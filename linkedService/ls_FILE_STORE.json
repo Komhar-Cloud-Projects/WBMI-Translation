@@ -5,15 +5,9 @@
 		"annotations": [],
 		"type": "AzureFileStorage",
 		"typeProperties": {
-			"connectionString": {
-				"type": "AzureKeyVaultSecret",
-				"store": {
-					"referenceName": "AzureKeyVault1",
-					"type": "LinkedServiceReference"
-				},
-				"secretName": "wbmiadlsdev-connection-string"
-			},
-			"fileShare": "wbmifilshare01"
+			"connectionString": "DefaultEndpointsProtocol=https;AccountName=wbmiadlsdev;EndpointSuffix=core.windows.net;",
+			"fileShare": "wbmifilshare01",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDAxRTNGRjdDLTMzNUMtNDkyRS1BQkYxLUNBQTNFQUYzNTA5OV83NzBiMDk2Yi0wYzNkLTRhYTktYjg0MS0wYTg4MTZhYWMwNWUiDQp9"
 		}
 	}
 }
