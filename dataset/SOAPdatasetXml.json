@@ -1,0 +1,17 @@
+{
+	"name": "SOAPdatasetXml",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_webservicetest",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Xml",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

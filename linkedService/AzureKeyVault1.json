@@ -1,0 +1,15 @@
+{
+	"name": "AzureKeyVault1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://wbmi-adf.vault.azure.net/",
+			"credential": {
+				"referenceName": "adfdev2-credential1",
+				"type": "CredentialReference"
+			}
+		}
+	}
+}

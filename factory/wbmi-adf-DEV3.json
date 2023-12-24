@@ -1,0 +1,223 @@
+{
+	"name": "wbmi-adf-DEV3",
+	"properties": {
+		"globalParameters": {
+			"gp_SQL_SRVR_DB_NM_SQL41": {
+				"type": "string",
+				"value": "AgencyManagement"
+			},
+			"gp_SQL_SRVR_DB_NM_SQL34": {
+				"type": "string",
+				"value": "ANALYTICS"
+			},
+			"gp_SNF_SCHEMA_DATAFEEDMART": {
+				"type": "string",
+				"value": "DATAFEEDMART"
+			},
+			"gp_SNF_SCHEMA_EDWTABULAR": {
+				"type": "string",
+				"value": "EDWTABULAR"
+			},
+			"gp_SNF_SCHEMA_WC_STAGE_ARCHIVE": {
+				"type": "string",
+				"value": "WC_STAGE_ARCHIVE"
+			},
+			"gp_SQL_SRVR_NM_EXAMPLE": {
+				"type": "string",
+				"value": "10.120.8.161"
+			},
+			"gp_SQL_SRVR_NM_SQL17": {
+				"type": "string",
+				"value": "10.120.8.161"
+			},
+			"gp_SQL_SRVR_NM_SQL27": {
+				"type": "string",
+				"value": "10.120.8.161"
+			},
+			"gp_SQL_SRVR_NM_SQL34": {
+				"type": "string",
+				"value": "10.120.8.161"
+			},
+			"gp_SQL_SRVR_NM_SQL36": {
+				"type": "string",
+				"value": "10.120.8.161"
+			},
+			"gp_SQL_SRVR_NM_SQL41": {
+				"type": "string",
+				"value": "10.120.8.161"
+			},
+			"gp_SQL_SRVR_DB_NM_WORKFLOWCENTER": {
+				"type": "string",
+				"value": "WORKFLOWCENTER"
+			},
+			"gp_SQL_SRVR_DB_NM_CLAIMS": {
+				"type": "string",
+				"value": "CLAIMS"
+			},
+			"gp_SQL_SRVR_DB_NM_PPPAYMENT": {
+				"type": "string",
+				"value": "PPPAYMENT"
+			},
+			"gp_SQL_SRVR_DB_NM_CMMN_ADMIN": {
+				"type": "string",
+				"value": "CMMN_ADMIN"
+			},
+			"gp_SQL_SRVR_DB_NM_AGENCYODS": {
+				"type": "string",
+				"value": "AgencyODS"
+			},
+			"gp_SQL_SRVR_DB_NM_EXAMPLEDATA_BALANCING": {
+				"type": "string",
+				"value": "ExampleData_Balancing"
+			},
+			"gp_SQL_SRVR_DB_NM_WBMISTAGING": {
+				"type": "string",
+				"value": "WBMIStaging"
+			},
+			"gp_SQL_SRVR_DB_NM_COMMERCIALLINES": {
+				"type": "string",
+				"value": "CommercialLines"
+			},
+			"gp_SQL_SRVR_DB_NM_PLINES": {
+				"type": "string",
+				"value": "PLines"
+			},
+			"gp_SQL_SRVR_DB_NM_ECPROD": {
+				"type": "string",
+				"value": "ECProd"
+			},
+			"gp_SQL_SRVR_DB_NM_BUSINESSCLASSIFICATIONCENTER": {
+				"type": "string",
+				"value": "BusinessClassificationCenter"
+			},
+			"gp_SQL_SRVR_DB_NM_HIERARCHYCENTER": {
+				"type": "string",
+				"value": "HierarchyCenter"
+			},
+			"gp_SQL_SRVR_DB_NM_QUESTIONCENTER": {
+				"type": "string",
+				"value": "QuestionCenter"
+			},
+			"gp_SQL_SRVR_DB_NM_INSURANCEREFERENCE": {
+				"type": "string",
+				"value": "InsuranceReference"
+			},
+			"gp_SQL_SRVR_DB_NM_RIAPPLDB": {
+				"type": "string",
+				"value": "RIAPPLDB"
+			},
+			"gp_SQL_SRVR_DB_NM_EAS": {
+				"type": "string",
+				"value": "EAS"
+			},
+			"gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL": {
+				"type": "string",
+				"value": "InformaticaAuditControl_ADF"
+			},
+			"gp_SQL_SRVR_NM_SQL06": {
+				"type": "string",
+				"value": "10.120.8.161"
+			},
+			"gp_SQL_SRVR_USER_NM_SQL06": {
+				"type": "string",
+				"value": "npwbmi"
+			},
+			"gp_SNF_SCHEMA_WC_STAGE": {
+				"type": "string",
+				"value": "WC_STAGE"
+			},
+			"gp_SNF_USERNAME": {
+				"type": "string",
+				"value": "npwbmi"
+			},
+			"gp_SNF_ACCOUNTNAME": {
+				"type": "string",
+				"value": "fc26219.canada-central.azure"
+			},
+			"gp_SNF_WAREHOUSE": {
+				"type": "string",
+				"value": "COMPUTE_WH"
+			},
+			"gp_SNF_DATABASE": {
+				"type": "string",
+				"value": "wbmidb"
+			},
+			"gp_SNF_ROLE": {
+				"type": "string",
+				"value": "ACCOUNTADMIN"
+			},
+			"gp_SNF_SCHEMA_RPT_EDM": {
+				"type": "string",
+				"value": "RPT_EDM"
+			},
+			"gp_SNF_SCHEMA_WC_DATA_MART": {
+				"type": "string",
+				"value": "WC_DATA_MART"
+			},
+			"gp_SQL_SRVR_DB_NM_EXAMPLEIDO": {
+				"type": "string",
+				"value": "ExampleIDO"
+			},
+			"gp_SQL_SRVR_DB_NM_WBEXAMPLEDATA": {
+				"type": "string",
+				"value": "WBExampleData"
+			},
+			"gp_SQL_SRVR_DB_NM_EXAMPLEDATA": {
+				"type": "string",
+				"value": "ExampleData"
+			},
+			"gp_SQL_SRVR_USER_NM_SQL17": {
+				"type": "string",
+				"value": "npwbmi"
+			},
+			"gp_SQL_SRVR_USER_NM_EXAMPLE": {
+				"type": "string",
+				"value": "npwbmi"
+			},
+			"gp_SQL_SRVR_USER_NM_SQL27": {
+				"type": "string",
+				"value": "npwbmi"
+			},
+			"gp_SNF_SCHEMA_COMMON": {
+				"type": "string",
+				"value": "COMMON"
+			},
+			"gp_SQL_SRVR_NM_CMMN_ADMIN": {
+				"type": "string",
+				"value": "10.120.8.161"
+			},
+			"gp_SQL_SRVR_USER_NM_CMMN_ADMIN": {
+				"type": "string",
+				"value": "npwbmi"
+			},
+			"gp_SQL_SRVR_USER_NM_SQL41": {
+				"type": "string",
+				"value": "npwbmi"
+			},
+			"gp_SQL_SRVR_USER_NM_SQL34": {
+				"type": "string",
+				"value": "npwbmi"
+			},
+			"gp_SNF_SCHEMA_STAGING": {
+				"type": "string",
+				"value": "STAGING"
+			},
+			"gp_PMTargetFileDir": {
+				"type": "string",
+				"value": "output"
+			}
+		}
+	},
+	"location": "canadacentral",
+	"identity": {
+		"type": "SystemAssigned,UserAssigned",
+		"principalId": "cccf9913-c538-4774-82ad-a264e1ea268b",
+		"tenantId": "84ebb0ce-a355-4687-84fc-1b3dacb2de5c",
+		"userAssignedIdentities": {
+			"/subscriptions/2e9cc886-f843-4396-b827-3c67985d85e0/resourcegroups/WBMI-Resource-Group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/wbmi-managed-identity": {
+				"clientId": "d511170c-39d5-4521-b649-0a7d63f1f424",
+				"principalId": "ceee8f8c-e85f-41ac-8270-e5a44d04d80b"
+			}
+		}
+	}
+}

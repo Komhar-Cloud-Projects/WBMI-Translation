@@ -1,0 +1,19 @@
+{
+	"name": "ls_FILE_STORE",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureFileStorage",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVault1",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "wbmiadlsdev-connection-string"
+			},
+			"fileShare": "wbmifilshare01"
+		}
+	}
+}

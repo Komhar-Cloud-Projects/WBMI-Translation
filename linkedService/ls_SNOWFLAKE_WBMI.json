@@ -1,0 +1,40 @@
+{
+	"name": "ls_SNOWFLAKE_WBMI",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"AccountName": {
+				"type": "string"
+			},
+			"UserName": {
+				"type": "string"
+			},
+			"DataBase": {
+				"type": "string"
+			},
+			"Warehouse": {
+				"type": "string"
+			},
+			"Schema": {
+				"type": "string"
+			},
+			"Role": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Snowflake",
+		"typeProperties": {
+			"authenticationType": "Basic",
+			"connectionString": "jdbc:snowflake://@{linkedService().AccountName}.snowflakecomputing.com/?user=@{linkedService().UserName}&db=@{linkedService().DataBase}&warehouse=@{linkedService().Warehouse}&role=@{linkedService().Role}&Schema=@{linkedService().Schema}",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVault1",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "wbmi-snowflake-pwd"
+			}
+		}
+	}
+}

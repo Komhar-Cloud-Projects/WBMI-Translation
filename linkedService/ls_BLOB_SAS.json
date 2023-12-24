@@ -1,0 +1,19 @@
+{
+	"name": "ls_BLOB_SAS",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"sasUri": "https://wbmiadlsdev.blob.core.windows.net/",
+			"sasToken": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVault1",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "blob-sas-token2"
+			}
+		}
+	}
+}
