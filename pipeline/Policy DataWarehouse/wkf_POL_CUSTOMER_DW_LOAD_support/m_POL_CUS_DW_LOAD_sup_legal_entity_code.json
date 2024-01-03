@@ -1,0 +1,77 @@
+{
+    "name": "m_POL_CUS_DW_LOAD_sup_legal_entity_code",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_CUS_DW_LOAD_sup_legal_entity_code",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_tl79_stage AS (\n\tSELECT\r\n\t\tb.xtdu01_code as location, \r\n\t\tb.verbal_description as master_company_number,\r\n\t\ta.lineof_business,\r\n\t\ta.legal_entity, \r\n\t\ta.legal_entity_literal \r\n\tFROM  \r\n\t\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.gtam_tl79_stage a\r\n\tLEFT OUTER JOIN\r\n\t\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.gtam_xtdu01_stage b ON \r\n\t\tSUBSTRING(xtdu01_code,1,1) = LTRIM(RTRIM(legal_entity))AND\r\n\t \ta.legal_entity = 'O'\r\n\tWHERE\r\n\t\ta.master_company_number <> '99'AND\r\n\t\ta.location <>'99'\r\n\t\r\n\t-- Here we are performing left outer join between gtam_tl79_stage and gtam_xtdu01_stage tables based on \r\n\t-- substring (xtdu01_code, 1, 1)  & legal_entity columns\n),\nEXP_values AS (\n\tSELECT\n\tlocation AS in_xtdu01_code,\n\tmaster_company_number AS in_verbal_description,\n\tlineof_business AS in_lineof_business,\n\t-- *INF*: iif(isnull(in_lineof_business) or IS_SPACES(in_lineof_business) or LENGTH(in_lineof_business)=0,'N/A',LTRIM(RTRIM(in_lineof_business)))\n\tIFF(in_lineof_business IS NULL OR IS_SPACES(in_lineof_business) OR LENGTH(in_lineof_business) = 0, 'N/A', LTRIM(RTRIM(in_lineof_business))) AS line_of_business,\n\tlgl_ent_code,\n\tlegal_entity_literal AS in_legal_entity_literal,\n\t-- *INF*: IIF(lgl_ent_code<>'O','N/A',ltrim(rtrim(in_xtdu01_code)))\n\tIFF(lgl_ent_code <> 'O', 'N/A', ltrim(rtrim(in_xtdu01_code))) AS lgl_ent_sub_code,\n\t-- *INF*: IIF(lgl_ent_code<>'O',in_legal_entity_literal,in_verbal_description)\n\tIFF(lgl_ent_code <> 'O', in_legal_entity_literal, in_verbal_description) AS v_legal_entity_description,\n\t-- *INF*: iif(isnull(v_legal_entity_description) or IS_SPACES(v_legal_entity_description) or LENGTH(v_legal_entity_description)=0,'Not Avaliable',ltrim(rtrim(v_legal_entity_description)))\n\tIFF(v_legal_entity_description IS NULL OR IS_SPACES(v_legal_entity_description) OR LENGTH(v_legal_entity_description) = 0, 'Not Avaliable', ltrim(rtrim(v_legal_entity_description))) AS lgl_ent_code_descript\n\tFROM SQ_gtam_tl79_stage\n),\nLKP_sup_legal_entity_code AS (\n\tSELECT\n\tsup_lgl_ent_code_id,\n\tlgl_ent_code_descript,\n\tlob,\n\tlgl_ent_code,\n\tlgl_ent_sub_code\n\tFROM (\n\t\tSELECT \r\n\t\tsup_legal_entity_code.sup_lgl_ent_code_id as sup_lgl_ent_code_id, sup_legal_entity_code.lgl_ent_code_descript as lgl_ent_code_descript, \r\n\t\tltrim(rtrim(sup_legal_entity_code.lob)) as lob, \r\n\t\tsup_legal_entity_code.lgl_ent_code as lgl_ent_code, \r\n\t\tltrim(rtrim(sup_legal_entity_code.lgl_ent_sub_code)) as lgl_ent_sub_code \r\n\t\tFROM \r\n\t\t@{pipeline().parameters.TARGET_TABLE_OWNER}.sup_legal_entity_code\r\n\t\twhere sup_legal_entity_code.crrnt_snpsht_flag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY lob,lgl_ent_code,lgl_ent_sub_code ORDER BY sup_lgl_ent_code_id DESC) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tLKP_sup_legal_entity_code.sup_lgl_ent_code_id AS lkp_sup_legal_entity_id,\n\tLKP_sup_legal_entity_code.lgl_ent_code_descript AS lkp_legal_entity_description,\n\tEXP_values.line_of_business,\n\tEXP_values.lgl_ent_code,\n\tEXP_values.lgl_ent_sub_code,\n\tEXP_values.lgl_ent_code_descript,\n\t-- *INF*: iif(isnull(lkp_sup_legal_entity_id),'NEW',\r\n\t-- IIF(LTRIM(RTRIM(lkp_legal_entity_description)) != LTRIM(RTRIM(lgl_ent_code_descript)),'UPDATE','NOCHANGE'))\n\tIFF(lkp_sup_legal_entity_id IS NULL, 'NEW', IFF(LTRIM(RTRIM(lkp_legal_entity_description)) != LTRIM(RTRIM(lgl_ent_code_descript)), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,\n\tv_changed_flag AS changed_flag,\n\t1 AS crrnt_snpsht_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t-- *INF*: iif(v_changed_flag='NEW',\r\n\t-- \tto_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)\n\tIFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,\n\tSYSDATE AS created_date,\n\tSYSDATE AS modified_date\n\tFROM EXP_values\n\tLEFT JOIN LKP_sup_legal_entity_code\n\tON LKP_sup_legal_entity_code.lob = EXP_values.line_of_business AND LKP_sup_legal_entity_code.lgl_ent_code = EXP_values.lgl_ent_code AND LKP_sup_legal_entity_code.lgl_ent_sub_code = EXP_values.lgl_ent_sub_code\n),\nFIL_insert AS (\n\tSELECT\n\tline_of_business, \n\tlgl_ent_code, \n\tlgl_ent_sub_code, \n\tlgl_ent_code_descript, \n\tchanged_flag, \n\tcrrnt_snpsht_flag, \n\taudit_id, \n\teff_from_date, \n\teff_to_date, \n\tsource_sys_id, \n\tcreated_date, \n\tmodified_date\n\tFROM EXP_Detect_Changes\n\tWHERE changed_flag='NEW' OR changed_flag='UPDATE'\n),\nTGT_sup_legal_entity_code_INSERT AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_legal_entity_code\n\t(crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, source_sys_id, created_date, modified_date, lob, lgl_ent_code, lgl_ent_sub_code, lgl_ent_code_descript, StandardLegalEntityCode, StandardLegalEntityDescription)\n\tSELECT \n\tCRRNT_SNPSHT_FLAG, \n\tAUDIT_ID, \n\tEFF_FROM_DATE, \n\tEFF_TO_DATE, \n\tSOURCE_SYS_ID, \n\tCREATED_DATE, \n\tMODIFIED_DATE, \n\tline_of_business AS LOB, \n\tLGL_ENT_CODE, \n\tLGL_ENT_SUB_CODE, \n\tLGL_ENT_CODE_DESCRIPT, \n\tlgl_ent_code AS STANDARDLEGALENTITYCODE, \n\tlgl_ent_code_descript AS STANDARDLEGALENTITYDESCRIPTION\n\tFROM FIL_insert\n),\nSQ_sup_legal_entity_code AS (\n\tSELECT \r\n\ta.sup_lgl_ent_code_id, \r\n\ta.eff_from_date, \r\n\ta.eff_to_date, \r\n\ta.lob, \r\n\ta.lgl_ent_code, \r\n\ta.lgl_ent_sub_code \r\n\tFROM\r\n\t@{pipeline().parameters.TARGET_TABLE_OWNER}.sup_legal_entity_code a\r\n\tWHERE EXISTS(SELECT 1\t\t\t\r\n\tFROM  @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_legal_entity_code b\r\n\tWHERE b.source_sys_id = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'   \r\n\tAND b.crrnt_snpsht_flag = 1 AND  \r\n\ta.lob=b.lob   AND\r\n\ta.lgl_ent_code=b.lgl_ent_code AND\r\n\ta.lgl_ent_sub_code = b.lgl_ent_sub_code\r\n\tGROUP BY b.lob,b.lgl_ent_code,b.lgl_ent_sub_code \r\n\tHAVING COUNT(*) > 1)\r\n\tORDER BY  \r\n\ta.lob, \r\n\ta.lgl_ent_code, \r\n\ta.lgl_ent_sub_code,\r\n\ta.eff_from_date  DESC\r\n\t\r\n\t\r\n\t\r\n\t\r\n\t--EXISTS Subquery exists to pick AK ID column values that have multiple rows with a 12/31/2100 eff_to_date.\r\n\t--When this condition occurs this is an indication that we must expire one or more of these rows.\r\n\t--WHERE clause is always made up of current snapshot flag \r\n\t--GROUP BY clause is always on AK\r\n\t--HAVING clause stays the same\n),\nEXP_Lag_eff_from_date AS (\n\tSELECT\n\tsup_lgl_ent_code_id AS sup_legal_entity_id,\n\teff_from_date AS in_eff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\tlob,\n\tlgl_ent_code AS in_legal_entity_code,\n\tlgl_ent_sub_code AS in_legal_entity_sub_code,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- lob = v_prev_line_of_business\r\n\t--  AND\r\n\t-- in_legal_entity_code=v_prev_legal_entity_code \r\n\t-- AND\r\n\t-- in_legal_entity_sub_code= v_prev_legal_entity_sub_code ,\r\n\t-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)\n\tDECODE(TRUE,\n\tlob = v_prev_line_of_business AND in_legal_entity_code = v_prev_legal_entity_code AND in_legal_entity_sub_code = v_prev_legal_entity_sub_code, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),\n\torig_eff_to_date) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\tlob AS v_prev_line_of_business,\n\tin_legal_entity_code AS v_prev_legal_entity_code,\n\tin_legal_entity_sub_code AS v_prev_legal_entity_sub_code,\n\tin_eff_from_date AS v_prev_eff_from_date,\n\t0 AS crrnt_snpsht_flag,\n\tSYSDATE AS modified_date\n\tFROM SQ_sup_legal_entity_code\n),\nFIL_FirstRowInAKGroup AS (\n\tSELECT\n\tsup_legal_entity_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM EXP_Lag_eff_from_date\n\tWHERE orig_eff_to_date != eff_to_date\n),\nUPD_sup_legal_entity_code AS (\n\tSELECT\n\tsup_legal_entity_id, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM FIL_FirstRowInAKGroup\n),\nTGT_sup_legal_entity_code_UPDATE AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_legal_entity_code AS T\n\tUSING UPD_sup_legal_entity_code AS S\n\tON T.sup_lgl_ent_code_id = S.sup_legal_entity_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_date\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905515"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604170"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 01:20:53"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 01:53:42"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Policy"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "dbo"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "dbo"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "PMS"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,46 @@
+{
+    "name": "wkf_Enable_Indexes_PremiumMasterFact",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "s_m_Enable_Indexes_PremiumMasterFact",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_Enable_Indexes"
+                    },
+                    "parameters": {}
+                }
+            }
+        ],
+        "folder": {
+            "name": ""
+        },
+        "variables": {}
+    }
+}

@@ -1,0 +1,46 @@
+{
+    "name": "wkf_CMN_DM_Update_CoverageDetailDim_Daily",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "s_m_CMN_DM_Update_CoverageDetailDim_Daily",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_DM_Update_CoverageDetailDim_Daily"
+                    },
+                    "parameters": {}
+                }
+            }
+        ],
+        "folder": {
+            "name": ""
+        },
+        "variables": {}
+    }
+}

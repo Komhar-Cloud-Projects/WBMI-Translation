@@ -1,0 +1,41 @@
+{
+    "name": "m_Do_PostBatch_CheckForExceptions",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Do_PostBatch_CheckForExceptions",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSRC_Rep_SessionLog AS (\n\tSELECT vw_REP_SESS_LOG.SUBJECT_AREA, vw_REP_SESS_LOG.SESSION_NAME, vw_REP_SESS_LOG.SUCCESSFUL_ROWS, vw_REP_SESS_LOG.FAILED_ROWS, vw_REP_SESS_LOG.FIRST_ERROR_CODE, vw_REP_SESS_LOG.FIRST_ERROR_MSG, vw_REP_SESS_LOG.LAST_ERROR_CODE, vw_REP_SESS_LOG.LAST_ERROR, vw_REP_SESS_LOG.RUN_STATUS_CODE, vw_REP_SESS_LOG.ACTUAL_START, vw_REP_SESS_LOG.SESSION_TIMESTAMP, vw_REP_SESS_LOG.WORKFLOW_NAME, vw_REP_SESS_LOG.MAPPING_NAME, vw_REP_SESS_LOG.TOTAL_ERR, vw_REP_SESS_LOG.WORKFLOW_RUN_ID, vw_REP_SESS_LOG.INSTANCE_ID \r\n\tFROM\r\n\t PowerCenter.vw_REP_SESS_LOG \r\n\tWHERE\r\n\t vw_REP_SESS_LOG.TOTAL_ERR <> 0 OR vw_REP_SESS_LOG.FAILED_ROWS <> 0\n),\nSRC_Session_batch_Control AS (\n\tSELECT wbmi_batch_control_run.wbmi_batch_control_run_id, wbmi_batch_control_run.batch_name, wbmi_batch_control_run.email_code, wbmi_batch_control_run.current_ind, wbmi_batch_control_run.email_address, wbmi_session_control_run.wbmi_session_control_id, wbmi_session_control_run.workflow_run_id, wbmi_session_control_run.sess_inst_id \r\n\tFROM\r\n\t wbmi_batch_control_run, wbmi_session_control_run \r\n\tWHERE\r\n\t wbmi_batch_control_run.batch_name = '@{pipeline().parameters.BATCH_NAME}'\r\n\tAND wbmi_batch_control_run.current_ind = 'Y' \r\n\tAND\r\n\t wbmi_batch_control_run.wbmi_batch_control_run_id=wbmi_session_control_run.wbmi_batch_control_run_id\n),\nJNR_Rep_Sess_Log_WBMI_Batch_ControlRun AS (SELECT\n\tSRC_Rep_SessionLog.SUBJECT_AREA, \n\tSRC_Rep_SessionLog.SESSION_NAME, \n\tSRC_Rep_SessionLog.SUCCESSFUL_ROWS, \n\tSRC_Rep_SessionLog.FAILED_ROWS, \n\tSRC_Rep_SessionLog.FIRST_ERROR_CODE, \n\tSRC_Rep_SessionLog.FIRST_ERROR_MSG, \n\tSRC_Rep_SessionLog.LAST_ERROR_CODE, \n\tSRC_Rep_SessionLog.LAST_ERROR, \n\tSRC_Rep_SessionLog.RUN_STATUS_CODE, \n\tSRC_Rep_SessionLog.ACTUAL_START, \n\tSRC_Rep_SessionLog.SESSION_TIMESTAMP, \n\tSRC_Rep_SessionLog.WORKFLOW_NAME, \n\tSRC_Rep_SessionLog.MAPPING_NAME, \n\tSRC_Rep_SessionLog.TOTAL_ERR, \n\tSRC_Rep_SessionLog.WORKFLOW_RUN_ID AS WORKFLOW_RUNID, \n\tSRC_Rep_SessionLog.INSTANCE_ID, \n\tSRC_Session_batch_Control.wbmi_batch_control_run_id, \n\tSRC_Session_batch_Control.batch_name, \n\tSRC_Session_batch_Control.email_code, \n\tSRC_Session_batch_Control.current_ind, \n\tSRC_Session_batch_Control.email_address, \n\tSRC_Session_batch_Control.wbmi_session_control_id, \n\tSRC_Session_batch_Control.workflow_run_id, \n\tSRC_Session_batch_Control.sess_inst_id\n\tFROM SRC_Rep_SessionLog\n\tINNER JOIN SRC_Session_batch_Control\n\tON SRC_Session_batch_Control.workflow_run_id = SRC_Rep_SessionLog.WORKFLOW_RUN_ID AND SRC_Session_batch_Control.sess_inst_id = SRC_Rep_SessionLog.INSTANCE_ID\n),\nEXP_Format_Email_Message AS (\n\tSELECT\n\tv_row_count AS v_row_count_temp,\n\tSESSION_NAME,\n\tSUCCESSFUL_ROWS,\n\t-- *INF*: TO_CHAR(SUCCESSFUL_ROWS)\n\tTO_CHAR(SUCCESSFUL_ROWS) AS v_SUCCESSFUL_ROWS_string,\n\tFAILED_ROWS,\n\t-- *INF*: TO_CHAR(FAILED_ROWS)\n\tTO_CHAR(FAILED_ROWS) AS v_FAILED_ROWS_string,\n\tFIRST_ERROR_CODE,\n\t-- *INF*: TO_CHAR(FIRST_ERROR_CODE)\n\tTO_CHAR(FIRST_ERROR_CODE) AS v_FIRST_ERROR_CODE_string,\n\tFIRST_ERROR_MSG,\n\tSESSION_TIMESTAMP,\n\tbatch_name,\n\temail_address,\n\t-- *INF*: batch_name || ' Exceptions Occurred ' ||  TO_CHAR(SESSION_TIMESTAMP)\n\tbatch_name || ' Exceptions Occurred ' || TO_CHAR(SESSION_TIMESTAMP) AS email_subject,\n\tv_row_count_temp + 1 AS v_row_count,\n\t-- *INF*: '<table width=\"100%\" style=\"border-collapse: collapse\" bordercolor=\"#111111\" cellpadding=\"3\" cellspacing=\"0\">' || CHR(10) ||\r\n\t-- '\t<tr><td width=\"176\"><b><font face=\"Arial\" size=\"2\">Session Name</font></b></td>' || CHR(10) ||\r\n\t-- '      <td width=\"57\"><b><font face=\"Arial\" size=\"2\">Target Success Rows</font></b></td>' || CHR(10) ||\r\n\t-- '      <td width=\"53\"><b><font face=\"Arial\" size=\"2\">Target Failed Rows</font></b></td>' || CHR(10) ||\r\n\t-- '      <td width=\"884\"><b><font face=\"Arial\" size=\"2\">First Error</font></b></td></tr>' || CHR(10) \n\t'<table width=\"100%\" style=\"border-collapse: collapse\" bordercolor=\"#111111\" cellpadding=\"3\" cellspacing=\"0\">' || CHR(10) || '\t<tr><td width=\"176\"><b><font face=\"Arial\" size=\"2\">Session Name</font></b></td>' || CHR(10) || '      <td width=\"57\"><b><font face=\"Arial\" size=\"2\">Target Success Rows</font></b></td>' || CHR(10) || '      <td width=\"53\"><b><font face=\"Arial\" size=\"2\">Target Failed Rows</font></b></td>' || CHR(10) || '      <td width=\"884\"><b><font face=\"Arial\" size=\"2\">First Error</font></b></td></tr>' || CHR(10) AS v_email_body_header,\n\t-- *INF*: '\t<tr><td width=\"176\"><font face=\"Arial\" size=\"2\">' || SESSION_NAME || '</font></td>' ||\r\n\t-- '\t<td width=\"57\"><font face=\"Arial\" size=\"2\">' || v_SUCCESSFUL_ROWS_string || '</font></td>' ||\r\n\t-- '\t<td width=\"53\"><font face=\"Arial\" size=\"2\">'  || v_FAILED_ROWS_string || '</font></td>' ||\r\n\t-- '\t<td width=\"884\"><font face=\"Arial\" size=\"1\">'  || FIRST_ERROR_MSG || ' </font></td></tr>' || CHR(10)\n\t'\t<tr><td width=\"176\"><font face=\"Arial\" size=\"2\">' || SESSION_NAME || '</font></td>' || '\t<td width=\"57\"><font face=\"Arial\" size=\"2\">' || v_SUCCESSFUL_ROWS_string || '</font></td>' || '\t<td width=\"53\"><font face=\"Arial\" size=\"2\">' || v_FAILED_ROWS_string || '</font></td>' || '\t<td width=\"884\"><font face=\"Arial\" size=\"1\">' || FIRST_ERROR_MSG || ' </font></td></tr>' || CHR(10) AS v_email_body_content,\n\t-- *INF*: IIF(v_row_count = 1,\r\n\t-- \tv_email_body_header || CHR(10) || v_email_body_content,\r\n\t-- \tv_email_body_content)\n\tIFF(v_row_count = 1, v_email_body_header || CHR(10) || v_email_body_content, v_email_body_content) AS v_email_body,\n\tv_email_body AS out_email_body\n\tFROM JNR_Rep_Sess_Log_WBMI_Batch_ControlRun\n),\nAGG_Distinct_Email_Address_Subject AS (\n\tSELECT\n\temail_address, \n\temail_subject\n\tFROM EXP_Format_Email_Message\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY email_address, email_subject ORDER BY NULL) = 1\n),\nemail_address AS (\n\tINSERT INTO email_address\n\t(FIELD1)\n\tSELECT \n\temail_address AS FIELD1\n\tFROM AGG_Distinct_Email_Address_Subject\n),\nemail_body AS (\n\tINSERT INTO email_body\n\t(FIELD1)\n\tSELECT \n\tout_email_body AS FIELD1\n\tFROM EXP_Format_Email_Message\n),\nemail_subject AS (\n\tINSERT INTO email_subject\n\t(FIELD1)\n\tSELECT \n\temail_subject AS FIELD1\n\tFROM AGG_Distinct_Email_Address_Subject\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "BATCH_NAME": {
+                "type": "string",
+                "defaultValue": "AGENCY_DATAWAREHOUSE"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,46 @@
+{
+    "name": "wkf_Do_PostAudit_Actuarial",
+    "properties": {
+        "activities": [
+            {
+                "name": "s_m_Do_PostAudit_Actuarial",
+                "type": "Script",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "Start",
+                "type": "Script",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                }
+            }
+        ],
+        "folder": {
+            "name": ""
+        },
+        "variables": {}
+    }
+}

@@ -1,0 +1,77 @@
+{
+    "name": "m_CLM_DM_LOAD_NurseAssignmentDim",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DM_LOAD_NurseAssignmentDim",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_NurseAssignment AS (\n\tSELECT \r\n\tN.NurseAssignmentId, \r\n\tN.EffectiveDate, \r\n\tN.SourceSystemId, \r\n\tN.NurseAssignmentAkId, \r\n\tN.claim_party_ak_id, \r\n\tN.OpenDate, \r\n\tN.ClosedDate \r\n\t\r\n\tFROM\r\n\t @{pipeline().parameters.SOURCE_TABLE_OWNER}.NurseAssignment N\r\n\twhere\r\n\t  N.CreatedDate >= '@{pipeline().parameters.SELECTION_START_TS}'\r\n\tAND\r\n\t   N.CurrentSnapshotFlag = 1\n),\nEXP_Src_Values_Default AS (\n\tSELECT\n\tEdwNurseAssignmentPkId,\n\t1 AS CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tEffectiveDate,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,\n\tSourceSystemId,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate,\n\tNurseAssignmentAkId AS IN_NurseAssignmentAkId,\n\t-- *INF*: iif(isnull(IN_NurseAssignmentAkId), -1, IN_NurseAssignmentAkId)\n\tIFF(IN_NurseAssignmentAkId IS NULL, - 1, IN_NurseAssignmentAkId) AS v_NurseAssignmentAkId,\n\tv_NurseAssignmentAkId AS EdwNurseAssignmentAkId,\n\tclaim_party_ak_id AS IN_claim_party_ak_id,\n\t-- *INF*: iif(isnull(IN_claim_party_ak_id), -1,IN_claim_party_ak_id)\n\tIFF(IN_claim_party_ak_id IS NULL, - 1, IN_claim_party_ak_id) AS v_claim_party_ak_id,\n\tv_claim_party_ak_id AS claim_party_ak_id,\n\tOpenDate AS IN_OpenDate,\n\t-- *INF*: iif(isnull(IN_OpenDate),to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),IN_OpenDate)\n\tIFF(IN_OpenDate IS NULL, to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), IN_OpenDate) AS v_OpenDate,\n\tv_OpenDate AS OpenDate,\n\tClosedDate AS IN_ClosedDate,\n\t-- *INF*: iif(isnull(ltrim(rtrim(IN_ClosedDate))),to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS'),IN_ClosedDate)\n\tIFF(ltrim(rtrim(IN_ClosedDate)) IS NULL, to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'), IN_ClosedDate) AS v_ClosedDate,\n\tv_ClosedDate AS ClosedDate\n\tFROM SQ_NurseAssignment\n),\nLKP_NurseAssignmentDim AS (\n\tSELECT\n\tNurseAssignmentDimId,\n\tEdwNurseAssignmentAkId\n\tFROM (\n\t\tSELECT\r\n\t\tN.NurseAssignmentDimId as NurseAssignmentDimId, N.EdwNurseAssignmentAkId as EdwNurseAssignmentAkId\r\n\t\t\r\n\t\t FROM\r\n\t\t @{pipeline().parameters.TARGET_TABLE_OWNER}.NurseAssignmentDim N\r\n\t\t\r\n\t\twhere\r\n\t\tN.CurrentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY EdwNurseAssignmentAkId ORDER BY NurseAssignmentDimId) = 1\n),\nLKP_claim_party AS (\n\tSELECT\n\tclaim_party_full_name,\n\tclaim_party_first_name,\n\tclaim_party_last_name,\n\tclaim_party_mid_name,\n\tclaim_party_name_prfx,\n\tclaim_party_name_sfx,\n\tclaim_party_ak_id\n\tFROM (\n\t\tSELECT\r\n\t\tCP.claim_party_full_name as claim_party_full_name, \r\n\t\tCP.claim_party_first_name as claim_party_first_name, \r\n\t\tCP.claim_party_last_name as claim_party_last_name, \r\n\t\tCP.claim_party_mid_name as claim_party_mid_name, \r\n\t\tCP.claim_party_name_prfx as claim_party_name_prfx, \r\n\t\tCP.claim_party_name_sfx as claim_party_name_sfx, \r\n\t\tCP.claim_party_ak_id as claim_party_ak_id\r\n\t\t\r\n\t\t FROM \r\n\t\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_party CP\r\n\t\t\r\n\t\twhere\r\n\t\tCP.crrnt_snpsht_flag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY claim_party_ak_id ORDER BY claim_party_full_name) = 1\n),\nEXP_Lkp_Records AS (\n\tSELECT\n\tLKP_NurseAssignmentDim.NurseAssignmentDimId,\n\tLKP_claim_party.claim_party_full_name AS IN_NurseFullName,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(IN_NurseFullName),'N/A',\r\n\t-- IS_SPACES(IN_NurseFullName),'N/A',\r\n\t-- LENGTH(IN_NurseFullName)=0,'N/A',\r\n\t-- LTRIM(RTRIM(IN_NurseFullName)))\n\tDECODE(TRUE,\n\tIN_NurseFullName IS NULL, 'N/A',\n\tIS_SPACES(IN_NurseFullName), 'N/A',\n\tLENGTH(IN_NurseFullName) = 0, 'N/A',\n\tLTRIM(RTRIM(IN_NurseFullName))) AS NurseFullName,\n\tLKP_claim_party.claim_party_first_name AS IN_NurseFirstName,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(IN_NurseFirstName),'N/A',\r\n\t-- IS_SPACES(IN_NurseFirstName),'N/A',\r\n\t-- LENGTH(IN_NurseFirstName)=0,'N/A',\r\n\t-- LTRIM(RTRIM(IN_NurseFirstName)))\n\tDECODE(TRUE,\n\tIN_NurseFirstName IS NULL, 'N/A',\n\tIS_SPACES(IN_NurseFirstName), 'N/A',\n\tLENGTH(IN_NurseFirstName) = 0, 'N/A',\n\tLTRIM(RTRIM(IN_NurseFirstName))) AS NurseFirstName,\n\tLKP_claim_party.claim_party_last_name AS IN_NurseLastName,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(IN_NurseLastName),'N/A',\r\n\t-- IS_SPACES(IN_NurseLastName),'N/A',\r\n\t-- LENGTH(IN_NurseLastName)=0,'N/A',\r\n\t-- LTRIM(RTRIM(IN_NurseLastName)))\n\tDECODE(TRUE,\n\tIN_NurseLastName IS NULL, 'N/A',\n\tIS_SPACES(IN_NurseLastName), 'N/A',\n\tLENGTH(IN_NurseLastName) = 0, 'N/A',\n\tLTRIM(RTRIM(IN_NurseLastName))) AS NurseLastName,\n\tLKP_claim_party.claim_party_mid_name AS IN_NurseMiddleName,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(IN_NurseMiddleName),'N/A',\r\n\t-- IS_SPACES(IN_NurseMiddleName),'N/A',\r\n\t-- LENGTH(IN_NurseMiddleName)=0,'N/A',\r\n\t-- LTRIM(RTRIM(IN_NurseMiddleName)))\n\tDECODE(TRUE,\n\tIN_NurseMiddleName IS NULL, 'N/A',\n\tIS_SPACES(IN_NurseMiddleName), 'N/A',\n\tLENGTH(IN_NurseMiddleName) = 0, 'N/A',\n\tLTRIM(RTRIM(IN_NurseMiddleName))) AS NurseMiddleName,\n\tLKP_claim_party.claim_party_name_prfx AS IN_NurseNamePrefix,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(IN_NurseNamePrefix),'N/A',\r\n\t-- IS_SPACES(IN_NurseNamePrefix),'N/A',\r\n\t-- LENGTH(IN_NurseNamePrefix)=0,'N/A',\r\n\t-- LTRIM(RTRIM(IN_NurseNamePrefix)))\n\tDECODE(TRUE,\n\tIN_NurseNamePrefix IS NULL, 'N/A',\n\tIS_SPACES(IN_NurseNamePrefix), 'N/A',\n\tLENGTH(IN_NurseNamePrefix) = 0, 'N/A',\n\tLTRIM(RTRIM(IN_NurseNamePrefix))) AS NurseNamePrefix,\n\tLKP_claim_party.claim_party_name_sfx AS IN_NurseNameSuffix,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(IN_NurseNameSuffix),'N/A',\r\n\t-- IS_SPACES(IN_NurseNameSuffix),'N/A',\r\n\t-- LENGTH(IN_NurseNameSuffix)=0,'N/A',\r\n\t-- LTRIM(RTRIM(IN_NurseNameSuffix)))\n\tDECODE(TRUE,\n\tIN_NurseNameSuffix IS NULL, 'N/A',\n\tIS_SPACES(IN_NurseNameSuffix), 'N/A',\n\tLENGTH(IN_NurseNameSuffix) = 0, 'N/A',\n\tLTRIM(RTRIM(IN_NurseNameSuffix))) AS NurseNameSuffix\n\tFROM \n\tLEFT JOIN LKP_NurseAssignmentDim\n\tON LKP_NurseAssignmentDim.EdwNurseAssignmentAkId = EXP_Src_Values_Default.EdwNurseAssignmentAkId\n\tLEFT JOIN LKP_claim_party\n\tON LKP_claim_party.claim_party_ak_id = EXP_Src_Values_Default.claim_party_ak_id\n),\nRTR_Insert_Update AS (\n\tSELECT\n\tEXP_Lkp_Records.NurseAssignmentDimId,\n\tEXP_Src_Values_Default.CurrentSnapshotFlag,\n\tEXP_Src_Values_Default.AuditId AS AuditID,\n\tEXP_Src_Values_Default.EffectiveDate,\n\tEXP_Src_Values_Default.ExpirationDate,\n\tEXP_Src_Values_Default.CreatedDate,\n\tEXP_Src_Values_Default.ModifiedDate,\n\tEXP_Src_Values_Default.EdwNurseAssignmentPkId,\n\tEXP_Src_Values_Default.EdwNurseAssignmentAkId,\n\tEXP_Src_Values_Default.OpenDate,\n\tEXP_Src_Values_Default.ClosedDate,\n\tEXP_Lkp_Records.NurseFullName,\n\tEXP_Lkp_Records.NurseFirstName,\n\tEXP_Lkp_Records.NurseLastName,\n\tEXP_Lkp_Records.NurseMiddleName,\n\tEXP_Lkp_Records.NurseNamePrefix,\n\tEXP_Lkp_Records.NurseNameSuffix\n\tFROM EXP_Lkp_Records\n\t -- Manually join with EXP_Src_Values_Default\n),\nRTR_Insert_Update_Insert AS (SELECT * FROM RTR_Insert_Update WHERE isnull(NurseAssignmentDimId)),\nRTR_Insert_Update_DEFAULT1 AS (SELECT * FROM RTR_Insert_Update WHERE NOT ( (isnull(NurseAssignmentDimId)) )),\nUPD_Update AS (\n\tSELECT\n\tNurseAssignmentDimId, \n\tCurrentSnapshotFlag, \n\tAuditID, \n\tEffectiveDate, \n\tExpirationDate, \n\tCreatedDate, \n\tModifiedDate, \n\tEdwNurseAssignmentPkId, \n\tEdwNurseAssignmentAkId, \n\tOpenDate, \n\tClosedDate, \n\tNurseFullName, \n\tNurseFirstName, \n\tNurseLastName, \n\tNurseMiddleName, \n\tNurseNamePrefix, \n\tNurseNameSuffix\n\tFROM RTR_Insert_Update_DEFAULT1\n),\nNurseAssignmentDim_Update AS (\n\tMERGE INTO NurseAssignmentDim AS T\n\tUSING UPD_Update AS S\n\tON T.NurseAssignmentDimId = S.NurseAssignmentDimId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.CurrentSnapshotFlag, T.AuditID = S.AuditID, T.EffectiveDate = S.EffectiveDate, T.ExpirationDate = S.ExpirationDate, T.CreatedDate = S.CreatedDate, T.ModifiedDate = S.ModifiedDate, T.EdwNurseAssignmentPkId = S.EdwNurseAssignmentPkId, T.EdwNurseAssignmentAkId = S.EdwNurseAssignmentAkId, T.OpenDate = S.OpenDate, T.ClosedDate = S.ClosedDate, T.NurseFullName = S.NurseFullName, T.NurseFirstName = S.NurseFirstName, T.NurseLastName = S.NurseLastName, T.NurseMiddleName = S.NurseMiddleName, T.NurseNamePrefix = S.NurseNamePrefix, T.NurseNameSuffix = S.NurseNameSuffix\n),\nUPD_Insert AS (\n\tSELECT\n\tCurrentSnapshotFlag, \n\tAuditID, \n\tEffectiveDate, \n\tExpirationDate, \n\tCreatedDate, \n\tModifiedDate, \n\tEdwNurseAssignmentPkId, \n\tEdwNurseAssignmentAkId, \n\tOpenDate, \n\tClosedDate, \n\tNurseFullName, \n\tNurseFirstName, \n\tNurseLastName, \n\tNurseMiddleName, \n\tNurseNamePrefix, \n\tNurseNameSuffix\n\tFROM RTR_Insert_Update_Insert\n),\nNurseAssignmentDim_Insert AS (\n\tINSERT INTO NurseAssignmentDim\n\t(CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, CreatedDate, ModifiedDate, EdwNurseAssignmentPkId, EdwNurseAssignmentAkId, OpenDate, ClosedDate, NurseFullName, NurseFirstName, NurseLastName, NurseMiddleName, NurseNamePrefix, NurseNameSuffix)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tEDWNURSEASSIGNMENTPKID, \n\tEDWNURSEASSIGNMENTAKID, \n\tOPENDATE, \n\tCLOSEDDATE, \n\tNURSEFULLNAME, \n\tNURSEFIRSTNAME, \n\tNURSELASTNAME, \n\tNURSEMIDDLENAME, \n\tNURSENAMEPREFIX, \n\tNURSENAMESUFFIX\n\tFROM UPD_Insert\n),\nSQ_NurseAssignmentDim AS (\n\tSELECT\r\n\tA.NurseAssignmentDimId,\r\n\tA.EffectiveDate,\r\n\tA.ExpirationDate,\r\n\tA.EdwNurseAssignmentAkId \r\n\t\r\n\tFROM\r\n\t @{pipeline().parameters.TARGET_TABLE_OWNER}.NurseAssignmentDim A\r\n\t\r\n\twhere Exists\r\n\t (\r\n\tSELECT 1\r\n\tFROM\r\n\t@{pipeline().parameters.TARGET_TABLE_OWNER}.NurseAssignmentDim B\r\n\t\r\n\tWHERE\r\n\tA.EdwNurseAssignmentAkId = B.EdwNurseAssignmentAkId\r\n\tAND\r\n\tB.CurrentSnapshotFlag = 1\r\n\t\r\n\tGROUP BY \r\n\tB.EdwNurseAssignmentAkId\r\n\tHAVING\r\n\tcount(*) > 1\r\n\t )\r\n\t\r\n\tORDER BY\r\n\tA.EdwNurseAssignmentAkId,\r\n\tA.EffectiveDate DESC\n),\nEXP_Lag_ExpirationDate AS (\n\tSELECT\n\tNurseAssignmentDimId,\n\t0 AS CurrentSnapshotFlag,\n\tEffectiveDate,\n\tExpirationDate AS orig_ExpirationDate,\n\t-- *INF*: decode(true,\r\n\t-- EdwNurseAssignmentAkId = v_PREV_ROW_EdwNurseAssignmentAkId,\r\n\t--  add_to_date(v_PREV_ROW_EffectiveDate,'SS', -1),\r\n\t-- orig_ExpirationDate)\n\tdecode(true,\n\tEdwNurseAssignmentAkId = v_PREV_ROW_EdwNurseAssignmentAkId, add_to_date(v_PREV_ROW_EffectiveDate, 'SS', - 1),\n\torig_ExpirationDate) AS v_ExpirationDate,\n\tv_ExpirationDate AS ExpirationDate,\n\tsysdate AS ModifiedDate,\n\tEdwNurseAssignmentAkId,\n\tEffectiveDate AS v_PREV_ROW_EffectiveDate,\n\tEdwNurseAssignmentAkId AS v_PREV_ROW_EdwNurseAssignmentAkId\n\tFROM SQ_NurseAssignmentDim\n),\nFIL_FirstRowAkId AS (\n\tSELECT\n\tNurseAssignmentDimId, \n\tCurrentSnapshotFlag, \n\torig_ExpirationDate, \n\tExpirationDate, \n\tModifiedDate\n\tFROM EXP_Lag_ExpirationDate\n\tWHERE orig_ExpirationDate != ExpirationDate\n),\nUPD_NurseAssignmentDim AS (\n\tSELECT\n\tNurseAssignmentDimId, \n\tCurrentSnapshotFlag, \n\tExpirationDate, \n\tModifiedDate\n\tFROM FIL_FirstRowAkId\n),\nNurseAssignmentDim_Expire AS (\n\tMERGE INTO NurseAssignmentDim AS T\n\tUSING UPD_NurseAssignmentDim AS S\n\tON T.NurseAssignmentDimId = S.NurseAssignmentDimId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.CurrentSnapshotFlag, T.ExpirationDate = S.ExpirationDate, T.ModifiedDate = S.ModifiedDate\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246514"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905534"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604541"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 03:42:21"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 04:16:04"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Data_Mart_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "EXCEED"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

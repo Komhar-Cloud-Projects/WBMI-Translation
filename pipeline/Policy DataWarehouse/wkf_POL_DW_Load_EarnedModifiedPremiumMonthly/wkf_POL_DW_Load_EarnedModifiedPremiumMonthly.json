@@ -1,0 +1,89 @@
+{
+    "name": "wkf_POL_DW_Load_EarnedModifiedPremiumMonthly",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_EarnedModifiedPremiumCalculation_Mon_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_Load_WorkNormalizedModifiedPremium",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_EarnedPremiumCalculation_Monthly"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_LOAD_EarnedModifiedPremiumCalculation_Monthly"
+            },
+            {
+                "name": "s_m_POL_DW_Load_WorkNormalizedModifiedPremium",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_Load_WorkNormalizedModifiedPremium"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_EarnedModifiedPremiumAudit_Balance",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_EarnedModifiedPremiumCalculation_Mon_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_EarnedPremiumAudit_Balance"
+                    },
+                    "parameters": {}
+                }
+            }
+        ],
+        "folder": {
+            "name": ""
+        },
+        "variables": {}
+    }
+}

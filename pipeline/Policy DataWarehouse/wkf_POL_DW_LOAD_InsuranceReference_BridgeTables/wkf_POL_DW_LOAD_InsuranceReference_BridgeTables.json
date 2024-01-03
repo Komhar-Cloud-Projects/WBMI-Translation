@@ -1,0 +1,235 @@
+{
+    "name": "wkf_POL_DW_LOAD_InsuranceReference_BridgeTables",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_InsuranceReferenceLineOfBusinessProduct",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_InsuranceReferenceLineOfBusinessProduct"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_CoverageFormProduct",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_CoverageFormProduct"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_PolicyOfferingProduct",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_PolicyOfferingProduct"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_InsuranceSegmentPolicyOffering",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_InsuranceSegmentPolicyOffering"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_RatingPlanProduct",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_RatingPlanProduct"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_InsuranceReferenceBridge",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_InsuranceReferenceBridge"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_AssociationProduct",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_AssociationProduct"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_ProgramProduct",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_ProgramProduct"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_StrategicProfitCenterProduct",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_StrategicProfitCenterProduct"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_InsuranceSegmentProduct",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_InsuranceSegmentProduct"
+                    },
+                    "parameters": {}
+                }
+            }
+        ],
+        "folder": {
+            "name": ""
+        },
+        "variables": {}
+    }
+}

@@ -1,0 +1,81 @@
+{
+    "name": "m_POL_DW_LOAD_CyberSuiteDetail_DCT_Negate",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_CyberSuiteDetail_DCT_Negate",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CyberSuiteDetail_Negate AS (\n\tSELECT\r\n\tPT.PremiumTransactionID as NewNegatePremiumTransactionID,\r\n\tPT.PremiumTransactionAKID as NewNegatePremiumTransactionAKID,\r\n\tCSD.PremiumTransactionID,\r\n\tCSD.CyberSuiteEligibilityQuestionOne,\r\n\tCSD.CyberSuiteEligibilityQuestionTwo,\r\n\tCSD.CyberSuiteEligibilityQuestionThree,\r\n\tCSD.CyberSuiteEligibilityQuestionFour,\r\n\tCSD.CyberSuiteEligibilityQuestionFive,\r\n\tCSD.CyberSuiteEligibilityQuestionSix,\r\n\tCSD.RatingTier\r\n\tFROM\r\n\tCyberSuiteDetail CSD WITH (NOLOCK)\r\n\tINNER JOIN WorkPremiumTransactionDataRepairNegate WPTDRN  WITH (NOLOCK)\r\n\t    ON CSD.PremiumTransactionID = WPTDRN.OriginalPremiumTransactionID\r\n\tINNER JOIN premiumtransaction PT WITH (NOLOCK) \r\n\t    ON PT.PremiumTransactionAKID = WPTDRN.NewNegatePremiumTransactionAKID\r\n\t    AND PT.SourceSystemId = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Input AS (\n\tSELECT\n\tNewNegatePremiumTransactionID,\n\tNewNegatePremiumTransactionAKID,\n\tPremiumTransactionID,\n\tCyberSuiteEligibilityQuestionOne,\n\tCyberSuiteEligibilityQuestionTwo,\n\tCyberSuiteEligibilityQuestionThree,\n\tCyberSuiteEligibilityQuestionFour,\n\tCyberSuiteEligibilityQuestionFive,\n\tCyberSuiteEligibilityQuestionSix,\n\tRatingTier,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate\n\tFROM SQ_CyberSuiteDetail_Negate\n),\nLKP_CyberSuiteDetail AS (\n\tSELECT\n\tCyberSuiteDetailId,\n\tPremiumTransactionID,\n\tPremiumTransactionAKID,\n\tAuditID,\n\tSourceSystemID,\n\tCreatedDate,\n\tModifiedDate,\n\tCyberSuiteEligibilityQuestionOne,\n\tCyberSuiteEligibilityQuestionTwo,\n\tCyberSuiteEligibilityQuestionThree,\n\tCyberSuiteEligibilityQuestionFour,\n\tCyberSuiteEligibilityQuestionFive,\n\tCyberSuiteEligibilityQuestionSix,\n\tRatingTier,\n\tin_PremiumTransactionID\n\tFROM (\n\t\tSELECT \n\t\t\tCyberSuiteDetailId,\n\t\t\tPremiumTransactionID,\n\t\t\tPremiumTransactionAKID,\n\t\t\tAuditID,\n\t\t\tSourceSystemID,\n\t\t\tCreatedDate,\n\t\t\tModifiedDate,\n\t\t\tCyberSuiteEligibilityQuestionOne,\n\t\t\tCyberSuiteEligibilityQuestionTwo,\n\t\t\tCyberSuiteEligibilityQuestionThree,\n\t\t\tCyberSuiteEligibilityQuestionFour,\n\t\t\tCyberSuiteEligibilityQuestionFive,\n\t\t\tCyberSuiteEligibilityQuestionSix,\n\t\t\tRatingTier,\n\t\t\tin_PremiumTransactionID\n\t\tFROM CyberSuiteDetail\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PremiumTransactionID ORDER BY CyberSuiteDetailId) = 1\n),\nFIL_Inserts AS (\n\tSELECT\n\tLKP_CyberSuiteDetail.PremiumTransactionID AS lkp_PremiumTransactionID, \n\tEXP_Input.NewNegatePremiumTransactionID, \n\tEXP_Input.NewNegatePremiumTransactionAKID, \n\tEXP_Input.CyberSuiteEligibilityQuestionOne, \n\tEXP_Input.CyberSuiteEligibilityQuestionTwo, \n\tEXP_Input.CyberSuiteEligibilityQuestionThree, \n\tEXP_Input.CyberSuiteEligibilityQuestionFour, \n\tEXP_Input.CyberSuiteEligibilityQuestionFive, \n\tEXP_Input.CyberSuiteEligibilityQuestionSix, \n\tEXP_Input.RatingTier, \n\tEXP_Input.AuditID, \n\tEXP_Input.SourceSystemID, \n\tEXP_Input.CreatedDate, \n\tEXP_Input.ModifiedDate\n\tFROM EXP_Input\n\tLEFT JOIN LKP_CyberSuiteDetail\n\tON LKP_CyberSuiteDetail.PremiumTransactionID = EXP_Input.NewNegatePremiumTransactionID\n\tWHERE ISNULL(lkp_PremiumTransactionID)\n),\nCyberSuiteDetail AS (\n\tINSERT INTO CyberSuiteDetail\n\t(PremiumTransactionID, PremiumTransactionAKID, AuditID, SourceSystemID, CreatedDate, ModifiedDate, CyberSuiteEligibilityQuestionOne, CyberSuiteEligibilityQuestionTwo, CyberSuiteEligibilityQuestionThree, CyberSuiteEligibilityQuestionFour, CyberSuiteEligibilityQuestionFive, CyberSuiteEligibilityQuestionSix, RatingTier)\n\tSELECT \n\tNewNegatePremiumTransactionID AS PREMIUMTRANSACTIONID, \n\tNewNegatePremiumTransactionAKID AS PREMIUMTRANSACTIONAKID, \n\tAUDITID, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tCYBERSUITEELIGIBILITYQUESTIONONE, \n\tCYBERSUITEELIGIBILITYQUESTIONTWO, \n\tCYBERSUITEELIGIBILITYQUESTIONTHREE, \n\tCYBERSUITEELIGIBILITYQUESTIONFOUR, \n\tCYBERSUITEELIGIBILITYQUESTIONFIVE, \n\tCYBERSUITEELIGIBILITYQUESTIONSIX, \n\tRATINGTIER\n\tFROM FIL_Inserts\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "216690"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "881000"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7484973"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "06/27/2023 12:02:14"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "07/04/2023 10:58:56"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_CLAIM"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": ""
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

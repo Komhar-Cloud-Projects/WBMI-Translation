@@ -1,0 +1,77 @@
+{
+    "name": "m_CLM_DW_LOAD_sup_claim_benefit_type",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DW_LOAD_sup_claim_benefit_type",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_sup_benefit_type_stage AS (\n\tSELECT\n\t\tsup_benefit_type_id,\n\t\tcode,\n\t\tdescript,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\tfin_type_cd,\n\t\tcause_of_loss,\n\t\tfilter_type,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM sup_benefit_type_stage\n),\nEXP_default AS (\n\tSELECT\n\tcode,\n\t-- *INF*: IIF(ISNULL(LTRIM(RTRIM(code)))OR IS_SPACES(LTRIM(RTRIM(code))) OR LENGTH(LTRIM(RTRIM(code))) =0, 'N/A',LTRIM(RTRIM(code)))\n\tIFF(LTRIM(RTRIM(code)) IS NULL OR IS_SPACES(LTRIM(RTRIM(code))) OR LENGTH(LTRIM(RTRIM(code))) = 0, 'N/A', LTRIM(RTRIM(code))) AS benefit_code_out,\n\tdescript,\n\t-- *INF*: IIF(ISNULL(LTRIM(RTRIM(descript))) OR IS_SPACES(LTRIM(RTRIM(descript))) OR LENGTH(LTRIM(RTRIM(descript))) = 0 ,'N/A' , LTRIM(RTRIM(descript)))\n\tIFF(LTRIM(RTRIM(descript)) IS NULL OR IS_SPACES(LTRIM(RTRIM(descript))) OR LENGTH(LTRIM(RTRIM(descript))) = 0, 'N/A', LTRIM(RTRIM(descript))) AS benefit_code_descript_out,\n\tfin_type_cd,\n\t-- *INF*: IIF(ISNULL(LTRIM(RTRIM(fin_type_cd))) OR IS_SPACES(LTRIM(RTRIM(fin_type_cd))) OR LENGTH(LTRIM(RTRIM(fin_type_cd))) = 0 ,'N/A' , LTRIM(RTRIM(fin_type_cd)))\n\tIFF(LTRIM(RTRIM(fin_type_cd)) IS NULL OR IS_SPACES(LTRIM(RTRIM(fin_type_cd))) OR LENGTH(LTRIM(RTRIM(fin_type_cd))) = 0, 'N/A', LTRIM(RTRIM(fin_type_cd))) AS fin_type_cd_out,\n\tcause_of_loss,\n\t-- *INF*: IIF(ISNULL(LTRIM(RTRIM(cause_of_loss))) OR IS_SPACES(LTRIM(RTRIM(cause_of_loss))) OR LENGTH(LTRIM(RTRIM(cause_of_loss))) = 0 ,'N/A' , LTRIM(RTRIM(cause_of_loss)))\n\tIFF(LTRIM(RTRIM(cause_of_loss)) IS NULL OR IS_SPACES(LTRIM(RTRIM(cause_of_loss))) OR LENGTH(LTRIM(RTRIM(cause_of_loss))) = 0, 'N/A', LTRIM(RTRIM(cause_of_loss))) AS cause_of_loss_out,\n\tfilter_type,\n\t-- *INF*: IIF(ISNULL(LTRIM(RTRIM(filter_type))) OR IS_SPACES(LTRIM(RTRIM(filter_type))) OR LENGTH(LTRIM(RTRIM(filter_type))) = 0 ,'N/A' , LTRIM(RTRIM(filter_type)))\n\tIFF(LTRIM(RTRIM(filter_type)) IS NULL OR IS_SPACES(LTRIM(RTRIM(filter_type))) OR LENGTH(LTRIM(RTRIM(filter_type))) = 0, 'N/A', LTRIM(RTRIM(filter_type))) AS filter_type_out\n\tFROM SQ_sup_benefit_type_stage\n),\nLKP_Claim_benefit_type AS (\n\tSELECT\n\tsup_claim_benefit_type_id,\n\tbenefit_type_code_descript,\n\tfinancial_type_code,\n\tcause_of_loss,\n\tfilter_type_code,\n\tbenefit_type_code\n\tFROM (\n\t\tSELECT sup_claim_benefit_type.sup_claim_benefit_type_id as sup_claim_benefit_type_id, sup_claim_benefit_type.benefit_type_code_descript as benefit_type_code_descript, sup_claim_benefit_type.financial_type_code as financial_type_code, sup_claim_benefit_type.cause_of_loss as cause_of_loss, sup_claim_benefit_type.filter_type_code as filter_type_code, sup_claim_benefit_type.benefit_type_code as benefit_type_code FROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.sup_claim_benefit_type\r\n\t\tWHERE crrnt_snpsht_flag =1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY benefit_type_code ORDER BY sup_claim_benefit_type_id) = 1\n),\nEXP_detect_changes AS (\n\tSELECT\n\tLKP_Claim_benefit_type.sup_claim_benefit_type_id,\n\tLKP_Claim_benefit_type.benefit_type_code_descript AS old_benefit_type_code_description,\n\tLKP_Claim_benefit_type.financial_type_code AS old_fin_type_code,\n\tLKP_Claim_benefit_type.cause_of_loss AS old_cause_of_loss,\n\tLKP_Claim_benefit_type.filter_type_code AS old_filter_type_code,\n\tEXP_default.benefit_code_out AS benefit_code,\n\tEXP_default.benefit_code_descript_out AS benefit_code_descript,\n\tEXP_default.fin_type_cd_out AS fin_type_cd,\n\tEXP_default.cause_of_loss_out AS cause_of_loss,\n\tEXP_default.filter_type_out AS filter_type,\n\t-- *INF*: IIF(ISNULL(sup_claim_benefit_type_id), 'NEW', \r\n\t-- IIF(LTRIM(RTRIM(old_benefit_type_code_description)) != (LTRIM(RTRIM(benefit_code_descript))) or \r\n\t--        LTRIM(RTRIM(old_fin_type_code)) != (LTRIM(RTRIM(fin_type_cd))) or\r\n\t--        LTRIM(RTRIM(old_cause_of_loss)) != (LTRIM(RTRIM(cause_of_loss))) or\r\n\t--        LTRIM(RTRIM(old_filter_type_code)) != (LTRIM(RTRIM(filter_type)))\r\n\t-- , 'UPDATE', 'NOCHANGE'))\n\tIFF(sup_claim_benefit_type_id IS NULL, 'NEW', IFF(LTRIM(RTRIM(old_benefit_type_code_description)) != ( LTRIM(RTRIM(benefit_code_descript)) ) OR LTRIM(RTRIM(old_fin_type_code)) != ( LTRIM(RTRIM(fin_type_cd)) ) OR LTRIM(RTRIM(old_cause_of_loss)) != ( LTRIM(RTRIM(cause_of_loss)) ) OR LTRIM(RTRIM(old_filter_type_code)) != ( LTRIM(RTRIM(filter_type)) ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,\n\tv_changed_flag AS Changed_flag,\n\t1 AS crrnt_snpsht_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t-- *INF*: IIF(v_changed_flag = 'NEW', TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)\n\tIFF(v_changed_flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS eff_from_date,\n\t-- *INF*:  TO_DATE('12/31/2100 11:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 11:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,\n\tSYSDATE AS created_date,\n\tSYSDATE AS modified_date\n\tFROM EXP_default\n\tLEFT JOIN LKP_Claim_benefit_type\n\tON LKP_Claim_benefit_type.benefit_type_code = EXP_default.benefit_code_out\n),\nFIL_new_update AS (\n\tSELECT\n\tbenefit_code, \n\tbenefit_code_descript, \n\tfin_type_cd, \n\tcause_of_loss, \n\tfilter_type, \n\tChanged_flag, \n\tcrrnt_snpsht_flag, \n\taudit_id, \n\teff_from_date, \n\teff_to_date, \n\tsource_sys_id, \n\tcreated_date, \n\tmodified_date\n\tFROM EXP_detect_changes\n\tWHERE Changed_flag = 'NEW' or Changed_flag = 'UPDATE'\n),\nsup_claim_benefit_type_insert AS (\n\tINSERT INTO sup_claim_benefit_type\n\t(benefit_type_code, benefit_type_code_descript, financial_type_code, cause_of_loss, filter_type_code, crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, source_sys_id, created_date, modified_date)\n\tSELECT \n\tbenefit_code AS BENEFIT_TYPE_CODE, \n\tbenefit_code_descript AS BENEFIT_TYPE_CODE_DESCRIPT, \n\tfin_type_cd AS FINANCIAL_TYPE_CODE, \n\tCAUSE_OF_LOSS, \n\tfilter_type AS FILTER_TYPE_CODE, \n\tCRRNT_SNPSHT_FLAG, \n\tAUDIT_ID, \n\tEFF_FROM_DATE, \n\tEFF_TO_DATE, \n\tSOURCE_SYS_ID, \n\tCREATED_DATE, \n\tMODIFIED_DATE\n\tFROM FIL_new_update\n),\nSQ_sup_claim_benefit_type AS (\n\tSELECT a.sup_claim_benefit_type_id, a.benefit_type_code, a.financial_type_code,a.cause_of_loss,a.filter_type_code,a.eff_from_date, a.eff_to_date \r\n\tFROM\r\n\t @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_claim_benefit_type a\r\n\t\r\n\tWHERE EXISTS(SELECT 1\t\t\t\r\n\t\t\tFROM  @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_claim_benefit_type b\r\n\t\t\tWHERE source_sys_id= '@{pipeline().parameters.SOURCE_SYSTEM_ID}'  AND crrnt_snpsht_flag = 1\r\n\t\t\tAND a.benefit_type_code = a.benefit_type_code\r\n\t            AND  a.financial_type_code =  b.financial_type_code\r\n\t            AND  a.cause_of_loss = a.cause_of_loss\r\n\t            AND  a.filter_type_code = a.filter_type_code\r\n\t\t\tGROUP BY b.benefit_type_code,b.financial_type_code,b.cause_of_loss,b.filter_type_code\r\n\t\t\tHAVING COUNT(*) > 1)\r\n\tORDER BY a.benefit_type_code,a.financial_type_code,a.cause_of_loss,a.filter_type_code, a.eff_from_date  DESC\r\n\t\r\n\t--EXISTS Subquery exists to pick AK Groups that have multiple rows with a 12/31/2100 eff_to_date.\r\n\t--When this condition occurs this is an indication that we must expire one or more of these rows.\r\n\t--WHERE clause is always made up of current snapshot flag and all columns of the AK\r\n\t--GROUP BY clause is always on AK\r\n\t--HAVING clause stays the same\r\n\t\r\n\t--ORDER BY of main query orders all rows first by the AK and then by the eff_from_date in a DESC format\r\n\t--the descending order is important because this allows us to avoid another lookup and properly apply the eff_to_date by utilizing a local variable to keep track\n),\nEXP_lag_eff_from_date AS (\n\tSELECT\n\tsup_claim_benefit_type_id,\n\tbenefit_type_code,\n\tfinancial_type_code,\n\tcause_of_loss,\n\tfilter_type_code,\n\teff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\t-- *INF*: DECODE(\r\n\t-- TRUE,benefit_type_code= v_Prev_row_benefit_type_code AND financial_type_code=v_Prev_row_fin_type_code AND cause_of_loss = v_Prev_row_cause_of_loss  AND filter_type_code=v_Prev_row_filter_type_code\r\n\t-- , ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)\r\n\t-- \t\n\tDECODE(TRUE,\n\tbenefit_type_code = v_Prev_row_benefit_type_code AND financial_type_code = v_Prev_row_fin_type_code AND cause_of_loss = v_Prev_row_cause_of_loss AND filter_type_code = v_Prev_row_filter_type_code, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),\n\torig_eff_to_date) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\tbenefit_type_code AS v_Prev_row_benefit_type_code,\n\tfinancial_type_code AS v_Prev_row_fin_type_code,\n\tcause_of_loss AS v_Prev_row_cause_of_loss,\n\tfilter_type_code AS v_Prev_row_filter_type_code,\n\teff_from_date AS v_prev_eff_from_date,\n\t0 AS crrnt_snpsht_flag,\n\tSYSDATE AS modified_date\n\tFROM SQ_sup_claim_benefit_type\n),\nFIL_First_rown_inAKGroup AS (\n\tSELECT\n\tsup_claim_benefit_type_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM EXP_lag_eff_from_date\n\tWHERE orig_eff_to_date != eff_to_date\n),\nUPD_eff_from_date AS (\n\tSELECT\n\tsup_claim_benefit_type_id, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM FIL_First_rown_inAKGroup\n),\nsup_claim_benefit_type_update AS (\n\tMERGE INTO sup_claim_benefit_type AS T\n\tUSING UPD_eff_from_date AS S\n\tON T.sup_claim_benefit_type_id = S.sup_claim_benefit_type_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_date\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246507"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905524"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604402"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:23:26"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 02:28:04"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "EXCEED AND PMS"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

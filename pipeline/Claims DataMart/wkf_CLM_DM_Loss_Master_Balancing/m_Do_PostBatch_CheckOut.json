@@ -1,0 +1,53 @@
+{
+    "name": "m_Do_PostBatch_CheckOut",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Do_PostBatch_CheckOut",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_wbmi_checkout AS (\n\tSELECT DISTINCT  '@{pipeline().parameters.DEFAULT_EMAIL_BODY}' + ' <BR> <BR> ',\r\n\t'@{pipeline().parameters.EMAIL_ADDRESS}'\r\n\tFROM\r\n\tdbo.wbmi_session_control_run wbmi_session_control_run,\r\n\tdbo.wbmi_batch_control_run wbmi_batch_control_run\r\n\tWHERE\r\n\twbmi_session_control_run.current_ind = 'Y'  and \r\n\twbmi_session_control_run.wbmi_batch_control_run_id = wbmi_batch_control_run.wbmi_batch_control_run_id and\r\n\twbmi_batch_control_run.batch_name = '@{pipeline().parameters.BATCH_NAME}'\r\n\t\r\n\tUNION ALL\r\n\t\r\n\tselect distinct \r\n\twbmi_checkout.checkout_message + ' <BR> <BR> ',\r\n\t'@{pipeline().parameters.EMAIL_ADDRESS}'\r\n\tfrom \r\n\tdbo.wbmi_checkout wbmi_checkout,\r\n\tdbo.wbmi_session_control_run wbmi_session_control_run,\r\n\tdbo.wbmi_batch_control_run wbmi_batch_control_run\r\n\twhere\r\n\twbmi_checkout.checkout_type_code in ('C') and \r\n\twbmi_checkout.wbmi_session_control_run_id = wbmi_session_control_run.wbmi_session_control_run_id and\r\n\twbmi_session_control_run.current_ind = 'Y'  and \r\n\twbmi_session_control_run.wbmi_batch_control_run_id = wbmi_batch_control_run.wbmi_batch_control_run_id and\r\n\twbmi_batch_control_run.batch_name  in ('@{pipeline().parameters.BATCH_NAME}','LOSS_MASTER_DATAMART')\n),\nEXP_Email_Subject AS (\n\tSELECT\n\temail_address,\n\tcheckout_message,\n\t-- *INF*: @{pipeline().parameters.EMAIL_SUBJECT} || ' (' || SYSDATE || ')'\r\n\t-- \n\t@{pipeline().parameters.EMAIL_SUBJECT} || ' (' || SYSDATE || ')' AS email_subject\n\tFROM SQ_wbmi_checkout\n),\nAGG_Distinct_Email_Id AS (\n\tSELECT\n\temail_address, \n\temail_subject\n\tFROM EXP_Email_Subject\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY email_address, email_subject ORDER BY NULL) = 1\n),\nemail_subject AS (\n\tINSERT INTO email_subject\n\t(FIELD1)\n\tSELECT \n\temail_subject AS FIELD1\n\tFROM AGG_Distinct_Email_Id\n),\nemail_body AS (\n\tINSERT INTO email_body\n\t(FIELD1)\n\tSELECT \n\tcheckout_message AS FIELD1\n\tFROM EXP_Email_Subject\n),\nemail_address AS (\n\tINSERT INTO email_address\n\t(FIELD1)\n\tSELECT \n\temail_address AS FIELD1\n\tFROM AGG_Distinct_Email_Id\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "BATCH_NAME": {
+                "type": "string",
+                "defaultValue": "LOSS_MASTER_DATAMART"
+            },
+            "EMAIL_SUBJECT": {
+                "type": "string",
+                "defaultValue": "Loss Master Fact Counts Report"
+            },
+            "DEFAULT_EMAIL_BODY": {
+                "type": "string",
+                "defaultValue": "Loss Master Fact count report."
+            },
+            "EMAIL_ADDRESS": {
+                "type": "string",
+                "defaultValue": ""
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

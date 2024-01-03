@@ -1,0 +1,412 @@
+{
+    "name": "wkf_CMN_IR_Load_ReferenceData_FlatFile",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "s_m_CMN_IR_Load_SupTypeOfLoss_FlatFile",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_Load_SupTypeOfLoss_FlatFile"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CMN_IR_Load_SupClassificationWorkersCompensation_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_Load_SupClassificationWorkersCompensation_FlatFile"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_CMN_IR_Load_SupClassificationWorkersCompensation_FlatFile"
+            },
+            {
+                "name": "s_m_CMN_IR_Load_BCCBusinessSegmentSBG_FlatFile",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_Load_BCCBusinessSegmentSBG_FlatFile"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CMN_IR_LOAD_SupClassificationCrime_FlatFile",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_LOAD_SupClassificationCrime_FlatFile"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CMN_IR_LOAD_SupClassificationCommercialAuto_Flat_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_LOAD_SupClassificationCommercialAuto_FlatFile"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_CMN_IR_LOAD_SupClassificationCommercialAuto_FlatFile"
+            },
+            {
+                "name": "s_m_CMN_IR_LOAD_SupClassificationGeneralLiability_Fl_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_LOAD_SupClassificationGeneralLiability_FlatFile"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_CMN_IR_LOAD_SupClassificationGeneralLiability_FlatFile"
+            },
+            {
+                "name": "s_m_CMN_IR_LOAD_SupClassificationCommercialProperty__00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_LOAD_SupClassificationCommercialProperty_FlatFile"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_CMN_IR_LOAD_SupClassificationCommercialProperty_FlatFile"
+            },
+            {
+                "name": "s_m_CMN_IR_LOAD_SupClassificationGarage_FlatFile",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_LOAD_SupClassificationGarage_FlatFile"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CMN_IR_LOAD_SupClassificationExcessLiability_Fla_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_LOAD_SupClassificationExcessLiability_FlatFile"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_CMN_IR_LOAD_SupClassificationExcessLiability_FlatFile"
+            },
+            {
+                "name": "s_m_CMN_IR_LOAD_SupClassificationEPLI_FlatFile",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_LOAD_SupClassificationEPLI_FlatFile"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CMN_IR_LOAD_SupISOCommercialPropertyCauseOfLossG_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_LOAD_SupISOCommercialPropertyCauseOfLossGroup_FlatFile"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_CMN_IR_LOAD_SupISOCommercialPropertyCauseOfLossGroup_FlatFile"
+            },
+            {
+                "name": "s_m_CMN_IR_Load_SupISOSpecialCauseOfLossCategoryRule_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_Load_SupISOSpecialCauseOfLossCategoryRule_FlatFile"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_CMN_IR_Load_SupISOSpecialCauseOfLossCategoryRule_FlatFile"
+            },
+            {
+                "name": "s_m_CMN_IR_LOAD_SupClassificationDirectorsOfficers_F_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_LOAD_SupClassificationDirectorsOfficers_FlatFile"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_CMN_IR_LOAD_SupClassificationDirectorsOfficers_FlatFile"
+            },
+            {
+                "name": "s_m_CMN_IR_LOAD_SupClassificationErrorsOmissions_Fla_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_LOAD_SupClassificationErrorsOmissions_FlatFile"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_CMN_IR_LOAD_SupClassificationErrorsOmissions_FlatFile"
+            },
+            {
+                "name": "s_m_CMN_IR_LOAD_SupClassificationUmbrella_FlatFile",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_LOAD_SupClassificationUmbrella_FlatFile"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CMN_IR_LOAD_SupClassificationInlandMarine_FlatFile",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_LOAD_SupClassificationInlandMarine_FlatFile"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CMN_IR_LOAD_SupClassificationBONDS_FlatFile",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_IR_LOAD_SupClassificationBONDS_FlatFile"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CMN_DW_LOAD_ASSOCIATION_FlatFile",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_DW_LOAD_Association_FlatFile"
+                    },
+                    "parameters": {}
+                }
+            }
+        ],
+        "folder": {
+            "name": ""
+        },
+        "variables": {}
+    }
+}

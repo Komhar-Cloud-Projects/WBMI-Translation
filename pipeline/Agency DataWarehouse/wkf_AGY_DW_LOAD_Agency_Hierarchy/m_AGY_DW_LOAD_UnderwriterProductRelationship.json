@@ -1,0 +1,85 @@
+{
+    "name": "m_AGY_DW_LOAD_UnderwriterProductRelationship",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_DW_LOAD_UnderwriterProductRelationship",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_UnderwriterProductRelationship AS (\n\tSELECT \r\n\t\ta.UnderwriterProductRelationshipID, \r\n\t\ta.EffectiveDate,\r\n\t\ta.ExpirationDate, \r\n\t\ta.UnderwriterProductRelationshipAKID\r\n\tFROM \r\n\t\t@{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwriterProductRelationship a\r\n\tWHERE  a.UnderwriterProductRelationshipAKID  IN\r\n\t\t( SELECT UnderwriterProductRelationshipAKID  FROM @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwriterProductRelationship\r\n\t\tWHERE CurrentSnapshotFlag = 1 GROUP BY UnderwriterProductRelationshipAKID HAVING count(*) > 1) \r\n\tORDER BY a.UnderwriterProductRelationshipAKID ,a.EffectiveDate DESC\r\n\t\r\n\t\r\n\t\r\n\t--IN Subquery exists to pick AK ID column values that have multiple rows with a 12/31/2100 eff_to_date.\r\n\t--When this condition occurs this is an indication that we must expire one or more of these rows.\r\n\t--WHERE clause is always made up of current snapshot flag \r\n\t--GROUP BY clause is always on AK\r\n\t--HAVING clause stays the same\n),\nEXP_Lag_eff_from_date AS (\n\tSELECT\n\tUnderwriterProductRelationshipId,\n\tEffectiveDate AS EffectiveFromDate,\n\tExpirationDate AS OriginalEffectiveToDate,\n\tUnderwriterProductRelationshipAKId,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- UnderwriterProductRelationshipAKId = v_prev_AKID , ADD_TO_DATE(v_prev_EffectiveFromDate,'SS',-1),\r\n\t-- OriginalEffectiveToDate)\n\tDECODE(TRUE,\n\tUnderwriterProductRelationshipAKId = v_prev_AKID, ADD_TO_DATE(v_prev_EffectiveFromDate, 'SS', - 1),\n\tOriginalEffectiveToDate) AS v_EffectiveToDate,\n\tv_EffectiveToDate AS o_EffectiveToDate,\n\tUnderwriterProductRelationshipAKId AS v_prev_AKID,\n\tEffectiveFromDate AS v_prev_EffectiveFromDate,\n\t0 AS CurrentSnapshotFlag,\n\tSYSDATE AS ModifiedDate\n\tFROM SQ_UnderwriterProductRelationship\n),\nFIL_FirstRowInAKGroup AS (\n\tSELECT\n\tUnderwriterProductRelationshipId, \n\tOriginalEffectiveToDate, \n\to_EffectiveToDate AS NewEffectiveToDate, \n\tCurrentSnapshotFlag, \n\tModifiedDate\n\tFROM EXP_Lag_eff_from_date\n\tWHERE OriginalEffectiveToDate != NewEffectiveToDate\n),\nUPD_OldRecord AS (\n\tSELECT\n\tUnderwriterProductRelationshipId AS UnderwriterProductRelationshipID, \n\tNewEffectiveToDate AS EffectiveToDate, \n\tCurrentSnapshotFlag, \n\tModifiedDate\n\tFROM FIL_FirstRowInAKGroup\n),\nUnderwriterProductRelationship_Expire AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwriterProductRelationship AS T\n\tUSING UPD_OldRecord AS S\n\tON T.UnderwriterProductRelationshipId = S.UnderwriterProductRelationshipID\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.CurrentSnapshotFlag, T.ExpirationDate = S.EffectiveToDate, T.ModifiedDate = S.ModifiedDate\n),\nSQ_UnderwriterProductRelationshipStage AS (\n\tSELECT\n\t\tUnderwriterProductRelationshipStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAssociateID,\n\t\tWestBendAssociateID,\n\t\tStrategicProfitCenterCode,\n\t\tPolicyOfferingCode,\n\t\tProgramCode,\n\t\tPolicyAmountMinimum,\n\t\tPolicyAmountMaximum,\n\t\tAgencyODSRelationshipId,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID,\n\t\tInsuranceSegmentCode,\n\t\tBondCategory\n\tFROM UnderwriterProductRelationshipStage\n),\nLKP_InsuranceSegment AS (\n\tSELECT\n\tInsuranceSegmentAKId,\n\tInsuranceSegmentCode\n\tFROM (\n\t\tSELECT \n\t\t\tInsuranceSegmentAKId,\n\t\t\tInsuranceSegmentCode\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.InsuranceSegment\n\t\tWHERE CurrentSnapshotFlag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY InsuranceSegmentCode ORDER BY InsuranceSegmentAKId) = 1\n),\nLKP_PolicyOffering AS (\n\tSELECT\n\tPolicyOfferingAKId,\n\tPolicyOfferingCode\n\tFROM (\n\t\tSELECT \n\t\t\tPolicyOfferingAKId,\n\t\t\tPolicyOfferingCode\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.PolicyOffering\n\t\tWHERE CurrentSnapshotFlag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyOfferingCode ORDER BY PolicyOfferingAKId DESC) = 1\n),\nLKP_Program AS (\n\tSELECT\n\tin_ProgramCode,\n\tProgramAKId,\n\tProgramCode\n\tFROM (\n\t\tSELECT \n\t\t\tin_ProgramCode,\n\t\t\tProgramAKId,\n\t\t\tProgramCode\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.Program\n\t\tWHERE CurrentSnapshotFlag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ProgramCode ORDER BY in_ProgramCode DESC) = 1\n),\nLKP_StrategicProfitCenter AS (\n\tSELECT\n\tin_StrategicProfitCenterCode,\n\tStrategicProfitCenterAKId,\n\tStrategicProfitCenterCode\n\tFROM (\n\t\tSELECT \n\t\t\tin_StrategicProfitCenterCode,\n\t\t\tStrategicProfitCenterAKId,\n\t\t\tStrategicProfitCenterCode\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.StrategicProfitCenter\n\t\tWHERE CurrentSnapshotFlag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY StrategicProfitCenterCode ORDER BY in_StrategicProfitCenterCode DESC) = 1\n),\nlkp_UnderwritingAssociate AS (\n\tSELECT\n\tUnderwritingAssociateAKID,\n\tWestBendAssociateID\n\tFROM (\n\t\tSELECT \n\t\t\tUnderwritingAssociateAKID,\n\t\t\tWestBendAssociateID\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwritingAssociate\n\t\tWHERE CurrentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY WestBendAssociateID ORDER BY UnderwritingAssociateAKID DESC) = 1\n),\nEXP_GetAKIDs AS (\n\tSELECT\n\tlkp_UnderwritingAssociate.UnderwritingAssociateAKID AS lkp_UnderwritingAssociateAKID,\n\tSQ_UnderwriterProductRelationshipStage.AgencyODSSourceSystemID AS SourceSystemID,\n\tLKP_StrategicProfitCenter.StrategicProfitCenterAKId,\n\tLKP_PolicyOffering.PolicyOfferingAKId,\n\tLKP_Program.ProgramAKId,\n\tSQ_UnderwriterProductRelationshipStage.WestBendAssociateID,\n\tSQ_UnderwriterProductRelationshipStage.StrategicProfitCenterCode,\n\tSQ_UnderwriterProductRelationshipStage.PolicyOfferingCode,\n\tSQ_UnderwriterProductRelationshipStage.ProgramCode,\n\tSQ_UnderwriterProductRelationshipStage.PolicyAmountMinimum,\n\tSQ_UnderwriterProductRelationshipStage.PolicyAmountMaximum,\n\tSQ_UnderwriterProductRelationshipStage.AgencyODSRelationshipId,\n\tLKP_InsuranceSegment.InsuranceSegmentAKId,\n\tSQ_UnderwriterProductRelationshipStage.BondCategory\n\tFROM SQ_UnderwriterProductRelationshipStage\n\tLEFT JOIN LKP_InsuranceSegment\n\tON LKP_InsuranceSegment.InsuranceSegmentCode = SQ_UnderwriterProductRelationshipStage.InsuranceSegmentCode\n\tLEFT JOIN LKP_PolicyOffering\n\tON LKP_PolicyOffering.PolicyOfferingCode = SQ_UnderwriterProductRelationshipStage.PolicyOfferingCode\n\tLEFT JOIN LKP_Program\n\tON LKP_Program.ProgramCode = SQ_UnderwriterProductRelationshipStage.ProgramCode\n\tLEFT JOIN LKP_StrategicProfitCenter\n\tON LKP_StrategicProfitCenter.StrategicProfitCenterCode = SQ_UnderwriterProductRelationshipStage.StrategicProfitCenterCode\n\tLEFT JOIN lkp_UnderwritingAssociate\n\tON lkp_UnderwritingAssociate.WestBendAssociateID = SQ_UnderwriterProductRelationshipStage.WestBendAssociateID\n),\nLKP_Existing AS (\n\tSELECT\n\tin_AgencyODSRelationshipId,\n\tUnderwriterProductRelationshipAKId,\n\tHashKey,\n\tInsuranceSegmentAKId,\n\tBondCategory,\n\tAgencyODSRelationshipId\n\tFROM (\n\t\tSELECT \n\t\t\tin_AgencyODSRelationshipId,\n\t\t\tUnderwriterProductRelationshipAKId,\n\t\t\tHashKey,\n\t\t\tInsuranceSegmentAKId,\n\t\t\tBondCategory,\n\t\t\tAgencyODSRelationshipId\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwriterProductRelationship\n\t\tWHERE CurrentSnapshotFlag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyODSRelationshipId ORDER BY in_AgencyODSRelationshipId DESC) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tEXP_GetAKIDs.StrategicProfitCenterAKId,\n\tEXP_GetAKIDs.PolicyOfferingAKId,\n\tEXP_GetAKIDs.ProgramAKId,\n\tEXP_GetAKIDs.InsuranceSegmentAKId AS i_InsuranceSegmentAKId,\n\tLKP_Existing.InsuranceSegmentAKId AS lkp_InsuranceSegmentAKId,\n\tLKP_Existing.BondCategory AS lkp_BondCategory,\n\tLKP_Existing.UnderwriterProductRelationshipAKId AS lkp_UnderwriterProductRelationshipAKId,\n\tEXP_GetAKIDs.lkp_UnderwritingAssociateAKID AS UnderwritingAssociateAKID,\n\tEXP_GetAKIDs.PolicyAmountMinimum,\n\tEXP_GetAKIDs.PolicyAmountMaximum,\n\tEXP_GetAKIDs.AgencyODSRelationshipId,\n\tEXP_GetAKIDs.BondCategory,\n\tLKP_Existing.HashKey AS lkp_HashKey,\n\t-- *INF*: IIF(ISNULL(i_InsuranceSegmentAKId),-1,i_InsuranceSegmentAKId)\n\tIFF(i_InsuranceSegmentAKId IS NULL, - 1, i_InsuranceSegmentAKId) AS v_InsuranceSegmentAKId,\n\t-- *INF*: MD5(to_char(UnderwritingAssociateAKID) || '&' || to_char(StrategicProfitCenterAKId) || '&' || to_char(PolicyOfferingAKId) || '&' || to_char(ProgramAKId) || '&' || to_char(PolicyAmountMinimum) || '&' || to_char(PolicyAmountMaximum))\n\tMD5(to_char(UnderwritingAssociateAKID) || '&' || to_char(StrategicProfitCenterAKId) || '&' || to_char(PolicyOfferingAKId) || '&' || to_char(ProgramAKId) || '&' || to_char(PolicyAmountMinimum) || '&' || to_char(PolicyAmountMaximum)) AS v_NewHashKey,\n\t-- *INF*: IIF(IsNull(lkp_UnderwriterProductRelationshipAKId), 'Insert', 'Update')\n\tIFF(lkp_UnderwriterProductRelationshipAKId IS NULL, 'Insert', 'Update') AS v_InsertOrUpdate,\n\t-- *INF*: IIF(IsNull(StrategicProfitCenterAKId), -1, StrategicProfitCenterAKId)\n\tIFF(StrategicProfitCenterAKId IS NULL, - 1, StrategicProfitCenterAKId) AS o_StrategicProfitCenterAKID,\n\t-- *INF*: IIF(IsNull(PolicyOfferingAKId), -1, PolicyOfferingAKId)\n\tIFF(PolicyOfferingAKId IS NULL, - 1, PolicyOfferingAKId) AS o_PolicyOfferingAKID,\n\t-- *INF*: IIF(IsNull(ProgramAKId), -1, ProgramAKId)\n\tIFF(ProgramAKId IS NULL, - 1, ProgramAKId) AS o_ProgramAKID,\n\tv_NewHashKey AS o_NewHashKey,\n\t-- *INF*: IIF(lkp_HashKey = v_NewHashKey \r\n\t-- AND lkp_InsuranceSegmentAKId=v_InsuranceSegmentAKId\r\n\t-- AND lkp_BondCategory=BondCategory, \r\n\t-- 'Ignore', v_InsertOrUpdate)\n\tIFF(lkp_HashKey = v_NewHashKey AND lkp_InsuranceSegmentAKId = v_InsuranceSegmentAKId AND lkp_BondCategory = BondCategory, 'Ignore', v_InsertOrUpdate) AS o_InsertUpdateOrIgnore,\n\tv_InsuranceSegmentAKId AS o_InsuranceSegmentAKId,\n\t1 AS CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,\n\t-- *INF*: iif(v_InsertOrUpdate='Insert',\r\n\t-- \tto_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)\n\tIFF(v_InsertOrUpdate = 'Insert', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS EffectiveDate,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate\n\tFROM EXP_GetAKIDs\n\tLEFT JOIN LKP_Existing\n\tON LKP_Existing.AgencyODSRelationshipId = EXP_GetAKIDs.AgencyODSRelationshipId\n),\nFIL_insert AS (\n\tSELECT\n\tlkp_UnderwriterProductRelationshipAKId AS UnderwriterProductRelationshipAKId, \n\tCurrentSnapshotFlag, \n\tAuditID, \n\tEffectiveDate, \n\tExpirationDate, \n\tSourceSystemID, \n\tCreatedDate, \n\tModifiedDate, \n\to_NewHashKey AS HashKey, \n\tUnderwritingAssociateAKID, \n\to_StrategicProfitCenterAKID AS StrategicProfitCenterAKId, \n\to_PolicyOfferingAKID AS ProductAKId, \n\to_ProgramAKID AS ProgramAKId, \n\tPolicyAmountMinimum, \n\tPolicyAmountMaximum, \n\to_InsuranceSegmentAKId AS InsuranceSegmentAKId, \n\tBondCategory, \n\to_InsertUpdateOrIgnore AS InsertUpdateOrIgnore, \n\tAgencyODSRelationshipId\n\tFROM EXP_Detect_Changes\n\tWHERE InsertUpdateOrIgnore='Insert'or InsertUpdateOrIgnore='Update'\n),\nSEQ_UnderwriterProductRelationship_AKID AS (\n\tCREATE SEQUENCE SEQ_UnderwriterProductRelationship_AKID\n\tSTART = 0\n\tINCREMENT = 1;\n),\nEXP_Assign_AKID AS (\n\tSELECT\n\tCurrentSnapshotFlag,\n\tAuditID,\n\tEffectiveDate,\n\tExpirationDate,\n\tSourceSystemID,\n\tCreatedDate,\n\tModifiedDate,\n\tHashKey,\n\tUnderwriterProductRelationshipAKId,\n\tSEQ_UnderwriterProductRelationship_AKID.NEXTVAL,\n\t-- *INF*: iif(isnull(UnderwriterProductRelationshipAKId),NEXTVAL,UnderwriterProductRelationshipAKId)\n\tIFF(UnderwriterProductRelationshipAKId IS NULL, NEXTVAL, UnderwriterProductRelationshipAKId) AS o_UnderwriterProductRelationshipAKID,\n\tUnderwritingAssociateAKID,\n\tStrategicProfitCenterAKId,\n\tProductAKId,\n\tProgramAKId,\n\tPolicyAmountMinimum,\n\tPolicyAmountMaximum,\n\tInsuranceSegmentAKId,\n\tBondCategory,\n\tAgencyODSRelationshipId\n\tFROM FIL_insert\n),\nUnderwriterProductRelationship_Inserts AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwriterProductRelationship;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwriterProductRelationship\n\t(CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, SourceSystemID, CreatedDate, ModifiedDate, HashKey, UnderwriterProductRelationshipAKId, UnderwritingAssociateAKID, StrategicProfitCenterAKId, ProgramAKId, PolicyOfferingAKId, PolicyAmountMinimum, PolicyAmountMaximum, AgencyODSRelationshipId, InsuranceSegmentAKId, BondCategory)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tHASHKEY, \n\to_UnderwriterProductRelationshipAKID AS UNDERWRITERPRODUCTRELATIONSHIPAKID, \n\tUNDERWRITINGASSOCIATEAKID, \n\tSTRATEGICPROFITCENTERAKID, \n\tPROGRAMAKID, \n\tProductAKId AS POLICYOFFERINGAKID, \n\tPOLICYAMOUNTMINIMUM, \n\tPOLICYAMOUNTMAXIMUM, \n\tAGENCYODSRELATIONSHIPID, \n\tINSURANCESEGMENTAKID, \n\tBONDCATEGORY\n\tFROM EXP_Assign_AKID\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246490"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905469"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603186"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:19:20"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 22:18:59"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "AgencyODS"
+            },
+            "TARGET_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "V2"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

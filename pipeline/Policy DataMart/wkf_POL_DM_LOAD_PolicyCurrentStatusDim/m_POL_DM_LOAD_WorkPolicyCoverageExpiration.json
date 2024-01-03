@@ -1,0 +1,89 @@
+{
+    "name": "m_POL_DM_LOAD_WorkPolicyCoverageExpiration",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DM_LOAD_WorkPolicyCoverageExpiration",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_PremiumTransaction AS (\n\tSELECT d.pol_ak_id AS PolicyAKID,\r\n\tcast(floor(cast(CASE WHEN a.PremiumTransactionEnteredDate>=a.PremiumTransactionExpirationDate\r\n\tTHEN a.PremiumTransactionEnteredDate ELSE a.PremiumTransactionExpirationDate END as float)) as datetime) AS RunDate,\r\n\t-SUM(a.FullTermPremium) as FullTermPremium\r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction a\r\n\tjoin\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.StatisticalCoverage b\r\n\ton a.StatisticalCoverageAKID=b.StatisticalCoverageAKID\r\n\tjoin\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyCoverage c\r\n\ton b.PolicyCoverageAKID=c.PolicyCoverageAKID\r\n\tjoin\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER_V2}.policy d\r\n\ton c.PolicyAKID=d.pol_ak_id\r\n\tand d.crrnt_snpsht_flag=1\r\n\tand d.pol_eff_date>='2001-1-1'\r\n\tWHERE a.SourceSystemId='PMS'\r\n\tAND a.CurrentSnapshotFlag=1\r\n\tGROUP BY d.pol_ak_id,\r\n\tcast(floor(cast(CASE WHEN a.PremiumTransactionEnteredDate>=a.PremiumTransactionExpirationDate\r\n\tTHEN a.PremiumTransactionEnteredDate ELSE a.PremiumTransactionExpirationDate END as float)) as datetime)\n),\nEXP_CalculationValue AS (\n\tSELECT\n\tPolicyAKID AS i_PolicyAKID,\n\tRunDate AS i_RunDate,\n\tFullTermPremium AS i_FullTermPremium,\n\t-- *INF*: IIF(i_PolicyAKID=v_prev_PolicyAKID,\r\n\t-- i_FullTermPremium+v_FullTermPremium,\r\n\t-- i_FullTermPremium)\n\tIFF(i_PolicyAKID = v_prev_PolicyAKID, i_FullTermPremium + v_FullTermPremium, i_FullTermPremium) AS v_FullTermPremium,\n\ti_PolicyAKID AS v_prev_PolicyAKID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\ti_RunDate AS o_RunDate,\n\ti_PolicyAKID AS o_PolicyAKID,\n\tv_FullTermPremium AS o_FullTermPremium\n\tFROM SQ_PremiumTransaction\n),\nWorkPolicyCoverageExpiration AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.Shortcut_to_WorkPolicyCoverageExpiration;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.Shortcut_to_WorkPolicyCoverageExpiration\n\t(AuditId, CreatedDate, ModifiedDate, RunDate, PolicyAKId, FullTermPremium)\n\tSELECT \n\to_AuditId AS AUDITID, \n\to_CreatedDate AS CREATEDDATE, \n\to_ModifiedDate AS MODIFIEDDATE, \n\to_RunDate AS RUNDATE, \n\to_PolicyAKID AS POLICYAKID, \n\to_FullTermPremium AS FULLTERMPREMIUM\n\tFROM EXP_CalculationValue\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246511"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905531"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604517"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:57:01"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 03:31:13"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "PMS"
+            },
+            "SOURCE_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "V2"
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "RPT_EDM"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": ""
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

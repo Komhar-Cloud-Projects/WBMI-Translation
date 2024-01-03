@@ -1,0 +1,93 @@
+{
+    "name": "m_POL_DW_LOAD_PremiumTransactionRatingRisk_DCT_Negate",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_PremiumTransactionRatingRisk_DCT_Negate",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_PremiumTransactionRatingRisk AS (\n\tSELECT \r\n\t\tPT.PremiumTransactionID as NewNegatePremiumTransactionID\r\n\t\t,PT.PremiumTransactionAKID as NewNegatePremiumTransactionAKID\r\n\t\t,PTRR.PremiumTransactionID\r\n\t\t,PTRR.CensusBlockGroupCountyCode\r\n\t\t,PTRR.CensusBlockGroupTractCode\r\n\t\t,PTRR.CensusBlockGroupBlockGroupCode\r\n\t\t,PTRR.Latitude\r\n\t\t,PTRR.Longitude\r\n\t\t,PTRR.RatingTerritoryCode\r\n\tFROM dbo.PremiumTransactionRatingRisk PTRR\r\n\tINNER JOIN dbo.WorkPremiumTransactionDataRepairNegate WPTDRN ON PTRR.PremiumTransactionID = WPTDRN.OriginalPremiumTransactionID\r\n\tINNER JOIN dbo.PremiumTransaction PT ON PT.PremiumTransactionAKID = WPTDRN.NewNegatePremiumTransactionAKID\r\n\t\tAND PT.SourceSystemId = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n),\nEXP_CoverageDetailCommercialProperty AS (\n\tSELECT\n\tNewNegatePremiumTransactionID,\n\tNewNegatePremiumTransactionAKID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\tPremiumTransactionID,\n\tCensusBlockGroupCountyCode,\n\tCensusBlockGroupTractCode,\n\tCensusBlockGroupBlockGroupCode,\n\tLatitude,\n\tLongitude,\n\tRatingTerritoryCode\n\tFROM SQ_PremiumTransactionRatingRisk\n),\nLKP_PremiumTransactionRatingRisk AS (\n\tSELECT\n\tPremiumTransactionID,\n\tNewNegatePremiumTransactionID\n\tFROM (\n\t\tSELECT \n\t\t\tPremiumTransactionID,\n\t\t\tNewNegatePremiumTransactionID\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.PremiumTransactionRatingRisk\n\t\tWHERE PremiumTransactionID IN ( SELECT pt.PremiumTransactionID FROM PremiumTransaction PT INNER JOIN dbo.WorkPremiumTransactionDataRepairNegate WPT ON PT.PremiumTransactionAKID = WPT.NewNegatePremiumTransactionAKID)\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PremiumTransactionID ORDER BY PremiumTransactionID) = 1\n),\nEXP_DetectChanges AS (\n\tSELECT\n\tLKP_PremiumTransactionRatingRisk.PremiumTransactionID AS lkp_PremiumTransactionId,\n\tEXP_CoverageDetailCommercialProperty.NewNegatePremiumTransactionID,\n\tEXP_CoverageDetailCommercialProperty.NewNegatePremiumTransactionAKID,\n\tEXP_CoverageDetailCommercialProperty.o_AuditID AS AuditID,\n\tEXP_CoverageDetailCommercialProperty.o_SourceSystemID AS SourceSystemID,\n\tEXP_CoverageDetailCommercialProperty.o_CreatedDate AS CreatedDate,\n\tEXP_CoverageDetailCommercialProperty.o_ModifiedDate AS ModifiedDate,\n\tEXP_CoverageDetailCommercialProperty.CensusBlockGroupCountyCode,\n\tEXP_CoverageDetailCommercialProperty.CensusBlockGroupTractCode,\n\tEXP_CoverageDetailCommercialProperty.CensusBlockGroupBlockGroupCode,\n\tEXP_CoverageDetailCommercialProperty.Latitude,\n\tEXP_CoverageDetailCommercialProperty.Longitude,\n\tEXP_CoverageDetailCommercialProperty.RatingTerritoryCode,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(lkp_PremiumTransactionId),1,\r\n\t-- 0\r\n\t-- )\r\n\t-- -- 1 Insert  0 Ignore\n\tDECODE(TRUE,\n\tlkp_PremiumTransactionId IS NULL, 1,\n\t0) AS o_ChangeFlag\n\tFROM EXP_CoverageDetailCommercialProperty\n\tLEFT JOIN LKP_PremiumTransactionRatingRisk\n\tON LKP_PremiumTransactionRatingRisk.PremiumTransactionID = EXP_CoverageDetailCommercialProperty.NewNegatePremiumTransactionID\n),\nFIL_InsertTarget AS (\n\tSELECT\n\tNewNegatePremiumTransactionID AS PremiumTransactionID, \n\tNewNegatePremiumTransactionAKID AS PremiumTransactionAKID, \n\tAuditID, \n\tSourceSystemID, \n\tCreatedDate, \n\tModifiedDate, \n\tCensusBlockGroupCountyCode, \n\tCensusBlockGroupTractCode, \n\tCensusBlockGroupBlockGroupCode, \n\tLatitude, \n\tLongitude, \n\tRatingTerritoryCode, \n\to_ChangeFlag\n\tFROM EXP_DetectChanges\n\tWHERE IIF(o_ChangeFlag=1,TRUE,FALSE)\n),\nPremiumTransactionRatingRisk1 AS (\n\tINSERT INTO PremiumTransactionRatingRisk\n\t(PremiumTransactionID, PremiumTransactionAKID, AuditID, SourceSystemID, CreatedDate, ModifiedDate, CensusBlockGroupCountyCode, CensusBlockGroupTractCode, CensusBlockGroupBlockGroupCode, Latitude, Longitude, RatingTerritoryCode)\n\tSELECT \n\tPREMIUMTRANSACTIONID, \n\tPREMIUMTRANSACTIONAKID, \n\tAUDITID, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tCENSUSBLOCKGROUPCOUNTYCODE, \n\tCENSUSBLOCKGROUPTRACTCODE, \n\tCENSUSBLOCKGROUPBLOCKGROUPCODE, \n\tLATITUDE, \n\tLONGITUDE, \n\tRATINGTERRITORYCODE\n\tFROM FIL_InsertTarget\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "216690"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "881000"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7484952"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "06/27/2023 12:02:14"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "07/04/2023 10:58:56"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_CLAIM"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": ""
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "WC_Stage"
+            },
+            "TARGET_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "RPT_EDM"
+            },
+            "TARGET_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "V2"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

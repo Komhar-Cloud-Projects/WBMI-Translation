@@ -1,0 +1,97 @@
+{
+    "name": "m_POL_DW_LOAD_PolicyForm_DCT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_PolicyForm_DCT",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCPolicyStaging AS (\n\tSELECT DISTINCT DCP.PolicyNumber\r\n\t\t,WBP.PolicyVersionFormatted\r\n\t\t,ISNULL(DCT.TransactionDate, DCT.CreatedDate) TransactionDate\r\n\t\t,DCT.EffectiveDate\r\n\t\t,DCT.Type\r\n\t\t,Doc.Caption\r\n\t\t,REPLACE(Doc.FormName,'_','') as FormName\r\n\t\t,Doc.Selected\r\n\t\t,Doc.OnPolicy\r\n\t\t,Doc.[Add]\r\n\t\t,Doc.[Remove]\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCPolicyStaging DCP\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WBPolicyStaging WBP ON WBP.policyid = DCP.PolicyId\r\n\t\tAND WBP.SessionId = DCP.SessionId\t\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCTransactionStaging DCT ON DCT.SessionId = WBP.SessionId\t\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCSessionStaging DSS ON DSS.SessionId = DCP.SessionId\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WBCLPrintDocStage Doc ON Doc.SessionId = DCP.SessionId\r\n\tWHERE DSS.Purpose = 'Onset'\r\n\tAND DCT.state = 'committed' AND DCP.Status<>'Quote'\r\n\tAND Doc.FormName @{pipeline().parameters.EXCLUDE_FORM}\r\n\tAND DCT.Type @{pipeline().parameters.EXCLUDE_TTYPE}\n),\nEXP_Default AS (\n\tSELECT\n\tPolicyNumber,\n\tPolicyVersionFormatted,\n\tTransactionDate,\n\tEffectiveDate,\n\tType AS TransactionType,\n\tCaption,\n\tFormName,\n\tSelected,\n\tOnPolicy,\n\tAdd,\n\tRemove,\n\t-- *INF*: LTRIM(RTRIM(FormName))\n\tLTRIM(RTRIM(FormName)) AS v_FormNumber,\n\t-- *INF*: REG_REPLACE(v_FormNumber,'[^0-9]','')\n\tREG_REPLACE(v_FormNumber, '[^0-9]', '') AS v_FormNumberRemoveChar,\n\t-- *INF*: SUBSTR(LTRIM(RTRIM(v_FormNumberRemoveChar)),\r\n\t-- LENGTH(LTRIM(RTRIM(v_FormNumberRemoveChar)))-3,\r\n\t-- 4)\n\tSUBSTR(LTRIM(RTRIM(v_FormNumberRemoveChar)), LENGTH(LTRIM(RTRIM(v_FormNumberRemoveChar))) - 3, 4) AS v_FormEditionDate,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,\n\tsysdate AS o_CreatedDate,\n\tsysdate AS o_ModifiedDate,\n\t-- *INF*: LTRIM(RTRIM(PolicyNumber)) || LTRIM(RTRIM(PolicyVersionFormatted))\n\tLTRIM(RTRIM(PolicyNumber)) || LTRIM(RTRIM(PolicyVersionFormatted)) AS o_pol_key,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(Caption)\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(Caption) AS o_FormName,\n\t-- *INF*: LTRIM(RTRIM(FormName))\n\tLTRIM(RTRIM(FormName)) AS o_FormNumber,\n\t-- *INF*: TO_DATE(LPAD(v_FormEditionDate,4,'0'),'MMRR')\n\tTO_DATE(LPAD(v_FormEditionDate, 4, '0'), 'MMRR') AS o_FormEditionDate,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- Add='1',\r\n\t-- \t\t\tDECODE(TRUE,\t\t\t\r\n\t-- \t\t\tRemove='1' ,'0',\r\n\t-- \t\t\t'1'\r\n\t-- \t\t\t),\r\n\t-- ISNULL(Add), \r\n\t-- \t\t\t\t\tDECODE(TRUE,\r\n\t-- \t\t\t\t\tISNULL(OnPolicy) AND ISNULL(Remove), \t\t\t\t\t\tNULL,\t\r\n\t-- \t\t\t\t\tOnPolicy ='1' AND ISNULL(Remove),'1',\r\n\t-- \t\t\t\t\t'0'\r\n\t-- \t\t\t\t\t ),\r\n\t-- Add='0',\r\n\t-- \t\t\tDECODE(TRUE,\t\r\n\t-- \t\t\tISNULL(OnPolicy) AND ISNULL(Remove), \t\t\t\t\t\tNULL,\t\r\n\t-- \t\t\tOnPolicy ='1' AND Remove ='1', '0',\t\r\n\t-- \t\t\tOnPolicy ='1' AND ISNULL(Remove), '1',\r\n\t-- \t\t\tOnPolicy ='1' AND Remove ='0', '1',\t\t\t\r\n\t-- \t\t\t '0'\r\n\t-- \t\t\t),\r\n\t-- '0'\r\n\t-- )\n\tDECODE(TRUE,\n\tAdd = '1', DECODE(TRUE,\n\tRemove = '1', '0',\n\t'1'),\n\tAdd IS NULL, DECODE(TRUE,\n\tOnPolicy IS NULL AND Remove IS NULL, NULL,\n\tOnPolicy = '1' AND Remove IS NULL, '1',\n\t'0'),\n\tAdd = '0', DECODE(TRUE,\n\tOnPolicy IS NULL AND Remove IS NULL, NULL,\n\tOnPolicy = '1' AND Remove = '1', '0',\n\tOnPolicy = '1' AND Remove IS NULL, '1',\n\tOnPolicy = '1' AND Remove = '0', '1',\n\t'0'),\n\t'0') AS o_AddRemoveFlag\n\tFROM SQ_DCPolicyStaging\n),\nLKP_Form AS (\n\tSELECT\n\tFormId,\n\tFormName,\n\tFormNumber,\n\tFormEditionDate\n\tFROM (\n\t\tSELECT \n\t\t\tFormId,\n\t\t\tFormName,\n\t\t\tFormNumber,\n\t\t\tFormEditionDate\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.Form\n\t\tWHERE SourceSystemID='@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY FormName,FormNumber,FormEditionDate ORDER BY FormId) = 1\n),\nLKP_Policy AS (\n\tSELECT\n\tpol_ak_id,\n\tpol_key,\n\tpol_num,\n\teff_from_date,\n\teff_to_date\n\tFROM (\n\t\tSELECT \n\t\t\tpol_ak_id,\n\t\t\tpol_key,\n\t\t\tpol_num,\n\t\t\teff_from_date,\n\t\t\teff_to_date\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER_V2}.policy\n\t\tWHERE source_sys_id='@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY pol_key,pol_num,eff_from_date,eff_to_date ORDER BY pol_ak_id DESC) = 1\n),\nLKP_PolicyForm AS (\n\tSELECT\n\tPolicyFormId,\n\tPolicyAKID,\n\tFormID,\n\tFormTransactionCreatedDate\n\tFROM (\n\t\tSELECT @{pipeline().parameters.TARGET_TABLE_OWNER}.PolicyForm.PolicyFormId as PolicyFormId, @{pipeline().parameters.TARGET_TABLE_OWNER}.PolicyForm.PolicyAKID as PolicyAKID, @{pipeline().parameters.TARGET_TABLE_OWNER}.PolicyForm.FormID as FormID, @{pipeline().parameters.TARGET_TABLE_OWNER}.PolicyForm.FormTransactionCreatedDate as FormTransactionCreatedDate FROM @{pipeline().parameters.TARGET_TABLE_OWNER}.PolicyForm \r\n\t\tINNER JOIN @{pipeline().parameters.TARGET_TABLE_OWNER_V2}.policy ON pol_ak_id = PolicyAKID\r\n\t\tWHERE SourceSystemID = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'\r\n\t\tAND exists (select 1 from @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WBPolicyStaging\r\n\t\twhere (PolicyNumber + PolicyVersionFormatted) = pol_key)\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyAKID,FormID,FormTransactionCreatedDate ORDER BY PolicyFormId) = 1\n),\nEXP_No_NULL AS (\n\tSELECT\n\tLKP_PolicyForm.PolicyFormId,\n\tEXP_Default.o_AuditID AS AuditID,\n\tEXP_Default.o_SourceSystemID AS SourceSystemID,\n\tEXP_Default.o_CreatedDate AS CreatedDate,\n\tEXP_Default.o_ModifiedDate AS ModifiedDate,\n\tLKP_Policy.pol_ak_id AS in_PolicyAKID,\n\t-- *INF*: DECODE(TRUE,ISNULL(in_PolicyAKID),-1,in_PolicyAKID)\n\tDECODE(TRUE,\n\tin_PolicyAKID IS NULL, - 1,\n\tin_PolicyAKID) AS o_PolicyAKID,\n\tLKP_Form.FormId AS in_FormID,\n\t-- *INF*: DECODE(TRUE,ISNULL(in_FormID),-1,in_FormID)\n\tDECODE(TRUE,\n\tin_FormID IS NULL, - 1,\n\tin_FormID) AS o_FormID,\n\tEXP_Default.TransactionDate,\n\tEXP_Default.EffectiveDate,\n\tEXP_Default.TransactionType,\n\tEXP_Default.o_AddRemoveFlag AS AddRemoveFlag,\n\t-- *INF*: MAKE_DATE_TIME(1800,01,01)\n\tMAKE_DATE_TIME(1800, 01, 01) AS FormAddedDate\n\tFROM EXP_Default\n\tLEFT JOIN LKP_Form\n\tON LKP_Form.FormName = EXP_Default.o_FormName AND LKP_Form.FormNumber = EXP_Default.o_FormNumber AND LKP_Form.FormEditionDate = EXP_Default.o_FormEditionDate\n\tLEFT JOIN LKP_Policy\n\tON LKP_Policy.pol_key = EXP_Default.o_pol_key AND LKP_Policy.pol_num = EXP_Default.PolicyNumber AND LKP_Policy.eff_from_date <= EXP_Default.TransactionDate AND LKP_Policy.eff_to_date >= EXP_Default.TransactionDate\n\tLEFT JOIN LKP_PolicyForm\n\tON LKP_PolicyForm.PolicyAKID = LKP_Policy.pol_ak_id AND LKP_PolicyForm.FormID = LKP_Form.FormId AND LKP_PolicyForm.FormTransactionCreatedDate = EXP_Default.TransactionDate\n),\nFIL_Existing AS (\n\tSELECT\n\tPolicyFormId, \n\tAuditID, \n\tSourceSystemID, \n\tCreatedDate, \n\tModifiedDate, \n\to_PolicyAKID AS PolicyAKID, \n\to_FormID AS FormID, \n\tTransactionDate, \n\tEffectiveDate, \n\tTransactionType, \n\tAddRemoveFlag, \n\tFormAddedDate\n\tFROM EXP_No_NULL\n\tWHERE ISNULL(PolicyFormId) AND NOT ISNULL(AddRemoveFlag)\n),\nPolicyForm AS (\n\tINSERT INTO PolicyForm\n\t(AuditId, SourceSystemID, CreatedDate, ModifiedDate, PolicyAKID, FormID, FormTransactionCreatedDate, FormTransactionEffectiveDate, FormTransactionType, FormAddRemoveFlag, FormAddedDate)\n\tSELECT \n\tAuditID AS AUDITID, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tPOLICYAKID, \n\tFORMID, \n\tTransactionDate AS FORMTRANSACTIONCREATEDDATE, \n\tEffectiveDate AS FORMTRANSACTIONEFFECTIVEDATE, \n\tTransactionType AS FORMTRANSACTIONTYPE, \n\tAddRemoveFlag AS FORMADDREMOVEFLAG, \n\tFORMADDEDDATE\n\tFROM FIL_Existing\n),\nSQ_PolicyForm_Update_FormAddedDate AS (\n\tselect\r\n\ttemp1.PolicyFormId,\r\n\tcase\r\n\twhen temp2.rnk2 is null then temp1.FormTransactionCreatedDate\r\n\twhen temp2.FormAddRemoveFlag = 0 then temp1.FormTransactionCreatedDate\r\n\telse NULL\r\n\tend 'FormAddedDate'\r\n\tfrom\r\n\t(select PolicyAKID , FormId, PolicyFormId, FormTransactionCreatedDate, FormAddRemoveFlag,FormAddedDate,\r\n\tROW_NUMBER() over (partition by policyakid, formid order by FormTransactionCreatedDate) as rnk1 \r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyForm\r\n\twhere policyAKID in (select distinct policyAKID from @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyForm where AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tand PolicyAKID <> -1)\r\n\t) temp1\r\n\tleft join \r\n\t(select PolicyAKID, formid, PolicyFormId, FormTransactionCreatedDate, FormAddRemoveFlag,\r\n\tROW_NUMBER() over (partition by policyakid, formid order by FormTransactionCreatedDate) as rnk2\r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyForm\r\n\twhere policyAKID in (select distinct policyAKID from @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyForm where AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} \r\n\tand PolicyAKID <> -1)\r\n\t) temp2\r\n\ton temp1.rnk1 = temp2.rnk2 + 1\r\n\tand temp1.PolicyAKID = temp2.PolicyAKID\r\n\tand temp1.FormID = temp2.FormID\n),\nEXP_Default_Place_Holder AS (\n\tSELECT\n\tPolicyFormId,\n\tFormAddedDate,\n\tsysdate AS ModifiedDate\n\tFROM SQ_PolicyForm_Update_FormAddedDate\n),\nFIL_Remove_NULL_Rows AS (\n\tSELECT\n\tPolicyFormId, \n\tFormAddedDate, \n\tModifiedDate\n\tFROM EXP_Default_Place_Holder\n\tWHERE NOT ISNULL(FormAddedDate)\n),\nUPD_Update_Table AS (\n\tSELECT\n\tPolicyFormId, \n\tFormAddedDate, \n\tModifiedDate\n\tFROM FIL_Remove_NULL_Rows\n),\nPolicyForm_Update_FormAddedDate AS (\n\tMERGE INTO PolicyForm AS T\n\tUSING UPD_Update_Table AS S\n\tON T.PolicyFormId = S.PolicyFormId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ModifiedDate = S.ModifiedDate, T.FormAddedDate = S.FormAddedDate\n),\nSQ_PolicyForm_Update_FormAddedDate1 AS (\n\tSELECT policyformid , FormAddedDate\r\n\tFROM\r\n\t(SELECT  policyformid ,\r\n\tcase\r\n\twhen FormAddedDate = '01-Jan-1800' then (select top 1 FormAddedDate from @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyForm where FormTransactionCreatedDate <= t.FormTransactionCreatedDate and FormAddedDate <> '01-Jan-1800'\r\n\tand policyakid = t.policyakid and formid = t.formid\r\n\torder by FormTransactionCreatedDate desc)\r\n\telse NULL\r\n\tend as  'FormAddedDate'\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyForm t\r\n\tWHERE PolicyAKID <> -1 AND policyakid IN (SELECT DISTINCT policyakid FROM DBO.PolicyForm WHERE modifieddate > '@{pipeline().parameters.SELECTION_START_TS}' ) ) A\r\n\tWHERE FormAddedDate is not null\n),\nEXP_Default_Place_Holder1 AS (\n\tSELECT\n\tPolicyFormId,\n\tFormAddedDate,\n\tsysdate AS ModifiedDate\n\tFROM SQ_PolicyForm_Update_FormAddedDate1\n),\nFIL_Remove_NULL_Rows1 AS (\n\tSELECT\n\tPolicyFormId, \n\tFormAddedDate, \n\tModifiedDate\n\tFROM EXP_Default_Place_Holder1\n\tWHERE NOT ISNULL(FormAddedDate)\n),\nUPD_Update_Table1 AS (\n\tSELECT\n\tPolicyFormId, \n\tFormAddedDate, \n\tModifiedDate\n\tFROM FIL_Remove_NULL_Rows1\n),\nPolicyForm_Update_FormAddedDate1 AS (\n\tMERGE INTO PolicyForm AS T\n\tUSING UPD_Update_Table1 AS S\n\tON T.PolicyFormId = S.PolicyFormId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ModifiedDate = S.ModifiedDate, T.FormAddedDate = S.FormAddedDate\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905491"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603238"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:44:58"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 23:03:38"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            },
+            "TARGET_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "V2"
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "WC_Stage"
+            },
+            "TARGET_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "RPT_EDM"
+            },
+            "EXCLUDE_FORM": {
+                "type": "string",
+                "defaultValue": "NOT LIKE 'SCHED%' AND DOC.FormName NOT LIKE 'DCT%' AND DOC.FormName not like 'Form071%'"
+            },
+            "EXCLUDE_TTYPE": {
+                "type": "string",
+                "defaultValue": "NOT IN ('RescindNonRenew','Reporting','VoidReporting','Information','Rescind','Dividend','RevisedDividend','VoidDividend','NonRenew','RescindCancelPending','CancelPending')"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

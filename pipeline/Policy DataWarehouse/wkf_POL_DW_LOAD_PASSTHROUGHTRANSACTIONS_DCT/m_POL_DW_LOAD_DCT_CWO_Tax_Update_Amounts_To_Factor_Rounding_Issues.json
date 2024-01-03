@@ -1,0 +1,85 @@
+{
+    "name": "m_POL_DW_LOAD_DCT_CWO_Tax_Update_Amounts_To_Factor_Rounding_Issues",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_DCT_CWO_Tax_Update_Amounts_To_Factor_R_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_PassThroughChargeTransaction AS (\n\tWith SRC as\r\n\t(select pol.pol_num, pt.PassThroughChargeTransactionID, pt.PassThroughChargeTransactionAmount,pt.PassThroughChargeTransactionEffectiveDate,\r\n\tROW_NUMBER() over (partition by pol.pol_num,pt.PassThroughChargeTransactionEffectiveDate order by pol.pol_num,pt.PassThroughChargeTransactionEffectiveDate, abs(pt.PassThroughChargeTransactionAmount) desc, pt.PassThroughChargeTransactionID desc) Num,\r\n\tSUM(PassThroughChargeTransactionAmount) over (partition by pol.pol_num, pt.PassThroughChargeTransactionEffectiveDate) as TotalCWOPT,\r\n\tpol.pol_eff_date,pol.pol_exp_date\r\n\tfrom PassThroughChargeTransaction pt\r\n\tinner join @{pipeline().parameters.TARGET_TABLE_OWNER_V2}.policy pol\r\n\ton pol.pol_ak_id = pt.PolicyAKID\r\n\tand pol.crrnt_snpsht_flag = 1\r\n\twhere pt.ReasonAmendedCode='CWO'\r\n\tand pt.AuditID=@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID})\r\n\t\r\n\tselect SRC.PassThroughChargeTransactionID, SRC.PassThroughChargeTransactionAmount, SRC.TotalCWOPT, DCBIL.WrittenOffAmount\r\n\tfrom SRC   \r\n\tinner join @{pipeline().parameters.SOURCE_DATABASE_NAME}..WorkDCBILCommissionCWOTax DCBIL\r\n\ton DCBIL.PolicyReference=SRC.pol_num and DCBIL.InstallmentDate=SRC.PassThroughChargeTransactionEffectiveDate\r\n\tand DCBIL.PolicyTermEffectiveDate=SRC.pol_eff_date and DCBIL.PolicyTermExpirationDate=SRC.pol_exp_date\r\n\tand SRC.Num=1\n),\nEXP_AmountCalc AS (\n\tSELECT\n\tPassThroughChargeTransactionID AS i_PassThroughChargeTransactionID,\n\tPassThroughChargeTransactionAmount AS i_PassThroughChargeTransactionAmount,\n\tTotalCWOPT AS i_TotalCWOPT,\n\tWrittenOffAmount AS i_WrittenOffAmount,\n\ti_WrittenOffAmount-i_TotalCWOPT AS v_AmountGap,\n\ti_PassThroughChargeTransactionID AS o_PassThroughChargeTransactionID,\n\ti_PassThroughChargeTransactionAmount + v_AmountGap AS o_PassThroughChargeTransactionAmount,\n\tv_AmountGap AS o_AmountGap\n\tFROM SQ_PassThroughChargeTransaction\n),\nFIL_HasGap AS (\n\tSELECT\n\to_PassThroughChargeTransactionID, \n\to_PassThroughChargeTransactionAmount, \n\to_AmountGap\n\tFROM EXP_AmountCalc\n\tWHERE o_AmountGap<>0\n),\nUPD_UPDATE AS (\n\tSELECT\n\to_PassThroughChargeTransactionID AS PassThroughChargeTransactionID, \n\to_PassThroughChargeTransactionAmount AS PassThroughChargeTransactionAmount\n\tFROM FIL_HasGap\n),\nPassThroughChargeTransaction AS (\n\tMERGE INTO PassThroughChargeTransaction AS T\n\tUSING UPD_UPDATE AS S\n\tON T.PassThroughChargeTransactionID = S.PassThroughChargeTransactionID\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.PassThroughChargeTransactionAmount = S.PassThroughChargeTransactionAmount\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905491"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603230"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:44:58"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 23:03:38"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Policy"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "WC_STAGE"
+            },
+            "TARGET_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "V2"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

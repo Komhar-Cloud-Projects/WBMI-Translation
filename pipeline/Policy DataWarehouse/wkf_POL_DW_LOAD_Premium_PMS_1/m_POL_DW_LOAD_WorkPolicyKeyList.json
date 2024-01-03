@@ -1,0 +1,57 @@
+{
+    "name": "m_POL_DW_LOAD_WorkPolicyKeyList",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_WorkPolicyKeyList",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_pif_4514_stage AS (\n\tSELECT DISTINCT RTRIM(pif_symbol),\r\n\t       pif_policy_number,\r\n\t       pif_module,\r\n\t       logical_flag\r\n\tFROM  @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.@{pipeline().parameters.SOURCE_TABLE_NAME}\r\n\tWHERE logical_flag IN ('0','1','2','3')\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Values AS (\n\tSELECT\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module,\n\tpif_symbol  ||  pif_policy_number  || pif_module AS PolicyKey,\n\tlogical_flag,\n\t-- *INF*: TO_INTEGER(logical_flag)\n\tTO_INTEGER(logical_flag) AS logical_flag_Out,\n\t@{pipeline().parameters.SOURCE_TABLE_NAME} AS StageTableName,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate\n\tFROM SQ_pif_4514_stage\n),\nWorkPolicyKeyList AS (\n\tTRUNCATE TABLE WorkPolicyKeyList;\n\tINSERT INTO WorkPolicyKeyList\n\t(StageTableName, PolicyKey, LogicalFlag, AuditId, CreatedDate)\n\tSELECT \n\tSTAGETABLENAME, \n\tPOLICYKEY, \n\tlogical_flag_Out AS LOGICALFLAG, \n\tAuditID AS AUDITID, \n\tCREATEDDATE\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

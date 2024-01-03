@@ -1,0 +1,41 @@
+{
+    "name": "m_Do_PreAudit",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Do_PreAudit",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_wbmi_audit_control_run_EXPIRE_AUDIT AS (\n\tSELECT wbmi_audit_control_run.wbmi_audit_control_run_id \r\n\tFROM\r\n\t wbmi_audit_control_run as wbmi_audit_control_run\r\n\tWHERE audit_name = '@{pipeline().parameters.AUDIT_NAME}'\r\n\tAND wbmi_audit_control_run.current_indicator = 'Y'\r\n\tAND NOT EXISTS(SELECT 1\r\n\t\tFROM wbmi_audit_control_run as wbmi_audit_control_run2\r\n\t\tWHERE wbmi_audit_control_run.wbmi_audit_control_id =  wbmi_audit_control_run2.wbmi_audit_control_id\r\n\t      and audit_name = '@{pipeline().parameters.AUDIT_NAME}'\r\n\t      AND wbmi_audit_control_run.current_indicator = 'Y'\r\n\t\tAND wbmi_audit_control_run2.end_ts IS NULL)\r\n\t\r\n\t--Subquery in place to ensure that if we have not ran m_Do_PostAudit for an Audit that m_Do_PreAudit\r\n\t--does not run and initialize a new set of rows in the corresponding run tables.\n),\nEXP_wbmi_audit_control_run_EXPIRE_AUDIT AS (\n\tSELECT\n\twbmi_audit_control_run_id,\n\t'N' AS current_indicator,\n\tsysdate AS modified_date\n\tFROM SQ_wbmi_audit_control_run_EXPIRE_AUDIT\n),\nUPD_wbmi_audit_control_run_EXPIRE_AUDIT AS (\n\tSELECT\n\twbmi_audit_control_run_id, \n\tcurrent_indicator, \n\tmodified_date\n\tFROM EXP_wbmi_audit_control_run_EXPIRE_AUDIT\n),\nwbmi_audit_control_run_EXPIRE_AUDIT AS (\n\tMERGE INTO wbmi_audit_control_run AS T\n\tUSING UPD_wbmi_audit_control_run_EXPIRE_AUDIT AS S\n\tON T.wbmi_audit_control_run_id = S.wbmi_audit_control_run_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.current_indicator = S.current_indicator, T.modified_date = S.modified_date\n),\nSQ_wbmi_audit_control_INITIALIZE_NEW_AUDIT AS (\n\tSELECT \r\n\twbmi_audit_control.wbmi_audit_control_id, \r\n\twbmi_audit_control.audit_name, \r\n\twbmi_audit_control.audit_notes, \r\n\twbmi_audit_control.created_user_id, \r\n\twbmi_audit_control.created_date, \r\n\twbmi_audit_control.modified_user_id \r\n\tFROM\r\n\t wbmi_audit_control\r\n\tWHERE audit_name = '@{pipeline().parameters.AUDIT_NAME}'\r\n\tAND NOT EXISTS(SELECT 1\r\n\t\tFROM wbmi_audit_control_run as wbmi_audit_control_run2\r\n\t\tWHERE wbmi_audit_control.wbmi_audit_control_id =  wbmi_audit_control_run2.wbmi_audit_control_id\r\n\t       and audit_name = '@{pipeline().parameters.AUDIT_NAME}'\r\n\t\tAND wbmi_audit_control_run2.end_ts IS NULL)\r\n\t\r\n\t--Subquery in place to ensure that if we have not ran m_Do_PostAudit for an Audit that m_Do_PreAudit\r\n\t--does not run and initialize a new set of rows in the corresponding run tables.\n),\nEXP_wbmi_audit_control_run AS (\n\tSELECT\n\twbmi_audit_control_id,\n\taudit_name,\n\taudit_notes,\n\t'Y' AS current_indicator,\n\tsysdate AS start_ts,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tsysdate AS modified_date\n\tFROM SQ_wbmi_audit_control_INITIALIZE_NEW_AUDIT\n),\nUPD_wbmi_audit_control_run AS (\n\tSELECT\n\twbmi_audit_control_id, \n\taudit_name, \n\taudit_notes, \n\tcurrent_indicator, \n\tstart_ts, \n\tcreated_user_id, \n\tcreated_date, \n\tmodified_user_id, \n\tmodified_date\n\tFROM EXP_wbmi_audit_control_run\n),\nwbmi_audit_control_run_INITIALIZE_NEW_AUDIT AS (\n\tINSERT INTO wbmi_audit_control_run\n\t(wbmi_audit_control_id, audit_name, audit_notes, current_indicator, start_ts, created_user_id, created_date, modified_user_id, modified_date)\n\tSELECT \n\tWBMI_AUDIT_CONTROL_ID, \n\tAUDIT_NAME, \n\tAUDIT_NOTES, \n\tCURRENT_INDICATOR, \n\tSTART_TS, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE\n\tFROM UPD_wbmi_audit_control_run\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "AUDIT_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

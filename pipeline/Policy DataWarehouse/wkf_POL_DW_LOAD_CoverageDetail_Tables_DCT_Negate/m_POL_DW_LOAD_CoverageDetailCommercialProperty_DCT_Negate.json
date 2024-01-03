@@ -1,0 +1,85 @@
+{
+    "name": "m_POL_DW_LOAD_CoverageDetailCommercialProperty_DCT_Negate",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_CoverageDetailCommercialProperty_DCT_N_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CoverageDetailCommercialProperty AS (\n\tSELECT CDCP.PremiumTransactionID,\r\n\t       CDCP.CoverageGuid,\r\n\t       CDCP.IsoFireProtectionCode,\r\n\t       CDCP.MultiLocationCreditFactor,\r\n\t       CDCP.PreferredPropertyFactor,\r\n\t       CDCP.SprinklerFlag,\r\n\t       CDCP.RetroactiveDate,\r\n\t       CDCP.ISOCommercialPropertyCauseofLossGroup,\r\n\t       CDCP.ISOCommercialPropertyRatingGroupCode,\r\n\t       CDCP.ISOSpecialCauseOfLossCategoryCode,\r\n\t       CDCP.RateType,\r\n\t       CDCP.CommercialPropertySpecialClass,\r\n\t       PT.PremiumTransactionID\r\n\tFROM   dbo.CoverageDetailCommercialProperty CDCP\r\n\t       INNER JOIN dbo.WorkPremiumTransactionDataRepairNegate WPTDRN\r\n\t               ON CDCP.PremiumTransactionID = WPTDRN.OriginalPremiumTransactionID\r\n\t       INNER JOIN dbo.PremiumTransaction PT\r\n\t               ON PT.PremiumTransactionAKID = WPTDRN.NewNegatePremiumTransactionAKID\r\n\t                  AND PT.SourceSystemId = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n),\nEXP_CoverageDetailCommercialProperty AS (\n\tSELECT\n\tNewNegatePremiumTransactionID,\n\tNewNegatePremiumTransactionID AS o_PremiumTransactionID,\n\t1 AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\t-- *INF*: TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS o_EffectiveDate,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59' , 'MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\tCoverageGuid,\n\tIsoFireProtectionCode,\n\tMultiLocationCreditFactor,\n\tPreferredPropertyFactor,\n\tSprinklerFlag,\n\tRetroactiveDate,\n\tISOCommercialPropertyCauseofLossGroup,\n\tISOCommercialPropertyRatingGroupCode,\n\tISOSpecialCauseOfLossCategoryCode,\n\tRateType,\n\tCommercialPropertySpecialClass,\n\tPremiumTransactionID\n\tFROM SQ_CoverageDetailCommercialProperty\n),\nLKP_CoverageDetailCommercialProperty AS (\n\tSELECT\n\tPremiumTransactionId,\n\tIsoFireProtectionCode,\n\tMultiLocationCreditFactor,\n\tPreferredPropertyFactor,\n\tSprinklerFlag,\n\tISOCommercialPropertyCauseofLossGroup,\n\tISOCommercialPropertyRatingGroupCode,\n\tISOSpecialCauseOfLossCategoryCode,\n\tRateType,\n\tCommercialPropertySpecialClass\n\tFROM (\n\t\tSELECT \n\t\t\tPremiumTransactionId,\n\t\t\tIsoFireProtectionCode,\n\t\t\tMultiLocationCreditFactor,\n\t\t\tPreferredPropertyFactor,\n\t\t\tSprinklerFlag,\n\t\t\tISOCommercialPropertyCauseofLossGroup,\n\t\t\tISOCommercialPropertyRatingGroupCode,\n\t\t\tISOSpecialCauseOfLossCategoryCode,\n\t\t\tRateType,\n\t\t\tCommercialPropertySpecialClass\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageDetailCommercialProperty\n\t\tWHERE PremiumTransactionID IN (SELECT pt.PremiumTransactionID FROM\r\n\t\tPremiumTransaction pt INNER JOIN dbo.WorkPremiumTransactionDataRepairNegate wpt\r\n\t\tON pt.PremiumTransactionAKID=wpt.NewNegatePremiumTransactionAKID)\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PremiumTransactionId ORDER BY PremiumTransactionId) = 1\n),\nEXP_DetectChanges AS (\n\tSELECT\n\tLKP_CoverageDetailCommercialProperty.PremiumTransactionId AS lkp_PremiumTransactionId,\n\tLKP_CoverageDetailCommercialProperty.IsoFireProtectionCode AS lkp_IsoFireProtectionCode,\n\tLKP_CoverageDetailCommercialProperty.MultiLocationCreditFactor AS lkp_MultiLocationCreditFactor,\n\tLKP_CoverageDetailCommercialProperty.PreferredPropertyFactor AS lkp_PreferredPropertyFactor,\n\tLKP_CoverageDetailCommercialProperty.SprinklerFlag AS lkp_SprinklerFlag_origin,\n\t-- *INF*: DECODE(lkp_SprinklerFlag_origin,'T',1,'F',0,NULL)\n\tDECODE(lkp_SprinklerFlag_origin,\n\t'T', 1,\n\t'F', 0,\n\tNULL) AS lkp_SprinklerFlag,\n\tLKP_CoverageDetailCommercialProperty.ISOCommercialPropertyCauseofLossGroup AS lkp_ISOPropertyCauseofLossGroup,\n\tLKP_CoverageDetailCommercialProperty.ISOCommercialPropertyRatingGroupCode AS lkp_ISOCPRatingGroup,\n\tLKP_CoverageDetailCommercialProperty.ISOSpecialCauseOfLossCategoryCode AS lkp_ISOSpecialCauseOfLossCategory,\n\tLKP_CoverageDetailCommercialProperty.RateType AS lkp_RateType,\n\tLKP_CoverageDetailCommercialProperty.CommercialPropertySpecialClass AS lkp_PropertySpecialClass,\n\tEXP_CoverageDetailCommercialProperty.o_PremiumTransactionID AS PremiumTransactionID,\n\tEXP_CoverageDetailCommercialProperty.o_CurrentSnapshotFlag AS CurrentSnapshotFlag,\n\tEXP_CoverageDetailCommercialProperty.o_AuditID AS AuditID,\n\tEXP_CoverageDetailCommercialProperty.o_EffectiveDate AS EffectiveDate,\n\tEXP_CoverageDetailCommercialProperty.o_ExpirationDate AS ExpirationDate,\n\tEXP_CoverageDetailCommercialProperty.o_SourceSystemID AS SourceSystemID,\n\tEXP_CoverageDetailCommercialProperty.o_CreatedDate AS CreatedDate,\n\tEXP_CoverageDetailCommercialProperty.o_ModifiedDate AS ModifiedDate,\n\tEXP_CoverageDetailCommercialProperty.CoverageGuid,\n\tEXP_CoverageDetailCommercialProperty.IsoFireProtectionCode,\n\tEXP_CoverageDetailCommercialProperty.MultiLocationCreditFactor,\n\tEXP_CoverageDetailCommercialProperty.PreferredPropertyFactor,\n\tEXP_CoverageDetailCommercialProperty.SprinklerFlag,\n\tEXP_CoverageDetailCommercialProperty.ISOCommercialPropertyCauseofLossGroup AS ISOPropertyCauseofLossGroup,\n\tEXP_CoverageDetailCommercialProperty.ISOSpecialCauseOfLossCategoryCode AS ISOSpecialCauseOfLossCategory,\n\tEXP_CoverageDetailCommercialProperty.RateType,\n\tEXP_CoverageDetailCommercialProperty.ISOCommercialPropertyRatingGroupCode AS ISOCPRatingGroup,\n\tEXP_CoverageDetailCommercialProperty.CommercialPropertySpecialClass AS PropertySpecialClass,\n\tEXP_CoverageDetailCommercialProperty.RetroactiveDate,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(lkp_PremiumTransactionId),'NEW',\r\n\t-- 'UPDATE'\r\n\t-- )\n\tDECODE(TRUE,\n\tlkp_PremiumTransactionId IS NULL, 'NEW',\n\t'UPDATE') AS ChangeFlag\n\tFROM EXP_CoverageDetailCommercialProperty\n\tLEFT JOIN LKP_CoverageDetailCommercialProperty\n\tON LKP_CoverageDetailCommercialProperty.PremiumTransactionId = EXP_CoverageDetailCommercialProperty.o_PremiumTransactionID\n),\nRTR_Target AS (\n\tSELECT\n\tChangeFlag,\n\tPremiumTransactionID AS PremiumTransactionId,\n\tCurrentSnapshotFlag,\n\tAuditID,\n\tEffectiveDate,\n\tExpirationDate,\n\tSourceSystemID,\n\tCreatedDate,\n\tModifiedDate,\n\tCoverageGuid,\n\tIsoFireProtectionCode,\n\tMultiLocationCreditFactor,\n\tPreferredPropertyFactor,\n\tSprinklerFlag,\n\tISOPropertyCauseofLossGroup,\n\tISOCPRatingGroup,\n\tISOSpecialCauseOfLossCategory,\n\tRateType,\n\tPropertySpecialClass,\n\tRetroactiveDate\n\tFROM EXP_DetectChanges\n),\nRTR_Target_INSERT AS (SELECT * FROM RTR_Target WHERE ChangeFlag='NEW'),\nRTR_Target_UPDATE AS (SELECT * FROM RTR_Target WHERE ChangeFlag='UPDATE'),\nCoverageDetailCommercialProperty_Insert AS (\n\tINSERT INTO CoverageDetailCommercialProperty\n\t(PremiumTransactionID, CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, SourceSystemID, CreatedDate, ModifiedDate, CoverageGuid, IsoFireProtectionCode, MultiLocationCreditFactor, PreferredPropertyFactor, SprinklerFlag, RetroactiveDate, ISOCommercialPropertyCauseofLossGroup, ISOCommercialPropertyRatingGroupCode, ISOSpecialCauseOfLossCategoryCode, RateType, CommercialPropertySpecialClass)\n\tSELECT \n\tPremiumTransactionId AS PREMIUMTRANSACTIONID, \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tCOVERAGEGUID, \n\tISOFIREPROTECTIONCODE, \n\tMULTILOCATIONCREDITFACTOR, \n\tPREFERREDPROPERTYFACTOR, \n\tSPRINKLERFLAG, \n\tRETROACTIVEDATE, \n\tISOPropertyCauseofLossGroup AS ISOCOMMERCIALPROPERTYCAUSEOFLOSSGROUP, \n\tISOCPRatingGroup AS ISOCOMMERCIALPROPERTYRATINGGROUPCODE, \n\tISOSpecialCauseOfLossCategory AS ISOSPECIALCAUSEOFLOSSCATEGORYCODE, \n\tRATETYPE, \n\tPropertySpecialClass AS COMMERCIALPROPERTYSPECIALCLASS\n\tFROM RTR_Target_INSERT\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "216690"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "881000"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7484959"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "06/27/2023 12:02:14"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "07/04/2023 10:58:56"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "WC_Stage"
+            },
+            "TARGET_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "V2"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

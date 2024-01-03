@@ -1,0 +1,105 @@
+{
+    "name": "m_POL_DW_LOAD_EarnedPremiumAudit_Balance_Daily",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_EarnedPremiumAudit_Balance_Daily",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_EarnedPremiumDailyCalculation AS (\n\tDeclare @Date_Monthly datetime,\r\n\t@Date_Daily datetime\r\n\t\r\n\tset @Date_Monthly=DATEADD(SS,-1,DATEADD(DD, DATEDIFF(DD,0,GETDATE())-(@{pipeline().parameters.NO_OF_DAYS}),0))\r\n\tSET @Date_Daily=DATEADD(SS,-1,DATEADD(DD, DATEDIFF(DD,0,GETDATE())-(@{pipeline().parameters.NO_OF_DAYS}),0))\r\n\t\r\n\tSELECT CurrentSnapshotFlag,AuditID,EffectiveDate,ExpirationDate,SourceSystemID,PolicyKey,AgencyAKID,ContractCustomerAKID,PolicyAKID,RiskLocationAKID,PolicyCoverageAKID,StatisticalCoverageAKID,ReinsuranceCoverageAKID,PremiumTransactionAKID,BureauStatisticalCodeAKID,PolicyEffectiveDate,PolicyExpirationDate,StatisticalCoverageEffectiveDate,StatisticalCoverageExpirationDate,StatisticalCoverageCancellationDate,PremiumTransactionEnteredDate,PremiumTransactionEffectiveDate,PremiumTransactionExpirationDate,PremiumTransactionBookedDate,PremiumTransactionCode,PremiumTransactionAmount,FullTermPremium,PremiumType,ReasonAmendedCode,EarnedPremium,ChangeInEarnedPremium,UnearnedPremium,ChangeInUnearnedPremium,ProductCode,AnnualStatementLineCode,SubAnnualStatementLineCode,NonSubAnnualStatementLineCode,AnnualStatementLineProductCode,LineOfBusinessCode,PolicyOfferingCode,RunDate,RatingCoverageAKId,RatingCoverageEffectiveDate,RatingCoverageExpirationDate,EarnedExposure,ChangeInEarnedExposure,Exposure,'Monthly' Process\r\n\t  FROM @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.EarnedPremiumMonthlyCalculation\r\n\t  where UnearnedPremium<>0.0\r\n\tand PremiumTransactionExpirationDate<=Rundate\r\n\tand StatisticalCoverageCancellationDate<>'2100-12-31 23:59:59'\r\n\tand Rundate=@Date_Monthly\r\n\t  UNION\r\n\tSELECT CurrentSnapshotFlag,AuditID,EffectiveDate,ExpirationDate,SourceSystemID,PolicyKey,AgencyAKID,ContractCustomerAKID,PolicyAKID,RiskLocationAKID,PolicyCoverageAKID,StatisticalCoverageAKID,ReinsuranceCoverageAKID,PremiumTransactionAKID,BureauStatisticalCodeAKID,PolicyEffectiveDate,PolicyExpirationDate,StatisticalCoverageEffectiveDate,StatisticalCoverageExpirationDate,StatisticalCoverageCancellationDate,PremiumTransactionEnteredDate,PremiumTransactionEffectiveDate,PremiumTransactionExpirationDate,PremiumTransactionBookedDate,PremiumTransactionCode,PremiumTransactionAmount,FullTermPremium,PremiumType,ReasonAmendedCode,EarnedPremium,ChangeInEarnedPremium,UnearnedPremium,ChangeInUnearnedPremium,ProductCode,AnnualStatementLineCode,SubAnnualStatementLineCode,NonSubAnnualStatementLineCode,AnnualStatementLineProductCode,LineOfBusinessCode,PolicyOfferingCode,RunDate,RatingCoverageAKId,RatingCoverageEffectiveDate,RatingCoverageExpirationDate,EarnedExposure,ChangeInEarnedExposure,Exposure,'Daily' Process\r\n\t  FROM @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.EarnedPremiumDailyCalculation\r\n\t    where UnearnedPremium<>0.0\r\n\tand PremiumTransactionExpirationDate<=Rundate\r\n\tand StatisticalCoverageCancellationDate<>'2100-12-31 23:59:59'\r\n\tand Rundate=@Date_Daily\n),\nEXP_Src_Data_Collect AS (\n\tSELECT\n\tCurrentSnapshotFlag,\n\tAuditID,\n\tEffectiveDate,\n\tExpirationDate,\n\tSourceSystemID,\n\tPolicyKey,\n\tAgencyAKID,\n\tContractCustomerAKID,\n\tPolicyAKID,\n\tRiskLocationAKID,\n\tPolicyCoverageAKID,\n\tStatisticalCoverageAKID,\n\tReinsuranceCoverageAKID,\n\tPremiumTransactionAKID,\n\tBureauStatisticalCodeAKID,\n\tPolicyEffectiveDate,\n\tPolicyExpirationDate,\n\tStatisticalCoverageEffectiveDate,\n\tStatisticalCoverageExpirationDate,\n\tStatisticalCoverageCancellationDate,\n\tPremiumTransactionEnteredDate,\n\tPremiumTransactionEffectiveDate,\n\tPremiumTransactionExpirationDate,\n\tPremiumTransactionBookedDate,\n\tPremiumTransactionCode,\n\tPremiumTransactionAmount,\n\tFullTermPremium,\n\tPremiumType,\n\tReasonAmendedCode,\n\tEarnedPremium,\n\tChangeInEarnedPremium,\n\tUnearnedPremium,\n\tChangeInUnearnedPremium,\n\tProductCode,\n\tAnnualStatementLineCode,\n\tSubAnnualStatementLineCode,\n\tNonSubAnnualStatementLineCode,\n\tAnnualStatementLineProductCode,\n\tLineOfBusinessCode,\n\tPolicyOfferingCode,\n\tRunDate,\n\t-- *INF*: SET_DATE_PART(\r\n\t--          SET_DATE_PART(\r\n\t--                      SET_DATE_PART(ADD_TO_DATE(RunDate,'DD',1), 'HH', 23) \r\n\t--                                           ,'MI',59)\r\n\t--                                ,'SS',59)\n\tSET_DATE_PART(SET_DATE_PART(SET_DATE_PART(ADD_TO_DATE(RunDate, 'DD', 1), 'HH', 23), 'MI', 59), 'SS', 59) AS TO_Be_Rundate,\n\tRatingCoverageAKId,\n\tRatingCoverageEffectiveDate,\n\tRatingCoverageExpirationDate,\n\tEarnedExposure,\n\tChangeInEarnedExposure,\n\tExposure,\n\tProcess\n\tFROM SQ_EarnedPremiumDailyCalculation\n),\nLKP_GetExposure AS (\n\tSELECT\n\tExposure,\n\tPremiumtransactionakid\n\tFROM (\n\t\tselect Premiumtransactionakid as Premiumtransactionakid,Exposure as Exposure from @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction\r\n\t\twhere exposure<>0.0\r\n\t\tand case when PremiumTransactionBookedDate>=PremiumTransactionEnteredDate then PremiumTransactionBookedDate else PremiumTransactionEnteredDate end>='2001-01-01 00:00:00'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY Premiumtransactionakid ORDER BY Exposure) = 1\n),\nLKP_GetFirstAudits AS (\n\tSELECT\n\tPremiumTransactionID,\n\tPolicyAKID,\n\tPremiumType\n\tFROM (\n\t\tselect PT.Premiumtransactionid as Premiumtransactionid,P.Pol_ak_id as Policyakid,PT.PremiumType as PremiumType\r\n\t\tFROM @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER2}.Policy P with(nolock)\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.RiskLocation RL with(nolock)\r\n\t\tON RL.PolicyAKID = P.Pol_AK_ID\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyCoverage PC with(nolock)\r\n\t\tON  RL.RiskLocationAKID= PC.RiskLocationAKID\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.RatingCoverage RC with(nolock)\r\n\t\tON RC.PolicyCoverageAKID = PC.PolicyCoverageAKID\r\n\t\tInner Join @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction PT with(nolock)\r\n\t\tON PT.RatingCoverageAKId = RC.RatingCoverageAKID\r\n\t\tinner join @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.sup_premium_transaction_code SPC\r\n\t\ton PT.SupPremiumTransactionCodeId=SPC.sup_prem_trans_code_id\r\n\t\twhere PT.CurrentSnapshotFlag = '1' AND PT.SourceSystemID = 'DCT'\r\n\t\tAND PC.CurrentSnapshotFlag = '1' AND PC.SourceSystemID = 'DCT'\r\n\t\tAND RL.CurrentSnapshotFlag = '1' AND RL.SourceSystemID = 'DCT'\r\n\t\tAND P.crrnt_snpsht_flag = '1' AND P.source_sys_id = 'DCT'\r\n\t\tAND RC.EffectiveDate=PT.EffectiveDate\r\n\t\tand SPC.source_sys_id='DCT'\r\n\t\tand SPC.StandardPremiumTransactionCode in ('14','24')\r\n\t\tand convert(varchar(8),case when PT.PremiumtransactionEnteredDate>=PT.PremiumTransactionBookedDate then PT.PremiumtransactionEnteredDate else PT.PremiumTransactionBookedDate end,112) =convert(varchar(8),DATEADD(SS,-1,DATEADD(DD, DATEDIFF(D,0,GETDATE())-(@{pipeline().parameters.NO_OF_DAYS}),0)),112)\r\n\t\t\r\n\t\tUNION\r\n\t\t\r\n\t\tselect PT.Premiumtransactionid as Premiumtransactionid,P.Pol_ak_id as Policyakid,PT.PremiumType as PremiumType\r\n\t\tFROM @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER2}.Policy P with(nolock)\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.RiskLocation RL with(nolock)\r\n\t\tON RL.PolicyAKID = P.Pol_AK_ID\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyCoverage PC with(nolock)\r\n\t\tON  RL.RiskLocationAKID= PC.RiskLocationAKID\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.StatisticalCoverage SC with(nolock)\r\n\t\tON SC.PolicyCoverageAKID = PC.PolicyCoverageAKID\r\n\t\tInner Join @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction PT with(nolock)\r\n\t\tON PT.RatingCoverageAKId = SC.StatisticalCoverageAKID\r\n\t\twhere PT.CurrentSnapshotFlag = '1' AND PT.SourceSystemID = 'PMS'\r\n\t\tAND PC.CurrentSnapshotFlag = '1' AND PC.SourceSystemID = 'PMS'\r\n\t\tAND RL.CurrentSnapshotFlag = '1' AND RL.SourceSystemID = 'PMS'\r\n\t\tAND P.crrnt_snpsht_flag = '1' AND P.source_sys_id = 'PMS'\r\n\t\tand SC.CurrentSnapshotFlag=1 and SC.SourceSystemID='PMS'\r\n\t\tand PT.PremiumTransactionCode in ('14','24')\r\n\t\tand convert(varchar(8),case when PT.PremiumtransactionEnteredDate>=PT.PremiumTransactionBookedDate then PT.PremiumtransactionEnteredDate else PT.PremiumTransactionBookedDate end,112) =convert(varchar(8),DATEADD(SS,-1,DATEADD(DD, DATEDIFF(D,0,GETDATE())-(@{pipeline().parameters.NO_OF_DAYS}),0)),112)\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyAKID,PremiumType ORDER BY PremiumTransactionID DESC) = 1\n),\nEXP_SetEarnedPremiumValues AS (\n\tSELECT\n\tLKP_GetFirstAudits.PremiumTransactionID AS PremiumMasterCalculationID,\n\t-- *INF*: IIF(ISNULL(PremiumMasterCalculationID),'1','2')\n\tIFF(PremiumMasterCalculationID IS NULL, '1', '2') AS Decision_Flag,\n\tEXP_Src_Data_Collect.CurrentSnapshotFlag,\n\t999 AS AuditID,\n\tEXP_Src_Data_Collect.EffectiveDate,\n\tEXP_Src_Data_Collect.ExpirationDate,\n\tEXP_Src_Data_Collect.SourceSystemID,\n\tCURRENT_TIMESTAMP AS CreatedDate,\n\tEXP_Src_Data_Collect.PolicyKey,\n\tEXP_Src_Data_Collect.AgencyAKID,\n\tEXP_Src_Data_Collect.ContractCustomerAKID,\n\tEXP_Src_Data_Collect.PolicyAKID,\n\tEXP_Src_Data_Collect.RiskLocationAKID,\n\tEXP_Src_Data_Collect.PolicyCoverageAKID,\n\tEXP_Src_Data_Collect.StatisticalCoverageAKID,\n\tEXP_Src_Data_Collect.ReinsuranceCoverageAKID,\n\tEXP_Src_Data_Collect.PremiumTransactionAKID,\n\tEXP_Src_Data_Collect.BureauStatisticalCodeAKID,\n\tEXP_Src_Data_Collect.PolicyEffectiveDate,\n\tEXP_Src_Data_Collect.PolicyExpirationDate,\n\tEXP_Src_Data_Collect.StatisticalCoverageEffectiveDate,\n\tEXP_Src_Data_Collect.StatisticalCoverageExpirationDate,\n\tEXP_Src_Data_Collect.StatisticalCoverageCancellationDate,\n\tEXP_Src_Data_Collect.PremiumTransactionEnteredDate,\n\tEXP_Src_Data_Collect.PremiumTransactionEffectiveDate,\n\tEXP_Src_Data_Collect.PremiumTransactionExpirationDate,\n\tEXP_Src_Data_Collect.PremiumTransactionBookedDate,\n\tEXP_Src_Data_Collect.PremiumTransactionCode,\n\tEXP_Src_Data_Collect.PremiumTransactionAmount,\n\t0.0 AS O_PremiumTransactionAmount,\n\tEXP_Src_Data_Collect.FullTermPremium,\n\t0.0 AS O_FullTermPremium,\n\tEXP_Src_Data_Collect.PremiumType,\n\tEXP_Src_Data_Collect.ReasonAmendedCode,\n\tEXP_Src_Data_Collect.EarnedPremium,\n\t-- *INF*: IIF(Decision_Flag='1',EarnedPremium,EarnedPremium+UnearnedPremium)\n\tIFF(Decision_Flag = '1', EarnedPremium, EarnedPremium + UnearnedPremium) AS v_EarnedPremium,\n\tv_EarnedPremium AS O_EarnedPremium,\n\tEXP_Src_Data_Collect.ChangeInEarnedPremium,\n\t-- *INF*: IIF(Decision_Flag='1',0.0,v_EarnedPremium-EarnedPremium)\n\tIFF(Decision_Flag = '1', 0.0, v_EarnedPremium - EarnedPremium) AS v_ChangeInEarnedPremium,\n\tv_ChangeInEarnedPremium AS O_ChangeInEarnedPremium,\n\tEXP_Src_Data_Collect.UnearnedPremium,\n\t-- *INF*: IIF(Decision_Flag='1',UnearnedPremium,0.0)\n\tIFF(Decision_Flag = '1', UnearnedPremium, 0.0) AS v_UnearnedPremium,\n\tv_UnearnedPremium AS O_UnearnedPremium,\n\tEXP_Src_Data_Collect.ChangeInUnearnedPremium,\n\t-- *INF*: IIF(Decision_Flag='1',0.0,v_UnearnedPremium-UnearnedPremium)\n\tIFF(Decision_Flag = '1', 0.0, v_UnearnedPremium - UnearnedPremium) AS v_ChangeInUnearnedPremium,\n\tv_ChangeInUnearnedPremium AS O_ChangeInUnearnedPremium,\n\tEXP_Src_Data_Collect.ProductCode,\n\tEXP_Src_Data_Collect.AnnualStatementLineCode,\n\tEXP_Src_Data_Collect.SubAnnualStatementLineCode,\n\tEXP_Src_Data_Collect.NonSubAnnualStatementLineCode,\n\tEXP_Src_Data_Collect.AnnualStatementLineProductCode,\n\tEXP_Src_Data_Collect.LineOfBusinessCode,\n\tEXP_Src_Data_Collect.PolicyOfferingCode,\n\tEXP_Src_Data_Collect.TO_Be_Rundate,\n\tEXP_Src_Data_Collect.RatingCoverageAKId,\n\tEXP_Src_Data_Collect.RatingCoverageEffectiveDate,\n\tEXP_Src_Data_Collect.RatingCoverageExpirationDate,\n\t-- *INF*: --DATE_DIFF(StatisticalCoverageCancellationDate,PremiumTransactionEffectiveDate,'D')\n\t'' AS v_DaysTillCancellation,\n\t-- *INF*: --DATE_DIFF(PremiumTransactionExpirationDate,PremiumTransactionEffectiveDate,'D')\n\t'' AS v_TotalDays,\n\tLKP_GetExposure.Exposure AS LKP_Exposure,\n\t-- *INF*: IIF(ISNULL(LKP_Exposure),0.0,LKP_Exposure)\n\tIFF(LKP_Exposure IS NULL, 0.0, LKP_Exposure) AS v_Exposure,\n\tEXP_Src_Data_Collect.EarnedExposure,\n\t-- *INF*: IIF(Decision_Flag='1',EarnedExposure,v_Exposure)\n\tIFF(Decision_Flag = '1', EarnedExposure, v_Exposure) AS v_EarnedExposure,\n\tv_EarnedExposure AS O_EarnedExposure,\n\tEXP_Src_Data_Collect.ChangeInEarnedExposure,\n\t-- *INF*: IIF(Decision_Flag='1',0.0,v_Exposure-EarnedExposure)\n\tIFF(Decision_Flag = '1', 0.0, v_Exposure - EarnedExposure) AS v_ChangeInEarnedExposure,\n\tv_ChangeInEarnedExposure AS O_ChangeInEarnedExposure,\n\tEXP_Src_Data_Collect.Exposure\n\tFROM EXP_Src_Data_Collect\n\tLEFT JOIN LKP_GetExposure\n\tON LKP_GetExposure.Premiumtransactionakid = EXP_Src_Data_Collect.PremiumTransactionAKID\n\tLEFT JOIN LKP_GetFirstAudits\n\tON LKP_GetFirstAudits.PolicyAKID = EXP_Src_Data_Collect.PolicyAKID AND LKP_GetFirstAudits.PremiumType = EXP_Src_Data_Collect.PremiumType\n),\nEarnedPremiumDailyCalculation1 AS (\n\tINSERT INTO EarnedPremiumDailyCalculation\n\t(CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, SourceSystemID, CreatedDate, ModifiedDate, PolicyKey, AgencyAKID, ContractCustomerAKID, PolicyAKID, RiskLocationAKID, PolicyCoverageAKID, StatisticalCoverageAKID, ReinsuranceCoverageAKID, PremiumTransactionAKID, BureauStatisticalCodeAKID, PolicyEffectiveDate, PolicyExpirationDate, StatisticalCoverageEffectiveDate, StatisticalCoverageExpirationDate, StatisticalCoverageCancellationDate, PremiumTransactionEnteredDate, PremiumTransactionEffectiveDate, PremiumTransactionExpirationDate, PremiumTransactionBookedDate, PremiumTransactionCode, PremiumTransactionAmount, FullTermPremium, PremiumType, ReasonAmendedCode, EarnedPremium, ChangeInEarnedPremium, UnearnedPremium, ChangeInUnearnedPremium, ProductCode, AnnualStatementLineCode, SubAnnualStatementLineCode, NonSubAnnualStatementLineCode, AnnualStatementLineProductCode, LineOfBusinessCode, PolicyOfferingCode, RunDate, RatingCoverageAKId, RatingCoverageEffectiveDate, RatingCoverageExpirationDate, EarnedExposure, ChangeInEarnedExposure, Exposure)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tCreatedDate AS MODIFIEDDATE, \n\tPOLICYKEY, \n\tAGENCYAKID, \n\tCONTRACTCUSTOMERAKID, \n\tPOLICYAKID, \n\tRISKLOCATIONAKID, \n\tPOLICYCOVERAGEAKID, \n\tSTATISTICALCOVERAGEAKID, \n\tREINSURANCECOVERAGEAKID, \n\tPREMIUMTRANSACTIONAKID, \n\tBUREAUSTATISTICALCODEAKID, \n\tPOLICYEFFECTIVEDATE, \n\tPOLICYEXPIRATIONDATE, \n\tSTATISTICALCOVERAGEEFFECTIVEDATE, \n\tSTATISTICALCOVERAGEEXPIRATIONDATE, \n\tSTATISTICALCOVERAGECANCELLATIONDATE, \n\tPREMIUMTRANSACTIONENTEREDDATE, \n\tPREMIUMTRANSACTIONEFFECTIVEDATE, \n\tPREMIUMTRANSACTIONEXPIRATIONDATE, \n\tPREMIUMTRANSACTIONBOOKEDDATE, \n\tPREMIUMTRANSACTIONCODE, \n\tPREMIUMTRANSACTIONAMOUNT, \n\tFULLTERMPREMIUM, \n\tPREMIUMTYPE, \n\tREASONAMENDEDCODE, \n\tO_EarnedPremium AS EARNEDPREMIUM, \n\tO_ChangeInEarnedPremium AS CHANGEINEARNEDPREMIUM, \n\tO_UnearnedPremium AS UNEARNEDPREMIUM, \n\tO_ChangeInUnearnedPremium AS CHANGEINUNEARNEDPREMIUM, \n\tPRODUCTCODE, \n\tANNUALSTATEMENTLINECODE, \n\tSUBANNUALSTATEMENTLINECODE, \n\tNONSUBANNUALSTATEMENTLINECODE, \n\tANNUALSTATEMENTLINEPRODUCTCODE, \n\tLINEOFBUSINESSCODE, \n\tPOLICYOFFERINGCODE, \n\tTO_Be_Rundate AS RUNDATE, \n\tRATINGCOVERAGEAKID, \n\tRATINGCOVERAGEEFFECTIVEDATE, \n\tRATINGCOVERAGEEXPIRATIONDATE, \n\tO_EarnedExposure AS EARNEDEXPOSURE, \n\tO_ChangeInEarnedExposure AS CHANGEINEARNEDEXPOSURE, \n\tEXPOSURE\n\tFROM EXP_SetEarnedPremiumValues\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905525"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604442"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:01:34"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 02:35:39"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "PMS"
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "RPT_EDM"
+            },
+            "TARGET_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "RPT_EDM"
+            },
+            "SOURCE_TABLE_OWNER2": {
+                "type": "string",
+                "defaultValue": "V2"
+            },
+            "NO_OF_DAYS": {
+                "type": "string",
+                "defaultValue": "1"
+            },
+            "REASON_AMENDED_CODE1": {
+                "type": "string",
+                "defaultValue": "AND PTb.ReasonAmendedCode not in ('CWO','COL')"
+            },
+            "REASON_AMENDED_CODE2": {
+                "type": "string",
+                "defaultValue": "AND PT.ReasonAmendedCode not in ('CWO','COL')"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": ""
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,73 @@
+{
+    "name": "m_POL_DW_Load_WorkZeroedOutRatableClassCode",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_Load_WorkZeroedOutRatableClassCode",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkClassCodePremiumAggregation AS (\n\twith c as \r\n\t(SELECT [LineOfBusinessAbbreviation],\r\n\t       Ext_RatingStateCode AS [RatingStateCode],\r\n\t       [ClassCode] class_code,\r\n\t       [RatableClassIndicator] ratable_class_ind,\r\n\t       [SubjectToExperienceModificationClassIndicator] subject_to_exprnc_modfctn_class_ind,\r\n\t       [ExperienceModificationClassIndicator] exprnc_modfctn_class_ind,\r\n\t       [ScheduledModificationClassIndicator] sched_modfctn_class_ind,\r\n\t       [SurchargeClassIndicator] surchg_class_ind,\r\n\t       [OtherModificationClassIndicator] other_modfctn_class_ind\r\n\tFROM (SELECT [LineOfBusinessAbbreviation],\r\n\t             supState.state_abbrev Ext_RatingStateCode,\r\n\t             [RatingStateCode],\r\n\t             MIN([RatingStateCode]) OVER (PARTITION BY ClassCode, state_abbrev) MinRatingStateCode,\r\n\t             [ClassCode],\r\n\t             [RatableClassIndicator],\r\n\t             [SubjectToExperienceModificationClassIndicator],\r\n\t             [ExperienceModificationClassIndicator],\r\n\t             [ScheduledModificationClassIndicator],\r\n\t             [SurchargeClassIndicator],\r\n\t             [OtherModificationClassIndicator]\r\n\tFROM SupClassificationWorkersCompensation\r\n\tINNER JOIN (SELECT Allstate.state_abbrev AllAtateAbbrev,\r\n\t                   otherstate.state_abbrev\r\n\tFROM sup_state Allstate,\r\n\t     sup_state otherstate  --FULL OUTER JOIN\r\n\tWHERE Allstate.state_abbrev = '99'\r\n\tAND otherstate.state_abbrev != '99'\r\n\tUNION\r\n\tSELECT otherstate.state_abbrev allAtateAbbrev,\r\n\t       otherstate.state_abbrev\r\n\tFROM sup_state otherstate\r\n\tWHERE otherstate.state_abbrev != '99') AS supState\r\n\t  ON SupClassificationWorkersCompensation.RatingStateCode = supState.AllAtateAbbrev\r\n\tWHERE CurrentSnapshotFlag = 1) Extent_SupClassificationWorkersCompensation\r\n\tWHERE MinRatingStateCode = [RatingStateCode])\r\n\t----------------------------------------------------------------------\r\n\tselect a.SourceSystemId,\r\n\ta.PolicyAKId,\r\n\ta.RatingState,\r\n\ta.ClassCode,\r\n\ta.RunDate,\r\n\tSUM(a.TransactionCount) over (partition by\r\n\ta.PolicyAKId,a.RatingState,a.RunDate) as TransactionCount from\r\n\t(select a.*,MAX(ABS(DirectWrittenPremium)) over (partition by\r\n\ta.PolicyAKId,a.RatingState,a.RunDate) MaxPremium from\r\n\t(select a.SourceSystemId,\r\n\ta.PolicyAKId,\r\n\ta.RatingState,\r\n\ta.ClassCode,\r\n\tb.RunDate,\r\n\tsum(a.DirectWrittenPremium) DirectWrittenPremium,\r\n\tsum(a.RateableTransactionCount) TransactionCount\r\n\tfrom WorkClassCodePremiumAggregation a\r\n\tjoin --master_classification_sup \r\n\tc\r\n\ton a.ClassCode=c.class_code and c.RatingStateCode=a.RatingState --add ratingstate as join condition \r\n\tand c.ratable_class_ind='Y'\r\n\tjoin WorkRatingStatePremiumAggregation b\r\n\ton a.RunDate<=b.RunDate\r\n\tand a.PolicyAKId=b.PolicyAKId\r\n\tand a.RatingState=b.RatingState\r\n\tgroup by a.PolicyAKId,a.RatingState,a.ClassCode,b.RunDate,a.SourceSystemId) a\r\n\t) a where a.MaxPremium<>0\r\n\tand a.DirectWrittenPremium=0\n),\nEXPTRANS AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tSourceSystemID,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate,\n\tPolicyAKId,\n\tRatingState,\n\tClassCode,\n\tRunDate,\n\tTransactionCount\n\tFROM SQ_WorkClassCodePremiumAggregation\n),\nWorkZeroedOutRatableClassCode AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkZeroedOutRatableClassCode;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkZeroedOutRatableClassCode\n\t(AuditId, SourceSystemID, CreatedDate, ModifiedDate, RunDate, PolicyAKId, RatingState, ClassCode, TransactionCount)\n\tSELECT \n\tAUDITID, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tRUNDATE, \n\tPOLICYAKID, \n\tRATINGSTATE, \n\tCLASSCODE, \n\tTRANSACTIONCOUNT\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "244834"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "893408"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7543478"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "07/01/2023 09:08:21"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/01/2023 23:13:55"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_CLAIM"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_CLAIM"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

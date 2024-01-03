@@ -1,0 +1,81 @@
+{
+    "name": "m_POL_DW_LOAD_WorkPolicyNotSuportedByOffsetAccuracy_MissingTRE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_WorkPolicyNotSuportedByOffsetAccuracy__00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_policy AS (\n\tSELECT distinct p.pol_key \r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction PT\r\n\t inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.RatingCoverage RC on\r\n\t PT.RatingCoverageAKID = RC.RatingCoverageAKID and PT.EffectiveDate = RC.EffectiveDate \r\n\t inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyCoverage PC on\r\n\t PC.PolicyCoverageAKID = RC.PolicyCoverageAKID and PC.CurrentSnapshotFlag = 1\r\n\t inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.RiskLocation RL on\r\n\t RL.RiskLocationAKID = PC.RiskLocationAKID and RL.CurrentSnapshotFlag = 1\r\n\t inner join v2.policy p on\r\n\t p.pol_ak_id = RL.PolicyAKID and p.crrnt_snpsht_flag = 1 \r\n\tleft join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkDCTPremiumTransactionTracking trk\r\n\ton PT.PremiumTransactionID = trk.PremiumTransactionID \r\n\twhere \r\n\tpt.SourceSystemID='DCT' \r\n\tAND pt.ReasonAmendedCode NOT IN ('CWO', 'Claw Back') and (trk.DCTTransactionSequence is NULL or trk.DCTTransactionIndex is NULL)\n),\nEXP_Pass_Value AS (\n\tSELECT\n\tpol_key AS PolicyKey\n\tFROM SQ_policy\n),\nmplt_Exclusivereason_WorkPolicyNotSuportedByOffsetAccuracy AS (WITH\n\tInput AS (\n\t\t\n\t),\n\tLkp_WorkPolicyNotSuportedByOffsetAccuracy AS (\n\t\tSELECT\n\t\tWorkPolicyNotSuportedByOffsetAccuracyId,\n\t\tPolicyKey,\n\t\tExclusionReason,\n\t\ti_Policykey\n\t\tFROM (\n\t\t\tSELECT \n\t\t\t\tWorkPolicyNotSuportedByOffsetAccuracyId,\n\t\t\t\tPolicyKey,\n\t\t\t\tExclusionReason,\n\t\t\t\ti_Policykey\n\t\t\tFROM WorkPolicyNotSuportedByOffsetAccuracy\n\t\t)\n\t\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyKey ORDER BY WorkPolicyNotSuportedByOffsetAccuracyId) = 1\n\t),\n\tEXP_ExclusionReason AS (\n\t\tSELECT\n\t\tWorkPolicyNotSuportedByOffsetAccuracyId,\n\t\tExclusionReason AS lkp_ExclusionReason,\n\t\t-- *INF*: DECODE(TRUE,\r\n\t\t-- lkp_ExclusionReason = 'Data Repair', lkp_ExclusionReason,\r\n\t\t-- ISNULL(lkp_ExclusionReason) OR lkp_ExclusionReason = '','Data Repair',\r\n\t\t-- NOT ISNULL(lkp_ExclusionReason) AND INSTR(lkp_ExclusionReason,'Data Repair') = 0,\r\n\t\t-- CONCAT(lkp_ExclusionReason,', Data Repair'),\r\n\t\t-- lkp_ExclusionReason)\n\t\tDECODE(TRUE,\n\t\tlkp_ExclusionReason = 'Data Repair', lkp_ExclusionReason,\n\t\tlkp_ExclusionReason IS NULL OR lkp_ExclusionReason = '', 'Data Repair',\n\t\tNOT lkp_ExclusionReason IS NULL AND INSTR(lkp_ExclusionReason, 'Data Repair') = 0, CONCAT(lkp_ExclusionReason, ', Data Repair'),\n\t\tlkp_ExclusionReason) AS v_DataRepair,\n\t\t-- *INF*: DECODE(TRUE,\r\n\t\t-- lkp_ExclusionReason = 'Missing/blank WorkDCTPremiumTransactionTracking', lkp_ExclusionReason,\r\n\t\t-- ISNULL(lkp_ExclusionReason) OR lkp_ExclusionReason = '','Missing/blank WorkDCTPremiumTransactionTracking',\r\n\t\t-- NOT ISNULL(lkp_ExclusionReason) AND INSTR(lkp_ExclusionReason,'Missing/blank WorkDCTPremiumTransactionTracking') = 0,\r\n\t\t-- CONCAT(lkp_ExclusionReason,', Missing/blank WorkDCTPremiumTransactionTracking'),\r\n\t\t-- lkp_ExclusionReason)\n\t\tDECODE(TRUE,\n\t\tlkp_ExclusionReason = 'Missing/blank WorkDCTPremiumTransactionTracking', lkp_ExclusionReason,\n\t\tlkp_ExclusionReason IS NULL OR lkp_ExclusionReason = '', 'Missing/blank WorkDCTPremiumTransactionTracking',\n\t\tNOT lkp_ExclusionReason IS NULL AND INSTR(lkp_ExclusionReason, 'Missing/blank WorkDCTPremiumTransactionTracking') = 0, CONCAT(lkp_ExclusionReason, ', Missing/blank WorkDCTPremiumTransactionTracking'),\n\t\tlkp_ExclusionReason) AS v_MissingTre,\n\t\t-- *INF*: DECODE(TRUE,\r\n\t\t-- lkp_ExclusionReason = 'CoverageId changed on PT', lkp_ExclusionReason,\r\n\t\t-- ISNULL(lkp_ExclusionReason) OR lkp_ExclusionReason = '','CoverageId changed on PT',\r\n\t\t-- NOT ISNULL(lkp_ExclusionReason) AND INSTR(lkp_ExclusionReason,'CoverageId changed on PT') = 0,\r\n\t\t-- CONCAT(lkp_ExclusionReason,', CoverageId changed on PT'),\r\n\t\t-- lkp_ExclusionReason)\n\t\tDECODE(TRUE,\n\t\tlkp_ExclusionReason = 'CoverageId changed on PT', lkp_ExclusionReason,\n\t\tlkp_ExclusionReason IS NULL OR lkp_ExclusionReason = '', 'CoverageId changed on PT',\n\t\tNOT lkp_ExclusionReason IS NULL AND INSTR(lkp_ExclusionReason, 'CoverageId changed on PT') = 0, CONCAT(lkp_ExclusionReason, ', CoverageId changed on PT'),\n\t\tlkp_ExclusionReason) AS v_coidchange,\n\t\tv_DataRepair AS o_DataRepair,\n\t\tv_MissingTre AS o_MissingTre,\n\t\tv_coidchange AS o_covidchange\n\t\tFROM Lkp_WorkPolicyNotSuportedByOffsetAccuracy\n\t),\n\tOutput AS (\n\t\tSELECT\n\t\tWorkPolicyNotSuportedByOffsetAccuracyId, \n\t\to_DataRepair AS ExclusionReason_DataRepair, \n\t\to_MissingTre AS ExclusionReason_MissingTre, \n\t\to_covidchange AS ExclusionReason_covidchange\n\t\tFROM EXP_ExclusionReason\n\t),\n),\nEXP_Get_Values AS (\n\tSELECT\n\tEXP_Pass_Value.PolicyKey AS i_PolicyKey,\n\tmplt_Exclusivereason_WorkPolicyNotSuportedByOffsetAccuracy.WorkPolicyNotSuportedByOffsetAccuracyId AS i_WorkPolicyNotSuportedByOffsetAccuracyId,\n\tmplt_Exclusivereason_WorkPolicyNotSuportedByOffsetAccuracy.ExclusionReason_MissingTre AS i_ExclusionReason,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- i_ExclusionReason = 'Missing/blank WorkDCTPremiumTransactionTracking', i_ExclusionReason,\r\n\t-- ISNULL(i_ExclusionReason) OR i_ExclusionReason = '','Missing/blank WorkDCTPremiumTransactionTracking',\r\n\t-- NOT ISNULL(i_ExclusionReason) AND INSTR(i_ExclusionReason,'Missing/blank WorkDCTPremiumTransactionTracking') = 0,\r\n\t-- CONCAT(i_ExclusionReason,', Missing/blank WorkDCTPremiumTransactionTracking'),\r\n\t-- i_ExclusionReason)\n\tDECODE(TRUE,\n\ti_ExclusionReason = 'Missing/blank WorkDCTPremiumTransactionTracking', i_ExclusionReason,\n\ti_ExclusionReason IS NULL OR i_ExclusionReason = '', 'Missing/blank WorkDCTPremiumTransactionTracking',\n\tNOT i_ExclusionReason IS NULL AND INSTR(i_ExclusionReason, 'Missing/blank WorkDCTPremiumTransactionTracking') = 0, CONCAT(i_ExclusionReason, ', Missing/blank WorkDCTPremiumTransactionTracking'),\n\ti_ExclusionReason) AS v_ExclusionReason,\n\t-- *INF*: IIF(ISNULL(i_WorkPolicyNotSuportedByOffsetAccuracyId),'INSERT','UPDATE')\n\tIFF(i_WorkPolicyNotSuportedByOffsetAccuracyId IS NULL, 'INSERT', 'UPDATE') AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag,\n\ti_WorkPolicyNotSuportedByOffsetAccuracyId AS o_WorkPolicyNotSuportedByOffsetAccuracyId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\t'DCT' AS o_SourceSystemID,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\ti_PolicyKey AS o_PolicyKey,\n\ti_ExclusionReason AS o_ExclusionReason\n\tFROM EXP_Pass_Value\n\t -- Manually join with mplt_Exclusivereason_WorkPolicyNotSuportedByOffsetAccuracy\n),\nRTR_Insert_Update AS (\n\tSELECT\n\to_ChangeFlag AS ChangeFlag,\n\to_WorkPolicyNotSuportedByOffsetAccuracyId AS WorkPolicyNotSuportedByOffsetAccuracyId,\n\to_AuditID AS AuditID,\n\to_SourceSystemID AS SourceSystemID,\n\to_CreatedDate AS CreatedDate,\n\to_ModifiedDate AS ModifiedDate,\n\to_PolicyKey AS PolicyKey,\n\to_ExclusionReason AS ExclusionReason\n\tFROM EXP_Get_Values\n),\nRTR_Insert_Update_INSERT AS (SELECT * FROM RTR_Insert_Update WHERE ChangeFlag = 'INSERT'),\nRTR_Insert_Update_UPDATE AS (SELECT * FROM RTR_Insert_Update WHERE ChangeFlag = 'UPDATE'),\nWorkPolicyNotSuportedByOffsetAccuracy_Insert AS (\n\tINSERT INTO WorkPolicyNotSuportedByOffsetAccuracy\n\t(AuditID, SourceSystemID, CreatedDate, ModifiedDate, PolicyKey, ExclusionReason)\n\tSELECT \n\tAUDITID, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tPOLICYKEY, \n\tEXCLUSIONREASON\n\tFROM RTR_Insert_Update_INSERT\n),\nUPD_WorkPolicyNotSuportedByOffsetAccuracy AS (\n\tSELECT\n\tWorkPolicyNotSuportedByOffsetAccuracyId AS WorkPolicyNotSuportedByOffsetAccuracyId3, \n\tModifiedDate AS ModifiedDate3, \n\tExclusionReason AS ExclusionReason3\n\tFROM RTR_Insert_Update_UPDATE\n),\nWorkPolicyNotSuportedByOffsetAccuracy_Update AS (\n\tMERGE INTO WorkPolicyNotSuportedByOffsetAccuracy AS T\n\tUSING UPD_WorkPolicyNotSuportedByOffsetAccuracy AS S\n\tON T.WorkPolicyNotSuportedByOffsetAccuracyId = S.WorkPolicyNotSuportedByOffsetAccuracyId3\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ModifiedDate = S.ModifiedDate3, T.ExclusionReason = S.ExclusionReason3\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905491"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603241"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:44:58"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 23:03:38"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "v2"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

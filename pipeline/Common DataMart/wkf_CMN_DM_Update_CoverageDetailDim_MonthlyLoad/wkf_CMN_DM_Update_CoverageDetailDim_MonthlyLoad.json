@@ -1,0 +1,133 @@
+{
+    "name": "wkf_CMN_DM_Update_CoverageDetailDim_MonthlyLoad",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "s_m_CMN_DM_Update_CoverageDetailCommercialAutoDim_Mo_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CMN_DM_Update_CoverageDetailDim_MonthlyLoad",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_DM_Update_CoverageDetailCommercialAutoDim_MonthlyLoad"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_CMN_DM_Update_CoverageDetailCommercialAutoDim_MonthlyLoad"
+            },
+            {
+                "name": "s_m_CMN_DM_Update_CoverageDetailGeneralLiabilityDim__00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CMN_DM_Update_CoverageDetailCommercialAutoDim_Mo_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_DM_Update_CoverageDetailGeneralLiabilityDim_MonthlyLoad"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_CMN_DM_Update_CoverageDetailGeneralLiabilityDim_MonthlyLoad"
+            },
+            {
+                "name": "s_m_CMN_DM_Update_CoverageDetailDim_MonthlyLoad",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_DM_Update_CoverageDetailDim_Monthly"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CMN_DM_Update_CoverageDetailCommercialPropertyDi_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CMN_DM_Update_CoverageDetailGeneralLiabilityDim__00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_DM_Update_CoverageDetailCommercialPropertyDim_MonthlyLoad"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_CMN_DM_Update_CoverageDetailCommercialPropertyDim_MonthlyLoad"
+            },
+            {
+                "name": "s_m_CMN_DM_Update_CoverageDetailCrimeDim_MonthlyLoad",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CMN_DM_Update_CoverageDetailCommercialPropertyDi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CMN_DM_Update_CoverageDetailCrimeDim_MonthlyLoad"
+                    },
+                    "parameters": {}
+                }
+            }
+        ],
+        "folder": {
+            "name": ""
+        },
+        "variables": {}
+    }
+}

@@ -1,0 +1,81 @@
+{
+    "name": "m_POL_DW_LOAD_RatingLocationLimit_DCT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_RatingLocationLimit_DCT",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_RatingLocationLimit AS (\n\tselect * from\r\n\t(select distinct p.PolicyNumber+right('00'+convert(varchar(10),ISNULL(p.PolicyVersion,0)),2) as PolicyKey\r\n\t,w.LineType as Insuranceline\r\n\t,lo.LocationXmlId as RatingLocationKey\r\n\t,p.TransactionCreatedDate as TransactionEnteredDate\r\n\t,DLT.Type as RatingLocationLimitType\r\n\t,DLT.Value as RatingLocationLimitValue\r\n\tfrom DCLimitStaging DLT\r\n\tjoin DCLocationAssociationStaging la\r\n\ton la.ObjectId=DLT.ObjectId\r\n\tand la.ObjectName='DC_BP_Location'\r\n\tjoin DCLocationStaging lo\r\n\ton lo.LocationId=la.LocationId\r\n\tjoin WorkDCTTransactionInsuranceLineLocationBridge l\r\n\ton l.LocationAssociationId=la.LocationAssociationId\r\n\tjoin WorkDCTInsuranceLine w\r\n\ton w.LineId=l.LineId\r\n\tand w.LineType='BusinessOwners'\r\n\tjoin WorkDCTPolicy p\r\n\ton p.SessionId=DLT.SessionId\r\n\tand p.TransactionPurpose<>'Offset'\r\n\tand p.TransactionState='committed'\r\n\tand p.PolicyStatus<>'Quote'\r\n\twhere DLT.Type='EquipmentBreakdown'\r\n\tand DLT.ObjectName='DC_BP_Location'\r\n\tunion all\r\n\tselect distinct p.PolicyNumber+right('00'+convert(varchar(10),ISNULL(p.PolicyVersion,0)),2) as PolicyKey\r\n\t,w.LineType as Insuranceline\r\n\t,lo.LocationXmlId as RatingLocationKey\r\n\t,p.TransactionCreatedDate\r\n\t,DLT.Type as RatingLocationLimitType\r\n\t,DLT.Value as RatingLocationLimitValue\r\n\tfrom DCLimitStaging DLT\r\n\tjoin DCLocationAssociationStaging la\r\n\ton la.ObjectId=DLT.ObjectId\r\n\tand la.ObjectName='DC_CF_Location'\r\n\tjoin DCLocationStaging lo\r\n\ton lo.LocationId=la.LocationId\r\n\tjoin WorkDCTTransactionInsuranceLineLocationBridge l\r\n\ton l.LocationAssociationId=la.LocationAssociationId\r\n\tjoin WorkDCTInsuranceLine w\r\n\ton w.LineId=l.LineId\r\n\tand w.LineType in ('Property','SBOPProperty')\r\n\tjoin WorkDCTPolicy p\r\n\ton p.SessionId=DLT.SessionId\r\n\tand p.TransactionPurpose<>'Deprecated'\r\n\tand p.TransactionState='committed'\r\n\tand p.PolicyStatus<>'Quote'\r\n\twhere DLT.Type='EquipmentBreakdown'\r\n\tand DLT.ObjectName='DC_CF_Location') a\r\n\torder by PolicyKey,InsuranceLine,RatingLocationKey,RatingLocationLimitType,TransactionEnteredDate\n),\nAGG_RemoveDuplicateShreds AS (\n\tSELECT\n\tPolicyKey, \n\tInsuranceLine, \n\tRatingLocationKey, \n\tRatingLocationLimitType, \n\tTransactionEnteredDate, \n\tRatingLocationLimitValue\n\tFROM SQ_RatingLocationLimit\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyKey, InsuranceLine, RatingLocationKey, RatingLocationLimitType, TransactionEnteredDate ORDER BY NULL) = 1\n),\nEXP_Default AS (\n\tSELECT\n\tPolicyKey,\n\tInsuranceLine,\n\tRatingLocationKey,\n\tRatingLocationLimitType,\n\tTransactionEnteredDate,\n\tRatingLocationLimitValue,\n\t-- *INF*: IIF(PolicyKey=v_prev_PolicyKey AND InsuranceLine=v_prev_InsuranceLine AND RatingLocationKey=v_prev_RatingLocationKey AND RatingLocationLimitType=v_prev_RatingLocationLimitType,1,0)\n\tIFF(PolicyKey = v_prev_PolicyKey AND InsuranceLine = v_prev_InsuranceLine AND RatingLocationKey = v_prev_RatingLocationKey AND RatingLocationLimitType = v_prev_RatingLocationLimitType, 1, 0) AS v_SameGroupFlag,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- v_SameGroupFlag=0,1,\r\n\t-- RatingLocationLimitValue!=v_prev_RatingLocationLimitValue,1,\r\n\t-- 0)\n\tDECODE(TRUE,\n\tv_SameGroupFlag = 0, 1,\n\tRatingLocationLimitValue != v_prev_RatingLocationLimitValue, 1,\n\t0) AS v_Filter,\n\tPolicyKey AS v_prev_PolicyKey,\n\tInsuranceLine AS v_prev_InsuranceLine,\n\tRatingLocationKey AS v_prev_RatingLocationKey,\n\tRatingLocationLimitType AS v_prev_RatingLocationLimitType,\n\tRatingLocationLimitValue AS v_prev_RatingLocationLimitValue,\n\tv_Filter AS o_Filter\n\tFROM AGG_RemoveDuplicateShreds\n),\nFIL_NoChange AS (\n\tSELECT\n\tPolicyKey, \n\tInsuranceLine, \n\tRatingLocationKey, \n\tRatingLocationLimitType, \n\tTransactionEnteredDate, \n\tRatingLocationLimitValue, \n\to_Filter AS Filter\n\tFROM EXP_Default\n\tWHERE Filter=1\n),\nLKP_policy AS (\n\tSELECT\n\tpol_ak_id,\n\tPolicyKey,\n\tpol_key\n\tFROM (\n\t\tSELECT p.pol_ak_id as pol_ak_id, p.pol_key as pol_key\r\n\t\tFROM V2.policy p\r\n\t\tinner hash join (\r\n\t\tselect distinct PolicyNumber from @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkDCTPolicy) w\r\n\t\ton p.pol_num=w.PolicyNumber\r\n\t\twhere p.crrnt_snpsht_flag=1 AND p.source_sys_id='DCT'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY pol_key ORDER BY pol_ak_id) = 1\n),\nLKP_RatingLocationLimit AS (\n\tSELECT\n\tRatingLocationLimitAKId,\n\tRatingLocationLimitValue,\n\tPolicyAKId,\n\tInsuranceLine,\n\tRatingLocationKey,\n\tRatingLocationLimitType,\n\tEffectiveDate,\n\tExpirationDate\n\tFROM (\n\t\tSELECT a.RatingLocationLimitAKId as RatingLocationLimitAKId,\r\n\t\ta.RatingLocationLimitValue as RatingLocationLimitValue,\r\n\t\ta.PolicyAKId as PolicyAKId,\r\n\t\ta.InsuranceLine as InsuranceLine,\r\n\t\ta.RatingLocationKey as RatingLocationKey,\r\n\t\ta.RatingLocationLimitType as RatingLocationLimitType,\r\n\t\ta.EffectiveDate as EffectiveDate,\r\n\t\ta.ExpirationDate as ExpirationDate\r\n\t\tFROM RatingLocationLimit a\r\n\t\tjoin (\r\n\t\tselect distinct LocationXMLId from @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.DCLocationStaging) b\r\n\t\ton a.RatingLocationKey=b.LocationXMLId\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyAKId,InsuranceLine,RatingLocationKey,RatingLocationLimitType,EffectiveDate,ExpirationDate ORDER BY RatingLocationLimitAKId) = 1\n),\nSEQ_LocationLimit AS (\n\tCREATE SEQUENCE SEQ_LocationLimit\n\tSTART = 1\n\tINCREMENT = 1;\n),\nEXP_Change AS (\n\tSELECT\n\tSEQ_LocationLimit.NEXTVAL,\n\tLKP_RatingLocationLimit.RatingLocationLimitAKId AS lkp_RatingLocationLimitAKId,\n\tLKP_RatingLocationLimit.RatingLocationLimitValue AS lkp_RatingLocationLimitValue,\n\t1 AS CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,\n\tTransactionEnteredDate AS EffectiveDate,\n\t-- *INF*: TO_DATE('21001231235959','YYYYMMDDHH24MISS')\n\tTO_DATE('21001231235959', 'YYYYMMDDHH24MISS') AS ExpirationDate,\n\t'DCT' AS SourceSystemID,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate,\n\tLKP_policy.pol_ak_id AS PolicyAKId,\n\tFIL_NoChange.InsuranceLine,\n\tFIL_NoChange.RatingLocationKey,\n\tFIL_NoChange.RatingLocationLimitType,\n\tFIL_NoChange.TransactionEnteredDate,\n\tFIL_NoChange.RatingLocationLimitValue,\n\t-- *INF*: IIF(PolicyAKId=v_prev_PolicyAKId AND v_prev_InsuranceLine=InsuranceLine AND RatingLocationKey=v_prev_RatingLocationKey AND RatingLocationLimitType=v_prev_RatingLocationLimitType,1,0)\n\tIFF(PolicyAKId = v_prev_PolicyAKId AND v_prev_InsuranceLine = InsuranceLine AND RatingLocationKey = v_prev_RatingLocationKey AND RatingLocationLimitType = v_prev_RatingLocationLimitType, 1, 0) AS v_SameGroupFlag,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(PolicyAKId),0,\r\n\t-- ISNULL(lkp_RatingLocationLimitAKId),1,\r\n\t-- RatingLocationLimitValue!=lkp_RatingLocationLimitValue,1,\r\n\t-- 0)\n\tDECODE(TRUE,\n\tPolicyAKId IS NULL, 0,\n\tlkp_RatingLocationLimitAKId IS NULL, 1,\n\tRatingLocationLimitValue != lkp_RatingLocationLimitValue, 1,\n\t0) AS v_Filter,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- v_SameGroupFlag=1,v_RatingLocationLimitAKId,\r\n\t-- NOT ISNULL(lkp_RatingLocationLimitAKId),lkp_RatingLocationLimitAKId,\r\n\t-- NEXTVAL)\n\tDECODE(TRUE,\n\tv_SameGroupFlag = 1, v_RatingLocationLimitAKId,\n\tNOT lkp_RatingLocationLimitAKId IS NULL, lkp_RatingLocationLimitAKId,\n\tNEXTVAL) AS v_RatingLocationLimitAKId,\n\tPolicyAKId AS v_prev_PolicyAKId,\n\tInsuranceLine AS v_prev_InsuranceLine,\n\tRatingLocationKey AS v_prev_RatingLocationKey,\n\tRatingLocationLimitType AS v_prev_RatingLocationLimitType,\n\tRatingLocationLimitValue AS v_prev_RatingLocationLimitValue,\n\tv_RatingLocationLimitAKId AS RatingLocationLimitAKId,\n\tv_Filter AS Filter\n\tFROM FIL_NoChange\n\tLEFT JOIN LKP_RatingLocationLimit\n\tON LKP_RatingLocationLimit.PolicyAKId = LKP_policy.pol_ak_id AND LKP_RatingLocationLimit.InsuranceLine = FIL_NoChange.InsuranceLine AND LKP_RatingLocationLimit.RatingLocationKey = FIL_NoChange.RatingLocationKey AND LKP_RatingLocationLimit.RatingLocationLimitType = FIL_NoChange.RatingLocationLimitType AND LKP_RatingLocationLimit.EffectiveDate <= FIL_NoChange.TransactionEnteredDate AND LKP_RatingLocationLimit.ExpirationDate >= FIL_NoChange.TransactionEnteredDate\n\tLEFT JOIN LKP_policy\n\tON LKP_policy.pol_key = FIL_NoChange.PolicyKey\n),\nRTR_Change AS (\n\tSELECT\n\tCurrentSnapshotFlag,\n\tAuditID,\n\tEffectiveDate,\n\tExpirationDate,\n\tSourceSystemID,\n\tCreatedDate,\n\tModifiedDate,\n\tRatingLocationLimitAKId,\n\tPolicyAKId,\n\tInsuranceLine,\n\tRatingLocationKey,\n\tRatingLocationLimitType,\n\tRatingLocationLimitValue,\n\tFilter\n\tFROM EXP_Change\n),\nRTR_Change_INSERT AS (SELECT * FROM RTR_Change WHERE Filter=1),\nTGT_RatingLocationLimit_Insert AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.RatingLocationLimit\n\t(CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, SourceSystemID, CreatedDate, ModifiedDate, RatingLocationLimitAKId, PolicyAKId, InsuranceLine, RatingLocationKey, RatingLocationLimitType, RatingLocationLimitValue)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tRATINGLOCATIONLIMITAKID, \n\tPOLICYAKID, \n\tINSURANCELINE, \n\tRATINGLOCATIONKEY, \n\tRATINGLOCATIONLIMITTYPE, \n\tRATINGLOCATIONLIMITVALUE\n\tFROM RTR_Change_INSERT\n),\nSQ_RatingLocationLimit_Expire AS (\n\tSELECT \r\n\t\tRatingLocationLimitID,\r\n\t\tEffectiveDate, \r\n\t\tExpirationDate,\r\n\t\tRatingLocationLimitAKID\r\n\tFROM\r\n\t\t@{pipeline().parameters.TARGET_TABLE_OWNER}.RatingLocationLimit a\r\n\tWHERE  EXISTS\r\n\t\t (SELECT 1\r\n\t\t FROM @{pipeline().parameters.TARGET_TABLE_OWNER}.RatingLocationLimit b \r\n\t\t   WHERE CurrentSnapshotFlag = 1 and SourceSystemID = '@{pipeline().parameters.SOURCE_SYSTEM_ID}' \r\n\t\t    and a.RatingLocationLimitAKID = b.RatingLocationLimitAKID\r\n\tGROUP BY  RatingLocationLimitAKID  HAVING count(*) > 1)\r\n\tAND SourceSystemID = '@{pipeline().parameters.SOURCE_SYSTEM_ID}' \r\n\tORDER BY  RatingLocationLimitAKID ,EffectiveDate  DESC\n),\nEXP_Lag_eff_from_date AS (\n\tSELECT\n\tRatingLocationLimitId,\n\tEffectiveDate,\n\tExpirationDate,\n\tRatingLocationLimitAKId,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- RatingLocationLimitAKId = v_PrevRatingLocationLimitAKID ,\r\n\t-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),ExpirationDate)\n\tDECODE(TRUE,\n\tRatingLocationLimitAKId = v_PrevRatingLocationLimitAKID, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),\n\tExpirationDate) AS v_eff_to_date,\n\tRatingLocationLimitAKId AS v_PrevRatingLocationLimitAKID,\n\tEffectiveDate AS v_prev_eff_from_date,\n\t0 AS o_crrnt_snpsht_flag,\n\tv_eff_to_date AS o_eff_to_date,\n\tSYSDATE AS o_modified_date\n\tFROM SQ_RatingLocationLimit_Expire\n),\nFIL_FirstRowInAKGroup AS (\n\tSELECT\n\tRatingLocationLimitId, \n\tExpirationDate, \n\to_crrnt_snpsht_flag AS crrnt_snpsht_flag, \n\to_eff_to_date AS eff_to_date, \n\to_modified_date AS modified_date\n\tFROM EXP_Lag_eff_from_date\n\tWHERE ExpirationDate != eff_to_date\n),\nUPD_RatingLocationLimit AS (\n\tSELECT\n\tRatingLocationLimitId, \n\tcrrnt_snpsht_flag, \n\teff_to_date, \n\tmodified_date\n\tFROM FIL_FirstRowInAKGroup\n),\nTGT_RatingLocationLimit_Update AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.RatingLocationLimit AS T\n\tUSING UPD_RatingLocationLimit AS S\n\tON T.RatingLocationLimitId = S.RatingLocationLimitId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.crrnt_snpsht_flag, T.ExpirationDate = S.eff_to_date, T.ModifiedDate = S.modified_date\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905491"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603278"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:44:58"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 23:03:38"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "WC_Stage"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

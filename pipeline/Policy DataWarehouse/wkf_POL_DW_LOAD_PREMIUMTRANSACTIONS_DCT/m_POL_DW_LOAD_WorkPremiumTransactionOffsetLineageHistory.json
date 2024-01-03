@@ -1,0 +1,77 @@
+{
+    "name": "m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineageHistory",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineageHis_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkPremiumTransactionOffsetLineage AS (\n\tSELECT\n\t\tWorkPremiumTransactionOffsetLineageId,\n\t\tAuditID,\n\t\tCreatedDate,\n\t\tModifiedDate,\n\t\tPolicyKey,\n\t\tRatingCoverageAKID,\n\t\tPremiumTransactionID,\n\t\tPremiumTransactionAKID,\n\t\tPreviousPremiumTransactionID,\n\t\tPreviousPremiumTransactionAKID,\n\t\tUpdateAttributeFlag\n\tFROM WorkPremiumTransactionOffsetLineage\n),\nEXP_WorkPremiumTransactionOffsetLineage AS (\n\tSELECT\n\tWorkPremiumTransactionOffsetLineageId,\n\tAuditID,\n\tCreatedDate,\n\tModifiedDate,\n\tPolicyKey,\n\tRatingCoverageAKID,\n\tPremiumTransactionID,\n\tPremiumTransactionAKID,\n\tPreviousPremiumTransactionID,\n\tPreviousPremiumTransactionAKID,\n\tUpdateAttributeFlag AS i_UpdateAttributeFlag,\n\t-- *INF*: DECODE(TRUE,i_UpdateAttributeFlag='T','1','0')\n\tDECODE(TRUE,\n\ti_UpdateAttributeFlag = 'T', '1',\n\t'0') AS o_UpdateAttributeFlag\n\tFROM SQ_WorkPremiumTransactionOffsetLineage\n),\nTGT_WorkPremiumTransactionOffsetLineageHistory AS (\n\tINSERT INTO WorkPremiumTransactionOffsetLineageHistory\n\t(AuditID, CreatedDate, ModifiedDate, PolicyKey, RatingCoverageAKID, PremiumTransactionID, PremiumTransactionAKID, PreviousPremiumTransactionID, PreviousPremiumTransactionAKID, UpdateAttributeFlag)\n\tSELECT \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tPOLICYKEY, \n\tRATINGCOVERAGEAKID, \n\tPREMIUMTRANSACTIONID, \n\tPREMIUMTRANSACTIONAKID, \n\tPREVIOUSPREMIUMTRANSACTIONID, \n\tPREVIOUSPREMIUMTRANSACTIONAKID, \n\to_UpdateAttributeFlag AS UPDATEATTRIBUTEFLAG\n\tFROM EXP_WorkPremiumTransactionOffsetLineage\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905491"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603293"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:44:58"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 23:03:38"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

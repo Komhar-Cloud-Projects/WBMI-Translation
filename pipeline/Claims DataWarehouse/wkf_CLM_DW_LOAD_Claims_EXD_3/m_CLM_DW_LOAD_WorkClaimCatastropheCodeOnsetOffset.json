@@ -1,0 +1,69 @@
+{
+    "name": "m_CLM_DW_LOAD_WorkClaimCatastropheCodeOnsetOffset",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DW_LOAD_WorkClaimCatastropheCodeOnsetOffset",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_cat_code AS (\n\tselect  distinct CPO.claim_party_occurrence_ak_id as ClaimPartyOccurrenceAKID,\r\n\tCPO.claim_occurrence_ak_id as ClaimOccurrenceAKID,\r\n\tCO.claim_occurrence_key as ClaimOccurrenceKey, \r\n\tCP.claim_party_key as ClaimantPartyKey, \r\n\tCO2.claim_cat_code as OldClaimCatastropheCode,\r\n\tCO.claim_cat_code as NewClaimCatastropheCode, \r\n\tCO.s3p_claim_updated_date ClaimUpdateDate\r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_occurrence CO\r\n\tjoin @{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_occurrence CO2 \r\n\ton CO.claim_occurrence_ak_id=CO2.claim_occurrence_ak_id and CO.claim_cat_code<>CO2.claim_cat_code\r\n\tand CO.crrnt_snpsht_flag=1 and dateadd(ss, 1, CO2.eff_to_date)=CO.eff_from_date \r\n\tjoin @{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_party_occurrence CPO\r\n\ton CPO.claim_occurrence_ak_id=CO.claim_occurrence_ak_id and CPO.crrnt_snpsht_flag=1 and CPO.claim_party_role_code = 'CLMT'\r\n\tjoin @{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_party CP\r\n\ton CPO.claim_party_ak_id=CP.claim_party_ak_id and CP.crrnt_snpsht_flag=1\r\n\twhere CO.created_date>='@{pipeline().parameters.SELECTION_START_TS}'   and CO.source_sys_id='@{pipeline().parameters.SOURCE_SYSTEM_ID}'\r\n\tand exists (select 1from @{pipeline().parameters.STAGE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_tab_stage where CO.claim_occurrence_key=CLM_CLAIM_NBR )\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\r\n\tUNION\r\n\tselect  distinct CPO.claim_party_occurrence_ak_id as ClaimPartyOccurrenceAKID,\r\n\tCPO.claim_occurrence_ak_id as ClaimOccurrenceAKID,\r\n\tCO.claim_occurrence_key as ClaimOccurrenceKey,\r\n\tCP.claim_party_key as ClaimantPartyKey,\r\n\tCO2.wc_cat_code  as OldClaimCatastropheCode,\r\n\tCO.wc_cat_code  as NewClaimCatastropheCode,\r\n\tCO.s3p_claim_updated_date ClaimUpdateDate\r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_occurrence CO\r\n\tjoin @{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_occurrence CO2\r\n\ton CO.claim_occurrence_ak_id=CO2.claim_occurrence_ak_id\r\n\tand co.claim_occurrence_type_code = 'WCC'\r\n\tand CO2.wc_cat_code <> CO.wc_cat_code\r\n\tand CO.crrnt_snpsht_flag=1 and dateadd(ss, 1, CO2.eff_to_date)=CO.eff_from_date\r\n\tjoin @{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_party_occurrence CPO\r\n\ton CPO.claim_occurrence_ak_id=CO.claim_occurrence_ak_id and CPO.crrnt_snpsht_flag=1 and CPO.claim_party_role_code = 'CLMT'\r\n\tjoin @{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_party CP\r\n\ton CPO.claim_party_ak_id=CP.claim_party_ak_id and CP.crrnt_snpsht_flag=1\r\n\twhere CO.created_date>='@{pipeline().parameters.SELECTION_END_TS}'   and CO.source_sys_id='@{pipeline().parameters.SOURCE_SYSTEM_ID}'\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Record_Changes AS (\n\tSELECT\n\tClaimPartyOccurrenceAKID,\n\tClaimOccurrenceAKID,\n\tClaimOccurrenceKey,\n\tClaimantPartyKey,\n\tOldClaimCatastropheCode,\n\tNewClaimCatastropheCode,\n\tClaimUpdateDate,\n\t'1' AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tCURRENT_TIMESTAMP AS o_CreatedDate,\n\tCURRENT_TIMESTAMP AS o_ModifiedDate\n\tFROM SQ_cat_code\n),\nLKP_WorkClaimCatastropheCodeOnsetOffset AS (\n\tSELECT\n\tWorkClaimCatastropheCodeOnsetOffsetId,\n\tClaimPartyOccurrenceAKID,\n\tOldClaimCatastropheCode,\n\tNewClaimCatastropheCode,\n\tClaimUpdateDate,\n\ti_ClaimPartyOccurrenceAKID,\n\ti_OldClaimCatastropheCode,\n\ti_NewClaimCatastropheCode,\n\ti_ClaimUpdateDate\n\tFROM (\n\t\tSELECT \n\t\t\tWorkClaimCatastropheCodeOnsetOffsetId,\n\t\t\tClaimPartyOccurrenceAKID,\n\t\t\tOldClaimCatastropheCode,\n\t\t\tNewClaimCatastropheCode,\n\t\t\tClaimUpdateDate,\n\t\t\ti_ClaimPartyOccurrenceAKID,\n\t\t\ti_OldClaimCatastropheCode,\n\t\t\ti_NewClaimCatastropheCode,\n\t\t\ti_ClaimUpdateDate\n\t\tFROM WorkClaimCatastropheCodeOnsetOffset\n\t\tWHERE exists (select 1 from  @{pipeline().parameters.STAGE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_tab_stage where WorkClaimCatastropheCodeOnsetOffset.ClaimOccurrenceKey=CLM_CLAIM_NBR )\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ClaimPartyOccurrenceAKID,OldClaimCatastropheCode,NewClaimCatastropheCode,ClaimUpdateDate ORDER BY WorkClaimCatastropheCodeOnsetOffsetId) = 1\n),\nFIL_Existing AS (\n\tSELECT\n\tLKP_WorkClaimCatastropheCodeOnsetOffset.WorkClaimCatastropheCodeOnsetOffsetId AS LKP_work_claim_cat_code_onset_offset_id, \n\tEXP_Record_Changes.o_CurrentSnapshotFlag AS CurrentSnapshotFlag, \n\tEXP_Record_Changes.o_AuditId AS AuditId, \n\tEXP_Record_Changes.o_SourceSystemId AS SourceSystemId, \n\tEXP_Record_Changes.o_CreatedDate AS CreatedDate, \n\tEXP_Record_Changes.o_ModifiedDate AS ModifiedDate, \n\tEXP_Record_Changes.ClaimPartyOccurrenceAKID, \n\tEXP_Record_Changes.ClaimOccurrenceAKID, \n\tEXP_Record_Changes.ClaimOccurrenceKey, \n\tEXP_Record_Changes.ClaimantPartyKey, \n\tEXP_Record_Changes.OldClaimCatastropheCode, \n\tEXP_Record_Changes.NewClaimCatastropheCode, \n\tEXP_Record_Changes.ClaimUpdateDate\n\tFROM EXP_Record_Changes\n\tLEFT JOIN LKP_WorkClaimCatastropheCodeOnsetOffset\n\tON LKP_WorkClaimCatastropheCodeOnsetOffset.ClaimPartyOccurrenceAKID = EXP_Record_Changes.ClaimPartyOccurrenceAKID AND LKP_WorkClaimCatastropheCodeOnsetOffset.OldClaimCatastropheCode = EXP_Record_Changes.OldClaimCatastropheCode AND LKP_WorkClaimCatastropheCodeOnsetOffset.NewClaimCatastropheCode = EXP_Record_Changes.NewClaimCatastropheCode AND LKP_WorkClaimCatastropheCodeOnsetOffset.ClaimUpdateDate = EXP_Record_Changes.ClaimUpdateDate\n\tWHERE ISNULL(LKP_work_claim_cat_code_onset_offset_id)\n),\nWorkClaimCatastropheCodeOnsetOffset AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkClaimCatastropheCodeOnsetOffset\n\t(CurrentSnapshotFlag, AuditId, SourceSystemId, CreatedDate, ModifiedDate, ClaimPartyOccurrenceAKID, ClaimOccurrenceAKID, ClaimOccurrenceKey, ClaimantPartyKey, OldClaimCatastropheCode, NewClaimCatastropheCode, ClaimUpdateDate)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tCLAIMPARTYOCCURRENCEAKID, \n\tCLAIMOCCURRENCEAKID, \n\tCLAIMOCCURRENCEKEY, \n\tCLAIMANTPARTYKEY, \n\tOLDCLAIMCATASTROPHECODE, \n\tNEWCLAIMCATASTROPHECODE, \n\tCLAIMUPDATEDATE\n\tFROM FIL_Existing\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "STAGE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

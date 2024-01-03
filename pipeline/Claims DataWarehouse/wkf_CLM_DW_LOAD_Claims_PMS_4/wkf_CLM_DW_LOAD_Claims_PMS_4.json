@@ -1,0 +1,257 @@
+{
+    "name": "wkf_CLM_DW_LOAD_Claims_PMS_4",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "s_m_CLM_DW_LOAD_workers_comp_claimant_detail_PMS",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_DW_LOAD_workers_comp_claimant_detail_PMS"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CLM_DW_LOAD_Claimant_Coverage_PMS",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_DW_LOAD_Claimant_Coverage_PMS"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CLM_DW_LOAD_Claim_Payment_PMS",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_DW_UPDATE_Claimant_Coverage_Detail_Type_Bureau",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_DW_LOAD_Claim_Payment_PMS"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CLM_DW_LOAD_Claim_Party_Occurrence_Payment_PMS",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_DW_LOAD_Claim_Payment_PMS",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_DW_LOAD_Claim_Party_Occurrence_Payment_PMS"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CLM_DW_LOAD_Claim_Payment_Category_PMS",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_DW_LOAD_Claim_Payment_PMS",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_DW_LOAD_Claim_Payment_Category_PMS"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CLM_Checks_And_Balances_Workers_Comp_Claimant_De_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_DW_LOAD_workers_comp_claimant_detail_PMS",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_Checks_And_Balances_Generic_EDW"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_CLM_Checks_And_Balances_Workers_Comp_Claimant_Detail"
+            },
+            {
+                "name": "s_m_CLM_Checks_And_Balances_Claimant_Coverage_Detail",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_DW_LOAD_Claimant_Coverage_PMS",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_Checks_And_Balances_Generic_EDW"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CLM_DW_LOAD_Reinsurance_Coverage",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_DW_LOAD_Workers_Comp_Claimant_Work_History_PMS",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_DW_LOAD_Reinsurance_Coverage"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CLM_DW_LOAD_Workers_Comp_Claimant_Work_History_PMS",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_Checks_And_Balances_Workers_Comp_Claimant_De_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_DW_LOAD_workers_comp_claimant_Work_History_PMS"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CLM_DW_UPDATE_Claimant_Coverage_Detail_Type_Bureau",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_Checks_And_Balances_Claimant_Coverage_Detail",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_DW_UPDATE_Claimant_Coverage_Detail_Type_Bureau"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_CLM_Checks_And_Balances_Reinsurance_Coverage",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_DW_LOAD_Reinsurance_Coverage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_Checks_And_Balances_Generic_EDW"
+                    },
+                    "parameters": {}
+                }
+            }
+        ],
+        "folder": {
+            "name": ""
+        },
+        "variables": {}
+    }
+}

@@ -1,0 +1,73 @@
+{
+    "name": "m_CMN_IL_Load_SupTypeOfLossRules",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CMN_IL_Load_SupTypeOfLossRules",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SupTypeOfLossRules AS (\n\tSELECT \r\n\t         a.EffectiveDate\r\n\t        ,a.ExpirationDate\r\n\t\t  ,a.InsuranceSegmentCode\r\n\t\t  ,a.MajorPerilCode\r\n\t\t  ,a.CauseOfLoss\r\n\t        ,a.CauseOfLossName\r\n\t\t  ,a.TypeOfLoss\r\n\t\t  ,a.ClaimTypeCategory\r\n\t\t  ,a.ClaimTypeGroup\r\n\t\t,a.SubrogationEligibleIndicator\r\n\tFROM\r\n\t(\r\n\tSELECT [SupTypeOfLossRulesId]\r\n\t      ,[ModifiedUserId]\r\n\t      ,[ModifiedDate]\r\n\t      ,[EffectiveDate]\r\n\t      ,[ExpirationDate]\r\n\t      ,[InsuranceSegmentCode]\r\n\t      ,[MajorPerilCode]\r\n\t      ,[CauseOfLoss]\r\n\t\t,CauseOfLossName\r\n\t      ,[TypeOfLoss]\r\n\t\t,[ClaimTypeCategory]\r\n\t\t,[ClaimTypeGroup]\r\n\t\t,[SubrogationEligibleIndicator]\r\n\t\t  ,ROW_NUMBER() OVER (PARTITION BY [InsuranceSegmentCode],[MajorPerilCode], [CauseOfLoss], [EffectiveDate]  ORDER BY [TypeOfLoss]) AS RN\r\n\t  FROM [dbo].[SupTypeOfLossRules]\r\n\t) a\r\n\tWHERE  a.RN =1\n),\nEXP_Trim_Values AS (\n\tSELECT\n\tEffectiveDate,\n\tExpirationDate,\n\tInsuranceSegmentCode AS i_InsuranceSegmentCode,\n\tMajorPerilCode AS i_MajorPerilCode,\n\tCauseOfLoss AS i_CauseOfLoss,\n\tCauseOfLossName AS i_CauseOfLossName,\n\tTypeOfLoss AS i_TypeOfLoss,\n\tClaimTypeCategory AS i_ClaimTypeCategory,\n\tClaimTypeGroup AS i_ClaimTypeGroup,\n\tSubrogationEligibleIndicator AS i_SubrogationEligibleIndicator,\n\t-- *INF*: LTRIM(RTRIM(i_InsuranceSegmentCode))\n\tLTRIM(RTRIM(i_InsuranceSegmentCode)) AS o_InsuranceSegmentCode,\n\t-- *INF*: LTRIM(RTRIM(i_MajorPerilCode))\n\tLTRIM(RTRIM(i_MajorPerilCode)) AS o_MajorPerilCode,\n\t-- *INF*: LTRIM(RTRIM(i_CauseOfLoss))\n\tLTRIM(RTRIM(i_CauseOfLoss)) AS o_CauseOfLoss,\n\t-- *INF*: Ltrim(Rtrim(i_CauseOfLossName))\n\tLtrim(Rtrim(i_CauseOfLossName)) AS o_CauseOfLossName,\n\t-- *INF*: LTRIM(RTRIM(i_TypeOfLoss))\n\tLTRIM(RTRIM(i_TypeOfLoss)) AS o_TypeOfLoss,\n\t-- *INF*: LTRIM(RTRIM(i_ClaimTypeCategory))\n\tLTRIM(RTRIM(i_ClaimTypeCategory)) AS o_ClaimTypeCategory,\n\t-- *INF*: LTRIM(RTRIM(i_ClaimTypeGroup))\n\tLTRIM(RTRIM(i_ClaimTypeGroup)) AS o_ClaimTypeGroup,\n\t-- *INF*: LTRIM(RTRIM(i_SubrogationEligibleIndicator))\n\tLTRIM(RTRIM(i_SubrogationEligibleIndicator)) AS o_SubrogationEligibleIndicator,\n\tsysdate AS ModifiedDate\n\tFROM SQ_SupTypeOfLossRules\n),\nLkp_SupTypeOfLossRules AS (\n\tSELECT\n\tSupTypeOfLossRulesId,\n\tTypeOfLoss,\n\tClaimTypeCategory,\n\tClaimTypeGroup,\n\tSubrogationEligibleIndicator,\n\tInsuranceSegmentCode,\n\tMajorPerilCode,\n\tCauseOfLoss\n\tFROM (\n\t\tSELECT \n\t\t\tSupTypeOfLossRulesId,\n\t\t\tTypeOfLoss,\n\t\t\tClaimTypeCategory,\n\t\t\tClaimTypeGroup,\n\t\t\tSubrogationEligibleIndicator,\n\t\t\tInsuranceSegmentCode,\n\t\t\tMajorPerilCode,\n\t\t\tCauseOfLoss\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.SupTypeOfLossRules\n\t\tWHERE CurrentSnapshotFlag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY InsuranceSegmentCode,MajorPerilCode,CauseOfLoss ORDER BY SupTypeOfLossRulesId) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tLkp_SupTypeOfLossRules.TypeOfLoss AS lkp_TypeOfLoss,\n\tLkp_SupTypeOfLossRules.ClaimTypeCategory AS lkp_ClaimTypeCategory,\n\tLkp_SupTypeOfLossRules.ClaimTypeGroup AS lkp_ClaimTypeGroup,\n\tLkp_SupTypeOfLossRules.SubrogationEligibleIndicator AS lkp_SubrogationEligibleIndicator,\n\tLkp_SupTypeOfLossRules.SupTypeOfLossRulesId,\n\tEXP_Trim_Values.EffectiveDate AS i_EffectiveDate,\n\tEXP_Trim_Values.ExpirationDate AS i_ExpirationDate,\n\tEXP_Trim_Values.o_InsuranceSegmentCode AS i_InsuranceSegmentCode,\n\tEXP_Trim_Values.o_MajorPerilCode AS i_MajorPerilCode,\n\tEXP_Trim_Values.o_CauseOfLoss AS i_CauseOfLoss,\n\tEXP_Trim_Values.o_CauseOfLossName AS i_CauseOfLossName,\n\tEXP_Trim_Values.o_TypeOfLoss AS i_TypeOfLoss,\n\tEXP_Trim_Values.o_ClaimTypeCategory AS i_ClaimTypeCategory,\n\tEXP_Trim_Values.o_ClaimTypeGroup AS i_ClaimTypeGroup,\n\tEXP_Trim_Values.o_SubrogationEligibleIndicator AS i_SubrogationEligibleIndicator,\n\tEXP_Trim_Values.ModifiedDate AS i_ModifiedDate,\n\t-- *INF*: IIF(ISNULL(i_InsuranceSegmentCode),'N/A',i_InsuranceSegmentCode)\n\tIFF(i_InsuranceSegmentCode IS NULL, 'N/A', i_InsuranceSegmentCode) AS o_InsuranceSegmentCode,\n\t-- *INF*: IIF(ISNULL(i_MajorPerilCode),'N/A',i_MajorPerilCode)\n\tIFF(i_MajorPerilCode IS NULL, 'N/A', i_MajorPerilCode) AS o_MajorPerilCode,\n\t-- *INF*: IIF(ISNULL(i_CauseOfLoss),'N/A',i_CauseOfLoss)\n\tIFF(i_CauseOfLoss IS NULL, 'N/A', i_CauseOfLoss) AS o_CauseOfLoss,\n\t-- *INF*: IIF(ISNULL(i_CauseOfLossName),'N/A',i_CauseOfLossName)\n\tIFF(i_CauseOfLossName IS NULL, 'N/A', i_CauseOfLossName) AS o_CauseOfLossName,\n\t-- *INF*: IIF(ISNULL(i_TypeOfLoss),'N/A',i_TypeOfLoss)\n\tIFF(i_TypeOfLoss IS NULL, 'N/A', i_TypeOfLoss) AS o_TypeOfLoss,\n\t-- *INF*: IIF(ISNULL(i_ClaimTypeCategory),'N/A',i_ClaimTypeCategory)\n\tIFF(i_ClaimTypeCategory IS NULL, 'N/A', i_ClaimTypeCategory) AS o_ClaimTypeCategory,\n\t-- *INF*: IIF(ISNULL(i_ClaimTypeGroup),'N/A',i_ClaimTypeGroup)\n\tIFF(i_ClaimTypeGroup IS NULL, 'N/A', i_ClaimTypeGroup) AS o_ClaimTypeGroup,\n\t-- *INF*: IIF(ISNULL(i_SubrogationEligibleIndicator),'N/A',i_SubrogationEligibleIndicator)\n\tIFF(i_SubrogationEligibleIndicator IS NULL, 'N/A', i_SubrogationEligibleIndicator) AS o_SubrogationEligibleIndicator,\n\tv_change_flag AS o_change_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tsysdate AS CreatedDate,\n\ti_ModifiedDate AS o_ModifiedDate,\n\t-- *INF*: IIF( v_change_flag=1,i_EffectiveDate , sysdate   )\n\tIFF(v_change_flag = 1, i_EffectiveDate, sysdate) AS o_EffectiveDate,\n\ti_ExpirationDate AS o_ExpirationDate,\n\t'InsRef' AS SourceSystemId,\n\t1 AS changedflag_insert,\n\t0 AS changedflag_update,\n\t-- *INF*: DECODE(TRUE,ISNULL(SupTypeOfLossRulesId),1,\r\n\t-- (  ISNULL(SupTypeOfLossRulesId) = 0  AND ((lkp_TypeOfLoss<>i_TypeOfLoss) OR (lkp_ClaimTypeCategory<>i_ClaimTypeCategory) OR (lkp_ClaimTypeGroup<>i_ClaimTypeGroup) OR (lkp_SubrogationEligibleIndicator<>i_SubrogationEligibleIndicator) )  )\r\n\t-- ,0,\r\n\t-- 2)\n\tDECODE(TRUE,\n\tSupTypeOfLossRulesId IS NULL, 1,\n\t( SupTypeOfLossRulesId IS NULL = 0 AND ( ( lkp_TypeOfLoss <> i_TypeOfLoss ) OR ( lkp_ClaimTypeCategory <> i_ClaimTypeCategory ) OR ( lkp_ClaimTypeGroup <> i_ClaimTypeGroup ) OR ( lkp_SubrogationEligibleIndicator <> i_SubrogationEligibleIndicator ) ) ), 0,\n\t2) AS v_change_flag,\n\t-- *INF*: ADD_TO_DATE(sysdate,'D',-1)\n\tADD_TO_DATE(sysdate, 'D', - 1) AS o_ExpirationDate_update\n\tFROM EXP_Trim_Values\n\tLEFT JOIN Lkp_SupTypeOfLossRules\n\tON Lkp_SupTypeOfLossRules.InsuranceSegmentCode = EXP_Trim_Values.o_InsuranceSegmentCode AND Lkp_SupTypeOfLossRules.MajorPerilCode = EXP_Trim_Values.o_MajorPerilCode AND Lkp_SupTypeOfLossRules.CauseOfLoss = EXP_Trim_Values.o_CauseOfLoss\n),\nRTR_SupTypeOfLossRules AS (\n\tSELECT\n\tSupTypeOfLossRulesId,\n\to_InsuranceSegmentCode AS InsuranceSegDescpt,\n\to_MajorPerilCode AS MajorPerilCode,\n\to_CauseOfLoss AS CauseOfLoss,\n\to_CauseOfLossName AS CauseOfLossName,\n\to_TypeOfLoss AS TypeOfLoss,\n\to_ClaimTypeCategory AS ClaimTypeCategory,\n\to_ClaimTypeGroup AS ClaimTypeGroup,\n\to_SubrogationEligibleIndicator AS SubrogationEligibleIndicator,\n\to_change_flag AS change_flag,\n\tAuditId,\n\to_ModifiedDate AS ModifiedDate,\n\to_EffectiveDate AS EffectiveDate,\n\to_ExpirationDate AS ExpirationDate,\n\tCreatedDate,\n\tchangedflag_insert,\n\tchangedflag_update,\n\tSourceSystemId,\n\to_ExpirationDate_update AS ExpirationDate_UPD\n\tFROM EXP_Detect_Changes\n),\nRTR_SupTypeOfLossRules_Insert AS (SELECT * FROM RTR_SupTypeOfLossRules WHERE change_flag=1 OR  change_flag=0),\nRTR_SupTypeOfLossRules_Update AS (SELECT * FROM RTR_SupTypeOfLossRules WHERE change_flag=0),\nSupTypeOfLossRules_Insert AS (\n\tINSERT INTO SupTypeOfLossRules\n\t(CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, InsuranceSegmentCode, MajorPerilCode, CauseOfLoss, CauseOfLossName, TypeOfLoss, ClaimTypeCategory, ClaimTypeGroup, SubrogationEligibleIndicator)\n\tSELECT \n\tchangedflag_insert AS CURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tInsuranceSegDescpt AS INSURANCESEGMENTCODE, \n\tMAJORPERILCODE, \n\tCAUSEOFLOSS, \n\tCAUSEOFLOSSNAME, \n\tTYPEOFLOSS, \n\tCLAIMTYPECATEGORY, \n\tCLAIMTYPEGROUP, \n\tSUBROGATIONELIGIBLEINDICATOR\n\tFROM RTR_SupTypeOfLossRules_Insert\n),\nUpd_sup_TypeOfLoss_Update AS (\n\tSELECT\n\tSupTypeOfLossRulesId, \n\tInsuranceSegDescpt, \n\tMajorPerilCode, \n\tCauseOfLoss, \n\tTypeOfLoss, \n\tchange_flag, \n\tAuditId, \n\tModifiedDate, \n\tEffectiveDate, \n\tExpirationDate, \n\tCreatedDate, \n\tchangedflag_insert, \n\tchangedflag_update, \n\tSourceSystemId, \n\tExpirationDate_UPD AS Expiration_Date_Update, \n\tCauseOfLossName\n\tFROM RTR_SupTypeOfLossRules_Update\n),\nSupTypeOfLossRules_Update AS (\n\tMERGE INTO SupTypeOfLossRules AS T\n\tUSING Upd_sup_TypeOfLoss_Update AS S\n\tON T.SupTypeOfLossRulesId = S.SupTypeOfLossRulesId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.changedflag_update, T.ExpirationDate = S.Expiration_Date_Update, T.ModifiedDate = S.ModifiedDate\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246484"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905454"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603044"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:02:48"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 22:02:41"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_InsuranceReference_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

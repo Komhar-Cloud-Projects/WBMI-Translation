@@ -1,0 +1,77 @@
+{
+    "name": "m_CMN_DW_LOAD_SupClassificationExcessLiability",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CMN_DW_LOAD_SupClassificationExcessLiability",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nLKP_SupClassificationExcessLiability_CurrentChangeFlag AS (\n\tSELECT\n\tSupClassificationExcessLiabilityId,\n\tRatingStateCode,\n\tClassCode,\n\tEffectiveDate,\n\tClassDescription,\n\tOriginatingOrganizationCode\n\tFROM (\n\t\tSELECT \n\t\t\tSupClassificationExcessLiabilityId,\n\t\t\tRatingStateCode,\n\t\t\tClassCode,\n\t\t\tEffectiveDate,\n\t\t\tClassDescription,\n\t\t\tOriginatingOrganizationCode\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.SupClassificationExcessLiability\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY RatingStateCode,ClassCode,EffectiveDate,ClassDescription,OriginatingOrganizationCode ORDER BY SupClassificationExcessLiabilityId) = 1\n),\nSQ_SupClassificationExcessLiability AS (\n\tSELECT\n\t\tSupClassificationExcessLiabilityId,\n\t\tAuditId,\n\t\tCreatedDate,\n\t\tModifiedDate,\n\t\tLineOfBusinessAbbreviation,\n\t\tRatingStateCode,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tClassCode,\n\t\tClassDescription,\n\t\tOriginatingOrganizationCode\n\tFROM SupClassificationExcessLiability\n),\nLKP_SupClassificationExcessLiability AS (\n\tSELECT\n\tSupClassificationExcessLiabilityId,\n\tEffectiveDate,\n\tExpirationDate,\n\tRatingStateCode,\n\tClassCode,\n\tClassDescription,\n\tOriginatingOrganizationCode\n\tFROM (\n\t\tSELECT \n\t\t\tSupClassificationExcessLiabilityId,\n\t\t\tEffectiveDate,\n\t\t\tExpirationDate,\n\t\t\tRatingStateCode,\n\t\t\tClassCode,\n\t\t\tClassDescription,\n\t\t\tOriginatingOrganizationCode\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.SupClassificationExcessLiability\n\t\tWHERE CurrentSnapshotFlag =1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY RatingStateCode,ClassCode,OriginatingOrganizationCode ORDER BY SupClassificationExcessLiabilityId) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tSQ_SupClassificationExcessLiability.LineOfBusinessAbbreviation AS i_LineOfBusinessAbbreviation,\n\tSQ_SupClassificationExcessLiability.RatingStateCode AS i_RatingStateCode,\n\tSQ_SupClassificationExcessLiability.EffectiveDate AS i_EffectiveDate,\n\tSQ_SupClassificationExcessLiability.ExpirationDate AS i_ExpirationDate,\n\tSQ_SupClassificationExcessLiability.ClassCode AS i_ClassCode,\n\tSQ_SupClassificationExcessLiability.ClassDescription AS i_ClassDescription,\n\tSQ_SupClassificationExcessLiability.OriginatingOrganizationCode AS i_OriginatingOrganizationCode,\n\tLKP_SupClassificationExcessLiability.SupClassificationExcessLiabilityId AS lkp_SupClassificationExcessLiabilityId,\n\tLKP_SupClassificationExcessLiability.EffectiveDate AS lkp_EffectiveDate,\n\tLKP_SupClassificationExcessLiability.ExpirationDate AS lkp_ExpirationDate,\n\tLKP_SupClassificationExcessLiability.RatingStateCode AS lkp_RatingStateCode,\n\tLKP_SupClassificationExcessLiability.ClassCode AS lkp_ClassCode,\n\tLKP_SupClassificationExcessLiability.ClassDescription AS lkp_ClassDescription,\n\tLKP_SupClassificationExcessLiability.OriginatingOrganizationCode AS lkp_OriginatingOrganizationCode,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- NOT ISNULL(:LKP.LKP_SUPCLASSIFICATIONEXCESSLIABILITY_CURRENTCHANGEFLAG(i_RatingStateCode,i_ClassCode,i_EffectiveDate,i_ClassDescription,i_OriginatingOrganizationCode)),\r\n\t-- 'NOCHANGE',\r\n\t-- 'INSERT')\t\t\t\t\t\t\n\tDECODE(TRUE,\n\tNOT LKP_SUPCLASSIFICATIONEXCESSLIABILITY_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_EffectiveDate_i_ClassDescription_i_OriginatingOrganizationCode.SupClassificationExcessLiabilityId IS NULL, 'NOCHANGE',\n\t'INSERT') AS v_RecordPopulated,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- i_ExpirationDate   <=  lkp_EffectiveDate OR v_RecordPopulated = 'NOCHANGE', 'NOCHANGE',\r\n\t-- ISNULL(lkp_SupClassificationExcessLiabilityId) \r\n\t-- OR ( i_RatingStateCode = lkp_RatingStateCode\r\n\t-- AND i_ClassCode = lkp_ClassCode\r\n\t-- AND i_OriginatingOrganizationCode = lkp_OriginatingOrganizationCode   \r\n\t-- AND \r\n\t-- \t\t(i_ClassDescription <>lkp_ClassDescription    \r\n\t--     \t\tOR i_ExpirationDate <> lkp_ExpirationDate\r\n\t--     \t\tOR  i_EffectiveDate <> lkp_EffectiveDate  )\r\n\t-- ),'INSERT', \r\n\t-- i_RatingStateCode<>lkp_RatingStateCode OR\r\n\t-- i_ClassCode<>lkp_ClassCode OR \r\n\t-- i_OriginatingOrganizationCode <> lkp_OriginatingOrganizationCode,\r\n\t-- 'UPDATE',\r\n\t-- 'NOCHANGE'\r\n\t-- )\n\tDECODE(TRUE,\n\ti_ExpirationDate <= lkp_EffectiveDate OR v_RecordPopulated = 'NOCHANGE', 'NOCHANGE',\n\tlkp_SupClassificationExcessLiabilityId IS NULL OR ( i_RatingStateCode = lkp_RatingStateCode AND i_ClassCode = lkp_ClassCode AND i_OriginatingOrganizationCode = lkp_OriginatingOrganizationCode AND ( i_ClassDescription <> lkp_ClassDescription OR i_ExpirationDate <> lkp_ExpirationDate OR i_EffectiveDate <> lkp_EffectiveDate ) ), 'INSERT',\n\ti_RatingStateCode <> lkp_RatingStateCode OR i_ClassCode <> lkp_ClassCode OR i_OriginatingOrganizationCode <> lkp_OriginatingOrganizationCode, 'UPDATE',\n\t'NOCHANGE') AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag,\n\t1 AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,\n\tsysdate AS o_CreatedDate,\n\tsysdate AS o_ModifiedDate,\n\ti_LineOfBusinessAbbreviation AS o_LineOfBusinessAbbreviation,\n\ti_RatingStateCode AS o_RatingStateCode,\n\ti_EffectiveDate AS o_EffectiveDate,\n\ti_ExpirationDate AS o_ExpirationDate_Insert,\n\ti_ClassCode AS o_ClassCode,\n\ti_ClassDescription AS o_ClassDescription,\n\ti_OriginatingOrganizationCode AS o_OriginatingOrganizationCode\n\tFROM SQ_SupClassificationExcessLiability\n\tLEFT JOIN LKP_SupClassificationExcessLiability\n\tON LKP_SupClassificationExcessLiability.RatingStateCode = SQ_SupClassificationExcessLiability.RatingStateCode AND LKP_SupClassificationExcessLiability.ClassCode = SQ_SupClassificationExcessLiability.ClassCode AND LKP_SupClassificationExcessLiability.OriginatingOrganizationCode = SQ_SupClassificationExcessLiability.OriginatingOrganizationCode\n\tLEFT JOIN LKP_SUPCLASSIFICATIONEXCESSLIABILITY_CURRENTCHANGEFLAG LKP_SUPCLASSIFICATIONEXCESSLIABILITY_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_EffectiveDate_i_ClassDescription_i_OriginatingOrganizationCode\n\tON LKP_SUPCLASSIFICATIONEXCESSLIABILITY_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_EffectiveDate_i_ClassDescription_i_OriginatingOrganizationCode.RatingStateCode = i_RatingStateCode\n\tAND LKP_SUPCLASSIFICATIONEXCESSLIABILITY_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_EffectiveDate_i_ClassDescription_i_OriginatingOrganizationCode.ClassCode = i_ClassCode\n\tAND LKP_SUPCLASSIFICATIONEXCESSLIABILITY_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_EffectiveDate_i_ClassDescription_i_OriginatingOrganizationCode.EffectiveDate = i_EffectiveDate\n\tAND LKP_SUPCLASSIFICATIONEXCESSLIABILITY_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_EffectiveDate_i_ClassDescription_i_OriginatingOrganizationCode.ClassDescription = i_ClassDescription\n\tAND LKP_SUPCLASSIFICATIONEXCESSLIABILITY_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_EffectiveDate_i_ClassDescription_i_OriginatingOrganizationCode.OriginatingOrganizationCode = i_OriginatingOrganizationCode\n\n),\nRTR_Insert_Update AS (\n\tSELECT\n\to_ChangeFlag AS ChangeFlag,\n\to_CurrentSnapshotFlag AS CurrentSnapshotFlag,\n\to_AuditId AS AuditId,\n\to_SourceSystemID AS SourceSystemID,\n\to_CreatedDate AS CreatedDate,\n\to_ModifiedDate AS ModifiedDate,\n\to_LineOfBusinessAbbreviation AS LineOfBusinessAbbreviation,\n\to_RatingStateCode AS RatingStateCode,\n\to_EffectiveDate AS EffectiveDate,\n\to_ExpirationDate_Insert AS ExpirationDate,\n\to_ClassCode AS ClassCode,\n\to_ClassDescription AS ClassDescription,\n\to_OriginatingOrganizationCode AS OriginatingOrganizationCode\n\tFROM EXP_Detect_Changes\n),\nRTR_Insert_Update_INSERT AS (SELECT * FROM RTR_Insert_Update WHERE ChangeFlag='INSERT'   OR  ChangeFlag='UPDATE'),\nSupClassificationExcessLiability_IL AS (\n\tINSERT INTO SupClassificationExcessLiability\n\t(CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, LineOfBusinessAbbreviation, RatingStateCode, ClassCode, ClassDescription, OriginatingOrganizationCode)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tSourceSystemID AS SOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tLINEOFBUSINESSABBREVIATION, \n\tRATINGSTATECODE, \n\tCLASSCODE, \n\tCLASSDESCRIPTION, \n\tORIGINATINGORGANIZATIONCODE\n\tFROM RTR_Insert_Update_INSERT\n),\nSQ_SupClassificationExcessLiability_CheckExpDate AS (\n\tSELECT SupClassificationExcessLiability.SupClassificationExcessLiabilityId, SupClassificationExcessLiability.EffectiveDate, SupClassificationExcessLiability.ExpirationDate, SupClassificationExcessLiability.LineOfBusinessAbbreviation, SupClassificationExcessLiability.RatingStateCode, SupClassificationExcessLiability.ClassCode, SupClassificationExcessLiability.ClassDescription, SupClassificationExcessLiability.OriginatingOrganizationCode \r\n\tFROM\r\n\t@{pipeline().parameters.TARGET_TABLE_OWNER}.SupClassificationExcessLiability\r\n\twhere CurrentSnapshotFlag = 1\r\n\tORDER BY SupClassificationExcessLiability.ClassCode,\r\n\tSupClassificationExcessLiability.RatingStateCode,\r\n\tSupClassificationExcessLiability.EffectiveDate DESC,\r\n\tSupClassificationExcessLiability.CreatedDate DESC\n),\nEXP_Lag_Eff_Dates AS (\n\tSELECT\n\tSupClassificationExcessLiabilityId,\n\tEffectiveDate,\n\tExpirationDate,\n\tLineOfBusinessAbbreviation,\n\tRatingStateCode,\n\tClassCode,\n\tClassDescription,\n\tOriginatingOrganizationCode,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- RatingStateCode = v_PREV_ROW_RatingStateCode\r\n\t--  AND ClassCode = v_PREV_ROW_ClassCode\r\n\t--  AND OriginatingOrganizationCode = v_PREV_ROW_OriginatingOrganizationCode\r\n\t--  AND \r\n\t-- \t\t(ClassDescription <> v_PREV_ROW_ClassDescription\r\n\t-- \t\t OR ADD_TO_DATE(ExpirationDate,'SS',+1) <> v_PREV_ROW_EffectiveDate)\r\n\t-- ,'0','1')\n\tDECODE(TRUE,\n\tRatingStateCode = v_PREV_ROW_RatingStateCode AND ClassCode = v_PREV_ROW_ClassCode AND OriginatingOrganizationCode = v_PREV_ROW_OriginatingOrganizationCode AND ( ClassDescription <> v_PREV_ROW_ClassDescription OR ADD_TO_DATE(ExpirationDate, 'SS', + 1) <> v_PREV_ROW_EffectiveDate ), '0',\n\t'1') AS v_CurrentSnapshotFlag,\n\t-- *INF*: ADD_TO_DATE(\r\n\t-- IIF(v_PREV_ROW_EffectiveDate = TO_DATE('1800-01-01 00:00:00' , 'YYYY-MM-DD HH24:MI:SS' ),SYSDATE,v_PREV_ROW_EffectiveDate),'SS',-1)\n\tADD_TO_DATE(IFF(v_PREV_ROW_EffectiveDate = TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), SYSDATE, v_PREV_ROW_EffectiveDate), 'SS', - 1) AS v_ClassExpirationDate,\n\tv_CurrentSnapshotFlag AS o_CurrentSnapshotFlag,\n\tv_ClassExpirationDate AS o_ClassExpirationDate,\n\tEffectiveDate AS v_PREV_ROW_EffectiveDate,\n\tExpirationDate AS v_PREV_ROW_ExpirationDate,\n\tLineOfBusinessAbbreviation AS v_PREV_ROW_LineOfBusinessAbbreviation,\n\tRatingStateCode AS v_PREV_ROW_RatingStateCode,\n\tClassCode AS v_PREV_ROW_ClassCode,\n\tClassDescription AS v_PREV_ROW_ClassDescription,\n\tOriginatingOrganizationCode AS v_PREV_ROW_OriginatingOrganizationCode,\n\tSYSDATE AS ModifiedDate\n\tFROM SQ_SupClassificationExcessLiability_CheckExpDate\n),\nFIL_FirstRowInAKGroup AS (\n\tSELECT\n\tSupClassificationExcessLiabilityId, \n\to_CurrentSnapshotFlag AS CurrentSnapshotFlag, \n\to_ClassExpirationDate AS ClassExpirationDate, \n\tModifiedDate\n\tFROM EXP_Lag_Eff_Dates\n\tWHERE CurrentSnapshotFlag = '0'\n),\nUPD_SupClassificationExcessLiability AS (\n\tSELECT\n\tSupClassificationExcessLiabilityId, \n\tCurrentSnapshotFlag, \n\tClassExpirationDate, \n\tModifiedDate\n\tFROM FIL_FirstRowInAKGroup\n),\nSupClassificationExcessLiability_IL_CheckExpDate AS (\n\tMERGE INTO SupClassificationExcessLiability AS T\n\tUSING UPD_SupClassificationExcessLiability AS S\n\tON T.SupClassificationExcessLiabilityId = S.SupClassificationExcessLiabilityId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.CurrentSnapshotFlag, T.ExpirationDate = S.ClassExpirationDate, T.ModifiedDate = S.ModifiedDate\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246484"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905454"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603054"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:02:48"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 22:02:41"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_InsuranceReference_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Policy"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "InsRef"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

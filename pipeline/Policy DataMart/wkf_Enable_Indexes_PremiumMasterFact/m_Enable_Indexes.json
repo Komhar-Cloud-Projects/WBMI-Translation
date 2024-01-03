@@ -1,0 +1,49 @@
+{
+    "name": "m_Enable_Indexes",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Enable_Indexes",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Source_Queries AS (\n\n-- TODO Manual --\n\n),\nEXP_Param_Substitution AS (\n\tSELECT\n\tQuery\n\tFROM SQ_Source_Queries\n),\nSQL_Enable_Indexes AS (-- SQL_Enable_Indexes\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nEXP_Generate_Log AS (\n\tSELECT\n\tSQLError,\n\tQuery_output AS SQL_Query_output,\n\t-- *INF*: TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS')||' SQL Statement: '||CHR(10)||SQL_Query_output||CHR(10)||DECODE(TRUE,ISNULL(SQLError),'Command(s) completed successfully. ','SQLError: '||SQLError)\n\tTO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS') || ' SQL Statement: ' || CHR(10) || SQL_Query_output || CHR(10) || DECODE(TRUE,\n\tSQLError IS NULL, 'Command(s) completed successfully. ',\n\t'SQLError: ' || SQLError) AS Result\n\tFROM SQL_Enable_Indexes\n),\nExecution_Results AS (\n\tINSERT INTO Execution_Results\n\t(Result)\n\tSELECT \n\tRESULT\n\tFROM EXP_Generate_Log\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "DBCONNECTION_SQL": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Data_Mart_Claim"
+            },
+            "INPUTFILE_QUERIES": {
+                "type": "string",
+                "defaultValue": "Enable_Indexes_PremiumMasterFact.txt"
+            },
+            "OUTPUTFILE_RESULTS": {
+                "type": "string",
+                "defaultValue": "Enable_Indexes_Results_PremiumMasterFact.txt"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

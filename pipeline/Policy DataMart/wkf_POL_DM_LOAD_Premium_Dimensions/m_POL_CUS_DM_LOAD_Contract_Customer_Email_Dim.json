@@ -1,0 +1,73 @@
+{
+    "name": "m_POL_CUS_DM_LOAD_Contract_Customer_Email_Dim",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_CUS_DM_LOAD_Contract_Customer_Email_Dim",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_ContractCustomerEmailAddress AS (\n\tSELECT\n\t\tContractCustomerEmailAddressID,\n\t\tCurrentSnapshotFlag,\n\t\tAuditId,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tSourceSystemId,\n\t\tCreatedDate,\n\t\tModifiedDate,\n\t\tContractCustomerAKID,\n\t\tSupEmailTypeCodeId,\n\t\tSupEmailPriorityCodeID,\n\t\tCustomerEmailAddress,\n\t\tContractCustomerEmailAddressAKID\n\tFROM ContractCustomerEmailAddress\n\tWHERE ContractCustomerEmailAddress.ModifiedDate>='@{pipeline().parameters.SELECTION_START_TS}'\n),\nLKP_ContractCustomerEmailAddressDim AS (\n\tSELECT\n\tContractCustomerEmailAddressDimID,\n\tEDWContractCustomerEmailAddressPKID\n\tFROM (\n\t\tSELECT \n\t\t\tContractCustomerEmailAddressDimID,\n\t\t\tEDWContractCustomerEmailAddressPKID\n\t\tFROM ContractCustomerEmailAddressDim\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY EDWContractCustomerEmailAddressPKID ORDER BY ContractCustomerEmailAddressDimID) = 1\n),\nLKP_SupEmailPriorityCode AS (\n\tSELECT\n\tEmailPriorityCode,\n\tEmailPriorityDescription,\n\tSupEmailPriorityCodeId\n\tFROM (\n\t\tselect SupEmailPriorityCodeId as SupEmailPriorityCodeId, EmailPriorityCode as EmailPriorityCode, EmailPriorityDescription as EmailPriorityDescription\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupEmailPriorityCode\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY SupEmailPriorityCodeId ORDER BY EmailPriorityCode) = 1\n),\nLKP_SupEmailTypeCode AS (\n\tSELECT\n\tSupEmailTypeCodeCode,\n\tSupEmailTypeDescription,\n\tSupEmailTypeCodeID\n\tFROM (\n\t\tselect SupEmailTypeCodeID as SupEmailTypeCodeID, SupEmailTypeCodeCode as SupEmailTypeCodeCode, SupEmailTypeDescription as SupEmailTypeDescription\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupEmailTypeCode\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY SupEmailTypeCodeID ORDER BY SupEmailTypeCodeCode) = 1\n),\nLKP_contract_customer_dim AS (\n\tSELECT\n\tcontract_cust_dim_id,\n\tcust_num,\n\tedw_contract_cust_ak_id,\n\teff_from_date,\n\teff_to_date\n\tFROM (\n\t\tselect edw_contract_cust_ak_id as edw_contract_cust_ak_id, cust_num as cust_num, contract_cust_dim_id as contract_cust_dim_id, eff_from_date as eff_from_date, eff_to_date as eff_to_date\r\n\t\tfrom @{pipeline().parameters.TARGET_TABLE_OWNER}.contract_customer_dim\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY edw_contract_cust_ak_id,eff_from_date,eff_to_date ORDER BY contract_cust_dim_id) = 1\n),\nExp_SetDefaultValue AS (\n\tSELECT\n\tLKP_ContractCustomerEmailAddressDim.ContractCustomerEmailAddressDimID,\n\t1 AS CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\t-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveDate,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,\n\t'DCT' AS SourceSystemId,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate,\n\tLKP_contract_customer_dim.contract_cust_dim_id AS i_contract_cust_dim_id,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_INTEGERS(i_contract_cust_dim_id)\n\t:UDF.DEFAULT_VALUE_FOR_INTEGERS(i_contract_cust_dim_id) AS o_contract_cust_dim_id,\n\tSQ_ContractCustomerEmailAddress.CustomerEmailAddress AS i_CustomerEmailAddress,\n\t-- *INF*: IIF(ISNULL(i_CustomerEmailAddress),'N/A',i_CustomerEmailAddress)\n\tIFF(i_CustomerEmailAddress IS NULL, 'N/A', i_CustomerEmailAddress) AS o_CustomerEmailAddress,\n\tLKP_SupEmailPriorityCode.EmailPriorityCode AS i_EmailPriorityCode,\n\t-- *INF*: IIF(ISNULL(i_EmailPriorityCode),'N/A',i_EmailPriorityCode)\n\tIFF(i_EmailPriorityCode IS NULL, 'N/A', i_EmailPriorityCode) AS o_EmailPriorityCode,\n\tLKP_SupEmailPriorityCode.EmailPriorityDescription AS i_EmailPriorityDescription,\n\t-- *INF*: IIF(ISNULL(i_EmailPriorityDescription),'N/A',i_EmailPriorityDescription)\n\tIFF(i_EmailPriorityDescription IS NULL, 'N/A', i_EmailPriorityDescription) AS o_EmailPriorityDescription,\n\tLKP_SupEmailTypeCode.SupEmailTypeCodeCode AS i_SupEmailTypeCodeCode,\n\t-- *INF*: IIF(ISNULL(i_SupEmailTypeCodeCode),'N/A',i_SupEmailTypeCodeCode)\n\tIFF(i_SupEmailTypeCodeCode IS NULL, 'N/A', i_SupEmailTypeCodeCode) AS o_SupEmailTypeCodeCode,\n\tLKP_SupEmailTypeCode.SupEmailTypeDescription AS i_SupEmailTypeDescription,\n\t-- *INF*: IIF(ISNULL(i_SupEmailTypeDescription),'N/A',i_SupEmailTypeDescription)\n\tIFF(i_SupEmailTypeDescription IS NULL, 'N/A', i_SupEmailTypeDescription) AS o_SupEmailTypeDescription,\n\tLKP_contract_customer_dim.cust_num AS i_cust_num,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_cust_num)\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(i_cust_num) AS o_cust_num,\n\t0 AS MasterFlag,\n\tSQ_ContractCustomerEmailAddress.ContractCustomerEmailAddressAKID AS i_ContractCustomerEmailAddressAKID,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_INTEGERS(i_ContractCustomerEmailAddressAKID)\n\t:UDF.DEFAULT_VALUE_FOR_INTEGERS(i_ContractCustomerEmailAddressAKID) AS o_ContractCustomerEmailAddressAKID,\n\tSQ_ContractCustomerEmailAddress.ContractCustomerEmailAddressID AS i_ContractCustomerEmailAddressID,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_INTEGERS(i_ContractCustomerEmailAddressID)\n\t:UDF.DEFAULT_VALUE_FOR_INTEGERS(i_ContractCustomerEmailAddressID) AS o_ContractCustomerEmailAddressID\n\tFROM SQ_ContractCustomerEmailAddress\n\tLEFT JOIN LKP_ContractCustomerEmailAddressDim\n\tON LKP_ContractCustomerEmailAddressDim.EDWContractCustomerEmailAddressPKID = SQ_ContractCustomerEmailAddress.ContractCustomerEmailAddressID\n\tLEFT JOIN LKP_SupEmailPriorityCode\n\tON LKP_SupEmailPriorityCode.SupEmailPriorityCodeId = SQ_ContractCustomerEmailAddress.SupEmailPriorityCodeID\n\tLEFT JOIN LKP_SupEmailTypeCode\n\tON LKP_SupEmailTypeCode.SupEmailTypeCodeID = SQ_ContractCustomerEmailAddress.SupEmailTypeCodeId\n\tLEFT JOIN LKP_contract_customer_dim\n\tON LKP_contract_customer_dim.edw_contract_cust_ak_id = SQ_ContractCustomerEmailAddress.ContractCustomerAKID AND LKP_contract_customer_dim.eff_from_date <= SQ_ContractCustomerEmailAddress.ModifiedDate AND LKP_contract_customer_dim.eff_to_date > SQ_ContractCustomerEmailAddress.ModifiedDate\n),\nRTR_Insert_Update AS (\n\tSELECT\n\tContractCustomerEmailAddressDimID AS lkp_ContractCustomerEmailAddressDimID,\n\tCurrentSnapshotFlag,\n\tAuditId,\n\tEffectiveDate,\n\tExpirationDate,\n\tSourceSystemId,\n\tCreatedDate,\n\tModifiedDate,\n\to_contract_cust_dim_id AS contract_cust_dim_id,\n\to_CustomerEmailAddress AS CustomerEmailAddress,\n\to_EmailPriorityCode AS EmailPriorityCode,\n\to_EmailPriorityDescription AS EmailPriorityDescription,\n\to_SupEmailTypeCodeCode AS SupEmailTypeCodeCode,\n\to_SupEmailTypeDescription AS SupEmailTypeDescription,\n\to_cust_num AS cust_num,\n\tMasterFlag,\n\to_ContractCustomerEmailAddressAKID AS ContractCustomerEmailAKID,\n\to_ContractCustomerEmailAddressID AS ContractCustomerEmailAddressID\n\tFROM Exp_SetDefaultValue\n),\nRTR_Insert_Update_INSERT AS (SELECT * FROM RTR_Insert_Update WHERE isnull(lkp_ContractCustomerEmailAddressDimID)),\nRTR_Insert_Update_UPDATE AS (SELECT * FROM RTR_Insert_Update WHERE not isnull(lkp_ContractCustomerEmailAddressDimID)),\nUPD_ContractCustomerEmailAddressDim AS (\n\tSELECT\n\tlkp_ContractCustomerEmailAddressDimID AS lkp_ContractCustomerEmailAddressDimID4, \n\tModifiedDate AS ModifiedDate4, \n\tcontract_cust_dim_id AS contract_cust_dim_id3, \n\tCustomerEmailAddress AS CustomerEmailAddress4, \n\tEmailPriorityCode AS EmailPriorityCode3, \n\tEmailPriorityDescription AS EmailPriorityDescription3, \n\tSupEmailTypeCodeCode AS SupEmailTypeCodeCode3, \n\tSupEmailTypeDescription AS SupEmailTypeDescription3, \n\tcust_num AS cust_num3, \n\tMasterFlag AS MasterFlag2, \n\tContractCustomerEmailAKID AS ContractCustomerEmailAKID3, \n\tContractCustomerEmailAddressID AS ContractCustomerEmailAddressID3\n\tFROM RTR_Insert_Update_UPDATE\n),\nTGT_UPD_ContractCustomerEmailAddressDim AS (\n\tMERGE INTO ContractCustomerEmailAddressDim AS T\n\tUSING UPD_ContractCustomerEmailAddressDim AS S\n\tON T.ContractCustomerEmailAddressDimID = S.lkp_ContractCustomerEmailAddressDimID4\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ModifiedDate = S.ModifiedDate4, T.ContractCustmerDimID = S.contract_cust_dim_id3, T.ContractCustomerEmailAddress = S.CustomerEmailAddress4, T.EmailPriorityCode = S.EmailPriorityCode3, T.EmailPriorityDescription = S.EmailPriorityDescription3, T.EmailTypeCode = S.SupEmailTypeCodeCode3, T.EmailTypeDescription = S.SupEmailTypeDescription3, T.CustomerNumber = S.cust_num3, T.MasterEmailFlag = S.MasterFlag2, T.EDWContractCustomerEmailAddressAKID = S.ContractCustomerEmailAKID3, T.EDWContractCustomerEmailAddressPKID = S.ContractCustomerEmailAddressID3\n),\nEXP_MasterFlag_new_customer AS (\n\tSELECT\n\tCurrentSnapshotFlag AS CurrentSnapshotFlag1,\n\tAuditId AS AuditId1,\n\tEffectiveDate AS EffectiveDate1,\n\tExpirationDate AS ExpirationDate1,\n\tSourceSystemId AS SourceSystemId1,\n\tCreatedDate AS CreatedDate1,\n\tModifiedDate AS ModifiedDate1,\n\tcontract_cust_dim_id AS contract_cust_dim_id1,\n\tCustomerEmailAddress AS CustomerEmailAddress1,\n\tEmailPriorityCode AS EmailPriorityCode1,\n\tEmailPriorityDescription AS EmailPriorityDescription1,\n\tSupEmailTypeCodeCode AS SupEmailTypeCodeCode1,\n\tSupEmailTypeDescription AS SupEmailTypeDescription1,\n\tcust_num AS cust_num1,\n\tMasterFlag AS MasterEmailFlag,\n\tContractCustomerEmailAKID AS ContractCustomerEmailAKID1,\n\tContractCustomerEmailAddressID AS ContractCustomerEmailAddressID1\n\tFROM RTR_Insert_Update_INSERT\n),\nTGT_Insert_ContractCustomerEmailAddressDim AS (\n\tINSERT INTO ContractCustomerEmailAddressDim\n\t(CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, ContractCustmerDimID, ContractCustomerEmailAddress, EmailPriorityCode, EmailPriorityDescription, EmailTypeCode, EmailTypeDescription, CustomerNumber, MasterEmailFlag, EDWContractCustomerEmailAddressAKID, EDWContractCustomerEmailAddressPKID)\n\tSELECT \n\tCurrentSnapshotFlag1 AS CURRENTSNAPSHOTFLAG, \n\tAuditId1 AS AUDITID, \n\tEffectiveDate1 AS EFFECTIVEDATE, \n\tExpirationDate1 AS EXPIRATIONDATE, \n\tSourceSystemId1 AS SOURCESYSTEMID, \n\tCreatedDate1 AS CREATEDDATE, \n\tModifiedDate1 AS MODIFIEDDATE, \n\tcontract_cust_dim_id1 AS CONTRACTCUSTMERDIMID, \n\tCustomerEmailAddress1 AS CONTRACTCUSTOMEREMAILADDRESS, \n\tEmailPriorityCode1 AS EMAILPRIORITYCODE, \n\tEmailPriorityDescription1 AS EMAILPRIORITYDESCRIPTION, \n\tSupEmailTypeCodeCode1 AS EMAILTYPECODE, \n\tSupEmailTypeDescription1 AS EMAILTYPEDESCRIPTION, \n\tcust_num1 AS CUSTOMERNUMBER, \n\tMASTEREMAILFLAG, \n\tContractCustomerEmailAKID1 AS EDWCONTRACTCUSTOMEREMAILADDRESSAKID, \n\tContractCustomerEmailAddressID1 AS EDWCONTRACTCUSTOMEREMAILADDRESSPKID\n\tFROM EXP_MasterFlag_new_customer\n),\nSQ_ContractCustomerEmailAddressDim AS (\n\tSELECT ContractCustomerEmailAddressDimID,CustomerNumber\r\n\tFROM \r\n\t\t@{pipeline().parameters.TARGET_TABLE_OWNER}.ContractCustomerEmailAddressDim a\r\n\tWHERE EXISTS\r\n\t\t( SELECT 1 FROM @{pipeline().parameters.TARGET_TABLE_OWNER}.ContractCustomerEmailAddressDim b WHERE a.CustomerNumber=b.CustomerNumber and a.ModifiedDate >='@{pipeline().parameters.SELECTION_START_TS}' GROUP BY b.CustomerNumber HAVING count(1) > 1) \r\n\tand CustomerNumber<>'N/A' \r\n\tORDER BY  CustomerNumber,ModifiedDate,EmailPriorityCode, EmailTypeCode\n),\nEXP_Set_MasterEmailFlag AS (\n\tSELECT\n\tContractCustomerEmailAddressDimID,\n\tCustomerNumber,\n\t-- *INF*: IIF(CustomerNumber=v_Prev_CustomerNumber,0,1)\n\tIFF(CustomerNumber = v_Prev_CustomerNumber, 0, 1) AS v_MasterEmailFlag,\n\tCustomerNumber AS v_Prev_CustomerNumber,\n\tv_MasterEmailFlag AS MasterEmailFlag\n\tFROM SQ_ContractCustomerEmailAddressDim\n),\nUPD_MasterEmailFlag AS (\n\tSELECT\n\tContractCustomerEmailAddressDimID, \n\tMasterEmailFlag\n\tFROM EXP_Set_MasterEmailFlag\n),\nContractCustomerEmailAddressDim_MasterEmailFlag AS (\n\tMERGE INTO ContractCustomerEmailAddressDim AS T\n\tUSING UPD_MasterEmailFlag AS S\n\tON T.ContractCustomerEmailAddressDimID = S.ContractCustomerEmailAddressDimID\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.MasterEmailFlag = S.MasterEmailFlag\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246511"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905531"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604528"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:57:01"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 03:31:13"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Data_Mart_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

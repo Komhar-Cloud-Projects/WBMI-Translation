@@ -1,0 +1,81 @@
+{
+    "name": "m_POL_DW_LOAD_ModifiedPremiumNonWorkersCompensationCalculation_DCT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_ModifiedPremiumNonWorkersCompensationC_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_PremiumMasterCalculation AS (\n\tselect\r\n\tPMC.PremiumMasterCalculationID,\r\n\tPMC.PremiumMasterRunDate,\r\n\tPMC.PremiumMasterPremium,\r\n\tPTRM.OtherModifiedFactor,\r\n\tPTRM.ScheduleModifiedFactor,\r\n\tPTRM.ExperienceModifiedFactor,\r\n\tPTRM.TransitionFactor\r\n\tfrom\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumMasterCalculation PMC inner Join @{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransactionRatingModifier PTRM\r\n\ton PMC.PremiumTransactionAKID = PTRM.PremiumTransactionAKID\r\n\tAND PMC.CurrentSnapshotFlag = 1\r\n\tAND PMC.SourceSystemID = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'\r\n\tAND PMC.PremiumMasterPremiumType = 'D'\r\n\tAND PMC.PremiumMasterPremium <> 0\r\n\tAND PMC.PremiumMasterReasonAmendedCode NOT IN ('CWO', 'Claw Back')\r\n\tAND convert(VARCHAR(6), PMC.PremiumMasterRunDate, 112) = CONVERT(VARCHAR(6), cast('@{pipeline().parameters.SELECTION_START_TS}' AS DATE), 112)\r\n\tinner Join @{pipeline().parameters.SOURCE_TABLE_OWNER}.RatingCoverage RC \r\n\ton PMC.RatingCoverageAKID = RC.RatingCoverageAKID and PMC.RatingCoverageEffectiveDate = RC.EffectiveDate \r\n\tinner Join @{pipeline().parameters.SOURCE_TABLE_OWNER}.Product PRD \r\n\ton RC.ProductAKId = PRD.ProductAKId AND PRD.CurrentSnapshotFlag = 1 AND PRD.ProductAbbreviation <> 'WC'\n),\nEXP_Extract_IL AS (\n\tSELECT\n\tPremiumMasterCalculationID,\n\tPremiumMasterRunDate,\n\tPremiumMasterPremium,\n\tOtherModifiedFactor,\n\tScheduleModifiedFactor,\n\tExperienceModifiedFactor,\n\tTransitionFactor\n\tFROM SQ_PremiumMasterCalculation\n),\nmplt_Compute_DCT_NonWC_ModifiedPremium AS (WITH\n\tINPUT AS (\n\t\t\n\t),\n\tEXP_Compute_ModifierAmounts AS (\n\t\tSELECT\n\t\ti_PremiumMasterPremium,\n\t\ti_OtherModifiedFactor,\n\t\ti_ScheduleModifiedFactor,\n\t\ti_ExperienceModifiedFactor,\n\t\ti_TransitionFactor,\n\t\ti_DirectWrittenPremium AS DirectWrittenPremium,\n\t\t-- *INF*: TO_DECIMAL((DirectWrittenPremium/i_TransitionFactor),8)\n\t\tTO_DECIMAL(( DirectWrittenPremium / i_TransitionFactor ), 8) AS v_OtherModifiedPremium_div,\n\t\t-- *INF*: TO_DECIMAL((v_OtherModifiedPremium_div/ i_OtherModifiedFactor),8)\n\t\tTO_DECIMAL(( v_OtherModifiedPremium_div / i_OtherModifiedFactor ), 8) AS v_ScheduleModifiedPremium_div,\n\t\t-- *INF*: TO_DECIMAL((v_ScheduleModifiedPremium_div/i_ScheduleModifiedFactor),8)\n\t\tTO_DECIMAL(( v_ScheduleModifiedPremium_div / i_ScheduleModifiedFactor ), 8) AS v_ExperienceModifiedPremium_div,\n\t\t-- *INF*: TO_DECIMAL((v_ExperienceModifiedPremium_div/i_ExperienceModifiedFactor),8)\n\t\tTO_DECIMAL(( v_ExperienceModifiedPremium_div / i_ExperienceModifiedFactor ), 8) AS v_SubjectDirectWrittenPremium_div,\n\t\t-- *INF*: ROUND(v_OtherModifiedPremium_div,4)\n\t\tROUND(v_OtherModifiedPremium_div, 4) AS v_OtherModifiedPremium,\n\t\t-- *INF*: ROUND(v_ScheduleModifiedPremium_div,4)\n\t\tROUND(v_ScheduleModifiedPremium_div, 4) AS v_ScheduleModifiedPremium,\n\t\t-- *INF*: ROUND(v_ExperienceModifiedPremium_div,4)\n\t\tROUND(v_ExperienceModifiedPremium_div, 4) AS v_ExperienceModifiedPremium,\n\t\t-- *INF*: ROUND(v_SubjectDirectWrittenPremium_div,4)\n\t\tROUND(v_SubjectDirectWrittenPremium_div, 4) AS v_SubjectDirectWrittenPremium,\n\t\tv_OtherModifiedPremium AS o_OtherModifiedPremium,\n\t\tv_ScheduleModifiedPremium AS o_ScheduleModifiedPremium,\n\t\tv_ExperienceModifiedPremium AS o_ExperienceModifiedPremium,\n\t\tv_SubjectDirectWrittenPremium AS o_SubjectDirectWrittenPremium\n\t\tFROM INPUT\n\t),\n\tOUTPUT AS (\n\t\tSELECT\n\t\tDirectWrittenPremium AS o_DirectWrittenPremium, \n\t\to_OtherModifiedPremium, \n\t\to_ScheduleModifiedPremium, \n\t\to_ExperienceModifiedPremium, \n\t\to_SubjectDirectWrittenPremium\n\t\tFROM EXP_Compute_ModifierAmounts\n\t),\n),\nEXP_AuditColumns AS (\n\tSELECT\n\tEXP_Extract_IL.PremiumMasterCalculationID,\n\tEXP_Extract_IL.PremiumMasterRunDate,\n\tmplt_Compute_DCT_NonWC_ModifiedPremium.o_DirectWrittenPremium,\n\tmplt_Compute_DCT_NonWC_ModifiedPremium.o_OtherModifiedPremium,\n\tmplt_Compute_DCT_NonWC_ModifiedPremium.o_ScheduleModifiedPremium,\n\tmplt_Compute_DCT_NonWC_ModifiedPremium.o_ExperienceModifiedPremium,\n\tmplt_Compute_DCT_NonWC_ModifiedPremium.o_SubjectDirectWrittenPremium,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate,\n\t0 AS GeneratedRecordIndicator\n\tFROM EXP_Extract_IL\n\t -- Manually join with mplt_Compute_DCT_NonWC_ModifiedPremium\n),\nLKP_ModifiedPremiumNonWorkersCompensationCalculation AS (\n\tSELECT\n\tModifiedPremiumNonWorkersCompensationCalculationId,\n\tPremiumMasterCalculationId\n\tFROM (\n\t\tSELECT \n\t\t\tModifiedPremiumNonWorkersCompensationCalculationId,\n\t\t\tPremiumMasterCalculationId\n\t\tFROM ModifiedPremiumNonWorkersCompensationCalculation\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PremiumMasterCalculationId ORDER BY ModifiedPremiumNonWorkersCompensationCalculationId) = 1\n),\nFTR_ModifiedPremiumNonWorkersCompensationCalculation_Insert AS (\n\tSELECT\n\tLKP_ModifiedPremiumNonWorkersCompensationCalculation.ModifiedPremiumNonWorkersCompensationCalculationId AS lkp_ModifiedPremiumNonWorkersCompensationCalculationId, \n\tEXP_AuditColumns.PremiumMasterCalculationID, \n\tEXP_AuditColumns.PremiumMasterRunDate, \n\tEXP_AuditColumns.o_DirectWrittenPremium, \n\tEXP_AuditColumns.o_OtherModifiedPremium, \n\tEXP_AuditColumns.o_ScheduleModifiedPremium, \n\tEXP_AuditColumns.o_ExperienceModifiedPremium, \n\tEXP_AuditColumns.o_SubjectDirectWrittenPremium, \n\tEXP_AuditColumns.AuditId, \n\tEXP_AuditColumns.SourceSystemID, \n\tEXP_AuditColumns.CreatedDate, \n\tEXP_AuditColumns.ModifiedDate, \n\tEXP_AuditColumns.GeneratedRecordIndicator\n\tFROM EXP_AuditColumns\n\tLEFT JOIN LKP_ModifiedPremiumNonWorkersCompensationCalculation\n\tON LKP_ModifiedPremiumNonWorkersCompensationCalculation.PremiumMasterCalculationId = EXP_AuditColumns.PremiumMasterCalculationID\n\tWHERE isnull(lkp_ModifiedPremiumNonWorkersCompensationCalculationId)\n),\nModifiedPremiumNonWorkersCompensationCalculation AS (\n\tINSERT INTO ModifiedPremiumNonWorkersCompensationCalculation\n\t(AuditId, SourceSystemID, CreatedDate, ModifiedDate, PremiumMasterCalculationId, RunDate, GeneratedRecordIndicator, DirectWrittenPremium, OtherModifiedPremium, ScheduleModifiedPremium, ExperienceModifiedPremium, SubjectWrittenPremium)\n\tSELECT \n\tAUDITID, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tPremiumMasterCalculationID AS PREMIUMMASTERCALCULATIONID, \n\tPremiumMasterRunDate AS RUNDATE, \n\tGENERATEDRECORDINDICATOR, \n\to_DirectWrittenPremium AS DIRECTWRITTENPREMIUM, \n\to_OtherModifiedPremium AS OTHERMODIFIEDPREMIUM, \n\to_ScheduleModifiedPremium AS SCHEDULEMODIFIEDPREMIUM, \n\to_ExperienceModifiedPremium AS EXPERIENCEMODIFIEDPREMIUM, \n\to_SubjectDirectWrittenPremium AS SUBJECTWRITTENPREMIUM\n\tFROM FTR_ModifiedPremiumNonWorkersCompensationCalculation_Insert\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "244834"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "893408"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7543483"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "07/01/2023 09:08:21"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/01/2023 23:13:55"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_CLAIM"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_CLAIM"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            },
+            "TARGET_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "RPT_EDM"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

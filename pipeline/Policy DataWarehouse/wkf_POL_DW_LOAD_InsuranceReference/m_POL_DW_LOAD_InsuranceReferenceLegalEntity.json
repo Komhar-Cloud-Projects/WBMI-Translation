@@ -1,0 +1,77 @@
+{
+    "name": "m_POL_DW_LOAD_InsuranceReferenceLegalEntity",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_InsuranceReferenceLegalEntity",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_LegalEntity AS (\n\tSELECT\n\t\tLegalEntityId,\n\t\tModifiedDate,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tLegalEntityAKId,\n\t\tLegalEntityCode,\n\t\tLegalEntityDescription,\n\t\tLegalEntityAbbreviation\n\tFROM LegalEntity\n),\nEXP_DateValues AS (\n\tSELECT\n\tModifiedDate AS i_ModifiedDate,\n\tEffectiveDate AS i_EffectiveDate,\n\tExpirationDate AS i_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)\n\tIFF(i_EffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate) AS o_EffectiveDate,\n\t-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)\n\tIFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)\n\tIFF(i_ModifiedDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate) AS o_ModifiedDate\n\tFROM SQ_LegalEntity\n),\nEXP_NumericValues AS (\n\tSELECT\n\tLegalEntityId AS i_LegalEntityId,\n\tLegalEntityAKId AS i_LegalEntityAKId,\n\t-- *INF*: IIF(ISNULL(i_LegalEntityId),-1,i_LegalEntityId)\n\tIFF(i_LegalEntityId IS NULL, - 1, i_LegalEntityId) AS o_LegalEntityId,\n\t-- *INF*: IIF(ISNULL(i_LegalEntityAKId),-1,i_LegalEntityAKId)\n\tIFF(i_LegalEntityAKId IS NULL, - 1, i_LegalEntityAKId) AS o_LegalEntityAKId\n\tFROM SQ_LegalEntity\n),\nEXP_StringValues AS (\n\tSELECT\n\tExpirationDate AS i_ExpirationDate,\n\tLegalEntityCode AS i_LegalEntityCode,\n\tLegalEntityDescription AS i_LegalEntityDescription,\n\tLegalEntityAbbreviation AS i_LegalEntityAbbreviation,\n\t-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)\n\tIFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tSYSDATE AS o_CreatedDate,\n\t-- *INF*: IIF(ISNULL(i_LegalEntityCode) OR LENGTH(i_LegalEntityCode)=0 OR IS_SPACES(i_LegalEntityCode),'N/A',LTRIM(RTRIM(i_LegalEntityCode)))\n\tIFF(i_LegalEntityCode IS NULL OR LENGTH(i_LegalEntityCode) = 0 OR IS_SPACES(i_LegalEntityCode), 'N/A', LTRIM(RTRIM(i_LegalEntityCode))) AS o_LegalEntityCode,\n\t-- *INF*: IIF(ISNULL(i_LegalEntityDescription) OR LENGTH(i_LegalEntityDescription)=0 OR IS_SPACES(i_LegalEntityDescription),'N/A',LTRIM(RTRIM(i_LegalEntityDescription)))\n\tIFF(i_LegalEntityDescription IS NULL OR LENGTH(i_LegalEntityDescription) = 0 OR IS_SPACES(i_LegalEntityDescription), 'N/A', LTRIM(RTRIM(i_LegalEntityDescription))) AS o_LegalEntityDescription,\n\t-- *INF*: IIF(ISNULL(i_LegalEntityAbbreviation) OR LENGTH(i_LegalEntityAbbreviation)=0 OR IS_SPACES(i_LegalEntityAbbreviation),'N/A',LTRIM(RTRIM(i_LegalEntityAbbreviation)))\n\tIFF(i_LegalEntityAbbreviation IS NULL OR LENGTH(i_LegalEntityAbbreviation) = 0 OR IS_SPACES(i_LegalEntityAbbreviation), 'N/A', LTRIM(RTRIM(i_LegalEntityAbbreviation))) AS o_LegalEntityAbbreviation\n\tFROM SQ_LegalEntity\n),\nTGT_InsuranceReferenceLegalEntity_UpdateElseInsert AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.InsuranceReferenceLegalEntity AS T\n\tUSING EXP_StringValues AS S\n\tON T.InsuranceReferenceLegalEntityId = S.o_LegalEntityId\n\tWHEN MATCHED THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.o_CurrentSnapshotFlag, T.AuditId = S.o_AuditId, T.EffectiveDate = S.o_EffectiveDate, T.ExpirationDate = S.o_ExpirationDate, T.SourceSystemId = S.o_SourceSystemId, T.CreatedDate = S.o_CreatedDate, T.ModifiedDate = S.o_ModifiedDate, T.InsuranceReferenceLegalEntityAKId = S.o_LegalEntityAKId, T.InsuranceReferenceLegalEntityCode = S.o_LegalEntityCode, T.InsuranceReferenceLegalEntityDescription = S.o_LegalEntityDescription, T.InsuranceReferenceLegalEntityAbbreviation = S.o_LegalEntityAbbreviation\n\tWHEN NOT MATCHED THEN\n\tINSERT (InsuranceReferenceLegalEntityId, CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, InsuranceReferenceLegalEntityAKId, InsuranceReferenceLegalEntityCode, InsuranceReferenceLegalEntityDescription, InsuranceReferenceLegalEntityAbbreviation)\n\tVALUES (\n\tEXP_NumericValues.o_LegalEntityId AS INSURANCEREFERENCELEGALENTITYID, \n\tEXP_StringValues.o_CurrentSnapshotFlag AS CURRENTSNAPSHOTFLAG, \n\tEXP_StringValues.o_AuditId AS AUDITID, \n\tEXP_DateValues.o_EffectiveDate AS EFFECTIVEDATE, \n\tEXP_DateValues.o_ExpirationDate AS EXPIRATIONDATE, \n\tEXP_StringValues.o_SourceSystemId AS SOURCESYSTEMID, \n\tEXP_StringValues.o_CreatedDate AS CREATEDDATE, \n\tEXP_DateValues.o_ModifiedDate AS MODIFIEDDATE, \n\tEXP_NumericValues.o_LegalEntityAKId AS INSURANCEREFERENCELEGALENTITYAKID, \n\tEXP_StringValues.o_LegalEntityCode AS INSURANCEREFERENCELEGALENTITYCODE, \n\tEXP_StringValues.o_LegalEntityDescription AS INSURANCEREFERENCELEGALENTITYDESCRIPTION, \n\tEXP_StringValues.o_LegalEntityAbbreviation AS INSURANCEREFERENCELEGALENTITYABBREVIATION)\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905450"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7602733"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:00:17"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 22:00:17"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_InsuranceReference_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "InsRef"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

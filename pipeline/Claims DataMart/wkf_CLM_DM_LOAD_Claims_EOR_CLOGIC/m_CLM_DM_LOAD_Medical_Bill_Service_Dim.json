@@ -1,0 +1,73 @@
+{
+    "name": "m_CLM_DM_LOAD_Medical_Bill_Service_Dim",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DM_LOAD_Medical_Bill_Service_Dim",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_medical_bill_service AS (\n\tSELECT medical_bill_service.med_bill_serv_id, medical_bill_service.med_bill_serv_ak_id, medical_bill_service.serv_seq_num, medical_bill_service.serv_from_date, medical_bill_service.serv_to_date, medical_bill_service.serv_place_code, medical_bill_service.serv_type_code, medical_bill_service.bill_review_adjusted_code1, medical_bill_service.bill_review_adjusted_code2, medical_bill_service.modified_proc_code1, medical_bill_service.modified_proc_descript, medical_bill_service.modified_proc_code2, medical_bill_service.modified_proc_descript2, medical_bill_service.serv_minutes, medical_bill_service.serv_units, medical_bill_service.drug_qty_dispensed, medical_bill_service.drug_qty_allowed, medical_bill_service.drug_actual_wholesale_price, medical_bill_service.proc_drug_revenue_type_ind, medical_bill_service.proc_drug_revenue_code, medical_bill_service.proc_drug_revenue_descript, medical_bill_service.serv_charge, medical_bill_service.serv_bill_review_red, medical_bill_service.serv_network_red, medical_bill_service.serv_recommend_pay, medical_bill_service.serv_review_comment, medical_bill_service.diagnose_cross_ref \r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.medical_bill_service\r\n\tWHERE\r\n\tCREATED_DATE >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_AUDIT AS (\n\tSELECT\n\tmed_bill_serv_id,\n\tmed_bill_serv_ak_id,\n\tserv_seq_num,\n\tserv_from_date,\n\tserv_to_date,\n\tserv_place_code,\n\tserv_type_code,\n\tbill_review_adjusted_code1,\n\tbill_review_adjusted_code2,\n\tmodified_proc_code1,\n\tmodified_proc_descript,\n\tmodified_proc_code2,\n\tmodified_proc_descript2,\n\tserv_minutes,\n\tserv_units,\n\tdrug_qty_dispensed,\n\tdrug_qty_allowed,\n\tdrug_actual_wholesale_price,\n\tproc_drug_revenue_type_ind,\n\tproc_drug_revenue_code,\n\tproc_drug_revenue_descript,\n\tserv_charge,\n\tserv_bill_review_red,\n\tserv_network_red,\n\tserv_recommend_pay,\n\tserv_review_comment,\n\tdiagnose_cross_ref,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t1 AS crrnt_snpsht_flag,\n\t-- *INF*: to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')\n\tto_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,\n\t-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tto_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,\n\tsysdate AS created_date,\n\tsysdate AS modified_date\n\tFROM SQ_medical_bill_service\n),\nLKP_Medical_Bill_Serv_Exists AS (\n\tSELECT\n\tmed_bill_serv_dim_id,\n\tedw_med_bill_serv_pk_id,\n\tedw_med_bill_serv_ak_id,\n\tserv_seq_num,\n\tserv_from_date,\n\tserv_to_date,\n\tserv_place_code,\n\tserv_type_code,\n\tbill_review_adjusted_code1,\n\tbill_review_adjusted_code2,\n\tmodified_proc_code1,\n\tmodified_proc_descript,\n\tmodified_proc_code2,\n\tmodified_proc_descript2,\n\tserv_minutes,\n\tserv_units,\n\tdrug_qty_dispensed,\n\tdrug_qty_allowed,\n\tdrug_actual_wholesale_price,\n\tproc_drug_revenue_type_ind,\n\tproc_drug_revenue_code,\n\tproc_drug_revenue_descript,\n\tserv_charge,\n\tserv_bill_review_red,\n\tserv_network_red,\n\tserv_recommend_pay,\n\tserv_review_comment,\n\tdiagnose_cross_ref,\n\tcrrnt_snpsht_flag,\n\taudit_id,\n\teff_from_date,\n\teff_to_date,\n\tcreated_date,\n\tmodified_date,\n\tmed_bill_serv_ak_id,\n\tserv_seq_num1,\n\tserv_units1,\n\tproc_drug_revenue_descript1,\n\tserv_charge1,\n\tserv_bill_review_red1,\n\tserv_network_red1,\n\tserv_recommend_pay1,\n\tserv_review_comment1\n\tFROM (\n\t\tSELECT \n\t\t\tmed_bill_serv_dim_id,\n\t\t\tedw_med_bill_serv_pk_id,\n\t\t\tedw_med_bill_serv_ak_id,\n\t\t\tserv_seq_num,\n\t\t\tserv_from_date,\n\t\t\tserv_to_date,\n\t\t\tserv_place_code,\n\t\t\tserv_type_code,\n\t\t\tbill_review_adjusted_code1,\n\t\t\tbill_review_adjusted_code2,\n\t\t\tmodified_proc_code1,\n\t\t\tmodified_proc_descript,\n\t\t\tmodified_proc_code2,\n\t\t\tmodified_proc_descript2,\n\t\t\tserv_minutes,\n\t\t\tserv_units,\n\t\t\tdrug_qty_dispensed,\n\t\t\tdrug_qty_allowed,\n\t\t\tdrug_actual_wholesale_price,\n\t\t\tproc_drug_revenue_type_ind,\n\t\t\tproc_drug_revenue_code,\n\t\t\tproc_drug_revenue_descript,\n\t\t\tserv_charge,\n\t\t\tserv_bill_review_red,\n\t\t\tserv_network_red,\n\t\t\tserv_recommend_pay,\n\t\t\tserv_review_comment,\n\t\t\tdiagnose_cross_ref,\n\t\t\tcrrnt_snpsht_flag,\n\t\t\taudit_id,\n\t\t\teff_from_date,\n\t\t\teff_to_date,\n\t\t\tcreated_date,\n\t\t\tmodified_date,\n\t\t\tmed_bill_serv_ak_id,\n\t\t\tserv_seq_num1,\n\t\t\tserv_units1,\n\t\t\tproc_drug_revenue_descript1,\n\t\t\tserv_charge1,\n\t\t\tserv_bill_review_red1,\n\t\t\tserv_network_red1,\n\t\t\tserv_recommend_pay1,\n\t\t\tserv_review_comment1\n\t\tFROM medical_bill_service_dim\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY edw_med_bill_serv_ak_id,serv_seq_num,serv_units,proc_drug_revenue_descript,serv_charge,serv_bill_review_red,serv_network_red,serv_recommend_pay,serv_review_comment ORDER BY med_bill_serv_dim_id) = 1\n),\nRTR_INS_UPD AS (\n\tSELECT\n\tLKP_Medical_Bill_Serv_Exists.med_bill_serv_dim_id,\n\tEXP_AUDIT.med_bill_serv_id,\n\tEXP_AUDIT.med_bill_serv_ak_id,\n\tEXP_AUDIT.serv_seq_num,\n\tEXP_AUDIT.serv_from_date,\n\tEXP_AUDIT.serv_to_date,\n\tEXP_AUDIT.serv_place_code,\n\tEXP_AUDIT.serv_type_code,\n\tEXP_AUDIT.bill_review_adjusted_code1,\n\tEXP_AUDIT.bill_review_adjusted_code2,\n\tEXP_AUDIT.modified_proc_code1,\n\tEXP_AUDIT.modified_proc_descript,\n\tEXP_AUDIT.modified_proc_code2,\n\tEXP_AUDIT.modified_proc_descript2,\n\tEXP_AUDIT.serv_minutes,\n\tEXP_AUDIT.serv_units,\n\tEXP_AUDIT.drug_qty_dispensed,\n\tEXP_AUDIT.drug_qty_allowed,\n\tEXP_AUDIT.drug_actual_wholesale_price,\n\tEXP_AUDIT.proc_drug_revenue_type_ind,\n\tEXP_AUDIT.proc_drug_revenue_code,\n\tEXP_AUDIT.proc_drug_revenue_descript,\n\tEXP_AUDIT.serv_charge,\n\tEXP_AUDIT.serv_bill_review_red,\n\tEXP_AUDIT.serv_network_red,\n\tEXP_AUDIT.serv_recommend_pay,\n\tEXP_AUDIT.serv_review_comment,\n\tEXP_AUDIT.diagnose_cross_ref,\n\tEXP_AUDIT.audit_id,\n\tEXP_AUDIT.crrnt_snpsht_flag,\n\tEXP_AUDIT.eff_from_date,\n\tEXP_AUDIT.eff_to_date,\n\tEXP_AUDIT.created_date,\n\tEXP_AUDIT.modified_date\n\tFROM EXP_AUDIT\n\tLEFT JOIN LKP_Medical_Bill_Serv_Exists\n\tON LKP_Medical_Bill_Serv_Exists.edw_med_bill_serv_ak_id = EXP_AUDIT.med_bill_serv_ak_id AND LKP_Medical_Bill_Serv_Exists.serv_seq_num = EXP_AUDIT.serv_seq_num AND LKP_Medical_Bill_Serv_Exists.serv_units = EXP_AUDIT.serv_units AND LKP_Medical_Bill_Serv_Exists.proc_drug_revenue_descript = EXP_AUDIT.proc_drug_revenue_descript AND LKP_Medical_Bill_Serv_Exists.serv_charge = EXP_AUDIT.serv_charge AND LKP_Medical_Bill_Serv_Exists.serv_bill_review_red = EXP_AUDIT.serv_bill_review_red AND LKP_Medical_Bill_Serv_Exists.serv_network_red = EXP_AUDIT.serv_network_red AND LKP_Medical_Bill_Serv_Exists.serv_recommend_pay = EXP_AUDIT.serv_recommend_pay AND LKP_Medical_Bill_Serv_Exists.serv_review_comment = EXP_AUDIT.serv_review_comment\n),\nRTR_INS_UPD_insert AS (SELECT * FROM RTR_INS_UPD WHERE isnull(med_bill_serv_dim_id)),\nRTR_INS_UPD_DEFAULT1 AS (SELECT * FROM RTR_INS_UPD WHERE NOT ( (isnull(med_bill_serv_dim_id)) )),\nUPD_Med_Bill_Serv_Dim_U AS (\n\tSELECT\n\tmed_bill_serv_dim_id AS med_bill_serv_dim_id2, \n\tmed_bill_serv_id AS med_bill_serv_id2, \n\tmed_bill_serv_ak_id AS med_bill_serv_ak_id2, \n\tserv_seq_num AS serv_seq_num2, \n\tserv_from_date AS serv_from_date2, \n\tserv_to_date AS serv_to_date2, \n\tserv_place_code AS serv_place_code2, \n\tserv_type_code AS serv_type_code2, \n\tbill_review_adjusted_code1 AS bill_review_adjusted_code12, \n\tbill_review_adjusted_code AS bill_review_adjusted_code22, \n\tmodified_proc_code1 AS modified_proc_code12, \n\tmodified_proc_descript3, \n\tmodified_proc_code AS modified_proc_code22, \n\tmodified_proc_descript AS modified_proc_descript22, \n\tserv_minutes AS serv_minutes2, \n\tserv_units AS serv_units2, \n\tdrug_qty_dispensed AS drug_qty_dispensed2, \n\tdrug_qty_allowed AS drug_qty_allowed2, \n\tdrug_actual_wholesale_price AS drug_actual_wholesale_price2, \n\tproc_drug_revenue_type_ind AS proc_drug_revenue_type_ind2, \n\tproc_drug_revenue_code AS proc_drug_revenue_code2, \n\tproc_drug_revenue_descript AS proc_drug_revenue_descript2, \n\tserv_charge AS serv_charge2, \n\tserv_bill_review_red AS serv_bill_review_red2, \n\tserv_network_red AS serv_network_red2, \n\tserv_recommend_pay AS serv_recommend_pay2, \n\tserv_review_comment AS serv_review_comment2, \n\tdiagnose_cross_ref AS diagnose_cross_ref2, \n\taudit_id AS audit_id2, \n\tcrrnt_snpsht_flag AS crrnt_snpsht_flag2, \n\teff_from_date AS eff_from_date2, \n\teff_to_date AS eff_to_date2, \n\tcreated_date AS created_date2, \n\tmodified_date AS modified_date2\n\tFROM RTR_INS_UPD_DEFAULT1\n),\nmedical_bill_service_dim_upd AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill_service_dim AS T\n\tUSING UPD_Med_Bill_Serv_Dim_U AS S\n\tON T.med_bill_serv_dim_id = S.med_bill_serv_dim_id2\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.edw_med_bill_serv_pk_id = S.med_bill_serv_id2, T.edw_med_bill_serv_ak_id = S.med_bill_serv_ak_id2, T.serv_seq_num = S.serv_seq_num2, T.serv_from_date = S.serv_from_date2, T.serv_to_date = S.serv_to_date2, T.serv_place_code = S.serv_place_code2, T.serv_type_code = S.serv_type_code2, T.bill_review_adjusted_code1 = S.bill_review_adjusted_code12, T.bill_review_adjusted_code2 = S.bill_review_adjusted_code22, T.modified_proc_code1 = S.modified_proc_code12, T.modified_proc_descript = S.modified_proc_descript3, T.modified_proc_code2 = S.modified_proc_code22, T.modified_proc_descript2 = S.modified_proc_descript22, T.serv_minutes = S.serv_minutes2, T.serv_units = S.serv_units2, T.drug_qty_dispensed = S.drug_qty_dispensed2, T.drug_qty_allowed = S.drug_qty_allowed2, T.drug_actual_wholesale_price = S.drug_actual_wholesale_price2, T.proc_drug_revenue_type_ind = S.proc_drug_revenue_type_ind2, T.proc_drug_revenue_code = S.proc_drug_revenue_code2, T.proc_drug_revenue_descript = S.proc_drug_revenue_descript2, T.serv_charge = S.serv_charge2, T.serv_bill_review_red = S.serv_bill_review_red2, T.serv_network_red = S.serv_network_red2, T.serv_recommend_pay = S.serv_recommend_pay2, T.serv_review_comment = S.serv_review_comment2, T.diagnose_cross_ref = S.diagnose_cross_ref2, T.audit_id = S.audit_id2, T.modified_date = S.modified_date2\n),\nmedical_bill_service_dim_ins AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill_service_dim\n\t(edw_med_bill_serv_pk_id, edw_med_bill_serv_ak_id, serv_seq_num, serv_from_date, serv_to_date, serv_place_code, serv_type_code, bill_review_adjusted_code1, bill_review_adjusted_code2, modified_proc_code1, modified_proc_descript, modified_proc_code2, modified_proc_descript2, serv_minutes, serv_units, drug_qty_dispensed, drug_qty_allowed, drug_actual_wholesale_price, proc_drug_revenue_type_ind, proc_drug_revenue_code, proc_drug_revenue_descript, serv_charge, serv_bill_review_red, serv_network_red, serv_recommend_pay, serv_review_comment, diagnose_cross_ref, crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, created_date, modified_date)\n\tSELECT \n\tmed_bill_serv_id AS EDW_MED_BILL_SERV_PK_ID, \n\tmed_bill_serv_ak_id AS EDW_MED_BILL_SERV_AK_ID, \n\tSERV_SEQ_NUM, \n\tSERV_FROM_DATE, \n\tSERV_TO_DATE, \n\tSERV_PLACE_CODE, \n\tSERV_TYPE_CODE, \n\tbill_review_adjusted_code AS BILL_REVIEW_ADJUSTED_CODE1, \n\tBILL_REVIEW_ADJUSTED_CODE2, \n\tmodified_proc_code AS MODIFIED_PROC_CODE1, \n\tMODIFIED_PROC_DESCRIPT, \n\tMODIFIED_PROC_CODE2, \n\tMODIFIED_PROC_DESCRIPT2, \n\tSERV_MINUTES, \n\tSERV_UNITS, \n\tDRUG_QTY_DISPENSED, \n\tDRUG_QTY_ALLOWED, \n\tDRUG_ACTUAL_WHOLESALE_PRICE, \n\tPROC_DRUG_REVENUE_TYPE_IND, \n\tPROC_DRUG_REVENUE_CODE, \n\tPROC_DRUG_REVENUE_DESCRIPT, \n\tSERV_CHARGE, \n\tSERV_BILL_REVIEW_RED, \n\tSERV_NETWORK_RED, \n\tSERV_RECOMMEND_PAY, \n\tSERV_REVIEW_COMMENT, \n\tDIAGNOSE_CROSS_REF, \n\tCRRNT_SNPSHT_FLAG, \n\tAUDIT_ID, \n\tEFF_FROM_DATE, \n\tEFF_TO_DATE, \n\tCREATED_DATE, \n\tMODIFIED_DATE\n\tFROM RTR_INS_UPD_insert\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246513"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905536"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604582"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 03:42:18"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 04:16:08"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Data_Mart_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

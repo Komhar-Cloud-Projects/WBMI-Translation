@@ -1,0 +1,89 @@
+{
+    "name": "wkf_POL_DW_LOAD_Premium_PMS_1",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "s_m_POL_DW_Logical_Delete_Location_Coverage_Transact_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_LOAD_Work_PolicyTransactionStatus",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_Logical_Delete_Location_Coverage_Transaction_Data"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_Logical_Delete_Location_Coverage_Transaction_Data"
+            },
+            {
+                "name": "s_m_POL_LOAD_Work_PolicyTransactionStatus",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_WorkPolicyKeyList",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_LOAD_Work_PolicyTransactionStatus"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_WorkPolicyKeyList",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_WorkPolicyKeyList"
+                    },
+                    "parameters": {}
+                }
+            }
+        ],
+        "folder": {
+            "name": ""
+        },
+        "variables": {}
+    }
+}

@@ -1,0 +1,563 @@
+{
+    "name": "wkf_POL_DW_LOAD_PREMIUMTRANSACTIONS_DCT",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_RatingCoverage_DCT",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_RatingCoverage_DCT"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_PremiumTransaction_DCT",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_PremiumTransaction_DCT_DataRepair",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_PremiumTransaction_DCT"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "Control",
+                "type": "Script",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_Load_PolicyAudit_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "s_m_POL_DW_Load_PolicyAudit_DCT",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_DCT_CWO_ClawBack_Update_Amounts_To_F_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_Load_PolicyAudit_DCT"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_ArchWorkPremiumTransaction",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineageH_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_ArchWorkPremiumTransaction"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_DCT_CWO_ClawBack_Update_Amounts_To_F_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_DCT_CWO_ClawBack_From_Billing",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_DCT_CWO_ClawBack_Update_Amounts_To_Factor_Rounding_Issues"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_LOAD_DCT_CWO_ClawBack_Update_Amounts_To_Factor_Rounding_Issues"
+            },
+            {
+                "name": "s_m_POL_DW_Update_GraduatedCommissionRate",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_ArchWorkPremiumTransaction",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_Update_GraduatedCommissionRate"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_Update_POPFinalAuditCommissionRate",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_Update_GraduatedCommissionRate",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_Update_POPFinalAuditCommissionRate"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_DCT_CWO_ClawBack_From_Billing",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_Update_POPFinalAuditCommissionRate",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_DCT_CWO_ClawBack_From_Billing"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_PremiumTransaction_DCT_DataRepair",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_RatingCoverage_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_PremiumTransaction_DCT_DataRepair"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineageH_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_Update_PremiumTransaction_ExpMod_Offset_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineageHistory"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineageHistory"
+            },
+            {
+                "name": "s_m_POL_DW_Update_expmod_effd_PremiumTransaction_DCT",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_Update_PremiumTransaction_WrittenExposure_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_Update_expmod_effd_PremiumTransaction_DCT"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_Update_PremiumTransaction_WrittenExposure_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_Update_PremiumTransaction_OffsetAttribute_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_Update_PremiumTransaction_WrittenExposure_WorkCompAudits"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_Update_PremiumTransaction_WrittenExposure_WorkCompAudits"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_WorkDCTPremiumTransactionTracking_In_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_PremiumTransaction_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_WorkDCTPremiumTransactionTracking_Incremental"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_LOAD_WorkDCTPremiumTransactionTracking_Incremental"
+            },
+            {
+                "name": "s_m_POL_DW_Update_WorkDCTPremiumTransactionTracking__00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_WorkDCTPremiumTransactionTracking_In_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_Update_WorkDCTPremiumTransactionTracking_DeprecatedOn"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_Update_WorkDCTPremiumTransactionTracking_DeprecatedOn_Incremental"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_WorkPolicyNotSuportedByOffsetAccurac_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_Update_WorkDCTPremiumTransactionTracking__00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_WorkPolicyNotSuportedByOffsetAccuracy_DataRepair"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_LOAD_WorkPolicyNotSuportedByOffsetAccuracy_DataRepair_Incremental"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionOnsetOffsetPre_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_WorkPolicyNotSuportedByOffsetAccurac_01",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_WorkPremiumTransactionOnsetOffsetPreProcessing"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_LOAD_WorkPremiumTransactionOnsetOffsetPreProcessing_Incremental"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage__00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionOnsetOffsetPre_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage_Offset"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage_Offset"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage__01",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage__00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage_DeprecatedForOffset"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage_DeprecatedForOffset"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage__02",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage__01",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage_DeprecatedForOnset"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage_DeprecatedForOnset"
+            },
+            {
+                "name": "s_m_POL_DW_Update_PremiumTransaction_OffsetAttribute_00",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage__03",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_Update_PremiumTransaction_OffsetAttributes_DCT"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_Update_PremiumTransaction_OffsetAttributes_DCT"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_WorkPolicyNotSuportedByOffsetAccurac_01",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_WorkPolicyNotSuportedByOffsetAccurac_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_WorkPolicyNotSuportedByOffsetAccuracy_MissingTRE"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_LOAD_WorkPolicyNotSuportedByOffsetAccuracy_MissingTRE"
+            },
+            {
+                "name": "s_m_POL_DW_Update_PremiumTransaction_ExpMod_Offset_DCT",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_Update_expmod_effd_PremiumTransaction_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_Update_PremiumTransaction_ExpMod_Offset_DCT"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage__03",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage__02",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage_DeprecatedForSoloOnset"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage_DeprecatedForSoloOnset"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_PolicyForm_DCT",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_PolicyForm_DCT"
+                    },
+                    "parameters": {}
+                }
+            }
+        ],
+        "folder": {
+            "name": ""
+        },
+        "variables": {}
+    }
+}

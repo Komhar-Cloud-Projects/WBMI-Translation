@@ -1,0 +1,77 @@
+{
+    "name": "m_POL_CUS_DW_LOAD_sup_target_market_code",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_CUS_DW_LOAD_sup_target_market_code",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_wbmtmrkt_stage AS (\n\tSELECT\n\t\tgtam_wbmtmrkt_stage_id,\n\t\tabbreviation_of_target_mkt,\n\t\tdate_field1,\n\t\tdate_field2,\n\t\tdescription_of_target_mkt,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_wbmtmrkt_stage\n),\nEXP_values AS (\n\tSELECT\n\tgtam_wbmtmrkt_stage_id,\n\tabbreviation_of_target_mkt AS in_abbreviation_of_target_mkt,\n\t-- *INF*: decode(TRUE,\r\n\t-- ISNULL(in_abbreviation_of_target_mkt),'N/A',\r\n\t-- IS_SPACES(in_abbreviation_of_target_mkt),'N/A',\r\n\t-- LENGTH(in_abbreviation_of_target_mkt)=0,'N/A',\r\n\t-- LTRIM(RTRIM(in_abbreviation_of_target_mkt)))\n\tdecode(TRUE,\n\tin_abbreviation_of_target_mkt IS NULL, 'N/A',\n\tIS_SPACES(in_abbreviation_of_target_mkt), 'N/A',\n\tLENGTH(in_abbreviation_of_target_mkt) = 0, 'N/A',\n\tLTRIM(RTRIM(in_abbreviation_of_target_mkt))) AS target_market_code,\n\tdescription_of_target_mkt AS in_description_of_target_mkt,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_description_of_target_mkt)\r\n\t-- \r\n\t-- \r\n\t-- \r\n\t-- \r\n\t-- \r\n\t-- \r\n\t-- --decode(TRUE,\r\n\t-- --ISNULL(in_description_of_target_mkt),'N/A',\r\n\t-- --IS_SPACES(in_description_of_target_mkt),'N/A',\r\n\t-- --LENGTH(in_description_of_target_mkt)=0,'N/A',\r\n\t-- --LTRIM(RTRIM(in_description_of_target_mkt)))\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(in_description_of_target_mkt) AS target_mrkt_code_descript\n\tFROM SQ_gtam_wbmtmrkt_stage\n),\nLKP_sup_target_marget_code AS (\n\tSELECT\n\tsup_target_mrkt_code_id,\n\ttarget_mrkt_code_descript,\n\ttarget_mrkt_code\n\tFROM (\n\t\tSELECT \r\n\t\t\tsup_target_market_code.sup_target_mrkt_code_id as sup_target_mrkt_code_id, \tsup_target_market_code.target_mrkt_code_descript as target_mrkt_code_descript,\r\n\t\t\tltrim(rtrim(sup_target_market_code.target_mrkt_code)) as target_mrkt_code \r\n\t\tFROM\r\n\t\t@{pipeline().parameters.TARGET_TABLE_OWNER}.sup_target_market_code\r\n\t\twhere sup_target_market_code.crrnt_snpsht_flag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY target_mrkt_code ORDER BY sup_target_mrkt_code_id DESC) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tLKP_sup_target_marget_code.sup_target_mrkt_code_id AS lkp_sup_target_mrkt_code_id,\n\tLKP_sup_target_marget_code.target_mrkt_code_descript AS lkp_target_mrkt_code_descript,\n\tEXP_values.target_market_code,\n\tEXP_values.target_mrkt_code_descript,\n\t-- *INF*: iif(isnull(lkp_sup_target_mrkt_code_id),'NEW',IIF(\r\n\t-- LTRIM(RTRIM(lkp_target_mrkt_code_descript)) != LTRIM(RTRIM(target_mrkt_code_descript)),'UPDATE','NOCHANGE'))\r\n\t-- \r\n\t-- \r\n\t-- \r\n\t-- \r\n\t-- \r\n\t-- \n\tIFF(lkp_sup_target_mrkt_code_id IS NULL, 'NEW', IFF(LTRIM(RTRIM(lkp_target_mrkt_code_descript)) != LTRIM(RTRIM(target_mrkt_code_descript)), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,\n\tv_changed_flag AS changed_flag,\n\t1 AS crrnt_snpsht_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t-- *INF*: iif(v_changed_flag='NEW',\r\n\t-- \tto_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)\n\tIFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,\n\tSYSDATE AS created_date,\n\tSYSDATE AS modified_date\n\tFROM EXP_values\n\tLEFT JOIN LKP_sup_target_marget_code\n\tON LKP_sup_target_marget_code.target_mrkt_code = EXP_values.target_market_code\n),\nFIL_insert AS (\n\tSELECT\n\ttarget_market_code, \n\ttarget_mrkt_code_descript, \n\tchanged_flag, \n\tcrrnt_snpsht_flag, \n\taudit_id, \n\teff_from_date, \n\teff_to_date, \n\tsource_sys_id, \n\tcreated_date, \n\tmodified_date\n\tFROM EXP_Detect_Changes\n\tWHERE changed_flag='NEW' OR changed_flag='UPDATE'\n),\nTGT_sup_target_market_code_INSERT AS (\n\tINSERT INTO sup_target_market_code\n\t(crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, source_sys_id, created_date, modified_date, target_mrkt_code, target_mrkt_code_descript)\n\tSELECT \n\tCRRNT_SNPSHT_FLAG, \n\tAUDIT_ID, \n\tEFF_FROM_DATE, \n\tEFF_TO_DATE, \n\tSOURCE_SYS_ID, \n\tCREATED_DATE, \n\tMODIFIED_DATE, \n\ttarget_market_code AS TARGET_MRKT_CODE, \n\tTARGET_MRKT_CODE_DESCRIPT\n\tFROM FIL_insert\n),\nSQ_sup_target_market_code AS (\n\tSELECT \r\n\t\t\ta.sup_target_mrkt_code_id, \r\n\t\t\ta.eff_from_date, \r\n\t\t\ta.eff_to_date, \r\n\t\t\ta.target_mrkt_code\r\n\tFROM\r\n\t\t\t @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_target_market_code a\r\n\tWHERE \r\n\t\t\ta.target_mrkt_code  IN \r\n\t\t\t(SELECT target_mrkt_code FROM @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_target_market_code\r\n\t\t\tWHERE crrnt_snpsht_flag = 1 GROUP BY target_mrkt_code  HAVING count(*) > 1)\r\n\tORDER BY \r\n\t\t\ta.target_mrkt_code, a.eff_from_date  DESC\r\n\t\r\n\t\r\n\t--IN Subquery exists to pick AK ID column values that have multiple rows with a 12/31/2100 eff_to_date.\r\n\t--When this condition occurs this is an indication that we must expire one or more of these rows.\r\n\t--WHERE clause is always made up of current snapshot flag \r\n\t--GROUP BY clause is always on AK\r\n\t--HAVING clause stays the same\n),\nEXP_Lag_eff_from_date AS (\n\tSELECT\n\tsup_target_mrkt_code_id,\n\teff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\ttarget_mrkt_code,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- target_mrkt_code = v_prev_target_mrkt_code,\r\n\t-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)\n\tDECODE(TRUE,\n\ttarget_mrkt_code = v_prev_target_mrkt_code, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),\n\torig_eff_to_date) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\ttarget_mrkt_code AS v_prev_target_mrkt_code,\n\teff_from_date AS v_prev_eff_from_date,\n\t0 AS crrnt_snpsht_flag,\n\tSYSDATE AS modified_dt\n\tFROM SQ_sup_target_market_code\n),\nFIL_FirstRowInAKGrouptRowInAKGroup AS (\n\tSELECT\n\tsup_target_mrkt_code_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_dt\n\tFROM EXP_Lag_eff_from_date\n\tWHERE orig_eff_to_date != eff_to_date\n),\nUPD_sup_assoc_program_code_id AS (\n\tSELECT\n\tsup_target_mrkt_code_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_dt\n\tFROM FIL_FirstRowInAKGrouptRowInAKGroup\n),\nTGT_sup_target_market_code_UPDATE AS (\n\tMERGE INTO sup_target_market_code AS T\n\tUSING UPD_sup_assoc_program_code_id AS S\n\tON T.sup_target_mrkt_code_id = S.sup_target_mrkt_code_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_dt\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905515"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604175"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 01:20:53"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 01:53:42"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Policy"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "dbo"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "dbo"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "PMS"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

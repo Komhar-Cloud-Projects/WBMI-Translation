@@ -1,0 +1,97 @@
+{
+    "name": "m_POL_Generate_DM_DCTBalanceAndControl_JSONDataHist_PolKey",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_Generate_DM_DCTBalanceAndControl_JSONDataHist__00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBPolicyStaging AS (\n\tSELECT  distinct P.PolicyNumber , WP.PolicyVersionFormatted as pol_version  \r\n\tFROM wc_stage_archive.dbo.ArchWBPolicyStaging WP\r\n\tINNER JOIN  wc_stage_archive.dbo.archDCPolicyStaging P ON WP.sessionid = P.sessionid\r\n\t Where\r\n\tp.ExtractDate >=@{pipeline().parameters.STARTDATE}\r\n\tUNION\r\n\t\r\n\tSELECT  \r\n\tdistinct P.PolicyNumber, P.PolicyVersion as pol_version \r\n\tFROM wc_stage_archive.dbo.ArchWorkDCTPLPolicy P\r\n\tWhere\r\n\tp.ExtractDate >=@{pipeline().parameters.STARTDATE}\n),\nEXP_POLKEY AS (\n\tSELECT\n\tpol_version,\n\tPolicyNumber,\n\t-- *INF*: CONCAT(PolicyNumber,pol_version)\n\tCONCAT(PolicyNumber, pol_version) AS Pol_key\n\tFROM SQ_WBPolicyStaging\n),\nSQ_policy_dim AS (\n\tDECLARE @DATE datetime\r\n\tSET @DATE = DATEADD(mm,DATEDIFF(m,0,GETDATE()),0)\r\n\t\r\n\t       SELECT POL.Pol_Num as SourceReference,\r\n\t              POL.Pol_Key as SourceUID,\r\n\t              sum(PTF.DirectWrittenPremium) as TotalPremiumChange\r\n\t       FROM dbo.PremiumTransactionfact PTF\r\n\t       INNER JOIN dbo.Policy_Dim POL\r\n\t         on POL.pol_dim_id = PTF.PolicyDimId\r\n\t  INNER JOIN dbo.calendar_dim CD on CD.clndr_id = PTF.PremiumTransactionBookedDateID\r\n\t       WHERE CD.clndr_date >= @DATE  ---- transactions with booked of current month and future months\r\n\t  AND POL.pol_sym = '000'\r\n\t  GROUP BY POL.Pol_Num, POL.Pol_Key\n),\nSQ_policy_dim1 AS (\n\tDECLARE @DATE datetime\r\n\tSET @DATE = DATEADD(mm,DATEDIFF(m,0,GETDATE()),0)\r\n\t         SELECT POL.Pol_Num as SourceReference,\r\n\t              POL.Pol_Key as SourceUID,\r\n\t              sum(PMF.PremiumMasterDirectWrittenPremium) as TotalPremiumChange\r\n\t       FROM dbo.PremiumMasterFact PMF\r\n\t       INNER JOIN dbo.Policy_Dim POL\r\n\t  on POL.pol_dim_id = PMF.PolicyDimId\r\n\t  WHERE POL.pol_sym = '000'\r\n\t       GROUP BY\r\n\t              POL.Pol_Num,\r\n\t              POL.Pol_Key\n),\nSQ_policy_dim2 AS (\n\tDECLARE @DATE datetime\r\n\tSET @DATE = DATEADD(mm,DATEDIFF(m,0,GETDATE()),0)\r\n\t       SELECT POL.Pol_Num as SourceReference,\r\n\t              POL.Pol_Key as SourceUID,\r\n\t              sum(PTCT.PassThroughChargeTransactionAmount) as TotalPremiumChange\r\n\t       FROM dbo.PassThroughChargeTransactionfact PTCT\r\n\t       INNER JOIN dbo.Policy_Dim POL\r\n\t         on POL.pol_dim_id = PTCT.PolicyDimId\r\n\t WHERE POL.pol_sym = '000'\r\n\t       GROUP BY     POL.Pol_Num,\r\n\t              POL.Pol_Key\n),\nUN_all AS (\n\tSELECT SourceReference, SourceUID, TotalPremiumChange\n\tFROM SQ_policy_dim\n\tUNION\n\tSELECT SourceReference, SourceUID, TotalPremiumChange\n\tFROM SQ_policy_dim1\n\tUNION\n\tSELECT SourceReference, SourceUID, TotalPremiumChange\n\tFROM SQ_policy_dim2\n),\nJNR_Stage_DM AS (SELECT\n\tEXP_POLKEY.Pol_key, \n\tUN_all.SourceReference, \n\tUN_all.SourceUID, \n\tUN_all.TotalPremiumChange\n\tFROM UN_all\n\tINNER JOIN EXP_POLKEY\n\tON EXP_POLKEY.Pol_key = UN_all.SourceUID\n),\nAGG_SR_SUID AS (\n\tSELECT\n\tSourceReference, \n\tSourceUID, \n\tTotalPremiumChange, \n\tSUM(TotalPremiumChange) AS TotalPremiumChangeOut\n\tFROM JNR_Stage_DM\n\tGROUP BY SourceReference, SourceUID\n),\nEXP_Values AS (\n\tSELECT\n\tSourceReference,\n\tSourceUID,\n\tTotalPremiumChangeOut AS TotalPremiumChange,\n\t-- *INF*: '{' ||\r\n\t--    '\"SourceSystemCode\":\"DWMRT\",' ||  \r\n\t--    '\"ComponentName\":\"PolicyMart\",' ||\r\n\t--    '\"TypeCode\":\"EXBAL\",' ||\r\n\t--    '\"SourceReference\":\"'|| SourceReference || '\",' ||\r\n\t--    '\"SourceTypeCode\":\"POLKY\",'  || \r\n\t--    '\"SourceUID\":\"'|| SourceUID ||'\",' ||  \r\n\t--    '\"TransactionType\":\"All Transactions\",'  || \r\n\t--    '\"TransactionTotal\":' || TO_CHAR(TotalPremiumChange) ||\r\n\t-- '}'\n\t'{' || '\"SourceSystemCode\":\"DWMRT\",' || '\"ComponentName\":\"PolicyMart\",' || '\"TypeCode\":\"EXBAL\",' || '\"SourceReference\":\"' || SourceReference || '\",' || '\"SourceTypeCode\":\"POLKY\",' || '\"SourceUID\":\"' || SourceUID || '\",' || '\"TransactionType\":\"All Transactions\",' || '\"TransactionTotal\":' || TO_CHAR(TotalPremiumChange) || '}' AS v_JSON_row,\n\tv_JSON_row AS Json_RowData,\n\t@{pipeline().parameters.TARGETFILE} AS Filename\n\tFROM AGG_SR_SUID\n),\nTransactionalData_JSONFile AS (\n\tINSERT INTO JSONFile\n\t(JSONMessage, FileName)\n\tSELECT \n\tJson_RowData AS JSONMESSAGE, \n\tFilename AS FILENAME\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "68878"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "114614"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "1431835"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "05/07/2020 11:22:18"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "05/07/2020 12:12:18"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Data_Mart_Policy"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "RUN_CONDITION_PL ": {
+                "type": "string",
+                "defaultValue": "1"
+            },
+            "WHERE_CLAUSE_PL ": {
+                "type": "string",
+                "defaultValue": ""
+            },
+            "TARGETFILE": {
+                "type": "string",
+                "defaultValue": "DCT_Aggregated_DM_Data_PL_CL.json"
+            },
+            "EFFECTIVE_START_DATE": {
+                "type": "string",
+                "defaultValue": "'01/01/2023'"
+            },
+            "EFFECTIVE_END_DATE": {
+                "type": "string",
+                "defaultValue": "'01/01/2025'"
+            },
+            "STARTDATE": {
+                "type": "string",
+                "defaultValue": "'04/30/2023'"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

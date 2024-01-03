@@ -1,0 +1,272 @@
+{
+    "name": "wkf_POL_DM_LOAD_LimitFact_V2",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "s_m_POL_DM_LOAD_LimitFact_V2",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DM_LOAD_LimitFact_V2"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "sp-PreBatch_LimitFact",
+                "type": "SqlServerStoredProcedure",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_PreBatch]",
+                    "storedProcedureParameters": {
+                        "BatchName": {
+                            "value": {
+                                "value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['batch_name']",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            {
+                "name": "sp-PostBatch_LimitFact",
+                "type": "SqlServerStoredProcedure",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DM_UPDATE_LimitFact_RatingPlan",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_PostBatch]",
+                    "storedProcedureParameters": {
+                        "BatchName": {
+                            "value": {
+                                "value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['batch_name']",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            {
+                "name": "s_m_POL_DM_UPDATE_LimitFact_RatingPlan",
+                "type": "ExecutePipeline",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DM_LOAD_LimitFact_V2",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DM_UPDATE_LimitFact_RatingPlan"
+                    },
+                    "parameters": {}
+                }
+            },
+            {
+                "name": "spt-Get Pipeline Parameters",
+                "type": "Script",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "sp-PreBatch_LimitFact",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": {
+                                "value": "@concat('EXEC Proc_Pipeline_Parameters @workflow_name = ''', pipeline().Pipeline, '''')",
+                                "type": "Expression"
+                            }
+                        }
+                    ],
+                    "scriptBlockExecutionTimeout": "02:00:00"
+                }
+            },
+            {
+                "name": "sv-Set Params",
+                "type": "SetVariable",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "spt-Get Pipeline Parameters",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "Params",
+                    "value": {
+                        "value": "@activity('spt-Get Pipeline Parameters').output.resultSets[0].rows[0]['json_value']",
+                        "type": "Expression"
+                    }
+                }
+            },
+            {
+                "name": "sp-ins_upd_rep_sess_log",
+                "type": "SqlServerStoredProcedure",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded",
+                "dependsOn": [
+                    {
+                        "activity": "sp-PostBatch_LimitFact",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_Upsert_Rep_Session_Log]",
+                    "storedProcedureParameters": {
+                        "jsonInput": {
+                            "value": {
+                                "value": "[\n   {\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineReturnValue.end_time}\"\n}\n]",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            }
+        ],
+        "folder": {
+            "name": ""
+        },
+        "variables": {
+            "Params": {
+                "type": "Expression"
+            }
+        }
+    }
+}

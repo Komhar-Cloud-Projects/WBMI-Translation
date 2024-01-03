@@ -1,0 +1,77 @@
+{
+    "name": "m_CLM_DW_LOAD_sup_workers_comp_exemption_type",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DW_LOAD_sup_workers_comp_exemption_type",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_sup_exemption_type_stage AS (\n\tSELECT\n\t\tsup_exemption_type_stage_id,\n\t\texemption_type_code,\n\t\texemption_type_desc,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM sup_exemption_type_stage\n),\nEXP_Default_Values AS (\n\tSELECT\n\texemption_type_code,\n\t-- *INF*: IIF(ISNULL(exemption_type_code), 'N/A', exemption_type_code)\n\tIFF(exemption_type_code IS NULL, 'N/A', exemption_type_code) AS exemption_type_code_out,\n\texemption_type_desc,\n\t-- *INF*: IIF(ISNULL(exemption_type_desc), 'N/A', exemption_type_desc)\n\tIFF(exemption_type_desc IS NULL, 'N/A', exemption_type_desc) AS exemption_type_desc_out\n\tFROM SQ_sup_exemption_type_stage\n),\nLKP_sup_workers_comp_exemption_type AS (\n\tSELECT\n\tsup_wc_exemption_type_id,\n\twc_exemption_type_descript,\n\twc_exemption_type_code\n\tFROM (\n\t\tSELECT sup_workers_comp_exemption_type.sup_wc_exemption_type_id as sup_wc_exemption_type_id, sup_workers_comp_exemption_type.wc_exemption_type_descript as wc_exemption_type_descript, \r\n\t\tltrim(rtrim(sup_workers_comp_exemption_type.wc_exemption_type_code)) as wc_exemption_type_code \r\n\t\tFROM sup_workers_comp_exemption_type\r\n\t\tWHERE crrnt_snpsht_flag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY wc_exemption_type_code ORDER BY sup_wc_exemption_type_id) = 1\n),\nEXP_detect_changes AS (\n\tSELECT\n\tLKP_sup_workers_comp_exemption_type.sup_wc_exemption_type_id AS lkp_sup_wc_exemption_type_id,\n\tLKP_sup_workers_comp_exemption_type.wc_exemption_type_descript AS lkp_wc_exemption_type_descript,\n\tEXP_Default_Values.exemption_type_code_out AS exemption_type_code,\n\tEXP_Default_Values.exemption_type_desc_out AS exemption_type_desc,\n\t-- *INF*: IIF(ISNULL(lkp_sup_wc_exemption_type_id), 'NEW', IIF(LTRIM(RTRIM(lkp_wc_exemption_type_descript)) != (LTRIM(RTRIM(exemption_type_desc))), 'UPDATE', 'NOCHANGE'))\r\n\t-- \n\tIFF(lkp_sup_wc_exemption_type_id IS NULL, 'NEW', IFF(LTRIM(RTRIM(lkp_wc_exemption_type_descript)) != ( LTRIM(RTRIM(exemption_type_desc)) ), 'UPDATE', 'NOCHANGE')) AS v_CHANGED_FLAG,\n\tv_CHANGED_FLAG AS CHANGED_FLAG,\n\t1 AS crrnt_snpsht_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t-- *INF*: iif(v_CHANGED_FLAG='NEW',\r\n\t-- \tto_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)\n\tIFF(v_CHANGED_FLAG = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,\n\tSYSDATE AS created_date,\n\tSYSDATE AS modified_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id\n\tFROM EXP_Default_Values\n\tLEFT JOIN LKP_sup_workers_comp_exemption_type\n\tON LKP_sup_workers_comp_exemption_type.wc_exemption_type_code = EXP_Default_Values.exemption_type_code_out\n),\nFIL_sup_workers_comp_exemption_type AS (\n\tSELECT\n\texemption_type_code, \n\texemption_type_desc, \n\tCHANGED_FLAG, \n\tcrrnt_snpsht_flag, \n\taudit_id, \n\teff_from_date, \n\teff_to_date, \n\tsource_sys_id, \n\tcreated_date, \n\tmodified_date\n\tFROM EXP_detect_changes\n\tWHERE CHANGED_FLAG = 'NEW' or CHANGED_FLAG = 'UPDATE'\n),\nTGT_sup_workers_comp_exemption_type_INSERT AS (\n\tINSERT INTO sup_workers_comp_exemption_type\n\t(wc_exemption_type_code, wc_exemption_type_descript, crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, source_sys_id, created_date, modified_date)\n\tSELECT \n\texemption_type_code AS WC_EXEMPTION_TYPE_CODE, \n\texemption_type_desc AS WC_EXEMPTION_TYPE_DESCRIPT, \n\tCRRNT_SNPSHT_FLAG, \n\tAUDIT_ID, \n\tEFF_FROM_DATE, \n\tEFF_TO_DATE, \n\tSOURCE_SYS_ID, \n\tCREATED_DATE, \n\tMODIFIED_DATE\n\tFROM FIL_sup_workers_comp_exemption_type\n),\nSQ_sup_workers_comp_exemption_type AS (\n\tSELECT a.sup_wc_exemption_type_id,\r\n\t                   a.wc_exemption_type_code, \r\n\t                   a.eff_from_date, \r\n\t                   a.eff_to_date \r\n\tFROM\r\n\t  @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_workers_comp_exemption_type a\r\n\t\r\n\tWHERE EXISTS(SELECT 1\t\t\t\r\n\t\t\tFROM  @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_workers_comp_exemption_type b\r\n\t\t\tWHERE source_sys_id= '@{pipeline().parameters.SOURCE_SYSTEM_ID}'  AND crrnt_snpsht_flag = 1\r\n\t\t\tAND a.wc_exemption_type_code = b.wc_exemption_type_code\r\n\t\t\tGROUP BY wc_exemption_type_code\r\n\t\t\tHAVING COUNT(*) > 1)\r\n\tORDER BY wc_exemption_type_code, eff_from_date  DESC\n),\nEXP_lag_eff_from_date AS (\n\tSELECT\n\tsup_wc_exemption_type_id,\n\twc_exemption_type_code,\n\teff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- \twc_exemption_type_code= v_Prev_row_wc_exemption_type_code, ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),\r\n\t-- \torig_eff_to_date)\r\n\t-- \t\n\tDECODE(TRUE,\n\twc_exemption_type_code = v_Prev_row_wc_exemption_type_code, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),\n\torig_eff_to_date) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\twc_exemption_type_code AS v_Prev_row_wc_exemption_type_code,\n\teff_from_date AS v_prev_eff_from_date,\n\t0 AS crrnt_snpsht_flag,\n\tSYSDATE AS modified_date\n\tFROM SQ_sup_workers_comp_exemption_type\n),\nFIL_First_rown_inAKGroup AS (\n\tSELECT\n\tsup_wc_exemption_type_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM EXP_lag_eff_from_date\n\tWHERE orig_eff_to_date != eff_to_date\n),\nUPD_sup_workers_comp_exemption_type AS (\n\tSELECT\n\tsup_wc_exemption_type_id, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM FIL_First_rown_inAKGroup\n),\nTGT_sup_workers_comp_exemption_type_UPDATE AS (\n\tMERGE INTO sup_workers_comp_exemption_type AS T\n\tUSING UPD_sup_workers_comp_exemption_type AS S\n\tON T.sup_wc_exemption_type_id = S.sup_wc_exemption_type_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_date\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246507"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905524"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604423"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:23:26"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 02:28:04"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "EXCEED AND PMS"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

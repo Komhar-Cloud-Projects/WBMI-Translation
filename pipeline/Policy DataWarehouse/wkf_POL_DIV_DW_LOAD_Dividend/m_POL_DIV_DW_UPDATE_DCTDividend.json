@@ -1,0 +1,93 @@
+{
+    "name": "m_POL_DIV_DW_UPDATE_DCTDividend",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DIV_DW_UPDATE_DCTDividend",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCTDividend AS (\n\tSELECT \r\n\tDCTDividend.DCTDividendId, \r\n\tDCTDividend.PolicyAKId,\r\n\tDCTDividend.StateCode\r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.DCTDividend \r\n\tWHERE\r\n\tDCTDividend.DividendPaidAmount <> 0\r\n\tand PolicyAKId in (\r\n\tselect PolicyAKId from DCTDividend\r\n\twhere SourceSystemId = 'DCT' and DividendPaidAmount <> 0\r\n\tgroup by PolicyAKId\r\n\thaving count(distinct StateCode) > 1)\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Passthrough AS (\n\tSELECT\n\tDCTDividendId,\n\tPolicyAKId,\n\tStateCode\n\tFROM SQ_DCTDividend\n),\nmplt_UPDATE_DCTDividend_Zeroes AS (WITH\n\tINPUT_DCTDividend_Zero AS (\n\t\t\n\t),\n\tEXP_passthrough AS (\n\t\tSELECT\n\t\tDCTDividendId,\n\t\tPolicyAKId,\n\t\tStateCode\n\t\tFROM INPUT_DCTDividend_Zero\n\t),\n\tLKP_Pol AS (\n\t\tSELECT\n\t\tpol_ak_id,\n\t\tstate_code\n\t\tFROM (\n\t\t\tselect \r\n\t\t\ts.state_code as state_code,\r\n\t\t\tp.pol_ak_id as pol_ak_id\r\n\t\t\tfrom @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER_V2}.policy p\r\n\t\t\tinner join @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER_V2}.Agency a\r\n\t\t\ton p.AgencyAKID = a.AgencyAKID\r\n\t\t\tinner join sup_state s\r\n\t\t\ton s.state_abbrev = a.AssignedStateCode and s.crrnt_snpsht_flag = 1\r\n\t\t\twhere p.crrnt_snpsht_flag = 1 \r\n\t\t\tand a.CurrentSnapshotFlag = 1 \r\n\t\t\tand p.source_sys_id = 'DCT'\r\n\t\t\t--\n\t\t)\n\t\tQUALIFY ROW_NUMBER() OVER (PARTITION BY pol_ak_id ORDER BY pol_ak_id DESC) = 1\n\t),\n\tEXP_Target AS (\n\t\tSELECT\n\t\tEXP_passthrough.DCTDividendId,\n\t\tEXP_passthrough.PolicyAKId,\n\t\tEXP_passthrough.StateCode,\n\t\tLKP_Pol.state_code AS lkp_State_code\n\t\tFROM EXP_passthrough\n\t\tLEFT JOIN LKP_Pol\n\t\tON LKP_Pol.pol_ak_id = EXP_passthrough.PolicyAKId\n\t),\n\tFIL_Non_Agency_states AS (\n\t\tSELECT\n\t\tDCTDividendId, \n\t\tPolicyAKId, \n\t\tStateCode, \n\t\tlkp_State_code\n\t\tFROM EXP_Target\n\t\tWHERE StateCode != lkp_State_code\n\t),\n\tOUTPUT_Update_DCTDividend_Zeroes AS (\n\t\tSELECT\n\t\tDCTDividendId, \n\t\tPolicyAKId, \n\t\tStateCode, \n\t\tlkp_State_code\n\t\tFROM FIL_Non_Agency_states\n\t),\n),\nEXP_PreTarget AS (\n\tSELECT\n\tDCTDividendId1 AS DCTDividendId,\n\t0 AS Defaultamount\n\tFROM mplt_UPDATE_DCTDividend_Zeroes\n),\nUPD_DCTDividend AS (\n\tSELECT\n\tDCTDividendId, \n\tDefaultamount\n\tFROM EXP_PreTarget\n),\nDCTDividend_Update AS (\n\tMERGE INTO DCTDividend AS T\n\tUSING UPD_DCTDividend AS S\n\tON T.DCTDividendId = S.DCTDividendId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.DividendPaidAmount = S.Defaultamount\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905520"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604321"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 01:27:36"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 02:03:07"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": ""
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "RPT_EDM"
+            },
+            "TARGET_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "RPT_EDM"
+            },
+            "TARGET_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "V2"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

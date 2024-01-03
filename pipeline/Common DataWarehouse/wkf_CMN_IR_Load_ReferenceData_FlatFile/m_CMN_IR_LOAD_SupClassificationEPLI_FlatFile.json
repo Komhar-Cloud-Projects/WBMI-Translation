@@ -1,0 +1,77 @@
+{
+    "name": "m_CMN_IR_LOAD_SupClassificationEPLI_FlatFile",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CMN_IR_LOAD_SupClassificationEPLI_FlatFile",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_EPLIClass AS (\n\n-- TODO Manual --\n\n),\nEXP_MetaData AS (\n\tSELECT\n\tLineOfBusinessAbbreviation AS i_LineOfBusinessAbbreviation,\n\tRatingStateCode AS i_RatingStateCode,\n\tEffectiveDate AS i_ClassEffectiveDate,\n\tExpirationDate AS i_ClassExpirationDate,\n\tClassCode AS i_ClassCode,\n\tClassDescription AS i_ClassDescription,\n\tOriginatingOrganizationCode AS i_OriginatingOrganizationCode,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tsysdate AS o_CreatedDate,\n\tsysdate AS o_ModifiedDate,\n\t-- *INF*: LTRIM(RTRIM(i_LineOfBusinessAbbreviation))\n\tLTRIM(RTRIM(i_LineOfBusinessAbbreviation)) AS o_LineOfBusinessAbbreviation,\n\t-- *INF*: LTRIM(RTRIM(i_RatingStateCode))\n\tLTRIM(RTRIM(i_RatingStateCode)) AS o_RatingStateCode,\n\t-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_ClassEffectiveDate))) \r\n\t-- OR IS_SPACES(LTRIM(RTRIM(i_ClassEffectiveDate))) \r\n\t-- OR LENGTH(LTRIM(RTRIM(i_ClassEffectiveDate)))=0\r\n\t-- OR LTRIM(RTRIM(SUBSTR(i_ClassEffectiveDate,1,10)))='1900-01-01',\r\n\t-- TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS'),\r\n\t-- TO_DATE( SUBSTR( i_ClassEffectiveDate ,1,19 )  ,'YYYY-MM-DD HH24:MI:SS'))\n\tIFF(LTRIM(RTRIM(i_ClassEffectiveDate)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_ClassEffectiveDate))) OR LENGTH(LTRIM(RTRIM(i_ClassEffectiveDate))) = 0 OR LTRIM(RTRIM(SUBSTR(i_ClassEffectiveDate, 1, 10))) = '1900-01-01', TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE(SUBSTR(i_ClassEffectiveDate, 1, 19), 'YYYY-MM-DD HH24:MI:SS')) AS o_ClassEffectiveDate,\n\t-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_ClassExpirationDate))) \r\n\t-- OR IS_SPACES(LTRIM(RTRIM(i_ClassExpirationDate)))\r\n\t-- OR LENGTH(LTRIM(RTRIM(i_ClassExpirationDate)))=0\r\n\t-- OR LTRIM(RTRIM(SUBSTR(i_ClassExpirationDate,1,10)))='2999-01-01',\r\n\t-- TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS'),\r\n\t-- TO_DATE(SUBSTR(i_ClassExpirationDate , 1,19  ),'YYYY-MM-DD HH24:MI:SS'))\n\tIFF(LTRIM(RTRIM(i_ClassExpirationDate)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_ClassExpirationDate))) OR LENGTH(LTRIM(RTRIM(i_ClassExpirationDate))) = 0 OR LTRIM(RTRIM(SUBSTR(i_ClassExpirationDate, 1, 10))) = '2999-01-01', TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE(SUBSTR(i_ClassExpirationDate, 1, 19), 'YYYY-MM-DD HH24:MI:SS')) AS o_ClassExpirationDate,\n\t-- *INF*: LTRIM(RTRIM(i_ClassCode))\n\tLTRIM(RTRIM(i_ClassCode)) AS o_ClassCode,\n\t-- *INF*: LTRIM(RTRIM(i_ClassDescription))\n\tLTRIM(RTRIM(i_ClassDescription)) AS o_ClassDescription,\n\t-- *INF*: LTRIM(RTRIM(i_OriginatingOrganizationCode))\n\tLTRIM(RTRIM(i_OriginatingOrganizationCode)) AS o_OriginatingOrganizationCode\n\tFROM SQ_EPLIClass\n),\nSupClassificationEPLI_IR AS (\n\tTRUNCATE TABLE SupClassificationEPLI;\n\tINSERT INTO SupClassificationEPLI\n\t(AuditId, CreatedDate, ModifiedDate, LineOfBusinessAbbreviation, RatingStateCode, EffectiveDate, ExpirationDate, ClassCode, ClassDescription, OriginatingOrganizationCode)\n\tSELECT \n\to_AuditId AS AUDITID, \n\to_CreatedDate AS CREATEDDATE, \n\to_ModifiedDate AS MODIFIEDDATE, \n\to_LineOfBusinessAbbreviation AS LINEOFBUSINESSABBREVIATION, \n\to_RatingStateCode AS RATINGSTATECODE, \n\to_ClassEffectiveDate AS EFFECTIVEDATE, \n\to_ClassExpirationDate AS EXPIRATIONDATE, \n\to_ClassCode AS CLASSCODE, \n\to_ClassDescription AS CLASSDESCRIPTION, \n\to_OriginatingOrganizationCode AS ORIGINATINGORGANIZATIONCODE\n\tFROM EXP_MetaData\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246484"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905454"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603062"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:02:48"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 22:02:41"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": ""
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_InsuranceReference_Policy"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "INPUTFILENAME": {
+                "type": "string",
+                "defaultValue": "$PMSourceFileDir\\Classification\\EPLIClass.csv"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

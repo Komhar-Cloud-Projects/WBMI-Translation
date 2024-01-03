@@ -1,0 +1,41 @@
+{
+    "name": "m_Do_PostAudit",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Do_PostAudit",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_wbmi_audit_control_run_EXPIRE AS (\n\tSELECT \r\n\twbmi_audit_control_run.wbmi_audit_control_run_id,\r\n\twbmi_audit_control_run.start_ts \r\n\tFROM\r\n\t wbmi_audit_control_run\r\n\tWHERE audit_name = '@{pipeline().parameters.AUDIT_NAME}'\r\n\t  AND wbmi_audit_control_run.current_indicator = 'Y'\r\n\t  AND wbmi_audit_control_run.end_ts IS NULL\n),\nEXP_audit_control_run AS (\n\tSELECT\n\twbmi_audit_control_run_id,\n\tstart_ts,\n\tsysdate AS end_ts,\n\tsysdate AS modified_date\n\tFROM SQ_wbmi_audit_control_run_EXPIRE\n),\nUPD_wbmi_audit_control_run AS (\n\tSELECT\n\twbmi_audit_control_run_id, \n\tend_ts, \n\tmodified_date\n\tFROM EXP_audit_control_run\n),\nwbmi_audit_control_run_EXPIRE AS (\n\tMERGE INTO wbmi_audit_control_run AS T\n\tUSING UPD_wbmi_audit_control_run AS S\n\tON T.wbmi_audit_control_run_id = S.wbmi_audit_control_run_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.end_ts = S.end_ts, T.modified_date = S.modified_date\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "AUDIT_NAME": {
+                "type": "string",
+                "defaultValue": "CLAIMS_EOR_DATAMART"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

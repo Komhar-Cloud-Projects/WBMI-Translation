@@ -1,0 +1,85 @@
+{
+    "name": "m_AGY_DW_LOAD_AgencyEmployee",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_DW_LOAD_AgencyEmployee",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AgencyEmployeeStage AS (\n\tSELECT\n\t\tAgencyEmployeeStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID AS AgencyODSStageID,\n\t\tAgencyCode,\n\t\tAgencyEmployeeCode,\n\t\tAgencyEmployeeRole,\n\t\tProducerCode,\n\t\tLastName,\n\t\tFirstName,\n\t\tMiddleName,\n\t\tSuffix,\n\t\tNickName,\n\t\tPrincipalFlag,\n\t\tPrimaryContactFlag,\n\t\tPhoneNumber,\n\t\tFaxNumber,\n\t\tEmailAddress,\n\t\tStatusCode,\n\t\tStatusCodeDescription,\n\t\tListedDate,\n\t\tTerminatedDate,\n\t\tUserID,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID\n\tFROM AgencyEmployeeStage\n),\nLKP_AgencyAKID AS (\n\tSELECT\n\tAgencyAKID,\n\tAgencyCode\n\tFROM (\n\t\tSELECT \n\t\t\tAgencyAKID,\n\t\t\tAgencyCode\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER_V2}.Agency\n\t\tWHERE CurrentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyCode ORDER BY AgencyAKID DESC) = 1\n),\nEXP_CleanupData AS (\n\tSELECT\n\tSQ_AgencyEmployeeStage.AgencyCode,\n\tLKP_AgencyAKID.AgencyAKID,\n\tSQ_AgencyEmployeeStage.AgencyEmployeeCode,\n\tSQ_AgencyEmployeeStage.AgencyEmployeeRole,\n\t-- *INF*: IIF(IsNull(AgencyEmployeeRole), 'N/A', AgencyEmployeeRole)\n\tIFF(AgencyEmployeeRole IS NULL, 'N/A', AgencyEmployeeRole) AS o_AgencyEmployeeRole,\n\tSQ_AgencyEmployeeStage.ProducerCode,\n\t-- *INF*: IIF(IsNull(ProducerCode), 'N/A', ProducerCode)\n\tIFF(ProducerCode IS NULL, 'N/A', ProducerCode) AS o_ProducerCode,\n\tSQ_AgencyEmployeeStage.LastName,\n\t-- *INF*: IIF(IsNull(LastName), 'N/A', LastName)\n\tIFF(LastName IS NULL, 'N/A', LastName) AS o_LastName,\n\tSQ_AgencyEmployeeStage.FirstName,\n\t-- *INF*: IIF(IsNull(FirstName), 'N/A', FirstName)\n\tIFF(FirstName IS NULL, 'N/A', FirstName) AS o_FirstName,\n\tSQ_AgencyEmployeeStage.MiddleName,\n\t-- *INF*: IIF(IsNull(MiddleName), '', MiddleName)\n\tIFF(MiddleName IS NULL, '', MiddleName) AS o_MiddleName,\n\tSQ_AgencyEmployeeStage.Suffix,\n\t-- *INF*: IIF(IsNull(Suffix), '', Suffix)\n\tIFF(Suffix IS NULL, '', Suffix) AS o_Suffix,\n\tSQ_AgencyEmployeeStage.NickName,\n\t-- *INF*: IIF(IsNull(NickName), '', NickName)\n\tIFF(NickName IS NULL, '', NickName) AS o_NickName,\n\tSQ_AgencyEmployeeStage.PrincipalFlag,\n\t-- *INF*: Decode(true,\r\n\t-- AgencyEmployeeRole = 'PRINCIPAL', '1',\r\n\t-- IsNull(PrincipalFlag), '0', \r\n\t-- PrincipalFlag)\n\tDecode(true,\n\tAgencyEmployeeRole = 'PRINCIPAL', '1',\n\tPrincipalFlag IS NULL, '0',\n\tPrincipalFlag) AS o_PrincipalFlag,\n\tSQ_AgencyEmployeeStage.PrimaryContactFlag,\n\t-- *INF*: IIF(IsNull(PrimaryContactFlag), 'N', PrimaryContactFlag)\n\tIFF(PrimaryContactFlag IS NULL, 'N', PrimaryContactFlag) AS o_PrimaryContactFlag,\n\tSQ_AgencyEmployeeStage.PhoneNumber,\n\t-- *INF*: IIF(IsNull(PhoneNumber), '000-000-0000', PhoneNumber)\n\tIFF(PhoneNumber IS NULL, '000-000-0000', PhoneNumber) AS o_PhoneNumber,\n\tSQ_AgencyEmployeeStage.FaxNumber,\n\t-- *INF*: IIF(IsNull(FaxNumber), '000-000-0000', FaxNumber)\n\tIFF(FaxNumber IS NULL, '000-000-0000', FaxNumber) AS o_FaxNumber,\n\tSQ_AgencyEmployeeStage.EmailAddress,\n\t-- *INF*: IIF(IsNull(EmailAddress), 'N/A', EmailAddress)\n\tIFF(EmailAddress IS NULL, 'N/A', EmailAddress) AS o_EmailAddress,\n\tSQ_AgencyEmployeeStage.StatusCode,\n\t-- *INF*: IIF(IsNull(StatusCode), 'A', StatusCode)\n\tIFF(StatusCode IS NULL, 'A', StatusCode) AS o_StatusCode,\n\tSQ_AgencyEmployeeStage.StatusCodeDescription,\n\t-- *INF*: IIF(IsNull(StatusCodeDescription), 'Active', StatusCodeDescription)\n\tIFF(StatusCodeDescription IS NULL, 'Active', StatusCodeDescription) AS o_StatusCodeDescription,\n\tSQ_AgencyEmployeeStage.ListedDate,\n\t-- *INF*: IIF(IsNull(ListedDate), to_date('1800-01-01', 'YYYY-MM-DD'), ListedDate)\n\tIFF(ListedDate IS NULL, to_date('1800-01-01', 'YYYY-MM-DD'), ListedDate) AS o_ListedDate,\n\tSQ_AgencyEmployeeStage.TerminatedDate,\n\t-- *INF*: IIF(IsNull(TerminatedDate), to_date('2999-12-31', 'YYYY-MM-DD'), TerminatedDate)\n\tIFF(TerminatedDate IS NULL, to_date('2999-12-31', 'YYYY-MM-DD'), TerminatedDate) AS o_TerminatedDate,\n\tSQ_AgencyEmployeeStage.UserID,\n\t-- *INF*: IIF(IsNull(UserID), 'N/A', UserID)\n\tIFF(UserID IS NULL, 'N/A', UserID) AS o_UserID,\n\tSQ_AgencyEmployeeStage.SourceSystemID\n\tFROM SQ_AgencyEmployeeStage\n\tLEFT JOIN LKP_AgencyAKID\n\tON LKP_AgencyAKID.AgencyCode = SQ_AgencyEmployeeStage.AgencyCode\n),\nLKP_ExistingEmployee AS (\n\tSELECT\n\tHashKey,\n\tAgencyEmployeeAKID,\n\tAgencyAKID,\n\tAgencyEmployeeCode\n\tFROM (\n\t\tSELECT \n\t\t\tHashKey,\n\t\t\tAgencyEmployeeAKID,\n\t\t\tAgencyAKID,\n\t\t\tAgencyEmployeeCode\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyEmployee\n\t\tWHERE CurrentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyAKID,AgencyEmployeeCode ORDER BY HashKey DESC) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tLKP_ExistingEmployee.HashKey AS lkp_HashKey,\n\tLKP_ExistingEmployee.AgencyEmployeeAKID AS lkp_AgencyEmployeeAKID,\n\tEXP_CleanupData.AgencyCode,\n\tEXP_CleanupData.AgencyAKID,\n\tEXP_CleanupData.AgencyEmployeeCode,\n\tEXP_CleanupData.o_AgencyEmployeeRole AS AgencyEmployeeRole,\n\tEXP_CleanupData.o_ProducerCode AS ProducerCode,\n\tEXP_CleanupData.o_LastName AS LastName,\n\tEXP_CleanupData.o_FirstName AS FirstName,\n\tEXP_CleanupData.o_MiddleName AS MiddleName,\n\tEXP_CleanupData.o_Suffix AS Suffix,\n\tEXP_CleanupData.o_NickName AS NickName,\n\tEXP_CleanupData.o_PrincipalFlag AS PrincipalFlag,\n\tEXP_CleanupData.o_PrimaryContactFlag AS PrimaryContactFlag,\n\tEXP_CleanupData.o_PhoneNumber AS PhoneNumber,\n\tEXP_CleanupData.o_FaxNumber AS FaxNumber,\n\tEXP_CleanupData.o_EmailAddress AS EmailAddress,\n\tEXP_CleanupData.o_StatusCode AS StatusCode,\n\tEXP_CleanupData.o_StatusCodeDescription AS StatusCodeDescription,\n\tEXP_CleanupData.o_ListedDate AS ListedDate,\n\tEXP_CleanupData.o_TerminatedDate AS TerminatedDate,\n\tEXP_CleanupData.o_UserID AS UserID,\n\t-- *INF*: MD5(AgencyEmployeeCode || AgencyEmployeeRole || ProducerCode || LastName || FirstName || MiddleName || Suffix || NickName || PrincipalFlag || PrimaryContactFlag || PhoneNumber || FaxNumber || EmailAddress || StatusCode || StatusCodeDescription || to_char(ListedDate) || to_char(TerminatedDate) || UserID)\n\tMD5(AgencyEmployeeCode || AgencyEmployeeRole || ProducerCode || LastName || FirstName || MiddleName || Suffix || NickName || PrincipalFlag || PrimaryContactFlag || PhoneNumber || FaxNumber || EmailAddress || StatusCode || StatusCodeDescription || to_char(ListedDate) || to_char(TerminatedDate) || UserID) AS v_NewHashKey,\n\tv_NewHashKey AS o_HashKey,\n\t-- *INF*: IIF(ISNULL(lkp_AgencyEmployeeAKID), 'NEW', \r\n\t-- IIF((lkp_HashKey <> v_NewHashKey),'UPDATE', 'NOCHANGE'))\n\tIFF(lkp_AgencyEmployeeAKID IS NULL, 'NEW', IFF(( lkp_HashKey <> v_NewHashKey ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,\n\tv_changed_flag AS changed_flag,\n\t1 AS CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,\n\t-- *INF*: iif(v_changed_flag='NEW',\r\n\t-- \tto_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)\n\tIFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS EffectiveFromDate,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveToDate,\n\tEXP_CleanupData.SourceSystemID,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate\n\tFROM EXP_CleanupData\n\tLEFT JOIN LKP_ExistingEmployee\n\tON LKP_ExistingEmployee.AgencyAKID = EXP_CleanupData.AgencyAKID AND LKP_ExistingEmployee.AgencyEmployeeCode = EXP_CleanupData.AgencyEmployeeCode\n),\nFIL_insert AS (\n\tSELECT\n\tlkp_AgencyEmployeeAKID AS lkp_AgencyEmployee_AKID, \n\tAgencyCode, \n\tchanged_flag, \n\tCurrentSnapshotFlag, \n\tAuditID AS audit_id, \n\tEffectiveFromDate, \n\tEffectiveToDate, \n\tSourceSystemID, \n\tCreatedDate, \n\tModifiedDate, \n\tAgencyAKID, \n\tAgencyEmployeeCode, \n\tAgencyEmployeeRole, \n\tProducerCode, \n\tLastName, \n\tFirstName, \n\tMiddleName, \n\tSuffix, \n\tNickName, \n\tPrincipalFlag, \n\tPrimaryContactFlag, \n\tPhoneNumber, \n\tFaxNumber, \n\tEmailAddress, \n\tStatusCode, \n\tStatusCodeDescription, \n\tListedDate, \n\tTerminatedDate, \n\tUserID, \n\to_HashKey\n\tFROM EXP_Detect_Changes\n\tWHERE (changed_flag='NEW'or changed_flag='UPDATE') \r\n\r\n\r\n--and AgencyCode <> '99999'\n),\nSEQ_AgencyEmployeeAKID AS (\n\tCREATE SEQUENCE SEQ_AgencyEmployeeAKID\n\tSTART = 0\n\tINCREMENT = 1;\n),\nEXP_Assign_AKID AS (\n\tSELECT\n\tCurrentSnapshotFlag,\n\taudit_id AS AuditID,\n\tEffectiveFromDate,\n\tEffectiveToDate,\n\tSourceSystemID,\n\tCreatedDate,\n\tModifiedDate,\n\tlkp_AgencyEmployee_AKID AS lkp_AgencyEmployeeAKID,\n\tSEQ_AgencyEmployeeAKID.NEXTVAL,\n\t-- *INF*: iif(isnull(lkp_AgencyEmployeeAKID),NEXTVAL,lkp_AgencyEmployeeAKID)\n\tIFF(lkp_AgencyEmployeeAKID IS NULL, NEXTVAL, lkp_AgencyEmployeeAKID) AS o_AgencyEmployeeAKID,\n\tAgencyAKID,\n\tAgencyEmployeeCode,\n\tAgencyEmployeeRole,\n\tProducerCode,\n\tLastName,\n\tFirstName,\n\tMiddleName,\n\tSuffix,\n\tNickName,\n\tPrincipalFlag,\n\tPrimaryContactFlag,\n\tPhoneNumber,\n\tFaxNumber,\n\tEmailAddress,\n\tStatusCode,\n\tStatusCodeDescription,\n\tListedDate,\n\tTerminatedDate,\n\tUserID,\n\to_HashKey\n\tFROM FIL_insert\n),\nAgencyEmployee_Inserts AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyEmployee\n\t(CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, SourceSystemID, CreatedDate, ModifiedDate, HashKey, AgencyEmployeeAKID, AgencyAKID, AgencyEmployeeCode, AgencyEmployeeRole, ProducerCode, LastName, FirstName, MiddleName, Suffix, NickName, PrincipalFlag, PrimaryContactFlag, PhoneNumber, FaxNumber, EmailAddress, StatusCode, StatusCodeDescription, ListedDate, TerminatedDate, UserID)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEffectiveFromDate AS EFFECTIVEDATE, \n\tEffectiveToDate AS EXPIRATIONDATE, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\to_HashKey AS HASHKEY, \n\to_AgencyEmployeeAKID AS AGENCYEMPLOYEEAKID, \n\tAGENCYAKID, \n\tAGENCYEMPLOYEECODE, \n\tAGENCYEMPLOYEEROLE, \n\tPRODUCERCODE, \n\tLASTNAME, \n\tFIRSTNAME, \n\tMIDDLENAME, \n\tSUFFIX, \n\tNICKNAME, \n\tPRINCIPALFLAG, \n\tPRIMARYCONTACTFLAG, \n\tPHONENUMBER, \n\tFAXNUMBER, \n\tEMAILADDRESS, \n\tSTATUSCODE, \n\tSTATUSCODEDESCRIPTION, \n\tLISTEDDATE, \n\tTERMINATEDDATE, \n\tUSERID\n\tFROM EXP_Assign_AKID\n),\nSQ_AgencyEmployee AS (\n\tSELECT \r\n\t\ta.AgencyEmployeeID, \r\n\t\ta.EffectiveDate,\r\n\t\ta.ExpirationDate, \r\n\t\ta.AgencyEmployeeAKID  \r\n\tFROM \r\n\t\t@{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyEmployee a\r\n\tWHERE  a.AgencyEmployeeAKID  IN\r\n\t\t( SELECT AgencyEmployeeAKID FROM @{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyEmployee\r\n\t\tWHERE CurrentSnapshotFlag = 1 GROUP BY AgencyEmployeeAKID HAVING count(*) > 1) \r\n\tORDER BY a.AgencyEmployeeAKID, a.EffectiveDate DESC\r\n\t\r\n\t\r\n\t\r\n\t--IN Subquery exists to pick AK ID column values that have multiple rows with a 12/31/2100 eff_to_date.\r\n\t--When this condition occurs this is an indication that we must expire one or more of these rows.\r\n\t--WHERE clause is always made up of current snapshot flag \r\n\t--GROUP BY clause is always on AK\r\n\t--HAVING clause stays the same\n),\nEXP_Lag_eff_from_date AS (\n\tSELECT\n\tAgencyEmployeeID,\n\tEffectiveDate AS EffectiveFromDate,\n\tExpirationDate AS OriginalEffectiveToDate,\n\tAgencyEmployeeAKID,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- AgencyEmployeeAKID = v_prev_AKID , ADD_TO_DATE(v_prev_EffectiveFromDate,'SS',-1),\r\n\t-- OriginalEffectiveToDate)\n\tDECODE(TRUE,\n\tAgencyEmployeeAKID = v_prev_AKID, ADD_TO_DATE(v_prev_EffectiveFromDate, 'SS', - 1),\n\tOriginalEffectiveToDate) AS v_EffectiveToDate,\n\tv_EffectiveToDate AS o_EffectiveToDate,\n\tAgencyEmployeeAKID AS v_prev_AKID,\n\tEffectiveFromDate AS v_prev_EffectiveFromDate,\n\t0 AS CurrentSnapshotFlag,\n\tSYSDATE AS ModifiedDate\n\tFROM SQ_AgencyEmployee\n),\nFIL_FirstRowInAKGroup AS (\n\tSELECT\n\tAgencyEmployeeID, \n\tOriginalEffectiveToDate, \n\to_EffectiveToDate AS NewEffectiveToDate, \n\tCurrentSnapshotFlag, \n\tModifiedDate\n\tFROM EXP_Lag_eff_from_date\n\tWHERE OriginalEffectiveToDate != NewEffectiveToDate\n),\nUPD_OldRecord AS (\n\tSELECT\n\tAgencyEmployeeID, \n\tNewEffectiveToDate AS EffectiveToDate, \n\tCurrentSnapshotFlag, \n\tModifiedDate\n\tFROM FIL_FirstRowInAKGroup\n),\nAgencyEmployee_Updates AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyEmployee AS T\n\tUSING UPD_OldRecord AS S\n\tON T.AgencyEmployeeID = S.AgencyEmployeeID\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.CurrentSnapshotFlag, T.ExpirationDate = S.EffectiveToDate, T.ModifiedDate = S.ModifiedDate\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246490"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905469"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603190"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:19:20"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 22:18:59"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "AgencyODS"
+            },
+            "TARGET_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "V2"
+            },
+            "DBCONNECTION_AGENCYODS": {
+                "type": "string",
+                "defaultValue": "SQLServer_AgencyODS_B"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

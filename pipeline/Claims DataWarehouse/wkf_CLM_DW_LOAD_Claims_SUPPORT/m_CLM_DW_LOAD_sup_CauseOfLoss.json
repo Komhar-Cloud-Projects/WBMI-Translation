@@ -1,0 +1,77 @@
+{
+    "name": "m_CLM_DW_LOAD_sup_CauseOfLoss",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DW_LOAD_sup_CauseOfLoss",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_cause_of_loss_stage AS (\n\tSELECT\n\t\tcause_of_loss_id,\n\t\tline_of_business,\n\t\tmajor_peril,\n\t\tcause_of_loss,\n\t\tnum_cause_of_loss,\n\t\talph_cause_of_loss,\n\t\tabbr_cause_of_loss,\n\t\tcause_of_loss_nm,\n\t\tbur_cause_of_loss1,\n\t\tbur_cause_of_loss2,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id,\n\t\tcov_category_code\n\tFROM cause_of_loss_stage\n),\nEXP_Accept_Inputs_Set_Defaults AS (\n\tSELECT\n\tline_of_business,\n\tmajor_peril,\n\tcause_of_loss,\n\tcause_of_loss_nm,\n\tbur_cause_of_loss1,\n\tbur_cause_of_loss2,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- IN(LTRIM(RTRIM(line_of_business)),'ACV','AFV','BO','BOP','CF','GL','SMP'), bur_cause_of_loss2,\r\n\t-- LTRIM(RTRIM(line_of_business))='CPP' and :UDF.DEFAULT_VALUE_FOR_STRINGS(bur_cause_of_loss2)<>'N/A' , bur_cause_of_loss2,\r\n\t-- LTRIM(RTRIM(line_of_business))='CPP' and :UDF.DEFAULT_VALUE_FOR_STRINGS(bur_cause_of_loss2)='N/A', bur_cause_of_loss1,\r\n\t-- LTRIM(RTRIM(line_of_business))='IMC', bur_cause_of_loss1,\r\n\t-- 'TBD'\r\n\t-- )\r\n\t-- \r\n\t-- \r\n\t-- \n\tDECODE(TRUE,\n\tIN(LTRIM(RTRIM(line_of_business)), 'ACV', 'AFV', 'BO', 'BOP', 'CF', 'GL', 'SMP'), bur_cause_of_loss2,\n\tLTRIM(RTRIM(line_of_business)) = 'CPP' AND :UDF.DEFAULT_VALUE_FOR_STRINGS(bur_cause_of_loss2) <> 'N/A', bur_cause_of_loss2,\n\tLTRIM(RTRIM(line_of_business)) = 'CPP' AND :UDF.DEFAULT_VALUE_FOR_STRINGS(bur_cause_of_loss2) = 'N/A', bur_cause_of_loss1,\n\tLTRIM(RTRIM(line_of_business)) = 'IMC', bur_cause_of_loss1,\n\t'TBD') AS v_BureauCauseOfLoss,\n\t-- *INF*: IIF(ISNULL(cause_of_loss_nm),'N/A',rtrim(ltrim(cause_of_loss_nm)))\n\tIFF(cause_of_loss_nm IS NULL, 'N/A', rtrim(ltrim(cause_of_loss_nm))) AS OUT_cause_of_loss_nm,\n\tsource_system_id,\n\t-- *INF*: IIF(ISNULL(source_system_id),'N/A',rtrim(ltrim(source_system_id)))\n\tIFF(source_system_id IS NULL, 'N/A', rtrim(ltrim(source_system_id))) AS OUT_source_system_id,\n\t'1' AS current_snapshot_flag,\n\t-- *INF*: IIF(ISNULL(LTRIM(RTRIM(v_BureauCauseOfLoss))) OR LENGTH(LTRIM(RTRIM(v_BureauCauseOfLoss)))=0 OR IS_SPACES(LTRIM(RTRIM(v_BureauCauseOfLoss))),'N/A',LTRIM(RTRIM(v_BureauCauseOfLoss)))\n\tIFF(LTRIM(RTRIM(v_BureauCauseOfLoss)) IS NULL OR LENGTH(LTRIM(RTRIM(v_BureauCauseOfLoss))) = 0 OR IS_SPACES(LTRIM(RTRIM(v_BureauCauseOfLoss))), 'N/A', LTRIM(RTRIM(v_BureauCauseOfLoss))) AS OUT_BureauCauseOfLoss\n\tFROM SQ_cause_of_loss_stage\n),\nLKP_Sup_CauseOfLoss AS (\n\tSELECT\n\tCauseOfLossId,\n\tCauseOfLossAKID,\n\tCauseOfLossName,\n\tBureauCauseOfLoss,\n\tCauseOfLoss,\n\tLineOfBusiness,\n\tMajorPeril\n\tFROM (\n\t\tSELECT \r\n\t\tsup_CauseOfLoss.CauseOfLossId as CauseOfLossId, \r\n\t\tsup_CauseOfLoss.CauseOfLossAKID as CauseOfLossAKID, \r\n\t\tsup_CauseOfLoss.CauseOfLossName as CauseOfLossName, \r\n\t\tsup_CauseOfLoss.BureauCauseOfLoss as BureauCauseOfLoss, \r\n\t\tsup_CauseOfLoss.CauseOfLoss as CauseOfLoss, \r\n\t\tsup_CauseOfLoss.LineOfBusiness as LineOfBusiness, \r\n\t\tsup_CauseOfLoss.MajorPeril as MajorPeril\r\n\t\tFROM \r\n\t\tsup_CauseOfLoss\r\n\t\tWHERE\r\n\t\tsup_CauseOfLoss.CurrentSnapshotFlag='1'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY CauseOfLoss,LineOfBusiness,MajorPeril ORDER BY CauseOfLossId DESC) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tLKP_Sup_CauseOfLoss.CauseOfLossId AS lkp_CauseOfLossId,\n\tLKP_Sup_CauseOfLoss.CauseOfLossAKID AS lkp_CauseOfLossAKID,\n\tLKP_Sup_CauseOfLoss.CauseOfLossName AS lkp_CauseOfLossName,\n\tLKP_Sup_CauseOfLoss.BureauCauseOfLoss AS lkp_BureauCauseOfLoss,\n\tEXP_Accept_Inputs_Set_Defaults.OUT_source_system_id AS source_system_id,\n\tEXP_Accept_Inputs_Set_Defaults.line_of_business,\n\tEXP_Accept_Inputs_Set_Defaults.major_peril,\n\tEXP_Accept_Inputs_Set_Defaults.cause_of_loss,\n\tEXP_Accept_Inputs_Set_Defaults.OUT_cause_of_loss_nm AS cause_of_loss_nm,\n\tEXP_Accept_Inputs_Set_Defaults.current_snapshot_flag,\n\tEXP_Accept_Inputs_Set_Defaults.OUT_BureauCauseOfLoss AS BureauCauseOfLoss,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(lkp_CauseOfLossId),'NEW',\r\n\t-- RTRIM(LTRIM(lkp_CauseOfLossName)) <> RTRIM(LTRIM(cause_of_loss_nm))\r\n\t-- OR RTRIM(LTRIM(lkp_BureauCauseOfLoss)) <> RTRIM(LTRIM(BureauCauseOfLoss)),'UPDATE',\r\n\t-- 'NOCHANGE')\r\n\t-- \n\tDECODE(TRUE,\n\tlkp_CauseOfLossId IS NULL, 'NEW',\n\tRTRIM(LTRIM(lkp_CauseOfLossName)) <> RTRIM(LTRIM(cause_of_loss_nm)) OR RTRIM(LTRIM(lkp_BureauCauseOfLoss)) <> RTRIM(LTRIM(BureauCauseOfLoss)), 'UPDATE',\n\t'NOCHANGE') AS v_change_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t-- *INF*: IIF(v_change_flag='NEW',TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)\n\tIFF(v_change_flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS eff_date,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS exp_date,\n\tSYSDATE AS current_date,\n\tv_change_flag AS change_flag,\n\t'0' AS expire_snapshot_flag,\n\t-- *INF*: IIF(v_change_flag='UPDATE', ADD_TO_DATE(SYSDATE,'SS',-1),SYSDATE)\r\n\t-- \r\n\t-- -- if we have the scenario where the lookup will be expired then the SYSDATE  minus one second will be the new exp date as SYSDATE will be the new records eff date.\r\n\t-- \n\tIFF(v_change_flag = 'UPDATE', ADD_TO_DATE(SYSDATE, 'SS', - 1), SYSDATE) AS lkp_exp_date_OUT\n\tFROM EXP_Accept_Inputs_Set_Defaults\n\tLEFT JOIN LKP_Sup_CauseOfLoss\n\tON LKP_Sup_CauseOfLoss.CauseOfLoss = EXP_Accept_Inputs_Set_Defaults.cause_of_loss AND LKP_Sup_CauseOfLoss.LineOfBusiness = EXP_Accept_Inputs_Set_Defaults.line_of_business AND LKP_Sup_CauseOfLoss.MajorPeril = EXP_Accept_Inputs_Set_Defaults.major_peril\n),\nRTR_route_transactions AS (\n\tSELECT\n\tlkp_CauseOfLossId AS CauseOfLossId,\n\tcurrent_snapshot_flag,\n\taudit_id,\n\teff_date,\n\texp_date,\n\tsource_system_id AS OUT_source_system_id,\n\tcurrent_date,\n\tlkp_CauseOfLossAKID AS CauseOfLossAKID,\n\tline_of_business,\n\tmajor_peril,\n\tcause_of_loss,\n\tcause_of_loss_nm AS OUT_cause_of_loss_nm,\n\tBureauCauseOfLoss,\n\tchange_flag,\n\texpire_snapshot_flag,\n\tlkp_exp_date_OUT\n\tFROM EXP_Detect_Changes\n),\nRTR_route_transactions_Insert AS (SELECT * FROM RTR_route_transactions WHERE IN(change_flag,'NEW','UPDATE')),\nRTR_route_transactions_Update AS (SELECT * FROM RTR_route_transactions WHERE change_flag='UPDATE'),\nSEQ_Inserts AS (\n\tCREATE SEQUENCE SEQ_Inserts\n\tSTART = 0\n\tINCREMENT = 1;\n),\nEXP_prepare_insert AS (\n\tSELECT\n\tcurrent_snapshot_flag,\n\taudit_id,\n\teff_date,\n\texp_date,\n\tOUT_source_system_id AS source_system_id,\n\tcurrent_date,\n\tCauseOfLossAKID,\n\t-- *INF*: IIF(change_flag='NEW',NEXTVAL,CauseOfLossAKID)\n\tIFF(change_flag = 'NEW', NEXTVAL, CauseOfLossAKID) AS OUT_cause_of_loss_AKID,\n\tline_of_business,\n\tmajor_peril,\n\tcause_of_loss,\n\tOUT_cause_of_loss_nm AS cause_of_loss_nm,\n\tBureauCauseOfLoss,\n\tchange_flag,\n\tSEQ_Inserts.NEXTVAL\n\tFROM RTR_route_transactions_Insert\n),\nUPDTRANS_INSERT AS (\n\tSELECT\n\tcurrent_snapshot_flag, \n\taudit_id, \n\teff_date, \n\texp_date, \n\tsource_system_id AS OUT_source_system_id, \n\tcurrent_date, \n\tOUT_cause_of_loss_AKID AS CauseOfLossAKID, \n\tline_of_business, \n\tmajor_peril, \n\tcause_of_loss, \n\tcause_of_loss_nm, \n\tBureauCauseOfLoss, \n\tchange_flag, \n\tNEXTVAL\n\tFROM EXP_prepare_insert\n),\nINSERT_first_sup_CauseOfLoss AS (\n\tINSERT INTO sup_CauseOfLoss\n\t(CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, SourceSystemID, CreatedDate, ModifiedDate, CauseOfLossAKID, LineOfBusiness, MajorPeril, CauseOfLoss, CauseOfLossName, BureauCauseOfLoss)\n\tSELECT \n\tcurrent_snapshot_flag AS CURRENTSNAPSHOTFLAG, \n\taudit_id AS AUDITID, \n\teff_date AS EFFECTIVEDATE, \n\texp_date AS EXPIRATIONDATE, \n\tOUT_source_system_id AS SOURCESYSTEMID, \n\tcurrent_date AS CREATEDDATE, \n\tcurrent_date AS MODIFIEDDATE, \n\tCAUSEOFLOSSAKID, \n\tline_of_business AS LINEOFBUSINESS, \n\tmajor_peril AS MAJORPERIL, \n\tcause_of_loss AS CAUSEOFLOSS, \n\tcause_of_loss_nm AS CAUSEOFLOSSNAME, \n\tBUREAUCAUSEOFLOSS\n\tFROM UPDTRANS_INSERT\n),\nUPDTRANS_UPDATE_EXPIRE AS (\n\tSELECT\n\tCauseOfLossId AS CauseOfLossId2, \n\tCauseOfLossAKID AS CauseOfLossAKID3, \n\texpire_snapshot_flag AS current_snapshot_flag3, \n\tlkp_exp_date_OUT AS lkp_exp_date_OUT3, \n\tcurrent_date AS current_date3\n\tFROM RTR_route_transactions_Update\n),\nEXPIRE_sup_CauseOfLoss AS (\n\tMERGE INTO sup_CauseOfLoss AS T\n\tUSING UPDTRANS_UPDATE_EXPIRE AS S\n\tON T.CauseOfLossId = S.CauseOfLossId2\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.current_snapshot_flag3, T.ExpirationDate = S.lkp_exp_date_OUT3, T.ModifiedDate = S.current_date3\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246507"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905524"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604432"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:23:26"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 02:28:04"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "EXCEED"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,77 @@
+{
+    "name": "m_CLM_DW_UPDATE_Claim_Transaction_tax_id",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DW_UPDATE_Claim_Transaction_tax_id",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_claim_transaction AS (\n\tSELECT \r\n\tclaim_transaction.claim_trans_id, \r\n\tclaim_transaction.tax_id\r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_transaction\r\n\twhere claim_transaction.tax_id <>'000000000'\r\n\tand claim_master_1099_list_ak_id =-1\n),\nEXP_claim_master_1099_list_ak_id AS (\n\tSELECT\n\tclaim_trans_id,\n\ttax_id AS in_tax_id,\n\t-- *INF*: ltrim(rtrim(in_tax_id))\n\tltrim(rtrim(in_tax_id)) AS tax_id\n\tFROM SQ_claim_transaction\n),\nLKP_claim_master_1099_list AS (\n\tSELECT\n\tclaim_master_1099_list_ak_id,\n\ttax_id\n\tFROM (\n\t\tSELECT\r\n\t\t claim_master_1099_list.claim_master_1099_list_ak_id as claim_master_1099_list_ak_id, LTRIM(RTRIM(claim_master_1099_list.tax_id)) as tax_id \r\n\t\tFROM \r\n\t\t@{pipeline().parameters.TARGET_TABLE_OWNER}.claim_master_1099_list\r\n\t\twhere \r\n\t\tclaim_master_1099_list.crrnt_snpsht_flag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY tax_id ORDER BY claim_master_1099_list_ak_id) = 1\n),\nEXP_claim_master_ak_id AS (\n\tSELECT\n\tEXP_claim_master_1099_list_ak_id.claim_trans_id,\n\tLKP_claim_master_1099_list.claim_master_1099_list_ak_id AS lkp_claim_master_1099_list_ak_id,\n\t-- *INF*: iif(isnull(lkp_claim_master_1099_list_ak_id),-1,lkp_claim_master_1099_list_ak_id)\n\tIFF(lkp_claim_master_1099_list_ak_id IS NULL, - 1, lkp_claim_master_1099_list_ak_id) AS claim_master_1099_list_ak_id\n\tFROM EXP_claim_master_1099_list_ak_id\n\tLEFT JOIN LKP_claim_master_1099_list\n\tON LKP_claim_master_1099_list.tax_id = EXP_claim_master_1099_list_ak_id.tax_id\n),\nUPD_master_1099_ak_id AS (\n\tSELECT\n\tclaim_trans_id, \n\tclaim_master_1099_list_ak_id\n\tFROM EXP_claim_master_ak_id\n),\nTGT_claim_transaction_UPDATE AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.claim_transaction AS T\n\tUSING UPD_master_1099_ak_id AS S\n\tON T.claim_trans_id = S.claim_trans_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.claim_master_1099_list_ak_id = S.claim_master_1099_list_ak_id\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246504"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905521"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604329"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:13:41"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 02:19:56"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "PMS"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

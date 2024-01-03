@@ -1,0 +1,73 @@
+{
+    "name": "m_POL_DW_DELETE_EarnedPremiumDailyCalculation_DataBeforeLastMonth",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_DELETE_EarnedPremiumDailyCalculation_DataBe_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_EarnedPremiumDailyCalculation AS (\n\tselect 1 as EarnedPremiumDailyCalculationID,\r\n\t'@{pipeline().parameters.SOURCE_TABLE_OWNER}' as SOURCE_TABLE_OWNER\n),\nSQL_DeleteDataBeforeLastMonth_EarnedPremiumDailyCalculation AS (-- SQL_DeleteDataBeforeLastMonth_EarnedPremiumDailyCalculation\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nSQL_DeleteDataBeforeLastMonth_WorkEarnedPremiumCoverageDaily AS (-- SQL_DeleteDataBeforeLastMonth_WorkEarnedPremiumCoverageDaily\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nSQL_DeleteDataBeforeLastMonth_WorkFirstAuditDaily AS (-- SQL_DeleteDataBeforeLastMonth_WorkFirstAuditDaily\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nUnion_Default AS (\n\tSELECT EarnedPremiumDailyCalculationID_output AS EarnedPremiumDailyCalculationId\n\tFROM SQL_DeleteDataBeforeLastMonth_EarnedPremiumDailyCalculation\n\tUNION\n\tSELECT EarnedPremiumDailyCalculationID_output AS EarnedPremiumDailyCalculationId\n\tFROM SQL_DeleteDataBeforeLastMonth_WorkEarnedPremiumCoverageDaily\n\tUNION\n\tSELECT EarnedPremiumDailyCalculationID_output AS EarnedPremiumDailyCalculationId\n\tFROM SQL_DeleteDataBeforeLastMonth_WorkFirstAuditDaily\n),\nFIL_All AS (\n\tSELECT\n\tEarnedPremiumDailyCalculationId\n\tFROM Union_Default\n\tWHERE FALSE\n),\nTGT_EarnedPremiumDailyCalculation_Default AS (\n\tINSERT INTO EarnedPremiumDailyCalculation\n\t(EarnedPremiumDailyCalculationID)\n\tSELECT \n\tEarnedPremiumDailyCalculationId AS EARNEDPREMIUMDAILYCALCULATIONID\n\tFROM FIL_All\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905525"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604439"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:01:34"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 02:35:39"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

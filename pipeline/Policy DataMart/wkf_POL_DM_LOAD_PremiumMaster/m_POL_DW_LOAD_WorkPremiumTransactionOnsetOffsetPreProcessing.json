@@ -1,0 +1,97 @@
+{
+    "name": "m_POL_DW_LOAD_WorkPremiumTransactionOnsetOffsetPreProcessing",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_WorkPremiumTransactionOnsetOffsetPrePr_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTPremiumTransactionTracking AS (\n\n------------ PRE SQL ----------\n@{pipeline().parameters.PRE_SQL}\n----------------------\n\n\n\tSELECT trk.PolicyKey,\r\n\t\ttrk.RatingCoverageAKID,\r\n\t\ttrk.PremiumTransactionEffectiveDate,\r\n\t\ttrk.DCTTransactionSequence,\r\n\t\ttrk.DCTTransactionIndex,\r\n\t\ttrk.DCTTransactionGuid,\r\n\t\ttrk.OffsetOnsetCode,\r\n\t\ttrk.PremiumTransactionID,\r\n\t\ttrk.PremiumTransactionAKID,\r\n\t\ttrk.DCTCoverageId,\r\n\t\ttrk.DeprecatedOnDCTTransactionSequence,\r\n\t\ttrk.DeprecatedOnDCTTransactionIndex\r\n\tFROM WorkDCTPremiumTransactionTracking trk with (nolock)\r\n\tINNER JOIN V2.policy P on trk.PolicyKey = P.pol_key AND  P.crrnt_snpsht_flag =1\r\n\t@{pipeline().parameters.INCREMENTALCOVERAGEFILTER}\r\n\tWHERE trk.DeletedFromPremiumTransactionFlag<>1 \r\n\tAND P.pol_ak_id%5= 0\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\r\n\tORDER BY trk.PolicyKey, trk.RatingCoverageAKID, trk.PremiumTransactionEffectiveDate, trk.DCTTransactionSequence, trk.DCTTransactionIndex, trk.DCTTransactionGuid, trk.OffsetOnsetCode\n),\nEXP_Pass_value AS (\n\tSELECT\n\tPolicyKey,\n\tRatingCoverageAKID,\n\tPremiumTransactionEffectiveDate,\n\tDCTTransactionSequence,\n\tDCTTransactionIndex,\n\tDCTTransactionGuid,\n\tOffsetOnsetCode,\n\tPremiumTransactionID,\n\tPremiumTransactionAKID,\n\tDCTCoverageId,\n\tDeprecatedOnDCTTransactionSequence,\n\tDeprecatedOnDCTTransactionIndex,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\tsysdate AS o_CreatedDate,\n\tsysdate AS o_ModifiedDate\n\tFROM SQ_WorkDCTPremiumTransactionTracking\n),\nWorkPremiumTransactionOnsetOffsetPreProcessing AS (\n\tTRUNCATE TABLE WorkPremiumTransactionOnsetOffsetPreProcessing;\n\tINSERT INTO WorkPremiumTransactionOnsetOffsetPreProcessing\n\t(AuditID, CreatedDate, ModifiedDate, PolicyKey, RatingCoverageAKID, PremiumTransactionID, PremiumTransactionAKID, PremiumTransactionEffectiveDate, PremiumTransactionEnteredDate, OffsetOnsetCode, DCTTransactionSequence, DCTTransactionIndex, DCTTransactionGuid, DCTCoverageId, DeprecatedOnDCTTransactionSequence, DeprecatedOnDCTTransactionIndex)\n\tSELECT \n\to_AuditID AS AUDITID, \n\to_CreatedDate AS CREATEDDATE, \n\to_ModifiedDate AS MODIFIEDDATE, \n\tPOLICYKEY, \n\tRATINGCOVERAGEAKID, \n\tPREMIUMTRANSACTIONID, \n\tPREMIUMTRANSACTIONAKID, \n\tPREMIUMTRANSACTIONEFFECTIVEDATE, \n\tPremiumTransactionEffectiveDate AS PREMIUMTRANSACTIONENTEREDDATE, \n\tOFFSETONSETCODE, \n\tDCTTRANSACTIONSEQUENCE, \n\tDCTTRANSACTIONINDEX, \n\tDCTTRANSACTIONGUID, \n\tDCTCOVERAGEID, \n\tDEPRECATEDONDCTTRANSACTIONSEQUENCE, \n\tDEPRECATEDONDCTTRANSACTIONINDEX\n\tFROM EXP_Pass_value\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "244793"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "893107"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7542389"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "07/01/2023 06:20:48"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/01/2023 11:17:11"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            },
+            "SOURCE_TABLE_OWNER_1": {
+                "type": "string",
+                "defaultValue": "v2"
+            },
+            "DATAMART_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "WC_Data_Mart"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "AND trk.PolicyKey IN (SELECT DISTINCT PolicyKey FROM dbo.WorkOffsetAttributeAccuracyPolicy)"
+            },
+            "PRE_SQL": {
+                "type": "string",
+                "defaultValue": "TRUNCATE TABLE $$SOURCE_TABLE_OWNER.WorkOffsetAttributeAccuracyPolicy; INSERT INTO $$SOURCE_TABLE_OWNER.WorkOffsetAttributeAccuracyPolicy (AuditID, CreatedDate, ModifiedDate, PolicyKey) SELECT DISTINCT $$WBMI_AUDIT_CONTROL_RUN_ID, GETDATE(), GETDATE(), pd.pol_key FROM $$DATAMART_DATABASE_NAME.$$TARGET_TABLE_OWNER.PremiumMasterFact pmf WITH (NOLOCK) INNER JOIN $$SOURCE_TABLE_OWNER.PremiumMasterCalculation pmc with (nolock) on pmf.EDWPremiumMasterCalculationPKID = pmc.PremiumMasterCalculationID and pmc.SourceSystemID = 'DCT' INNER JOIN $$DATAMART_DATABASE_NAME.$$TARGET_TABLE_OWNER.policy_dim pd with (nolock) on pmf.PolicyDimID = pd.pol_dim_id WHERE pmf.AuditID = $$WBMI_AUDIT_CONTROL_RUN_ID; DELETE FROM $$SOURCE_TABLE_OWNER.WorkOffsetAttributeAccuracyPolicy WHERE PolicyKey IN (SELECT PolicyKey FROM $$SOURCE_TABLE_OWNER.WorkPolicyNotSuportedByOffsetAccuracy);"
+            },
+            "INCREMENTALCOVERAGEFILTER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

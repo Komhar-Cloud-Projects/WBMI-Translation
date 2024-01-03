@@ -1,0 +1,77 @@
+{
+    "name": "m_POL_DM_LOAD_PassThroughChargeTranTypeDim",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DM_LOAD_PassThroughChargeTranTypeDim",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_PassThroughChargeTransaction AS (\n\tSELECT DISTINCT\r\n\tPTCT.SourceSystemID as SourceSystemID,\r\n\tLTRIM(RTRIM(PTCT.ReasonAmendedCode)) as ReasonAmendedCode, \r\n\tPTCT.PassThroughChargeTransactionCodeId as PassThroughChargeTransactionCodeId,\r\n\tPTCT.SupPassThroughChargeTypeID as SupPassThroughChargeTypeID \r\n\tFROM PassThroughChargeTransaction PTCT\r\n\tWHERE PTCT.CREATEDDATE>='@{pipeline().parameters.SELECTION_START_TS}'\n),\nexp_get_data AS (\n\tSELECT\n\tSourceSystemID,\n\tReasonAmendedCode,\n\tPassThroughChargeTransactionCodeId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,\n\t-- *INF*: TO_DATE('1/1/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('1/1/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveDate,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,\n\t1 AS CurrentSnapshotFlag,\n\tSupPassThroughChargeTypeID\n\tFROM SQ_PassThroughChargeTransaction\n),\nlkp_SupPassThroughChargeType AS (\n\tSELECT\n\tPassThroughChargeType,\n\tSupPassThroughChargeTypeID\n\tFROM (\n\t\tSELECT \n\t\t\tPassThroughChargeType,\n\t\t\tSupPassThroughChargeTypeID\n\t\tFROM SupPassThroughChargeType\n\t\tWHERE CurrentSnapShotFlag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY SupPassThroughChargeTypeID ORDER BY PassThroughChargeType DESC) = 1\n),\nlkp_sup_premim_transaction_code AS (\n\tSELECT\n\tStandardPremiumTransactionCode,\n\tStandardPremiumTransactionCodeDescription,\n\tprem_trans_type_descript,\n\tsup_prem_trans_code_id\n\tFROM (\n\t\tSELECT\r\n\t\tsup_premium_transaction_code.sup_prem_trans_code_id as sup_prem_trans_code_id,\r\n\t\tsup_premium_transaction_code.StandardPremiumTransactionCode as StandardPremiumTransactionCode, \r\n\t\tsup_premium_transaction_code.prem_trans_type_descript as prem_trans_type_descript, \r\n\t\tsup_premium_transaction_code.StandardPremiumTransactionCodeDescription as StandardPremiumTransactionCodeDescription \r\n\t\tFROM sup_premium_transaction_code\r\n\t\twhere sup_premium_transaction_code.crrnt_snpsht_flag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY sup_prem_trans_code_id ORDER BY StandardPremiumTransactionCode DESC) = 1\n),\nlkp_sup_reason_amended_code AS (\n\tSELECT\n\tStandardReasonAmendedDescription,\n\tStandardReasonAmendedCode,\n\trsn_amended_code,\n\tsource_sys_id\n\tFROM (\n\t\tSELECT \n\t\t\tStandardReasonAmendedDescription,\n\t\t\tStandardReasonAmendedCode,\n\t\t\trsn_amended_code,\n\t\t\tsource_sys_id\n\t\tFROM sup_reason_amended_code\n\t\tWHERE crrnt_snpsht_flag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY rsn_amended_code,source_sys_id ORDER BY StandardReasonAmendedDescription) = 1\n),\nExp_PassThroughTransTypeDim AS (\n\tSELECT\n\tlkp_sup_premim_transaction_code.StandardPremiumTransactionCode AS lkp_StandardPremiumTransactionCode,\n\t-- *INF*: IIF(ISNULL(lkp_StandardPremiumTransactionCode) or IS_SPACES(lkp_StandardPremiumTransactionCode) or LENGTH(lkp_StandardPremiumTransactionCode)=0,'N/A',LTRIM(RTRIM(lkp_StandardPremiumTransactionCode)))\n\tIFF(lkp_StandardPremiumTransactionCode IS NULL OR IS_SPACES(lkp_StandardPremiumTransactionCode) OR LENGTH(lkp_StandardPremiumTransactionCode) = 0, 'N/A', LTRIM(RTRIM(lkp_StandardPremiumTransactionCode))) AS StandardPremiumTransactionCode,\n\tlkp_sup_premim_transaction_code.StandardPremiumTransactionCodeDescription AS lkp_StandardPremiumTransactionCodeDescription,\n\t-- *INF*: iif(isnull(lkp_StandardPremiumTransactionCodeDescription) or IS_SPACES(lkp_StandardPremiumTransactionCodeDescription) or LENGTH(lkp_StandardPremiumTransactionCodeDescription)=0,'N/A',LTRIM(RTRIM(lkp_StandardPremiumTransactionCodeDescription)))\n\tIFF(lkp_StandardPremiumTransactionCodeDescription IS NULL OR IS_SPACES(lkp_StandardPremiumTransactionCodeDescription) OR LENGTH(lkp_StandardPremiumTransactionCodeDescription) = 0, 'N/A', LTRIM(RTRIM(lkp_StandardPremiumTransactionCodeDescription))) AS StandardPremiumTransactionCodeDescription,\n\tlkp_sup_premim_transaction_code.prem_trans_type_descript AS lkp_prem_trans_type_descript,\n\t-- *INF*: iif(isnull(lkp_prem_trans_type_descript) or IS_SPACES(lkp_prem_trans_type_descript) or LENGTH(lkp_prem_trans_type_descript)=0,'N/A',LTRIM(RTRIM(lkp_prem_trans_type_descript)))\n\tIFF(lkp_prem_trans_type_descript IS NULL OR IS_SPACES(lkp_prem_trans_type_descript) OR LENGTH(lkp_prem_trans_type_descript) = 0, 'N/A', LTRIM(RTRIM(lkp_prem_trans_type_descript))) AS prem_trans_type_descript,\n\tlkp_sup_reason_amended_code.StandardReasonAmendedDescription AS lkp_rsn_amended_code_descript,\n\t-- *INF*: iif(isnull(lkp_rsn_amended_code_descript) or IS_SPACES(lkp_rsn_amended_code_descript) or LENGTH(lkp_rsn_amended_code_descript)=0,'N/A',LTRIM(RTRIM(lkp_rsn_amended_code_descript)))\n\tIFF(lkp_rsn_amended_code_descript IS NULL OR IS_SPACES(lkp_rsn_amended_code_descript) OR LENGTH(lkp_rsn_amended_code_descript) = 0, 'N/A', LTRIM(RTRIM(lkp_rsn_amended_code_descript))) AS rsn_amended_code_descript,\n\tlkp_sup_reason_amended_code.StandardReasonAmendedCode AS lkp_StandardReasonAmendedCode,\n\t-- *INF*: iif(isnull(lkp_StandardReasonAmendedCode) or IS_SPACES(lkp_StandardReasonAmendedCode) or LENGTH(lkp_StandardReasonAmendedCode)=0,'N/A',LTRIM(RTRIM(lkp_StandardReasonAmendedCode)))\n\tIFF(lkp_StandardReasonAmendedCode IS NULL OR IS_SPACES(lkp_StandardReasonAmendedCode) OR LENGTH(lkp_StandardReasonAmendedCode) = 0, 'N/A', LTRIM(RTRIM(lkp_StandardReasonAmendedCode))) AS ReasonAmendedCode,\n\texp_get_data.AuditID,\n\texp_get_data.EffectiveDate,\n\texp_get_data.ExpirationDate,\n\texp_get_data.CurrentSnapshotFlag,\n\tlkp_SupPassThroughChargeType.PassThroughChargeType AS lkp_PassThroughChargeType,\n\t-- *INF*: iif(isnull(lkp_PassThroughChargeType) or IS_SPACES(lkp_PassThroughChargeType) or LENGTH(lkp_PassThroughChargeType)=0,'N/A',LTRIM(RTRIM(lkp_PassThroughChargeType)))\n\tIFF(lkp_PassThroughChargeType IS NULL OR IS_SPACES(lkp_PassThroughChargeType) OR LENGTH(lkp_PassThroughChargeType) = 0, 'N/A', LTRIM(RTRIM(lkp_PassThroughChargeType))) AS PassThroughChargeType\n\tFROM exp_get_data\n\tLEFT JOIN lkp_SupPassThroughChargeType\n\tON lkp_SupPassThroughChargeType.SupPassThroughChargeTypeID = exp_get_data.SupPassThroughChargeTypeID\n\tLEFT JOIN lkp_sup_premim_transaction_code\n\tON lkp_sup_premim_transaction_code.sup_prem_trans_code_id = exp_get_data.PassThroughChargeTransactionCodeId\n\tLEFT JOIN lkp_sup_reason_amended_code\n\tON lkp_sup_reason_amended_code.rsn_amended_code = exp_get_data.ReasonAmendedCode AND lkp_sup_reason_amended_code.source_sys_id = exp_get_data.SourceSystemID\n),\nlkp_PassThroughChargeTransTypeDim AS (\n\tSELECT\n\tPassThroughChargeTransactionTypeDimID,\n\tPassThroughChargeTransactionCode,\n\tReasonAmendedCode,\n\tPassThroughChargeType\n\tFROM (\n\t\tSELECT \n\t\t\tPassThroughChargeTransactionTypeDimID,\n\t\t\tPassThroughChargeTransactionCode,\n\t\t\tReasonAmendedCode,\n\t\t\tPassThroughChargeType\n\t\tFROM PassThroughChargeTransactionTypeDim\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PassThroughChargeTransactionCode,ReasonAmendedCode,PassThroughChargeType ORDER BY PassThroughChargeTransactionTypeDimID DESC) = 1\n),\nfil_new_records AS (\n\tSELECT\n\tlkp_PassThroughChargeTransTypeDim.PassThroughChargeTransactionTypeDimID AS lkp_PassThroughChargeTransactionTypeDimID, \n\tExp_PassThroughTransTypeDim.CurrentSnapshotFlag, \n\tExp_PassThroughTransTypeDim.AuditID, \n\tExp_PassThroughTransTypeDim.EffectiveDate, \n\tExp_PassThroughTransTypeDim.ExpirationDate, \n\tExp_PassThroughTransTypeDim.StandardPremiumTransactionCode, \n\tExp_PassThroughTransTypeDim.StandardPremiumTransactionCodeDescription, \n\tExp_PassThroughTransTypeDim.prem_trans_type_descript, \n\tExp_PassThroughTransTypeDim.ReasonAmendedCode, \n\tExp_PassThroughTransTypeDim.rsn_amended_code_descript, \n\tExp_PassThroughTransTypeDim.PassThroughChargeType\n\tFROM Exp_PassThroughTransTypeDim\n\tLEFT JOIN lkp_PassThroughChargeTransTypeDim\n\tON lkp_PassThroughChargeTransTypeDim.PassThroughChargeTransactionCode = Exp_PassThroughTransTypeDim.StandardPremiumTransactionCode AND lkp_PassThroughChargeTransTypeDim.ReasonAmendedCode = Exp_PassThroughTransTypeDim.ReasonAmendedCode AND lkp_PassThroughChargeTransTypeDim.PassThroughChargeType = Exp_PassThroughTransTypeDim.PassThroughChargeType\n\tWHERE ISNULL(lkp_PassThroughChargeTransactionTypeDimID)\n),\nagg_PassThroughTypeDim AS (\n\tSELECT\n\tCurrentSnapshotFlag, \n\tAuditID, \n\tEffectiveDate, \n\tExpirationDate, \n\tStandardPremiumTransactionCode, \n\tStandardPremiumTransactionCodeDescription, \n\tprem_trans_type_descript, \n\tReasonAmendedCode, \n\trsn_amended_code_descript, \n\tPassThroughChargeType\n\tFROM fil_new_records\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY StandardPremiumTransactionCode, ReasonAmendedCode, PassThroughChargeType ORDER BY NULL) = 1\n),\nexp_Pass_through AS (\n\tSELECT\n\tCurrentSnapshotFlag,\n\tAuditID,\n\tEffectiveDate,\n\tExpirationDate,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate,\n\tStandardPremiumTransactionCode,\n\tStandardPremiumTransactionCodeDescription,\n\tprem_trans_type_descript,\n\tReasonAmendedCode,\n\trsn_amended_code_descript,\n\tPassThroughChargeType\n\tFROM agg_PassThroughTypeDim\n),\nPassThroughChargeTransactionTypeDim AS (\n\tINSERT INTO Shortcut_to_PassThroughChargeTransactionTypeDim\n\t(CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, CreatedDate, ModifiedDate, PassThroughChargeTransactionCode, PassThroughChargeTransactionCodeDescription, PassThroughChargeTransactionTypeDescription, ReasonAmendedCode, ReasonAmendedCodeDescription, PassThroughChargeType)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tStandardPremiumTransactionCode AS PASSTHROUGHCHARGETRANSACTIONCODE, \n\tStandardPremiumTransactionCodeDescription AS PASSTHROUGHCHARGETRANSACTIONCODEDESCRIPTION, \n\tprem_trans_type_descript AS PASSTHROUGHCHARGETRANSACTIONTYPEDESCRIPTION, \n\tREASONAMENDEDCODE, \n\trsn_amended_code_descript AS REASONAMENDEDCODEDESCRIPTION, \n\tPASSTHROUGHCHARGETYPE\n\tFROM exp_Pass_through\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246511"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905531"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604516"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:57:01"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 03:31:13"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_DATA_MART_Policy"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "PMS"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}

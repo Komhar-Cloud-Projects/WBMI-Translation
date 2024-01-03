@@ -1,0 +1,77 @@
+{
+    "name": "m_CLM_DM_LOAD_NurseReferralFact",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DM_LOAD_NurseReferralFact",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_NurseReferral AS (\n\tSELECT \r\n\tN.NurseReferralId, \r\n\tN.NurseReferralAkId, \r\n\tN.NurseCaseAkId \r\n\t\r\n\tFROM\r\n\t @{pipeline().parameters.SOURCE_TABLE_OWNER}.NurseReferral N\r\n\t\r\n\twhere\r\n\tN.CurrentSnapshotFlag = 1\n),\nEXP_Scr_Values AS (\n\tSELECT\n\tNurseReferralId,\n\tNurseReferralAkId,\n\tNurseCaseAkId\n\tFROM SQ_NurseReferral\n),\nLKP_NurseReferralDim AS (\n\tSELECT\n\tNurseReferralDimId,\n\tEdwNurseReferralAkId\n\tFROM (\n\t\tSELECT\r\n\t\tN.NurseReferralDimId as NurseReferralDimId, \r\n\t\tN.EdwNurseReferralAkId as EdwNurseReferralAkId\r\n\t\t\r\n\t\t FROM \r\n\t\t@{pipeline().parameters.TARGET_TABLE_OWNER}.NurseReferralDim N\r\n\t\t\r\n\t\twhere\r\n\t\tN.CurrentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY EdwNurseReferralAkId ORDER BY NurseReferralDimId) = 1\n),\nLKP_NurseReferralTimeWorked AS (\n\tSELECT\n\tReferralTotalTimeWorkedHours,\n\tNurseReferralAkId\n\tFROM (\n\t\tSELECT\r\n\t\tCOUNT(*) as Total_Count,\r\n\t\tN.NurseReferralAkId as NurseReferralAkId,\r\n\t\tSUM(N.TimeWorkedHours) as ReferralTotalTimeWorkedHours  \r\n\t\t\r\n\t\tFROM \r\n\t\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.NurseReferralTimeWorked N\r\n\t\t\r\n\t\twhere\r\n\t\tN.CurrentSnapshotFlag = 1\r\n\t\t\r\n\t\tGroup by\r\n\t\tN.NurseReferralAkId\r\n\t\t\r\n\t\thaving\r\n\t\tCOUNT(*) >= 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY NurseReferralAkId ORDER BY ReferralTotalTimeWorkedHours) = 1\n),\nmplt_Claimant_Occurrence_dim_ids AS (WITH\n\tINPUT AS (\n\t\t\n\t),\n\tLKP_NurseCase_EDW_Scr AS (\n\t\tSELECT\n\t\tclaim_party_occurrence_ak_id,\n\t\tNurseCaseAkId\n\t\tFROM (\n\t\t\tSELECT \r\n\t\t\tN.claim_party_occurrence_ak_id as claim_party_occurrence_ak_id, \r\n\t\t\tN.NurseCaseAkId as NurseCaseAkId\r\n\t\t\t\r\n\t\t\t FROM \r\n\t\t\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.NurseCase N\r\n\t\t\t\r\n\t\t\twhere\r\n\t\t\tCurrentSnapshotFlag = 1\n\t\t)\n\t\tQUALIFY ROW_NUMBER() OVER (PARTITION BY NurseCaseAkId ORDER BY claim_party_occurrence_ak_id) = 1\n\t),\n\tLKP_claimant_dim_DM_Tgt AS (\n\t\tSELECT\n\t\tclaimant_dim_id,\n\t\tedw_claim_party_occurrence_ak_id\n\t\tFROM (\n\t\t\tSELECT \r\n\t\t\tC.claimant_dim_id as claimant_dim_id, C.edw_claim_party_occurrence_ak_id as edw_claim_party_occurrence_ak_id\r\n\t\t\t\r\n\t\t\t FROM\r\n\t\t\t @{pipeline().parameters.TARGET_TABLE_OWNER}.claimant_dim C\r\n\t\t\t\r\n\t\t\twhere\r\n\t\t\tcrrnt_snpsht_flag = 1\n\t\t)\n\t\tQUALIFY ROW_NUMBER() OVER (PARTITION BY edw_claim_party_occurrence_ak_id ORDER BY claimant_dim_id) = 1\n\t),\n\tLKP_claim_party_occurrence_EDW_Scr AS (\n\t\tSELECT\n\t\tclaim_occurrence_ak_id,\n\t\tclaim_party_occurrence_ak_id\n\t\tFROM (\n\t\t\tSELECT \r\n\t\t\tC.claim_occurrence_ak_id as claim_occurrence_ak_id, C.claim_party_occurrence_ak_id as claim_party_occurrence_ak_id\r\n\t\t\t\r\n\t\t\t FROM \r\n\t\t\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_party_occurrence C\r\n\t\t\t\r\n\t\t\twhere\r\n\t\t\tcrrnt_snpsht_flag = 1\r\n\t\t\tAND\r\n\t\t\tclaim_party_role_code in ('CLMT','CMT')\n\t\t)\n\t\tQUALIFY ROW_NUMBER() OVER (PARTITION BY claim_party_occurrence_ak_id ORDER BY claim_occurrence_ak_id) = 1\n\t),\n\tLKP_claim_occurrence_dim_DM_Tgt AS (\n\t\tSELECT\n\t\tclaim_occurrence_dim_id,\n\t\tedw_claim_occurrence_ak_id\n\t\tFROM (\n\t\t\tSELECT\r\n\t\t\tC.claim_occurrence_dim_id as claim_occurrence_dim_id, C.edw_claim_occurrence_ak_id as edw_claim_occurrence_ak_id \r\n\t\t\t\r\n\t\t\tFROM \r\n\t\t\t@{pipeline().parameters.TARGET_TABLE_OWNER}.claim_occurrence_dim C\r\n\t\t\t\r\n\t\t\twhere\r\n\t\t\tcrrnt_snpsht_flag = 1\n\t\t)\n\t\tQUALIFY ROW_NUMBER() OVER (PARTITION BY edw_claim_occurrence_ak_id ORDER BY claim_occurrence_dim_id) = 1\n\t),\n\tOUTPUT AS (\n\t\tSELECT\n\t\tLKP_claimant_dim_DM_Tgt.claimant_dim_id, \n\t\tLKP_claim_occurrence_dim_DM_Tgt.claim_occurrence_dim_id\n\t\tFROM \n\t\tLEFT JOIN LKP_claim_occurrence_dim_DM_Tgt\n\t\tON LKP_claim_occurrence_dim_DM_Tgt.edw_claim_occurrence_ak_id = LKP_claim_party_occurrence_EDW_Scr.claim_occurrence_ak_id\n\t\tLEFT JOIN LKP_claimant_dim_DM_Tgt\n\t\tON LKP_claimant_dim_DM_Tgt.edw_claim_party_occurrence_ak_id = LKP_NurseCase_EDW_Scr.claim_party_occurrence_ak_id\n\t),\n),\nEXP_Defualt_Values AS (\n\tSELECT\n\tEXP_Scr_Values.NurseReferralId,\n\tLKP_NurseReferralDim.NurseReferralDimId AS IN_NurseReferralDimId,\n\t-- *INF*: iif(isnull(IN_NurseReferralDimId),-1,IN_NurseReferralDimId)\n\tIFF(IN_NurseReferralDimId IS NULL, - 1, IN_NurseReferralDimId) AS v_NurseReferralDimId,\n\tv_NurseReferralDimId AS NurseReferralDimId,\n\tmplt_Claimant_Occurrence_dim_ids.claimant_dim_id AS IN_claimant_dim_id,\n\t-- *INF*: iif(isnull(IN_claimant_dim_id), -1,IN_claimant_dim_id)\n\tIFF(IN_claimant_dim_id IS NULL, - 1, IN_claimant_dim_id) AS v_claimant_dim_id,\n\tv_claimant_dim_id AS claimant_dim_id,\n\tmplt_Claimant_Occurrence_dim_ids.claim_occurrence_dim_id AS IN_claim_occurrence_dim_id,\n\t-- *INF*: iif(isnull(IN_claim_occurrence_dim_id) ,-1, IN_claim_occurrence_dim_id)\n\tIFF(IN_claim_occurrence_dim_id IS NULL, - 1, IN_claim_occurrence_dim_id) AS v_claim_occurrence_dim_id,\n\tv_claim_occurrence_dim_id AS claim_occurrence_dim_id,\n\tLKP_NurseReferralTimeWorked.ReferralTotalTimeWorkedHours AS IN_ReferralTotalTimeWorkedHours,\n\t-- *INF*: iif(isnull(IN_ReferralTotalTimeWorkedHours),0,IN_ReferralTotalTimeWorkedHours)\n\tIFF(IN_ReferralTotalTimeWorkedHours IS NULL, 0, IN_ReferralTotalTimeWorkedHours) AS v_ReferralTotalTimeWorkedHours,\n\tv_ReferralTotalTimeWorkedHours AS ReferralTotalTimeWorkedHours\n\tFROM EXP_Scr_Values\n\t -- Manually join with mplt_Claimant_Occurrence_dim_ids\n\tLEFT JOIN LKP_NurseReferralDim\n\tON LKP_NurseReferralDim.EdwNurseReferralAkId = EXP_Scr_Values.NurseReferralAkId\n\tLEFT JOIN LKP_NurseReferralTimeWorked\n\tON LKP_NurseReferralTimeWorked.NurseReferralAkId = EXP_Scr_Values.NurseReferralAkId\n),\nLKP_NurseReferralFact AS (\n\tSELECT\n\tNurseReferralFactId,\n\tEdwNurseReferralPkId,\n\tclaimant_dim_id,\n\tclaim_occurrence_dim_id,\n\tNurseReferralDimId,\n\tReferralTotalTimeWorkedHours\n\tFROM (\n\t\tSELECT \n\t\t\tNurseReferralFactId,\n\t\t\tEdwNurseReferralPkId,\n\t\t\tclaimant_dim_id,\n\t\t\tclaim_occurrence_dim_id,\n\t\t\tNurseReferralDimId,\n\t\t\tReferralTotalTimeWorkedHours\n\t\tFROM NurseReferralFact\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY EdwNurseReferralPkId ORDER BY NurseReferralFactId) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tLKP_NurseReferralFact.NurseReferralFactId AS Lkp_NurseReferralFactId,\n\tLKP_NurseReferralFact.EdwNurseReferralPkId AS Lkp_EdwNurseReferralPkId,\n\tLKP_NurseReferralFact.claimant_dim_id AS Lkp_claimant_dim_id,\n\tLKP_NurseReferralFact.claim_occurrence_dim_id AS Lkp_claim_occurrence_dim_id,\n\tLKP_NurseReferralFact.NurseReferralDimId AS Lkp_NurseReferralDimId,\n\tLKP_NurseReferralFact.ReferralTotalTimeWorkedHours AS Lkp_ReferralTotalTimeWorkedHours,\n\t-- *INF*: iif(isnull(Lkp_NurseReferralFactId),'NEW',\r\n\t-- \r\n\t-- iif(\r\n\t-- \r\n\t--   Lkp_EdwNurseReferralPkId != NurseReferralId\r\n\t--  OR \r\n\t--   Lkp_claimant_dim_id != claimant_dim_id\r\n\t--  OR \r\n\t--   Lkp_claim_occurrence_dim_id != claim_occurrence_dim_id\r\n\t--  OR \r\n\t--   Lkp_NurseReferralDimId != NurseReferralDimId\r\n\t--   OR\r\n\t--   Lkp_ReferralTotalTimeWorkedHours != ReferralTotalTimeWorkedHours,\r\n\t-- \r\n\t--   'UPDATE','NOCHANGE' )\r\n\t-- \r\n\t--    )\n\tIFF(Lkp_NurseReferralFactId IS NULL, 'NEW', IFF(Lkp_EdwNurseReferralPkId != NurseReferralId OR Lkp_claimant_dim_id != claimant_dim_id OR Lkp_claim_occurrence_dim_id != claim_occurrence_dim_id OR Lkp_NurseReferralDimId != NurseReferralDimId OR Lkp_ReferralTotalTimeWorkedHours != ReferralTotalTimeWorkedHours, 'UPDATE', 'NOCHANGE')) AS v_ChangedFlag,\n\tv_ChangedFlag AS ChangedFlag,\n\tEXP_Defualt_Values.NurseReferralId,\n\tEXP_Defualt_Values.NurseReferralDimId,\n\tEXP_Defualt_Values.claimant_dim_id,\n\tEXP_Defualt_Values.claim_occurrence_dim_id,\n\tEXP_Defualt_Values.ReferralTotalTimeWorkedHours,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM EXP_Defualt_Values\n\tLEFT JOIN LKP_NurseReferralFact\n\tON LKP_NurseReferralFact.EdwNurseReferralPkId = EXP_Defualt_Values.NurseReferralId\n),\nRTR_Insert_Update AS (\n\tSELECT\n\tLkp_NurseReferralFactId,\n\tChangedFlag,\n\tNurseReferralId,\n\tNurseReferralDimId,\n\tclaimant_dim_id,\n\tclaim_occurrence_dim_id,\n\tReferralTotalTimeWorkedHours,\n\to_AuditId\n\tFROM EXP_Detect_Changes\n),\nRTR_Insert_Update_Insert AS (SELECT * FROM RTR_Insert_Update WHERE ChangedFlag = 'NEW'),\nRTR_Insert_Update_DEFAULT1 AS (SELECT * FROM RTR_Insert_Update WHERE NOT ( (ChangedFlag = 'NEW') )),\nUPD_Update AS (\n\tSELECT\n\tLkp_NurseReferralFactId AS Lkp_NurseReferralFactId2, \n\tNurseReferralId AS NurseReferralId2, \n\tNurseReferralDimId AS NurseReferralDimId2, \n\tclaimant_dim_id AS claimant_dim_id2, \n\tclaim_occurrence_dim_id AS claim_occurrence_dim_id2, \n\tReferralTotalTimeWorkedHours, \n\to_AuditId AS o_AuditId2\n\tFROM RTR_Insert_Update_DEFAULT1\n),\nNurseReferralFact_Update AS (\n\tMERGE INTO NurseReferralFact AS T\n\tUSING UPD_Update AS S\n\tON T.NurseReferralFactId = S.Lkp_NurseReferralFactId2\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.AuditId = S.o_AuditId2, T.EdwNurseReferralPkId = S.NurseReferralId2, T.claimant_dim_id = S.claimant_dim_id2, T.claim_occurrence_dim_id = S.claim_occurrence_dim_id2, T.NurseReferralDimId = S.NurseReferralDimId2, T.ReferralTotalTimeWorkedHours = S.ReferralTotalTimeWorkedHours\n),\nUPD_Insert AS (\n\tSELECT\n\tNurseReferralId AS NurseReferralId1, \n\tNurseReferralDimId AS NurseReferralDimId1, \n\tclaimant_dim_id AS claimant_dim_id1, \n\tclaim_occurrence_dim_id AS claim_occurrence_dim_id1, \n\tReferralTotalTimeWorkedHours, \n\to_AuditId AS o_AuditId1\n\tFROM RTR_Insert_Update_Insert\n),\nNurseReferralFact_Insert AS (\n\tTRUNCATE TABLE NurseReferralFact;\n\tINSERT INTO NurseReferralFact\n\t(AuditId, EdwNurseReferralPkId, claimant_dim_id, claim_occurrence_dim_id, NurseReferralDimId, ReferralTotalTimeWorkedHours)\n\tSELECT \n\to_AuditId1 AS AUDITID, \n\tNurseReferralId1 AS EDWNURSEREFERRALPKID, \n\tclaimant_dim_id1 AS CLAIMANT_DIM_ID, \n\tclaim_occurrence_dim_id1 AS CLAIM_OCCURRENCE_DIM_ID, \n\tNurseReferralDimId1 AS NURSEREFERRALDIMID, \n\tREFERRALTOTALTIMEWORKEDHOURS\n\tFROM UPD_Insert\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246514"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905534"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604549"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 03:42:21"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 04:16:04"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Data_Mart_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "EXCEED"
+            }
+        },
+        "folder": {
+            "name": ""
+        },
+        "annotations": []
+    }
+}
