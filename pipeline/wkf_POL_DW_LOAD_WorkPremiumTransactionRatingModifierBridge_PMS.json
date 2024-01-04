@@ -7,7 +7,7 @@
                 "type": "ExecutePipeline",
                 "dependsOn": [
                     {
-                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_01",
+                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_02",
                         "dependencyConditions": [
                             "Succeeded"
                         ]
@@ -25,7 +25,7 @@
                 "onInactiveMarkAs": "Succeeded"
             },
             {
-                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_02",
+                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_01",
                 "type": "ExecutePipeline",
                 "dependsOn": [
                     {
@@ -47,11 +47,11 @@
                 "onInactiveMarkAs": "Succeeded"
             },
             {
-                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_01",
+                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_02",
                 "type": "ExecutePipeline",
                 "dependsOn": [
                     {
-                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_03",
+                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_06",
                         "dependencyConditions": [
                             "Succeeded"
                         ]
@@ -69,7 +69,7 @@
                 "onInactiveMarkAs": "Succeeded"
             },
             {
-                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_04",
+                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_03",
                 "type": "ExecutePipeline",
                 "dependsOn": [
                     {
@@ -105,11 +105,11 @@
                 "onInactiveMarkAs": "Succeeded"
             },
             {
-                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_06",
+                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_04",
                 "type": "ExecutePipeline",
                 "dependsOn": [
                     {
-                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_04",
+                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_03",
                         "dependencyConditions": [
                             "Succeeded"
                         ]
@@ -149,11 +149,11 @@
                 "onInactiveMarkAs": "Succeeded"
             },
             {
-                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_03",
+                "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_06",
                 "type": "ExecutePipeline",
                 "dependsOn": [
                     {
-                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_06",
+                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_04",
                         "dependencyConditions": [
                             "Succeeded"
                         ]
@@ -175,7 +175,7 @@
                 "type": "SqlServerStoredProcedure",
                 "dependsOn": [
                     {
-                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_02",
+                        "activity": "s_m_POL_DW_LOAD_WorkPremiumTransactionRatingModifier_01",
                         "dependencyConditions": [
                             "Succeeded"
                         ]

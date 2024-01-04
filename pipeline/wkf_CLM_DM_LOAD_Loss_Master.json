@@ -564,7 +564,7 @@
                 "onInactiveMarkAs": "Succeeded"
             },
             {
-                "name": "sp-ins_upd_rep_sess_log",
+                "name": "sp-ins_upd_rep_sess_log_0",
                 "type": "SqlServerStoredProcedure",
                 "dependsOn": [
                     {
@@ -605,11 +605,12 @@
                         }
                     }
                 },
+                "description": "sp-ins_upd_rep_sess_log",
                 "state": "Inactive",
                 "onInactiveMarkAs": "Succeeded"
             },
             {
-                "name": "sp-ins_upd_rep_sess_log",
+                "name": "sp-ins_upd_rep_sess_log_0_1",
                 "type": "SqlServerStoredProcedure",
                 "dependsOn": [
                     {
@@ -650,6 +651,7 @@
                         }
                     }
                 },
+                "description": "sp-ins_upd_rep_sess_log",
                 "state": "Inactive",
                 "onInactiveMarkAs": "Succeeded"
             }
