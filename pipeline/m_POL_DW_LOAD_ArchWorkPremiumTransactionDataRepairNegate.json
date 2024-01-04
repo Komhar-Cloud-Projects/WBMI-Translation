@@ -24,7 +24,9 @@
                             "text": "WITH\nSQ_WorkPremiumTransactionDataRepairNegate AS (\n\tSELECT\n\t\tWorkPremiumTransactionDataRepairNegateId,\n\t\tSourceSystemId,\n\t\tCreatedDate,\n\t\tCreatedUserID,\n\t\tOriginalPremiumTransactionID,\n\t\tOriginalPremiumTransactionAKID,\n\t\tNewNegatePremiumTransactionID,\n\t\tNewNegatePremiumTransactionAKID\n\tFROM WorkPremiumTransactionDataRepairNegate\n),\nEXP_Default AS (\n\tSELECT\n\tWorkPremiumTransactionDataRepairNegateId,\n\tSourceSystemId,\n\tCreatedDate,\n\tCreatedUserID,\n\tOriginalPremiumTransactionID,\n\tOriginalPremiumTransactionAKID,\n\tNewNegatePremiumTransactionID,\n\tNewNegatePremiumTransactionAKID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID\n\tFROM SQ_WorkPremiumTransactionDataRepairNegate\n),\nArchWorkPremiumTransactionDataRepairNegate AS (\n\tINSERT INTO ArchWorkPremiumTransactionDataRepairNegate\n\t(SourceSystemId, CreatedDate, CreatedUserID, OriginalPremiumTransactionID, OriginalPremiumTransactionAKID, NewNegatePremiumTransactionID, NewNegatePremiumTransactionAKID, AuditId)\n\tSELECT \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tCREATEDUSERID, \n\tORIGINALPREMIUMTRANSACTIONID, \n\tORIGINALPREMIUMTRANSACTIONAKID, \n\tNEWNEGATEPREMIUMTRANSACTIONID, \n\tNEWNEGATEPREMIUMTRANSACTIONAKID, \n\to_AuditID AS AUDITID\n\tFROM EXP_Default\n),"
                         }
                     ]
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             }
         ],
         "parameters": {

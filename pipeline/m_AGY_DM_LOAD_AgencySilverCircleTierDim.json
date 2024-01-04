@@ -24,7 +24,9 @@
                             "text": "WITH\nSQ_AgencySilverCircleTier AS (\n\tSELECT\n\t\tAgencySilverCircleTierId,\n\t\tAgencyCode,\n\t\tSilverCircleYear,\n\t\tSilverCircleLevelDescription,\n\t\tHashKey,\n\t\tModifiedUserId,\n\t\tModifiedDate,\n\t\tCreatedDate,\n\t\tSourceSystemId,\n\t\tAuditId\n\tFROM AgencySilverCircleTier\n),\nEXPTRANS AS (\n\tSELECT\n\tAgencySilverCircleTierId,\n\tAgencyCode,\n\tSilverCircleYear,\n\tSilverCircleLevelDescription,\n\tHashKey,\n\tModifiedUserId,\n\tModifiedDate,\n\tCreatedDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_AgencySilverCircleTier\n),\nAgencySilverCircleTierDim AS (\n\tTRUNCATE TABLE AgencySilverCircleTierDim;\n\tINSERT INTO AgencySilverCircleTierDim\n\t(EDWAgencySilverCircleTierPKId, AgencyCode, SilverCircleYear, SilverCircleLevelDescription, HashKey, ModifiedUserId, ModifiedDate, CreatedDate, SourceSystemId, AuditId)\n\tSELECT \n\tAgencySilverCircleTierId AS EDWAGENCYSILVERCIRCLETIERPKID, \n\tAGENCYCODE, \n\tSILVERCIRCLEYEAR, \n\tSILVERCIRCLELEVELDESCRIPTION, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tCREATEDDATE, \n\tSOURCESYSTEMID, \n\tAUDITID\n\tFROM EXPTRANS\n),"
                         }
                     ]
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             }
         ],
         "parameters": {

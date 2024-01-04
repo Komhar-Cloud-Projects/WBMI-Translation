@@ -24,7 +24,9 @@
                             "text": "WITH\nSQ_WorkPremiumTransactionDataRepairNegate AS (\n\tselect Max(B.WorkPremiumTransactionId) as WorkPremiumTransactionId, NewNegatePremiumTransactionAKID as PremiumTransactionAKId,Max(PremiumTransactionStageId) as PremiumTransactionStageId , Max(A.CreatedDate) as CreatedDate\r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkPremiumTransactionDataRepairNegate A\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchWorkPremiumTransaction B\r\n\ton A.OriginalPremiumTransactionAKID=B.PremiumTransactionAKId and B.SourceSystemID='DCT'\r\n\tgroup by NewNegatePremiumTransactionAKID\n),\nEXP_METADATA AS (\n\tSELECT\n\t-- *INF*: --v_WorkPremiumTransactionID+1\r\n\t-- --Removed as we figured WorkPremiumTransactionID shouldn't be assigned, but rather come from the source\n\t'' AS v_WorkPremiumTransactionID,\n\tWorkPremiumTransactionId AS WorkPremiumTransactionID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,\n\tCreatedDate,\n\tPremiumTransactionAKId,\n\tPremiumTransactionStageId\n\tFROM SQ_WorkPremiumTransactionDataRepairNegate\n),\nArchWorkPremiumTransaction AS (\n\tINSERT INTO ArchWorkPremiumTransaction\n\t(WorkPremiumTransactionId, AuditID, SourceSystemID, CreatedDate, PremiumTransactionAKId, PremiumTransactionStageId)\n\tSELECT \n\tWorkPremiumTransactionID AS WORKPREMIUMTRANSACTIONID, \n\tAUDITID, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tPREMIUMTRANSACTIONAKID, \n\tPREMIUMTRANSACTIONSTAGEID\n\tFROM EXP_METADATA\n),"
                         }
                     ]
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             }
         ],
         "parameters": {

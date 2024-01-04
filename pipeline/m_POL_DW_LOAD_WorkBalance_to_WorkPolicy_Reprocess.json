@@ -24,7 +24,9 @@
                             "text": "WITH\nSQ_WorkBalanceStageToEDWPolicyTransaction AS (\n\tSELECT DISTINCT WBSPT.StagePolicyKey, \r\n\tWBSPT.AuditId\r\n\tFROM\r\n\t @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkBalanceStageToEDWPolicyTransaction WBSPT\r\n\tWHERE WBSPT.AuditId=@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Status_Default AS (\n\tSELECT\n\tStagePolicyKey,\n\t'REPROCESS' AS PolicyStatus,\n\tAuditId,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate\n\tFROM SQ_WorkBalanceStageToEDWPolicyTransaction\n),\nWork_PolicyTransactionStatus AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.Work_PolicyTransactionStatus\n\t(PolicyKey, PolicyStatus, AuditID, CreatedDate, ModifiedDate)\n\tSELECT \n\tStagePolicyKey AS POLICYKEY, \n\tPOLICYSTATUS, \n\tAuditId AS AUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE\n\tFROM EXP_Status_Default\n),"
                         }
                     ]
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             }
         ],
         "parameters": {

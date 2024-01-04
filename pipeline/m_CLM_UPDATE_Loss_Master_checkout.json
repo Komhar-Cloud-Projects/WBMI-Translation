@@ -24,7 +24,9 @@
                             "text": "WITH\nSQ_Loss_Master_Fact_and_Calendar_Dim AS (\n\tselect top 1\r\n\tC.clndr_date, \r\n\tLMF.audit_id, \r\n\tLMF.loss_master_run_date_id  \r\n\tfrom \r\n\tloss_master_fact LMF \r\n\t  inner join calendar_dim C  on C.clndr_id=LMF.loss_master_run_date_id\r\n\twhere audit_id=@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\n),\nEXP_input AS (\n\tSELECT\n\tclndr_date,\n\taudit_id,\n\tloss_master_run_date_id,\n\t@{pipeline().parameters.SUBJECTAREA} AS subject_area\n\tFROM SQ_Loss_Master_Fact_and_Calendar_Dim\n),\nSQL_wbmi_checkout AS (-- SQL_wbmi_checkout\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nEXP_sql_output AS (\n\tSELECT\n\twbmi_checkout_id,\n\tclndr_date_output\n\tFROM SQL_wbmi_checkout\n),\nFIL_nulls AS (\n\tSELECT\n\twbmi_checkout_id, \n\tclndr_date_output\n\tFROM EXP_sql_output\n\tWHERE NOT ISNULL(wbmi_checkout_id)\n),\nUPD_UPDATE AS (\n\tSELECT\n\twbmi_checkout_id, \n\tclndr_date_output\n\tFROM FIL_nulls\n),\nwbmi_checkout AS (\n\tMERGE INTO wbmi_checkout AS T\n\tUSING UPD_UPDATE AS S\n\tON T.wbmi_checkout_id = S.wbmi_checkout_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.source_dt = S.clndr_date_output, T.target_dt = S.clndr_date_output\n),"
                         }
                     ]
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             }
         ],
         "parameters": {

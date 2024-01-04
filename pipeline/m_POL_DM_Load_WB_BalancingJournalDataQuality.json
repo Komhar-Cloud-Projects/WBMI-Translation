@@ -24,7 +24,9 @@
                             "text": "WITH\nSQ_WB_BalancingJournalDataQuality1 AS (\n\tSELECT\n\t\tHistoryId,\n\t\tPurpose,\n\t\tDataQualityFailedDate,\n\t\tDataQualityRestoredDate,\n\t\tModifiedDate\n\tFROM WB_BalancingJournalDataQuality1\n),\nEXP_Default_Value1 AS (\n\tSELECT\n\t@{pipeline().parameters.AUDITID} AS o_AduitId,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS o_SourceSystemId,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_SourceModififedDate,\n\tHistoryId AS i_HistoryId,\n\tPurpose AS i_Purpose,\n\tDataQualityFailedDate,\n\tDataQualityRestoredDate,\n\tModifiedDate,\n\t-- *INF*: IIF(NOT ISNULL(i_HistoryId), i_HistoryId, 0)\n\tIFF(NOT i_HistoryId IS NULL, i_HistoryId, 0) AS o_HistoryId,\n\t-- *INF*: IIF(NOT ISNULL(i_Purpose), i_Purpose, '0')\n\tIFF(NOT i_Purpose IS NULL, i_Purpose, '0') AS o_Purpose\n\tFROM SQ_WB_BalancingJournalDataQuality1\n),\nWBBalancingJournalDataQuality AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBBalancingJournalDataQuality;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBBalancingJournalDataQuality\n\t(AuditId, SourceSystemId, CreatedDate, ModifiedDate, HistoryId, Purpose, DataQualityFailedDate, DataQualityRestoredDate, SourceModifiedDate)\n\tSELECT \n\to_AduitId AS AUDITID, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\to_CreatedDate AS CREATEDDATE, \n\tMODIFIEDDATE, \n\to_HistoryId AS HISTORYID, \n\to_Purpose AS PURPOSE, \n\tDATAQUALITYFAILEDDATE, \n\tDATAQUALITYRESTOREDDATE, \n\to_SourceModififedDate AS SOURCEMODIFIEDDATE\n\tFROM EXP_Default_Value1\n),"
                         }
                     ]
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             }
         ],
         "parameters": {
