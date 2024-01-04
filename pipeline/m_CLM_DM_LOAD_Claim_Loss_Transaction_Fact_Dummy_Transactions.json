@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DM_LOAD_Claim_Loss_Transaction_Fact_Dummy_Transactions",
+    "name": "s_m_CLM_DM_LOAD_Claim_Loss_Transaction_Fact_Dummy_Transactions",
     "properties": {
         "activities": [
             {

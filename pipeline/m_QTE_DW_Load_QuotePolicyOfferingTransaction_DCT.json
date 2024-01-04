@@ -1,5 +1,5 @@
 {
-    "name": "m_QTE_DW_Load_QuotePolicyOfferingTransaction_DCT",
+    "name": "s_m_QTE_DW_Load_QuotePolicyOfferingTransaction_DCT",
     "properties": {
         "activities": [
             {

@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DM_LOAD_Claim_Bank_Payment",
+    "name": "s_m_CLM_DM_LOAD_Claim_Bank_Payment",
     "properties": {
         "activities": [
             {

@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DW_LOAD_sup_claim_subrogation_file_status_code",
+    "name": "s_m_CLM_DW_LOAD_sup_claim_subrogation_file_status_code",
     "properties": {
         "activities": [
             {

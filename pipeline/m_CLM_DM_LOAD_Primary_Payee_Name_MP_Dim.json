@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DM_LOAD_Primary_Payee_Name_MP_Dim",
+    "name": "s_m_CLM_DM_LOAD_Primary_Payee_Name_MP_Dim",
     "properties": {
         "activities": [
             {

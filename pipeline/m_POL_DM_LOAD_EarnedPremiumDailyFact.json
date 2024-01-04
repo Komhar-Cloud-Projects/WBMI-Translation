@@ -1,5 +1,5 @@
 {
-    "name": "m_POL_DM_LOAD_EarnedPremiumDailyFact",
+    "name": "s_m_POL_DM_LOAD_EarnedPremiumDailyFact",
     "properties": {
         "activities": [
             {

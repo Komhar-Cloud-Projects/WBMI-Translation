@@ -1,5 +1,5 @@
 {
-    "name": "m_QTE_Load_QuoteStatusDim",
+    "name": "s_m_QTE_Load_QuoteStatusDim",
     "properties": {
         "activities": [
             {

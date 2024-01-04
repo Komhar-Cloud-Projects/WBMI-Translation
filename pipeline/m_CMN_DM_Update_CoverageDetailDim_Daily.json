@@ -1,5 +1,5 @@
 {
-    "name": "m_CMN_DM_Update_CoverageDetailDim_Daily",
+    "name": "s_m_CMN_DM_Update_CoverageDetailDim_Daily",
     "properties": {
         "activities": [
             {

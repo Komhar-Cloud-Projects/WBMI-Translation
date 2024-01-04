@@ -1,5 +1,5 @@
 {
-    "name": "m_POL_DW_LOAD_EarnedPremiumAudit_Balance_Daily",
+    "name": "s_m_POL_DW_LOAD_EarnedPremiumAudit_Balance_Daily",
     "properties": {
         "activities": [
             {

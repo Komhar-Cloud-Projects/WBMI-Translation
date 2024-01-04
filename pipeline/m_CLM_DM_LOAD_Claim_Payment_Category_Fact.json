@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DM_LOAD_Claim_Payment_Category_Fact",
+    "name": "s_m_CLM_DM_LOAD_Claim_Payment_Category_Fact",
     "properties": {
         "activities": [
             {

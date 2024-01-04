@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DW_LOAD_SupMedicalCauseCode",
+    "name": "s_m_CLM_DW_LOAD_SupMedicalCauseCode",
     "properties": {
         "activities": [
             {

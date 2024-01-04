@@ -1,5 +1,5 @@
 {
-    "name": "m_POL_DW_LOAD_EarnedPremiumCalculation_Monthly",
+    "name": "s_m_POL_DW_LOAD_EarnedPremiumCalculation_Monthly",
     "properties": {
         "activities": [
             {

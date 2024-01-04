@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DW_LOAD_EOR_medical_bill_code_CLogic",
+    "name": "s_m_CLM_DW_LOAD_EOR_medical_bill_code_CLogic",
     "properties": {
         "activities": [
             {

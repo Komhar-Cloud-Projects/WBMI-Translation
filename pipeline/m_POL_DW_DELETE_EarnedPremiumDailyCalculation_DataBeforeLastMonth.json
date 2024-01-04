@@ -1,5 +1,5 @@
 {
-    "name": "m_POL_DW_DELETE_EarnedPremiumDailyCalculation_DataBeforeLastMonth",
+    "name": "s_m_POL_DW_DELETE_EarnedPremiumDailyCalculation_DataBeforeLastMonth",
     "properties": {
         "activities": [
             {

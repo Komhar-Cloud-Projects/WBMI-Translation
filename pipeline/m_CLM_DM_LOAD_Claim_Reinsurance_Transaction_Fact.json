@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DM_LOAD_Claim_Reinsurance_Transaction_Fact",
+    "name": "s_m_CLM_DM_LOAD_Claim_Reinsurance_Transaction_Fact",
     "properties": {
         "activities": [
             {

@@ -1,5 +1,5 @@
 {
-    "name": "m_CMN_IR_Load_SupISOSpecialCauseOfLossCategoryRule_FlatFile",
+    "name": "s_m_CMN_IR_Load_SupISOSpecialCauseOfLossCategoryRule_FlatFile",
     "properties": {
         "activities": [
             {

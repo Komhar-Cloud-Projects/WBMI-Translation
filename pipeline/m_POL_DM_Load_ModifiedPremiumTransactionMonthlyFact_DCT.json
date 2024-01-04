@@ -1,5 +1,5 @@
 {
-    "name": "m_POL_DM_Load_ModifiedPremiumTransactionMonthlyFact_DCT",
+    "name": "s_m_POL_DM_Load_ModifiedPremiumTransactionMonthlyFact_DCT",
     "properties": {
         "activities": [
             {

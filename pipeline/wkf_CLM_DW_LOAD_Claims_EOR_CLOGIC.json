@@ -412,7 +412,7 @@
         },
         "variables": {
             "Params": {
-                "type": "Expression"
+                "type": "String"
             }
         }
     }

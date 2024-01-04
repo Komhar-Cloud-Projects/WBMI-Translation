@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DW_LOAD_Claimant_Reserve_Calc",
+    "name": "s_m_CLM_DW_LOAD_Claimant_Reserve_Calc",
     "properties": {
         "activities": [
             {

@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DW_UPDATE_Claimant_Coverage_Detail_MonthlyLoad",
+    "name": "s_m_CLM_DW_UPDATE_Claimant_Coverage_Detail_MonthlyLoad",
     "properties": {
         "activities": [
             {

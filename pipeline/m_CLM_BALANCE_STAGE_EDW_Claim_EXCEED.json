@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_BALANCE_STAGE_EDW_Claim_EXCEED",
+    "name": "s_m_CLM_BALANCE_STAGE_EDW_Claim_EXCEED",
     "properties": {
         "activities": [
             {

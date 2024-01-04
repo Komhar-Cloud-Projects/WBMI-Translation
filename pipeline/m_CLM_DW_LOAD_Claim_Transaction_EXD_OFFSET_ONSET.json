@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DW_LOAD_Claim_Transaction_EXD_OFFSET_ONSET",
+    "name": "s_m_CLM_DW_LOAD_Claim_Transaction_EXD_OFFSET_ONSET",
     "properties": {
         "activities": [
             {

@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_Check_Valid_SSN_Data_in_STG_EDW_DM",
+    "name": "s_m_CLM_Check_Valid_SSN_Data_in_STG_EDW_DM",
     "properties": {
         "activities": [
             {

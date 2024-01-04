@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DM_LOAD_Claim_subrogation_dim",
+    "name": "s_m_CLM_DM_LOAD_Claim_subrogation_dim",
     "properties": {
         "activities": [
             {

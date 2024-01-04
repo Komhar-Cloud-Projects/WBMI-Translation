@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DW_UPDATE_Claimant_Cov_Dtl_Reserve_Calc",
+    "name": "s_m_CLM_DW_UPDATE_Claimant_Cov_Dtl_Reserve_Calc",
     "properties": {
         "activities": [
             {

@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DM_UPDATE_Loss_Master_Fact_ASL_Product",
+    "name": "s_m_CLM_DM_UPDATE_Loss_Master_Fact_ASL_Product",
     "properties": {
         "activities": [
             {

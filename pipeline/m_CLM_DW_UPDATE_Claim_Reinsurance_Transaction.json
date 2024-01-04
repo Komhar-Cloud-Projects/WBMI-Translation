@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DW_UPDATE_Claim_Reinsurance_Transaction",
+    "name": "s_m_CLM_DW_UPDATE_Claim_Reinsurance_Transaction",
     "properties": {
         "activities": [
             {

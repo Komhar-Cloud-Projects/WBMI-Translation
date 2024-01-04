@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DW_UPDATE_Claim_Transaction_PMS",
+    "name": "s_m_CLM_DW_UPDATE_Claim_Transaction_PMS",
     "properties": {
         "activities": [
             {

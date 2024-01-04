@@ -1,5 +1,5 @@
 {
-    "name": "m_POL_DW_Update_PremiumTransaction_WrittenExposure_WorkCompAudits",
+    "name": "s_m_POL_DW_Update_PremiumTransaction_WrittenExposure_WorkCompAudits",
     "properties": {
         "activities": [
             {

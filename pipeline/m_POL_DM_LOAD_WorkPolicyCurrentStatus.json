@@ -1,5 +1,5 @@
 {
-    "name": "m_POL_DM_LOAD_WorkPolicyCurrentStatus",
+    "name": "s_m_POL_DM_LOAD_WorkPolicyCurrentStatus",
     "properties": {
         "activities": [
             {

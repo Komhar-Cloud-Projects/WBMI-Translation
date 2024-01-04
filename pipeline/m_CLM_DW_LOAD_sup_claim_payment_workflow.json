@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DW_LOAD_sup_claim_payment_workflow",
+    "name": "s_m_CLM_DW_LOAD_sup_claim_payment_workflow",
     "properties": {
         "activities": [
             {

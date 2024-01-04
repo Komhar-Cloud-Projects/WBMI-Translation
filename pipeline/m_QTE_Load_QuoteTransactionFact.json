@@ -1,5 +1,5 @@
 {
-    "name": "m_QTE_Load_QuoteTransactionFact",
+    "name": "s_m_QTE_Load_QuoteTransactionFact",
     "properties": {
         "activities": [
             {

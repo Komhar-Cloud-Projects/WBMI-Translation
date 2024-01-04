@@ -1,5 +1,5 @@
 {
-    "name": "m_CMN_DM_Load_CoverageDetailBusinessOwnersDim",
+    "name": "s_m_CMN_DM_Load_CoverageDetailBusinessOwnersDim",
     "properties": {
         "activities": [
             {

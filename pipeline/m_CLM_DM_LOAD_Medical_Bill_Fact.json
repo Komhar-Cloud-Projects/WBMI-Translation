@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DM_LOAD_Medical_Bill_Fact",
+    "name": "s_m_CLM_DM_LOAD_Medical_Bill_Fact",
     "properties": {
         "activities": [
             {

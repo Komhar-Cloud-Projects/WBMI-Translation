@@ -1,5 +1,5 @@
 {
-    "name": "m_POL_DM_DELETE_EarnedPremiumTransactionDailyFact_DataBeforeLastMonth",
+    "name": "s_m_POL_DM_DELETE_EarnedPremiumTransactionDailyFact_DataBeforeLastMonth",
     "properties": {
         "activities": [
             {

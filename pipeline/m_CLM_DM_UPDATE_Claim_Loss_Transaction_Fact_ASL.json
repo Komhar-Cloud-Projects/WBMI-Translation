@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DM_UPDATE_Claim_Loss_Transaction_Fact_ASL",
+    "name": "s_m_CLM_DM_UPDATE_Claim_Loss_Transaction_Fact_ASL",
     "properties": {
         "activities": [
             {

@@ -1,5 +1,5 @@
 {
-    "name": "m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage_DeprecatedForSoloOnset",
+    "name": "s_m_POL_DW_LOAD_WorkPremiumTransactionOffsetLineage_DeprecatedForSoloOnset",
     "properties": {
         "activities": [
             {

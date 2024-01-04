@@ -1,5 +1,5 @@
 {
-    "name": "m_CMN_DM_Update_CoverageDetailCommercialAutoDim_MonthlyLoad",
+    "name": "s_m_CMN_DM_Update_CoverageDetailCommercialAutoDim_MonthlyLoad",
     "properties": {
         "activities": [
             {

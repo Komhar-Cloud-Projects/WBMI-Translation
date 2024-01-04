@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DM_LOAD_Claim_Occurrence_Dim",
+    "name": "s_m_CLM_DM_LOAD_Claim_Occurrence_Dim",
     "properties": {
         "activities": [
             {

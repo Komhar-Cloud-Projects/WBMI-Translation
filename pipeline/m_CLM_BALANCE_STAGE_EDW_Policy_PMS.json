@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_BALANCE_STAGE_EDW_Policy_PMS",
+    "name": "s_m_CLM_BALANCE_STAGE_EDW_Policy_PMS",
     "properties": {
         "activities": [
             {

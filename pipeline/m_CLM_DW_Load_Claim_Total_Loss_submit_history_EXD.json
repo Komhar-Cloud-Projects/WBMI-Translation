@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DW_Load_Claim_Total_Loss_submit_history_EXD",
+    "name": "s_m_CLM_DW_Load_Claim_Total_Loss_submit_history_EXD",
     "properties": {
         "activities": [
             {

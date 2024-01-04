@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DM_LOAD_ClaimantMedicalCodeDim",
+    "name": "s_m_CLM_DM_LOAD_ClaimantMedicalCodeDim",
     "properties": {
         "activities": [
             {

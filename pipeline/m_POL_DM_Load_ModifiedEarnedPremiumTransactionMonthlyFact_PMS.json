@@ -1,5 +1,5 @@
 {
-    "name": "m_POL_DM_Load_ModifiedEarnedPremiumTransactionMonthlyFact_PMS",
+    "name": "s_m_POL_DM_Load_ModifiedEarnedPremiumTransactionMonthlyFact_PMS",
     "properties": {
         "activities": [
             {

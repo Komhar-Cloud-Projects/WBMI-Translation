@@ -1,5 +1,5 @@
 {
-    "name": "m_CLM_DW_LOAD_EOR_sup_autopay_exclude_reason",
+    "name": "s_m_CLM_DW_LOAD_EOR_sup_autopay_exclude_reason",
     "properties": {
         "activities": [
             {

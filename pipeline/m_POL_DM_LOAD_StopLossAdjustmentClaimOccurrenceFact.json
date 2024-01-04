@@ -1,5 +1,5 @@
 {
-    "name": "m_POL_DM_LOAD_StopLossAdjustmentClaimOccurrenceFact",
+    "name": "s_m_POL_DM_LOAD_StopLossAdjustmentClaimOccurrenceFact",
     "properties": {
         "activities": [
             {
