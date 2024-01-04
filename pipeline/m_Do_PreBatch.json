@@ -30,7 +30,7 @@
         "parameters": {
             "BATCH_NAME": {
                 "type": "string",
-                "defaultValue": "Default Value"
+                "defaultValue": "CLAIMS_QUES"
             },
             "WBMI_AUDIT_CONTROL_RUN_ID": {
                 "type": "string",
@@ -70,7 +70,7 @@
             }
         },
         "folder": {
-            "name": ""
+            "name": "Claims DataWarehouse/"
         },
         "annotations": []
     }

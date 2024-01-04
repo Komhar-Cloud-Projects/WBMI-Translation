@@ -1,0 +1,77 @@
+{
+    "name": "m_POL_DW_LOAD_CoverageDetailUnderlyingPolicy_DCT_Negate",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_CoverageDetailUnderlyingPolicy_DCT_Negate",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CoverageDetailUnderlyingPolicy_DCT_Negate AS (\n\tSELECT CDUP.PremiumTransactionID,\r\n\t                  CDUP.UnderlyingInsuranceCompanyName,\r\n\t                  CDUP.UnderlyingPolicyKey,\r\n\t                  CDUP.UnderlyingPolicyType,\r\n\t                  CDUP.UnderlyingPolicyLimit,\r\n\t                  CDUP.UnderlyingPolicyLimitType,\r\n\t                  PT.PremiumTransactionID\r\n\tFROM   @{pipeline().parameters.SOURCE_TABLE_OWNER}.CoverageDetailUnderlyingPolicy CDUP\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkPremiumTransactionDataRepairNegate WPTDRN\r\n\tON CDUP.PremiumTransactionID = WPTDRN.OriginalPremiumTransactionID\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction PT\r\n\tON PT.PremiumTransactionAKID = WPTDRN.NewNegatePremiumTransactionAKID\r\n\tAND PT.SourceSystemId = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n),\nEXP_CoverageDetailUnderlyingPolicy_DCT_Negate AS (\n\tSELECT\n\tPremiumTransactionId AS Old_PremiumTransactionId,\n\tUnderlyingInsuranceCompanyName,\n\tUnderlyingPolicyKey,\n\tUnderlyingPolicyType,\n\tUnderlyingPolicyLimit,\n\tUnderlyingPolicyLimitType,\n\tNewNegatePremiumTransactionID\n\tFROM SQ_CoverageDetailUnderlyingPolicy_DCT_Negate\n),\nEXP_Metadata AS (\n\tSELECT\n\tNewNegatePremiumTransactionID,\n\tUnderlyingInsuranceCompanyName AS In_UnderlyingInsuranceCompanyName,\n\tUnderlyingPolicyKey AS In_UnderlyingPolicyKey,\n\tUnderlyingPolicyType AS In_UnderlyingPolicyType,\n\tUnderlyingPolicyLimit AS In_UnderlyingPolicyLimit,\n\tUnderlyingPolicyLimitType AS In_UnderlyingPolicyLimitType,\n\tNewNegatePremiumTransactionID AS o_PremiumTransactionID,\n\t-- *INF*: IIF(ISNULL(In_UnderlyingInsuranceCompanyName),'N/A',In_UnderlyingInsuranceCompanyName)\n\tIFF(In_UnderlyingInsuranceCompanyName IS NULL, 'N/A', In_UnderlyingInsuranceCompanyName) AS o_UnderlyingInsuranceCompanyName,\n\t-- *INF*: IIF(ISNULL(In_UnderlyingPolicyKey),'N/A',In_UnderlyingPolicyKey)\n\tIFF(In_UnderlyingPolicyKey IS NULL, 'N/A', In_UnderlyingPolicyKey) AS o_UnderlyingPolicyKey,\n\t-- *INF*: IIF(ISNULL(In_UnderlyingPolicyType),'N/A',In_UnderlyingPolicyType)\n\tIFF(In_UnderlyingPolicyType IS NULL, 'N/A', In_UnderlyingPolicyType) AS o_UnderlyingPolicyType,\n\tIn_UnderlyingPolicyLimit AS o_UnderlyingPolicyLimit,\n\tIn_UnderlyingPolicyLimitType AS o_UnderlyingPolicyLimitType\n\tFROM EXP_CoverageDetailUnderlyingPolicy_DCT_Negate\n),\nLKP_CoverageDetailUnderlyingPolicy AS (\n\tSELECT\n\tCoverageDetailUnderlyingPolicyId,\n\tPremiumTransactionId,\n\tUnderlyingInsuranceCompanyName,\n\tUnderlyingPolicyKey,\n\tUnderlyingPolicyType,\n\tUnderlyingPolicyLimit,\n\tUnderlyingPolicyLimitType\n\tFROM (\n\t\tSELECT \n\t\t\tCoverageDetailUnderlyingPolicyId,\n\t\t\tPremiumTransactionId,\n\t\t\tUnderlyingInsuranceCompanyName,\n\t\t\tUnderlyingPolicyKey,\n\t\t\tUnderlyingPolicyType,\n\t\t\tUnderlyingPolicyLimit,\n\t\t\tUnderlyingPolicyLimitType\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageDetailUnderlyingPolicy\n\t\tWHERE SourceSystemId='@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PremiumTransactionId,UnderlyingInsuranceCompanyName,UnderlyingPolicyKey,UnderlyingPolicyType,UnderlyingPolicyLimitType ORDER BY CoverageDetailUnderlyingPolicyId) = 1\n),\nEXP_DetectChanges AS (\n\tSELECT\n\tLKP_CoverageDetailUnderlyingPolicy.CoverageDetailUnderlyingPolicyId AS lkp_CoverageDetailUnderlyingPolicyId,\n\tLKP_CoverageDetailUnderlyingPolicy.PremiumTransactionId AS lkp_PremiumTransactionId,\n\tLKP_CoverageDetailUnderlyingPolicy.UnderlyingInsuranceCompanyName AS lkp_UnderlyingInsuranceCompanyName,\n\tLKP_CoverageDetailUnderlyingPolicy.UnderlyingPolicyKey AS lkp_UnderlyingPolicyKey,\n\tLKP_CoverageDetailUnderlyingPolicy.UnderlyingPolicyType AS lkp_UnderlyingPolicyType,\n\tLKP_CoverageDetailUnderlyingPolicy.UnderlyingPolicyLimit AS lkp_UnderlyingPolicyLimit,\n\tLKP_CoverageDetailUnderlyingPolicy.UnderlyingPolicyLimitType AS lkp_UnderlyingPolicyLimitType,\n\tEXP_Metadata.o_PremiumTransactionID AS In_PremiumTransactionID,\n\tEXP_Metadata.o_UnderlyingInsuranceCompanyName AS In_UnderlyingInsuranceCompanyName,\n\tEXP_Metadata.o_UnderlyingPolicyKey AS In_UnderlyingPolicyKey,\n\tEXP_Metadata.o_UnderlyingPolicyType AS In_UnderlyingPolicyType,\n\tEXP_Metadata.o_UnderlyingPolicyLimit AS In_UnderlyingPolicyLimit,\n\tEXP_Metadata.o_UnderlyingPolicyLimitType AS In_UnderlyingPolicyLimitType,\n\tlkp_CoverageDetailUnderlyingPolicyId AS o_CoverageDetailUnderlyingPolicyId,\n\t'1' AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\t-- *INF*: TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US')\n\tTO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_EffectiveDate,\n\t-- *INF*: TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US')\n\tTO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_ExpirationDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\tIn_PremiumTransactionID AS o_PremiumTransactionID,\n\tIn_UnderlyingInsuranceCompanyName AS o_UnderlyingInsuranceCompanyName,\n\tIn_UnderlyingPolicyKey AS o_UnderlyingPolicyKey,\n\tIn_UnderlyingPolicyType AS o_UnderlyingPolicyType,\n\tIn_UnderlyingPolicyLimit AS o_UnderlyingPolicyLimit,\n\tIn_UnderlyingPolicyLimitType AS o_UnderlyingPolicyLimitType,\n\t-- *INF*: IIF(ISNULL(lkp_CoverageDetailUnderlyingPolicyId),'NEW','UPDATE')\n\tIFF(lkp_CoverageDetailUnderlyingPolicyId IS NULL, 'NEW', 'UPDATE') AS o_DetectChanges\n\tFROM EXP_Metadata\n\tLEFT JOIN LKP_CoverageDetailUnderlyingPolicy\n\tON LKP_CoverageDetailUnderlyingPolicy.PremiumTransactionId = EXP_Metadata.o_PremiumTransactionID AND LKP_CoverageDetailUnderlyingPolicy.UnderlyingInsuranceCompanyName = EXP_Metadata.o_UnderlyingInsuranceCompanyName AND LKP_CoverageDetailUnderlyingPolicy.UnderlyingPolicyKey = EXP_Metadata.o_UnderlyingPolicyKey AND LKP_CoverageDetailUnderlyingPolicy.UnderlyingPolicyType = EXP_Metadata.o_UnderlyingPolicyType AND LKP_CoverageDetailUnderlyingPolicy.UnderlyingPolicyLimitType = EXP_Metadata.o_UnderlyingPolicyLimitType\n),\nRTR_Insert_Update AS (\n\tSELECT\n\to_CoverageDetailUnderlyingPolicyId AS CoverageDetailUnderlyingPolicyId,\n\to_CurrentSnapshotFlag AS CurrentSnapshotFlag,\n\to_AuditID AS AuditID,\n\to_EffectiveDate AS EffectiveDate,\n\to_ExpirationDate AS ExpirationDate,\n\to_SourceSystemId AS SourceSystemId,\n\to_CreatedDate AS CreatedDate,\n\to_ModifiedDate AS ModifiedDate,\n\to_PremiumTransactionID AS PremiumTransactionID,\n\to_UnderlyingInsuranceCompanyName AS UnderlyingInsuranceCompanyName,\n\to_UnderlyingPolicyKey AS UnderlyingPolicyKey,\n\to_UnderlyingPolicyType AS UnderlyingPolicyType,\n\to_UnderlyingPolicyLimit AS UnderlyingPolicyLimit,\n\to_UnderlyingPolicyLimitType AS UnderlyingPolicyLimitType,\n\to_DetectChanges AS DetectChanges\n\tFROM EXP_DetectChanges\n),\nRTR_Insert_Update_INSERT AS (SELECT * FROM RTR_Insert_Update WHERE DetectChanges='NEW'),\nRTR_Insert_Update_UPDATE AS (SELECT * FROM RTR_Insert_Update WHERE DetectChanges='UPDATE'),\nEXP_Insert AS (\n\tSELECT\n\tCurrentSnapshotFlag,\n\tAuditID,\n\tEffectiveDate,\n\tExpirationDate,\n\tSourceSystemId,\n\tCreatedDate,\n\tModifiedDate,\n\tPremiumTransactionID,\n\tUnderlyingInsuranceCompanyName,\n\tUnderlyingPolicyKey,\n\tUnderlyingPolicyType,\n\tUnderlyingPolicyLimit,\n\tUnderlyingPolicyLimitType\n\tFROM RTR_Insert_Update_INSERT\n),\nCoverageDetailUnderlyingPolicy_Insert AS (\n\tINSERT INTO CoverageDetailUnderlyingPolicy\n\t(CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, PremiumTransactionId, UnderlyingInsuranceCompanyName, UnderlyingPolicyKey, UnderlyingPolicyType, UnderlyingPolicyLimit, UnderlyingPolicyLimitType)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tPremiumTransactionID AS PREMIUMTRANSACTIONID, \n\tUNDERLYINGINSURANCECOMPANYNAME, \n\tUNDERLYINGPOLICYKEY, \n\tUNDERLYINGPOLICYTYPE, \n\tUNDERLYINGPOLICYLIMIT, \n\tUNDERLYINGPOLICYLIMITTYPE\n\tFROM EXP_Insert\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "216690"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "881000"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7484966"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "06/27/2023 12:02:14"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "07/04/2023 10:58:56"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            }
+        },
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

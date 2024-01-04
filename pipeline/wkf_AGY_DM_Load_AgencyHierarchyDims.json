@@ -5,8 +5,6 @@
             {
                 "name": "Start",
                 "type": "Script",
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded",
                 "dependsOn": [],
                 "typeProperties": {
                     "scripts": [
@@ -14,13 +12,13 @@
                             "type": "Query"
                         }
                     ]
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             },
             {
                 "name": "s_m_AGY_DM_Load_AgencyDim_v3",
                 "type": "ExecutePipeline",
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded",
                 "dependsOn": [
                     {
                         "activity": "s_m_AGY_DM_Load_SalesDivisionDim",
@@ -35,13 +33,13 @@
                         "referenceName": "s_m_AGY_DM_Load_AgencyDim_v3"
                     },
                     "parameters": {}
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             },
             {
                 "name": "s_m_AGY_DM_Load_SalesDivisionDim",
                 "type": "ExecutePipeline",
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded",
                 "dependsOn": [
                     {
                         "activity": "sv-Set Params",
@@ -56,13 +54,13 @@
                         "referenceName": "s_m_AGY_DM_Load_SalesDivisionDim"
                     },
                     "parameters": {}
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             },
             {
                 "name": "s_m_AGY_DM_Load_UnderwritingDivisionDim",
                 "type": "ExecutePipeline",
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded",
                 "dependsOn": [
                     {
                         "activity": "sv-Set Params",
@@ -77,13 +75,13 @@
                         "referenceName": "s_m_AGY_DM_Load_UnderwritingDivisionDim"
                     },
                     "parameters": {}
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             },
             {
                 "name": "s_m_AGY_DM_Load_AgencyEmployeeDim",
                 "type": "ExecutePipeline",
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded",
                 "dependsOn": [
                     {
                         "activity": "s_m_AGY_DM_LOAD_AgencyRelationshipCurrent",
@@ -98,13 +96,13 @@
                         "referenceName": "s_m_AGY_DM_Load_AgencyEmployeeDim"
                     },
                     "parameters": {}
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             },
             {
                 "name": "sp-PreBatch_Workflow_AgencyHierarchyDM",
                 "type": "SqlServerStoredProcedure",
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded",
                 "dependsOn": [
                     {
                         "activity": "Start",
@@ -143,13 +141,13 @@
                             "type": "Expression"
                         }
                     }
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             },
             {
                 "name": "s_m_Do_PostAudit_Workflow_AgencyHierarchyDM",
                 "type": "Script",
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded",
                 "dependsOn": [
                     {
                         "activity": "sp-ins_upd_rep_sess_log",
@@ -164,13 +162,13 @@
                             "type": "Query"
                         }
                     ]
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             },
             {
                 "name": "sp-PostBatch_Workflow_AgencyHierarchyDM",
                 "type": "SqlServerStoredProcedure",
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded",
                 "dependsOn": [
                     {
                         "activity": "s_m_AGY_DM_Load_UnderwritingDivisionDim",
@@ -220,13 +218,13 @@
                             "type": "Expression"
                         }
                     }
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             },
             {
                 "name": "s_m_AGY_DM_LOAD_AgencyRelationshipDim",
                 "type": "ExecutePipeline",
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded",
                 "dependsOn": [
                     {
                         "activity": "s_m_AGY_DM_Load_AgencyDim_v3",
@@ -241,13 +239,13 @@
                         "referenceName": "s_m_AGY_DM_LOAD_AgencyRelationshipDim"
                     },
                     "parameters": {}
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             },
             {
                 "name": "s_m_AGY_DM_LOAD_AgencyRelationshipCurrent",
                 "type": "ExecutePipeline",
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded",
                 "dependsOn": [
                     {
                         "activity": "s_m_AGY_DM_LOAD_AgencyRelationshipDim",
@@ -262,13 +260,13 @@
                         "referenceName": "s_m_AGY_DM_LOAD_AgencyRelationshipCurrent"
                     },
                     "parameters": {}
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             },
             {
                 "name": "s_m_AGY_DM_LOAD_AgencySilverCircleTierDim",
                 "type": "ExecutePipeline",
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded",
                 "dependsOn": [
                     {
                         "activity": "sv-Set Params",
@@ -283,13 +281,13 @@
                         "referenceName": "s_m_AGY_DM_LOAD_AgencySilverCircleTierDim"
                     },
                     "parameters": {}
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             },
             {
                 "name": "spt-Get Pipeline Parameters",
                 "type": "Script",
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded",
                 "dependsOn": [
                     {
                         "activity": "sp-PreBatch_Workflow_AgencyHierarchyDM",
@@ -328,13 +326,13 @@
                         }
                     ],
                     "scriptBlockExecutionTimeout": "02:00:00"
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             },
             {
                 "name": "sv-Set Params",
                 "type": "SetVariable",
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded",
                 "dependsOn": [
                     {
                         "activity": "spt-Get Pipeline Parameters",
@@ -350,13 +348,13 @@
                         "value": "@activity('spt-Get Pipeline Parameters').output.resultSets[0].rows[0]['json_value']",
                         "type": "Expression"
                     }
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             },
             {
                 "name": "sp-ins_upd_rep_sess_log",
                 "type": "SqlServerStoredProcedure",
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded",
                 "dependsOn": [
                     {
                         "activity": "sp-PostBatch_Workflow_AgencyHierarchyDM",
@@ -395,11 +393,13 @@
                             "type": "Expression"
                         }
                     }
-                }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
             }
         ],
         "folder": {
-            "name": ""
+            "name": "Agency DataMart/"
         },
         "variables": {
             "Params": {

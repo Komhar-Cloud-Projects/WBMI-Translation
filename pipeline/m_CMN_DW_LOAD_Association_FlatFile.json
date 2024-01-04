@@ -1,0 +1,45 @@
+{
+    "name": "m_CMN_DW_LOAD_Association_FlatFile",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CMN_DW_LOAD_Association_FlatFile",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Association AS (\n\n-- TODO Manual --\n\n),\nLKP_Association AS (\n\tSELECT\n\tAssociationId,\n\tCurrentSnapshotFlag,\n\tAuditId,\n\tEffectiveDate,\n\tExpirationDate,\n\tSourceSystemId,\n\tCreatedDate,\n\tModifiedDate,\n\tAssociationAKId,\n\tAssociationCode,\n\tAssociationDescription\n\tFROM (\n\t\tSELECT \n\t\t\tAssociationId,\n\t\t\tCurrentSnapshotFlag,\n\t\t\tAuditId,\n\t\t\tEffectiveDate,\n\t\t\tExpirationDate,\n\t\t\tSourceSystemId,\n\t\t\tCreatedDate,\n\t\t\tModifiedDate,\n\t\t\tAssociationAKId,\n\t\t\tAssociationCode,\n\t\t\tAssociationDescription\n\t\tFROM Association\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AssociationCode ORDER BY AssociationId) = 1\n),\nEXPTRANS AS (\n\tSELECT\n\tSQ_Association.EffectiveDate,\n\tSQ_Association.ExpirationDate,\n\tSQ_Association.AssociationCode,\n\tSQ_Association.AssociationDescription,\n\tLKP_Association.AssociationCode AS LKP_AssociationCode,\n\tLKP_Association.AssociationId,\n\tLKP_Association.AssociationDescription AS LKP_AssociationDescription,\n\t-- *INF*: decode(True,isnull(LKP_AssociationCode),1,not isnull(LKP_AssociationCode) and AssociationDescription<>LKP_AssociationDescription,2,0)\r\n\t-- --iif(isnull(LKP_AssociationCode),1,0)\n\tdecode(True,\n\tLKP_AssociationCode IS NULL, 1,\n\tNOT LKP_AssociationCode IS NULL AND AssociationDescription <> LKP_AssociationDescription, 2,\n\t0) AS V_Change_Flag,\n\tV_Change_Flag AS O_Change_Flag\n\tFROM SQ_Association\n\tLEFT JOIN LKP_Association\n\tON LKP_Association.AssociationCode = SQ_Association.AssociationCode\n),\nRTRTRANS AS (\n\tSELECT\n\tEffectiveDate,\n\tExpirationDate,\n\tAssociationCode,\n\tAssociationDescription,\n\tO_Change_Flag,\n\tAssociationCode AS AssociationCode4,\n\tAssociationId\n\tFROM EXPTRANS\n),\nRTRTRANS_Insert AS (SELECT * FROM RTRTRANS WHERE O_Change_Flag=1),\nRTRTRANS_Update AS (SELECT * FROM RTRTRANS WHERE O_Change_Flag=2),\nSEQ_AssociationAkid AS (\n\tCREATE SEQUENCE SEQ_AssociationAkid\n\tSTART = 0\n\tINCREMENT = 1;\n),\nEXP_Insert AS (\n\tSELECT\n\t1 AS CurrentSnapshotFlag,\n\tEffectiveDate AS i_EffectiveDate,\n\t-- *INF*: TO_DATE(substr(i_EffectiveDate,1,19), 'YYYY-MM-DD HH24:MI:SS')\n\tTO_DATE(substr(i_EffectiveDate, 1, 19), 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,\n\tExpirationDate AS i_ExpirationDate,\n\t-- *INF*: TO_DATE(substr(i_ExpirationDate,1,19), 'YYYY-MM-DD HH24:MI:SS')\r\n\t-- \r\n\t-- --TO_DATE(i_ExpirationDate, 'YYYY-MM-DD HH24:MI:SS')\n\tTO_DATE(substr(i_ExpirationDate, 1, 19), 'YYYY-MM-DD HH24:MI:SS') AS O_ExpirationDate,\n\tAssociationCode,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId,\n\t-- *INF*: SESSSTARTTIME\r\n\t-- --substr(i_ExpirationDate,1,19)\n\tSESSSTARTTIME AS ModifiedDate,\n\tAssociationDescription,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tSEQ_AssociationAkid.NEXTVAL\n\tFROM RTRTRANS_Insert\n),\nTrg_Association_Insert AS (\n\tINSERT INTO Association\n\t(ModifiedUserId, ModifiedDate, EffectiveDate, ExpirationDate, AssociationAKId, AssociationCode, AssociationDescription)\n\tSELECT \n\tSourceSystemId AS MODIFIEDUSERID, \n\tMODIFIEDDATE, \n\to_EffectiveDate AS EFFECTIVEDATE, \n\tO_ExpirationDate AS EXPIRATIONDATE, \n\tNEXTVAL AS ASSOCIATIONAKID, \n\tASSOCIATIONCODE, \n\tASSOCIATIONDESCRIPTION\n\tFROM EXP_Insert\n),\nEXP_Update AS (\n\tSELECT\n\tEffectiveDate AS i_EffectiveDate3,\n\t-- *INF*: TO_DATE(substr(i_EffectiveDate3,1,19), 'YYYY-MM-DD HH24:MI:SS')\n\tTO_DATE(substr(i_EffectiveDate3, 1, 19), 'YYYY-MM-DD HH24:MI:SS') AS O_EffectiveDate3,\n\tCURRENT_TIMESTAMP AS ModifiedDate,\n\tExpirationDate AS i_ExpirationDate3,\n\t-- *INF*: TO_DATE(substr(i_ExpirationDate3,1,19), 'YYYY-MM-DD HH24:MI:SS')\n\tTO_DATE(substr(i_ExpirationDate3, 1, 19), 'YYYY-MM-DD HH24:MI:SS') AS O_ExpirationDate3,\n\tAssociationCode AS AssociationCode3,\n\tAssociationDescription AS AssociationDescription3,\n\tAssociationCode4 AS AssociationCode43,\n\tAssociationId AS AssociationId3,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId\n\tFROM RTRTRANS_Update\n),\nUPD_Update AS (\n\tSELECT\n\tO_EffectiveDate3 AS EffectiveDate3, \n\tO_ExpirationDate3 AS ExpirationDate3, \n\tAssociationCode3, \n\tAssociationDescription3, \n\tAssociationId3, \n\tModifiedDate, \n\tSourceSystemId\n\tFROM EXP_Update\n),\nTrg_Association_Update AS (\n\tMERGE INTO Association AS T\n\tUSING UPD_Update AS S\n\tON T.AssociationId = S.AssociationId3\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ModifiedUserId = S.SourceSystemId, T.ModifiedDate = S.ModifiedDate, T.EffectiveDate = S.EffectiveDate3, T.ExpirationDate = S.ExpirationDate3, T.AssociationDescription = S.AssociationDescription3\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Common DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

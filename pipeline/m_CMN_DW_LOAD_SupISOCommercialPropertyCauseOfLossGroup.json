@@ -1,0 +1,73 @@
+{
+    "name": "m_CMN_DW_LOAD_SupISOCommercialPropertyCauseOfLossGroup",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CMN_DW_LOAD_SupISOCommercialPropertyCauseOfLossGroup",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SupISOCommercialPropertyCauseOfLossGroup AS (\n\tSELECT\n\t\tSupISOCommercialPropertyCauseOfLossGroupId,\n\t\tAuditId,\n\t\tCreatedDate,\n\t\tModifiedDate,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tSourceSystemID,\n\t\tProductCode,\n\t\tMajorPerilCode,\n\t\tSublineCode,\n\t\tISOCommercialPropertyCauseOfLossGroup\n\tFROM SupISOCommercialPropertyCauseOfLossGroup\n\tINNER JOIN SupISOCommercialPropertyCauseOfLossGroup\n),\nEXP_METADATA AS (\n\tSELECT\n\tSourceSystemID AS i_SourceSystemID,\n\tProductCode AS i_ProductCode,\n\tMajorPerilCode AS i_MajorPerilCode,\n\tSublineCode AS i_SublineCode,\n\tISOCommercialPropertyCauseOfLossGroup AS i_ISOCommercialPropertyCauseOfLossGroup,\n\t1 AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tsysdate AS o_CreatedDate,\n\tsysdate AS o_ModifiedDate,\n\t-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS o_EffectiveDate,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,\n\ti_SourceSystemID AS o_SourceSystemID,\n\ti_ProductCode AS o_ProductCode,\n\ti_MajorPerilCode AS o_MajorPerilCode,\n\ti_SublineCode AS o_SublineCode,\n\ti_ISOCommercialPropertyCauseOfLossGroup AS o_ISOCommercialPropertyCauseOfLossGroup\n\tFROM SQ_SupISOCommercialPropertyCauseOfLossGroup\n),\nSupISOCommercialPropertyCauseOfLossGroup AS (\n\tTRUNCATE TABLE SupISOCommercialPropertyCauseOfLossGroup;\n\tINSERT INTO SupISOCommercialPropertyCauseOfLossGroup\n\t(CurrentSnapshotFlag, AuditId, CreatedDate, ModifiedDate, EffectiveDate, ExpirationDate, SourceSystemID, ProductCode, MajorPerilCode, SublineCode, ISOCommercialPropertyCauseOfLossGroup)\n\tSELECT \n\to_CurrentSnapshotFlag AS CURRENTSNAPSHOTFLAG, \n\to_AuditId AS AUDITID, \n\to_CreatedDate AS CREATEDDATE, \n\to_ModifiedDate AS MODIFIEDDATE, \n\to_EffectiveDate AS EFFECTIVEDATE, \n\to_ExpirationDate AS EXPIRATIONDATE, \n\to_SourceSystemID AS SOURCESYSTEMID, \n\to_ProductCode AS PRODUCTCODE, \n\to_MajorPerilCode AS MAJORPERILCODE, \n\to_SublineCode AS SUBLINECODE, \n\to_ISOCommercialPropertyCauseOfLossGroup AS ISOCOMMERCIALPROPERTYCAUSEOFLOSSGROUP\n\tFROM EXP_METADATA\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246484"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905454"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603047"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:02:48"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 22:02:41"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_InsuranceReference_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Policy"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "dbo"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "dbo"
+            }
+        },
+        "folder": {
+            "name": "Common DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

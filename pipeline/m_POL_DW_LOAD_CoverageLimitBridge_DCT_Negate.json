@@ -1,0 +1,77 @@
+{
+    "name": "m_POL_DW_LOAD_CoverageLimitBridge_DCT_Negate",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_CoverageLimitBridge_DCT_Negate",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CoverageLimitBridge_DCT_Negate AS (\n\tSELECT CLB.PremiumTransactionAKId,\r\n\t                  CLB.CoverageLimitId,\r\n\t\t            CLB.CoverageLimitIDCount,\r\n\t\t            CLB.CoverageLimitControl,\r\n\t\t\t\tWPTDRN.NewNegatePremiumTransactionAKID\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.CoverageLimitBridge CLB\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkPremiumTransactionDataRepairNegate WPTDRN\r\n\tON CLB.PremiumTransactionAKId = WPTDRN.OriginalPremiumTransactionAKID\r\n\tand CLB.SourceSystemID='@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n),\nExp_CoverageLimitBridge_DCT_Negate AS (\n\tSELECT\n\tPremiumTransactionAKId AS OldPremiumTransactionAKId,\n\tCoverageLimitId,\n\tCoverageLimitIDCount,\n\tCoverageLimitControl,\n\tNewNegatePremiumTransactionAKID\n\tFROM SQ_CoverageLimitBridge_DCT_Negate\n),\nExp_Metadata AS (\n\tSELECT\n\tCoverageLimitId,\n\tCoverageLimitIDCount,\n\tCoverageLimitControl,\n\tNewNegatePremiumTransactionAKID AS In_NewNegatePremiumTransactionAKID,\n\tIn_NewNegatePremiumTransactionAKID AS o_PremiumTransactionAKID\n\tFROM Exp_CoverageLimitBridge_DCT_Negate\n),\nLKP_CoverageLimitBridge AS (\n\tSELECT\n\tCoverageLimitBridgeID,\n\tPremiumTransactionAKId,\n\tCoverageLimitId,\n\tCoverageLimitIDCount,\n\tCoverageLimitControl,\n\tIn_PremiumTransactionAKID,\n\tIn_CoverageLimitId\n\tFROM (\n\t\tSELECT \n\t\t\tCoverageLimitBridgeID,\n\t\t\tPremiumTransactionAKId,\n\t\t\tCoverageLimitId,\n\t\t\tCoverageLimitIDCount,\n\t\t\tCoverageLimitControl,\n\t\t\tIn_PremiumTransactionAKID,\n\t\t\tIn_CoverageLimitId\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageLimitBridge\n\t\tWHERE SourceSystemID='@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PremiumTransactionAKId,CoverageLimitId ORDER BY CoverageLimitBridgeID) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tLKP_CoverageLimitBridge.CoverageLimitBridgeID AS lkp_CoverageLimitBridgeID,\n\tLKP_CoverageLimitBridge.PremiumTransactionAKId AS lkp_PremiumTransactionAKId,\n\tLKP_CoverageLimitBridge.CoverageLimitId AS lkp_CoverageLimitId,\n\tLKP_CoverageLimitBridge.CoverageLimitIDCount AS lkp_CoverageLimitIDCount,\n\tLKP_CoverageLimitBridge.CoverageLimitControl AS lkp_CoverageLimitControl,\n\tExp_Metadata.o_PremiumTransactionAKID AS In_PremiumTransactionAKID,\n\tExp_Metadata.CoverageLimitId AS In_CoverageLimitID,\n\tExp_Metadata.CoverageLimitIDCount AS In_CoverageLimitIDCount,\n\tExp_Metadata.CoverageLimitControl AS In_CoverageLimitControl,\n\tlkp_CoverageLimitBridgeID AS o_CoverageLimitBridgeID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,\n\tSYSDATE AS o_CreatedDate,\n\tIn_PremiumTransactionAKID AS o_PremiumTransactionAKID,\n\tIn_CoverageLimitID AS o_CoverageLimitID,\n\tIn_CoverageLimitIDCount AS o_CoverageLimitIDCount,\n\tIn_CoverageLimitControl AS o_CoverageLimitControl,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(lkp_CoverageLimitBridgeID),'NEW'\r\n\t-- ,'UPDATE'\r\n\t-- )\n\tDECODE(TRUE,\n\tlkp_CoverageLimitBridgeID IS NULL, 'NEW',\n\t'UPDATE') AS o_ChangeFlag\n\tFROM Exp_Metadata\n\tLEFT JOIN LKP_CoverageLimitBridge\n\tON LKP_CoverageLimitBridge.PremiumTransactionAKId = Exp_Metadata.o_PremiumTransactionAKID AND LKP_CoverageLimitBridge.CoverageLimitId = Exp_Metadata.CoverageLimitId\n),\nRTR_Insert_Update AS (\n\tSELECT\n\to_CoverageLimitBridgeID AS CoverageLimitBridgeID,\n\to_AuditID AS AuditID,\n\to_SourceSystemID AS SourceSystemID,\n\to_CreatedDate AS CreatedDate,\n\to_PremiumTransactionAKID AS PremiumTransactionAKID,\n\to_CoverageLimitID AS CoverageLimitID,\n\to_CoverageLimitIDCount AS CoverageLimitIDCount,\n\to_CoverageLimitControl AS CoverageLimitControl,\n\to_ChangeFlag AS ChangeFlag\n\tFROM EXP_Detect_Changes\n),\nRTR_Insert_Update_INSERT AS (SELECT * FROM RTR_Insert_Update WHERE ChangeFlag='NEW'),\nRTR_Insert_Update_UPDATE AS (SELECT * FROM RTR_Insert_Update WHERE ChangeFlag='UPDATE'),\nEXP_Insert AS (\n\tSELECT\n\tAuditID,\n\tSourceSystemID,\n\tCreatedDate,\n\tPremiumTransactionAKID,\n\tCoverageLimitID,\n\tCoverageLimitIDCount,\n\tCoverageLimitControl\n\tFROM RTR_Insert_Update_INSERT\n),\nCoverageLimitBridge__Negate_Insert AS (\n\tINSERT INTO CoverageLimitBridge\n\t(AuditID, SourceSystemID, CreatedDate, PremiumTransactionAKId, CoverageLimitId, CoverageLimitIDCount, CoverageLimitControl)\n\tSELECT \n\tAUDITID, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tPremiumTransactionAKID AS PREMIUMTRANSACTIONAKID, \n\tCoverageLimitID AS COVERAGELIMITID, \n\tCOVERAGELIMITIDCOUNT, \n\tCOVERAGELIMITCONTROL\n\tFROM EXP_Insert\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "216690"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "881000"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7484967"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "06/27/2023 12:02:14"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "07/04/2023 10:58:56"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            }
+        },
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

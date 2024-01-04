@@ -1,0 +1,77 @@
+{
+    "name": "m_POL_DW_LOAD_SupPolicyOfferingRules",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_SupPolicyOfferingRules",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SupPolicyOfferingRules AS (\n\tSELECT\n\t\tSupPolicyOfferingRulesId,\n\t\tModifiedDate,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tSupPolicyOfferingRuleAKId,\n\t\tSourceCode,\n\t\tSequenceNumber,\n\t\tPolicyOfferingCode,\n\t\tPolicySymbol,\n\t\tInsuranceLine,\n\t\tMajorPerilCode,\n\t\tSublineCode,\n\t\tRiskUnitGroup,\n\t\tClassCode\n\tFROM SupPolicyOfferingRules\n),\nEXP_DateValues AS (\n\tSELECT\n\tModifiedDate AS i_ModifiedDate,\n\tEffectiveDate AS i_EffectiveDate,\n\tExpirationDate AS i_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)\n\tIFF(i_EffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate) AS o_EffectiveDate,\n\t-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)\n\tIFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)\n\tIFF(i_ModifiedDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate) AS o_ModifiedDate\n\tFROM SQ_SupPolicyOfferingRules\n),\nEXP_NumericValues AS (\n\tSELECT\n\tSupPolicyOfferingRulesId AS i_SupPolicyOfferingRulesId,\n\tSupPolicyOfferingRuleAKId AS i_SupPolicyOfferingRuleAKId,\n\tSequenceNumber AS i_SequenceNumber,\n\t-- *INF*: IIF(ISNULL(i_SupPolicyOfferingRulesId),-1,i_SupPolicyOfferingRulesId)\n\tIFF(i_SupPolicyOfferingRulesId IS NULL, - 1, i_SupPolicyOfferingRulesId) AS o_SupPolicyOfferingRulesId,\n\t-- *INF*: IIF(ISNULL(i_SupPolicyOfferingRuleAKId),-1,i_SupPolicyOfferingRuleAKId)\n\tIFF(i_SupPolicyOfferingRuleAKId IS NULL, - 1, i_SupPolicyOfferingRuleAKId) AS o_SupPolicyOfferingRuleAKId,\n\t-- *INF*: IIF(ISNULL(i_SequenceNumber),-1,i_SequenceNumber)\n\tIFF(i_SequenceNumber IS NULL, - 1, i_SequenceNumber) AS o_SequenceNumber\n\tFROM SQ_SupPolicyOfferingRules\n),\nEXP_StringValues AS (\n\tSELECT\n\tExpirationDate AS i_ExpirationDate,\n\tSourceCode AS i_SourceCode,\n\tPolicyOfferingCode AS i_PolicyOfferingCode,\n\tPolicySymbol AS i_PolicySymbol,\n\tInsuranceLine AS i_InsuranceLine,\n\tMajorPerilCode AS i_MajorPerilCode,\n\tSublineCode AS i_SublineCode,\n\tRiskUnitGroup AS i_RiskUnitGroup,\n\tClassCode AS i_ClassCode,\n\t-- *INF*: IIF(i_ExpirationDate>=TO_DATE('21001231','YYYYMMDD'),1,0)\n\tIFF(i_ExpirationDate >= TO_DATE('21001231', 'YYYYMMDD'), 1, 0) AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tSYSDATE AS o_CreatedDate,\n\t-- *INF*: IIF(ISNULL(i_SourceCode) OR LENGTH(i_SourceCode)=0 OR IS_SPACES(i_SourceCode),'N/A',LTRIM(RTRIM(i_SourceCode)))\n\tIFF(i_SourceCode IS NULL OR LENGTH(i_SourceCode) = 0 OR IS_SPACES(i_SourceCode), 'N/A', LTRIM(RTRIM(i_SourceCode))) AS o_SourceCode,\n\t-- *INF*: IIF(ISNULL(i_PolicyOfferingCode) OR LENGTH(i_PolicyOfferingCode)=0 OR IS_SPACES(i_PolicyOfferingCode),'N/A',LTRIM(RTRIM(i_PolicyOfferingCode)))\n\tIFF(i_PolicyOfferingCode IS NULL OR LENGTH(i_PolicyOfferingCode) = 0 OR IS_SPACES(i_PolicyOfferingCode), 'N/A', LTRIM(RTRIM(i_PolicyOfferingCode))) AS o_PolicyOfferingCode,\n\t-- *INF*: IIF(ISNULL(i_PolicySymbol) OR LENGTH(i_PolicySymbol)=0 OR IS_SPACES(i_PolicySymbol),'N/A',LTRIM(RTRIM(i_PolicySymbol)))\n\tIFF(i_PolicySymbol IS NULL OR LENGTH(i_PolicySymbol) = 0 OR IS_SPACES(i_PolicySymbol), 'N/A', LTRIM(RTRIM(i_PolicySymbol))) AS o_PolicySymbol,\n\t-- *INF*: IIF(ISNULL(i_InsuranceLine) OR LENGTH(i_InsuranceLine)=0 OR IS_SPACES(i_InsuranceLine),'N/A',LTRIM(RTRIM(i_InsuranceLine)))\n\tIFF(i_InsuranceLine IS NULL OR LENGTH(i_InsuranceLine) = 0 OR IS_SPACES(i_InsuranceLine), 'N/A', LTRIM(RTRIM(i_InsuranceLine))) AS o_InsuranceLine,\n\t-- *INF*: IIF(ISNULL(i_MajorPerilCode) OR LENGTH(i_MajorPerilCode)=0 OR IS_SPACES(i_MajorPerilCode),'N/A',LTRIM(RTRIM(i_MajorPerilCode)))\n\tIFF(i_MajorPerilCode IS NULL OR LENGTH(i_MajorPerilCode) = 0 OR IS_SPACES(i_MajorPerilCode), 'N/A', LTRIM(RTRIM(i_MajorPerilCode))) AS o_MajorPerilCode,\n\t-- *INF*: IIF(ISNULL(i_SublineCode) OR LENGTH(i_SublineCode)=0 OR IS_SPACES(i_SublineCode),'N/A',LTRIM(RTRIM(i_SublineCode)))\n\tIFF(i_SublineCode IS NULL OR LENGTH(i_SublineCode) = 0 OR IS_SPACES(i_SublineCode), 'N/A', LTRIM(RTRIM(i_SublineCode))) AS o_SublineCode,\n\t-- *INF*: IIF(ISNULL(i_RiskUnitGroup) OR LENGTH(i_RiskUnitGroup)=0 OR IS_SPACES(i_RiskUnitGroup),'N/A',LTRIM(RTRIM(i_RiskUnitGroup)))\n\tIFF(i_RiskUnitGroup IS NULL OR LENGTH(i_RiskUnitGroup) = 0 OR IS_SPACES(i_RiskUnitGroup), 'N/A', LTRIM(RTRIM(i_RiskUnitGroup))) AS o_RiskUnitGroup,\n\t-- *INF*: IIF(ISNULL(i_ClassCode) OR LENGTH(i_ClassCode)=0 OR IS_SPACES(i_ClassCode),'N/A',LTRIM(RTRIM(i_ClassCode)))\n\tIFF(i_ClassCode IS NULL OR LENGTH(i_ClassCode) = 0 OR IS_SPACES(i_ClassCode), 'N/A', LTRIM(RTRIM(i_ClassCode))) AS o_ClassCode\n\tFROM SQ_SupPolicyOfferingRules\n),\nTGT_SupPolicyOfferingRules_UpdateElseInsert AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.SupPolicyOfferingRules AS T\n\tUSING EXP_StringValues AS S\n\tON T.SupPolicyOfferingRulesId = S.o_SupPolicyOfferingRulesId\n\tWHEN MATCHED THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.o_CurrentSnapshotFlag, T.AuditId = S.o_AuditId, T.EffectiveDate = S.o_EffectiveDate, T.ExpirationDate = S.o_ExpirationDate, T.SourceSystemId = S.o_SourceSystemId, T.CreatedDate = S.o_CreatedDate, T.ModifiedDate = S.o_ModifiedDate, T.SupPolicyOfferingRulesAKId = S.o_SupPolicyOfferingRuleAKId, T.SourceCode = S.o_SourceCode, T.SequenceNumber = S.o_SequenceNumber, T.PolicyOfferingCode = S.o_PolicyOfferingCode, T.PolicySymbol = S.o_PolicySymbol, T.InsuranceLine = S.o_InsuranceLine, T.MajorPerilCode = S.o_MajorPerilCode, T.SublineCode = S.o_SublineCode, T.RiskUnitGroup = S.o_RiskUnitGroup, T.ClassCode = S.o_ClassCode\n\tWHEN NOT MATCHED THEN\n\tINSERT (SupPolicyOfferingRulesId, CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, SupPolicyOfferingRulesAKId, SourceCode, SequenceNumber, PolicyOfferingCode, PolicySymbol, InsuranceLine, MajorPerilCode, SublineCode, RiskUnitGroup, ClassCode)\n\tVALUES (\n\tEXP_NumericValues.o_SupPolicyOfferingRulesId AS SUPPOLICYOFFERINGRULESID, \n\tEXP_StringValues.o_CurrentSnapshotFlag AS CURRENTSNAPSHOTFLAG, \n\tEXP_StringValues.o_AuditId AS AUDITID, \n\tEXP_DateValues.o_EffectiveDate AS EFFECTIVEDATE, \n\tEXP_DateValues.o_ExpirationDate AS EXPIRATIONDATE, \n\tEXP_StringValues.o_SourceSystemId AS SOURCESYSTEMID, \n\tEXP_StringValues.o_CreatedDate AS CREATEDDATE, \n\tEXP_DateValues.o_ModifiedDate AS MODIFIEDDATE, \n\tEXP_NumericValues.o_SupPolicyOfferingRuleAKId AS SUPPOLICYOFFERINGRULESAKID, \n\tEXP_StringValues.o_SourceCode AS SOURCECODE, \n\tEXP_NumericValues.o_SequenceNumber AS SEQUENCENUMBER, \n\tEXP_StringValues.o_PolicyOfferingCode AS POLICYOFFERINGCODE, \n\tEXP_StringValues.o_PolicySymbol AS POLICYSYMBOL, \n\tEXP_StringValues.o_InsuranceLine AS INSURANCELINE, \n\tEXP_StringValues.o_MajorPerilCode AS MAJORPERILCODE, \n\tEXP_StringValues.o_SublineCode AS SUBLINECODE, \n\tEXP_StringValues.o_RiskUnitGroup AS RISKUNITGROUP, \n\tEXP_StringValues.o_ClassCode AS CLASSCODE)\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905450"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7602741"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:00:17"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 22:00:17"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_InsuranceReference_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "InsRef"
+            }
+        },
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

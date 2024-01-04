@@ -1,0 +1,77 @@
+{
+    "name": "m_CLM_DW_LOAD_sup_cms_relation_indicator",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DW_LOAD_sup_cms_relation_indicator",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_cms_relation_ind_stage AS (\n\tSELECT\n\t\tcms_relation_ind_stage_id,\n\t\tcms_party_type,\n\t\tcms_relation_ind,\n\t\tis_individual,\n\t\tcms_relation_desc,\n\t\tcms_rel_file_code,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM cms_relation_ind_stage\n),\nEXP_Default_Values AS (\n\tSELECT\n\tcms_party_type,\n\tcms_relation_ind,\n\tis_individual,\n\tcms_relation_desc,\n\tcms_rel_file_code,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(cms_party_type)\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(cms_party_type) AS cms_party_type1,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(cms_relation_ind)\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(cms_relation_ind) AS cms_relation_ind1,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(is_individual)\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(is_individual) AS is_individual1,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(cms_relation_desc)\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(cms_relation_desc) AS cms_relation_desc1,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(cms_rel_file_code)\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(cms_rel_file_code) AS cms_rel_file_code1\n\tFROM SQ_cms_relation_ind_stage\n),\nLKP_Target AS (\n\tSELECT\n\tsup_cms_relation_ind_id,\n\tcms_relation_descript,\n\tcms_relation_file_code,\n\tcms_party_type,\n\tcms_relation_ind,\n\tis_cms_party_individ\n\tFROM (\n\t\tSELECT \r\n\t\ta.sup_cms_relation_ind_id as sup_cms_relation_ind_id,\r\n\t\tltrim(rtrim(a.cms_relation_descript)) as cms_relation_descript, \r\n\t\tltrim(rtrim(a.cms_relation_file_code)) as cms_relation_file_code, \r\n\t\tltrim(rtrim(a.cms_party_type)) as cms_party_type,\r\n\t\tltrim(rtrim(a.cms_relation_ind)) as cms_relation_ind,\r\n\t\tltrim(rtrim(a.is_cms_party_individ)) as is_cms_party_individ\r\n\t\tFROM \r\n\t\t\t@{pipeline().parameters.TARGET_TABLE_OWNER}.sup_cms_relation_indicator a\r\n\t\tWHERE \r\n\t\t\tcrrnt_snpsht_flag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY cms_party_type,cms_relation_ind,is_cms_party_individ ORDER BY sup_cms_relation_ind_id DESC) = 1\n),\nEXP_detect_changes AS (\n\tSELECT\n\tLKP_Target.sup_cms_relation_ind_id,\n\tLKP_Target.cms_relation_descript,\n\tLKP_Target.cms_relation_file_code,\n\tEXP_Default_Values.cms_party_type1,\n\tEXP_Default_Values.cms_relation_ind1,\n\tEXP_Default_Values.is_individual1,\n\tEXP_Default_Values.cms_relation_desc1,\n\tEXP_Default_Values.cms_rel_file_code1,\n\t-- *INF*: IIF(ISNULL(sup_cms_relation_ind_id), 'NEW', \r\n\t-- IIF(\r\n\t-- (cms_relation_descript != cms_relation_desc1 OR\r\n\t-- cms_relation_file_code != cms_rel_file_code1)\r\n\t-- , 'UPDATE', 'NOCHANGE'))\r\n\t-- \n\tIFF(sup_cms_relation_ind_id IS NULL, 'NEW', IFF(( cms_relation_descript != cms_relation_desc1 OR cms_relation_file_code != cms_rel_file_code1 ), 'UPDATE', 'NOCHANGE')) AS v_CHANGED_FLAG,\n\tv_CHANGED_FLAG AS CHANGED_FLAG,\n\t1 AS crrnt_snpsht_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t-- *INF*: iif(v_CHANGED_FLAG='NEW',\r\n\t-- \tto_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)\n\tIFF(v_CHANGED_FLAG = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,\n\tSYSDATE AS created_date,\n\tSYSDATE AS modified_date\n\tFROM EXP_Default_Values\n\tLEFT JOIN LKP_Target\n\tON LKP_Target.cms_party_type = EXP_Default_Values.cms_party_type1 AND LKP_Target.cms_relation_ind = EXP_Default_Values.cms_relation_ind1 AND LKP_Target.is_cms_party_individ = EXP_Default_Values.is_individual1\n),\nFIL_sup_insurance_line_insert AS (\n\tSELECT\n\tCHANGED_FLAG, \n\tcrrnt_snpsht_flag, \n\taudit_id, \n\teff_from_date, \n\teff_to_date, \n\tsource_sys_id, \n\tcreated_date, \n\tmodified_date, \n\tcms_party_type1, \n\tcms_relation_ind1, \n\tis_individual1, \n\tcms_relation_desc1, \n\tcms_rel_file_code1\n\tFROM EXP_detect_changes\n\tWHERE CHANGED_FLAG = 'NEW' or CHANGED_FLAG = 'UPDATE'\n),\nsup_cms_relation_indicator_INSERT AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_cms_relation_indicator\n\t(crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, source_sys_id, created_date, modified_date, cms_party_type, cms_relation_ind, is_cms_party_individ, cms_relation_descript, cms_relation_file_code)\n\tSELECT \n\tCRRNT_SNPSHT_FLAG, \n\tAUDIT_ID, \n\tEFF_FROM_DATE, \n\tEFF_TO_DATE, \n\tSOURCE_SYS_ID, \n\tCREATED_DATE, \n\tMODIFIED_DATE, \n\tcms_party_type1 AS CMS_PARTY_TYPE, \n\tcms_relation_ind1 AS CMS_RELATION_IND, \n\tis_individual1 AS IS_CMS_PARTY_INDIVID, \n\tcms_relation_desc1 AS CMS_RELATION_DESCRIPT, \n\tcms_rel_file_code1 AS CMS_RELATION_FILE_CODE\n\tFROM FIL_sup_insurance_line_insert\n),\nSQ_sup_cms_relation_indicator AS (\n\tSELECT \r\n\ta.sup_cms_relation_ind_id, \r\n\ta.eff_from_date, \r\n\ta.eff_to_date, \r\n\ta.cms_party_type,\r\n\ta.cms_relation_ind,\r\n\tis_cms_party_individ\r\n\tFROM\r\n\t @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_cms_relation_indicator a\r\n\tWHERE EXISTS(SELECT 1\t\t\t\r\n\t\t\tFROM  @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_cms_relation_indicator b\r\n\t\t\tWHERE source_sys_id= '@{pipeline().parameters.SOURCE_SYSTEM_ID}'  AND crrnt_snpsht_flag = 1\r\n\t\t\t                  AND a.cms_party_type = b.cms_party_type \r\n\t\t\t\t\t     AND a.cms_relation_ind = b.cms_relation_ind\r\n\t\t                        AND a.is_cms_party_individ = b.is_cms_party_individ\r\n\t\t\tGROUP BY cms_party_type,cms_relation_ind,is_cms_party_individ\r\n\t\t\tHAVING COUNT(*) > 1)\r\n\tORDER BY cms_party_type,cms_relation_ind, is_cms_party_individ, eff_from_date  DESC\n),\nEXP_lag_eff_from_date AS (\n\tSELECT\n\tsup_cms_relation_ind_id,\n\tcms_party_type,\n\tcms_relation_ind,\n\tis_cms_party_individ,\n\teff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- \tcms_party_type = v_Prev_row_cms_party_type AND cms_relation_ind = v_Prev_row_cms_relation_ind AND is_cms_party_individ = v_Prev_row_cms_party_individ,\r\n\t--       ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),\r\n\t-- \torig_eff_to_date)\r\n\t-- \t\n\tDECODE(TRUE,\n\tcms_party_type = v_Prev_row_cms_party_type AND cms_relation_ind = v_Prev_row_cms_relation_ind AND is_cms_party_individ = v_Prev_row_cms_party_individ, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),\n\torig_eff_to_date) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\tcms_party_type AS v_Prev_row_cms_party_type,\n\tcms_relation_ind AS v_Prev_row_cms_relation_ind,\n\tis_cms_party_individ AS v_Prev_row_cms_party_individ,\n\teff_from_date AS v_prev_eff_from_date,\n\t0 AS crrnt_snpsht_flag,\n\tSYSDATE AS modified_date\n\tFROM SQ_sup_cms_relation_indicator\n),\nFIL_First_rown_inAKGroup AS (\n\tSELECT\n\tsup_cms_relation_ind_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM EXP_lag_eff_from_date\n\tWHERE orig_eff_to_date != eff_to_date\n),\nUPD_sup_insurance_line AS (\n\tSELECT\n\tsup_cms_relation_ind_id, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM FIL_First_rown_inAKGroup\n),\nsup_cms_relation_indicator_UPDATE AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_cms_relation_indicator AS T\n\tUSING UPD_sup_insurance_line AS S\n\tON T.sup_cms_relation_ind_id = S.sup_cms_relation_ind_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_date\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246507"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905524"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604437"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:23:26"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 02:28:04"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "EXCEED AND PMS"
+            }
+        },
+        "folder": {
+            "name": "Claims DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

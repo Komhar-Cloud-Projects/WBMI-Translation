@@ -30,11 +30,11 @@
         "parameters": {
             "AUDIT_NAME": {
                 "type": "string",
-                "defaultValue": "Default Value"
+                "defaultValue": "CLAIMS_PMS"
             }
         },
         "folder": {
-            "name": ""
+            "name": "Claims DataWarehouse/"
         },
         "annotations": []
     }

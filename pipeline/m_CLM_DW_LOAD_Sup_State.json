@@ -1,0 +1,53 @@
+{
+    "name": "m_CLM_DW_LOAD_Sup_State",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DW_LOAD_Sup_State",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLAIM_SUPPORT_01_STAGE AS (\n\tSELECT \r\n\tCS01_TABLE_SEQ_NBR, \r\n\tCS01_CODE, \r\n\tCS01_CODE_DES \r\n\tFROM\r\n\t @{pipeline().parameters.SOURCE_TABLE_OWNER}.CLAIM_SUPPORT_01_STAGE\r\n\tWHERE\r\n\tCS01_TABLE_ID = 'C005'\n),\nEXP_Values AS (\n\tSELECT\n\tCS01_TABLE_SEQ_NBR,\n\tCS01_CODE,\n\tCS01_CODE_DES\n\tFROM SQ_CLAIM_SUPPORT_01_STAGE\n),\nEXP_Lkp_Values AS (\n\tSELECT\n\tCS01_TABLE_SEQ_NBR AS in_CS01_TABLE_SEQ_NBR,\n\t-- *INF*: IIF(ISNULL(in_CS01_TABLE_SEQ_NBR), \r\n\t-- 0,\r\n\t-- in_CS01_TABLE_SEQ_NBR)\n\tIFF(in_CS01_TABLE_SEQ_NBR IS NULL, 0, in_CS01_TABLE_SEQ_NBR) AS CS01_TABLE_SEQ_NBR,\n\tCS01_CODE AS in_CS01_CODE,\n\t-- *INF*: IIF(ISNULL(in_CS01_CODE), \r\n\t-- 'N/A',\r\n\t-- ltrim(rtrim(in_CS01_CODE)))\n\tIFF(in_CS01_CODE IS NULL, 'N/A', ltrim(rtrim(in_CS01_CODE))) AS CS01_CODE,\n\tCS01_CODE_DES AS in_CS01_CODE_DES,\n\t-- *INF*: IIF(ISNULL(in_CS01_CODE_DES),\r\n\t-- 'N/A', \r\n\t-- in_CS01_CODE_DES)\n\tIFF(in_CS01_CODE_DES IS NULL, 'N/A', in_CS01_CODE_DES) AS CS01_CODE_DES\n\tFROM EXP_Values\n),\nLKP_Sup_State AS (\n\tSELECT\n\tsup_state_id,\n\tstate_abbrev,\n\tstate_descript,\n\tstate_code\n\tFROM (\n\t\tSELECT \r\n\t\ta.sup_state_id as sup_state_id, \r\n\t\ta.state_abbrev as state_abbrev, \r\n\t\ta.state_descript as state_descript, \r\n\t\tltrim(rtrim(a.state_code)) as state_code \r\n\t\tFROM \r\n\t\t@{pipeline().parameters.TARGET_TABLE_OWNER}.sup_state a\r\n\t\tWHERE \r\n\t\tsource_sys_id = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'  AND crrnt_snpsht_flag = 1\r\n\t\tORDER BY state_code --\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY state_code ORDER BY sup_state_id) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tEXP_Lkp_Values.CS01_TABLE_SEQ_NBR,\n\t-- *INF*: TO_CHAR(CS01_TABLE_SEQ_NBR)\n\tTO_CHAR(CS01_TABLE_SEQ_NBR) AS out_CS01_TABLE_SEQ_NBR,\n\tEXP_Lkp_Values.CS01_CODE,\n\tEXP_Lkp_Values.CS01_CODE_DES,\n\tLKP_Sup_State.sup_state_id AS lkp_sup_state_id,\n\tLKP_Sup_State.state_abbrev AS lkp_state_abbrev,\n\tLKP_Sup_State.state_descript AS lkp_state_descript,\n\t1 AS Crrnt_Snpsht_Flag,\n\t-- *INF*: IIF(ISNULL(lkp_sup_state_id),'NEW',\r\n\t-- \tIIF(\r\n\t-- \t(to_char(CS01_TABLE_SEQ_NBR) <> lkp_state_abbrev or  \r\n\t-- \tltrim(rtrim(CS01_CODE_DES)) <> ltrim(rtrim(lkp_state_descript))),\r\n\t-- \t'UPDATE',\r\n\t-- \t'NOCHANGE'))\n\tIFF(lkp_sup_state_id IS NULL, 'NEW', IFF(( to_char(CS01_TABLE_SEQ_NBR) <> lkp_state_abbrev OR ltrim(rtrim(CS01_CODE_DES)) <> ltrim(rtrim(lkp_state_descript)) ), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,\n\t-- *INF*: IIF(v_Changed_Flag='NEW',\r\n\t-- \tTO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),\r\n\t-- \tTO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))\n\tIFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')) AS Eff_From_Date,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,\n\tv_Changed_Flag AS Changed_Flag,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_System_Id,\n\tSYSDATE AS Created_Date,\n\tSYSDATE AS Modified_Date\n\tFROM EXP_Lkp_Values\n\tLEFT JOIN LKP_Sup_State\n\tON LKP_Sup_State.state_code = EXP_Lkp_Values.CS01_CODE\n),\nFIL_Insert AS (\n\tSELECT\n\tout_CS01_TABLE_SEQ_NBR AS CS01_TABLE_SEQ_NBR, \n\tCS01_CODE, \n\tCS01_CODE_DES, \n\tCrrnt_Snpsht_Flag, \n\tAudit_Id, \n\tEff_From_Date, \n\tEff_To_Date, \n\tChanged_Flag, \n\tSource_System_Id, \n\tCreated_Date, \n\tModified_Date\n\tFROM EXP_Detect_Changes\n\tWHERE Changed_Flag='NEW'  OR Changed_Flag='UPDATE'\n),\nsup_state_Insert AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_state\n\t(state_code, state_abbrev, state_descript, crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, source_sys_id, created_date, modified_date)\n\tSELECT \n\tCS01_CODE AS STATE_CODE, \n\tCS01_TABLE_SEQ_NBR AS STATE_ABBREV, \n\tCS01_CODE_DES AS STATE_DESCRIPT, \n\tCrrnt_Snpsht_Flag AS CRRNT_SNPSHT_FLAG, \n\tAudit_Id AS AUDIT_ID, \n\tEff_From_Date AS EFF_FROM_DATE, \n\tEff_To_Date AS EFF_TO_DATE, \n\tSource_System_Id AS SOURCE_SYS_ID, \n\tCreated_Date AS CREATED_DATE, \n\tModified_Date AS MODIFIED_DATE\n\tFROM FIL_Insert\n),\nSQ_sup_state AS (\n\tSELECT \r\n\ta.sup_state_id, \r\n\ta.state_code, \r\n\ta.eff_from_date, \r\n\ta.eff_to_date \r\n\tFROM\r\n\t @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_state a\r\n\tWHERE EXISTS(SELECT 1\t\t\t\r\n\t\t\tFROM  @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_state b\r\n\t\t\tWHERE source_sys_id = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'  AND crrnt_snpsht_flag = 1\r\n\t\t\tAND a.state_code = b.state_code\r\n\t\t\tGROUP BY state_code\r\n\t\t\tHAVING COUNT(*) > 1)\r\n\tORDER BY state_code, eff_from_date  DESC\n),\nEXP_Lag_eff_from_date AS (\n\tSELECT\n\tsup_state_id,\n\tstate_code,\n\teff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- \tstate_code = v_PREV_ROW_state_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),\r\n\t-- \torig_eff_to_date)\n\tDECODE(TRUE,\n\tstate_code = v_PREV_ROW_state_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),\n\torig_eff_to_date) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\teff_from_date AS v_PREV_ROW_eff_from_date,\n\tstate_code AS v_PREV_ROW_state_code,\n\tSYSDATE AS modified_date,\n\t0 AS crrnt_snpsht_flag\n\tFROM SQ_sup_state\n),\nFIL_FirstRowInAKGroup AS (\n\tSELECT\n\tsup_state_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tmodified_date, \n\tcrrnt_snpsht_flag\n\tFROM EXP_Lag_eff_from_date\n\tWHERE orig_eff_to_date <> eff_to_date\r\n\r\n--If these two dates equal each other we are dealing with the first row in an AK group.  This row\r\n--does not need to be expired or updated for any reason thus it can be filtered out\r\n-- but we must source it to capture the eff_from_date of this row \r\n--so that we can properly expire the subsequent row\n),\nUPD_Sup_State AS (\n\tSELECT\n\tsup_state_id, \n\teff_to_date, \n\tmodified_date, \n\tcrrnt_snpsht_flag\n\tFROM FIL_FirstRowInAKGroup\n),\nsup_state_Update AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_state AS T\n\tUSING UPD_Sup_State AS S\n\tON T.sup_state_id = S.sup_state_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_date\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Claims DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

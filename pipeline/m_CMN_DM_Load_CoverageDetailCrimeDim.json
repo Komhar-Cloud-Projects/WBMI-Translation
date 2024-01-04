@@ -1,0 +1,53 @@
+{
+    "name": "m_CMN_DM_Load_CoverageDetailCrimeDim",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CMN_DM_Load_CoverageDetailCrimeDim",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CoverageDetailCrime AS (\n\tSELECT cdc.CoverageGUID,\r\n\tcdd.CoverageDetailDimId,\r\n\tcdd.EffectiveDate,\r\n\tcdd.ExpirationDate,\r\n\tcdc.IndustryGroup as IndustryGroup\r\n\tfrom CoverageDetailCrime CDC\r\n\tinner join @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageDetailDim CDD\r\n\ton CDC.PremiumTransactionID=CDD.EDWPremiumTransactionPKId\r\n\tinner join PremiumTransaction p\r\n\ton CDC.PremiumTransactionID=p.PremiumTransactionID\r\n\twhere CDC.ModifiedDate>=@{pipeline().parameters.SELECTION_START_TS}\n),\nLKP_CDCD AS (\n\tSELECT\n\tCoverageDetailDimId,\n\tCoverageGUID,\n\tIndustryGroup,\n\ti_CoverageDetailDimId\n\tFROM (\n\t\tSELECT \n\t\t\tCoverageDetailDimId,\n\t\t\tCoverageGUID,\n\t\t\tIndustryGroup,\n\t\t\ti_CoverageDetailDimId\n\t\tFROM CoverageDetailCrimeDim\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY CoverageDetailDimId ORDER BY CoverageDetailDimId) = 1\n),\nEXP_CalValues AS (\n\tSELECT\n\tLKP_CDCD.CoverageDetailDimId AS lkp_CoverageDetailDimId,\n\tLKP_CDCD.CoverageGUID AS lkp_CoverageGUID,\n\tLKP_CDCD.IndustryGroup AS lkp_CrimeIndustryGroup,\n\tSQ_CoverageDetailCrime.CoverageDetailDimId AS i_CoverageDetailDimId,\n\tSQ_CoverageDetailCrime.CoverageGUID AS i_CoverageGUID,\n\tSQ_CoverageDetailCrime.IndustryGroup AS i_CrimeIndustryGroup,\n\tSQ_CoverageDetailCrime.EffectiveDate AS i_EffectiveDate,\n\tSQ_CoverageDetailCrime.ExpirationDate AS i_ExpirationDate,\n\ti_CoverageDetailDimId AS o_CoverageDetailDimId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\ti_EffectiveDate AS o_EffectiveDate,\n\ti_ExpirationDate AS o_ExpirationDate,\n\tsysdate AS o_CreatedDate,\n\tsysdate AS o_ModifiedDate,\n\ti_CoverageGUID AS o_CoverageGUID,\n\ti_CrimeIndustryGroup AS o_CrimeIndustryGroup,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(lkp_CoverageDetailDimId),\r\n\t-- 'INSERT',\r\n\t-- i_CrimeIndustryGroup <>lkp_CrimeIndustryGroup\r\n\t-- OR i_CoverageGUID<>lkp_CoverageGUID,\r\n\t-- 'UPDATE',\r\n\t-- 'NOCHANGE')\n\tDECODE(TRUE,\n\tlkp_CoverageDetailDimId IS NULL, 'INSERT',\n\ti_CrimeIndustryGroup <> lkp_CrimeIndustryGroup OR i_CoverageGUID <> lkp_CoverageGUID, 'UPDATE',\n\t'NOCHANGE') AS o_changeflag\n\tFROM SQ_CoverageDetailCrime\n\tLEFT JOIN LKP_CDCD\n\tON LKP_CDCD.CoverageDetailDimId = SQ_CoverageDetailCrime.CoverageDetailDimId\n),\nRTRTRANS AS (\n\tSELECT\n\to_CoverageDetailDimId,\n\to_AuditId,\n\to_EffectiveDate,\n\to_ExpirationDate,\n\to_CreatedDate,\n\to_ModifiedDate,\n\to_CoverageGUID,\n\to_CrimeIndustryGroup,\n\to_changeflag\n\tFROM EXP_CalValues\n),\nRTRTRANS_INSERT AS (SELECT * FROM RTRTRANS WHERE o_changeflag='INSERT'),\nRTRTRANS_UPDATE AS (SELECT * FROM RTRTRANS WHERE o_changeflag='UPDATE'),\nCoverageDetailCrimeDim_INSERT AS (\n\tINSERT INTO CoverageDetailCrimeDim\n\t(CoverageDetailDimId, AuditID, EffectiveDate, ExpirationDate, CreatedDate, ModifiedDate, CoverageGuid, IndustryGroup)\n\tSELECT \n\to_CoverageDetailDimId AS COVERAGEDETAILDIMID, \n\to_AuditId AS AUDITID, \n\to_EffectiveDate AS EFFECTIVEDATE, \n\to_ExpirationDate AS EXPIRATIONDATE, \n\to_CreatedDate AS CREATEDDATE, \n\to_ModifiedDate AS MODIFIEDDATE, \n\to_CoverageGUID AS COVERAGEGUID, \n\to_CrimeIndustryGroup AS INDUSTRYGROUP\n\tFROM RTRTRANS_INSERT\n),\nUPD_CDCD AS (\n\tSELECT\n\to_CoverageDetailDimId AS o_CoverageDetailDimId3, \n\to_EffectiveDate AS o_EffectiveDate3, \n\to_ExpirationDate AS o_ExpirationDate3, \n\to_ModifiedDate AS o_ModifiedDate3, \n\to_CoverageGUID AS o_CoverageGUID3, \n\to_CrimeIndustryGroup AS o_CrimeIndustryGroup3\n\tFROM RTRTRANS_UPDATE\n),\nCoverageDetailCrimeDim_UPDATE AS (\n\tMERGE INTO CoverageDetailCrimeDim AS T\n\tUSING UPD_CDCD AS S\n\tON T.CoverageDetailDimId = S.o_CoverageDetailDimId3\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.EffectiveDate = S.o_EffectiveDate3, T.ExpirationDate = S.o_ExpirationDate3, T.ModifiedDate = S.o_ModifiedDate3, T.CoverageGuid = S.o_CoverageGUID3, T.IndustryGroup = S.o_CrimeIndustryGroup3\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "TARGET_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Common DataMart/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "name": "m_POL_DW_LOAD_ArchWorkPremiumTransaction",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_ArchWorkPremiumTransaction",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkPremiumTransaction AS (\n\tSELECT\n\t\tWorkPremiumTransactionId,\n\t\tAuditID,\n\t\tSourceSystemID,\n\t\tCreatedDate,\n\t\tPremiumTransactionAKId,\n\t\tPremiumTransactionStageId\n\tFROM WorkPremiumTransaction\n),\nArchWorkPremiumTransaction AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWorkPremiumTransaction\n\t(WorkPremiumTransactionId, AuditID, SourceSystemID, CreatedDate, PremiumTransactionAKId, PremiumTransactionStageId)\n\tSELECT \n\tWORKPREMIUMTRANSACTIONID, \n\tAUDITID, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tPREMIUMTRANSACTIONAKID, \n\tPREMIUMTRANSACTIONSTAGEID\n\tFROM SQ_WorkPremiumTransaction\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

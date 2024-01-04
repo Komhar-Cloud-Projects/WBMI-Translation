@@ -1,0 +1,89 @@
+{
+    "name": "m_POL_DIV_DW_LOAD_Dividend_PMS",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DIV_DW_LOAD_Dividend_PMS",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif43IXUnmodStage AS (\n\tSELECT \r\n\tPif43IXUnmodYearTransaction, \r\n\tPif43IXUnmodMonthTransaction, \r\n\tPif43IXUnmodDayTransaction, \r\n\tPif43IXUnmodStage.Pif43IXUnmodWbmDividendPaid,\r\n\tpolicy.pol_ak_id, \r\n\tSupDividendType.SupDividendTypeID, \r\n\tSupDividendType.PMSStateCode, \r\n\tSupDividendType.DividendType, \r\n\tSupDividendType.DividendPlan\r\n\tFROM (select distinct\r\n\tPifSymbol \r\n\t,PifPolicyNumber \r\n\t,PifModule \r\n\t,Pif43IXUnmodWCRatingState \r\n\t,Pif43IXUnmodYearTransaction\r\n\t,Pif43IXUnmodMonthTransaction\r\n\t,Pif43IXUnmodDayTransaction\r\n\t,Pif43IXUnmodSplitRateSeq\r\n\t,Pif43IXUnmodWbmDividendPaid\r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.Pif43IXUnmodStage pif43\r\n\twhere Pif43IXUnmodSegmentLevelCode='I' \r\n\tand Pif43IXUnmodSegmentPartCode='X' \r\n\tand Pif43IXUnmodYearTransaction > = 2001\r\n\tand not exists (select 1 from @{pipeline().parameters.SOURCE_TABLE_OWNER}.Pif43IXUnmodStage \r\n\twhere pif43.PifSymbol=PifSymbol\r\n\tand pif43.PifPolicyNumber=PifPolicyNumber\r\n\tand pif43.PifModule=PifModule\r\n\tand Pif43IXUnmodSegmentLevelCode='I' \r\n\tand Pif43IXUnmodSegmentPartCode='X' \r\n\tand pif43.Pif43IXUnmodWCRatingState=Pif43IXUnmodWCRatingState\r\n\tand pif43.Pif43IXUnmodSplitRateSeq<Pif43IXUnmodSplitRateSeq)\r\n\t) as Pif43IXUnmodStage \r\n\tjoin @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER_V2}.policy as policy\r\n\ton LTRIM(RTRIM(Pif43IXUnmodStage.PifSymbol))=policy.pol_sym \r\n\tand LTRIM(RTRIM(Pif43IXUnmodStage.PifPolicyNumber))=policy.pol_num \r\n\tand LTRIM(RTRIM(Pif43IXUnmodStage.PifModule))=policy.pol_mod \r\n\tand policy.source_sys_id='@{pipeline().parameters.SOURCE_SYSTEM_ID}' and policy.crrnt_snpsht_flag=1 \r\n\tjoin @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.SupDividendType as SupDividendType\r\n\ton SUBSTRING(LTRIM(RTRIM(Pif43IXUnmodStage.PifSymbol)),1,2)=SupDividendType.PMSPolicySymbol \r\n\tand LTRIM(RTRIM(Pif43IXUnmodStage.Pif43IXUnmodWCRatingState))=SupDividendType.PMSStateCode \r\n\tand policy.pol_eff_date between SupDividendType.EffectiveDate and SupDividendType.ExpirationDate\r\n\tand SupDividendType.SourceSystemID='@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n),\nEXP_GetValues AS (\n\tSELECT\n\tPif43IXUnmodYearTransaction AS i_Pif43IXUnmodYearTransaction,\n\tPif43IXUnmodMonthTransaction AS i_Pif43IXUnmodMonthTransaction,\n\tPif43IXUnmodDayTransaction AS i_Pif43IXUnmodDayTransaction,\n\tPif43IXUnmodWbmDividendPaid AS i_Pif43IXUnmodWbmDividendPaid,\n\tpol_ak_id AS i_pol_ak_id,\n\tSupDividendTypeID AS i_SupDividendTypeID,\n\tPMSStateCode AS i_PMSStateCode,\n\tDividendType AS i_DividendType,\n\tDividendPlan AS i_DividendPlan,\n\ti_pol_ak_id AS o_PolicyAKId,\n\t-- *INF*: IIF(ISNULL(i_Pif43IXUnmodWbmDividendPaid), 0.00,ROUND(i_Pif43IXUnmodWbmDividendPaid,2))\n\tIFF(i_Pif43IXUnmodWbmDividendPaid IS NULL, 0.00, ROUND(i_Pif43IXUnmodWbmDividendPaid, 2)) AS o_DividendAmount,\n\t-- *INF*: TO_DATE(TO_CHAR(TO_INTEGER(i_Pif43IXUnmodYearTransaction))||LPAD(TO_CHAR(TO_INTEGER(i_Pif43IXUnmodMonthTransaction)),2,'0')||LPAD(TO_CHAR(TO_INTEGER(i_Pif43IXUnmodDayTransaction)),2,'0'),'YYYYMMDD' )\n\tTO_DATE(TO_CHAR(TO_INTEGER(i_Pif43IXUnmodYearTransaction)) || LPAD(TO_CHAR(TO_INTEGER(i_Pif43IXUnmodMonthTransaction)), 2, '0') || LPAD(TO_CHAR(TO_INTEGER(i_Pif43IXUnmodDayTransaction)), 2, '0'), 'YYYYMMDD') AS o_DividendTransactionEnteredDate,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_PMSStateCode)))\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_PMSStateCode))) AS o_StateCode,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_DividendPlan)))\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_DividendPlan))) AS o_DividendPlan,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_DividendType)))\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_DividendType))) AS o_DividendType,\n\t-- *INF*: IIF(ISNULL(i_SupDividendTypeID),-1,i_SupDividendTypeID)\n\tIFF(i_SupDividendTypeID IS NULL, - 1, i_SupDividendTypeID) AS o_SupDividendTypeId\n\tFROM SQ_Pif43IXUnmodStage\n),\nLKP_sup_state AS (\n\tSELECT\n\tsup_state_id,\n\tstate_abbrev\n\tFROM (\n\t\tSELECT \n\t\t\tsup_state_id,\n\t\t\tstate_abbrev\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_state\n\t\tWHERE crrnt_snpsht_flag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY state_abbrev ORDER BY sup_state_id) = 1\n),\nEXP_sup_state_id AS (\n\tSELECT\n\tEXP_GetValues.o_PolicyAKId AS PolicyAKId,\n\tEXP_GetValues.o_DividendAmount AS DividendAmount,\n\tEXP_GetValues.o_DividendTransactionEnteredDate AS DividendTransactionEnteredDate,\n\tEXP_GetValues.o_StateCode AS StateCode,\n\tEXP_GetValues.o_DividendPlan AS DividendPlan,\n\tEXP_GetValues.o_DividendType AS DividendType,\n\tEXP_GetValues.o_SupDividendTypeId AS SupDividendTypeId,\n\tLKP_sup_state.sup_state_id AS lkp_sup_state_id,\n\t-- *INF*: IIF(ISNULL(lkp_sup_state_id),-1,lkp_sup_state_id)\n\tIFF(lkp_sup_state_id IS NULL, - 1, lkp_sup_state_id) AS o_sup_state_id\n\tFROM EXP_GetValues\n\tLEFT JOIN LKP_sup_state\n\tON LKP_sup_state.state_abbrev = EXP_GetValues.o_StateCode\n),\nAGG_SUMAMT AS (\n\tSELECT\n\tPolicyAKId, \n\tDividendAmount, \n\tROUND(SUM(DividendAmount), 2) AS sum_DividendAmount, \n\tDividendTransactionEnteredDate, \n\tStateCode, \n\tDividendPlan, \n\tDividendType, \n\tSupDividendTypeId, \n\to_sup_state_id AS sup_state_id\n\tFROM EXP_sup_state_id\n\tGROUP BY PolicyAKId, DividendTransactionEnteredDate, StateCode\n),\nEXP_TRAN AS (\n\tSELECT\n\tPolicyAKId,\n\tsum_DividendAmount AS DividendAmount,\n\tDividendTransactionEnteredDate,\n\tStateCode,\n\tDividendPlan,\n\tDividendType,\n\tSupDividendTypeId,\n\tsup_state_id\n\tFROM AGG_SUMAMT\n),\nLKP_Dividend AS (\n\tSELECT\n\tDividendId,\n\tDividendPayableAmount,\n\tDividendPlan,\n\tDividendType,\n\tSupStateId,\n\tSupDividendTypeId,\n\tDividendPaidAmount,\n\tPolicyAKId,\n\tDividendTransactionEnteredDate,\n\tStateCode\n\tFROM (\n\t\tSELECT \n\t\t\tDividendId,\n\t\t\tDividendPayableAmount,\n\t\t\tDividendPlan,\n\t\t\tDividendType,\n\t\t\tSupStateId,\n\t\t\tSupDividendTypeId,\n\t\t\tDividendPaidAmount,\n\t\t\tPolicyAKId,\n\t\t\tDividendTransactionEnteredDate,\n\t\t\tStateCode\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.Dividend\n\t\tWHERE EXISTS ( SELECT 1 FROM @{pipeline().parameters.TARGET_TABLE_OWNER_V2}.policy\r\n\t\tWHERE Dividend.PolicyAKId=policy.pol_ak_id\r\n\t\tAND policy.crrnt_snpsht_flag=1\r\n\t\tAND policy.source_sys_id='@{pipeline().parameters.SOURCE_SYSTEM_ID}'\r\n\t\tand exists (select 1 from @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.Pif43IXUnmodStage IX\r\n\t\twhere LTRIM(RTRIM(IX.PifSymbol))=policy.pol_sym \r\n\t\tand LTRIM(RTRIM(IX.PifPolicyNumber))=policy.pol_num \r\n\t\tand LTRIM(RTRIM(IX.PifModule))=policy.pol_mod))\r\n\t\tAND Dividend.CurrentSnapshotFlag = 1\r\n\t\tAND Dividend.SourceSystemId = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyAKId,DividendTransactionEnteredDate,StateCode ORDER BY DividendId) = 1\n),\nEXP_MetaData AS (\n\tSELECT\n\tLKP_Dividend.DividendId AS lkp_DividendId,\n\tLKP_Dividend.DividendPayableAmount AS lkp_DividendPayableAmount,\n\tLKP_Dividend.DividendPlan AS lkp_DividendPlan,\n\tLKP_Dividend.DividendType AS lkp_DividendType,\n\tLKP_Dividend.SupStateId AS lkp_SupStateId,\n\tLKP_Dividend.SupDividendTypeId AS lkp_SupDividendTypeId,\n\tLKP_Dividend.DividendPaidAmount AS lkp_DividendPaidAmount,\n\tEXP_TRAN.PolicyAKId,\n\tEXP_TRAN.DividendAmount AS DividendPayableAmount,\n\tEXP_TRAN.DividendTransactionEnteredDate,\n\t-- *INF*: ADD_TO_DATE(TRUNC(ADD_TO_DATE(DividendTransactionEnteredDate,'MM',1), 'MM'),'DD',-1)\n\tADD_TO_DATE(TRUNC(ADD_TO_DATE(DividendTransactionEnteredDate, 'MM', 1), 'MM'), 'DD', - 1) AS DividendRunDate,\n\tEXP_TRAN.StateCode,\n\tEXP_TRAN.DividendPlan,\n\tEXP_TRAN.DividendType,\n\tEXP_TRAN.SupDividendTypeId,\n\tEXP_TRAN.sup_state_id,\n\tlkp_DividendId AS o_DividendId,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(lkp_DividendId), 'NEW', \r\n\t-- lkp_DividendPayableAmount <>DividendPayableAmount OR\r\n\t-- lkp_DividendPlan<>DividendPlan OR\r\n\t-- lkp_DividendType<>DividendType OR\r\n\t-- lkp_SupStateId<>sup_state_id OR\r\n\t-- lkp_SupDividendTypeId<>SupDividendTypeId OR\r\n\t-- lkp_DividendPaidAmount<>v_DividendPaidAmount,'UPDATE',\r\n\t-- 'NOCHANGE')\n\tDECODE(TRUE,\n\tlkp_DividendId IS NULL, 'NEW',\n\tlkp_DividendPayableAmount <> DividendPayableAmount OR lkp_DividendPlan <> DividendPlan OR lkp_DividendType <> DividendType OR lkp_SupStateId <> sup_state_id OR lkp_SupDividendTypeId <> SupDividendTypeId OR lkp_DividendPaidAmount <> v_DividendPaidAmount, 'UPDATE',\n\t'NOCHANGE') AS o_ChangeFlag,\n\t'1' AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\t-- *INF*: TO_DATE('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS')\n\tTO_DATE('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,\n\t-- *INF*: TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')\n\tTO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_ExpirationDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\t0.0 AS v_DividendPaidAmount,\n\tv_DividendPaidAmount AS DividendPaidAmount\n\tFROM EXP_TRAN\n\tLEFT JOIN LKP_Dividend\n\tON LKP_Dividend.PolicyAKId = EXP_TRAN.PolicyAKId AND LKP_Dividend.DividendTransactionEnteredDate = EXP_TRAN.DividendTransactionEnteredDate AND LKP_Dividend.StateCode = EXP_TRAN.StateCode\n),\nRTR_Target AS (\n\tSELECT\n\to_ChangeFlag AS ChangeFlag,\n\to_DividendId AS DividendId,\n\tPolicyAKId,\n\tDividendPayableAmount AS DividendAmount,\n\tDividendTransactionEnteredDate,\n\tDividendRunDate,\n\tStateCode,\n\tDividendPlan,\n\tDividendType,\n\tSupDividendTypeId,\n\tsup_state_id AS SupStateId,\n\to_CurrentSnapshotFlag AS CurrentSnapshotFlag,\n\to_AuditID AS AuditID,\n\to_EffectiveDate AS EffectiveDate,\n\to_ExpirationDate AS ExpirationDate,\n\to_SourceSystemID AS SourceSystemID,\n\to_CreatedDate AS CreatedDate,\n\to_ModifiedDate AS ModifiedDate,\n\tDividendPaidAmount\n\tFROM EXP_MetaData\n),\nRTR_Target_NEW AS (SELECT * FROM RTR_Target WHERE ChangeFlag='NEW'),\nRTR_Target_UPDATE AS (SELECT * FROM RTR_Target WHERE ChangeFlag='UPDATE'),\nSEQ_DividendAKId AS (\n\tCREATE SEQUENCE SEQ_DividendAKId\n\tSTART = 1\n\tINCREMENT = 1;\n),\nDividend_INSERT AS (\n\tINSERT INTO Dividend\n\t(CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, DividendAKId, PolicyAKId, DividendPayableAmount, DividendTransactionEnteredDate, DividendRunDate, StateCode, DividendPlan, DividendType, SupStateId, SupDividendTypeId, DividendPaidAmount)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tSourceSystemID AS SOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tSEQ_DividendAKId.NEXTVAL AS DIVIDENDAKID, \n\tPOLICYAKID, \n\tDividendAmount AS DIVIDENDPAYABLEAMOUNT, \n\tDIVIDENDTRANSACTIONENTEREDDATE, \n\tDIVIDENDRUNDATE, \n\tSTATECODE, \n\tDIVIDENDPLAN, \n\tDIVIDENDTYPE, \n\tSUPSTATEID, \n\tSUPDIVIDENDTYPEID, \n\tDIVIDENDPAIDAMOUNT\n\tFROM RTR_Target_NEW\n),\nUPD_UPDATE AS (\n\tSELECT\n\tDividendId, \n\tPolicyAKId, \n\tDividendAmount, \n\tDividendTransactionEnteredDate, \n\tDividendRunDate, \n\tStateCode, \n\tDividendPlan, \n\tDividendType, \n\tSupDividendTypeId, \n\tSupStateId, \n\tCurrentSnapshotFlag, \n\tAuditID, \n\tEffectiveDate, \n\tExpirationDate, \n\tSourceSystemID, \n\tCreatedDate, \n\tModifiedDate, \n\tDividendPaidAmount AS DividendPaidAmount3\n\tFROM RTR_Target_UPDATE\n),\nDividend_UPDATE AS (\n\tMERGE INTO Dividend AS T\n\tUSING UPD_UPDATE AS S\n\tON T.DividendId = S.DividendId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.AuditID = S.AuditID, T.ModifiedDate = S.ModifiedDate, T.DividendPayableAmount = S.DividendAmount, T.DividendPlan = S.DividendPlan, T.DividendType = S.DividendType, T.SupStateId = S.SupStateId, T.SupDividendTypeId = S.SupDividendTypeId, T.DividendPaidAmount = S.DividendPaidAmount3\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905520"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604317"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 01:27:36"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 02:03:07"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "PMS"
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "WC_STAGE"
+            },
+            "TARGET_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "RPT_EDM"
+            },
+            "TARGET_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "V2"
+            }
+        },
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

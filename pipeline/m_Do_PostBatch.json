@@ -30,15 +30,15 @@
         "parameters": {
             "BATCH_NAME": {
                 "type": "string",
-                "defaultValue": "Default Value"
+                "defaultValue": "CLAIMS_PMS_DATAWAREHOUSE"
             },
             "SUBJECT_AREA": {
                 "type": "string",
-                "defaultValue": "Default Value"
+                "defaultValue": "ClaimsDataWarehouse"
             }
         },
         "folder": {
-            "name": ""
+            "name": "Claims DataWarehouse/"
         },
         "annotations": []
     }

@@ -1,0 +1,85 @@
+{
+    "name": "m_POL_DM_UPDATE_PremiumMasterFact_Offsets",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DM_UPDATE_PremiumMasterFact_Offsets",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_PremiumMasterFact_Offsets AS (\n\tSELECT \r\n\t pmfoffset.PremiumMasterFactID AS PremiumMasterFactID\r\n\t,pmfonset.AnnualStatementLineProductCodeDimID AS AnnualStatementLineProductCodeDimID\r\n\t,pmfonset.InsuranceReferenceCoverageDimId AS InsuranceReferenceCoverageDimId\r\n\t,pmfonset.InsuranceReferenceDimId AS InsuranceReferenceDimId\r\n\t,pmfonset.PolicyDimID AS PolicyDimID\r\n\t,pmfonset.PremiumMasterCoverageExpirationDateID AS PremiumMasterCoverageExpirationDateID\r\n\t,pmfonset.RiskLocationDimID AS RiskLocationDimID\r\n\t,pmfonset.SalesDivisionDimId AS SalesDivisionDimId\r\n\t\r\n\tFROM (\r\n\t\tSELECT wrk.PolicyKey\r\n\t\t\t,wrk.PremiumTransactionAKID\r\n\t\t\t,wrk.PreviousPremiumTransactionAKID\r\n\t\t\t,wrk.RatingCoverageAKID\r\n\t\t\t,pmf.AnnualStatementLineDimID\r\n\t\t\t,pmf.AnnualStatementLineProductCodeDimID\r\n\t\t\t,pmf.InsuranceReferenceCoverageDimId\r\n\t\t\t,pmf.InsuranceReferenceDimId\r\n\t\t\t,pmf.PolicyDimID\r\n\t\t\t,pmf.PremiumMasterCoverageExpirationDateID\r\n\t\t\t,pmf.RiskLocationDimID\r\n\t\t\t,pmf.SalesDivisionDimId\r\n\t\tFROM @{pipeline().parameters.DATAMART_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumMasterFact pmf WITH (NOLOCK)\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumMasterCalculation pmc WITH (NOLOCK) ON (pmf.EDWPremiumMasterCalculationPKID = pmc.PremiumMasterCalculationID)\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkPremiumTransactionOffsetLineage wrk WITH (NOLOCK) ON (wrk.PreviousPremiumTransactionAKID = pmc.PremiumTransactionAKID and wrk.UpdateAttributeFlag = 1)\r\n\t\t) pmfonset -----Onset\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumMasterCalculation pmcof WITH (NOLOCK) ON pmfonset.PremiumTransactionAKID = pmcof.PremiumTransactionAKID\r\n\tINNER JOIN @{pipeline().parameters.DATAMART_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumMasterFact pmfoffset WITH (NOLOCK) ----Offset\r\n\t\tON (pmcof.PremiumMasterCalculationID = pmfoffset.EDWPremiumMasterCalculationPKID)\r\n\t\tAND pmfonset.AnnualStatementLineDimID = pmfoffset.AnnualStatementLineDimID\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction PT WITH (NOLOCK) on\r\n\tpmcof.PremiumTransactionAKID=PT.PremiumTransactionAKID @{pipeline().parameters.WHERE_CLAUSE}\r\n\tWHERE (\r\n\t   pmfonset.AnnualStatementLineProductCodeDimID <> pmfoffset.AnnualStatementLineProductCodeDimID\r\n\tOr pmfonset.InsuranceReferenceCoverageDimId <> pmfoffset.InsuranceReferenceCoverageDimId\r\n\tOr pmfonset.InsuranceReferenceDimId <> pmfoffset.InsuranceReferenceDimId\r\n\tOr pmfonset.PolicyDimID <> pmfoffset.PolicyDimID\r\n\tOr pmfonset.PremiumMasterCoverageExpirationDateID <> pmfoffset.PremiumMasterCoverageExpirationDateID\r\n\tOr pmfonset.RiskLocationDimID <> pmfoffset.RiskLocationDimID\r\n\tOr pmfonset.SalesDivisionDimId <> pmfoffset.SalesDivisionDimId\r\n\t)\n),\nEXP_PremiumMasterFact_Offsets AS (\n\tSELECT\n\tPremiumMasterFactID,\n\tAnnualStatementLineProductCodeDimID,\n\tPolicyDimID,\n\tRiskLocationDimID,\n\tPremiumMasterCoverageExpirationDateID,\n\tInsuranceReferenceDimId,\n\tSalesDivisionDimId,\n\tInsuranceReferenceCoverageDimId\n\tFROM SQ_PremiumMasterFact_Offsets\n),\nUPD_Update AS (\n\tSELECT\n\tPremiumMasterFactID, \n\tAnnualStatementLineProductCodeDimID, \n\tPolicyDimID, \n\tRiskLocationDimID, \n\tPremiumMasterCoverageExpirationDateID, \n\tInsuranceReferenceDimId, \n\tSalesDivisionDimId, \n\tInsuranceReferenceCoverageDimId\n\tFROM EXP_PremiumMasterFact_Offsets\n),\nTGT_PremiumMasterFact_UPDATE AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.PremiumMasterFact AS T\n\tUSING UPD_Update AS S\n\tON T.PremiumMasterFactID = S.PremiumMasterFactID\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.AnnualStatementLineProductCodeDimID = S.AnnualStatementLineProductCodeDimID, T.PolicyDimID = S.PolicyDimID, T.RiskLocationDimID = S.RiskLocationDimID, T.PremiumMasterCoverageExpirationDateID = S.PremiumMasterCoverageExpirationDateID, T.InsuranceReferenceDimId = S.InsuranceReferenceDimId, T.SalesDivisionDimId = S.SalesDivisionDimId, T.InsuranceReferenceCoverageDimId = S.InsuranceReferenceCoverageDimId\n),\nSQ_PremiumMasterFact_Offsets__PTTypeDimID AS (\n\tSELECT \r\n\tPMF_offset.PremiumMasterFactID AS PremiumMasterFactID\r\n\t,PMF_updt.PremiumTransactionTypeDimID AS PremiumTransactionTypeDimID\r\n\tFROM (\r\n\t\tSELECT DISTINCT wrk.PremiumTransactionAKID\t\t,--Offset PTAKID\r\n\t\t\twrk.PremiumTransactionID\t\t,--Offset PTID\r\n\t\t\twrk.RatingCoverageAKID\r\n\t\t\t,pmf.PremiumMasterFactID\r\n\t\t\t,pmf.AnnualStatementLineDimID\r\n\t\t\t,pttd.PremiumTransactionTypeDimID\t\t,-- Derived PTTD TypeDIMID Value\r\n\t\t\tpt.PremiumType\r\n\t\t\t,SRAC.StandardReasonAmendedCode\r\n\t\t\t,pc1.CustomerCareCommissionRate\r\n\t\t\t,sptc.StandardPremiumTransactionCode\r\n\t\tFROM @{pipeline().parameters.DATAMART_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumMasterFact pmf WITH (NOLOCK) \r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumMasterCalculation pmc WITH (NOLOCK) ON (pmf.EDWPremiumMasterCalculationPKID = pmc.PremiumMasterCalculationID)\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkPremiumTransactionOffsetLineage wrk WITH (NOLOCK) ON (wrk.PremiumTransactionAKID = pmc.PremiumTransactionAKID and wrk.UpdateAttributeFlag = 1) -- offset PTAKID Value\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction PT WITH (NOLOCK) ON wrk.PremiumTransactionID = PT.PremiumTransactionID  @{pipeline().parameters.WHERE_CLAUSE}\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.RatingCoverage RC1 WITH (NOLOCK) ON RC1.RatingCoverageAKID = PT.RatingCoverageAKId\r\n\t\t\tAND PT.EffectiveDate = RC1.EffectiveDate\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyCoverage PC1 WITH (NOLOCK) ON PC1.PolicyCoverageAKID = RC1.PolicyCoverageAKID\r\n\t\t\tAND PC1.CurrentSnapshotFlag = 1\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.sup_premium_transaction_code SPTC WITH (NOLOCK) ON SPTC.sup_prem_trans_code_id = pt.SupPremiumTransactionCodeId\r\n\t\t-- and SPTC.source_sys_id='DCT'  (JIRA OAA -25 )\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.sup_reason_amended_code SRAC WITH (NOLOCK) ON SRAC.rsn_amended_code = pt.ReasonAmendedCode\r\n\t\t\tAND SRAC.source_sys_id = 'DCT'\r\n\t\tLEFT JOIN @{pipeline().parameters.DATAMART_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransactionTypeDim PTTD WITH (NOLOCK) ON (\r\n\t\t\t\tPT.PremiumType = PTTD.PremiumTypeCode\r\n\t\t\t\tAND SRAC.StandardReasonAmendedCode = PTTD.ReasonAmendedCode\r\n\t\t\t\tAND SPTC.StandardPremiumTransactionCode = PTTD.PremiumTransactionCode\r\n\t\t\t\tAND PC1.CustomerCareCommissionRate = PTTD.CustomerCareCommissionRate\r\n\t\t\t\t)\r\n\t\t) PMF_updt\r\n\tINNER JOIN @{pipeline().parameters.DATAMART_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumMasterFact PMF_offset WITH (NOLOCK) ON PMF_offset.PremiumMasterFactID = PMF_updt.PremiumMasterFactID\r\n\tWHERE (PMF_offset.PremiumTransactionTypeDimID <> PMF_updt.PremiumTransactionTypeDimID)\n),\nEXP_PremiumMasterFact_Offsets__PTTypeDimID AS (\n\tSELECT\n\tPremiumMasterFactID,\n\tPremiumTransactionTypeDimID\n\tFROM SQ_PremiumMasterFact_Offsets__PTTypeDimID\n),\nUPD_Update__PTTypeDimID AS (\n\tSELECT\n\tPremiumMasterFactID, \n\tPremiumTransactionTypeDimID\n\tFROM EXP_PremiumMasterFact_Offsets__PTTypeDimID\n),\nTGT_PremiumMasterFact_UPDATE_PTTypeDimID AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.PremiumMasterFact AS T\n\tUSING UPD_Update__PTTypeDimID AS S\n\tON T.PremiumMasterFactID = S.PremiumMasterFactID\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.PremiumTransactionTypeDimID = S.PremiumTransactionTypeDimID\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "244793"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "893107"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7542400"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "07/01/2023 06:20:48"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/01/2023 11:17:11"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Data_Mart_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "dbo"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "dbo"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            },
+            "DATAMART_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "WC_Data_Mart"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "AND PT.OffsetOnsetCode='Deprecated'"
+            }
+        },
+        "folder": {
+            "name": "Policy DataMart/"
+        },
+        "annotations": []
+    }
+}

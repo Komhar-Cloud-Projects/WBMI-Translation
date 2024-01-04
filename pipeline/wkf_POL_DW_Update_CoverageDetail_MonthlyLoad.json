@@ -1,0 +1,113 @@
+{
+    "name": "wkf_POL_DW_Update_CoverageDetail_MonthlyLoad",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_Update_CoverageDetailCommercialAuto_Detai_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_Update_CoverageDetailCommercialAuto_Detail_MonthlyLoad"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_Update_CoverageDetailCommercialAuto_Detail_MonthlyLoad",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_Update_CoverageDetailGeneralLiability_Det_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_Update_CoverageDetailCommercialProperty_D_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_Update_CoverageDetailGeneralLiability_Detail_MonthlyLoad"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_Update_CoverageDetailGeneralLiability_Detail_MonthlyLoad",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_Update_CoverageDetailCommercialProperty_D_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_Update_CoverageDetailCommercialAuto_Detai_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_Update_CoverageDetailCommercialProperty_Detail_MonthlyLoad"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_Update_CoverageDetailCommercialProperty_Detail_MonthlyLoad",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_Update_CoverageDetailCrime_Detail_Monthly_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_Update_CoverageDetailGeneralLiability_Det_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_Update_CoverageDetailCrime_Detail_MonthlyLoad"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_Update_CoverageDetailCrime_Detail_MonthlyLoad",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "variables": {}
+    }
+}

@@ -1,0 +1,77 @@
+{
+    "name": "m_POL_CUS_DW_LOAD_PolicyExtension_DCT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_CUS_DW_LOAD_PolicyExtension_DCT",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBPOLBatchRenewalPolicyStage AS (\n\t--SM#791680 In the existing Query data from both stage and archival tables are used , inorder to reduce the --dependency on archival tables \r\n\t--and increase the parallel processing(currently archival and integration jobs runs in sequence) we have developed the below query.\r\n\t\r\n\t--in the below Query Data from both stage table and archival tabel are used as input , incase archival and datawarehouse jobs runs parallelely then the beloq query will process all the --records without having any dependency on archival jobs.\r\n\t--Stage Tables - Containes Todays's Data\r\n\t--Stage Archival Tables - Containes Data Till Yesterday\r\n\t--booth will be union which is equal to data till today , incase of any duplicates will be handled in --the mapping.\r\n\t\r\n\tselect \r\n\tc.PolicyNumber AS PolicyNumber\r\n\t       ,ISNULL(RIGHT('00' + CONVERT(VARCHAR(3), d.PolicyVersion), 2), '00') AS PolicyVersion\r\n\t       ,a.AutoRenewedIndicator AS AutoRenewedIndicator\r\n\t       ,a.CustomerCarePolicyQualifiedAutomaticRenewalIndicator AS CustomerCarePolicyQualifiedAutomaticRenewalIndicator\r\n\tFROM WBPOLBatchRenewalPolicyStage a\r\n\tJOIN \r\n\t(select HistoryId, SessionId, state from archDCTransactionStaging \r\n\t--where ExtractDate < (select min(ExtractDate) from DCTransactionStaging)\r\n\tunion all \r\n\tselect HistoryId, SessionId, state from DCTransactionStaging \r\n\t\r\n\t) b\r\n\t\r\n\tON a.HistoryId = b.HistoryID -- and \r\n\t\r\n\tJOIN \r\n\t(SELECT PolicyId, PolicyNumber, SessionId, Status from archDCPolicyStaging \r\n\t--where ExtractDate < (select min(ExtractDate) from DCPolicyStaging)\r\n\tunion all \r\n\tSELECT PolicyId, PolicyNumber, SessionId, Status from DCPolicyStaging \r\n\t) c\r\n\t\r\n\tON b.SessionId = c.SessionId  \r\n\t\r\n\tJOIN \r\n\t(select PolicyId, PolicyVersion from archWBPolicyStaging \r\n\t--where ExtractDate < (select min(ExtractDate) from WBPolicyStaging)\r\n\t\r\n\tunion all\r\n\tselect PolicyId, PolicyVersion from WBPolicyStaging\r\n\t) d\r\n\t\r\n\tON c.PolicyId = d.PolicyId  --and d.AuditId<>106190\r\n\tWHERE b.state = 'committed'\r\n\tAND c.Status <> 'Quote'\r\n\torder by c.PolicyNumber,ISNULL(RIGHT('00'+CONVERT(VARCHAR(3),d.PolicyVersion),2),'00'),b.SessionId\n),\nAGG_Remove_Duplicates AS (\n\tSELECT\n\tPolicyNumber, \n\tPolicyVersion, \n\tPolicyNumber || PolicyVersion AS PolicyKey, \n\tAutoRenewedIndicator AS FutureAutomaticRenewalIndicator, \n\tCustomerCarePolicyQualifiedAutomaticRenewalIndicator\n\tFROM SQ_WBPOLBatchRenewalPolicyStage\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyKey ORDER BY NULL) = 1\n),\nLKP_policy AS (\n\tSELECT\n\tpol_ak_id,\n\tpol_key\n\tFROM (\n\t\tSELECT \n\t\t\tpol_ak_id,\n\t\t\tpol_key\n\t\tFROM V2.policy\n\t\tWHERE source_sys_id = '@{pipeline().parameters.SOURCE_SYSTEM_ID}' and crrnt_snpsht_flag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY pol_key ORDER BY pol_ak_id) = 1\n),\nFILTRANS AS (\n\tSELECT\n\tLKP_policy.pol_ak_id, \n\tAGG_Remove_Duplicates.FutureAutomaticRenewalIndicator, \n\tAGG_Remove_Duplicates.CustomerCarePolicyQualifiedAutomaticRenewalIndicator\n\tFROM AGG_Remove_Duplicates\n\tLEFT JOIN LKP_policy\n\tON LKP_policy.pol_key = AGG_Remove_Duplicates.PolicyKey\n\tWHERE pol_ak_id<>-1\n),\nEXP_values AS (\n\tSELECT\n\tpol_ak_id,\n\tFutureAutomaticRenewalIndicator AS i_FutureAutomaticRenewalIndicator,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- i_FutureAutomaticRenewalIndicator='T','1',\r\n\t-- i_FutureAutomaticRenewalIndicator='1','1',\r\n\t-- '0')\n\tDECODE(TRUE,\n\ti_FutureAutomaticRenewalIndicator = 'T', '1',\n\ti_FutureAutomaticRenewalIndicator = '1', '1',\n\t'0') AS o_FutureAutomaticRenewalIndicator,\n\tCustomerCarePolicyQualifiedAutomaticRenewalIndicator,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- CustomerCarePolicyQualifiedAutomaticRenewalIndicator='T','1',\r\n\t-- CustomerCarePolicyQualifiedAutomaticRenewalIndicator='1','1',\r\n\t-- '0')\n\tDECODE(TRUE,\n\tCustomerCarePolicyQualifiedAutomaticRenewalIndicator = 'T', '1',\n\tCustomerCarePolicyQualifiedAutomaticRenewalIndicator = '1', '1',\n\t'0') AS o_CustomerCarePolicyQualifiedAutomaticRenewalIndicator\n\tFROM FILTRANS\n),\nLKP_PolicyExtension AS (\n\tSELECT\n\tPolicyExtensionId,\n\tFutureAutomaticRenewalFlag,\n\tCustomerCarePolicyFutureAutomaticRenewalFlag,\n\ti_PolicyAKId,\n\tPolicyAKId\n\tFROM (\n\t\tSELECT \n\t\t\tPolicyExtensionId,\n\t\t\tFutureAutomaticRenewalFlag,\n\t\t\tCustomerCarePolicyFutureAutomaticRenewalFlag,\n\t\t\ti_PolicyAKId,\n\t\t\tPolicyAKId\n\t\tFROM PolicyExtension\n\t\tWHERE SourceSystemId= '@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyAKId ORDER BY PolicyExtensionId) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tLKP_PolicyExtension.PolicyExtensionId AS lkp_PolicyExtensionId,\n\tLKP_PolicyExtension.FutureAutomaticRenewalFlag AS lkp_FutureAutomaticRenewalFlag,\n\tLKP_PolicyExtension.CustomerCarePolicyFutureAutomaticRenewalFlag AS lkp_CustomerCarePolicyFutureAutomaticRenewalFlag,\n\t-- *INF*: IIF(lkp_FutureAutomaticRenewalFlag='T','1','0')\n\tIFF(lkp_FutureAutomaticRenewalFlag = 'T', '1', '0') AS v_lkp_FutureAutomaticRenewalFlag,\n\t-- *INF*: iif(lkp_CustomerCarePolicyFutureAutomaticRenewalFlag='T','1','0')\n\tIFF(lkp_CustomerCarePolicyFutureAutomaticRenewalFlag = 'T', '1', '0') AS v_lkp_CustomerCarePolicyFutureAutomaticRenewalFlag,\n\t-- *INF*: --DECODE(TRUE, lkp_PolicyExtensionId=-1,'NEW', FutureAutomaticRenewalIndicator<>v_lkp_FutureAutomaticRenewalFlag,'UPDATE', 'NOCHANGE' )\r\n\t-- DECODE(TRUE, lkp_PolicyExtensionId=-1,'NEW', FutureAutomaticRenewalIndicator<>v_lkp_FutureAutomaticRenewalFlag,'UPDATE', \r\n\t-- CustomerCarePolicyQualifiedAutomaticRenewalIndicator<>v_lkp_CustomerCarePolicyFutureAutomaticRenewalFlag,'UPDATE',\r\n\t-- 'NOCHANGE' )\n\tDECODE(TRUE,\n\tlkp_PolicyExtensionId = - 1, 'NEW',\n\tFutureAutomaticRenewalIndicator <> v_lkp_FutureAutomaticRenewalFlag, 'UPDATE',\n\tCustomerCarePolicyQualifiedAutomaticRenewalIndicator <> v_lkp_CustomerCarePolicyFutureAutomaticRenewalFlag, 'UPDATE',\n\t'NOCHANGE') AS o_changed_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_audit_id,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_source_sys_id,\n\tSYSDATE AS o_created_date,\n\tSYSDATE AS o_modified_date,\n\tEXP_values.pol_ak_id,\n\tEXP_values.o_FutureAutomaticRenewalIndicator AS FutureAutomaticRenewalIndicator,\n\tEXP_values.o_CustomerCarePolicyQualifiedAutomaticRenewalIndicator AS CustomerCarePolicyQualifiedAutomaticRenewalIndicator\n\tFROM EXP_values\n\tLEFT JOIN LKP_PolicyExtension\n\tON LKP_PolicyExtension.PolicyAKId = EXP_values.pol_ak_id\n),\nRTRTRANS AS (\n\tSELECT\n\tlkp_PolicyExtensionId,\n\to_changed_flag AS changed_flag,\n\to_audit_id AS audit_id,\n\to_source_sys_id AS source_sys_id,\n\to_created_date AS created_date,\n\to_modified_date AS modified_date,\n\tpol_ak_id,\n\tFutureAutomaticRenewalIndicator,\n\tCustomerCarePolicyQualifiedAutomaticRenewalIndicator\n\tFROM EXP_Detect_Changes\n),\nRTRTRANS_Insert AS (SELECT * FROM RTRTRANS WHERE changed_flag='NEW'),\nRTRTRANS_Update AS (SELECT * FROM RTRTRANS WHERE changed_flag='UPDATE'),\nUPD_CodeChange AS (\n\tSELECT\n\tlkp_PolicyExtensionId, \n\tmodified_date, \n\tFutureAutomaticRenewalIndicator, \n\tCustomerCarePolicyQualifiedAutomaticRenewalIndicator AS CustomerCarePolicyQualifiedAutomaticRenewalIndicator3\n\tFROM RTRTRANS_Update\n),\nTGT_PolicyExtension_UPDATE AS (\n\tMERGE INTO PolicyExtension AS T\n\tUSING UPD_CodeChange AS S\n\tON T.PolicyExtensionId = S.lkp_PolicyExtensionId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ModifiedDate = S.modified_date, T.FutureAutomaticRenewalFlag = S.FutureAutomaticRenewalIndicator, T.CustomerCarePolicyFutureAutomaticRenewalFlag = S.CustomerCarePolicyQualifiedAutomaticRenewalIndicator3\n),\nTGT_PolicyExtension_INSERT AS (\n\tINSERT INTO PolicyExtension\n\t(AuditId, SourceSystemId, CreatedDate, ModifiedDate, PolicyAKId, FutureAutomaticRenewalFlag, CustomerCarePolicyFutureAutomaticRenewalFlag)\n\tSELECT \n\taudit_id AS AUDITID, \n\tsource_sys_id AS SOURCESYSTEMID, \n\tcreated_date AS CREATEDDATE, \n\tmodified_date AS MODIFIEDDATE, \n\tpol_ak_id AS POLICYAKID, \n\tFutureAutomaticRenewalIndicator AS FUTUREAUTOMATICRENEWALFLAG, \n\tCustomerCarePolicyQualifiedAutomaticRenewalIndicator AS CUSTOMERCAREPOLICYFUTUREAUTOMATICRENEWALFLAG\n\tFROM RTRTRANS_Insert\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905491"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603234"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:44:58"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 23:03:38"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            }
+        },
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,77 @@
+{
+    "name": "m_CLM_DW_LOAD_EOR_autopay_exclude_reason",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DW_LOAD_EOR_autopay_exclude_reason",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_eor_excl_reason_stage AS (\n\tSELECT c.med_bill_id\r\n\t                  ,c.autopay_excl_rsn_code\r\n\t  FROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.eor_excl_reason_stage c\n),\nEXP_LKP AS (\n\tSELECT\n\tmed_bill_id,\n\tautopay_excl_rsn_code,\n\t-- *INF*: IIF(ISNULL(RTRIM(LTRIM(autopay_excl_rsn_code))),'N/A',autopay_excl_rsn_code)\n\tIFF(RTRIM(LTRIM(autopay_excl_rsn_code)) IS NULL, 'N/A', autopay_excl_rsn_code) AS reason_code_out\n\tFROM SQ_eor_excl_reason_stage\n),\nLKP_MEDICAL_BILL AS (\n\tSELECT\n\tmed_bill_ak_id,\n\tmed_bill_key\n\tFROM (\n\t\tSELECT  med_bill_key as  med_bill_key,\r\n\t\t med_bill_ak_id \tAS med_bill_ak_id\r\n\t\tFROM\t@{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill\r\n\t\tWHERE\tcrrnt_snpsht_flag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY med_bill_key ORDER BY med_bill_ak_id DESC) = 1\n),\nEXP_LKP2 AS (\n\tSELECT\n\tLKP_MEDICAL_BILL.med_bill_ak_id,\n\tEXP_LKP.reason_code_out AS autopay_reason_code_out\n\tFROM EXP_LKP\n\tLEFT JOIN LKP_MEDICAL_BILL\n\tON LKP_MEDICAL_BILL.med_bill_key = EXP_LKP.med_bill_id\n),\nLKP_EOR_AUTOPAY_REASON_TGT AS (\n\tSELECT\n\teor_autopay_excl_rsn_ak_id,\n\tautopay_excl_rsn_code,\n\tmed_bill_ak_id\n\tFROM (\n\t\tSELECT\teor_autopay_excl_rsn_ak_id\tAS eor_autopay_excl_rsn_ak_id\r\n\t\t,\t\t      med_bill_ak_id as  med_bill_ak_id\r\n\t\t,                 autopay_excl_rsn_code as  autopay_excl_rsn_code\r\n\t\tFROM\t@{pipeline().parameters.TARGET_TABLE_OWNER}.eor_autopay_exclude_reason\r\n\t\tWHERE\tcrrnt_snpsht_flag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY autopay_excl_rsn_code,med_bill_ak_id ORDER BY eor_autopay_excl_rsn_ak_id DESC) = 1\n),\nEXP_AUDIT_FIELDS AS (\n\tSELECT\n\tLKP_EOR_AUTOPAY_REASON_TGT.eor_autopay_excl_rsn_ak_id AS LKP_eor_autopay_excl_rsn_ak_id,\n\tEXP_LKP2.med_bill_ak_id,\n\tEXP_LKP2.autopay_reason_code_out AS autopay_excl_rsn_code,\n\t1 AS current_snpsht_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t-- *INF*: iif( ISNULL(LKP_eor_autopay_excl_rsn_ak_id), 'INSERT', 'NOINSERT')\r\n\t-- \t \n\tIFF(LKP_eor_autopay_excl_rsn_ak_id IS NULL, 'INSERT', 'NOINSERT') AS CHANGE_FLAG,\n\t-- *INF*: to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')\n\tto_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,\n\t-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tto_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,\n\tSYSDATE AS CREATE_MOD_DATE\n\tFROM EXP_LKP2\n\tLEFT JOIN LKP_EOR_AUTOPAY_REASON_TGT\n\tON LKP_EOR_AUTOPAY_REASON_TGT.autopay_excl_rsn_code = EXP_LKP2.autopay_reason_code_out AND LKP_EOR_AUTOPAY_REASON_TGT.med_bill_ak_id = EXP_LKP2.med_bill_ak_id\n),\nFIL_NEW_CHANGED_ROWS1 AS (\n\tSELECT\n\tmed_bill_ak_id, \n\tautopay_excl_rsn_code, \n\tcurrent_snpsht_flag, \n\taudit_id, \n\tCHANGE_FLAG, \n\teff_from_date, \n\teff_to_date, \n\tSOURCE_SYSTEM_ID, \n\tCREATE_MOD_DATE\n\tFROM EXP_AUDIT_FIELDS\n\tWHERE CHANGE_FLAG = 'INSERT'\n),\nSEQ_EOR_Excl_Rsn_AK AS (\n\tCREATE SEQUENCE SEQ_EOR_Excl_Rsn_AK\n\tSTART = 0\n\tINCREMENT = 1;\n),\neor_autopay_exclude_reason_INS AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.eor_autopay_exclude_reason\n\t(eor_autopay_excl_rsn_ak_id, med_bill_ak_id, autopay_excl_rsn_code, crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, source_sys_id, created_date, modified_date)\n\tSELECT \n\tSEQ_EOR_Excl_Rsn_AK.NEXTVAL AS EOR_AUTOPAY_EXCL_RSN_AK_ID, \n\tMED_BILL_AK_ID, \n\tAUTOPAY_EXCL_RSN_CODE, \n\tcurrent_snpsht_flag AS CRRNT_SNPSHT_FLAG, \n\tAUDIT_ID, \n\tEFF_FROM_DATE, \n\tEFF_TO_DATE, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYS_ID, \n\tCREATE_MOD_DATE AS CREATED_DATE, \n\tCREATE_MOD_DATE AS MODIFIED_DATE\n\tFROM FIL_NEW_CHANGED_ROWS1\n),\nSQ_eor_autopay_exclude_reason AS (\n\tSELECT eor_autopay_excl_rsn_id\r\n\t,  eor_autopay_excl_rsn_ak_id\r\n\t,\t\teff_from_date\r\n\t,\t\teff_to_date \r\n\t \r\n\tFROM\t@{pipeline().parameters.TARGET_TABLE_OWNER}.eor_autopay_exclude_reason MBV\r\n\tWHERE\tsource_sys_id = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'\r\n\tAND\t\tEXISTS\r\n\t\t\t(select 1\r\n\t\t\tFROM\t@{pipeline().parameters.TARGET_TABLE_OWNER}.eor_autopay_exclude_reason MBV2\r\n\t\t\tWHERE\tsource_sys_id = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'\r\n\t\t\tAND\t\tcrrnt_snpsht_flag = 1\r\n\t\t\tAND\t\tMBV2.eor_autopay_excl_rsn_ak_id = MBV.eor_autopay_excl_rsn_ak_id \r\n\t\t\tGROUP\tBY\tMBV2.eor_autopay_excl_rsn_ak_id\r\n\t\t\tHAVING\tcount(*) > 1\r\n\t)\r\n\tORDER\tBY eor_autopay_excl_rsn_ak_id\r\n\t,\t\teff_from_date  DESC\n),\nEXP_Lag_eff_from_date AS (\n\tSELECT\n\teor_autopay_excl_rsn_id,\n\teor_autopay_excl_rsn_ak_id,\n\teff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- \teor_autopay_excl_rsn_ak_id = v_PREV_ROW_eor_autopay_excl_rsn_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),\r\n\t-- \torig_eff_to_date)\n\tDECODE(TRUE,\n\teor_autopay_excl_rsn_ak_id = v_PREV_ROW_eor_autopay_excl_rsn_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),\n\torig_eff_to_date) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\teff_from_date AS v_PREV_ROW_eff_from_date,\n\teor_autopay_excl_rsn_ak_id AS v_PREV_ROW_eor_autopay_excl_rsn_ak_id,\n\tSYSDATE AS modified_date,\n\t0 AS crrnt_snpsht_flag\n\tFROM SQ_eor_autopay_exclude_reason\n),\nFIL_First_Row_in_AK_Group AS (\n\tSELECT\n\teor_autopay_excl_rsn_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tmodified_date, \n\tcrrnt_snpsht_flag\n\tFROM EXP_Lag_eff_from_date\n\tWHERE orig_eff_to_date <> eff_to_date\n),\nUPD_EOR_autopay_exclude_reason AS (\n\tSELECT\n\teor_autopay_excl_rsn_id, \n\teff_to_date, \n\tmodified_date, \n\tcrrnt_snpsht_flag\n\tFROM FIL_First_Row_in_AK_Group\n),\neor_autopay_exclude_reason_UPD AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.eor_autopay_exclude_reason AS T\n\tUSING UPD_EOR_autopay_exclude_reason AS S\n\tON T.eor_autopay_excl_rsn_id = S.eor_autopay_excl_rsn_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_date\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246497"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905526"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604451"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:30:37"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 02:35:40"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "EXCEED"
+            }
+        },
+        "folder": {
+            "name": "Claims DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

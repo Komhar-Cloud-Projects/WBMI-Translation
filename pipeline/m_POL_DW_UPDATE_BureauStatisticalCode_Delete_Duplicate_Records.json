@@ -1,0 +1,36 @@
+{
+    "name": "m_POL_DW_UPDATE_BureauStatisticalCode_Delete_Duplicate_Records",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_UPDATE_BureauStatisticalCode_Delete_Duplica_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_BureauStatisticalCode_PremiumTransactionAKID AS (\n\tSELECT \r\n\tMIN(BureauStatisticalCodeID) as BureauStatisticalCodeID,\r\n\tPremiumTransactionAKID as PremiumTransactionAKID \r\n\tFROM BureauStatisticalCode\r\n\tWHERE PassThroughChargeTransactionAKID = -1\r\n\tAND CurrentSnapshotFlag=1\r\n\tGROUP BY PremiumTransactionAKID\r\n\tHAVING COUNT(*) >1\n),\nEXP_Set_Flag_And_Date_PremiumTransactionAKID AS (\n\tSELECT\n\tBureauStatisticalCodeID,\n\tPremiumTransactionAKID,\n\t'0' AS CurrentSnapshotFlag,\n\tSYSDATE AS ModifiedDate\n\tFROM SQ_BureauStatisticalCode_PremiumTransactionAKID\n),\nUPD_BureauStatisticalCode_PremiumTransactionAKID AS (\n\tSELECT\n\tBureauStatisticalCodeID, \n\tCurrentSnapshotFlag, \n\tModifiedDate\n\tFROM EXP_Set_Flag_And_Date_PremiumTransactionAKID\n),\nBureauStatisticalCode_PremiumTransactionAKID AS (\n\tMERGE INTO BureauStatisticalCode AS T\n\tUSING UPD_BureauStatisticalCode_PremiumTransactionAKID AS S\n\tON T.BureauStatisticalCodeID = S.BureauStatisticalCodeID\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.CurrentSnapshotFlag, T.ModifiedDate = S.ModifiedDate\n),\nSQ_BureauStatisticalCode_PassThroughChargeTransactionAKID AS (\n\tSELECT\r\n\tMIN(BureauStatisticalCodeID) as BureauStatisticalCodeID,\r\n\tPassThroughChargeTransactionAKID as PassThroughChargeTransactionAKID \r\n\tFROM BureauStatisticalCode\r\n\tWHERE PremiumTransactionAKID = -1\r\n\tAND CurrentSnapshotFlag=1\r\n\tGROUP BY PassThroughChargeTransactionAKID\r\n\tHAVING COUNT(*) >1\n),\nEXP_Set_Flag_And_Date_PassThroughChargeTransactionAKID AS (\n\tSELECT\n\tBureauStatisticalCodeID,\n\tPassThroughChargeTransactionAKID,\n\t'0' AS CurrentSnapshotFlag,\n\tSYSDATE AS ModifiedDate\n\tFROM SQ_BureauStatisticalCode_PassThroughChargeTransactionAKID\n),\nUPD_BureauStatisticalCode_PassThroughChargeTransactionAKID AS (\n\tSELECT\n\tBureauStatisticalCodeID, \n\tCurrentSnapshotFlag, \n\tModifiedDate\n\tFROM EXP_Set_Flag_And_Date_PassThroughChargeTransactionAKID\n),\nBureauStatisticalCode_PassThroughChargeTransactionAKID AS (\n\tMERGE INTO BureauStatisticalCode AS T\n\tUSING UPD_BureauStatisticalCode_PassThroughChargeTransactionAKID AS S\n\tON T.BureauStatisticalCodeID = S.BureauStatisticalCodeID\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.CurrentSnapshotFlag, T.ModifiedDate = S.ModifiedDate\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

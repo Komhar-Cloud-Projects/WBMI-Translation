@@ -1,0 +1,73 @@
+{
+    "name": "m_DIM_Load_BusinessClassDim",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_DIM_Load_BusinessClassDim",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_sup_business_classfication_code AS (\n\tSELECT\n\t\tsup_bus_class_code_id,\n\t\tcrrnt_snpsht_flag,\n\t\taudit_id,\n\t\teff_from_date,\n\t\teff_to_date,\n\t\tsource_sys_id,\n\t\tcreated_date,\n\t\tmodified_date,\n\t\tbus_class_code,\n\t\tbus_class_code_descript,\n\t\tStandardBusinessClassCode,\n\t\tStandardBusinessClassCodeDescription,\n\t\tBusinessSegmentCode,\n\t\tBusinessSegmentDescription,\n\t\tStrategicBusinessGroupCode,\n\t\tStrategicBusinessGroupDescription,\n\t\tArgentBusinessSegmentCode,\n\t\tArgentBusinessSegmentDescription\n\tFROM sup_business_classification_code\n\tWHERE sup_business_classification_code.modified_date> '@{pipeline().parameters.SELECTION_START_TS}'\n),\nLKP_BusinessClassDim AS (\n\tSELECT\n\tBusinessClassDimId,\n\tCurrentSnapshotFlag,\n\tAuditId,\n\tEffectiveDate,\n\tExpirationDate,\n\tSourceSystemId,\n\tCreatedDate,\n\tModifiedDate,\n\tBusinessClassCode,\n\tBusinessClassDescription,\n\tBusinessSegmentCode,\n\tBusinessSegmentDescription,\n\tStrategicBusinessGroupCode,\n\tStrategicBusinessGroupDescription,\n\tArgentBusinessSegmentCode,\n\tArgentBusinessSegmentDescription\n\tFROM (\n\t\tSELECT \n\t\t\tBusinessClassDimId,\n\t\t\tCurrentSnapshotFlag,\n\t\t\tAuditId,\n\t\t\tEffectiveDate,\n\t\t\tExpirationDate,\n\t\t\tSourceSystemId,\n\t\t\tCreatedDate,\n\t\t\tModifiedDate,\n\t\t\tBusinessClassCode,\n\t\t\tBusinessClassDescription,\n\t\t\tBusinessSegmentCode,\n\t\t\tBusinessSegmentDescription,\n\t\t\tStrategicBusinessGroupCode,\n\t\t\tStrategicBusinessGroupDescription,\n\t\t\tArgentBusinessSegmentCode,\n\t\t\tArgentBusinessSegmentDescription\n\t\tFROM BusinessClassDim\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY BusinessClassCode,EffectiveDate ORDER BY BusinessClassDimId) = 1\n),\nEXP_GetValue AS (\n\tSELECT\n\tLKP_BusinessClassDim.BusinessClassDimId AS i_BusinessClassDimId,\n\t-- *INF*: IIF(ISNULL(i_BusinessClassDimId),-1,i_BusinessClassDimId)\n\tIFF(i_BusinessClassDimId IS NULL, - 1, i_BusinessClassDimId) AS o_BusinessClassDimId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tSQ_sup_business_classfication_code.eff_from_date AS EffectiveDate,\n\tSQ_sup_business_classfication_code.eff_to_date AS ExpirationDate,\n\tSQ_sup_business_classfication_code.source_sys_id AS SourceSystemId,\n\tSQ_sup_business_classfication_code.created_date AS CreatedDate,\n\tSQ_sup_business_classfication_code.modified_date AS ModifiedDate,\n\tSQ_sup_business_classfication_code.bus_class_code AS BusinessClassCode,\n\tSQ_sup_business_classfication_code.bus_class_code_descript AS i_BusinessClassDescription,\n\t-- *INF*: IIF(ISNULL(i_BusinessClassDescription),'N/A',i_BusinessClassDescription)\n\tIFF(i_BusinessClassDescription IS NULL, 'N/A', i_BusinessClassDescription) AS o_BusinessClassDescription,\n\tSQ_sup_business_classfication_code.BusinessSegmentCode AS i_BusinessSegmentCode,\n\t-- *INF*: iif(isnull(i_BusinessSegmentCode), 'N/A',i_BusinessSegmentCode)\n\tIFF(i_BusinessSegmentCode IS NULL, 'N/A', i_BusinessSegmentCode) AS o_BusinessSegmentCode,\n\tSQ_sup_business_classfication_code.BusinessSegmentDescription AS i_BusinessSegmentDescription,\n\t-- *INF*: iif(isnull(i_BusinessSegmentDescription),'N/A',i_BusinessSegmentDescription)\n\tIFF(i_BusinessSegmentDescription IS NULL, 'N/A', i_BusinessSegmentDescription) AS o_BusinessSegmentDescription,\n\tSQ_sup_business_classfication_code.StrategicBusinessGroupCode AS i_StrategicBusinessGroupCode,\n\t-- *INF*: iif(isnull(i_StrategicBusinessGroupCode),'N/A',i_StrategicBusinessGroupCode)\n\tIFF(i_StrategicBusinessGroupCode IS NULL, 'N/A', i_StrategicBusinessGroupCode) AS o_StrategicBusinessGroupCode,\n\tSQ_sup_business_classfication_code.StrategicBusinessGroupDescription AS i_StrategicBusinessGroupDescription,\n\t-- *INF*: iif(isnull(i_StrategicBusinessGroupDescription),'N/A',i_StrategicBusinessGroupDescription)\r\n\t-- \n\tIFF(i_StrategicBusinessGroupDescription IS NULL, 'N/A', i_StrategicBusinessGroupDescription) AS o_StrategicBusinessGroupDescription,\n\tSQ_sup_business_classfication_code.ArgentBusinessSegmentCode AS i_ArgentBusinessSegmentCode,\n\t-- *INF*: iif(isnull(i_ArgentBusinessSegmentCode),'N/A',i_ArgentBusinessSegmentCode)\r\n\t-- \n\tIFF(i_ArgentBusinessSegmentCode IS NULL, 'N/A', i_ArgentBusinessSegmentCode) AS o_ArgentBusinessSegmentCode,\n\tSQ_sup_business_classfication_code.ArgentBusinessSegmentDescription AS i_ArgentBusinessSegmentDescription,\n\t-- *INF*: iif(isnull(i_ArgentBusinessSegmentDescription),'N/A',i_ArgentBusinessSegmentDescription)\n\tIFF(i_ArgentBusinessSegmentDescription IS NULL, 'N/A', i_ArgentBusinessSegmentDescription) AS o_ArgentBusinessSegmentDescription,\n\tLKP_BusinessClassDim.ExpirationDate AS lkp_ExpirationDate,\n\tLKP_BusinessClassDim.BusinessClassDescription AS lkp_BusinessClassDescription,\n\tLKP_BusinessClassDim.BusinessSegmentCode AS lkp_BusinessSegmentCode,\n\tLKP_BusinessClassDim.BusinessSegmentDescription AS lkp_BusinessSegmentDescription,\n\tLKP_BusinessClassDim.StrategicBusinessGroupCode AS lkp_StrategicBusinessGroupCode,\n\tLKP_BusinessClassDim.StrategicBusinessGroupDescription AS lkp_StrategicBusinessGroupDescription,\n\tLKP_BusinessClassDim.ArgentBusinessSegmentCode AS lkp_ArgentBusinessSegmentCode,\n\tLKP_BusinessClassDim.ArgentBusinessSegmentDescription AS lkp_ArgentBusinessSegmentDescription,\n\t-- *INF*: DECODE(TRUE,ExpirationDate != lkp_ExpirationDate  OR i_BusinessClassDescription != lkp_BusinessClassDescription  OR i_BusinessSegmentCode!= lkp_BusinessSegmentCode OR i_BusinessSegmentDescription != lkp_BusinessSegmentDescription OR\r\n\t-- i_StrategicBusinessGroupCode != lkp_StrategicBusinessGroupCode OR i_StrategicBusinessGroupDescription!=lkp_StrategicBusinessGroupDescription OR\r\n\t-- i_ArgentBusinessSegmentCode != lkp_ArgentBusinessSegmentCode OR\r\n\t-- i_ArgentBusinessSegmentDescription != lkp_ArgentBusinessSegmentDescription\r\n\t-- ,'1','0')\n\tDECODE(TRUE,\n\tExpirationDate != lkp_ExpirationDate OR i_BusinessClassDescription != lkp_BusinessClassDescription OR i_BusinessSegmentCode != lkp_BusinessSegmentCode OR i_BusinessSegmentDescription != lkp_BusinessSegmentDescription OR i_StrategicBusinessGroupCode != lkp_StrategicBusinessGroupCode OR i_StrategicBusinessGroupDescription != lkp_StrategicBusinessGroupDescription OR i_ArgentBusinessSegmentCode != lkp_ArgentBusinessSegmentCode OR i_ArgentBusinessSegmentDescription != lkp_ArgentBusinessSegmentDescription, '1',\n\t'0') AS v_changeForUpdate,\n\t-- *INF*: IIF(ISNULL(i_BusinessClassDimId),'New',IIF(v_changeForUpdate='1','Update'))\n\tIFF(i_BusinessClassDimId IS NULL, 'New', IFF(v_changeForUpdate = '1', 'Update')) AS v_NewFlag,\n\tv_NewFlag AS o_NewFlag,\n\t-- *INF*: decode(v_NewFlag,'New',1,'Update',0)\n\tdecode(v_NewFlag,\n\t'New', 1,\n\t'Update', 0) AS CurrentSnapshotFlag\n\tFROM SQ_sup_business_classfication_code\n\tLEFT JOIN LKP_BusinessClassDim\n\tON LKP_BusinessClassDim.BusinessClassCode = SQ_sup_business_classfication_code.bus_class_code AND LKP_BusinessClassDim.EffectiveDate = SQ_sup_business_classfication_code.eff_from_date\n),\nRTR_NEW AS (\n\tSELECT\n\tCurrentSnapshotFlag,\n\to_NewFlag AS NewFlag,\n\to_BusinessClassDimId AS BusinessClassDimId,\n\to_AuditId AS AuditId,\n\tEffectiveDate,\n\tExpirationDate,\n\tSourceSystemId,\n\tCreatedDate,\n\tModifiedDate,\n\tBusinessClassCode,\n\to_BusinessClassDescription AS BusinessClassDescription,\n\to_BusinessSegmentCode AS BusinessSegmentCode,\n\to_BusinessSegmentDescription AS BusinessSegmentDescription,\n\to_StrategicBusinessGroupCode AS StrategicBusinessGroupCode,\n\to_StrategicBusinessGroupDescription AS StrategicBusinessGroupDescription,\n\to_ArgentBusinessSegmentCode AS ArgentBusinessSegmentCode,\n\to_ArgentBusinessSegmentDescription AS ArgentBusinessSegmentDescription\n\tFROM EXP_GetValue\n),\nRTR_NEW_NEW AS (SELECT * FROM RTR_NEW WHERE NewFlag='New'),\nRTR_NEW_UPDATE AS (SELECT * FROM RTR_NEW WHERE NewFlag='Update'),\nUPD_update AS (\n\tSELECT\n\tBusinessClassDimId AS BusinessClassDimId1, \n\tCurrentSnapshotFlag AS CurrentSnapShotFlag, \n\tExpirationDate AS ExpirationDate1, \n\tModifiedDate AS ModifiedDate1, \n\tBusinessClassDescription AS BusinessClassDescription1, \n\tBusinessSegmentCode AS BusinessSegmentCode1, \n\tBusinessSegmentDescription AS BusinessSegmentDescription1, \n\tStrategicBusinessGroupCode AS StrategicBusinessGroupCode1, \n\tStrategicBusinessGroupDescription AS StrategicBusinessGroupDescription1, \n\tArgentBusinessSegmentCode, \n\tArgentBusinessSegmentDescription\n\tFROM RTR_NEW_UPDATE\n),\nTGT_Update_BusinessClassDim AS (\n\tMERGE INTO BusinessClassDim AS T\n\tUSING UPD_update AS S\n\tON T.BusinessClassDimId = S.BusinessClassDimId1\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ExpirationDate = S.ExpirationDate1, T.ModifiedDate = S.ModifiedDate1, T.BusinessClassDescription = S.BusinessClassDescription1, T.BusinessSegmentCode = S.BusinessSegmentCode1, T.BusinessSegmentDescription = S.BusinessSegmentDescription1, T.StrategicBusinessGroupCode = S.StrategicBusinessGroupCode1, T.StrategicBusinessGroupDescription = S.StrategicBusinessGroupDescription1, T.ArgentBusinessSegmentCode = S.ArgentBusinessSegmentCode, T.ArgentBusinessSegmentDescription = S.ArgentBusinessSegmentDescription\n),\nUPD_New AS (\n\tSELECT\n\tCurrentSnapshotFlag AS CurrentSnapshotFlag3, \n\tAuditId, \n\tEffectiveDate AS EffectiveDate1, \n\tExpirationDate AS ExpirationDate1, \n\tSourceSystemId AS SourceSystemId1, \n\tCreatedDate AS CreatedDate1, \n\tModifiedDate AS ModifiedDate1, \n\tBusinessClassCode AS BusinessClassCode1, \n\tBusinessClassDescription AS BusinessClassDescription1, \n\tBusinessSegmentCode AS BusinessSegmentCode1, \n\tBusinessSegmentDescription AS BusinessSegmentDescription1, \n\tStrategicBusinessGroupCode AS StrategicBusinessGroupCode1, \n\tStrategicBusinessGroupDescription AS StrategicBusinessGroupDescription1, \n\tArgentBusinessSegmentCode AS ArgentBusinessSegmentCode1, \n\tArgentBusinessSegmentDescription AS ArgentBusinessSegmentDescription1\n\tFROM RTR_NEW_NEW\n),\nTGT_Insert_BusinessClassDim AS (\n\tINSERT INTO BusinessClassDim\n\t(CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, BusinessClassCode, BusinessClassDescription, BusinessSegmentCode, BusinessSegmentDescription, StrategicBusinessGroupCode, StrategicBusinessGroupDescription, ArgentBusinessSegmentCode, ArgentBusinessSegmentDescription)\n\tSELECT \n\tCurrentSnapshotFlag3 AS CURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEffectiveDate1 AS EFFECTIVEDATE, \n\tExpirationDate1 AS EXPIRATIONDATE, \n\tSourceSystemId1 AS SOURCESYSTEMID, \n\tCreatedDate1 AS CREATEDDATE, \n\tModifiedDate1 AS MODIFIEDDATE, \n\tBusinessClassCode1 AS BUSINESSCLASSCODE, \n\tBusinessClassDescription1 AS BUSINESSCLASSDESCRIPTION, \n\tBusinessSegmentCode1 AS BUSINESSSEGMENTCODE, \n\tBusinessSegmentDescription1 AS BUSINESSSEGMENTDESCRIPTION, \n\tStrategicBusinessGroupCode1 AS STRATEGICBUSINESSGROUPCODE, \n\tStrategicBusinessGroupDescription1 AS STRATEGICBUSINESSGROUPDESCRIPTION, \n\tArgentBusinessSegmentCode1 AS ARGENTBUSINESSSEGMENTCODE, \n\tArgentBusinessSegmentDescription1 AS ARGENTBUSINESSSEGMENTDESCRIPTION\n\tFROM UPD_New\n),\nSQ_BusinessClassDim AS (\n\tSELECT \r\n\ta.BusinessClassDimId,\r\n\ta.EffectiveDate, \r\n\t'0' CurrentSnapshotFlag,\r\n\ta.BusinessClassCode\r\n\t\r\n\tFROM\r\n\t @{pipeline().parameters.TARGET_TABLE_OWNER}.BusinessClassDim a\r\n\tWHERE a.EffectiveDate not in \r\n\t(SELECT max(EffectiveDate)  FROM @{pipeline().parameters.TARGET_TABLE_OWNER}.BusinessClassDim b\r\n\t       WHERE a.BusinessClassCode = b.BusinessClassCode )\n),\nExp_SetValue AS (\n\tSELECT\n\tBusinessClassDimId,\n\tEffectiveDate AS i_EffectiveDate,\n\t0 AS CurrentSnapshotFlag,\n\tBusinessClassCode AS i_BusinessClassCode,\n\tSYSDATE AS ModifiedDate\n\tFROM SQ_BusinessClassDim\n),\nUPD_SetFlag AS (\n\tSELECT\n\tBusinessClassDimId, \n\ti_EffectiveDate AS EffectiveDate, \n\tCurrentSnapshotFlag, \n\tModifiedDate\n\tFROM Exp_SetValue\n),\nBusinessClassDim AS (\n\tMERGE INTO BusinessClassDim AS T\n\tUSING UPD_SetFlag AS S\n\tON T.BusinessClassDimId = S.BusinessClassDimId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.CurrentSnapshotFlag, T.ModifiedDate = S.ModifiedDate\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246496"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905496"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603413"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:46:53"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 23:06:25"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Data_Mart_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            }
+        },
+        "folder": {
+            "name": "Quote DataMart/"
+        },
+        "annotations": []
+    }
+}

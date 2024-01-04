@@ -1,0 +1,93 @@
+{
+    "name": "m_POL_DM_UPDATE_PolicyFormFact_RatingPlan",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DM_UPDATE_PolicyFormFact_RatingPlan",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nLKP_InsuranceReference AS (\n\tSELECT\n\tInsuranceReferenceDimId,\n\tEnterpriseGroupCode,\n\tInsuranceReferenceLegalEntityCode,\n\tStrategicProfitCenterCode,\n\tInsuranceSegmentCode,\n\tPolicyOfferingCode,\n\tProductCode,\n\tInsuranceReferenceLineOfBusinessCode,\n\tRatingPlanCode\n\tFROM (\n\t\tSELECT \n\t\t\tInsuranceReferenceDimId,\n\t\t\tEnterpriseGroupCode,\n\t\t\tInsuranceReferenceLegalEntityCode,\n\t\t\tStrategicProfitCenterCode,\n\t\t\tInsuranceSegmentCode,\n\t\t\tPolicyOfferingCode,\n\t\t\tProductCode,\n\t\t\tInsuranceReferenceLineOfBusinessCode,\n\t\t\tRatingPlanCode\n\t\tFROM InsuranceReferenceDim\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY EnterpriseGroupCode,InsuranceReferenceLegalEntityCode,StrategicProfitCenterCode,InsuranceSegmentCode,PolicyOfferingCode,ProductCode,InsuranceReferenceLineOfBusinessCode,RatingPlanCode ORDER BY InsuranceReferenceDimId) = 1\n),\nSQ_PolicyFormFact AS (\n\tSELECT\r\n\t\tP.edw_pol_ak_id\r\n\t\t,PFF.PolicyFormFactId\r\n\t\t,IRD.EnterpriseGroupCode\r\n\t\t,IRD.InsuranceReferenceLegalEntityCode\r\n\t\t,IRD.StrategicProfitCenterCode\r\n\t\t,IRD.InsuranceSegmentCode\r\n\t\t,IRD.PolicyOfferingCode\r\n\t\t,IRD.ProductCode\r\n\t\t,IRD.InsuranceReferenceLineOfBusinessCode\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.policy_dim P\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyFormFact PFF\r\n\t\tON P.pol_dim_id = PFF.PolicyDimId\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.InsuranceReferenceDim IRD\r\n\t\tON PFF.InsuranceReferenceDimId = IRD.InsuranceReferenceDimId\r\n\tWHERE P.edw_pol_ak_id IN (SELECT\r\n\t\t\tP.edw_pol_ak_id\r\n\t\tFROM policy_dim P\r\n\t\tINNER JOIN PolicyFormFact PTCTF\r\n\t\t\tON P.pol_dim_id = PTCTF.PolicyDimId\r\n\t\tINNER JOIN InsuranceReferenceDim IRD\r\n\t\t\tON PTCTF.InsuranceReferenceDimId = IRD.InsuranceReferenceDimId\r\n\t\tGROUP BY P.edw_pol_ak_id\r\n\t\tHAVING COUNT(DISTINCT IRD.RatingPlanCode) > 1)\r\n\t@{pipeline().parameters.WHERE_CLAUSE_PFF}\r\n\tORDER BY 1\n),\nEXP_PolicyFormFact AS (\n\tSELECT\n\tEDW_Pol_AK_id,\n\tPolicyFormFactId,\n\tEnterpriseGroupCode,\n\tInsuranceReferenceLegalEntityCode,\n\tStrategicProfitCenterCode,\n\tInsuranceSegmentCode,\n\tPolicyOfferingCode,\n\tProductCode,\n\tInsuranceReferenceLineOfBusinessCode\n\tFROM SQ_PolicyFormFact\n),\nLKP_RatingPlan_DCT AS (\n\tSELECT\n\tRatingPlanAKId,\n\tPolicyAKID,\n\tRatingPlanCode\n\tFROM (\n\t\tSELECT\r\n\t\t\tP.pol_ak_id AS PolicyAKID\r\n\t\t\t,R.RatingPlanAKId AS RatingPlanAKId\r\n\t\t\t,RatingPlanCode AS RatingPlanCode\r\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER_V2}.policy P\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.RiskLocation RL\r\n\t\t\tON P.pol_ak_id = RL.PolicyAKID\r\n\t\t\t\tAND P.crrnt_snpsht_flag = 1\r\n\t\t\t\tAND RL.CurrentSnapshotFlag = 1\r\n\t\t\t\tAND P.source_sys_id = 'DCT'\r\n\t\t\t\tAND RL.SourceSystemID = 'DCT'\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyCoverage PC\r\n\t\t\tON RL.RiskLocationAKID = PC.RiskLocationAKID\r\n\t\t\t\tAND PC.CurrentSnapshotFlag = 1\r\n\t\t\t\tAND PC.SourceSystemID = 'DCT'\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.RatingCoverage RC\r\n\t\t\tON PC.PolicyCoverageAKID = RC.PolicyCoverageAKID\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction PT\r\n\t\t\tON RC.RatingCoverageAKID = PT.RatingCoverageAKId\r\n\t\t\t\tAND RC.EffectiveDate = PT.EffectiveDate\r\n\t\t\t\tAND PT.SourceSystemID = 'DCT'\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.RatingPlan R\r\n\t\t\tON PC.RatingPlanAKId = R.RatingPlanAKId\r\n\t\tWHERE PC.InsuranceLine = 'WorkersCompensation'\r\n\t\tAND PT.ReasonAmendedCode NOT IN ('COL', 'CWO', 'CWB', 'Claw Back')\r\n\t\tAND P.pol_ak_id IN (SELECT\r\n\t\t\t\tP.edw_pol_ak_id\r\n\t\t\tFROM @{pipeline().parameters.WC_DATA_MART_DATABASE_NAME}.DBO.policy_dim P\r\n\t\t\tINNER JOIN @{pipeline().parameters.WC_DATA_MART_DATABASE_NAME}.DBO.PolicyFormFact PTCTF\r\n\t\t\t\tON P.pol_dim_id = PTCTF.PolicyDimId\r\n\t\t\tINNER JOIN @{pipeline().parameters.WC_DATA_MART_DATABASE_NAME}.DBO.InsuranceReferenceDim IRD\r\n\t\t\t\tON PTCTF.InsuranceReferenceDimId = IRD.InsuranceReferenceDimId\r\n\t\t\tGROUP BY P.edw_pol_ak_id\r\n\t\t\tHAVING COUNT(DISTINCT IRD.RatingPlanCode) > 1)\r\n\t\tGROUP BY\tP.pol_ak_id\r\n\t\t\t\t\t,R.RatingPlanCode\r\n\t\t\t\t\t,R.RatingPlanAKId\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyAKID ORDER BY RatingPlanAKId DESC) = 1\n),\nLKP_RatingPlan_PMS AS (\n\tSELECT\n\tRatingPlanAKId,\n\tPolicyAKID,\n\tRatingPlanCode\n\tFROM (\n\t\tselect P.pol_ak_id as PolicyAKID,R.RatingPlanAKId as RatingPlanAKId , R.RatingPlanCode as RatingPlanCode  \r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER_V2}.policy P\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.RiskLocation RL\r\n\t\ton P.pol_ak_id=RL.PolicyAKID\r\n\t\tand P.crrnt_snpsht_flag=1\r\n\t\tand RL.CurrentSnapshotFlag=1\r\n\t\tand P.source_sys_id='PMS'\r\n\t\tand RL.SourceSystemID='PMS'\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyCoverage PC\r\n\t\ton RL.RiskLocationAKID=PC.RiskLocationAKID\r\n\t\tand PC.CurrentSnapshotFlag=1\r\n\t\tand PC.SourceSystemID='PMS'\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.StatisticalCoverage SC\r\n\t\ton PC.PolicyCoverageAKID=SC.PolicyCoverageAKID\r\n\t\tand SC.CurrentSnapshotFlag=1\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction PT\r\n\t\ton SC.StatisticalCoverageAKID=PT.StatisticalCoverageAKID\r\n\t\tand PT.SourceSystemID='PMS'\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.RatingPlan R\r\n\t\ton PC.RatingPlanAKId=R.RatingPlanAKId\r\n\t\twhere PC.InsuranceLine='WC'\r\n\t\tand PT.ReasonAmendedCode not in ('COL','CWO','CWB')\r\n\t\tand P.pol_ak_id in (SELECT\r\n\t\t\t\tP.edw_pol_ak_id\r\n\t\t\tFROM @{pipeline().parameters.WC_DATA_MART_DATABASE_NAME}.DBO.policy_dim P\r\n\t\t\tINNER JOIN @{pipeline().parameters.WC_DATA_MART_DATABASE_NAME}.DBO.PolicyFormFact PTCTF\r\n\t\t\t\tON P.pol_dim_id = PTCTF.PolicyDimId\r\n\t\t\tINNER JOIN @{pipeline().parameters.WC_DATA_MART_DATABASE_NAME}.DBO.InsuranceReferenceDim IRD\r\n\t\t\t\tON PTCTF.InsuranceReferenceDimId = IRD.InsuranceReferenceDimId\r\n\t\t\tGROUP BY P.edw_pol_ak_id\r\n\t\t\tHAVING COUNT(DISTINCT IRD.RatingPlanCode) > 1)\r\n\t\tgroup by P.pol_ak_id,R.RatingPlanCode,R.RatingPlanAKId\r\n\t\thaving sum(PT.PremiumTransactionAmount)<>0\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyAKID ORDER BY RatingPlanAKId DESC) = 1\n),\nEXP_RatingPlanDerivation AS (\n\tSELECT\n\tLKP_RatingPlan_PMS.RatingPlanAKId AS PMS_RatingPlanAKId,\n\tLKP_RatingPlan_PMS.RatingPlanCode AS PMS_RatingPlanCode,\n\tLKP_RatingPlan_DCT.RatingPlanAKId AS DCT_RatingPlanAKId,\n\tLKP_RatingPlan_DCT.RatingPlanCode AS DCT_RatingPlanCode,\n\t-- *INF*: IIF(ISNULL(PMS_RatingPlanCode),DCT_RatingPlanCode,PMS_RatingPlanCode)\n\tIFF(PMS_RatingPlanCode IS NULL, DCT_RatingPlanCode, PMS_RatingPlanCode) AS o_RatingPlanCode\n\tFROM \n\tLEFT JOIN LKP_RatingPlan_DCT\n\tON LKP_RatingPlan_DCT.PolicyAKID = EXP_PolicyFormFact.EDW_Pol_AK_id\n\tLEFT JOIN LKP_RatingPlan_PMS\n\tON LKP_RatingPlan_PMS.PolicyAKID = EXP_PolicyFormFact.EDW_Pol_AK_id\n),\nEXP_PolFormFact_JNR AS (\n\tSELECT\n\tEXP_PolicyFormFact.PolicyFormFactId,\n\tEXP_PolicyFormFact.EnterpriseGroupCode,\n\tEXP_PolicyFormFact.InsuranceReferenceLegalEntityCode,\n\tEXP_PolicyFormFact.StrategicProfitCenterCode,\n\tEXP_PolicyFormFact.InsuranceSegmentCode,\n\tEXP_PolicyFormFact.PolicyOfferingCode,\n\tEXP_PolicyFormFact.ProductCode,\n\tEXP_PolicyFormFact.InsuranceReferenceLineOfBusinessCode,\n\tEXP_RatingPlanDerivation.o_RatingPlanCode AS RatingPlanCode,\n\t-- *INF*: :LKP.LKP_INSURANCEREFERENCE(EnterpriseGroupCode,InsuranceReferenceLegalEntityCode,StrategicProfitCenterCode,InsuranceSegmentCode,PolicyOfferingCode,ProductCode,InsuranceReferenceLineOfBusinessCode,RatingPlanCode)\n\tLKP_INSURANCEREFERENCE_EnterpriseGroupCode_InsuranceReferenceLegalEntityCode_StrategicProfitCenterCode_InsuranceSegmentCode_PolicyOfferingCode_ProductCode_InsuranceReferenceLineOfBusinessCode_RatingPlanCode.InsuranceReferenceDimId AS o_InsuranceReferenceDimId\n\tFROM EXP_PolicyFormFact\n\t -- Manually join with EXP_RatingPlanDerivation\n\tLEFT JOIN LKP_INSURANCEREFERENCE LKP_INSURANCEREFERENCE_EnterpriseGroupCode_InsuranceReferenceLegalEntityCode_StrategicProfitCenterCode_InsuranceSegmentCode_PolicyOfferingCode_ProductCode_InsuranceReferenceLineOfBusinessCode_RatingPlanCode\n\tON LKP_INSURANCEREFERENCE_EnterpriseGroupCode_InsuranceReferenceLegalEntityCode_StrategicProfitCenterCode_InsuranceSegmentCode_PolicyOfferingCode_ProductCode_InsuranceReferenceLineOfBusinessCode_RatingPlanCode.EnterpriseGroupCode = EnterpriseGroupCode\n\tAND LKP_INSURANCEREFERENCE_EnterpriseGroupCode_InsuranceReferenceLegalEntityCode_StrategicProfitCenterCode_InsuranceSegmentCode_PolicyOfferingCode_ProductCode_InsuranceReferenceLineOfBusinessCode_RatingPlanCode.InsuranceReferenceLegalEntityCode = InsuranceReferenceLegalEntityCode\n\tAND LKP_INSURANCEREFERENCE_EnterpriseGroupCode_InsuranceReferenceLegalEntityCode_StrategicProfitCenterCode_InsuranceSegmentCode_PolicyOfferingCode_ProductCode_InsuranceReferenceLineOfBusinessCode_RatingPlanCode.StrategicProfitCenterCode = StrategicProfitCenterCode\n\tAND LKP_INSURANCEREFERENCE_EnterpriseGroupCode_InsuranceReferenceLegalEntityCode_StrategicProfitCenterCode_InsuranceSegmentCode_PolicyOfferingCode_ProductCode_InsuranceReferenceLineOfBusinessCode_RatingPlanCode.InsuranceSegmentCode = InsuranceSegmentCode\n\tAND LKP_INSURANCEREFERENCE_EnterpriseGroupCode_InsuranceReferenceLegalEntityCode_StrategicProfitCenterCode_InsuranceSegmentCode_PolicyOfferingCode_ProductCode_InsuranceReferenceLineOfBusinessCode_RatingPlanCode.PolicyOfferingCode = PolicyOfferingCode\n\tAND LKP_INSURANCEREFERENCE_EnterpriseGroupCode_InsuranceReferenceLegalEntityCode_StrategicProfitCenterCode_InsuranceSegmentCode_PolicyOfferingCode_ProductCode_InsuranceReferenceLineOfBusinessCode_RatingPlanCode.ProductCode = ProductCode\n\tAND LKP_INSURANCEREFERENCE_EnterpriseGroupCode_InsuranceReferenceLegalEntityCode_StrategicProfitCenterCode_InsuranceSegmentCode_PolicyOfferingCode_ProductCode_InsuranceReferenceLineOfBusinessCode_RatingPlanCode.InsuranceReferenceLineOfBusinessCode = InsuranceReferenceLineOfBusinessCode\n\tAND LKP_INSURANCEREFERENCE_EnterpriseGroupCode_InsuranceReferenceLegalEntityCode_StrategicProfitCenterCode_InsuranceSegmentCode_PolicyOfferingCode_ProductCode_InsuranceReferenceLineOfBusinessCode_RatingPlanCode.RatingPlanCode = RatingPlanCode\n\n),\nFILT_PFF AS (\n\tSELECT\n\tPolicyFormFactId, \n\to_InsuranceReferenceDimId\n\tFROM EXP_PolFormFact_JNR\n\tWHERE not ISNULL(o_InsuranceReferenceDimId)\n),\nUPD_PFF AS (\n\tSELECT\n\tPolicyFormFactId, \n\to_InsuranceReferenceDimId\n\tFROM FILT_PFF\n),\nPolicyFormFact AS (\n\tMERGE INTO PolicyFormFact AS T\n\tUSING UPD_PFF AS S\n\tON T.PolicyFormFactId = S.PolicyFormFactId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.InsuranceReferenceDimId = S.o_InsuranceReferenceDimId\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246511"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905531"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604526"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:57:01"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 03:31:13"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Data_Mart_Policy"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "WC_DATA_MART_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "WC_DATA_MART"
+            },
+            "RPT_EDM_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "RPT_EDM"
+            },
+            "STAGE_DATABASE": {
+                "type": "string",
+                "defaultValue": "WC_STAGE"
+            },
+            "SOURCE_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "V2"
+            },
+            "WHERE_CLAUSE_PFF": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Policy DataMart/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,77 @@
+{
+    "name": "m_CLM_DW_LOAD_sup_claim_subrogation_deductible_status_code",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DW_LOAD_sup_claim_subrogation_deductible_statu_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLAIM_SUPPORT_01_STAGE AS (\n\tSELECT CS01_CODE, \r\n\tCS01_CODE_DES \r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.CLAIM_SUPPORT_01_STAGE\r\n\tWHERE\r\n\tCS01_TABLE_ID = 'C188'\n),\nEXP_Default_Values AS (\n\tSELECT\n\tCS01_CODE AS in_CS01_CODE,\n\tCS01_CODE_DES AS in_CS01_CODE_DES,\n\t-- *INF*: iif(isnull(in_CS01_CODE),'N/A',in_CS01_CODE)\n\tIFF(in_CS01_CODE IS NULL, 'N/A', in_CS01_CODE) AS out_CS01_CODE,\n\t-- *INF*: iif(isnull(in_CS01_CODE_DES),'N/A',in_CS01_CODE_DES)\n\tIFF(in_CS01_CODE_DES IS NULL, 'N/A', in_CS01_CODE_DES) AS out_CS01_CODE_DES\n\tFROM SQ_CLAIM_SUPPORT_01_STAGE\n),\nLKP_sup_claim_subrogation_deductible_status_code AS (\n\tSELECT\n\tsup_claim_subrogation_ded_status_code_id,\n\tded_status_code,\n\tded_status_code_descript,\n\tout_CS01_CODE\n\tFROM (\n\t\tSELECT sup_claim_subrogation_deductible_status_code.sup_claim_subrogation_ded_status_code_id as sup_claim_subrogation_ded_status_code_id, sup_claim_subrogation_deductible_status_code.ded_status_code_descript as ded_status_code_descript, sup_claim_subrogation_deductible_status_code.ded_status_code as ded_status_code FROM sup_claim_subrogation_deductible_status_code\r\n\t\tWHERE crrnt_snpsht_flag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ded_status_code ORDER BY sup_claim_subrogation_ded_status_code_id) = 1\n),\nEXP_lkpvalues AS (\n\tSELECT\n\tLKP_sup_claim_subrogation_deductible_status_code.sup_claim_subrogation_ded_status_code_id AS old_sup_claim_subrogation_ded_tatus_code_id,\n\tLKP_sup_claim_subrogation_deductible_status_code.ded_status_code_descript AS old_ded_status_code_descript,\n\tEXP_Default_Values.out_CS01_CODE,\n\tEXP_Default_Values.out_CS01_CODE_DES,\n\t-- *INF*: iif(isnull(old_sup_claim_subrogation_ded_tatus_code_id),'NEW',\r\n\t-- \tiif((out_CS01_CODE_DES <>old_ded_status_code_descript),\r\n\t-- \t'UPDATE',\r\n\t-- \t'NOCHANGE'))\n\tIFF(old_sup_claim_subrogation_ded_tatus_code_id IS NULL, 'NEW', IFF(( out_CS01_CODE_DES <> old_ded_status_code_descript ), 'UPDATE', 'NOCHANGE')) AS V_CHANGED_FLAG,\n\tV_CHANGED_FLAG AS changed_flag,\n\t1 AS crrnt_snpsht_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS auidt_id,\n\t-- *INF*: iif(V_CHANGED_FLAG='NEW',\r\n\t-- \tto_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)\n\tIFF(V_CHANGED_FLAG = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,\n\tsysdate AS created_date,\n\tsysdate AS modified_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_sys_id\n\tFROM EXP_Default_Values\n\tLEFT JOIN LKP_sup_claim_subrogation_deductible_status_code\n\tON LKP_sup_claim_subrogation_deductible_status_code.ded_status_code = EXP_Default_Values.out_CS01_CODE\n),\nFIL_Sup_transaction_code AS (\n\tSELECT\n\tout_CS01_CODE, \n\tout_CS01_CODE_DES, \n\tcrrnt_snpsht_flag, \n\tauidt_id, \n\teff_from_date, \n\teff_to_date, \n\tcreated_date, \n\tmodified_date, \n\tSource_sys_id, \n\tchanged_flag\n\tFROM EXP_lkpvalues\n\tWHERE changed_flag = 'NEW' or changed_flag = 'UPDATE'\n),\nsup_claim_subrogation_deductible_status_code AS (\n\tINSERT INTO sup_claim_subrogation_deductible_status_code\n\t(crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, source_sys_id, created_date, modified_date, ded_status_code, ded_status_code_descript)\n\tSELECT \n\tCRRNT_SNPSHT_FLAG, \n\tauidt_id AS AUDIT_ID, \n\tEFF_FROM_DATE, \n\tEFF_TO_DATE, \n\tSource_sys_id AS SOURCE_SYS_ID, \n\tCREATED_DATE, \n\tMODIFIED_DATE, \n\tout_CS01_CODE AS DED_STATUS_CODE, \n\tout_CS01_CODE_DES AS DED_STATUS_CODE_DESCRIPT\n\tFROM FIL_Sup_transaction_code\n),\nSQ_sup_claim_subrogation_deductible_status_code AS (\n\tSELECT a.sup_claim_subrogation_ded_status_code_id, \r\n\ta.eff_from_date, \r\n\ta.eff_to_date, \r\n\ta.ded_status_code \r\n\tFROM\r\n\t sup_claim_subrogation_deductible_status_code a \r\n\tWHERE EXISTS(SELECT 1\t\t\t\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.sup_claim_subrogation_deductible_status_code  b\r\n\tWHERE eff_to_date = '12/31/2100 23:59:59'\r\n\t\tAND a.ded_status_code = b.ded_status_code\r\n\t\tGROUP BY ded_status_code \r\n\t\tHAVING COUNT(*) > 1)\r\n\tORDER BY ded_status_code , eff_from_date  DESC\r\n\t\r\n\t--EXISTS Subquery exists to pick AK Groups that have multiple rows with a 12/31/2100 eff_to_date.\r\n\t--When this condition occurs this is an indication that we must expire one or more of these rows.\r\n\t--WHERE clause is always made up of current snapshot flag and all columns of the AK\r\n\t--GROUP BY clause is always on AK\r\n\t--HAVING clause stays the same\r\n\t\r\n\t--ORDER BY of main query orders all rows first by the AK and then by the eff_from_date in a DESC format\r\n\t--the descending order is important because this allows us to avoid another lookup and properly apply the eff_to_date by utilizing a local variable to keep track\n),\nEXP_Lag_eff_from_date AS (\n\tSELECT\n\tsup_claim_subrogation_ded_tatus_code_id,\n\tded_status_code,\n\teff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- \tded_status_code = V_PREV_ROW_ded_status_code, ADD_TO_DATE(V_PREV_ROW_eff_from_date,'SS',-1),\r\n\t-- \torig_eff_to_date)\n\tDECODE(TRUE,\n\tded_status_code = V_PREV_ROW_ded_status_code, ADD_TO_DATE(V_PREV_ROW_eff_from_date, 'SS', - 1),\n\torig_eff_to_date) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\teff_from_date AS V_PREV_ROW_eff_from_date,\n\tded_status_code AS V_PREV_ROW_ded_status_code,\n\t0 AS crrnt_snpsht_flag,\n\tsysdate AS modified_date\n\tFROM SQ_sup_claim_subrogation_deductible_status_code\n),\nFIL_FIRST_ROW_IN_AK_ID AS (\n\tSELECT\n\tsup_claim_subrogation_ded_tatus_code_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM EXP_Lag_eff_from_date\n\tWHERE orig_eff_to_date <> eff_to_date\n),\nUPD_sup_claim_subrogation_deductible_status_code AS (\n\tSELECT\n\tsup_claim_subrogation_ded_tatus_code_id, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM FIL_FIRST_ROW_IN_AK_ID\n),\nsup_claim_subrogation_deductible_status_code2 AS (\n\tMERGE INTO sup_claim_subrogation_deductible_status_code AS T\n\tUSING UPD_sup_claim_subrogation_deductible_status_code AS S\n\tON T.sup_claim_subrogation_ded_tatus_code_id = S.sup_claim_subrogation_ded_tatus_code_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_date\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246507"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905524"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604433"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:23:26"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 02:28:04"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "EXCEED AND PMS"
+            }
+        },
+        "folder": {
+            "name": "Claims DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

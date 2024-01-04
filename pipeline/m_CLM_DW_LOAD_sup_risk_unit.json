@@ -1,0 +1,77 @@
+{
+    "name": "m_CLM_DW_LOAD_sup_risk_unit",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DW_LOAD_sup_risk_unit",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_tm523c_stage AS (\n\tSELECT\n\t\ttm523c_stage_id,\n\t\ttable_fld,\n\t\tkey_len,\n\t\tline_of_business,\n\t\tinsurance_line,\n\t\trisk_unit,\n\t\tlanguage_indicator,\n\t\tdata_len,\n\t\trisk_unit_literal,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_sytem_id\n\tFROM gtam_tm523c_stage\n),\nEXP_Default_Values AS (\n\tSELECT\n\trisk_unit AS IN_risk_unit,\n\trisk_unit_literal AS IN_risk_unit_literal,\n\tinsurance_line AS IN_insurance_line,\n\t-- *INF*: iif(isnull(IN_insurance_line),'N/A',ltrim(rtrim(IN_insurance_line)))\n\tIFF(IN_insurance_line IS NULL, 'N/A', ltrim(rtrim(IN_insurance_line))) AS INSURANCE_LINE_OUT,\n\t-- *INF*: IIF(ISNULL(IN_risk_unit), 'N/A', ltrim(rtrim(IN_risk_unit)))\n\tIFF(IN_risk_unit IS NULL, 'N/A', ltrim(rtrim(IN_risk_unit))) AS RISK_UNIT_CODE_OUT,\n\t-- *INF*: IIF(ISNULL(IN_risk_unit_literal), 'N/A', IN_risk_unit_literal)\n\tIFF(IN_risk_unit_literal IS NULL, 'N/A', IN_risk_unit_literal) AS RISK_UNIT_LITERAL_OUT\n\tFROM SQ_gtam_tm523c_stage\n),\nLKP_sup_risk_unit AS (\n\tSELECT\n\tsup_risk_unit_id,\n\trisk_unit_descript,\n\trisk_unit_code,\n\tins_line\n\tFROM (\n\t\tSELECT \r\n\t\ta.sup_risk_unit_id as sup_risk_unit_id, \r\n\t\tltrim(rtrim(a.risk_unit_descript)) as risk_unit_descript, \r\n\t\tltrim(rtrim(a.risk_unit_code)) as risk_unit_code, \r\n\t\tltrim(rtrim(a.ins_line)) as ins_line \r\n\t\tFROM sup_risk_unit a\r\n\t\twhere a.crrnt_snpsht_flag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY risk_unit_code,ins_line ORDER BY sup_risk_unit_id) = 1\n),\nEXP_detect_changes AS (\n\tSELECT\n\tLKP_sup_risk_unit.sup_risk_unit_id AS old_sup_risk_unit_id,\n\tLKP_sup_risk_unit.risk_unit_descript AS old_risk_unit_descript,\n\tEXP_Default_Values.INSURANCE_LINE_OUT,\n\tEXP_Default_Values.RISK_UNIT_CODE_OUT,\n\tEXP_Default_Values.RISK_UNIT_LITERAL_OUT,\n\t-- *INF*: IIF(ISNULL(old_sup_risk_unit_id), 'NEW', \r\n\t-- IIF(ltrim(rtrim(old_risk_unit_descript)) != ltrim(rtrim(RISK_UNIT_LITERAL_OUT)), \r\n\t-- 'UPDATE', 'NOCHANGE'))\r\n\t-- \n\tIFF(old_sup_risk_unit_id IS NULL, 'NEW', IFF(ltrim(rtrim(old_risk_unit_descript)) != ltrim(rtrim(RISK_UNIT_LITERAL_OUT)), 'UPDATE', 'NOCHANGE')) AS v_CHANGED_FLAG,\n\tv_CHANGED_FLAG AS CHANGED_FLAG,\n\t1 AS crrnt_snpsht_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t-- *INF*: iif(v_CHANGED_FLAG='NEW',\r\n\t-- \tto_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)\n\tIFF(v_CHANGED_FLAG = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,\n\tSYSDATE AS created_date,\n\tSYSDATE AS modified_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id\n\tFROM EXP_Default_Values\n\tLEFT JOIN LKP_sup_risk_unit\n\tON LKP_sup_risk_unit.risk_unit_code = EXP_Default_Values.RISK_UNIT_CODE_OUT AND LKP_sup_risk_unit.ins_line = EXP_Default_Values.INSURANCE_LINE_OUT\n),\nFIL_sup_insurance_line_insert AS (\n\tSELECT\n\tINSURANCE_LINE_OUT, \n\tRISK_UNIT_CODE_OUT, \n\tRISK_UNIT_LITERAL_OUT, \n\tCHANGED_FLAG, \n\tcrrnt_snpsht_flag, \n\taudit_id, \n\teff_from_date, \n\teff_to_date, \n\tcreated_date, \n\tmodified_date, \n\tsource_sys_id\n\tFROM EXP_detect_changes\n\tWHERE CHANGED_FLAG = 'NEW' or CHANGED_FLAG = 'UPDATE'\n),\nsup_risk_unit_Insert AS (\n\tINSERT INTO sup_risk_unit\n\t(risk_unit_code, risk_unit_descript, ins_line, crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, source_sys_id, created_date, modified_date)\n\tSELECT \n\tRISK_UNIT_CODE_OUT AS RISK_UNIT_CODE, \n\tRISK_UNIT_LITERAL_OUT AS RISK_UNIT_DESCRIPT, \n\tINSURANCE_LINE_OUT AS INS_LINE, \n\tCRRNT_SNPSHT_FLAG, \n\tAUDIT_ID, \n\tEFF_FROM_DATE, \n\tEFF_TO_DATE, \n\tSOURCE_SYS_ID, \n\tCREATED_DATE, \n\tMODIFIED_DATE\n\tFROM FIL_sup_insurance_line_insert\n),\nSQ_sup_risk_unit AS (\n\tSELECT a.sup_risk_unit_id, \r\n\ta.risk_unit_code, \r\n\ta.ins_line,\r\n\ta.eff_from_date, \r\n\ta.eff_to_date \r\n\tFROM\r\n\t @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_risk_unit a\r\n\tWHERE EXISTS(SELECT 1\t\t\t\r\n\t\t\tFROM  @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_risk_unit b\r\n\t\t\tWHERE source_sys_id = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'  AND crrnt_snpsht_flag = 1\r\n\t\t\tAND a.risk_unit_code = b.risk_unit_code AND\r\n\t                        a.ins_line = b.ins_line\r\n\t\t\tGROUP BY risk_unit_code,ins_line\r\n\t\t\tHAVING COUNT(*) > 1)\r\n\tORDER BY risk_unit_code, ins_line, eff_from_date  DESC\n),\nEXP_lag_eff_from_date AS (\n\tSELECT\n\tsup_risk_unit_id,\n\trisk_unit_code,\n\tins_line,\n\teff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- \trisk_unit_code = v_Prev_row_risk_unit_code AND ins_line = v_Prev_row_ins_line,\r\n\t-- \t ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),\r\n\t-- \torig_eff_to_date)\r\n\t-- \t\n\tDECODE(TRUE,\n\trisk_unit_code = v_Prev_row_risk_unit_code AND ins_line = v_Prev_row_ins_line, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),\n\torig_eff_to_date) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\trisk_unit_code AS v_Prev_row_risk_unit_code,\n\tins_line AS v_Prev_row_ins_line,\n\teff_from_date AS v_prev_eff_from_date,\n\t0 AS crrnt_snpsht_flag,\n\tSYSDATE AS modified_date\n\tFROM SQ_sup_risk_unit\n),\nFIL_First_rown_inAKGroup AS (\n\tSELECT\n\tsup_risk_unit_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM EXP_lag_eff_from_date\n\tWHERE orig_eff_to_date != eff_to_date\n),\nUPD_sup_insurance_line AS (\n\tSELECT\n\tsup_risk_unit_id, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM FIL_First_rown_inAKGroup\n),\nsup_risk_unit_update AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_risk_unit AS T\n\tUSING UPD_sup_insurance_line AS S\n\tON T.sup_risk_unit_id = S.sup_risk_unit_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_date\n),"
+                        }
+                    ]
+                }
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246507"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905524"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604411"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:23:26"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 02:28:04"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "EXCEED AND PMS"
+            }
+        },
+        "folder": {
+            "name": "Claims DataWarehouse/"
+        },
+        "annotations": []
+    }
+}
