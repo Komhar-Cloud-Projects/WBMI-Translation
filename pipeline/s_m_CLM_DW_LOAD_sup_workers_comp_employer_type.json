@@ -1,0 +1,79 @@
+{
+    "name": "s_m_CLM_DW_LOAD_sup_workers_comp_employer_type",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DW_LOAD_sup_workers_comp_employer_type",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_sup_employer_type_stage AS (\n\tSELECT\n\t\tsup_employer_type_stage_id,\n\t\temployer_type_code,\n\t\temployer_type_desc,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM sup_employer_type_stage\n),\nEXP_Default_Values AS (\n\tSELECT\n\temployer_type_code,\n\t-- *INF*: iif(isnull(employer_type_code),'N/A',employer_type_code)\n\tIFF(employer_type_code IS NULL, 'N/A', employer_type_code) AS employer_type_code_OUT,\n\temployer_type_desc,\n\t-- *INF*: iif(isnull(employer_type_desc),'N/A',employer_type_desc)\n\tIFF(employer_type_desc IS NULL, 'N/A', employer_type_desc) AS employer_type_desc_OUT\n\tFROM SQ_sup_employer_type_stage\n),\nLKP_sup_workers_comp_employer_type AS (\n\tSELECT\n\tIN_employer_type_code,\n\tsup_wc_emplyr_type_id,\n\templyr_type_code,\n\templyr_type_descript\n\tFROM (\n\t\tSELECT sup_workers_comp_employer_type.sup_wc_emplyr_type_id as sup_wc_emplyr_type_id,\r\n\t\t LTRIM(RTRIM(sup_workers_comp_employer_type.emplyr_type_descript)) as emplyr_type_descript, \r\n\t\tLTRIM(RTRIM(sup_workers_comp_employer_type.emplyr_type_code)) as emplyr_type_code\r\n\t\t FROM sup_workers_comp_employer_type where crrnt_snpsht_flag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY emplyr_type_code ORDER BY IN_employer_type_code) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tLKP_sup_workers_comp_employer_type.sup_wc_emplyr_type_id AS OLD_sup_wc_emplyr_type_id,\n\tLKP_sup_workers_comp_employer_type.emplyr_type_descript AS OLD_emplyr_type_descript,\n\tEXP_Default_Values.employer_type_code_OUT,\n\tEXP_Default_Values.employer_type_desc_OUT,\n\t-- *INF*: IIF(ISNULL(OLD_sup_wc_emplyr_type_id), 'NEW', IIF(LTRIM(RTRIM(OLD_emplyr_type_descript)) != (LTRIM(RTRIM(employer_type_desc_OUT))), 'UPDATE', 'NOCHANGE'))\n\tIFF(OLD_sup_wc_emplyr_type_id IS NULL, 'NEW', IFF(LTRIM(RTRIM(OLD_emplyr_type_descript)) != ( LTRIM(RTRIM(employer_type_desc_OUT)) ), 'UPDATE', 'NOCHANGE')) AS V_changed_flag,\n\tV_changed_flag AS CHANGED_FLAG,\n\t1 AS crrnt_snpsht_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t-- *INF*: iif(V_changed_flag='NEW',\r\n\t-- \tto_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)\n\tIFF(V_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,\n\tSYSDATE AS created_date,\n\tSYSDATE AS modified_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id\n\tFROM EXP_Default_Values\n\tLEFT JOIN LKP_sup_workers_comp_employer_type\n\tON LKP_sup_workers_comp_employer_type.emplyr_type_code = EXP_Default_Values.employer_type_code_OUT\n),\nFIL_sup_workers_comp_employer_type AS (\n\tSELECT\n\temployer_type_code_OUT, \n\temployer_type_desc_OUT, \n\tCHANGED_FLAG, \n\tcrrnt_snpsht_flag, \n\taudit_id, \n\teff_from_date, \n\teff_to_date, \n\tcreated_date, \n\tmodified_date, \n\tsource_sys_id\n\tFROM EXP_Detect_Changes\n\tWHERE CHANGED_FLAG = 'NEW' or CHANGED_FLAG = 'UPDATE'\n),\nsup_workers_comp_employer_type_INSERT AS (\n\tINSERT INTO sup_workers_comp_employer_type\n\t(emplyr_type_code, emplyr_type_descript, crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, source_sys_id, created_date, modified_date)\n\tSELECT \n\temployer_type_code_OUT AS EMPLYR_TYPE_CODE, \n\temployer_type_desc_OUT AS EMPLYR_TYPE_DESCRIPT, \n\tCRRNT_SNPSHT_FLAG, \n\tAUDIT_ID, \n\tEFF_FROM_DATE, \n\tEFF_TO_DATE, \n\tSOURCE_SYS_ID, \n\tCREATED_DATE, \n\tMODIFIED_DATE\n\tFROM FIL_sup_workers_comp_employer_type\n),\nSQ_sup_workers_comp_employer_type AS (\n\tSELECT a.sup_wc_emplyr_type_id, \r\n\ta.emplyr_type_code,\r\n\ta.eff_from_date,\r\n\ta.eff_to_date \r\n\tFROM\r\n\t  @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_workers_comp_employer_type a\r\n\t    WHERE EXISTS ( SELECT 1\r\n\t                              FROM  @{pipeline().parameters.TARGET_TABLE_OWNER}.   sup_workers_comp_employer_type b\r\n\t\t\tWHERE source_sys_id= '@{pipeline().parameters.SOURCE_SYSTEM_ID}'  AND crrnt_snpsht_flag = 1\r\n\t\t\tAND a.emplyr_type_code = b.emplyr_type_code            \r\n\t GROUP BY emplyr_type_code  \t\r\n\t             HAVING COUNT(*) > 1)\r\n\tORDER BY emplyr_type_code  , eff_from_date  DESC\n),\nEXP_Lag_Eff_From_Date AS (\n\tSELECT\n\tsup_wc_emplyr_type_id,\n\templyr_type_code,\n\teff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- \templyr_type_code= v_prev_row_emplyr_type_code, ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),\r\n\t-- \torig_eff_to_date)\r\n\t-- \t\n\tDECODE(TRUE,\n\templyr_type_code = v_prev_row_emplyr_type_code, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),\n\torig_eff_to_date) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\templyr_type_code AS v_prev_row_emplyr_type_code,\n\teff_from_date AS v_prev_eff_from_date,\n\t0 AS crrnt_snpsht_flag,\n\tSYSDATE AS modified_date\n\tFROM SQ_sup_workers_comp_employer_type\n),\nFIL_First_Row_In_AK_Group AS (\n\tSELECT\n\tsup_wc_emplyr_type_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM EXP_Lag_Eff_From_Date\n\tWHERE orig_eff_to_date !=eff_to_date\n),\nUPD_sup_workers_comp_employer_type AS (\n\tSELECT\n\tsup_wc_emplyr_type_id, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM FIL_First_Row_In_AK_Group\n),\nsup_workers_comp_employer_type_UPDATE AS (\n\tMERGE INTO sup_workers_comp_employer_type AS T\n\tUSING UPD_sup_workers_comp_employer_type AS S\n\tON T.sup_wc_emplyr_type_id = S.sup_wc_emplyr_type_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_date\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246507"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905524"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604430"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:23:26"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 02:28:04"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "EXCEED AND PMS"
+            }
+        },
+        "folder": {
+            "name": "Claims DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

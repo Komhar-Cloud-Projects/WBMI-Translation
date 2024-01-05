@@ -1,0 +1,69 @@
+{
+    "name": "wkf_POL_DW_LOAD_PassThroughChargeTransaction_Restate",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_PassThroughChargeTransaction_DCT_Res_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_PassThroughChargeTransaction_DCT_Restate"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_LOAD_PassThroughChargeTransaction_DCT_Restate",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_DELETE_PassThroughChargeTransaction_DCT_N_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_PassThroughChargeTransaction_DCT_Res_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_DELETE_PassThroughChargeTransaction_DCT_NegateRestate_Unbal_Cleanup"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_DW_DELETE_PassThroughChargeTransaction_DCT_NegateRestate_Unbal_Cleanup",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "variables": {}
+    }
+}

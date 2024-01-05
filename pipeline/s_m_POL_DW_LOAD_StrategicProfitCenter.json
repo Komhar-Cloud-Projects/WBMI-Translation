@@ -1,0 +1,79 @@
+{
+    "name": "s_m_POL_DW_LOAD_StrategicProfitCenter",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_StrategicProfitCenter",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_StrategicProfitCenter AS (\n\tSELECT\n\t\tStrategicProfitCenterId,\n\t\tModifiedDate,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tStrategicProfitCenterAKId,\n\t\tEnterpriseGroupId,\n\t\tLegalEntityId,\n\t\tStrategicProfitCenterCode,\n\t\tStrategicProfitCenterAbbreviation,\n\t\tStrategicProfitCenterDescription\n\tFROM StrategicProfitCenter\n),\nEXP_DateValues AS (\n\tSELECT\n\tModifiedDate AS i_ModifiedDate,\n\tEffectiveDate AS i_EffectiveDate,\n\tExpirationDate AS i_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)\n\tIFF(i_EffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate) AS o_EffectiveDate,\n\t-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)\n\tIFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)\n\tIFF(i_ModifiedDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate) AS o_ModifiedDate\n\tFROM SQ_StrategicProfitCenter\n),\nEXP_NumericValues AS (\n\tSELECT\n\tStrategicProfitCenterId AS i_StrategicProfitCenterId,\n\tStrategicProfitCenterAKId AS i_StrategicProfitCenterAKId,\n\tEnterpriseGroupId AS i_EnterpriseGroupId,\n\tLegalEntityId AS i_LegalEntityId,\n\t-- *INF*: IIF(ISNULL(i_StrategicProfitCenterId),-1,i_StrategicProfitCenterId)\n\tIFF(i_StrategicProfitCenterId IS NULL, - 1, i_StrategicProfitCenterId) AS o_StrategicProfitCenterId,\n\t-- *INF*: IIF(ISNULL(i_StrategicProfitCenterAKId),-1,i_StrategicProfitCenterAKId)\n\tIFF(i_StrategicProfitCenterAKId IS NULL, - 1, i_StrategicProfitCenterAKId) AS o_StrategicProfitCenterAKId,\n\t-- *INF*: IIF(ISNULL(i_EnterpriseGroupId),-1,i_EnterpriseGroupId)\n\tIFF(i_EnterpriseGroupId IS NULL, - 1, i_EnterpriseGroupId) AS o_EnterpriseGroupId,\n\t-- *INF*: IIF(ISNULL(i_LegalEntityId),-1,i_LegalEntityId)\n\tIFF(i_LegalEntityId IS NULL, - 1, i_LegalEntityId) AS o_LegalEntityId\n\tFROM SQ_StrategicProfitCenter\n),\nEXP_StringValues AS (\n\tSELECT\n\tExpirationDate AS i_ExpirationDate,\n\tStrategicProfitCenterCode AS i_StrategicProfitCenterCode,\n\tStrategicProfitCenterAbbreviation AS i_StrategicProfitCenterAbbreviation,\n\tStrategicProfitCenterDescription AS i_StrategicProfitCenterDescription,\n\t-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)\n\tIFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tSYSDATE AS o_CreatedDate,\n\t-- *INF*: IIF(ISNULL(i_StrategicProfitCenterCode) OR LENGTH(i_StrategicProfitCenterCode)=0 OR IS_SPACES(i_StrategicProfitCenterCode),'N/A',LTRIM(RTRIM(i_StrategicProfitCenterCode)))\n\tIFF(i_StrategicProfitCenterCode IS NULL OR LENGTH(i_StrategicProfitCenterCode) = 0 OR IS_SPACES(i_StrategicProfitCenterCode), 'N/A', LTRIM(RTRIM(i_StrategicProfitCenterCode))) AS o_StrategicProfitCenterCode,\n\t-- *INF*: IIF(ISNULL(i_StrategicProfitCenterAbbreviation) OR LENGTH(i_StrategicProfitCenterAbbreviation)=0 OR IS_SPACES(i_StrategicProfitCenterAbbreviation),'N/A',LTRIM(RTRIM(i_StrategicProfitCenterAbbreviation)))\n\tIFF(i_StrategicProfitCenterAbbreviation IS NULL OR LENGTH(i_StrategicProfitCenterAbbreviation) = 0 OR IS_SPACES(i_StrategicProfitCenterAbbreviation), 'N/A', LTRIM(RTRIM(i_StrategicProfitCenterAbbreviation))) AS o_StrategicProfitCenterAbbreviation,\n\t-- *INF*: IIF(ISNULL(i_StrategicProfitCenterDescription) OR LENGTH(i_StrategicProfitCenterDescription)=0 OR IS_SPACES(i_StrategicProfitCenterDescription),'N/A',LTRIM(RTRIM(i_StrategicProfitCenterDescription)))\n\tIFF(i_StrategicProfitCenterDescription IS NULL OR LENGTH(i_StrategicProfitCenterDescription) = 0 OR IS_SPACES(i_StrategicProfitCenterDescription), 'N/A', LTRIM(RTRIM(i_StrategicProfitCenterDescription))) AS o_StrategicProfitCenterDescription\n\tFROM SQ_StrategicProfitCenter\n),\nTGT_StrategicProfitCenter_UpdateElseInsert AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.StrategicProfitCenter AS T\n\tUSING EXP_StringValues AS S\n\tON T.StrategicProfitCenterId = S.o_StrategicProfitCenterId\n\tWHEN MATCHED THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.o_CurrentSnapshotFlag, T.AuditId = S.o_AuditId, T.EffectiveDate = S.o_EffectiveDate, T.ExpirationDate = S.o_ExpirationDate, T.SourceSystemId = S.o_SourceSystemId, T.CreatedDate = S.o_CreatedDate, T.ModifiedDate = S.o_ModifiedDate, T.StrategicProfitCenterAKId = S.o_StrategicProfitCenterAKId, T.EnterpriseGroupId = S.o_EnterpriseGroupId, T.InsuranceReferenceLegalEntityId = S.o_LegalEntityId, T.StrategicProfitCenterCode = S.o_StrategicProfitCenterCode, T.StrategicProfitCenterAbbreviation = S.o_StrategicProfitCenterAbbreviation, T.StrategicProfitCenterDescription = S.o_StrategicProfitCenterDescription\n\tWHEN NOT MATCHED THEN\n\tINSERT (StrategicProfitCenterId, CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, StrategicProfitCenterAKId, EnterpriseGroupId, InsuranceReferenceLegalEntityId, StrategicProfitCenterCode, StrategicProfitCenterAbbreviation, StrategicProfitCenterDescription)\n\tVALUES (\n\tEXP_NumericValues.o_StrategicProfitCenterId AS STRATEGICPROFITCENTERID, \n\tEXP_StringValues.o_CurrentSnapshotFlag AS CURRENTSNAPSHOTFLAG, \n\tEXP_StringValues.o_AuditId AS AUDITID, \n\tEXP_DateValues.o_EffectiveDate AS EFFECTIVEDATE, \n\tEXP_DateValues.o_ExpirationDate AS EXPIRATIONDATE, \n\tEXP_StringValues.o_SourceSystemId AS SOURCESYSTEMID, \n\tEXP_StringValues.o_CreatedDate AS CREATEDDATE, \n\tEXP_DateValues.o_ModifiedDate AS MODIFIEDDATE, \n\tEXP_NumericValues.o_StrategicProfitCenterAKId AS STRATEGICPROFITCENTERAKID, \n\tEXP_NumericValues.o_EnterpriseGroupId AS ENTERPRISEGROUPID, \n\tEXP_NumericValues.o_LegalEntityId AS INSURANCEREFERENCELEGALENTITYID, \n\tEXP_StringValues.o_StrategicProfitCenterCode AS STRATEGICPROFITCENTERCODE, \n\tEXP_StringValues.o_StrategicProfitCenterAbbreviation AS STRATEGICPROFITCENTERABBREVIATION, \n\tEXP_StringValues.o_StrategicProfitCenterDescription AS STRATEGICPROFITCENTERDESCRIPTION)\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905450"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7602756"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:00:17"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 22:00:17"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_InsuranceReference_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "InsRef"
+            }
+        },
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

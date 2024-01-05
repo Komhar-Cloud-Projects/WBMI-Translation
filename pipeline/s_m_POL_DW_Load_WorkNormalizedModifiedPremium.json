@@ -1,0 +1,83 @@
+{
+    "name": "s_m_POL_DW_Load_WorkNormalizedModifiedPremium",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_Load_WorkNormalizedModifiedPremium",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Source AS (\n\tselect a.PremiumMasterCalculationId,a.RunDate,'Classified' as ModifiedPremiumType,\r\n\ta.ClassifiedDirectWrittenPremium as ModifiedPremium,a.GeneratedRecordIndicator,b.PremiumMasterRunDate,b.PremiumTransactionEnteredDate,a.SourceSystemId\r\n\tfrom ModifiedPremiumWorkersCompensationCalculation a\r\n\tjoin PremiumMasterCalculation b\r\n\ton a.PremiumMasterCalculationId=b.PremiumMasterCalculationId\r\n\twhere a.ClassifiedDirectWrittenPremium<>0\r\n\tand a.CreatedDate>'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t@{pipeline().parameters.WHERE_CLAUSE_WC}\r\n\tunion all\r\n\tselect a.PremiumMasterCalculationId,a.RunDate,'Ratable' as ModifiedPremiumType,\r\n\ta.RatableDirectWrittenPremium as ModifiedPremium,a.GeneratedRecordIndicator,b.PremiumMasterRunDate,b.PremiumTransactionEnteredDate,a.SourceSystemId\r\n\tfrom ModifiedPremiumWorkersCompensationCalculation a\r\n\tjoin PremiumMasterCalculation b\r\n\ton a.PremiumMasterCalculationId=b.PremiumMasterCalculationId\r\n\twhere a.RatableDirectWrittenPremium<>0\r\n\tand a.CreatedDate>'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t@{pipeline().parameters.WHERE_CLAUSE_WC}\r\n\tunion all\r\n\tselect a.PremiumMasterCalculationId,a.RunDate,'Other' as ModifiedPremiumType,\r\n\ta.OtherModifiedDirectWrittenPremium as ModifiedPremium,a.GeneratedRecordIndicator,b.PremiumMasterRunDate,b.PremiumTransactionEnteredDate,a.SourceSystemId\r\n\tfrom ModifiedPremiumWorkersCompensationCalculation a\r\n\tjoin PremiumMasterCalculation b\r\n\ton a.PremiumMasterCalculationId=b.PremiumMasterCalculationId\r\n\twhere a.OtherModifiedDirectWrittenPremium<>0\r\n\tand a.CreatedDate>'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t@{pipeline().parameters.WHERE_CLAUSE_WC}\r\n\tunion all\r\n\tselect a.PremiumMasterCalculationId,a.RunDate,'Schedule' as ModifiedPremiumType,\r\n\ta.ScheduleModifiedDirectWrittenPremium as ModifiedPremium,a.GeneratedRecordIndicator,b.PremiumMasterRunDate,b.PremiumTransactionEnteredDate,a.SourceSystemId\r\n\tfrom ModifiedPremiumWorkersCompensationCalculation a\r\n\tjoin PremiumMasterCalculation b\r\n\ton a.PremiumMasterCalculationId=b.PremiumMasterCalculationId\r\n\twhere a.ScheduleModifiedDirectWrittenPremium<>0\r\n\tand a.CreatedDate>'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t@{pipeline().parameters.WHERE_CLAUSE_WC}\r\n\tunion all\r\n\tselect a.PremiumMasterCalculationId,a.RunDate,'Experience' as ModifiedPremiumType,\r\n\ta.ExperienceModifiedDirectWrittenPremium as ModifiedPremium,a.GeneratedRecordIndicator,b.PremiumMasterRunDate,b.PremiumTransactionEnteredDate,a.SourceSystemId\r\n\tfrom ModifiedPremiumWorkersCompensationCalculation a\r\n\tjoin PremiumMasterCalculation b\r\n\ton a.PremiumMasterCalculationId=b.PremiumMasterCalculationId\r\n\twhere a.ExperienceModifiedDirectWrittenPremium<>0\r\n\tand a.CreatedDate>'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t@{pipeline().parameters.WHERE_CLAUSE_WC}\r\n\tunion all\r\n\tselect a.PremiumMasterCalculationId,a.RunDate,'Subject' as ModifiedPremiumType,\r\n\ta.SubjectDirectWrittenPremium as ModifiedPremium,a.GeneratedRecordIndicator,b.PremiumMasterRunDate,b.PremiumTransactionEnteredDate,a.SourceSystemId\r\n\tfrom ModifiedPremiumWorkersCompensationCalculation a\r\n\tjoin PremiumMasterCalculation b\r\n\ton a.PremiumMasterCalculationId=b.PremiumMasterCalculationId\r\n\twhere a.SubjectDirectWrittenPremium<>0\r\n\tand a.CreatedDate>'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t@{pipeline().parameters.WHERE_CLAUSE_WC}\r\n\t\r\n\tunion all\r\n\tselect a.PremiumMasterCalculationId,a.RunDate,'Other' as ModifiedPremiumType,\r\n\ta.OtherModifiedPremium as ModifiedPremium,a.GeneratedRecordIndicator,NULL,NULL,a.SourceSystemId\r\n\tfrom ModifiedPremiumNonWorkersCompensationCalculation a\r\n\twhere GeneratedRecordIndicator=1\r\n\tand a.OtherModifiedPremium<>0\r\n\tand a.CreatedDate>'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t@{pipeline().parameters.WHERE_CLAUSE_OTHER}\r\n\tunion all\r\n\tselect a.PremiumMasterCalculationId,a.RunDate,'Schedule' as ModifiedPremiumType,\r\n\ta.ScheduleModifiedPremium as ModifiedPremium,a.GeneratedRecordIndicator,NULL,NULL,a.SourceSystemId\r\n\tfrom ModifiedPremiumNonWorkersCompensationCalculation a\r\n\twhere GeneratedRecordIndicator=1\r\n\tand a.ScheduleModifiedPremium<>0\r\n\tand a.CreatedDate>'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t@{pipeline().parameters.WHERE_CLAUSE_OTHER}\r\n\tunion all\r\n\tselect a.PremiumMasterCalculationId,a.RunDate,'Experience' as ModifiedPremiumType,\r\n\ta.ExperienceModifiedPremium as ModifiedPremium,a.GeneratedRecordIndicator,NULL,NULL,a.SourceSystemId\r\n\tfrom ModifiedPremiumNonWorkersCompensationCalculation a\r\n\twhere GeneratedRecordIndicator=1\r\n\tand a.ExperienceModifiedPremium<>0\r\n\tand a.CreatedDate>'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t@{pipeline().parameters.WHERE_CLAUSE_OTHER}\r\n\tunion all\r\n\tselect a.PremiumMasterCalculationId,a.RunDate,'Subject' as ModifiedPremiumType,\r\n\ta.SubjectWrittenPremium as ModifiedPremium,a.GeneratedRecordIndicator,NULL,NULL,a.SourceSystemId\r\n\tfrom ModifiedPremiumNonWorkersCompensationCalculation a\r\n\twhere GeneratedRecordIndicator=1\r\n\tand a.SubjectWrittenPremium<>0\r\n\tand a.CreatedDate>'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t@{pipeline().parameters.WHERE_CLAUSE_OTHER}\n),\nEXP_Default AS (\n\tSELECT\n\tPremiumMasterCalculationId,\n\tRunDate,\n\tModifiedPremiumType,\n\tModifiedPremium,\n\tGeneratedRecordIndicator AS i_GeneratedRecordIndicator,\n\tPremiumMasterRunDate AS i_PremiumMasterRunDate,\n\tPremiumTransactionEnteredDate AS i_PremiumTransactionEnteredDate,\n\t-- *INF*: IIF(i_GeneratedRecordIndicator='F',i_PremiumMasterRunDate,ADD_TO_DATE(LAST_DAY(TRUNC(RunDate,'MM')),'SS',86399))\n\tIFF(i_GeneratedRecordIndicator = 'F', i_PremiumMasterRunDate, ADD_TO_DATE(LAST_DAY(TRUNC(RunDate, 'MM')), 'SS', 86399)) AS PremiumMasterRunDate,\n\t-- *INF*: IIF(i_GeneratedRecordIndicator='F',TRUNC(i_PremiumTransactionEnteredDate,'DD'),TRUNC(RunDate,'DD'))\n\tIFF(i_GeneratedRecordIndicator = 'F', TRUNC(i_PremiumTransactionEnteredDate, 'DD'), TRUNC(RunDate, 'DD')) AS PremiumTransactionEnteredDate,\n\t-- *INF*: IIF(i_GeneratedRecordIndicator='F','0','1')\n\tIFF(i_GeneratedRecordIndicator = 'F', '0', '1') AS GeneratedRecordIndicator,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tSourceSystemID,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate\n\tFROM SQ_Source\n),\nLKP_Target AS (\n\tSELECT\n\tWorkNormalizedModifiedPremiumId,\n\tPremiumMasterCalculationId,\n\tRunDate,\n\tModifiedPremiumType\n\tFROM (\n\t\tselect a.WorkNormalizedModifiedPremiumId as WorkNormalizedModifiedPremiumId,\r\n\t\ta.PremiumMasterCalculationId as PremiumMasterCalculationId,\r\n\t\ta.RunDate as RunDate,\r\n\t\ta.ModifiedPremiumType as ModifiedPremiumType\r\n\t\tfrom (\r\n\t\tSELECT a.WorkNormalizedModifiedPremiumId,\r\n\t\ta.PremiumMasterCalculationId,\r\n\t\ta.RunDate,\r\n\t\ta.ModifiedPremiumType\r\n\t\tFROM WorkNormalizedModifiedPremium a\r\n\t\tjoin ModifiedPremiumWorkersCompensationCalculation b\r\n\t\ton a.PremiumMasterCalculationId=b.PremiumMasterCalculationId\r\n\t\tand a.RunDate=b.RunDate\r\n\t\tand b.CreatedDate>='@{pipeline().parameters.SELECTION_START_TS}'\r\n\t\tunion all\r\n\t\tSELECT a.WorkNormalizedModifiedPremiumId,\r\n\t\ta.PremiumMasterCalculationId,\r\n\t\ta.RunDate,\r\n\t\ta.ModifiedPremiumType\r\n\t\tFROM WorkNormalizedModifiedPremium a\r\n\t\tjoin ModifiedPremiumNonWorkersCompensationCalculation b\r\n\t\ton a.PremiumMasterCalculationId=b.PremiumMasterCalculationId\r\n\t\tand a.RunDate=b.RunDate\r\n\t\tand b.CreatedDate>='@{pipeline().parameters.SELECTION_START_TS}') a\r\n\t\torder by a.PremiumMasterCalculationId,a.RunDate,a.ModifiedPremiumType\r\n\t\t--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PremiumMasterCalculationId,RunDate,ModifiedPremiumType ORDER BY WorkNormalizedModifiedPremiumId) = 1\n),\nRTR_Insert AS (\n\tSELECT\n\tLKP_Target.WorkNormalizedModifiedPremiumId,\n\tEXP_Default.PremiumMasterCalculationId,\n\tEXP_Default.RunDate,\n\tEXP_Default.ModifiedPremiumType,\n\tEXP_Default.ModifiedPremium,\n\tEXP_Default.PremiumMasterRunDate,\n\tEXP_Default.PremiumTransactionEnteredDate,\n\tEXP_Default.GeneratedRecordIndicator,\n\tEXP_Default.AuditId,\n\tEXP_Default.SourceSystemID,\n\tEXP_Default.CreatedDate,\n\tEXP_Default.ModifiedDate\n\tFROM EXP_Default\n\tLEFT JOIN LKP_Target\n\tON LKP_Target.PremiumMasterCalculationId = EXP_Default.PremiumMasterCalculationId AND LKP_Target.RunDate = EXP_Default.RunDate AND LKP_Target.ModifiedPremiumType = EXP_Default.ModifiedPremiumType\n),\nRTR_Insert_INSERT AS (SELECT * FROM RTR_Insert WHERE ISNULL(WorkNormalizedModifiedPremiumId)),\nWorkNormalizedModifiedPremium AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkNormalizedModifiedPremium\n\t(AuditId, SourceSystemID, CreatedDate, ModifiedDate, PremiumMasterCalculationId, RunDate, ModifiedPremiumType, ModifiedPremium, PremiumMasterRunDate, PremiumTransactionEnteredDate, GeneratedRecordFlag)\n\tSELECT \n\tAUDITID, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tPREMIUMMASTERCALCULATIONID, \n\tRUNDATE, \n\tMODIFIEDPREMIUMTYPE, \n\tMODIFIEDPREMIUM, \n\tPREMIUMMASTERRUNDATE, \n\tPREMIUMTRANSACTIONENTEREDDATE, \n\tGeneratedRecordIndicator AS GENERATEDRECORDFLAG\n\tFROM RTR_Insert_INSERT\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "244834"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "893408"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7543481"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "07/01/2023 09:08:21"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/01/2023 23:13:55"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_CLAIM"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_CLAIM"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "WHERE_CLAUSE_WC": {
+                "type": "string",
+                "defaultValue": ""
+            },
+            "WHERE_CLAUSE_OTHER": {
+                "type": "string",
+                "defaultValue": ""
+            }
+        },
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,87 @@
+{
+    "name": "s_m_POL_DM_LOAD_CatastropheDim",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DM_LOAD_CatastropheDim",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_claim_occurrence AS (\n\tSELECT distinct claim_cat_code,\r\n\tclaim_cat_start_date,\r\n\tclaim_cat_end_date\r\n\t FROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_occurrence WHERE claim_cat_code<>'N/A' and Modified_Date>='@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_GetValues AS (\n\tSELECT\n\tclaim_cat_code AS i_claim_cat_code,\n\tclaim_cat_start_date AS i_claim_cat_start_date,\n\tclaim_cat_end_date AS i_claim_cat_end_date,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\ti_claim_cat_code AS o_claim_cat_code,\n\t-- *INF*: TO_CHAR(i_claim_cat_start_date,'YYYY-MM-DD')\n\tTO_CHAR(i_claim_cat_start_date, 'YYYY-MM-DD') AS o_claim_cat_start_date,\n\t-- *INF*: TO_CHAR(i_claim_cat_end_date,'YYYY-MM-DD')\n\tTO_CHAR(i_claim_cat_end_date, 'YYYY-MM-DD') AS o_claim_cat_end_date\n\tFROM SQ_claim_occurrence\n),\nLKP_CatastropheDim AS (\n\tSELECT\n\tCatastropheDimId,\n\tCatastropheCode,\n\tCatastropheStartDate,\n\tCatastropheEndDate\n\tFROM (\n\t\tSELECT \n\t\t\tCatastropheDimId,\n\t\t\tCatastropheCode,\n\t\t\tCatastropheStartDate,\n\t\t\tCatastropheEndDate\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.CatastropheDim\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY CatastropheCode,CatastropheStartDate,CatastropheEndDate ORDER BY CatastropheDimId) = 1\n),\nRTR_Insert AS (\n\tSELECT\n\tLKP_CatastropheDim.CatastropheDimId,\n\tEXP_GetValues.o_AuditID AS AuditID,\n\tEXP_GetValues.o_CreatedDate AS CreatedDate,\n\tEXP_GetValues.o_ModifiedDate AS ModifiedDate,\n\tEXP_GetValues.o_claim_cat_code AS claim_cat_code,\n\tEXP_GetValues.o_claim_cat_start_date AS claim_cat_start_date,\n\tEXP_GetValues.o_claim_cat_end_date AS claim_cat_end_date\n\tFROM EXP_GetValues\n\tLEFT JOIN LKP_CatastropheDim\n\tON LKP_CatastropheDim.CatastropheCode = EXP_GetValues.o_claim_cat_code AND LKP_CatastropheDim.CatastropheStartDate = EXP_GetValues.o_claim_cat_start_date AND LKP_CatastropheDim.CatastropheEndDate = EXP_GetValues.o_claim_cat_end_date\n),\nRTR_Insert_INSERT AS (SELECT * FROM RTR_Insert WHERE ISNULL(CatastropheDimId)),\nTGT_CatastropheDim_INSERT AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.CatastropheDim\n\t(AuditID, CreatedDate, ModifiedDate, CatastropheCode, CatastropheStartDate, CatastropheEndDate)\n\tSELECT \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tclaim_cat_code AS CATASTROPHECODE, \n\tclaim_cat_start_date AS CATASTROPHESTARTDATE, \n\tclaim_cat_end_date AS CATASTROPHEENDDATE\n\tFROM RTR_Insert_INSERT\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "244879"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "893608"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7545031"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "07/01/2023 12:24:09"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/02/2023 12:45:34"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_DATA_MART_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "EDW_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "RPT_EDM"
+            },
+            "SOURCE_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "V2"
+            },
+            "SOURCE_TABLE_OWNER_V3": {
+                "type": "string",
+                "defaultValue": "V3"
+            }
+        },
+        "folder": {
+            "name": "Policy DataMart/"
+        },
+        "annotations": []
+    }
+}

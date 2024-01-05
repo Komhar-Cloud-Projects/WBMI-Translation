@@ -1,0 +1,79 @@
+{
+    "name": "s_m_CMN_IR_Load_SupClassificationWorkersCompensation_FlatFile",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CMN_IR_Load_SupClassificationWorkersCompensation_F_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkCompClass AS (\n\n-- TODO Manual --\n\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tLine_of_Business_Abbreviation AS LineOfBusinessAbbreviation,\n\tRating_State_Code AS RatingStateCode,\n\tClass_Effective_Date AS ClassEffectiveDate,\n\tClass_Expiration_Date AS ClassExpirationDate,\n\tClass_Code AS ClassCode,\n\tClass_Description AS ClassDescription,\n\tClass_Code_Originating_Organization AS ClassCodeOriginatingOrganization,\n\tRatable_Class_Indicator AS RatableClassIndicator,\n\tSubject_To_Experience_Modification_Class_Indicator AS SubjectToExperienceModificationClassIndicator,\n\tExperience_Modification_Class_Indicator AS ExperienceModificationClassIndicator,\n\tScheduled_Modification_Class_Indicator AS ScheduledModificationClassIndicator,\n\tSurcharge_Class_Indicator AS SurchargeClassIndicator,\n\tOther_Modification_Class_Indicator AS OtherModificationClassIndicator,\n\tHazard_Group_Code AS HazardGroupCode,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tsysdate AS o_CreatedDate,\n\tsysdate AS o_ModifiedDate,\n\tLineOfBusinessAbbreviation AS i_LineOfBusinessAbbreviation,\n\tRatingStateCode AS i_RatingStateCode,\n\t-- *INF*: TO_DATE(ClassEffectiveDate,'YYYY-MM-DD HH24:MI:SS.MS')\n\tTO_DATE(ClassEffectiveDate, 'YYYY-MM-DD HH24:MI:SS.MS') AS i_ClassEffectiveDate,\n\t-- *INF*: TO_DATE(ClassExpirationDate,'YYYY-MM-DD HH24:MI:SS.MS')\n\tTO_DATE(ClassExpirationDate, 'YYYY-MM-DD HH24:MI:SS.MS') AS i_ClassExpirationDate,\n\tClassCode AS i_ClassCode,\n\tClassDescription AS i_ClassDescription,\n\tClassCodeOriginatingOrganization AS i_ClassCodeOriginatingOrganization,\n\tRatableClassIndicator AS i_RatableClassIndicator,\n\tSubjectToExperienceModificationClassIndicator AS i_SubjectToExperienceModificationClassIndicator,\n\tExperienceModificationClassIndicator AS i_ExperienceModificationClassIndicator,\n\tScheduledModificationClassIndicator AS i_ScheduledModificationClassIndicator,\n\tSurchargeClassIndicator AS i_SurchargeClassIndicator,\n\tOtherModificationClassIndicator AS i_OtherModificationClassIndicator,\n\tHazardGroupCode AS i_HazardGroupCode,\n\tMerit_Rating_Class_Indicator\n\tFROM SQ_WorkCompClass\n),\nSupClassificationWorkersCompensation_IR AS (\n\tTRUNCATE TABLE SupClassificationWorkersCompensation;\n\tINSERT INTO SupClassificationWorkersCompensation\n\t(AuditId, CreatedDate, ModifiedDate, LineOfBusinessAbbreviation, RatingStateCode, EffectiveDate, ExpirationDate, ClassCode, ClassDescription, OriginatingOrganizationCode, RatableClassIndicator, SubjectToExperienceModificationClassIndicator, ExperienceModificationClassIndicator, ScheduledModificationClassIndicator, SurchargeClassIndicator, OtherModificationClassIndicator, HazardGroupCode, MeritRatingClassIndicator)\n\tSELECT \n\to_AuditId AS AUDITID, \n\to_CreatedDate AS CREATEDDATE, \n\to_ModifiedDate AS MODIFIEDDATE, \n\ti_LineOfBusinessAbbreviation AS LINEOFBUSINESSABBREVIATION, \n\ti_RatingStateCode AS RATINGSTATECODE, \n\ti_ClassEffectiveDate AS EFFECTIVEDATE, \n\ti_ClassExpirationDate AS EXPIRATIONDATE, \n\ti_ClassCode AS CLASSCODE, \n\ti_ClassDescription AS CLASSDESCRIPTION, \n\ti_ClassCodeOriginatingOrganization AS ORIGINATINGORGANIZATIONCODE, \n\ti_RatableClassIndicator AS RATABLECLASSINDICATOR, \n\ti_SubjectToExperienceModificationClassIndicator AS SUBJECTTOEXPERIENCEMODIFICATIONCLASSINDICATOR, \n\ti_ExperienceModificationClassIndicator AS EXPERIENCEMODIFICATIONCLASSINDICATOR, \n\ti_ScheduledModificationClassIndicator AS SCHEDULEDMODIFICATIONCLASSINDICATOR, \n\ti_SurchargeClassIndicator AS SURCHARGECLASSINDICATOR, \n\ti_OtherModificationClassIndicator AS OTHERMODIFICATIONCLASSINDICATOR, \n\ti_HazardGroupCode AS HAZARDGROUPCODE, \n\tMerit_Rating_Class_Indicator AS MERITRATINGCLASSINDICATOR\n\tFROM EXP_Detect_Changes\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246484"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905454"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603045"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:02:48"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 22:02:41"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_InsuranceReference_Policy"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "INPUTFILENAME": {
+                "type": "string",
+                "defaultValue": "$PMSourceFileDir\\Classification\\WorkCompClass.csv"
+            }
+        },
+        "folder": {
+            "name": "Common DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

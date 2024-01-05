@@ -1,0 +1,79 @@
+{
+    "name": "s_m_CMN_DW_Load_AnnualStatementLine",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CMN_DW_Load_AnnualStatementLine",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AnnualStatementLine AS (\n\tSELECT\n\t\tAnnualStatementLineId,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tSchedulePNumber,\n\t\tSchedulePName,\n\t\tAnnualStatementLineNumber,\n\t\tAnnualStatementLineNumberDescription,\n\t\tAnnualStatementLineCode,\n\t\tAnnualStatementLineCodeDescription,\n\t\tSubAnnualStatementLineNumber,\n\t\tSubAnnualStatementLineNumberDescription,\n\t\tSubAnnualStatementLineCode,\n\t\tSubAnnualStatementLineCodeDescription,\n\t\tSubNonAnnualStatementLineCode,\n\t\tSubNonAnnualStatementLineCodeDescription\n\tFROM AnnualStatementLine\n),\nEXP_Trim_Values AS (\n\tSELECT\n\tAnnualStatementLineId,\n\tEffectiveDate,\n\tExpirationDate,\n\tSchedulePNumber,\n\tSchedulePName,\n\tAnnualStatementLineNumber,\n\tAnnualStatementLineNumberDescription,\n\tAnnualStatementLineCode,\n\tAnnualStatementLineCodeDescription,\n\tSubAnnualStatementLineNumber,\n\tSubAnnualStatementLineNumberDescription,\n\tSubAnnualStatementLineCode,\n\tSubAnnualStatementLineCodeDescription,\n\tSubNonAnnualStatementLineCode,\n\tSubNonAnnualStatementLineCodeDescription,\n\t1 AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tCURRENT_TIMESTAMP AS o_CreatedDate,\n\tCURRENT_TIMESTAMP AS o_ModifiedDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_AnnualStatementLine\n),\nLKP_AnnualStatementLine AS (\n\tSELECT\n\tAnnualStatementLineId\n\tFROM (\n\t\tSELECT \n\t\t\tAnnualStatementLineId\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.AnnualStatementLine\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AnnualStatementLineId ORDER BY AnnualStatementLineId) = 1\n),\nRTR_Insert_Update AS (\n\tSELECT\n\tLKP_AnnualStatementLine.AnnualStatementLineId AS lkp_AnnualStatementLineId,\n\tEXP_Trim_Values.AnnualStatementLineId,\n\tEXP_Trim_Values.EffectiveDate AS EffectiveFromDate,\n\tEXP_Trim_Values.ExpirationDate AS EffectiveToDate,\n\tEXP_Trim_Values.SchedulePNumber,\n\tEXP_Trim_Values.SchedulePName,\n\tEXP_Trim_Values.AnnualStatementLineNumber,\n\tEXP_Trim_Values.AnnualStatementLineNumberDescription,\n\tEXP_Trim_Values.AnnualStatementLineCode,\n\tEXP_Trim_Values.AnnualStatementLineCodeDescription,\n\tEXP_Trim_Values.SubAnnualStatementLineNumber,\n\tEXP_Trim_Values.SubAnnualStatementLineNumberDescription,\n\tEXP_Trim_Values.SubAnnualStatementLineCode,\n\tEXP_Trim_Values.SubAnnualStatementLineCodeDescription,\n\tEXP_Trim_Values.SubNonAnnualStatementLineCode,\n\tEXP_Trim_Values.SubNonAnnualStatementLineCodeDescription,\n\tEXP_Trim_Values.o_CurrentSnapshotFlag AS CurrentSnapshotFlag,\n\tEXP_Trim_Values.o_AuditId AS AuditId,\n\tEXP_Trim_Values.o_CreatedDate AS CreatedDate,\n\tEXP_Trim_Values.o_ModifiedDate AS ModifiedDate,\n\tEXP_Trim_Values.o_SourceSystemId AS SourceSystemId\n\tFROM EXP_Trim_Values\n\tLEFT JOIN LKP_AnnualStatementLine\n\tON LKP_AnnualStatementLine.AnnualStatementLineId = EXP_Trim_Values.AnnualStatementLineId\n),\nRTR_Insert_Update_INSERT AS (SELECT * FROM RTR_Insert_Update WHERE ISNULL(lkp_AnnualStatementLineId)),\nRTR_Insert_Update_UPDATE AS (SELECT * FROM RTR_Insert_Update WHERE NOT ISNULL(lkp_AnnualStatementLineId)),\nTGT_AnnualStatementLine_INSERT AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.AnnualStatementLine\n\t(AnnualStatementLineId, CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, SchedulePNumber, SchedulePName, AnnualStatementLineNumber, AnnualStatementLineNumberDescription, AnnualStatementLineCode, AnnualStatementLineCodeDescription, SubAnnualStatementLineNumber, SubAnnualStatementLineNumberDescription, SubAnnualStatementLineCode, SubAnnualStatementLineCodeDescription, SubNonAnnualStatementLineCode, SubNonAnnualStatementLineCodeDescription)\n\tSELECT \n\tANNUALSTATEMENTLINEID, \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEffectiveFromDate AS EFFECTIVEDATE, \n\tEffectiveToDate AS EXPIRATIONDATE, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tSCHEDULEPNUMBER, \n\tSCHEDULEPNAME, \n\tANNUALSTATEMENTLINENUMBER, \n\tANNUALSTATEMENTLINENUMBERDESCRIPTION, \n\tANNUALSTATEMENTLINECODE, \n\tANNUALSTATEMENTLINECODEDESCRIPTION, \n\tSUBANNUALSTATEMENTLINENUMBER, \n\tSUBANNUALSTATEMENTLINENUMBERDESCRIPTION, \n\tSUBANNUALSTATEMENTLINECODE, \n\tSUBANNUALSTATEMENTLINECODEDESCRIPTION, \n\tSUBNONANNUALSTATEMENTLINECODE, \n\tSUBNONANNUALSTATEMENTLINECODEDESCRIPTION\n\tFROM RTR_Insert_Update_INSERT\n),\nUPD_AnnualStatementLine AS (\n\tSELECT\n\tAnnualStatementLineId, \n\tAuditId, \n\tEffectiveFromDate, \n\tEffectiveToDate, \n\tModifiedDate, \n\tSchedulePNumber, \n\tSchedulePName, \n\tAnnualStatementLineNumber, \n\tAnnualStatementLineNumberDescription, \n\tAnnualStatementLineCode, \n\tAnnualStatementLineCodeDescription, \n\tSubAnnualStatementLineNumber, \n\tSubAnnualStatementLineNumberDescription, \n\tSubAnnualStatementLineCode, \n\tSubAnnualStatementLineCodeDescription, \n\tSubNonAnnualStatementLineCode, \n\tSubNonAnnualStatementLineCodeDescription, \n\tSourceSystemId\n\tFROM RTR_Insert_Update_UPDATE\n),\nTGT_AnnualStatementLine_UPDATE AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.AnnualStatementLine AS T\n\tUSING UPD_AnnualStatementLine AS S\n\tON T.AnnualStatementLineId = S.AnnualStatementLineId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.AuditId = S.AuditId, T.EffectiveDate = S.EffectiveFromDate, T.ExpirationDate = S.EffectiveToDate, T.SourceSystemId = S.SourceSystemId, T.ModifiedDate = S.ModifiedDate, T.SchedulePNumber = S.SchedulePNumber, T.SchedulePName = S.SchedulePName, T.AnnualStatementLineNumber = S.AnnualStatementLineNumber, T.AnnualStatementLineNumberDescription = S.AnnualStatementLineNumberDescription, T.AnnualStatementLineCode = S.AnnualStatementLineCode, T.AnnualStatementLineCodeDescription = S.AnnualStatementLineCodeDescription, T.SubAnnualStatementLineNumber = S.SubAnnualStatementLineNumber, T.SubAnnualStatementLineNumberDescription = S.SubAnnualStatementLineNumberDescription, T.SubAnnualStatementLineCode = S.SubAnnualStatementLineCode, T.SubAnnualStatementLineCodeDescription = S.SubAnnualStatementLineCodeDescription, T.SubNonAnnualStatementLineCode = S.SubNonAnnualStatementLineCode, T.SubNonAnnualStatementLineCodeDescription = S.SubNonAnnualStatementLineCodeDescription\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246535"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905690"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604838"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 22:04:54"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 11:42:10"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_InsuranceReference_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "InsRef"
+            }
+        },
+        "folder": {
+            "name": "Common DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

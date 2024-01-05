@@ -1,0 +1,79 @@
+{
+    "name": "s_m_AGY_DW_LOAD_Underwriter",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_DW_LOAD_Underwriter",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_underwriter_stage AS (\n\tSELECT\n\t\tuw_stage_id,\n\t\tuw_code,\n\t\tuw_first_name,\n\t\tuw_middle_name,\n\t\tuw_last_name,\n\t\tuw_suffix,\n\t\tuw_extension,\n\t\trouting_station,\n\t\temp_id,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM underwriter_stage\n),\nEXP_defaultvalues AS (\n\tSELECT\n\tuw_code AS in_uw_code,\n\tuw_first_name AS in_uw_first_name,\n\tuw_middle_name AS in_uw_middle_name,\n\tuw_last_name AS in_uw_last_name,\n\tuw_suffix AS in_uw_suffix,\n\tuw_extension AS in_uw_extension,\n\trouting_station AS in_routing_station,\n\t-- *INF*: iif(isnull(in_uw_code),'N/A',iif(IS_SPACES(in_uw_code),'N/A',in_uw_code))\n\tIFF(in_uw_code IS NULL, 'N/A', IFF(IS_SPACES(in_uw_code), 'N/A', in_uw_code)) AS uw_code,\n\t-- *INF*: iif(isnull(in_uw_first_name),'N/A',iif(IS_SPACES(in_uw_first_name),'N/A',ltrim(rtrim(in_uw_first_name))))\n\tIFF(in_uw_first_name IS NULL, 'N/A', IFF(IS_SPACES(in_uw_first_name), 'N/A', ltrim(rtrim(in_uw_first_name)))) AS uw_first_name,\n\t-- *INF*: iif(isnull(in_uw_middle_name),'N/A',iif(IS_SPACES(in_uw_middle_name),'N/A',ltrim(rtrim(in_uw_middle_name))))\n\tIFF(in_uw_middle_name IS NULL, 'N/A', IFF(IS_SPACES(in_uw_middle_name), 'N/A', ltrim(rtrim(in_uw_middle_name)))) AS uw_middle_name,\n\t-- *INF*: iif(isnull(in_uw_last_name),'N/A',iif(IS_SPACES(in_uw_last_name),'N/A',ltrim(rtrim(in_uw_last_name))))\n\tIFF(in_uw_last_name IS NULL, 'N/A', IFF(IS_SPACES(in_uw_last_name), 'N/A', ltrim(rtrim(in_uw_last_name)))) AS uw_last_name,\n\t-- *INF*: iif(isnull(in_uw_suffix),'N/A',iif(IS_SPACES(in_uw_suffix),'N/A',in_uw_suffix))\n\tIFF(in_uw_suffix IS NULL, 'N/A', IFF(IS_SPACES(in_uw_suffix), 'N/A', in_uw_suffix)) AS uw_suffix,\n\t-- *INF*: iif(isnull(in_uw_extension),'N/A ',iif(IS_SPACES(in_uw_extension),'N/A ',in_uw_extension))\n\tIFF(in_uw_extension IS NULL, 'N/A ', IFF(IS_SPACES(in_uw_extension), 'N/A ', in_uw_extension)) AS uw_extension,\n\t-- *INF*: iif(isnull(in_routing_station),'N/A',iif(IS_SPACES(in_routing_station),'N/A',in_routing_station))\n\tIFF(in_routing_station IS NULL, 'N/A', IFF(IS_SPACES(in_routing_station), 'N/A', in_routing_station)) AS routing_station,\n\tSOURCE_SYSTEM_ID\n\tFROM SQ_underwriter_stage\n),\nLKP_Underwriter AS (\n\tSELECT\n\tuw_id,\n\tuw_ak_id,\n\tuw_first_name,\n\tuw_mid_name,\n\tuw_last_name,\n\tuw_sfx,\n\tuw_extension,\n\trouting_station,\n\tuw_code\n\tFROM (\n\t\tSELECT a.uw_id as uw_id,\r\n\t\ta.uw_ak_id as uw_ak_id,\r\n\t\ta.uw_first_name as uw_first_name, \r\n\t\ta.uw_mid_name as uw_mid_name, \r\n\t\ta.uw_last_name as uw_last_name, \r\n\t\ta.uw_sfx as uw_sfx, \r\n\t\ta.uw_extension as uw_extension,\r\n\t\ta.routing_station as routing_station,\r\n\t\ta.uw_code as uw_code \r\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.underwriter a\r\n\t\tWHERE  a.uw_id IN (SELECT MAX(b.uw_id)\r\n\t\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.underwriter b\r\n\t\t\tWHERE crrnt_snpsht_flag=1\r\n\t\t\tGROUP BY b.uw_code)\r\n\t\tORDER BY uw_code\r\n\t\t\r\n\t\t--IN Subquery exists so that we only pick the MAX value of the PK for each AK Group\r\n\t\t--WHERE clause is always eff_to_date = '12/31/2100'\r\n\t\t--GROUP BY clause is always the AK\r\n\t\t--ORDER BY clause is always the AK.  When any comments exist in the SQL override Informatica will no longer generate an ORDER BY statement\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY uw_code ORDER BY uw_id) = 1\n),\nSEQ_Underwriter AS (\n\tCREATE SEQUENCE SEQ_Underwriter\n\tSTART = 0\n\tINCREMENT = 1;\n),\nEXP_DetectChanges AS (\n\tSELECT\n\tEXP_defaultvalues.uw_first_name,\n\tEXP_defaultvalues.uw_middle_name,\n\tEXP_defaultvalues.uw_last_name,\n\tEXP_defaultvalues.uw_suffix,\n\tEXP_defaultvalues.uw_extension,\n\tEXP_defaultvalues.routing_station,\n\tLKP_Underwriter.uw_id AS uw_id_old,\n\tLKP_Underwriter.uw_ak_id,\n\tLKP_Underwriter.uw_first_name AS uw_first_name_old,\n\tLKP_Underwriter.uw_mid_name AS uw_mid_name_old,\n\tLKP_Underwriter.uw_last_name AS uw_last_name_old,\n\tLKP_Underwriter.uw_sfx AS uw_sfx_old,\n\tLKP_Underwriter.uw_extension AS uw_extension_old,\n\tLKP_Underwriter.routing_station AS routing_station_old,\n\t-- *INF*: iif(isnull(uw_id_old),'NEW',\r\n\t-- \tiif((uw_first_name <> uw_first_name_old ) or\r\n\t-- \t(uw_middle_name <> uw_mid_name_old) or\r\n\t-- \t(uw_last_name <> uw_last_name_old) or\r\n\t-- \t(uw_suffix <> uw_sfx_old ) or\r\n\t-- \t(uw_extension <> uw_extension_old ) or\r\n\t-- \t(routing_station<> routing_station_old ),\r\n\t-- \t'UPDATE',\r\n\t-- \t'NOCHANGE'))\n\tIFF(uw_id_old IS NULL, 'NEW', IFF(( uw_first_name <> uw_first_name_old ) OR ( uw_middle_name <> uw_mid_name_old ) OR ( uw_last_name <> uw_last_name_old ) OR ( uw_suffix <> uw_sfx_old ) OR ( uw_extension <> uw_extension_old ) OR ( routing_station <> routing_station_old ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,\n\tv_changed_flag AS changed_flag,\n\t1 AS crrnt_snpsht_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t-- *INF*: iif(v_changed_flag='NEW',\r\n\t-- \tto_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)\r\n\t-- \r\n\t-- --sysdate normally has a time value.  We don't want the time value as our effectivity runs from day to day starting at midnight\r\n\t-- \r\n\t-- \r\n\t-- \n\tIFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,\n\t-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\r\n\t-- \r\n\t-- \r\n\t-- \r\n\t-- \r\n\t-- \n\tto_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,\n\tsysdate AS created_date,\n\tsysdate AS modified_date,\n\tEXP_defaultvalues.SOURCE_SYSTEM_ID,\n\tSEQ_Underwriter.NEXTVAL,\n\t-- *INF*: IIF(v_changed_flag='NEW',\r\n\t-- NEXTVAL,\r\n\t-- uw_ak_id)\n\tIFF(v_changed_flag = 'NEW', NEXTVAL, uw_ak_id) AS out_uw_AK_ID\n\tFROM EXP_defaultvalues\n\tLEFT JOIN LKP_Underwriter\n\tON LKP_Underwriter.uw_code = EXP_defaultvalues.uw_code\n),\nFIL_Insert AS (\n\tSELECT\n\tEXP_DetectChanges.out_uw_AK_ID, \n\tEXP_defaultvalues.uw_code, \n\tEXP_DetectChanges.uw_first_name, \n\tEXP_DetectChanges.uw_middle_name, \n\tEXP_DetectChanges.uw_last_name, \n\tEXP_DetectChanges.uw_suffix, \n\tEXP_DetectChanges.uw_extension, \n\tEXP_DetectChanges.routing_station, \n\tEXP_DetectChanges.crrnt_snpsht_flag, \n\tEXP_DetectChanges.audit_id, \n\tEXP_DetectChanges.eff_from_date, \n\tEXP_DetectChanges.eff_to_date, \n\tEXP_DetectChanges.changed_flag, \n\tEXP_DetectChanges.created_date, \n\tEXP_DetectChanges.modified_date, \n\tEXP_DetectChanges.SOURCE_SYSTEM_ID\n\tFROM EXP_DetectChanges\n\t -- Manually join with EXP_defaultvalues\n\tWHERE changed_flag='NEW' or changed_flag='UPDATE'\n),\nunderwriter_Insert AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.underwriter\n\t(uw_ak_id, uw_code, uw_first_name, uw_mid_name, uw_last_name, uw_sfx, uw_extension, routing_station, crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, source_system_id, created_date, modified_date)\n\tSELECT \n\tout_uw_AK_ID AS UW_AK_ID, \n\tUW_CODE, \n\tUW_FIRST_NAME, \n\tuw_middle_name AS UW_MID_NAME, \n\tUW_LAST_NAME, \n\tuw_suffix AS UW_SFX, \n\tUW_EXTENSION, \n\tROUTING_STATION, \n\tCRRNT_SNPSHT_FLAG, \n\tAUDIT_ID, \n\tEFF_FROM_DATE, \n\tEFF_TO_DATE, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tCREATED_DATE, \n\tMODIFIED_DATE\n\tFROM FIL_Insert\n),\nSQ_underwriter1 AS (\n\tSELECT a.uw_id, \r\n\ta.uw_code,\r\n\t a.eff_from_date, \r\n\ta.eff_to_date \r\n\tFROM\r\n\t @{pipeline().parameters.SOURCE_TABLE_OWNER}.underwriter a\r\n\tWHERE EXISTS(SELECT 1\t\t\t\r\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.underwriter b\r\n\t\tWHERE eff_to_date = '12/31/2100 23:59:59'\r\n\t\tAND a.uw_code = b.uw_code\r\n\t\tGROUP BY UW_CODE\r\n\t\tHAVING COUNT(*) > 1)\r\n\tORDER BY uw_code, eff_from_date  DESC\r\n\t\r\n\t--EXISTS Subquery exists to pick AK Groups that have multiple rows with a 12/31/2100 eff_to_date.\r\n\t--When this condition occurs this is an indication that we must expire one or more of these rows.\r\n\t--WHERE clause is always made up of eff_to_date='12/31/2100' and all columns of the AK\r\n\t--GROUP BY clause is always on AK\r\n\t--HAVING clause stays the same\r\n\t\r\n\t--ORDER BY of main query orders all rows first by the AK and then by the eff_from_date in a DESC format\r\n\t--the descending order is important because this allows us to avoid another lookup and properly apply the\r\n\t--eff_to_date by utilizing a local variable to keep track of the eff_from date of the previous row and then ultimately\r\n\t--utilize that value minus 1 day for the next row\n),\nEXP_Lag_eff_from_date AS (\n\tSELECT\n\tuw_id,\n\tuw_code,\n\teff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- \tuw_code = v_PREV_ROW_uw_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),\r\n\t-- \torig_eff_to_date)\r\n\t-- \t\n\tDECODE(TRUE,\n\tuw_code = v_PREV_ROW_uw_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),\n\torig_eff_to_date) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\teff_from_date AS v_PREV_ROW_eff_from_date,\n\tuw_code AS v_PREV_ROW_uw_code,\n\t0 AS crrnt_snpsht_flag,\n\tsysdate AS modified_date\n\tFROM SQ_underwriter1\n),\nFIL_FirstRowInAKGroup AS (\n\tSELECT\n\tuw_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM EXP_Lag_eff_from_date\n\tWHERE orig_eff_to_date <> eff_to_date\r\n\r\n--If these two dates equal each other we are dealing with the first row in an AK group.  This row\r\n--does not need to be expired or updated for any reason thus it can be filtered out\r\n-- but we must source it to capture the eff_from_date of this row \r\n--so that we can properly expire the subsequent row\n),\nUPD_underwriter AS (\n\tSELECT\n\tuw_id, \n\teff_to_date, \n\tcrrnt_snpsht_flag, \n\tmodified_date\n\tFROM FIL_FirstRowInAKGroup\n),\nunderwriter_update AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.underwriter AS T\n\tUSING UPD_underwriter AS S\n\tON T.uw_id = S.uw_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_date\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246519"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905540"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604604"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 22:18:00"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 05:12:52"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Agency"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Agency"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "dbo"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "dbo"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "AGENCY"
+            }
+        },
+        "folder": {
+            "name": "Agency DataWarehouse/"
+        },
+        "annotations": []
+    }
+}
