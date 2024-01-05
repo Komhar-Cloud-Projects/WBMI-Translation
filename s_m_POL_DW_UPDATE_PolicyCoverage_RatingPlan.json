@@ -1,0 +1,95 @@
+{
+    "name": "s_m_POL_DW_UPDATE_PolicyCoverage_RatingPlan",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_UPDATE_PolicyCoverage_RatingPlan",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nLKP_InsuranceReference AS (\n\tSELECT\n\tInsuranceReferenceDimId,\n\tEnterpriseGroupCode,\n\tInsuranceReferenceLegalEntityCode,\n\tStrategicProfitCenterCode,\n\tInsuranceSegmentCode,\n\tPolicyOfferingCode,\n\tProductCode,\n\tInsuranceReferenceLineOfBusinessCode\n\tFROM (\n\t\tSELECT \n\t\t\tInsuranceReferenceDimId,\n\t\t\tEnterpriseGroupCode,\n\t\t\tInsuranceReferenceLegalEntityCode,\n\t\t\tStrategicProfitCenterCode,\n\t\t\tInsuranceSegmentCode,\n\t\t\tPolicyOfferingCode,\n\t\t\tProductCode,\n\t\t\tInsuranceReferenceLineOfBusinessCode\n\t\tFROM InsuranceReferenceDim\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY EnterpriseGroupCode,InsuranceReferenceLegalEntityCode,StrategicProfitCenterCode,InsuranceSegmentCode,PolicyOfferingCode,ProductCode,InsuranceReferenceLineOfBusinessCode ORDER BY InsuranceReferenceDimId) = 1\n),\nSQ_PolicyCoverage AS (\n\tSelect PolicyCoverageID,PolicyAKID from @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyCoverage\r\n\twhere PolicyAKID in (select PolicyAKID from @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyCoverage\r\n\twhere InsuranceLine in ('WC','WorkersCompensation')\r\n\tgroup by PolicyAKID\r\n\thaving count(distinct RatingPlanAKId)>1)\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_SRC_DataCollect AS (\n\tSELECT\n\tPolicyCoverageID,\n\tPolicyAKID\n\tFROM SQ_PolicyCoverage\n),\nLKP_RatingPlan_DCT AS (\n\tSELECT\n\tRatingPlanAKId,\n\tPolicyAKID,\n\tRatingPlanCode\n\tFROM (\n\t\tselect P.pol_ak_id as PolicyAKID,R.RatingPlanAKId as RatingPlanAKId , RatingPlanCode as RatingPlanCode\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER_V2}.policy P\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.RiskLocation RL\r\n\t\ton P.pol_ak_id=RL.PolicyAKID\r\n\t\tand P.crrnt_snpsht_flag=1\r\n\t\tand RL.CurrentSnapshotFlag=1\r\n\t\tand P.source_sys_id='DCT'\r\n\t\tand RL.SourceSystemID='DCT'\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyCoverage PC\r\n\t\ton RL.RiskLocationAKID=PC.RiskLocationAKID\r\n\t\tand PC.CurrentSnapshotFlag=1\r\n\t\tand PC.SourceSystemID='DCT'\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.RatingCoverage RC\r\n\t\ton PC.PolicyCoverageAKID=RC.PolicyCoverageAKID\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction PT\r\n\t\ton RC.RatingCoverageAKID=PT.RatingCoverageAKId\r\n\t\tand RC.EffectiveDate=PT.EffectiveDate\r\n\t\tand PT.SourceSystemID='DCT'\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.RatingPlan R\r\n\t\ton PC.RatingPlanAKId=R.RatingPlanAKId\r\n\t\twhere PC.InsuranceLine='WorkersCompensation'\r\n\t\tand PT.ReasonAmendedCode not in ('COL','CWO','CWB','Claw Back')\r\n\t\tand P.pol_ak_id in (select PolicyAKID from PolicyCoverage\r\n\t\twhere InsuranceLine='WorkersCompensation'\r\n\t\tand SourceSystemID='DCT'\r\n\t\tgroup by PolicyAKID\r\n\t\thaving count(distinct RatingPlanAKId)>1)\r\n\t\tgroup by P.pol_ak_id,R.RatingPlanCode,R.RatingPlanAKId\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyAKID ORDER BY RatingPlanAKId DESC) = 1\n),\nLKP_RatingPlan_PMS AS (\n\tSELECT\n\tRatingPlanAKId,\n\tPolicyAKID,\n\tRatingPlanCode\n\tFROM (\n\t\tselect P.pol_ak_id as PolicyAKID,R.RatingPlanAKId as RatingPlanAKId , R.RatingPlanCode as RatingPlanCode  \r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER_V2}.policy P\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.RiskLocation RL\r\n\t\ton P.pol_ak_id=RL.PolicyAKID\r\n\t\tand P.crrnt_snpsht_flag=1\r\n\t\tand RL.CurrentSnapshotFlag=1\r\n\t\tand P.source_sys_id='PMS'\r\n\t\tand RL.SourceSystemID='PMS'\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyCoverage PC\r\n\t\ton RL.RiskLocationAKID=PC.RiskLocationAKID\r\n\t\tand PC.CurrentSnapshotFlag=1\r\n\t\tand PC.SourceSystemID='PMS'\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.StatisticalCoverage SC\r\n\t\ton PC.PolicyCoverageAKID=SC.PolicyCoverageAKID\r\n\t\tand SC.CurrentSnapshotFlag=1\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction PT\r\n\t\ton SC.StatisticalCoverageAKID=PT.StatisticalCoverageAKID\r\n\t\tand PT.SourceSystemID='PMS'\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.RatingPlan R\r\n\t\ton PC.RatingPlanAKId=R.RatingPlanAKId\r\n\t\twhere PC.InsuranceLine='WC'\r\n\t\tand PT.ReasonAmendedCode not in ('COL','CWO','CWB')\r\n\t\tand P.pol_ak_id in (select PolicyAKID from PolicyCoverage\r\n\t\twhere InsuranceLine='WC'\r\n\t\tand SourceSystemID='PMS'\r\n\t\tgroup by PolicyAKID\r\n\t\thaving count(distinct RatingPlanAKId)>1)\r\n\t\tgroup by P.pol_ak_id,R.RatingPlanCode,R.RatingPlanAKId\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyAKID ORDER BY RatingPlanAKId DESC) = 1\n),\nEXP_RatingPlanDerivation AS (\n\tSELECT\n\tEXP_SRC_DataCollect.PolicyCoverageID,\n\tEXP_SRC_DataCollect.PolicyAKID,\n\tLKP_RatingPlan_PMS.RatingPlanAKId AS PMS_RatingPlanAKId,\n\tLKP_RatingPlan_PMS.RatingPlanCode AS PMS_RatingPlanCode,\n\tLKP_RatingPlan_DCT.RatingPlanAKId AS DCT_RatingPlanAKId,\n\tLKP_RatingPlan_DCT.RatingPlanCode AS DCT_RatingPlanCode,\n\t-- *INF*: IIF(ISNULL(PMS_RatingPlanAKId),DCT_RatingPlanAKId,PMS_RatingPlanAKId)\n\tIFF(PMS_RatingPlanAKId IS NULL, DCT_RatingPlanAKId, PMS_RatingPlanAKId) AS o_RatingPlanAKId,\n\t-- *INF*: IIF(ISNULL(PMS_RatingPlanCode),DCT_RatingPlanCode,PMS_RatingPlanCode)\n\tIFF(PMS_RatingPlanCode IS NULL, DCT_RatingPlanCode, PMS_RatingPlanCode) AS o_RatingPlanCode\n\tFROM EXP_SRC_DataCollect\n\tLEFT JOIN LKP_RatingPlan_DCT\n\tON LKP_RatingPlan_DCT.PolicyAKID = EXP_SRC_DataCollect.PolicyAKID\n\tLEFT JOIN LKP_RatingPlan_PMS\n\tON LKP_RatingPlan_PMS.PolicyAKID = EXP_SRC_DataCollect.PolicyAKID\n),\nFIL_Exclude_Nulls AS (\n\tSELECT\n\tPolicyCoverageID, \n\to_RatingPlanAKId AS RatingPlanAKId\n\tFROM EXP_RatingPlanDerivation\n\tWHERE not ISNULL(RatingPlanAKId)\n),\nUPD_RatingPlanAKId_PolicyCoverage AS (\n\tSELECT\n\tPolicyCoverageID, \n\tRatingPlanAKId AS o_RatingPlanAKId\n\tFROM FIL_Exclude_Nulls\n),\nPolicyCoverage AS (\n\tMERGE INTO PolicyCoverage AS T\n\tUSING UPD_RatingPlanAKId_PolicyCoverage AS S\n\tON T.PolicyCoverageID = S.PolicyCoverageID\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.RatingPlanAKId = S.o_RatingPlanAKId\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905491"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603262"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:44:58"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 23:03:38"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Policy"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "WC_DATA_MART_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "WC_DATA_MART"
+            },
+            "RPT_EDM_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "RPT_EDM"
+            },
+            "STAGE_DATABASE": {
+                "type": "string",
+                "defaultValue": "WC_STAGE"
+            },
+            "SOURCE_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "V2"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

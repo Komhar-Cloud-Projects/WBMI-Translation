@@ -1,0 +1,87 @@
+{
+    "name": "s_m_POL_CUS_DW_LOAD_contract_customer_email_DCT_PL",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_CUS_DW_LOAD_contract_customer_email_DCT_PL",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTPLParty AS (\n\tSELECT distinct P.PolicyNumber, \r\n\tP.PolicyVersion, \r\n\tISNULL(P.Email,'N/A') Email,\r\n\tP.EmailType, \r\n\tP.EmailPriority \r\n\tfrom\r\n\t(select *,case when AddressType='Insured MailingAddress' then 1 else 2 end Customer_Record\r\n\tFROM\r\n\t @{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkDCTPLParty \r\n\twhere AddressType in ('Insured MailingAddress','Insured InsuredsAddress')) P\r\n\tinner join (select PolicyKey,StartDate,min(case when AddressType='Insured MailingAddress' then 1 else 2 end) Customer_Record\r\n\tFROM\r\n\t @{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkDCTPLParty P\r\n\twhere AddressType in ('Insured MailingAddress','Insured InsuredsAddress')\r\n\tgroup by PolicyKey,StartDate) B\r\n\ton P.Policykey=B.PolicyKey\r\n\tand P.StartDate=B.STartDate\r\n\tand P.Customer_Record=B.Customer_Record\n),\nLKP_SupEmailPriorityCode AS (\n\tSELECT\n\tSupEmailPriorityCodeId,\n\tEmailPriorityDescription\n\tFROM (\n\t\tselect SupEmailPriorityCodeId as SupEmailPriorityCodeId, \r\n\t\tLTRIM(RTRIM(EmailPriorityDescription)) as EmailPriorityDescription\r\n\t\tFrom SupEmailPriorityCode\r\n\t\tWhere currentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY EmailPriorityDescription ORDER BY SupEmailPriorityCodeId) = 1\n),\nLKP_SupEmailTypeCode AS (\n\tSELECT\n\tSupEmailTypeCodeId,\n\tSupEmailTypeDescription\n\tFROM (\n\t\tselect SupEmailTypeCodeId as SupEmailTypeCodeId,\r\n\t\tLTRIM(RTRIM(SupEmailTypeDescription)) as SupEmailTypeDescription\r\n\t\tfrom SupEmailTypeCode\r\n\t\twhere CurrentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY SupEmailTypeDescription ORDER BY SupEmailTypeCodeId) = 1\n),\nEXPTRANS AS (\n\tSELECT\n\tPolicyNumber AS i_PolicyNumber,\n\tPolicyVersion AS i_PolicyVersion,\n\t-- *INF*: i_PolicyNumber|| IIF(ISNULL(ltrim(rtrim(i_PolicyVersion))) or Length(ltrim(rtrim(i_PolicyVersion)))=0 or IS_SPACES(i_PolicyVersion),'00',i_PolicyVersion)\n\ti_PolicyNumber || IFF(ltrim(rtrim(i_PolicyVersion)) IS NULL OR Length(ltrim(rtrim(i_PolicyVersion))) = 0 OR IS_SPACES(i_PolicyVersion), '00', i_PolicyVersion) AS o_contract_key\n\tFROM SQ_WorkDCTPLParty\n),\nLKP_contract_customer_key AS (\n\tSELECT\n\tcontract_cust_ak_id,\n\tcontract_key\n\tFROM (\n\t\tSELECT \r\n\t\tcontract_customer.contract_cust_ak_id as contract_cust_ak_id, \r\n\t\tltrim(rtrim(contract_customer.contract_key)) as contract_key \r\n\t\tFROM \r\n\t\tcontract_customer\r\n\t\tWHERE contract_customer.crrnt_snpsht_flag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY contract_key ORDER BY contract_cust_ak_id DESC) = 1\n),\nLKP_ContractCustomerEmailAddress AS (\n\tSELECT\n\tContractCustomerEmailAddressID,\n\tCustomerEmailAddress,\n\tContractCustomerEmailAddressAKID,\n\tContractCustomerAKID,\n\tSupEmailTypeCodeId,\n\tSupEmailPriorityCodeID\n\tFROM (\n\t\tSELECT \n\t\t\tContractCustomerEmailAddressID,\n\t\t\tCustomerEmailAddress,\n\t\t\tContractCustomerEmailAddressAKID,\n\t\t\tContractCustomerAKID,\n\t\t\tSupEmailTypeCodeId,\n\t\t\tSupEmailPriorityCodeID\n\t\tFROM ContractCustomerEmailAddress\n\t\tWHERE SourceSystemId='DCT' and CurrentSnapshotFlag=1\r\n\t\torder by ContractCustomerAKID,SupEmailTypeCodeId,SupEmailPriorityCodeID,CreatedDate Desc\r\n\t\t--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ContractCustomerAKID,SupEmailTypeCodeId,SupEmailPriorityCodeID ORDER BY ContractCustomerEmailAddressID) = 1\n),\nSEQ_customer_email AS (\n\tCREATE SEQUENCE SEQ_customer_email\n\tSTART = 0\n\tINCREMENT = 1;\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tSEQ_customer_email.NEXTVAL,\n\tLKP_ContractCustomerEmailAddress.ContractCustomerEmailAddressID AS lkp_ContractCustomerEmailAddressID,\n\tLKP_ContractCustomerEmailAddress.CustomerEmailAddress AS lkp_CustomerEmailAddress,\n\tLKP_ContractCustomerEmailAddress.ContractCustomerEmailAddressAKID AS lkp_ContractCustomerEmailAKID,\n\t1 AS crrnt_snpsht_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id,\n\tSYSDATE AS created_date,\n\tSYSDATE AS modified_date,\n\tLKP_contract_customer_key.contract_cust_ak_id AS ContractCustomerAKID,\n\tLKP_SupEmailTypeCode.SupEmailTypeCodeId AS i_SupEmailTypeCodeId,\n\t-- *INF*: IIF(ISNULL(i_SupEmailTypeCodeId), -1, i_SupEmailTypeCodeId)\n\tIFF(i_SupEmailTypeCodeId IS NULL, - 1, i_SupEmailTypeCodeId) AS o_SupEmailTypeCodeId,\n\tLKP_SupEmailPriorityCode.SupEmailPriorityCodeId AS i_SupEmailPriorityCodeId,\n\t-- *INF*: IIF(ISNULL(i_SupEmailPriorityCodeId)-1,i_SupEmailPriorityCodeId)\n\tIFF(i_SupEmailPriorityCodeId IS NULL - 1, i_SupEmailPriorityCodeId) AS o_SupEmailPriorityCodeId,\n\tSQ_WorkDCTPLParty.Email,\n\t-- *INF*: IIF(lkp_ContractCustomerEmailAKID=-1 OR ISNULL(lkp_ContractCustomerEmailAddressID),NEXTVAL,lkp_ContractCustomerEmailAKID)\n\tIFF(lkp_ContractCustomerEmailAKID = - 1 OR lkp_ContractCustomerEmailAddressID IS NULL, NEXTVAL, lkp_ContractCustomerEmailAKID) AS o_ContractCustomerEmailAKID,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ContractCustomerAKID=-1 or lkp_ContractCustomerEmailAddressID=-1 , 'NEW', \r\n\t-- LTRIM(RTRIM(Email)) <> LTRIM(RTRIM(lkp_CustomerEmailAddress)),'UPDATE', \r\n\t-- 'NOCHANGE')\n\tDECODE(TRUE,\n\tContractCustomerAKID = - 1 OR lkp_ContractCustomerEmailAddressID = - 1, 'NEW',\n\tLTRIM(RTRIM(Email)) <> LTRIM(RTRIM(lkp_CustomerEmailAddress)), 'UPDATE',\n\t'NOCHANGE') AS v_changed_flag,\n\tv_changed_flag AS changed_flag\n\tFROM SQ_WorkDCTPLParty\n\tLEFT JOIN LKP_ContractCustomerEmailAddress\n\tON LKP_ContractCustomerEmailAddress.ContractCustomerAKID = LKP_contract_customer_key.contract_cust_ak_id AND LKP_ContractCustomerEmailAddress.SupEmailTypeCodeId = LKP_SupEmailTypeCode.SupEmailTypeCodeId AND LKP_ContractCustomerEmailAddress.SupEmailPriorityCodeID = LKP_SupEmailPriorityCode.SupEmailPriorityCodeId\n\tLEFT JOIN LKP_SupEmailPriorityCode\n\tON LKP_SupEmailPriorityCode.EmailPriorityDescription = SQ_WorkDCTPLParty.EmailPriority\n\tLEFT JOIN LKP_SupEmailTypeCode\n\tON LKP_SupEmailTypeCode.SupEmailTypeDescription = SQ_WorkDCTPLParty.EmailType\n\tLEFT JOIN LKP_contract_customer_key\n\tON LKP_contract_customer_key.contract_key = EXPTRANS.o_contract_key\n),\nRTR_InsertOrUpdate AS (\n\tSELECT\n\tlkp_ContractCustomerEmailAddressID AS ContractCustomerEmailAddressID,\n\tcrrnt_snpsht_flag,\n\taudit_id,\n\teff_from_date,\n\teff_to_date,\n\tsource_system_id,\n\tcreated_date,\n\tmodified_date,\n\tContractCustomerAKID AS cust_ak_id,\n\to_SupEmailTypeCodeId AS SupEmailTypeCodeId,\n\to_SupEmailPriorityCodeId AS SupEmailPriorityCodeId,\n\tEmail,\n\to_ContractCustomerEmailAKID AS ContractCustomerEmailAKID,\n\tchanged_flag\n\tFROM EXP_Detect_Changes\n),\nRTR_InsertOrUpdate_Insert AS (SELECT * FROM RTR_InsertOrUpdate WHERE changed_flag = 'NEW'),\nRTR_InsertOrUpdate_Update AS (SELECT * FROM RTR_InsertOrUpdate WHERE changed_flag = 'UPDATE'),\nEXP_Customer_email_address_ak_id AS (\n\tSELECT\n\tcrrnt_snpsht_flag AS crrnt_snpsht_flag1,\n\taudit_id AS audit_id1,\n\teff_from_date AS eff_from_date1,\n\teff_to_date AS eff_to_date1,\n\tsource_system_id AS source_system_id1,\n\tcreated_date AS created_date1,\n\tmodified_date AS modified_date1,\n\tcust_ak_id AS cust_ak_id1,\n\tSupEmailTypeCodeId AS SupEmailTypeCodeId1,\n\tSupEmailPriorityCodeId AS SupEmailPriorityCodeId1,\n\tEmail AS Email1,\n\tContractCustomerEmailAKID AS ContractCustomerEmailAKID1\n\tFROM RTR_InsertOrUpdate_Insert\n),\nInsert_ContractCustomerEmailAddress AS (\n\tINSERT INTO ContractCustomerEmailAddress\n\t(CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, ContractCustomerAKID, SupEmailTypeCodeId, SupEmailPriorityCodeID, CustomerEmailAddress, ContractCustomerEmailAddressAKID)\n\tSELECT \n\tcrrnt_snpsht_flag1 AS CURRENTSNAPSHOTFLAG, \n\taudit_id1 AS AUDITID, \n\teff_from_date1 AS EFFECTIVEDATE, \n\teff_to_date1 AS EXPIRATIONDATE, \n\tsource_system_id1 AS SOURCESYSTEMID, \n\tcreated_date1 AS CREATEDDATE, \n\tmodified_date1 AS MODIFIEDDATE, \n\tcust_ak_id1 AS CONTRACTCUSTOMERAKID, \n\tSupEmailTypeCodeId1 AS SUPEMAILTYPECODEID, \n\tSupEmailPriorityCodeId1 AS SUPEMAILPRIORITYCODEID, \n\tEmail1 AS CUSTOMEREMAILADDRESS, \n\tContractCustomerEmailAKID1 AS CONTRACTCUSTOMEREMAILADDRESSAKID\n\tFROM EXP_Customer_email_address_ak_id\n),\nUPD_ContractCustomerEmailAddress AS (\n\tSELECT\n\tContractCustomerEmailAddressID AS ContractCustomerEmailAddressID3, \n\tmodified_date AS modified_date3, \n\tEmail AS Email3\n\tFROM RTR_InsertOrUpdate_Update\n),\nUpdate_ContractCustomerEmailAddress AS (\n\tMERGE INTO ContractCustomerEmailAddress AS T\n\tUSING UPD_ContractCustomerEmailAddress AS S\n\tON T.ContractCustomerEmailAddressID = S.ContractCustomerEmailAddressID3\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ModifiedDate = S.modified_date3, T.CustomerEmailAddress = S.Email3\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905512"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604104"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 01:12:09"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 01:29:57"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "WC_Stage"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": ""
+            }
+        },
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,95 @@
+{
+    "name": "s_m_POL_DM_Load_ReasonAmendedCodeDim",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DM_Load_ReasonAmendedCodeDim",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_sup_reason_amended_code AS (\n\tSELECT\n\t\tsup_rsn_amended_code_id,\n\t\tcrrnt_snpsht_flag,\n\t\taudit_id,\n\t\teff_from_date,\n\t\teff_to_date,\n\t\tsource_sys_id,\n\t\tcreated_date,\n\t\tmodified_date,\n\t\trsn_amended_code,\n\t\trsn_amended_code_descript,\n\t\tStandardReasonAmendedCode,\n\t\tStandardReasonAmendedDescription\n\tFROM sup_reason_amended_code\n),\nAGG_reason_amended_code AS (\n\tSELECT\n\tStandardReasonAmendedCode, \n\tStandardReasonAmendedDescription\n\tFROM SQ_sup_reason_amended_code\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY StandardReasonAmendedCode ORDER BY NULL) = 1\n),\nLKP_ReasonAmendedCodeDim AS (\n\tSELECT\n\tReasonAmendedCodeDimId,\n\tin_StandardReasonAmendedCode,\n\tReasonAmendedCode\n\tFROM (\n\t\tSELECT \n\t\t\tReasonAmendedCodeDimId,\n\t\t\tin_StandardReasonAmendedCode,\n\t\t\tReasonAmendedCode\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.ReasonAmendedCodeDim\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ReasonAmendedCode ORDER BY ReasonAmendedCodeDimId) = 1\n),\nEXP_ExistingChecking AS (\n\tSELECT\n\tLKP_ReasonAmendedCodeDim.ReasonAmendedCodeDimId AS lkp_ReasonAmendedCodeDimId,\n\t-- *INF*: IIF(ISNULL(lkp_ReasonAmendedCodeDimId), 'Insert', \r\n\t--  'Update')\n\tIFF(lkp_ReasonAmendedCodeDimId IS NULL, 'Insert', 'Update') AS v_ChangeFlag,\n\tv_ChangeFlag AS ChangeFlag,\n\t1 AS CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\t-- *INF*: TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')\n\tTO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS EffectiveDate,\n\t-- *INF*: TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS')\n\tTO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS ExpirationDate,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate,\n\tAGG_reason_amended_code.StandardReasonAmendedCode AS i_StandardReasonAmendedCode,\n\tAGG_reason_amended_code.StandardReasonAmendedDescription AS i_StandardReasonAmendedDescription,\n\t-- *INF*: IIF(ISNULL(i_StandardReasonAmendedCode ), 'N/A', i_StandardReasonAmendedCode )\n\tIFF(i_StandardReasonAmendedCode IS NULL, 'N/A', i_StandardReasonAmendedCode) AS o_StandardReasonAmendedCode,\n\t-- *INF*: IIF(ISNULL(i_StandardReasonAmendedDescription ), 'N/A', i_StandardReasonAmendedDescription )\n\tIFF(i_StandardReasonAmendedDescription IS NULL, 'N/A', i_StandardReasonAmendedDescription) AS o_StandardReasonAmendedDescription\n\tFROM AGG_reason_amended_code\n\tLEFT JOIN LKP_ReasonAmendedCodeDim\n\tON LKP_ReasonAmendedCodeDim.ReasonAmendedCode = AGG_reason_amended_code.StandardReasonAmendedCode\n),\nRTR_InsertUpdate AS (\n\tSELECT\n\tlkp_ReasonAmendedCodeDimId AS ReasonAmendedCodeDimID,\n\tChangeFlag,\n\tCurrentSnapshotFlag,\n\tAuditId,\n\tCreatedDate,\n\tModifiedDate,\n\to_StandardReasonAmendedCode AS ReasonAmendedCode,\n\to_StandardReasonAmendedDescription AS ReasonAmendedDescription\n\tFROM EXP_ExistingChecking\n),\nRTR_InsertUpdate_Insert AS (SELECT * FROM RTR_InsertUpdate WHERE ChangeFlag = 'Insert'),\nRTR_InsertUpdate_DEFAULT1 AS (SELECT * FROM RTR_InsertUpdate WHERE NOT ( (ChangeFlag = 'Insert') )),\nUPD_QuoteStatusDim_Insert AS (\n\tSELECT\n\tAuditId AS AuditID, \n\tCreatedDate, \n\tModifiedDate, \n\tReasonAmendedCode, \n\tReasonAmendedDescription\n\tFROM RTR_InsertUpdate_Insert\n),\nReasonAmendedCodeDim_Insert AS (\n\tINSERT INTO ReasonAmendedCodeDim\n\t(AuditID, CreatedDate, ModifiedDate, ReasonAmendedCode, ReasonAmendedDescription)\n\tSELECT \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tREASONAMENDEDCODE, \n\tREASONAMENDEDDESCRIPTION\n\tFROM UPD_QuoteStatusDim_Insert\n),\nUPD_QuoteStatusDim_Update AS (\n\tSELECT\n\tReasonAmendedCodeDimID AS ReasonAmendedCodeDimId, \n\tAuditId AS AuditID, \n\tCreatedDate, \n\tModifiedDate, \n\tReasonAmendedCode, \n\tReasonAmendedDescription\n\tFROM RTR_InsertUpdate_DEFAULT1\n),\nReasonAmendedCodeDim_update AS (\n\tMERGE INTO ReasonAmendedCodeDim AS T\n\tUSING UPD_QuoteStatusDim_Update AS S\n\tON T.ReasonAmendedCodeDimId = S.ReasonAmendedCodeDimId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.AuditID = S.AuditID, T.ModifiedDate = S.ModifiedDate, T.ReasonAmendedCode = S.ReasonAmendedCode, T.ReasonAmendedDescription = S.ReasonAmendedDescription\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246511"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905531"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604522"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 02:57:01"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 03:31:13"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_DATA_MART_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "PMS"
+            },
+            "SOURCE_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "V2"
+            },
+            "TARGET_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "WC_Data_Mart"
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "RPT_EDM"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": ""
+            }
+        },
+        "folder": {
+            "name": "Policy DataMart/"
+        },
+        "annotations": []
+    }
+}

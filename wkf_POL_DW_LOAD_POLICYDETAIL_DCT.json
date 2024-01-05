@@ -1,0 +1,256 @@
+{
+    "name": "wkf_POL_DW_LOAD_POLICYDETAIL_DCT",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_RiskLocation_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_PolicyLimit_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_RiskLocation_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_PolicyCoverage_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_RiskLocation_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_PolicyCoverage_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "Control1",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_RatingLocationLimit_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_PolicyLimit_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_PriorCoverage_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_PolicyLimit_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_Form_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_CUS_DW_LOAD_PolicyExtension_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_Form_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_PriorCoverage_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_Form_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_PriorCoverage_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_reinsurance_coverage_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_UPDATE_PolicyCoverage_RatingPlan",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_Reinsurance_Coverage_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_Driver_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_reinsurance_coverage_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_Driver_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_RatingLocationLimit_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_Driver_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_RatingLocationLimit_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_CUS_DW_LOAD_PolicyExtension_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_CUS_DW_LOAD_PolicyExtension_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_UPDATE_PolicyCoverage_RatingPlan",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_PolicyCoverage_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_UPDATE_PolicyCoverage_RatingPlan"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "variables": {}
+    }
+}

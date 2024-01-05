@@ -1,0 +1,319 @@
+{
+    "name": "wkf_POL_DW_LOAD_PREMIUMTRANSACTIONS_DCT_2",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_CoverageDetailCrime_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_WorkBlanketPremiumBreakOut",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_CoverageDetailCrime_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_PremiumTransactionRatingModifier_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_CoverageDetailCrime_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_PremiumTransactionRatingModifier_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_CoverageDeductible_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_CoverageDeductible_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_CoverageLimit_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_CoverageDeductible_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_CoverageLimit_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_CoverageDetailCommercialAuto_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_CoverageLimit_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_CoverageDetailCommercialAuto_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_CoverageDetailCommercialProperty_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_CoverageDetailCommercialAuto_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_CoverageDetailCommercialProperty_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_CoverageDetailGeneralLiability_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_CoverageDetailCommercialProperty_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_CoverageDetailGeneralLiability_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_CoverageDetailInlandMarine_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_CoverageDetailGeneralLiability_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_CoverageDetailInlandMarine_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_CoverageDetailWorkersCompensation_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_CoverageDetailInlandMarine_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_CoverageDetailWorkersCompensation_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_CoverageDetailCommercialUmbrella_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_CoverageDetailWorkersCompensation_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_CoverageDetailCommercialUmbrella_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_CoverageDetailBusinessOwners_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_CoverageDetailCommercialUmbrella_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_CoverageDetailBusinessOwners_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_WorkBlanketPremiumBreakOut",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_CoverageDetailBusinessOwners_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_WorkBlanketPremiumBreakOut"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_PremiumTransactionRatingRisk_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_PremiumTransactionRatingModifier_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_PremiumTransactionRatingRisk_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_CyberSuiteDetail_DCT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_PremiumTransactionRatingRisk_DCT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_CyberSuiteDetail_DCT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "variables": {}
+    }
+}

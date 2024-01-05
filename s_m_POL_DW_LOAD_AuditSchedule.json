@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_DW_LOAD_AuditSchedule",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_LOAD_AuditSchedule",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_pif_43ld_stage AS (\n\tSELECT\n\t\tpif_symbol,\n\t\tpif_policy_number,\n\t\tpif_module,\n\t\tpmd4d_insurance_line,\n\t\tpmd4d_status_1,\n\t\tpmd4d_effective_date_1,\n\t\tpmd4d_expiration_date_1,\n\t\tpmd4d_status_2,\n\t\tpmd4d_effective_date_2,\n\t\tpmd4d_expiration_date_2,\n\t\tpmd4d_status_3,\n\t\tpmd4d_effective_date_3,\n\t\tpmd4d_expiration_date_3,\n\t\tpmd4d_status_4,\n\t\tpmd4d_effective_date_4,\n\t\tpmd4d_expiration_date_4\n\tFROM pif_43ld_stage\n\tWHERE pif_43ld_stage.pmd4d_effective_date_1<>0 and pif_43ld_stage.pmd4d_effective_date_1 is not null\n),\nRTR_AuditSchedule AS (\n\tSELECT\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module,\n\tpmd4d_insurance_line,\n\tpmd4d_status_1,\n\tpmd4d_effective_date_1,\n\tpmd4d_expiration_date_1,\n\tpmd4d_status_2,\n\tpmd4d_effective_date_2,\n\tpmd4d_expiration_date_2,\n\tpmd4d_status_3,\n\tpmd4d_effective_date_3,\n\tpmd4d_expiration_date_3,\n\tpmd4d_status_4,\n\tpmd4d_effective_date_4,\n\tpmd4d_expiration_date_4\n\tFROM SQ_pif_43ld_stage\n),\nRTR_AuditSchedule_Effective1 AS (SELECT * FROM RTR_AuditSchedule WHERE pmd4d_effective_date_1>0 and NOT ISNULL(pmd4d_effective_date_1)),\nRTR_AuditSchedule_Effective2 AS (SELECT * FROM RTR_AuditSchedule WHERE pmd4d_effective_date_2>0 and NOT ISNULL(pmd4d_effective_date_2)),\nRTR_AuditSchedule_Effective3 AS (SELECT * FROM RTR_AuditSchedule WHERE pmd4d_effective_date_3>0 and NOT ISNULL(pmd4d_effective_date_3)),\nRTR_AuditSchedule_Effective4 AS (SELECT * FROM RTR_AuditSchedule WHERE pmd4d_effective_date_4>0 and NOT ISNULL(pmd4d_effective_date_4)),\nUnion_AuditSchedule AS (\n\tSELECT pif_symbol, pif_policy_number, pif_module, pmd4d_insurance_line, pmd4d_status_ AS pmd4d_status, pmd4d_effective_date_ AS pmd4d_effective_date, pmd4d_expiration_date_ AS pmd4d_expiration_date\n\tFROM \n\tUNION\n\tSELECT pif_symbol, pif_policy_number, pif_module, pmd4d_insurance_line, pmd4d_status_2 AS pmd4d_status, pmd4d_effective_date_2 AS pmd4d_effective_date, pmd4d_expiration_date_2 AS pmd4d_expiration_date\n\tFROM \n\tUNION\n\tSELECT pif_symbol, pif_policy_number, pif_module, pmd4d_insurance_line, pmd4d_status_3 AS pmd4d_status, pmd4d_effective_date_3 AS pmd4d_effective_date, pmd4d_expiration_date_3 AS pmd4d_expiration_date\n\tFROM \n\tUNION\n\tSELECT pif_symbol, pif_policy_number, pif_module, pmd4d_insurance_line, pmd4d_status_4 AS pmd4d_status, pmd4d_effective_date_4 AS pmd4d_effective_date, pmd4d_expiration_date_4 AS pmd4d_expiration_date\n\tFROM \n),\nEXP_Status_Decode AS (\n\tSELECT\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module,\n\tpmd4d_insurance_line,\n\tpmd4d_status,\n\tpmd4d_effective_date,\n\tpmd4d_expiration_date,\n\t-- *INF*: DECODE(pmd4d_status, 'A',1,'C',2,'E',3,'V',4,'B',5,'O',6,'X',7,'R',8,9)\n\tDECODE(pmd4d_status,\n\t'A', 1,\n\t'C', 2,\n\t'E', 3,\n\t'V', 4,\n\t'B', 5,\n\t'O', 6,\n\t'X', 7,\n\t'R', 8,\n\t9) AS v_Status_Rank,\n\tv_Status_Rank AS o_Status_Rank\n\tFROM Union_AuditSchedule\n),\nSRT_AuditSchedule AS (\n\tSELECT\n\tpif_symbol, \n\tpif_policy_number, \n\tpif_module, \n\tpmd4d_insurance_line, \n\tpmd4d_effective_date, \n\tpmd4d_expiration_date, \n\to_Status_Rank, \n\tpmd4d_status\n\tFROM EXP_Status_Decode\n\tORDER BY pif_symbol ASC, pif_policy_number ASC, pif_module ASC, pmd4d_insurance_line ASC, pmd4d_effective_date ASC, pmd4d_expiration_date ASC, o_Status_Rank DESC\n),\nAGG_Duplicate AS (\n\tSELECT\n\tpif_symbol, \n\tpif_policy_number, \n\tpif_module, \n\tpmd4d_insurance_line, \n\tpmd4d_effective_date, \n\tpmd4d_expiration_date, \n\to_Status_Rank, \n\tpmd4d_status\n\tFROM SRT_AuditSchedule\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY pif_symbol, pif_policy_number, pif_module, pmd4d_insurance_line, pmd4d_effective_date, pmd4d_expiration_date ORDER BY NULL) = 1\n),\nEXP_MetaValues AS (\n\tSELECT\n\tpif_symbol AS i_pif_symbol,\n\tpif_policy_number AS i_pif_policy_number,\n\tpif_module AS i_pif_module,\n\tpmd4d_insurance_line AS i_pmd4d_insurance_line,\n\tpmd4d_status AS i_pmd4d_status,\n\tpmd4d_effective_date AS i_pmd4d_effective_date,\n\tpmd4d_expiration_date AS i_pmd4d_expiration_date,\n\t1 AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t-- *INF*: TO_DATE('18000101','YYYYMMDD')\n\tTO_DATE('18000101', 'YYYYMMDD') AS o_EffectiveDate,\n\t-- *INF*: TO_DATE('21001231','YYYYMMDD')\n\tTO_DATE('21001231', 'YYYYMMDD') AS o_ExpirationDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\ti_pif_symbol || i_pif_policy_number || i_pif_module AS o_PolicyKey,\n\ti_pmd4d_insurance_line AS o_InsuranceLine,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- i_pmd4d_status='N','Unassigned',\r\n\t-- i_pmd4d_status='C','Completed',\r\n\t-- i_pmd4d_status='A','Amended',\r\n\t-- i_pmd4d_status='R','Requested',\r\n\t-- i_pmd4d_status='B','Bypassed',\r\n\t-- i_pmd4d_status='E','Estimated',\r\n\t-- i_pmd4d_status='V','Reversed',\r\n\t-- i_pmd4d_status='O','Overdue',\r\n\t-- i_pmd4d_status='X','Coverage Cancelled',\r\n\t-- i_pmd4d_status='U','Unscheduled Request',\r\n\t-- i_pmd4d_status='K','Unscheduled Complete',\r\n\t-- i_pmd4d_status='P','Unscheduled Overdue',\r\n\t-- i_pmd4d_status='D','Deleted'\r\n\t-- )\n\tDECODE(TRUE,\n\ti_pmd4d_status = 'N', 'Unassigned',\n\ti_pmd4d_status = 'C', 'Completed',\n\ti_pmd4d_status = 'A', 'Amended',\n\ti_pmd4d_status = 'R', 'Requested',\n\ti_pmd4d_status = 'B', 'Bypassed',\n\ti_pmd4d_status = 'E', 'Estimated',\n\ti_pmd4d_status = 'V', 'Reversed',\n\ti_pmd4d_status = 'O', 'Overdue',\n\ti_pmd4d_status = 'X', 'Coverage Cancelled',\n\ti_pmd4d_status = 'U', 'Unscheduled Request',\n\ti_pmd4d_status = 'K', 'Unscheduled Complete',\n\ti_pmd4d_status = 'P', 'Unscheduled Overdue',\n\ti_pmd4d_status = 'D', 'Deleted') AS o_AuditStatus,\n\t-- *INF*: TO_DATE(TO_CHAR(i_pmd4d_effective_date),'yyyymmdd')\n\tTO_DATE(TO_CHAR(i_pmd4d_effective_date), 'yyyymmdd') AS o_AuditEffectiveDate,\n\t-- *INF*: IIF(ISNULL(i_pmd4d_expiration_date) OR i_pmd4d_expiration_date=0,21001231,i_pmd4d_expiration_date)\n\tIFF(i_pmd4d_expiration_date IS NULL OR i_pmd4d_expiration_date = 0, 21001231, i_pmd4d_expiration_date) AS v_pmd4d_expiration_date,\n\t-- *INF*: TO_DATE(TO_CHAR(i_pmd4d_expiration_date),'yyyymmdd')\n\tTO_DATE(TO_CHAR(i_pmd4d_expiration_date), 'yyyymmdd') AS o_AuditExpirationDate\n\tFROM AGG_Duplicate\n),\nLKP_AuditSchedule AS (\n\tSELECT\n\tAuditScheduleId,\n\tPolicyKey,\n\tInsuranceLine,\n\tAuditEffectiveDate,\n\tAuditExpirationDate\n\tFROM (\n\t\tSELECT \n\t\t\tAuditScheduleId,\n\t\t\tPolicyKey,\n\t\t\tInsuranceLine,\n\t\t\tAuditEffectiveDate,\n\t\t\tAuditExpirationDate\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.AuditSchedule\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyKey,InsuranceLine,AuditEffectiveDate,AuditExpirationDate ORDER BY AuditScheduleId) = 1\n),\nFIL_AuditSchedule AS (\n\tSELECT\n\tLKP_AuditSchedule.AuditScheduleId AS lkp_AuditScheduleId, \n\tEXP_MetaValues.o_CurrentSnapshotFlag AS CurrentSnapshotFlag, \n\tEXP_MetaValues.o_AuditId AS AuditId, \n\tEXP_MetaValues.o_EffectiveDate AS EffectiveDate, \n\tEXP_MetaValues.o_ExpirationDate AS ExpirationDate, \n\tEXP_MetaValues.o_SourceSystemId AS SourceSystemId, \n\tEXP_MetaValues.o_CreatedDate AS CreatedDate, \n\tEXP_MetaValues.o_ModifiedDate AS ModifiedDate, \n\tEXP_MetaValues.o_PolicyKey AS PolicyKey, \n\tEXP_MetaValues.o_InsuranceLine AS InsuranceLine, \n\tEXP_MetaValues.o_AuditStatus AS AuditStatus, \n\tEXP_MetaValues.o_AuditEffectiveDate AS AuditEffectiveDate, \n\tEXP_MetaValues.o_AuditExpirationDate AS AuditExpirationDate\n\tFROM EXP_MetaValues\n\tLEFT JOIN LKP_AuditSchedule\n\tON LKP_AuditSchedule.PolicyKey = EXP_MetaValues.o_PolicyKey AND LKP_AuditSchedule.InsuranceLine = EXP_MetaValues.o_InsuranceLine AND LKP_AuditSchedule.AuditEffectiveDate = EXP_MetaValues.o_AuditEffectiveDate AND LKP_AuditSchedule.AuditExpirationDate = EXP_MetaValues.o_AuditExpirationDate\n\tWHERE ISNULL(lkp_AuditScheduleId)\n),\nSEQ_AuditSchedule AS (\n\tCREATE SEQUENCE SEQ_AuditSchedule\n\tSTART = 0\n\tINCREMENT = 1;\n),\nAuditSchedule AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.AuditSchedule\n\t(CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, AuditScheduleAKId, PolicyKey, InsuranceLine, AuditStatus, AuditEffectiveDate, AuditExpirationDate)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tSEQ_AuditSchedule.NEXTVAL AS AUDITSCHEDULEAKID, \n\tPOLICYKEY, \n\tINSURANCELINE, \n\tAUDITSTATUS, \n\tAUDITEFFECTIVEDATE, \n\tAUDITEXPIRATIONDATE\n\tFROM FIL_AuditSchedule\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_STAGE_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

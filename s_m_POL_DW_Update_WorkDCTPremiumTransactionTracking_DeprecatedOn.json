@@ -1,0 +1,91 @@
+{
+    "name": "s_m_POL_DW_Update_WorkDCTPremiumTransactionTracking_DeprecatedOn",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DW_Update_WorkDCTPremiumTransactionTracking_De_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTPremiumTransactionTracking AS (\n\tSELECT nonDep.PremiumTransactionID,\r\n\t\tdep.DCTTransactionSequence,\r\n\t\tdep.DCTTransactionIndex\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkDCTPremiumTransactionTracking dep with (nolock)\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction ptDep with (nolock) ON dep.PremiumTransactionID = ptDep.PremiumTransactionID \r\n\t@{pipeline().parameters.HISTORICALPOLICYFILTER}\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkDCTPremiumTransactionTracking nonDep with (nolock) ON dep.policykey = nonDep.policykey\r\n\t\tAND dep.RatingCoverageAKID = nonDep.RatingCoverageAKID\r\n\t\tAND dep.DCTTransactionGuid = nonDep.DCTTransactionGuid\r\n\t\tAND nonDep.OffsetOnsetCode <> 'Deprecated'\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction ptNonDep with (nolock) ON ptNonDep.PremiumTransactionID = nondep.PremiumTransactionID\r\n\t\tAND ptNonDep.PremiumTransactionAmount = (ptDep.PremiumTransactionAmount * -1.0)\r\n\t@{pipeline().parameters.INCREMENTALCOVERAGEFILTER}\r\n\tWHERE dep.OffsetOnsetCode = 'Deprecated'\r\n\tand (\r\n\tCOALESCE(dep.DCTTransactionSequence,-9999)!=COALESCE(nonDep.DeprecatedOnDCTTransactionSequence,-9999) \r\n\tor \r\n\tCOALESCE(dep.DCTTransactionIndex,-9999)!=COALESCE(nonDep.DeprecatedOnDCTTransactionIndex,-9999))\n),\nEXP_Pass_Value AS (\n\tSELECT\n\tPremiumTransactionID_NonDeprecated,\n\tDCTTransactionSequence,\n\tDCTTransactionIndex,\n\tSYSDATE AS ModifiedDate\n\tFROM SQ_WorkDCTPremiumTransactionTracking\n),\nUPD_WorkDCTPremiumTransactionTracking AS (\n\tSELECT\n\tPremiumTransactionID_NonDeprecated, \n\tDCTTransactionSequence, \n\tDCTTransactionIndex, \n\tModifiedDate AS o_ModifiedDate\n\tFROM EXP_Pass_Value\n),\nWorkDCTPremiumTransactionTracking_Update AS (\n\tMERGE INTO WorkDCTPremiumTransactionTracking AS T\n\tUSING UPD_WorkDCTPremiumTransactionTracking AS S\n\tON T.PremiumTransactionID = S.PremiumTransactionID_NonDeprecated\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ModifiedDate = S.o_ModifiedDate, T.DeprecatedOnDCTTransactionSequence = S.DCTTransactionSequence, T.DeprecatedOnDCTTransactionIndex = S.DCTTransactionIndex\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246483"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905491"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603250"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:44:58"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 23:03:38"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Claim"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "SOURCE_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "v2"
+            },
+            "HISTORICALPOLICYFILTER": {
+                "type": "string",
+                "defaultValue": ""
+            },
+            "INCREMENTALCOVERAGEFILTER": {
+                "type": "string",
+                "defaultValue": "join (select distinct trkToday.PolicyKey, trkToday.RatingCoverageAKID FROM WorkDCTPremiumTransactionTracking trkToday where trkToday.AuditId = $$WBMI_AUDIT_CONTROL_RUN_ID) todaysCoverages on dep.PolicyKey = todaysCoverages.PolicyKey and dep.RatingCoverageAKID = todaysCoverages.RatingCoverageAKID"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "DCT"
+            }
+        },
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

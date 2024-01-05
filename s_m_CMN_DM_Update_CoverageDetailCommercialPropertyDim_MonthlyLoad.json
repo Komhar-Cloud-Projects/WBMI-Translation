@@ -1,0 +1,99 @@
+{
+    "name": "s_m_CMN_DM_Update_CoverageDetailCommercialPropertyDim_MonthlyLoad",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CMN_DM_Update_CoverageDetailCommercialPropertyDim__00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nLKP_SupISOSpecialCauseOfLossCategory AS (\n\tSELECT\n\tISOSpecialCauseOfLossCategoryDescription,\n\tISOSpecialCauseOfLossCategoryCode\n\tFROM (\n\t\tSELECT \n\t\t\tISOSpecialCauseOfLossCategoryDescription,\n\t\t\tISOSpecialCauseOfLossCategoryCode\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupISOSpecialCauseOfLossCategory\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ISOSpecialCauseOfLossCategoryCode ORDER BY ISOSpecialCauseOfLossCategoryDescription) = 1\n),\nSQ_CoverageDetailCommercialProperty AS (\n\tDECLARE @Date1 DATE = DATEADD(D, -1, DATEADD(M,DATEDIFF(M,0,GETDATE())@{pipeline().parameters.NO_MONTHS},0)) \r\n\tselect CDD.CoverageDetailDimId AS CoverageDetailDimId\r\n\t,CDCP.ISOCommercialPropertyCauseofLossGroup AS ISOCommercialPropertyCauseofLossGroup\r\n\t,CDCP.ISOCommercialPropertyRatingGroupCode AS ISOCommercialPropertyRatingGroupCode\r\n\t,CDCP.ISOSpecialCauseOfLossCategoryCode AS ISOSpecialCauseOfLossCategoryCode\r\n\t,CDCP.RateType AS RateType\r\n\t,CDCP.CommercialPropertySpecialClass AS CommercialPropertySpecialClass\r\n\tfrom  CoverageDetailCommercialProperty CDCP\r\n\tINNER JOIN  @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageDetailDim CDD\r\n\tON CDCP.PremiumTransactionID=CDD.EDWPremiumTransactionPKId\r\n\tinner join @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageDetailCommercialPropertyDim CPD\r\n\ton CDD.CoverageDetailDimId=CPD.CoverageDetailDimId\r\n\twhere @{pipeline().parameters.PCOLUMN}%@{pipeline().parameters.NUM_OF_PARTITIONS}=0 \r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_METADATE AS (\n\tSELECT\n\tCoverageDetailDimId,\n\tISOCommercialPropertyCauseofLossGroup,\n\tISOCommercialPropertyRatingGroupCode,\n\tISOSpecialCauseOfLossCategoryCode,\n\tRateType,\n\tCommercialPropertySpecialClass\n\tFROM SQ_CoverageDetailCommercialProperty\n),\nLKP_SupISOCommercialPropertyRatingGroup AS (\n\tSELECT\n\tISOCommercialPropertyRatingGroupDescription,\n\tISOCommercialPropertyRatingGroupCode\n\tFROM (\n\t\tSELECT \n\t\t\tISOCommercialPropertyRatingGroupDescription,\n\t\t\tISOCommercialPropertyRatingGroupCode\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupISOCommercialPropertyRatingGroup\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ISOCommercialPropertyRatingGroupCode ORDER BY ISOCommercialPropertyRatingGroupDescription) = 1\n),\nEXP_GetData AS (\n\tSELECT\n\tEXP_METADATE.CoverageDetailDimId AS i_CoverageDetailDimId,\n\tEXP_METADATE.ISOCommercialPropertyCauseofLossGroup AS i_ISOCommercialPropertyCauseofLossGroup,\n\tEXP_METADATE.ISOCommercialPropertyRatingGroupCode AS i_ISOCommercialPropertyRatingGroupCode,\n\tLKP_SupISOCommercialPropertyRatingGroup.ISOCommercialPropertyRatingGroupDescription AS i_ISOCommercialPropertyRatingGroupDescription,\n\tEXP_METADATE.ISOSpecialCauseOfLossCategoryCode AS i_ISOSpecialCauseOfLossCategoryCode,\n\tEXP_METADATE.RateType AS i_RateType,\n\tEXP_METADATE.CommercialPropertySpecialClass AS i_CommercialPropertySpecialClass,\n\ti_CoverageDetailDimId AS o_CoverageDetailDimId,\n\t-- *INF*: iif(isnull(i_ISOCommercialPropertyCauseofLossGroup),'N/A',i_ISOCommercialPropertyCauseofLossGroup)\n\tIFF(i_ISOCommercialPropertyCauseofLossGroup IS NULL, 'N/A', i_ISOCommercialPropertyCauseofLossGroup) AS o_ISOCommercialPropertyCauseofLossGroup,\n\t-- *INF*: iif(isnull(i_ISOCommercialPropertyRatingGroupCode),'N/A',i_ISOCommercialPropertyRatingGroupCode)\n\tIFF(i_ISOCommercialPropertyRatingGroupCode IS NULL, 'N/A', i_ISOCommercialPropertyRatingGroupCode) AS o_ISOCommercialPropertyRatingGroupCode,\n\t-- *INF*: iif(isnull(i_ISOCommercialPropertyRatingGroupDescription),'N/A',i_ISOCommercialPropertyRatingGroupDescription)\n\tIFF(i_ISOCommercialPropertyRatingGroupDescription IS NULL, 'N/A', i_ISOCommercialPropertyRatingGroupDescription) AS o_ISOCommercialPropertyRatingGroupDescription,\n\t-- *INF*: iif(isnull(i_ISOSpecialCauseOfLossCategoryCode),'N/A',i_ISOSpecialCauseOfLossCategoryCode)\n\tIFF(i_ISOSpecialCauseOfLossCategoryCode IS NULL, 'N/A', i_ISOSpecialCauseOfLossCategoryCode) AS o_ISOSpecialCauseOfLossCategoryCode,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- i_ISOCommercialPropertyCauseofLossGroup='SCL' and not isnull(:LKP.LKP_SupISOSpecialCauseOfLossCategory(i_ISOSpecialCauseOfLossCategoryCode)),:LKP.LKP_SupISOSpecialCauseOfLossCategory(i_ISOSpecialCauseOfLossCategoryCode),'N/A')\n\tDECODE(TRUE,\n\ti_ISOCommercialPropertyCauseofLossGroup = 'SCL' AND NOT LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORY_i_ISOSpecialCauseOfLossCategoryCode.ISOSpecialCauseOfLossCategoryDescription IS NULL, LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORY_i_ISOSpecialCauseOfLossCategoryCode.ISOSpecialCauseOfLossCategoryDescription,\n\t'N/A') AS o_ISOSpecialCauseOfLossCategoryDescription,\n\t-- *INF*: iif(isnull(i_RateType),'N/A',i_RateType)\n\tIFF(i_RateType IS NULL, 'N/A', i_RateType) AS o_RateType,\n\t-- *INF*: iif(isnull(i_CommercialPropertySpecialClass),'N/A',i_CommercialPropertySpecialClass)\n\tIFF(i_CommercialPropertySpecialClass IS NULL, 'N/A', i_CommercialPropertySpecialClass) AS o_CommercialPropertySpecialClass\n\tFROM EXP_METADATE\n\tLEFT JOIN LKP_SupISOCommercialPropertyRatingGroup\n\tON LKP_SupISOCommercialPropertyRatingGroup.ISOCommercialPropertyRatingGroupCode = EXP_METADATE.ISOCommercialPropertyRatingGroupCode\n\tLEFT JOIN LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORY LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORY_i_ISOSpecialCauseOfLossCategoryCode\n\tON LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORY_i_ISOSpecialCauseOfLossCategoryCode.ISOSpecialCauseOfLossCategoryCode = i_ISOSpecialCauseOfLossCategoryCode\n\n),\nUPD_ADDEDCOLUMNS AS (\n\tSELECT\n\to_CoverageDetailDimId AS CoverageDetailDimId, \n\to_ISOCommercialPropertyCauseofLossGroup AS ISOCommercialPropertyCauseofLossGroup, \n\to_ISOCommercialPropertyRatingGroupCode AS ISOCommercialPropertyRatingGroupCode, \n\to_ISOCommercialPropertyRatingGroupDescription AS ISOCommercialPropertyRatingGroupDescription, \n\to_ISOSpecialCauseOfLossCategoryCode AS ISOSpecialCauseOfLossCategoryCode, \n\to_ISOSpecialCauseOfLossCategoryDescription AS ISOSpecialCauseOfLossCategoryDescription, \n\to_RateType AS RateType, \n\to_CommercialPropertySpecialClass AS CommercialPropertySpecialClass\n\tFROM EXP_GetData\n),\nCoverageDetailCommercialPropertyDim AS (\n\tMERGE INTO CoverageDetailCommercialPropertyDim AS T\n\tUSING UPD_ADDEDCOLUMNS AS S\n\tON \n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.CoverageDetailDimId = S.CoverageDetailDimId, T.ISOCommercialPropertyCauseofLossGroup = S.ISOCommercialPropertyCauseofLossGroup, T.ISOCommercialPropertyRatingGroupCode = S.ISOCommercialPropertyRatingGroupCode, T.ISOCommercialPropertyRatingGroupDescription = S.ISOCommercialPropertyRatingGroupDescription, T.ISOSpecialCauseOfLossCategoryCode = S.ISOSpecialCauseOfLossCategoryCode, T.ISOSpecialCauseOfLossCategoryDescription = S.ISOSpecialCauseOfLossCategoryDescription, T.RateType = S.RateType, T.CommercialPropertySpecialClass = S.CommercialPropertySpecialClass\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246244"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "903271"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7594675"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "07/26/2023 05:02:27"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/26/2023 03:40:27"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Policy"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Data_Mart_Policy"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "dbo"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "dbo"
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "RPT_EDM"
+            },
+            "TARGET_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "WC_DATA_MART"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "and (CPD.ISOCommercialPropertyRatingGroupDescription  is null or  CPD.ISOSpecialCauseOfLossCategoryDescription is null or CPD.ISOCommercialPropertyRatingGroupDescription='N/A' or  CPD.ISOSpecialCauseOfLossCategoryDescription='N/A' or  CPD.ISOCommercialPropertyCauseofLossGroup is null OR CPD.ISOCommercialPropertyCauseofLossGroup='N/A' OR CPD.ISOCommercialPropertyRatingGroupCode is null OR CPD.ISOCommercialPropertyRatingGroupCode='N/A' OR CPD.ISOSpecialCauseOfLossCategoryCode is null OR CPD.ISOSpecialCauseOfLossCategoryCode='N/A' OR CPD.RateType is null OR CPD.RateType='N/A' OR CPD.CommercialPropertySpecialClass is null OR CPD.CommercialPropertySpecialClass='N/A') and CDCP.CreatedDate > @Date1"
+            },
+            "PCOLUMN": {
+                "type": "string",
+                "defaultValue": "CPD.CoverageDetailDimId"
+            },
+            "NO_MONTHS": {
+                "type": "string",
+                "defaultValue": ""
+            },
+            "NUM_OF_PARTITIONS": {
+                "type": "string",
+                "defaultValue": "4"
+            }
+        },
+        "folder": {
+            "name": "Common DataMart/"
+        },
+        "annotations": []
+    }
+}

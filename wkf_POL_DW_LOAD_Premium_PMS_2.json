@@ -1,0 +1,151 @@
+{
+    "name": "wkf_POL_DW_LOAD_Premium_PMS_2",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_RiskLocation",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_PolicyLimit",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_RiskLocation"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_PolicyCoverage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_RiskLocation",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_PolicyCoverage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_StatisticalCoverage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_PolicyCoverageForm",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_StatisticalCoverage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_PolicyLimit",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_PriorCoverage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_PolicyLimit"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_PolicyCoverageForm",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DW_LOAD_PolicyCoverage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_PolicyCoverageForm"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DW_LOAD_PriorCoverage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DW_LOAD_PriorCoverage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "Policy DataWarehouse/"
+        },
+        "variables": {}
+    }
+}

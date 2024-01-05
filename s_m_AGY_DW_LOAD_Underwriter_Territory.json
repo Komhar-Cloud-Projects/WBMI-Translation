@@ -1,0 +1,79 @@
+{
+    "name": "s_m_AGY_DW_LOAD_Underwriter_Territory",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_DW_LOAD_Underwriter_Territory",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nLKP_Underwriter AS (\n\tSELECT\n\tuw_ak_id,\n\tuw_code\n\tFROM (\n\t\tSELECT u.uw_ak_id as uw_ak_id, \r\n\t\tu.uw_code as uw_code FROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.underwriter u\r\n\t\tWhere u.crrnt_snpsht_flag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY uw_code ORDER BY uw_ak_id) = 1\n),\nLKP_Underwriter_Manager AS (\n\tSELECT\n\tuw_mgr_ak_id,\n\tsource_uw_mgr_id\n\tFROM (\n\t\tSELECT u.uw_mgr_ak_id as uw_mgr_ak_id, u.source_uw_mgr_id as source_uw_mgr_id \r\n\t\tFROM \r\n\t\tdbo.underwriter_manager u\r\n\t\tWhere u.crrnt_snpsht_flag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY source_uw_mgr_id ORDER BY uw_mgr_ak_id) = 1\n),\nSQ_underwriter_terr_stage AS (\n\tselect A.territory_code as territory_code, A.uw_code as uw_code, A.uw_mgr_id as uw_mgr_id, A.SOURCE_SYSTEM_ID as SOURCE_SYSTEM_ID \r\n\tFROM\r\n\t(\r\n\t SELECT  underwriter_terr_stage.territory_code, underwriter_terr_stage.uw_code, underwriter_terr_stage.uw_mgr_id, underwriter_terr_stage.SOURCE_SYSTEM_ID \r\n\t, row_number() over (partition by underwriter_terr_stage.territory_code, underwriter_terr_stage.uw_code,underwriter_terr_stage.uw_mgr_id order by underwriter_terr_stage.uw_mgr_id) as rn\r\n\tFROM\r\n\t underwriter_terr_stage) A\r\n\t where A.rn=1\n),\nEXP_DefaultValues AS (\n\tSELECT\n\tterritory_code AS in_territory_code,\n\tuw_code AS in_uw_code,\n\tuw_mgr_id AS in_uw_mgr_id,\n\t-- *INF*: iif(isnull(in_rsm_id),'N/A',iif(IS_SPACES(in_rsm_id),'N/A',in_rsm_id))\n\tIFF(in_rsm_id IS NULL, 'N/A', IFF(IS_SPACES(in_rsm_id), 'N/A', in_rsm_id)) AS rsm_id,\n\t-- *INF*: to_char(to_integer(in_territory_code))\r\n\t-- --substr(in_territory_code,1,(INSTR(in_territory_code,'.',1,1)-1))\r\n\t-- \r\n\t-- \r\n\t-- \n\tto_char(to_integer(in_territory_code)) AS territory_code,\n\t-- *INF*: iif(isnull(in_uw_code),'N/A',iif(IS_SPACES(in_uw_code),'N/A',in_uw_code))\n\tIFF(in_uw_code IS NULL, 'N/A', IFF(IS_SPACES(in_uw_code), 'N/A', in_uw_code)) AS uw_code,\n\t-- *INF*: iif(isnull(in_uw_mgr_id),'N/A',iif(IS_SPACES(in_uw_mgr_id),'N/A',in_uw_mgr_id))\n\tIFF(in_uw_mgr_id IS NULL, 'N/A', IFF(IS_SPACES(in_uw_mgr_id), 'N/A', in_uw_mgr_id)) AS uw_mgr_id,\n\tSOURCE_SYSTEM_ID\n\tFROM SQ_underwriter_terr_stage\n),\nEXP_lookupvalues AS (\n\tSELECT\n\tterritory_code AS in_territory_code,\n\t-- *INF*: in_territory_code || '  '\r\n\t-- --Concat  spaces to have a correct lookup to underwriter_terr_table\r\n\t-- \r\n\t-- \n\tin_territory_code || '  ' AS v_territory_code,\n\tv_territory_code AS territory_code,\n\tuw_code,\n\t-- *INF*: :LKP.LKP_UNDERWRITER(uw_code)\n\tLKP_UNDERWRITER_uw_code.uw_ak_id AS out_uw_ak_id,\n\tuw_mgr_id AS source_uw_mgr_id,\n\t-- *INF*: TO_INTEGER(source_uw_mgr_id)\n\tTO_INTEGER(source_uw_mgr_id) AS lkp_uw_mgr_id,\n\t-- *INF*: :LKP.LKP_UNDERWRITER_MANAGER(lkp_uw_mgr_id)\n\tLKP_UNDERWRITER_MANAGER_lkp_uw_mgr_id.uw_mgr_ak_id AS out_uw_mgr_ak_id,\n\tSOURCE_SYSTEM_ID\n\tFROM EXP_DefaultValues\n\tLEFT JOIN LKP_UNDERWRITER LKP_UNDERWRITER_uw_code\n\tON LKP_UNDERWRITER_uw_code.uw_code = uw_code\n\n\tLEFT JOIN LKP_UNDERWRITER_MANAGER LKP_UNDERWRITER_MANAGER_lkp_uw_mgr_id\n\tON LKP_UNDERWRITER_MANAGER_lkp_uw_mgr_id.source_uw_mgr_id = lkp_uw_mgr_id\n\n),\nEXP_Detectchanges AS (\n\tSELECT\n\tterritory_code,\n\tout_uw_ak_id,\n\tout_uw_mgr_ak_id,\n\t1 AS crrnt_snpsht_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t-- *INF*: to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')\n\tto_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,\n\t-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tto_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,\n\tSOURCE_SYSTEM_ID,\n\tsysdate AS created_date,\n\tsysdate AS modified_date,\n\t-- *INF*: IIF(ISNULL(v_uw_terr_ak_id) OR v_uw_terr_ak_id=0,1,v_uw_terr_ak_id +1)\n\tIFF(v_uw_terr_ak_id IS NULL OR v_uw_terr_ak_id = 0, 1, v_uw_terr_ak_id + 1) AS v_uw_terr_ak_id,\n\tv_uw_terr_ak_id AS out_uw_terr_ak_id\n\tFROM EXP_lookupvalues\n),\nunderwriter_territory_Insert AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.underwriter_territory;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.underwriter_territory\n\t(uw_terr_ak_id, uw_ak_id, uw_mgr_ak_id, terr_code, crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, source_system_id, created_date, modified_date)\n\tSELECT \n\tout_uw_terr_ak_id AS UW_TERR_AK_ID, \n\tout_uw_ak_id AS UW_AK_ID, \n\tout_uw_mgr_ak_id AS UW_MGR_AK_ID, \n\tterritory_code AS TERR_CODE, \n\tCRRNT_SNPSHT_FLAG, \n\tAUDIT_ID, \n\tEFF_FROM_DATE, \n\tEFF_TO_DATE, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tCREATED_DATE, \n\tMODIFIED_DATE\n\tFROM EXP_Detectchanges\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246519"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905540"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7604606"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 22:18:00"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/31/2023 05:12:52"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": "SQLServer_WC_Stage_Agency"
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_RPT_EDM_Agency"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "dbo"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "dbo"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "AGENCY"
+            }
+        },
+        "folder": {
+            "name": "Agency DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

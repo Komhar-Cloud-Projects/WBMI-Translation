@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_Check_LossMasterCalculation_Initialization",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_Check_LossMasterCalculation_Initialization",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_wbmi_checkout AS (\n\tselect checkout_type_code,\r\n\tt1.checkout_message\r\n\tfrom wbmi_checkout t1\r\n\tjoin\r\n\t(\r\n\tselect a.WBMIChecksAndBalancingRuleId,\r\n\tmax(a.Created_Date) max_date from wbmi_checkout a\r\n\tjoin WBMIChecksAndBalancingRule b\r\n\ton a.WBMIChecksAndBalancingRuleId=b.WBMIChecksAndBalancingRuleId\r\n\twhere b.RuleLabel=@{pipeline().parameters.RULE_LABEL}\r\n\tgroup by a.WBMIChecksAndBalancingRuleId\r\n\t) t2\r\n\ton t1.WBMIChecksAndBalancingRuleId=t2.WBMIChecksAndBalancingRuleId\r\n\tand t1.created_date=t2.max_date\n),\nFIL_IssueCheck AS (\n\tSELECT\n\tcheckout_type_code, \n\tcheckout_message\n\tFROM SQ_wbmi_checkout\n\tWHERE IN(checkout_type_code,'E')\n),\nEXP_Abort AS (\n\tSELECT\n\tcheckout_type_code,\n\t-- *INF*: Abort('There are issues with the EDW data')\n\tAbort('There are issues with the EDW data') AS error\n\tFROM FIL_IssueCheck\n),\nFIL_STOP_PROCESSING AS (\n\tSELECT\n\terror\n\tFROM EXP_Abort\n\tWHERE TRUE\n),\nwbmi_checkout_dummy_target AS (\n\tINSERT INTO wbmi_checkout\n\t(checkout_message)\n\tSELECT \n\terror AS CHECKOUT_MESSAGE\n\tFROM FIL_STOP_PROCESSING\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "RULE_LABEL": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Claims DataWarehouse/"
+        },
+        "annotations": []
+    }
+}

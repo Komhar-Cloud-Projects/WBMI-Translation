@@ -1,0 +1,67 @@
+{
+    "name": "wkf_POL_DIV_DM_LOAD_DCTDividendFact",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DIV_DM_LOAD_DCTDividendFact",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DIV_DM_LOAD_DCTDividendFact"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_DM_UPDATE_DCTDividendFact_RatingPlan",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_DIV_DM_LOAD_DCTDividendFact",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_DM_UPDATE_DCTDividendFact_RatingPlan"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "Policy DataMart/"
+        },
+        "variables": {}
+    }
+}

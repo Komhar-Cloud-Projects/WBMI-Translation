@@ -1,0 +1,46 @@
+{
+    "name": "wkf_CLM_DW_UPDATE_Claimant_Coverage_Detail_MonthlyLoad",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_DW_UPDATE_Claimant_Coverage_Detail_MonthlyLoad",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_DW_UPDATE_Claimant_Coverage_Detail_MonthlyLoad"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "Claims DataWarehouse/"
+        },
+        "variables": {}
+    }
+}

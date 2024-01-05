@@ -1,0 +1,79 @@
+{
+    "name": "s_m_CMN_IR_LOAD_SupClassificationGarage_FlatFile",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CMN_IR_LOAD_SupClassificationGarage_FlatFile",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_GarageClass AS (\n\n-- TODO Manual --\n\n),\nEXP_MetaData AS (\n\tSELECT\n\tLineOfBusinessAbbreviation AS LineofBusinessAbbreviation,\n\tRatingStateCode,\n\tEffectiveDate AS ClassEffectiveDate,\n\tExpirationDate AS ClassExpirationDate,\n\tClassCode,\n\tClassDescription,\n\tOriginatingOrganizationCode AS ClassCodeOriginatingOrganization,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_Auditid,\n\tsysdate AS o_CreatedDate,\n\tsysdate AS o_ModifiedDate,\n\t-- *INF*: LTRIM(RTRIM(LineofBusinessAbbreviation))\n\tLTRIM(RTRIM(LineofBusinessAbbreviation)) AS o_LineofBusinessAbbreviation,\n\t-- *INF*: LTRIM(RTRIM(RatingStateCode))\n\tLTRIM(RTRIM(RatingStateCode)) AS o_RatingStateCode,\n\t-- *INF*: IIF(ISNULL(LTRIM(RTRIM(ClassEffectiveDate))) \r\n\t-- OR IS_SPACES(LTRIM(RTRIM(ClassEffectiveDate))) \r\n\t-- OR LENGTH(LTRIM(RTRIM(ClassEffectiveDate)))=0\r\n\t-- OR LTRIM(RTRIM(SUBSTR(ClassEffectiveDate,1,10)))='1900-01-01', TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS'),\r\n\t-- TO_DATE( SUBSTR( ClassEffectiveDate ,1,19 )  ,'YYYY-MM-DD HH24:MI:SS'))\n\tIFF(LTRIM(RTRIM(ClassEffectiveDate)) IS NULL OR IS_SPACES(LTRIM(RTRIM(ClassEffectiveDate))) OR LENGTH(LTRIM(RTRIM(ClassEffectiveDate))) = 0 OR LTRIM(RTRIM(SUBSTR(ClassEffectiveDate, 1, 10))) = '1900-01-01', TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE(SUBSTR(ClassEffectiveDate, 1, 19), 'YYYY-MM-DD HH24:MI:SS')) AS o_ClassEffectiveDate,\n\t-- *INF*: IIF(ISNULL(LTRIM(RTRIM(ClassExpirationDate))) \r\n\t-- OR IS_SPACES(LTRIM(RTRIM(ClassExpirationDate)))\r\n\t-- OR LENGTH(LTRIM(RTRIM(ClassExpirationDate)))=0\r\n\t-- OR LTRIM(RTRIM(SUBSTR(ClassExpirationDate,1,10)))='2999-01-01', TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS'),\r\n\t-- TO_DATE(SUBSTR(ClassExpirationDate , 1,19  ),'YYYY-MM-DD HH24:MI:SS'))\r\n\t-- \n\tIFF(LTRIM(RTRIM(ClassExpirationDate)) IS NULL OR IS_SPACES(LTRIM(RTRIM(ClassExpirationDate))) OR LENGTH(LTRIM(RTRIM(ClassExpirationDate))) = 0 OR LTRIM(RTRIM(SUBSTR(ClassExpirationDate, 1, 10))) = '2999-01-01', TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'), TO_DATE(SUBSTR(ClassExpirationDate, 1, 19), 'YYYY-MM-DD HH24:MI:SS')) AS o_ClassExpirationDate,\n\t-- *INF*: LTRIM(RTRIM(ClassCode))\n\tLTRIM(RTRIM(ClassCode)) AS o_ClassCode,\n\t-- *INF*: LTRIM(RTRIM(ClassDescription))\n\tLTRIM(RTRIM(ClassDescription)) AS o_ClassDescription,\n\t-- *INF*: LTRIM(RTRIM(ClassCodeOriginatingOrganization))\n\tLTRIM(RTRIM(ClassCodeOriginatingOrganization)) AS o_ClassCodeOriginatingOrganization\n\tFROM SQ_GarageClass\n),\nSupClassificationGarage_IR AS (\n\tTRUNCATE TABLE SupClassificationGarage;\n\tINSERT INTO SupClassificationGarage\n\t(AuditId, CreatedDate, ModifiedDate, LineOfBusinessAbbreviation, RatingStateCode, EffectiveDate, ExpirationDate, ClassCode, ClassDescription, OriginatingOrganizationCode)\n\tSELECT \n\to_Auditid AS AUDITID, \n\to_CreatedDate AS CREATEDDATE, \n\to_ModifiedDate AS MODIFIEDDATE, \n\to_LineofBusinessAbbreviation AS LINEOFBUSINESSABBREVIATION, \n\to_RatingStateCode AS RATINGSTATECODE, \n\to_ClassEffectiveDate AS EFFECTIVEDATE, \n\to_ClassExpirationDate AS EXPIRATIONDATE, \n\to_ClassCode AS CLASSCODE, \n\to_ClassDescription AS CLASSDESCRIPTION, \n\to_ClassCodeOriginatingOrganization AS ORIGINATINGORGANIZATIONCODE\n\tFROM EXP_MetaData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "246484"
+            },
+            "WBMI_BATCH_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "905454"
+            },
+            "WBMI_SESSION_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "7603059"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "08/29/2023 22:02:48"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "08/30/2023 22:02:41"
+            },
+            "DBCONNECTION_SOURCE": {
+                "type": "string",
+                "defaultValue": ""
+            },
+            "DBCONNECTION_TARGET": {
+                "type": "string",
+                "defaultValue": "SQLServer_InsuranceReference_Policy"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "DBO"
+            },
+            "INPUTFILENAME": {
+                "type": "string",
+                "defaultValue": "$PMSourceFileDir\\Classification\\GarageClass.csv"
+            }
+        },
+        "folder": {
+            "name": "Common DataWarehouse/"
+        },
+        "annotations": []
+    }
+}
