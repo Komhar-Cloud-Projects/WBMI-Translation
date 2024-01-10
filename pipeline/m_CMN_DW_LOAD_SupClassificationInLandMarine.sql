@@ -78,8 +78,9 @@ EXP_Detect_Changes AS (
 	-- 'NOCHANGE',
 	-- 'INSERT')						
 	DECODE(TRUE,
-		NOT LKP_SUPCLASSIFICATIONINLANDMARINE_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_EffectiveDate_i_ClassDescription_i_OriginatingOrganizationCode.SupClassificationInlandMarineId IS NULL, 'NOCHANGE',
-		'INSERT') AS v_RecordPopulated,
+		LKP_SUPCLASSIFICATIONINLANDMARINE_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_EffectiveDate_i_ClassDescription_i_OriginatingOrganizationCode.SupClassificationInlandMarineId IS NOT NULL, 'NOCHANGE',
+		'INSERT'
+	) AS v_RecordPopulated,
 	-- *INF*: DECODE(TRUE,
 	-- i_ExpirationDate   <=  lkp_EffectiveDate OR v_RecordPopulated = 'NOCHANGE', 'NOCHANGE',
 	-- ISNULL(lkp_SupClassificationInlandMarineId) 
@@ -98,10 +99,22 @@ EXP_Detect_Changes AS (
 	-- 'NOCHANGE'
 	-- )
 	DECODE(TRUE,
-		i_ExpirationDate <= lkp_EffectiveDate OR v_RecordPopulated = 'NOCHANGE', 'NOCHANGE',
-		lkp_SupClassificationInlandMarineId IS NULL OR ( i_RatingStateCode = lkp_RatingStateCode AND i_ClassCode = lkp_ClassCode AND i_OriginatingOrganizationCode = lkp_OriginatingOrganizationCode AND ( i_ClassDescription <> lkp_ClassDescription OR i_ExpirationDate <> lkp_ExpirationDate OR i_EffectiveDate <> lkp_EffectiveDate ) ), 'INSERT',
-		i_RatingStateCode <> lkp_RatingStateCode OR i_ClassCode <> lkp_ClassCode OR i_OriginatingOrganizationCode <> lkp_OriginatingOrganizationCode, 'UPDATE',
-		'NOCHANGE') AS v_ChangeFlag,
+		i_ExpirationDate <= lkp_EffectiveDate 
+		OR v_RecordPopulated = 'NOCHANGE', 'NOCHANGE',
+		lkp_SupClassificationInlandMarineId IS NULL 
+		OR ( i_RatingStateCode = lkp_RatingStateCode 
+			AND i_ClassCode = lkp_ClassCode 
+			AND i_OriginatingOrganizationCode = lkp_OriginatingOrganizationCode 
+			AND ( i_ClassDescription <> lkp_ClassDescription 
+				OR i_ExpirationDate <> lkp_ExpirationDate 
+				OR i_EffectiveDate <> lkp_EffectiveDate 
+			) 
+		), 'INSERT',
+		i_RatingStateCode <> lkp_RatingStateCode 
+		OR i_ClassCode <> lkp_ClassCode 
+		OR i_OriginatingOrganizationCode <> lkp_OriginatingOrganizationCode, 'UPDATE',
+		'NOCHANGE'
+	) AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag,
 	1 AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
@@ -194,12 +207,22 @@ EXP_Lag_Eff_Dates AS (
 	-- 		 OR ADD_TO_DATE(ExpirationDate,'SS',+1) <> v_PREV_ROW_EffectiveDate)
 	-- ,'0','1')
 	DECODE(TRUE,
-		RatingStateCode = v_PREV_ROW_RatingStateCode AND ClassCode = v_PREV_ROW_ClassCode AND OriginatingOrganizationCode = v_PREV_ROW_OriginatingOrganizationCode AND ( ClassDescription <> v_PREV_ROW_ClassDescription OR ADD_TO_DATE(ExpirationDate, 'SS', + 1) <> v_PREV_ROW_EffectiveDate ), '0',
-		'1') AS v_CurrentSnapshotFlag,
+		RatingStateCode = v_PREV_ROW_RatingStateCode 
+		AND ClassCode = v_PREV_ROW_ClassCode 
+		AND OriginatingOrganizationCode = v_PREV_ROW_OriginatingOrganizationCode 
+		AND ( ClassDescription <> v_PREV_ROW_ClassDescription 
+			OR DATEADD(SECOND,+ 1,ExpirationDate) <> v_PREV_ROW_EffectiveDate 
+		), '0',
+		'1'
+	) AS v_CurrentSnapshotFlag,
 	-- *INF*: ADD_TO_DATE(
 	-- IIF(v_PREV_ROW_EffectiveDate = TO_DATE('1800-01-01 00:00:00' , 'YYYY-MM-DD HH24:MI:SS' ),SYSDATE,v_PREV_ROW_EffectiveDate)
 	-- ,'SS',-1)
-	ADD_TO_DATE(IFF(v_PREV_ROW_EffectiveDate = TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), SYSDATE, v_PREV_ROW_EffectiveDate), 'SS', - 1) AS v_ClassExpirationDate,
+	DATEADD(SECOND,- 1,IFF(v_PREV_ROW_EffectiveDate = TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		SYSDATE,
+		v_PREV_ROW_EffectiveDate
+	)) AS v_ClassExpirationDate,
 	v_CurrentSnapshotFlag AS o_CurrentSnapshotFlag,
 	v_ClassExpirationDate AS o_ClassExpirationDate,
 	EffectiveDate AS v_PREV_ROW_EffectiveDate,

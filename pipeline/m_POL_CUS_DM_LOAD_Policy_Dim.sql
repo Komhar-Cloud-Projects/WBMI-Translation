@@ -379,7 +379,15 @@ EXP_values AS (
 	terrorism_risk_ind,
 	prior_pol_key AS in_prior_pol_key,
 	-- *INF*: iif(substr(in_prior_pol_key,1,1)='+','N/A',iif(substr(in_prior_pol_key,14,1)='+','N/A',in_prior_pol_key))
-	IFF(substr(in_prior_pol_key, 1, 1) = '+', 'N/A', IFF(substr(in_prior_pol_key, 14, 1) = '+', 'N/A', in_prior_pol_key)) AS prior_pol_key,
+	IFF(substr(in_prior_pol_key, 1, 1
+		) = '+',
+		'N/A',
+		IFF(substr(in_prior_pol_key, 14, 1
+			) = '+',
+			'N/A',
+			in_prior_pol_key
+		)
+	) AS prior_pol_key,
 	pol_status_code,
 	pol_issue_code,
 	pol_age,
@@ -406,19 +414,24 @@ EXP_values AS (
 	pol_status_on_pif,
 	target_mrkt_code AS target_mrkt_code1,
 	-- *INF*: :UDF.LTRIM_RTRIM(target_mrkt_code1)
-	:UDF.LTRIM_RTRIM(target_mrkt_code1) AS target_mrkt_code,
+	:UDF.LTRIM_RTRIM(target_mrkt_code1
+	) AS target_mrkt_code,
 	pkg_code AS pkg_code1,
 	-- *INF*: :UDF.LTRIM_RTRIM(pkg_code1)
-	:UDF.LTRIM_RTRIM(pkg_code1) AS pkg_code,
+	:UDF.LTRIM_RTRIM(pkg_code1
+	) AS pkg_code,
 	pol_kind_code AS pol_kind_code1,
 	-- *INF*: :UDF.LTRIM_RTRIM(pol_kind_code1)
-	:UDF.LTRIM_RTRIM(pol_kind_code1) AS pol_kind_code,
+	:UDF.LTRIM_RTRIM(pol_kind_code1
+	) AS pol_kind_code,
 	bus_seg_code AS bus_seg_code1,
 	-- *INF*: :UDF.LTRIM_RTRIM(bus_seg_code1)
-	:UDF.LTRIM_RTRIM(bus_seg_code1) AS bus_seg_code,
+	:UDF.LTRIM_RTRIM(bus_seg_code1
+	) AS bus_seg_code,
 	pif_upload_audit_ind AS pif_upload_audit_ind1,
 	-- *INF*: :UDF.LTRIM_RTRIM(pif_upload_audit_ind1)
-	:UDF.LTRIM_RTRIM(pif_upload_audit_ind1) AS pif_upload_audit_ind,
+	:UDF.LTRIM_RTRIM(pif_upload_audit_ind1
+	) AS pif_upload_audit_ind,
 	err_flag_bal_txn,
 	err_flag_bal_reins,
 	prdcr_code,
@@ -445,11 +458,17 @@ EXP_values AS (
 	AutomatedUnderwritingServicesIndicator,
 	AutomaticRenewalIndicator AS i_AutomaticRenewalIndicator,
 	-- *INF*: IIF(i_AutomaticRenewalIndicator='T', '1', '0')
-	IFF(i_AutomaticRenewalIndicator = 'T', '1', '0') AS o_AutomaticRenewalIndicator,
+	IFF(i_AutomaticRenewalIndicator = 'T',
+		'1',
+		'0'
+	) AS o_AutomaticRenewalIndicator,
 	AssociationCode,
 	RolloverPolicyIndicator AS i_RolloverPolicyIndicator,
 	-- *INF*: IIF(i_RolloverPolicyIndicator='T','1','0')
-	IFF(i_RolloverPolicyIndicator = 'T', '1', '0') AS o_RolloverPolicyIndicator,
+	IFF(i_RolloverPolicyIndicator = 'T',
+		'1',
+		'0'
+	) AS o_RolloverPolicyIndicator,
 	RolloverPriorCarrier,
 	MailToInsuredFlag AS i_MailToInsuredFlag,
 	-- *INF*: DECODE(TRUE,
@@ -459,11 +478,15 @@ EXP_values AS (
 	DECODE(TRUE,
 		i_MailToInsuredFlag = 'T', '1',
 		i_MailToInsuredFlag = '1', '1',
-		'0') AS o_MailToInsuredFlag,
+		'0'
+	) AS o_MailToInsuredFlag,
 	AgencyEmployeeAKId,
 	PolicyIssueCodeOverride AS i_PolicyIssueCodeOverride,
 	-- *INF*: IIF(i_PolicyIssueCodeOverride='T','Y','N')
-	IFF(i_PolicyIssueCodeOverride = 'T', 'Y', 'N') AS o_PolicyIssueCodeOverride,
+	IFF(i_PolicyIssueCodeOverride = 'T',
+		'Y',
+		'N'
+	) AS o_PolicyIssueCodeOverride,
 	DCBillFlag,
 	IssuedUWID,
 	IssuedUnderwriter
@@ -883,12 +906,14 @@ EXP_sup_description AS (
 	LKP_SupSurchargeExempt.StandardSurchargeExemptCode,
 	LKP_SupSurchargeExempt.StandardSurchargeExemptDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(prdcr_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(prdcr_code) AS producer_code,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(prdcr_code
+	) AS producer_code,
 	EXP_values.in_pol_co_num AS pol_co_num,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id), 'sup_policy_company_number',:UDF.LTRIM_RTRIM(pol_co_num))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_company_number_UDF_LTRIM_RTRIM_pol_co_num.descript AS v_pol_co_num_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_co_num_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_co_num_descript) AS pol_co_num_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_co_num_descript
+	) AS pol_co_num_descript,
 	EXP_values.pol_eff_date,
 	EXP_values.pol_exp_date,
 	EXP_values.orig_incptn_date,
@@ -896,89 +921,104 @@ EXP_sup_description AS (
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM('DCT'),'sup_business_classification_code',:UDF.LTRIM_RTRIM(prim_bus_class_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_DCT_sup_business_classification_code_UDF_LTRIM_RTRIM_prim_bus_class_code.descript AS v_prim_bus_class_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_prim_bus_class_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_prim_bus_class_code_descript) AS prim_bus_class_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_prim_bus_class_code_descript
+	) AS prim_bus_class_code_descript,
 	EXP_values.reins_code,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_reinsurance_code',:UDF.LTRIM_RTRIM(reins_code))
 	-- 
 	-- 
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_reinsurance_code_UDF_LTRIM_RTRIM_reins_code.descript AS v_reins_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_reins_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_reins_code_descript) AS reins_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_reins_code_descript
+	) AS reins_code_descript,
 	EXP_values.pms_pol_lob_code,
 	'N/A' AS pms_pol_lob_code_descript,
 	EXP_values.pol_co_line_code,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_policy_company_line_code',:UDF.LTRIM_RTRIM(pol_co_line_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_company_line_code_UDF_LTRIM_RTRIM_pol_co_line_code.descript AS v_pol_co_line_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_co_line_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_co_line_code_descript) AS pol_co_line_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_co_line_code_descript
+	) AS pol_co_line_code_descript,
 	EXP_values.pol_cancellation_ind,
 	EXP_values.pol_cancellation_date,
 	EXP_values.pol_cancellation_rsn_code,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_reason_amended_code',:UDF.LTRIM_RTRIM(pol_cancellation_rsn_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_reason_amended_code_UDF_LTRIM_RTRIM_pol_cancellation_rsn_code.descript AS v_pol_cancellation_rsn_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_cancellation_rsn_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_cancellation_rsn_code_descript) AS pol_cancellation_rsn_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_cancellation_rsn_code_descript
+	) AS pol_cancellation_rsn_code_descript,
 	EXP_values.state_of_domicile_code,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_state_abbrev',:UDF.LTRIM_RTRIM(state_of_domicile_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_state_abbrev_UDF_LTRIM_RTRIM_state_of_domicile_code.descript AS v_state_of_domicile_code_abbrev,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_state_of_domicile_code_abbrev)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_state_of_domicile_code_abbrev) AS state_of_domicile_code_abbrev,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_state_of_domicile_code_abbrev
+	) AS state_of_domicile_code_abbrev,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM('EXCEED'),'sup_state',:UDF.LTRIM_RTRIM(state_of_domicile_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_EXCEED_sup_state_UDF_LTRIM_RTRIM_state_of_domicile_code.descript AS v_state_of_domicile_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_state_of_domicile_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_state_of_domicile_code_descript) AS state_of_domicile_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_state_of_domicile_code_descript
+	) AS state_of_domicile_code_descript,
 	EXP_values.wbconnect_upload_code,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_wbconnect_upload_code',:UDF.LTRIM_RTRIM(wbconnect_upload_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_wbconnect_upload_code_UDF_LTRIM_RTRIM_wbconnect_upload_code.descript AS v_wbconnect_upload_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_wbconnect_upload_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_wbconnect_upload_code_descript) AS wbconnect_upload_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_wbconnect_upload_code_descript
+	) AS wbconnect_upload_code_descript,
 	EXP_values.serv_center_support_code,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_service_center_support_code',:UDF.LTRIM_RTRIM(serv_center_support_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_service_center_support_code_UDF_LTRIM_RTRIM_serv_center_support_code.descript AS v_serv_center_support_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_serv_center_support_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_serv_center_support_code_descript) AS serv_center_support_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_serv_center_support_code_descript
+	) AS serv_center_support_code_descript,
 	EXP_values.pol_term,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM('PMS'),'sup_policy_term',:UDF.LTRIM_RTRIM(pol_term))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_term_UDF_LTRIM_RTRIM_pol_term.descript AS v_pol_term_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_term_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_term_descript) AS pol_term_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_term_descript
+	) AS pol_term_descript,
 	EXP_values.terrorism_risk_ind,
 	EXP_values.prior_pol_key,
 	EXP_values.pol_status_code,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_policy_status_code',:UDF.LTRIM_RTRIM(pol_status_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_status_code_UDF_LTRIM_RTRIM_pol_status_code.descript AS v_pol_status_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_status_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_status_code_descript) AS pol_status_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_status_code_descript
+	) AS pol_status_code_descript,
 	'N/A' AS pol_count_type_code,
 	EXP_values.pol_issue_code,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM('PMS'),'sup_policy_issue_code',:UDF.LTRIM_RTRIM(pol_issue_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_issue_code_UDF_LTRIM_RTRIM_pol_issue_code.descript AS v_pol_issue_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_issue_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_issue_code_descript) AS pol_issue_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_issue_code_descript
+	) AS pol_issue_code_descript,
 	EXP_values.pol_age,
 	EXP_values.industry_risk_grade_code,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM('PMS'),'sup_industry_risk_grade_code',:UDF.LTRIM_RTRIM(industry_risk_grade_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_industry_risk_grade_code_UDF_LTRIM_RTRIM_industry_risk_grade_code.descript AS v_industry_risk_grade_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_industry_risk_grade_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_industry_risk_grade_code_descript) AS industry_risk_grade_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_industry_risk_grade_code_descript
+	) AS industry_risk_grade_code_descript,
 	EXP_values.uw_review_yr,
 	EXP_values.mvr_request_code,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_mvr_request_code',:UDF.LTRIM_RTRIM(mvr_request_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_mvr_request_code_UDF_LTRIM_RTRIM_mvr_request_code.descript AS v_mvr_request_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_mvr_request_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_mvr_request_code_descript) AS mvr_request_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_mvr_request_code_descript
+	) AS mvr_request_code_descript,
 	EXP_values.renl_code,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_policy_renewal_code',:UDF.LTRIM_RTRIM(renl_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_renewal_code_UDF_LTRIM_RTRIM_renl_code.descript AS v_renl_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_renl_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_renl_code_descript) AS renl_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_renl_code_descript
+	) AS renl_code_descript,
 	EXP_values.amend_num,
 	EXP_values.anniversary_rerate_code,
 	EXP_values.pol_audit_frqncy,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM('PMS'),'sup_policy_audit_frequency',:UDF.LTRIM_RTRIM(pol_audit_frqncy))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_audit_frequency_UDF_LTRIM_RTRIM_pol_audit_frqncy.descript AS v_pol_audit_frqncy_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_audit_frqncy_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_audit_frqncy_descript) AS pol_audit_frqncy_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_pol_audit_frqncy_descript
+	) AS pol_audit_frqncy_descript,
 	EXP_values.final_audit_code,
 	EXP_values.zip_ind,
 	EXP_values.guarantee_ind,
@@ -986,13 +1026,15 @@ EXP_sup_description AS (
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_policy_variation_code',:UDF.LTRIM_RTRIM(variation_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_variation_code_UDF_LTRIM_RTRIM_variation_code.descript AS v_variation_ind_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_variation_ind_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_variation_ind_descript) AS variation_ind_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_variation_ind_descript
+	) AS variation_ind_descript,
 	EXP_values.county,
 	EXP_values.non_smoker_disc_code,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_non_smoker_discount_code',:UDF.LTRIM_RTRIM(non_smoker_disc_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_non_smoker_discount_code_UDF_LTRIM_RTRIM_non_smoker_disc_code.descript AS v_non_smoker_disc_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_non_smoker_disc_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_non_smoker_disc_code_descript) AS non_smoker_disc_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_non_smoker_disc_code_descript
+	) AS non_smoker_disc_code_descript,
 	EXP_values.renl_disc,
 	EXP_values.renl_safe_driver_disc_count,
 	EXP_values.nonrenewal_flag_date,
@@ -1003,29 +1045,36 @@ EXP_sup_description AS (
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_excess_claim_code',:UDF.LTRIM_RTRIM(excess_claim_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_excess_claim_code_UDF_LTRIM_RTRIM_excess_claim_code.descript AS v_excess_claim_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_excess_claim_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_excess_claim_code_descript) AS excess_claim_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_excess_claim_code_descript
+	) AS excess_claim_code_descript,
 	EXP_values.pol_status_on_pif,
 	EXP_values.target_mrkt_code,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_target_market_code',:UDF.LTRIM_RTRIM(target_mrkt_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_target_market_code_UDF_LTRIM_RTRIM_target_mrkt_code.descript AS v_target_mrkt_code_descript,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_target_mrkt_code_descript)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_target_mrkt_code_descript) AS target_mrkt_code_descript,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_target_mrkt_code_descript
+	) AS target_mrkt_code_descript,
 	EXP_values.pkg_code,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_marketing_package_code',:UDF.LTRIM_RTRIM(pkg_code))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_marketing_package_code_UDF_LTRIM_RTRIM_pkg_code.descript AS v_mrktng_pkg_description,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_mrktng_pkg_description)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_mrktng_pkg_description) AS mrktng_pkg_description,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_mrktng_pkg_description
+	) AS mrktng_pkg_description,
 	EXP_values.pol_kind_code,
 	'N/A' AS pol_kind_code_description,
 	EXP_values.bus_seg_code,
 	-- *INF*: IIF(pol_sym='000',bus_seg_code,'N/A')
-	IFF(pol_sym = '000', bus_seg_code, 'N/A') AS bus_seg_code_description,
+	IFF(pol_sym = '000',
+		bus_seg_code,
+		'N/A'
+	) AS bus_seg_code_description,
 	EXP_values.pif_upload_audit_ind,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	EXP_values.eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	EXP_values.err_flag_bal_txn,
@@ -1037,17 +1086,24 @@ EXP_sup_description AS (
 	-- 'W')
 	-- 
 	Decode(TRUE,
-		substr(pol_sym, 1, 1) = 'N', 'N',
-		in(substr(pol_sym, 1, 1), 'R', 'S', 'T') AND pms_pol_lob_code = 'WCP', 'N',
-		in(substr(pol_sym, 1, 1), 'A', 'J', 'L'), 'A',
-		'W') AS reporting_dvsn_code,
+		substr(pol_sym, 1, 1
+		) = 'N', 'N',
+		substr(pol_sym, 1, 1
+		) IN ('R','S','T') 
+		AND pms_pol_lob_code = 'WCP', 'N',
+		substr(pol_sym, 1, 1
+		) IN ('A','J','L'), 'A',
+		'W'
+	) AS reporting_dvsn_code,
 	EXP_values.ClassOfBusiness,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(ClassOfBusiness)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(ClassOfBusiness) AS class_of_business,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(ClassOfBusiness
+	) AS class_of_business,
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES(:UDF.LTRIM_RTRIM(i_source_sys_id),'sup_association_program_code',:UDF.LTRIM_RTRIM(ClassOfBusiness))
 	LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_association_program_code_UDF_LTRIM_RTRIM_ClassOfBusiness.descript AS v_ClassOfBusinessCodeDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_ClassOfBusinessCodeDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_ClassOfBusinessCodeDescription) AS ClassOfBusinessCodeDescription,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_ClassOfBusinessCodeDescription
+	) AS ClassOfBusinessCodeDescription,
 	'N/A' AS policy_type,
 	'N/A' AS prog_code,
 	'N/A' AS prog_code_desc,
@@ -1059,53 +1115,78 @@ EXP_sup_description AS (
 	LKP_Program.ProgramCode AS i_ProgramCode,
 	LKP_Program.ProgramDescription AS i_ProgramDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardInsuranceSegmentCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardInsuranceSegmentCode) AS o_StandardInsuranceSegmentCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardInsuranceSegmentCode
+	) AS o_StandardInsuranceSegmentCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardInsuranceSegmentDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardInsuranceSegmentDescription) AS o_StandardInsuranceSegmentDescription,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardInsuranceSegmentDescription
+	) AS o_StandardInsuranceSegmentDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardBusinessClassCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardBusinessClassCode) AS o_StandardBusinessClassCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardBusinessClassCode
+	) AS o_StandardBusinessClassCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardBusinessClassCodeDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardBusinessClassCodeDescription) AS o_StandardBusinessClassCodeDescription,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardBusinessClassCodeDescription
+	) AS o_StandardBusinessClassCodeDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyTerm)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyTerm) AS o_StandardPolicyTerm,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyTerm
+	) AS o_StandardPolicyTerm,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyTermDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyTermDescription) AS o_StandardPolicyTermDescription,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyTermDescription
+	) AS o_StandardPolicyTermDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyStatusCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyStatusCode) AS o_StandardPolicyStatusCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyStatusCode
+	) AS o_StandardPolicyStatusCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyStatusCodeDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyStatusCodeDescription) AS o_StandardPolicyStatusCodeDescription,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyStatusCodeDescription
+	) AS o_StandardPolicyStatusCodeDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyIssueCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyIssueCode) AS o_StandardPolicyIssueCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyIssueCode
+	) AS o_StandardPolicyIssueCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyIssueCodeDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyIssueCodeDescription) AS o_StandardPolicyIssueCodeDescription,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyIssueCodeDescription
+	) AS o_StandardPolicyIssueCodeDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardIndustryRiskGradeCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardIndustryRiskGradeCode) AS o_StandardIndustryRiskGradeCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardIndustryRiskGradeCode
+	) AS o_StandardIndustryRiskGradeCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardIndustryRiskGradeCodeDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardIndustryRiskGradeCodeDescription) AS o_StandardIndustryRiskGradeCodeDescription,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardIndustryRiskGradeCodeDescription
+	) AS o_StandardIndustryRiskGradeCodeDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyAuditFrequency)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyAuditFrequency) AS o_StandardPolicyAuditFrequency,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyAuditFrequency
+	) AS o_StandardPolicyAuditFrequency,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyAuditFrequencyDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyAuditFrequencyDescription) AS o_StandardPolicyAuditFrequencyDescription,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardPolicyAuditFrequencyDescription
+	) AS o_StandardPolicyAuditFrequencyDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardStateAbbreviation)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardStateAbbreviation) AS o_StandardStateAbbreviation,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardStateAbbreviation
+	) AS o_StandardStateAbbreviation,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardStateDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardStateDescription) AS o_StandardStateDescription,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardStateDescription
+	) AS o_StandardStateDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardSurchargeExemptCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardSurchargeExemptCode) AS o_StandardSurchargeExemptCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardSurchargeExemptCode
+	) AS o_StandardSurchargeExemptCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(StandardSurchargeExemptDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardSurchargeExemptDescription) AS o_StandardSurchargeExemptDescription,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(StandardSurchargeExemptDescription
+	) AS o_StandardSurchargeExemptDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ProgramCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ProgramCode) AS o_ProgramCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ProgramCode
+	) AS o_ProgramCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ProgramDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ProgramDescription) AS o_ProgramDescription,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ProgramDescription
+	) AS o_ProgramDescription,
 	LKP_UnderWritingDivisionDim.UnderwritingDivisionDimID,
 	LKP_UserId.UserID AS i_UserID,
 	LKP_Agency_V2.AgencyCode AS i_AgencyCode,
 	-- *INF*: LTRIM(RTRIM(i_AgencyCode))
-	LTRIM(RTRIM(i_AgencyCode)) AS v_AgencyCode,
+	LTRIM(RTRIM(i_AgencyCode
+		)
+	) AS v_AgencyCode,
 	LKP_AgencyEmployeeDim.AgencyEmployeeDimId AS i_AgencyEmployeeDimID,
 	-- *INF*: IIF(ISNULL(i_AgencyEmployeeDimID),-1,i_AgencyEmployeeDimID)
-	IFF(i_AgencyEmployeeDimID IS NULL, - 1, i_AgencyEmployeeDimID) AS v_AgencyEmployeeDimID,
+	IFF(i_AgencyEmployeeDimID IS NULL,
+		- 1,
+		i_AgencyEmployeeDimID
+	) AS v_AgencyEmployeeDimID,
 	v_AgencyEmployeeDimID AS o_AgencyEmployeeDimID,
 	EXP_values.ObligeeName,
 	EXP_values.AutomatedUnderwritingServicesIndicator,
@@ -1113,13 +1194,22 @@ EXP_sup_description AS (
 	EXP_values.AssociationCode,
 	LKP_AssociationDescription.AssociationDescription AS i_AssociationDescription,
 	-- *INF*: IIF(ISNULL(i_AssociationDescription),'N/A',i_AssociationDescription)
-	IFF(i_AssociationDescription IS NULL, 'N/A', i_AssociationDescription) AS o_AssociationDescription,
+	IFF(i_AssociationDescription IS NULL,
+		'N/A',
+		i_AssociationDescription
+	) AS o_AssociationDescription,
 	LKP_AssociationDiscountPercentage.AssociationDiscountPercentage AS i_AssociationDiscountPercentage_PMS,
 	-- *INF*: IIF(ISNULL(i_AssociationDiscountPercentage_PMS),0,i_AssociationDiscountPercentage_PMS)
-	IFF(i_AssociationDiscountPercentage_PMS IS NULL, 0, i_AssociationDiscountPercentage_PMS) AS v_AssociationDiscountPercentage_PMS,
+	IFF(i_AssociationDiscountPercentage_PMS IS NULL,
+		0,
+		i_AssociationDiscountPercentage_PMS
+	) AS v_AssociationDiscountPercentage_PMS,
 	LKP_AssociationDiscountFactor_DCT.AssociationDiscountFactor AS i_AssociationDiscountFactor_DCT,
 	-- *INF*: IIF(ISNULL(i_AssociationDiscountFactor_DCT),0,i_AssociationDiscountFactor_DCT)
-	IFF(i_AssociationDiscountFactor_DCT IS NULL, 0, i_AssociationDiscountFactor_DCT) AS v_AssociationDiscountFactor_DCT,
+	IFF(i_AssociationDiscountFactor_DCT IS NULL,
+		0,
+		i_AssociationDiscountFactor_DCT
+	) AS v_AssociationDiscountFactor_DCT,
 	-- *INF*: DECODE(TRUE,
 	-- i_source_sys_id='PMS',v_AssociationDiscountPercentage_PMS,
 	-- i_source_sys_id='DCT',v_AssociationDiscountFactor_DCT,0
@@ -1127,11 +1217,13 @@ EXP_sup_description AS (
 	DECODE(TRUE,
 		i_source_sys_id = 'PMS', v_AssociationDiscountPercentage_PMS,
 		i_source_sys_id = 'DCT', v_AssociationDiscountFactor_DCT,
-		0) AS o_AssociationDiscountPercentage,
+		0
+	) AS o_AssociationDiscountPercentage,
 	'N/A' AS o_ExpiringPriorPolicyKey,
 	LKP_BusinessClassDim.BusinessClassDimId AS i_BusinessClassDimId,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_INTEGERS(i_BusinessClassDimId)
-	:UDF.DEFAULT_VALUE_FOR_INTEGERS(i_BusinessClassDimId) AS o_BusinessClassDimId,
+	:UDF.DEFAULT_VALUE_FOR_INTEGERS(i_BusinessClassDimId
+	) AS o_BusinessClassDimId,
 	EXP_values.o_RolloverPolicyIndicator AS RolloverPolicyIndicator,
 	EXP_values.RolloverPriorCarrier,
 	EXP_values.o_MailToInsuredFlag AS MailToInsuredFlag,
@@ -1142,19 +1234,28 @@ EXP_sup_description AS (
 	-- 0)
 	DECODE(TRUE,
 		DCBillFlag = 'T', 1,
-		0) AS out_DCBillFlag,
+		0
+	) AS out_DCBillFlag,
 	EXP_values.IssuedUWID AS i_IssuedUWID,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_IssuedUWID)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_IssuedUWID) AS o_IssuedUWID,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_IssuedUWID
+	) AS o_IssuedUWID,
 	EXP_values.IssuedUnderwriter AS i_IssuedUnderwriter,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_IssuedUnderwriter)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_IssuedUnderwriter) AS o_IssuedUnderwriter,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_IssuedUnderwriter
+	) AS o_IssuedUnderwriter,
 	LKP_QuoteDim.QuoteChannel,
 	-- *INF*: iif(isnull(QuoteChannel), 'N/A',QuoteChannel)
-	IFF(QuoteChannel IS NULL, 'N/A', QuoteChannel) AS o_QuoteChannel,
+	IFF(QuoteChannel IS NULL,
+		'N/A',
+		QuoteChannel
+	) AS o_QuoteChannel,
 	LKP_QuoteDim.QuoteChannelOrigin,
 	-- *INF*: iif(isnull(QuoteChannelOrigin), 'N/A',QuoteChannelOrigin)
-	IFF(QuoteChannelOrigin IS NULL, 'N/A', QuoteChannelOrigin) AS o_QuoteChannelOrigin
+	IFF(QuoteChannelOrigin IS NULL,
+		'N/A',
+		QuoteChannelOrigin
+	) AS o_QuoteChannelOrigin
 	FROM EXP_values
 	LEFT JOIN LKP_AgencyEmployeeDim
 	ON LKP_AgencyEmployeeDim.EDWAgencyEmployeeAKId = EXP_values.AgencyEmployeeAKId
@@ -1195,114 +1296,158 @@ EXP_sup_description AS (
 	LEFT JOIN LKP_sup_state
 	ON LKP_sup_state.sup_state_id = EXP_values.sup_state_id
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_company_number_UDF_LTRIM_RTRIM_pol_co_num
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_company_number_UDF_LTRIM_RTRIM_pol_co_num.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_company_number_UDF_LTRIM_RTRIM_pol_co_num.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_company_number_UDF_LTRIM_RTRIM_pol_co_num.tablename = 'sup_policy_company_number'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_company_number_UDF_LTRIM_RTRIM_pol_co_num.code = :UDF.LTRIM_RTRIM(pol_co_num)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_company_number_UDF_LTRIM_RTRIM_pol_co_num.code = :UDF.LTRIM_RTRIM(pol_co_num
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_DCT_sup_business_classification_code_UDF_LTRIM_RTRIM_prim_bus_class_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_DCT_sup_business_classification_code_UDF_LTRIM_RTRIM_prim_bus_class_code.source_sys_id = :UDF.LTRIM_RTRIM('DCT')
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_DCT_sup_business_classification_code_UDF_LTRIM_RTRIM_prim_bus_class_code.source_sys_id = :UDF.LTRIM_RTRIM('DCT'
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_DCT_sup_business_classification_code_UDF_LTRIM_RTRIM_prim_bus_class_code.tablename = 'sup_business_classification_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_DCT_sup_business_classification_code_UDF_LTRIM_RTRIM_prim_bus_class_code.code = :UDF.LTRIM_RTRIM(prim_bus_class_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_DCT_sup_business_classification_code_UDF_LTRIM_RTRIM_prim_bus_class_code.code = :UDF.LTRIM_RTRIM(prim_bus_class_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_reinsurance_code_UDF_LTRIM_RTRIM_reins_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_reinsurance_code_UDF_LTRIM_RTRIM_reins_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_reinsurance_code_UDF_LTRIM_RTRIM_reins_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_reinsurance_code_UDF_LTRIM_RTRIM_reins_code.tablename = 'sup_reinsurance_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_reinsurance_code_UDF_LTRIM_RTRIM_reins_code.code = :UDF.LTRIM_RTRIM(reins_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_reinsurance_code_UDF_LTRIM_RTRIM_reins_code.code = :UDF.LTRIM_RTRIM(reins_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_company_line_code_UDF_LTRIM_RTRIM_pol_co_line_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_company_line_code_UDF_LTRIM_RTRIM_pol_co_line_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_company_line_code_UDF_LTRIM_RTRIM_pol_co_line_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_company_line_code_UDF_LTRIM_RTRIM_pol_co_line_code.tablename = 'sup_policy_company_line_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_company_line_code_UDF_LTRIM_RTRIM_pol_co_line_code.code = :UDF.LTRIM_RTRIM(pol_co_line_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_company_line_code_UDF_LTRIM_RTRIM_pol_co_line_code.code = :UDF.LTRIM_RTRIM(pol_co_line_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_reason_amended_code_UDF_LTRIM_RTRIM_pol_cancellation_rsn_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_reason_amended_code_UDF_LTRIM_RTRIM_pol_cancellation_rsn_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_reason_amended_code_UDF_LTRIM_RTRIM_pol_cancellation_rsn_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_reason_amended_code_UDF_LTRIM_RTRIM_pol_cancellation_rsn_code.tablename = 'sup_reason_amended_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_reason_amended_code_UDF_LTRIM_RTRIM_pol_cancellation_rsn_code.code = :UDF.LTRIM_RTRIM(pol_cancellation_rsn_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_reason_amended_code_UDF_LTRIM_RTRIM_pol_cancellation_rsn_code.code = :UDF.LTRIM_RTRIM(pol_cancellation_rsn_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_state_abbrev_UDF_LTRIM_RTRIM_state_of_domicile_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_state_abbrev_UDF_LTRIM_RTRIM_state_of_domicile_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_state_abbrev_UDF_LTRIM_RTRIM_state_of_domicile_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_state_abbrev_UDF_LTRIM_RTRIM_state_of_domicile_code.tablename = 'sup_state_abbrev'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_state_abbrev_UDF_LTRIM_RTRIM_state_of_domicile_code.code = :UDF.LTRIM_RTRIM(state_of_domicile_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_state_abbrev_UDF_LTRIM_RTRIM_state_of_domicile_code.code = :UDF.LTRIM_RTRIM(state_of_domicile_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_EXCEED_sup_state_UDF_LTRIM_RTRIM_state_of_domicile_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_EXCEED_sup_state_UDF_LTRIM_RTRIM_state_of_domicile_code.source_sys_id = :UDF.LTRIM_RTRIM('EXCEED')
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_EXCEED_sup_state_UDF_LTRIM_RTRIM_state_of_domicile_code.source_sys_id = :UDF.LTRIM_RTRIM('EXCEED'
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_EXCEED_sup_state_UDF_LTRIM_RTRIM_state_of_domicile_code.tablename = 'sup_state'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_EXCEED_sup_state_UDF_LTRIM_RTRIM_state_of_domicile_code.code = :UDF.LTRIM_RTRIM(state_of_domicile_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_EXCEED_sup_state_UDF_LTRIM_RTRIM_state_of_domicile_code.code = :UDF.LTRIM_RTRIM(state_of_domicile_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_wbconnect_upload_code_UDF_LTRIM_RTRIM_wbconnect_upload_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_wbconnect_upload_code_UDF_LTRIM_RTRIM_wbconnect_upload_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_wbconnect_upload_code_UDF_LTRIM_RTRIM_wbconnect_upload_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_wbconnect_upload_code_UDF_LTRIM_RTRIM_wbconnect_upload_code.tablename = 'sup_wbconnect_upload_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_wbconnect_upload_code_UDF_LTRIM_RTRIM_wbconnect_upload_code.code = :UDF.LTRIM_RTRIM(wbconnect_upload_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_wbconnect_upload_code_UDF_LTRIM_RTRIM_wbconnect_upload_code.code = :UDF.LTRIM_RTRIM(wbconnect_upload_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_service_center_support_code_UDF_LTRIM_RTRIM_serv_center_support_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_service_center_support_code_UDF_LTRIM_RTRIM_serv_center_support_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_service_center_support_code_UDF_LTRIM_RTRIM_serv_center_support_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_service_center_support_code_UDF_LTRIM_RTRIM_serv_center_support_code.tablename = 'sup_service_center_support_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_service_center_support_code_UDF_LTRIM_RTRIM_serv_center_support_code.code = :UDF.LTRIM_RTRIM(serv_center_support_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_service_center_support_code_UDF_LTRIM_RTRIM_serv_center_support_code.code = :UDF.LTRIM_RTRIM(serv_center_support_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_term_UDF_LTRIM_RTRIM_pol_term
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_term_UDF_LTRIM_RTRIM_pol_term.source_sys_id = :UDF.LTRIM_RTRIM('PMS')
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_term_UDF_LTRIM_RTRIM_pol_term.source_sys_id = :UDF.LTRIM_RTRIM('PMS'
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_term_UDF_LTRIM_RTRIM_pol_term.tablename = 'sup_policy_term'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_term_UDF_LTRIM_RTRIM_pol_term.code = :UDF.LTRIM_RTRIM(pol_term)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_term_UDF_LTRIM_RTRIM_pol_term.code = :UDF.LTRIM_RTRIM(pol_term
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_status_code_UDF_LTRIM_RTRIM_pol_status_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_status_code_UDF_LTRIM_RTRIM_pol_status_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_status_code_UDF_LTRIM_RTRIM_pol_status_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_status_code_UDF_LTRIM_RTRIM_pol_status_code.tablename = 'sup_policy_status_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_status_code_UDF_LTRIM_RTRIM_pol_status_code.code = :UDF.LTRIM_RTRIM(pol_status_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_status_code_UDF_LTRIM_RTRIM_pol_status_code.code = :UDF.LTRIM_RTRIM(pol_status_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_issue_code_UDF_LTRIM_RTRIM_pol_issue_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_issue_code_UDF_LTRIM_RTRIM_pol_issue_code.source_sys_id = :UDF.LTRIM_RTRIM('PMS')
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_issue_code_UDF_LTRIM_RTRIM_pol_issue_code.source_sys_id = :UDF.LTRIM_RTRIM('PMS'
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_issue_code_UDF_LTRIM_RTRIM_pol_issue_code.tablename = 'sup_policy_issue_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_issue_code_UDF_LTRIM_RTRIM_pol_issue_code.code = :UDF.LTRIM_RTRIM(pol_issue_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_issue_code_UDF_LTRIM_RTRIM_pol_issue_code.code = :UDF.LTRIM_RTRIM(pol_issue_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_industry_risk_grade_code_UDF_LTRIM_RTRIM_industry_risk_grade_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_industry_risk_grade_code_UDF_LTRIM_RTRIM_industry_risk_grade_code.source_sys_id = :UDF.LTRIM_RTRIM('PMS')
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_industry_risk_grade_code_UDF_LTRIM_RTRIM_industry_risk_grade_code.source_sys_id = :UDF.LTRIM_RTRIM('PMS'
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_industry_risk_grade_code_UDF_LTRIM_RTRIM_industry_risk_grade_code.tablename = 'sup_industry_risk_grade_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_industry_risk_grade_code_UDF_LTRIM_RTRIM_industry_risk_grade_code.code = :UDF.LTRIM_RTRIM(industry_risk_grade_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_industry_risk_grade_code_UDF_LTRIM_RTRIM_industry_risk_grade_code.code = :UDF.LTRIM_RTRIM(industry_risk_grade_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_mvr_request_code_UDF_LTRIM_RTRIM_mvr_request_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_mvr_request_code_UDF_LTRIM_RTRIM_mvr_request_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_mvr_request_code_UDF_LTRIM_RTRIM_mvr_request_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_mvr_request_code_UDF_LTRIM_RTRIM_mvr_request_code.tablename = 'sup_mvr_request_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_mvr_request_code_UDF_LTRIM_RTRIM_mvr_request_code.code = :UDF.LTRIM_RTRIM(mvr_request_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_mvr_request_code_UDF_LTRIM_RTRIM_mvr_request_code.code = :UDF.LTRIM_RTRIM(mvr_request_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_renewal_code_UDF_LTRIM_RTRIM_renl_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_renewal_code_UDF_LTRIM_RTRIM_renl_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_renewal_code_UDF_LTRIM_RTRIM_renl_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_renewal_code_UDF_LTRIM_RTRIM_renl_code.tablename = 'sup_policy_renewal_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_renewal_code_UDF_LTRIM_RTRIM_renl_code.code = :UDF.LTRIM_RTRIM(renl_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_renewal_code_UDF_LTRIM_RTRIM_renl_code.code = :UDF.LTRIM_RTRIM(renl_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_audit_frequency_UDF_LTRIM_RTRIM_pol_audit_frqncy
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_audit_frequency_UDF_LTRIM_RTRIM_pol_audit_frqncy.source_sys_id = :UDF.LTRIM_RTRIM('PMS')
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_audit_frequency_UDF_LTRIM_RTRIM_pol_audit_frqncy.source_sys_id = :UDF.LTRIM_RTRIM('PMS'
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_audit_frequency_UDF_LTRIM_RTRIM_pol_audit_frqncy.tablename = 'sup_policy_audit_frequency'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_audit_frequency_UDF_LTRIM_RTRIM_pol_audit_frqncy.code = :UDF.LTRIM_RTRIM(pol_audit_frqncy)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_PMS_sup_policy_audit_frequency_UDF_LTRIM_RTRIM_pol_audit_frqncy.code = :UDF.LTRIM_RTRIM(pol_audit_frqncy
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_variation_code_UDF_LTRIM_RTRIM_variation_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_variation_code_UDF_LTRIM_RTRIM_variation_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_variation_code_UDF_LTRIM_RTRIM_variation_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_variation_code_UDF_LTRIM_RTRIM_variation_code.tablename = 'sup_policy_variation_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_variation_code_UDF_LTRIM_RTRIM_variation_code.code = :UDF.LTRIM_RTRIM(variation_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_policy_variation_code_UDF_LTRIM_RTRIM_variation_code.code = :UDF.LTRIM_RTRIM(variation_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_non_smoker_discount_code_UDF_LTRIM_RTRIM_non_smoker_disc_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_non_smoker_discount_code_UDF_LTRIM_RTRIM_non_smoker_disc_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_non_smoker_discount_code_UDF_LTRIM_RTRIM_non_smoker_disc_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_non_smoker_discount_code_UDF_LTRIM_RTRIM_non_smoker_disc_code.tablename = 'sup_non_smoker_discount_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_non_smoker_discount_code_UDF_LTRIM_RTRIM_non_smoker_disc_code.code = :UDF.LTRIM_RTRIM(non_smoker_disc_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_non_smoker_discount_code_UDF_LTRIM_RTRIM_non_smoker_disc_code.code = :UDF.LTRIM_RTRIM(non_smoker_disc_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_excess_claim_code_UDF_LTRIM_RTRIM_excess_claim_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_excess_claim_code_UDF_LTRIM_RTRIM_excess_claim_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_excess_claim_code_UDF_LTRIM_RTRIM_excess_claim_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_excess_claim_code_UDF_LTRIM_RTRIM_excess_claim_code.tablename = 'sup_excess_claim_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_excess_claim_code_UDF_LTRIM_RTRIM_excess_claim_code.code = :UDF.LTRIM_RTRIM(excess_claim_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_excess_claim_code_UDF_LTRIM_RTRIM_excess_claim_code.code = :UDF.LTRIM_RTRIM(excess_claim_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_target_market_code_UDF_LTRIM_RTRIM_target_mrkt_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_target_market_code_UDF_LTRIM_RTRIM_target_mrkt_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_target_market_code_UDF_LTRIM_RTRIM_target_mrkt_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_target_market_code_UDF_LTRIM_RTRIM_target_mrkt_code.tablename = 'sup_target_market_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_target_market_code_UDF_LTRIM_RTRIM_target_mrkt_code.code = :UDF.LTRIM_RTRIM(target_mrkt_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_target_market_code_UDF_LTRIM_RTRIM_target_mrkt_code.code = :UDF.LTRIM_RTRIM(target_mrkt_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_marketing_package_code_UDF_LTRIM_RTRIM_pkg_code
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_marketing_package_code_UDF_LTRIM_RTRIM_pkg_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_marketing_package_code_UDF_LTRIM_RTRIM_pkg_code.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_marketing_package_code_UDF_LTRIM_RTRIM_pkg_code.tablename = 'sup_marketing_package_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_marketing_package_code_UDF_LTRIM_RTRIM_pkg_code.code = :UDF.LTRIM_RTRIM(pkg_code)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_marketing_package_code_UDF_LTRIM_RTRIM_pkg_code.code = :UDF.LTRIM_RTRIM(pkg_code
+)
 
 	LEFT JOIN LKP_ALL_SUPPORT_TABLES LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_association_program_code_UDF_LTRIM_RTRIM_ClassOfBusiness
-	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_association_program_code_UDF_LTRIM_RTRIM_ClassOfBusiness.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id)
+	ON LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_association_program_code_UDF_LTRIM_RTRIM_ClassOfBusiness.source_sys_id = :UDF.LTRIM_RTRIM(i_source_sys_id
+)
 	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_association_program_code_UDF_LTRIM_RTRIM_ClassOfBusiness.tablename = 'sup_association_program_code'
-	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_association_program_code_UDF_LTRIM_RTRIM_ClassOfBusiness.code = :UDF.LTRIM_RTRIM(ClassOfBusiness)
+	AND LKP_ALL_SUPPORT_TABLES__UDF_LTRIM_RTRIM_i_source_sys_id_sup_association_program_code_UDF_LTRIM_RTRIM_ClassOfBusiness.code = :UDF.LTRIM_RTRIM(ClassOfBusiness
+)
 
 ),
 LKP_policy_dim AS (
@@ -1759,8 +1904,9 @@ EXP_Lag_eff_from_date AS (
 	-- edw_pol_ak_id = v_prev_edw_pol_ak_id  ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
 	DECODE(TRUE,
-		edw_pol_ak_id = v_prev_edw_pol_ak_id, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		edw_pol_ak_id = v_prev_edw_pol_ak_id, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	edw_pol_ak_id AS v_prev_edw_pol_ak_id,
 	in_eff_from_date AS v_prev_eff_from_date,
@@ -1996,7 +2142,12 @@ Exp_CollectdifferentExpPolicyKey AS (
 	LKP_Policy_Dim_DeriveExpiringPriorPolicyKey.ExpiringPriorPolicyKey AS lkp_DeriveExpiringPriorPolicyKey_Step2,
 	LKP_GetPriorPolicyKey_V2_Policy.PreviousPolicyKey AS lkp_GetPriorPolicyKey_V2_Policy_Step4,
 	-- *INF*: IIF(ISNULL(lkp_GetPriorPolicyKey_V2_Policy_Step4) OR lkp_GetPriorPolicyKey_V2_Policy_Step4='' OR IS_SPACES(lkp_GetPriorPolicyKey_V2_Policy_Step4),'N/A',lkp_GetPriorPolicyKey_V2_Policy_Step4)
-	IFF(lkp_GetPriorPolicyKey_V2_Policy_Step4 IS NULL OR lkp_GetPriorPolicyKey_V2_Policy_Step4 = '' OR IS_SPACES(lkp_GetPriorPolicyKey_V2_Policy_Step4), 'N/A', lkp_GetPriorPolicyKey_V2_Policy_Step4) AS o_GetPriorPolicyKey_V2_Policy_Step4,
+	IFF(lkp_GetPriorPolicyKey_V2_Policy_Step4 IS NULL 
+		OR lkp_GetPriorPolicyKey_V2_Policy_Step4 = '' 
+		OR LENGTH(lkp_GetPriorPolicyKey_V2_Policy_Step4)>0 AND TRIM(lkp_GetPriorPolicyKey_V2_Policy_Step4)='',
+		'N/A',
+		lkp_GetPriorPolicyKey_V2_Policy_Step4
+	) AS o_GetPriorPolicyKey_V2_Policy_Step4,
 	-- *INF*: DECODE(
 	-- True,
 	-- (Not isnull(lkp_GetExpiringPriorPolicyKey_Step1) AND lkp_GetExpiringPriorPolicyKey_Step1  != 'N/A' AND lkp_GetExpiringPriorPolicyKey_Step1 <> '' and NOT IS_SPACES(lkp_GetExpiringPriorPolicyKey_Step1 ) ), lkp_GetExpiringPriorPolicyKey_Step1,
@@ -2004,9 +2155,18 @@ Exp_CollectdifferentExpPolicyKey AS (
 	-- (not isnull(lkp_DeriveExpiringPriorPolicyKey_Step2) and lkp_DeriveExpiringPriorPolicyKey_Step2  !=  'N/A' AND lkp_DeriveExpiringPriorPolicyKey_Step2 <> '' and NOT IS_SPACES(lkp_DeriveExpiringPriorPolicyKey_Step2) ), lkp_DeriveExpiringPriorPolicyKey_Step2
 	-- ,'N/A')
 	DECODE(True,
-		( NOT lkp_GetExpiringPriorPolicyKey_Step1 IS NULL AND lkp_GetExpiringPriorPolicyKey_Step1 != 'N/A' AND lkp_GetExpiringPriorPolicyKey_Step1 <> '' AND NOT IS_SPACES(lkp_GetExpiringPriorPolicyKey_Step1) ), lkp_GetExpiringPriorPolicyKey_Step1,
-		( NOT lkp_DeriveExpiringPriorPolicyKey_Step2 IS NULL AND lkp_DeriveExpiringPriorPolicyKey_Step2 != 'N/A' AND lkp_DeriveExpiringPriorPolicyKey_Step2 <> '' AND NOT IS_SPACES(lkp_DeriveExpiringPriorPolicyKey_Step2) ), lkp_DeriveExpiringPriorPolicyKey_Step2,
-		'N/A') AS o_ExpiringPriorPolicyKey
+		( lkp_GetExpiringPriorPolicyKey_Step1 IS NULL 
+			AND lkp_GetExpiringPriorPolicyKey_Step1 != 'N/A' 
+			AND lkp_GetExpiringPriorPolicyKey_Step1 <> '' 
+			AND NOT LENGTH(lkp_GetExpiringPriorPolicyKey_Step1)>0 AND TRIM(lkp_GetExpiringPriorPolicyKey_Step1NOT )='' 
+		), lkp_GetExpiringPriorPolicyKey_Step1,
+		( lkp_DeriveExpiringPriorPolicyKey_Step2 IS NULL 
+			AND lkp_DeriveExpiringPriorPolicyKey_Step2 != 'N/A' 
+			AND lkp_DeriveExpiringPriorPolicyKey_Step2 <> '' 
+			AND NOT LENGTH(lkp_DeriveExpiringPriorPolicyKey_Step2)>0 AND TRIM(lkp_DeriveExpiringPriorPolicyKey_Step2NOT )='' 
+		), lkp_DeriveExpiringPriorPolicyKey_Step2,
+		'N/A'
+	) AS o_ExpiringPriorPolicyKey
 	FROM SQ_policy_dim_updateExpiringPriorPolicy
 	LEFT JOIN LKP_GetPriorPolicyKey_V2_Policy
 	ON LKP_GetPriorPolicyKey_V2_Policy.PolicyKey = SQ_policy_dim_updateExpiringPriorPolicy.pol_key
@@ -2109,10 +2269,23 @@ Exp_FinalDerivationOfExpiringPolicyKey AS (
 	-- 
 	-- 'N/A')
 	DECODE(True,
-		( NOT ExpiringPriorPolicyKey_Step1_2 IS NULL AND ExpiringPriorPolicyKey_Step1_2 != 'N/A' AND ExpiringPriorPolicyKey_Step1_2 <> '' AND NOT IS_SPACES(ExpiringPriorPolicyKey_Step1_2) ), ExpiringPriorPolicyKey_Step1_2,
-		( NOT ExpiringPriorPolicyKey_Step3 IS NULL AND ExpiringPriorPolicyKey_Step3 != 'N/A' AND ExpiringPriorPolicyKey_Step3 <> '' AND NOT IS_SPACES(ExpiringPriorPolicyKey_Step3) ), ExpiringPriorPolicyKey_Step3,
-		( NOT ExpiringPriorPolicyKey_Step4 IS NULL AND ExpiringPriorPolicyKey_Step4 != 'N/A' AND ExpiringPriorPolicyKey_Step4 <> '' AND NOT IS_SPACES(ExpiringPriorPolicyKey_Step4) ), ExpiringPriorPolicyKey_Step4,
-		'N/A') AS o_ExpiringPriorPolicyKey
+		( ExpiringPriorPolicyKey_Step1_2 IS NULL 
+			AND ExpiringPriorPolicyKey_Step1_2 != 'N/A' 
+			AND ExpiringPriorPolicyKey_Step1_2 <> '' 
+			AND NOT LENGTH(ExpiringPriorPolicyKey_Step1_2)>0 AND TRIM(ExpiringPriorPolicyKey_Step1_2NOT )='' 
+		), ExpiringPriorPolicyKey_Step1_2,
+		( ExpiringPriorPolicyKey_Step3 IS NULL 
+			AND ExpiringPriorPolicyKey_Step3 != 'N/A' 
+			AND ExpiringPriorPolicyKey_Step3 <> '' 
+			AND NOT LENGTH(ExpiringPriorPolicyKey_Step3)>0 AND TRIM(ExpiringPriorPolicyKey_Step3NOT )='' 
+		), ExpiringPriorPolicyKey_Step3,
+		( ExpiringPriorPolicyKey_Step4 IS NULL 
+			AND ExpiringPriorPolicyKey_Step4 != 'N/A' 
+			AND ExpiringPriorPolicyKey_Step4 <> '' 
+			AND NOT LENGTH(ExpiringPriorPolicyKey_Step4)>0 AND TRIM(ExpiringPriorPolicyKey_Step4NOT )='' 
+		), ExpiringPriorPolicyKey_Step4,
+		'N/A'
+	) AS o_ExpiringPriorPolicyKey
 	FROM Jnr_ExpiringPolicyderivationJoiner
 ),
 UPD_Policy_Dim_UpdateExpiringPriorPolicy AS (

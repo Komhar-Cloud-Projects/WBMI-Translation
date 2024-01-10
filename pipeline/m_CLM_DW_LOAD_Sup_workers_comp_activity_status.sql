@@ -16,10 +16,20 @@ EXP_Default_Values AS (
 	SELECT
 	act_status_code,
 	-- *INF*: iif(isnull(act_status_code),'N/A',LTRIM(RTRIM(act_status_code)))
-	IFF(act_status_code IS NULL, 'N/A', LTRIM(RTRIM(act_status_code))) AS act_status_code_OUT,
+	IFF(act_status_code IS NULL,
+		'N/A',
+		LTRIM(RTRIM(act_status_code
+			)
+		)
+	) AS act_status_code_OUT,
 	act_status_desc,
 	-- *INF*: iif(isnull(act_status_desc),'N/A',LTRIM(RTRIM(act_status_desc)))
-	IFF(act_status_desc IS NULL, 'N/A', LTRIM(RTRIM(act_status_desc))) AS act_status_desc_OUT
+	IFF(act_status_desc IS NULL,
+		'N/A',
+		LTRIM(RTRIM(act_status_desc
+			)
+		)
+	) AS act_status_desc_OUT
 	FROM SQ_sup_activity_stage
 ),
 LKP_SUP_WC_ACTIVITY_STATUS AS (
@@ -39,15 +49,31 @@ EXP_Detect_Changes AS (
 	EXP_Default_Values.act_status_code_OUT AS act_status_code,
 	EXP_Default_Values.act_status_desc_OUT AS act_status_desc,
 	-- *INF*: IIF(ISNULL(act_status_code_OLD), 'NEW', IIF(LTRIM(RTRIM(act_status_code_descript_OLD)) != (LTRIM(RTRIM(act_status_desc))), 'UPDATE', 'NOCHANGE'))
-	IFF(act_status_code_OLD IS NULL, 'NEW', IFF(LTRIM(RTRIM(act_status_code_descript_OLD)) != ( LTRIM(RTRIM(act_status_desc)) ), 'UPDATE', 'NOCHANGE')) AS V_changed_flag,
+	IFF(act_status_code_OLD IS NULL,
+		'NEW',
+		IFF(LTRIM(RTRIM(act_status_code_descript_OLD
+				)
+			) != ( LTRIM(RTRIM(act_status_desc
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS V_changed_flag,
 	V_changed_flag AS CHANGED_FLAG,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(V_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(V_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,
+	IFF(V_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id
@@ -108,8 +134,9 @@ EXP_Lag_Eff_From_Date AS (
 	-- 	orig_eff_to_date)
 	-- 	
 	DECODE(TRUE,
-		act_status_code = v_prev_row_claim_ctgry_code, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		act_status_code = v_prev_row_claim_ctgry_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	act_status_code AS v_prev_row_claim_ctgry_code,
 	eff_from_date AS v_prev_eff_from_date,

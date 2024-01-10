@@ -22,17 +22,28 @@ EXP_Lkp_Values AS (
 	-- *INF*: IIF(ISNULL(in_CS01_TABLE_SEQ_NBR), 
 	-- 0,
 	-- in_CS01_TABLE_SEQ_NBR)
-	IFF(in_CS01_TABLE_SEQ_NBR IS NULL, 0, in_CS01_TABLE_SEQ_NBR) AS CS01_TABLE_SEQ_NBR,
+	IFF(in_CS01_TABLE_SEQ_NBR IS NULL,
+		0,
+		in_CS01_TABLE_SEQ_NBR
+	) AS CS01_TABLE_SEQ_NBR,
 	CS01_CODE AS in_CS01_CODE,
 	-- *INF*: IIF(ISNULL(in_CS01_CODE), 
 	-- 'N/A',
 	-- ltrim(rtrim(in_CS01_CODE)))
-	IFF(in_CS01_CODE IS NULL, 'N/A', ltrim(rtrim(in_CS01_CODE))) AS CS01_CODE,
+	IFF(in_CS01_CODE IS NULL,
+		'N/A',
+		ltrim(rtrim(in_CS01_CODE
+			)
+		)
+	) AS CS01_CODE,
 	CS01_CODE_DES AS in_CS01_CODE_DES,
 	-- *INF*: IIF(ISNULL(in_CS01_CODE_DES),
 	-- 'N/A', 
 	-- in_CS01_CODE_DES)
-	IFF(in_CS01_CODE_DES IS NULL, 'N/A', in_CS01_CODE_DES) AS CS01_CODE_DES
+	IFF(in_CS01_CODE_DES IS NULL,
+		'N/A',
+		in_CS01_CODE_DES
+	) AS CS01_CODE_DES
 	FROM EXP_Values
 ),
 LKP_Sup_State AS (
@@ -59,7 +70,8 @@ EXP_Detect_Changes AS (
 	SELECT
 	EXP_Lkp_Values.CS01_TABLE_SEQ_NBR,
 	-- *INF*: TO_CHAR(CS01_TABLE_SEQ_NBR)
-	TO_CHAR(CS01_TABLE_SEQ_NBR) AS out_CS01_TABLE_SEQ_NBR,
+	TO_CHAR(CS01_TABLE_SEQ_NBR
+	) AS out_CS01_TABLE_SEQ_NBR,
 	EXP_Lkp_Values.CS01_CODE,
 	EXP_Lkp_Values.CS01_CODE_DES,
 	LKP_Sup_State.sup_state_id AS lkp_sup_state_id,
@@ -72,14 +84,34 @@ EXP_Detect_Changes AS (
 	-- 	ltrim(rtrim(CS01_CODE_DES)) <> ltrim(rtrim(lkp_state_descript))),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(lkp_sup_state_id IS NULL, 'NEW', IFF(( to_char(CS01_TABLE_SEQ_NBR) <> lkp_state_abbrev OR ltrim(rtrim(CS01_CODE_DES)) <> ltrim(rtrim(lkp_state_descript)) ), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(lkp_sup_state_id IS NULL,
+		'NEW',
+		IFF(( to_char(CS01_TABLE_SEQ_NBR
+				) <> lkp_state_abbrev 
+				OR ltrim(rtrim(CS01_CODE_DES
+					)
+				) <> ltrim(rtrim(lkp_state_descript
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	TO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
+			), 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_System_Id,
 	SYSDATE AS Created_Date,
@@ -146,8 +178,9 @@ EXP_Lag_eff_from_date AS (
 	-- 	state_code = v_PREV_ROW_state_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		state_code = v_PREV_ROW_state_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		state_code = v_PREV_ROW_state_code, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	state_code AS v_PREV_ROW_state_code,

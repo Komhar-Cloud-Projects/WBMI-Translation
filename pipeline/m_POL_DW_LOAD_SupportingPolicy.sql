@@ -40,17 +40,25 @@ EXPTRANS AS (
 	comments_area AS i_comments_area,
 	rownum AS i_rownum,
 	-- *INF*: REG_REPLACE(i_comments_area, '[^A-Za-z0-9,]', '')
-	REG_REPLACE(i_comments_area, '[^A-Za-z0-9,]', '') AS v_comments_area,
+	REG_REPLACE(i_comments_area, '[^A-Za-z0-9,]', ''
+	) AS v_comments_area,
 	-- *INF*: INSTR(v_comments_area,',',1,i_rownum)+1
-	INSTR(v_comments_area, ',', 1, i_rownum) + 1 AS v_start_pos,
+	REGEXP_INSTR(v_comments_area, ',', 1, i_rownum
+	) + 1 AS v_start_pos,
 	-- *INF*: INSTR(v_comments_area,',',1,i_rownum+1)-v_start_pos
-	INSTR(v_comments_area, ',', 1, i_rownum + 1) - v_start_pos AS v_end_pos,
+	REGEXP_INSTR(v_comments_area, ',', 1, i_rownum + 1
+	) - v_start_pos AS v_end_pos,
 	-- *INF*: SUBSTR(v_comments_area,v_start_pos,v_end_pos)
-	SUBSTR(v_comments_area, v_start_pos, v_end_pos) AS v_Parsed,
+	SUBSTR(v_comments_area, v_start_pos, v_end_pos
+	) AS v_Parsed,
 	-- *INF*: RTRIM(i_pif_symbol)||i_pif_policy_number||i_pif_module
-	RTRIM(i_pif_symbol) || i_pif_policy_number || i_pif_module AS o_PolicyKey,
+	RTRIM(i_pif_symbol
+	) || i_pif_policy_number || i_pif_module AS o_PolicyKey,
 	-- *INF*: Substr(v_Parsed,1,1) ||  REG_REPLACE(Substr(v_Parsed,2), '[^0-9,]', '')
-	Substr(v_Parsed, 1, 1) || REG_REPLACE(Substr(v_Parsed, 2), '[^0-9,]', '') AS o_Parsed
+	Substr(v_Parsed, 1, 1
+	) || REG_REPLACE(Substr(v_Parsed, 2
+		), '[^0-9,]', ''
+	) AS o_Parsed
 	FROM SQ_arch_pif_03_stage
 ),
 LKP_policy AS (
@@ -125,7 +133,7 @@ EXPTRANS2 AS (
 	'PMS' AS SourceSystemId,
 	SYSDATE AS CreatedDate,
 	-- *INF*: TRUNC(SYSDATE,'MM')
-	TRUNC(SYSDATE, 'MM') AS RunDate,
+	CAST(TRUNC(SYSDATE, 'MONTH') AS TIMESTAMP_NTZ(0)) AS RunDate,
 	'loo' AS SupportingPolicyType
 	FROM JNRTRANS
 ),

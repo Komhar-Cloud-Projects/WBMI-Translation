@@ -15,11 +15,23 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate) AS o_EffectiveDate,
+	IFF(i_EffectiveDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_EffectiveDate
+	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate,
+	IFF(i_ExpirationDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ExpirationDate
+	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate) AS o_ModifiedDate
+	IFF(i_ModifiedDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ModifiedDate
+	) AS o_ModifiedDate
 	FROM SQ_CoverageFormProduct
 ),
 EXP_NumericValues AS (
@@ -28,11 +40,20 @@ EXP_NumericValues AS (
 	CoverageFormId AS i_CoverageFormId,
 	ProductId AS i_ProductId,
 	-- *INF*: IIF(ISNULL(i_CoverageFormProductId),-1,i_CoverageFormProductId)
-	IFF(i_CoverageFormProductId IS NULL, - 1, i_CoverageFormProductId) AS o_CoverageFormProductId,
+	IFF(i_CoverageFormProductId IS NULL,
+		- 1,
+		i_CoverageFormProductId
+	) AS o_CoverageFormProductId,
 	-- *INF*: IIF(ISNULL(i_CoverageFormId),-1,i_CoverageFormId)
-	IFF(i_CoverageFormId IS NULL, - 1, i_CoverageFormId) AS o_CoverageFormId,
+	IFF(i_CoverageFormId IS NULL,
+		- 1,
+		i_CoverageFormId
+	) AS o_CoverageFormId,
 	-- *INF*: IIF(ISNULL(i_ProductId),-1,i_ProductId)
-	IFF(i_ProductId IS NULL, - 1, i_ProductId) AS o_ProductId
+	IFF(i_ProductId IS NULL,
+		- 1,
+		i_ProductId
+	) AS o_ProductId
 	FROM SQ_CoverageFormProduct
 ),
 EXP_StringValues AS (

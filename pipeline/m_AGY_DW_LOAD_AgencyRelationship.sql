@@ -47,10 +47,18 @@ EXP_GetAKIDs AS (
 	SQ_AgencyRelationshipStage.RelationshipType,
 	SQ_AgencyRelationshipStage.EffectiveDate AS AgencyRelationshipEffectiveDate,
 	-- *INF*: IIF(RelationshipType= 'LEGAL DELETED', TO_DATE('1800/01/01', 'YYYY/MM/DD'), AgencyRelationshipEffectiveDate)
-	IFF(RelationshipType = 'LEGAL DELETED', TO_DATE('1800/01/01', 'YYYY/MM/DD'), AgencyRelationshipEffectiveDate) AS o_AgencyRelationshipEffectiveDate,
+	IFF(RelationshipType = 'LEGAL DELETED',
+		TO_DATE('1800/01/01', 'YYYY/MM/DD'
+		),
+		AgencyRelationshipEffectiveDate
+	) AS o_AgencyRelationshipEffectiveDate,
 	SQ_AgencyRelationshipStage.ExpirationDate AS AgencyRelationshipExpirationDate,
 	-- *INF*: IIF(RelationshipType= 'LEGAL DELETED', TO_DATE('1800/01/01', 'YYYY/MM/DD'), AgencyRelationshipExpirationDate)
-	IFF(RelationshipType = 'LEGAL DELETED', TO_DATE('1800/01/01', 'YYYY/MM/DD'), AgencyRelationshipExpirationDate) AS o_AgencyRelationshipExpirationDate,
+	IFF(RelationshipType = 'LEGAL DELETED',
+		TO_DATE('1800/01/01', 'YYYY/MM/DD'
+		),
+		AgencyRelationshipExpirationDate
+	) AS o_AgencyRelationshipExpirationDate,
 	SQ_AgencyRelationshipStage.SourceSystemID
 	FROM SQ_AgencyRelationshipStage
 	LEFT JOIN LKP_AgencyAKID
@@ -113,19 +121,34 @@ EXP_Detect_Changes AS (
 	EXP_GetAKIDs.o_AgencyRelationshipEffectiveDate AS AgencyRelationshipEffectiveDate,
 	EXP_GetAKIDs.o_AgencyRelationshipExpirationDate AS AgencyRelationshipExpirationDate,
 	-- *INF*: MD5(AgencyAKID||RelatedAgencyAKID||RelationshipType || to_char(AgencyRelationshipEffectiveDate) || to_char(AgencyRelationshipExpirationDate))
-	MD5(AgencyAKID || RelatedAgencyAKID || RelationshipType || to_char(AgencyRelationshipEffectiveDate) || to_char(AgencyRelationshipExpirationDate)) AS v_NewHashKey,
+	MD5(AgencyAKID || RelatedAgencyAKID || RelationshipType || to_char(AgencyRelationshipEffectiveDate
+		) || to_char(AgencyRelationshipExpirationDate
+		)
+	) AS v_NewHashKey,
 	v_NewHashKey AS o_NewHashKey,
 	-- *INF*: IIF(ISNULL(lkp_AgencyRelationshipAKID), 'NEW', 
 	-- IIF((v_NewHashKey <> lkp_HashKey), 'UPDATE', 'NOCHANGE'))
-	IFF(lkp_AgencyRelationshipAKID IS NULL, 'NEW', IFF(( v_NewHashKey <> lkp_HashKey ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(lkp_AgencyRelationshipAKID IS NULL,
+		'NEW',
+		IFF(( v_NewHashKey <> lkp_HashKey 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS EffectiveDate,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	EXP_GetAKIDs.SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate
@@ -170,7 +193,10 @@ EXP_Assign_AKID AS (
 	lkp_AgencyRelationshipAKID,
 	SEQ_AgencyRelationship_AKID.NEXTVAL,
 	-- *INF*: iif(isnull(lkp_AgencyRelationshipAKID),NEXTVAL,lkp_AgencyRelationshipAKID)
-	IFF(lkp_AgencyRelationshipAKID IS NULL, NEXTVAL, lkp_AgencyRelationshipAKID) AS AgencyRelationshipAKID,
+	IFF(lkp_AgencyRelationshipAKID IS NULL,
+		NEXTVAL,
+		lkp_AgencyRelationshipAKID
+	) AS AgencyRelationshipAKID,
 	0 AS Default_Int,
 	'N/A' AS Default_char,
 	HashKey,
@@ -232,8 +258,9 @@ EXP_Lag_eff_from_date AS (
 	-- AgencyRelationshipAKID = v_prev_AKID , ADD_TO_DATE(v_prev_EffectiveFromDate,'SS',-1),
 	-- OriginalEffectiveToDate)
 	DECODE(TRUE,
-		AgencyRelationshipAKID = v_prev_AKID, ADD_TO_DATE(v_prev_EffectiveFromDate, 'SS', - 1),
-		OriginalEffectiveToDate) AS v_EffectiveToDate,
+		AgencyRelationshipAKID = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_EffectiveFromDate),
+		OriginalEffectiveToDate
+	) AS v_EffectiveToDate,
 	v_EffectiveToDate AS o_EffectiveToDate,
 	AgencyRelationshipAKID AS v_prev_AKID,
 	EffectiveFromDate AS v_prev_EffectiveFromDate,

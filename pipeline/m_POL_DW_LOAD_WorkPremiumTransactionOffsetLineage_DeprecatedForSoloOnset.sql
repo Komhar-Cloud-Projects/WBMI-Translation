@@ -80,7 +80,10 @@ EXP_Pass_Value AS (
 	SYSDATE AS ModifiedDate,
 	'1' AS UpdateAttributeFlag,
 	-- *INF*: IIF ( ISNULL(WorkPremiumTransactionOffsetLineageId ), 'Insert','Update')
-	IFF(WorkPremiumTransactionOffsetLineageId IS NULL, 'Insert', 'Update') AS o_flag
+	IFF(WorkPremiumTransactionOffsetLineageId IS NULL,
+		'Insert',
+		'Update'
+	) AS o_flag
 	FROM SQ_WorkPremiumTransactionOnsetOffsetPreProcessing
 	LEFT JOIN LKP_WorkPremiumTransactionOffsetLineage
 	ON LKP_WorkPremiumTransactionOffsetLineage.PremiumTransactionID = SQ_WorkPremiumTransactionOnsetOffsetPreProcessing.PremiumTransactionID

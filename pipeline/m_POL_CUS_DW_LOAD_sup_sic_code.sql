@@ -17,11 +17,28 @@ EXP_values AS (
 	-- *INF*: IIF(ISNULL(in_sic_code_number) OR IS_SPACES(in_sic_code_number) OR LENGTH(in_sic_code_number)=0
 	-- ,'N/A'
 	-- ,ltrim(rtrim(in_sic_code_number)))
-	IFF(in_sic_code_number IS NULL OR IS_SPACES(in_sic_code_number) OR LENGTH(in_sic_code_number) = 0, 'N/A', ltrim(rtrim(in_sic_code_number))) AS sic_code_number,
+	IFF(in_sic_code_number IS NULL 
+		OR LENGTH(in_sic_code_number)>0 AND TRIM(in_sic_code_number)='' 
+		OR LENGTH(in_sic_code_number
+		) = 0,
+		'N/A',
+		ltrim(rtrim(in_sic_code_number
+			)
+		)
+	) AS sic_code_number,
 	sic_code_description AS in_sic_code_description,
 	-- *INF*: IIF(ISNULL(in_sic_code_description) OR IS_SPACES(in_sic_code_description) OR
 	-- LENGTH(in_sic_code_description)=0,'N/A',UPPER(ltrim(rtrim(in_sic_code_description))))
-	IFF(in_sic_code_description IS NULL OR IS_SPACES(in_sic_code_description) OR LENGTH(in_sic_code_description) = 0, 'N/A', UPPER(ltrim(rtrim(in_sic_code_description)))) AS sic_code_description
+	IFF(in_sic_code_description IS NULL 
+		OR LENGTH(in_sic_code_description)>0 AND TRIM(in_sic_code_description)='' 
+		OR LENGTH(in_sic_code_description
+		) = 0,
+		'N/A',
+		UPPER(ltrim(rtrim(in_sic_code_description
+				)
+			)
+		)
+	) AS sic_code_description
 	FROM SQ_gtam_wbsiccod_stage
 ),
 LKP_sup_sic_code AS (
@@ -53,14 +70,33 @@ EXP_Detect_Changes AS (
 	-- 	(ltrim(rtrim(sic_code_description)) <> UPPER(ltrim(rtrim(lkp_sic_code_description)))),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(lkp_sup_sic_code_id IS NULL, 'NEW', IFF(( ltrim(rtrim(sic_code_description)) <> UPPER(ltrim(rtrim(lkp_sic_code_description))) ), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(lkp_sup_sic_code_id IS NULL,
+		'NEW',
+		IFF(( ltrim(rtrim(sic_code_description
+					)
+				) <> UPPER(ltrim(rtrim(lkp_sic_code_description
+						)
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_ID,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	TO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
+			), 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_System_ID,
 	SYSDATE AS Created_Date,
@@ -112,14 +148,26 @@ EXP_GetValues_DCT AS (
 	SICCode AS i_SICCode,
 	SICCodeDesc AS i_SICCodeDesc,
 	-- *INF*: LTRIM(RTRIM(i_SICCode))
-	LTRIM(RTRIM(i_SICCode)) AS v_SICCode,
+	LTRIM(RTRIM(i_SICCode
+		)
+	) AS v_SICCode,
 	-- *INF*: UPPER(LTRIM(RTRIM(i_SICCodeDesc)))
-	UPPER(LTRIM(RTRIM(i_SICCodeDesc))) AS v_SICCodeDesc,
+	UPPER(LTRIM(RTRIM(i_SICCodeDesc
+			)
+		)
+	) AS v_SICCodeDesc,
 	'[' || v_SICCode || ']' AS v_SICCode2,
 	-- *INF*: LPAD(v_SICCode, 4, '0')
-	LPAD(v_SICCode, 4, '0') AS sic_code_number,
+	LPAD(v_SICCode, 4, '0'
+	) AS sic_code_number,
 	-- *INF*: IIF(INSTR(v_SICCodeDesc, v_SICCode2)=0, v_SICCodeDesc, LTRIM(RTRIM(REPLACESTR(0, v_SICCodeDesc, v_SICCode2, ''))))
-	IFF(INSTR(v_SICCodeDesc, v_SICCode2) = 0, v_SICCodeDesc, LTRIM(RTRIM(REPLACESTR(0, v_SICCodeDesc, v_SICCode2, '')))) AS sic_code_description
+	IFF(REGEXP_INSTR(v_SICCodeDesc, v_SICCode2
+		) = 0,
+		v_SICCodeDesc,
+		LTRIM(RTRIM(REGEXP_REPLACE(v_SICCodeDesc,v_SICCode2,'','i')
+			)
+		)
+	) AS sic_code_description
 	FROM SQ_DCPolicyStaging
 ),
 LKP_sup_sic_code_DCT_new AS (
@@ -152,16 +200,25 @@ EXP_Detect_Changes_DCT AS (
 	-- )
 	DECODE(TRUE,
 		lkp_sic_code_description IS NULL, 'NEW',
-		UPPER(LTRIM(RTRIM(lkp_sic_code_description))) <> sic_code_description, 'UPDATE',
-		'NOCHANGE') AS v_Changed_Flag,
+		UPPER(LTRIM(RTRIM(lkp_sic_code_description
+				)
+			)
+		) <> sic_code_description, 'UPDATE',
+		'NOCHANGE'
+	) AS v_Changed_Flag,
 	1 AS o_crrnt_snapshot_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_Audit_ID,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS o_Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS o_Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS o_Eff_To_Date,
 	'DCT' AS o_Source_System_ID,
 	SYSDATE AS o_Created_Date,
 	SYSDATE AS o_Modified_Date,
@@ -250,8 +307,9 @@ EXP_Lag_Eff_dates AS (
 	-- 	sic_code = v_PREV_ROW_sic_code_number, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		sic_code = v_PREV_ROW_sic_code_number, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		sic_code = v_PREV_ROW_sic_code_number, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	sic_code AS v_PREV_ROW_sic_code_number,

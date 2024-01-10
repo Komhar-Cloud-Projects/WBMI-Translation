@@ -37,7 +37,11 @@ EXP_Failure_Message AS (
 	-- *INF*: IIF(i_WBMIChecksAndBalancingRuleID=-1, checkout_message,
 	-- 'SubjectArea: '  || WBMISubjectArea || ' , Rule Label: ' || RuleLabel || ' , Balancing Layer: '  || WBMIBalancingLayer   || 
 	-- ' , '  ||  ' <BR> '  || 'Failure Rule ID: ' || TO_CHAR(i_WBMIChecksAndBalancingRuleID) ||' , Message: '|| checkout_message)
-	IFF(i_WBMIChecksAndBalancingRuleID = - 1, checkout_message, 'SubjectArea: ' || WBMISubjectArea || ' , Rule Label: ' || RuleLabel || ' , Balancing Layer: ' || WBMIBalancingLayer || ' , ' || ' <BR> ' || 'Failure Rule ID: ' || TO_CHAR(i_WBMIChecksAndBalancingRuleID) || ' , Message: ' || checkout_message) AS o_message
+	IFF(i_WBMIChecksAndBalancingRuleID = - 1,
+		checkout_message,
+		'SubjectArea: ' || WBMISubjectArea || ' , Rule Label: ' || RuleLabel || ' , Balancing Layer: ' || WBMIBalancingLayer || ' , ' || ' <BR> ' || 'Failure Rule ID: ' || TO_CHAR(i_WBMIChecksAndBalancingRuleID
+		) || ' , Message: ' || checkout_message
+	) AS o_message
 	FROM SQ_wbmi_checkout
 ),
 AGG_Get_Max_CheckoutID AS (
@@ -46,7 +50,8 @@ AGG_Get_Max_CheckoutID AS (
 	Frequency,
 	WBMISubjectArea,
 	-- *INF*: MAX(i_wbmi_checkout_id)
-	MAX(i_wbmi_checkout_id) AS o_wbmi_checkout_id
+	MAX(i_wbmi_checkout_id
+	) AS o_wbmi_checkout_id
 	FROM EXP_Failure_Message
 	GROUP BY 
 ),
@@ -73,21 +78,36 @@ EXP_Orgnize_Parameters AS (
 	-- Frequency='M' and v_subject_area='UnassignedRules', 's_m_Mail_Failed_Rules_Monthly_UnassignedRules',
 	-- @{pipeline().parameters.PMSESSIONNAME})
 	DECODE(TRUE,
-		Frequency = 'D' AND i_WBMISubjectArea = 'DM-Sapiens-Daily-Policy', 's_m_Mail_Failed_Rules_Datamart_Sapiens_Policy_Daily',
-		Frequency = 'D' AND i_WBMISubjectArea = 'DM-Sapiens-Daily-Claim', 's_m_Mail_Failed_Rules_Datamart_Sapiens_Claims_Daily',
-		Frequency = 'M' AND i_WBMISubjectArea = 'SapiensPolicyMonthly', 's_m_Mail_Failed_Rules_DataMart_Sapiens_Policy_Monthly',
-		Frequency = 'D' AND i_WBMISubjectArea = 'DM-Sapiens-Daily-Validation', 's_m_Mail_Failed_Rules_Datamart_Sapiens_Validation_Daily',
-		Frequency = 'M' AND i_WBMISubjectArea = 'SapiensValidationMonthly', 's_m_Mail_Failed_Rules_DataMart_Sapiens_Validation_Monthly',
-		Frequency = 'D' AND i_WBMISubjectArea = 'DCTPolicy_DM', 's_m_Mail_Failed_Rules_DCTPolicy_DM_Daily',
-		Frequency = 'M' AND i_WBMISubjectArea = 'DCTPolicy_DM', 's_m_Mail_Failed_Rules_DCTPolicy_DM_Monthly',
-		Frequency = 'D' AND i_WBMISubjectArea = 'DCTPolicy_IDO', 's_m_Mail_Failed_Rules_DCTPolicy_IDO',
-		Frequency = 'D' AND IN(i_WBMISubjectArea, 'DCT_Billing', 'Billing_Billing'), 's_m_Mail_Failed_Rules_DCT_To_Billing_Daily',
-		Frequency = 'D' AND i_WBMISubjectArea = 'ODS-Billing-Daily', 's_m_Mail_Failed_Rules_BillingODS_Daily',
-		Frequency = 'M' AND i_WBMISubjectArea = 'ODS-Billing-Monthly', 's_m_Mail_Failed_Rules_BillingODS_Monthly',
-		Frequency = 'D' AND i_WBMISubjectArea = 'ReinsuranceODS', 's_m_Mail_Failed_Rules_ReinsuranceODS',
-		Frequency = 'D' AND v_subject_area = 'UnassignedRules', 's_m_Mail_Failed_Rules_Daily_UnassignedRules',
-		Frequency = 'M' AND v_subject_area = 'UnassignedRules', 's_m_Mail_Failed_Rules_Monthly_UnassignedRules',
-		@{pipeline().parameters.PMSESSIONNAME}) AS v_session_name,
+		Frequency = 'D' 
+		AND i_WBMISubjectArea = 'DM-Sapiens-Daily-Policy', 's_m_Mail_Failed_Rules_Datamart_Sapiens_Policy_Daily',
+		Frequency = 'D' 
+		AND i_WBMISubjectArea = 'DM-Sapiens-Daily-Claim', 's_m_Mail_Failed_Rules_Datamart_Sapiens_Claims_Daily',
+		Frequency = 'M' 
+		AND i_WBMISubjectArea = 'SapiensPolicyMonthly', 's_m_Mail_Failed_Rules_DataMart_Sapiens_Policy_Monthly',
+		Frequency = 'D' 
+		AND i_WBMISubjectArea = 'DM-Sapiens-Daily-Validation', 's_m_Mail_Failed_Rules_Datamart_Sapiens_Validation_Daily',
+		Frequency = 'M' 
+		AND i_WBMISubjectArea = 'SapiensValidationMonthly', 's_m_Mail_Failed_Rules_DataMart_Sapiens_Validation_Monthly',
+		Frequency = 'D' 
+		AND i_WBMISubjectArea = 'DCTPolicy_DM', 's_m_Mail_Failed_Rules_DCTPolicy_DM_Daily',
+		Frequency = 'M' 
+		AND i_WBMISubjectArea = 'DCTPolicy_DM', 's_m_Mail_Failed_Rules_DCTPolicy_DM_Monthly',
+		Frequency = 'D' 
+		AND i_WBMISubjectArea = 'DCTPolicy_IDO', 's_m_Mail_Failed_Rules_DCTPolicy_IDO',
+		Frequency = 'D' 
+		AND i_WBMISubjectArea IN ('DCT_Billing','Billing_Billing'), 's_m_Mail_Failed_Rules_DCT_To_Billing_Daily',
+		Frequency = 'D' 
+		AND i_WBMISubjectArea = 'ODS-Billing-Daily', 's_m_Mail_Failed_Rules_BillingODS_Daily',
+		Frequency = 'M' 
+		AND i_WBMISubjectArea = 'ODS-Billing-Monthly', 's_m_Mail_Failed_Rules_BillingODS_Monthly',
+		Frequency = 'D' 
+		AND i_WBMISubjectArea = 'ReinsuranceODS', 's_m_Mail_Failed_Rules_ReinsuranceODS',
+		Frequency = 'D' 
+		AND v_subject_area = 'UnassignedRules', 's_m_Mail_Failed_Rules_Daily_UnassignedRules',
+		Frequency = 'M' 
+		AND v_subject_area = 'UnassignedRules', 's_m_Mail_Failed_Rules_Monthly_UnassignedRules',
+		@{pipeline().parameters.PMSESSIONNAME}
+	) AS v_session_name,
 	-- *INF*: '['||v_session_name||']'||CHR(10)||
 	-- '@{pipeline().parameters.WBMI_CHECKOUT_ID}='||i_wbmi_checkout_id||CHR(10)||
 	-- '@{pipeline().parameters.FREQUENCY}='||Frequency||CHR(10)||
@@ -98,7 +118,15 @@ EXP_Orgnize_Parameters AS (
 	-- '@{pipeline().parameters.WBMISUBJECTAREA}='||@{pipeline().parameters.WBMISUBJECTAREA}||CHR(10)||
 	-- '@{pipeline().parameters.WHERE_CLAUSE}='||@{pipeline().parameters.WHERE_CLAUSE}
 	-- 
-	'[' || v_session_name || ']' || CHR(10) || '@{pipeline().parameters.WBMI_CHECKOUT_ID}=' || i_wbmi_checkout_id || CHR(10) || '@{pipeline().parameters.FREQUENCY}=' || Frequency || CHR(10) || '@{pipeline().parameters.DBCONNECTION_SOURCE}=' || @{pipeline().parameters.DBCONNECTION_SOURCE} || CHR(10) || '@{pipeline().parameters.ENV}=' || @{pipeline().parameters.ENV} || CHR(10) || '@{pipeline().parameters.DBCONNECTION_SOURCE}=' || @{pipeline().parameters.DBCONNECTION_SOURCE} || CHR(10) || '@{pipeline().parameters.PMFAILUREEMAILUSER}=' || @{pipeline().parameters.PMFAILUREEMAILUSER} || CHR(10) || '@{pipeline().parameters.WBMISUBJECTAREA}=' || @{pipeline().parameters.WBMISUBJECTAREA} || CHR(10) || '@{pipeline().parameters.WHERE_CLAUSE}=' || @{pipeline().parameters.WHERE_CLAUSE} AS o_Param,
+	'[' || v_session_name || ']' || CHR(10
+	) || '@{pipeline().parameters.WBMI_CHECKOUT_ID}=' || i_wbmi_checkout_id || CHR(10
+	) || '@{pipeline().parameters.FREQUENCY}=' || Frequency || CHR(10
+	) || '@{pipeline().parameters.DBCONNECTION_SOURCE}=' || @{pipeline().parameters.DBCONNECTION_SOURCE} || CHR(10
+	) || '@{pipeline().parameters.ENV}=' || @{pipeline().parameters.ENV} || CHR(10
+	) || '@{pipeline().parameters.DBCONNECTION_SOURCE}=' || @{pipeline().parameters.DBCONNECTION_SOURCE} || CHR(10
+	) || '@{pipeline().parameters.PMFAILUREEMAILUSER}=' || @{pipeline().parameters.PMFAILUREEMAILUSER} || CHR(10
+	) || '@{pipeline().parameters.WBMISUBJECTAREA}=' || @{pipeline().parameters.WBMISUBJECTAREA} || CHR(10
+	) || '@{pipeline().parameters.WHERE_CLAUSE}=' || @{pipeline().parameters.WHERE_CLAUSE} AS o_Param,
 	@{pipeline().parameters.PMFAILUREEMAILUSER} AS o_EmailUser,
 	-- *INF*: @{pipeline().parameters.ENV}||' : '||
 	-- DECODE(TRUE,
@@ -117,9 +145,11 @@ EXP_Orgnize_Parameters AS (
 		Frequency = 'W', 'Weekly',
 		Frequency = 'M', 'Monthly',
 		Frequency = 'A', 'Historical',
-		'') || ' Validation Report (' || SYSDATE || ')' || DECODE(TRUE,
+		''
+	) || ' Validation Report (' || SYSDATE || ')' || DECODE(TRUE,
 		@{pipeline().parameters.WBMISUBJECTAREA} <> '', ' - ' || @{pipeline().parameters.WBMISUBJECTAREA},
-		'') AS o_EmailSubject
+		''
+	) AS o_EmailSubject
 	FROM AGG_Get_Max_CheckoutID
 ),
 Update_Parm AS (

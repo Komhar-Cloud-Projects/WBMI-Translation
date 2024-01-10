@@ -70,25 +70,42 @@ EXP_Detect_Changes AS (
 	SELECT
 	LKP_UWManagerAKID.UnderwritingManagerAKID AS lkp_UnderwritingManagerAKID,
 	-- *INF*: IIF(IsNull(lkp_UnderwritingManagerAKID), -1, lkp_UnderwritingManagerAKID)
-	IFF(lkp_UnderwritingManagerAKID IS NULL, - 1, lkp_UnderwritingManagerAKID) AS o_UnderwritingManagerAKID,
+	IFF(lkp_UnderwritingManagerAKID IS NULL,
+		- 1,
+		lkp_UnderwritingManagerAKID
+	) AS o_UnderwritingManagerAKID,
 	LKP_ExistingUnderwritingRegion.UnderwritingRegionAKID AS lkp_UnderwritingRegionAKID,
 	LKP_ExistingUnderwritingRegion.HashKey AS lkp_HashKey,
 	JNR_OuterToRelationship.UnderwritingRegionCode,
 	JNR_OuterToRelationship.UnderwritingRegionCodeDescription,
 	-- *INF*: MD5(UnderwritingRegionCode || UnderwritingRegionCodeDescription || to_char(lkp_UnderwritingManagerAKID))
-	MD5(UnderwritingRegionCode || UnderwritingRegionCodeDescription || to_char(lkp_UnderwritingManagerAKID)) AS v_NewHashKey,
+	MD5(UnderwritingRegionCode || UnderwritingRegionCodeDescription || to_char(lkp_UnderwritingManagerAKID
+		)
+	) AS v_NewHashKey,
 	v_NewHashKey AS o_NewHashKey,
 	-- *INF*: IIF(ISNULL(lkp_UnderwritingRegionAKID), 'NEW', 
 	-- IIF((v_NewHashKey <> lkp_HashKey), 'UPDATE', 'NOCHANGE'))
-	IFF(lkp_UnderwritingRegionAKID IS NULL, 'NEW', IFF(( v_NewHashKey <> lkp_HashKey ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(lkp_UnderwritingRegionAKID IS NULL,
+		'NEW',
+		IFF(( v_NewHashKey <> lkp_HashKey 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS EffectiveDate,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	JNR_OuterToRelationship.SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate
@@ -133,7 +150,10 @@ EXP_Assign_AKID AS (
 	UnderwritingRegionAKID AS lkp_UnderwritingRegionAKID,
 	SEQ_UnderwritingRegion_ak_id.NEXTVAL,
 	-- *INF*: iif(isnull(lkp_UnderwritingRegionAKID), NEXTVAL, lkp_UnderwritingRegionAKID)
-	IFF(lkp_UnderwritingRegionAKID IS NULL, NEXTVAL, lkp_UnderwritingRegionAKID) AS UnderwritingRegionAKID,
+	IFF(lkp_UnderwritingRegionAKID IS NULL,
+		NEXTVAL,
+		lkp_UnderwritingRegionAKID
+	) AS UnderwritingRegionAKID,
 	0 AS Default_Int,
 	'N/A' AS Default_char,
 	HashKey,
@@ -191,8 +211,9 @@ EXP_Lag_eff_from_date AS (
 	-- UnderwritingRegionAKID = v_prev_AKID , ADD_TO_DATE(v_prev_EffectiveFromDate,'SS',-1),
 	-- OriginalEffectiveToDate)
 	DECODE(TRUE,
-		UnderwritingRegionAKID = v_prev_AKID, ADD_TO_DATE(v_prev_EffectiveFromDate, 'SS', - 1),
-		OriginalEffectiveToDate) AS v_EffectiveToDate,
+		UnderwritingRegionAKID = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_EffectiveFromDate),
+		OriginalEffectiveToDate
+	) AS v_EffectiveToDate,
 	v_EffectiveToDate AS o_EffectiveToDate,
 	UnderwritingRegionAKID AS v_prev_AKID,
 	EffectiveFromDate AS v_prev_EffectiveFromDate,

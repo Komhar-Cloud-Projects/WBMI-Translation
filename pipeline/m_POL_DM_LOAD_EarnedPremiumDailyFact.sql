@@ -1095,7 +1095,10 @@ EXP_EarnedPremiumCalculation_IN AS (
 	SubAnnualStatementLineCode,
 	NonSubAnnualStatementLineCode AS i_NonSubAnnualStatementLineCode,
 	-- *INF*: IIF(SourceSystemID='DCT','N/A',i_NonSubAnnualStatementLineCode)
-	IFF(SourceSystemID = 'DCT', 'N/A', i_NonSubAnnualStatementLineCode) AS o_NonSubAnnualStatementLineCode,
+	IFF(SourceSystemID = 'DCT',
+		'N/A',
+		i_NonSubAnnualStatementLineCode
+	) AS o_NonSubAnnualStatementLineCode,
 	AnnualStatementLineProductCode,
 	LineOfBusinessCode,
 	PolicyOfferingCode,
@@ -1111,22 +1114,40 @@ EXP_EarnedPremiumCalculation_IN AS (
 	-- --Incremental records
 	-- :LKP.LKP_CoverageDetailDim(PremiumTransactionAKId)
 	-- )
-	IFF(PremiumTransactionAKId = - 1, LKP_COVERAGEDETAILDIM_HIST_StatisticalCoverageAKID.CoverageDetailDimId, LKP_COVERAGEDETAILDIM_PremiumTransactionAKId.CoverageDetailDimId) AS v_CoverageDetailDimID,
+	IFF(PremiumTransactionAKId = - 1,
+		LKP_COVERAGEDETAILDIM_HIST_StatisticalCoverageAKID.CoverageDetailDimId,
+		LKP_COVERAGEDETAILDIM_PremiumTransactionAKId.CoverageDetailDimId
+	) AS v_CoverageDetailDimID,
 	-- *INF*: IIF(ISNULL(v_CoverageDetailDimID), -1, v_CoverageDetailDimID)
-	IFF(v_CoverageDetailDimID IS NULL, - 1, v_CoverageDetailDimID) AS CoverageDetailDimID_lkp,
+	IFF(v_CoverageDetailDimID IS NULL,
+		- 1,
+		v_CoverageDetailDimID
+	) AS CoverageDetailDimID_lkp,
 	RiskLocationHashKey,
 	EnterpriseGroupCode AS i_EnterpriseGroupCode,
 	InsuranceReferenceLegalEntityCode AS i_InsuranceReferenceLegalEntityCode,
 	StrategicProfitCenterCode AS i_StrategicProfitCenterCode,
 	InsuranceSegmentCode AS i_InsuranceSegmentCode,
 	-- *INF*: IIF(NOT ISNULL(i_EnterpriseGroupCode), i_EnterpriseGroupCode, '1')
-	IFF(NOT i_EnterpriseGroupCode IS NULL, i_EnterpriseGroupCode, '1') AS EnterpriseGroupCode,
+	IFF(i_EnterpriseGroupCode IS NOT NULL,
+		i_EnterpriseGroupCode,
+		'1'
+	) AS EnterpriseGroupCode,
 	-- *INF*: IIF(NOT ISNULL(i_InsuranceReferenceLegalEntityCode), i_InsuranceReferenceLegalEntityCode, '1')
-	IFF(NOT i_InsuranceReferenceLegalEntityCode IS NULL, i_InsuranceReferenceLegalEntityCode, '1') AS InsuranceReferenceLegalEntityCode,
+	IFF(i_InsuranceReferenceLegalEntityCode IS NOT NULL,
+		i_InsuranceReferenceLegalEntityCode,
+		'1'
+	) AS InsuranceReferenceLegalEntityCode,
 	-- *INF*: IIF(NOT ISNULL(i_StrategicProfitCenterCode), i_StrategicProfitCenterCode, '6')
-	IFF(NOT i_StrategicProfitCenterCode IS NULL, i_StrategicProfitCenterCode, '6') AS StrategicProfitCenterCode,
+	IFF(i_StrategicProfitCenterCode IS NOT NULL,
+		i_StrategicProfitCenterCode,
+		'6'
+	) AS StrategicProfitCenterCode,
 	-- *INF*: IIF(NOT ISNULL(i_InsuranceSegmentCode), i_InsuranceSegmentCode, 'N/A')
-	IFF(NOT i_InsuranceSegmentCode IS NULL, i_InsuranceSegmentCode, 'N/A') AS InsuranceSegmentCode,
+	IFF(i_InsuranceSegmentCode IS NOT NULL,
+		i_InsuranceSegmentCode,
+		'N/A'
+	) AS InsuranceSegmentCode,
 	RiskUnitGroup AS i_RiskUnitGroup,
 	RiskUnit AS i_RiskUnit,
 	RiskUnitSequenceNumber AS i_RiskUnitSequenceNumber,
@@ -1140,39 +1161,108 @@ EXP_EarnedPremiumCalculation_IN AS (
 	SubCoverageTypeCode AS i_SubCoverageTypeCode,
 	CoverageVersion AS i_CoverageVersion,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_RiskUnitSequenceNumber,2,1))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_RiskUnitSequenceNumber, 2, 1)) AS v_ProductTypeCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_RiskUnitSequenceNumber, 2, 1
+		)
+	) AS v_ProductTypeCode,
 	-- *INF*: IIF(REG_MATCH(i_StandardInsuranceLineCode,'[^0-9a-zA-Z]'),'N/A',i_StandardInsuranceLineCode)
-	IFF(REG_MATCH(i_StandardInsuranceLineCode, '[^0-9a-zA-Z]'), 'N/A', i_StandardInsuranceLineCode) AS v_Reg_StandardInsuranceLineCode,
+	IFF(REGEXP_LIKE(i_StandardInsuranceLineCode, '[^0-9a-zA-Z]'
+		),
+		'N/A',
+		i_StandardInsuranceLineCode
+	) AS v_Reg_StandardInsuranceLineCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode) AS v_MajorPerilCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode
+	) AS v_MajorPerilCode,
 	-- *INF*: IIF(LTRIM(v_MajorPerilCode,'0')='','N/A',v_MajorPerilCode)
-	IFF(LTRIM(v_MajorPerilCode, '0') = '', 'N/A', v_MajorPerilCode) AS v_Zero_MajorPerilCode,
+	IFF(LTRIM(v_MajorPerilCode, '0'
+		) = '',
+		'N/A',
+		v_MajorPerilCode
+	) AS v_Zero_MajorPerilCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassCode) AS v_ClassCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassCode
+	) AS v_ClassCode,
 	-- *INF*: IIF(v_Reg_StandardInsuranceLineCode='N/A' AND (IN(i_TypeBureauCode,'AL','AN','AP') OR IN(v_Zero_MajorPerilCode,'930','931')),'CA',v_Reg_StandardInsuranceLineCode)
-	IFF(v_Reg_StandardInsuranceLineCode = 'N/A' AND ( IN(i_TypeBureauCode, 'AL', 'AN', 'AP') OR IN(v_Zero_MajorPerilCode, '930', '931') ), 'CA', v_Reg_StandardInsuranceLineCode) AS v_StandardInsuranceLineCode,
+	IFF(v_Reg_StandardInsuranceLineCode = 'N/A' 
+		AND ( i_TypeBureauCode IN ('AL','AN','AP') 
+			OR v_Zero_MajorPerilCode IN ('930','931') 
+		),
+		'CA',
+		v_Reg_StandardInsuranceLineCode
+	) AS v_StandardInsuranceLineCode,
 	-- *INF*: IIF(v_StandardInsuranceLineCode='N/A' AND IN(i_TypeBureauCode,'CF','B2','BB','BE','BF','BM','BT','FT','GL','GS','IM','MS','PF','PH','PI','PL','PQ','WC','WP','NB','RL','RN','RP','BC','N/A'),1,0)
-	IFF(v_StandardInsuranceLineCode = 'N/A' AND IN(i_TypeBureauCode, 'CF', 'B2', 'BB', 'BE', 'BF', 'BM', 'BT', 'FT', 'GL', 'GS', 'IM', 'MS', 'PF', 'PH', 'PI', 'PL', 'PQ', 'WC', 'WP', 'NB', 'RL', 'RN', 'RP', 'BC', 'N/A'), 1, 0) AS v_flag,
+	IFF(v_StandardInsuranceLineCode = 'N/A' 
+		AND i_TypeBureauCode IN ('CF','B2','BB','BE','BF','BM','BT','FT','GL','GS','IM','MS','PF','PH','PI','PL','PQ','WC','WP','NB','RL','RN','RP','BC','N/A'),
+		1,
+		0
+	) AS v_flag,
 	-- *INF*: IIF(IN(v_StandardInsuranceLineCode,'CR') OR v_flag=1,'N/A',:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnitGroup))
-	IFF(IN(v_StandardInsuranceLineCode, 'CR') OR v_flag = 1, 'N/A', :UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnitGroup)) AS v_RiskUnitGroup,
+	IFF(v_StandardInsuranceLineCode IN ('CR') 
+		OR v_flag = 1,
+		'N/A',
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnitGroup
+		)
+	) AS v_RiskUnitGroup,
 	-- *INF*: IIF(LTRIM(v_RiskUnitGroup,'0')='','N/A',v_RiskUnitGroup)
-	IFF(LTRIM(v_RiskUnitGroup, '0') = '', 'N/A', v_RiskUnitGroup) AS v_Zero_RiskUnitGroup,
+	IFF(LTRIM(v_RiskUnitGroup, '0'
+		) = '',
+		'N/A',
+		v_RiskUnitGroup
+	) AS v_Zero_RiskUnitGroup,
 	-- *INF*: IIF( v_flag=1 OR   (v_StandardInsuranceLineCode='GL' AND (NOT IN(v_MajorPerilCode,'540','599','919')    OR NOT IN(v_ClassCode,'11111','22222','22250','92100','17000','17001','17002','80051','80052','80053','80054','80055','80056','80057','80058')))   OR IN(v_StandardInsuranceLineCode,'WC','IM','CG','CA')=1,  'N/A',:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnit))
-	IFF(v_flag = 1 OR ( v_StandardInsuranceLineCode = 'GL' AND ( NOT IN(v_MajorPerilCode, '540', '599', '919') OR NOT IN(v_ClassCode, '11111', '22222', '22250', '92100', '17000', '17001', '17002', '80051', '80052', '80053', '80054', '80055', '80056', '80057', '80058') ) ) OR IN(v_StandardInsuranceLineCode, 'WC', 'IM', 'CG', 'CA') = 1, 'N/A', :UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnit)) AS v_RiskUnit,
+	IFF(v_flag = 1 
+		OR ( v_StandardInsuranceLineCode = 'GL' 
+			AND ( NOT v_MajorPerilCode IN ('540','599','919') 
+				OR NOT v_ClassCode IN ('11111','22222','22250','92100','17000','17001','17002','80051','80052','80053','80054','80055','80056','80057','80058') 
+			) 
+		) 
+		OR v_StandardInsuranceLineCode IN ('WC','IM','CG','CA') = 1,
+		'N/A',
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnit
+		)
+	) AS v_RiskUnit,
 	-- *INF*: IIF(LTRIM(v_RiskUnit,'0')='','N/A',v_RiskUnit)
-	IFF(LTRIM(v_RiskUnit, '0') = '', 'N/A', v_RiskUnit) AS v_Zero_RiskUnit,
+	IFF(LTRIM(v_RiskUnit, '0'
+		) = '',
+		'N/A',
+		v_RiskUnit
+	) AS v_Zero_RiskUnit,
 	-- *INF*: IIF(REG_MATCH(v_Zero_RiskUnitGroup,'[^0-9a-zA-Z]'),'N/A',v_Zero_RiskUnitGroup)
-	IFF(REG_MATCH(v_Zero_RiskUnitGroup, '[^0-9a-zA-Z]'), 'N/A', v_Zero_RiskUnitGroup) AS v_PmsRiskUnitGroupCode,
+	IFF(REGEXP_LIKE(v_Zero_RiskUnitGroup, '[^0-9a-zA-Z]'
+		),
+		'N/A',
+		v_Zero_RiskUnitGroup
+	) AS v_PmsRiskUnitGroupCode,
 	-- *INF*: IIF(REG_MATCH(v_Zero_RiskUnit,'[^0-9a-zA-Z]'),'N/A',v_Zero_RiskUnit)
-	IFF(REG_MATCH(v_Zero_RiskUnit, '[^0-9a-zA-Z]'), 'N/A', v_Zero_RiskUnit) AS v_PmsRiskUnitCode,
+	IFF(REGEXP_LIKE(v_Zero_RiskUnit, '[^0-9a-zA-Z]'
+		),
+		'N/A',
+		v_Zero_RiskUnit
+	) AS v_PmsRiskUnitCode,
 	-- *INF*: SUBSTR(v_PmsRiskUnitCode, 1, 3)
-	SUBSTR(v_PmsRiskUnitCode, 1, 3) AS v_PmsRiskUnitCode_1_3,
+	SUBSTR(v_PmsRiskUnitCode, 1, 3
+	) AS v_PmsRiskUnitCode_1_3,
 	-- *INF*: IIF(SourceSystemID='PMS',v_StandardInsuranceLineCode,i_StandardInsuranceLineCode)
-	IFF(SourceSystemID = 'PMS', v_StandardInsuranceLineCode, i_StandardInsuranceLineCode) AS v_InsuranceLineCode,
+	IFF(SourceSystemID = 'PMS',
+		v_StandardInsuranceLineCode,
+		i_StandardInsuranceLineCode
+	) AS v_InsuranceLineCode,
 	-- *INF*: IIF(REG_MATCH(v_Zero_MajorPerilCode,'[^0-9a-zA-Z]'),'N/A',v_Zero_MajorPerilCode)
-	IFF(REG_MATCH(v_Zero_MajorPerilCode, '[^0-9a-zA-Z]'), 'N/A', v_Zero_MajorPerilCode) AS v_PmsMajorPerilCode,
+	IFF(REGEXP_LIKE(v_Zero_MajorPerilCode, '[^0-9a-zA-Z]'
+		),
+		'N/A',
+		v_Zero_MajorPerilCode
+	) AS v_PmsMajorPerilCode,
 	-- *INF*: IIF(   REG_MATCH(v_ProductTypeCode,'[^0-9a-zA-Z]') OR v_Reg_StandardInsuranceLineCode<>'GL' OR v_ProductTypeCode='0' OR LENGTH(v_ProductTypeCode)=0,   'N/A',v_ProductTypeCode )
-	IFF(REG_MATCH(v_ProductTypeCode, '[^0-9a-zA-Z]') OR v_Reg_StandardInsuranceLineCode <> 'GL' OR v_ProductTypeCode = '0' OR LENGTH(v_ProductTypeCode) = 0, 'N/A', v_ProductTypeCode) AS v_PmsProductTypeCode,
+	IFF(REGEXP_LIKE(v_ProductTypeCode, '[^0-9a-zA-Z]'
+		) 
+		OR v_Reg_StandardInsuranceLineCode <> 'GL' 
+		OR v_ProductTypeCode = '0' 
+		OR LENGTH(v_ProductTypeCode
+		) = 0,
+		'N/A',
+		v_ProductTypeCode
+	) AS v_PmsProductTypeCode,
 	-- *INF*: :LKP.LKP_INSURANCEREFERENCECOVERAGEDIM_PMS(v_PmsRiskUnitGroupCode, v_PmsRiskUnitCode, v_PmsMajorPerilCode, v_InsuranceLineCode, v_PmsProductTypeCode)
 	LKP_INSURANCEREFERENCECOVERAGEDIM_PMS_v_PmsRiskUnitGroupCode_v_PmsRiskUnitCode_v_PmsMajorPerilCode_v_InsuranceLineCode_v_PmsProductTypeCode.InsuranceReferenceCoverageDimId AS v_InsuranceReferenceCoverageDimId_PMS_1,
 	-- *INF*: v_InsuranceReferenceCoverageDimId_PMS_1
@@ -1182,13 +1272,22 @@ EXP_EarnedPremiumCalculation_IN AS (
 	-- *INF*: :LKP.LKP_INSURANCEREFERENCECOVERAGEDIM_DCT(i_RiskType, i_CoverageType, v_InsuranceLineCode, i_PerilGroup,i_SubCoverageTypeCode,i_CoverageVersion)
 	LKP_INSURANCEREFERENCECOVERAGEDIM_DCT_i_RiskType_i_CoverageType_v_InsuranceLineCode_i_PerilGroup_i_SubCoverageTypeCode_i_CoverageVersion.InsuranceReferenceCoverageDimId AS v_InsuranceReferenceCoverageDimId_DCT,
 	-- *INF*: IIF(ISNULL(v_InsuranceReferenceCoverageDimId_PMS_2), -1, v_InsuranceReferenceCoverageDimId_PMS_2)
-	IFF(v_InsuranceReferenceCoverageDimId_PMS_2 IS NULL, - 1, v_InsuranceReferenceCoverageDimId_PMS_2) AS o_InsuranceReferenceCoverageDimId_PMS,
+	IFF(v_InsuranceReferenceCoverageDimId_PMS_2 IS NULL,
+		- 1,
+		v_InsuranceReferenceCoverageDimId_PMS_2
+	) AS o_InsuranceReferenceCoverageDimId_PMS,
 	-- *INF*: IIF(ISNULL(v_InsuranceReferenceCoverageDimId_DCT), -1, v_InsuranceReferenceCoverageDimId_DCT)
-	IFF(v_InsuranceReferenceCoverageDimId_DCT IS NULL, - 1, v_InsuranceReferenceCoverageDimId_DCT) AS o_InsuranceReferenceCoverageDimId_DCT,
+	IFF(v_InsuranceReferenceCoverageDimId_DCT IS NULL,
+		- 1,
+		v_InsuranceReferenceCoverageDimId_DCT
+	) AS o_InsuranceReferenceCoverageDimId_DCT,
 	CustomerCareCommissionRate,
 	RatingPlanCode AS i_RatingPlanCode,
 	-- *INF*: IIF(ISNULL(i_RatingPlanCode), '1', i_RatingPlanCode)
-	IFF(i_RatingPlanCode IS NULL, '1', i_RatingPlanCode) AS o_RatingPlanCode,
+	IFF(i_RatingPlanCode IS NULL,
+		'1',
+		i_RatingPlanCode
+	) AS o_RatingPlanCode,
 	PolicyCoverageEffectiveDate,
 	PolicyCoverageExpirationDate
 	FROM SQ_EarnedPremiumDailyCalculation
@@ -1458,26 +1557,47 @@ EXP_Consolidate_Data_from_Lookups AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	mplt_PolicyDimID_PremiumMaster.agency_dim_id AS AgencyDimID,
 	-- *INF*: IIF(NOT ISNULL(AgencyDimID),AgencyDimID,-1)
-	IFF(NOT AgencyDimID IS NULL, AgencyDimID, - 1) AS AgencyDimID_out,
+	IFF(AgencyDimID IS NOT NULL,
+		AgencyDimID,
+		- 1
+	) AS AgencyDimID_out,
 	mplt_PolicyDimID_PremiumMaster.pol_dim_id AS PolicyDimID,
 	mplt_PolicyDimID_PremiumMaster.pol_status_code,
 	-- *INF*: IIF(NOT ISNULL(PolicyDimID),PolicyDimID,-1)
-	IFF(NOT PolicyDimID IS NULL, PolicyDimID, - 1) AS PolicyDimID_out,
+	IFF(PolicyDimID IS NOT NULL,
+		PolicyDimID,
+		- 1
+	) AS PolicyDimID_out,
 	mplt_PolicyDimID_PremiumMaster.contract_cust_dim_id AS ContractCustomerDimID,
 	-- *INF*: IIF(NOT ISNULL(ContractCustomerDimID),ContractCustomerDimID,-1)
-	IFF(NOT ContractCustomerDimID IS NULL, ContractCustomerDimID, - 1) AS ContractCustomerDimID_out,
+	IFF(ContractCustomerDimID IS NOT NULL,
+		ContractCustomerDimID,
+		- 1
+	) AS ContractCustomerDimID_out,
 	LKP_RiskLocationDim.RiskLocationDimID,
 	-- *INF*: IIF(NOT ISNULL(RiskLocationDimID),RiskLocationDimID,-1)
-	IFF(NOT RiskLocationDimID IS NULL, RiskLocationDimID, - 1) AS RiskLocationDimID_out,
+	IFF(RiskLocationDimID IS NOT NULL,
+		RiskLocationDimID,
+		- 1
+	) AS RiskLocationDimID_out,
 	LKP_reinsurance_coverage_dim.reins_cov_dim_id AS ReinsuranceCoverageDimID,
 	-- *INF*: IIF(NOT ISNULL(ReinsuranceCoverageDimID),ReinsuranceCoverageDimID,-1)
-	IFF(NOT ReinsuranceCoverageDimID IS NULL, ReinsuranceCoverageDimID, - 1) AS ReinsuranceCoverageDimID_out,
+	IFF(ReinsuranceCoverageDimID IS NOT NULL,
+		ReinsuranceCoverageDimID,
+		- 1
+	) AS ReinsuranceCoverageDimID_out,
 	lkp_PremiumTransactionTypeDim.PremiumTransactionTypeDimID,
 	-- *INF*: IIF(NOT ISNULL(PremiumTransactionTypeDimID),PremiumTransactionTypeDimID,-1)
-	IFF(NOT PremiumTransactionTypeDimID IS NULL, PremiumTransactionTypeDimID, - 1) AS PremiumTransactionTypeDimID_out,
+	IFF(PremiumTransactionTypeDimID IS NOT NULL,
+		PremiumTransactionTypeDimID,
+		- 1
+	) AS PremiumTransactionTypeDimID_out,
 	EXP_EarnedPremiumCalculation_IN.PremiumTransactionID AS EDWPremiumTransactionPKID,
 	-- *INF*: IIF(NOT ISNULL(EDWPremiumTransactionPKID),EDWPremiumTransactionPKID,-1)
-	IFF(NOT EDWPremiumTransactionPKID IS NULL, EDWPremiumTransactionPKID, - 1) AS EDWPremiumTransactionPKID_out,
+	IFF(EDWPremiumTransactionPKID IS NOT NULL,
+		EDWPremiumTransactionPKID,
+		- 1
+	) AS EDWPremiumTransactionPKID_out,
 	EXP_EarnedPremiumCalculation_IN.PremiumTransactionAmount,
 	EXP_EarnedPremiumCalculation_IN.FullTermPremium,
 	EXP_EarnedPremiumCalculation_IN.EarnedPremium,
@@ -1488,47 +1608,81 @@ EXP_Consolidate_Data_from_Lookups AS (
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(PremiumTransactionBookedDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionBookedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_PremiumTransactionBookedDateID,
 	-- *INF*: IIF(NOT ISNULL(v_PremiumTransactionBookedDateID),v_PremiumTransactionBookedDateID,-1)
-	IFF(NOT v_PremiumTransactionBookedDateID IS NULL, v_PremiumTransactionBookedDateID, - 1) AS PremiumTransactionBookedDateID_out,
+	IFF(v_PremiumTransactionBookedDateID IS NOT NULL,
+		v_PremiumTransactionBookedDateID,
+		- 1
+	) AS PremiumTransactionBookedDateID_out,
 	EXP_EarnedPremiumCalculation_IN.RunDate AS PremiumTransactionRunDate,
 	-- *INF*: IIF((PremiumTransactionBookedDate<=LAST_DAY(PremiumTransactionRunDate)) AND (PremiumTransactionBookedDate>=
 	-- SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(SET_DATE_PART( PremiumTransactionRunDate, 'DD', 1 ),'HH',0),'MI',0),'SS',0)),'Y','N')
-	IFF(( PremiumTransactionBookedDate <= LAST_DAY(PremiumTransactionRunDate) ) AND ( PremiumTransactionBookedDate >= SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(PremiumTransactionRunDate, 'DD', 1), 'HH', 0), 'MI', 0), 'SS', 0) ), 'Y', 'N') AS DateFlagForWittenPremium,
+	IFF(( PremiumTransactionBookedDate <= LAST_DAY(PremiumTransactionRunDate
+			) 
+		) 
+		AND ( PremiumTransactionBookedDate >= DATEADD(SECOND,0-DATE_PART(SECOND,DATEADD(MINUTE,0-DATE_PART(MINUTE,DATEADD(HOUR,0-DATE_PART(HOUR,DATEADD(DAY,1-DATE_PART(DAY,PremiumTransactionRunDate),PremiumTransactionRunDate)),DATEADD(DAY,1-DATE_PART(DAY,PremiumTransactionRunDate),PremiumTransactionRunDate))),DATEADD(HOUR,0-DATE_PART(HOUR,DATEADD(DAY,1-DATE_PART(DAY,PremiumTransactionRunDate),PremiumTransactionRunDate)),DATEADD(DAY,1-DATE_PART(DAY,PremiumTransactionRunDate),PremiumTransactionRunDate)))),DATEADD(MINUTE,0-DATE_PART(MINUTE,DATEADD(HOUR,0-DATE_PART(HOUR,DATEADD(DAY,1-DATE_PART(DAY,PremiumTransactionRunDate),PremiumTransactionRunDate)),DATEADD(DAY,1-DATE_PART(DAY,PremiumTransactionRunDate),PremiumTransactionRunDate))),DATEADD(HOUR,0-DATE_PART(HOUR,DATEADD(DAY,1-DATE_PART(DAY,PremiumTransactionRunDate),PremiumTransactionRunDate)),DATEADD(DAY,1-DATE_PART(DAY,PremiumTransactionRunDate),PremiumTransactionRunDate)))) 
+		),
+		'Y',
+		'N'
+	) AS DateFlagForWittenPremium,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(PremiumTransactionRunDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionRunDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_PremiumTransactionRunDateID,
 	-- *INF*: IIF(NOT ISNULL(v_PremiumTransactionRunDateID),v_PremiumTransactionRunDateID,-1)
-	IFF(NOT v_PremiumTransactionRunDateID IS NULL, v_PremiumTransactionRunDateID, - 1) AS PremiumTransactionRunDateID_out,
+	IFF(v_PremiumTransactionRunDateID IS NOT NULL,
+		v_PremiumTransactionRunDateID,
+		- 1
+	) AS PremiumTransactionRunDateID_out,
 	EXP_EarnedPremiumCalculation_IN.PolicyCoverageEffectiveDate,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(PolicyCoverageEffectiveDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_PolicyCoverageEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_PolicyCoverageEffectiveDateID,
 	-- *INF*: IIF(NOT ISNULL(v_PolicyCoverageEffectiveDateID),v_PolicyCoverageEffectiveDateID,-1)
-	IFF(NOT v_PolicyCoverageEffectiveDateID IS NULL, v_PolicyCoverageEffectiveDateID, - 1) AS PolicyCoverageEffectiveDateID_out,
+	IFF(v_PolicyCoverageEffectiveDateID IS NOT NULL,
+		v_PolicyCoverageEffectiveDateID,
+		- 1
+	) AS PolicyCoverageEffectiveDateID_out,
 	EXP_EarnedPremiumCalculation_IN.PolicyCoverageExpirationDate,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(PolicyCoverageExpirationDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_PolicyCoverageExpirationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_PolicyCoverageExpirationDateID,
 	-- *INF*: IIF(NOT ISNULL(v_PolicyCoverageExpirationDateID),v_PolicyCoverageExpirationDateID,-1)
-	IFF(NOT v_PolicyCoverageExpirationDateID IS NULL, v_PolicyCoverageExpirationDateID, - 1) AS PolicyCoverageExpirationDateID_out,
+	IFF(v_PolicyCoverageExpirationDateID IS NOT NULL,
+		v_PolicyCoverageExpirationDateID,
+		- 1
+	) AS PolicyCoverageExpirationDateID_out,
 	EXP_EarnedPremiumCalculation_IN.PremiumTransactionEnteredDate,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(PremiumTransactionEnteredDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionEnteredDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_PremiumTransactionEnteredDateID,
 	-- *INF*: IIF(NOT ISNULL(v_PremiumTransactionEnteredDateID),v_PremiumTransactionEnteredDateID,-1)
-	IFF(NOT v_PremiumTransactionEnteredDateID IS NULL, v_PremiumTransactionEnteredDateID, - 1) AS PremiumTransactionEnteredDateID_out,
+	IFF(v_PremiumTransactionEnteredDateID IS NOT NULL,
+		v_PremiumTransactionEnteredDateID,
+		- 1
+	) AS PremiumTransactionEnteredDateID_out,
 	EXP_EarnedPremiumCalculation_IN.PremiumTransactionEffectiveDate,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(PremiumTransactionEffectiveDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_PremiumTransactionEffectiveDateID,
 	-- *INF*: IIF(NOT ISNULL(v_PremiumTransactionEffectiveDateID),v_PremiumTransactionEffectiveDateID,-1)
-	IFF(NOT v_PremiumTransactionEffectiveDateID IS NULL, v_PremiumTransactionEffectiveDateID, - 1) AS PremiumTransactionEffectiveDateID_out,
+	IFF(v_PremiumTransactionEffectiveDateID IS NOT NULL,
+		v_PremiumTransactionEffectiveDateID,
+		- 1
+	) AS PremiumTransactionEffectiveDateID_out,
 	EXP_EarnedPremiumCalculation_IN.PremiumTransactionExpirationDate,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(PremiumTransactionExpirationDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionExpirationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_PremiumTransactionExpirationDateID,
 	-- *INF*: IIF(NOT ISNULL(v_PremiumTransactionExpirationDateID),v_PremiumTransactionExpirationDateID,-1)
-	IFF(NOT v_PremiumTransactionExpirationDateID IS NULL, v_PremiumTransactionExpirationDateID, - 1) AS PremiumTransactionExpirationDateID_out,
+	IFF(v_PremiumTransactionExpirationDateID IS NOT NULL,
+		v_PremiumTransactionExpirationDateID,
+		- 1
+	) AS PremiumTransactionExpirationDateID_out,
 	EXP_EarnedPremiumCalculation_IN.PremiumType,
 	LKP_asl_dim.asl_dim_id AS ASLdimID,
 	-- *INF*: IIF(NOT ISNULL(ASLdimID),ASLdimID,-1)
-	IFF(NOT ASLdimID IS NULL, ASLdimID, - 1) AS ASLdimID_out,
+	IFF(ASLdimID IS NOT NULL,
+		ASLdimID,
+		- 1
+	) AS ASLdimID_out,
 	LKP_asl_product_code.asl_prdct_code_dim_id AS ASLproductcodedimID,
 	-- *INF*: IIF(NOT ISNULL(ASLproductcodedimID),ASLproductcodedimID,-1)
-	IFF(NOT ASLproductcodedimID IS NULL, ASLproductcodedimID, - 1) AS ASLproductcodedimID_out,
+	IFF(ASLproductcodedimID IS NOT NULL,
+		ASLproductcodedimID,
+		- 1
+	) AS ASLproductcodedimID_out,
 	EXP_EarnedPremiumCalculation_IN.PolicyEffectiveDate,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(PolicyEffectiveDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_PolicyEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_PolicyEffectiveDateID,
@@ -1537,7 +1691,10 @@ EXP_Consolidate_Data_from_Lookups AS (
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(PolicyExpirationDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_PolicyExpirationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_PolicyExpirationDateID,
 	-- *INF*: IIF(ISNULL(v_PolicyExpirationDateID),-1,v_PolicyExpirationDateID)
-	IFF(v_PolicyExpirationDateID IS NULL, - 1, v_PolicyExpirationDateID) AS PolicyExpirationDateID_out,
+	IFF(v_PolicyExpirationDateID IS NULL,
+		- 1,
+		v_PolicyExpirationDateID
+	) AS PolicyExpirationDateID_out,
 	EXP_EarnedPremiumCalculation_IN.EarnedPremiumCalculationID AS EDWEarnedPremiumDailyCalculationPKID,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(TO_DATE(TO_CHAR(RatingCoverageEffectiveDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_TO_DATE_TO_CHAR_RatingCoverageEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS RatingCoverageEffectiveDateId,
@@ -1547,7 +1704,10 @@ EXP_Consolidate_Data_from_Lookups AS (
 	'' AS RatingCoverageDimId_out,
 	LKP_InsuranceReferenceDim.InsuranceReferenceDimId,
 	-- *INF*: IIF(ISNULL(InsuranceReferenceDimId), -1, InsuranceReferenceDimId)
-	IFF(InsuranceReferenceDimId IS NULL, - 1, InsuranceReferenceDimId) AS o_InsuranceReferenceDimId,
+	IFF(InsuranceReferenceDimId IS NULL,
+		- 1,
+		InsuranceReferenceDimId
+	) AS o_InsuranceReferenceDimId,
 	-- *INF*: --IIF(ISNULL(SalesDivisionDimID), -1, SalesDivisionDimID)
 	'' AS o_SalesDivisionDimID,
 	EXP_EarnedPremiumCalculation_IN.CoverageDetailDimID_lkp AS CoverageDetailDimID,
@@ -1555,14 +1715,18 @@ EXP_Consolidate_Data_from_Lookups AS (
 	-- *INF*: :LKP.LKP_CALENDER_DIM(TO_DATE(TO_CHAR(i_StatisticalCoverageCancellationDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_TO_DATE_TO_CHAR_i_StatisticalCoverageCancellationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_StatisticalCoverageCancellationDate,
 	-- *INF*: IIF(NOT ISNULL(v_StatisticalCoverageCancellationDate),v_StatisticalCoverageCancellationDate,-1)
-	IFF(NOT v_StatisticalCoverageCancellationDate IS NULL, v_StatisticalCoverageCancellationDate, - 1) AS o_StatisticalCoverageCancellationDate,
+	IFF(v_StatisticalCoverageCancellationDate IS NOT NULL,
+		v_StatisticalCoverageCancellationDate,
+		- 1
+	) AS o_StatisticalCoverageCancellationDate,
 	EXP_EarnedPremiumCalculation_IN.SourceSystemID,
 	EXP_EarnedPremiumCalculation_IN.o_InsuranceReferenceCoverageDimId_PMS AS InsuranceReferenceCoverageDimId_PMS,
 	EXP_EarnedPremiumCalculation_IN.o_InsuranceReferenceCoverageDimId_DCT AS InsuranceReferenceCoverageDimId_DCT,
 	-- *INF*: DECODE(SourceSystemID,'DCT',InsuranceReferenceCoverageDimId_DCT,'PMS',InsuranceReferenceCoverageDimId_PMS)
 	DECODE(SourceSystemID,
 		'DCT', InsuranceReferenceCoverageDimId_DCT,
-		'PMS', InsuranceReferenceCoverageDimId_PMS) AS o_InsuranceReferenceCoverageDimId
+		'PMS', InsuranceReferenceCoverageDimId_PMS
+	) AS o_InsuranceReferenceCoverageDimId
 	FROM EXP_EarnedPremiumCalculation_IN
 	 -- Manually join with mplt_PolicyDimID_PremiumMaster
 	LEFT JOIN LKP_InsuranceReferenceDim
@@ -1578,40 +1742,64 @@ EXP_Consolidate_Data_from_Lookups AS (
 	LEFT JOIN lkp_PremiumTransactionTypeDim
 	ON lkp_PremiumTransactionTypeDim.PremiumTransactionCode = EXP_EarnedPremiumCalculation_IN.PremiumTransactionCode AND lkp_PremiumTransactionTypeDim.ReasonAmendedCode = EXP_EarnedPremiumCalculation_IN.ReasonAmendedCode AND lkp_PremiumTransactionTypeDim.PremiumTypeCode = EXP_EarnedPremiumCalculation_IN.PremiumType AND lkp_PremiumTransactionTypeDim.CustomerCareCommissionRate = EXP_EarnedPremiumCalculation_IN.CustomerCareCommissionRate
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionBookedDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionBookedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PremiumTransactionBookedDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionBookedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PremiumTransactionBookedDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionRunDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionRunDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PremiumTransactionRunDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionRunDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PremiumTransactionRunDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_PolicyCoverageEffectiveDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_PolicyCoverageEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PolicyCoverageEffectiveDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_PolicyCoverageEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PolicyCoverageEffectiveDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_PolicyCoverageExpirationDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_PolicyCoverageExpirationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PolicyCoverageExpirationDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_PolicyCoverageExpirationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PolicyCoverageExpirationDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionEnteredDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionEnteredDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PremiumTransactionEnteredDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionEnteredDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PremiumTransactionEnteredDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionEffectiveDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PremiumTransactionEffectiveDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PremiumTransactionEffectiveDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionExpirationDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionExpirationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PremiumTransactionExpirationDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_PremiumTransactionExpirationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PremiumTransactionExpirationDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_PolicyEffectiveDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_PolicyEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PolicyEffectiveDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_PolicyEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PolicyEffectiveDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_PolicyExpirationDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_PolicyExpirationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PolicyExpirationDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_PolicyExpirationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(PolicyExpirationDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TO_DATE_TO_CHAR_RatingCoverageEffectiveDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_RatingCoverageEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(RatingCoverageEffectiveDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_RatingCoverageEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(RatingCoverageEffectiveDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TO_DATE_TO_CHAR_RatingCoverageExpirationDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_RatingCoverageExpirationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(RatingCoverageExpirationDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_RatingCoverageExpirationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(RatingCoverageExpirationDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TO_DATE_TO_CHAR_i_StatisticalCoverageCancellationDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_i_StatisticalCoverageCancellationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(i_StatisticalCoverageCancellationDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_i_StatisticalCoverageCancellationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(i_StatisticalCoverageCancellationDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 ),
 EXP_Evaluate_Fields AS (
@@ -1642,49 +1830,100 @@ EXP_Evaluate_Fields AS (
 	FullTermPremium,
 	DateFlagForWittenPremium,
 	-- *INF*: IIF(rtrim(PremiumType)='D' AND DateFlagForWittenPremium='Y',PremiumTransactionAmount,0)
-	IFF(rtrim(PremiumType) = 'D' AND DateFlagForWittenPremium = 'Y', PremiumTransactionAmount, 0) AS v_TotalDirectWrittenPremium,
+	IFF(rtrim(PremiumType
+		) = 'D' 
+		AND DateFlagForWittenPremium = 'Y',
+		PremiumTransactionAmount,
+		0
+	) AS v_TotalDirectWrittenPremium,
 	v_TotalDirectWrittenPremium AS TotalDirectWrittenPremium,
 	-- *INF*: IIF(rtrim(PremiumType)='C' AND DateFlagForWittenPremium='Y',PremiumTransactionAmount,0)
-	IFF(rtrim(PremiumType) = 'C' AND DateFlagForWittenPremium = 'Y', PremiumTransactionAmount, 0) AS v_TotalCededWrittenPremium,
+	IFF(rtrim(PremiumType
+		) = 'C' 
+		AND DateFlagForWittenPremium = 'Y',
+		PremiumTransactionAmount,
+		0
+	) AS v_TotalCededWrittenPremium,
 	v_TotalCededWrittenPremium AS TotalCededWrittenPremium,
 	v_TotalDirectWrittenPremium - v_TotalCededWrittenPremium AS TotalNetWrittenPremium,
 	EarnedPremium,
 	-- *INF*: IIF(rtrim(PremiumType)='D',EarnedPremium,0)
-	IFF(rtrim(PremiumType) = 'D', EarnedPremium, 0) AS v_DirectEarnedPremium,
+	IFF(rtrim(PremiumType
+		) = 'D',
+		EarnedPremium,
+		0
+	) AS v_DirectEarnedPremium,
 	v_DirectEarnedPremium AS DirectEarnedPremium,
 	-- *INF*: IIF(rtrim(PremiumType)='C',EarnedPremium,0)
-	IFF(rtrim(PremiumType) = 'C', EarnedPremium, 0) AS v_CededEarnedPremium,
+	IFF(rtrim(PremiumType
+		) = 'C',
+		EarnedPremium,
+		0
+	) AS v_CededEarnedPremium,
 	v_CededEarnedPremium AS CededEarnedPremium,
 	v_DirectEarnedPremium - v_CededEarnedPremium AS NetEarnedPremium,
 	ChangeInEarnedPremium,
 	-- *INF*: IIF(rtrim(PremiumType)='D',ChangeInEarnedPremium,0)
-	IFF(rtrim(PremiumType) = 'D', ChangeInEarnedPremium, 0) AS v_ChangeinDirectEarnedPremium,
+	IFF(rtrim(PremiumType
+		) = 'D',
+		ChangeInEarnedPremium,
+		0
+	) AS v_ChangeinDirectEarnedPremium,
 	v_ChangeinDirectEarnedPremium AS ChangeinDirectEarnedPremium,
 	-- *INF*: IIF(rtrim(PremiumType)='C',ChangeInEarnedPremium,0)
-	IFF(rtrim(PremiumType) = 'C', ChangeInEarnedPremium, 0) AS v_ChangeinCededEarnedPremium,
+	IFF(rtrim(PremiumType
+		) = 'C',
+		ChangeInEarnedPremium,
+		0
+	) AS v_ChangeinCededEarnedPremium,
 	v_ChangeinCededEarnedPremium AS ChangeinCededEarnedPremium,
 	v_ChangeinDirectEarnedPremium - v_ChangeinCededEarnedPremium AS NetChangeinEarnedPremium,
 	UnearnedPremium AS Direct_UnearnedPremium,
 	-- *INF*: IIF(rtrim(PremiumType)='D',Direct_UnearnedPremium,0)
-	IFF(rtrim(PremiumType) = 'D', Direct_UnearnedPremium, 0) AS v_Direct_UnearnedPremium,
+	IFF(rtrim(PremiumType
+		) = 'D',
+		Direct_UnearnedPremium,
+		0
+	) AS v_Direct_UnearnedPremium,
 	v_Direct_UnearnedPremium AS O_Direct_UnearnedPremium,
 	ChangeInUnearnedPremium AS DirectChangeInUnearnedPremium,
 	-- *INF*: IIF(rtrim(PremiumType)='D',DirectChangeInUnearnedPremium,0)
-	IFF(rtrim(PremiumType) = 'D', DirectChangeInUnearnedPremium, 0) AS DailyDirectChangeInUnearnedPremium,
+	IFF(rtrim(PremiumType
+		) = 'D',
+		DirectChangeInUnearnedPremium,
+		0
+	) AS DailyDirectChangeInUnearnedPremium,
 	-- *INF*: IIF(rtrim(PremiumType)='C',v_TotalCededWrittenPremium - v_CededEarnedPremium,0)
-	IFF(rtrim(PremiumType) = 'C', v_TotalCededWrittenPremium - v_CededEarnedPremium, 0) AS v_CededUnearnedPremium,
+	IFF(rtrim(PremiumType
+		) = 'C',
+		v_TotalCededWrittenPremium - v_CededEarnedPremium,
+		0
+	) AS v_CededUnearnedPremium,
 	v_CededUnearnedPremium AS CededUnearnedPremium,
 	v_Direct_UnearnedPremium - v_CededUnearnedPremium AS NetUnearnedPremium,
 	-- *INF*: IIF(pol_status_code='I' AND PremiumType='D', PremiumTransactionAmount, 0)
-	IFF(pol_status_code = 'I' AND PremiumType = 'D', PremiumTransactionAmount, 0) AS v_DirectInforcePremium,
+	IFF(pol_status_code = 'I' 
+		AND PremiumType = 'D',
+		PremiumTransactionAmount,
+		0
+	) AS v_DirectInforcePremium,
 	v_DirectInforcePremium AS DirectInforcePremium,
 	-- *INF*: IIF(pol_status_code='I' AND PremiumType='C', PremiumTransactionAmount, 0)
-	IFF(pol_status_code = 'I' AND PremiumType = 'C', PremiumTransactionAmount, 0) AS v_CededInforcePremium,
+	IFF(pol_status_code = 'I' 
+		AND PremiumType = 'C',
+		PremiumTransactionAmount,
+		0
+	) AS v_CededInforcePremium,
 	v_CededInforcePremium AS CededInforcePremium,
 	v_DirectInforcePremium - v_CededInforcePremium AS v_NetInforcePremium,
 	v_NetInforcePremium AS NetInforcePremium,
 	-- *INF*: IIF(rtrim(PremiumType)='C',v_ChangeinCededEarnedPremium*(-1),0)
-	IFF(rtrim(PremiumType) = 'C', v_ChangeinCededEarnedPremium * ( - 1 ), 0) AS DailyChangeInCededUnearnedPremium,
+	IFF(rtrim(PremiumType
+		) = 'C',
+		v_ChangeinCededEarnedPremium * ( - 1 
+		),
+		0
+	) AS DailyChangeInCededUnearnedPremium,
 	RatingCoverageEffectiveDateId,
 	RatingCoverageExpirationDateId,
 	RatingCoverageDimId_out,

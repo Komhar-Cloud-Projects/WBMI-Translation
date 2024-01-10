@@ -163,7 +163,15 @@ EXP_Detect_Changes_Add_MetaData AS (
 	i_LossHistoryCode AS o_LossHistoryCode,
 	i_LossHistoryDescription AS o_LossHistoryDescription,
 	-- *INF*: IIF(ISNULL(i_ISOMajorCrimeGroup)OR IS_SPACES(i_ISOMajorCrimeGroup)OR LENGTH(i_ISOMajorCrimeGroup)=0,'N/A',LTRIM(RTRIM(i_ISOMajorCrimeGroup)))
-	IFF(i_ISOMajorCrimeGroup IS NULL OR IS_SPACES(i_ISOMajorCrimeGroup) OR LENGTH(i_ISOMajorCrimeGroup) = 0, 'N/A', LTRIM(RTRIM(i_ISOMajorCrimeGroup))) AS o_ISOMajorCrimeGroup,
+	IFF(i_ISOMajorCrimeGroup IS NULL 
+		OR LENGTH(i_ISOMajorCrimeGroup)>0 AND TRIM(i_ISOMajorCrimeGroup)='' 
+		OR LENGTH(i_ISOMajorCrimeGroup
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_ISOMajorCrimeGroup
+			)
+		)
+	) AS o_ISOMajorCrimeGroup,
 	i_RatedCoverageCode AS o_RatedCoverageCode,
 	i_RatedCoverageDescription AS o_RatedCoverageDescription,
 	-- *INF*: Decode(TRUE,
@@ -186,8 +194,23 @@ EXP_Detect_Changes_Add_MetaData AS (
 	-- ,'Ignore','Update')
 	Decode(TRUE,
 		lkp_InsuranceReferenceCoverageDimId IS NULL, 'Insert',
-		lkp_CoverageCode = i_CoverageCode AND lkp_CoverageGroupCode = i_CoverageGroupCode AND lkp_CoverageSummaryCode = i_CoverageSummaryCode AND lkp_InsuranceLineDescription = i_InsuranceLineDescription AND lkp_CoverageDescription = i_CoverageDescription AND lkp_CoverageGroupDescription = i_CoverageGroupDescription AND lkp_CoverageSummaryDescription = i_CoverageSummaryDescription AND lkp_PmsRiskUnitGroupDescription = i_PmsRiskUnitGroupDescription AND lkp_PmsRiskUnitDescription = i_PmsRiskUnitDescription AND lkp_PmsMajorPerilDescription = i_PmsMajorPerilDescription AND lkp_LossHistoryCode = i_LossHistoryCode AND lkp_LossHistoryDescription = i_LossHistoryDescription AND lkp_ISOMajorCrimeGroup = i_ISOMajorCrimeGroup AND lkp_RatedCoverageCode = i_RatedCoverageCode AND lkp_RatedCoverageDescription = i_RatedCoverageDescription, 'Ignore',
-		'Update') AS o_InsertUpdateOrIgnore
+		lkp_CoverageCode = i_CoverageCode 
+		AND lkp_CoverageGroupCode = i_CoverageGroupCode 
+		AND lkp_CoverageSummaryCode = i_CoverageSummaryCode 
+		AND lkp_InsuranceLineDescription = i_InsuranceLineDescription 
+		AND lkp_CoverageDescription = i_CoverageDescription 
+		AND lkp_CoverageGroupDescription = i_CoverageGroupDescription 
+		AND lkp_CoverageSummaryDescription = i_CoverageSummaryDescription 
+		AND lkp_PmsRiskUnitGroupDescription = i_PmsRiskUnitGroupDescription 
+		AND lkp_PmsRiskUnitDescription = i_PmsRiskUnitDescription 
+		AND lkp_PmsMajorPerilDescription = i_PmsMajorPerilDescription 
+		AND lkp_LossHistoryCode = i_LossHistoryCode 
+		AND lkp_LossHistoryDescription = i_LossHistoryDescription 
+		AND lkp_ISOMajorCrimeGroup = i_ISOMajorCrimeGroup 
+		AND lkp_RatedCoverageCode = i_RatedCoverageCode 
+		AND lkp_RatedCoverageDescription = i_RatedCoverageDescription, 'Ignore',
+		'Update'
+	) AS o_InsertUpdateOrIgnore
 	FROM SQ_CoverageSummary
 	LEFT JOIN LKP_InsuranceReferenceCoverageDim
 	ON LKP_InsuranceReferenceCoverageDim.InsuranceLineCode = SQ_CoverageSummary.InsuranceLineCode AND LKP_InsuranceReferenceCoverageDim.DctCoverageTypeCode = SQ_CoverageSummary.DctCoverageTypeCode AND LKP_InsuranceReferenceCoverageDim.DctSubCoverageTypeCode = SQ_CoverageSummary.DctSubCoverageTypeCode AND LKP_InsuranceReferenceCoverageDim.DctRiskTypeCode = SQ_CoverageSummary.DctRiskTypeCode AND LKP_InsuranceReferenceCoverageDim.DctPerilGroup = SQ_CoverageSummary.DctPerilGroup AND LKP_InsuranceReferenceCoverageDim.DctCoverageVersion = SQ_CoverageSummary.DctCoverageVersion AND LKP_InsuranceReferenceCoverageDim.PmsRiskUnitGroupCode = SQ_CoverageSummary.PmsRiskUnitGroupCode AND LKP_InsuranceReferenceCoverageDim.PmsRiskUnitCode = SQ_CoverageSummary.PmsRiskUnitCode AND LKP_InsuranceReferenceCoverageDim.PmsMajorPerilCode = SQ_CoverageSummary.PmsMajorPerilCode AND LKP_InsuranceReferenceCoverageDim.PmsProductTypeCode = SQ_CoverageSummary.PmsProductTypeCode

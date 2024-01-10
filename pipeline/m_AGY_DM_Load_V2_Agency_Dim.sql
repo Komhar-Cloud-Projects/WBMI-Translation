@@ -165,12 +165,14 @@ EXPTRANS AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	eff_from_date AS eff_from_dt,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_dt,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_dt,
 	sysdate AS cr_mod_dt,
 	agency_ak_id,
 	'N/A' AS DEFAULT_STR,
 	-- *INF*: TO_DATE('1/1/1800','MM/DD/YYYY')
-	TO_DATE('1/1/1800', 'MM/DD/YYYY') AS DEFAULT_DATE
+	TO_DATE('1/1/1800', 'MM/DD/YYYY'
+	) AS DEFAULT_DATE
 	FROM SQ_agency
 ),
 LKP_agency_underwriter AS (
@@ -231,11 +233,25 @@ EXP_DET_MRG_REGION AS (
 	-- 
 	--  
 	--  
-	IFF(LKP_agency_uw_id IS NULL, 'N/A', IFF(LKP_insurance_line = 'D', in_uw_mgr_full_name, LKP_uw_mgr)) AS v_uw_mgr_full_name,
+	IFF(LKP_agency_uw_id IS NULL,
+		'N/A',
+		IFF(LKP_insurance_line = 'D',
+			in_uw_mgr_full_name,
+			LKP_uw_mgr
+		)
+	) AS v_uw_mgr_full_name,
 	-- *INF*: IIF(ISNULL(LKP_agency_uw_id) OR LKP_insurance_line = 'D'  ,'N/A',LKP_uw_mgr_region)
-	IFF(LKP_agency_uw_id IS NULL OR LKP_insurance_line = 'D', 'N/A', LKP_uw_mgr_region) AS v_uw_mgr_region,
+	IFF(LKP_agency_uw_id IS NULL 
+		OR LKP_insurance_line = 'D',
+		'N/A',
+		LKP_uw_mgr_region
+	) AS v_uw_mgr_region,
 	-- *INF*: IIF(ISNULL(LKP_agency_uw_id) OR LKP_insurance_line = 'D' ,'N/A',LKP_bus_unit_ind)
-	IFF(LKP_agency_uw_id IS NULL OR LKP_insurance_line = 'D', 'N/A', LKP_bus_unit_ind) AS v_bus_unit_ind,
+	IFF(LKP_agency_uw_id IS NULL 
+		OR LKP_insurance_line = 'D',
+		'N/A',
+		LKP_bus_unit_ind
+	) AS v_bus_unit_ind,
 	v_uw_mgr_full_name AS o_uw_mgr,
 	v_uw_mgr_region AS o_uw_mgr_region,
 	v_bus_unit_ind AS o_bus_unit_ind
@@ -487,7 +503,9 @@ EXP_EFF_TO_DATE AS (
 	SQ_agency_dim.agency_dim_id,
 	LKP_AGENCY_DIM_GET_TO_DATE.eff_to_date,
 	-- *INF*: iif(not isnull(eff_to_date),add_to_date(eff_to_date,'SS',-1))
-	IFF(NOT eff_to_date IS NULL, add_to_date(eff_to_date, 'SS', - 1)) AS out_eff_to_date,
+	IFF(eff_to_date IS NOT NULL,
+		DATEADD(SECOND,- 1,eff_to_date)
+	) AS out_eff_to_date,
 	0 AS crrnt_snpsht_flag,
 	sysdate AS modified_date,
 	LKP_AGENCY_DIM_GET_TO_DATE.edw_agency_ak_id AS exists_edw_agency_ak_id

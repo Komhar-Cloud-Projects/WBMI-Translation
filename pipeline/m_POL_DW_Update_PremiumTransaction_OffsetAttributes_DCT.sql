@@ -115,8 +115,29 @@ EXP_offset_PTUpdate_attributes AS (
 	-- 		'UPD',
 	-- 	'NOCHANGE')
 	DECODE(TRUE,
-		( ptToUpdate_EffectiveDate != ptAttrValues_EffectiveDate OR ptToUpdate_ReasonAmendedCode != ptAttrValues_ReasonAmendedCode OR ptToUpdate_PremiumTransactionExpirationDate != ptAttrValues_PremiumTransactionExpirationDate OR ptToUpdate_DeductibleAmount != ptAttrValues_DeductibleAmount OR ptToUpdate_ExperienceModificationFactor != ptAttrValues_ExperienceModificationFactor OR ptToUpdate_ExperienceModificationEffectiveDate != ptAttrValues_ExperienceModificationEffectiveDate OR ptToUpdate_PackageModificationAdjustmentFactor != ptAttrValues_PackageModificationAdjustmentFactor OR ptToUpdate_PackageModificationAdjustmentGroupCode != ptAttrValues_PackageModificationAdjustmentGroupCode OR ptToUpdate_IncreasedLimitFactor != ptAttrValues_IncreasedLimitFactor OR ptToUpdate_IncreasedLimitGroupCode != ptAttrValues_IncreasedLimitGroupCode OR ptToUpdate_YearBuilt != ptAttrValues_YearBuilt OR ptToUpdate_BaseRate != ptAttrValues_BaseRate OR ptToUpdate_ConstructionCode != ptAttrValues_ConstructionCode OR ptToUpdate_IndividualRiskPremiumModification != ptAttrValues_IndividualRiskPremiumModification OR ptToUpdate_StateRatingEffectiveDate != ptAttrValues_StateRatingEffectiveDate OR ptToUpdate_WindCoverageFlag != ptAttrValues_WindCoverageFlag OR ptToUpdate_DeductibleBasis != ptAttrValues_DeductibleBasis OR ptToUpdate_ExposureBasis != ptAttrValues_ExposureBasis OR ptToUpdate_ServiceCentreName != ptAttrValues_ServiceCentreName OR ptToUpdate_NumberOfEmployee != ptAttrValues_NumberOfEmployee ), 'UPD',
-		'NOCHANGE') AS v_PTUpdateFlag,
+		( ptToUpdate_EffectiveDate != ptAttrValues_EffectiveDate 
+			OR ptToUpdate_ReasonAmendedCode != ptAttrValues_ReasonAmendedCode 
+			OR ptToUpdate_PremiumTransactionExpirationDate != ptAttrValues_PremiumTransactionExpirationDate 
+			OR ptToUpdate_DeductibleAmount != ptAttrValues_DeductibleAmount 
+			OR ptToUpdate_ExperienceModificationFactor != ptAttrValues_ExperienceModificationFactor 
+			OR ptToUpdate_ExperienceModificationEffectiveDate != ptAttrValues_ExperienceModificationEffectiveDate 
+			OR ptToUpdate_PackageModificationAdjustmentFactor != ptAttrValues_PackageModificationAdjustmentFactor 
+			OR ptToUpdate_PackageModificationAdjustmentGroupCode != ptAttrValues_PackageModificationAdjustmentGroupCode 
+			OR ptToUpdate_IncreasedLimitFactor != ptAttrValues_IncreasedLimitFactor 
+			OR ptToUpdate_IncreasedLimitGroupCode != ptAttrValues_IncreasedLimitGroupCode 
+			OR ptToUpdate_YearBuilt != ptAttrValues_YearBuilt 
+			OR ptToUpdate_BaseRate != ptAttrValues_BaseRate 
+			OR ptToUpdate_ConstructionCode != ptAttrValues_ConstructionCode 
+			OR ptToUpdate_IndividualRiskPremiumModification != ptAttrValues_IndividualRiskPremiumModification 
+			OR ptToUpdate_StateRatingEffectiveDate != ptAttrValues_StateRatingEffectiveDate 
+			OR ptToUpdate_WindCoverageFlag != ptAttrValues_WindCoverageFlag 
+			OR ptToUpdate_DeductibleBasis != ptAttrValues_DeductibleBasis 
+			OR ptToUpdate_ExposureBasis != ptAttrValues_ExposureBasis 
+			OR ptToUpdate_ServiceCentreName != ptAttrValues_ServiceCentreName 
+			OR ptToUpdate_NumberOfEmployee != ptAttrValues_NumberOfEmployee 
+		), 'UPD',
+		'NOCHANGE'
+	) AS v_PTUpdateFlag,
 	v_PTUpdateFlag AS PTUpdateFlag
 	FROM SQ_PremiumTransaction_Offset
 ),
@@ -295,8 +316,29 @@ EXP_Deprecated_PTUpdate_attributes AS (
 	-- 		'UPD',
 	-- 	'NOCHANGE')
 	DECODE(TRUE,
-		( ptToUpdate_EffectiveDate != ptAttrValues_EffectiveDate OR ptToUpdate_ReasonAmendedCode != ptAttrValues_ReasonAmendedCode OR ptToUpdate_PremiumTransactionExpirationDate != ptAttrValues_PremiumTransactionExpirationDate OR ptToUpdate_DeductibleAmount != ptAttrValues_DeductibleAmount OR ptToUpdate_ExperienceModificationFactor != ptAttrValues_ExperienceModificationFactor OR ptToUpdate_ExperienceModificationEffectiveDate != ptAttrValues_ExperienceModificationEffectiveDate OR ptToUpdate_PackageModificationAdjustmentFactor != ptAttrValues_PackageModificationAdjustmentFactor OR ptToUpdate_PackageModificationAdjustmentGroupCode != ptAttrValues_PackageModificationAdjustmentGroupCode OR ptToUpdate_IncreasedLimitFactor != ptAttrValues_IncreasedLimitFactor OR ptToUpdate_IncreasedLimitGroupCode != ptAttrValues_IncreasedLimitGroupCode OR ptToUpdate_YearBuilt != ptAttrValues_YearBuilt OR ptToUpdate_BaseRate != ptAttrValues_BaseRate OR ptToUpdate_ConstructionCode != ptAttrValues_ConstructionCode OR ptToUpdate_IndividualRiskPremiumModification != ptAttrValues_IndividualRiskPremiumModification OR ptToUpdate_StateRatingEffectiveDate != ptAttrValues_StateRatingEffectiveDate OR ptToUpdate_WindCoverageFlag != ptAttrValues_WindCoverageFlag OR ptToUpdate_DeductibleBasis != ptAttrValues_DeductibleBasis OR ptToUpdate_ExposureBasis != ptAttrValues_ExposureBasis OR ptToUpdate_ServiceCentreName != ptAttrValues_ServiceCentreName OR ptToUpdate_NumberOfEmployee != ptAttrValues_NumberOfEmployee ), 'UPD',
-		'NOCHANGE') AS v_PTUpdateFlag,
+		( ptToUpdate_EffectiveDate != ptAttrValues_EffectiveDate 
+			OR ptToUpdate_ReasonAmendedCode != ptAttrValues_ReasonAmendedCode 
+			OR ptToUpdate_PremiumTransactionExpirationDate != ptAttrValues_PremiumTransactionExpirationDate 
+			OR ptToUpdate_DeductibleAmount != ptAttrValues_DeductibleAmount 
+			OR ptToUpdate_ExperienceModificationFactor != ptAttrValues_ExperienceModificationFactor 
+			OR ptToUpdate_ExperienceModificationEffectiveDate != ptAttrValues_ExperienceModificationEffectiveDate 
+			OR ptToUpdate_PackageModificationAdjustmentFactor != ptAttrValues_PackageModificationAdjustmentFactor 
+			OR ptToUpdate_PackageModificationAdjustmentGroupCode != ptAttrValues_PackageModificationAdjustmentGroupCode 
+			OR ptToUpdate_IncreasedLimitFactor != ptAttrValues_IncreasedLimitFactor 
+			OR ptToUpdate_IncreasedLimitGroupCode != ptAttrValues_IncreasedLimitGroupCode 
+			OR ptToUpdate_YearBuilt != ptAttrValues_YearBuilt 
+			OR ptToUpdate_BaseRate != ptAttrValues_BaseRate 
+			OR ptToUpdate_ConstructionCode != ptAttrValues_ConstructionCode 
+			OR ptToUpdate_IndividualRiskPremiumModification != ptAttrValues_IndividualRiskPremiumModification 
+			OR ptToUpdate_StateRatingEffectiveDate != ptAttrValues_StateRatingEffectiveDate 
+			OR ptToUpdate_WindCoverageFlag != ptAttrValues_WindCoverageFlag 
+			OR ptToUpdate_DeductibleBasis != ptAttrValues_DeductibleBasis 
+			OR ptToUpdate_ExposureBasis != ptAttrValues_ExposureBasis 
+			OR ptToUpdate_ServiceCentreName != ptAttrValues_ServiceCentreName 
+			OR ptToUpdate_NumberOfEmployee != ptAttrValues_NumberOfEmployee 
+		), 'UPD',
+		'NOCHANGE'
+	) AS v_PTUpdateFlag,
 	v_PTUpdateFlag AS PTUpdateFlag
 	FROM SQ_PremiumTransaction_Deprecated
 ),

@@ -157,73 +157,171 @@ EXP_Claimant_Coverage_Dim AS (
 	SQ_Claimant_Coverage_Sources.claimant_cov_det_id AS in_claimant_cov_det_id,
 	-- *INF*: IIF(ISNULL(in_claimant_cov_det_id), -1, in_claimant_cov_det_id)
 	-- 
-	IFF(in_claimant_cov_det_id IS NULL, - 1, in_claimant_cov_det_id) AS claimant_cov_det_id_out,
+	IFF(in_claimant_cov_det_id IS NULL,
+		- 1,
+		in_claimant_cov_det_id
+	) AS claimant_cov_det_id_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_det_calculation_id AS in_claimant_cov_det_calculation_id,
 	-- *INF*: IIF(ISNULL(in_claimant_cov_det_calculation_id), -1, in_claimant_cov_det_calculation_id)
-	IFF(in_claimant_cov_det_calculation_id IS NULL, - 1, in_claimant_cov_det_calculation_id) AS claimant_cov_det_calculation_id_out,
+	IFF(in_claimant_cov_det_calculation_id IS NULL,
+		- 1,
+		in_claimant_cov_det_calculation_id
+	) AS claimant_cov_det_calculation_id_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_det_reserve_calculation_id_D AS in_claimant_cov_det_reserve_calculation_id_D,
 	-- *INF*: IIF(ISNULL(in_claimant_cov_det_reserve_calculation_id_D), -1,in_claimant_cov_det_reserve_calculation_id_D )
-	IFF(in_claimant_cov_det_reserve_calculation_id_D IS NULL, - 1, in_claimant_cov_det_reserve_calculation_id_D) AS claimant_cov_det_reserve_calculation_id_D_out,
+	IFF(in_claimant_cov_det_reserve_calculation_id_D IS NULL,
+		- 1,
+		in_claimant_cov_det_reserve_calculation_id_D
+	) AS claimant_cov_det_reserve_calculation_id_D_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_date_type AS in_claimant_cov_date_type,
 	-- *INF*: IIF(ISNULL(in_claimant_cov_date_type) OR in_claimant_cov_date_type = 'N/A','N/A',RTRIM(SUBSTR(in_claimant_cov_date_type,2)))
-	IFF(in_claimant_cov_date_type IS NULL OR in_claimant_cov_date_type = 'N/A', 'N/A', RTRIM(SUBSTR(in_claimant_cov_date_type, 2))) AS v_claimant_cov_date_type,
+	IFF(in_claimant_cov_date_type IS NULL 
+		OR in_claimant_cov_date_type = 'N/A',
+		'N/A',
+		RTRIM(SUBSTR(in_claimant_cov_date_type, 2
+			)
+		)
+	) AS v_claimant_cov_date_type,
 	v_claimant_cov_date_type AS claimant_cov_date_type_out1,
 	SQ_Claimant_Coverage_Sources.claimant_cov_direct_loss_status_type,
 	-- *INF*: IIF(ISNULL(claimant_cov_direct_loss_status_type) OR claimant_cov_direct_loss_status_type = 'N/A','N/A',
 	-- RTRIM(SUBSTR(claimant_cov_direct_loss_status_type,2)))
-	IFF(claimant_cov_direct_loss_status_type IS NULL OR claimant_cov_direct_loss_status_type = 'N/A', 'N/A', RTRIM(SUBSTR(claimant_cov_direct_loss_status_type, 2))) AS claimant_cov_direct_loss_status_type_out,
+	IFF(claimant_cov_direct_loss_status_type IS NULL 
+		OR claimant_cov_direct_loss_status_type = 'N/A',
+		'N/A',
+		RTRIM(SUBSTR(claimant_cov_direct_loss_status_type, 2
+			)
+		)
+	) AS claimant_cov_direct_loss_status_type_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_det_reserve_calculation_id_E AS in_claimant_cov_det_reserve_calculation_id_E,
 	-- *INF*: IIF(ISNULL(in_claimant_cov_det_reserve_calculation_id_E), -1,in_claimant_cov_det_reserve_calculation_id_E )
-	IFF(in_claimant_cov_det_reserve_calculation_id_E IS NULL, - 1, in_claimant_cov_det_reserve_calculation_id_E) AS claimant_cov_det_reserve_calculation_id_E_out,
+	IFF(in_claimant_cov_det_reserve_calculation_id_E IS NULL,
+		- 1,
+		in_claimant_cov_det_reserve_calculation_id_E
+	) AS claimant_cov_det_reserve_calculation_id_E_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_exp_status_type,
 	-- *INF*: IIF(ISNULL(claimant_cov_exp_status_type) OR claimant_cov_exp_status_type = 'N/A','N/A',RTRIM(SUBSTR(claimant_cov_exp_status_type,2)))
-	IFF(claimant_cov_exp_status_type IS NULL OR claimant_cov_exp_status_type = 'N/A', 'N/A', RTRIM(SUBSTR(claimant_cov_exp_status_type, 2))) AS claimant_cov_exp_status_type_out,
+	IFF(claimant_cov_exp_status_type IS NULL 
+		OR claimant_cov_exp_status_type = 'N/A',
+		'N/A',
+		RTRIM(SUBSTR(claimant_cov_exp_status_type, 2
+			)
+		)
+	) AS claimant_cov_exp_status_type_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_det_reserve_calculation_id_S AS in_claimant_cov_det_reserve_calculation_id_S,
 	-- *INF*: IIF(ISNULL(in_claimant_cov_det_reserve_calculation_id_S), -1,in_claimant_cov_det_reserve_calculation_id_S )
-	IFF(in_claimant_cov_det_reserve_calculation_id_S IS NULL, - 1, in_claimant_cov_det_reserve_calculation_id_S) AS claimant_cov_det_reserve_calculation_id_S_out,
+	IFF(in_claimant_cov_det_reserve_calculation_id_S IS NULL,
+		- 1,
+		in_claimant_cov_det_reserve_calculation_id_S
+	) AS claimant_cov_det_reserve_calculation_id_S_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_salvage_status_type,
 	-- *INF*: IIF(ISNULL(claimant_cov_salvage_status_type) OR claimant_cov_salvage_status_type = 'N/A','N/A',RTRIM(SUBSTR(claimant_cov_salvage_status_type,2)))
-	IFF(claimant_cov_salvage_status_type IS NULL OR claimant_cov_salvage_status_type = 'N/A', 'N/A', RTRIM(SUBSTR(claimant_cov_salvage_status_type, 2))) AS claimant_cov_salvage_status_type_out,
+	IFF(claimant_cov_salvage_status_type IS NULL 
+		OR claimant_cov_salvage_status_type = 'N/A',
+		'N/A',
+		RTRIM(SUBSTR(claimant_cov_salvage_status_type, 2
+			)
+		)
+	) AS claimant_cov_salvage_status_type_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_det_reserve_calculation_id_B AS in_claimant_cov_det_reserve_calculation_id_B,
 	-- *INF*: IIF(ISNULL(in_claimant_cov_det_reserve_calculation_id_B), -1, in_claimant_cov_det_reserve_calculation_id_B)
-	IFF(in_claimant_cov_det_reserve_calculation_id_B IS NULL, - 1, in_claimant_cov_det_reserve_calculation_id_B) AS claimant_cov_det_reserve_calculation_id_B_out,
+	IFF(in_claimant_cov_det_reserve_calculation_id_B IS NULL,
+		- 1,
+		in_claimant_cov_det_reserve_calculation_id_B
+	) AS claimant_cov_det_reserve_calculation_id_B_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_subgrogation_status_type,
 	-- *INF*: IIF(ISNULL(claimant_cov_subgrogation_status_type) OR claimant_cov_subgrogation_status_type = 'N/A','N/A',RTRIM(SUBSTR(claimant_cov_subgrogation_status_type,2)))
-	IFF(claimant_cov_subgrogation_status_type IS NULL OR claimant_cov_subgrogation_status_type = 'N/A', 'N/A', RTRIM(SUBSTR(claimant_cov_subgrogation_status_type, 2))) AS claimant_cov_subgrogation_status_type_out,
+	IFF(claimant_cov_subgrogation_status_type IS NULL 
+		OR claimant_cov_subgrogation_status_type = 'N/A',
+		'N/A',
+		RTRIM(SUBSTR(claimant_cov_subgrogation_status_type, 2
+			)
+		)
+	) AS claimant_cov_subgrogation_status_type_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_det_reserve_calculation_id_R AS in_claimant_cov_det_reserve_calculation_id_R,
 	-- *INF*: IIF(ISNULL(in_claimant_cov_det_reserve_calculation_id_R),-1,in_claimant_cov_det_reserve_calculation_id_R)
-	IFF(in_claimant_cov_det_reserve_calculation_id_R IS NULL, - 1, in_claimant_cov_det_reserve_calculation_id_R) AS claimant_cov_det_reserve_calculation_id_R_out,
+	IFF(in_claimant_cov_det_reserve_calculation_id_R IS NULL,
+		- 1,
+		in_claimant_cov_det_reserve_calculation_id_R
+	) AS claimant_cov_det_reserve_calculation_id_R_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_other_recovery_status_type,
 	-- *INF*: IIF(ISNULL(claimant_cov_other_recovery_status_type) OR claimant_cov_other_recovery_status_type = 'N/A','N/A',RTRIM(SUBSTR(claimant_cov_other_recovery_status_type,2)))
-	IFF(claimant_cov_other_recovery_status_type IS NULL OR claimant_cov_other_recovery_status_type = 'N/A', 'N/A', RTRIM(SUBSTR(claimant_cov_other_recovery_status_type, 2))) AS claimant_cov_other_recovery_status_type_out,
+	IFF(claimant_cov_other_recovery_status_type IS NULL 
+		OR claimant_cov_other_recovery_status_type = 'N/A',
+		'N/A',
+		RTRIM(SUBSTR(claimant_cov_other_recovery_status_type, 2
+			)
+		)
+	) AS claimant_cov_other_recovery_status_type_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_supplemental_ind AS in_claimant_cov_supplemental_ind,
 	-- *INF*: IIF(ISNULL(in_claimant_cov_supplemental_ind) OR in_claimant_cov_supplemental_ind = 'N/A','N/A',in_claimant_cov_supplemental_ind)
-	IFF(in_claimant_cov_supplemental_ind IS NULL OR in_claimant_cov_supplemental_ind = 'N/A', 'N/A', in_claimant_cov_supplemental_ind) AS claimant_cov_supplemental_ind_out,
+	IFF(in_claimant_cov_supplemental_ind IS NULL 
+		OR in_claimant_cov_supplemental_ind = 'N/A',
+		'N/A',
+		in_claimant_cov_supplemental_ind
+	) AS claimant_cov_supplemental_ind_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_financial_ind AS in_claimant_cov_financial_ind,
 	-- *INF*: IIF(ISNULL(in_claimant_cov_financial_ind) OR in_claimant_cov_financial_ind = 'N/A'
 	-- ,'N/A',in_claimant_cov_financial_ind)
-	IFF(in_claimant_cov_financial_ind IS NULL OR in_claimant_cov_financial_ind = 'N/A', 'N/A', in_claimant_cov_financial_ind) AS claimant_cov_financial_ind_out,
+	IFF(in_claimant_cov_financial_ind IS NULL 
+		OR in_claimant_cov_financial_ind = 'N/A',
+		'N/A',
+		in_claimant_cov_financial_ind
+	) AS claimant_cov_financial_ind_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_recovery_ind AS in_claimant_cov_recovery_ind,
 	-- *INF*: IIF(ISNULL(in_claimant_cov_recovery_ind) OR in_claimant_cov_recovery_ind = 'N/A','N/A',in_claimant_cov_recovery_ind)
-	IFF(in_claimant_cov_recovery_ind IS NULL OR in_claimant_cov_recovery_ind = 'N/A', 'N/A', in_claimant_cov_recovery_ind) AS claimant_cov_recovery_ind_out,
+	IFF(in_claimant_cov_recovery_ind IS NULL 
+		OR in_claimant_cov_recovery_ind = 'N/A',
+		'N/A',
+		in_claimant_cov_recovery_ind
+	) AS claimant_cov_recovery_ind_out,
 	SQ_Claimant_Coverage_Sources.claimant_cov_notice_only_ind AS in_claimant_cov_notice_only_ind,
 	-- *INF*: IIF(ISNULL(in_claimant_cov_notice_only_ind) OR in_claimant_cov_notice_only_ind = 'N/A','N/A',in_claimant_cov_notice_only_ind)
-	IFF(in_claimant_cov_notice_only_ind IS NULL OR in_claimant_cov_notice_only_ind = 'N/A', 'N/A', in_claimant_cov_notice_only_ind) AS claimant_cov_notice_only_ind_out,
+	IFF(in_claimant_cov_notice_only_ind IS NULL 
+		OR in_claimant_cov_notice_only_ind = 'N/A',
+		'N/A',
+		in_claimant_cov_notice_only_ind
+	) AS claimant_cov_notice_only_ind_out,
 	SQ_Claimant_Coverage_Sources.s3p_wc_class_descript AS i_s3p_wc_class_descript,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_s3p_wc_class_descript))) OR IS_SPACES(LTRIM(RTRIM(i_s3p_wc_class_descript))),'N/A',LTRIM(RTRIM(i_s3p_wc_class_descript)))
-	IFF(LTRIM(RTRIM(i_s3p_wc_class_descript)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_s3p_wc_class_descript))), 'N/A', LTRIM(RTRIM(i_s3p_wc_class_descript))) AS o_s3p_wc_class_descript,
+	IFF(LTRIM(RTRIM(i_s3p_wc_class_descript
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_s3p_wc_class_descript
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(i_s3p_wc_class_descript
+			)
+		))='',
+		'N/A',
+		LTRIM(RTRIM(i_s3p_wc_class_descript
+			)
+		)
+	) AS o_s3p_wc_class_descript,
 	LKP_Sup_Claim_Pms_Loss_Disability.in_pms_loss_disability_code,
 	-- *INF*: IIF(ISNULL(in_pms_loss_disability_code),'N/A',in_pms_loss_disability_code)
-	IFF(in_pms_loss_disability_code IS NULL, 'N/A', in_pms_loss_disability_code) AS o_pms_loss_disability_code,
+	IFF(in_pms_loss_disability_code IS NULL,
+		'N/A',
+		in_pms_loss_disability_code
+	) AS o_pms_loss_disability_code,
 	LKP_Sup_Claim_Pms_Loss_Disability.loss_disability_descript AS lkp_loss_disability_descript,
 	-- *INF*: IIF(ISNULL(lkp_loss_disability_descript) OR lkp_loss_disability_descript = 'N/A','N/A',lkp_loss_disability_descript)
-	IFF(lkp_loss_disability_descript IS NULL OR lkp_loss_disability_descript = 'N/A', 'N/A', lkp_loss_disability_descript) AS loss_disability_descript_out,
+	IFF(lkp_loss_disability_descript IS NULL 
+		OR lkp_loss_disability_descript = 'N/A',
+		'N/A',
+		lkp_loss_disability_descript
+	) AS loss_disability_descript_out,
 	SQ_Claimant_Coverage_Sources.s3p_unit_descript AS i_s3p_unit_descript,
 	-- *INF*: IIF(ISNULL(i_s3p_unit_descript),'N/A',i_s3p_unit_descript)
-	IFF(i_s3p_unit_descript IS NULL, 'N/A', i_s3p_unit_descript) AS o_s3p_unit_descript,
+	IFF(i_s3p_unit_descript IS NULL,
+		'N/A',
+		i_s3p_unit_descript
+	) AS o_s3p_unit_descript,
 	SQ_Claimant_Coverage_Sources.unit_dam_descript AS i_unit_dam_descript,
 	-- *INF*: IIF(ISNULL(i_unit_dam_descript),'N/A',i_unit_dam_descript)
-	IFF(i_unit_dam_descript IS NULL, 'N/A', i_unit_dam_descript) AS o_unit_dam_descript,
+	IFF(i_unit_dam_descript IS NULL,
+		'N/A',
+		i_unit_dam_descript
+	) AS o_unit_dam_descript,
 	SQ_Claimant_Coverage_Sources.claimant_cov_date,
 	-- *INF*: IIF(ISNULL(v_claimant_cov_date_type),TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),IIF(v_claimant_cov_date_type= 'OPEN',claimant_cov_date,TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')))
 	-- 
@@ -235,7 +333,15 @@ EXP_Claimant_Coverage_Dim AS (
 	-- 
 	-- 
 	-- 
-	IFF(v_claimant_cov_date_type IS NULL, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), IFF(v_claimant_cov_date_type = 'OPEN', claimant_cov_date, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))) AS v_claimant_cov_open_date,
+	IFF(v_claimant_cov_date_type IS NULL,
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		IFF(v_claimant_cov_date_type = 'OPEN',
+			claimant_cov_date,
+			TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+			)
+		)
+	) AS v_claimant_cov_open_date,
 	v_claimant_cov_open_date AS claimant_cov_open_date,
 	-- *INF*: IIF(ISNULL(v_claimant_cov_date_type),TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),IIF(v_claimant_cov_date_type= 'CLOSED',claimant_cov_date,TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')))
 	-- 
@@ -243,7 +349,15 @@ EXP_Claimant_Coverage_Dim AS (
 	-- -- v_claimant_cov_date_type = 'N/A',TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
 	-- -- v_claimant_cov_date_type = 'CLOSED',claimant_cov_date,
 	-- -- (v_claimant_cov_date_type != 'N/A' OR v_claimant_cov_date_type != 'CLOSED' ) AND (claimant_cov_det_ak_id = v_prev_row_claimant_cov_det_ak_id), v_prev_row_claimant_cov_close_date)
-	IFF(v_claimant_cov_date_type IS NULL, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), IFF(v_claimant_cov_date_type = 'CLOSED', claimant_cov_date, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))) AS v_claimant_cov_close_date,
+	IFF(v_claimant_cov_date_type IS NULL,
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		IFF(v_claimant_cov_date_type = 'CLOSED',
+			claimant_cov_date,
+			TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+			)
+		)
+	) AS v_claimant_cov_close_date,
 	v_claimant_cov_close_date AS claimant_cov_close_date,
 	-- *INF*: IIF(ISNULL(v_claimant_cov_date_type),TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),IIF(v_claimant_cov_date_type= 'REOPEN',claimant_cov_date,TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')))
 	-- 
@@ -251,7 +365,15 @@ EXP_Claimant_Coverage_Dim AS (
 	-- -- v_claimant_cov_date_type = 'N/A',TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
 	-- -- v_claimant_cov_date_type = 'REOPEN',claimant_cov_date,
 	-- -- (v_claimant_cov_date_type != 'N/A' OR v_claimant_cov_date_type != 'REOPEN' ) AND (claimant_cov_det_ak_id = v_prev_row_claimant_cov_det_ak_id), v_prev_row_claimant_cov_reopen_date)
-	IFF(v_claimant_cov_date_type IS NULL, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), IFF(v_claimant_cov_date_type = 'REOPEN', claimant_cov_date, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))) AS v_claimant_cov_reopen_date,
+	IFF(v_claimant_cov_date_type IS NULL,
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		IFF(v_claimant_cov_date_type = 'REOPEN',
+			claimant_cov_date,
+			TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+			)
+		)
+	) AS v_claimant_cov_reopen_date,
 	v_claimant_cov_reopen_date AS claimant_cov_reopen_date,
 	-- *INF*: IIF(ISNULL(v_claimant_cov_date_type),TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),IIF(v_claimant_cov_date_type= 'CLOSEDAFTERREOPEN',claimant_cov_date,TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')))
 	-- 
@@ -261,7 +383,15 @@ EXP_Claimant_Coverage_Dim AS (
 	-- -- (v_claimant_cov_date_type != 'N/A' OR v_claimant_cov_date_type != 'CLOSEDAFTERREOPEN' ) AND (claimant_cov_det_ak_id = v_prev_row_claimant_cov_det_ak_id), v_prev_row_claimant_cov_closed_after_reopen_date)
 	-- -- 
 	-- -- 
-	IFF(v_claimant_cov_date_type IS NULL, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), IFF(v_claimant_cov_date_type = 'CLOSEDAFTERREOPEN', claimant_cov_date, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))) AS v_claimant_cov_closed_after_reopen_date,
+	IFF(v_claimant_cov_date_type IS NULL,
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		IFF(v_claimant_cov_date_type = 'CLOSEDAFTERREOPEN',
+			claimant_cov_date,
+			TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+			)
+		)
+	) AS v_claimant_cov_closed_after_reopen_date,
 	v_claimant_cov_closed_after_reopen_date AS claimant_cov_closed_after_reopen_date,
 	-- *INF*: IIF(ISNULL(v_claimant_cov_date_type),TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),IIF(v_claimant_cov_date_type= 'NOTICEONLY',claimant_cov_date,TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')))
 	-- 
@@ -279,30 +409,55 @@ EXP_Claimant_Coverage_Dim AS (
 	-- 
 	-- 
 	-- 
-	IFF(v_claimant_cov_date_type IS NULL, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), IFF(v_claimant_cov_date_type = 'NOTICEONLY', claimant_cov_date, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))) AS v_claimant_cov_noticeonly_date,
+	IFF(v_claimant_cov_date_type IS NULL,
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		IFF(v_claimant_cov_date_type = 'NOTICEONLY',
+			claimant_cov_date,
+			TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+			)
+		)
+	) AS v_claimant_cov_noticeonly_date,
 	v_claimant_cov_noticeonly_date AS claimant_cov_noticeonly_date,
 	1 AS crrnt_snpsht_flag,
 	-- *INF*: IIF(EDW_CCD_audit_id < 0 , EDW_CCD_audit_id,@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID})
-	IFF(EDW_CCD_audit_id < 0, EDW_CCD_audit_id, @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}) AS audit_id,
+	IFF(EDW_CCD_audit_id < 0,
+		EDW_CCD_audit_id,
+		@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}
+	) AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	SQ_Claimant_Coverage_Sources.s3p_unit_type_code AS i_s3p_unit_type_code,
 	-- *INF*: IIF(ISNULL(i_s3p_unit_type_code),'N/A',i_s3p_unit_type_code)
-	IFF(i_s3p_unit_type_code IS NULL, 'N/A', i_s3p_unit_type_code) AS o_s3p_unit_type_code,
+	IFF(i_s3p_unit_type_code IS NULL,
+		'N/A',
+		i_s3p_unit_type_code
+	) AS o_s3p_unit_type_code,
 	SQ_Claimant_Coverage_Sources.reserve_ctgry AS i_pms_reserve_ctgry,
 	-- *INF*: IIF(ISNULL(i_pms_reserve_ctgry),'N/A',i_pms_reserve_ctgry)
-	IFF(i_pms_reserve_ctgry IS NULL, 'N/A', i_pms_reserve_ctgry) AS o_pms_reserve_ctgry,
+	IFF(i_pms_reserve_ctgry IS NULL,
+		'N/A',
+		i_pms_reserve_ctgry
+	) AS o_pms_reserve_ctgry,
 	SQ_Claimant_Coverage_Sources.cause_of_loss AS i_pms_loss_cause,
 	-- *INF*: IIF(ISNULL(i_pms_loss_cause),'N/A',i_pms_loss_cause)
-	IFF(i_pms_loss_cause IS NULL, 'N/A', i_pms_loss_cause) AS o_pms_loss_cause,
+	IFF(i_pms_loss_cause IS NULL,
+		'N/A',
+		i_pms_loss_cause
+	) AS o_pms_loss_cause,
 	SQ_Claimant_Coverage_Sources.eff_from_date AS new_eff_from_date,
 	SQ_Claimant_Coverage_Sources.claimant_cov_det_ak_id AS i_claimant_cov_det_ak_id,
 	-- *INF*: IIF(ISNULL(i_claimant_cov_det_ak_id),-1,i_claimant_cov_det_ak_id)
-	IFF(i_claimant_cov_det_ak_id IS NULL, - 1, i_claimant_cov_det_ak_id) AS o_claimant_cov_det_ak_id,
+	IFF(i_claimant_cov_det_ak_id IS NULL,
+		- 1,
+		i_claimant_cov_det_ak_id
+	) AS o_claimant_cov_det_ak_id,
 	SQ_Claimant_Coverage_Sources.major_peril_code,
 	i_claimant_cov_det_ak_id AS v_prev_row_claimant_cov_det_ak_id,
 	v_claimant_cov_open_date AS v_prev_row_claimant_cov_open_date,
@@ -314,7 +469,7 @@ EXP_Claimant_Coverage_Dim AS (
 	LKP_Line_Of_Business.line_of_business,
 	SQ_Claimant_Coverage_Sources.CauseOfLossID AS i_CauseOfLossID,
 	-- *INF*: TO_BIGINT(i_CauseOfLossID)
-	TO_BIGINT(i_CauseOfLossID) AS o_CauseOfLossID,
+	CAST(i_CauseOfLossID AS BIGINT) AS o_CauseOfLossID,
 	SQ_Claimant_Coverage_Sources.PolicySourceID,
 	SQ_Claimant_Coverage_Sources.CoverageForm,
 	SQ_Claimant_Coverage_Sources.RiskType,
@@ -336,7 +491,11 @@ EXP_Claimant_Coverage_Dim AS (
 	SQ_Claimant_Coverage_Sources.major_peril_seq,
 	SQ_Claimant_Coverage_Sources.claimant_cov_eff_date AS i_claimant_cov_eff_date,
 	-- *INF*: IIF(ISNULL(i_claimant_cov_eff_date),TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'),i_claimant_cov_eff_date)
-	IFF(i_claimant_cov_eff_date IS NULL, TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'), i_claimant_cov_eff_date) AS o_claimant_cov_eff_date,
+	IFF(i_claimant_cov_eff_date IS NULL,
+		TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		i_claimant_cov_eff_date
+	) AS o_claimant_cov_eff_date,
 	SQ_Claimant_Coverage_Sources.unit_veh_registration_state_code,
 	SQ_Claimant_Coverage_Sources.unit_vin_num,
 	SQ_Claimant_Coverage_Sources.unit_veh_stated_amt,
@@ -369,8 +528,15 @@ EXP_Dup_Flag AS (
 	-- *INF*: DECODE(TRUE,claimant_cov_det_id_out=-1 AND claimant_cov_det_calculation_id_out=-1 AND claimant_cov_det_reserve_calculation_id_D_out=-1 AND claimant_cov_det_reserve_calculation_id_E_out=-1 AND claimant_cov_det_reserve_calculation_id_S_out=-1 AND 
 	-- claimant_cov_det_reserve_calculation_id_B_out=-1 AND claimant_cov_det_reserve_calculation_id_R_out=-1,'1','0')
 	DECODE(TRUE,
-		claimant_cov_det_id_out = - 1 AND claimant_cov_det_calculation_id_out = - 1 AND claimant_cov_det_reserve_calculation_id_D_out = - 1 AND claimant_cov_det_reserve_calculation_id_E_out = - 1 AND claimant_cov_det_reserve_calculation_id_S_out = - 1 AND claimant_cov_det_reserve_calculation_id_B_out = - 1 AND claimant_cov_det_reserve_calculation_id_R_out = - 1, '1',
-		'0') AS Dup_Flag
+		claimant_cov_det_id_out = - 1 
+		AND claimant_cov_det_calculation_id_out = - 1 
+		AND claimant_cov_det_reserve_calculation_id_D_out = - 1 
+		AND claimant_cov_det_reserve_calculation_id_E_out = - 1 
+		AND claimant_cov_det_reserve_calculation_id_S_out = - 1 
+		AND claimant_cov_det_reserve_calculation_id_B_out = - 1 
+		AND claimant_cov_det_reserve_calculation_id_R_out = - 1, '1',
+		'0'
+	) AS Dup_Flag
 	FROM EXP_Claimant_Coverage_Dim
 ),
 FIL_INVALID_COMB_RES_NONRES_STATUS AS (
@@ -632,31 +798,94 @@ EXP_Verify_Lookup_Results AS (
 	SELECT
 	LKP_Sup_CauseOfLoss.CauseOfLossName,
 	-- *INF*: IIF(ISNULL(RTRIM(LTRIM(CauseOfLossName))),'N/A',RTRIM(LTRIM(CauseOfLossName)))
-	IFF(RTRIM(LTRIM(CauseOfLossName)) IS NULL, 'N/A', RTRIM(LTRIM(CauseOfLossName))) AS OUT_CauseOfLossName,
+	IFF(RTRIM(LTRIM(CauseOfLossName
+			)
+		) IS NULL,
+		'N/A',
+		RTRIM(LTRIM(CauseOfLossName
+			)
+		)
+	) AS OUT_CauseOfLossName,
 	LKP_Sup_Insurance_Line.StandardInsuranceLineDescription,
 	-- *INF*: IIF(ISNULL(RTRIM(LTRIM(StandardInsuranceLineDescription))),'N/A',RTRIM(LTRIM(StandardInsuranceLineDescription)))
-	IFF(RTRIM(LTRIM(StandardInsuranceLineDescription)) IS NULL, 'N/A', RTRIM(LTRIM(StandardInsuranceLineDescription))) AS OUT_StandardInsuranceLineDescription,
+	IFF(RTRIM(LTRIM(StandardInsuranceLineDescription
+			)
+		) IS NULL,
+		'N/A',
+		RTRIM(LTRIM(StandardInsuranceLineDescription
+			)
+		)
+	) AS OUT_StandardInsuranceLineDescription,
 	LKP_Sup_Major_Peril.StandardMajorPerilDescription,
 	-- *INF*: IIF(ISNULL(RTRIM(LTRIM(StandardMajorPerilDescription))),'N/A',RTRIM(LTRIM(StandardMajorPerilDescription)))
-	IFF(RTRIM(LTRIM(StandardMajorPerilDescription)) IS NULL, 'N/A', RTRIM(LTRIM(StandardMajorPerilDescription))) AS OUT_StandardMajorPerilDescription,
+	IFF(RTRIM(LTRIM(StandardMajorPerilDescription
+			)
+		) IS NULL,
+		'N/A',
+		RTRIM(LTRIM(StandardMajorPerilDescription
+			)
+		)
+	) AS OUT_StandardMajorPerilDescription,
 	LKP_Sup_Type_Bureau_Code.StandardTypeBureauCode,
 	LKP_Sup_Type_Bureau_Code.StandardTypeBureauCodeShortDescription,
 	LKP_Sup_Type_Bureau_Code.StandardTypeBureauCodeLongDescription,
 	-- *INF*: IIF(ISNULL(RTRIM(LTRIM(StandardTypeBureauCode))),'N/A',RTRIM(LTRIM(StandardTypeBureauCode)))
-	IFF(RTRIM(LTRIM(StandardTypeBureauCode)) IS NULL, 'N/A', RTRIM(LTRIM(StandardTypeBureauCode))) AS OUT_StandardTypeBureauCode,
+	IFF(RTRIM(LTRIM(StandardTypeBureauCode
+			)
+		) IS NULL,
+		'N/A',
+		RTRIM(LTRIM(StandardTypeBureauCode
+			)
+		)
+	) AS OUT_StandardTypeBureauCode,
 	-- *INF*: IIF(ISNULL(RTRIM(LTRIM(StandardTypeBureauCodeShortDescription))),'N/A',RTRIM(LTRIM(StandardTypeBureauCodeShortDescription)))
-	IFF(RTRIM(LTRIM(StandardTypeBureauCodeShortDescription)) IS NULL, 'N/A', RTRIM(LTRIM(StandardTypeBureauCodeShortDescription))) AS OUT_StandardTypeBureauCodeShortDescription,
+	IFF(RTRIM(LTRIM(StandardTypeBureauCodeShortDescription
+			)
+		) IS NULL,
+		'N/A',
+		RTRIM(LTRIM(StandardTypeBureauCodeShortDescription
+			)
+		)
+	) AS OUT_StandardTypeBureauCodeShortDescription,
 	-- *INF*: IIF(ISNULL(RTRIM(LTRIM(StandardTypeBureauCodeLongDescription))),'N/A',RTRIM(LTRIM(StandardTypeBureauCodeLongDescription)))
-	IFF(RTRIM(LTRIM(StandardTypeBureauCodeLongDescription)) IS NULL, 'N/A', RTRIM(LTRIM(StandardTypeBureauCodeLongDescription))) AS OUT_StandardTypeBureauCodeLongDescription,
+	IFF(RTRIM(LTRIM(StandardTypeBureauCodeLongDescription
+			)
+		) IS NULL,
+		'N/A',
+		RTRIM(LTRIM(StandardTypeBureauCodeLongDescription
+			)
+		)
+	) AS OUT_StandardTypeBureauCodeLongDescription,
 	LKP_Sup_Risk_Unit_Group.risk_unit_grp_descript,
 	-- *INF*: IIF(ISNULL(RTRIM(LTRIM(risk_unit_grp_descript))),'N/A',RTRIM(LTRIM(risk_unit_grp_descript)))
-	IFF(RTRIM(LTRIM(risk_unit_grp_descript)) IS NULL, 'N/A', RTRIM(LTRIM(risk_unit_grp_descript))) AS OUT_risk_unit_grp_descript,
+	IFF(RTRIM(LTRIM(risk_unit_grp_descript
+			)
+		) IS NULL,
+		'N/A',
+		RTRIM(LTRIM(risk_unit_grp_descript
+			)
+		)
+	) AS OUT_risk_unit_grp_descript,
 	LKP_Sup_Risk_Unit.StandardRiskUnitDescription,
 	-- *INF*: IIF(ISNULL(RTRIM(LTRIM(StandardRiskUnitDescription))),'N/A',RTRIM(LTRIM(StandardRiskUnitDescription)))
-	IFF(RTRIM(LTRIM(StandardRiskUnitDescription)) IS NULL, 'N/A', RTRIM(LTRIM(StandardRiskUnitDescription))) AS OUT_StandardRiskUnitDescription,
+	IFF(RTRIM(LTRIM(StandardRiskUnitDescription
+			)
+		) IS NULL,
+		'N/A',
+		RTRIM(LTRIM(StandardRiskUnitDescription
+			)
+		)
+	) AS OUT_StandardRiskUnitDescription,
 	LKP_Sup_Claim_Reserve_Category.reserve_ctgry_descript,
 	-- *INF*: IIF(ISNULL(RTRIM(LTRIM(reserve_ctgry_descript))),'N/A',RTRIM(LTRIM(reserve_ctgry_descript)))
-	IFF(RTRIM(LTRIM(reserve_ctgry_descript)) IS NULL, 'N/A', RTRIM(LTRIM(reserve_ctgry_descript))) AS OUT_reserve_ctgry_descript
+	IFF(RTRIM(LTRIM(reserve_ctgry_descript
+			)
+		) IS NULL,
+		'N/A',
+		RTRIM(LTRIM(reserve_ctgry_descript
+			)
+		)
+	) AS OUT_reserve_ctgry_descript
 	FROM 
 	LEFT JOIN LKP_Sup_CauseOfLoss
 	ON LKP_Sup_CauseOfLoss.CauseOfLossId = FIL_INVALID_COMB_RES_NONRES_STATUS.CauseOfLossID
@@ -689,7 +918,10 @@ EXP_claim_total_loss_ind AS (
 	SELECT
 	claim_total_loss_ak_id,
 	-- *INF*: IIF(ISNULL(claim_total_loss_ak_id), 'Y', 'N')
-	IFF(claim_total_loss_ak_id IS NULL, 'Y', 'N') AS claim_total_loss_ind
+	IFF(claim_total_loss_ak_id IS NULL,
+		'Y',
+		'N'
+	) AS claim_total_loss_ind
 	FROM LKP_Claim_Total_Loss
 ),
 LKP_Claimant_Coverage_Dim AS (

@@ -18,7 +18,11 @@ EXP_Input AS (
 	SilverCircleYear,
 	SilverCircleLevelDescription AS i_SilverCircleLevelDescription,
 	-- *INF*: IIF(UPPER(i_SilverCircleLevelDescription)='NONE','Emerging',i_SilverCircleLevelDescription)
-	IFF(UPPER(i_SilverCircleLevelDescription) = 'NONE', 'Emerging', i_SilverCircleLevelDescription) AS o_SilverCircleLevelDescription,
+	IFF(UPPER(i_SilverCircleLevelDescription
+		) = 'NONE',
+		'Emerging',
+		i_SilverCircleLevelDescription
+	) AS o_SilverCircleLevelDescription,
 	HashKey,
 	ModifiedUserId,
 	ModifiedDate,

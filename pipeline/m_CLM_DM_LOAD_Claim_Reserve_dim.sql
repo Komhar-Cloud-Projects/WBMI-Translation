@@ -47,35 +47,47 @@ EXP_Collect_Reserve_Information AS (
 	-- *INF*: IIF(ISNULL(FirstPaymentDate),
 	-- TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
 	-- FirstPaymentDate)
-	IFF(FirstPaymentDate IS NULL, TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), FirstPaymentDate) AS FirstPaymentDateFromSource,
+	IFF(FirstPaymentDate IS NULL,
+		TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		FirstPaymentDate
+	) AS FirstPaymentDateFromSource,
 	-- *INF*: DECODE(TRUE,
 	-- ReserveDateType='2OPEN',
 	-- ReserveDate,
 	-- TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))
 	DECODE(TRUE,
 		ReserveDateType = '2OPEN', ReserveDate,
-		TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')) AS ReserveOpenDateFromSource,
+		TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS ReserveOpenDateFromSource,
 	-- *INF*: DECODE(TRUE,
 	-- ReserveDateType='3CLOSED',
 	-- ReserveDate,
 	-- TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))
 	DECODE(TRUE,
 		ReserveDateType = '3CLOSED', ReserveDate,
-		TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')) AS ReserveCloseDateFromSource,
+		TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS ReserveCloseDateFromSource,
 	-- *INF*: DECODE(TRUE,
 	-- ReserveDateType='4REOPEN',
 	-- ReserveDate,
 	-- TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))
 	DECODE(TRUE,
 		ReserveDateType = '4REOPEN', ReserveDate,
-		TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')) AS ReserveReopenDateFromSource,
+		TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS ReserveReopenDateFromSource,
 	-- *INF*: DECODE(TRUE,
 	-- ReserveDateType='5CLOSEDAFTERREOPEN',
 	-- ReserveDate,
 	-- TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))
 	DECODE(TRUE,
 		ReserveDateType = '5CLOSEDAFTERREOPEN', ReserveDate,
-		TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')) AS ReserveCloseAfterReopenDateFromSource,
+		TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS ReserveCloseAfterReopenDateFromSource,
 	SYSDATE AS created_modified_date,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId
 	FROM EXP_Input
@@ -91,7 +103,8 @@ mplt_ClaimReserveDim AS (WITH
 		claimant_coverage_detail_ak_id AS ClaimantCoverageDetailAkId,
 		financial_type_code AS in_FinancialTypeCode,
 		-- *INF*: RTRIM(in_FinancialTypeCode)
-		RTRIM(in_FinancialTypeCode) AS out_FinancialTypeCode
+		RTRIM(in_FinancialTypeCode
+		) AS out_FinancialTypeCode
 		FROM INPUT
 	),
 	LKP_Existing_Reserve AS (

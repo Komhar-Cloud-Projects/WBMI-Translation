@@ -35,24 +35,36 @@ EXP_get_values AS (
 	claimant_cov_det_id,
 	ins_line,
 	-- *INF*: LTRIM(RTRIM(ins_line))
-	LTRIM(RTRIM(ins_line)) AS ins_line_OUT,
+	LTRIM(RTRIM(ins_line
+		)
+	) AS ins_line_OUT,
 	major_peril_code,
 	-- *INF*: LTRIM(RTRIM(major_peril_code))
-	LTRIM(RTRIM(major_peril_code)) AS major_peril_code_OUT,
+	LTRIM(RTRIM(major_peril_code
+		)
+	) AS major_peril_code_OUT,
 	reserve_ctgry,
 	-- *INF*: LTRIM(RTRIM(reserve_ctgry))
-	LTRIM(RTRIM(reserve_ctgry)) AS reserve_ctgry_OUT,
+	LTRIM(RTRIM(reserve_ctgry
+		)
+	) AS reserve_ctgry_OUT,
 	cause_of_loss,
 	-- *INF*: LTRIM(RTRIM(cause_of_loss))
-	LTRIM(RTRIM(cause_of_loss)) AS cause_of_loss_OUT,
+	LTRIM(RTRIM(cause_of_loss
+		)
+	) AS cause_of_loss_OUT,
 	major_peril_seq,
 	risk_unit_grp,
 	-- *INF*: LTRIM(RTRIM(risk_unit_grp))
-	LTRIM(RTRIM(risk_unit_grp)) AS risk_unit_grp_OUT,
+	LTRIM(RTRIM(risk_unit_grp
+		)
+	) AS risk_unit_grp_OUT,
 	risk_unit_grp_seq_num,
 	risk_unit,
 	-- *INF*: LTRIM(RTRIM(risk_unit))
-	LTRIM(RTRIM(risk_unit)) AS risk_unit_OUT,
+	LTRIM(RTRIM(risk_unit
+		)
+	) AS risk_unit_OUT,
 	risk_unit_seq_num,
 	unit_veh_registration_state_code,
 	unit_vin_num,
@@ -64,7 +76,9 @@ EXP_get_values AS (
 	sub_loc_unit_num,
 	risk_type_ind,
 	-- *INF*: LTRIM(RTRIM(risk_type_ind))
-	LTRIM(RTRIM(risk_type_ind)) AS risk_type_ind_OUT,
+	LTRIM(RTRIM(risk_type_ind
+		)
+	) AS risk_type_ind_OUT,
 	spec_pers_prop_use_code,
 	pkg_ded_amt,
 	pkg_lmt_amt,
@@ -158,30 +172,51 @@ EXP_DEFAULT_VALUES AS (
 	EXP_get_values.ins_line_OUT AS ins_line,
 	lkp_sup_insurance_line.ins_line_descript,
 	-- *INF*: IIF(ISNULL(ins_line_descript), 'N/A', ins_line_descript)
-	IFF(ins_line_descript IS NULL, 'N/A', ins_line_descript) AS ins_line_descript_out,
+	IFF(ins_line_descript IS NULL,
+		'N/A',
+		ins_line_descript
+	) AS ins_line_descript_out,
 	EXP_get_values.major_peril_code_OUT AS major_peril_code,
 	LKP_sup_major_peril.major_peril_descript,
 	-- *INF*: IIF(ISNULL(major_peril_descript), 'N/A', major_peril_descript )
-	IFF(major_peril_descript IS NULL, 'N/A', major_peril_descript) AS major_peril_descript_out,
+	IFF(major_peril_descript IS NULL,
+		'N/A',
+		major_peril_descript
+	) AS major_peril_descript_out,
 	EXP_get_values.major_peril_seq,
 	EXP_get_values.cause_of_loss_OUT AS cause_of_loss,
 	-- *INF*: iif(isnull(cause_of_loss_short_descript),'N/A',cause_of_loss_short_descript)
-	IFF(cause_of_loss_short_descript IS NULL, 'N/A', cause_of_loss_short_descript) AS cause_of_loss_short_descript_out,
+	IFF(cause_of_loss_short_descript IS NULL,
+		'N/A',
+		cause_of_loss_short_descript
+	) AS cause_of_loss_short_descript_out,
 	-- *INF*: iif(isnull(cause_of_loss_long_descript),'N/A',cause_of_loss_long_descript)
-	IFF(cause_of_loss_long_descript IS NULL, 'N/A', cause_of_loss_long_descript) AS cause_of_loss_long_descript_out,
+	IFF(cause_of_loss_long_descript IS NULL,
+		'N/A',
+		cause_of_loss_long_descript
+	) AS cause_of_loss_long_descript_out,
 	EXP_get_values.reserve_ctgry_OUT AS reserve_ctgry,
 	LKP_sup_claim_reserve_category.reserve_ctgry_descript,
 	-- *INF*: iif(isnull(reserve_ctgry_descript),'N/A',reserve_ctgry_descript)
-	IFF(reserve_ctgry_descript IS NULL, 'N/A', reserve_ctgry_descript) AS reserve_ctgry_descript_out,
+	IFF(reserve_ctgry_descript IS NULL,
+		'N/A',
+		reserve_ctgry_descript
+	) AS reserve_ctgry_descript_out,
 	EXP_get_values.risk_unit_grp_OUT AS risk_unit_grp,
 	LKP_sup_risk_unit_group.risk_unit_grp_descript,
 	-- *INF*: IIF(ISNULL(risk_unit_grp_descript), 'N/A', risk_unit_grp_descript)
-	IFF(risk_unit_grp_descript IS NULL, 'N/A', risk_unit_grp_descript) AS risk_unit_grp_descript_out,
+	IFF(risk_unit_grp_descript IS NULL,
+		'N/A',
+		risk_unit_grp_descript
+	) AS risk_unit_grp_descript_out,
 	EXP_get_values.risk_unit_grp_seq_num,
 	EXP_get_values.risk_unit_OUT AS risk_unit,
 	LKP_sup_risk_unit.risk_unit_descript,
 	-- *INF*: IIF(ISNULL(risk_unit_descript), 'N/A', risk_unit_descript)
-	IFF(risk_unit_descript IS NULL, 'N/A', risk_unit_descript) AS risk_unit_descript_out,
+	IFF(risk_unit_descript IS NULL,
+		'N/A',
+		risk_unit_descript
+	) AS risk_unit_descript_out,
 	EXP_get_values.risk_unit_seq_num,
 	EXP_get_values.unit_veh_registration_state_code,
 	EXP_get_values.unit_vin_num,
@@ -198,10 +233,14 @@ EXP_DEFAULT_VALUES AS (
 	-- *INF*: IIF(source_audit_id < 0 , source_audit_id , @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID})
 	-- 
 	-- --- We want to identify the loss master data inserted into coverage_dim based on the audit_id. In EDW we insert data into claimant_coverage_detail for loss_master_historical_data.
-	IFF(source_audit_id < 0, source_audit_id, @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}) AS audit_id,
+	IFF(source_audit_id < 0,
+		source_audit_id,
+		@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}
+	) AS audit_id,
 	EXP_get_values.eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
@@ -440,8 +479,9 @@ EXP_Lag_eff_from_date111 AS (
 	-- 	edw_claimant_cov_det_ak_id = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		edw_claimant_cov_det_ak_id = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		edw_claimant_cov_det_ak_id = v_PREV_ROW_occurrence_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	edw_claimant_cov_det_ak_id AS v_PREV_ROW_occurrence_key,

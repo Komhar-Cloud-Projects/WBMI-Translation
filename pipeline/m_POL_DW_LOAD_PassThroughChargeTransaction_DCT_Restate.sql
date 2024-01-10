@@ -644,10 +644,14 @@ mplt_PassThroughCharge AS (WITH
 			LineType = 'DirectorsAndOfficersNFP', 'DandONFP',
 			LineType = 'EmploymentPracticesLiab', 'EPLI',
 			LineType = 'DirectorsAndOffsCondos', 'DandOCondo',
-			INSTR(DCTSType, 'SMART') > 0, 'SMART',
-			LineType) AS v_LineTypeFormatted,
+			REGEXP_INSTR(DCTSType, 'SMART'
+			) > 0, 'SMART',
+			LineType
+		) AS v_LineTypeFormatted,
 		-- *INF*: LTRIM(RTRIM(v_LineTypeFormatted))
-		LTRIM(RTRIM(v_LineTypeFormatted)) AS o_LineTypeFormatted,
+		LTRIM(RTRIM(v_LineTypeFormatted
+			)
+		) AS o_LineTypeFormatted,
 		-- *INF*: DECODE(TRUE,
 		-- EntityType='taxAppliedTo',0,
 		-- --filter out fee and surcharge in the location level excluding MNFirefighterReliefFundSurcharge
@@ -670,27 +674,52 @@ mplt_PassThroughCharge AS (WITH
 		-- )
 		DECODE(TRUE,
 			EntityType = 'taxAppliedTo', 0,
-			TaxSurchargeObjectName = 'DC_Location' AND ( INSTR(DCTSType, 'CollectionFee') > 0 OR INSTR(DCTSType, 'Surcharge') > 0 ) AND DCTSType <> 'MNFirefighterReliefFundSurcharge', 0,
-			TaxSurchargeObjectName = 'DC_Location' AND ( INSTR(DCTSType, 'Total') > 0 ), 0,
-			TaxSurchargeObjectName = 'DC_Line' AND DCTSType = 'MNFirefighterReliefFundSurcharge' AND NOT LKP_ARCHDCTAXSURCHARGESTAGING_SessionId.SessionId IS NULL, 0,
-			NOT LKP_SUPPASSTHROUGHMAP_PREFILTER_BYTYPE_DCTSType.RuleResult IS NULL, TO_INTEGER(LKP_SUPPASSTHROUGHMAP_PREFILTER_BYTYPE_DCTSType.RuleResult),
-			NOT LKP_SUPPASSTHROUGHMAP_PREFILTER_BYTYPEANDLINETYPE_DCTSType_LineType.RuleResult IS NULL, TO_INTEGER(LKP_SUPPASSTHROUGHMAP_PREFILTER_BYTYPEANDLINETYPE_DCTSType_LineType.RuleResult),
-			NOT LKP_SUPPASSTHROUGHMAP_PREFILTER_BYTYPEANDOBJECT_DCTSType_TaxSurchargeObjectName.RuleResult IS NULL, TO_INTEGER(LKP_SUPPASSTHROUGHMAP_PREFILTER_BYTYPEANDOBJECT_DCTSType_TaxSurchargeObjectName.RuleResult),
+			TaxSurchargeObjectName = 'DC_Location' 
+			AND ( REGEXP_INSTR(DCTSType, 'CollectionFee'
+				) > 0 
+				OR REGEXP_INSTR(DCTSType, 'Surcharge'
+				) > 0 
+			) 
+			AND DCTSType <> 'MNFirefighterReliefFundSurcharge', 0,
+			TaxSurchargeObjectName = 'DC_Location' 
+			AND ( REGEXP_INSTR(DCTSType, 'Total'
+				) > 0 
+			), 0,
+			TaxSurchargeObjectName = 'DC_Line' 
+			AND DCTSType = 'MNFirefighterReliefFundSurcharge' 
+			AND LKP_ARCHDCTAXSURCHARGESTAGING_SessionId.SessionId IS NOT NULL, 0,
+			LKP_SUPPASSTHROUGHMAP_PREFILTER_BYTYPE_DCTSType.RuleResult IS NOT NULL, CAST(LKP_SUPPASSTHROUGHMAP_PREFILTER_BYTYPE_DCTSType.RuleResult AS INTEGER),
+			LKP_SUPPASSTHROUGHMAP_PREFILTER_BYTYPEANDLINETYPE_DCTSType_LineType.RuleResult IS NOT NULL, CAST(LKP_SUPPASSTHROUGHMAP_PREFILTER_BYTYPEANDLINETYPE_DCTSType_LineType.RuleResult AS INTEGER),
+			LKP_SUPPASSTHROUGHMAP_PREFILTER_BYTYPEANDOBJECT_DCTSType_TaxSurchargeObjectName.RuleResult IS NOT NULL, CAST(LKP_SUPPASSTHROUGHMAP_PREFILTER_BYTYPEANDOBJECT_DCTSType_TaxSurchargeObjectName.RuleResult AS INTEGER),
 			TaxSurchargeObjectName = 'DC_WC_State', 1,
-			TaxSurchargeObjectName = 'DC_Location' AND NumOfLine >= 1 AND INSTR(DCTSType, v_LineTypeFormatted) > 0, 1,
-			0) AS o_FilterFlag,
+			TaxSurchargeObjectName = 'DC_Location' 
+			AND NumOfLine >= 1 
+			AND REGEXP_INSTR(DCTSType, v_LineTypeFormatted
+			) > 0, 1,
+			0
+		) AS o_FilterFlag,
 		DCTranTransactionDate,
 		Purpose AS i_Purpose,
 		-- *INF*: IIF(ISNULL(i_Purpose) or IS_SPACES(i_Purpose) or LENGTH(i_Purpose)=0,'N/A', LTRIM(RTRIM (i_Purpose))) 
-		IFF(i_Purpose IS NULL OR IS_SPACES(i_Purpose) OR LENGTH(i_Purpose) = 0, 'N/A', LTRIM(RTRIM(i_Purpose))) AS v_Purpose,
+		IFF(i_Purpose IS NULL 
+			OR LENGTH(i_Purpose)>0 AND TRIM(i_Purpose)='' 
+			OR LENGTH(i_Purpose
+			) = 0,
+			'N/A',
+			LTRIM(RTRIM(i_Purpose
+				)
+			)
+		) AS v_Purpose,
 		-- *INF*: LTRIM(RTRIM(v_Purpose))
-		LTRIM(RTRIM(v_Purpose)) AS o_Purpose,
+		LTRIM(RTRIM(v_Purpose
+			)
+		) AS o_Purpose,
 		AccountingDate AS CreatedDate,
 		IterationId,
 		-- *INF*: TRUNC(CreatedDate,'MM')
 		-- 
 		-- --- Using the CreatedDate from the WorkDCTDataRepairPolicy table we are determing the AccountingDate
-		TRUNC(CreatedDate, 'MM') AS AccountingDate,
+		CAST(TRUNC(CreatedDate, 'MONTH') AS TIMESTAMP_NTZ(0)) AS AccountingDate,
 		RestateRepair,
 		CoverageGUID
 		FROM IN_PassThroughChargeMapplet
@@ -758,88 +787,150 @@ mplt_PassThroughCharge AS (WITH
 		SessionId,
 		LineType AS in_DCLineType,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_DCLineType)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_DCLineType) AS o_DCLineType,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_DCLineType
+		) AS o_DCLineType,
 		Id AS in_Id,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_Id)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Id) AS o_Id,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Id
+		) AS o_Id,
 		PolicyEffectiveDate AS in_PolicyEffectiveDate,
 		-- *INF*: :UDF.DEFAULT_DATE_TO_21001231(in_PolicyEffectiveDate)
-		:UDF.DEFAULT_DATE_TO_21001231(in_PolicyEffectiveDate) AS o_PolicyEffectiveDate,
+		:UDF.DEFAULT_DATE_TO_21001231(in_PolicyEffectiveDate
+		) AS o_PolicyEffectiveDate,
 		TType AS in_Type,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_Type)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Type) AS o_Type,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Type
+		) AS o_Type,
 		TEffectiveDate AS in_EffectiveDate,
 		-- *INF*: :UDF.DEFAULT_DATE_TO_21001231(in_EffectiveDate)
-		:UDF.DEFAULT_DATE_TO_21001231(in_EffectiveDate) AS o_EffectiveDate,
+		:UDF.DEFAULT_DATE_TO_21001231(in_EffectiveDate
+		) AS o_EffectiveDate,
 		TCreatedDate AS in_CreatedDate,
 		-- *INF*: IIF(ISNULL(in_CreatedDate),TO_DATE('2100-12-31 23:59:59.000','YYYY-MM-DD HH24:MI:SS.MS'),in_CreatedDate)
-		IFF(in_CreatedDate IS NULL, TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.MS'), in_CreatedDate) AS v_CreatedDate,
+		IFF(in_CreatedDate IS NULL,
+			TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.MS'
+			),
+			in_CreatedDate
+		) AS v_CreatedDate,
 		v_CreatedDate AS o_CreatedDate,
 		TExpirationDate AS in_ExpirationDate,
 		-- *INF*: :UDF.DEFAULT_DATE_TO_21001231(in_ExpirationDate)
-		:UDF.DEFAULT_DATE_TO_21001231(in_ExpirationDate) AS o_ExpirationDate,
+		:UDF.DEFAULT_DATE_TO_21001231(in_ExpirationDate
+		) AS o_ExpirationDate,
 		LocationNumber AS in_LocationNumber,
 		-- *INF*: IIF(ISNULL(in_LocationNumber) or IS_SPACES(in_LocationNumber) or LENGTH(in_LocationNumber)=0,'0000', LPAD(LTRIM(RTRIM (in_LocationNumber)), 4, '0')) 
-		IFF(in_LocationNumber IS NULL OR IS_SPACES(in_LocationNumber) OR LENGTH(in_LocationNumber) = 0, '0000', LPAD(LTRIM(RTRIM(in_LocationNumber)), 4, '0')) AS o_LocationNumber,
+		IFF(in_LocationNumber IS NULL 
+			OR LENGTH(in_LocationNumber)>0 AND TRIM(in_LocationNumber)='' 
+			OR LENGTH(in_LocationNumber
+			) = 0,
+			'0000',
+			LPAD(LTRIM(RTRIM(in_LocationNumber
+					)
+				), 4, '0'
+			)
+		) AS o_LocationNumber,
 		PolicyVersion AS in_PolicyVersion,
 		-- *INF*: IIF(ISNULL(in_PolicyVersion),'00',LPAD(TO_CHAR(in_PolicyVersion),2,'0'))
-		IFF(in_PolicyVersion IS NULL, '00', LPAD(TO_CHAR(in_PolicyVersion), 2, '0')) AS o_PolicyVersion,
+		IFF(in_PolicyVersion IS NULL,
+			'00',
+			LPAD(TO_CHAR(in_PolicyVersion
+				), 2, '0'
+			)
+		) AS o_PolicyVersion,
 		TaxSurchargeObjectName AS in_TaxSurchargeObjectName,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_TaxSurchargeObjectName)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_TaxSurchargeObjectName) AS o_TaxSurchargeObjectName,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_TaxSurchargeObjectName
+		) AS o_TaxSurchargeObjectName,
 		TaxSurchargeId AS in_TaxSurchargeId,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_TaxSurchargeId)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_TaxSurchargeId) AS o_TaxSurchargeId,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_TaxSurchargeId
+		) AS o_TaxSurchargeId,
 		DCTSType AS in_DCTSType,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_DCTSType)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_DCTSType) AS o_DCTSType,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_DCTSType
+		) AS o_DCTSType,
 		Amount AS in_Amount,
 		-- *INF*: IIF(ISNULL(in_Amount), 0, in_Amount)
-		IFF(in_Amount IS NULL, 0, in_Amount) AS o_Amount,
+		IFF(in_Amount IS NULL,
+			0,
+			in_Amount
+		) AS o_Amount,
 		Change AS in_Change,
 		-- *INF*: IIF(ISNULL(in_Change), 0, in_Change)
-		IFF(in_Change IS NULL, 0, in_Change) AS o_Change,
+		IFF(in_Change IS NULL,
+			0,
+			in_Change
+		) AS o_Change,
 		Code AS in_Code,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_Code)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Code) AS o_Code,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Code
+		) AS o_Code,
 		ChangeAttr AS in_ChangeAttr,
 		-- *INF*: IIF(ISNULL(in_ChangeAttr), 0, in_ChangeAttr)
-		IFF(in_ChangeAttr IS NULL, 0, in_ChangeAttr) AS o_ChangeAttr,
+		IFF(in_ChangeAttr IS NULL,
+			0,
+			in_ChangeAttr
+		) AS o_ChangeAttr,
 		WrittenAttr AS in_WrittenAttr,
 		-- *INF*: IIF(ISNULL(in_WrittenAttr), 0, in_WrittenAttr)
-		IFF(in_WrittenAttr IS NULL, 0, in_WrittenAttr) AS o_WrittenAttr,
+		IFF(in_WrittenAttr IS NULL,
+			0,
+			in_WrittenAttr
+		) AS o_WrittenAttr,
 		EntityType AS in_EntityType,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_EntityType)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_EntityType) AS o_EntityType,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_EntityType
+		) AS o_EntityType,
 		GeoTaxCityTaxPercent AS in_GeoTaxCityTaxPercent,
 		-- *INF*: IIF(ISNULL(in_GeoTaxCityTaxPercent), 0, TO_DECIMAL(in_GeoTaxCityTaxPercent))
-		IFF(in_GeoTaxCityTaxPercent IS NULL, 0, TO_DECIMAL(in_GeoTaxCityTaxPercent)) AS o_GeoTaxCityTaxPercent,
+		IFF(in_GeoTaxCityTaxPercent IS NULL,
+			0,
+			CAST(in_GeoTaxCityTaxPercent AS FLOAT)
+		) AS o_GeoTaxCityTaxPercent,
 		GeoTaxCountyTaxPercent AS in_GeoTaxCountyTaxPercent,
 		-- *INF*: IIF(ISNULL(in_GeoTaxCountyTaxPercent), 0, TO_DECIMAL(in_GeoTaxCountyTaxPercent))
-		IFF(in_GeoTaxCountyTaxPercent IS NULL, 0, TO_DECIMAL(in_GeoTaxCountyTaxPercent)) AS o_GeoTaxCountyTaxPercent,
+		IFF(in_GeoTaxCountyTaxPercent IS NULL,
+			0,
+			CAST(in_GeoTaxCountyTaxPercent AS FLOAT)
+		) AS o_GeoTaxCountyTaxPercent,
 		State AS in_State,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_State)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_State) AS o_State,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_State
+		) AS o_State,
 		DCPSTWritten AS in_DCPSTWritten,
 		-- *INF*: IIF(ISNULL(in_DCPSTWritten), 0, in_DCPSTWritten)
-		IFF(in_DCPSTWritten IS NULL, 0, in_DCPSTWritten) AS o_DCPSTWritten,
+		IFF(in_DCPSTWritten IS NULL,
+			0,
+			in_DCPSTWritten
+		) AS o_DCPSTWritten,
 		Territory AS in_Territory,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_Territory)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Territory) AS o_Territory,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Territory
+		) AS o_Territory,
 		LocationXmlId AS in_LocationXmlId,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_LocationXmlId)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_LocationXmlId) AS o_LocationXmlId,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_LocationXmlId
+		) AS o_LocationXmlId,
 		PolicyNumber AS in_PolicyNumber,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_PolicyNumber)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_PolicyNumber) AS o_PolicyNumber,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_PolicyNumber
+		) AS o_PolicyNumber,
 		LocationId,
 		LineTypeFormatted,
 		DCTranTransactionDate AS in_DCTranTransactionDate,
 		-- *INF*: IIF(ISNULL(in_DCTranTransactionDate),v_CreatedDate,in_DCTranTransactionDate)
-		IFF(in_DCTranTransactionDate IS NULL, v_CreatedDate, in_DCTranTransactionDate) AS o_TransactionDate,
+		IFF(in_DCTranTransactionDate IS NULL,
+			v_CreatedDate,
+			in_DCTranTransactionDate
+		) AS o_TransactionDate,
 		Purpose AS in_Purpose,
 		-- *INF*: IIF(in_Purpose!='Offset',ltrim(rtrim(in_Purpose)),'Deprecated')
-		IFF(in_Purpose != 'Offset', ltrim(rtrim(in_Purpose)), 'Deprecated') AS o_Purpose,
+		IFF(in_Purpose != 'Offset',
+			ltrim(rtrim(in_Purpose
+				)
+			),
+			'Deprecated'
+		) AS o_Purpose,
 		AccountingDate,
 		IterationId,
 		RestateRepair,
@@ -1009,10 +1100,12 @@ mplt_PassThroughCharge AS (WITH
 		SELECT
 		LKP_SupPassThroughChargeMap_FullTaxAmount.RuleResult AS FullTaxAmount_Result,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(FullTaxAmount_Result)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(FullTaxAmount_Result) AS o_FullTaxAmount_Result,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(FullTaxAmount_Result
+		) AS o_FullTaxAmount_Result,
 		LKP_SupPassThroughChargeMap_DCTTaxCode.RuleResult AS DCTTaxCode_Result,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(DCTTaxCode_Result)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(DCTTaxCode_Result) AS o_DCTTaxCode_Result,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(DCTTaxCode_Result
+		) AS o_DCTTaxCode_Result,
 		LKP_SupPassThroughChargeMap_TransAmount.RuleResult AS TransAmount_Result,
 		LKP_SupPassThroughChargeMap_TransAmount_NoState_Object.RuleResult AS TransAmount_NoState_Object_Result,
 		LKP_SupPassThroughChargeMap_TransAmount_NoState_Entity.RuleResult AS TransAmount_NoState_Entity_Result,
@@ -1022,16 +1115,22 @@ mplt_PassThroughCharge AS (WITH
 		-- NOT ISNULL(TransAmount_NoState_Object_Result), :UDF.DEFAULT_VALUE_FOR_STRINGS(TransAmount_NoState_Object_Result),
 		-- 'N/A')
 		Decode(True,
-			NOT TransAmount_Result IS NULL, :UDF.DEFAULT_VALUE_FOR_STRINGS(TransAmount_Result),
-			NOT TransAmount_NoState_Entity_Result IS NULL, :UDF.DEFAULT_VALUE_FOR_STRINGS(TransAmount_NoState_Entity_Result),
-			NOT TransAmount_NoState_Object_Result IS NULL, :UDF.DEFAULT_VALUE_FOR_STRINGS(TransAmount_NoState_Object_Result),
-			'N/A') AS o_TransAmount_Result,
+			TransAmount_Result IS NOT NULL, :UDF.DEFAULT_VALUE_FOR_STRINGS(TransAmount_Result
+			),
+			TransAmount_NoState_Entity_Result IS NOT NULL, :UDF.DEFAULT_VALUE_FOR_STRINGS(TransAmount_NoState_Entity_Result
+			),
+			TransAmount_NoState_Object_Result IS NOT NULL, :UDF.DEFAULT_VALUE_FOR_STRINGS(TransAmount_NoState_Object_Result
+			),
+			'N/A'
+		) AS o_TransAmount_Result,
 		LKP_SupPassThroughChargeMap_TaxPercentRate.AttributeValue AS TaxPercentRate_Type,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(TaxPercentRate_Type)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(TaxPercentRate_Type) AS o_TaxPercentRate_Type,
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(TaxPercentRate_Type
+		) AS o_TaxPercentRate_Type,
 		LKP_SupPassThroughChargeMap_TaxPercentRate.RuleResult AS TaxPercentRate_Result,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(TaxPercentRate_Result)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(TaxPercentRate_Result) AS o_TaxPercentRate_Result
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(TaxPercentRate_Result
+		) AS o_TaxPercentRate_Result
 		FROM 
 		LEFT JOIN LKP_SupPassThroughChargeMap_DCTTaxCode
 		ON LKP_SupPassThroughChargeMap_DCTTaxCode.StateAbbrev = EXP_CleanInput.o_State AND LKP_SupPassThroughChargeMap_DCTTaxCode.ElementValue = EXP_CleanInput.o_DCTSType
@@ -1094,7 +1193,9 @@ mplt_PassThroughCharge AS (WITH
 		--     ,'SS',59)
 		-- ,'MS', 000))
 		-- )
-		LAST(LAST_DAY(SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(in_AccountingDate, 'HH', 23), 'MI', 59), 'SS', 59), 'MS', 000))) AS out_PassThroughChargeTransactionBookedDate,
+		LAST(LAST_DAY(DATEADD(,000-DATE_PART(,DATEADD(SECOND,59-DATE_PART(SECOND,DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,in_AccountingDate),in_AccountingDate)),DATEADD(HOUR,23-DATE_PART(HOUR,in_AccountingDate),in_AccountingDate))),DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,in_AccountingDate),in_AccountingDate)),DATEADD(HOUR,23-DATE_PART(HOUR,in_AccountingDate),in_AccountingDate)))),DATEADD(SECOND,59-DATE_PART(SECOND,DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,in_AccountingDate),in_AccountingDate)),DATEADD(HOUR,23-DATE_PART(HOUR,in_AccountingDate),in_AccountingDate))),DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,in_AccountingDate),in_AccountingDate)),DATEADD(HOUR,23-DATE_PART(HOUR,in_AccountingDate),in_AccountingDate))))
+			)
+		) AS out_PassThroughChargeTransactionBookedDate,
 		-- *INF*: DECODE(TRUE,
 		-- TransAmount_Result !='N/A' AND TransAmount_Result='ChangeAttr', ChangeAttr,
 		-- TransAmount_Result !='N/A' AND TransAmount_Result='Change', in_Change,
@@ -1102,9 +1203,12 @@ mplt_PassThroughCharge AS (WITH
 		-- )
 		-- 
 		DECODE(TRUE,
-			TransAmount_Result != 'N/A' AND TransAmount_Result = 'ChangeAttr', ChangeAttr,
-			TransAmount_Result != 'N/A' AND TransAmount_Result = 'Change', in_Change,
-			ChangeAttr) AS out_PassThroughChargeTransactionAmount,
+			TransAmount_Result != 'N/A' 
+			AND TransAmount_Result = 'ChangeAttr', ChangeAttr,
+			TransAmount_Result != 'N/A' 
+			AND TransAmount_Result = 'Change', in_Change,
+			ChangeAttr
+		) AS out_PassThroughChargeTransactionAmount,
 		-- *INF*: DECODE(TRUE,
 		-- FullTaxAmount_Result = 'City_X_WrittenAttr', in_GeoTaxCityTaxPercent * WrittenAttr,
 		-- FullTaxAmount_Result = 'County_X_WrittenAttr', in_GeoTaxCountyTaxPercent * WrittenAttr,
@@ -1114,7 +1218,8 @@ mplt_PassThroughCharge AS (WITH
 		DECODE(TRUE,
 			FullTaxAmount_Result = 'City_X_WrittenAttr', in_GeoTaxCityTaxPercent * WrittenAttr,
 			FullTaxAmount_Result = 'County_X_WrittenAttr', in_GeoTaxCountyTaxPercent * WrittenAttr,
-			0) AS out_FullTaxAmount,
+			0
+		) AS out_FullTaxAmount,
 		-- *INF*: DECODE(TRUE,
 		-- TaxPercentRate_Type='Rate', TO_DECIMAL(TaxPercentRate_Result,3),
 		-- TaxPercentRate_Type='City',in_GeoTaxCityTaxPercent,
@@ -1122,18 +1227,24 @@ mplt_PassThroughCharge AS (WITH
 		-- 0.000)
 		-- 
 		DECODE(TRUE,
-			TaxPercentRate_Type = 'Rate', TO_DECIMAL(TaxPercentRate_Result, 3),
+			TaxPercentRate_Type = 'Rate', CAST(TaxPercentRate_Result AS FLOAT),
 			TaxPercentRate_Type = 'City', in_GeoTaxCityTaxPercent,
 			TaxPercentRate_Type = 'County', in_GeoTaxCountyTaxPercent,
-			0.000) AS out_TaxPercentageRate,
+			0.000
+		) AS out_TaxPercentageRate,
 		-- *INF*: DECODE(TRUE,
 		-- DCLineType='WorkersCompensation' AND TaxSurchargeObjectName= 'DC_WC_State' AND DCTTaxCode_Result != 'N/A', DCTTaxCode_Result,
 		-- DCTSType)
 		DECODE(TRUE,
-			DCLineType = 'WorkersCompensation' AND TaxSurchargeObjectName = 'DC_WC_State' AND DCTTaxCode_Result != 'N/A', DCTTaxCode_Result,
-			DCTSType) AS out_DCTTaxCode,
+			DCLineType = 'WorkersCompensation' 
+			AND TaxSurchargeObjectName = 'DC_WC_State' 
+			AND DCTTaxCode_Result != 'N/A', DCTTaxCode_Result,
+			DCTSType
+		) AS out_DCTTaxCode,
 		-- *INF*: LTRIM(RTRIM(REPLACESTR(0,DCTSType,'TaxCity','TaxCounty','')))
-		LTRIM(RTRIM(REPLACESTR(0, DCTSType, 'TaxCity', 'TaxCounty', ''))) AS out_DCTaxSurchargeType,
+		LTRIM(RTRIM(REGEXP_REPLACE(DCTSType,'TaxCity','TaxCounty','','i')
+			)
+		) AS out_DCTaxSurchargeType,
 		EXP_CleanInput.IterationId,
 		EXP_CleanInput.RestateRepair,
 		EXP_CleanInput.CoverageGUID
@@ -1221,9 +1332,15 @@ mplt_PassThroughCharge AS (WITH
 		-- --in_RiskType
 		'' AS v_tmp,
 		-- *INF*: IIF(in_Purpose!='Deprecated',in_PassThroughChargeTransactionAmount,-1*in_PassThroughChargeTransactionAmount)
-		IFF(in_Purpose != 'Deprecated', in_PassThroughChargeTransactionAmount, - 1 * in_PassThroughChargeTransactionAmount) AS v_PassThroughChargeTransactionAmount,
+		IFF(in_Purpose != 'Deprecated',
+			in_PassThroughChargeTransactionAmount,
+			- 1 * in_PassThroughChargeTransactionAmount
+		) AS v_PassThroughChargeTransactionAmount,
 		-- *INF*: IIF(in_Purpose!='Deprecated',in_FullTermPremium,-1*in_FullTermPremium)
-		IFF(in_Purpose != 'Deprecated', in_FullTermPremium, - 1 * in_FullTermPremium) AS v_FullTermPremium,
+		IFF(in_Purpose != 'Deprecated',
+			in_FullTermPremium,
+			- 1 * in_FullTermPremium
+		) AS v_FullTermPremium,
 		v_PolicyKey_new AS out_PolicyKey,
 		v_RiskLocationKey AS out_RiskLocationKey,
 		in_PolicyEffectiveDate AS out_PolicyEffectiveDate,
@@ -1235,7 +1352,11 @@ mplt_PassThroughCharge AS (WITH
 		-- *INF*: IIF(ISNULL(in_PassThroughChargeTransactionBookedDate), TO_DATE('1800-01-01', 'YYYY-MM-DD'), in_PassThroughChargeTransactionBookedDate)
 		-- 
 		-- --There is a possibility that no match is found in the lookup LKP_WorkDCTInBalancePolicy. So we have to do regular null check and assign a default date '1800-01-01' to pass the job first and then investigate why and correct the data.
-		IFF(in_PassThroughChargeTransactionBookedDate IS NULL, TO_DATE('1800-01-01', 'YYYY-MM-DD'), in_PassThroughChargeTransactionBookedDate) AS out_PassThroughChargeTransactionBookedDate,
+		IFF(in_PassThroughChargeTransactionBookedDate IS NULL,
+			TO_DATE('1800-01-01', 'YYYY-MM-DD'
+			),
+			in_PassThroughChargeTransactionBookedDate
+		) AS out_PassThroughChargeTransactionBookedDate,
 		v_PassThroughChargeTransactionAmount AS out_PassThroughChargeTransactionAmount,
 		v_FullTermPremium AS out_FullTermPremium,
 		in_FullTaxAmount AS out_FullTaxAmount,
@@ -1249,7 +1370,11 @@ mplt_PassThroughCharge AS (WITH
 		DECODE(TRUE,
 			in_DCTSType = 'KYPremiumSurcharge', in_DCPSTWritten,
 			in_DCTSType = 'KYCollectionFee', 0,
-			IFF(lkp_ChangeAttr IS NULL, 0, lkp_ChangeAttr)) AS out_TotalAnnualPremiumSubjectToTax,
+			IFF(lkp_ChangeAttr IS NULL,
+				0,
+				lkp_ChangeAttr
+			)
+		) AS out_TotalAnnualPremiumSubjectToTax,
 		in_DCTSType AS out_DCTSType,
 		in_EntityType AS out_EntityType,
 		in_Purpose AS out_Purpose,
@@ -1283,7 +1408,10 @@ mplt_PassThroughCharge AS (WITH
 		EXP_Values.LocationXmlId AS in_LocationXmlId,
 		LKP_policy.pol_ak_id AS i_pol_ak_id,
 		-- *INF*: IIF(ISNULL(i_pol_ak_id), -1, i_pol_ak_id)
-		IFF(i_pol_ak_id IS NULL, - 1, i_pol_ak_id) AS v_pol_ak_id,
+		IFF(i_pol_ak_id IS NULL,
+			- 1,
+			i_pol_ak_id
+		) AS v_pol_ak_id,
 		v_pol_ak_id||'~'||in_LocationXmlId AS o_RisklocationKey,
 		EXP_Values.Territory
 		FROM EXP_Values
@@ -1296,13 +1424,25 @@ mplt_PassThroughCharge AS (WITH
 		LocationNumber AS i_LocationNumber,
 		Territory AS i_Territory,
 		-- *INF*: IIF(ISNULL(i_RatingCoverage_RiskLocationAKID),:LKP.LKP_RISKLOCATION_RISKLOCATIONKEY_LOCNUM_TERRITORY(i_RiskLocationKey,i_LocationNumber,i_Territory),i_RatingCoverage_RiskLocationAKID)
-		IFF(i_RatingCoverage_RiskLocationAKID IS NULL, LKP_RISKLOCATION_RISKLOCATIONKEY_LOCNUM_TERRITORY_i_RiskLocationKey_i_LocationNumber_i_Territory.RiskLocationAKID, i_RatingCoverage_RiskLocationAKID) AS v_RiskLocationAKID_RiskKey_Location_Territory,
+		IFF(i_RatingCoverage_RiskLocationAKID IS NULL,
+			LKP_RISKLOCATION_RISKLOCATIONKEY_LOCNUM_TERRITORY_i_RiskLocationKey_i_LocationNumber_i_Territory.RiskLocationAKID,
+			i_RatingCoverage_RiskLocationAKID
+		) AS v_RiskLocationAKID_RiskKey_Location_Territory,
 		-- *INF*: IIF(ISNULL(v_RiskLocationAKID_RiskKey_Location_Territory),:LKP.LKP_RISKLOCATION_RISKLOCATIONKEY_LOCNUM(i_RiskLocationKey,i_LocationNumber),v_RiskLocationAKID_RiskKey_Location_Territory)
-		IFF(v_RiskLocationAKID_RiskKey_Location_Territory IS NULL, LKP_RISKLOCATION_RISKLOCATIONKEY_LOCNUM_i_RiskLocationKey_i_LocationNumber.RiskLocationAKID, v_RiskLocationAKID_RiskKey_Location_Territory) AS v_RiskLocationAKID_RiskKey_Location,
+		IFF(v_RiskLocationAKID_RiskKey_Location_Territory IS NULL,
+			LKP_RISKLOCATION_RISKLOCATIONKEY_LOCNUM_i_RiskLocationKey_i_LocationNumber.RiskLocationAKID,
+			v_RiskLocationAKID_RiskKey_Location_Territory
+		) AS v_RiskLocationAKID_RiskKey_Location,
 		-- *INF*: IIF(ISNULL(v_RiskLocationAKID_RiskKey_Location),:LKP.LKP_RISKLOCATION_RISKLOCATIONKEY(i_RiskLocationKey),v_RiskLocationAKID_RiskKey_Location)
-		IFF(v_RiskLocationAKID_RiskKey_Location IS NULL, LKP_RISKLOCATION_RISKLOCATIONKEY_i_RiskLocationKey.RiskLocationAKID, v_RiskLocationAKID_RiskKey_Location) AS v_RiskLocationAKID_RiskKey,
+		IFF(v_RiskLocationAKID_RiskKey_Location IS NULL,
+			LKP_RISKLOCATION_RISKLOCATIONKEY_i_RiskLocationKey.RiskLocationAKID,
+			v_RiskLocationAKID_RiskKey_Location
+		) AS v_RiskLocationAKID_RiskKey,
 		-- *INF*: iif(isnull(v_RiskLocationAKID_RiskKey),-1,v_RiskLocationAKID_RiskKey)
-		IFF(v_RiskLocationAKID_RiskKey IS NULL, - 1, v_RiskLocationAKID_RiskKey) AS o_RiskLocationAKID
+		IFF(v_RiskLocationAKID_RiskKey IS NULL,
+			- 1,
+			v_RiskLocationAKID_RiskKey
+		) AS o_RiskLocationAKID
 		FROM EXP_RiskLocationKey
 		LEFT JOIN LKP_RISKLOCATION_RISKLOCATIONKEY_LOCNUM_TERRITORY LKP_RISKLOCATION_RISKLOCATIONKEY_LOCNUM_TERRITORY_i_RiskLocationKey_i_LocationNumber_i_Territory
 		ON LKP_RISKLOCATION_RISKLOCATIONKEY_LOCNUM_TERRITORY_i_RiskLocationKey_i_LocationNumber_i_Territory.RiskLocationKey = i_RiskLocationKey
@@ -1350,7 +1490,8 @@ mplt_PassThroughCharge AS (WITH
 		-- *INF*: substr(in_DCTTaxCode,1,2)
 		-- 
 		-- -- change this to DCTTaxCode because we want both the passed in DCTSType values that get assigned to DCTTaxCode and the cases where DCTTaxCode has appended States which should all be in DCTTaxCode
-		substr(in_DCTTaxCode, 1, 2) AS o_DCTSTypeStateAbbrev,
+		substr(in_DCTTaxCode, 1, 2
+		) AS o_DCTSTypeStateAbbrev,
 		EXP_Values.out_Type AS Type,
 		EXP_Values.out_TransactionDate AS TransactionDate,
 		EXP_Values.out_EnteredDate AS EnteredDate,
@@ -1364,23 +1505,37 @@ mplt_PassThroughCharge AS (WITH
 		EXP_Values.out_ReasonAmendedCode AS ReasonAmendedCode,
 		EXP_Values.out_TotalAnnualPremiumSubjectToTax AS TotalAnnualPremiumSubjectToTax,
 		-- *INF*: IIF(ISNULL(in_pol_ak_id),-1,in_pol_ak_id)
-		IFF(in_pol_ak_id IS NULL, - 1, in_pol_ak_id) AS v_pol_ak_id,
+		IFF(in_pol_ak_id IS NULL,
+			- 1,
+			in_pol_ak_id
+		) AS v_pol_ak_id,
 		-- *INF*: IIF(ISNULL(in_SupSurchargeExemptID),-1,in_SupSurchargeExemptID)
-		IFF(in_SupSurchargeExemptID IS NULL, - 1, in_SupSurchargeExemptID) AS v_SupSurchargeExemptID,
+		IFF(in_SupSurchargeExemptID IS NULL,
+			- 1,
+			in_SupSurchargeExemptID
+		) AS v_SupSurchargeExemptID,
 		-- *INF*: IIF(ISNULL(in_RiskLocationAKID) ,
 		-- -1,in_RiskLocationAKID)
-		IFF(in_RiskLocationAKID IS NULL, - 1, in_RiskLocationAKID) AS v_RiskLocationAKID,
+		IFF(in_RiskLocationAKID IS NULL,
+			- 1,
+			in_RiskLocationAKID
+		) AS v_RiskLocationAKID,
 		-- *INF*: MD5(in_TaxSurchargeId||
 		-- TO_CHAR(TransactionDate))
-		MD5(in_TaxSurchargeId || TO_CHAR(TransactionDate)) AS v_PassThroughChargeTransactionHashKey,
+		MD5(in_TaxSurchargeId || TO_CHAR(TransactionDate
+			)
+		) AS v_PassThroughChargeTransactionHashKey,
 		-- *INF*: DECODE(TRUE,
 		-- PassThroughChargeTransactionAmount<0 AND in_PolicyEffectiveDate=EffectiveDate AND Type='Cancel', 'ReturnFull', 
 		-- PassThroughChargeTransactionAmount<0, 'Return',
 		-- 'Add')
 		DECODE(TRUE,
-			PassThroughChargeTransactionAmount < 0 AND in_PolicyEffectiveDate = EffectiveDate AND Type = 'Cancel', 'ReturnFull',
+			PassThroughChargeTransactionAmount < 0 
+			AND in_PolicyEffectiveDate = EffectiveDate 
+			AND Type = 'Cancel', 'ReturnFull',
 			PassThroughChargeTransactionAmount < 0, 'Return',
-			'Add') AS v_PremPlusMinusDescription,
+			'Add'
+		) AS v_PremPlusMinusDescription,
 		LKP_RiskLocation.StateProvinceCode,
 		1 AS out_DuplicateSequence,
 		v_PassThroughChargeTransactionHashKey AS out_PassThroughChargeTransactionHashKey,
@@ -1390,7 +1545,11 @@ mplt_PassThroughCharge AS (WITH
 		-- TO_CHAR(v_RiskLocationAKID) || 
 		-- in_InsuranceLine||
 		-- TO_CHAR(in_PolicyEffectiveDate))
-		MD5(TO_CHAR(v_pol_ak_id) || TO_CHAR(v_RiskLocationAKID) || in_InsuranceLine || TO_CHAR(in_PolicyEffectiveDate)) AS out_PolicyCoverageHashKey,
+		MD5(TO_CHAR(v_pol_ak_id
+			) || TO_CHAR(v_RiskLocationAKID
+			) || in_InsuranceLine || TO_CHAR(in_PolicyEffectiveDate
+			)
+		) AS out_PolicyCoverageHashKey,
 		v_SupSurchargeExemptID AS out_SupSurchargeExemptID,
 		Type AS out_prem_trans_code,
 		v_PremPlusMinusDescription AS out_PremPlusMinusDescription,
@@ -1399,7 +1558,10 @@ mplt_PassThroughCharge AS (WITH
 		EXP_Values.out_Purpose AS Purpose,
 		EXP_Values.IterationId,
 		-- *INF*: IIF(RestateRepair='Restate',IterationId + 1,IterationId)
-		IFF(RestateRepair = 'Restate', IterationId + 1, IterationId) AS LoadSequence,
+		IFF(RestateRepair = 'Restate',
+			IterationId + 1,
+			IterationId
+		) AS LoadSequence,
 		EXP_Values.RestateRepair,
 		'N/A' AS DefaultString,
 		EXP_Values.CoverageGUID
@@ -1668,11 +1830,12 @@ mplt_PassThroughCharge AS (WITH
 		-- 
 		-- -- hierarchy of rules -- StateProvenceCode (numeric) values first, then parsed StateAbbrev (text) 
 		DECODE(TRUE,
-			NOT lkp_FilterRule_StateProvenceCode_InsuranceLine IS NULL, TO_INTEGER(lkp_FilterRule_StateProvenceCode_InsuranceLine),
-			NOT lkp_FilterRule_StateProvenceCode IS NULL, TO_INTEGER(lkp_FilterRule_StateProvenceCode),
-			NOT lkp_FilterRule_StateAbbrev_InsuranceLine IS NULL, TO_INTEGER(lkp_FilterRule_StateAbbrev_InsuranceLine),
-			NOT lkp_FilterRule_StateAbbrev IS NULL, TO_INTEGER(lkp_FilterRule_StateAbbrev),
-			0) AS v_FilterRule,
+			lkp_FilterRule_StateProvenceCode_InsuranceLine IS NOT NULL, CAST(lkp_FilterRule_StateProvenceCode_InsuranceLine AS INTEGER),
+			lkp_FilterRule_StateProvenceCode IS NOT NULL, CAST(lkp_FilterRule_StateProvenceCode AS INTEGER),
+			lkp_FilterRule_StateAbbrev_InsuranceLine IS NOT NULL, CAST(lkp_FilterRule_StateAbbrev_InsuranceLine AS INTEGER),
+			lkp_FilterRule_StateAbbrev IS NOT NULL, CAST(lkp_FilterRule_StateAbbrev AS INTEGER),
+			0
+		) AS v_FilterRule,
 		v_FilterRule AS FilterRule
 		FROM 
 		LEFT JOIN LKP_SupPassThroughChargeMap_FilterRule_StateAbbrev
@@ -1722,8 +1885,10 @@ mplt_PassThroughCharge AS (WITH
 		-- -- PremiumChange check needed  because onsets will not return values
 		Decode(True,
 			RestateRepair = 'Restate', i_PassThroughChargeTransactionAKID_Restate,
-			RestateRepair = 'PremiumChange' AND Purpose != 'Onset', i_PassThroughChargeTransactionAKID_DataRepair,
-			i_PassThroughChargeTransactionAKID) AS v_PassThroughChargeTransactionAKID,
+			RestateRepair = 'PremiumChange' 
+			AND Purpose != 'Onset', i_PassThroughChargeTransactionAKID_DataRepair,
+			i_PassThroughChargeTransactionAKID
+		) AS v_PassThroughChargeTransactionAKID,
 		-- *INF*: Decode(True,
 		-- RestateRepair='Restate',i_PassThroughChargeTransactionAmount,
 		-- RestateRepair='PremiumChange' and Purpose !='Onset', i_PassThroughChargeTransactionAmount_DataRepair,
@@ -1733,17 +1898,22 @@ mplt_PassThroughCharge AS (WITH
 		-- -- PremiumChange check needed  because onsets will not return values
 		Decode(True,
 			RestateRepair = 'Restate', i_PassThroughChargeTransactionAmount,
-			RestateRepair = 'PremiumChange' AND Purpose != 'Onset', i_PassThroughChargeTransactionAmount_DataRepair,
-			i_PassThroughChargeTransactionAmount) AS v_PassThroughChargeTransactionAmount,
+			RestateRepair = 'PremiumChange' 
+			AND Purpose != 'Onset', i_PassThroughChargeTransactionAmount_DataRepair,
+			i_PassThroughChargeTransactionAmount
+		) AS v_PassThroughChargeTransactionAmount,
 		-- *INF*: DECODE(TRUE,
 		-- RestateRepair='PremiumChange' AND ISNULL(i_PassThroughChargeTransactionAKID_DataRepair),'Y',
 		-- RestateRepair='PremiumChange' AND i_PassThroughChargeTransactionAmount_DataRepair<>i_PassThroughChargeTransactionAmount,'Y',
 		-- 'N'
 		-- )
 		DECODE(TRUE,
-			RestateRepair = 'PremiumChange' AND i_PassThroughChargeTransactionAKID_DataRepair IS NULL, 'Y',
-			RestateRepair = 'PremiumChange' AND i_PassThroughChargeTransactionAmount_DataRepair <> i_PassThroughChargeTransactionAmount, 'Y',
-			'N') AS v_RepairChangeFlag,
+			RestateRepair = 'PremiumChange' 
+			AND i_PassThroughChargeTransactionAKID_DataRepair IS NULL, 'Y',
+			RestateRepair = 'PremiumChange' 
+			AND i_PassThroughChargeTransactionAmount_DataRepair <> i_PassThroughChargeTransactionAmount, 'Y',
+			'N'
+		) AS v_RepairChangeFlag,
 		v_PassThroughChargeTransactionAKID AS o_PassThroughChargeTransactionAKID,
 		v_PassThroughChargeTransactionAmount AS o_PassThroughChargeTransactionAmount,
 		v_RepairChangeFlag AS o_RepairChangeFlag
@@ -1760,7 +1930,10 @@ mplt_PassThroughCharge AS (WITH
 		ModInsuranceLine,
 		in_InsuranceLine AS InsuranceLine,
 		-- *INF*: IIF(NOT ISNULL(ModInsuranceLine),ModInsuranceLine,InsuranceLine)
-		IFF(NOT ModInsuranceLine IS NULL, ModInsuranceLine, InsuranceLine) AS o_InsurancelIne
+		IFF(ModInsuranceLine IS NOT NULL,
+			ModInsuranceLine,
+			InsuranceLine
+		) AS o_InsurancelIne
 		FROM LKP_RatingCoverage_SupPassThroughMap
 	),
 	LKP_SupLGTLineOfInsurance AS (
@@ -1807,18 +1980,29 @@ mplt_PassThroughCharge AS (WITH
 		EXP_MD5.Purpose,
 		EXP_EvaluatePassThroughLookupResponse.o_PassThroughChargeTransactionAKID AS PassThroughChargeTransactionAKID,
 		-- *INF*: IIF(ISNULL(in_sup_prem_trans_code_id), -1, in_sup_prem_trans_code_id)
-		IFF(in_sup_prem_trans_code_id IS NULL, - 1, in_sup_prem_trans_code_id) AS v_sup_prem_trans_code_id,
+		IFF(in_sup_prem_trans_code_id IS NULL,
+			- 1,
+			in_sup_prem_trans_code_id
+		) AS v_sup_prem_trans_code_id,
 		-- *INF*: IIF(ISNULL(in_SupPassThroughChargeTypeID), -1, in_SupPassThroughChargeTypeID)
-		IFF(in_SupPassThroughChargeTypeID IS NULL, - 1, in_SupPassThroughChargeTypeID) AS v_SupPassThroughChargeTypeID,
+		IFF(in_SupPassThroughChargeTypeID IS NULL,
+			- 1,
+			in_SupPassThroughChargeTypeID
+		) AS v_SupPassThroughChargeTypeID,
 		-- *INF*: IIF(ISNULL(in_SupLGTLineOfInsuranceId),-1,in_SupLGTLineOfInsuranceId)
-		IFF(in_SupLGTLineOfInsuranceId IS NULL, - 1, in_SupLGTLineOfInsuranceId) AS v_SupLGTLineOfInsuranceId,
+		IFF(in_SupLGTLineOfInsuranceId IS NULL,
+			- 1,
+			in_SupLGTLineOfInsuranceId
+		) AS v_SupLGTLineOfInsuranceId,
 		EXP_EvaluatePassThroughLookupResponse.o_RepairChangeFlag AS ChangeFlag,
 		EXP_ApplyFilterRule.FilterRule AS AdditionalFilter,
 		'1' AS out_CurrentSnapshotFlag,
 		-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS out_EffectiveDate,
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		) AS out_EffectiveDate,
 		-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-		TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS out_ExpirationDate,
+		TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+		) AS out_ExpirationDate,
 		@{pipeline().parameters.SOURCE_SYSTEM_ID} AS out_SourceSystemID,
 		SYSDATE AS out_CreateDate,
 		SYSDATE AS out_ModifiedDate,
@@ -1836,26 +2020,46 @@ mplt_PassThroughCharge AS (WITH
 		in_FullTaxAmount AS out_FullTaxAmount,
 		in_TaxPercentageRate AS out_TaxPercentageRate,
 		-- *INF*: IIF(ISNULL(in_ReasonAmendedCode),'N/A',in_ReasonAmendedCode)
-		IFF(in_ReasonAmendedCode IS NULL, 'N/A', in_ReasonAmendedCode) AS out_ReasonAmendedCode,
+		IFF(in_ReasonAmendedCode IS NULL,
+			'N/A',
+			in_ReasonAmendedCode
+		) AS out_ReasonAmendedCode,
 		v_sup_prem_trans_code_id AS out_sup_prem_trans_code_id,
 		-- *INF*: IIF( ISNULL(in_RiskLocationAKID) or (IN(in_DCTSType,'KYPremiumSurcharge','KYCollectionFee') AND IN(in_TaxSurchargeObjectName,'DC_Policy')),-1, in_RiskLocationAKID)
-		IFF(in_RiskLocationAKID IS NULL OR ( IN(in_DCTSType, 'KYPremiumSurcharge', 'KYCollectionFee') AND IN(in_TaxSurchargeObjectName, 'DC_Policy') ), - 1, in_RiskLocationAKID) AS out_RiskLocationAKID,
+		IFF(in_RiskLocationAKID IS NULL 
+			OR ( in_DCTSType IN ('KYPremiumSurcharge','KYCollectionFee') 
+				AND in_TaxSurchargeObjectName IN ('DC_Policy') 
+			),
+			- 1,
+			in_RiskLocationAKID
+		) AS out_RiskLocationAKID,
 		in_PolicyAKID AS out_PolicyAKID,
 		v_SupLGTLineOfInsuranceId AS out_SupLGTLineOfInsuranceId,
 		-- *INF*: IIF( ISNULL(in_PolicyCoverageAKID) or (IN(in_DCTSType,'KYPremiumSurcharge','KYCollectionFee') AND IN(in_TaxSurchargeObjectName,'DC_Policy')),-1, in_PolicyCoverageAKID)
-		IFF(in_PolicyCoverageAKID IS NULL OR ( IN(in_DCTSType, 'KYPremiumSurcharge', 'KYCollectionFee') AND IN(in_TaxSurchargeObjectName, 'DC_Policy') ), - 1, in_PolicyCoverageAKID) AS out_PolicyCoverageAKID,
+		IFF(in_PolicyCoverageAKID IS NULL 
+			OR ( in_DCTSType IN ('KYPremiumSurcharge','KYCollectionFee') 
+				AND in_TaxSurchargeObjectName IN ('DC_Policy') 
+			),
+			- 1,
+			in_PolicyCoverageAKID
+		) AS out_PolicyCoverageAKID,
 		in_SupSurchargeExemptID AS out_SupSurchargeExemptID,
 		v_SupPassThroughChargeTypeID AS out_SupPassThroughChargeTypeID,
 		in_TotalAnnualPremiumSubjectToTax AS out_TotalAnnualPremiumSubjectToTax,
 		in_TaxSurchargeObjectName AS out_TaxSurchargeObjectName,
 		-- *INF*: LTRIM(RTRIM(in_DCTTaxCode))
-		LTRIM(RTRIM(in_DCTTaxCode)) AS out_DCTTaxCode,
+		LTRIM(RTRIM(in_DCTTaxCode
+			)
+		) AS out_DCTTaxCode,
 		Purpose AS out_Purpose,
 		EXP_MD5.LoadSequence,
 		EXP_MD5.RestateRepair,
 		LKP_RatingCoverage.RatingCoverageAKID,
 		-- *INF*: IIF(ISNULL(RatingCoverageAKID),-1,RatingCoverageAKID)
-		IFF(RatingCoverageAKID IS NULL, - 1, RatingCoverageAKID) AS O_RatingCoverageAKID
+		IFF(RatingCoverageAKID IS NULL,
+			- 1,
+			RatingCoverageAKID
+		) AS O_RatingCoverageAKID
 		FROM EXP_ApplyFilterRule
 		 -- Manually join with EXP_EvaluatePassThroughLookupResponse
 		 -- Manually join with EXP_MD5
@@ -1991,7 +2195,10 @@ EXP_Detemine_AK_ID AS (
 	TotalAnnualPremiumSubjectToTax,
 	-1 AS out_RatingCoverageAKID,
 	-- *INF*: IIF(ISNULL(in_PassThroughChargeTransactionAKID), in_NEXTVAL, in_PassThroughChargeTransactionAKID)
-	IFF(in_PassThroughChargeTransactionAKID IS NULL, in_NEXTVAL, in_PassThroughChargeTransactionAKID) AS out_PassThroughChargeTransactionAKID,
+	IFF(in_PassThroughChargeTransactionAKID IS NULL,
+		in_NEXTVAL,
+		in_PassThroughChargeTransactionAKID
+	) AS out_PassThroughChargeTransactionAKID,
 	DCTTaxCode,
 	Purpose1 AS Purpose,
 	LoadSequence,

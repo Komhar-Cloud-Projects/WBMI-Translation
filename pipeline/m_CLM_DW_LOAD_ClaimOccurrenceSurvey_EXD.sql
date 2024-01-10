@@ -89,25 +89,38 @@ EXP_LookupValues AS (
 	-- *INF*: IIF(ISNULL(lkp_claim_occurrence_ak_id),
 	-- -1,
 	-- lkp_claim_occurrence_ak_id)
-	IFF(lkp_claim_occurrence_ak_id IS NULL, - 1, lkp_claim_occurrence_ak_id) AS claim_occurrence_ak_id,
+	IFF(lkp_claim_occurrence_ak_id IS NULL,
+		- 1,
+		lkp_claim_occurrence_ak_id
+	) AS claim_occurrence_ak_id,
 	LKP_SupClaimSurveyType.SupClaimSurveyTypeId AS lkp_SupClaimSurveyTypeId,
 	-- *INF*: IIF(ISNULL(lkp_SupClaimSurveyTypeId),
 	-- 1,
 	-- lkp_SupClaimSurveyTypeId)
-	IFF(lkp_SupClaimSurveyTypeId IS NULL, 1, lkp_SupClaimSurveyTypeId) AS SupClaimSurveyTypeId,
+	IFF(lkp_SupClaimSurveyTypeId IS NULL,
+		1,
+		lkp_SupClaimSurveyTypeId
+	) AS SupClaimSurveyTypeId,
 	LKP_claim_party.claim_party_ak_id AS lkp_recipient_claim_party_ak_id,
 	-- *INF*: IIF(ISNULL(lkp_recipient_claim_party_ak_id),
 	-- -1,
 	-- lkp_recipient_claim_party_ak_id)
-	IFF(lkp_recipient_claim_party_ak_id IS NULL, - 1, lkp_recipient_claim_party_ak_id) AS recipient_claim_party_ak_id,
+	IFF(lkp_recipient_claim_party_ak_id IS NULL,
+		- 1,
+		lkp_recipient_claim_party_ak_id
+	) AS recipient_claim_party_ak_id,
 	LKP_SupClaimSurveyContactMethod.SurveyContactMethodDescription AS lkp_SurveyContactMethodDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_SurveyContactMethodDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_SurveyContactMethodDescription) AS SurveyContactMethodDescription,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_SurveyContactMethodDescription
+	) AS SurveyContactMethodDescription,
 	LKP_claim_representative.claim_rep_ak_id AS lkp_claim_rep_ak_id,
 	-- *INF*: IIF(ISNULL(lkp_claim_rep_ak_id),
 	-- -3,
 	-- lkp_claim_rep_ak_id)
-	IFF(lkp_claim_rep_ak_id IS NULL, - 3, lkp_claim_rep_ak_id) AS claim_rep_ak_id
+	IFF(lkp_claim_rep_ak_id IS NULL,
+		- 3,
+		lkp_claim_rep_ak_id
+	) AS claim_rep_ak_id
 	FROM 
 	LEFT JOIN LKP_SupClaimSurveyContactMethod
 	ON LKP_SupClaimSurveyContactMethod.SurveyContactMethodCode = EXP_Source.clm_survey_contact_method
@@ -167,17 +180,28 @@ EXP_DetectChanges AS (
 	-- 	'NOCHANGE'
 	-- 	)
 	DECODE(TRUE,
-		lkp_ClaimOccurrenceSurveyId IS NULL AND recipient_claim_party_ak_id = - 1 AND SurveyContactMethodDescription = 'N/A' AND claim_rep_ak_id < 0, 'IGNORE',
+		lkp_ClaimOccurrenceSurveyId IS NULL 
+		AND recipient_claim_party_ak_id = - 1 
+		AND SurveyContactMethodDescription = 'N/A' 
+		AND claim_rep_ak_id < 0, 'IGNORE',
 		lkp_ClaimOccurrenceSurveyId IS NULL, 'NEW',
-		lkp_RecipientClaimPartyAKID <> recipient_claim_party_ak_id OR lkp_SurveyContactMethodDescription <> SurveyContactMethodDescription OR lkp_AdjusterClaimRepresentativeAKID <> claim_rep_ak_id, 'UPDATE',
-		'NOCHANGE') AS v_ChangeFlag,
+		lkp_RecipientClaimPartyAKID <> recipient_claim_party_ak_id 
+		OR lkp_SurveyContactMethodDescription <> SurveyContactMethodDescription 
+		OR lkp_AdjusterClaimRepresentativeAKID <> claim_rep_ak_id, 'UPDATE',
+		'NOCHANGE'
+	) AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag,
 	-- *INF*: IIF(v_ChangeFlag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_ChangeFlag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS EffectiveFromDate,
+	IFF(v_ChangeFlag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS EffectiveFromDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveToDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS EffectiveToDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
@@ -267,8 +291,10 @@ EXP_EffectiveToDate AS (
 	-- 		ADD_TO_DATE(v_PREV_ROW_EffectiveFromDate,'SS',-1),
 	-- 	OriginalEffectiveToDate)
 	DECODE(TRUE,
-		ClaimOccurrenceAKID = v_PREV_ROW_ClaimOccurrenceAKID AND SupClaimSurveyTypeId = v_PREV_ROW_SupClaimSurveyTypeId, ADD_TO_DATE(v_PREV_ROW_EffectiveFromDate, 'SS', - 1),
-		OriginalEffectiveToDate) AS v_EffectiveToDate,
+		ClaimOccurrenceAKID = v_PREV_ROW_ClaimOccurrenceAKID 
+		AND SupClaimSurveyTypeId = v_PREV_ROW_SupClaimSurveyTypeId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveFromDate),
+		OriginalEffectiveToDate
+	) AS v_EffectiveToDate,
 	v_EffectiveToDate AS o_EffectiveToDate,
 	ClaimOccurrenceAKID AS v_PREV_ROW_ClaimOccurrenceAKID,
 	SupClaimSurveyTypeId AS v_PREV_ROW_SupClaimSurveyTypeId,

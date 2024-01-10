@@ -113,8 +113,9 @@ EXP_UpdateOrInsert AS (
 	-- 'NOCHANGE',
 	-- 'INSERT')						
 	DECODE(TRUE,
-		NOT LKP_SUPCLASSIFICATIONCOMMERCIALPROPERTY_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_ClassDescription_lkp_ClassCodeOriginatingOrganization_i_ISOCPRatingGroup_i_PropertySpecialClass_i_EffectiveDate.SupClassificationCommercialPropertyId IS NULL, 'NOCHANGE',
-		'INSERT') AS v_RecordPopulated,
+		LKP_SUPCLASSIFICATIONCOMMERCIALPROPERTY_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_ClassDescription_lkp_ClassCodeOriginatingOrganization_i_ISOCPRatingGroup_i_PropertySpecialClass_i_EffectiveDate.SupClassificationCommercialPropertyId IS NOT NULL, 'NOCHANGE',
+		'INSERT'
+	) AS v_RecordPopulated,
 	-- *INF*: DECODE(true,
 	-- i_ExpirationDate   <=  lkp_EffectiveDate OR v_RecordPopulated = 'NOCHANGE', 'NOCHANGE',
 	--  ISNULL(lkp_SupClassificationCommercialPropertyId) 
@@ -134,10 +135,24 @@ EXP_UpdateOrInsert AS (
 	-- 'NOCHANGE'
 	-- )
 	DECODE(true,
-		i_ExpirationDate <= lkp_EffectiveDate OR v_RecordPopulated = 'NOCHANGE', 'NOCHANGE',
-		lkp_SupClassificationCommercialPropertyId IS NULL OR ( i_RatingStateCode = lkp_RatingStateCode AND i_ClassCode = lkp_ClassCode AND i_ClassCodeOriginatingOrganization = lkp_ClassCodeOriginatingOrganization AND ( i_ClassDescription <> lkp_ClassDescription OR i_EffectiveDate <> lkp_EffectiveDate OR i_ExpirationDate <> lkp_ExpirationDate OR i_ISOCPRatingGroup <> lkp_ISOCPRatingGroup OR lkp_PropertySpecialClass <> i_PropertySpecialClass ) ), 'INSERT',
-		i_RatingStateCode <> lkp_RatingStateCode OR i_ClassCode <> lkp_ClassCode OR i_ClassCodeOriginatingOrganization <> lkp_ClassCodeOriginatingOrganization, 'UPDATE',
-		'NOCHANGE') AS v_ChangeFlag,
+		i_ExpirationDate <= lkp_EffectiveDate 
+		OR v_RecordPopulated = 'NOCHANGE', 'NOCHANGE',
+		lkp_SupClassificationCommercialPropertyId IS NULL 
+		OR ( i_RatingStateCode = lkp_RatingStateCode 
+			AND i_ClassCode = lkp_ClassCode 
+			AND i_ClassCodeOriginatingOrganization = lkp_ClassCodeOriginatingOrganization 
+			AND ( i_ClassDescription <> lkp_ClassDescription 
+				OR i_EffectiveDate <> lkp_EffectiveDate 
+				OR i_ExpirationDate <> lkp_ExpirationDate 
+				OR i_ISOCPRatingGroup <> lkp_ISOCPRatingGroup 
+				OR lkp_PropertySpecialClass <> i_PropertySpecialClass 
+			) 
+		), 'INSERT',
+		i_RatingStateCode <> lkp_RatingStateCode 
+		OR i_ClassCode <> lkp_ClassCode 
+		OR i_ClassCodeOriginatingOrganization <> lkp_ClassCodeOriginatingOrganization, 'UPDATE',
+		'NOCHANGE'
+	) AS v_ChangeFlag,
 	1 AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	-- *INF*: i_EffectiveDate
@@ -254,14 +269,26 @@ EXP_Lag_Eff_dates AS (
 	-- 								  )
 	-- 		,'0','1')
 	DECODE(TRUE,
-		RatingStateCode = v_PREV_ROW_RatingStateCode AND ClassCode = v_PREV_ROW_ClassCode AND OriginatingOrganizationCode = v_PREV_ROW_OriginatingOrganizationCode AND ( ClassDescription <> v_PREV_ROW_ClassDescription OR ADD_TO_DATE(ExpirationDate, 'SS', + 1) <> v_PREV_ROW_EffectiveDate OR ISOCPRatingGroup <> v_PREV_ROW_ISOCPRatingGroup OR CommercialPropertySpecialClass <> v_PREV_ROW_CommercialPropertySpecialClass ), '0',
-		'1') AS v_CurrentSnapshotFlag,
+		RatingStateCode = v_PREV_ROW_RatingStateCode 
+		AND ClassCode = v_PREV_ROW_ClassCode 
+		AND OriginatingOrganizationCode = v_PREV_ROW_OriginatingOrganizationCode 
+		AND ( ClassDescription <> v_PREV_ROW_ClassDescription 
+			OR DATEADD(SECOND,+ 1,ExpirationDate) <> v_PREV_ROW_EffectiveDate 
+			OR ISOCPRatingGroup <> v_PREV_ROW_ISOCPRatingGroup 
+			OR CommercialPropertySpecialClass <> v_PREV_ROW_CommercialPropertySpecialClass 
+		), '0',
+		'1'
+	) AS v_CurrentSnapshotFlag,
 	-- *INF*: ADD_TO_DATE(   --v_PREV_ROW_EffectiveDate
 	-- 
 	-- 	IIF(v_PREV_ROW_EffectiveDate =  TO_DATE('1800-01-01 00:00:00' , 'YYYY-MM-DD HH24:MI:SS' ) , sysdate ,v_PREV_ROW_EffectiveDate )
 	-- 
 	-- ,'SS',-1)
-	ADD_TO_DATE(IFF(v_PREV_ROW_EffectiveDate = TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), sysdate, v_PREV_ROW_EffectiveDate), 'SS', - 1) AS v_ClassExpirationDate,
+	DATEADD(SECOND,- 1,IFF(v_PREV_ROW_EffectiveDate = TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		sysdate,
+		v_PREV_ROW_EffectiveDate
+	)) AS v_ClassExpirationDate,
 	v_CurrentSnapshotFlag AS o_CurrentSnapshotFlag,
 	v_ClassExpirationDate AS o_ClassExpirationDate,
 	EffectiveDate AS v_PREV_ROW_EffectiveDate,

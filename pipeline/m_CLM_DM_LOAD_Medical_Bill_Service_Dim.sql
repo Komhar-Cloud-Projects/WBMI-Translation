@@ -38,9 +38,11 @@ EXP_AUDIT AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	1 AS crrnt_snpsht_flag,
 	-- *INF*: to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
+	to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	sysdate AS created_date,
 	sysdate AS modified_date
 	FROM SQ_medical_bill_service

@@ -13,17 +13,29 @@ EXP_Trim_Values AS (
 	RatedCoverageCode AS i_RatedCoverageCode,
 	RatedCoverageDescription AS i_RatedCoverageDescription,
 	-- *INF*: LTRIM(RTRIM(i_CoverageSummaryCode))
-	LTRIM(RTRIM(i_CoverageSummaryCode)) AS o_CoverageSummaryCode,
+	LTRIM(RTRIM(i_CoverageSummaryCode
+		)
+	) AS o_CoverageSummaryCode,
 	-- *INF*: LTRIM(RTRIM(i_CoverageGroupCode))
-	LTRIM(RTRIM(i_CoverageGroupCode)) AS o_CoverageGroupCode,
+	LTRIM(RTRIM(i_CoverageGroupCode
+		)
+	) AS o_CoverageGroupCode,
 	-- *INF*: LTRIM(RTRIM(i_CoverageCode))
-	LTRIM(RTRIM(i_CoverageCode)) AS o_CoverageCode,
+	LTRIM(RTRIM(i_CoverageCode
+		)
+	) AS o_CoverageCode,
 	-- *INF*: LTRIM(RTRIM(i_CoverageDescription))
-	LTRIM(RTRIM(i_CoverageDescription)) AS o_CoverageDescription,
+	LTRIM(RTRIM(i_CoverageDescription
+		)
+	) AS o_CoverageDescription,
 	-- *INF*: LTRIM(RTRIM(i_RatedCoverageCode))
-	LTRIM(RTRIM(i_RatedCoverageCode)) AS o_RatedCoverageCode,
+	LTRIM(RTRIM(i_RatedCoverageCode
+		)
+	) AS o_RatedCoverageCode,
 	-- *INF*: LTRIM(RTRIM(i_RatedCoverageDescription))
-	LTRIM(RTRIM(i_RatedCoverageDescription)) AS o_RatedCoverageDescription
+	LTRIM(RTRIM(i_RatedCoverageDescription
+		)
+	) AS o_RatedCoverageDescription
 	FROM SQ_CSV_ConformedCoverage
 ),
 AGG_Remove_Duplicate AS (
@@ -105,8 +117,11 @@ EXP_Detect_Changes AS (
 	-- 0)
 	DECODE(TRUE,
 		lkp_ConformedCoverageId IS NULL, 1,
-		lkp_CoverageDescription <> CoverageDescription OR lkp_RatedCoverageDescription <> RatedCoverageDescription OR lkp_RatedCoverageCode <> RatedCoverageCode, 2,
-		0) AS o_change_flag
+		lkp_CoverageDescription <> CoverageDescription 
+		OR lkp_RatedCoverageDescription <> RatedCoverageDescription 
+		OR lkp_RatedCoverageCode <> RatedCoverageCode, 2,
+		0
+	) AS o_change_flag
 	FROM AGG_Remove_Duplicate
 	LEFT JOIN LKP_ConformedCoverage
 	ON LKP_ConformedCoverage.CoverageCode = AGG_Remove_Duplicate.CoverageCode AND LKP_ConformedCoverage.CoverageGroupId = LKP_CoverageGroup.CoverageGroupId AND LKP_ConformedCoverage.RatedCoverageCode = AGG_Remove_Duplicate.RatedCoverageCode AND LKP_ConformedCoverage.RatedCoverageDescription = AGG_Remove_Duplicate.RatedCoverageDescription

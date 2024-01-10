@@ -87,49 +87,97 @@ EXP_MetaData AS (
 	ClassCode AS i_ClassCode,
 	PremiumTransactionExpirationDate AS i_PremiumTransactionExpirationDate,
 	-- *INF*: TO_DATE(i_PremiumTransactionExpirationDate,'MM/DD/YYYY')
-	TO_DATE(i_PremiumTransactionExpirationDate, 'MM/DD/YYYY') AS v_PTExpDate,
+	TO_DATE(i_PremiumTransactionExpirationDate, 'MM/DD/YYYY'
+	) AS v_PTExpDate,
 	-- *INF*: DECODE(true,
 	-- NOT ISNULL(:LKP.LKP_FiveColumns(i_ClassCode,i_sar_state)),:LKP.LKP_FiveColumns(i_ClassCode,i_sar_state),
 	-- NOT ISNULL(:LKP.LKP_FiveColumns(i_ClassCode,'99')),:LKP.LKP_FiveColumns(i_ClassCode,'99'),
 	-- 'N/A')
 	DECODE(true,
-		NOT LKP_FIVECOLUMNS_i_ClassCode_i_sar_state.lkp_result IS NULL, LKP_FIVECOLUMNS_i_ClassCode_i_sar_state.lkp_result,
-		NOT LKP_FIVECOLUMNS_i_ClassCode_99.lkp_result IS NULL, LKP_FIVECOLUMNS_i_ClassCode_99.lkp_result,
-		'N/A') AS v_lkp_result,
+		LKP_FIVECOLUMNS_i_ClassCode_i_sar_state.lkp_result IS NOT NULL, LKP_FIVECOLUMNS_i_ClassCode_i_sar_state.lkp_result,
+		LKP_FIVECOLUMNS_i_ClassCode_99.lkp_result IS NOT NULL, LKP_FIVECOLUMNS_i_ClassCode_99.lkp_result,
+		'N/A'
+	) AS v_lkp_result,
 	i_pif_4514_stage_id AS o_pif_4514_stage_id,
 	-- *INF*: RTRIM(LTRIM(i_VehicleClassCode))
-	RTRIM(LTRIM(i_VehicleClassCode)) AS o_VehicleClassCode,
+	RTRIM(LTRIM(i_VehicleClassCode
+		)
+	) AS o_VehicleClassCode,
 	i_VehicleWeight AS o_VehicleWeight,
 	i_VehicleWeight2 AS o_VehicleWeight2,
 	-- *INF*: IIF(ISNULL(i_CostNew7),i_CostNew,i_CostNew7)
-	IFF(i_CostNew7 IS NULL, i_CostNew, i_CostNew7) AS v_CostNew,
+	IFF(i_CostNew7 IS NULL,
+		i_CostNew,
+		i_CostNew7
+	) AS v_CostNew,
 	-- *INF*: --- Logic applied to use CostNew7 field if it is not Null else use CostNew field
 	-- IIF(ISNULL(v_CostNew),0,v_CostNew)
-	IFF(v_CostNew IS NULL, 0, v_CostNew) AS o_CostNew,
+	IFF(v_CostNew IS NULL,
+		0,
+		v_CostNew
+	) AS o_CostNew,
 	-- *INF*: IIF(IS_DATE(i_LastChangeDateMonth||'/'||i_LastchangeDateDay||'/'||i_LastChangeDateCentury||i_LastChangeDateYear,'MM/DD/YYYY'),
 	-- TO_DATE(i_LastChangeDateMonth||'/'||i_LastchangeDateDay||'/'||i_LastChangeDateCentury||i_LastChangeDateYear,'MM/DD/YYYY'),
 	-- TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS'))
-	IFF(IS_DATE(i_LastChangeDateMonth || '/' || i_LastchangeDateDay || '/' || i_LastChangeDateCentury || i_LastChangeDateYear, 'MM/DD/YYYY'), TO_DATE(i_LastChangeDateMonth || '/' || i_LastchangeDateDay || '/' || i_LastChangeDateCentury || i_LastChangeDateYear, 'MM/DD/YYYY'), TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')) AS v_VehicleDeleteDate,
+	IFF(IS_DATE(i_LastChangeDateMonth || '/' || i_LastchangeDateDay || '/' || i_LastChangeDateCentury || i_LastChangeDateYear, 'MM/DD/YYYY'
+		),
+		TO_DATE(i_LastChangeDateMonth || '/' || i_LastchangeDateDay || '/' || i_LastChangeDateCentury || i_LastChangeDateYear, 'MM/DD/YYYY'
+		),
+		TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+		)
+	) AS v_VehicleDeleteDate,
 	-- *INF*: IIF(i_VehicleDeletedIndicator='D',v_VehicleDeleteDate,TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS'))
-	IFF(i_VehicleDeletedIndicator = 'D', v_VehicleDeleteDate, TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')) AS o_VehicleDeleteDate,
+	IFF(i_VehicleDeletedIndicator = 'D',
+		v_VehicleDeleteDate,
+		TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+		)
+	) AS o_VehicleDeleteDate,
 	-- *INF*: LTRIM(RTRIM(i_sar_major_peril))
-	LTRIM(RTRIM(i_sar_major_peril)) AS o_sar_major_peril,
+	LTRIM(RTRIM(i_sar_major_peril
+		)
+	) AS o_sar_major_peril,
 	-- *INF*: SUBSTR(LTRIM(RTRIM(i_sar_code_4)),1,1)
-	SUBSTR(LTRIM(RTRIM(i_sar_code_4)), 1, 1) AS o_sar_code_4_1,
+	SUBSTR(LTRIM(RTRIM(i_sar_code_4
+			)
+		), 1, 1
+	) AS o_sar_code_4_1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_sar_state)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_sar_state) AS o_sar_state,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_sar_state
+	) AS o_sar_state,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@5')+2,instr(v_lkp_result,'@6')-instr(v_lkp_result,'@5')-2)
-	SUBSTR(v_lkp_result, instr(v_lkp_result, '@5') + 2, instr(v_lkp_result, '@6') - instr(v_lkp_result, '@5') - 2) AS o_RadiusOfOperation,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@5'
+		) + 2, REGEXP_INSTR(v_lkp_result, '@6'
+		) - REGEXP_INSTR(v_lkp_result, '@5'
+		) - 2
+	) AS o_RadiusOfOperation,
 	-- *INF*: SUBSTR(v_lkp_result,1,instr(v_lkp_result,'@1')-1)
-	SUBSTR(v_lkp_result, 1, instr(v_lkp_result, '@1') - 1) AS o_VehicleTypeSize,
+	SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1'
+		) - 1
+	) AS o_VehicleTypeSize,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@1')+2,instr(v_lkp_result,'@2')-instr(v_lkp_result,'@1')-2)
-	SUBSTR(v_lkp_result, instr(v_lkp_result, '@1') + 2, instr(v_lkp_result, '@2') - instr(v_lkp_result, '@1') - 2) AS o_BusinessUseClass,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@1'
+		) + 2, REGEXP_INSTR(v_lkp_result, '@2'
+		) - REGEXP_INSTR(v_lkp_result, '@1'
+		) - 2
+	) AS o_BusinessUseClass,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@2')+2,instr(v_lkp_result,'@3')-instr(v_lkp_result,'@2')-2)
-	SUBSTR(v_lkp_result, instr(v_lkp_result, '@2') + 2, instr(v_lkp_result, '@3') - instr(v_lkp_result, '@2') - 2) AS o_SecondaryClass,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@2'
+		) + 2, REGEXP_INSTR(v_lkp_result, '@3'
+		) - REGEXP_INSTR(v_lkp_result, '@2'
+		) - 2
+	) AS o_SecondaryClass,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@3')+2,instr(v_lkp_result,'@4')-instr(v_lkp_result,'@3')-2)
-	SUBSTR(v_lkp_result, instr(v_lkp_result, '@3') + 2, instr(v_lkp_result, '@4') - instr(v_lkp_result, '@3') - 2) AS o_FleetType,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@3'
+		) + 2, REGEXP_INSTR(v_lkp_result, '@4'
+		) - REGEXP_INSTR(v_lkp_result, '@3'
+		) - 2
+	) AS o_FleetType,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@4')+2,instr(v_lkp_result,'@5')-instr(v_lkp_result,'@4')-2)
-	SUBSTR(v_lkp_result, instr(v_lkp_result, '@4') + 2, instr(v_lkp_result, '@5') - instr(v_lkp_result, '@4') - 2) AS o_SecondaryClassGroup
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@4'
+		) + 2, REGEXP_INSTR(v_lkp_result, '@5'
+		) - REGEXP_INSTR(v_lkp_result, '@4'
+		) - 2
+	) AS o_SecondaryClassGroup
 	FROM SQ_PMS
 	LEFT JOIN LKP_FIVECOLUMNS LKP_FIVECOLUMNS_i_ClassCode_i_sar_state
 	ON LKP_FIVECOLUMNS_i_ClassCode_i_sar_state.ClassCode = i_ClassCode
@@ -214,21 +262,30 @@ EXP_CoverageDetailCommercialAuto AS (
 	YearMake,
 	StatedAmount,
 	-- *INF*: TO_DECIMAL(TO_CHAR(i_VehicleWeight) || TO_CHAR(i_VehicleWeight2))
-	TO_DECIMAL(TO_CHAR(i_VehicleWeight) || TO_CHAR(i_VehicleWeight2)) AS v_VehicleWeight,
+	CAST(TO_CHAR(i_VehicleWeight
+	) || TO_CHAR(i_VehicleWeight2
+	) AS FLOAT) AS v_VehicleWeight,
 	-- *INF*: SUBSTR(i_VehicleClassCode,1,3)
-	SUBSTR(i_VehicleClassCode, 1, 3) AS v_VehicleClassCode_1_3,
+	SUBSTR(i_VehicleClassCode, 1, 3
+	) AS v_VehicleClassCode_1_3,
 	-- *INF*: SUBSTR(i_VehicleClassCode,1,4)
-	SUBSTR(i_VehicleClassCode, 1, 4) AS v_VehicleClassCode_1_4,
+	SUBSTR(i_VehicleClassCode, 1, 4
+	) AS v_VehicleClassCode_1_4,
 	-- *INF*: SUBSTR(i_VehicleClassCode,4,2)
-	SUBSTR(i_VehicleClassCode, 4, 2) AS v_VehicleClassCode_4_5,
+	SUBSTR(i_VehicleClassCode, 4, 2
+	) AS v_VehicleClassCode_4_5,
 	-- *INF*: SUBSTR(i_VehicleClassCode,3,1)
-	SUBSTR(i_VehicleClassCode, 3, 1) AS v_VehicleClassCode_3_1,
+	SUBSTR(i_VehicleClassCode, 3, 1
+	) AS v_VehicleClassCode_3_1,
 	-- *INF*: :LKP.LKP_COVERAGELIMIT(i_PremiumTransactionAKID)
 	LKP_COVERAGELIMIT_i_PremiumTransactionAKID.CoverageLimitType AS v_CoverageLimitType,
 	CostNew,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	-- *INF*: IIF(ISNULL(i_StatisticalCoverageHashKey),'N/A',i_StatisticalCoverageHashKey)
-	IFF(i_StatisticalCoverageHashKey IS NULL, 'N/A', i_StatisticalCoverageHashKey) AS o_StatisticalCoverageHashKey,
+	IFF(i_StatisticalCoverageHashKey IS NULL,
+		'N/A',
+		i_StatisticalCoverageHashKey
+	) AS o_StatisticalCoverageHashKey,
 	-- *INF*: DECODE(TRUE,
 	-- v_VehicleClassCode_1_3  >=  '011' AND v_VehicleClassCode_1_3 <=  '236' AND v_VehicleWeight <= 10000,'Light Trucks',
 	-- v_VehicleClassCode_1_3  >=  '011' AND v_VehicleClassCode_1_3 <=  '236' AND v_VehicleWeight >= 10001 AND v_VehicleWeight <= 20000,'Medium Trucks',
@@ -258,17 +315,30 @@ EXP_CoverageDetailCommercialAuto AS (
 	-- 'N/A'
 	-- )
 	DECODE(TRUE,
-		v_VehicleClassCode_1_3 >= '011' AND v_VehicleClassCode_1_3 <= '236' AND v_VehicleWeight <= 10000, 'Light Trucks',
-		v_VehicleClassCode_1_3 >= '011' AND v_VehicleClassCode_1_3 <= '236' AND v_VehicleWeight >= 10001 AND v_VehicleWeight <= 20000, 'Medium Trucks',
-		v_VehicleClassCode_1_3 >= '311' AND v_VehicleClassCode_1_3 <= '366', 'Heavy Trucks',
-		v_VehicleClassCode_1_3 >= '401' AND v_VehicleClassCode_1_3 <= '506' AND v_VehicleWeight > 45000, 'Extra Heavy Trucks',
-		v_VehicleClassCode_1_3 >= '401' AND v_VehicleClassCode_1_3 <= '506' AND v_VehicleWeight < 45000, 'Extra Heavy Truck Tractors',
-		v_VehicleClassCode_1_3 >= '671' AND v_VehicleClassCode_1_3 <= '676', 'Semitrailers',
-		v_VehicleClassCode_1_3 >= '681' AND v_VehicleClassCode_1_3 <= '686', 'Trailers',
-		v_VehicleClassCode_1_3 >= '691' AND v_VehicleClassCode_1_3 <= '696', 'ServiceUtilityTrailers',
+		v_VehicleClassCode_1_3 >= '011' 
+		AND v_VehicleClassCode_1_3 <= '236' 
+		AND v_VehicleWeight <= 10000, 'Light Trucks',
+		v_VehicleClassCode_1_3 >= '011' 
+		AND v_VehicleClassCode_1_3 <= '236' 
+		AND v_VehicleWeight >= 10001 
+		AND v_VehicleWeight <= 20000, 'Medium Trucks',
+		v_VehicleClassCode_1_3 >= '311' 
+		AND v_VehicleClassCode_1_3 <= '366', 'Heavy Trucks',
+		v_VehicleClassCode_1_3 >= '401' 
+		AND v_VehicleClassCode_1_3 <= '506' 
+		AND v_VehicleWeight > 45000, 'Extra Heavy Trucks',
+		v_VehicleClassCode_1_3 >= '401' 
+		AND v_VehicleClassCode_1_3 <= '506' 
+		AND v_VehicleWeight < 45000, 'Extra Heavy Truck Tractors',
+		v_VehicleClassCode_1_3 >= '671' 
+		AND v_VehicleClassCode_1_3 <= '676', 'Semitrailers',
+		v_VehicleClassCode_1_3 >= '681' 
+		AND v_VehicleClassCode_1_3 <= '686', 'Trailers',
+		v_VehicleClassCode_1_3 >= '691' 
+		AND v_VehicleClassCode_1_3 <= '696', 'ServiceUtilityTrailers',
 		v_VehicleClassCode_1_3 = '707', 'GarageKeepers',
-		in(v_VehicleClassCode_1_4, '6601', '6602', '6603', '6604', '6610', '6611', '6614', '6619', '6620', '6670', '6671', '7040', '7059', '7060', '7070', '7072', '7219', '7480', '7721', '7800', '7802', '7804', '7852', '7909', '7912', '7919', '7923', '7929', '7960', '7961', '7962', '7963', '7964', '7970', '7971', '7985', '7986', '7993', '7996', '8001', '8002', '9020', '9450', '9461', '9462', '9463', '9625', '9771', '9999', '9920', '73998'), 'Special Class',
-		in(v_VehicleClassCode_1_4, '7399', '7908', '7911', '7915', '7922', '7926', '7927'), 'PrivatePassenger',
+		v_VehicleClassCode_1_4 IN ('6601','6602','6603','6604','6610','6611','6614','6619','6620','6670','6671','7040','7059','7060','7070','7072','7219','7480','7721','7800','7802','7804','7852','7909','7912','7919','7923','7929','7960','7961','7962','7963','7964','7970','7971','7985','7986','7993','7996','8001','8002','9020','9450','9461','9462','9463','9625','9771','9999','9920','73998'), 'Special Class',
+		v_VehicleClassCode_1_4 IN ('7399','7908','7911','7915','7922','7926','7927'), 'PrivatePassenger',
 		v_VehicleClassCode_1_4 = '7398', 'Fleet',
 		v_VehicleClassCode_1_4 = '7391', 'All Other NonFleet',
 		v_VehicleClassCode_1_4 = '7381', 'NO <5 Yrs-Not Work',
@@ -280,9 +350,14 @@ EXP_CoverageDetailCommercialAuto AS (
 		v_VehicleClassCode_1_4 = '7392', 'Owner-Not Work',
 		v_VehicleClassCode_1_4 = '7393', 'Owner-Less 15',
 		v_VehicleClassCode_1_4 = '7394', 'Owner-More 15',
-		'N/A') AS o_VehicleType,
+		'N/A'
+	) AS o_VehicleType,
 	-- *INF*: IIF(LENGTH(i_RadiusOfOperation)>0,i_RadiusOfOperation,'N/A')
-	IFF(LENGTH(i_RadiusOfOperation) > 0, i_RadiusOfOperation, 'N/A') AS o_RadiusOfOperation,
+	IFF(LENGTH(i_RadiusOfOperation
+		) > 0,
+		i_RadiusOfOperation,
+		'N/A'
+	) AS o_RadiusOfOperation,
 	-- *INF*: DECODE(TRUE,
 	-- IN(v_VehicleClassCode_4_5,'02','03','21','22','23','24','25','26','27','28','29'),'Truckers',
 	-- IN(v_VehicleClassCode_4_5,'31','32','33','34','35','36','37','38','39'),'Food Delivery',
@@ -297,19 +372,23 @@ EXP_CoverageDetailCommercialAuto AS (
 	-- 'N/A'
 	-- )
 	DECODE(TRUE,
-		IN(v_VehicleClassCode_4_5, '02', '03', '21', '22', '23', '24', '25', '26', '27', '28', '29'), 'Truckers',
-		IN(v_VehicleClassCode_4_5, '31', '32', '33', '34', '35', '36', '37', '38', '39'), 'Food Delivery',
-		IN(v_VehicleClassCode_4_5, '41', '42', '43', '44', '45', '46', '47', '48', '49'), 'Special Delivery',
-		IN(v_VehicleClassCode_4_5, '51', '52', '53', '54', '55', '56', '57', '58', '59'), 'Waste',
-		IN(v_VehicleClassCode_4_5, '61', '62', '63', '64', '65', '66', '67', '68', '69'), 'Farmers',
-		IN(v_VehicleClassCode_4_5, '71', '72', '73', '74', '75', '76', '77', '78', '79'), 'Dump/Transit',
-		IN(v_VehicleClassCode_4_5, '81', '82', '83', '84', '85', '86', '87', '88', '89'), 'Contractors',
-		IN(v_VehicleClassCode_4_5, '93', '94', '95', '96', '97'), 'Van/Bus',
+		v_VehicleClassCode_4_5 IN ('02','03','21','22','23','24','25','26','27','28','29'), 'Truckers',
+		v_VehicleClassCode_4_5 IN ('31','32','33','34','35','36','37','38','39'), 'Food Delivery',
+		v_VehicleClassCode_4_5 IN ('41','42','43','44','45','46','47','48','49'), 'Special Delivery',
+		v_VehicleClassCode_4_5 IN ('51','52','53','54','55','56','57','58','59'), 'Waste',
+		v_VehicleClassCode_4_5 IN ('61','62','63','64','65','66','67','68','69'), 'Farmers',
+		v_VehicleClassCode_4_5 IN ('71','72','73','74','75','76','77','78','79'), 'Dump/Transit',
+		v_VehicleClassCode_4_5 IN ('81','82','83','84','85','86','87','88','89'), 'Contractors',
+		v_VehicleClassCode_4_5 IN ('93','94','95','96','97'), 'Van/Bus',
 		v_VehicleClassCode_4_5 = '91', 'Logging',
-		IN(v_VehicleClassCode_4_5, '92', '98', '99'), 'Other',
-		'N/A') AS o_SecondaryVehicleType,
+		v_VehicleClassCode_4_5 IN ('92','98','99'), 'Other',
+		'N/A'
+	) AS o_SecondaryVehicleType,
 	-- *INF*: IIF(IN(v_VehicleClassCode_4_5,'71','72','73','74','75','76','77','78','79'),'1','0')
-	IFF(IN(v_VehicleClassCode_4_5, '71', '72', '73', '74', '75', '76', '77', '78', '79'), '1', '0') AS o_UsedInDumpingIndicator,
+	IFF(v_VehicleClassCode_4_5 IN ('71','72','73','74','75','76','77','78','79'),
+		'1',
+		'0'
+	) AS o_UsedInDumpingIndicator,
 	VehicleDeleteDate,
 	-- *INF*: DECODE(TRUE,
 	-- i_sar_state='16' AND i_sar_major_peril='130' AND v_CoverageLimitType='PersonalInjuryProtectionBasicLimit' AND i_sar_code_4_1='1','671',
@@ -325,29 +404,81 @@ EXP_CoverageDetailCommercialAuto AS (
 	-- i_sar_state='21' AND i_sar_major_peril='130' AND i_sar_code_4_1='0','681',
 	-- 'N/A')
 	DECODE(TRUE,
-		i_sar_state = '16' AND i_sar_major_peril = '130' AND v_CoverageLimitType = 'PersonalInjuryProtectionBasicLimit' AND i_sar_code_4_1 = '1', '671',
-		i_sar_state = '16' AND i_sar_major_peril = '130' AND v_CoverageLimitType = 'PersonalInjuryProtectionExcessLimit' AND i_sar_code_4_1 = '1', '672',
-		i_sar_state = '16' AND i_sar_major_peril = '130' AND v_CoverageLimitType = 'PersonalInjuryProtectionBasicLimit' AND i_sar_code_4_1 = '0', '681',
-		i_sar_state = '16' AND i_sar_major_peril = '130' AND v_CoverageLimitType = 'PersonalInjuryProtectionExcessLimit' AND i_sar_code_4_1 = '0', '682',
-		i_sar_state = '15' AND i_sar_major_peril = '130' AND v_CoverageLimitType = 'PersonalInjuryProtectionBasicLimit' AND i_sar_code_4_1 = '0', '681',
-		i_sar_state = '15' AND i_sar_major_peril = '130' AND v_CoverageLimitType = 'PersonalInjuryProtectionExcessLimit' AND i_sar_code_4_1 = '0', '682',
-		i_sar_state = '22' AND i_sar_major_peril = '130' AND v_CoverageLimitType = 'PersonalInjuryProtectionBasicLimit' AND IN(i_sar_code_4_1, '1', '3'), '671',
-		i_sar_state = '22' AND i_sar_major_peril = '130' AND v_CoverageLimitType = 'PersonalInjuryProtectionBasicLimit' AND i_sar_code_4_1 = '0', '681',
-		i_sar_state = '22' AND i_sar_major_peril = '130' AND v_CoverageLimitType = 'PersonalInjuryProtectionExcessLimit' AND i_sar_code_4_1 = '0', '695',
-		i_sar_state = '21' AND i_sar_major_peril = '130' AND IN(i_sar_code_4_1, '1', '3'), '671',
-		i_sar_state = '21' AND i_sar_major_peril = '130' AND i_sar_code_4_1 = '0', '681',
-		'N/A') AS o_PIPBureaucoverageCode,
+		i_sar_state = '16' 
+		AND i_sar_major_peril = '130' 
+		AND v_CoverageLimitType = 'PersonalInjuryProtectionBasicLimit' 
+		AND i_sar_code_4_1 = '1', '671',
+		i_sar_state = '16' 
+		AND i_sar_major_peril = '130' 
+		AND v_CoverageLimitType = 'PersonalInjuryProtectionExcessLimit' 
+		AND i_sar_code_4_1 = '1', '672',
+		i_sar_state = '16' 
+		AND i_sar_major_peril = '130' 
+		AND v_CoverageLimitType = 'PersonalInjuryProtectionBasicLimit' 
+		AND i_sar_code_4_1 = '0', '681',
+		i_sar_state = '16' 
+		AND i_sar_major_peril = '130' 
+		AND v_CoverageLimitType = 'PersonalInjuryProtectionExcessLimit' 
+		AND i_sar_code_4_1 = '0', '682',
+		i_sar_state = '15' 
+		AND i_sar_major_peril = '130' 
+		AND v_CoverageLimitType = 'PersonalInjuryProtectionBasicLimit' 
+		AND i_sar_code_4_1 = '0', '681',
+		i_sar_state = '15' 
+		AND i_sar_major_peril = '130' 
+		AND v_CoverageLimitType = 'PersonalInjuryProtectionExcessLimit' 
+		AND i_sar_code_4_1 = '0', '682',
+		i_sar_state = '22' 
+		AND i_sar_major_peril = '130' 
+		AND v_CoverageLimitType = 'PersonalInjuryProtectionBasicLimit' 
+		AND i_sar_code_4_1 IN ('1','3'), '671',
+		i_sar_state = '22' 
+		AND i_sar_major_peril = '130' 
+		AND v_CoverageLimitType = 'PersonalInjuryProtectionBasicLimit' 
+		AND i_sar_code_4_1 = '0', '681',
+		i_sar_state = '22' 
+		AND i_sar_major_peril = '130' 
+		AND v_CoverageLimitType = 'PersonalInjuryProtectionExcessLimit' 
+		AND i_sar_code_4_1 = '0', '695',
+		i_sar_state = '21' 
+		AND i_sar_major_peril = '130' 
+		AND i_sar_code_4_1 IN ('1','3'), '671',
+		i_sar_state = '21' 
+		AND i_sar_major_peril = '130' 
+		AND i_sar_code_4_1 = '0', '681',
+		'N/A'
+	) AS o_PIPBureaucoverageCode,
 	-- *INF*: IIF(LENGTH(i_CommercialAutoVehicleTypeSize)>0,i_CommercialAutoVehicleTypeSize,'N/A')
-	IFF(LENGTH(i_CommercialAutoVehicleTypeSize) > 0, i_CommercialAutoVehicleTypeSize, 'N/A') AS o_CommercialAutoVehicleTypeSize,
+	IFF(LENGTH(i_CommercialAutoVehicleTypeSize
+		) > 0,
+		i_CommercialAutoVehicleTypeSize,
+		'N/A'
+	) AS o_CommercialAutoVehicleTypeSize,
 	-- *INF*: IIF(LENGTH(i_CommercialAutoBusinessUseClass)>0,i_CommercialAutoBusinessUseClass,'N/A')
-	IFF(LENGTH(i_CommercialAutoBusinessUseClass) > 0, i_CommercialAutoBusinessUseClass, 'N/A') AS o_CommercialAutoBusinessUseClass,
+	IFF(LENGTH(i_CommercialAutoBusinessUseClass
+		) > 0,
+		i_CommercialAutoBusinessUseClass,
+		'N/A'
+	) AS o_CommercialAutoBusinessUseClass,
 	-- *INF*: IIF(LENGTH(i_SecondaryClass)>0,i_SecondaryClass,'N/A')
-	IFF(LENGTH(i_SecondaryClass) > 0, i_SecondaryClass, 'N/A') AS o_SecondaryClass,
+	IFF(LENGTH(i_SecondaryClass
+		) > 0,
+		i_SecondaryClass,
+		'N/A'
+	) AS o_SecondaryClass,
 	-- *INF*: IIF(LENGTH(i_FleetType)>0,i_FleetType,'N/A')
-	IFF(LENGTH(i_FleetType) > 0, i_FleetType, 'N/A') AS o_FleetType,
+	IFF(LENGTH(i_FleetType
+		) > 0,
+		i_FleetType,
+		'N/A'
+	) AS o_FleetType,
 	-- *INF*: IIF(LENGTH(i_SecondaryClassGroup)>0,i_SecondaryClassGroup,'N/A')
 	-- 
-	IFF(LENGTH(i_SecondaryClassGroup) > 0, i_SecondaryClassGroup, 'N/A') AS o_SecondaryClassGroup
+	IFF(LENGTH(i_SecondaryClassGroup
+		) > 0,
+		i_SecondaryClassGroup,
+		'N/A'
+	) AS o_SecondaryClassGroup
 	FROM FIL_NULL_PremiumTransactionID
 	LEFT JOIN LKP_COVERAGELIMIT LKP_COVERAGELIMIT_i_PremiumTransactionAKID
 	ON LKP_COVERAGELIMIT_i_PremiumTransactionAKID.PremiumTransactionAKID = i_PremiumTransactionAKID
@@ -445,16 +576,28 @@ EXP_DetectChanges AS (
 	LKP_CoverageDetailCommercialAuto.VehicleDeleteDate AS lkp_VehicleDeleteDate,
 	LKP_CoverageDetailCommercialAuto.VIN AS lkp_VIN,
 	-- *INF*: IIF(ISNULL(lkp_VIN), 'TBD', lkp_VIN)
-	IFF(lkp_VIN IS NULL, 'TBD', lkp_VIN) AS v_lkp_VIN,
+	IFF(lkp_VIN IS NULL,
+		'TBD',
+		lkp_VIN
+	) AS v_lkp_VIN,
 	LKP_CoverageDetailCommercialAuto.VehicleMake AS lkp_VehicleMake,
 	-- *INF*: IIF(ISNULL(lkp_VehicleMake), 'TBD', lkp_VehicleMake)
-	IFF(lkp_VehicleMake IS NULL, 'TBD', lkp_VehicleMake) AS v_lkp_VehicleMake,
+	IFF(lkp_VehicleMake IS NULL,
+		'TBD',
+		lkp_VehicleMake
+	) AS v_lkp_VehicleMake,
 	LKP_CoverageDetailCommercialAuto.VehicleModel AS lkp_VehicleModel,
 	-- *INF*: IIF(ISNULL(lkp_VehicleModel), 'TBD', lkp_VehicleModel)
-	IFF(lkp_VehicleModel IS NULL, 'TBD', lkp_VehicleModel) AS v_lkp_VehicleModel,
+	IFF(lkp_VehicleModel IS NULL,
+		'TBD',
+		lkp_VehicleModel
+	) AS v_lkp_VehicleModel,
 	LKP_CoverageDetailCommercialAuto.VehicleNumber AS lkp_VehicleNumber,
 	-- *INF*: IIF(ISNULL(lkp_VehicleNumber), -1, lkp_VehicleNumber)
-	IFF(lkp_VehicleNumber IS NULL, - 1, lkp_VehicleNumber) AS v_lkp_VehicleNumber,
+	IFF(lkp_VehicleNumber IS NULL,
+		- 1,
+		lkp_VehicleNumber
+	) AS v_lkp_VehicleNumber,
 	LKP_CoverageDetailCommercialAuto.PIPBureauCoverageCode AS lkp_PIPBureaucoverageCode,
 	LKP_CoverageDetailCommercialAuto.VehicleTypeSize AS lkp_CommercialAutoVehicleTypeSize,
 	LKP_CoverageDetailCommercialAuto.BusinessUseClass AS lkp_CommercialAutoBusinessUseClass,
@@ -466,7 +609,10 @@ EXP_DetectChanges AS (
 	LKP_CoverageDetailCommercialAuto.MedicalExpensesOption AS lkp_MedicalExpensesOption,
 	LKP_CoverageDetailCommercialAuto.CoveredByWorkersCompensationFlag AS lkp_CoveredByWorkersCompensationFlag,
 	-- *INF*: IIF(ISNULL(lkp_PIPBureaucoverageCode),'N/A',lkp_PIPBureaucoverageCode)
-	IFF(lkp_PIPBureaucoverageCode IS NULL, 'N/A', lkp_PIPBureaucoverageCode) AS v_lkp_PIPBureaucoverageCode,
+	IFF(lkp_PIPBureaucoverageCode IS NULL,
+		'N/A',
+		lkp_PIPBureaucoverageCode
+	) AS v_lkp_PIPBureaucoverageCode,
 	EXP_CoverageDetailCommercialAuto.CostNew AS i_CostNew,
 	EXP_CoverageDetailCommercialAuto.o_PremiumTransactionID AS i_PremiumTransactionID,
 	EXP_CoverageDetailCommercialAuto.o_StatisticalCoverageHashKey AS i_StatisticalCoverageHashKey,
@@ -484,17 +630,37 @@ EXP_DetectChanges AS (
 	EXP_CoverageDetailCommercialAuto.o_FleetType AS i_FleetType,
 	EXP_CoverageDetailCommercialAuto.o_SecondaryClassGroup AS i_SecondaryClassGroup,
 	-- *INF*: RTRIM(LTRIM(lkp_VehicleType))
-	RTRIM(LTRIM(lkp_VehicleType)) AS v_lkp_VehicleType,
+	RTRIM(LTRIM(lkp_VehicleType
+		)
+	) AS v_lkp_VehicleType,
 	-- *INF*: RTRIM(LTRIM(lkp_RadiusOfOperation))
-	RTRIM(LTRIM(lkp_RadiusOfOperation)) AS v_lkp_RadiusOfOperation,
+	RTRIM(LTRIM(lkp_RadiusOfOperation
+		)
+	) AS v_lkp_RadiusOfOperation,
 	-- *INF*: RTRIM(LTRIM(lkp_SecondaryVehicleType))
-	RTRIM(LTRIM(lkp_SecondaryVehicleType)) AS v_lkp_SecondaryVehicleType,
+	RTRIM(LTRIM(lkp_SecondaryVehicleType
+		)
+	) AS v_lkp_SecondaryVehicleType,
 	-- *INF*: IIF(RTRIM(LTRIM(lkp_UsedInDumpingIndicator))='T','1','0')
-	IFF(RTRIM(LTRIM(lkp_UsedInDumpingIndicator)) = 'T', '1', '0') AS v_lkp_UsedInDumpingIndicator,
+	IFF(RTRIM(LTRIM(lkp_UsedInDumpingIndicator
+			)
+		) = 'T',
+		'1',
+		'0'
+	) AS v_lkp_UsedInDumpingIndicator,
 	-- *INF*: SUBSTR('0000' || IIF(ISNULL(i_YearMake), '0000', TO_CHAR(i_YearMake)), -4, 4)
-	SUBSTR('0000' || IFF(i_YearMake IS NULL, '0000', TO_CHAR(i_YearMake)), - 4, 4) AS v_YearMake,
+	SUBSTR('0000' || IFF(i_YearMake IS NULL,
+			'0000',
+			TO_CHAR(i_YearMake
+			)
+		), - 4, 4
+	) AS v_YearMake,
 	-- *INF*: IIF(ISNULL(i_StatedAmount), '0', TO_CHAR(i_StatedAmount))
-	IFF(i_StatedAmount IS NULL, '0', TO_CHAR(i_StatedAmount)) AS v_StatedAmount,
+	IFF(i_StatedAmount IS NULL,
+		'0',
+		TO_CHAR(i_StatedAmount
+		)
+	) AS v_StatedAmount,
 	'N/A' AS v_VIN,
 	v_VIN AS o_VIN,
 	'N/A' AS v_VehicleMake,
@@ -507,9 +673,11 @@ EXP_DetectChanges AS (
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_EffectiveDate,
+	TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US'
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_ExpirationDate,
+	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -544,8 +712,27 @@ EXP_DetectChanges AS (
 	-- 'NOCHANGE')
 	DECODE(TRUE,
 		lkp_PremiumTransactionID IS NULL, 'NEW',
-		v_lkp_VehicleType != i_VehicleType OR v_lkp_RadiusOfOperation != i_RadiusOfOperation OR v_lkp_SecondaryVehicleType != i_SecondaryVehicleType OR v_lkp_UsedInDumpingIndicator != i_UsedInDumpingIndicator OR v_YearMake != lkp_VehicleYear OR v_StatedAmount != lkp_StatedAmount OR lkp_CostNew != i_CostNew OR lkp_VehicleDeleteDate != i_VehicleDeleteDate OR v_lkp_VIN != v_VIN OR v_lkp_VehicleMake != v_VehicleMake OR v_lkp_VehicleModel != v_VehicleModel OR v_lkp_VehicleNumber != v_VehicleNumber OR v_lkp_PIPBureaucoverageCode <> i_PIPBureaucoverageCode OR lkp_CommercialAutoVehicleTypeSize <> i_CommercialAutoVehicleTypeSize OR lkp_CommercialAutoBusinessUseClass <> i_CommercialAutoBusinessUseClass OR lkp_SecondaryClass <> i_SecondaryClass OR lkp_FleetType <> i_FleetType OR lkp_SecondaryClassGroup <> i_SecondaryClassGroup OR lkp_IncludeUIM <> v_IncludeUIM, 'UPDATE',
-		'NOCHANGE') AS o_ChangeFlag,
+		v_lkp_VehicleType != i_VehicleType 
+		OR v_lkp_RadiusOfOperation != i_RadiusOfOperation 
+		OR v_lkp_SecondaryVehicleType != i_SecondaryVehicleType 
+		OR v_lkp_UsedInDumpingIndicator != i_UsedInDumpingIndicator 
+		OR v_YearMake != lkp_VehicleYear 
+		OR v_StatedAmount != lkp_StatedAmount 
+		OR lkp_CostNew != i_CostNew 
+		OR lkp_VehicleDeleteDate != i_VehicleDeleteDate 
+		OR v_lkp_VIN != v_VIN 
+		OR v_lkp_VehicleMake != v_VehicleMake 
+		OR v_lkp_VehicleModel != v_VehicleModel 
+		OR v_lkp_VehicleNumber != v_VehicleNumber 
+		OR v_lkp_PIPBureaucoverageCode <> i_PIPBureaucoverageCode 
+		OR lkp_CommercialAutoVehicleTypeSize <> i_CommercialAutoVehicleTypeSize 
+		OR lkp_CommercialAutoBusinessUseClass <> i_CommercialAutoBusinessUseClass 
+		OR lkp_SecondaryClass <> i_SecondaryClass 
+		OR lkp_FleetType <> i_FleetType 
+		OR lkp_SecondaryClassGroup <> i_SecondaryClassGroup 
+		OR lkp_IncludeUIM <> v_IncludeUIM, 'UPDATE',
+		'NOCHANGE'
+	) AS o_ChangeFlag,
 	'N/A' AS o_TerminalZoneCode,
 	'N/A' AS o_VehicleType,
 	i_PIPBureaucoverageCode AS o_PIPBureaucoverageCode,
@@ -557,7 +744,8 @@ EXP_DetectChanges AS (
 	'N/A' AS v_IncludeUIM,
 	v_IncludeUIM AS o_IncludeUIM,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS RetroactiveDate,
+	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+	) AS RetroactiveDate,
 	'N/A' AS o_CoordinationOfBenefits,
 	'N/A' AS o_MedicalExpensesOption,
 	0 AS o_CoveredByWorkersCompensationFlag,

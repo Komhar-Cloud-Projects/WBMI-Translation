@@ -15,11 +15,23 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate) AS o_EffectiveDate,
+	IFF(i_EffectiveDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_EffectiveDate
+	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate,
+	IFF(i_ExpirationDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ExpirationDate
+	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate) AS o_ModifiedDate
+	IFF(i_ModifiedDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ModifiedDate
+	) AS o_ModifiedDate
 	FROM SQ_PolicyOfferingProduct
 ),
 EXP_NumericValues AS (
@@ -28,11 +40,20 @@ EXP_NumericValues AS (
 	PolicyOfferingId AS i_PolicyOfferingId,
 	ProductId AS i_ProductId,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingProductId),-1,i_PolicyOfferingProductId)
-	IFF(i_PolicyOfferingProductId IS NULL, - 1, i_PolicyOfferingProductId) AS o_PolicyOfferingProductId,
+	IFF(i_PolicyOfferingProductId IS NULL,
+		- 1,
+		i_PolicyOfferingProductId
+	) AS o_PolicyOfferingProductId,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingId),-1,i_PolicyOfferingId)
-	IFF(i_PolicyOfferingId IS NULL, - 1, i_PolicyOfferingId) AS o_PolicyOfferingId,
+	IFF(i_PolicyOfferingId IS NULL,
+		- 1,
+		i_PolicyOfferingId
+	) AS o_PolicyOfferingId,
 	-- *INF*: IIF(ISNULL(i_ProductId),-1,i_ProductId)
-	IFF(i_ProductId IS NULL, - 1, i_ProductId) AS o_ProductId
+	IFF(i_ProductId IS NULL,
+		- 1,
+		i_ProductId
+	) AS o_ProductId
 	FROM SQ_PolicyOfferingProduct
 ),
 EXP_StringValues AS (

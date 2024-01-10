@@ -16,10 +16,16 @@ EXP_Default_Values AS (
 	SELECT
 	premises_code,
 	-- *INF*: iif(isnull(premises_code),'N/A',premises_code)
-	IFF(premises_code IS NULL, 'N/A', premises_code) AS premises_code_OUT,
+	IFF(premises_code IS NULL,
+		'N/A',
+		premises_code
+	) AS premises_code_OUT,
 	premises_desc AS premises_descript,
 	-- *INF*: iif(isnull(premises_descript),'N/A',premises_descript)
-	IFF(premises_descript IS NULL, 'N/A', premises_descript) AS premises_descript_OUT
+	IFF(premises_descript IS NULL,
+		'N/A',
+		premises_descript
+	) AS premises_descript_OUT
 	FROM SQ_sup_premises_type_stage
 ),
 LKP_sup_workers_comp_premises_type AS (
@@ -44,15 +50,31 @@ EXP_Detect_Changes AS (
 	EXP_Default_Values.premises_code_OUT,
 	EXP_Default_Values.premises_descript_OUT,
 	-- *INF*: IIF(ISNULL(OLD_sup_wc_premises_type_id), 'NEW', IIF(LTRIM(RTRIM(OLD_premises_descript)) != (LTRIM(RTRIM(premises_descript_OUT))), 'UPDATE', 'NOCHANGE'))
-	IFF(OLD_sup_wc_premises_type_id IS NULL, 'NEW', IFF(LTRIM(RTRIM(OLD_premises_descript)) != ( LTRIM(RTRIM(premises_descript_OUT)) ), 'UPDATE', 'NOCHANGE')) AS V_changed_flag,
+	IFF(OLD_sup_wc_premises_type_id IS NULL,
+		'NEW',
+		IFF(LTRIM(RTRIM(OLD_premises_descript
+				)
+			) != ( LTRIM(RTRIM(premises_descript_OUT
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS V_changed_flag,
 	V_changed_flag AS CHANGED_FLAG,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(V_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(V_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,
+	IFF(V_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id
@@ -117,8 +139,9 @@ EXP_Lag_Eff_From_Date AS (
 	-- 	orig_eff_to_date)
 	-- 	
 	DECODE(TRUE,
-		premises_code = v_prev_row_premises_code, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		premises_code = v_prev_row_premises_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	premises_code AS v_prev_row_premises_code,
 	eff_from_date AS v_prev_eff_from_date,

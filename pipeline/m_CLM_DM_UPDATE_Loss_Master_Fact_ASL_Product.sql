@@ -171,7 +171,8 @@ mplt_ASL_Policy_Symbol_Changes AS (WITH
 		-- 'XX',1, 
 		-- 'DU',1,
 		-- 0)
-		decode(substr(symbol, 1, 2),
+		decode(substr(symbol, 1, 2
+			),
 			'HX', 1,
 			'PX', 1,
 			'WM', 1,
@@ -179,9 +180,11 @@ mplt_ASL_Policy_Symbol_Changes AS (WITH
 			'XA', 1,
 			'XX', 1,
 			'DU', 1,
-			0) AS symbol_change,
+			0
+		) AS symbol_change,
 		-- *INF*: substr(symbol,3,1)
-		substr(symbol, 3, 1) AS v_symbol_3,
+		substr(symbol, 3, 1
+		) AS v_symbol_3,
 		-- *INF*: IIF(symbol_change=1,
 		-- 	DECODE(TRUE,
 		-- 		line_of_business='HAP' and type_bureau !='GL', 'HH',
@@ -212,29 +215,63 @@ mplt_ASL_Policy_Symbol_Changes AS (WITH
 		-- --)
 		-- 
 		-- 
-		IFF(symbol_change = 1, DECODE(TRUE,
-			line_of_business = 'HAP' AND type_bureau != 'GL', 'HH',
+		IFF(symbol_change = 1,
+			DECODE(TRUE,
+			line_of_business = 'HAP' 
+				AND type_bureau != 'GL', 'HH',
 			line_of_business = 'APV', 'PA',
-			rtrim(ltrim(line_of_business)) = 'HP' AND master_co_number = '06', 'HA',
-			rtrim(ltrim(line_of_business)) = 'HP' AND master_co_number = '05', 'HB',
+			rtrim(ltrim(line_of_business
+					)
+				) = 'HP' 
+				AND master_co_number = '06', 'HA',
+			rtrim(ltrim(line_of_business
+					)
+				) = 'HP' 
+				AND master_co_number = '05', 'HB',
 			line_of_business = 'IMP', 'IP',
-			line_of_business = 'HAP' AND type_bureau = 'GL', 'HH',
-			rtrim(ltrim(line_of_business)) = 'GL' AND major_peril = '017', 'UP',
-			substr(symbol, 1, 2)), substr(symbol, 1, 2)) AS v_symbol_1_2,
+			line_of_business = 'HAP' 
+				AND type_bureau = 'GL', 'HH',
+			rtrim(ltrim(line_of_business
+					)
+				) = 'GL' 
+				AND major_peril = '017', 'UP',
+			substr(symbol, 1, 2
+				)
+			),
+			substr(symbol, 1, 2
+			)
+		) AS v_symbol_1_2,
 		-- *INF*: IIF(symbol_change=1,
 		-- 	IIF(line_of_business='HAP' and type_bureau='GL', '017',major_peril)
 		-- ,major_peril)
 		-- 
 		-- 
-		IFF(symbol_change = 1, IFF(line_of_business = 'HAP' AND type_bureau = 'GL', '017', major_peril), major_peril) AS v_major_peril,
+		IFF(symbol_change = 1,
+			IFF(line_of_business = 'HAP' 
+				AND type_bureau = 'GL',
+				'017',
+				major_peril
+			),
+			major_peril
+		) AS v_major_peril,
 		-- *INF*: IIF(symbol_change=1,
 		-- 	IIF(rtrim(ltrim(line_of_business))='GL' and major_peril='017','GL',type_bureau)
 		-- ,type_bureau)
 		-- 
 		-- 
-		IFF(symbol_change = 1, IFF(rtrim(ltrim(line_of_business)) = 'GL' AND major_peril = '017', 'GL', type_bureau), type_bureau) AS v_type_bureau,
+		IFF(symbol_change = 1,
+			IFF(rtrim(ltrim(line_of_business
+					)
+				) = 'GL' 
+				AND major_peril = '017',
+				'GL',
+				type_bureau
+			),
+			type_bureau
+		) AS v_type_bureau,
 		-- *INF*: concat(v_symbol_1_2,v_symbol_3)
-		concat(v_symbol_1_2, v_symbol_3) AS symbol_out,
+		concat(v_symbol_1_2, v_symbol_3
+		) AS symbol_out,
 		v_major_peril AS major_peril_out,
 		v_type_bureau AS type_bureau_out
 		FROM EXP_accept_inputs
@@ -273,11 +310,16 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		nsi_indicator,
 		policy_effective_date,
 		-- *INF*: IIF(ISNULL(policy_effective_date),TO_DATE('01/01/1800','MM/DD/YYYY'),policy_effective_date)
-		IFF(policy_effective_date IS NULL, TO_DATE('01/01/1800', 'MM/DD/YYYY'), policy_effective_date) AS policy_effective_date_out,
+		IFF(policy_effective_date IS NULL,
+			TO_DATE('01/01/1800', 'MM/DD/YYYY'
+			),
+			policy_effective_date
+		) AS policy_effective_date_out,
 		-- *INF*: TO_DATE('06/01/2012 00:00:00','MM/DD/YYYY HH24:MI:SS')
 		-- 
 		-- -- prod 3017 6/1/2012 is the date for applying new earthquake coverages
-		TO_DATE('06/01/2012 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS CL_EQ_EFF_Date
+		TO_DATE('06/01/2012 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		) AS CL_EQ_EFF_Date
 		FROM INPUT
 	),
 	EXP_evaluate_step_1 AS (
@@ -296,167 +338,454 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		policy_effective_date_out AS policy_effective_date,
 		CL_EQ_EFF_Date,
 		-- *INF*: substr(risk_unit_group,1,3)
-		substr(risk_unit_group, 1, 3) AS v_risk_unit_group_1_3,
+		substr(risk_unit_group, 1, 3
+		) AS v_risk_unit_group_1_3,
 		-- *INF*: substr(symbol,1,2)
-		substr(symbol, 1, 2) AS v_symbol_pos_1_2,
+		substr(symbol, 1, 2
+		) AS v_symbol_pos_1_2,
 		v_symbol_pos_1_2 AS symbol_pos_1_2_out,
 		-- *INF*: IIF(v_symbol_pos_1_2='HH' and type_bureau='PF' and (in(major_peril,'081','280',@{pipeline().parameters.MP_210_211},@{pipeline().parameters.MP_249_250})),1,0)
-		IFF(v_symbol_pos_1_2 = 'HH' AND type_bureau = 'PF' AND ( in(major_peril, '081', '280', @{pipeline().parameters.MP_210_211}, @{pipeline().parameters.MP_249_250}) ), 1, 0) AS v_home_and_highway_fire_wbm,
+		IFF(v_symbol_pos_1_2 = 'HH' 
+			AND type_bureau = 'PF' 
+			AND ( major_peril IN ('081','280',@{pipeline().parameters.MP_210_211},@{pipeline().parameters.MP_249_250}) 
+			),
+			1,
+			0
+		) AS v_home_and_highway_fire_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='HH' and type_bureau='PF' and in(major_peril,@{pipeline().parameters.MP_220_230}),1,0)
-		IFF(v_symbol_pos_1_2 = 'HH' AND type_bureau = 'PF' AND in(major_peril, @{pipeline().parameters.MP_220_230}), 1, 0) AS v_home_and_highway_allied_lines_wbm,
+		IFF(v_symbol_pos_1_2 = 'HH' 
+			AND type_bureau = 'PF' 
+			AND major_peril IN (@{pipeline().parameters.MP_220_230}),
+			1,
+			0
+		) AS v_home_and_highway_allied_lines_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='HH' and type_bureau='PH' and in(major_peril,'002','097','911','914'),1,0)
-		IFF(v_symbol_pos_1_2 = 'HH' AND type_bureau = 'PH' AND in(major_peril, '002', '097', '911', '914'), 1, 0) AS v_home_and_highway_homeowners_wbm,
+		IFF(v_symbol_pos_1_2 = 'HH' 
+			AND type_bureau = 'PH' 
+			AND major_peril IN ('002','097','911','914'),
+			1,
+			0
+		) AS v_home_and_highway_homeowners_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='HH' and  type_bureau='PI' and in( major_peril,'042','062','200','201','206'),1,0)
-		IFF(v_symbol_pos_1_2 = 'HH' AND type_bureau = 'PI' AND in(major_peril, '042', '062', '200', '201', '206'), 1, 0) AS v_home_and_highway_inland_marine_wbm,
+		IFF(v_symbol_pos_1_2 = 'HH' 
+			AND type_bureau = 'PI' 
+			AND major_peril IN ('042','062','200','201','206'),
+			1,
+			0
+		) AS v_home_and_highway_inland_marine_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='HH' and type_bureau='PQ' and in(major_peril,@{pipeline().parameters.MP_260_261}),1,0)
-		IFF(v_symbol_pos_1_2 = 'HH' AND type_bureau = 'PQ' AND in(major_peril, @{pipeline().parameters.MP_260_261}), 1, 0) AS v_home_and_highway_earthquake_wbm,
+		IFF(v_symbol_pos_1_2 = 'HH' 
+			AND type_bureau = 'PQ' 
+			AND major_peril IN (@{pipeline().parameters.MP_260_261}),
+			1,
+			0
+		) AS v_home_and_highway_earthquake_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='HH' and type_bureau='PL',1,0) 
-		IFF(v_symbol_pos_1_2 = 'HH' AND type_bureau = 'PL', 1, 0) AS v_home_and_highway_personal_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'HH' 
+			AND type_bureau = 'PL',
+			1,
+			0
+		) AS v_home_and_highway_personal_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='HH' and  type_bureau='GL' and major_peril='017',1,0)
-		IFF(v_symbol_pos_1_2 = 'HH' AND type_bureau = 'GL' AND major_peril = '017', 1, 0) AS v_home_and_highway_general_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'HH' 
+			AND type_bureau = 'GL' 
+			AND major_peril = '017',
+			1,
+			0
+		) AS v_home_and_highway_general_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='HH'  and in(type_bureau,'RL','RP','RN') and in(major_peril,'150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143}),1,0) 
-		IFF(v_symbol_pos_1_2 = 'HH' AND in(type_bureau, 'RL', 'RP', 'RN') AND in(major_peril, '150', @{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_140_143}), 1, 0) AS v_home_and_highway_pp_auto_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'HH' 
+			AND type_bureau IN ('RL','RP','RN') 
+			AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143}),
+			1,
+			0
+		) AS v_home_and_highway_pp_auto_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='HH' and type_bureau='RP' and in(major_peril,'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}),1,0)
-		IFF(v_symbol_pos_1_2 = 'HH' AND type_bureau = 'RP' AND in(major_peril, '168', '169', '912', @{pipeline().parameters.MP_145_149}, @{pipeline().parameters.MP_151_163}, @{pipeline().parameters.MP_170_178}), 1, 0) AS v_home_and_highway_pp_auto_physical_damage_wbm,
+		IFF(v_symbol_pos_1_2 = 'HH' 
+			AND type_bureau = 'RP' 
+			AND major_peril IN ('168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}),
+			1,
+			0
+		) AS v_home_and_highway_pp_auto_physical_damage_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='PP' and in(type_bureau,'RL','RP','RN') and in(major_peril,'150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143}),1,0)
-		IFF(v_symbol_pos_1_2 = 'PP' AND in(type_bureau, 'RL', 'RP', 'RN') AND in(major_peril, '150', @{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_140_143}), 1, 0) AS v_preferred_auto_pp_auto_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'PP' 
+			AND type_bureau IN ('RL','RP','RN') 
+			AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143}),
+			1,
+			0
+		) AS v_preferred_auto_pp_auto_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='PP' and type_bureau='RP' and in(major_peril,'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}),1,0)
-		IFF(v_symbol_pos_1_2 = 'PP' AND type_bureau = 'RP' AND in(major_peril, '168', '169', '912', @{pipeline().parameters.MP_145_149}, @{pipeline().parameters.MP_151_163}, @{pipeline().parameters.MP_170_178}), 1, 0) AS v_preferred_auto_pp_auto_physical_damage_wbm,
+		IFF(v_symbol_pos_1_2 = 'PP' 
+			AND type_bureau = 'RP' 
+			AND major_peril IN ('168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}),
+			1,
+			0
+		) AS v_preferred_auto_pp_auto_physical_damage_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='PA' and in(type_bureau,'RL','RP','RN') and in(major_peril,'150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143}),1,0)
-		IFF(v_symbol_pos_1_2 = 'PA' AND in(type_bureau, 'RL', 'RP', 'RN') AND in(major_peril, '150', @{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_140_143}), 1, 0) AS v_select_auto_pp_auto_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'PA' 
+			AND type_bureau IN ('RL','RP','RN') 
+			AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143}),
+			1,
+			0
+		) AS v_select_auto_pp_auto_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='PA' and type_bureau='RP' and in(major_peril,'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}),1,0)
-		IFF(v_symbol_pos_1_2 = 'PA' AND type_bureau = 'RP' AND in(major_peril, '168', '169', '912', @{pipeline().parameters.MP_145_149}, @{pipeline().parameters.MP_151_163}, @{pipeline().parameters.MP_170_178}), 1, 0) AS v_select_auto_pp_auto_physical_damage_wbm,
+		IFF(v_symbol_pos_1_2 = 'PA' 
+			AND type_bureau = 'RP' 
+			AND major_peril IN ('168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}),
+			1,
+			0
+		) AS v_select_auto_pp_auto_physical_damage_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='HB' and type_bureau='NB' and in(major_peril,@{pipeline().parameters.MP_220_230}),1,0)
-		IFF(v_symbol_pos_1_2 = 'HB' AND type_bureau = 'NB' AND in(major_peril, @{pipeline().parameters.MP_220_230}), 1, 0) AS v_standard_homeowners_allied_lined_wbm,
+		IFF(v_symbol_pos_1_2 = 'HB' 
+			AND type_bureau = 'NB' 
+			AND major_peril IN (@{pipeline().parameters.MP_220_230}),
+			1,
+			0
+		) AS v_standard_homeowners_allied_lined_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='HB' and  type_bureau='PH' and major_peril='002',1,0)
-		IFF(v_symbol_pos_1_2 = 'HB' AND type_bureau = 'PH' AND major_peril = '002', 1, 0) AS v_standard_homeowners_homeowners_wbm,
+		IFF(v_symbol_pos_1_2 = 'HB' 
+			AND type_bureau = 'PH' 
+			AND major_peril = '002',
+			1,
+			0
+		) AS v_standard_homeowners_homeowners_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='HB' and type_bureau='PI' and in(major_peril,'042','044','062','200','201','206'),1,0)
-		IFF(v_symbol_pos_1_2 = 'HB' AND type_bureau = 'PI' AND in(major_peril, '042', '044', '062', '200', '201', '206'), 1, 0) AS v_standard_homeowners_inland_marine_wbm,
+		IFF(v_symbol_pos_1_2 = 'HB' 
+			AND type_bureau = 'PI' 
+			AND major_peril IN ('042','044','062','200','201','206'),
+			1,
+			0
+		) AS v_standard_homeowners_inland_marine_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='HB' and type_bureau='PQ' and in(major_peril,@{pipeline().parameters.MP_260_261}),1,0)
 		-- 
-		IFF(v_symbol_pos_1_2 = 'HB' AND type_bureau = 'PQ' AND in(major_peril, @{pipeline().parameters.MP_260_261}), 1, 0) AS v_standard_homeowners_earthquake_wbm,
+		IFF(v_symbol_pos_1_2 = 'HB' 
+			AND type_bureau = 'PQ' 
+			AND major_peril IN (@{pipeline().parameters.MP_260_261}),
+			1,
+			0
+		) AS v_standard_homeowners_earthquake_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'HB' AND type_bureau = 'PL',1,0)
-		IFF(v_symbol_pos_1_2 = 'HB' AND type_bureau = 'PL', 1, 0) AS v_standard_homeowners_personal_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'HB' 
+			AND type_bureau = 'PL',
+			1,
+			0
+		) AS v_standard_homeowners_personal_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='HA' and type_bureau='NB' and in(major_peril,@{pipeline().parameters.MP_220_230}),1,0)
 		-- 
-		IFF(v_symbol_pos_1_2 = 'HA' AND type_bureau = 'NB' AND in(major_peril, @{pipeline().parameters.MP_220_230}), 1, 0) AS v_select_homeowners_allied_lines_wbm,
+		IFF(v_symbol_pos_1_2 = 'HA' 
+			AND type_bureau = 'NB' 
+			AND major_peril IN (@{pipeline().parameters.MP_220_230}),
+			1,
+			0
+		) AS v_select_homeowners_allied_lines_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'HA' AND type_bureau = 'PH' AND
 		--               major_peril = '002',1,0)
-		IFF(v_symbol_pos_1_2 = 'HA' AND type_bureau = 'PH' AND major_peril = '002', 1, 0) AS v_select_homeowners_homeowners_wbm,
+		IFF(v_symbol_pos_1_2 = 'HA' 
+			AND type_bureau = 'PH' 
+			AND major_peril = '002',
+			1,
+			0
+		) AS v_select_homeowners_homeowners_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'HA' AND type_bureau = 'PI' AND in(major_peril,'042','044','062',                     '200','201','206'),1,0)
-		IFF(v_symbol_pos_1_2 = 'HA' AND type_bureau = 'PI' AND in(major_peril, '042', '044', '062', '200', '201', '206'), 1, 0) AS v_select_homeowners_inland_marine_wbm,
+		IFF(v_symbol_pos_1_2 = 'HA' 
+			AND type_bureau = 'PI' 
+			AND major_peril IN ('042','044','062','200','201','206'),
+			1,
+			0
+		) AS v_select_homeowners_inland_marine_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'HA' AND type_bureau = 'PQ' AND in(major_peril,@{pipeline().parameters.MP_260_261}),1,0)
-		IFF(v_symbol_pos_1_2 = 'HA' AND type_bureau = 'PQ' AND in(major_peril, @{pipeline().parameters.MP_260_261}), 1, 0) AS v_select_homeowners_earthquake_wbm,
+		IFF(v_symbol_pos_1_2 = 'HA' 
+			AND type_bureau = 'PQ' 
+			AND major_peril IN (@{pipeline().parameters.MP_260_261}),
+			1,
+			0
+		) AS v_select_homeowners_earthquake_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'HA' AND type_bureau = 'PL',1,0)
-		IFF(v_symbol_pos_1_2 = 'HA' AND type_bureau = 'PL', 1, 0) AS v_select_homeowners_personal_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'HA' 
+			AND type_bureau = 'PL',
+			1,
+			0
+		) AS v_select_homeowners_personal_liability_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2 , 'FP' ,'FL') AND type_bureau = 'PF' AND
 		--               in(major_peril ,'081',@{pipeline().parameters.MP_210_211},@{pipeline().parameters.MP_249_250}),1,0)
-		IFF(in(v_symbol_pos_1_2, 'FP', 'FL') AND type_bureau = 'PF' AND in(major_peril, '081', @{pipeline().parameters.MP_210_211}, @{pipeline().parameters.MP_249_250}), 1, 0) AS v_dwelling_fire_fire_wbm,
+		IFF(v_symbol_pos_1_2 IN ('FP','FL') 
+			AND type_bureau = 'PF' 
+			AND major_peril IN ('081',@{pipeline().parameters.MP_210_211},@{pipeline().parameters.MP_249_250}),
+			1,
+			0
+		) AS v_dwelling_fire_fire_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2, 'FP','FL') AND in(type_bureau,'PF','NB') AND in(major_peril,@{pipeline().parameters.MP_220_230}),1,0)
-		IFF(in(v_symbol_pos_1_2, 'FP', 'FL') AND in(type_bureau, 'PF', 'NB') AND in(major_peril, @{pipeline().parameters.MP_220_230}), 1, 0) AS v_dwelling_fire_allied_lines_wbm,
+		IFF(v_symbol_pos_1_2 IN ('FP','FL') 
+			AND type_bureau IN ('PF','NB') 
+			AND major_peril IN (@{pipeline().parameters.MP_220_230}),
+			1,
+			0
+		) AS v_dwelling_fire_allied_lines_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'FP','FL') AND type_bureau = 'PQ' AND in(major_peril,@{pipeline().parameters.MP_260_261}),1,0)
-		IFF(in(v_symbol_pos_1_2, 'FP', 'FL') AND type_bureau = 'PQ' AND in(major_peril, @{pipeline().parameters.MP_260_261}), 1, 0) AS v_dwelling_fire_earthquake_wbm,
+		IFF(v_symbol_pos_1_2 IN ('FP','FL') 
+			AND type_bureau = 'PQ' 
+			AND major_peril IN (@{pipeline().parameters.MP_260_261}),
+			1,
+			0
+		) AS v_dwelling_fire_earthquake_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'IP' AND type_bureau= 'PI',1,0)
-		IFF(v_symbol_pos_1_2 = 'IP' AND type_bureau = 'PI', 1, 0) AS v_personal_inland_marine_inland_marine_wbm,
+		IFF(v_symbol_pos_1_2 = 'IP' 
+			AND type_bureau = 'PI',
+			1,
+			0
+		) AS v_personal_inland_marine_inland_marine_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'IP' AND type_bureau = 'PL',1,0)
-		IFF(v_symbol_pos_1_2 = 'IP' AND type_bureau = 'PL', 1, 0) AS v_personal_inland_marine_personal_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'IP' 
+			AND type_bureau = 'PL',
+			1,
+			0
+		) AS v_personal_inland_marine_personal_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'PM' AND
 		--               in(type_bureau,'RL','RP','RN') AND
 		--               in(major_peril,'150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143}),1,0)
-		IFF(v_symbol_pos_1_2 = 'PM' AND in(type_bureau, 'RL', 'RP', 'RN') AND in(major_peril, '150', @{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_140_143}), 1, 0) AS v_motorcycle_pp_auto_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'PM' 
+			AND type_bureau IN ('RL','RP','RN') 
+			AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143}),
+			1,
+			0
+		) AS v_motorcycle_pp_auto_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'PM' AND type_bureau = 'RP' AND
 		--  in(major_peril, '168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}),1,0)
-		IFF(v_symbol_pos_1_2 = 'PM' AND type_bureau = 'RP' AND in(major_peril, '168', '169', '912', @{pipeline().parameters.MP_145_149}, @{pipeline().parameters.MP_151_163}, @{pipeline().parameters.MP_170_178}), 1, 0) AS v_motorcycle_pp_auto_physical_damage_wbm,
+		IFF(v_symbol_pos_1_2 = 'PM' 
+			AND type_bureau = 'RP' 
+			AND major_peril IN ('168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}),
+			1,
+			0
+		) AS v_motorcycle_pp_auto_physical_damage_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'IB' AND type_bureau = 'PI',1,0)
-		IFF(v_symbol_pos_1_2 = 'IB' AND type_bureau = 'PI', 1, 0) AS v_boatowners_inland_marine_wbm,
+		IFF(v_symbol_pos_1_2 = 'IB' 
+			AND type_bureau = 'PI',
+			1,
+			0
+		) AS v_boatowners_inland_marine_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'IB' AND type_bureau = 'PL',1,0)
-		IFF(v_symbol_pos_1_2 = 'IB' AND type_bureau = 'PL', 1, 0) AS v_boatowners_personal_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'IB' 
+			AND type_bureau = 'PL',
+			1,
+			0
+		) AS v_boatowners_personal_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'PS' AND
 		--               in(type_bureau,'RL', 'RP', 'RN') AND
 		--              in(major_peril,'150',@{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_140_143}),1,0)
-		IFF(v_symbol_pos_1_2 = 'PS' AND in(type_bureau, 'RL', 'RP', 'RN') AND in(major_peril, '150', @{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_140_143}), 1, 0) AS v_alternative_one_pp_auto_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'PS' 
+			AND type_bureau IN ('RL','RP','RN') 
+			AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143}),
+			1,
+			0
+		) AS v_alternative_one_pp_auto_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'PS' AND type_bureau = 'RP' AND
 		-- in(major_peril, '168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}),1,0)
-		IFF(v_symbol_pos_1_2 = 'PS' AND type_bureau = 'RP' AND in(major_peril, '168', '169', '912', @{pipeline().parameters.MP_145_149}, @{pipeline().parameters.MP_151_163}, @{pipeline().parameters.MP_170_178}), 1, 0) AS v_alternative_one_pp_auto_physical_damage_wbm,
+		IFF(v_symbol_pos_1_2 = 'PS' 
+			AND type_bureau = 'RP' 
+			AND major_peril IN ('168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}),
+			1,
+			0
+		) AS v_alternative_one_pp_auto_physical_damage_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'PT' AND
 		--               in(type_bureau,'RL','RP','RN') AND
 		--               in(major_peril,'150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143}),1,0)
-		IFF(v_symbol_pos_1_2 = 'PT' AND in(type_bureau, 'RL', 'RP', 'RN') AND in(major_peril, '150', @{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_140_143}), 1, 0) AS v_alternative_one_star_pp_auto_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'PT' 
+			AND type_bureau IN ('RL','RP','RN') 
+			AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143}),
+			1,
+			0
+		) AS v_alternative_one_star_pp_auto_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'PT' AND type_bureau = 'RP' AND
 		-- in(major_peril,'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}),1,0)
-		IFF(v_symbol_pos_1_2 = 'PT' AND type_bureau = 'RP' AND in(major_peril, '168', '169', '912', @{pipeline().parameters.MP_145_149}, @{pipeline().parameters.MP_151_163}, @{pipeline().parameters.MP_170_178}), 1, 0) AS v_alternative_one_star_pp_auto_physical_damage_wbm,
+		IFF(v_symbol_pos_1_2 = 'PT' 
+			AND type_bureau = 'RP' 
+			AND major_peril IN ('168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}),
+			1,
+			0
+		) AS v_alternative_one_star_pp_auto_physical_damage_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2, 'BC','BD','CP','BG','BH','GG','CA') AND
 		--  in(type_bureau,'AN','AL') AND
 		--  in(major_peril ,'150','599',@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},@{pipeline().parameters.MP_930_931}) AND 
 		-- NOT in(subline,@{pipeline().parameters.GARAGE_SUBLINES}),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BC', 'BD', 'CP', 'BG', 'BH', 'GG', 'CA') AND in(type_bureau, 'AN', 'AL') AND in(major_peril, '150', '599', @{pipeline().parameters.MP_271_274}, @{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_140_143}, @{pipeline().parameters.MP_930_931}) AND NOT in(subline, @{pipeline().parameters.GARAGE_SUBLINES}), 1, 0) AS v_commercial_auto_commercial_auto_liability_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BC','BD','CP','BG','BH','GG','CA') 
+			AND type_bureau IN ('AN','AL') 
+			AND major_peril IN ('150','599',@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},@{pipeline().parameters.MP_930_931}) 
+			AND NOT subline IN (@{pipeline().parameters.GARAGE_SUBLINES}),
+			1,
+			0
+		) AS v_commercial_auto_commercial_auto_liability_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2, 'NA','NB','NS') AND
 		--               in(type_bureau, 'AN','AL') AND
 		--               in(major_peril,'150','599',@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},@{pipeline().parameters.MP_930_931}) AND
 		--  NOT in(subline,@{pipeline().parameters.GARAGE_SUBLINES}),1,0)
-		IFF(in(v_symbol_pos_1_2, 'NA', 'NB', 'NS') AND in(type_bureau, 'AN', 'AL') AND in(major_peril, '150', '599', @{pipeline().parameters.MP_271_274}, @{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_140_143}, @{pipeline().parameters.MP_930_931}) AND NOT in(subline, @{pipeline().parameters.GARAGE_SUBLINES}), 1, 0) AS v_commercial_auto_commercial_auto_liability_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NA','NB','NS') 
+			AND type_bureau IN ('AN','AL') 
+			AND major_peril IN ('150','599',@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},@{pipeline().parameters.MP_930_931}) 
+			AND NOT subline IN (@{pipeline().parameters.GARAGE_SUBLINES}),
+			1,
+			0
+		) AS v_commercial_auto_commercial_auto_liability_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BC','BD','CP','BG','BH','GG') AND
 		--          in(type_bureau,'AN','AL') AND
 		--          in(major_peril,'150','599',@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},@{pipeline().parameters.MP_930_931}) 	   AND
 		--          in(subline,@{pipeline().parameters.GARAGE_SUBLINES}) AND
 		--          unit_number = '999' AND
 		--          (is_spaces(location_number) = 1 OR rtrim(ltrim(location_number)) = '0000' ),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BC', 'BD', 'CP', 'BG', 'BH', 'GG') AND in(type_bureau, 'AN', 'AL') AND in(major_peril, '150', '599', @{pipeline().parameters.MP_271_274}, @{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_140_143}, @{pipeline().parameters.MP_930_931}) AND in(subline, @{pipeline().parameters.GARAGE_SUBLINES}) AND unit_number = '999' AND ( is_spaces(location_number) = 1 OR rtrim(ltrim(location_number)) = '0000' ), 1, 0) AS v_commercial_auto_commercial_auto_liability_garage_veh_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BC','BD','CP','BG','BH','GG') 
+			AND type_bureau IN ('AN','AL') 
+			AND major_peril IN ('150','599',@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},@{pipeline().parameters.MP_930_931}) 
+			AND subline IN (@{pipeline().parameters.GARAGE_SUBLINES}) 
+			AND unit_number = '999' 
+			AND ( LENGTH(location_number)>0 AND TRIM(location_number)='' = 1 
+				OR rtrim(ltrim(location_number
+					)
+				) = '0000' 
+			),
+			1,
+			0
+		) AS v_commercial_auto_commercial_auto_liability_garage_veh_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NA','NB','NS') AND
 		--         in(type_bureau,'AN','AL') AND
 		--         in(major_peril,'150','599',@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},@{pipeline().parameters.MP_930_931}) AND
 		--         in(subline,@{pipeline().parameters.GARAGE_SUBLINES}) AND
 		--         unit_number = '999' AND
 		--          (is_spaces(location_number) OR rtrim(ltrim(location_number))='0000'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'NA', 'NB', 'NS') AND in(type_bureau, 'AN', 'AL') AND in(major_peril, '150', '599', @{pipeline().parameters.MP_271_274}, @{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_140_143}, @{pipeline().parameters.MP_930_931}) AND in(subline, @{pipeline().parameters.GARAGE_SUBLINES}) AND unit_number = '999' AND ( is_spaces(location_number) OR rtrim(ltrim(location_number)) = '0000' ), 1, 0) AS v_commercial_auto_commercial_auto_liability_garage_veh_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NA','NB','NS') 
+			AND type_bureau IN ('AN','AL') 
+			AND major_peril IN ('150','599',@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},@{pipeline().parameters.MP_930_931}) 
+			AND subline IN (@{pipeline().parameters.GARAGE_SUBLINES}) 
+			AND unit_number = '999' 
+			AND ( LENGTH(location_number)>0 AND TRIM(location_number)='' 
+				OR rtrim(ltrim(location_number
+					)
+				) = '0000' 
+			),
+			1,
+			0
+		) AS v_commercial_auto_commercial_auto_liability_garage_veh_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BC','BD','CP','BG','BH','GG','CA','GA') AND
 		--               type_bureau = 'AP' AND
 		--               NOT in(subline,@{pipeline().parameters.GARAGE_SUBLINES}) AND
 		--              in (major_peril,'132','147','177','178',@{pipeline().parameters.MP_145_146},@{pipeline().parameters.MP_148_160},@{pipeline().parameters.MP_163_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BC', 'BD', 'CP', 'BG', 'BH', 'GG', 'CA', 'GA') AND type_bureau = 'AP' AND NOT in(subline, @{pipeline().parameters.GARAGE_SUBLINES}) AND in(major_peril, '132', '147', '177', '178', @{pipeline().parameters.MP_145_146}, @{pipeline().parameters.MP_148_160}, @{pipeline().parameters.MP_163_166}, @{pipeline().parameters.MP_170_173}, @{pipeline().parameters.MP_269_270}), 1, 0) AS v_commercial_auto_comm_auto_physical_damage_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BC','BD','CP','BG','BH','GG','CA','GA') 
+			AND type_bureau = 'AP' 
+			AND NOT subline IN (@{pipeline().parameters.GARAGE_SUBLINES}) 
+			AND major_peril IN ('132','147','177','178',@{pipeline().parameters.MP_145_146},@{pipeline().parameters.MP_148_160},@{pipeline().parameters.MP_163_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}),
+			1,
+			0
+		) AS v_commercial_auto_comm_auto_physical_damage_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NA','NB','NS') AND
 		--        type_bureau = 'AP' AND
 		--        NOT in(subline,@{pipeline().parameters.GARAGE_SUBLINES}) AND
 		--        in(major_peril,'132','147','177','178',@{pipeline().parameters.MP_145_146},@{pipeline().parameters.MP_148_160},@{pipeline().parameters.MP_163_166}, @{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}),1,0)
-		IFF(in(v_symbol_pos_1_2, 'NA', 'NB', 'NS') AND type_bureau = 'AP' AND NOT in(subline, @{pipeline().parameters.GARAGE_SUBLINES}) AND in(major_peril, '132', '147', '177', '178', @{pipeline().parameters.MP_145_146}, @{pipeline().parameters.MP_148_160}, @{pipeline().parameters.MP_163_166}, @{pipeline().parameters.MP_170_173}, @{pipeline().parameters.MP_269_270}), 1, 0) AS v_commercial_auto_comm_auto_physical_damage_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NA','NB','NS') 
+			AND type_bureau = 'AP' 
+			AND NOT subline IN (@{pipeline().parameters.GARAGE_SUBLINES}) 
+			AND major_peril IN ('132','147','177','178',@{pipeline().parameters.MP_145_146},@{pipeline().parameters.MP_148_160},@{pipeline().parameters.MP_163_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}),
+			1,
+			0
+		) AS v_commercial_auto_comm_auto_physical_damage_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2, 'BC','BD','CP','BG','BH','GG') AND
 		--         type_bureau = 'AP' AND
 		--         in(major_peril,'132','147','177','178',@{pipeline().parameters.MP_145_146}, @{pipeline().parameters.MP_148_160},@{pipeline().parameters.MP_163_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) AND
 		--          in(subline,@{pipeline().parameters.GARAGE_SUBLINES}) AND
 		--          unit_number = '999' AND
 		--           (is_spaces(location_number)=1 OR rtrim(ltrim(location_number))= '0000'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BC', 'BD', 'CP', 'BG', 'BH', 'GG') AND type_bureau = 'AP' AND in(major_peril, '132', '147', '177', '178', @{pipeline().parameters.MP_145_146}, @{pipeline().parameters.MP_148_160}, @{pipeline().parameters.MP_163_166}, @{pipeline().parameters.MP_170_173}, @{pipeline().parameters.MP_269_270}) AND in(subline, @{pipeline().parameters.GARAGE_SUBLINES}) AND unit_number = '999' AND ( is_spaces(location_number) = 1 OR rtrim(ltrim(location_number)) = '0000' ), 1, 0) AS v_commercial_auto_comm_auto_physical_damage_garage_veh_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BC','BD','CP','BG','BH','GG') 
+			AND type_bureau = 'AP' 
+			AND major_peril IN ('132','147','177','178',@{pipeline().parameters.MP_145_146},@{pipeline().parameters.MP_148_160},@{pipeline().parameters.MP_163_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) 
+			AND subline IN (@{pipeline().parameters.GARAGE_SUBLINES}) 
+			AND unit_number = '999' 
+			AND ( LENGTH(location_number)>0 AND TRIM(location_number)='' = 1 
+				OR rtrim(ltrim(location_number
+					)
+				) = '0000' 
+			),
+			1,
+			0
+		) AS v_commercial_auto_comm_auto_physical_damage_garage_veh_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2, 'NA','NB','NS') AND
 		--         type_bureau = 'AP' AND
 		--         in(major_peril,'132','147','177','178',@{pipeline().parameters.MP_145_146}, @{pipeline().parameters.MP_148_160}, @{pipeline().parameters.MP_163_166}, @{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) AND
 		--               in(subline,@{pipeline().parameters.GARAGE_SUBLINES}) AND
 		--              unit_number = '999' AND
 		--               (is_spaces(location_number)=1 OR  rtrim(ltrim(location_number))= '0000'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'NA', 'NB', 'NS') AND type_bureau = 'AP' AND in(major_peril, '132', '147', '177', '178', @{pipeline().parameters.MP_145_146}, @{pipeline().parameters.MP_148_160}, @{pipeline().parameters.MP_163_166}, @{pipeline().parameters.MP_170_173}, @{pipeline().parameters.MP_269_270}) AND in(subline, @{pipeline().parameters.GARAGE_SUBLINES}) AND unit_number = '999' AND ( is_spaces(location_number) = 1 OR rtrim(ltrim(location_number)) = '0000' ), 1, 0) AS v_commercial_auto_comm_auto_physical_damage_garage_veh_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NA','NB','NS') 
+			AND type_bureau = 'AP' 
+			AND major_peril IN ('132','147','177','178',@{pipeline().parameters.MP_145_146},@{pipeline().parameters.MP_148_160},@{pipeline().parameters.MP_163_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) 
+			AND subline IN (@{pipeline().parameters.GARAGE_SUBLINES}) 
+			AND unit_number = '999' 
+			AND ( LENGTH(location_number)>0 AND TRIM(location_number)='' = 1 
+				OR rtrim(ltrim(location_number
+					)
+				) = '0000' 
+			),
+			1,
+			0
+		) AS v_commercial_auto_comm_auto_physical_damage_garage_veh_nsi,
 		-- *INF*: IIF(v_symbol_pos_1_2='CP' and in(type_bureau,'AN','AL') and in(subline,@{pipeline().parameters.GARAGE_SUBLINES}) and in(major_peril,'599',@{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_930_931}),1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND in(type_bureau, 'AN', 'AL') AND in(subline, @{pipeline().parameters.GARAGE_SUBLINES}) AND in(major_peril, '599', @{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_271_274}, @{pipeline().parameters.MP_930_931}), 1, 0) AS v_garage_liability_commercial_auto_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau IN ('AN','AL') 
+			AND subline IN (@{pipeline().parameters.GARAGE_SUBLINES}) 
+			AND major_peril IN ('599',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_930_931}),
+			1,
+			0
+		) AS v_garage_liability_commercial_auto_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2='NS' and in(type_bureau,'AN','AL') and in(subline,@{pipeline().parameters.GARAGE_SUBLINES}) and in(major_peril,'599',@{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_271_274}, @{pipeline().parameters.MP_930_931}),1,0)
-		IFF(v_symbol_pos_1_2 = 'NS' AND in(type_bureau, 'AN', 'AL') AND in(subline, @{pipeline().parameters.GARAGE_SUBLINES}) AND in(major_peril, '599', @{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_271_274}, @{pipeline().parameters.MP_930_931}), 1, 0) AS v_garage_liability_commercial_auto_liability_nsi,
+		IFF(v_symbol_pos_1_2 = 'NS' 
+			AND type_bureau IN ('AN','AL') 
+			AND subline IN (@{pipeline().parameters.GARAGE_SUBLINES}) 
+			AND major_peril IN ('599',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_930_931}),
+			1,
+			0
+		) AS v_garage_liability_commercial_auto_liability_nsi,
 		-- *INF*: IIF(v_symbol_pos_1_2= 'CP' AND
 		--        type_bureau = 'AP' AND 
 		--       in(subline,@{pipeline().parameters.GARAGE_SUBLINES}) AND
 		--       in(major_peril,'132','177','178',@{pipeline().parameters.MP_145_159},@{pipeline().parameters.MP_165_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270})
 		-- ,1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'AP' AND in(subline, @{pipeline().parameters.GARAGE_SUBLINES}) AND in(major_peril, '132', '177', '178', @{pipeline().parameters.MP_145_159}, @{pipeline().parameters.MP_165_166}, @{pipeline().parameters.MP_170_173}, @{pipeline().parameters.MP_269_270}), 1, 0) AS v_garage_liability_commercial_auto_physical_damage_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'AP' 
+			AND subline IN (@{pipeline().parameters.GARAGE_SUBLINES}) 
+			AND major_peril IN ('132','177','178',@{pipeline().parameters.MP_145_159},@{pipeline().parameters.MP_165_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}),
+			1,
+			0
+		) AS v_garage_liability_commercial_auto_physical_damage_wbm,
 		-- *INF*: IIF (v_symbol_pos_1_2 = 'NS' AND
 		--         type_bureau = 'AP' AND 
 		--        in(subline,@{pipeline().parameters.GARAGE_SUBLINES}) AND
 		--        in(major_peril,'132','177','178',@{pipeline().parameters.MP_145_159},@{pipeline().parameters.MP_165_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) ,1,0)
-		IFF(v_symbol_pos_1_2 = 'NS' AND type_bureau = 'AP' AND in(subline, @{pipeline().parameters.GARAGE_SUBLINES}) AND in(major_peril, '132', '177', '178', @{pipeline().parameters.MP_145_159}, @{pipeline().parameters.MP_165_166}, @{pipeline().parameters.MP_170_173}, @{pipeline().parameters.MP_269_270}), 1, 0) AS v_garage_liability_commercial_auto_physical_damage_nsi,
+		IFF(v_symbol_pos_1_2 = 'NS' 
+			AND type_bureau = 'AP' 
+			AND subline IN (@{pipeline().parameters.GARAGE_SUBLINES}) 
+			AND major_peril IN ('132','177','178',@{pipeline().parameters.MP_145_159},@{pipeline().parameters.MP_165_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}),
+			1,
+			0
+		) AS v_garage_liability_commercial_auto_physical_damage_nsi,
 		-- *INF*: IIF(in(substr(symbol,1,1),'V','W','Y') AND
 		--          in(type_bureau,'WC','WP'),1,0)
-		IFF(in(substr(symbol, 1, 1), 'V', 'W', 'Y') AND in(type_bureau, 'WC', 'WP'), 1, 0) AS v_workers_comp_total_non_pool_workers_comp_wbm,
+		IFF(substr(symbol, 1, 1
+			) IN ('V','W','Y') 
+			AND type_bureau IN ('WC','WP'),
+			1,
+			0
+		) AS v_workers_comp_total_non_pool_workers_comp_wbm,
 		-- *INF*: IIF(in(substr(symbol,1,1),'R','S','T') AND
 		--        in(type_bureau,'WC','WP'),1,0)
-		IFF(in(substr(symbol, 1, 1), 'R', 'S', 'T') AND in(type_bureau, 'WC', 'WP'), 1, 0) AS v_workers_comp_total_non_pool_workers_comp_nsi,
+		IFF(substr(symbol, 1, 1
+			) IN ('R','S','T') 
+			AND type_bureau IN ('WC','WP'),
+			1,
+			0
+		) AS v_workers_comp_total_non_pool_workers_comp_nsi,
 		-- *INF*: IIF(in(substr(symbol,1,1),'A','J','L') AND
 		--        in(type_bureau,'WC','WP'),1,0)
-		IFF(in(substr(symbol, 1, 1), 'A', 'J', 'L') AND in(type_bureau, 'WC', 'WP'), 1, 0) AS v_workers_comp_total_non_pool_workers_comp_argent,
+		IFF(substr(symbol, 1, 1
+			) IN ('A','J','L') 
+			AND type_bureau IN ('WC','WP'),
+			1,
+			0
+		) AS v_workers_comp_total_non_pool_workers_comp_argent,
 		-- *INF*:  IIF(v_symbol_pos_1_2 = 'CP' AND
 		--        type_bureau = 'CF' AND
 		--        in(major_peril,'415','463','490','496','498','599','919','425','426','435','455','480') AND
@@ -464,32 +793,69 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		-- 	 in(v_risk_unit_group_1_3,@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND
 		-- 	policy_effective_date >= CL_EQ_EFF_Date
 		-- ,1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919', '425', '426', '435', '455', '480') AND NOT in(class_of_business, 'I', 'O') AND in(v_risk_unit_group_1_3, @{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND policy_effective_date >= CL_EQ_EFF_Date, 1, 0) AS v_commercial_property_earthquake_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480') 
+			AND NOT class_of_business IN ('I','O') 
+			AND v_risk_unit_group_1_3 IN (@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) 
+			AND policy_effective_date >= CL_EQ_EFF_Date,
+			1,
+			0
+		) AS v_commercial_property_earthquake_wbm,
 		-- *INF*:  IIF(v_symbol_pos_1_2 = 'CP' AND
 		--        type_bureau = 'CF' AND
 		--        in(major_peril,'415','463','490','496','498','599','919') AND
 		--        NOT in(class_of_business,'I','O'),1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919') AND NOT in(class_of_business, 'I', 'O'), 1, 0) AS v_commercial_property_fire_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919') 
+			AND NOT class_of_business IN ('I','O'),
+			1,
+			0
+		) AS v_commercial_property_fire_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'NS' AND
 		--         type_bureau = 'CF' AND
 		--         in(major_peril, '415','463','490','496','498','599','919','425','426','435','455','480') AND
 		-- 	  in(v_risk_unit_group_1_3,@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND
 		-- 	  policy_effective_date >= CL_EQ_EFF_Date
 		-- ,1,0)
-		IFF(v_symbol_pos_1_2 = 'NS' AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919', '425', '426', '435', '455', '480') AND in(v_risk_unit_group_1_3, @{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND policy_effective_date >= CL_EQ_EFF_Date, 1, 0) AS v_commercial_property_earthquake_nsi,
+		IFF(v_symbol_pos_1_2 = 'NS' 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480') 
+			AND v_risk_unit_group_1_3 IN (@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) 
+			AND policy_effective_date >= CL_EQ_EFF_Date,
+			1,
+			0
+		) AS v_commercial_property_earthquake_nsi,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'NS' AND
 		--         type_bureau = 'CF' AND
 		--         in(major_peril, '415','463','490','496','498','599','919'),1,0)
-		IFF(v_symbol_pos_1_2 = 'NS' AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919'), 1, 0) AS v_commercial_property_fire_nsi,
+		IFF(v_symbol_pos_1_2 = 'NS' 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919'),
+			1,
+			0
+		) AS v_commercial_property_fire_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2 ,'CP','PX','SM') AND
 		--         in(type_bureau,'CF','NB','GS') AND
 		--          in(major_peril,'425','426','435','220','455','480','599','227') AND
 		--          NOT in(class_of_business,'I','O'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'CP', 'PX', 'SM') AND in(type_bureau, 'CF', 'NB', 'GS') AND in(major_peril, '425', '426', '435', '220', '455', '480', '599', '227') AND NOT in(class_of_business, 'I', 'O'), 1, 0) AS v_commercial_property_allied_lines_wbm,
+		IFF(v_symbol_pos_1_2 IN ('CP','PX','SM') 
+			AND type_bureau IN ('CF','NB','GS') 
+			AND major_peril IN ('425','426','435','220','455','480','599','227') 
+			AND NOT class_of_business IN ('I','O'),
+			1,
+			0
+		) AS v_commercial_property_allied_lines_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'NS' AND
 		--        in(type_bureau,'CF','NB','GS') AND
 		--        in(major_peril,'425','426','435','220','455','480','599','227'),1,0)
-		IFF(v_symbol_pos_1_2 = 'NS' AND in(type_bureau, 'CF', 'NB', 'GS') AND in(major_peril, '425', '426', '435', '220', '455', '480', '599', '227'), 1, 0) AS v_commercial_property_allied_lines_nsi,
+		IFF(v_symbol_pos_1_2 = 'NS' 
+			AND type_bureau IN ('CF','NB','GS') 
+			AND major_peril IN ('425','426','435','220','455','480','599','227'),
+			1,
+			0
+		) AS v_commercial_property_allied_lines_nsi,
 		-- *INF*:  IIF(v_symbol_pos_1_2 = 'CP' AND 
 		--        type_bureau = 'CF' AND
 		--        in(major_peril,'415','463','490','496','498','599' ,'919','425','426','435','455','480') AND
@@ -497,48 +863,107 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		--        in(v_risk_unit_group_1_3,@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND
 		--        policy_effective_date >= CL_EQ_EFF_Date
 		-- ,1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919', '425', '426', '435', '455', '480') AND class_of_business = 'I' AND in(v_risk_unit_group_1_3, @{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND policy_effective_date >= CL_EQ_EFF_Date, 1, 0) AS v_metalworkers_earthquake_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480') 
+			AND class_of_business = 'I' 
+			AND v_risk_unit_group_1_3 IN (@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) 
+			AND policy_effective_date >= CL_EQ_EFF_Date,
+			1,
+			0
+		) AS v_metalworkers_earthquake_wbm,
 		-- *INF*:  IIF(v_symbol_pos_1_2 = 'CP' AND 
 		--        type_bureau = 'CF' AND
 		--        in(major_peril,'415','463','490','496','498','599' ,'919') AND
 		--        class_of_business = 'I',1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919') AND class_of_business = 'I', 1, 0) AS v_metalworkers_fire_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919') 
+			AND class_of_business = 'I',
+			1,
+			0
+		) AS v_metalworkers_fire_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CP' AND
 		--        in(type_bureau,'CF','NB','GS') AND
 		--        in(major_peril,'425','426','435','455','480') AND
 		--         class_of_business = 'I',1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND in(type_bureau, 'CF', 'NB', 'GS') AND in(major_peril, '425', '426', '435', '455', '480') AND class_of_business = 'I', 1, 0) AS v_metalworkers_allied_lines_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau IN ('CF','NB','GS') 
+			AND major_peril IN ('425','426','435','455','480') 
+			AND class_of_business = 'I',
+			1,
+			0
+		) AS v_metalworkers_allied_lines_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CP' AND 
 		--       type_bureau = 'IM' AND
 		--       in(major_peril,'551','599','919') AND
 		--       class_of_business = 'I',1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'IM' AND in(major_peril, '551', '599', '919') AND class_of_business = 'I', 1, 0) AS v_metalworkers_inland_marine_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'IM' 
+			AND major_peril IN ('551','599','919') 
+			AND class_of_business = 'I',
+			1,
+			0
+		) AS v_metalworkers_inland_marine_wbm,
 		-- *INF*:  IIF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'GL' AND
 		--        in(major_peril,'530','599','919') AND
 		--        in(subline,@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350}) AND
 		--        class_of_business = 'I',1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'GL' AND in(major_peril, '530', '599', '919') AND in(subline, @{pipeline().parameters.SUB_325_335}, @{pipeline().parameters.SUB_342_350}) AND class_of_business = 'I', 1, 0) AS v_metalworkers_general_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'GL' 
+			AND major_peril IN ('530','599','919') 
+			AND subline IN (@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350}) 
+			AND class_of_business = 'I',
+			1,
+			0
+		) AS v_metalworkers_general_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CP' AND 
 		--       type_bureau = 'GL' AND
 		--       in(major_peril,'530','550','599') AND
 		--       in(subline,'336','365') AND
 		--       class_of_business = 'I',1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'GL' AND in(major_peril, '530', '550', '599') AND in(subline, '336', '365') AND class_of_business = 'I', 1, 0) AS v_metalworkers_products_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'GL' 
+			AND major_peril IN ('530','550','599') 
+			AND subline IN ('336','365') 
+			AND class_of_business = 'I',
+			1,
+			0
+		) AS v_metalworkers_products_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CM' AND type_bureau = 'GL' AND
 		--              major_peril = '540' AND
 		--              subline = '336' AND 
 		--              class_of_business = 'I',1,0)
-		IFF(v_symbol_pos_1_2 = 'CM' AND type_bureau = 'GL' AND major_peril = '540' AND subline = '336' AND class_of_business = 'I', 1, 0) AS v_metalworkers_claims_made_product_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'CM' 
+			AND type_bureau = 'GL' 
+			AND major_peril = '540' 
+			AND subline = '336' 
+			AND class_of_business = 'I',
+			1,
+			0
+		) AS v_metalworkers_claims_made_product_liability_wbm,
 		-- *INF*:  IIF(in(v_symbol_pos_1_2,'CP','FF') AND
 		--         in(type_bureau,'FT','CR') AND
 		--         in(major_peril,'566','016') AND
 		--         class_of_business = 'I',1,0)
-		IFF(in(v_symbol_pos_1_2, 'CP', 'FF') AND in(type_bureau, 'FT', 'CR') AND in(major_peril, '566', '016') AND class_of_business = 'I', 1, 0) AS v_metalworkers_fidelity_wbm,
+		IFF(v_symbol_pos_1_2 IN ('CP','FF') 
+			AND type_bureau IN ('FT','CR') 
+			AND major_peril IN ('566','016') 
+			AND class_of_business = 'I',
+			1,
+			0
+		) AS v_metalworkers_fidelity_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CP' AND
 		--       in(type_bureau,'FT','BT','CR') AND
 		--       in(major_peril,'565','599') AND
 		--       class_of_business = 'I',1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND in(type_bureau, 'FT', 'BT', 'CR') AND in(major_peril, '565', '599') AND class_of_business = 'I', 1, 0) AS v_metalworkers_burglary_and_theft_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau IN ('FT','BT','CR') 
+			AND major_peril IN ('565','599') 
+			AND class_of_business = 'I',
+			1,
+			0
+		) AS v_metalworkers_burglary_and_theft_wbm,
 		-- *INF*:  IIF(v_symbol_pos_1_2 = 'CP' AND 
 		--        type_bureau = 'CF' AND
 		--        in(major_peril, '415','463','490','496','498','599','919','425','426','435','455','480') AND
@@ -546,310 +971,686 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		--        in(v_risk_unit_group_1_3,@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND
 		--        policy_effective_date >= CL_EQ_EFF_Date
 		-- ,1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919', '425', '426', '435', '455', '480') AND class_of_business = 'O' AND in(v_risk_unit_group_1_3, @{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND policy_effective_date >= CL_EQ_EFF_Date, 1, 0) AS v_woodworkers_earthquake_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480') 
+			AND class_of_business = 'O' 
+			AND v_risk_unit_group_1_3 IN (@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) 
+			AND policy_effective_date >= CL_EQ_EFF_Date,
+			1,
+			0
+		) AS v_woodworkers_earthquake_wbm,
 		-- *INF*:  IIF(v_symbol_pos_1_2 = 'CP' AND 
 		--        type_bureau = 'CF' AND
 		--        in(major_peril, '415','463','490','496','498','599','919') AND
 		--        class_of_business = 'O',1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919') AND class_of_business = 'O', 1, 0) AS v_woodworkers_fire_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919') 
+			AND class_of_business = 'O',
+			1,
+			0
+		) AS v_woodworkers_fire_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CP' AND
 		--      in(type_bureau,'CF','NB','GS') AND
 		--      in(major_peril,'425','426','435','455','480') AND
 		--      class_of_business = 'O',1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND in(type_bureau, 'CF', 'NB', 'GS') AND in(major_peril, '425', '426', '435', '455', '480') AND class_of_business = 'O', 1, 0) AS v_woodworkers_allied_lines_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau IN ('CF','NB','GS') 
+			AND major_peril IN ('425','426','435','455','480') 
+			AND class_of_business = 'O',
+			1,
+			0
+		) AS v_woodworkers_allied_lines_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CP' AND 
 		--       type_bureau = 'IM' AND
 		--       in(major_peril,'551','599','919') AND
 		--       class_of_business = 'O',1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'IM' AND in(major_peril, '551', '599', '919') AND class_of_business = 'O', 1, 0) AS v_woodworkers_inland_marine_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'IM' 
+			AND major_peril IN ('551','599','919') 
+			AND class_of_business = 'O',
+			1,
+			0
+		) AS v_woodworkers_inland_marine_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CP' AND 
 		--       type_bureau = 'GL' AND
 		--       in(major_peril,'530','599','919') AND
 		--       in(subline,@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350}) AND
 		--       class_of_business = 'O',1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'GL' AND in(major_peril, '530', '599', '919') AND in(subline, @{pipeline().parameters.SUB_325_335}, @{pipeline().parameters.SUB_342_350}) AND class_of_business = 'O', 1, 0) AS v_woodworkers_general_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'GL' 
+			AND major_peril IN ('530','599','919') 
+			AND subline IN (@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350}) 
+			AND class_of_business = 'O',
+			1,
+			0
+		) AS v_woodworkers_general_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CP' AND 
 		--       type_bureau = 'GL' AND
 		--      in(major_peril,'530','550','599') AND
 		--      in(subline,'336','365') AND
 		--      class_of_business = 'O',1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'GL' AND in(major_peril, '530', '550', '599') AND in(subline, '336', '365') AND class_of_business = 'O', 1, 0) AS v_woodworkers_products_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'GL' 
+			AND major_peril IN ('530','550','599') 
+			AND subline IN ('336','365') 
+			AND class_of_business = 'O',
+			1,
+			0
+		) AS v_woodworkers_products_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CM' AND 
 		--       type_bureau = 'GL' AND
 		--       major_peril = '540' AND
 		--       subline = '336' AND 
 		--       class_of_business = 'O',1,0)
-		IFF(v_symbol_pos_1_2 = 'CM' AND type_bureau = 'GL' AND major_peril = '540' AND subline = '336' AND class_of_business = 'O', 1, 0) AS v_woodworkers_claims_made_product_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'CM' 
+			AND type_bureau = 'GL' 
+			AND major_peril = '540' 
+			AND subline = '336' 
+			AND class_of_business = 'O',
+			1,
+			0
+		) AS v_woodworkers_claims_made_product_liability_wbm,
 		-- *INF*:  IIF(in(v_symbol_pos_1_2,'CP','FF') AND
 		--         in(type_bureau,'FT','CR') AND
 		--         in (major_peril,'566','016') AND
 		--         class_of_business = 'O',1,0)
-		IFF(in(v_symbol_pos_1_2, 'CP', 'FF') AND in(type_bureau, 'FT', 'CR') AND in(major_peril, '566', '016') AND class_of_business = 'O', 1, 0) AS v_woodworkers_fidelity_wbm,
+		IFF(v_symbol_pos_1_2 IN ('CP','FF') 
+			AND type_bureau IN ('FT','CR') 
+			AND major_peril IN ('566','016') 
+			AND class_of_business = 'O',
+			1,
+			0
+		) AS v_woodworkers_fidelity_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CP' AND
 		--       in(type_bureau,'FT','BT','CR') AND
 		--       in(major_peril,'565','599') AND
 		--       class_of_business= 'O',1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND in(type_bureau, 'FT', 'BT', 'CR') AND in(major_peril, '565', '599') AND class_of_business = 'O', 1, 0) AS v_woodworkers_burglary_and_theft_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau IN ('FT','BT','CR') 
+			AND major_peril IN ('565','599') 
+			AND class_of_business = 'O',
+			1,
+			0
+		) AS v_woodworkers_burglary_and_theft_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'CP','GL','SM','XX') AND
 		--         type_bureau = 'GL' AND
 		--        in(major_peril,'530','599','084','085','919') AND
 		--        in(subline,@{pipeline().parameters.SUB_313_315},@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350}) AND
 		--        NOT in(class_of_business,'I','O'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'CP', 'GL', 'SM', 'XX') AND type_bureau = 'GL' AND in(major_peril, '530', '599', '084', '085', '919') AND in(subline, @{pipeline().parameters.SUB_313_315}, @{pipeline().parameters.SUB_325_335}, @{pipeline().parameters.SUB_342_350}) AND NOT in(class_of_business, 'I', 'O'), 1, 0) AS v_general_liability_general_liability_wbm,
+		IFF(v_symbol_pos_1_2 IN ('CP','GL','SM','XX') 
+			AND type_bureau = 'GL' 
+			AND major_peril IN ('530','599','084','085','919') 
+			AND subline IN (@{pipeline().parameters.SUB_313_315},@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350}) 
+			AND NOT class_of_business IN ('I','O'),
+			1,
+			0
+		) AS v_general_liability_general_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'NS' AND
 		--         type_bureau = 'GL' AND
 		--         in(major_peril,'530','599','084','085','919') AND
 		--         in(subline,@{pipeline().parameters.SUB_313_315},@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350}),1,0)
-		IFF(v_symbol_pos_1_2 = 'NS' AND type_bureau = 'GL' AND in(major_peril, '530', '599', '084', '085', '919') AND in(subline, @{pipeline().parameters.SUB_313_315}, @{pipeline().parameters.SUB_325_335}, @{pipeline().parameters.SUB_342_350}), 1, 0) AS v_general_liability_general_liability_nsi,
+		IFF(v_symbol_pos_1_2 = 'NS' 
+			AND type_bureau = 'GL' 
+			AND major_peril IN ('530','599','084','085','919') 
+			AND subline IN (@{pipeline().parameters.SUB_313_315},@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350}),
+			1,
+			0
+		) AS v_general_liability_general_liability_nsi,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CP' AND
 		--        type_bureau = 'GL' AND
 		--        in(major_peril,'530','550','599') AND
 		--        in(subline,'336','365') AND
 		--        not in(class_of_business,'I','O'),1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'GL' AND in(major_peril, '530', '550', '599') AND in(subline, '336', '365') AND NOT in(class_of_business, 'I', 'O'), 1, 0) AS v_general_liability_products_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'GL' 
+			AND major_peril IN ('530','550','599') 
+			AND subline IN ('336','365') 
+			AND NOT class_of_business IN ('I','O'),
+			1,
+			0
+		) AS v_general_liability_products_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'BO' AND
 		--        type_bureau = 'GL' AND
 		--        in(major_peril,'530','550','599') AND
 		--        in(subline,'336','365'),1,0)
-		IFF(v_symbol_pos_1_2 = 'BO' AND type_bureau = 'GL' AND in(major_peril, '530', '550', '599') AND in(subline, '336', '365'), 1, 0) AS v_smart_products_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'BO' 
+			AND type_bureau = 'GL' 
+			AND major_peril IN ('530','550','599') 
+			AND subline IN ('336','365'),
+			1,
+			0
+		) AS v_smart_products_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'NS' AND
 		--        type_bureau = 'GL' AND
 		--        in(major_peril,'530','599') AND
 		--        subline = '336',1,0)
-		IFF(v_symbol_pos_1_2 = 'NS' AND type_bureau = 'GL' AND in(major_peril, '530', '599') AND subline = '336', 1, 0) AS v_general_liability_products_liability_nsi,
+		IFF(v_symbol_pos_1_2 = 'NS' 
+			AND type_bureau = 'GL' 
+			AND major_peril IN ('530','599') 
+			AND subline = '336',
+			1,
+			0
+		) AS v_general_liability_products_liability_nsi,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CM' AND
 		--       type_bureau = 'GL' AND
 		--       major_peril = '540' AND
 		--       subline = '336' AND
 		--       not in(class_of_business,'I','O'),1,0)
-		IFF(v_symbol_pos_1_2 = 'CM' AND type_bureau = 'GL' AND major_peril = '540' AND subline = '336' AND NOT in(class_of_business, 'I', 'O'), 1, 0) AS v_general_liability_claims_made_product_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'CM' 
+			AND type_bureau = 'GL' 
+			AND major_peril = '540' 
+			AND subline = '336' 
+			AND NOT class_of_business IN ('I','O'),
+			1,
+			0
+		) AS v_general_liability_claims_made_product_liability_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NE','NS') AND
 		--             type_bureau = 'GL' AND
 		--            major_peril = '540' AND
 		--            subline= '336',1,0)
-		IFF(in(v_symbol_pos_1_2, 'NE', 'NS') AND type_bureau = 'GL' AND major_peril = '540' AND subline = '336', 1, 0) AS v_general_liability_claims_made_product_liability_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NE','NS') 
+			AND type_bureau = 'GL' 
+			AND major_peril = '540' 
+			AND subline = '336',
+			1,
+			0
+		) AS v_general_liability_claims_made_product_liability_nsi,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'NS' AND
 		--       type_bureau= 'GL' AND
 		--      major_peril= '540' AND
 		--      subline= '334',1,0)
-		IFF(v_symbol_pos_1_2 = 'NS' AND type_bureau = 'GL' AND major_peril = '540' AND subline = '334', 1, 0) AS v_general_liability_claims_made_general_liability_nsi,
+		IFF(v_symbol_pos_1_2 = 'NS' 
+			AND type_bureau = 'GL' 
+			AND major_peril = '540' 
+			AND subline = '334',
+			1,
+			0
+		) AS v_general_liability_claims_made_general_liability_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'CP','SM') AND
 		--       in(type_bureau,'FT','BT','CR') AND
 		--       in(major_peril,'566','016') AND
 		--       not in(class_of_business,'I','O'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'CP', 'SM') AND in(type_bureau, 'FT', 'BT', 'CR') AND in(major_peril, '566', '016') AND NOT in(class_of_business, 'I', 'O'), 1, 0) AS v_crime_fidelity_wbm,
+		IFF(v_symbol_pos_1_2 IN ('CP','SM') 
+			AND type_bureau IN ('FT','BT','CR') 
+			AND major_peril IN ('566','016') 
+			AND NOT class_of_business IN ('I','O'),
+			1,
+			0
+		) AS v_crime_fidelity_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'BO' AND
 		--       in(type_bureau,'FT','BT','CR') AND
 		--       in(major_peril,'566','016'),1,0)
-		IFF(v_symbol_pos_1_2 = 'BO' AND in(type_bureau, 'FT', 'BT', 'CR') AND in(major_peril, '566', '016'), 1, 0) AS v_smart_fidelity_wbm,
+		IFF(v_symbol_pos_1_2 = 'BO' 
+			AND type_bureau IN ('FT','BT','CR') 
+			AND major_peril IN ('566','016'),
+			1,
+			0
+		) AS v_smart_fidelity_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'NS' AND
 		--       in(type_bureau,'FT','BT','CR') AND
 		--       in(major_peril,'566','016'),1,0)
-		IFF(v_symbol_pos_1_2 = 'NS' AND in(type_bureau, 'FT', 'BT', 'CR') AND in(major_peril, '566', '016'), 1, 0) AS v_crime_fidelity_nsi,
+		IFF(v_symbol_pos_1_2 = 'NS' 
+			AND type_bureau IN ('FT','BT','CR') 
+			AND major_peril IN ('566','016'),
+			1,
+			0
+		) AS v_crime_fidelity_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'CP','SM') AND
 		--        in(type_bureau,'FT','BT','CR') AND
 		--        in(major_peril,'565','599','015') AND
 		--        not in(class_of_business,'I','O'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'CP', 'SM') AND in(type_bureau, 'FT', 'BT', 'CR') AND in(major_peril, '565', '599', '015') AND NOT in(class_of_business, 'I', 'O'), 1, 0) AS v_crime_burglary_and_theft_wbm,
+		IFF(v_symbol_pos_1_2 IN ('CP','SM') 
+			AND type_bureau IN ('FT','BT','CR') 
+			AND major_peril IN ('565','599','015') 
+			AND NOT class_of_business IN ('I','O'),
+			1,
+			0
+		) AS v_crime_burglary_and_theft_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'NS' AND
 		--       in(type_bureau,'FT','BT','CR') AND
 		--       in(major_peril,'565','599','015'),1,0)
-		IFF(v_symbol_pos_1_2 = 'NS' AND in(type_bureau, 'FT', 'BT', 'CR') AND in(major_peril, '565', '599', '015'), 1, 0) AS v_crime_burglary_and_theft_nsi,
+		IFF(v_symbol_pos_1_2 = 'NS' 
+			AND type_bureau IN ('FT','BT','CR') 
+			AND major_peril IN ('565','599','015'),
+			1,
+			0
+		) AS v_crime_burglary_and_theft_nsi,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CP' AND
 		--       type_bureau = 'IM' AND
 		--       in(major_peril,'551','599','919') AND
 		--       not in(class_of_business,'I','O'),1,0)
-		IFF(v_symbol_pos_1_2 = 'CP' AND type_bureau = 'IM' AND in(major_peril, '551', '599', '919') AND NOT in(class_of_business, 'I', 'O'), 1, 0) AS v_commercial_im_inland_marine_wbm,
+		IFF(v_symbol_pos_1_2 = 'CP' 
+			AND type_bureau = 'IM' 
+			AND major_peril IN ('551','599','919') 
+			AND NOT class_of_business IN ('I','O'),
+			1,
+			0
+		) AS v_commercial_im_inland_marine_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'NS' AND
 		--       type_bureau = 'IM' AND
 		--       in(major_peril,'551','599','919'),1,0)
-		IFF(v_symbol_pos_1_2 = 'NS' AND type_bureau = 'IM' AND in(major_peril, '551', '599', '919'), 1, 0) AS v_commercial_im_inland_marine_nsi,
+		IFF(v_symbol_pos_1_2 = 'NS' 
+			AND type_bureau = 'IM' 
+			AND major_peril IN ('551','599','919'),
+			1,
+			0
+		) AS v_commercial_im_inland_marine_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BA','BB') AND
 		--        in(type_bureau,'BB','BC','BE','NB') AND
 		--        in(major_peril,'903','904','905','908'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BA', 'BB') AND in(type_bureau, 'BB', 'BC', 'BE', 'NB') AND in(major_peril, '903', '904', '905', '908'), 1, 0) AS v_bop_cmp_property_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BA','BB') 
+			AND type_bureau IN ('BB','BC','BE','NB') 
+			AND major_peril IN ('903','904','905','908'),
+			1,
+			0
+		) AS v_bop_cmp_property_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BA','BB') AND
 		--        type_bureau = 'BC' AND
 		--        major_peril = '919',1,0)
-		IFF(in(v_symbol_pos_1_2, 'BA', 'BB') AND type_bureau = 'BC' AND major_peril = '919', 1, 0) AS v_bop_unnamed_R13905,
+		IFF(v_symbol_pos_1_2 IN ('BA','BB') 
+			AND type_bureau = 'BC' 
+			AND major_peril = '919',
+			1,
+			0
+		) AS v_bop_unnamed_R13905,
 		-- *INF*:  IIF(in(v_symbol_pos_1_2,'BA','BB','XA','XX') AND
 		--         in(type_bureau,'BB','BC','BE','NB') AND
 		--         in(major_peril,'599',@{pipeline().parameters.MP_901_904}),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BA', 'BB', 'XA', 'XX') AND in(type_bureau, 'BB', 'BC', 'BE', 'NB') AND in(major_peril, '599', @{pipeline().parameters.MP_901_904}), 1, 0) AS v_bop_cmp_property_liability_peril_901_904_and_599_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BA','BB','XA','XX') 
+			AND type_bureau IN ('BB','BC','BE','NB') 
+			AND major_peril IN ('599',@{pipeline().parameters.MP_901_904}),
+			1,
+			0
+		) AS v_bop_cmp_property_liability_peril_901_904_and_599_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BA','BB','XA') AND
 		--        in(type_bureau,'BE','B2') AND
 		--        in(major_peril,'907','065','919'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BA', 'BB', 'XA') AND in(type_bureau, 'BE', 'B2') AND in(major_peril, '907', '065', '919'), 1, 0) AS v_bop_cmp_liability_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BA','BB','XA') 
+			AND type_bureau IN ('BE','B2') 
+			AND major_peril IN ('907','065','919'),
+			1,
+			0
+		) AS v_bop_cmp_liability_wbm,
 		-- *INF*:  IIF(in(v_symbol_pos_1_2,'BC','BD') AND
 		--         type_bureau = 'CF' AND
 		--         in(major_peril,'415','463','490','496','498','599','919','425','426','435','455','480') AND
 		-- in(v_risk_unit_group_1_3,@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND
 		-- policy_effective_date >= CL_EQ_EFF_Date
 		-- ,1,0)
-		IFF(in(v_symbol_pos_1_2, 'BC', 'BD') AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919', '425', '426', '435', '455', '480') AND in(v_risk_unit_group_1_3, @{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND policy_effective_date >= CL_EQ_EFF_Date, 1, 0) AS v_cbop_earthquake_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BC','BD') 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480') 
+			AND v_risk_unit_group_1_3 IN (@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) 
+			AND policy_effective_date >= CL_EQ_EFF_Date,
+			1,
+			0
+		) AS v_cbop_earthquake_wbm,
 		-- *INF*:  IIF(in(v_symbol_pos_1_2,'BC','BD') AND
 		--         type_bureau = 'CF' AND
 		--         in(major_peril,'415','463','490','496','498','599','919'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BC', 'BD') AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919'), 1, 0) AS v_cbop_fire_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BC','BD') 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919'),
+			1,
+			0
+		) AS v_cbop_fire_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'BO' AND
 		--       type_bureau = 'CF' AND
 		--       in(major_peril,'415','463','490','496','498','599','919','425','426','435','455','480') AND
 		--       in(v_risk_unit_group_1_3,@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND
 		--       policy_effective_date >= CL_EQ_EFF_Date
 		-- ,1,0)
-		IFF(v_symbol_pos_1_2 = 'BO' AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919', '425', '426', '435', '455', '480') AND in(v_risk_unit_group_1_3, @{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND policy_effective_date >= CL_EQ_EFF_Date, 1, 0) AS v_smart_earthquake_wbm,
+		IFF(v_symbol_pos_1_2 = 'BO' 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480') 
+			AND v_risk_unit_group_1_3 IN (@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) 
+			AND policy_effective_date >= CL_EQ_EFF_Date,
+			1,
+			0
+		) AS v_smart_earthquake_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'BO' AND
 		--       type_bureau = 'CF' AND
 		--       in(major_peril,'415','463','490','496','498','599','919'),1,0)
-		IFF(v_symbol_pos_1_2 = 'BO' AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919'), 1, 0) AS v_smart_fire_wbm,
+		IFF(v_symbol_pos_1_2 = 'BO' 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919'),
+			1,
+			0
+		) AS v_smart_fire_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NA','NB') AND
 		--              type_bureau = 'CF' AND
 		--              in(major_peril,'415','463','490','496','498','599','919','425','426','435','455','480') AND
 		--              in(v_risk_unit_group_1_3,@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND
 		--              policy_effective_date >= CL_EQ_EFF_Date
 		-- ,1,0)
-		IFF(in(v_symbol_pos_1_2, 'NA', 'NB') AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919', '425', '426', '435', '455', '480') AND in(v_risk_unit_group_1_3, @{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND policy_effective_date >= CL_EQ_EFF_Date, 1, 0) AS v_sbop_earthquake_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NA','NB') 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480') 
+			AND v_risk_unit_group_1_3 IN (@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) 
+			AND policy_effective_date >= CL_EQ_EFF_Date,
+			1,
+			0
+		) AS v_sbop_earthquake_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NA','NB') AND
 		--              type_bureau = 'CF' AND
 		--              in(major_peril,'415','463','490','496','498','599','919'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'NA', 'NB') AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919'), 1, 0) AS v_sbop_fire_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NA','NB') 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919'),
+			1,
+			0
+		) AS v_sbop_fire_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BC','BD') AND
 		--        in(type_bureau,'CF','GS') AND
 		--        in(major_peril,'425','426','435','455','480'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BC', 'BD') AND in(type_bureau, 'CF', 'GS') AND in(major_peril, '425', '426', '435', '455', '480'), 1, 0) AS v_cbop_allied_lines_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BC','BD') 
+			AND type_bureau IN ('CF','GS') 
+			AND major_peril IN ('425','426','435','455','480'),
+			1,
+			0
+		) AS v_cbop_allied_lines_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'BO' AND
 		--       in(type_bureau,'CF','GS') AND
 		--       in(major_peril,'425','426','435','455','480'),1,0)
-		IFF(v_symbol_pos_1_2 = 'BO' AND in(type_bureau, 'CF', 'GS') AND in(major_peril, '425', '426', '435', '455', '480'), 1, 0) AS v_smart_allied_lines_wbm,
+		IFF(v_symbol_pos_1_2 = 'BO' 
+			AND type_bureau IN ('CF','GS') 
+			AND major_peril IN ('425','426','435','455','480'),
+			1,
+			0
+		) AS v_smart_allied_lines_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NA','NB') AND
 		--        in(type_bureau,'CF','GS') AND
 		--        in(major_peril,'425','426','435','455','480'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'NA', 'NB') AND in(type_bureau, 'CF', 'GS') AND in(major_peril, '425', '426', '435', '455', '480'), 1, 0) AS v_sbop_allied_lines_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NA','NB') 
+			AND type_bureau IN ('CF','GS') 
+			AND major_peril IN ('425','426','435','455','480'),
+			1,
+			0
+		) AS v_sbop_allied_lines_nsi,
 		-- *INF*:  IIF(in(v_symbol_pos_1_2,'BC','BD') AND
 		--         type_bureau = 'CF' AND
 		--         major_peril = '066',1,0)
-		IFF(in(v_symbol_pos_1_2, 'BC', 'BD') AND type_bureau = 'CF' AND major_peril = '066', 1, 0) AS v_cbop_cmp_property_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BC','BD') 
+			AND type_bureau = 'CF' 
+			AND major_peril = '066',
+			1,
+			0
+		) AS v_cbop_cmp_property_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BC','BD') AND
 		--        type_bureau = 'IM' AND
 		--        in(major_peril,'551','599','919'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BC', 'BD') AND type_bureau = 'IM' AND in(major_peril, '551', '599', '919'), 1, 0) AS v_cbop_inland_marine_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BC','BD') 
+			AND type_bureau = 'IM' 
+			AND major_peril IN ('551','599','919'),
+			1,
+			0
+		) AS v_cbop_inland_marine_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'BO' AND
 		--        type_bureau = 'IM' AND
 		--        in(major_peril,'551','599','919'),1,0)
-		IFF(v_symbol_pos_1_2 = 'BO' AND type_bureau = 'IM' AND in(major_peril, '551', '599', '919'), 1, 0) AS v_smart_inland_marine_wbm,
+		IFF(v_symbol_pos_1_2 = 'BO' 
+			AND type_bureau = 'IM' 
+			AND major_peril IN ('551','599','919'),
+			1,
+			0
+		) AS v_smart_inland_marine_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NA','NB') AND
 		--        type_bureau = 'IM' AND
 		--        in(major_peril,'551','599','919'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'NA', 'NB') AND type_bureau = 'IM' AND in(major_peril, '551', '599', '919'), 1, 0) AS v_sbop_inland_marine_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NA','NB') 
+			AND type_bureau = 'IM' 
+			AND major_peril IN ('551','599','919'),
+			1,
+			0
+		) AS v_sbop_inland_marine_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BC','BD') AND
 		--        type_bureau = 'GL' AND
 		--        in(major_peril,'530','599','067','919'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BC', 'BD') AND type_bureau = 'GL' AND in(major_peril, '530', '599', '067', '919'), 1, 0) AS v_cbop_general_liability_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BC','BD') 
+			AND type_bureau = 'GL' 
+			AND major_peril IN ('530','599','067','919'),
+			1,
+			0
+		) AS v_cbop_general_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'BO' AND
 		--        type_bureau = 'GL' AND
 		--        in(major_peril,'530','599','919'),1,0)
-		IFF(v_symbol_pos_1_2 = 'BO' AND type_bureau = 'GL' AND in(major_peril, '530', '599', '919'), 1, 0) AS v_smart_general_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'BO' 
+			AND type_bureau = 'GL' 
+			AND major_peril IN ('530','599','919'),
+			1,
+			0
+		) AS v_smart_general_liability_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NA','NB') AND
 		--        type_bureau = 'GL' AND
 		--        in(major_peril,'530','599','067','919'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'NA', 'NB') AND type_bureau = 'GL' AND in(major_peril, '530', '599', '067', '919'), 1, 0) AS v_sbop_general_liability_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NA','NB') 
+			AND type_bureau = 'GL' 
+			AND major_peril IN ('530','599','067','919'),
+			1,
+			0
+		) AS v_sbop_general_liability_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BC','BD') AND
 		--        type_bureau = 'FT' AND
 		--         major_peril = '566',1,0)
-		IFF(in(v_symbol_pos_1_2, 'BC', 'BD') AND type_bureau = 'FT' AND major_peril = '566', 1, 0) AS v_cbop_fidelity_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BC','BD') 
+			AND type_bureau = 'FT' 
+			AND major_peril = '566',
+			1,
+			0
+		) AS v_cbop_fidelity_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NA','NB') AND
 		--        type_bureau = 'FT' AND
 		--        major_peril = '566',1,0)
-		IFF(in(v_symbol_pos_1_2, 'NA', 'NB') AND type_bureau = 'FT' AND major_peril = '566', 1, 0) AS v_sbop_fidelity_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NA','NB') 
+			AND type_bureau = 'FT' 
+			AND major_peril = '566',
+			1,
+			0
+		) AS v_sbop_fidelity_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BC','BD') AND
 		--        in(type_bureau,'FT','BT') AND
 		--        in(major_peril,'565','599'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BC', 'BD') AND in(type_bureau, 'FT', 'BT') AND in(major_peril, '565', '599'), 1, 0) AS v_cbop_burglary_and_theft_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BC','BD') 
+			AND type_bureau IN ('FT','BT') 
+			AND major_peril IN ('565','599'),
+			1,
+			0
+		) AS v_cbop_burglary_and_theft_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'BO' AND
 		--       in(type_bureau,'CR','FT','BT') AND
 		--       in(major_peril,'565','599'),1,0)
-		IFF(v_symbol_pos_1_2 = 'BO' AND in(type_bureau, 'CR', 'FT', 'BT') AND in(major_peril, '565', '599'), 1, 0) AS v_smart_burglary_and_theft_wbm,
+		IFF(v_symbol_pos_1_2 = 'BO' 
+			AND type_bureau IN ('CR','FT','BT') 
+			AND major_peril IN ('565','599'),
+			1,
+			0
+		) AS v_smart_burglary_and_theft_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NA','NB') AND
 		--        in(type_bureau,'FT','BT') AND
 		--        in(major_peril,'565','599'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'NA', 'NB') AND in(type_bureau, 'FT', 'BT') AND in(major_peril, '565', '599'), 1, 0) AS v_sbop_burglary_and_theft_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NA','NB') 
+			AND type_bureau IN ('FT','BT') 
+			AND major_peril IN ('565','599'),
+			1,
+			0
+		) AS v_sbop_burglary_and_theft_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BG','BH') AND 
 		--        type_bureau = 'CF' AND
 		--        in(major_peril,'415','463','490','496','498','599','919','425','426','435','455','480',@{pipeline().parameters.MP_901_904}) AND
 		--        in(v_risk_unit_group_1_3,@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND
 		--       policy_effective_date >= CL_EQ_EFF_Date
 		-- ,1,0)
-		IFF(in(v_symbol_pos_1_2, 'BG', 'BH') AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919', '425', '426', '435', '455', '480', @{pipeline().parameters.MP_901_904}) AND in(v_risk_unit_group_1_3, @{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND policy_effective_date >= CL_EQ_EFF_Date, 1, 0) AS v_gbop_earthquake_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BG','BH') 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480',@{pipeline().parameters.MP_901_904}) 
+			AND v_risk_unit_group_1_3 IN (@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) 
+			AND policy_effective_date >= CL_EQ_EFF_Date,
+			1,
+			0
+		) AS v_gbop_earthquake_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BG','BH') AND 
 		--        type_bureau = 'CF' AND
 		--        in(major_peril,'415','463','490','496','498','599','919'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BG', 'BH') AND type_bureau = 'CF' AND in(major_peril, '415', '463', '490', '496', '498', '599', '919'), 1, 0) AS v_gbop_fire_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BG','BH') 
+			AND type_bureau = 'CF' 
+			AND major_peril IN ('415','463','490','496','498','599','919'),
+			1,
+			0
+		) AS v_gbop_fire_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BG','BH') AND
 		--        in(type_bureau,'CF','GS') AND
 		--        in(major_peril,'425' ,'426','435','455','480'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BG', 'BH') AND in(type_bureau, 'CF', 'GS') AND in(major_peril, '425', '426', '435', '455', '480'), 1, 0) AS v_gbop_allied_lines_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BG','BH') 
+			AND type_bureau IN ('CF','GS') 
+			AND major_peril IN ('425','426','435','455','480'),
+			1,
+			0
+		) AS v_gbop_allied_lines_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BG','BH') AND 
 		--        type_bureau = 'IM' AND
 		--        in(major_peril,'551','599','919'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BG', 'BH') AND type_bureau = 'IM' AND in(major_peril, '551', '599', '919'), 1, 0) AS v_gbop_inland_marine_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BG','BH') 
+			AND type_bureau = 'IM' 
+			AND major_peril IN ('551','599','919'),
+			1,
+			0
+		) AS v_gbop_inland_marine_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BG','BH') AND 
 		--       type_bureau = 'GL' AND
 		--       in(major_peril,'530','599','919'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BG', 'BH') AND type_bureau = 'GL' AND in(major_peril, '530', '599', '919'), 1, 0) AS v_gbop_general_liability_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BG','BH') 
+			AND type_bureau = 'GL' 
+			AND major_peril IN ('530','599','919'),
+			1,
+			0
+		) AS v_gbop_general_liability_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BG','BH','GG','XX') AND
 		--         in(type_bureau,'AN','AL') AND
 		--         in(major_peril,'599',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_930_931}),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BG', 'BH', 'GG', 'XX') AND in(type_bureau, 'AN', 'AL') AND in(major_peril, '599', @{pipeline().parameters.MP_100_130}, @{pipeline().parameters.MP_271_274}, @{pipeline().parameters.MP_930_931}), 1, 0) AS v_gbop_commercial_auto_liability_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BG','BH','GG','XX') 
+			AND type_bureau IN ('AN','AL') 
+			AND major_peril IN ('599',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_930_931}),
+			1,
+			0
+		) AS v_gbop_commercial_auto_liability_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BG','BH') AND
 		--        in(type_bureau,'CF','NB','BC','BE') AND
 		--        in(major_peril,@{pipeline().parameters.MP_901_904}),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BG', 'BH') AND in(type_bureau, 'CF', 'NB', 'BC', 'BE') AND in(major_peril, @{pipeline().parameters.MP_901_904}), 1, 0) AS v_gbop_cmp_property_liability_peril_901_904_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BG','BH') 
+			AND type_bureau IN ('CF','NB','BC','BE') 
+			AND major_peril IN (@{pipeline().parameters.MP_901_904}),
+			1,
+			0
+		) AS v_gbop_cmp_property_liability_peril_901_904_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BG','BH') AND
 		--        type_bureau = 'BE' AND 
 		--        major_peril = '907',1,0)
-		IFF(in(v_symbol_pos_1_2, 'BG', 'BH') AND type_bureau = 'BE' AND major_peril = '907', 1, 0) AS v_gbop_cmp_liability_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BG','BH') 
+			AND type_bureau = 'BE' 
+			AND major_peril = '907',
+			1,
+			0
+		) AS v_gbop_cmp_liability_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BG','BH','GG') AND
 		--        type_bureau = 'AP' AND
 		--         in(major_peril,'269',@{pipeline().parameters.MP_145_160},@{pipeline().parameters.MP_165_166},@{pipeline().parameters.MP_170_173}),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BG', 'BH', 'GG') AND type_bureau = 'AP' AND in(major_peril, '269', @{pipeline().parameters.MP_145_160}, @{pipeline().parameters.MP_165_166}, @{pipeline().parameters.MP_170_173}), 1, 0) AS v_gbop_comm_auto_physical_damage_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BG','BH','GG') 
+			AND type_bureau = 'AP' 
+			AND major_peril IN ('269',@{pipeline().parameters.MP_145_160},@{pipeline().parameters.MP_165_166},@{pipeline().parameters.MP_170_173}),
+			1,
+			0
+		) AS v_gbop_comm_auto_physical_damage_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BG','BH') AND
 		--         in( type_bureau,'FT','BT') AND
 		--         major_peril = '566',1,0)
-		IFF(in(v_symbol_pos_1_2, 'BG', 'BH') AND in(type_bureau, 'FT', 'BT') AND major_peril = '566', 1, 0) AS v_gbop_fidelity_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BG','BH') 
+			AND type_bureau IN ('FT','BT') 
+			AND major_peril = '566',
+			1,
+			0
+		) AS v_gbop_fidelity_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BG','BH') AND
 		--        in(type_bureau,'FT','BT') AND
 		--        in(major_peril,'565','599'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BG', 'BH') AND in(type_bureau, 'FT', 'BT') AND in(major_peril, '565', '599'), 1, 0) AS v_gbop_burglary_and_theft_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BG','BH') 
+			AND type_bureau IN ('FT','BT') 
+			AND major_peril IN ('565','599'),
+			1,
+			0
+		) AS v_gbop_burglary_and_theft_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'UP' AND 
 		--        type_bureau = 'GL' AND
 		--        major_peril = '017',1,0)
-		IFF(v_symbol_pos_1_2 = 'UP' AND type_bureau = 'GL' AND major_peril = '017', 1, 0) AS v_personal_umbrella_general_liability_wbm,
+		IFF(v_symbol_pos_1_2 = 'UP' 
+			AND type_bureau = 'GL' 
+			AND major_peril = '017',
+			1,
+			0
+		) AS v_personal_umbrella_general_liability_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'CP','UC','CU') AND
 		--        type_bureau = 'GL' AND
 		--        major_peril = '517',1,0)
-		IFF(in(v_symbol_pos_1_2, 'CP', 'UC', 'CU') AND type_bureau = 'GL' AND major_peril = '517', 1, 0) AS v_commercial_umbrella_general_liability_wbm,
+		IFF(v_symbol_pos_1_2 IN ('CP','UC','CU') 
+			AND type_bureau = 'GL' 
+			AND major_peril = '517',
+			1,
+			0
+		) AS v_commercial_umbrella_general_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'NU' AND
 		--         type_bureau = 'GL' AND
 		--         major_peril = '517',1,0)
-		IFF(v_symbol_pos_1_2 = 'NU' AND type_bureau = 'GL' AND major_peril = '517', 1, 0) AS v_commercial_umbrella_general_liability_nsi,
+		IFF(v_symbol_pos_1_2 = 'NU' 
+			AND type_bureau = 'GL' 
+			AND major_peril = '517',
+			1,
+			0
+		) AS v_commercial_umbrella_general_liability_nsi,
 		-- *INF*: IIF(symbol= 'ZZZ',1,0)
-		IFF(symbol = 'ZZZ', 1, 0) AS v_workers_comp_pool_total_workers_comp_wbm,
+		IFF(symbol = 'ZZZ',
+			1,
+			0
+		) AS v_workers_comp_pool_total_workers_comp_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'NF' AND
 		--         in(major_peril,'566','599'),1,0)
-		IFF(v_symbol_pos_1_2 = 'NF' AND in(major_peril, '566', '599'), 1, 0) AS v_fidelity_bonds_fidelity_nsi,
+		IFF(v_symbol_pos_1_2 = 'NF' 
+			AND major_peril IN ('566','599'),
+			1,
+			0
+		) AS v_fidelity_bonds_fidelity_nsi,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'NF' AND
 		--        major_peril = '565',1,0)
-		IFF(v_symbol_pos_1_2 = 'NF' AND major_peril = '565', 1, 0) AS v_fidelity_bonds_burgulary_and_theft_nsi,
+		IFF(v_symbol_pos_1_2 = 'NF' 
+			AND major_peril = '565',
+			1,
+			0
+		) AS v_fidelity_bonds_burgulary_and_theft_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NC','NJ','NL','NO','NM'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'NC', 'NJ', 'NL', 'NO', 'NM'), 1, 0) AS v_surety_bonds_surety_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NC','NJ','NL','NO','NM'),
+			1,
+			0
+		) AS v_surety_bonds_surety_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'CD','CM') AND
 		--        in(subline,'345','334') AND
 		--        in(major_peril,'540','599','919'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'CD', 'CM') AND in(subline, '345', '334') AND in(major_peril, '540', '599', '919'), 1, 0) AS v_d_and_o_claims_made_general_liability_wbm,
+		IFF(v_symbol_pos_1_2 IN ('CD','CM') 
+			AND subline IN ('345','334') 
+			AND major_peril IN ('540','599','919'),
+			1,
+			0
+		) AS v_d_and_o_claims_made_general_liability_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'CM',1,0)
-		IFF(v_symbol_pos_1_2 = 'CM', 1, 0) AS v_epli_general_liability_claims_made_wbm,
+		IFF(v_symbol_pos_1_2 = 'CM',
+			1,
+			0
+		) AS v_epli_general_liability_claims_made_wbm,
 		-- *INF*: IIF(v_symbol_pos_1_2 = 'NE',1,0)
-		IFF(v_symbol_pos_1_2 = 'NE', 1, 0) AS v_epli_general_liability_claims_made_nsi,
+		IFF(v_symbol_pos_1_2 = 'NE',
+			1,
+			0
+		) AS v_epli_general_liability_claims_made_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BC','BD','BG','BH','CP') AND
 		--         major_peril = '540' AND
 		--         type_bureau = 'GL' AND
@@ -858,7 +1659,17 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		--         in(substr(risk_unit_group,1,3),'366','367')
 		--         )
 		-- 	 ,1,0)
-		IFF(in(v_symbol_pos_1_2, 'BC', 'BD', 'BG', 'BH', 'CP') AND major_peril = '540' AND type_bureau = 'GL' AND ( in(substr(class_code, 1, 5), '22222', '22250') OR in(substr(risk_unit_group, 1, 3), '366', '367') ), 1, 0) AS v_epli_general_liability_claims_made_cpp_cbop_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BC','BD','BG','BH','CP') 
+			AND major_peril = '540' 
+			AND type_bureau = 'GL' 
+			AND ( substr(class_code, 1, 5
+				) IN ('22222','22250') 
+				OR substr(risk_unit_group, 1, 3
+				) IN ('366','367') 
+			),
+			1,
+			0
+		) AS v_epli_general_liability_claims_made_cpp_cbop_wbm,
 		-- *INF*:  IIF(v_symbol_pos_1_2 = 'BO' AND
 		--        in(major_peril,'540','541') AND
 		--        type_bureau = 'GL' AND
@@ -867,7 +1678,17 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		--        in(substr(risk_unit_group,1,3),'366','367')
 		--        )
 		--        ,1,0)
-		IFF(v_symbol_pos_1_2 = 'BO' AND in(major_peril, '540', '541') AND type_bureau = 'GL' AND ( in(substr(class_code, 1, 5), '22222', '22250') OR in(substr(risk_unit_group, 1, 3), '366', '367') ), 1, 0) AS v_smart_general_liability_claims_made_smart_wbm,
+		IFF(v_symbol_pos_1_2 = 'BO' 
+			AND major_peril IN ('540','541') 
+			AND type_bureau = 'GL' 
+			AND ( substr(class_code, 1, 5
+				) IN ('22222','22250') 
+				OR substr(risk_unit_group, 1, 3
+				) IN ('366','367') 
+			),
+			1,
+			0
+		) AS v_smart_general_liability_claims_made_smart_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NA','NB','NS') AND
 		--        major_peril = '540' AND
 		--        type_bureau = 'GL' AND
@@ -876,51 +1697,117 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		--        in(substr(risk_unit_group,1,3),'366','367')
 		--        )
 		--        ,1,0)
-		IFF(in(v_symbol_pos_1_2, 'NA', 'NB', 'NS') AND major_peril = '540' AND type_bureau = 'GL' AND ( in(substr(class_code, 1, 5), '22222', '22250') OR in(substr(risk_unit_group, 1, 3), '366', '367') ), 1, 0) AS v_epli_general_liability_claims_made_cpp_sbop_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NA','NB','NS') 
+			AND major_peril = '540' 
+			AND type_bureau = 'GL' 
+			AND ( substr(class_code, 1, 5
+				) IN ('22222','22250') 
+				OR substr(risk_unit_group, 1, 3
+				) IN ('366','367') 
+			),
+			1,
+			0
+		) AS v_epli_general_liability_claims_made_cpp_sbop_nsi,
 		-- *INF*: IIF(major_peril = '540' AND
 		--        type_bureau = 'BE' AND
 		--        in(substr(risk_unit_group,1,3),'366','367'),1,0)
-		IFF(major_peril = '540' AND type_bureau = 'BE' AND in(substr(risk_unit_group, 1, 3), '366', '367'), 1, 0) AS v_epli_general_liability_claims_made_bop_wbm,
+		IFF(major_peril = '540' 
+			AND type_bureau = 'BE' 
+			AND substr(risk_unit_group, 1, 3
+			) IN ('366','367'),
+			1,
+			0
+		) AS v_epli_general_liability_claims_made_bop_wbm,
 		-- *INF*: IIF(major_peril = '540' AND
 		--        type_bureau = 'AL' AND
 		--        in(substr(risk_unit_group,1,3),'417','418'),1,0)
-		IFF(major_peril = '540' AND type_bureau = 'AL' AND in(substr(risk_unit_group, 1, 3), '417', '418'), 1, 0) AS v_epli_general_liability_claims_made_gbop_wbm,
+		IFF(major_peril = '540' 
+			AND type_bureau = 'AL' 
+			AND substr(risk_unit_group, 1, 3
+			) IN ('417','418'),
+			1,
+			0
+		) AS v_epli_general_liability_claims_made_gbop_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NK','NN'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'NK', 'NN'), 1, 0) AS v_d_and_o_claims_made_general_liability_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NK','NN'),
+			1,
+			0
+		) AS v_d_and_o_claims_made_general_liability_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BA','BB','BC','BD','BG','BH','BO','CP') AND
 		--        in(type_bureau,'CF','BE','BM') AND
 		--        in(major_peril,'570','906') AND
 		--        in(v_risk_unit_group_1_3,@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND
 		--        policy_effective_date >= CL_EQ_EFF_Date
 		-- ,1,0)
-		IFF(in(v_symbol_pos_1_2, 'BA', 'BB', 'BC', 'BD', 'BG', 'BH', 'BO', 'CP') AND in(type_bureau, 'CF', 'BE', 'BM') AND in(major_peril, '570', '906') AND in(v_risk_unit_group_1_3, @{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND policy_effective_date >= CL_EQ_EFF_Date, 1, 0) AS v_boiler_and_machinery_earthquake_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BA','BB','BC','BD','BG','BH','BO','CP') 
+			AND type_bureau IN ('CF','BE','BM') 
+			AND major_peril IN ('570','906') 
+			AND v_risk_unit_group_1_3 IN (@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) 
+			AND policy_effective_date >= CL_EQ_EFF_Date,
+			1,
+			0
+		) AS v_boiler_and_machinery_earthquake_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'BA','BB','BC','BD','BG','BH','BO','CP') AND
 		--        in(type_bureau,'CF','BE','BM') AND
 		--        in(major_peril,'570','906'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'BA', 'BB', 'BC', 'BD', 'BG', 'BH', 'BO', 'CP') AND in(type_bureau, 'CF', 'BE', 'BM') AND in(major_peril, '570', '906'), 1, 0) AS v_boiler_and_machinery_boiler_and_machinery_wbm,
+		IFF(v_symbol_pos_1_2 IN ('BA','BB','BC','BD','BG','BH','BO','CP') 
+			AND type_bureau IN ('CF','BE','BM') 
+			AND major_peril IN ('570','906'),
+			1,
+			0
+		) AS v_boiler_and_machinery_boiler_and_machinery_wbm,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NA','NB','NS') AND
 		--        in(type_bureau,'CF','BE', 'BM') AND
 		--        in(major_peril,'570','906') AND
 		--        in(v_risk_unit_group_1_3,@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND
 		--        policy_effective_date >= CL_EQ_EFF_Date
 		-- ,1,0)
-		IFF(in(v_symbol_pos_1_2, 'NA', 'NB', 'NS') AND in(type_bureau, 'CF', 'BE', 'BM') AND in(major_peril, '570', '906') AND in(v_risk_unit_group_1_3, @{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) AND policy_effective_date >= CL_EQ_EFF_Date, 1, 0) AS v_boiler_and_machinery_earthquake_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NA','NB','NS') 
+			AND type_bureau IN ('CF','BE','BM') 
+			AND major_peril IN ('570','906') 
+			AND v_risk_unit_group_1_3 IN (@{pipeline().parameters.RISK_UNIT_GRP_CL_EQ}) 
+			AND policy_effective_date >= CL_EQ_EFF_Date,
+			1,
+			0
+		) AS v_boiler_and_machinery_earthquake_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'NA','NB','NS') AND
 		--        in(type_bureau,'CF','BE','BM') AND
 		--        in(major_peril,'570','906'),1,0)
-		IFF(in(v_symbol_pos_1_2, 'NA', 'NB', 'NS') AND in(type_bureau, 'CF', 'BE', 'BM') AND in(major_peril, '570', '906'), 1, 0) AS v_boiler_and_machinery_boiler_and_machinery_nsi,
+		IFF(v_symbol_pos_1_2 IN ('NA','NB','NS') 
+			AND type_bureau IN ('CF','BE','BM') 
+			AND major_peril IN ('570','906'),
+			1,
+			0
+		) AS v_boiler_and_machinery_boiler_and_machinery_nsi,
 		-- *INF*: IIF(in(v_symbol_pos_1_2,'HA','HB','HH') AND
 		--        type_bureau = 'MS' AND
 		--        major_peril = '050',1,0)
-		IFF(in(v_symbol_pos_1_2, 'HA', 'HB', 'HH') AND type_bureau = 'MS' AND major_peril = '050', 1, 0) AS v_mine_subsidence_homeowners_wbm,
+		IFF(v_symbol_pos_1_2 IN ('HA','HB','HH') 
+			AND type_bureau = 'MS' 
+			AND major_peril = '050',
+			1,
+			0
+		) AS v_mine_subsidence_homeowners_wbm,
 		-- *INF*:  IIF(substr(symbol,1,1) != 'N' AND
 		--        in(type_bureau,'MS','NB') AND
 		--         major_peril = '050',1,0)
-		IFF(substr(symbol, 1, 1) != 'N' AND in(type_bureau, 'MS', 'NB') AND major_peril = '050', 1, 0) AS v_mine_subsidence_allied_lines_wbm,
+		IFF(substr(symbol, 1, 1
+			) != 'N' 
+			AND type_bureau IN ('MS','NB') 
+			AND major_peril = '050',
+			1,
+			0
+		) AS v_mine_subsidence_allied_lines_wbm,
 		-- *INF*:  IIF(substr(symbol,1,1) = 'N' AND
 		--        in(type_bureau,'MS','NB') AND
 		--         major_peril = '050',1,0)
-		IFF(substr(symbol, 1, 1) = 'N' AND in(type_bureau, 'MS', 'NB') AND major_peril = '050', 1, 0) AS v_mine_subsidence_allied_lines_nsi,
+		IFF(substr(symbol, 1, 1
+			) = 'N' 
+			AND type_bureau IN ('MS','NB') 
+			AND major_peril = '050',
+			1,
+			0
+		) AS v_mine_subsidence_allied_lines_nsi,
 		-- *INF*: DECODE(1,
 		-- v_home_and_highway_fire_wbm,'1500',
 		-- v_home_and_highway_allied_lines_wbm,'1500',
@@ -1223,7 +2110,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 			v_mine_subsidence_homeowners_wbm, '1500',
 			v_mine_subsidence_allied_lines_wbm, '1500',
 			v_mine_subsidence_allied_lines_nsi, '1500',
-			'1500') AS Path_Flag_Step_1,
+			'1500'
+		) AS Path_Flag_Step_1,
 		-- *INF*: DECODE(1,
 		-- v_home_and_highway_fire_wbm,'20',
 		-- v_home_and_highway_allied_lines_wbm,'20',
@@ -1526,7 +2414,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 			v_mine_subsidence_homeowners_wbm, '560',
 			v_mine_subsidence_allied_lines_wbm, '560',
 			v_mine_subsidence_allied_lines_nsi, '880',
-			'999') AS product_code,
+			'999'
+		) AS product_code,
 		-- *INF*: DECODE(1,
 		-- v_home_and_highway_fire_wbm,'20',
 		-- v_home_and_highway_allied_lines_wbm,'40',
@@ -1772,7 +2661,9 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 			v_commercial_im_inland_marine_nsi, '120',
 			v_bop_cmp_property_wbm, '80',
 			v_bop_unnamed_R13905, '80',
-			v_bop_cmp_property_liability_peril_901_904_and_599_wbm, to_char(:UDF.ASL_400_PERIL_901_904_LIABILITY(loss_cause, 80)),
+			v_bop_cmp_property_liability_peril_901_904_and_599_wbm, to_char(:UDF.ASL_400_PERIL_901_904_LIABILITY(loss_cause, 80
+				)
+			),
 			v_bop_cmp_liability_wbm, '100',
 			v_cbop_earthquake_wbm, '140',
 			v_cbop_fire_wbm, '20',
@@ -1829,7 +2720,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 			v_mine_subsidence_homeowners_wbm, '60',
 			v_mine_subsidence_allied_lines_wbm, '40',
 			v_mine_subsidence_allied_lines_nsi, '40',
-			'999') AS coverage_code,
+			'999'
+		) AS coverage_code,
 		-- *INF*: DECODE(1,
 		-- v_mine_subsidence_homeowners_wbm,1,
 		-- v_mine_subsidence_allied_lines_wbm,1,
@@ -1839,7 +2731,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 			v_mine_subsidence_homeowners_wbm, 1,
 			v_mine_subsidence_allied_lines_wbm, 1,
 			v_mine_subsidence_allied_lines_nsi, 1,
-			0) AS mine_sub_special_out
+			0
+		) AS mine_sub_special_out
 		FROM EXP_accept_inputs
 	),
 	EXP_router_step_1 AS (
@@ -1861,32 +2754,65 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		coverage_code,
 		mine_sub_special_out AS flag_mine_sub,
 		-- *INF*: IIF(Path_Flag_Step_1='2000',1,0)
-		IFF(Path_Flag_Step_1 = '2000', 1, 0) AS flag_2000,
+		IFF(Path_Flag_Step_1 = '2000',
+			1,
+			0
+		) AS flag_2000,
 		-- *INF*: IIF(Path_Flag_Step_1='2020',1,0)
-		IFF(Path_Flag_Step_1 = '2020', 1, 0) AS flag_2020,
+		IFF(Path_Flag_Step_1 = '2020',
+			1,
+			0
+		) AS flag_2020,
 		-- *INF*: IIF(Path_Flag_Step_1='2050',1,0)
-		IFF(Path_Flag_Step_1 = '2050', 1, 0) AS flag_2050,
+		IFF(Path_Flag_Step_1 = '2050',
+			1,
+			0
+		) AS flag_2050,
 		-- *INF*: IIF(Path_Flag_Step_1='2070',1,0)
-		IFF(Path_Flag_Step_1 = '2070', 1, 0) AS flag_2070,
+		IFF(Path_Flag_Step_1 = '2070',
+			1,
+			0
+		) AS flag_2070,
 		-- *INF*: IIF(Path_Flag_Step_1='2080',1,0)
-		IFF(Path_Flag_Step_1 = '2080', 1, 0) AS flag_2080,
+		IFF(Path_Flag_Step_1 = '2080',
+			1,
+			0
+		) AS flag_2080,
 		-- *INF*: IIF(Path_Flag_Step_1='2100',1,0)
-		IFF(Path_Flag_Step_1 = '2100', 1, 0) AS flag_2100,
+		IFF(Path_Flag_Step_1 = '2100',
+			1,
+			0
+		) AS flag_2100,
 		-- *INF*: IIF(Path_Flag_Step_1='2110',1,0)
-		IFF(Path_Flag_Step_1 = '2110', 1, 0) AS flag_2110,
+		IFF(Path_Flag_Step_1 = '2110',
+			1,
+			0
+		) AS flag_2110,
 		-- *INF*: IIF(Path_Flag_Step_1='2130',1,0)
-		IFF(Path_Flag_Step_1 = '2130', 1, 0) AS flag_2130,
+		IFF(Path_Flag_Step_1 = '2130',
+			1,
+			0
+		) AS flag_2130,
 		-- *INF*: IIF(Path_Flag_Step_1='2150',1,0)
-		IFF(Path_Flag_Step_1 = '2150', 1, 0) AS flag_2150
+		IFF(Path_Flag_Step_1 = '2150',
+			1,
+			0
+		) AS flag_2150
 		FROM EXP_evaluate_step_1
 	),
 	EXP_2070 AS (
 		SELECT
 		major_peril,
 		-- *INF*: IIF(in(major_peril,'132','147','177','270',@{pipeline().parameters.MP_145_146},@{pipeline().parameters.MP_148_155},@{pipeline().parameters.MP_157_160},@{pipeline().parameters.MP_163_166}),1,0)
-		IFF(in(major_peril, '132', '147', '177', '270', @{pipeline().parameters.MP_145_146}, @{pipeline().parameters.MP_148_155}, @{pipeline().parameters.MP_157_160}, @{pipeline().parameters.MP_163_166}), 1, 0) AS v_Comp,
+		IFF(major_peril IN ('132','147','177','270',@{pipeline().parameters.MP_145_146},@{pipeline().parameters.MP_148_155},@{pipeline().parameters.MP_157_160},@{pipeline().parameters.MP_163_166}),
+			1,
+			0
+		) AS v_Comp,
 		-- *INF*: IIF(in(major_peril,'156','178','269',@{pipeline().parameters.MP_170_173}),1,0)
-		IFF(in(major_peril, '156', '178', '269', @{pipeline().parameters.MP_170_173}), 1, 0) AS v_Coll,
+		IFF(major_peril IN ('156','178','269',@{pipeline().parameters.MP_170_173}),
+			1,
+			0
+		) AS v_Coll,
 		-- *INF*: DECODE(1,
 		-- v_Comp,'520',
 		-- v_Coll,'540',
@@ -1894,7 +2820,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_Comp, '520',
 			v_Coll, '540',
-			'999') AS coverage_code_2070,
+			'999'
+		) AS coverage_code_2070,
 		-- *INF*: '1500'
 		-- --999 path does route to 4000, but that's an infinite loop in the source code that just writes 999 anyway.
 		'1500' AS Path_Flag_Step_2_2070
@@ -1906,7 +2833,10 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		'C' AS kind_code_mine_sub,
 		'N' AS faculative_ind_mine_sub,
 		-- *INF*: IIF(nsi_indicator='W','0008','0094')
-		IFF(nsi_indicator = 'W', '0008', '0094') AS reins_co_number_mine_sub,
+		IFF(nsi_indicator = 'W',
+			'0008',
+			'0094'
+		) AS reins_co_number_mine_sub,
 		'1500' AS Path_Flag_Step_2_mine_sub
 		FROM EXP_router_step_1
 	),
@@ -1915,9 +2845,17 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		type_bureau,
 		major_peril,
 		-- *INF*: IIF(type_bureau='AN' and in(major_peril,'130',@{pipeline().parameters.MP_930_931}),1,0)
-		IFF(type_bureau = 'AN' AND in(major_peril, '130', @{pipeline().parameters.MP_930_931}), 1, 0) AS v_PIP,
+		IFF(type_bureau = 'AN' 
+			AND major_peril IN ('130',@{pipeline().parameters.MP_930_931}),
+			1,
+			0
+		) AS v_PIP,
 		-- *INF*: IIF(type_bureau='AL' and in(major_peril,'150',@{pipeline().parameters.MP_100_125},@{pipeline().parameters.MP_140_143}),1,0)
-		IFF(type_bureau = 'AL' AND in(major_peril, '150', @{pipeline().parameters.MP_100_125}, @{pipeline().parameters.MP_140_143}), 1, 0) AS v_Other_Than_PIP,
+		IFF(type_bureau = 'AL' 
+			AND major_peril IN ('150',@{pipeline().parameters.MP_100_125},@{pipeline().parameters.MP_140_143}),
+			1,
+			0
+		) AS v_Other_Than_PIP,
 		-- *INF*: DECODE(1,
 		-- v_PIP,'2060',
 		-- v_Other_Than_PIP,'2060',
@@ -1925,7 +2863,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_PIP, '2060',
 			v_Other_Than_PIP, '2060',
-			'1500') AS Path_Flag_Step_2_2050,
+			'1500'
+		) AS Path_Flag_Step_2_2050,
 		-- *INF*: DECODE(1,
 		-- v_PIP,'360',
 		-- v_Other_Than_PIP,'380',
@@ -1933,16 +2872,23 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_PIP, '360',
 			v_Other_Than_PIP, '380',
-			'999') AS coverage_code_2050
+			'999'
+		) AS coverage_code_2050
 		FROM EXP_router_step_1
 	),
 	EXP_2020 AS (
 		SELECT
 		major_peril,
 		-- *INF*: IIF(in(major_peril,'168','169','174','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_155},@{pipeline().parameters.MP_157_163}),1,0)
-		IFF(in(major_peril, '168', '169', '174', '912', @{pipeline().parameters.MP_145_149}, @{pipeline().parameters.MP_151_155}, @{pipeline().parameters.MP_157_163}), 1, 0) AS v_Comp,
+		IFF(major_peril IN ('168','169','174','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_155},@{pipeline().parameters.MP_157_163}),
+			1,
+			0
+		) AS v_Comp,
 		-- *INF*: IIF(in(major_peril,'156','178',@{pipeline().parameters.MP_170_173}),1,0)
-		IFF(in(major_peril, '156', '178', @{pipeline().parameters.MP_170_173}), 1, 0) AS v_Coll,
+		IFF(major_peril IN ('156','178',@{pipeline().parameters.MP_170_173}),
+			1,
+			0
+		) AS v_Coll,
 		'1500' AS Path_Flag_Step_2_2020,
 		-- *INF*: DECODE(1,
 		-- v_Comp,'460',
@@ -1951,7 +2897,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_Comp, '460',
 			v_Coll, '480',
-			'999') AS coverage_code_2020
+			'999'
+		) AS coverage_code_2020
 		FROM EXP_router_step_1
 	),
 	EXP_Perform_2080 AS (
@@ -1959,9 +2906,17 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		type_bureau,
 		major_peril,
 		-- *INF*: IIF(type_bureau='AN' and in(major_peril,'130',@{pipeline().parameters.MP_930_931}),1,0)
-		IFF(type_bureau = 'AN' AND in(major_peril, '130', @{pipeline().parameters.MP_930_931}), 1, 0) AS v_GA_Comm_Auto_PIP,
+		IFF(type_bureau = 'AN' 
+			AND major_peril IN ('130',@{pipeline().parameters.MP_930_931}),
+			1,
+			0
+		) AS v_GA_Comm_Auto_PIP,
 		-- *INF*: IIF(type_bureau='AL' and in(major_peril,'599',@{pipeline().parameters.MP_100_125},@{pipeline().parameters.MP_271_274}),1,0)
-		IFF(type_bureau = 'AL' AND in(major_peril, '599', @{pipeline().parameters.MP_100_125}, @{pipeline().parameters.MP_271_274}), 1, 0) AS v_GA_Comm_Auto_Other_Than_PIP,
+		IFF(type_bureau = 'AL' 
+			AND major_peril IN ('599',@{pipeline().parameters.MP_100_125},@{pipeline().parameters.MP_271_274}),
+			1,
+			0
+		) AS v_GA_Comm_Auto_Other_Than_PIP,
 		-- *INF*: DECODE(1,
 		-- v_GA_Comm_Auto_PIP,'2090',
 		-- v_GA_Comm_Auto_Other_Than_PIP,'2090',
@@ -1970,7 +2925,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_GA_Comm_Auto_PIP, '2090',
 			v_GA_Comm_Auto_Other_Than_PIP, '2090',
-			'1500') AS Path_Flag_Step_2_2080,
+			'1500'
+		) AS Path_Flag_Step_2_2080,
 		-- *INF*: DECODE(1,
 		-- v_GA_Comm_Auto_PIP,'360',
 		-- v_GA_Comm_Auto_Other_Than_PIP,'380',
@@ -1978,16 +2934,23 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_GA_Comm_Auto_PIP, '360',
 			v_GA_Comm_Auto_Other_Than_PIP, '380',
-			'999') AS coverage_code_2080
+			'999'
+		) AS coverage_code_2080
 		FROM EXP_router_step_1
 	),
 	EXP_2130 AS (
 		SELECT
 		major_peril,
 		-- *INF*: IIF(in(major_peril,'132','177',@{pipeline().parameters.MP_145_155},@{pipeline().parameters.MP_157_160},@{pipeline().parameters.MP_165_166}),1,0)
-		IFF(in(major_peril, '132', '177', @{pipeline().parameters.MP_145_155}, @{pipeline().parameters.MP_157_160}, @{pipeline().parameters.MP_165_166}), 1, 0) AS v_Comp,
+		IFF(major_peril IN ('132','177',@{pipeline().parameters.MP_145_155},@{pipeline().parameters.MP_157_160},@{pipeline().parameters.MP_165_166}),
+			1,
+			0
+		) AS v_Comp,
 		-- *INF*: IIF(in(major_peril,'156','178','269',@{pipeline().parameters.MP_170_173}),1,0)
-		IFF(in(major_peril, '156', '178', '269', @{pipeline().parameters.MP_170_173}), 1, 0) AS v_Coll,
+		IFF(major_peril IN ('156','178','269',@{pipeline().parameters.MP_170_173}),
+			1,
+			0
+		) AS v_Coll,
 		-- *INF*: DECODE(1,
 		-- v_Comp,'520',
 		-- v_Coll,'540',
@@ -1996,7 +2959,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_Comp, '520',
 			v_Coll, '540',
-			'999') AS coverage_code_2130,
+			'999'
+		) AS coverage_code_2130,
 		'1500' AS Path_Flag_Step_2_2130
 		FROM EXP_router_step_1
 	),
@@ -2004,9 +2968,15 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		SELECT
 		loss_cause,
 		-- *INF*: IIF(in(loss_cause,'05','75'),1,0)
-		IFF(in(loss_cause, '05', '75'), 1, 0) AS v_Indemnity,
+		IFF(loss_cause IN ('05','75'),
+			1,
+			0
+		) AS v_Indemnity,
 		-- *INF*: IIF(in(loss_cause,'06','07'),1,0)
-		IFF(in(loss_cause, '06', '07'), 1, 0) AS v_Medical,
+		IFF(loss_cause IN ('06','07'),
+			1,
+			0
+		) AS v_Medical,
 		-- *INF*: DECODE(1,
 		-- v_Indemnity,'180',
 		-- v_Medical,'190',
@@ -2015,7 +2985,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_Indemnity, '180',
 			v_Medical, '190',
-			'999') AS coverage_code_2150,
+			'999'
+		) AS coverage_code_2150,
 		'1500' AS Path_Flag_Step_2_2150
 		FROM EXP_router_step_1
 	),
@@ -2024,9 +2995,17 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		type_bureau,
 		major_peril,
 		-- *INF*: IIF(type_bureau='RN' and major_peril='130',1,0)
-		IFF(type_bureau = 'RN' AND major_peril = '130', 1, 0) AS v_PIP,
+		IFF(type_bureau = 'RN' 
+			AND major_peril = '130',
+			1,
+			0
+		) AS v_PIP,
 		-- *INF*: IIF(type_bureau='RL' and in(major_peril,'150',@{pipeline().parameters.MP_100_121},@{pipeline().parameters.MP_140_143}),1,0)
-		IFF(type_bureau = 'RL' AND in(major_peril, '150', @{pipeline().parameters.MP_100_121}, @{pipeline().parameters.MP_140_143}), 1, 0) AS v_Other_than_PIP,
+		IFF(type_bureau = 'RL' 
+			AND major_peril IN ('150',@{pipeline().parameters.MP_100_121},@{pipeline().parameters.MP_140_143}),
+			1,
+			0
+		) AS v_Other_than_PIP,
 		-- *INF*: DECODE(1,
 		-- v_PIP,'270',
 		-- v_Other_than_PIP,'280',
@@ -2034,7 +3013,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_PIP, '270',
 			v_Other_than_PIP, '280',
-			'999') AS coverage_code_2000,
+			'999'
+		) AS coverage_code_2000,
 		-- *INF*: DECODE(1,
 		-- v_PIP,'2010',
 		-- v_Other_than_PIP,'2010',
@@ -2042,16 +3022,23 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_PIP, '2010',
 			v_Other_than_PIP, '2010',
-			'1500') AS Path_Flag_Step_2_2000
+			'1500'
+		) AS Path_Flag_Step_2_2000
 		FROM EXP_router_step_1
 	),
 	EXP_2100 AS (
 		SELECT
 		major_peril,
 		-- *INF*: IIF(in(major_peril,'132','177','270',@{pipeline().parameters.MP_145_146},@{pipeline().parameters.MP_148_155},@{pipeline().parameters.MP_157_160},@{pipeline().parameters.MP_165_166}),1,0)
-		IFF(in(major_peril, '132', '177', '270', @{pipeline().parameters.MP_145_146}, @{pipeline().parameters.MP_148_155}, @{pipeline().parameters.MP_157_160}, @{pipeline().parameters.MP_165_166}), 1, 0) AS v_Comp,
+		IFF(major_peril IN ('132','177','270',@{pipeline().parameters.MP_145_146},@{pipeline().parameters.MP_148_155},@{pipeline().parameters.MP_157_160},@{pipeline().parameters.MP_165_166}),
+			1,
+			0
+		) AS v_Comp,
 		-- *INF*: IIF(in(major_peril,'156','178','269',@{pipeline().parameters.MP_170_173}),1,0)
-		IFF(in(major_peril, '156', '178', '269', @{pipeline().parameters.MP_170_173}), 1, 0) AS v_Coll,
+		IFF(major_peril IN ('156','178','269',@{pipeline().parameters.MP_170_173}),
+			1,
+			0
+		) AS v_Coll,
 		-- *INF*: DECODE(1,
 		-- v_Comp,'520',
 		-- v_Coll,'540',
@@ -2059,7 +3046,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_Comp, '520',
 			v_Coll, '540',
-			'999') AS coverage_code_2100,
+			'999'
+		) AS coverage_code_2100,
 		'1500' AS Path_Flag_Step_2_2100
 		FROM EXP_router_step_1
 	),
@@ -2068,9 +3056,17 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		type_bureau,
 		major_peril,
 		-- *INF*: IIF(type_bureau='AN' and in(major_peril,'130',@{pipeline().parameters.MP_930_931}),1,0)
-		IFF(type_bureau = 'AN' AND in(major_peril, '130', @{pipeline().parameters.MP_930_931}), 1, 0) AS v_PIP,
+		IFF(type_bureau = 'AN' 
+			AND major_peril IN ('130',@{pipeline().parameters.MP_930_931}),
+			1,
+			0
+		) AS v_PIP,
 		-- *INF*: IIF(type_bureau='AL' and in(major_peril,'599',@{pipeline().parameters.MP_100_125},@{pipeline().parameters.MP_271_274}),1,0)
-		IFF(type_bureau = 'AL' AND in(major_peril, '599', @{pipeline().parameters.MP_100_125}, @{pipeline().parameters.MP_271_274}), 1, 0) AS v_Other_than_PIP,
+		IFF(type_bureau = 'AL' 
+			AND major_peril IN ('599',@{pipeline().parameters.MP_100_125},@{pipeline().parameters.MP_271_274}),
+			1,
+			0
+		) AS v_Other_than_PIP,
 		-- *INF*: DECODE(1,
 		-- v_PIP,'2120',
 		-- v_Other_than_PIP,'2120',
@@ -2078,7 +3074,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_PIP, '2120',
 			v_Other_than_PIP, '2120',
-			'1500') AS Path_Flag_Step_2_2110,
+			'1500'
+		) AS Path_Flag_Step_2_2110,
 		-- *INF*: DECODE(1,
 		-- v_PIP,'360',
 		-- v_Other_than_PIP,'380',
@@ -2086,7 +3083,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_PIP, '360',
 			v_Other_than_PIP, '380',
-			'999') AS coverage_code_2110
+			'999'
+		) AS coverage_code_2110
 		FROM EXP_router_step_1
 	),
 	EXP_union_router_Step_2 AS (
@@ -2160,7 +3158,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 			flag_2110, coverage_code_2110,
 			flag_2130, coverage_code_2130,
 			flag_2150, coverage_code_2150,
-			'N/A') AS coverage_code_step_2,
+			'N/A'
+		) AS coverage_code_step_2,
 		-- *INF*: DECODE(TRUE,
 		-- flag_2000,Path_Flag_Step_2_2000,
 		-- flag_2020,Path_Flag_Step_2_2020,
@@ -2182,15 +3181,28 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 			flag_2110, Path_Flag_Step_2_2110,
 			flag_2130, Path_Flag_Step_2_2130,
 			flag_2150, Path_Flag_Step_2_2150,
-			'1500') AS Path_Flag_Step_3,
+			'1500'
+		) AS Path_Flag_Step_3,
 		-- *INF*: IIF(Path_Flag_Step_3='2010',1,0)
-		IFF(Path_Flag_Step_3 = '2010', 1, 0) AS flag_2010,
+		IFF(Path_Flag_Step_3 = '2010',
+			1,
+			0
+		) AS flag_2010,
 		-- *INF*: IIF(Path_Flag_Step_3='2060',1,0)
-		IFF(Path_Flag_Step_3 = '2060', 1, 0) AS flag_2060,
+		IFF(Path_Flag_Step_3 = '2060',
+			1,
+			0
+		) AS flag_2060,
 		-- *INF*: IIF(Path_Flag_Step_3='2090',1,0)
-		IFF(Path_Flag_Step_3 = '2090', 1, 0) AS flag_2090,
+		IFF(Path_Flag_Step_3 = '2090',
+			1,
+			0
+		) AS flag_2090,
 		-- *INF*: IIF(Path_Flag_Step_3='2120',1,0)
-		IFF(Path_Flag_Step_3 = '2120', 1, 0) AS flag_2120
+		IFF(Path_Flag_Step_3 = '2120',
+			1,
+			0
+		) AS flag_2120
 		FROM EXP_2000
 		 -- Manually join with EXP_2020
 		 -- Manually join with EXP_2050
@@ -2208,11 +3220,20 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		major_peril,
 		loss_cause,
 		-- *INF*: IIF(in(major_peril,'130',@{pipeline().parameters.MP_101_103},@{pipeline().parameters.MP_114_119},@{pipeline().parameters.MP_930_931}),1,0)
-		IFF(in(major_peril, '130', @{pipeline().parameters.MP_101_103}, @{pipeline().parameters.MP_114_119}, @{pipeline().parameters.MP_930_931}), 1, 0) AS v_BI,
+		IFF(major_peril IN ('130',@{pipeline().parameters.MP_101_103},@{pipeline().parameters.MP_114_119},@{pipeline().parameters.MP_930_931}),
+			1,
+			0
+		) AS v_BI,
 		-- *INF*: IIF(in(major_peril,@{pipeline().parameters.MP_110_112},@{pipeline().parameters.MP_120_125}),1,0)
-		IFF(in(major_peril, @{pipeline().parameters.MP_110_112}, @{pipeline().parameters.MP_120_125}), 1, 0) AS v_PD,
+		IFF(major_peril IN (@{pipeline().parameters.MP_110_112},@{pipeline().parameters.MP_120_125}),
+			1,
+			0
+		) AS v_PD,
 		-- *INF*: IIF(in(major_peril,'100','599',@{pipeline().parameters.MP_271_274}),1,0)
-		IFF(in(major_peril, '100', '599', @{pipeline().parameters.MP_271_274}), 1, 0) AS v_MP,
+		IFF(major_peril IN ('100','599',@{pipeline().parameters.MP_271_274}),
+			1,
+			0
+		) AS v_MP,
 		-- *INF*: DECODE(1,
 		-- v_BI,'400',
 		-- v_PD,'420',
@@ -2222,8 +3243,11 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_BI, '400',
 			v_PD, '420',
-			v_MP, to_char(:UDF.ASL_300_PERIL_100_PD(loss_cause, 400)),
-			'999') AS coverage_code_2120
+			v_MP, to_char(:UDF.ASL_300_PERIL_100_PD(loss_cause, 400
+				)
+			),
+			'999'
+		) AS coverage_code_2120
 		FROM EXP_union_router_Step_2
 	),
 	EXP_2010 AS (
@@ -2231,11 +3255,20 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		major_peril,
 		loss_cause,
 		-- *INF*: IIF(in(major_peril,'130',@{pipeline().parameters.MP_101_103},@{pipeline().parameters.MP_114_119},@{pipeline().parameters.MP_140_143}),1,0)
-		IFF(in(major_peril, '130', @{pipeline().parameters.MP_101_103}, @{pipeline().parameters.MP_114_119}, @{pipeline().parameters.MP_140_143}), 1, 0) AS v_BI,
+		IFF(major_peril IN ('130',@{pipeline().parameters.MP_101_103},@{pipeline().parameters.MP_114_119},@{pipeline().parameters.MP_140_143}),
+			1,
+			0
+		) AS v_BI,
 		-- *INF*: IIF(in(major_peril,@{pipeline().parameters.MP_110_112},@{pipeline().parameters.MP_120_121}),1,0)
-		IFF(in(major_peril, @{pipeline().parameters.MP_110_112}, @{pipeline().parameters.MP_120_121}), 1, 0) AS v_PD,
+		IFF(major_peril IN (@{pipeline().parameters.MP_110_112},@{pipeline().parameters.MP_120_121}),
+			1,
+			0
+		) AS v_PD,
 		-- *INF*: IIF(major_peril='100',1,0)
-		IFF(major_peril = '100', 1, 0) AS v_MP,
+		IFF(major_peril = '100',
+			1,
+			0
+		) AS v_MP,
 		-- *INF*: DECODE(1,
 		-- v_BI,'300',
 		-- v_PD,'320',
@@ -2245,8 +3278,11 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_BI, '300',
 			v_PD, '320',
-			v_MP, to_char(:UDF.ASL_300_PERIL_100_PD(loss_cause, 300)),
-			'999') AS coverage_code_2010
+			v_MP, to_char(:UDF.ASL_300_PERIL_100_PD(loss_cause, 300
+				)
+			),
+			'999'
+		) AS coverage_code_2010
 		FROM EXP_union_router_Step_2
 	),
 	EXP_2060 AS (
@@ -2254,11 +3290,20 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		major_peril,
 		loss_cause,
 		-- *INF*: IIF(in(major_peril,'130','150',@{pipeline().parameters.MP_101_103},@{pipeline().parameters.MP_114_119},@{pipeline().parameters.MP_140_143},@{pipeline().parameters.MP_930_931}),1,0)
-		IFF(in(major_peril, '130', '150', @{pipeline().parameters.MP_101_103}, @{pipeline().parameters.MP_114_119}, @{pipeline().parameters.MP_140_143}, @{pipeline().parameters.MP_930_931}), 1, 0) AS v_BI,
+		IFF(major_peril IN ('130','150',@{pipeline().parameters.MP_101_103},@{pipeline().parameters.MP_114_119},@{pipeline().parameters.MP_140_143},@{pipeline().parameters.MP_930_931}),
+			1,
+			0
+		) AS v_BI,
 		-- *INF*: IIF(in(major_peril,@{pipeline().parameters.MP_110_112},@{pipeline().parameters.MP_120_125}),1,0)
-		IFF(in(major_peril, @{pipeline().parameters.MP_110_112}, @{pipeline().parameters.MP_120_125}), 1, 0) AS v_PD,
+		IFF(major_peril IN (@{pipeline().parameters.MP_110_112},@{pipeline().parameters.MP_120_125}),
+			1,
+			0
+		) AS v_PD,
 		-- *INF*: IIF(in(major_peril,'100','599'),1,0)
-		IFF(in(major_peril, '100', '599'), 1, 0) AS v_MP,
+		IFF(major_peril IN ('100','599'),
+			1,
+			0
+		) AS v_MP,
 		-- *INF*: DECODE(1,
 		-- v_BI,'400',
 		-- v_PD,'420',
@@ -2267,8 +3312,11 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_BI, '400',
 			v_PD, '420',
-			v_MP, to_char(:UDF.ASL_300_PERIL_100_PD(loss_cause, 400)),
-			'999') AS coverage_code_2060
+			v_MP, to_char(:UDF.ASL_300_PERIL_100_PD(loss_cause, 400
+				)
+			),
+			'999'
+		) AS coverage_code_2060
 		FROM EXP_union_router_Step_2
 	),
 	EXP_2090 AS (
@@ -2276,11 +3324,20 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		major_peril,
 		loss_cause,
 		-- *INF*: IIF(in(major_peril,'130',@{pipeline().parameters.MP_101_103},@{pipeline().parameters.MP_114_119},@{pipeline().parameters.MP_930_931}),1,0)
-		IFF(in(major_peril, '130', @{pipeline().parameters.MP_101_103}, @{pipeline().parameters.MP_114_119}, @{pipeline().parameters.MP_930_931}), 1, 0) AS v_GA_Comm_Auto_Bi,
+		IFF(major_peril IN ('130',@{pipeline().parameters.MP_101_103},@{pipeline().parameters.MP_114_119},@{pipeline().parameters.MP_930_931}),
+			1,
+			0
+		) AS v_GA_Comm_Auto_Bi,
 		-- *INF*: IIF(in(major_peril,@{pipeline().parameters.MP_110_112},@{pipeline().parameters.MP_120_125}),1,0)
-		IFF(in(major_peril, @{pipeline().parameters.MP_110_112}, @{pipeline().parameters.MP_120_125}), 1, 0) AS v_GA_Comm_Auto_Pd,
+		IFF(major_peril IN (@{pipeline().parameters.MP_110_112},@{pipeline().parameters.MP_120_125}),
+			1,
+			0
+		) AS v_GA_Comm_Auto_Pd,
 		-- *INF*: IIF(in(major_peril,'100','599',@{pipeline().parameters.MP_271_274}),1,0)
-		IFF(in(major_peril, '100', '599', @{pipeline().parameters.MP_271_274}), 1, 0) AS v_GA_Comm_Auto,
+		IFF(major_peril IN ('100','599',@{pipeline().parameters.MP_271_274}),
+			1,
+			0
+		) AS v_GA_Comm_Auto,
 		-- *INF*: DECODE(1,
 		-- v_GA_Comm_Auto_Bi,'400',
 		-- v_GA_Comm_Auto_Pd,'420',
@@ -2289,8 +3346,11 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		DECODE(1,
 			v_GA_Comm_Auto_Bi, '400',
 			v_GA_Comm_Auto_Pd, '420',
-			v_GA_Comm_Auto, to_char(:UDF.ASL_300_PERIL_100_PD(loss_cause, 400)),
-			'999') AS coverage_code_2090
+			v_GA_Comm_Auto, to_char(:UDF.ASL_300_PERIL_100_PD(loss_cause, 400
+				)
+			),
+			'999'
+		) AS coverage_code_2090
 		FROM EXP_union_router_Step_2
 	),
 	EXP_union_output AS (
@@ -2335,7 +3395,8 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 			flag_2060, coverage_code_2060,
 			flag_2090, coverage_code_2090,
 			flag_2120, coverage_code_2120,
-			'N/A') AS coverage_code_3
+			'N/A'
+		) AS coverage_code_3
 		FROM EXP_2010
 		 -- Manually join with EXP_2060
 		 -- Manually join with EXP_2090
@@ -2357,14 +3418,16 @@ mplt_ASL_WBC8827B_Product_Coverage_Codes AS (WITH
 		-- ---- SubASLCode of 421 applies to Allied lines PMS data.
 		DECODE(TRUE,
 			coverage_code_1 = '40', '421',
-			coverage_code_step_2) AS O_coverage_code_step_2,
+			coverage_code_step_2
+		) AS O_coverage_code_step_2,
 		coverage_code_3,
 		-- *INF*: DECODE(TRUE,
 		-- coverage_code_1 = '40','421',
 		-- coverage_code_3)
 		DECODE(TRUE,
 			coverage_code_1 = '40', '421',
-			coverage_code_3) AS O_coverage_code_3
+			coverage_code_3
+		) AS O_coverage_code_3
 		FROM EXP_union_output
 	),
 	Output AS (
@@ -2428,7 +3491,11 @@ mplt_hierarchy_product_mapping AS (WITH
 		SELECT
 		Symbol AS symbol,
 		-- *INF*: iif(symbol <> 'N/A',substr(symbol,1,2),symbol)
-		IFF(symbol <> 'N/A', substr(symbol, 1, 2), symbol) AS symbol_2pos,
+		IFF(symbol <> 'N/A',
+			substr(symbol, 1, 2
+			),
+			symbol
+		) AS symbol_2pos,
 		Class_of_Business AS class_of_business,
 		Line_of_Business AS line_of_business,
 		Insurance_Line AS insurance_line,
@@ -2533,30 +3600,73 @@ mplt_hierarchy_product_mapping AS (WITH
 		-- 
 		-- '000')
 		DECODE(TRUE,
-			IN(symbol_2pos, 'CP', 'NS') AND insurance_line = 'GL' AND IN(major_peril, '530', '599') AND RTRIM(class_code) = '99999' AND IN(sub_line, '334', '336'), '320',
-			IN(symbol_2pos, 'CP', 'NS') AND type_bureau = 'IM', '550',
-			symbol_2pos = 'CP' AND insurance_line = 'GL' AND sub_line = '365', '380',
-			IN(symbol_2pos, 'CP', 'NS') AND insurance_line = 'GL' AND IN(major_peril, '599', '919') AND IN(risk_unit_group, '345', '367'), '300',
-			IN(symbol_2pos, 'CP', 'NS') AND insurance_line = 'GL' AND IN(major_peril, '530', '540', '919', '599') AND RTRIM(class_code) <> '99999' AND NOT IN(risk_unit_group, '345', '346', '355', '900', '901', '367', '286', '365'), '300',
-			IN(symbol_2pos, 'CF', 'CP', 'NS') AND IN(insurance_line, 'BM', 'CF', 'CG', 'CR', 'GS', 'N/A') AND NOT IN(type_bureau, 'AL', 'AP', 'AN', 'GL', 'IM'), '500',
-			IN(symbol_2pos, 'BC', 'BD', 'BG', 'BH', 'CA', 'CP', 'NB', 'NS', 'NA', 'XX') AND IN(insurance_line, 'N/A', 'CA') AND IN(type_bureau, 'AL', 'AP', 'AN'), '200',
-			IN(symbol_2pos, 'CP', 'NS') AND insurance_line = 'GL' AND risk_unit_group = '355', '370',
-			IN(symbol_2pos, 'BA', 'BB', 'XX') AND IN(line_of_business, 'BOP', 'BO') AND NOT IN(insurance_line, 'CA'), '400',
-			symbol_2pos = 'CM' AND insurance_line = 'GL' AND IN(risk_unit_group, '901', '902', '903'), '360',
-			IN(symbol_2pos, 'CP', 'NS') AND insurance_line = 'GL' AND risk_unit_group = '345', '365',
-			IN(symbol_2pos, 'CU', 'NU', 'CP', 'UC') AND type_bureau = 'GL' AND IN(major_peril, '517'), '900',
-			IN(symbol_2pos, 'BC', 'BD') AND IN(insurance_line, 'CF', 'GL', 'CR', 'IM', 'CG', 'N/A'), '410',
-			symbol_2pos = 'CP' AND insurance_line = 'GL' AND risk_unit_group = '346', '321',
-			IN(symbol_2pos, 'NA', 'NB') AND IN(insurance_line, 'CF', 'GL', 'CR', 'IM', 'CG'), '430',
-			IN(symbol_2pos, 'BG', 'BH', 'GG') AND IN(insurance_line, 'CF', 'GL', 'CR', 'IM', 'GA', 'CG', 'N/A'), '420',
-			symbol_2pos = 'NF' AND IN(class_of_business, 'XN', 'XO', 'XP', 'XQ'), '620',
-			IN(symbol_2pos, 'CD', 'CM') AND IN(risk_unit_group, '367', '900'), '350',
-			IN(symbol_2pos, 'BA', 'BB') AND insurance_line = 'GL' AND IN(risk_unit_group, '110', '111'), '200',
-			IN(symbol_2pos, 'CP', 'NS') AND insurance_line = 'GA', '340',
-			IN(symbol_2pos, 'HH', 'HA', 'HB', 'HX', 'IB', 'IP', 'PA', 'PX', 'XX') AND IN(type_bureau, 'PH', 'PI', 'PL', 'PQ', 'MS'), '800',
-			symbol_2pos = 'NF' AND class_of_business = '9', '510',
+			symbol_2pos IN ('CP','NS') 
+			AND insurance_line = 'GL' 
+			AND major_peril IN ('530','599') 
+			AND RTRIM(class_code
+			) = '99999' 
+			AND sub_line IN ('334','336'), '320',
+			symbol_2pos IN ('CP','NS') 
+			AND type_bureau = 'IM', '550',
+			symbol_2pos = 'CP' 
+			AND insurance_line = 'GL' 
+			AND sub_line = '365', '380',
+			symbol_2pos IN ('CP','NS') 
+			AND insurance_line = 'GL' 
+			AND major_peril IN ('599','919') 
+			AND risk_unit_group IN ('345','367'), '300',
+			symbol_2pos IN ('CP','NS') 
+			AND insurance_line = 'GL' 
+			AND major_peril IN ('530','540','919','599') 
+			AND RTRIM(class_code
+			) <> '99999' 
+			AND NOT risk_unit_group IN ('345','346','355','900','901','367','286','365'), '300',
+			symbol_2pos IN ('CF','CP','NS') 
+			AND insurance_line IN ('BM','CF','CG','CR','GS','N/A') 
+			AND NOT type_bureau IN ('AL','AP','AN','GL','IM'), '500',
+			symbol_2pos IN ('BC','BD','BG','BH','CA','CP','NB','NS','NA','XX') 
+			AND insurance_line IN ('N/A','CA') 
+			AND type_bureau IN ('AL','AP','AN'), '200',
+			symbol_2pos IN ('CP','NS') 
+			AND insurance_line = 'GL' 
+			AND risk_unit_group = '355', '370',
+			symbol_2pos IN ('BA','BB','XX') 
+			AND line_of_business IN ('BOP','BO') 
+			AND NOT insurance_line IN ('CA'), '400',
+			symbol_2pos = 'CM' 
+			AND insurance_line = 'GL' 
+			AND risk_unit_group IN ('901','902','903'), '360',
+			symbol_2pos IN ('CP','NS') 
+			AND insurance_line = 'GL' 
+			AND risk_unit_group = '345', '365',
+			symbol_2pos IN ('CU','NU','CP','UC') 
+			AND type_bureau = 'GL' 
+			AND major_peril IN ('517'), '900',
+			symbol_2pos IN ('BC','BD') 
+			AND insurance_line IN ('CF','GL','CR','IM','CG','N/A'), '410',
+			symbol_2pos = 'CP' 
+			AND insurance_line = 'GL' 
+			AND risk_unit_group = '346', '321',
+			symbol_2pos IN ('NA','NB') 
+			AND insurance_line IN ('CF','GL','CR','IM','CG'), '430',
+			symbol_2pos IN ('BG','BH','GG') 
+			AND insurance_line IN ('CF','GL','CR','IM','GA','CG','N/A'), '420',
+			symbol_2pos = 'NF' 
+			AND class_of_business IN ('XN','XO','XP','XQ'), '620',
+			symbol_2pos IN ('CD','CM') 
+			AND risk_unit_group IN ('367','900'), '350',
+			symbol_2pos IN ('BA','BB') 
+			AND insurance_line = 'GL' 
+			AND risk_unit_group IN ('110','111'), '200',
+			symbol_2pos IN ('CP','NS') 
+			AND insurance_line = 'GA', '340',
+			symbol_2pos IN ('HH','HA','HB','HX','IB','IP','PA','PX','XX') 
+			AND type_bureau IN ('PH','PI','PL','PQ','MS'), '800',
+			symbol_2pos = 'NF' 
+			AND class_of_business = '9', '510',
 			symbol_2pos = 'BO', '450',
-			IN(symbol_2pos, 'GL', 'XX') AND IN(major_peril, '084', '085'), '300',
+			symbol_2pos IN ('GL','XX') 
+			AND major_peril IN ('084','085'), '300',
 			symbol_2pos = 'NN', '310',
 			symbol_2pos = 'NK', '311',
 			symbol_2pos = 'NE', '330',
@@ -2567,11 +3677,17 @@ mplt_hierarchy_product_mapping AS (WITH
 			symbol_2pos = 'NM', '650',
 			symbol_2pos = 'NO', '660',
 			symbol_2pos = 'FF', '510',
-			IN(symbol_2pos, 'FL', 'FP') AND IN(type_bureau, 'PF', 'PQ', 'MS'), '820',
-			symbol_2pos = 'HH' AND type_bureau = 'PF', '820',
-			IN(symbol_2pos, 'HH', 'PA', 'PM', 'PP', 'PS', 'PT', 'HA', 'XX', 'XA') AND IN(type_bureau, 'RL', 'RP', 'RN'), '850',
-			IN(symbol_2pos, 'HH', 'UP', 'HX', 'XX') AND type_bureau = 'GL' AND major_peril = '017', '890',
-			'000') AS v_product_code,
+			symbol_2pos IN ('FL','FP') 
+			AND type_bureau IN ('PF','PQ','MS'), '820',
+			symbol_2pos = 'HH' 
+			AND type_bureau = 'PF', '820',
+			symbol_2pos IN ('HH','PA','PM','PP','PS','PT','HA','XX','XA') 
+			AND type_bureau IN ('RL','RP','RN'), '850',
+			symbol_2pos IN ('HH','UP','HX','XX') 
+			AND type_bureau = 'GL' 
+			AND major_peril = '017', '890',
+			'000'
+		) AS v_product_code,
 		v_product_code AS product_code_out
 		FROM EXP_input
 	),
@@ -2599,13 +3715,26 @@ mplt_hierarchy_product_mapping AS (WITH
 		SELECT
 		prdct_code_dim_id,
 		-- *INF*: IIF(isnull(prdct_code_dim_id),-1,prdct_code_dim_id)
-		IFF(prdct_code_dim_id IS NULL, - 1, prdct_code_dim_id) AS prdct_code_dim_id_out,
+		IFF(prdct_code_dim_id IS NULL,
+			- 1,
+			prdct_code_dim_id
+		) AS prdct_code_dim_id_out,
 		prdct_code_descript,
 		-- *INF*: IIF(isnull(prdct_code_descript),'N/A',rtrim(ltrim(prdct_code_descript)))
-		IFF(prdct_code_descript IS NULL, 'N/A', rtrim(ltrim(prdct_code_descript))) AS prdct_code_descript_out,
+		IFF(prdct_code_descript IS NULL,
+			'N/A',
+			rtrim(ltrim(prdct_code_descript
+				)
+			)
+		) AS prdct_code_descript_out,
 		prdct_code,
 		-- *INF*: IIF(isnull(prdct_code),'N/A',rtrim(ltrim(prdct_code)))
-		IFF(prdct_code IS NULL, 'N/A', rtrim(ltrim(prdct_code))) AS prdct_code_out
+		IFF(prdct_code IS NULL,
+			'N/A',
+			rtrim(ltrim(prdct_code
+				)
+			)
+		) AS prdct_code_out
 		FROM LKP_product_code_dim
 	),
 	OUTPUT_hierarchy_product_code AS (
@@ -2621,9 +3750,15 @@ EXP_merge_update_data AS (
 	LKP_asl_dim.asl_dim_id,
 	LKP_asl_product_code_dim.asl_prdct_code_dim_id,
 	-- *INF*: IIF(ISNULL(asl_dim_id),-1,asl_dim_id)
-	IFF(asl_dim_id IS NULL, - 1, asl_dim_id) AS asl_dim_id_out,
+	IFF(asl_dim_id IS NULL,
+		- 1,
+		asl_dim_id
+	) AS asl_dim_id_out,
 	-- *INF*: IIF(ISNULL(asl_prdct_code_dim_id),-1,asl_prdct_code_dim_id)
-	IFF(asl_prdct_code_dim_id IS NULL, - 1, asl_prdct_code_dim_id) AS asl_prdct_code_dim_id_out,
+	IFF(asl_prdct_code_dim_id IS NULL,
+		- 1,
+		asl_prdct_code_dim_id
+	) AS asl_prdct_code_dim_id_out,
 	mplt_ASL_WBC8827B_Product_Coverage_Codes.kind_code_mine_sub,
 	mplt_ASL_WBC8827B_Product_Coverage_Codes.facultative_ind_mine_sub,
 	mplt_ASL_WBC8827B_Product_Coverage_Codes.reins_co_number_mine_sub,
@@ -2939,7 +4074,10 @@ EXP_combine_mp50_with_ceded_transaction_type_id AS (
 	FIL_filter_Ceded_records.reins_co_number_mine_sub,
 	LKP_claim_transaction_type_dim_Get_Ceded_Record.claim_trans_type_dim_id AS lkp_claim_trans_type_dim_id,
 	-- *INF*: IIF(isnull(lkp_claim_trans_type_dim_id),-1,lkp_claim_trans_type_dim_id)
-	IFF(lkp_claim_trans_type_dim_id IS NULL, - 1, lkp_claim_trans_type_dim_id) AS lkp_claim_trans_type_dim_id_out,
+	IFF(lkp_claim_trans_type_dim_id IS NULL,
+		- 1,
+		lkp_claim_trans_type_dim_id
+	) AS lkp_claim_trans_type_dim_id_out,
 	-1 AS DEFAULT_ID,
 	FIL_filter_Ceded_records.kind_code_mine_sub,
 	FIL_filter_Ceded_records.loss_master_fact_id111,
@@ -3320,7 +4458,12 @@ EXP_check_for_update AS (
 	-- mplt_asl_dim_id_out != asl_dim_id_old or 
 	-- mplt_asl_prdct_code_dim_id_out !=asl_prdct_code_dim_id_old or
 	-- mplt_prdct_code_dim_id_out != prdct_code_dim_id_old,1,0)
-	IFF(mplt_asl_dim_id_out != asl_dim_id_old OR mplt_asl_prdct_code_dim_id_out != asl_prdct_code_dim_id_old OR mplt_prdct_code_dim_id_out != prdct_code_dim_id_old, 1, 0) AS IsChanged
+	IFF(mplt_asl_dim_id_out != asl_dim_id_old 
+		OR mplt_asl_prdct_code_dim_id_out != asl_prdct_code_dim_id_old 
+		OR mplt_prdct_code_dim_id_out != prdct_code_dim_id_old,
+		1,
+		0
+	) AS IsChanged
 	FROM RTR_split_special_inserts_UpdatePath
 ),
 FIL_ASL_updates AS (
@@ -3413,9 +4556,15 @@ EXP_Default AS (
 	SubNonAnnualStatementLineCode,
 	cause_of_loss,
 	-- *INF*: IIF(in(cause_of_loss,'05','75'),'1','0')
-	IFF(in(cause_of_loss, '05', '75'), '1', '0') AS v_Indemnity,
+	IFF(cause_of_loss IN ('05','75'),
+		'1',
+		'0'
+	) AS v_Indemnity,
 	-- *INF*: IIF(in(cause_of_loss,'06','07'),'1','0')
-	IFF(in(cause_of_loss, '06', '07'), '1', '0') AS v_Medical,
+	IFF(cause_of_loss IN ('06','07'),
+		'1',
+		'0'
+	) AS v_Medical,
 	-- *INF*: IIF
 	-- (AnnualStatementLineCode='160',
 	-- DECODE('1',
@@ -3423,10 +4572,14 @@ EXP_Default AS (
 	-- v_Medical,'190',
 	-- '999'),
 	-- SubAnnualStatementLineCode)
-	IFF(AnnualStatementLineCode = '160', DECODE('1',
+	IFF(AnnualStatementLineCode = '160',
+		DECODE('1',
 		v_Indemnity, '180',
 		v_Medical, '190',
-		'999'), SubAnnualStatementLineCode) AS o_sub_asl_code
+		'999'
+		),
+		SubAnnualStatementLineCode
+	) AS o_sub_asl_code
 	FROM SQ_EDWSource_DCTClaims
 ),
 LKP_Produc_Code_Dim AS (
@@ -3525,20 +4678,32 @@ EXP_Values AS (
 	EXP_Default.claim_trans_id,
 	LKP_loss_master_dim_DuckCreekClaims.loss_master_dim_id,
 	-- *INF*: IIF(ISNULL(loss_master_dim_id),-1,loss_master_dim_id)
-	IFF(loss_master_dim_id IS NULL, - 1, loss_master_dim_id) AS loss_master_dim_id_out,
+	IFF(loss_master_dim_id IS NULL,
+		- 1,
+		loss_master_dim_id
+	) AS loss_master_dim_id_out,
 	EXP_Default.AnnualStatementLineNumber,
 	EXP_Default.SchedulePNumber,
 	EXP_Default.SubAnnualStatementLineNumber,
 	LKP_asl_dim_DuckCreekClaims.asl_dim_id,
 	-- *INF*: IIF(ISNULL(asl_dim_id),-1,asl_dim_id)
 	-- 
-	IFF(asl_dim_id IS NULL, - 1, asl_dim_id) AS asl_dim_id_Out,
+	IFF(asl_dim_id IS NULL,
+		- 1,
+		asl_dim_id
+	) AS asl_dim_id_Out,
 	LKP_strategic_business_division_dim.strtgc_bus_dvsn_dim_id,
 	-- *INF*: IIF(ISNULL(strtgc_bus_dvsn_dim_id),-1,strtgc_bus_dvsn_dim_id)
-	IFF(strtgc_bus_dvsn_dim_id IS NULL, - 1, strtgc_bus_dvsn_dim_id) AS strtgc_bus_dvsn_dim_id_Out,
+	IFF(strtgc_bus_dvsn_dim_id IS NULL,
+		- 1,
+		strtgc_bus_dvsn_dim_id
+	) AS strtgc_bus_dvsn_dim_id_Out,
 	LKP_Produc_Code_Dim.prdct_code_dim_id,
 	-- *INF*: IIF(ISNULL(prdct_code_dim_id),-1,prdct_code_dim_id)
-	IFF(prdct_code_dim_id IS NULL, - 1, prdct_code_dim_id) AS prdct_code_dim_id_Out
+	IFF(prdct_code_dim_id IS NULL,
+		- 1,
+		prdct_code_dim_id
+	) AS prdct_code_dim_id_Out
 	FROM EXP_Default
 	LEFT JOIN LKP_Produc_Code_Dim
 	ON LKP_Produc_Code_Dim.prdct_code = EXP_Default.ProductCode

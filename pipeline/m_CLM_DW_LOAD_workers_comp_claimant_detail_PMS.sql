@@ -191,7 +191,10 @@ EXP_VALIDATE_workers_comp_claimant_detail_PMS AS (
 	-- *INF*: :LKP.LKP_CLAIM_COVERAGE(PIF_SYMBOL,PIF_POLICY_NUMBER,PIF_MODULE,V_INS_LINE)
 	LKP_CLAIM_COVERAGE_PIF_SYMBOL_PIF_POLICY_NUMBER_PIF_MODULE_V_INS_LINE.PIF_42X6_stage_id AS V_FILTER_FLAG,
 	-- *INF*: IIF(ISNULL(V_FILTER_FLAG),'N','Y')
-	IFF(V_FILTER_FLAG IS NULL, 'N', 'Y') AS FILTER_FLAG
+	IFF(V_FILTER_FLAG IS NULL,
+		'N',
+		'Y'
+	) AS FILTER_FLAG
 	FROM SQ_PIF_42GQ_CMT_stage
 	LEFT JOIN LKP_CLAIM_COVERAGE LKP_CLAIM_COVERAGE_PIF_SYMBOL_PIF_POLICY_NUMBER_PIF_MODULE_V_INS_LINE
 	ON LKP_CLAIM_COVERAGE_PIF_SYMBOL_PIF_POLICY_NUMBER_PIF_MODULE_V_INS_LINE.PIF_SYMBOL = PIF_SYMBOL
@@ -323,47 +326,105 @@ EXP_Lkp_Values_workers_comp_claimant_detail_PMS AS (
 	IPFCGQ_LOSS_COV_CODE_2 AS IN_IPFCGQ_LOSS_COV_CODE_2,
 	IPFCGQ_TYPE_DISABILITY AS IN_IPFCGQ_TYPE_DISABILITY,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_PIF_SYMBOL))),'N/A',IIF(IS_SPACES(IN_PIF_SYMBOL),'N/A',LTRIM(RTRIM(IN_PIF_SYMBOL))))
-	IFF(LTRIM(RTRIM(IN_PIF_SYMBOL)) IS NULL, 'N/A', IFF(IS_SPACES(IN_PIF_SYMBOL), 'N/A', LTRIM(RTRIM(IN_PIF_SYMBOL)))) AS V_PIF_SYMBOL,
+	IFF(LTRIM(RTRIM(IN_PIF_SYMBOL
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_PIF_SYMBOL)>0 AND TRIM(IN_PIF_SYMBOL)='',
+			'N/A',
+			LTRIM(RTRIM(IN_PIF_SYMBOL
+				)
+			)
+		)
+	) AS V_PIF_SYMBOL,
 	V_PIF_SYMBOL AS PIF_SYMBOL,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_PIF_POLICY_NUMBER))),'N/A',IIF(IS_SPACES(IN_PIF_POLICY_NUMBER),'N/A',LTRIM(RTRIM(IN_PIF_POLICY_NUMBER))))
-	IFF(LTRIM(RTRIM(IN_PIF_POLICY_NUMBER)) IS NULL, 'N/A', IFF(IS_SPACES(IN_PIF_POLICY_NUMBER), 'N/A', LTRIM(RTRIM(IN_PIF_POLICY_NUMBER)))) AS V_PIF_POLICY_NUMBER,
+	IFF(LTRIM(RTRIM(IN_PIF_POLICY_NUMBER
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_PIF_POLICY_NUMBER)>0 AND TRIM(IN_PIF_POLICY_NUMBER)='',
+			'N/A',
+			LTRIM(RTRIM(IN_PIF_POLICY_NUMBER
+				)
+			)
+		)
+	) AS V_PIF_POLICY_NUMBER,
 	V_PIF_POLICY_NUMBER AS PIF_POLICY_NUMBER,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_PIF_MODULE))),'N/A',IIF(IS_SPACES(IN_PIF_MODULE),'N/A',LTRIM(RTRIM(IN_PIF_MODULE))))
-	IFF(LTRIM(RTRIM(IN_PIF_MODULE)) IS NULL, 'N/A', IFF(IS_SPACES(IN_PIF_MODULE), 'N/A', LTRIM(RTRIM(IN_PIF_MODULE)))) AS V_PIF_MODULE,
+	IFF(LTRIM(RTRIM(IN_PIF_MODULE
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_PIF_MODULE)>0 AND TRIM(IN_PIF_MODULE)='',
+			'N/A',
+			LTRIM(RTRIM(IN_PIF_MODULE
+				)
+			)
+		)
+	) AS V_PIF_MODULE,
 	V_PIF_MODULE AS PIF_MODULE,
 	-- *INF*: IIF(ISNULL(IN_IPFCGQ_YEAR_OF_LOSS),1800,IN_IPFCGQ_YEAR_OF_LOSS)
-	IFF(IN_IPFCGQ_YEAR_OF_LOSS IS NULL, 1800, IN_IPFCGQ_YEAR_OF_LOSS) AS V_IPFCGQ_YEAR_OF_LOSS,
+	IFF(IN_IPFCGQ_YEAR_OF_LOSS IS NULL,
+		1800,
+		IN_IPFCGQ_YEAR_OF_LOSS
+	) AS V_IPFCGQ_YEAR_OF_LOSS,
 	V_IPFCGQ_YEAR_OF_LOSS AS IPFCGQ_YEAR_OF_LOSS,
 	-- *INF*: IIF(ISNULL(IN_IPFCGQ_MONTH_OF_LOSS),01,IN_IPFCGQ_MONTH_OF_LOSS)
-	IFF(IN_IPFCGQ_MONTH_OF_LOSS IS NULL, 01, IN_IPFCGQ_MONTH_OF_LOSS) AS V_IPFCGQ_MONTH_OF_LOSS,
+	IFF(IN_IPFCGQ_MONTH_OF_LOSS IS NULL,
+		01,
+		IN_IPFCGQ_MONTH_OF_LOSS
+	) AS V_IPFCGQ_MONTH_OF_LOSS,
 	V_IPFCGQ_MONTH_OF_LOSS AS IPFCGQ_MONTH_OF_LOSS,
 	-- *INF*: IIF(ISNULL(IN_IPFCGQ_DAY_OF_LOSS),01,IN_IPFCGQ_DAY_OF_LOSS)
-	IFF(IN_IPFCGQ_DAY_OF_LOSS IS NULL, 01, IN_IPFCGQ_DAY_OF_LOSS) AS V_IPFCGQ_DAY_OF_LOSS,
+	IFF(IN_IPFCGQ_DAY_OF_LOSS IS NULL,
+		01,
+		IN_IPFCGQ_DAY_OF_LOSS
+	) AS V_IPFCGQ_DAY_OF_LOSS,
 	V_IPFCGQ_DAY_OF_LOSS AS IPFCGQ_DAY_OF_LOSS,
 	-- *INF*: IIF(ISNULL(IN_IPFCGQ_LOSS_OCCURENCE),'000',IN_IPFCGQ_LOSS_OCCURENCE)
-	IFF(IN_IPFCGQ_LOSS_OCCURENCE IS NULL, '000', IN_IPFCGQ_LOSS_OCCURENCE) AS V_IPFCGQ_LOSS_OCCURENCE,
+	IFF(IN_IPFCGQ_LOSS_OCCURENCE IS NULL,
+		'000',
+		IN_IPFCGQ_LOSS_OCCURENCE
+	) AS V_IPFCGQ_LOSS_OCCURENCE,
 	V_IPFCGQ_LOSS_OCCURENCE AS IPFCGQ_LOSS_OCCURENCE,
 	-- *INF*: IIF(ISNULL(IN_IPFCGQ_LOSS_CLAIMANT),'000',IN_IPFCGQ_LOSS_CLAIMANT)
-	IFF(IN_IPFCGQ_LOSS_CLAIMANT IS NULL, '000', IN_IPFCGQ_LOSS_CLAIMANT) AS V_IPFCGQ_LOSS_CLAIMANT,
+	IFF(IN_IPFCGQ_LOSS_CLAIMANT IS NULL,
+		'000',
+		IN_IPFCGQ_LOSS_CLAIMANT
+	) AS V_IPFCGQ_LOSS_CLAIMANT,
 	V_IPFCGQ_LOSS_CLAIMANT AS IPFCGQ_LOSS_CLAIMANT,
 	-- *INF*: TO_CHAR(V_IPFCGQ_YEAR_OF_LOSS)
-	TO_CHAR(V_IPFCGQ_YEAR_OF_LOSS) AS V_LOSS_YEAR,
+	TO_CHAR(V_IPFCGQ_YEAR_OF_LOSS
+	) AS V_LOSS_YEAR,
 	-- *INF*: TO_CHAR(V_IPFCGQ_MONTH_OF_LOSS)
-	TO_CHAR(V_IPFCGQ_MONTH_OF_LOSS) AS V_LOSS_MONTH,
+	TO_CHAR(V_IPFCGQ_MONTH_OF_LOSS
+	) AS V_LOSS_MONTH,
 	-- *INF*: TO_CHAR(V_IPFCGQ_DAY_OF_LOSS)
-	TO_CHAR(V_IPFCGQ_DAY_OF_LOSS) AS V_LOSS_DAY,
+	TO_CHAR(V_IPFCGQ_DAY_OF_LOSS
+	) AS V_LOSS_DAY,
 	-- *INF*: IIF ( LENGTH(V_LOSS_MONTH) = 1, '0' || V_LOSS_MONTH, V_LOSS_MONTH)
 	-- ||  
 	-- IIF ( LENGTH(V_LOSS_DAY ) = 1, '0' || V_LOSS_DAY, V_LOSS_DAY )
 	-- ||  
 	-- V_LOSS_YEAR
-	IFF(LENGTH(V_LOSS_MONTH) = 1, '0' || V_LOSS_MONTH, V_LOSS_MONTH) || IFF(LENGTH(V_LOSS_DAY) = 1, '0' || V_LOSS_DAY, V_LOSS_DAY) || V_LOSS_YEAR AS V_LOSS_DATE,
+	IFF(LENGTH(V_LOSS_MONTH
+		) = 1,
+		'0' || V_LOSS_MONTH,
+		V_LOSS_MONTH
+	) || IFF(LENGTH(V_LOSS_DAY
+		) = 1,
+		'0' || V_LOSS_DAY,
+		V_LOSS_DAY
+	) || V_LOSS_YEAR AS V_LOSS_DATE,
 	-- *INF*: V_PIF_SYMBOL || V_PIF_POLICY_NUMBER || V_PIF_MODULE || V_LOSS_DATE || TO_CHAR(V_IPFCGQ_LOSS_OCCURENCE)
-	V_PIF_SYMBOL || V_PIF_POLICY_NUMBER || V_PIF_MODULE || V_LOSS_DATE || TO_CHAR(V_IPFCGQ_LOSS_OCCURENCE) AS V_OCCURRENCE_KEY,
+	V_PIF_SYMBOL || V_PIF_POLICY_NUMBER || V_PIF_MODULE || V_LOSS_DATE || TO_CHAR(V_IPFCGQ_LOSS_OCCURENCE
+	) AS V_OCCURRENCE_KEY,
 	V_OCCURRENCE_KEY AS CLAIM_OCCURRENCE_KEY,
 	'CMT' AS V_PARTY_ROLE_CODE,
 	-- *INF*: V_OCCURRENCE_KEY||TO_CHAR(V_IPFCGQ_LOSS_CLAIMANT)||V_PARTY_ROLE_CODE
-	V_OCCURRENCE_KEY || TO_CHAR(V_IPFCGQ_LOSS_CLAIMANT) || V_PARTY_ROLE_CODE AS V_LOSS_PARTY_KEY,
+	V_OCCURRENCE_KEY || TO_CHAR(V_IPFCGQ_LOSS_CLAIMANT
+	) || V_PARTY_ROLE_CODE AS V_LOSS_PARTY_KEY,
 	V_LOSS_PARTY_KEY AS CLAIM_PARTY_KEY,
 	-- *INF*: ---:LKP.LKP_CLAIM_OCCURRENCE(V_OCCURRENCE_KEY)
 	'' AS V_CLAIM_OCCURRENCE_AK_ID,
@@ -373,19 +434,89 @@ EXP_Lkp_Values_workers_comp_claimant_detail_PMS AS (
 	'' AS V_CLAIM_PARTY_OCCURRENCE_AK_ID,
 	V_CLAIM_PARTY_OCCURRENCE_AK_ID AS CLAIM_PARTY_OCCURRENCE_AK_ID,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_IPFCGQ_MARITAL_STATUS))),'N/A',IIF(IS_SPACES(IN_IPFCGQ_MARITAL_STATUS),'N/A',LTRIM(RTRIM(IN_IPFCGQ_MARITAL_STATUS))))
-	IFF(LTRIM(RTRIM(IN_IPFCGQ_MARITAL_STATUS)) IS NULL, 'N/A', IFF(IS_SPACES(IN_IPFCGQ_MARITAL_STATUS), 'N/A', LTRIM(RTRIM(IN_IPFCGQ_MARITAL_STATUS)))) AS IPFCGQ_MARITAL_STATUS,
+	IFF(LTRIM(RTRIM(IN_IPFCGQ_MARITAL_STATUS
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_IPFCGQ_MARITAL_STATUS)>0 AND TRIM(IN_IPFCGQ_MARITAL_STATUS)='',
+			'N/A',
+			LTRIM(RTRIM(IN_IPFCGQ_MARITAL_STATUS
+				)
+			)
+		)
+	) AS IPFCGQ_MARITAL_STATUS,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_1_2))),'N/A',IIF(IS_SPACES(IN_IPFCGQ_LOSS_AIA_CODES_1_2),'N/A',LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_1_2))))
-	IFF(LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_1_2)) IS NULL, 'N/A', IFF(IS_SPACES(IN_IPFCGQ_LOSS_AIA_CODES_1_2), 'N/A', LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_1_2)))) AS IPFCGQ_LOSS_AIA_CODES_1_2,
+	IFF(LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_1_2
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_IPFCGQ_LOSS_AIA_CODES_1_2)>0 AND TRIM(IN_IPFCGQ_LOSS_AIA_CODES_1_2)='',
+			'N/A',
+			LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_1_2
+				)
+			)
+		)
+	) AS IPFCGQ_LOSS_AIA_CODES_1_2,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_3_4))),'N/A',IIF(IS_SPACES(IN_IPFCGQ_LOSS_AIA_CODES_3_4),'N/A',LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_3_4))))
-	IFF(LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_3_4)) IS NULL, 'N/A', IFF(IS_SPACES(IN_IPFCGQ_LOSS_AIA_CODES_3_4), 'N/A', LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_3_4)))) AS IPFCGQ_LOSS_AIA_CODES_3_4,
+	IFF(LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_3_4
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_IPFCGQ_LOSS_AIA_CODES_3_4)>0 AND TRIM(IN_IPFCGQ_LOSS_AIA_CODES_3_4)='',
+			'N/A',
+			LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_3_4
+				)
+			)
+		)
+	) AS IPFCGQ_LOSS_AIA_CODES_3_4,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_5_6))),'N/A',IIF(IS_SPACES(IN_IPFCGQ_LOSS_AIA_CODES_5_6),'N/A',LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_5_6))))
-	IFF(LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_5_6)) IS NULL, 'N/A', IFF(IS_SPACES(IN_IPFCGQ_LOSS_AIA_CODES_5_6), 'N/A', LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_5_6)))) AS IPFCGQ_LOSS_AIA_CODES_5_6,
+	IFF(LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_5_6
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_IPFCGQ_LOSS_AIA_CODES_5_6)>0 AND TRIM(IN_IPFCGQ_LOSS_AIA_CODES_5_6)='',
+			'N/A',
+			LTRIM(RTRIM(IN_IPFCGQ_LOSS_AIA_CODES_5_6
+				)
+			)
+		)
+	) AS IPFCGQ_LOSS_AIA_CODES_5_6,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_IPFCGQ_DEATH_INDICATOR))),'N/A',IIF(IS_SPACES(IN_IPFCGQ_DEATH_INDICATOR),'N/A',LTRIM(RTRIM(IN_IPFCGQ_DEATH_INDICATOR))))
-	IFF(LTRIM(RTRIM(IN_IPFCGQ_DEATH_INDICATOR)) IS NULL, 'N/A', IFF(IS_SPACES(IN_IPFCGQ_DEATH_INDICATOR), 'N/A', LTRIM(RTRIM(IN_IPFCGQ_DEATH_INDICATOR)))) AS IPFCGQ_DEATH_INDICATOR,
+	IFF(LTRIM(RTRIM(IN_IPFCGQ_DEATH_INDICATOR
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_IPFCGQ_DEATH_INDICATOR)>0 AND TRIM(IN_IPFCGQ_DEATH_INDICATOR)='',
+			'N/A',
+			LTRIM(RTRIM(IN_IPFCGQ_DEATH_INDICATOR
+				)
+			)
+		)
+	) AS IPFCGQ_DEATH_INDICATOR,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_IPFCGQ_LOSS_COV_CODE_2))),'N/A',IIF(IS_SPACES(IN_IPFCGQ_LOSS_COV_CODE_2),'N/A',LTRIM(RTRIM(IN_IPFCGQ_LOSS_COV_CODE_2))))
-	IFF(LTRIM(RTRIM(IN_IPFCGQ_LOSS_COV_CODE_2)) IS NULL, 'N/A', IFF(IS_SPACES(IN_IPFCGQ_LOSS_COV_CODE_2), 'N/A', LTRIM(RTRIM(IN_IPFCGQ_LOSS_COV_CODE_2)))) AS IPFCGQ_LOSS_COV_CODE_2,
+	IFF(LTRIM(RTRIM(IN_IPFCGQ_LOSS_COV_CODE_2
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_IPFCGQ_LOSS_COV_CODE_2)>0 AND TRIM(IN_IPFCGQ_LOSS_COV_CODE_2)='',
+			'N/A',
+			LTRIM(RTRIM(IN_IPFCGQ_LOSS_COV_CODE_2
+				)
+			)
+		)
+	) AS IPFCGQ_LOSS_COV_CODE_2,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_IPFCGQ_TYPE_DISABILITY))),'N/A',IIF(IS_SPACES(IN_IPFCGQ_TYPE_DISABILITY),'N/A',LTRIM(RTRIM(IN_IPFCGQ_TYPE_DISABILITY))))
-	IFF(LTRIM(RTRIM(IN_IPFCGQ_TYPE_DISABILITY)) IS NULL, 'N/A', IFF(IS_SPACES(IN_IPFCGQ_TYPE_DISABILITY), 'N/A', LTRIM(RTRIM(IN_IPFCGQ_TYPE_DISABILITY)))) AS IPFCGQ_TYPE_DISABILITY,
+	IFF(LTRIM(RTRIM(IN_IPFCGQ_TYPE_DISABILITY
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_IPFCGQ_TYPE_DISABILITY)>0 AND TRIM(IN_IPFCGQ_TYPE_DISABILITY)='',
+			'N/A',
+			LTRIM(RTRIM(IN_IPFCGQ_TYPE_DISABILITY
+				)
+			)
+		)
+	) AS IPFCGQ_TYPE_DISABILITY,
 	logical_flag,
 	SOURCE_SYSTEM_ID
 	FROM FIL_workers_comp_claimant_detail_PMS
@@ -826,20 +957,52 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	-- --:LKP.LKP_Sup_State(LTRIM(RTRIM(IPFCGQ_JURISDICTION_STATE)))))
 	-- 
 	-- --get the alpha state code from numeric
-	IFF(LTRIM(RTRIM(IPFCGQ_JURISDICTION_STATE)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IPFCGQ_JURISDICTION_STATE))) OR LENGTH(LTRIM(RTRIM(IPFCGQ_JURISDICTION_STATE))) = 0, LTRIM(RTRIM(V_Loss_Accident_State)), LTRIM(RTRIM(IPFCGQ_JURISDICTION_STATE))) AS V_jurisdiction_state_code,
+	IFF(LTRIM(RTRIM(IPFCGQ_JURISDICTION_STATE
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IPFCGQ_JURISDICTION_STATE
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IPFCGQ_JURISDICTION_STATE
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IPFCGQ_JURISDICTION_STATE
+				)
+			)
+		) = 0,
+		LTRIM(RTRIM(V_Loss_Accident_State
+			)
+		),
+		LTRIM(RTRIM(IPFCGQ_JURISDICTION_STATE
+			)
+		)
+	) AS V_jurisdiction_state_code,
 	-- *INF*: IIF(ISNULL(V_jurisdiction_state_code) OR IS_SPACES(V_jurisdiction_state_code) OR LENGTH(V_jurisdiction_state_code) =0,'N/A',
 	-- :LKP.LKP_Sup_State(LTRIM(RTRIM(V_jurisdiction_state_code)))
 	-- )
 	-- 
 	-- --get the alpha state code from numeric
-	IFF(V_jurisdiction_state_code IS NULL OR IS_SPACES(V_jurisdiction_state_code) OR LENGTH(V_jurisdiction_state_code) = 0, 'N/A', LKP_SUP_STATE_LTRIM_RTRIM_V_jurisdiction_state_code.state_code) AS V_jurisdiction_state_code_Actual,
+	IFF(V_jurisdiction_state_code IS NULL 
+		OR LENGTH(V_jurisdiction_state_code)>0 AND TRIM(V_jurisdiction_state_code)='' 
+		OR LENGTH(V_jurisdiction_state_code
+		) = 0,
+		'N/A',
+		LKP_SUP_STATE_LTRIM_RTRIM_V_jurisdiction_state_code.state_code
+	) AS V_jurisdiction_state_code_Actual,
 	V_jurisdiction_state_code_Actual AS jurisdiction_state_code_OP,
 	LKP_42GQ_MS3.IPFCGQ_DATE_RPTD_EMPLOYER,
 	-- *INF*: IIF(ISNULL(IPFCGQ_DATE_RPTD_EMPLOYER) OR IPFCGQ_DATE_RPTD_EMPLOYER=0,TO_DATE('1800/01/01','YYYY/MM/DD'),TO_DATE(TO_CHAR(IPFCGQ_DATE_RPTD_EMPLOYER),'YYYYMMDD'))
-	IFF(IPFCGQ_DATE_RPTD_EMPLOYER IS NULL OR IPFCGQ_DATE_RPTD_EMPLOYER = 0, TO_DATE('1800/01/01', 'YYYY/MM/DD'), TO_DATE(TO_CHAR(IPFCGQ_DATE_RPTD_EMPLOYER), 'YYYYMMDD')) AS V_emplyr_notified_date,
+	IFF(IPFCGQ_DATE_RPTD_EMPLOYER IS NULL 
+		OR IPFCGQ_DATE_RPTD_EMPLOYER = 0,
+		TO_DATE('1800/01/01', 'YYYY/MM/DD'
+		),
+		TO_DATE(TO_CHAR(IPFCGQ_DATE_RPTD_EMPLOYER
+			), 'YYYYMMDD'
+		)
+	) AS V_emplyr_notified_date,
 	V_emplyr_notified_date AS emplyr_notified_date,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS V_rpted_to_carrier_date,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS V_rpted_to_carrier_date,
 	V_rpted_to_carrier_date AS rpted_to_carrier_date,
 	'N/A' AS V_jurisdiction_claim_num,
 	V_jurisdiction_claim_num AS jurisdiction_claim_num,
@@ -851,7 +1014,17 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	V_hired_state_code AS hired_state_code,
 	LKP_42GQ_MS3.IPFCGQ_DATE_HIRE,
 	-- *INF*: IIF(ISNULL(IPFCGQ_DATE_HIRE) OR IPFCGQ_DATE_HIRE=0 OR LENGTH (TO_CHAR(IPFCGQ_DATE_HIRE)) < 8 ,TO_DATE('1800/01/01','YYYY/MM/DD'),TO_DATE(TO_CHAR(IPFCGQ_DATE_HIRE),'YYYYMMDD'))
-	IFF(IPFCGQ_DATE_HIRE IS NULL OR IPFCGQ_DATE_HIRE = 0 OR LENGTH(TO_CHAR(IPFCGQ_DATE_HIRE)) < 8, TO_DATE('1800/01/01', 'YYYY/MM/DD'), TO_DATE(TO_CHAR(IPFCGQ_DATE_HIRE), 'YYYYMMDD')) AS V_hired_date,
+	IFF(IPFCGQ_DATE_HIRE IS NULL 
+		OR IPFCGQ_DATE_HIRE = 0 
+		OR LENGTH(TO_CHAR(IPFCGQ_DATE_HIRE
+			)
+		) < 8,
+		TO_DATE('1800/01/01', 'YYYY/MM/DD'
+		),
+		TO_DATE(TO_CHAR(IPFCGQ_DATE_HIRE
+			), 'YYYYMMDD'
+		)
+	) AS V_hired_date,
 	V_hired_date AS hired_date,
 	'N/A' AS V_tax_filing_status,
 	V_tax_filing_status AS tax_filing_status,
@@ -859,7 +1032,17 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	V_occuptn_code AS occuptn_code,
 	LKP_42GQ_WC1.IPFCGQ_EMPLOYMENT_STATUS,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IPFCGQ_EMPLOYMENT_STATUS))),'N/A',IIF(IS_SPACES(IPFCGQ_EMPLOYMENT_STATUS),'N/A',LTRIM(RTRIM(IPFCGQ_EMPLOYMENT_STATUS))))
-	IFF(LTRIM(RTRIM(IPFCGQ_EMPLOYMENT_STATUS)) IS NULL, 'N/A', IFF(IS_SPACES(IPFCGQ_EMPLOYMENT_STATUS), 'N/A', LTRIM(RTRIM(IPFCGQ_EMPLOYMENT_STATUS)))) AS V_employement_status_code,
+	IFF(LTRIM(RTRIM(IPFCGQ_EMPLOYMENT_STATUS
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IPFCGQ_EMPLOYMENT_STATUS)>0 AND TRIM(IPFCGQ_EMPLOYMENT_STATUS)='',
+			'N/A',
+			LTRIM(RTRIM(IPFCGQ_EMPLOYMENT_STATUS
+				)
+			)
+		)
+	) AS V_employement_status_code,
 	V_employement_status_code AS employement_status_code,
 	'N/A' AS V_len_of_time_in_crrnt_job,
 	V_len_of_time_in_crrnt_job AS len_of_time_in_crrnt_job,
@@ -870,7 +1053,10 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	EXP_Lkp_Values_workers_comp_claimant_detail_PMS.IPFCGQ_MARITAL_STATUS AS marital_status,
 	LKP_42GQ_MS3.IPFCGQ_NUMBER_DEPENDENTS,
 	-- *INF*: IIF(ISNULL(IPFCGQ_NUMBER_DEPENDENTS),0,IPFCGQ_NUMBER_DEPENDENTS)
-	IFF(IPFCGQ_NUMBER_DEPENDENTS IS NULL, 0, IPFCGQ_NUMBER_DEPENDENTS) AS V_num_of_dependents,
+	IFF(IPFCGQ_NUMBER_DEPENDENTS IS NULL,
+		0,
+		IPFCGQ_NUMBER_DEPENDENTS
+	) AS V_num_of_dependents,
 	V_num_of_dependents AS num_of_dependents,
 	0 AS V_num_of_dependent_children,
 	V_num_of_dependent_children AS num_of_dependent_children,
@@ -909,7 +1095,8 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	'N/A' AS V_wage_period_code,
 	V_wage_period_code AS wage_period_code,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS V_wage_eff_date,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS V_wage_eff_date,
 	V_wage_eff_date AS wage_eff_date,
 	0 AS V_weeks_worked,
 	V_weeks_worked AS weeks_worked,
@@ -943,7 +1130,10 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	V_avg_full_time_hours_week AS avg_full_time_hours_week,
 	LKP_42GQ_WC2.IPFCGQ_PRE_INJ_WAGE,
 	-- *INF*: IIF(ISNULL(TO_DECIMAL(IPFCGQ_PRE_INJ_WAGE)),0,TO_DECIMAL(IPFCGQ_PRE_INJ_WAGE))
-	IFF(TO_DECIMAL(IPFCGQ_PRE_INJ_WAGE) IS NULL, 0, TO_DECIMAL(IPFCGQ_PRE_INJ_WAGE)) AS V_avg_wkly_wage,
+	IFF(CAST(IPFCGQ_PRE_INJ_WAGE AS FLOAT) IS NULL,
+		0,
+		CAST(IPFCGQ_PRE_INJ_WAGE AS FLOAT)
+	) AS V_avg_wkly_wage,
 	V_avg_wkly_wage AS avg_wkly_wage,
 	0 AS V_num_of_full_time_emplymnt_same_job,
 	V_num_of_full_time_emplymnt_same_job AS num_of_full_time_emplymnt_same_job,
@@ -960,10 +1150,12 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	0 AS V_wkly_attorney_fee,
 	V_wkly_attorney_fee AS wkly_attorney_fee,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS V_first_rpt_inj_date,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS V_first_rpt_inj_date,
 	V_first_rpt_inj_date AS first_rpt_inj_date,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS V_supplementary_rpt_inj_date,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS V_supplementary_rpt_inj_date,
 	V_supplementary_rpt_inj_date AS supplementary_rpt_inj_date,
 	0 AS V_fringe_bnft_discontinued_amt,
 	V_fringe_bnft_discontinued_amt AS fringe_bnft_discontinued_amt,
@@ -976,11 +1168,19 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	0 AS V_emp_day_week,
 	V_emp_day_week AS emp_day_week,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS V_inj_work_day_begin_time,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS V_inj_work_day_begin_time,
 	V_inj_work_day_begin_time AS inj_work_day_begin_time,
 	LKP_42GQ_MS3.IPFCGQ_DATE_OF_DISABILITY,
 	-- *INF*: IIF(ISNULL(IPFCGQ_DATE_OF_DISABILITY) OR IPFCGQ_DATE_OF_DISABILITY=0,TO_DATE('1800/01/01','YYYY/MM/DD'),TO_DATE(TO_CHAR(IPFCGQ_DATE_OF_DISABILITY),'YYYYMMDD'))
-	IFF(IPFCGQ_DATE_OF_DISABILITY IS NULL OR IPFCGQ_DATE_OF_DISABILITY = 0, TO_DATE('1800/01/01', 'YYYY/MM/DD'), TO_DATE(TO_CHAR(IPFCGQ_DATE_OF_DISABILITY), 'YYYYMMDD')) AS V_disability_date,
+	IFF(IPFCGQ_DATE_OF_DISABILITY IS NULL 
+		OR IPFCGQ_DATE_OF_DISABILITY = 0,
+		TO_DATE('1800/01/01', 'YYYY/MM/DD'
+		),
+		TO_DATE(TO_CHAR(IPFCGQ_DATE_OF_DISABILITY
+			), 'YYYYMMDD'
+		)
+	) AS V_disability_date,
 	V_disability_date AS disability_date,
 	'N/A' AS V_phys_restriction_ind,
 	V_phys_restriction_ind AS phys_restriction_ind,
@@ -1016,7 +1216,13 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	V_hazard_condition_descript AS hazard_condition_descript,
 	LKP_42GQ_WC1.IPFCGQ_EMPLOYEE_DEATH_DATE,
 	-- *INF*: IIF(ISNULL(IPFCGQ_EMPLOYEE_DEATH_DATE) OR IS_SPACES(IPFCGQ_EMPLOYEE_DEATH_DATE),TO_DATE('1800/01/01','YYYY/MM/DD'),TO_DATE(IPFCGQ_EMPLOYEE_DEATH_DATE,'YYYYMMDD'))
-	IFF(IPFCGQ_EMPLOYEE_DEATH_DATE IS NULL OR IS_SPACES(IPFCGQ_EMPLOYEE_DEATH_DATE), TO_DATE('1800/01/01', 'YYYY/MM/DD'), TO_DATE(IPFCGQ_EMPLOYEE_DEATH_DATE, 'YYYYMMDD')) AS V_death_date,
+	IFF(IPFCGQ_EMPLOYEE_DEATH_DATE IS NULL 
+		OR LENGTH(IPFCGQ_EMPLOYEE_DEATH_DATE)>0 AND TRIM(IPFCGQ_EMPLOYEE_DEATH_DATE)='',
+		TO_DATE('1800/01/01', 'YYYY/MM/DD'
+		),
+		TO_DATE(IPFCGQ_EMPLOYEE_DEATH_DATE, 'YYYYMMDD'
+		)
+	) AS V_death_date,
 	V_death_date AS death_date,
 	'N/A' AS V_emplyr_nature_bus_descript,
 	V_emplyr_nature_bus_descript AS emplyr_nature_bus_descript,
@@ -1025,45 +1231,107 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	'N/A' AS V_insd_type_code,
 	V_insd_type_code AS insd_type_code,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS V_subrogation_statute_exp_date,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS V_subrogation_statute_exp_date,
 	V_subrogation_statute_exp_date AS subrogation_statute_exp_date,
 	LKP_42GQ_WC3.IPFCGQ_MANGD_CARE_ORG_IND,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IPFCGQ_MANGD_CARE_ORG_IND))),'N/A',IIF(IS_SPACES(IPFCGQ_MANGD_CARE_ORG_IND),'N/A',LTRIM(RTRIM(IPFCGQ_MANGD_CARE_ORG_IND))))
-	IFF(LTRIM(RTRIM(IPFCGQ_MANGD_CARE_ORG_IND)) IS NULL, 'N/A', IFF(IS_SPACES(IPFCGQ_MANGD_CARE_ORG_IND), 'N/A', LTRIM(RTRIM(IPFCGQ_MANGD_CARE_ORG_IND)))) AS V_managed_care_org_type,
+	IFF(LTRIM(RTRIM(IPFCGQ_MANGD_CARE_ORG_IND
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IPFCGQ_MANGD_CARE_ORG_IND)>0 AND TRIM(IPFCGQ_MANGD_CARE_ORG_IND)='',
+			'N/A',
+			LTRIM(RTRIM(IPFCGQ_MANGD_CARE_ORG_IND
+				)
+			)
+		)
+	) AS V_managed_care_org_type,
 	V_managed_care_org_type AS managed_care_org_type,
 	LKP_42GQ_WC2.IPFCGQ_SUBROGATION_CODE,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IPFCGQ_SUBROGATION_CODE))),'N/A',IIF(IS_SPACES(IPFCGQ_SUBROGATION_CODE),'N/A',LTRIM(RTRIM(IPFCGQ_SUBROGATION_CODE))))
-	IFF(LTRIM(RTRIM(IPFCGQ_SUBROGATION_CODE)) IS NULL, 'N/A', IFF(IS_SPACES(IPFCGQ_SUBROGATION_CODE), 'N/A', LTRIM(RTRIM(IPFCGQ_SUBROGATION_CODE)))) AS V_subrogation_code,
+	IFF(LTRIM(RTRIM(IPFCGQ_SUBROGATION_CODE
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IPFCGQ_SUBROGATION_CODE)>0 AND TRIM(IPFCGQ_SUBROGATION_CODE)='',
+			'N/A',
+			LTRIM(RTRIM(IPFCGQ_SUBROGATION_CODE
+				)
+			)
+		)
+	) AS V_subrogation_code,
 	V_subrogation_code AS subrogation_code,
 	EXP_Lkp_Values_workers_comp_claimant_detail_PMS.IPFCGQ_LOSS_COV_CODE_2,
 	LKP_42GQ_WC3.IPFCGQ_TYPE_COVG,
 	LKP_42GQ_WC3.IPFCGQ_TYPE_SETL,
 	-- *INF*: IPFCGQ_LOSS_COV_CODE_2||TO_CHAR(IPFCGQ_TYPE_COVG)||TO_CHAR(IPFCGQ_TYPE_SETL)
-	IPFCGQ_LOSS_COV_CODE_2 || TO_CHAR(IPFCGQ_TYPE_COVG) || TO_CHAR(IPFCGQ_TYPE_SETL) AS V_loss_condition,
+	IPFCGQ_LOSS_COV_CODE_2 || TO_CHAR(IPFCGQ_TYPE_COVG
+	) || TO_CHAR(IPFCGQ_TYPE_SETL
+	) AS V_loss_condition,
 	V_loss_condition AS loss_condition,
 	LKP_42GQ_MS3.IPFCGQ_ATTORNEY_AUTH_REP,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IPFCGQ_ATTORNEY_AUTH_REP))),'N/A',IIF(IS_SPACES(IPFCGQ_ATTORNEY_AUTH_REP),'N/A',LTRIM(RTRIM(IPFCGQ_ATTORNEY_AUTH_REP))))
-	IFF(LTRIM(RTRIM(IPFCGQ_ATTORNEY_AUTH_REP)) IS NULL, 'N/A', IFF(IS_SPACES(IPFCGQ_ATTORNEY_AUTH_REP), 'N/A', LTRIM(RTRIM(IPFCGQ_ATTORNEY_AUTH_REP)))) AS V_attorney_or_au_rep_ind,
+	IFF(LTRIM(RTRIM(IPFCGQ_ATTORNEY_AUTH_REP
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IPFCGQ_ATTORNEY_AUTH_REP)>0 AND TRIM(IPFCGQ_ATTORNEY_AUTH_REP)='',
+			'N/A',
+			LTRIM(RTRIM(IPFCGQ_ATTORNEY_AUTH_REP
+				)
+			)
+		)
+	) AS V_attorney_or_au_rep_ind,
 	V_attorney_or_au_rep_ind AS attorney_or_au_rep_ind,
 	LKP_42GQ_WC1.IPFCGQ_HOSPITAL_COSTS,
 	-- *INF*: IIF(ISNULL(IPFCGQ_HOSPITAL_COSTS),0,IPFCGQ_HOSPITAL_COSTS)
-	IFF(IPFCGQ_HOSPITAL_COSTS IS NULL, 0, IPFCGQ_HOSPITAL_COSTS) AS V_hospital_cost,
+	IFF(IPFCGQ_HOSPITAL_COSTS IS NULL,
+		0,
+		IPFCGQ_HOSPITAL_COSTS
+	) AS V_hospital_cost,
 	V_hospital_cost AS hospital_cost,
 	LKP_42GQ_WC1.IPFCGQ_DOCTOR_COSTS,
 	-- *INF*: IIF(ISNULL(IPFCGQ_DOCTOR_COSTS),0,IPFCGQ_DOCTOR_COSTS)
-	IFF(IPFCGQ_DOCTOR_COSTS IS NULL, 0, IPFCGQ_DOCTOR_COSTS) AS V_doctor_cost,
+	IFF(IPFCGQ_DOCTOR_COSTS IS NULL,
+		0,
+		IPFCGQ_DOCTOR_COSTS
+	) AS V_doctor_cost,
 	V_doctor_cost AS doctor_cost,
 	LKP_42GQ_WC1.IPFCGQ_OTHER_MED_COSTS,
 	-- *INF*: IIF(ISNULL(IPFCGQ_OTHER_MED_COSTS),0,IPFCGQ_OTHER_MED_COSTS)
-	IFF(IPFCGQ_OTHER_MED_COSTS IS NULL, 0, IPFCGQ_OTHER_MED_COSTS) AS V_other_med_cost,
+	IFF(IPFCGQ_OTHER_MED_COSTS IS NULL,
+		0,
+		IPFCGQ_OTHER_MED_COSTS
+	) AS V_other_med_cost,
 	V_other_med_cost AS other_med_cost,
 	LKP_42GQ_MS3.IPFCGQ_CONTROVERTED_CASE,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IPFCGQ_CONTROVERTED_CASE))),'N/A',IIF(IS_SPACES(IPFCGQ_CONTROVERTED_CASE),'N/A',LTRIM(RTRIM(IPFCGQ_CONTROVERTED_CASE))))
-	IFF(LTRIM(RTRIM(IPFCGQ_CONTROVERTED_CASE)) IS NULL, 'N/A', IFF(IS_SPACES(IPFCGQ_CONTROVERTED_CASE), 'N/A', LTRIM(RTRIM(IPFCGQ_CONTROVERTED_CASE)))) AS V_controverted_case_code,
+	IFF(LTRIM(RTRIM(IPFCGQ_CONTROVERTED_CASE
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IPFCGQ_CONTROVERTED_CASE)>0 AND TRIM(IPFCGQ_CONTROVERTED_CASE)='',
+			'N/A',
+			LTRIM(RTRIM(IPFCGQ_CONTROVERTED_CASE
+				)
+			)
+		)
+	) AS V_controverted_case_code,
 	V_controverted_case_code AS controverted_case_code,
 	LKP_42GQ_MS3.IPFCGQ_SURGERY,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IPFCGQ_SURGERY))),'N/A',IIF(IS_SPACES(IPFCGQ_SURGERY),'N/A',LTRIM(RTRIM(IPFCGQ_SURGERY))))
-	IFF(LTRIM(RTRIM(IPFCGQ_SURGERY)) IS NULL, 'N/A', IFF(IS_SPACES(IPFCGQ_SURGERY), 'N/A', LTRIM(RTRIM(IPFCGQ_SURGERY)))) AS V_surgery_ind,
+	IFF(LTRIM(RTRIM(IPFCGQ_SURGERY
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IPFCGQ_SURGERY)>0 AND TRIM(IPFCGQ_SURGERY)='',
+			'N/A',
+			LTRIM(RTRIM(IPFCGQ_SURGERY
+				)
+			)
+		)
+	) AS V_surgery_ind,
 	V_surgery_ind AS surgery_ind,
 	'N/A' AS V_emplyr_loc_descript,
 	V_emplyr_loc_descript AS emplyr_loc_descript,
@@ -1081,16 +1349,50 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	V_hospitalized_ind AS hospitalized_ind,
 	LKP_42GQ_WC2.IPFCGQ_WAGE_METHOD,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IPFCGQ_WAGE_METHOD))),'N/A',IIF(IS_SPACES(IPFCGQ_WAGE_METHOD),'N/A',LTRIM(RTRIM(IPFCGQ_WAGE_METHOD))))
-	IFF(LTRIM(RTRIM(IPFCGQ_WAGE_METHOD)) IS NULL, 'N/A', IFF(IS_SPACES(IPFCGQ_WAGE_METHOD), 'N/A', LTRIM(RTRIM(IPFCGQ_WAGE_METHOD)))) AS V_wage_method_code,
+	IFF(LTRIM(RTRIM(IPFCGQ_WAGE_METHOD
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IPFCGQ_WAGE_METHOD)>0 AND TRIM(IPFCGQ_WAGE_METHOD)='',
+			'N/A',
+			LTRIM(RTRIM(IPFCGQ_WAGE_METHOD
+				)
+			)
+		)
+	) AS V_wage_method_code,
 	V_wage_method_code AS wage_method_code,
 	-- *INF*: :LKP.LKP_42GQ_MS2(PIF_SYMBOL,PIF_POLICY_NUMBER,PIF_MODULE,IPFCGQ_YEAR_OF_LOSS,IPFCGQ_MONTH_OF_LOSS,IPFCGQ_DAY_OF_LOSS,IPFCGQ_LOSS_OCCURENCE,IPFCGQ_LOSS_CLAIMANT)
 	LKP_42GQ_MS2_PIF_SYMBOL_PIF_POLICY_NUMBER_PIF_MODULE_IPFCGQ_YEAR_OF_LOSS_IPFCGQ_MONTH_OF_LOSS_IPFCGQ_DAY_OF_LOSS_IPFCGQ_LOSS_OCCURENCE_IPFCGQ_LOSS_CLAIMANT.IPFCGQ_OCCUPATION AS V_LKP_pms_occuptn_descript,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(V_LKP_pms_occuptn_descript))),'N/A',IIF(IS_SPACES(V_LKP_pms_occuptn_descript),'N/A',LTRIM(RTRIM(V_LKP_pms_occuptn_descript))))
-	IFF(LTRIM(RTRIM(V_LKP_pms_occuptn_descript)) IS NULL, 'N/A', IFF(IS_SPACES(V_LKP_pms_occuptn_descript), 'N/A', LTRIM(RTRIM(V_LKP_pms_occuptn_descript)))) AS V_pms_occuptn_descript,
+	IFF(LTRIM(RTRIM(V_LKP_pms_occuptn_descript
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(V_LKP_pms_occuptn_descript)>0 AND TRIM(V_LKP_pms_occuptn_descript)='',
+			'N/A',
+			LTRIM(RTRIM(V_LKP_pms_occuptn_descript
+				)
+			)
+		)
+	) AS V_pms_occuptn_descript,
 	V_pms_occuptn_descript AS pms_occuptn_descript,
 	EXP_Lkp_Values_workers_comp_claimant_detail_PMS.IPFCGQ_TYPE_DISABILITY AS pms_type_disability,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(TO_CHAR(IPFCGQ_TYPE_COVG)))),'N/A',IIF(IS_SPACES(TO_CHAR(IPFCGQ_TYPE_COVG)),'N/A',LTRIM(RTRIM(TO_CHAR(IPFCGQ_TYPE_COVG)))))
-	IFF(LTRIM(RTRIM(TO_CHAR(IPFCGQ_TYPE_COVG))) IS NULL, 'N/A', IFF(IS_SPACES(TO_CHAR(IPFCGQ_TYPE_COVG)), 'N/A', LTRIM(RTRIM(TO_CHAR(IPFCGQ_TYPE_COVG))))) AS V_ncci_type_cov,
+	IFF(LTRIM(RTRIM(TO_CHAR(IPFCGQ_TYPE_COVG
+				)
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(TO_CHAR(IPFCGQ_TYPE_COVG
+			))>0 AND TRIM(TO_CHAR(IPFCGQ_TYPE_COVG
+			))='',
+			'N/A',
+			LTRIM(RTRIM(TO_CHAR(IPFCGQ_TYPE_COVG
+					)
+				)
+			)
+		)
+	) AS V_ncci_type_cov,
 	V_ncci_type_cov AS ncci_type_cov,
 	-- *INF*: IIF(ISNULL(LKP_claim_party_occurrence_ak_id),'NEW',
 	-- IIF((ltrim(rtrim(LKP_jurisdiction_state_code)) <> ltrim(rtrim(V_jurisdiction_state_code_Actual))) OR 
@@ -1204,7 +1506,442 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	-- (ltrim(rtrim(LKP_pms_type_disability)) <> ltrim(rtrim(pms_type_disability))) OR 
 	-- (ltrim(rtrim(LKP_ncci_type_cov)) <> ltrim(rtrim(V_ncci_type_cov))),
 	-- 'UPDATE','NOCHANGE'))
-	IFF(LKP_claim_party_occurrence_ak_id IS NULL, 'NEW', IFF(( ltrim(rtrim(LKP_jurisdiction_state_code)) <> ltrim(rtrim(V_jurisdiction_state_code_Actual)) ) OR LKP_emplyr_notified_date <> V_emplyr_notified_date OR LKP_rpted_to_carrier_date <> V_rpted_to_carrier_date OR ( ltrim(rtrim(LKP_jurisdiction_claim_num)) <> ltrim(rtrim(V_jurisdiction_claim_num)) ) OR ( ltrim(rtrim(LKP_care_directed_ind)) <> ltrim(rtrim(V_care_directed_ind)) ) OR ( ltrim(rtrim(LKP_care_directed_by)) <> ltrim(rtrim(V_care_directed_by)) ) OR ( ltrim(rtrim(LKP_hired_state_code)) <> ltrim(rtrim(V_hired_state_code)) ) OR LKP_hired_date <> V_hired_date OR ( ltrim(rtrim(LKP_tax_filing_status)) <> ltrim(rtrim(V_tax_filing_status)) ) OR ( ltrim(rtrim(LKP_occuptn_code)) <> ltrim(rtrim(V_occuptn_code)) ) OR ( ltrim(rtrim(LKP_employement_status_code)) <> ltrim(rtrim(V_employement_status_code)) ) OR LKP_len_of_time_in_crrnt_job <> V_len_of_time_in_crrnt_job OR ( ltrim(rtrim(LKP_emp_dept_name)) <> ltrim(rtrim(V_emp_dept_name)) ) OR ( ltrim(rtrim(LKP_emp_shift_num)) <> ltrim(rtrim(V_emp_shift_num)) ) OR ( ltrim(rtrim(LKP_marital_status)) <> ltrim(rtrim(marital_status)) ) OR LKP_num_of_dependents <> V_num_of_dependents OR LKP_num_of_dependent_children <> V_num_of_dependent_children OR LKP_num_of_other_dependents <> V_num_of_other_dependents OR LKP_num_of_exemptions <> V_num_of_exemptions OR ( ltrim(rtrim(LKP_exemption_type)) <> ltrim(rtrim(V_exemption_type)) ) OR ( ltrim(rtrim(LKP_emp_blind_ind)) <> ltrim(rtrim(V_emp_blind_ind)) ) OR ( ltrim(rtrim(LKP_emp_over_65_ind)) <> ltrim(rtrim(V_emp_over_65_ind)) ) OR ( ltrim(rtrim(LKP_spouse_blind_ind)) <> ltrim(rtrim(V_spouse_blind_ind)) ) OR ( ltrim(rtrim(LKP_spouse_over_65_ind)) <> ltrim(rtrim(V_spouse_over_65_ind)) ) OR ( ltrim(rtrim(LKP_education_lvl)) <> ltrim(rtrim(V_education_lvl)) ) OR ( ltrim(rtrim(LKP_med_auth_ind)) <> ltrim(rtrim(V_med_auth_ind)) ) OR ( ltrim(rtrim(LKP_auth_to_release_ssn_ind)) <> ltrim(rtrim(V_auth_to_release_ssn_ind)) ) OR ( ltrim(rtrim(LKP_emp_id_num)) <> ltrim(rtrim(V_emp_id_num)) ) OR ( ltrim(rtrim(LKP_emp_id_type)) <> ltrim(rtrim(V_emp_id_type)) ) OR LKP_emp_part_time_hour_week <> V_emp_part_time_hour_week OR ( ltrim(rtrim(LKP_emp_dept_num)) <> ltrim(rtrim(V_emp_dept_num)) ) OR LKP_emp_part_time_hourly_week_rate_amt <> V_emp_part_time_hourly_week_rate_amt OR LKP_wage_rate_amt <> V_wage_rate_amt OR ( ltrim(rtrim(LKP_wage_period_code)) <> ltrim(rtrim(V_wage_period_code)) ) OR LKP_wage_eff_date <> V_wage_eff_date OR LKP_weeks_worked <> V_weeks_worked OR ( ltrim(rtrim(LKP_gross_amt_type)) <> ltrim(rtrim(V_gross_amt_type)) ) OR LKP_gross_wage_amt_excluding_tips <> V_gross_wage_amt_excluding_tips OR LKP_piece_work_num_of_weeks_excluding_overtime <> V_piece_work_num_of_weeks_excluding_overtime OR LKP_emp_rec_meals <> V_emp_rec_meals OR LKP_emp_rec_room <> V_emp_rec_room OR LKP_emp_rec_tips <> V_emp_rec_tips OR LKP_overtime_amt <> V_overtime_amt OR LKP_overtime_after_hour_in_a_week <> V_overtime_after_hour_in_a_week OR LKP_overtime_after_hour_in_a_day <> V_overtime_after_hour_in_a_day OR ( ltrim(rtrim(LKP_full_pay_inj_day_ind)) <> ltrim(rtrim(V_full_pay_inj_day_ind)) ) OR ( ltrim(rtrim(LKP_salary_paid_ind)) <> ltrim(rtrim(V_salary_paid_ind)) ) OR LKP_avg_full_time_days_week <> V_avg_full_time_days_week OR LKP_avg_full_time_hours_day <> V_avg_full_time_hours_day OR LKP_avg_full_time_hours_week <> V_avg_full_time_hours_week OR LKP_avg_wkly_wage <> V_avg_wkly_wage OR LKP_num_of_full_time_emplymnt_same_job <> V_num_of_full_time_emplymnt_same_job OR LKP_num_of_part_time_emplymnt_same_job <> V_num_of_part_time_emplymnt_same_job OR LKP_ttd_rate <> V_ttd_rate OR LKP_ppd_rate <> V_ppd_rate OR LKP_ptd_rate <> V_ptd_rate OR LKP_dtd_rate <> V_dtd_rate OR LKP_wkly_attorney_fee <> V_wkly_attorney_fee OR LKP_first_rpt_inj_date <> V_first_rpt_inj_date OR LKP_supplementary_rpt_inj_date <> V_supplementary_rpt_inj_date OR LKP_fringe_bnft_discontinued_amt <> V_fringe_bnft_discontinued_amt OR LKP_emp_start_time <> V_emp_start_time OR LKP_emp_hour_day <> V_emp_hour_day OR LKP_emp_hour_week <> V_emp_hour_week OR LKP_emp_day_week <> V_emp_day_week OR LKP_inj_work_day_begin_time <> V_inj_work_day_begin_time OR LKP_disability_date <> V_disability_date OR ( ltrim(rtrim(LKP_phys_restriction_ind)) <> ltrim(rtrim(V_phys_restriction_ind)) ) OR ( ltrim(rtrim(LKP_pre_exst_disability_ind)) <> ltrim(rtrim(V_pre_exst_disability_ind)) ) OR ( ltrim(rtrim(LKP_premises_code)) <> ltrim(rtrim(V_premises_code)) ) OR ( ltrim(rtrim(LKP_work_process_descript)) <> ltrim(rtrim(V_work_process_descript)) ) OR ( ltrim(rtrim(LKP_task_descript)) <> ltrim(rtrim(V_task_descript)) ) OR ( ltrim(rtrim(LKP_body_part_code)) <> ltrim(rtrim(body_part_code)) ) OR ( ltrim(rtrim(LKP_nature_inj_code)) <> ltrim(rtrim(nature_inj_code)) ) OR ( ltrim(rtrim(LKP_cause_inj_code)) <> ltrim(rtrim(cause_inj_code)) ) OR ( ltrim(rtrim(LKP_safeguard_not_used_ind)) <> ltrim(rtrim(V_safeguard_not_used_ind)) ) OR ( ltrim(rtrim(LKP_inj_substance_abuse_ind)) <> ltrim(rtrim(V_inj_substance_abuse_ind)) ) OR ( ltrim(rtrim(LKP_sfty_device_not_used_ind)) <> ltrim(rtrim(V_sfty_device_not_used_ind)) ) OR ( ltrim(rtrim(LKP_inj_rules_not_obeyed_ind)) <> ltrim(rtrim(V_inj_rules_not_obeyed_ind)) ) OR ( ltrim(rtrim(LKP_inj_result_occuptnal_inj_ind)) <> ltrim(rtrim(V_inj_result_occuptnal_inj_ind)) ) OR ( ltrim(rtrim(LKP_inj_result_occuptnal_disease_ndicator)) <> ltrim(rtrim(V_inj_result_occuptnal_disease_ndicator)) ) OR ( ltrim(rtrim(LKP_inj_result_death_ind)) <> ltrim(rtrim(inj_result_death_ind)) ) OR ( ltrim(rtrim(LKP_unsafe_act_descript)) <> ltrim(rtrim(V_unsafe_act_descript)) ) OR ( ltrim(rtrim(LKP_responsible_for_inj_descript)) <> ltrim(rtrim(V_responsible_for_inj_descript)) ) OR ( ltrim(rtrim(LKP_hazard_condition_descript)) <> ltrim(rtrim(V_hazard_condition_descript)) ) OR LKP_death_date <> V_death_date OR ( ltrim(rtrim(LKP_emplyr_nature_bus_descript)) <> ltrim(rtrim(V_emplyr_nature_bus_descript)) ) OR ( ltrim(rtrim(LKP_emplyr_type_code)) <> ltrim(rtrim(V_emplyr_type_code)) ) OR ( ltrim(rtrim(LKP_insd_type_code)) <> ltrim(rtrim(V_insd_type_code)) ) OR LKP_subrogation_statute_exp_date <> V_subrogation_statute_exp_date OR ( ltrim(rtrim(LKP_managed_care_org_type)) <> ltrim(rtrim(V_managed_care_org_type)) ) OR ( ltrim(rtrim(LKP_subrogation_code)) <> ltrim(rtrim(V_subrogation_code)) ) OR ( ltrim(rtrim(LKP_loss_condition)) <> ltrim(rtrim(V_loss_condition)) ) OR ( ltrim(rtrim(LKP_attorney_or_au_rep_ind)) <> ltrim(rtrim(V_attorney_or_au_rep_ind)) ) OR LKP_hospital_cost <> V_hospital_cost OR LKP_doctor_cost <> V_doctor_cost OR LKP_other_med_cost <> V_other_med_cost OR ( ltrim(rtrim(LKP_controverted_case_code)) <> ltrim(rtrim(V_controverted_case_code)) ) OR ( ltrim(rtrim(LKP_surgery_ind)) <> ltrim(rtrim(V_surgery_ind)) ) OR ( ltrim(rtrim(LKP_emplyr_loc_descript)) <> ltrim(rtrim(V_emplyr_loc_descript)) ) OR ( ltrim(rtrim(LKP_inj_loc_comment)) <> ltrim(rtrim(V_inj_loc_comment)) ) OR ( ltrim(rtrim(LKP_claim_ctgry_code)) <> ltrim(rtrim(V_claim_ctgry_code)) ) OR ( ltrim(rtrim(LKP_act_status_code)) <> ltrim(rtrim(V_act_status_code)) ) OR ( ltrim(rtrim(LKP_investigate_ind)) <> ltrim(rtrim(V_investigate_ind)) ) OR ( ltrim(rtrim(LKP_emplyr_standard_industry_code)) <> ltrim(rtrim(V_emplyr_standard_industry_code)) ) OR ( ltrim(rtrim(LKP_hospitalized_ind)) <> ltrim(rtrim(V_hospitalized_ind)) ) OR ( ltrim(rtrim(LKP_wage_method_code)) <> ltrim(rtrim(V_wage_method_code)) ) OR ( ltrim(rtrim(LKP_pms_occuptn_descript)) <> ltrim(rtrim(V_pms_occuptn_descript)) ) OR ( ltrim(rtrim(LKP_pms_type_disability)) <> ltrim(rtrim(pms_type_disability)) ) OR ( ltrim(rtrim(LKP_ncci_type_cov)) <> ltrim(rtrim(V_ncci_type_cov)) ), 'UPDATE', 'NOCHANGE')) AS V_CHANGE_FLAG,
+	IFF(LKP_claim_party_occurrence_ak_id IS NULL,
+		'NEW',
+		IFF(( ltrim(rtrim(LKP_jurisdiction_state_code
+					)
+				) <> ltrim(rtrim(V_jurisdiction_state_code_Actual
+					)
+				) 
+			) 
+			OR LKP_emplyr_notified_date <> V_emplyr_notified_date 
+			OR LKP_rpted_to_carrier_date <> V_rpted_to_carrier_date 
+			OR ( ltrim(rtrim(LKP_jurisdiction_claim_num
+					)
+				) <> ltrim(rtrim(V_jurisdiction_claim_num
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_care_directed_ind
+					)
+				) <> ltrim(rtrim(V_care_directed_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_care_directed_by
+					)
+				) <> ltrim(rtrim(V_care_directed_by
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_hired_state_code
+					)
+				) <> ltrim(rtrim(V_hired_state_code
+					)
+				) 
+			) 
+			OR LKP_hired_date <> V_hired_date 
+			OR ( ltrim(rtrim(LKP_tax_filing_status
+					)
+				) <> ltrim(rtrim(V_tax_filing_status
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_occuptn_code
+					)
+				) <> ltrim(rtrim(V_occuptn_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_employement_status_code
+					)
+				) <> ltrim(rtrim(V_employement_status_code
+					)
+				) 
+			) 
+			OR LKP_len_of_time_in_crrnt_job <> V_len_of_time_in_crrnt_job 
+			OR ( ltrim(rtrim(LKP_emp_dept_name
+					)
+				) <> ltrim(rtrim(V_emp_dept_name
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_emp_shift_num
+					)
+				) <> ltrim(rtrim(V_emp_shift_num
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_marital_status
+					)
+				) <> ltrim(rtrim(marital_status
+					)
+				) 
+			) 
+			OR LKP_num_of_dependents <> V_num_of_dependents 
+			OR LKP_num_of_dependent_children <> V_num_of_dependent_children 
+			OR LKP_num_of_other_dependents <> V_num_of_other_dependents 
+			OR LKP_num_of_exemptions <> V_num_of_exemptions 
+			OR ( ltrim(rtrim(LKP_exemption_type
+					)
+				) <> ltrim(rtrim(V_exemption_type
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_emp_blind_ind
+					)
+				) <> ltrim(rtrim(V_emp_blind_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_emp_over_65_ind
+					)
+				) <> ltrim(rtrim(V_emp_over_65_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_spouse_blind_ind
+					)
+				) <> ltrim(rtrim(V_spouse_blind_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_spouse_over_65_ind
+					)
+				) <> ltrim(rtrim(V_spouse_over_65_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_education_lvl
+					)
+				) <> ltrim(rtrim(V_education_lvl
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_med_auth_ind
+					)
+				) <> ltrim(rtrim(V_med_auth_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_auth_to_release_ssn_ind
+					)
+				) <> ltrim(rtrim(V_auth_to_release_ssn_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_emp_id_num
+					)
+				) <> ltrim(rtrim(V_emp_id_num
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_emp_id_type
+					)
+				) <> ltrim(rtrim(V_emp_id_type
+					)
+				) 
+			) 
+			OR LKP_emp_part_time_hour_week <> V_emp_part_time_hour_week 
+			OR ( ltrim(rtrim(LKP_emp_dept_num
+					)
+				) <> ltrim(rtrim(V_emp_dept_num
+					)
+				) 
+			) 
+			OR LKP_emp_part_time_hourly_week_rate_amt <> V_emp_part_time_hourly_week_rate_amt 
+			OR LKP_wage_rate_amt <> V_wage_rate_amt 
+			OR ( ltrim(rtrim(LKP_wage_period_code
+					)
+				) <> ltrim(rtrim(V_wage_period_code
+					)
+				) 
+			) 
+			OR LKP_wage_eff_date <> V_wage_eff_date 
+			OR LKP_weeks_worked <> V_weeks_worked 
+			OR ( ltrim(rtrim(LKP_gross_amt_type
+					)
+				) <> ltrim(rtrim(V_gross_amt_type
+					)
+				) 
+			) 
+			OR LKP_gross_wage_amt_excluding_tips <> V_gross_wage_amt_excluding_tips 
+			OR LKP_piece_work_num_of_weeks_excluding_overtime <> V_piece_work_num_of_weeks_excluding_overtime 
+			OR LKP_emp_rec_meals <> V_emp_rec_meals 
+			OR LKP_emp_rec_room <> V_emp_rec_room 
+			OR LKP_emp_rec_tips <> V_emp_rec_tips 
+			OR LKP_overtime_amt <> V_overtime_amt 
+			OR LKP_overtime_after_hour_in_a_week <> V_overtime_after_hour_in_a_week 
+			OR LKP_overtime_after_hour_in_a_day <> V_overtime_after_hour_in_a_day 
+			OR ( ltrim(rtrim(LKP_full_pay_inj_day_ind
+					)
+				) <> ltrim(rtrim(V_full_pay_inj_day_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_salary_paid_ind
+					)
+				) <> ltrim(rtrim(V_salary_paid_ind
+					)
+				) 
+			) 
+			OR LKP_avg_full_time_days_week <> V_avg_full_time_days_week 
+			OR LKP_avg_full_time_hours_day <> V_avg_full_time_hours_day 
+			OR LKP_avg_full_time_hours_week <> V_avg_full_time_hours_week 
+			OR LKP_avg_wkly_wage <> V_avg_wkly_wage 
+			OR LKP_num_of_full_time_emplymnt_same_job <> V_num_of_full_time_emplymnt_same_job 
+			OR LKP_num_of_part_time_emplymnt_same_job <> V_num_of_part_time_emplymnt_same_job 
+			OR LKP_ttd_rate <> V_ttd_rate 
+			OR LKP_ppd_rate <> V_ppd_rate 
+			OR LKP_ptd_rate <> V_ptd_rate 
+			OR LKP_dtd_rate <> V_dtd_rate 
+			OR LKP_wkly_attorney_fee <> V_wkly_attorney_fee 
+			OR LKP_first_rpt_inj_date <> V_first_rpt_inj_date 
+			OR LKP_supplementary_rpt_inj_date <> V_supplementary_rpt_inj_date 
+			OR LKP_fringe_bnft_discontinued_amt <> V_fringe_bnft_discontinued_amt 
+			OR LKP_emp_start_time <> V_emp_start_time 
+			OR LKP_emp_hour_day <> V_emp_hour_day 
+			OR LKP_emp_hour_week <> V_emp_hour_week 
+			OR LKP_emp_day_week <> V_emp_day_week 
+			OR LKP_inj_work_day_begin_time <> V_inj_work_day_begin_time 
+			OR LKP_disability_date <> V_disability_date 
+			OR ( ltrim(rtrim(LKP_phys_restriction_ind
+					)
+				) <> ltrim(rtrim(V_phys_restriction_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_pre_exst_disability_ind
+					)
+				) <> ltrim(rtrim(V_pre_exst_disability_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_premises_code
+					)
+				) <> ltrim(rtrim(V_premises_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_work_process_descript
+					)
+				) <> ltrim(rtrim(V_work_process_descript
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_task_descript
+					)
+				) <> ltrim(rtrim(V_task_descript
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_body_part_code
+					)
+				) <> ltrim(rtrim(body_part_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_nature_inj_code
+					)
+				) <> ltrim(rtrim(nature_inj_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_cause_inj_code
+					)
+				) <> ltrim(rtrim(cause_inj_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_safeguard_not_used_ind
+					)
+				) <> ltrim(rtrim(V_safeguard_not_used_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_inj_substance_abuse_ind
+					)
+				) <> ltrim(rtrim(V_inj_substance_abuse_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_sfty_device_not_used_ind
+					)
+				) <> ltrim(rtrim(V_sfty_device_not_used_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_inj_rules_not_obeyed_ind
+					)
+				) <> ltrim(rtrim(V_inj_rules_not_obeyed_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_inj_result_occuptnal_inj_ind
+					)
+				) <> ltrim(rtrim(V_inj_result_occuptnal_inj_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_inj_result_occuptnal_disease_ndicator
+					)
+				) <> ltrim(rtrim(V_inj_result_occuptnal_disease_ndicator
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_inj_result_death_ind
+					)
+				) <> ltrim(rtrim(inj_result_death_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_unsafe_act_descript
+					)
+				) <> ltrim(rtrim(V_unsafe_act_descript
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_responsible_for_inj_descript
+					)
+				) <> ltrim(rtrim(V_responsible_for_inj_descript
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_hazard_condition_descript
+					)
+				) <> ltrim(rtrim(V_hazard_condition_descript
+					)
+				) 
+			) 
+			OR LKP_death_date <> V_death_date 
+			OR ( ltrim(rtrim(LKP_emplyr_nature_bus_descript
+					)
+				) <> ltrim(rtrim(V_emplyr_nature_bus_descript
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_emplyr_type_code
+					)
+				) <> ltrim(rtrim(V_emplyr_type_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_insd_type_code
+					)
+				) <> ltrim(rtrim(V_insd_type_code
+					)
+				) 
+			) 
+			OR LKP_subrogation_statute_exp_date <> V_subrogation_statute_exp_date 
+			OR ( ltrim(rtrim(LKP_managed_care_org_type
+					)
+				) <> ltrim(rtrim(V_managed_care_org_type
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_subrogation_code
+					)
+				) <> ltrim(rtrim(V_subrogation_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_loss_condition
+					)
+				) <> ltrim(rtrim(V_loss_condition
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_attorney_or_au_rep_ind
+					)
+				) <> ltrim(rtrim(V_attorney_or_au_rep_ind
+					)
+				) 
+			) 
+			OR LKP_hospital_cost <> V_hospital_cost 
+			OR LKP_doctor_cost <> V_doctor_cost 
+			OR LKP_other_med_cost <> V_other_med_cost 
+			OR ( ltrim(rtrim(LKP_controverted_case_code
+					)
+				) <> ltrim(rtrim(V_controverted_case_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_surgery_ind
+					)
+				) <> ltrim(rtrim(V_surgery_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_emplyr_loc_descript
+					)
+				) <> ltrim(rtrim(V_emplyr_loc_descript
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_inj_loc_comment
+					)
+				) <> ltrim(rtrim(V_inj_loc_comment
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_claim_ctgry_code
+					)
+				) <> ltrim(rtrim(V_claim_ctgry_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_act_status_code
+					)
+				) <> ltrim(rtrim(V_act_status_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_investigate_ind
+					)
+				) <> ltrim(rtrim(V_investigate_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_emplyr_standard_industry_code
+					)
+				) <> ltrim(rtrim(V_emplyr_standard_industry_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_hospitalized_ind
+					)
+				) <> ltrim(rtrim(V_hospitalized_ind
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_wage_method_code
+					)
+				) <> ltrim(rtrim(V_wage_method_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_pms_occuptn_descript
+					)
+				) <> ltrim(rtrim(V_pms_occuptn_descript
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_pms_type_disability
+					)
+				) <> ltrim(rtrim(pms_type_disability
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LKP_ncci_type_cov
+					)
+				) <> ltrim(rtrim(V_ncci_type_cov
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS V_CHANGE_FLAG,
 	V_CHANGE_FLAG AS CHANGE_FLAG_OP,
 	EXP_Lkp_Values_workers_comp_claimant_detail_PMS.logical_flag,
 	1 AS crrnt_snpsht_flag,
@@ -1212,9 +1949,16 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	-- *INF*: IIF(V_CHANGE_FLAG='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	TO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))
-	IFF(V_CHANGE_FLAG = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')) AS eff_from_date,
+	IFF(V_CHANGE_FLAG = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
+			), 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
@@ -1242,7 +1986,9 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	AND LKP_PIF_42GP_PIF_SYMBOL_PIF_POLICY_NUMBER_PIF_MODULE_IPFCGQ_YEAR_OF_LOSS_IPFCGQ_MONTH_OF_LOSS_IPFCGQ_DAY_OF_LOSS_IPFCGQ_LOSS_OCCURENCE.ipfcgp_loss_occurence = IPFCGQ_LOSS_OCCURENCE
 
 	LEFT JOIN LKP_SUP_STATE LKP_SUP_STATE_LTRIM_RTRIM_V_jurisdiction_state_code
-	ON LKP_SUP_STATE_LTRIM_RTRIM_V_jurisdiction_state_code.state_abbrev = LTRIM(RTRIM(V_jurisdiction_state_code))
+	ON LKP_SUP_STATE_LTRIM_RTRIM_V_jurisdiction_state_code.state_abbrev = LTRIM(RTRIM(V_jurisdiction_state_code
+		)
+	)
 
 	LEFT JOIN LKP_42GQ_MS2 LKP_42GQ_MS2_PIF_SYMBOL_PIF_POLICY_NUMBER_PIF_MODULE_IPFCGQ_YEAR_OF_LOSS_IPFCGQ_MONTH_OF_LOSS_IPFCGQ_DAY_OF_LOSS_IPFCGQ_LOSS_OCCURENCE_IPFCGQ_LOSS_CLAIMANT
 	ON LKP_42GQ_MS2_PIF_SYMBOL_PIF_POLICY_NUMBER_PIF_MODULE_IPFCGQ_YEAR_OF_LOSS_IPFCGQ_MONTH_OF_LOSS_IPFCGQ_DAY_OF_LOSS_IPFCGQ_LOSS_OCCURENCE_IPFCGQ_LOSS_CLAIMANT.PIF_SYMBOL = PIF_SYMBOL
@@ -1393,7 +2139,10 @@ EXP_INSERT AS (
 	claim_party_occurrence_ak_id,
 	SEQ_Workers_Comp_Claimant_Detail.NEXTVAL,
 	-- *INF*: IIF(CHANGE_FLAG_OP='NEW', NEXTVAL, wc_claimant_det_ak_id_IN)
-	IFF(CHANGE_FLAG_OP = 'NEW', NEXTVAL, wc_claimant_det_ak_id_IN) AS wc_claimant_det_ak_id,
+	IFF(CHANGE_FLAG_OP = 'NEW',
+		NEXTVAL,
+		wc_claimant_det_ak_id_IN
+	) AS wc_claimant_det_ak_id,
 	jurisdiction_state_code_OP,
 	emplyr_notified_date,
 	rpted_to_carrier_date,
@@ -1514,12 +2263,14 @@ EXP_INSERT AS (
 	modified_date,
 	'N/A' AS DummyString,
 	-- *INF*: to_date('01/01/1800','mm/dd/yyyy')
-	to_date('01/01/1800', 'mm/dd/yyyy') AS DummyDate,
+	to_date('01/01/1800', 'mm/dd/yyyy'
+	) AS DummyDate,
 	0.00 AS DummyDecimal,
 	0 AS DummnNum,
 	'N/A' AS FROIclaimType,
 	-- *INF*: to_date('12/31/2100','mm/dd/yyyy')
-	to_date('12/31/2100', 'mm/dd/yyyy') AS DefaultHighDate
+	to_date('12/31/2100', 'mm/dd/yyyy'
+	) AS DefaultHighDate
 	FROM FIL_INSERT_workers_comp_claimant_detail_PMS
 ),
 workers_comp_claimant_detail_insert AS (
@@ -1708,7 +2459,10 @@ EXP_Lag_eff_from_date AS (
 	eff_from_date,
 	eff_to_date AS orig_eff_to_date,
 	-- *INF*: IIF(wc_claimant_det_ak_id = v_PREV_ROW_wc_claimant_det_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),orig_eff_to_date)
-	IFF(wc_claimant_det_ak_id = v_PREV_ROW_wc_claimant_det_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1), orig_eff_to_date) AS v_eff_to_date,
+	IFF(wc_claimant_det_ak_id = v_PREV_ROW_wc_claimant_det_ak_id,
+		DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	wc_claimant_det_ak_id AS v_PREV_ROW_wc_claimant_det_ak_id,

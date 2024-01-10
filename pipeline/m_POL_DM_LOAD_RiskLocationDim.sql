@@ -46,7 +46,10 @@ EXP_Def_Values AS (
 	LocationUnitNumber,
 	LocationIndicator,
 	-- *INF*: IIF(LocationIndicator =  'Y',LocationUnitNumber,'N/A')
-	IFF(LocationIndicator = 'Y', LocationUnitNumber, 'N/A') AS LocationNumber,
+	IFF(LocationIndicator = 'Y',
+		LocationUnitNumber,
+		'N/A'
+	) AS LocationNumber,
 	RiskTerritory,
 	ZipPostalCode,
 	TaxLocation,
@@ -137,20 +140,45 @@ Exp_RiskLocationDimINS AS (
 	-- 0)
 	DECODE(TRUE,
 		lkp_RiskLocationHashKey IS NULL, 1,
-		lkp_LocationNumber != LocationNumber OR lkp_RiskTerritory != RiskTerritory OR lkp_TaxLocation != TaxLocation OR lkp_RatingCounty != RatingCounty OR lkp_TaxCode != TaxCode OR lkp_ISOFireProtectCity != ISOFireProtectCity OR lkp_ISOFireProtectCounty != ISOFireProtectCounty, 2,
-		0) AS o_ChangeFlag,
+		lkp_LocationNumber != LocationNumber 
+		OR lkp_RiskTerritory != RiskTerritory 
+		OR lkp_TaxLocation != TaxLocation 
+		OR lkp_RatingCounty != RatingCounty 
+		OR lkp_TaxCode != TaxCode 
+		OR lkp_ISOFireProtectCity != ISOFireProtectCity 
+		OR lkp_ISOFireProtectCounty != ISOFireProtectCounty, 2,
+		0
+	) AS o_ChangeFlag,
 	1 AS o_crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_audit_id,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS o_EffectiveDate,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS o_ExpirationDate,
 	SYSDATE AS o_createddate,
 	SYSDATE AS o_modifieddate,
 	-- *INF*: IIF(ISNULL(lkp_state_code) OR IS_SPACES(lkp_state_code) OR LENGTH(lkp_state_code)=0,'N/A',LTRIM(RTRIM(lkp_state_code)))
-	IFF(lkp_state_code IS NULL OR IS_SPACES(lkp_state_code) OR LENGTH(lkp_state_code) = 0, 'N/A', LTRIM(RTRIM(lkp_state_code))) AS o_StateProvinceCode,
+	IFF(lkp_state_code IS NULL 
+		OR LENGTH(lkp_state_code)>0 AND TRIM(lkp_state_code)='' 
+		OR LENGTH(lkp_state_code
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(lkp_state_code
+			)
+		)
+	) AS o_StateProvinceCode,
 	-- *INF*: IIF(ISNULL(lkp_state_abbrev) OR IS_SPACES(lkp_state_abbrev) OR LENGTH(lkp_state_abbrev)=0, 'N/A',LTRIM(RTRIM(lkp_state_abbrev)))
-	IFF(lkp_state_abbrev IS NULL OR IS_SPACES(lkp_state_abbrev) OR LENGTH(lkp_state_abbrev) = 0, 'N/A', LTRIM(RTRIM(lkp_state_abbrev))) AS o_StateProvinceCodeAbbreviation
+	IFF(lkp_state_abbrev IS NULL 
+		OR LENGTH(lkp_state_abbrev)>0 AND TRIM(lkp_state_abbrev)='' 
+		OR LENGTH(lkp_state_abbrev
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(lkp_state_abbrev
+			)
+		)
+	) AS o_StateProvinceCodeAbbreviation
 	FROM EXP_Def_Values
 	LEFT JOIN LKP_SupState
 	ON LKP_SupState.sup_state_id = EXP_Def_Values.sup_state_id

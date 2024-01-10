@@ -128,7 +128,8 @@ EXP_Values AS (
 	BreakOutDenominator,
 	AnnualStatementLineId,
 	-- *INF*: ROUND(TotalBlanketWrittenPremium*BreakOutNumerator/BreakOutDenominator,4)
-	ROUND(TotalBlanketWrittenPremium * BreakOutNumerator / BreakOutDenominator, 4) AS o_BreakOutPremium,
+	ROUND(TotalBlanketWrittenPremium * BreakOutNumerator / BreakOutDenominator, 4
+	) AS o_BreakOutPremium,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	SYSDATE AS o_CreatedDate
 	FROM SQ_WorkBlanketPremiumBreakOut

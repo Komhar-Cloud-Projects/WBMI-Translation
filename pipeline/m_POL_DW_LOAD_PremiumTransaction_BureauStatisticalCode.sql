@@ -541,96 +541,160 @@ EXP_Default AS (
 	sar_insurance_line,
 	-- *INF*: --edwp-1344
 	-- iif(sar_insurance_line='IM','GL',sar_insurance_line)
-	IFF(sar_insurance_line = 'IM', 'GL', sar_insurance_line) AS sar_insurance_line_GL,
+	IFF(sar_insurance_line = 'IM',
+		'GL',
+		sar_insurance_line
+	) AS sar_insurance_line_GL,
 	-- *INF*: --edwp - 1344
 	-- iif(sar_insurance_line='IM','CF',sar_insurance_line)
-	IFF(sar_insurance_line = 'IM', 'CF', sar_insurance_line) AS sar_insurance_line_CF,
+	IFF(sar_insurance_line = 'IM',
+		'CF',
+		sar_insurance_line
+	) AS sar_insurance_line_CF,
 	sar_location_x,
 	-- *INF*: DECODE(TRUE,
 	-- LENGTH(LTRIM(RTRIM(sar_location_x)))=0, 0, 
 	-- REG_MATCH(sar_location_x, '[0-9]+'), TO_DECIMAL(sar_location_x,0) 
 	-- , -1)
 	DECODE(TRUE,
-		LENGTH(LTRIM(RTRIM(sar_location_x))) = 0, 0,
-		REG_MATCH(sar_location_x, '[0-9]+'), TO_DECIMAL(sar_location_x, 0),
-		- 1) AS lkp_sar_location_x,
+		LENGTH(LTRIM(RTRIM(sar_location_x
+				)
+			)
+		) = 0, 0,
+		REGEXP_LIKE(sar_location_x, '[0-9]+'
+		), CAST(sar_location_x AS FLOAT),
+		- 1
+	) AS lkp_sar_location_x,
 	sar_sub_location_x,
 	-- *INF*: DECODE(TRUE,
 	-- LENGTH(LTRIM(RTRIM(sar_sub_location_x)))=0, 0, 
 	-- REG_MATCH(sar_sub_location_x, '[0-9]+'), TO_DECIMAL(sar_sub_location_x,0) 
 	-- , -1)
 	DECODE(TRUE,
-		LENGTH(LTRIM(RTRIM(sar_sub_location_x))) = 0, 0,
-		REG_MATCH(sar_sub_location_x, '[0-9]+'), TO_DECIMAL(sar_sub_location_x, 0),
-		- 1) AS lkp_sar_sub_location_x,
+		LENGTH(LTRIM(RTRIM(sar_sub_location_x
+				)
+			)
+		) = 0, 0,
+		REGEXP_LIKE(sar_sub_location_x, '[0-9]+'
+		), CAST(sar_sub_location_x AS FLOAT),
+		- 1
+	) AS lkp_sar_sub_location_x,
 	sar_risk_unit_group,
 	-- *INF*: DECODE(TRUE,
 	-- LENGTH(LTRIM(RTRIM(sar_risk_unit_group)))=0, 0, 
 	-- REG_MATCH(sar_risk_unit_group, '[0-9]+'), TO_DECIMAL(sar_risk_unit_group,0) 
 	-- , -1)
 	DECODE(TRUE,
-		LENGTH(LTRIM(RTRIM(sar_risk_unit_group))) = 0, 0,
-		REG_MATCH(sar_risk_unit_group, '[0-9]+'), TO_DECIMAL(sar_risk_unit_group, 0),
-		- 1) AS lkp_sar_risk_unit_group,
+		LENGTH(LTRIM(RTRIM(sar_risk_unit_group
+				)
+			)
+		) = 0, 0,
+		REGEXP_LIKE(sar_risk_unit_group, '[0-9]+'
+		), CAST(sar_risk_unit_group AS FLOAT),
+		- 1
+	) AS lkp_sar_risk_unit_group,
 	sar_class_code_grp_x,
 	-- *INF*: SUBSTR(sar_class_code_grp_x,1,2)
-	SUBSTR(sar_class_code_grp_x, 1, 2) AS v_sar_class_code_grp_x,
+	SUBSTR(sar_class_code_grp_x, 1, 2
+	) AS v_sar_class_code_grp_x,
 	-- *INF*: DECODE(TRUE,
 	-- LENGTH(LTRIM(RTRIM(v_sar_class_code_grp_x)))=0, 0, 
 	-- REG_MATCH(v_sar_class_code_grp_x, '[0-9]+'), TO_DECIMAL(v_sar_class_code_grp_x,0) 
 	-- , -1)
 	DECODE(TRUE,
-		LENGTH(LTRIM(RTRIM(v_sar_class_code_grp_x))) = 0, 0,
-		REG_MATCH(v_sar_class_code_grp_x, '[0-9]+'), TO_DECIMAL(v_sar_class_code_grp_x, 0),
-		- 1) AS lkp_sar_class_code_grp_x,
+		LENGTH(LTRIM(RTRIM(v_sar_class_code_grp_x
+				)
+			)
+		) = 0, 0,
+		REGEXP_LIKE(v_sar_class_code_grp_x, '[0-9]+'
+		), CAST(v_sar_class_code_grp_x AS FLOAT),
+		- 1
+	) AS lkp_sar_class_code_grp_x,
 	-- *INF*: LENGTH(LTRIM(RTRIM(sar_class_code_grp_x)))
-	LENGTH(LTRIM(RTRIM(sar_class_code_grp_x))) AS TEST1,
+	LENGTH(LTRIM(RTRIM(sar_class_code_grp_x
+			)
+		)
+	) AS TEST1,
 	-- *INF*: REG_MATCH(sar_class_code_grp_x, '[0-9]+')
-	REG_MATCH(sar_class_code_grp_x, '[0-9]+') AS TEST2,
+	REGEXP_LIKE(sar_class_code_grp_x, '[0-9]+'
+	) AS TEST2,
 	sar_class_code_mem_x,
 	-- *INF*: DECODE(TRUE,
 	-- LENGTH(LTRIM(RTRIM(sar_class_code_mem_x)))=0, 0, 
 	-- REG_MATCH(sar_class_code_mem_x, '[0-9]+'), TO_DECIMAL(sar_class_code_mem_x,0) 
 	-- , -1)
 	DECODE(TRUE,
-		LENGTH(LTRIM(RTRIM(sar_class_code_mem_x))) = 0, 0,
-		REG_MATCH(sar_class_code_mem_x, '[0-9]+'), TO_DECIMAL(sar_class_code_mem_x, 0),
-		- 1) AS lkp_sar_class_code_mem_x,
+		LENGTH(LTRIM(RTRIM(sar_class_code_mem_x
+				)
+			)
+		) = 0, 0,
+		REGEXP_LIKE(sar_class_code_mem_x, '[0-9]+'
+		), CAST(sar_class_code_mem_x AS FLOAT),
+		- 1
+	) AS lkp_sar_class_code_mem_x,
 	-- *INF*: SUBSTR(sar_class_code_grp_x,2,1) || sar_class_code_mem_x
-	SUBSTR(sar_class_code_grp_x, 2, 1) || sar_class_code_mem_x AS lkp_ReportingClassSeq,
+	SUBSTR(sar_class_code_grp_x, 2, 1
+	) || sar_class_code_mem_x AS lkp_ReportingClassSeq,
 	-- *INF*: DECODE(TRUE,
 	-- LENGTH(LTRIM(RTRIM(sar_class_code_grp_x)))=0, 0, 
 	-- REG_MATCH(sar_class_code_grp_x, '[0-9]+'), TO_DECIMAL(sar_class_code_grp_x,0) 
 	-- , -1)
 	DECODE(TRUE,
-		LENGTH(LTRIM(RTRIM(sar_class_code_grp_x))) = 0, 0,
-		REG_MATCH(sar_class_code_grp_x, '[0-9]+'), TO_DECIMAL(sar_class_code_grp_x, 0),
-		- 1) AS lkp_sequencenumber,
+		LENGTH(LTRIM(RTRIM(sar_class_code_grp_x
+				)
+			)
+		) = 0, 0,
+		REGEXP_LIKE(sar_class_code_grp_x, '[0-9]+'
+		), CAST(sar_class_code_grp_x AS FLOAT),
+		- 1
+	) AS lkp_sequencenumber,
 	sar_unit,
 	-- *INF*: LTRIM(:UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(sar_unit,1,3)),'0')
-	LTRIM(:UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(sar_unit, 1, 3)), '0') AS o_sar_unit_1_3_trimmed,
+	LTRIM(:UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(sar_unit, 1, 3
+			)
+		), '0'
+	) AS o_sar_unit_1_3_trimmed,
 	-- *INF*: length(ltrim(rtrim(sar_unit )  )  ) 
-	length(ltrim(rtrim(sar_unit))) AS out_sar_unit,
+	length(ltrim(rtrim(sar_unit
+			)
+		)
+	) AS out_sar_unit,
 	-- *INF*: SUBSTR(sar_unit,3,1)
-	SUBSTR(sar_unit, 3, 1) AS lkp_sar_unit_3_1,
+	SUBSTR(sar_unit, 3, 1
+	) AS lkp_sar_unit_3_1,
 	sar_risk_unit_continued,
 	-- *INF*: SUBSTR(sar_risk_unit_continued ,2,2)
-	SUBSTR(sar_risk_unit_continued, 2, 2) AS lkp_ClassCodeSeq,
+	SUBSTR(sar_risk_unit_continued, 2, 2
+	) AS lkp_ClassCodeSeq,
 	-- *INF*: SUBSTR(sar_unit,1,5)
-	SUBSTR(sar_unit, 1, 5) AS lkp_Pmduxg1ClassCode,
+	SUBSTR(sar_unit, 1, 5
+	) AS lkp_Pmduxg1ClassCode,
 	sar_seq_rsk_unt_a,
 	-- *INF*: DECODE(TRUE,
 	-- LENGTH(LTRIM(RTRIM(sar_seq_rsk_unt_a)))=0, 0, 
 	-- REG_MATCH(SUBSTR(sar_seq_rsk_unt_a,1,1), '[0-9]+'), TO_DECIMAL(SUBSTR(sar_seq_rsk_unt_a,1,1),0) 
 	-- , -1)
 	DECODE(TRUE,
-		LENGTH(LTRIM(RTRIM(sar_seq_rsk_unt_a))) = 0, 0,
-		REG_MATCH(SUBSTR(sar_seq_rsk_unt_a, 1, 1), '[0-9]+'), TO_DECIMAL(SUBSTR(sar_seq_rsk_unt_a, 1, 1), 0),
-		- 1) AS lkp_sar_seq_rsk_unt_a,
+		LENGTH(LTRIM(RTRIM(sar_seq_rsk_unt_a
+				)
+			)
+		) = 0, 0,
+		REGEXP_LIKE(SUBSTR(sar_seq_rsk_unt_a, 1, 1
+			), '[0-9]+'
+		), CAST(SUBSTR(sar_seq_rsk_unt_a, 1, 1
+		) AS FLOAT),
+		- 1
+	) AS lkp_sar_seq_rsk_unt_a,
 	-- *INF*: DECODE(TRUE, LENGTH(LTRIM(RTRIM(SUBSTR(sar_seq_rsk_unt_a,2,1))))=0, 'B', SUBSTR(sar_seq_rsk_unt_a,2,1))
 	DECODE(TRUE,
-		LENGTH(LTRIM(RTRIM(SUBSTR(sar_seq_rsk_unt_a, 2, 1)))) = 0, 'B',
-		SUBSTR(sar_seq_rsk_unt_a, 2, 1)) AS lkp_sar_seq_rsk_unt_a_2_1,
+		LENGTH(LTRIM(RTRIM(SUBSTR(sar_seq_rsk_unt_a, 2, 1
+					)
+				)
+			)
+		) = 0, 'B',
+		SUBSTR(sar_seq_rsk_unt_a, 2, 1
+		)
+	) AS lkp_sar_seq_rsk_unt_a_2_1,
 	sar_type_exposure,
 	sar_major_peril,
 	sar_seq_no,
@@ -667,26 +731,46 @@ EXP_Default AS (
 	sar_type_bureau,
 	sar_class_1_4,
 	-- *INF*: SUBSTR(sar_class_1_4,1,4)
-	SUBSTR(sar_class_1_4, 1, 4) AS lkp_sar_class_1_4,
+	SUBSTR(sar_class_1_4, 1, 4
+	) AS lkp_sar_class_1_4,
 	-- *INF*: SUBSTR(sar_class_1_4,1,4)
-	SUBSTR(sar_class_1_4, 1, 4) AS v_lkp_sar_class_1_4,
+	SUBSTR(sar_class_1_4, 1, 4
+	) AS v_lkp_sar_class_1_4,
 	-- *INF*: DECODE(TRUE,
 	-- LENGTH(LTRIM(RTRIM(v_lkp_sar_class_1_4)))=0, 0, 
 	-- REG_MATCH(v_lkp_sar_class_1_4, '[0-9]+'), TO_DECIMAL(v_lkp_sar_class_1_4,0) 
 	-- , -1)
 	DECODE(TRUE,
-		LENGTH(LTRIM(RTRIM(v_lkp_sar_class_1_4))) = 0, 0,
-		REG_MATCH(v_lkp_sar_class_1_4, '[0-9]+'), TO_DECIMAL(v_lkp_sar_class_1_4, 0),
-		- 1) AS out_lkp_sar_class_1_4,
+		LENGTH(LTRIM(RTRIM(v_lkp_sar_class_1_4
+				)
+			)
+		) = 0, 0,
+		REGEXP_LIKE(v_lkp_sar_class_1_4, '[0-9]+'
+		), CAST(v_lkp_sar_class_1_4 AS FLOAT),
+		- 1
+	) AS out_lkp_sar_class_1_4,
 	sar_class_5_6,
 	-- *INF*: DECODE(TRUE,
 	-- LENGTH(LTRIM(RTRIM(SUBSTR(sar_class_1_4,1,4) || SUBSTR(sar_class_5_6,1,1))))=0, 0, 
 	-- REG_MATCH(SUBSTR(sar_class_1_4,1,4), '[0-9]+') AND REG_MATCH(SUBSTR(sar_class_5_6,1,1), '[0-9]+'), TO_DECIMAL(SUBSTR(sar_class_1_4,1,4) || SUBSTR(sar_class_5_6,1,1),0) 
 	-- , -1)
 	DECODE(TRUE,
-		LENGTH(LTRIM(RTRIM(SUBSTR(sar_class_1_4, 1, 4) || SUBSTR(sar_class_5_6, 1, 1)))) = 0, 0,
-		REG_MATCH(SUBSTR(sar_class_1_4, 1, 4), '[0-9]+') AND REG_MATCH(SUBSTR(sar_class_5_6, 1, 1), '[0-9]+'), TO_DECIMAL(SUBSTR(sar_class_1_4, 1, 4) || SUBSTR(sar_class_5_6, 1, 1), 0),
-		- 1) AS lkp_ClassCode,
+		LENGTH(LTRIM(RTRIM(SUBSTR(sar_class_1_4, 1, 4
+					) || SUBSTR(sar_class_5_6, 1, 1
+					)
+				)
+			)
+		) = 0, 0,
+		REGEXP_LIKE(SUBSTR(sar_class_1_4, 1, 4
+			), '[0-9]+'
+		) 
+		AND REGEXP_LIKE(SUBSTR(sar_class_5_6, 1, 1
+			), '[0-9]+'
+		), CAST(SUBSTR(sar_class_1_4, 1, 4
+		) || SUBSTR(sar_class_5_6, 1, 1
+		) AS FLOAT),
+		- 1
+	) AS lkp_ClassCode,
 	sar_exposure,
 	sar_sub_line,
 	sar_zip_postal_code,
@@ -713,7 +797,8 @@ EXP_Default AS (
 	sar_audit_reinst_ind,
 	logical_flag,
 	-- *INF*: (sar_code_1 || sar_code_2)
-	( sar_code_1 || sar_code_2 ) AS Out_PMACode
+	( sar_code_1 || sar_code_2 
+	) AS Out_PMACode
 	FROM FIL_PassThroughCharges_Records
 ),
 LKP_PIF43NXCRStage AS (
@@ -1335,10 +1420,14 @@ EXP_Values AS (
 	EXP_Default.Policy_Key,
 	EXP_Default.sar_location_x,
 	-- *INF*: LTRIM(RTRIM(sar_location_x))
-	LTRIM(RTRIM(sar_location_x)) AS v_RiskLocation_Unit,
+	LTRIM(RTRIM(sar_location_x
+		)
+	) AS v_RiskLocation_Unit,
 	EXP_Default.sar_state,
 	-- *INF*: LTRIM(RTRIM(sar_state))
-	LTRIM(RTRIM(sar_state)) AS v_sar_state,
+	LTRIM(RTRIM(sar_state
+		)
+	) AS v_sar_state,
 	v_sar_state AS o_sar_state,
 	EXP_Default.sar_loc_prov_territory,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory)
@@ -1348,14 +1437,17 @@ EXP_Values AS (
 	-- 
 	-- 
 	-- 
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory) AS v_sar_loc_prov_territory,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory
+	) AS v_sar_loc_prov_territory,
 	EXP_Default.sar_city,
 	-- *INF*: LTRIM(RTRIM(sar_city))
 	-- 
 	-- --IIF(IS_SPACES(LTRIM(RTRIM(sar_city)))  OR ISNULL(LTRIM(RTRIM(sar_city))) OR LENGTH(LTRIM(RTRIM(sar_city))) < 3, '000', LTRIM(RTRIM(sar_city)))
 	-- 
 	-- 
-	LTRIM(RTRIM(sar_city)) AS v_sar_city,
+	LTRIM(RTRIM(sar_city
+		)
+	) AS v_sar_city,
 	-- *INF*: IIF(REG_MATCH(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city) ,'(\d{6})')
 	-- ,:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city)
 	-- ,'000000')
@@ -1363,21 +1455,38 @@ EXP_Values AS (
 	-- --v_sar_county_first_two  ||  v_sar_county_last_one  ||  v_sar_city
 	-- 
 	-- --IIF(ISNULL(Tax_Location)  OR IS_SPACES(Tax_Location)  OR LENGTH(Tax_Location) = 0 , '000000', Tax_Location)
-	IFF(REG_MATCH(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city), '(\d{6})'), :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city), '000000') AS v_Tax_Location,
+	IFF(REGEXP_LIKE(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city
+			), '(\d{6})'
+		),
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city
+		),
+		'000000'
+	) AS v_Tax_Location,
 	EXP_Default.sar_zip_postal_code,
 	-- *INF*: IIF(ISNULL(sar_zip_postal_code)  OR IS_SPACES(sar_zip_postal_code)  OR LENGTH(sar_zip_postal_code) = 0 , 'N/A', LTRIM(RTRIM(sar_zip_postal_code)))
-	IFF(sar_zip_postal_code IS NULL OR IS_SPACES(sar_zip_postal_code) OR LENGTH(sar_zip_postal_code) = 0, 'N/A', LTRIM(RTRIM(sar_zip_postal_code))) AS v_sar_zip_postal_code,
+	IFF(sar_zip_postal_code IS NULL 
+		OR LENGTH(sar_zip_postal_code)>0 AND TRIM(sar_zip_postal_code)='' 
+		OR LENGTH(sar_zip_postal_code
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(sar_zip_postal_code
+			)
+		)
+	) AS v_sar_zip_postal_code,
 	-- *INF*: :LKP.LKP_RISKLOCATION_RISKLOCATIONAKID(pol_ak_id, v_RiskLocation_Unit, v_sar_loc_prov_territory, v_sar_state, v_sar_zip_postal_code, v_Tax_Location)
 	LKP_RISKLOCATION_RISKLOCATIONAKID_pol_ak_id_v_RiskLocation_Unit_v_sar_loc_prov_territory_v_sar_state_v_sar_zip_postal_code_v_Tax_Location.RiskLocationAKID AS v_RiskLocationAKID,
 	EXP_Default.sar_insurance_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line) AS v_sar_insurance_line,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line
+	) AS v_sar_insurance_line,
 	EXP_Default.sar_type_bureau,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_bureau)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_bureau) AS v_sar_type_bureau,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_bureau
+	) AS v_sar_type_bureau,
 	EXP_Default.sar_sub_location_x,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x) AS v_sar_sub_location_x,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x
+	) AS v_sar_sub_location_x,
 	EXP_Default.sar_risk_unit_group,
 	-- *INF*: IIF(REG_MATCH(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group) ,'(\d{3})')
 	-- ,:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group)
@@ -1387,75 +1496,150 @@ EXP_Values AS (
 	-- 
 	-- 
 	-- ---:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group)
-	IFF(REG_MATCH(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group), '(\d{3})'), :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group), 'N/A') AS v_sar_risk_unit_group,
+	IFF(REGEXP_LIKE(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group
+			), '(\d{3})'
+		),
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group
+		),
+		'N/A'
+	) AS v_sar_risk_unit_group,
 	EXP_Default.sar_class_code_grp_x,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code_grp_x)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code_grp_x) AS v_sar_class_code_grp_x,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code_grp_x
+	) AS v_sar_class_code_grp_x,
 	EXP_Default.sar_unit,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_unit)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_unit) AS v_sar_unit,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_unit
+	) AS v_sar_unit,
 	-- *INF*: SUBSTR(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_unit),1,3)
-	SUBSTR(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_unit), 1, 3) AS v_sar_unit_3pos,
+	SUBSTR(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_unit
+		), 1, 3
+	) AS v_sar_unit_3pos,
 	EXP_Default.sar_seq_rsk_unt_a,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a) AS v_sar_seq_rsk_unt_a,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a
+	) AS v_sar_seq_rsk_unt_a,
 	EXP_Default.sar_type_exposure,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure) AS v_sar_type_exposure,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure
+	) AS v_sar_type_exposure,
 	EXP_Default.sar_major_peril,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_major_peril)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_major_peril) AS v_sar_major_peril,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_major_peril
+	) AS v_sar_major_peril,
 	EXP_Default.sar_seq_no,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_no)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_no) AS v_sar_seq_no,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_no
+	) AS v_sar_seq_no,
 	-- *INF*: LTRIM(RTRIM(v_sar_seq_no))
-	LTRIM(RTRIM(v_sar_seq_no)) AS o_sar_seq_no,
+	LTRIM(RTRIM(v_sar_seq_no
+		)
+	) AS o_sar_seq_no,
 	EXP_Default.sar_cov_eff_year,
 	-- *INF*: TO_CHAR(sar_cov_eff_year)
-	TO_CHAR(sar_cov_eff_year) AS v_sar_cov_eff_year,
+	TO_CHAR(sar_cov_eff_year
+	) AS v_sar_cov_eff_year,
 	EXP_Default.sar_cov_eff_month,
 	-- *INF*: TO_CHAR(sar_cov_eff_month)
-	TO_CHAR(sar_cov_eff_month) AS v_sar_cov_eff_month,
+	TO_CHAR(sar_cov_eff_month
+	) AS v_sar_cov_eff_month,
 	EXP_Default.sar_cov_eff_day,
 	-- *INF*: TO_CHAR(sar_cov_eff_day)
-	TO_CHAR(sar_cov_eff_day) AS v_sar_cov_eff_day,
+	TO_CHAR(sar_cov_eff_day
+	) AS v_sar_cov_eff_day,
 	-- *INF*: TO_DATE(v_sar_cov_eff_month || '/' || v_sar_cov_eff_day || '/'|| v_sar_cov_eff_year ,'MM/DD/YYYY')
-	TO_DATE(v_sar_cov_eff_month || '/' || v_sar_cov_eff_day || '/' || v_sar_cov_eff_year, 'MM/DD/YYYY') AS v_sar_cov_eff_date,
+	TO_DATE(v_sar_cov_eff_month || '/' || v_sar_cov_eff_day || '/' || v_sar_cov_eff_year, 'MM/DD/YYYY'
+	) AS v_sar_cov_eff_date,
 	EXP_Default.sar_agents_comm_rate,
 	-- *INF*: IIF(ISNULL(sar_agents_comm_rate) , 0.00000 , sar_agents_comm_rate)
-	IFF(sar_agents_comm_rate IS NULL, 0.00000, sar_agents_comm_rate) AS v_sar_agents_comm_rate,
+	IFF(sar_agents_comm_rate IS NULL,
+		0.00000,
+		sar_agents_comm_rate
+	) AS v_sar_agents_comm_rate,
 	-- *INF*: MD5(TO_CHAR(pol_ak_id)  || 
 	--  TO_CHAR(v_RiskLocationAKID)  || 
 	--  TO_CHAR(v_sar_insurance_line)  || 
 	--  TO_CHAR(v_sar_type_bureau) )
-	MD5(TO_CHAR(pol_ak_id) || TO_CHAR(v_RiskLocationAKID) || TO_CHAR(v_sar_insurance_line) || TO_CHAR(v_sar_type_bureau)) AS v_PolicyCoverageHashKey,
+	MD5(TO_CHAR(pol_ak_id
+		) || TO_CHAR(v_RiskLocationAKID
+		) || TO_CHAR(v_sar_insurance_line
+		) || TO_CHAR(v_sar_type_bureau
+		)
+	) AS v_PolicyCoverageHashKey,
 	-- *INF*: :LKP.LKP_POLICYCOVERAGE_POLICYCOVERAGEAKID(v_PolicyCoverageHashKey)
 	LKP_POLICYCOVERAGE_POLICYCOVERAGEAKID_v_PolicyCoverageHashKey.PolicyCoverageAKID AS v_PolicyCoverageAKID,
 	EXP_Default.sar_section,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_section)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_section) AS v_sar_section,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_section
+	) AS v_sar_section,
 	EXP_Default.sar_class_1_4 AS sar_class_code,
 	EXP_Default.lkp_sar_class_1_4 AS in_sar_class_1_4,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_sar_class_1_4)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_sar_class_1_4) AS v_sar_class_1_4,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_sar_class_1_4
+	) AS v_sar_class_1_4,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code) AS v_sar_class_code,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code
+	) AS v_sar_class_code,
 	EXP_Default.out_lkp_sar_class_1_4,
 	EXP_Default.sar_exposure,
 	-- *INF*: IIF(ISNULL(sar_exposure),0,IIF(IN(ltrim(rtrim(v_sar_class_code)),'770901','090801','0913','091301','091342', '910801','9108A','942801','942802') AND IN( ltrim(rtrim( sar_code_13)),'U','UA','UD','UP') AND ltrim(rtrim(v_sar_insurance_line))='WC', sar_exposure/10,sar_exposure))
 	-- 
 	-- 
 	-- 
-	IFF(sar_exposure IS NULL, 0, IFF(IN(ltrim(rtrim(v_sar_class_code)), '770901', '090801', '0913', '091301', '091342', '910801', '9108A', '942801', '942802') AND IN(ltrim(rtrim(sar_code_13)), 'U', 'UA', 'UD', 'UP') AND ltrim(rtrim(v_sar_insurance_line)) = 'WC', sar_exposure / 10, sar_exposure)) AS v_sar_exposure,
+	IFF(sar_exposure IS NULL,
+		0,
+		IFF(ltrim(rtrim(v_sar_class_code
+				)
+			) IN ('770901','090801','0913','091301','091342','910801','9108A','942801','942802') 
+			AND ltrim(rtrim(sar_code_13
+				)
+			) IN ('U','UA','UD','UP') 
+			AND ltrim(rtrim(v_sar_insurance_line
+				)
+			) = 'WC',
+			sar_exposure / 10,
+			sar_exposure
+		)
+	) AS v_sar_exposure,
 	-- *INF*: IIF(ISNULL(sar_exposure),0,IIF(IN(ltrim(rtrim(v_sar_class_code)),'770901','090801','0913','091301','091342', '910801','9108A','942801','942802') AND IN( ltrim(rtrim( sar_code_13)),'U','UA','UD','UP') AND ltrim(rtrim(v_sar_insurance_line))='WC', sar_exposure/10, IIF(ltrim(rtrim(v_sar_insurance_line))='WC',sar_exposure, 0)))
-	IFF(sar_exposure IS NULL, 0, IFF(IN(ltrim(rtrim(v_sar_class_code)), '770901', '090801', '0913', '091301', '091342', '910801', '9108A', '942801', '942802') AND IN(ltrim(rtrim(sar_code_13)), 'U', 'UA', 'UD', 'UP') AND ltrim(rtrim(v_sar_insurance_line)) = 'WC', sar_exposure / 10, IFF(ltrim(rtrim(v_sar_insurance_line)) = 'WC', sar_exposure, 0))) AS v_writtenexposure,
+	IFF(sar_exposure IS NULL,
+		0,
+		IFF(ltrim(rtrim(v_sar_class_code
+				)
+			) IN ('770901','090801','0913','091301','091342','910801','9108A','942801','942802') 
+			AND ltrim(rtrim(sar_code_13
+				)
+			) IN ('U','UA','UD','UP') 
+			AND ltrim(rtrim(v_sar_insurance_line
+				)
+			) = 'WC',
+			sar_exposure / 10,
+			IFF(ltrim(rtrim(v_sar_insurance_line
+					)
+				) = 'WC',
+				sar_exposure,
+				0
+			)
+		)
+	) AS v_writtenexposure,
 	-- *INF*: TO_CHAR(sar_cov_eff_year) || LPAD(TO_CHAR(LTRIM(RTRIM(sar_cov_eff_month))), 2, '0') || LPAD(TO_CHAR(LTRIM(RTRIM(sar_cov_eff_day))), 2, '0')
-	TO_CHAR(sar_cov_eff_year) || LPAD(TO_CHAR(LTRIM(RTRIM(sar_cov_eff_month))), 2, '0') || LPAD(TO_CHAR(LTRIM(RTRIM(sar_cov_eff_day))), 2, '0') AS v_cov_eff_date,
+	TO_CHAR(sar_cov_eff_year
+	) || LPAD(TO_CHAR(LTRIM(RTRIM(sar_cov_eff_month
+				)
+			)
+		), 2, '0'
+	) || LPAD(TO_CHAR(LTRIM(RTRIM(sar_cov_eff_day
+				)
+			)
+		), 2, '0'
+	) AS v_cov_eff_date,
 	-- *INF*: TO_DATE(v_cov_eff_date, 'YYYYMMDD')
-	TO_DATE(v_cov_eff_date, 'YYYYMMDD') AS cov_eff_date,
+	TO_DATE(v_cov_eff_date, 'YYYYMMDD'
+	) AS cov_eff_date,
 	EXP_Default.sar_sub_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_line)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_line) AS v_sar_sub_line,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_line
+	) AS v_sar_sub_line,
 	-- *INF*: MD5(
 	-- IIF(ISNULL(v_PolicyCoverageAKID),'-1',TO_CHAR(v_PolicyCoverageAKID))   || 
 	-- v_sar_sub_location_x   || 
@@ -1470,65 +1654,100 @@ EXP_Values AS (
 	-- v_sar_class_code   || 
 	-- v_sar_section
 	-- )
-	MD5(IFF(v_PolicyCoverageAKID IS NULL, '-1', TO_CHAR(v_PolicyCoverageAKID)) || v_sar_sub_location_x || v_sar_risk_unit_group || v_sar_class_code_grp_x || v_sar_unit || v_sar_seq_rsk_unt_a || v_sar_major_peril || v_sar_seq_no || v_sar_sub_line || v_sar_type_exposure || v_sar_class_code || v_sar_section) AS v_CoverageDetailHashKey,
+	MD5(IFF(v_PolicyCoverageAKID IS NULL,
+			'-1',
+			TO_CHAR(v_PolicyCoverageAKID
+			)
+		) || v_sar_sub_location_x || v_sar_risk_unit_group || v_sar_class_code_grp_x || v_sar_unit || v_sar_seq_rsk_unt_a || v_sar_major_peril || v_sar_seq_no || v_sar_sub_line || v_sar_type_exposure || v_sar_class_code || v_sar_section
+	) AS v_CoverageDetailHashKey,
 	-- *INF*: :LKP.LKP_STATISTICALCOVERAGE_STATISTICALCOVERAGEAKID(v_CoverageDetailHashKey)
 	LKP_STATISTICALCOVERAGE_STATISTICALCOVERAGEAKID_v_CoverageDetailHashKey.StatisticalCoverageAKID AS v_CoverageDetailAKID,
 	-- *INF*: IIF(NOT ISNULL(v_CoverageDetailAKID), v_CoverageDetailAKID, -1)
-	IFF(NOT v_CoverageDetailAKID IS NULL, v_CoverageDetailAKID, - 1) AS CoverageDetailAKID,
+	IFF(v_CoverageDetailAKID IS NOT NULL,
+		v_CoverageDetailAKID,
+		- 1
+	) AS CoverageDetailAKID,
 	EXP_Default.sar_id,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_id)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_id) AS v_PMSFunctionCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_id
+	) AS v_PMSFunctionCode,
 	v_PMSFunctionCode AS PMSFunctionCode,
 	EXP_Default.sar_part_code,
 	-- *INF*: IIF(sar_part_code = '1', 'D','C')
-	IFF(sar_part_code = '1', 'D', 'C') AS v_PremiumType,
+	IFF(sar_part_code = '1',
+		'D',
+		'C'
+	) AS v_PremiumType,
 	v_PremiumType AS PremiumType,
 	EXP_Default.sar_trans_eff_year,
 	-- *INF*: TO_CHAR(sar_trans_eff_year)
-	TO_CHAR(sar_trans_eff_year) AS v_sar_trans_eff_year,
+	TO_CHAR(sar_trans_eff_year
+	) AS v_sar_trans_eff_year,
 	EXP_Default.sar_trans_eff_month,
 	-- *INF*: IIF(TO_CHAR(sar_trans_eff_month) = '0','1',TO_CHAR(sar_trans_eff_month)
 	-- )
-	IFF(TO_CHAR(sar_trans_eff_month) = '0', '1', TO_CHAR(sar_trans_eff_month)) AS v_sar_trans_eff_month,
+	IFF(TO_CHAR(sar_trans_eff_month
+		) = '0',
+		'1',
+		TO_CHAR(sar_trans_eff_month
+		)
+	) AS v_sar_trans_eff_month,
 	EXP_Default.sar_trans_eff_day,
 	-- *INF*: IIF(TO_CHAR(sar_trans_eff_day) ='0','1',TO_CHAR(sar_trans_eff_day))
-	IFF(TO_CHAR(sar_trans_eff_day) = '0', '1', TO_CHAR(sar_trans_eff_day)) AS v_sar_trans_eff_day,
+	IFF(TO_CHAR(sar_trans_eff_day
+		) = '0',
+		'1',
+		TO_CHAR(sar_trans_eff_day
+		)
+	) AS v_sar_trans_eff_day,
 	-- *INF*: TO_DATE(v_sar_trans_eff_month || '/' || v_sar_trans_eff_day || '/'|| v_sar_trans_eff_year ,'MM/DD/YYYY')
-	TO_DATE(v_sar_trans_eff_month || '/' || v_sar_trans_eff_day || '/' || v_sar_trans_eff_year, 'MM/DD/YYYY') AS v_sar_trans_eff_date,
+	TO_DATE(v_sar_trans_eff_month || '/' || v_sar_trans_eff_day || '/' || v_sar_trans_eff_year, 'MM/DD/YYYY'
+	) AS v_sar_trans_eff_date,
 	v_sar_trans_eff_date AS Trans_eff_date,
 	EXP_Default.sar_reinsurance_company_no,
 	EXP_Default.sar_entrd_date,
 	-- *INF*: TO_DATE(sar_entrd_date,'YYYYMMDD')
-	TO_DATE(sar_entrd_date, 'YYYYMMDD') AS v_sar_entrd_date,
+	TO_DATE(sar_entrd_date, 'YYYYMMDD'
+	) AS v_sar_entrd_date,
 	v_sar_entrd_date AS Trans_entered_date,
 	EXP_Default.sar_exp_year,
 	-- *INF*: TO_CHAR(sar_exp_year)
-	TO_CHAR(sar_exp_year) AS v_sar_exp_year,
+	TO_CHAR(sar_exp_year
+	) AS v_sar_exp_year,
 	EXP_Default.sar_exp_month,
 	-- *INF*: TO_CHAR(sar_exp_month)
-	TO_CHAR(sar_exp_month) AS v_sar_exp_month,
+	TO_CHAR(sar_exp_month
+	) AS v_sar_exp_month,
 	EXP_Default.sar_exp_day,
 	-- *INF*: TO_CHAR(sar_exp_day)
-	TO_CHAR(sar_exp_day) AS v_sar_exp_day,
+	TO_CHAR(sar_exp_day
+	) AS v_sar_exp_day,
 	-- *INF*: TO_DATE(v_sar_exp_month || '/' || v_sar_exp_day || '/'|| v_sar_exp_year ,'MM/DD/YYYY')
-	TO_DATE(v_sar_exp_month || '/' || v_sar_exp_day || '/' || v_sar_exp_year, 'MM/DD/YYYY') AS v_sar_exp_date,
+	TO_DATE(v_sar_exp_month || '/' || v_sar_exp_day || '/' || v_sar_exp_year, 'MM/DD/YYYY'
+	) AS v_sar_exp_date,
 	v_sar_exp_date AS Trans_expiration_date,
 	EXP_Default.sar_transaction,
 	EXP_Default.sar_premium,
 	EXP_Default.sar_original_prem,
 	EXP_Default.sar_acct_entrd_date,
 	-- *INF*: TO_DATE('01'  || sar_acct_entrd_date, 'DDYYYYMM')
-	TO_DATE('01' || sar_acct_entrd_date, 'DDYYYYMM') AS v_sar_acct_entrd_date,
+	TO_DATE('01' || sar_acct_entrd_date, 'DDYYYYMM'
+	) AS v_sar_acct_entrd_date,
 	-- *INF*: TO_DATE('12312100', 'MMDDYYYY')
-	TO_DATE('12312100', 'MMDDYYYY') AS v_dummy_start_date,
+	TO_DATE('12312100', 'MMDDYYYY'
+	) AS v_dummy_start_date,
 	-- *INF*: TO_DATE('01011800', 'MMDDYYYY')
-	TO_DATE('01011800', 'MMDDYYYY') AS v_dummy_end_date,
+	TO_DATE('01011800', 'MMDDYYYY'
+	) AS v_dummy_end_date,
 	v_sar_acct_entrd_date AS Trans_Booked_date,
 	-- *INF*: :LKP.LKP_POLICY_STRTGC_BUS_DIV_CODE(pol_ak_id)
 	LKP_POLICY_STRTGC_BUS_DIV_CODE_pol_ak_id.strtgc_bus_dvsn_code AS v_PolicyStrategicBusinessDivisionCode,
 	EXP_Default.sar_faculta_comm_rate,
 	-- *INF*: IIF(ISNULL(sar_faculta_comm_rate),0.0,sar_faculta_comm_rate)
-	IFF(sar_faculta_comm_rate IS NULL, 0.0, sar_faculta_comm_rate) AS v_sar_faculta_comm_rate,
+	IFF(sar_faculta_comm_rate IS NULL,
+		0.0,
+		sar_faculta_comm_rate
+	) AS v_sar_faculta_comm_rate,
 	-- *INF*: IIF (v_PolicyStrategicBusinessDivisionCode = '1', 
 	--        NULL,
 	--         IIF (v_sar_insurance_line = 'N/A',
@@ -1538,7 +1757,13 @@ EXP_Values AS (
 	--          )
 	-- 
 	-- ---- This provides a full key match with location, sublocation and date bounds along with insurance line for CL with InsuranceLine <> 'N/A'
-	IFF(v_PolicyStrategicBusinessDivisionCode = '1', NULL, IFF(v_sar_insurance_line = 'N/A', NULL, LKP_REINSURANCECOVERAGE_COMMERCIALLINESPOLICIES_pol_ak_id_v_sar_insurance_line_v_RiskLocation_Unit_v_sar_sub_location_x_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_sar_trans_eff_date_v_sar_exp_date.reins_cov_ak_id)) AS v_ReinsuranceCoverageAKID_CommercialLineslocsubwd,
+	IFF(v_PolicyStrategicBusinessDivisionCode = '1',
+		NULL,
+		IFF(v_sar_insurance_line = 'N/A',
+			NULL,
+			LKP_REINSURANCECOVERAGE_COMMERCIALLINESPOLICIES_pol_ak_id_v_sar_insurance_line_v_RiskLocation_Unit_v_sar_sub_location_x_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_sar_trans_eff_date_v_sar_exp_date.reins_cov_ak_id
+		)
+	) AS v_ReinsuranceCoverageAKID_CommercialLineslocsubwd,
 	-- *INF*: IIF (v_PolicyStrategicBusinessDivisionCode = '1', 
 	--        NULL,
 	--         IIF (v_sar_insurance_line = 'N/A',
@@ -1550,7 +1775,16 @@ EXP_Values AS (
 	--              )
 	--                    
 	-- --- This provides a full key match with location, sublocation and no date bounds along with insurance line for CL with InsuranceLine <> 'N/A' , we try this lookup if a full key match fails. The dummy date ports allow us to reuse the existing lookups with datebounds that satisfy the condition
-	IFF(v_PolicyStrategicBusinessDivisionCode = '1', NULL, IFF(v_sar_insurance_line = 'N/A', NULL, IFF(v_ReinsuranceCoverageAKID_CommercialLineslocsubwd IS NULL, LKP_REINSURANCECOVERAGE_COMMERCIALLINESPOLICIES_pol_ak_id_v_sar_insurance_line_v_RiskLocation_Unit_v_sar_sub_location_x_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_dummy_start_date_v_dummy_end_date.reins_cov_ak_id, v_ReinsuranceCoverageAKID_CommercialLineslocsubwd))) AS v_ReinsuranceCoverageAKID_CommercialLineslocsub,
+	IFF(v_PolicyStrategicBusinessDivisionCode = '1',
+		NULL,
+		IFF(v_sar_insurance_line = 'N/A',
+			NULL,
+			IFF(v_ReinsuranceCoverageAKID_CommercialLineslocsubwd IS NULL,
+				LKP_REINSURANCECOVERAGE_COMMERCIALLINESPOLICIES_pol_ak_id_v_sar_insurance_line_v_RiskLocation_Unit_v_sar_sub_location_x_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_dummy_start_date_v_dummy_end_date.reins_cov_ak_id,
+				v_ReinsuranceCoverageAKID_CommercialLineslocsubwd
+			)
+		)
+	) AS v_ReinsuranceCoverageAKID_CommercialLineslocsub,
 	-- *INF*: IIF (v_PolicyStrategicBusinessDivisionCode = '1', 
 	--        NULL,
 	--         IIF (v_sar_insurance_line = 'N/A',
@@ -1562,7 +1796,16 @@ EXP_Values AS (
 	--             )
 	-- 
 	-- --- This provides a full key match with location, no sublocation and date bounds along with insurance line for CL with InsuranceLine <> 'N/A', we try this only if a full key match failed
-	IFF(v_PolicyStrategicBusinessDivisionCode = '1', NULL, IFF(v_sar_insurance_line = 'N/A', NULL, IFF(v_ReinsuranceCoverageAKID_CommercialLineslocsub IS NULL, LKP_REINSURANCECOVERAGE_COMMERCIALLINESPOLICIES_WITHOUTSUBLOCATION_pol_ak_id_v_sar_insurance_line_v_RiskLocation_Unit_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_sar_trans_eff_date_v_sar_exp_date.reins_cov_ak_id, v_ReinsuranceCoverageAKID_CommercialLineslocsub))) AS v_ReinsuranceCoverageAKID_CommercialLines_locwd,
+	IFF(v_PolicyStrategicBusinessDivisionCode = '1',
+		NULL,
+		IFF(v_sar_insurance_line = 'N/A',
+			NULL,
+			IFF(v_ReinsuranceCoverageAKID_CommercialLineslocsub IS NULL,
+				LKP_REINSURANCECOVERAGE_COMMERCIALLINESPOLICIES_WITHOUTSUBLOCATION_pol_ak_id_v_sar_insurance_line_v_RiskLocation_Unit_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_sar_trans_eff_date_v_sar_exp_date.reins_cov_ak_id,
+				v_ReinsuranceCoverageAKID_CommercialLineslocsub
+			)
+		)
+	) AS v_ReinsuranceCoverageAKID_CommercialLines_locwd,
 	-- *INF*: IIF (v_PolicyStrategicBusinessDivisionCode = '1', 
 	--        NULL,
 	--         IIF (v_sar_insurance_line = 'N/A',
@@ -1574,7 +1817,16 @@ EXP_Values AS (
 	--            )
 	-- 
 	-- ---- This provides a full key match with location, no sublocation and no date bounds along with insurance line for CL with InsuranceLine <> 'N/A', we try this also if there was no full key match or match with date range and location alone. The dummy date ports allow us to reuse the existing lookups with datebounds that satisfy the condition
-	IFF(v_PolicyStrategicBusinessDivisionCode = '1', NULL, IFF(v_sar_insurance_line = 'N/A', NULL, IFF(v_ReinsuranceCoverageAKID_CommercialLines_locwd IS NULL, LKP_REINSURANCECOVERAGE_COMMERCIALLINESPOLICIES_WITHOUTSUBLOCATION_pol_ak_id_v_sar_insurance_line_v_RiskLocation_Unit_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_dummy_start_date_v_dummy_end_date.reins_cov_ak_id, v_ReinsuranceCoverageAKID_CommercialLines_locwd))) AS v_ReinsuranceCoverageAKID_CommercialLines_loc,
+	IFF(v_PolicyStrategicBusinessDivisionCode = '1',
+		NULL,
+		IFF(v_sar_insurance_line = 'N/A',
+			NULL,
+			IFF(v_ReinsuranceCoverageAKID_CommercialLines_locwd IS NULL,
+				LKP_REINSURANCECOVERAGE_COMMERCIALLINESPOLICIES_WITHOUTSUBLOCATION_pol_ak_id_v_sar_insurance_line_v_RiskLocation_Unit_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_dummy_start_date_v_dummy_end_date.reins_cov_ak_id,
+				v_ReinsuranceCoverageAKID_CommercialLines_locwd
+			)
+		)
+	) AS v_ReinsuranceCoverageAKID_CommercialLines_loc,
 	-- *INF*: IIF (v_PolicyStrategicBusinessDivisionCode = '1', 
 	--        NULL,
 	--         IIF (v_sar_insurance_line = 'N/A',
@@ -1586,7 +1838,16 @@ EXP_Values AS (
 	--          )
 	-- 
 	-- --- When we are not getting a hit on commercial line policies using location and sublocation or only location with and without dates,  we just default to a lookup on polakid, insline, reinscompanyno, sectioncode with dates
-	IFF(v_PolicyStrategicBusinessDivisionCode = '1', NULL, IFF(v_sar_insurance_line = 'N/A', NULL, IFF(v_ReinsuranceCoverageAKID_CommercialLines_loc IS NULL, LKP_REINSURANCE_COVERAGE_COMMERCIALLINESPOLICIES_DEFAULT_pol_ak_id_v_sar_insurance_line_sar_reinsurance_company_no_v_sar_section_v_sar_faculta_comm_rate_v_sar_trans_eff_date_v_sar_exp_date.reins_cov_ak_id, v_ReinsuranceCoverageAKID_CommercialLines_loc))) AS v_ReinsuranceCoverageAKID_CommercialLines_defwd,
+	IFF(v_PolicyStrategicBusinessDivisionCode = '1',
+		NULL,
+		IFF(v_sar_insurance_line = 'N/A',
+			NULL,
+			IFF(v_ReinsuranceCoverageAKID_CommercialLines_loc IS NULL,
+				LKP_REINSURANCE_COVERAGE_COMMERCIALLINESPOLICIES_DEFAULT_pol_ak_id_v_sar_insurance_line_sar_reinsurance_company_no_v_sar_section_v_sar_faculta_comm_rate_v_sar_trans_eff_date_v_sar_exp_date.reins_cov_ak_id,
+				v_ReinsuranceCoverageAKID_CommercialLines_loc
+			)
+		)
+	) AS v_ReinsuranceCoverageAKID_CommercialLines_defwd,
 	-- *INF*: IIF (v_PolicyStrategicBusinessDivisionCode = '1', 
 	--        NULL,
 	--         IIF (v_sar_insurance_line = 'N/A',
@@ -1598,13 +1859,26 @@ EXP_Values AS (
 	--           )
 	-- 
 	-- ---- When we are not getting a hit on commercial line policies using location and sublocation or only location with and without dates,  or even default key with dates we finally default to a lookup on polakid, insline, reinscompanyno, sectioncode without dates, The dummy date ports allow us to reuse the existing lookups with datebounds that satisfy the condition
-	IFF(v_PolicyStrategicBusinessDivisionCode = '1', NULL, IFF(v_sar_insurance_line = 'N/A', NULL, IFF(v_ReinsuranceCoverageAKID_CommercialLines_defwd IS NULL, LKP_REINSURANCE_COVERAGE_COMMERCIALLINESPOLICIES_DEFAULT_pol_ak_id_v_sar_insurance_line_sar_reinsurance_company_no_v_sar_section_v_sar_faculta_comm_rate_v_dummy_start_date_v_dummy_end_date.reins_cov_ak_id, v_ReinsuranceCoverageAKID_CommercialLines_defwd))) AS v_ReinsuranceCoverageAKID_CommercialLines_def,
+	IFF(v_PolicyStrategicBusinessDivisionCode = '1',
+		NULL,
+		IFF(v_sar_insurance_line = 'N/A',
+			NULL,
+			IFF(v_ReinsuranceCoverageAKID_CommercialLines_defwd IS NULL,
+				LKP_REINSURANCE_COVERAGE_COMMERCIALLINESPOLICIES_DEFAULT_pol_ak_id_v_sar_insurance_line_sar_reinsurance_company_no_v_sar_section_v_sar_faculta_comm_rate_v_dummy_start_date_v_dummy_end_date.reins_cov_ak_id,
+				v_ReinsuranceCoverageAKID_CommercialLines_defwd
+			)
+		)
+	) AS v_ReinsuranceCoverageAKID_CommercialLines_def,
 	-- *INF*: IIF(v_sar_insurance_line = 'N/A' or v_PolicyStrategicBusinessDivisionCode = '1', :LKP.LKP_REINSURANCECOVERAGE_PERSONALLINESPOLICIES(pol_ak_id, v_sar_unit_3pos,
 	-- v_sar_section,sar_reinsurance_company_no,v_sar_faculta_comm_rate,v_sar_trans_eff_date, v_sar_exp_date),NULL)
 	-- 
 	-- ------- This provides a full key match with reinsurance risk unit, section code, reinsurance company number and date bounds along for PL and CL with InsuranceLine = 'N/A'
 	-- 
-	IFF(v_sar_insurance_line = 'N/A' OR v_PolicyStrategicBusinessDivisionCode = '1', LKP_REINSURANCECOVERAGE_PERSONALLINESPOLICIES_pol_ak_id_v_sar_unit_3pos_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_sar_trans_eff_date_v_sar_exp_date.reins_cov_ak_id, NULL) AS v_ReinsuranceCoverageAKID_PersonalLineswd,
+	IFF(v_sar_insurance_line = 'N/A' 
+		OR v_PolicyStrategicBusinessDivisionCode = '1',
+		LKP_REINSURANCECOVERAGE_PERSONALLINESPOLICIES_pol_ak_id_v_sar_unit_3pos_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_sar_trans_eff_date_v_sar_exp_date.reins_cov_ak_id,
+		NULL
+	) AS v_ReinsuranceCoverageAKID_PersonalLineswd,
 	-- *INF*: IIF(v_sar_insurance_line = 'N/A' or v_PolicyStrategicBusinessDivisionCode = '1', 
 	--  IIF(ISNULL(v_ReinsuranceCoverageAKID_PersonalLineswd),      
 	--        :LKP.LKP_REINSURANCECOVERAGE_PERSONALLINESPOLICIES(pol_ak_id, v_sar_unit_3pos,
@@ -1613,7 +1887,14 @@ EXP_Values AS (
 	--          )
 	-- 
 	-- --- ------- This provides a full key match with reinsurance risk unit, section code, reinsurance company number and no date date bounds along for PL and CL with InsuranceLine = 'N/A' if we don't get a hit with dates. The dummy date ports allow us to reuse the existing lookups with datebounds that satisfy the condition
-	IFF(v_sar_insurance_line = 'N/A' OR v_PolicyStrategicBusinessDivisionCode = '1', IFF(v_ReinsuranceCoverageAKID_PersonalLineswd IS NULL, LKP_REINSURANCECOVERAGE_PERSONALLINESPOLICIES_pol_ak_id_v_sar_unit_3pos_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_dummy_start_date_v_dummy_end_date.reins_cov_ak_id, v_ReinsuranceCoverageAKID_PersonalLineswd), NULL) AS v_ReinsuranceCoverageAKID_PersonalLines,
+	IFF(v_sar_insurance_line = 'N/A' 
+		OR v_PolicyStrategicBusinessDivisionCode = '1',
+		IFF(v_ReinsuranceCoverageAKID_PersonalLineswd IS NULL,
+			LKP_REINSURANCECOVERAGE_PERSONALLINESPOLICIES_pol_ak_id_v_sar_unit_3pos_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_dummy_start_date_v_dummy_end_date.reins_cov_ak_id,
+			v_ReinsuranceCoverageAKID_PersonalLineswd
+		),
+		NULL
+	) AS v_ReinsuranceCoverageAKID_PersonalLines,
 	-- *INF*: IIF(v_sar_insurance_line = 'N/A' or v_PolicyStrategicBusinessDivisionCode = '1', 
 	--    IIF(ISNULL(v_ReinsuranceCoverageAKID_PersonalLines),        
 	--      :LKP.LKP_REINSURANCECOVERAGE__PERSONALLINESPOLICIES_DEFAULT(pol_ak_id, 
@@ -1622,7 +1903,14 @@ EXP_Values AS (
 	--        )
 	-- 
 	-- ------------- This provides a default key match with section code, reinsurance company number and date bounds for PL and CL with InsuranceLine = 'N/A' if we don't get a hit with full key including risk unit with and without dates. The dummy date ports allow us to reuse the existing lookups with datebounds that satisfy the condition
-	IFF(v_sar_insurance_line = 'N/A' OR v_PolicyStrategicBusinessDivisionCode = '1', IFF(v_ReinsuranceCoverageAKID_PersonalLines IS NULL, LKP_REINSURANCECOVERAGE__PERSONALLINESPOLICIES_DEFAULT_pol_ak_id_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_sar_trans_eff_date_v_sar_exp_date.reins_cov_ak_id, v_ReinsuranceCoverageAKID_PersonalLines), NULL) AS v_ReinsuranceCoverageAKID_PersonalLines_defwd,
+	IFF(v_sar_insurance_line = 'N/A' 
+		OR v_PolicyStrategicBusinessDivisionCode = '1',
+		IFF(v_ReinsuranceCoverageAKID_PersonalLines IS NULL,
+			LKP_REINSURANCECOVERAGE__PERSONALLINESPOLICIES_DEFAULT_pol_ak_id_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_sar_trans_eff_date_v_sar_exp_date.reins_cov_ak_id,
+			v_ReinsuranceCoverageAKID_PersonalLines
+		),
+		NULL
+	) AS v_ReinsuranceCoverageAKID_PersonalLines_defwd,
 	-- *INF*: IIF(v_sar_insurance_line = 'N/A' or v_PolicyStrategicBusinessDivisionCode = '1', 
 	--  IIF(ISNULL(v_ReinsuranceCoverageAKID_PersonalLines_defwd),      
 	--        :LKP.LKP_REINSURANCECOVERAGE__PERSONALLINESPOLICIES_DEFAULT(pol_ak_id, 
@@ -1631,25 +1919,45 @@ EXP_Values AS (
 	--          )
 	-- 
 	-- ------------- This provides a default key match with section code, reinsurance company number and no date bounds for PL and CL with InsuranceLine = 'N/A' if we don't get a hit with full key including risk unit with and without dates or default key with dates. The dummy date ports allow us to reuse the existing lookups with datebounds that satisfy the condition
-	IFF(v_sar_insurance_line = 'N/A' OR v_PolicyStrategicBusinessDivisionCode = '1', IFF(v_ReinsuranceCoverageAKID_PersonalLines_defwd IS NULL, LKP_REINSURANCECOVERAGE__PERSONALLINESPOLICIES_DEFAULT_pol_ak_id_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_dummy_start_date_v_dummy_end_date.reins_cov_ak_id, v_ReinsuranceCoverageAKID_PersonalLines_defwd), NULL) AS v_ReinsuranceCoverageAKID_PersonalLines_def,
+	IFF(v_sar_insurance_line = 'N/A' 
+		OR v_PolicyStrategicBusinessDivisionCode = '1',
+		IFF(v_ReinsuranceCoverageAKID_PersonalLines_defwd IS NULL,
+			LKP_REINSURANCECOVERAGE__PERSONALLINESPOLICIES_DEFAULT_pol_ak_id_v_sar_section_sar_reinsurance_company_no_v_sar_faculta_comm_rate_v_dummy_start_date_v_dummy_end_date.reins_cov_ak_id,
+			v_ReinsuranceCoverageAKID_PersonalLines_defwd
+		),
+		NULL
+	) AS v_ReinsuranceCoverageAKID_PersonalLines_def,
 	-- *INF*: IIF(v_sar_insurance_line = 'N/A' or v_PolicyStrategicBusinessDivisionCode = '1' , v_ReinsuranceCoverageAKID_PersonalLines_def, v_ReinsuranceCoverageAKID_CommercialLines_def)
 	-- 
 	-- 
 	-- ---- If the Strategic Business DivisionCode value is 1 then get the personalline lookup value otherwise commerciallines lookup value.
-	IFF(v_sar_insurance_line = 'N/A' OR v_PolicyStrategicBusinessDivisionCode = '1', v_ReinsuranceCoverageAKID_PersonalLines_def, v_ReinsuranceCoverageAKID_CommercialLines_def) AS v_ReinsuranceCoverageAKID_PL_CL,
+	IFF(v_sar_insurance_line = 'N/A' 
+		OR v_PolicyStrategicBusinessDivisionCode = '1',
+		v_ReinsuranceCoverageAKID_PersonalLines_def,
+		v_ReinsuranceCoverageAKID_CommercialLines_def
+	) AS v_ReinsuranceCoverageAKID_PL_CL,
 	-- *INF*: IIF(sar_part_code = '4',IIF(ISNULL(v_ReinsuranceCoverageAKID_PL_CL), -1, v_ReinsuranceCoverageAKID_PL_CL),-1)
-	IFF(sar_part_code = '4', IFF(v_ReinsuranceCoverageAKID_PL_CL IS NULL, - 1, v_ReinsuranceCoverageAKID_PL_CL), - 1) AS v_ReinsuranceCoverageAKID,
+	IFF(sar_part_code = '4',
+		IFF(v_ReinsuranceCoverageAKID_PL_CL IS NULL,
+			- 1,
+			v_ReinsuranceCoverageAKID_PL_CL
+		),
+		- 1
+	) AS v_ReinsuranceCoverageAKID,
 	v_ReinsuranceCoverageAKID AS ReinsuranceCoverageAKID,
 	EXP_Default.sar_rsn_amend_one,
 	EXP_Default.sar_rsn_amend_two,
 	EXP_Default.sar_rsn_amend_three,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_rsn_amend_one  ||  sar_rsn_amend_two || sar_rsn_amend_three)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_rsn_amend_one || sar_rsn_amend_two || sar_rsn_amend_three) AS v_sar_rsn_amend_code,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_rsn_amend_one || sar_rsn_amend_two || sar_rsn_amend_three
+	) AS v_sar_rsn_amend_code,
 	v_sar_rsn_amend_code AS Reason_amend_code,
 	-- *INF*: Policy_Key  ||  TO_CHAR(v_PolicyCoverageAKID)
-	Policy_Key || TO_CHAR(v_PolicyCoverageAKID) AS v_CoverageKey,
+	Policy_Key || TO_CHAR(v_PolicyCoverageAKID
+	) AS v_CoverageKey,
 	-- *INF*: Policy_Key  ||  TO_CHAR(v_PolicyCoverageAKID)
-	Policy_Key || TO_CHAR(v_PolicyCoverageAKID) AS CoverageKey,
+	Policy_Key || TO_CHAR(v_PolicyCoverageAKID
+	) AS CoverageKey,
 	-- *INF*: MD5(
 	-- TO_CHAR(v_ReinsuranceCoverageAKID)  ||  
 	-- TO_CHAR(v_CoverageDetailAKID)  ||  
@@ -1664,10 +1972,26 @@ EXP_Values AS (
 	-- TO_CHAR(v_PremiumType)  ||  
 	-- TO_CHAR(v_sar_rsn_amend_code) 
 	-- )
-	MD5(TO_CHAR(v_ReinsuranceCoverageAKID) || TO_CHAR(v_CoverageDetailAKID) || TO_CHAR(v_PMSFunctionCode) || TO_CHAR(sar_transaction) || TO_CHAR(v_sar_entrd_date) || TO_CHAR(v_sar_trans_eff_date) || TO_CHAR(v_sar_exp_date) || TO_CHAR(v_sar_acct_entrd_date) || TO_CHAR(sar_premium) || TO_CHAR(sar_original_prem) || TO_CHAR(v_PremiumType) || TO_CHAR(v_sar_rsn_amend_code)) AS v_PremiumTransactionHashKey,
+	MD5(TO_CHAR(v_ReinsuranceCoverageAKID
+		) || TO_CHAR(v_CoverageDetailAKID
+		) || TO_CHAR(v_PMSFunctionCode
+		) || TO_CHAR(sar_transaction
+		) || TO_CHAR(v_sar_entrd_date
+		) || TO_CHAR(v_sar_trans_eff_date
+		) || TO_CHAR(v_sar_exp_date
+		) || TO_CHAR(v_sar_acct_entrd_date
+		) || TO_CHAR(sar_premium
+		) || TO_CHAR(sar_original_prem
+		) || TO_CHAR(v_PremiumType
+		) || TO_CHAR(v_sar_rsn_amend_code
+		)
+	) AS v_PremiumTransactionHashKey,
 	v_PremiumTransactionHashKey AS PremiumTransactionHashKey,
 	-- *INF*: IIF(Policy_Key = v_prev_row_Pol_Key, v_prev_row_Premium_Sequence + 1,1)
-	IFF(Policy_Key = v_prev_row_Pol_Key, v_prev_row_Premium_Sequence + 1, 1) AS v_premium_sequence,
+	IFF(Policy_Key = v_prev_row_Pol_Key,
+		v_prev_row_Premium_Sequence + 1,
+		1
+	) AS v_premium_sequence,
 	v_premium_sequence AS PremiumLoadSequence,
 	v_premium_sequence AS v_prev_row_Premium_Sequence,
 	-- *INF*: IIF(v_prev_row_CoverageDetailAKID = v_CoverageDetailAKID AND 
@@ -1683,7 +2007,21 @@ EXP_Values AS (
 	-- v_prev_row_PremiumType = v_PremiumType AND
 	-- v_prev_row_sar_rsn_amend_code = v_sar_rsn_amend_code
 	-- , v_DuplicateSequenceNum + 1,1)
-	IFF(v_prev_row_CoverageDetailAKID = v_CoverageDetailAKID AND v_prev_row_ReinsuranceCoverageAKID = v_ReinsuranceCoverageAKID AND v_prev_row_PMSFunctionCode = v_PMSFunctionCode AND v_prev_row_sar_entrd_date = v_sar_entrd_date AND v_prev_row_sar_trans_eff_date = v_sar_trans_eff_date AND v_prev_row_sar_premium = sar_premium AND v_prev_row_sar_acct_entrd_date = v_sar_acct_entrd_date AND v_prev_row_sar_transaction = sar_transaction AND v_prev_row_sar_exp_date = v_sar_exp_date AND v_prev_row_sar_original_prem = sar_original_prem AND v_prev_row_PremiumType = v_PremiumType AND v_prev_row_sar_rsn_amend_code = v_sar_rsn_amend_code, v_DuplicateSequenceNum + 1, 1) AS v_DuplicateSequenceNum,
+	IFF(v_prev_row_CoverageDetailAKID = v_CoverageDetailAKID 
+		AND v_prev_row_ReinsuranceCoverageAKID = v_ReinsuranceCoverageAKID 
+		AND v_prev_row_PMSFunctionCode = v_PMSFunctionCode 
+		AND v_prev_row_sar_entrd_date = v_sar_entrd_date 
+		AND v_prev_row_sar_trans_eff_date = v_sar_trans_eff_date 
+		AND v_prev_row_sar_premium = sar_premium 
+		AND v_prev_row_sar_acct_entrd_date = v_sar_acct_entrd_date 
+		AND v_prev_row_sar_transaction = sar_transaction 
+		AND v_prev_row_sar_exp_date = v_sar_exp_date 
+		AND v_prev_row_sar_original_prem = sar_original_prem 
+		AND v_prev_row_PremiumType = v_PremiumType 
+		AND v_prev_row_sar_rsn_amend_code = v_sar_rsn_amend_code,
+		v_DuplicateSequenceNum + 1,
+		1
+	) AS v_DuplicateSequenceNum,
 	v_DuplicateSequenceNum AS DuplicateSequenceNum,
 	Policy_Key AS v_prev_row_Pol_Key,
 	v_CoverageDetailAKID AS v_prev_row_CoverageDetailAKID,
@@ -1776,7 +2114,9 @@ EXP_Values AS (
 	LKP_Pif43RXGLStage.Pmdrxg1ScheduleMod AS in_Pmdrxg1ScheduleMod,
 	LKP_Pif43LXGAStage.PMDLXA1PmaCode AS in_PMDLXA1PmaCode,
 	-- *INF*: LTRIM(RTRIM(in_wb_class_of_business_cr))
-	LTRIM(RTRIM(in_wb_class_of_business_cr)) AS v_wb_class_of_business_cr,
+	LTRIM(RTRIM(in_wb_class_of_business_cr
+		)
+	) AS v_wb_class_of_business_cr,
 	-- *INF*: DECODE(TRUE,
 	-- v_sar_type_bureau='FT',LTRIM(RTRIM(sar_code_4)),
 	-- v_sar_type_bureau='BT',LTRIM(RTRIM(sar_code_7)),
@@ -1784,26 +2124,50 @@ EXP_Values AS (
 	-- '00'
 	-- )
 	DECODE(TRUE,
-		v_sar_type_bureau = 'FT', LTRIM(RTRIM(sar_code_4)),
-		v_sar_type_bureau = 'BT', LTRIM(RTRIM(sar_code_7)),
-		v_sar_type_bureau = 'CR', LTRIM(RTRIM(sar_code_11)),
-		'00') AS v_OriginalPMACode_CR,
+		v_sar_type_bureau = 'FT', LTRIM(RTRIM(sar_code_4
+			)
+		),
+		v_sar_type_bureau = 'BT', LTRIM(RTRIM(sar_code_7
+			)
+		),
+		v_sar_type_bureau = 'CR', LTRIM(RTRIM(sar_code_11
+			)
+		),
+		'00'
+	) AS v_OriginalPMACode_CR,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_PMACode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_PMACode) AS v_PMACode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_PMACode
+	) AS v_PMACode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_PackageModificationAssignment)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_PackageModificationAssignment) AS v_PackageModificationAssignment,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_PackageModificationAssignment
+	) AS v_PackageModificationAssignment,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmduxg1PmaCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmduxg1PmaCode) AS v_Pmduxg1PmaCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmduxg1PmaCode
+	) AS v_Pmduxg1PmaCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmdrxp1PmaCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmdrxp1PmaCode) AS v_Pmdrxp1PmaCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmdrxp1PmaCode
+	) AS v_Pmdrxp1PmaCode,
 	-- *INF*: IIF(ISNULL(in_wb_class_of_business) OR IS_SPACES(in_wb_class_of_business) OR LENGTH(in_wb_class_of_business)=0, '00', LTRIM(RTRIM(in_wb_class_of_business)))
-	IFF(in_wb_class_of_business IS NULL OR IS_SPACES(in_wb_class_of_business) OR LENGTH(in_wb_class_of_business) = 0, '00', LTRIM(RTRIM(in_wb_class_of_business))) AS v_wb_class_of_business,
+	IFF(in_wb_class_of_business IS NULL 
+		OR LENGTH(in_wb_class_of_business)>0 AND TRIM(in_wb_class_of_business)='' 
+		OR LENGTH(in_wb_class_of_business
+		) = 0,
+		'00',
+		LTRIM(RTRIM(in_wb_class_of_business
+			)
+		)
+	) AS v_wb_class_of_business,
 	-- *INF*: IIF(NOT ISNULL(in_Pmdnxp1OtherMod), in_Pmdnxp1OtherMod, 0)
-	IFF(NOT in_Pmdnxp1OtherMod IS NULL, in_Pmdnxp1OtherMod, 0) AS v_Pmdnxp1OtherMod,
+	IFF(in_Pmdnxp1OtherMod IS NOT NULL,
+		in_Pmdnxp1OtherMod,
+		0
+	) AS v_Pmdnxp1OtherMod,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_PMDNXC1PmaCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_PMDNXC1PmaCode) AS v_PMDNXC1PmaCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_PMDNXC1PmaCode
+	) AS v_PMDNXC1PmaCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_PMDLXA1PmaCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_PMDLXA1PmaCode) AS v_PMDLXA1PmaCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_PMDLXA1PmaCode
+	) AS v_PMDLXA1PmaCode,
 	-- *INF*: DECODE(v_PMACode,
 	-- 'N/A', 'N/A' ,
 	-- '10','N/A',
@@ -1824,11 +2188,27 @@ EXP_Values AS (
 		'32', 'A',
 		'33', 'O',
 		'34', 'M',
-		'35', IFF(Lkp_CLBCode = 'AL', 'AL', 'I'),
+		'35', IFF(Lkp_CLBCode = 'AL',
+			'AL',
+			'I'
+		),
 		'36', 'N/A',
-		'37', IFF(Lkp_CLBCode = 'I', 'MW', IFF(Lkp_CLBCode = 'O', 'WW', 'IP')),
-		'38', IFF(Lkp_CLBCode = 'AG', 'AG', IFF(Lkp_CLBCode = 'AM', 'AM', 'C')),
-		v_PMACode) AS v_PMACODE_IM,
+		'37', IFF(Lkp_CLBCode = 'I',
+			'MW',
+			IFF(Lkp_CLBCode = 'O',
+				'WW',
+				'IP'
+			)
+		),
+		'38', IFF(Lkp_CLBCode = 'AG',
+			'AG',
+			IFF(Lkp_CLBCode = 'AM',
+				'AM',
+				'C'
+			)
+		),
+		v_PMACode
+	) AS v_PMACODE_IM,
 	-- *INF*: DECODE(TRUE, 
 	-- v_OriginalPMACode_CR = '','N/A',
 	-- v_OriginalPMACode_CR='10','N/A',
@@ -1854,32 +2234,91 @@ EXP_Values AS (
 		v_OriginalPMACode_CR = '32', 'A',
 		v_OriginalPMACode_CR = '33', 'O',
 		v_OriginalPMACode_CR = '34', 'M',
-		v_OriginalPMACode_CR = '35' AND v_wb_class_of_business_cr = 'AL', 'AL',
+		v_OriginalPMACode_CR = '35' 
+		AND v_wb_class_of_business_cr = 'AL', 'AL',
 		v_OriginalPMACode_CR = '35', 'I',
 		v_OriginalPMACode_CR = '36', v_PMDNXC1PmaCode,
-		v_OriginalPMACode_CR = '37' AND v_wb_class_of_business_cr = 'I', 'MW',
-		v_OriginalPMACode_CR = '37' AND v_wb_class_of_business_cr = 'O', 'WW',
+		v_OriginalPMACode_CR = '37' 
+		AND v_wb_class_of_business_cr = 'I', 'MW',
+		v_OriginalPMACode_CR = '37' 
+		AND v_wb_class_of_business_cr = 'O', 'WW',
 		v_OriginalPMACode_CR = '37', 'IP',
-		v_OriginalPMACode_CR = '38' AND v_wb_class_of_business_cr = 'AG', 'AG',
-		v_OriginalPMACode_CR = '38' AND v_wb_class_of_business_cr = 'AM', 'AM',
+		v_OriginalPMACode_CR = '38' 
+		AND v_wb_class_of_business_cr = 'AG', 'AG',
+		v_OriginalPMACode_CR = '38' 
+		AND v_wb_class_of_business_cr = 'AM', 'AM',
 		v_OriginalPMACode_CR = '38', 'C',
-		'N/A') AS v_PMACODE_CR,
+		'N/A'
+	) AS v_PMACODE_CR,
 	-- *INF*: IIF(v_sar_insurance_line='CF', v_Pmdnxp1OtherMod, 0)
-	IFF(v_sar_insurance_line = 'CF', v_Pmdnxp1OtherMod, 0) AS v_PreferredPropertyFactor,
+	IFF(v_sar_insurance_line = 'CF',
+		v_Pmdnxp1OtherMod,
+		0
+	) AS v_PreferredPropertyFactor,
 	-- *INF*: IIF(ISNULL(sar_code_1) OR IS_SPACES(sar_code_1) OR LENGTH(sar_code_1)=0, '0', sar_code_1)
-	IFF(sar_code_1 IS NULL OR IS_SPACES(sar_code_1) OR LENGTH(sar_code_1) = 0, '0', sar_code_1) AS v_sar_code_1,
+	IFF(sar_code_1 IS NULL 
+		OR LENGTH(sar_code_1)>0 AND TRIM(sar_code_1)='' 
+		OR LENGTH(sar_code_1
+		) = 0,
+		'0',
+		sar_code_1
+	) AS v_sar_code_1,
 	-- *INF*: IIF(ISNULL(sar_code_2) OR IS_SPACES(sar_code_2) OR LENGTH(sar_code_2)=0, '0', sar_code_2)
-	IFF(sar_code_2 IS NULL OR IS_SPACES(sar_code_2) OR LENGTH(sar_code_2) = 0, '0', sar_code_2) AS v_sar_code_2,
+	IFF(sar_code_2 IS NULL 
+		OR LENGTH(sar_code_2)>0 AND TRIM(sar_code_2)='' 
+		OR LENGTH(sar_code_2
+		) = 0,
+		'0',
+		sar_code_2
+	) AS v_sar_code_2,
 	-- *INF*: IIF(ISNULL(sar_code_3) OR IS_SPACES(sar_code_3) OR LENGTH(sar_code_3)=0, '0', sar_code_3)
-	IFF(sar_code_3 IS NULL OR IS_SPACES(sar_code_3) OR LENGTH(sar_code_3) = 0, '0', sar_code_3) AS v_sar_code_3,
+	IFF(sar_code_3 IS NULL 
+		OR LENGTH(sar_code_3)>0 AND TRIM(sar_code_3)='' 
+		OR LENGTH(sar_code_3
+		) = 0,
+		'0',
+		sar_code_3
+	) AS v_sar_code_3,
 	-- *INF*: IIF(ISNULL(sar_code_4) OR IS_SPACES(sar_code_4) OR LENGTH(sar_code_4)=0, '00', LTRIM(RTRIM(sar_code_4)))
-	IFF(sar_code_4 IS NULL OR IS_SPACES(sar_code_4) OR LENGTH(sar_code_4) = 0, '00', LTRIM(RTRIM(sar_code_4))) AS v_sar_code_4,
+	IFF(sar_code_4 IS NULL 
+		OR LENGTH(sar_code_4)>0 AND TRIM(sar_code_4)='' 
+		OR LENGTH(sar_code_4
+		) = 0,
+		'00',
+		LTRIM(RTRIM(sar_code_4
+			)
+		)
+	) AS v_sar_code_4,
 	-- *INF*: IIF(ISNULL(sar_code_5) OR IS_SPACES(sar_code_5) OR LENGTH(sar_code_5)=0, '00', LTRIM(RTRIM(sar_code_5)))
-	IFF(sar_code_5 IS NULL OR IS_SPACES(sar_code_5) OR LENGTH(sar_code_5) = 0, '00', LTRIM(RTRIM(sar_code_5))) AS v_sar_code_5,
+	IFF(sar_code_5 IS NULL 
+		OR LENGTH(sar_code_5)>0 AND TRIM(sar_code_5)='' 
+		OR LENGTH(sar_code_5
+		) = 0,
+		'00',
+		LTRIM(RTRIM(sar_code_5
+			)
+		)
+	) AS v_sar_code_5,
 	-- *INF*: IIF(ISNULL(sar_code_6) OR IS_SPACES(sar_code_6) OR LENGTH(sar_code_6)=0, '000', LTRIM(RTRIM(sar_code_6)))
-	IFF(sar_code_6 IS NULL OR IS_SPACES(sar_code_6) OR LENGTH(sar_code_6) = 0, '000', LTRIM(RTRIM(sar_code_6))) AS v_sar_code_6,
+	IFF(sar_code_6 IS NULL 
+		OR LENGTH(sar_code_6)>0 AND TRIM(sar_code_6)='' 
+		OR LENGTH(sar_code_6
+		) = 0,
+		'000',
+		LTRIM(RTRIM(sar_code_6
+			)
+		)
+	) AS v_sar_code_6,
 	-- *INF*: IIF(ISNULL(sar_code_7) OR IS_SPACES(sar_code_7) OR LENGTH(sar_code_7)=0, '000', LTRIM(RTRIM(sar_code_7)))
-	IFF(sar_code_7 IS NULL OR IS_SPACES(sar_code_7) OR LENGTH(sar_code_7) = 0, '000', LTRIM(RTRIM(sar_code_7))) AS v_sar_code_7,
+	IFF(sar_code_7 IS NULL 
+		OR LENGTH(sar_code_7)>0 AND TRIM(sar_code_7)='' 
+		OR LENGTH(sar_code_7
+		) = 0,
+		'000',
+		LTRIM(RTRIM(sar_code_7
+			)
+		)
+	) AS v_sar_code_7,
 	-- *INF*: DECODE(TRUE,
 	-- v_sar_code_6 = '32' , 'A',
 	-- v_sar_code_6 = '38' and  IN (v_wb_class_of_business, 'AG', 'AM')=0, 'C',
@@ -1907,60 +2346,151 @@ EXP_Values AS (
 	-- v_Pmdrxp1PmaCode)
 	DECODE(TRUE,
 		v_sar_code_6 = '32', 'A',
-		v_sar_code_6 = '38' AND IN(v_wb_class_of_business, 'AG', 'AM') = 0, 'C',
-		v_sar_code_6 = '35' AND IN(v_wb_class_of_business, 'AL') = 0, 'I',
-		v_sar_code_6 = '37' AND IN(v_wb_class_of_business, 'I', 'O') = 0, 'IP',
+		v_sar_code_6 = '38' 
+		AND v_wb_class_of_business IN ('AG','AM') = 0, 'C',
+		v_sar_code_6 = '35' 
+		AND v_wb_class_of_business IN ('AL') = 0, 'I',
+		v_sar_code_6 = '37' 
+		AND v_wb_class_of_business IN ('I','O') = 0, 'IP',
 		v_sar_code_6 = '34', 'M',
 		v_sar_code_6 = '31', 'MH',
 		v_sar_code_6 = '33', 'O',
-		v_sar_code_6 = '36' AND v_Pmdrxp1PmaCode = 'S', 'S',
-		v_sar_code_6 = '36' AND v_Pmdrxp1PmaCode = 'TA', 'TA',
-		v_sar_code_6 = '36' AND v_Pmdrxp1PmaCode = 'BA', 'BA',
-		v_sar_code_6 = '36' AND v_Pmdrxp1PmaCode = 'AD', 'AD',
-		v_sar_code_6 = '36' AND v_Pmdrxp1PmaCode = 'TD', 'TD',
-		v_sar_code_6 = '36' AND v_Pmdrxp1PmaCode = 'BD', 'BD',
-		v_sar_code_6 = '36' AND v_Pmdrxp1PmaCode = 'N', 'N',
-		v_sar_code_6 = '36' AND v_Pmdrxp1PmaCode = 'TN', 'TN',
-		v_sar_code_6 = '36' AND v_Pmdrxp1PmaCode = 'BN', 'BN',
-		v_sar_code_6 = '38' AND v_wb_class_of_business = 'AG', 'AG',
-		v_sar_code_6 = '38' AND v_wb_class_of_business = 'AM', 'AM',
-		v_sar_code_6 = '37' AND v_wb_class_of_business = 'I', 'MW',
-		v_sar_code_6 = '37' AND v_wb_class_of_business = 'O', 'WW',
-		( v_sar_code_6 = '35' AND v_wb_class_of_business = 'AL' ) OR ( v_sar_code_6 = '45' ), 'AL',
-		( v_sar_code_6 = '36' AND v_Pmdrxp1PmaCode = 'HC' ) OR ( v_sar_code_6 = '46' ), 'HC',
-		v_sar_code_6 = '10' OR v_sar_code_6 = '000', 'N/A',
-		v_Pmdrxp1PmaCode) AS v_Pmdrxp1PmaCode_Final,
+		v_sar_code_6 = '36' 
+		AND v_Pmdrxp1PmaCode = 'S', 'S',
+		v_sar_code_6 = '36' 
+		AND v_Pmdrxp1PmaCode = 'TA', 'TA',
+		v_sar_code_6 = '36' 
+		AND v_Pmdrxp1PmaCode = 'BA', 'BA',
+		v_sar_code_6 = '36' 
+		AND v_Pmdrxp1PmaCode = 'AD', 'AD',
+		v_sar_code_6 = '36' 
+		AND v_Pmdrxp1PmaCode = 'TD', 'TD',
+		v_sar_code_6 = '36' 
+		AND v_Pmdrxp1PmaCode = 'BD', 'BD',
+		v_sar_code_6 = '36' 
+		AND v_Pmdrxp1PmaCode = 'N', 'N',
+		v_sar_code_6 = '36' 
+		AND v_Pmdrxp1PmaCode = 'TN', 'TN',
+		v_sar_code_6 = '36' 
+		AND v_Pmdrxp1PmaCode = 'BN', 'BN',
+		v_sar_code_6 = '38' 
+		AND v_wb_class_of_business = 'AG', 'AG',
+		v_sar_code_6 = '38' 
+		AND v_wb_class_of_business = 'AM', 'AM',
+		v_sar_code_6 = '37' 
+		AND v_wb_class_of_business = 'I', 'MW',
+		v_sar_code_6 = '37' 
+		AND v_wb_class_of_business = 'O', 'WW',
+		( v_sar_code_6 = '35' 
+			AND v_wb_class_of_business = 'AL' 
+		) 
+		OR ( v_sar_code_6 = '45' 
+		), 'AL',
+		( v_sar_code_6 = '36' 
+			AND v_Pmdrxp1PmaCode = 'HC' 
+		) 
+		OR ( v_sar_code_6 = '46' 
+		), 'HC',
+		v_sar_code_6 = '10' 
+		OR v_sar_code_6 = '000', 'N/A',
+		v_Pmdrxp1PmaCode
+	) AS v_Pmdrxp1PmaCode_Final,
 	-- *INF*: IIF(ISNULL(in_sar_company_number), 0, in_sar_company_number)
-	IFF(in_sar_company_number IS NULL, 0, in_sar_company_number) AS v_sar_company_number,
+	IFF(in_sar_company_number IS NULL,
+		0,
+		in_sar_company_number
+	) AS v_sar_company_number,
 	-- *INF*: to_char(in_Pmdlxg1YearRetro) || LPAD(to_char(in_Pmdlxg1MonthRetro), 2, '0')  || LPAD(to_char(in_Pmdlxg1DayRetro), 2, '0')
-	to_char(in_Pmdlxg1YearRetro) || LPAD(to_char(in_Pmdlxg1MonthRetro), 2, '0') || LPAD(to_char(in_Pmdlxg1DayRetro), 2, '0') AS v_RetroactiveDate,
+	to_char(in_Pmdlxg1YearRetro
+	) || LPAD(to_char(in_Pmdlxg1MonthRetro
+		), 2, '0'
+	) || LPAD(to_char(in_Pmdlxg1DayRetro
+		), 2, '0'
+	) AS v_RetroactiveDate,
 	-- *INF*: IIF(ISNULL(in_Pif43IXUnmodWCRatingState) OR IS_SPACES(in_Pif43IXUnmodWCRatingState) OR LENGTH(in_Pif43IXUnmodWCRatingState)=0, '00', LTRIM(RTRIM(in_Pif43IXUnmodWCRatingState)))
-	IFF(in_Pif43IXUnmodWCRatingState IS NULL OR IS_SPACES(in_Pif43IXUnmodWCRatingState) OR LENGTH(in_Pif43IXUnmodWCRatingState) = 0, '00', LTRIM(RTRIM(in_Pif43IXUnmodWCRatingState))) AS v_Pif43IXUnmodWCRatingState,
+	IFF(in_Pif43IXUnmodWCRatingState IS NULL 
+		OR LENGTH(in_Pif43IXUnmodWCRatingState)>0 AND TRIM(in_Pif43IXUnmodWCRatingState)='' 
+		OR LENGTH(in_Pif43IXUnmodWCRatingState
+		) = 0,
+		'00',
+		LTRIM(RTRIM(in_Pif43IXUnmodWCRatingState
+			)
+		)
+	) AS v_Pif43IXUnmodWCRatingState,
 	-- *INF*: IIF(ISNULL(in_Pif43IXUnmodReportingClassCode) OR IS_SPACES(in_Pif43IXUnmodReportingClassCode) OR LENGTH(in_Pif43IXUnmodReportingClassCode)=0, '0000', LTRIM(RTRIM(in_Pif43IXUnmodReportingClassCode)))
-	IFF(in_Pif43IXUnmodReportingClassCode IS NULL OR IS_SPACES(in_Pif43IXUnmodReportingClassCode) OR LENGTH(in_Pif43IXUnmodReportingClassCode) = 0, '0000', LTRIM(RTRIM(in_Pif43IXUnmodReportingClassCode))) AS v_Pif43IXUnmodReportingClassCode,
+	IFF(in_Pif43IXUnmodReportingClassCode IS NULL 
+		OR LENGTH(in_Pif43IXUnmodReportingClassCode)>0 AND TRIM(in_Pif43IXUnmodReportingClassCode)='' 
+		OR LENGTH(in_Pif43IXUnmodReportingClassCode
+		) = 0,
+		'0000',
+		LTRIM(RTRIM(in_Pif43IXUnmodReportingClassCode
+			)
+		)
+	) AS v_Pif43IXUnmodReportingClassCode,
 	-- *INF*: IIF(ISNULL(in_Pmdi4w1ModifierRate), 0, in_Pmdi4w1ModifierRate)
-	IFF(in_Pmdi4w1ModifierRate IS NULL, 0, in_Pmdi4w1ModifierRate) AS v_Pmdi4w1ModifierRate,
+	IFF(in_Pmdi4w1ModifierRate IS NULL,
+		0,
+		in_Pmdi4w1ModifierRate
+	) AS v_Pmdi4w1ModifierRate,
 	-- *INF*: IIF(ISNULL(in_Pmdnxp1YearBuilt), '0000', TO_CHAR(in_Pmdnxp1YearBuilt))
-	IFF(in_Pmdnxp1YearBuilt IS NULL, '0000', TO_CHAR(in_Pmdnxp1YearBuilt)) AS v_Pmdnxp1YearBuilt,
+	IFF(in_Pmdnxp1YearBuilt IS NULL,
+		'0000',
+		TO_CHAR(in_Pmdnxp1YearBuilt
+		)
+	) AS v_Pmdnxp1YearBuilt,
 	-- *INF*: TO_CHAR(in_Pmdi4w1YearItemEffective) || LPAD(TO_CHAR(LTRIM(RTRIM(in_Pmdi4w1MonthItemEffective))), 2, '0') || LPAD(TO_CHAR(LTRIM(RTRIM(in_Pmdi4w1DayItemEffective))), 2, '0')
-	TO_CHAR(in_Pmdi4w1YearItemEffective) || LPAD(TO_CHAR(LTRIM(RTRIM(in_Pmdi4w1MonthItemEffective))), 2, '0') || LPAD(TO_CHAR(LTRIM(RTRIM(in_Pmdi4w1DayItemEffective))), 2, '0') AS v_ExperienceModificationEffectiveDate,
+	TO_CHAR(in_Pmdi4w1YearItemEffective
+	) || LPAD(TO_CHAR(LTRIM(RTRIM(in_Pmdi4w1MonthItemEffective
+				)
+			)
+		), 2, '0'
+	) || LPAD(TO_CHAR(LTRIM(RTRIM(in_Pmdi4w1DayItemEffective
+				)
+			)
+		), 2, '0'
+	) AS v_ExperienceModificationEffectiveDate,
 	-- *INF*: IIF(ISNULL(in_Pmdnxp1CspConstrCod), 'N/A', TO_CHAR(in_Pmdnxp1CspConstrCod))
-	IFF(in_Pmdnxp1CspConstrCod IS NULL, 'N/A', TO_CHAR(in_Pmdnxp1CspConstrCod)) AS v_Pmdnxp1CspConstrCod,
+	IFF(in_Pmdnxp1CspConstrCod IS NULL,
+		'N/A',
+		TO_CHAR(in_Pmdnxp1CspConstrCod
+		)
+	) AS v_Pmdnxp1CspConstrCod,
 	-- *INF*: IIF(ISNULL(in_HRRConstruction) OR IS_SPACES(in_HRRConstruction) OR LENGTH(in_HRRConstruction)=0, 'N/A', LTRIM(RTRIM(in_HRRConstruction)))
-	IFF(in_HRRConstruction IS NULL OR IS_SPACES(in_HRRConstruction) OR LENGTH(in_HRRConstruction) = 0, 'N/A', LTRIM(RTRIM(in_HRRConstruction))) AS v_HRRConstruction,
+	IFF(in_HRRConstruction IS NULL 
+		OR LENGTH(in_HRRConstruction)>0 AND TRIM(in_HRRConstruction)='' 
+		OR LENGTH(in_HRRConstruction
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(in_HRRConstruction
+			)
+		)
+	) AS v_HRRConstruction,
 	in_pif_eff_yr_a||in_pif_eff_mo_a||in_pif_eff_da_a AS v_StateRatingEffectiveDate,
 	-- *INF*: IIF(ISNULL(in_Pmdi4w1ModifierPremBasis),0,in_Pmdi4w1ModifierPremBasis)
-	IFF(in_Pmdi4w1ModifierPremBasis IS NULL, 0, in_Pmdi4w1ModifierPremBasis) AS v_Pmdi4w1ModifierPremBasis,
+	IFF(in_Pmdi4w1ModifierPremBasis IS NULL,
+		0,
+		in_Pmdi4w1ModifierPremBasis
+	) AS v_Pmdi4w1ModifierPremBasis,
 	-- *INF*: LTRIM(RTRIM(:LKP.LKP_PIF11STAGE(Policy_Key)))
-	LTRIM(RTRIM(LKP_PIF11STAGE_Policy_Key.DocumentText)) AS v_DocumentText,
+	LTRIM(RTRIM(LKP_PIF11STAGE_Policy_Key.DocumentText
+		)
+	) AS v_DocumentText,
 	-- *INF*: LTRIM(RTRIM(REPLACESTR(TRUE,DECODE(TRUE,
 	-- LENGTH(v_DocumentText)>14,SUBSTR(v_DocumentText,8,LENGTH(v_DocumentText)-14),
 	-- LENGTH(v_DocumentText)<=14,SUBSTR(v_DocumentText,8),
 	-- '0'),',','')))
-	LTRIM(RTRIM(REPLACESTR(TRUE, DECODE(TRUE,
-		LENGTH(v_DocumentText) > 14, SUBSTR(v_DocumentText, 8, LENGTH(v_DocumentText) - 14),
-		LENGTH(v_DocumentText) <= 14, SUBSTR(v_DocumentText, 8),
-		'0'), ',', ''))) AS v_DocumentText_Trim,
+	LTRIM(RTRIM(REGEXP_REPLACE(DECODE(TRUE,
+		LENGTH(v_DocumentText
+				) > 14, SUBSTR(v_DocumentText, 8, LENGTH(v_DocumentText
+					) - 14
+				),
+		LENGTH(v_DocumentText
+				) <= 14, SUBSTR(v_DocumentText, 8
+				),
+		'0'
+			),',','')
+		)
+	) AS v_DocumentText_Trim,
 	EXP_Default.pif_4514_stage_id,
 	LKP_Pif43RXCPStage.Pmdrxp1WindAndHail,
 	-- *INF*: DECODE(TRUE,
@@ -1999,7 +2529,8 @@ EXP_Values AS (
 		'10', '10000',
 		'11', '25000',
 		'90', 'over 25000',
-		'0'),
+		'0'
+		),
 		v_sar_insurance_line = 'CF', DECODE(v_sar_code_5,
 		'01', 'FullCoverage',
 		'03', '100',
@@ -2012,15 +2543,20 @@ EXP_Values AS (
 		'11', '25000',
 		'12', '50000',
 		'13', '75000',
-		'0'),
+		'0'
+		),
 		v_sar_insurance_line = 'GL', DECODE(v_sar_code_4 || v_sar_code_6,
 		'0101', 'FullCoverage',
-		'0'),
-		v_sar_insurance_line = 'CR' AND v_sar_company_number = 20, DECODE(v_sar_code_7,
+		'0'
+		),
+		v_sar_insurance_line = 'CR' 
+		AND v_sar_company_number = 20, DECODE(v_sar_code_7,
 		'0', 'Blank',
 		'100', '100',
-		'0'),
-		v_sar_insurance_line = 'CR' AND v_sar_company_number != 20, DECODE(v_sar_code_7,
+		'0'
+		),
+		v_sar_insurance_line = 'CR' 
+		AND v_sar_company_number != 20, DECODE(v_sar_code_7,
 		'04', '250',
 		'05', '500',
 		'07', '1000',
@@ -2028,9 +2564,13 @@ EXP_Values AS (
 		'09', '5000',
 		'10', '10000',
 		'11', '25000',
-		'0'),
-		v_sar_insurance_line = 'WC' AND v_Pif43IXUnmodWCRatingState = '12' AND v_Pif43IXUnmodReportingClassCode = '9931', '1000',
-		v_sar_insurance_line = 'WC' AND v_Pif43IXUnmodWCRatingState = '13', DECODE(v_Pif43IXUnmodReportingClassCode,
+		'0'
+		),
+		v_sar_insurance_line = 'WC' 
+		AND v_Pif43IXUnmodWCRatingState = '12' 
+		AND v_Pif43IXUnmodReportingClassCode = '9931', '1000',
+		v_sar_insurance_line = 'WC' 
+		AND v_Pif43IXUnmodWCRatingState = '13', DECODE(v_Pif43IXUnmodReportingClassCode,
 		'9940', '500',
 		'9941', '1000',
 		'9942', '1500',
@@ -2046,42 +2586,57 @@ EXP_Values AS (
 		'9917', '1500',
 		'9918', '2000',
 		'9919', '2500',
-		'0'),
-		v_sar_insurance_line = 'WC' AND v_Pif43IXUnmodWCRatingState = '15', DECODE(v_Pif43IXUnmodReportingClassCode,
+		'0'
+		),
+		v_sar_insurance_line = 'WC' 
+		AND v_Pif43IXUnmodWCRatingState = '15', DECODE(v_Pif43IXUnmodReportingClassCode,
 		'9940', '500',
 		'9941', '1000',
 		'9942', '1500',
 		'9943', '2000',
 		'9944', '2500',
 		'9945', '5000',
-		'0'),
-		v_sar_insurance_line = 'WC' AND v_Pif43IXUnmodWCRatingState = '21' AND v_Pif43IXUnmodReportingClassCode = '9664', DECODE(v_Pmdi4w1ModifierPremBasis,
+		'0'
+		),
+		v_sar_insurance_line = 'WC' 
+		AND v_Pif43IXUnmodWCRatingState = '21' 
+		AND v_Pif43IXUnmodReportingClassCode = '9664', DECODE(v_Pmdi4w1ModifierPremBasis,
 		500, '500',
 		1000, '1000',
 		1500, '1500',
 		2000, '2000',
 		2500, '2500',
-		'0'),
-		v_sar_insurance_line = 'WC' AND v_Pif43IXUnmodWCRatingState = '22', DECODE(v_Pif43IXUnmodReportingClassCode,
+		'0'
+		),
+		v_sar_insurance_line = 'WC' 
+		AND v_Pif43IXUnmodWCRatingState = '22', DECODE(v_Pif43IXUnmodReportingClassCode,
 		'9940', '500',
 		'9941', '1000',
-		'0'),
-		v_sar_insurance_line = 'WC' AND v_Pif43IXUnmodWCRatingState = '24', DECODE(v_Pif43IXUnmodReportingClassCode,
+		'0'
+		),
+		v_sar_insurance_line = 'WC' 
+		AND v_Pif43IXUnmodWCRatingState = '24', DECODE(v_Pif43IXUnmodReportingClassCode,
 		'9940', '500',
 		'9941', '1000',
 		'9942', '1500',
 		'9943', '2000',
 		'9944', '2500',
 		'9945', '5000',
-		'0'),
-		v_sar_insurance_line = 'WC' AND v_Pif43IXUnmodWCRatingState = '26' AND v_Pif43IXUnmodReportingClassCode = '9664', DECODE(v_Pmdi4w1ModifierPremBasis,
+		'0'
+		),
+		v_sar_insurance_line = 'WC' 
+		AND v_Pif43IXUnmodWCRatingState = '26' 
+		AND v_Pif43IXUnmodReportingClassCode = '9664', DECODE(v_Pmdi4w1ModifierPremBasis,
 		500, '500',
 		1000, '1000',
 		1500, '1500',
 		2000, '2000',
 		2500, '2500',
-		'0'),
-		v_sar_insurance_line = 'WC' AND v_Pif43IXUnmodWCRatingState = '14' AND IN(v_DocumentText_Trim, '100', '150', '200', '250', '300', '350', '400', '450', '500', '550', '600', '650', '700', '750', '800', '850', '900', '950', '1000', '1050', '2000', '2050', '3000', '3050', '4000', '4050', '5000', '5050', '6000', '6050', '7000', '7050', '8000', '8050', '9000', '9050', '10000'), v_DocumentText_Trim,
+		'0'
+		),
+		v_sar_insurance_line = 'WC' 
+		AND v_Pif43IXUnmodWCRatingState = '14' 
+		AND v_DocumentText_Trim IN ('100','150','200','250','300','350','400','450','500','550','600','650','700','750','800','850','900','950','1000','1050','2000','2050','3000','3050','4000','4050','5000','5050','6000','6050','7000','7050','8000','8050','9000','9050','10000'), v_DocumentText_Trim,
 		v_sar_type_bureau = 'PI', DECODE(v_sar_code_5,
 		'01', '0',
 		'03', '50',
@@ -2090,16 +2645,41 @@ EXP_Values AS (
 		'50', '500',
 		'82', '1000',
 		'99', '10000',
-		'0'),
-		'0') AS out_DeductibleAmount,
+		'0'
+		),
+		'0'
+	) AS out_DeductibleAmount,
 	-- *INF*: IIF(IS_DATE(v_RetroactiveDate, 'YYYYMMDD'), TO_DATE(v_RetroactiveDate, 'YYYYMMDD'), TO_DATE('2100-12-31', 'YYYY-MM-DD'))
-	IFF(IS_DATE(v_RetroactiveDate, 'YYYYMMDD'), TO_DATE(v_RetroactiveDate, 'YYYYMMDD'), TO_DATE('2100-12-31', 'YYYY-MM-DD')) AS out_RetroactiveDate,
+	IFF(IS_DATE(v_RetroactiveDate, 'YYYYMMDD'
+		),
+		TO_DATE(v_RetroactiveDate, 'YYYYMMDD'
+		),
+		TO_DATE('2100-12-31', 'YYYY-MM-DD'
+		)
+	) AS out_RetroactiveDate,
 	-- *INF*: IIF(LTRIM(RTRIM(in_Pmdi4w1ModifierDesc))='EXPER MOD', v_Pmdi4w1ModifierRate,0)
-	IFF(LTRIM(RTRIM(in_Pmdi4w1ModifierDesc)) = 'EXPER MOD', v_Pmdi4w1ModifierRate, 0) AS out_ExperienceModificationFactor,
+	IFF(LTRIM(RTRIM(in_Pmdi4w1ModifierDesc
+			)
+		) = 'EXPER MOD',
+		v_Pmdi4w1ModifierRate,
+		0
+	) AS out_ExperienceModificationFactor,
 	-- *INF*: IIF(IS_DATE(v_ExperienceModificationEffectiveDate, 'YYYYMMDD') AND LTRIM(RTRIM(in_Pmdi4w1ModifierDesc))='EXPER MOD', TO_DATE(v_ExperienceModificationEffectiveDate, 'YYYYMMDD'), TO_DATE('2100-12-31', 'YYYY-MM-DD'))
-	IFF(IS_DATE(v_ExperienceModificationEffectiveDate, 'YYYYMMDD') AND LTRIM(RTRIM(in_Pmdi4w1ModifierDesc)) = 'EXPER MOD', TO_DATE(v_ExperienceModificationEffectiveDate, 'YYYYMMDD'), TO_DATE('2100-12-31', 'YYYY-MM-DD')) AS out_ExperienceModificationEffectiveDate,
+	IFF(IS_DATE(v_ExperienceModificationEffectiveDate, 'YYYYMMDD'
+		) 
+		AND LTRIM(RTRIM(in_Pmdi4w1ModifierDesc
+			)
+		) = 'EXPER MOD',
+		TO_DATE(v_ExperienceModificationEffectiveDate, 'YYYYMMDD'
+		),
+		TO_DATE('2100-12-31', 'YYYY-MM-DD'
+		)
+	) AS out_ExperienceModificationEffectiveDate,
 	-- *INF*: IIF(ISNULL(in_Pmduyg1PkgModFactor), 0, in_Pmduyg1PkgModFactor)
-	IFF(in_Pmduyg1PkgModFactor IS NULL, 0, in_Pmduyg1PkgModFactor) AS out_PackageModificationAdjustmentFactor,
+	IFF(in_Pmduyg1PkgModFactor IS NULL,
+		0,
+		in_Pmduyg1PkgModFactor
+	) AS out_PackageModificationAdjustmentFactor,
 	-- *INF*: DECODE(TRUE,
 	-- v_sar_insurance_line= 'GL', v_Pmduxg1PmaCode, 
 	-- v_sar_insurance_line='CF', v_Pmdrxp1PmaCode_Final, 
@@ -2114,44 +2694,71 @@ EXP_Values AS (
 		v_sar_insurance_line = 'CR', v_PMACODE_CR,
 		v_sar_insurance_line = 'IM', v_PMACODE_IM,
 		v_sar_insurance_line = 'GA', v_PMDLXA1PmaCode,
-		IN(v_sar_type_bureau, 'AL', 'AP', 'AN'), v_PackageModificationAssignment,
-		'N/A') AS out_PackageModificationAdjustmentGroupCode,
+		v_sar_type_bureau IN ('AL','AP','AN'), v_PackageModificationAssignment,
+		'N/A'
+	) AS out_PackageModificationAdjustmentGroupCode,
 	-- *INF*: IIF(ISNULL(in_Pmduyg1IncreaseLimitsFactor), 0, in_Pmduyg1IncreaseLimitsFactor)
-	IFF(in_Pmduyg1IncreaseLimitsFactor IS NULL, 0, in_Pmduyg1IncreaseLimitsFactor) AS out_IncreasedLimitFactor,
+	IFF(in_Pmduyg1IncreaseLimitsFactor IS NULL,
+		0,
+		in_Pmduyg1IncreaseLimitsFactor
+	) AS out_IncreasedLimitFactor,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmduxg1IncLimitTableInd)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmduxg1IncLimitTableInd) AS out_IncreasedLimitGroupCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmduxg1IncLimitTableInd
+	) AS out_IncreasedLimitGroupCode,
 	-- *INF*: IIF(v_sar_insurance_line='CF', v_Pmdnxp1YearBuilt, '0000')
-	IFF(v_sar_insurance_line = 'CF', v_Pmdnxp1YearBuilt, '0000') AS out_YearBuilt,
+	IFF(v_sar_insurance_line = 'CF',
+		v_Pmdnxp1YearBuilt,
+		'0000'
+	) AS out_YearBuilt,
 	v_sar_agents_comm_rate AS out_AgencyActualCommissionRate,
 	-- *INF*: DECODE(TRUE,NOT ISNULL(in_Pmdu4w1Rate), in_Pmdu4w1Rate,
 	--  NOT ISNULL(in_Pmdu4w1Rate_UZWC),in_Pmdu4w1Rate_UZWC,0)
 	DECODE(TRUE,
-		NOT in_Pmdu4w1Rate IS NULL, in_Pmdu4w1Rate,
-		NOT in_Pmdu4w1Rate_UZWC IS NULL, in_Pmdu4w1Rate_UZWC,
-		0) AS out_BaseRate,
+		in_Pmdu4w1Rate IS NOT NULL, in_Pmdu4w1Rate,
+		in_Pmdu4w1Rate_UZWC IS NOT NULL, in_Pmdu4w1Rate_UZWC,
+		0
+	) AS out_BaseRate,
 	-- *INF*: DECODE(TRUE,v_sar_insurance_line='CF',v_Pmdnxp1CspConstrCod,SUBSTR(Policy_Key,1,2)='HH', v_HRRConstruction,'N/A')
 	DECODE(TRUE,
 		v_sar_insurance_line = 'CF', v_Pmdnxp1CspConstrCod,
-		SUBSTR(Policy_Key, 1, 2) = 'HH', v_HRRConstruction,
-		'N/A') AS out_ConstructionCode,
+		SUBSTR(Policy_Key, 1, 2
+		) = 'HH', v_HRRConstruction,
+		'N/A'
+	) AS out_ConstructionCode,
 	-- *INF*: IIF(IS_DATE(v_StateRatingEffectiveDate, 'YYYYMMDD'), TO_DATE(v_StateRatingEffectiveDate, 'YYYYMMDD'),
 	-- TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'))
 	-- 
 	-- 
 	-- 
 	-- --TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
-	IFF(IS_DATE(v_StateRatingEffectiveDate, 'YYYYMMDD'), TO_DATE(v_StateRatingEffectiveDate, 'YYYYMMDD'), TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')) AS out_StateRatingEffectiveDate,
+	IFF(IS_DATE(v_StateRatingEffectiveDate, 'YYYYMMDD'
+		),
+		TO_DATE(v_StateRatingEffectiveDate, 'YYYYMMDD'
+		),
+		TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+		)
+	) AS out_StateRatingEffectiveDate,
 	-- *INF*: IIF(LTRIM(RTRIM(in_Pmdl4w1RatingProgramType))='R', 1, 0)
-	IFF(LTRIM(RTRIM(in_Pmdl4w1RatingProgramType)) = 'R', 1, 0) AS out_WCRetrospectiveRatingIndicator,
+	IFF(LTRIM(RTRIM(in_Pmdl4w1RatingProgramType
+			)
+		) = 'R',
+		1,
+		0
+	) AS out_WCRetrospectiveRatingIndicator,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmdl4w1PolicyType)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmdl4w1PolicyType) AS out_WCPolicyRatingType,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmdl4w1PolicyType
+	) AS out_WCPolicyRatingType,
 	-- *INF*: DECODE(LTRIM(RTRIM(in_Pmdl4w1PolicyType)), 'S', '01', 'A', '02', '01')
-	DECODE(LTRIM(RTRIM(in_Pmdl4w1PolicyType)),
+	DECODE(LTRIM(RTRIM(in_Pmdl4w1PolicyType
+			)
+		),
 		'S', '01',
 		'A', '02',
-		'01') AS out_WCPolicyPlanCode,
+		'01'
+	) AS out_WCPolicyPlanCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmdnxp1ProtectionClassPart1)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmdnxp1ProtectionClassPart1) AS out_IsoFireProtectionCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Pmdnxp1ProtectionClassPart1
+	) AS out_IsoFireProtectionCode,
 	v_PreferredPropertyFactor AS out_MultiLocationCreditFactor,
 	v_PreferredPropertyFactor AS out_PreferredPropertyFactor,
 	-- *INF*: DECODE(sar_insurance_line,'CP',in_Pmdnxp1Irpm,'IM',in_PMDRXI1Irpm,'GL',in_Pmdrxg1ScheduleMod,0)
@@ -2159,11 +2766,13 @@ EXP_Values AS (
 		'CP', in_Pmdnxp1Irpm,
 		'IM', in_PMDRXI1Irpm,
 		'GL', in_Pmdrxg1ScheduleMod,
-		0) AS out_IndividualRiskPremiumModification,
+		0
+	) AS out_IndividualRiskPremiumModification,
 	-- *INF*: DECODE(Pmdrxp1WindAndHail, 'Y', 0, 1)
 	DECODE(Pmdrxp1WindAndHail,
 		'Y', 0,
-		1) AS out_WindCoverageIndicator,
+		1
+	) AS out_WindCoverageIndicator,
 	-- *INF*: :LKP.LKP_SupClassificationWorkersCompensation(v_sar_class_1_4,sar_state)
 	LKP_SUPCLASSIFICATIONWORKERSCOMPENSATION_v_sar_class_1_4_sar_state.SupClassificationWorkersCompensationId AS SupClassificationWorkersCompensationId,
 	-- *INF*: :LKP.LKP_SupClassificationWorkersCompensation(v_sar_class_1_4,'99')
@@ -2178,9 +2787,13 @@ EXP_Values AS (
 	DECODE(v_sar_type_bureau,
 		'AL', '0',
 		'AN', 'D',
-		'AP', IFF(LKP_SUPDEDUCTIBLEBASIS_BYSTATE_v_sar_major_peril_v_sar_code_1_sar_code_2_sar_code_3_v_sar_state.DeductibleBasis IS NULL, LKP_SUPDEDUCTIBLEBASIS_v_sar_major_peril_v_sar_code_1_sar_code_2_sar_code_3.DeductibleBasis)) AS v_DeductibleBasis,
+		'AP', IFF(LKP_SUPDEDUCTIBLEBASIS_BYSTATE_v_sar_major_peril_v_sar_code_1_sar_code_2_sar_code_3_v_sar_state.DeductibleBasis IS NULL,
+			LKP_SUPDEDUCTIBLEBASIS_v_sar_major_peril_v_sar_code_1_sar_code_2_sar_code_3.DeductibleBasis
+		)
+	) AS v_DeductibleBasis,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_DeductibleBasis)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_DeductibleBasis) AS o_DeductibleBasis,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_DeductibleBasis
+	) AS o_DeductibleBasis,
 	v_sar_exposure AS out_Exposure,
 	-- *INF*: DECODE (TRUE,
 	-- v_sar_rsn_amend_code='CWO', 0, 
@@ -2188,9 +2801,12 @@ EXP_Values AS (
 	-- --We actively zero out written exposure for CWO type transactions else we use the incoming exposure value
 	DECODE(TRUE,
 		v_sar_rsn_amend_code = 'CWO', 0,
-		v_writtenexposure) AS out_writtenexposure,
+		v_writtenexposure
+	) AS out_writtenexposure,
 	-- *INF*: LTRIM(RTRIM(v_sar_class_1_4))
-	LTRIM(RTRIM(v_sar_class_1_4)) AS o_sar_class_1_4
+	LTRIM(RTRIM(v_sar_class_1_4
+		)
+	) AS o_sar_class_1_4
 	FROM EXP_Default
 	LEFT JOIN LKP_PIF43NXCRStage
 	ON LKP_PIF43NXCRStage.PifSymbol = EXP_Default.pif_symbol AND LKP_PIF43NXCRStage.PifPolicyNumber = EXP_Default.pif_policy_number AND LKP_PIF43NXCRStage.PifPolicyModule = EXP_Default.pif_module AND LKP_PIF43NXCRStage.PMDNXC1InsuranceLine = EXP_Default.sar_insurance_line AND LKP_PIF43NXCRStage.PMDNXC1LocationNumber = EXP_Default.lkp_sar_location_x AND LKP_PIF43NXCRStage.PMDNXC1SubLocationNumber = EXP_Default.lkp_sar_sub_location_x AND LKP_PIF43NXCRStage.PMDNXC1CspClassCode = EXP_Default.out_lkp_sar_class_1_4 AND LKP_PIF43NXCRStage.PMDUYC1Coverage = EXP_Default.out_sar_unit
@@ -2446,9 +3062,11 @@ EXP_Detect_Changes AS (
 	'1' AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveDate,
+	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,
 	SYSDATE AS CreateDate,
 	SYSDATE AS ModifiedDate,
@@ -2466,10 +3084,13 @@ EXP_Detect_Changes AS (
 	LKP_sup_premium_transaction_code.sup_prem_trans_code_id AS in_sup_prem_trans_code_id,
 	'N/A' AS o_OffsetOnsetIndicator,
 	-- *INF*: IIF(ISNULL(in_sup_prem_trans_code_id),-1,in_sup_prem_trans_code_id)
-	IFF(in_sup_prem_trans_code_id IS NULL, - 1, in_sup_prem_trans_code_id) AS o_sup_prem_trans_code_id,
+	IFF(in_sup_prem_trans_code_id IS NULL,
+		- 1,
+		in_sup_prem_trans_code_id
+	) AS o_sup_prem_trans_code_id,
 	EXP_Values.logical_flag,
 	-- *INF*: TO_INTEGER(logical_flag)
-	TO_INTEGER(logical_flag) AS logical_flag_out,
+	CAST(logical_flag AS INTEGER) AS logical_flag_out,
 	EXP_Values.PremiumLoadSequence,
 	EXP_Values.DuplicateSequenceNum,
 	EXP_Values.sar_annual_state_line,
@@ -2505,9 +3126,37 @@ EXP_Detect_Changes AS (
 	EXP_Values.out_ExperienceModificationFactor AS ExperienceModificationFactor,
 	EXP_Values.out_ExperienceModificationEffectiveDate AS ExperienceModificationEffectiveDate,
 	-- *INF*: IIF(LTRIM(RTRIM(sar_class_1_4))='9898', ExperienceModificationFactor,IIF((NOT ISNULL(LKP_PremiumTransactionKey)) AND ((NOT ISNULL(SupClassificationWorkersCompensationId)) OR (NOT ISNULL(SupClassificationWorkersCompensationId99))), LKP_ExperienceModificationFactor, ExperienceModificationFactor))
-	IFF(LTRIM(RTRIM(sar_class_1_4)) = '9898', ExperienceModificationFactor, IFF(( NOT LKP_PremiumTransactionKey IS NULL ) AND ( ( NOT SupClassificationWorkersCompensationId IS NULL ) OR ( NOT SupClassificationWorkersCompensationId99 IS NULL ) ), LKP_ExperienceModificationFactor, ExperienceModificationFactor)) AS out_ExperienceModificationFactor,
+	IFF(LTRIM(RTRIM(sar_class_1_4
+			)
+		) = '9898',
+		ExperienceModificationFactor,
+		IFF(( LKP_PremiumTransactionKey IS NOT NULL 
+			) 
+			AND ( ( SupClassificationWorkersCompensationId IS NOT NULL 
+				) 
+				OR ( SupClassificationWorkersCompensationId99 IS NOT NULL 
+				) 
+			),
+			LKP_ExperienceModificationFactor,
+			ExperienceModificationFactor
+		)
+	) AS out_ExperienceModificationFactor,
 	-- *INF*: IIF(LTRIM(RTRIM(sar_class_1_4)) = '9898', ExperienceModificationEffectiveDate,IIF((NOT ISNULL(LKP_PremiumTransactionKey)) AND ((NOT ISNULL(SupClassificationWorkersCompensationId)) OR (NOT ISNULL(SupClassificationWorkersCompensationId99))), LKP_ExperienceModificationEffectiveDate, ExperienceModificationEffectiveDate))
-	IFF(LTRIM(RTRIM(sar_class_1_4)) = '9898', ExperienceModificationEffectiveDate, IFF(( NOT LKP_PremiumTransactionKey IS NULL ) AND ( ( NOT SupClassificationWorkersCompensationId IS NULL ) OR ( NOT SupClassificationWorkersCompensationId99 IS NULL ) ), LKP_ExperienceModificationEffectiveDate, ExperienceModificationEffectiveDate)) AS out_ExperienceModificationEffectiveDate,
+	IFF(LTRIM(RTRIM(sar_class_1_4
+			)
+		) = '9898',
+		ExperienceModificationEffectiveDate,
+		IFF(( LKP_PremiumTransactionKey IS NOT NULL 
+			) 
+			AND ( ( SupClassificationWorkersCompensationId IS NOT NULL 
+				) 
+				OR ( SupClassificationWorkersCompensationId99 IS NOT NULL 
+				) 
+			),
+			LKP_ExperienceModificationEffectiveDate,
+			ExperienceModificationEffectiveDate
+		)
+	) AS out_ExperienceModificationEffectiveDate,
 	EXP_Values.out_PackageModificationAdjustmentFactor AS PackageModificationAdjustmentFactor,
 	EXP_Values.out_PackageModificationAdjustmentGroupCode AS PackageModificationAdjustmentGroupCode,
 	EXP_Values.out_IncreasedLimitFactor AS IncreasedLimitFactor,
@@ -2517,7 +3166,8 @@ EXP_Detect_Changes AS (
 	EXP_Values.out_BaseRate AS BaseRate,
 	EXP_Values.out_ConstructionCode AS i_ConstructionCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(:LKP.LKP_SUPCONSTRUCTIONCODE(i_ConstructionCode))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(LKP_SUPCONSTRUCTIONCODE_i_ConstructionCode.StandardConstructionCodeDescription) AS o_ConstructionCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(LKP_SUPCONSTRUCTIONCODE_i_ConstructionCode.StandardConstructionCodeDescription
+	) AS o_ConstructionCode,
 	EXP_Values.out_StateRatingEffectiveDate AS StateRatingEffectiveDate,
 	EXP_Values.out_WCRetrospectiveRatingIndicator AS WCRetrospectiveRatingIndicator,
 	EXP_Values.out_WCPolicyRatingType AS WCPolicyRatingType,
@@ -2688,7 +3338,10 @@ EXP_Detemine_AK_ID AS (
 	PremiumLoadSequence,
 	DuplicateSequenceNum AS DuplicateSequenceNum3,
 	-- *INF*: IIF(ISNULL(PremiumTransactionAKID_lookup), NEXTVAL, PremiumTransactionAKID_lookup)
-	IFF(PremiumTransactionAKID_lookup IS NULL, NEXTVAL, PremiumTransactionAKID_lookup) AS PremiumTransactionAKID_Out,
+	IFF(PremiumTransactionAKID_lookup IS NULL,
+		NEXTVAL,
+		PremiumTransactionAKID_lookup
+	) AS PremiumTransactionAKID_Out,
 	ReinsuranceCoverageAKID,
 	StatisticalCoverageAKID,
 	CoverageKey,
@@ -2956,18 +3609,22 @@ EXP_Pre_BureauCodeLkp AS (
 	sar_special_use AS BureauSpecialUseCode,
 	sar_annual_state_line AS PMSAnnualStatementLine,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(PMSAnnualStatementLine)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(PMSAnnualStatementLine) AS v_PMSAnnualStatementLine,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(PMSAnnualStatementLine
+	) AS v_PMSAnnualStatementLine,
 	v_PMSAnnualStatementLine AS PMSAnnualStatementLine_out,
 	sar_rating_date_ind AS RatingDateIndicator,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(RatingDateIndicator)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(RatingDateIndicator) AS v_RatingDateIndicator,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(RatingDateIndicator
+	) AS v_RatingDateIndicator,
 	v_RatingDateIndicator AS RatingDateIndicator_out,
 	sar_stat_breakdown_line || sar_user_line AS v_BureauStatisticalUserLine,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_BureauStatisticalUserLine)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_BureauStatisticalUserLine) AS BureauStatisticalUserLine,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_BureauStatisticalUserLine
+	) AS BureauStatisticalUserLine,
 	sar_audit_reinst_ind AS AuditReinstatementIndicator,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(AuditReinstatementIndicator)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(AuditReinstatementIndicator) AS v_AuditReinstatementIndicator,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(AuditReinstatementIndicator
+	) AS v_AuditReinstatementIndicator,
 	v_AuditReinstatementIndicator AS AuditReinstatementIndicator_out,
 	-- *INF*: MD5(
 	-- TO_CHAR(PremiumTransactionAKID)  ||  
@@ -2992,7 +3649,9 @@ EXP_Pre_BureauCodeLkp AS (
 	-- v_BureauStatisticalUserLine  ||
 	-- AuditReinstatementIndicator )
 	-- 
-	MD5(TO_CHAR(PremiumTransactionAKID) || BureauCode1 || BureauCode2 || BureauCode3 || BureauCode4 || BureauCode5 || BureauCode6 || BureauCode7 || BureauCode8 || BureauCode9 || BureauCode10 || BureauCode11 || BureauCode12 || BureauCode13 || BureauCode14 || BureauCode15 || BureauSpecialUseCode || PMSAnnualStatementLine || RatingDateIndicator || v_BureauStatisticalUserLine || AuditReinstatementIndicator) AS v_BureauStatisticalCodeHashKey,
+	MD5(TO_CHAR(PremiumTransactionAKID
+		) || BureauCode1 || BureauCode2 || BureauCode3 || BureauCode4 || BureauCode5 || BureauCode6 || BureauCode7 || BureauCode8 || BureauCode9 || BureauCode10 || BureauCode11 || BureauCode12 || BureauCode13 || BureauCode14 || BureauCode15 || BureauSpecialUseCode || PMSAnnualStatementLine || RatingDateIndicator || v_BureauStatisticalUserLine || AuditReinstatementIndicator
+	) AS v_BureauStatisticalCodeHashKey,
 	v_BureauStatisticalCodeHashKey AS BureauStatisticalCodeHashKey
 	FROM EXP_Detemine_AK_ID
 ),
@@ -3084,7 +3743,10 @@ EXP_Determine_BureauCode_AKID AS (
 	1 AS LogicalDeleteFlag,
 	BureauStatisticalCodeHashKey,
 	-- *INF*: IIF(ISNULL(BureauStatisticalCodeAKID), NEXTVAL, BureauStatisticalCodeAKID)
-	IFF(BureauStatisticalCodeAKID IS NULL, NEXTVAL, BureauStatisticalCodeAKID) AS BureauStatisticalCodeAKID_Out,
+	IFF(BureauStatisticalCodeAKID IS NULL,
+		NEXTVAL,
+		BureauStatisticalCodeAKID
+	) AS BureauStatisticalCodeAKID_Out,
 	PremiumTransactionAKID,
 	-1 AS PassThroughChargeTransactionAKID,
 	BureauCode1,
@@ -3285,7 +3947,10 @@ EXP_CalculatePMA AS (
 	PremiumTransactionID,
 	PackageModificationAdjustmentGroupCode AS i_PackageModificationAdjustmentGroupCode,
 	-- *INF*: IIF(i_PolicyAKID=v_prev_PolicyAKID,v_PackageModificationAdjustmentGroupCode,i_PackageModificationAdjustmentGroupCode)
-	IFF(i_PolicyAKID = v_prev_PolicyAKID, v_PackageModificationAdjustmentGroupCode, i_PackageModificationAdjustmentGroupCode) AS v_PackageModificationAdjustmentGroupCode,
+	IFF(i_PolicyAKID = v_prev_PolicyAKID,
+		v_PackageModificationAdjustmentGroupCode,
+		i_PackageModificationAdjustmentGroupCode
+	) AS v_PackageModificationAdjustmentGroupCode,
 	i_PolicyAKID AS v_prev_PolicyAKID,
 	v_PackageModificationAdjustmentGroupCode AS o_PackageModificationAdjustmentGroupCode
 	FROM SQ_PMA

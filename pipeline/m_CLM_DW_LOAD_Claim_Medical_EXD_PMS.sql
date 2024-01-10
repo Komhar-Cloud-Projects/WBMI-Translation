@@ -114,69 +114,129 @@ EXP_Values AS (
 	claim_medical_stage_id AS claim_medical_stage_id1,
 	injured_party_id AS injured_party_id1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(medicare_hicn)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(medicare_hicn) AS medicare_hicn1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(medicare_hicn
+	) AS medicare_hicn1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(medicare_elig)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(medicare_elig) AS medicare_elig1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(medicare_elig
+	) AS medicare_elig1,
 	-- *INF*: IIF(ISNULL(cms_date_of_incid), TO_DATE('1/1/1800','MM/DD/YYYY'), cms_date_of_incid)
-	IFF(cms_date_of_incid IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), cms_date_of_incid) AS cms_date_of_incid1,
+	IFF(cms_date_of_incid IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		cms_date_of_incid
+	) AS cms_date_of_incid1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(cause_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(cause_code) AS cause_code1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(cause_code
+	) AS cause_code1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(diag_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(diag_code) AS diag_code1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(diag_code
+	) AS diag_code1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_ind)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_ind) AS self_insd_ind1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_ind
+	) AS self_insd_ind1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_type)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_type) AS self_insd_type1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_type
+	) AS self_insd_type1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_fst_nm)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_fst_nm) AS self_insd_fst_nm1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_fst_nm
+	) AS self_insd_fst_nm1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_last_nm)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_last_nm) AS self_insd_last_nm1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_last_nm
+	) AS self_insd_last_nm1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_dba_nm)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_dba_nm) AS self_insd_dba_nm1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_dba_nm
+	) AS self_insd_dba_nm1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_lgl_nm)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_lgl_nm) AS self_insd_lgl_nm1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(self_insd_lgl_nm
+	) AS self_insd_lgl_nm1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(product_liab_ind)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(product_liab_ind) AS product_liab_ind1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(product_liab_ind
+	) AS product_liab_ind1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(prod_generic_nm)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(prod_generic_nm) AS prod_generic_nm1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(prod_generic_nm
+	) AS prod_generic_nm1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(prod_brand_nm)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(prod_brand_nm) AS prod_brand_nm1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(prod_brand_nm
+	) AS prod_brand_nm1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(prod_manufacturer)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(prod_manufacturer) AS prod_manufacturer1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(prod_manufacturer
+	) AS prod_manufacturer1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(prod_allege_harm)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(prod_allege_harm) AS prod_allege_harm1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(prod_allege_harm
+	) AS prod_allege_harm1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(inj_par_rep_firm)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(inj_par_rep_firm) AS inj_par_rep_firm1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(inj_par_rep_firm
+	) AS inj_par_rep_firm1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(cms_source_system_id)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(cms_source_system_id) AS cms_source_system_id1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(cms_source_system_id
+	) AS cms_source_system_id1,
 	-- *INF*: replaceChr(0,to_char(pms_date_of_loss),'/','')
-	replaceChr(0, to_char(pms_date_of_loss), '/', '') AS v_pms_date_of_loss,
+	REGEXP_REPLACE(to_char(pms_date_of_loss
+	),'/','','i') AS v_pms_date_of_loss,
 	-- *INF*: IIF(length(exceed_claim_key)>0 ,ltrim(rtrim(exceed_claim_key)),
 	-- IIF(length(pms_policy_sym)>0,ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence)),
 	-- 'N/A'))
-	IFF(length(exceed_claim_key) > 0, ltrim(rtrim(exceed_claim_key)), IFF(length(pms_policy_sym) > 0, ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence)), 'N/A')) AS claim_key1,
+	IFF(length(exceed_claim_key
+		) > 0,
+		ltrim(rtrim(exceed_claim_key
+			)
+		),
+		IFF(length(pms_policy_sym
+			) > 0,
+			ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence
+				)
+			),
+			'N/A'
+		)
+	) AS claim_key1,
 	-- *INF*: IIF(length(exceed_claim_key)>0,ltrim(rtrim(exceed_claimnt_key)),
 	-- IIF(length(pms_policy_sym)>0,ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence || pms_loss_claimant || 'CMT')),
 	-- 'N/A'))
-	IFF(length(exceed_claim_key) > 0, ltrim(rtrim(exceed_claimnt_key)), IFF(length(pms_policy_sym) > 0, ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence || pms_loss_claimant || 'CMT')), 'N/A')) AS claimnt_key1,
+	IFF(length(exceed_claim_key
+		) > 0,
+		ltrim(rtrim(exceed_claimnt_key
+			)
+		),
+		IFF(length(pms_policy_sym
+			) > 0,
+			ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence || pms_loss_claimant || 'CMT'
+				)
+			),
+			'N/A'
+		)
+	) AS claimnt_key1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(clmt1_rep_firm)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(clmt1_rep_firm) AS clmt1_rep_firm1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(clmt1_rep_firm
+	) AS clmt1_rep_firm1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(clmt2_rep_firm)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(clmt2_rep_firm) AS clmt2_rep_firm1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(clmt2_rep_firm
+	) AS clmt2_rep_firm1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(clmt3_rep_firm)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(clmt3_rep_firm) AS clmt3_rep_firm1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(clmt3_rep_firm
+	) AS clmt3_rep_firm1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(clmt4_rep_firm)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(clmt4_rep_firm) AS clmt4_rep_firm1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(clmt4_rep_firm
+	) AS clmt4_rep_firm1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(query_requested)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(query_requested) AS query_requested1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(query_requested
+	) AS query_requested1,
 	-- *INF*: IIF(ISNULL(query_request_date), TO_DATE('1/1/1800','MM/DD/YYYY'), query_request_date)
-	IFF(query_request_date IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), query_request_date) AS query_request_date1,
+	IFF(query_request_date IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		query_request_date
+	) AS query_request_date1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(last_cms_hicn)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(last_cms_hicn) AS last_cms_hicn1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(last_cms_hicn
+	) AS last_cms_hicn1,
 	-- *INF*: iif(icd_code_version = '0','10',icd_code_version)
-	IFF(icd_code_version = '0', '10', icd_code_version) AS v_icd_code_version,
+	IFF(icd_code_version = '0',
+		'10',
+		icd_code_version
+	) AS v_icd_code_version,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_icd_code_version)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_icd_code_version) AS icd_code_version1
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_icd_code_version
+	) AS icd_code_version1
 	FROM SQ_claim_medical_stage
 ),
 LKP_Claim_Party_Occurrence_AK_ID AS (
@@ -357,15 +417,51 @@ EXP_Detect_Changes AS (
 	-- last_cms_hicn1 <> last_cms_hicn  OR 
 	-- icd_code_version1 <> ICDCodeVersion
 	-- , 'UPDATE','NOCHANGE'))
-	IFF(claim_med_id IS NULL, 'NEW', IFF(injured_party_id1 <> cms_document_cntl_num OR medicare_hicn1 <> medicare_hicn OR medicare_elig1 <> medicare_eligibility OR cms_date_of_incid1 <> cms_incdnt_date OR cause_code1 <> patient_cause_code OR diag_code1 <> patient_diag_code OR self_insd_ind1 <> self_insd_ind OR self_insd_type1 <> self_insd_type OR self_insd_fst_nm1 <> self_insd_first_name OR self_insd_last_nm1 <> self_insd_last_name OR self_insd_dba_nm1 <> self_insd_dba_name OR self_insd_lgl_nm1 <> self_insd_lgl_name OR product_liab_ind1 <> prdct_liab_ind OR prod_generic_nm1 <> prdct_generic_name OR prod_brand_nm1 <> prdct_brand_name OR prod_manufacturer1 <> prdct_mfr OR prod_allege_harm1 <> prdct_alleged_harm OR inj_par_rep_firm1 <> injured_party_rep_firm OR clmt1_rep_firm1 <> claimant1_rep_firm OR clmt2_rep_firm1 <> claimant2_rep_firm OR clmt3_rep_firm1 <> claimant3_rep_firm OR clmt4_rep_firm1 <> claimant4_rep_firm OR query_requested1 <> query_requested_ind OR query_request_date1 <> query_request_date OR last_cms_hicn1 <> last_cms_hicn OR icd_code_version1 <> ICDCodeVersion, 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(claim_med_id IS NULL,
+		'NEW',
+		IFF(injured_party_id1 <> cms_document_cntl_num 
+			OR medicare_hicn1 <> medicare_hicn 
+			OR medicare_elig1 <> medicare_eligibility 
+			OR cms_date_of_incid1 <> cms_incdnt_date 
+			OR cause_code1 <> patient_cause_code 
+			OR diag_code1 <> patient_diag_code 
+			OR self_insd_ind1 <> self_insd_ind 
+			OR self_insd_type1 <> self_insd_type 
+			OR self_insd_fst_nm1 <> self_insd_first_name 
+			OR self_insd_last_nm1 <> self_insd_last_name 
+			OR self_insd_dba_nm1 <> self_insd_dba_name 
+			OR self_insd_lgl_nm1 <> self_insd_lgl_name 
+			OR product_liab_ind1 <> prdct_liab_ind 
+			OR prod_generic_nm1 <> prdct_generic_name 
+			OR prod_brand_nm1 <> prdct_brand_name 
+			OR prod_manufacturer1 <> prdct_mfr 
+			OR prod_allege_harm1 <> prdct_alleged_harm 
+			OR inj_par_rep_firm1 <> injured_party_rep_firm 
+			OR clmt1_rep_firm1 <> claimant1_rep_firm 
+			OR clmt2_rep_firm1 <> claimant2_rep_firm 
+			OR clmt3_rep_firm1 <> claimant3_rep_firm 
+			OR clmt4_rep_firm1 <> claimant4_rep_firm 
+			OR query_requested1 <> query_requested_ind 
+			OR query_request_date1 <> query_request_date 
+			OR last_cms_hicn1 <> last_cms_hicn 
+			OR icd_code_version1 <> ICDCodeVersion,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	1 AS Crrnt_Snpsht_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
@@ -460,7 +556,10 @@ EXP_Insert AS (
 	Modified_Date,
 	SEQ_claim_medical.NEXTVAL,
 	-- *INF*: IIF(Changed_Flag='NEW', NEXTVAL, claim_med_ak_id)
-	IFF(Changed_Flag = 'NEW', NEXTVAL, claim_med_ak_id) AS claim_med_ak_id_out,
+	IFF(Changed_Flag = 'NEW',
+		NEXTVAL,
+		claim_med_ak_id
+	) AS claim_med_ak_id_out,
 	last_cms_hicn1,
 	icd_code_version1
 	FROM FIL_Insert
@@ -534,8 +633,9 @@ EXP_Lag_eff_from_date AS (
 	-- 	claim_med_ak_id = v_PREV_ROW_claim_med_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		claim_med_ak_id = v_PREV_ROW_claim_med_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_med_ak_id = v_PREV_ROW_claim_med_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	claim_med_ak_id AS v_PREV_ROW_claim_med_ak_id,

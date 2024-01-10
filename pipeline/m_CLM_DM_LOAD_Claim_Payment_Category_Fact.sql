@@ -85,7 +85,8 @@ EXP_get_values AS (
 	SQ_claim_payment_category.tpd_wage_loss,
 	SQ_claim_payment_category.tpd_wkly_wage,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS trans_date,
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS trans_date,
 	SQ_claim_payment_category.claim_pay_ctgry_lump_sum_ind
 	FROM SQ_claim_payment_category
 	LEFT JOIN LKP_claim_transaction
@@ -479,7 +480,10 @@ mplt_Claim_occurence_dim_id AS (WITH
 		SELECT
 		LKP_Claim_Party_occurrence.claim_occurrence_ak_id,
 		-- *INF*: IIF(ISNULL(claim_occurrence_ak_id), -1, claim_occurrence_ak_id)
-		IFF(claim_occurrence_ak_id IS NULL, - 1, claim_occurrence_ak_id) AS claim_occurrence_ak_id_out,
+		IFF(claim_occurrence_ak_id IS NULL,
+			- 1,
+			claim_occurrence_ak_id
+		) AS claim_occurrence_ak_id_out,
 		EXP_get_values.IN_trans_date
 		FROM EXP_get_values
 		LEFT JOIN LKP_Claim_Party_occurrence
@@ -880,11 +884,24 @@ mplt_Strategic_Business_Division_Dim AS (WITH
 		policy_number,
 		policy_eff_date AS policy_eff_date_in,
 		-- *INF*: IIF(:UDF.DEFAULT_VALUE_FOR_STRINGS(policy_symbol)='N/A','N/A',substr(policy_symbol,1,1))
-		IFF(:UDF.DEFAULT_VALUE_FOR_STRINGS(policy_symbol) = 'N/A', 'N/A', substr(policy_symbol, 1, 1)) AS policy_symbol_position_1,
+		IFF(:UDF.DEFAULT_VALUE_FOR_STRINGS(policy_symbol
+			) = 'N/A',
+			'N/A',
+			substr(policy_symbol, 1, 1
+			)
+		) AS policy_symbol_position_1,
 		-- *INF*: IIF(:UDF.DEFAULT_VALUE_FOR_STRINGS(policy_number)='N/A','N/A',substr(policy_number,1,1))
-		IFF(:UDF.DEFAULT_VALUE_FOR_STRINGS(policy_number) = 'N/A', 'N/A', substr(policy_number, 1, 1)) AS policy_number_position_1,
+		IFF(:UDF.DEFAULT_VALUE_FOR_STRINGS(policy_number
+			) = 'N/A',
+			'N/A',
+			substr(policy_number, 1, 1
+			)
+		) AS policy_number_position_1,
 		-- *INF*: IIF(isnull(policy_eff_date_in),SYSDATE,policy_eff_date_in)
-		IFF(policy_eff_date_in IS NULL, SYSDATE, policy_eff_date_in) AS policy_eff_date
+		IFF(policy_eff_date_in IS NULL,
+			SYSDATE,
+			policy_eff_date_in
+		) AS policy_eff_date
 		FROM INPUT_Strategic_Business_Division
 	),
 	LKP_strategic_business_division_dim AS (
@@ -936,13 +953,25 @@ mplt_Strategic_Business_Division_Dim AS (WITH
 		strtgc_bus_dvsn_code,
 		strtgc_bus_dvsn_code_descript,
 		-- *INF*: IIF(isnull(strtgc_bus_dvsn_dim_id),-1,strtgc_bus_dvsn_dim_id)
-		IFF(strtgc_bus_dvsn_dim_id IS NULL, - 1, strtgc_bus_dvsn_dim_id) AS strtgc_bus_dvsn_id_out,
+		IFF(strtgc_bus_dvsn_dim_id IS NULL,
+			- 1,
+			strtgc_bus_dvsn_dim_id
+		) AS strtgc_bus_dvsn_id_out,
 		-- *INF*: IIF(isnull(edw_strtgc_bus_dvsn_ak_id),-1,edw_strtgc_bus_dvsn_ak_id)
-		IFF(edw_strtgc_bus_dvsn_ak_id IS NULL, - 1, edw_strtgc_bus_dvsn_ak_id) AS edw_strtgc_bus_dvsn_ak_id_out,
+		IFF(edw_strtgc_bus_dvsn_ak_id IS NULL,
+			- 1,
+			edw_strtgc_bus_dvsn_ak_id
+		) AS edw_strtgc_bus_dvsn_ak_id_out,
 		-- *INF*: IIF(isnull(strtgc_bus_dvsn_code),'N/A',strtgc_bus_dvsn_code)
-		IFF(strtgc_bus_dvsn_code IS NULL, 'N/A', strtgc_bus_dvsn_code) AS strtgc_bus_dvsn_code_out,
+		IFF(strtgc_bus_dvsn_code IS NULL,
+			'N/A',
+			strtgc_bus_dvsn_code
+		) AS strtgc_bus_dvsn_code_out,
 		-- *INF*: IIF(isnull(strtgc_bus_dvsn_code_descript),'N/A',strtgc_bus_dvsn_code_descript)
-		IFF(strtgc_bus_dvsn_code_descript IS NULL, 'N/A', strtgc_bus_dvsn_code_descript) AS strtgc_bus_dvsn_code_descript_out
+		IFF(strtgc_bus_dvsn_code_descript IS NULL,
+			'N/A',
+			strtgc_bus_dvsn_code_descript
+		) AS strtgc_bus_dvsn_code_descript_out
 		FROM LKP_strategic_business_division_dim
 	),
 	OUTPUT_return_Strategic_Business_Division AS (
@@ -969,15 +998,24 @@ EXP_get_dim_id AS (
 	-- 
 	LKP_CALENDER_DIM_to_date_to_char_claim_pay_ctgry_start_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_pay_ctgry_start_date_id,
 	-- *INF*: IIF(ISNULL(v_claim_pay_ctgry_start_date_id), -1, v_claim_pay_ctgry_start_date_id)
-	IFF(v_claim_pay_ctgry_start_date_id IS NULL, - 1, v_claim_pay_ctgry_start_date_id) AS claim_pay_ctgry_start_date_id_out,
+	IFF(v_claim_pay_ctgry_start_date_id IS NULL,
+		- 1,
+		v_claim_pay_ctgry_start_date_id
+	) AS claim_pay_ctgry_start_date_id_out,
 	EXP_Claimant_Dim_Ids.claim_pay_ctgry_end_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_pay_ctgry_end_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_pay_ctgry_end_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_pay_ctgry_end_date_id,
 	-- *INF*: IIF(ISNULL(v_claim_pay_ctgry_end_date_id), -1, v_claim_pay_ctgry_end_date_id)
-	IFF(v_claim_pay_ctgry_end_date_id IS NULL, - 1, v_claim_pay_ctgry_end_date_id) AS claim_pay_ctgry_end_date_id_out,
+	IFF(v_claim_pay_ctgry_end_date_id IS NULL,
+		- 1,
+		v_claim_pay_ctgry_end_date_id
+	) AS claim_pay_ctgry_end_date_id_out,
 	EXP_Claimant_Dim_Ids.claim_financial_type_dim_id,
 	-- *INF*: IIF(ISNULL(claim_financial_type_dim_id), -1, claim_financial_type_dim_id)
-	IFF(claim_financial_type_dim_id IS NULL, - 1, claim_financial_type_dim_id) AS claim_financial_type_dim_id_out,
+	IFF(claim_financial_type_dim_id IS NULL,
+		- 1,
+		claim_financial_type_dim_id
+	) AS claim_financial_type_dim_id_out,
 	EXP_Claimant_Dim_Ids.financial_type_code,
 	EXP_Claimant_Dim_Ids.invc_num,
 	EXP_Claimant_Dim_Ids.cost_containment_saving_amt,
@@ -996,20 +1034,35 @@ EXP_get_dim_id AS (
 	EXP_Claimant_Dim_Ids.tpd_wkly_wage,
 	mplt_Claim_occurence_dim_id.claim_occurrence_dim_id,
 	-- *INF*: IIF(ISNULL(claim_occurrence_dim_id), -1, claim_occurrence_dim_id)
-	IFF(claim_occurrence_dim_id IS NULL, - 1, claim_occurrence_dim_id) AS claim_occurrence_dim_id_out,
+	IFF(claim_occurrence_dim_id IS NULL,
+		- 1,
+		claim_occurrence_dim_id
+	) AS claim_occurrence_dim_id_out,
 	EXP_Claimant_Dim_Ids.claimant_dim_id,
 	-- *INF*: IIF(ISNULL(claimant_dim_id), -1, claimant_dim_id)
-	IFF(claimant_dim_id IS NULL, - 1, claimant_dim_id) AS claimant_dim_id_out,
+	IFF(claimant_dim_id IS NULL,
+		- 1,
+		claimant_dim_id
+	) AS claimant_dim_id_out,
 	EXP_Claimant_Dim_Ids.claimant_cov_dim_id,
 	-- *INF*: IIF(ISNULL(claimant_cov_dim_id), -1, claimant_cov_dim_id)
 	-- 
-	IFF(claimant_cov_dim_id IS NULL, - 1, claimant_cov_dim_id) AS claimant_cov_dim_id_out,
+	IFF(claimant_cov_dim_id IS NULL,
+		- 1,
+		claimant_cov_dim_id
+	) AS claimant_cov_dim_id_out,
 	mplt_Claim_occurence_dim_id.pol_key_dim_id,
 	-- *INF*: IIF(ISNULL(pol_key_dim_id), -1, pol_key_dim_id)
-	IFF(pol_key_dim_id IS NULL, - 1, pol_key_dim_id) AS pol_key_dim_id_out,
+	IFF(pol_key_dim_id IS NULL,
+		- 1,
+		pol_key_dim_id
+	) AS pol_key_dim_id_out,
 	mplt_Claim_occurence_dim_id.agency_dim_id,
 	-- *INF*: IIF(ISNULL(agency_dim_id), -1, agency_dim_id)
-	IFF(agency_dim_id IS NULL, - 1, agency_dim_id) AS agency_dim_id_out,
+	IFF(agency_dim_id IS NULL,
+		- 1,
+		agency_dim_id
+	) AS agency_dim_id_out,
 	mplt_Claim_occurence_dim_id.claim_loss_date,
 	mplt_Claim_occurence_dim_id.claim_discovery_date,
 	mplt_Claim_occurence_dim_id.claim_occurrence_rpted_date,
@@ -1033,39 +1086,69 @@ EXP_get_dim_id AS (
 	mplt_Claim_occurence_dim_id.claim_rep_dim_prim_claim_rep_id,
 	-- *INF*: IIF(ISNULL(claim_rep_dim_prim_claim_rep_id), -1, claim_rep_dim_prim_claim_rep_id)
 	-- 
-	IFF(claim_rep_dim_prim_claim_rep_id IS NULL, - 1, claim_rep_dim_prim_claim_rep_id) AS claim_rep_dim_prim_claim_rep_id_out,
+	IFF(claim_rep_dim_prim_claim_rep_id IS NULL,
+		- 1,
+		claim_rep_dim_prim_claim_rep_id
+	) AS claim_rep_dim_prim_claim_rep_id_out,
 	EXP_Claimant_Dim_Ids.claim_pay_dim_id,
 	-- *INF*: IIF(ISNULL(claim_pay_dim_id), -1, claim_pay_dim_id)
-	IFF(claim_pay_dim_id IS NULL, - 1, claim_pay_dim_id) AS claim_pay_dim_id_out,
+	IFF(claim_pay_dim_id IS NULL,
+		- 1,
+		claim_pay_dim_id
+	) AS claim_pay_dim_id_out,
 	EXP_Claimant_Dim_Ids.claim_pay_ctgry_type_dim_id,
 	-- *INF*: IIF(ISNULL(claim_pay_ctgry_type_dim_id), -1, claim_pay_ctgry_type_dim_id)
-	IFF(claim_pay_ctgry_type_dim_id IS NULL, - 1, claim_pay_ctgry_type_dim_id) AS claim_pay_ctgry_type_dim_id_out,
+	IFF(claim_pay_ctgry_type_dim_id IS NULL,
+		- 1,
+		claim_pay_ctgry_type_dim_id
+	) AS claim_pay_ctgry_type_dim_id_out,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	EXP_Claimant_Dim_Ids.cov_dim_id,
 	-- *INF*: IIF(ISNULL(cov_dim_id), -1, cov_dim_id)
-	IFF(cov_dim_id IS NULL, - 1, cov_dim_id) AS cov_dim_id_out,
+	IFF(cov_dim_id IS NULL,
+		- 1,
+		cov_dim_id
+	) AS cov_dim_id_out,
 	mplt_Claim_occurence_dim_id.claim_rep_dim_examiner_id,
 	-- *INF*: IIF(ISNULL(claim_rep_dim_examiner_id),-1,claim_rep_dim_examiner_id)
-	IFF(claim_rep_dim_examiner_id IS NULL, - 1, claim_rep_dim_examiner_id) AS claim_rep_dim_examiner_id_out,
+	IFF(claim_rep_dim_examiner_id IS NULL,
+		- 1,
+		claim_rep_dim_examiner_id
+	) AS claim_rep_dim_examiner_id_out,
 	mplt_Claim_occurence_dim_id.claim_rep_dim_prim_litigation_handler_id,
 	-- *INF*: IIF(ISNULL(claim_rep_dim_prim_litigation_handler_id),-1,claim_rep_dim_prim_litigation_handler_id)
-	IFF(claim_rep_dim_prim_litigation_handler_id IS NULL, - 1, claim_rep_dim_prim_litigation_handler_id) AS claim_rep_dim_prim_litigation_handler_id_out,
+	IFF(claim_rep_dim_prim_litigation_handler_id IS NULL,
+		- 1,
+		claim_rep_dim_prim_litigation_handler_id
+	) AS claim_rep_dim_prim_litigation_handler_id_out,
 	-1 AS default_dim_id,
 	mplt_Claim_occurence_dim_id.AgencyDimID,
 	mplt_Claim_occurence_dim_id.claim_created_by_id,
 	-- *INF*: IIF(ISNULL(claim_created_by_id),-1,claim_created_by_id)
-	IFF(claim_created_by_id IS NULL, - 1, claim_created_by_id) AS claim_created_by_dim_id_out,
+	IFF(claim_created_by_id IS NULL,
+		- 1,
+		claim_created_by_id
+	) AS claim_created_by_dim_id_out,
 	mplt_Claim_occurence_dim_id.claim_case_dim_id,
 	-- *INF*: iif(isnull(claim_case_dim_id)
 	-- ,-1
 	-- ,claim_case_dim_id)
-	IFF(claim_case_dim_id IS NULL, - 1, claim_case_dim_id) AS claim_case_dim_id_out,
+	IFF(claim_case_dim_id IS NULL,
+		- 1,
+		claim_case_dim_id
+	) AS claim_case_dim_id_out,
 	mplt_Claim_occurence_dim_id.contract_cust_dim_id,
 	-- *INF*: IIF(ISNULL(contract_cust_dim_id),-1,contract_cust_dim_id)
-	IFF(contract_cust_dim_id IS NULL, - 1, contract_cust_dim_id) AS contract_cust_dim_id_out,
+	IFF(contract_cust_dim_id IS NULL,
+		- 1,
+		contract_cust_dim_id
+	) AS contract_cust_dim_id_out,
 	mplt_Strategic_Business_Division_Dim.strtgc_bus_dvsn_dim_id,
 	-- *INF*: IIF(isnull(strtgc_bus_dvsn_dim_id),-1,strtgc_bus_dvsn_dim_id)
-	IFF(strtgc_bus_dvsn_dim_id IS NULL, - 1, strtgc_bus_dvsn_dim_id) AS strtgc_bus_dvsn_dim_id_out,
+	IFF(strtgc_bus_dvsn_dim_id IS NULL,
+		- 1,
+		strtgc_bus_dvsn_dim_id
+	) AS strtgc_bus_dvsn_dim_id_out,
 	mplt_Claim_occurence_dim_id.AgencyAKID,
 	mplt_Claim_occurence_dim_id.SalesTerritoryAKID,
 	mplt_Claim_occurence_dim_id.RegionalSalesManagerAKID,
@@ -1077,16 +1160,23 @@ EXP_get_dim_id AS (
 	-- *INF*: IIF(ISNULL(FeatureRepresentativeDimId),
 	-- -1,
 	-- FeatureRepresentativeDimId)
-	IFF(FeatureRepresentativeDimId IS NULL, - 1, FeatureRepresentativeDimId) AS FeatureRepresentativeDimId_out,
+	IFF(FeatureRepresentativeDimId IS NULL,
+		- 1,
+		FeatureRepresentativeDimId
+	) AS FeatureRepresentativeDimId_out,
 	EXP_Claimant_Dim_Ids.FeatureRepresentativeAssignedDate
 	FROM EXP_Claimant_Dim_Ids
 	 -- Manually join with mplt_Claim_occurence_dim_id
 	 -- Manually join with mplt_Strategic_Business_Division_Dim
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_pay_ctgry_start_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_pay_ctgry_start_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_pay_ctgry_start_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_pay_ctgry_start_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_pay_ctgry_start_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_pay_ctgry_end_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_pay_ctgry_end_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_pay_ctgry_end_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_pay_ctgry_end_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_pay_ctgry_end_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 ),
 EXP_Date_Ids AS (
@@ -1138,102 +1228,162 @@ EXP_Date_Ids AS (
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(IN_claim_loss_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_IN_claim_loss_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_loss_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_loss_date_id), v_claim_loss_date_id, -1)
-	IFF(NOT v_claim_loss_date_id IS NULL, v_claim_loss_date_id, - 1) AS claim_loss_date_id,
+	IFF(v_claim_loss_date_id IS NOT NULL,
+		v_claim_loss_date_id,
+		- 1
+	) AS claim_loss_date_id,
 	claim_discovery_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_discovery_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_discovery_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_discovery_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_discovery_date_id), v_claim_discovery_date_id, -1)
-	IFF(NOT v_claim_discovery_date_id IS NULL, v_claim_discovery_date_id, - 1) AS claim_discovery_date_id,
+	IFF(v_claim_discovery_date_id IS NOT NULL,
+		v_claim_discovery_date_id,
+		- 1
+	) AS claim_discovery_date_id,
 	claim_occurrence_rpted_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_occurrence_rpted_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_occurrence_rpted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_occurrence_rpted_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_occurrence_rpted_date_id), v_claim_occurrence_rpted_date_id, -1)
-	IFF(NOT v_claim_occurrence_rpted_date_id IS NULL, v_claim_occurrence_rpted_date_id, - 1) AS claim_occurrence_rpted_date_id,
+	IFF(v_claim_occurrence_rpted_date_id IS NOT NULL,
+		v_claim_occurrence_rpted_date_id,
+		- 1
+	) AS claim_occurrence_rpted_date_id,
 	claim_cat_start_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_cat_start_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_cat_start_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_cat_start_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_cat_start_date_id), v_claim_cat_start_date_id, -1)
-	IFF(NOT v_claim_cat_start_date_id IS NULL, v_claim_cat_start_date_id, - 1) AS claim_cat_start_date_id,
+	IFF(v_claim_cat_start_date_id IS NOT NULL,
+		v_claim_cat_start_date_id,
+		- 1
+	) AS claim_cat_start_date_id,
 	claim_cat_end_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_cat_end_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_cat_end_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_cat_end_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_cat_end_date_id), v_claim_cat_end_date_id, -1)
-	IFF(NOT v_claim_cat_end_date_id IS NULL, v_claim_cat_end_date_id, - 1) AS claim_cat_end_date_id,
+	IFF(v_claim_cat_end_date_id IS NOT NULL,
+		v_claim_cat_end_date_id,
+		- 1
+	) AS claim_cat_end_date_id,
 	claim_rep_assigned_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_rep_assigned_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_rep_assigned_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_rep_assigned_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_rep_assigned_date_id), v_claim_rep_assigned_date_id, -1)
-	IFF(NOT v_claim_rep_assigned_date_id IS NULL, v_claim_rep_assigned_date_id, - 1) AS claim_rep_assigned_date_id,
+	IFF(v_claim_rep_assigned_date_id IS NOT NULL,
+		v_claim_rep_assigned_date_id,
+		- 1
+	) AS claim_rep_assigned_date_id,
 	claim_rep_unassigned_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_rep_unassigned_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_rep_unassigned_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_rep_unassigned_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_rep_unassigned_date_id), v_claim_rep_unassigned_date_id, -1)
-	IFF(NOT v_claim_rep_unassigned_date_id IS NULL, v_claim_rep_unassigned_date_id, - 1) AS claim_rep_unassigned_date_id,
+	IFF(v_claim_rep_unassigned_date_id IS NOT NULL,
+		v_claim_rep_unassigned_date_id,
+		- 1
+	) AS claim_rep_unassigned_date_id,
 	claim_scripted_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_scripted_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_scripted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_scripted_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_scripted_date_id), v_claim_scripted_date_id, -1)
-	IFF(NOT v_claim_scripted_date_id IS NULL, v_claim_scripted_date_id, - 1) AS claim_scripted_date_id,
+	IFF(v_claim_scripted_date_id IS NOT NULL,
+		v_claim_scripted_date_id,
+		- 1
+	) AS claim_scripted_date_id,
 	source_claim_rpted_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(source_claim_rpted_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_source_claim_rpted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_source_claim_rpted_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_source_claim_rpted_date_id), v_source_claim_rpted_date_id, -1)
-	IFF(NOT v_source_claim_rpted_date_id IS NULL, v_source_claim_rpted_date_id, - 1) AS source_claim_rpted_date_id,
+	IFF(v_source_claim_rpted_date_id IS NOT NULL,
+		v_source_claim_rpted_date_id,
+		- 1
+	) AS source_claim_rpted_date_id,
 	claim_open_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_open_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_open_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_open_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_open_date_id), v_claim_open_date_id, -1)
-	IFF(NOT v_claim_open_date_id IS NULL, v_claim_open_date_id, - 1) AS claim_open_date_id,
+	IFF(v_claim_open_date_id IS NOT NULL,
+		v_claim_open_date_id,
+		- 1
+	) AS claim_open_date_id,
 	claim_close_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_close_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_close_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_close_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_close_date_id), v_claim_close_date_id, -1)
-	IFF(NOT v_claim_close_date_id IS NULL, v_claim_close_date_id, - 1) AS claim_close_date_id,
+	IFF(v_claim_close_date_id IS NOT NULL,
+		v_claim_close_date_id,
+		- 1
+	) AS claim_close_date_id,
 	claim_reopen_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_reopen_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_reopen_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_reopen_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_reopen_date_id), v_claim_reopen_date_id, -1)
-	IFF(NOT v_claim_reopen_date_id IS NULL, v_claim_reopen_date_id, - 1) AS claim_reopen_date_id,
+	IFF(v_claim_reopen_date_id IS NOT NULL,
+		v_claim_reopen_date_id,
+		- 1
+	) AS claim_reopen_date_id,
 	claim_closed_after_reopen_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_closed_after_reopen_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_closed_after_reopen_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_closed_after_reopen_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_closed_after_reopen_date_id), v_claim_closed_after_reopen_date_id, -1)
-	IFF(NOT v_claim_closed_after_reopen_date_id IS NULL, v_claim_closed_after_reopen_date_id, - 1) AS claim_closed_after_reopen_date_id,
+	IFF(v_claim_closed_after_reopen_date_id IS NOT NULL,
+		v_claim_closed_after_reopen_date_id,
+		- 1
+	) AS claim_closed_after_reopen_date_id,
 	claim_notice_only_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_notice_only_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_notice_only_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_notice_only_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_notice_only_date_id), v_claim_notice_only_date_id, -1)
-	IFF(NOT v_claim_notice_only_date_id IS NULL, v_claim_notice_only_date_id, - 1) AS claim_notice_only_date_id,
+	IFF(v_claim_notice_only_date_id IS NOT NULL,
+		v_claim_notice_only_date_id,
+		- 1
+	) AS claim_notice_only_date_id,
 	pol_eff_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(pol_eff_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_pol_eff_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_pol_eff_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_pol_eff_date_id), v_pol_eff_date_id, -1)
-	IFF(NOT v_pol_eff_date_id IS NULL, v_pol_eff_date_id, - 1) AS pol_eff_date_id,
+	IFF(v_pol_eff_date_id IS NOT NULL,
+		v_pol_eff_date_id,
+		- 1
+	) AS pol_eff_date_id,
 	pol_exp_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(pol_exp_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_pol_exp_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_pol_exp_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_pol_exp_date_id), v_pol_exp_date_id, -1)
-	IFF(NOT v_pol_exp_date_id IS NULL, v_pol_exp_date_id, - 1) AS pol_exp_date_id,
+	IFF(v_pol_exp_date_id IS NOT NULL,
+		v_pol_exp_date_id,
+		- 1
+	) AS pol_exp_date_id,
 	pay_issued_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(pay_issued_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_pay_issued_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_pay_issued_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_pay_issued_date_id), v_pay_issued_date_id, -1)
-	IFF(NOT v_pay_issued_date_id IS NULL, v_pay_issued_date_id, - 1) AS pay_issued_date_id,
+	IFF(v_pay_issued_date_id IS NOT NULL,
+		v_pay_issued_date_id,
+		- 1
+	) AS pay_issued_date_id,
 	pay_cashed_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(pay_cashed_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_pay_cashed_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_pay_cashed_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_pay_cashed_date_id), v_pay_cashed_date_id, -1)
-	IFF(NOT v_pay_cashed_date_id IS NULL, v_pay_cashed_date_id, - 1) AS pay_cashed_date_id,
+	IFF(v_pay_cashed_date_id IS NOT NULL,
+		v_pay_cashed_date_id,
+		- 1
+	) AS pay_cashed_date_id,
 	pay_voided_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(pay_voided_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_pay_voided_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_pay_voided_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_pay_voided_date_id), v_pay_voided_date_id, -1)
-	IFF(NOT v_pay_voided_date_id IS NULL, v_pay_voided_date_id, - 1) AS pay_voided_date_id,
+	IFF(v_pay_voided_date_id IS NOT NULL,
+		v_pay_voided_date_id,
+		- 1
+	) AS pay_voided_date_id,
 	pay_reposted_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(pay_reposted_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_pay_reposted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_pay_reposted_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_pay_reposted_date_id), v_pay_reposted_date_id, -1)
-	IFF(NOT v_pay_reposted_date_id IS NULL, v_pay_reposted_date_id, - 1) AS pay_reposted_date_id,
+	IFF(v_pay_reposted_date_id IS NOT NULL,
+		v_pay_reposted_date_id,
+		- 1
+	) AS pay_reposted_date_id,
 	FeatureRepresentativeDimId_out AS FeatureRepresentativeDimId,
 	FeatureRepresentativeAssignedDate,
 	-- *INF*: :LKP.LKP_calender_dim(to_date(to_char(FeatureRepresentativeAssignedDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
@@ -1241,70 +1391,115 @@ EXP_Date_Ids AS (
 	-- *INF*: IIF(NOT ISNULL(v_FeatureRepresentativeAssignedDate_id),
 	-- v_FeatureRepresentativeAssignedDate_id,
 	-- -1)
-	IFF(NOT v_FeatureRepresentativeAssignedDate_id IS NULL, v_FeatureRepresentativeAssignedDate_id, - 1) AS FeatureRepresentativeAssignedDate_id
+	IFF(v_FeatureRepresentativeAssignedDate_id IS NOT NULL,
+		v_FeatureRepresentativeAssignedDate_id,
+		- 1
+	) AS FeatureRepresentativeAssignedDate_id
 	FROM EXP_get_dim_id
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_IN_claim_loss_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_IN_claim_loss_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(IN_claim_loss_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_IN_claim_loss_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(IN_claim_loss_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_discovery_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_discovery_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_discovery_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_discovery_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_discovery_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_occurrence_rpted_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_occurrence_rpted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_occurrence_rpted_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_occurrence_rpted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_occurrence_rpted_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_cat_start_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_cat_start_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_cat_start_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_cat_start_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_cat_start_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_cat_end_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_cat_end_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_cat_end_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_cat_end_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_cat_end_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_rep_assigned_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_rep_assigned_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_rep_assigned_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_rep_assigned_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_rep_assigned_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_rep_unassigned_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_rep_unassigned_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_rep_unassigned_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_rep_unassigned_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_rep_unassigned_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_scripted_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_scripted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_scripted_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_scripted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_scripted_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_source_claim_rpted_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_source_claim_rpted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(source_claim_rpted_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_source_claim_rpted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(source_claim_rpted_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_open_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_open_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_open_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_open_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_open_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_close_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_close_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_close_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_close_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_close_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_reopen_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_reopen_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_reopen_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_reopen_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_reopen_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_closed_after_reopen_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_closed_after_reopen_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_closed_after_reopen_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_closed_after_reopen_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_closed_after_reopen_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_notice_only_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_notice_only_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_notice_only_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_notice_only_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_notice_only_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_pol_eff_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_pol_eff_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(pol_eff_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_pol_eff_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(pol_eff_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_pol_exp_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_pol_exp_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(pol_exp_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_pol_exp_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(pol_exp_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_pay_issued_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_pay_issued_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(pay_issued_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_pay_issued_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(pay_issued_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_pay_cashed_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_pay_cashed_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(pay_cashed_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_pay_cashed_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(pay_cashed_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_pay_voided_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_pay_voided_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(pay_voided_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_pay_voided_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(pay_voided_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_pay_reposted_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_pay_reposted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(pay_reposted_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_pay_reposted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(pay_reposted_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_FeatureRepresentativeAssignedDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_FeatureRepresentativeAssignedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(FeatureRepresentativeAssignedDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_to_date_to_char_FeatureRepresentativeAssignedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(FeatureRepresentativeAssignedDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 ),
 LKP_Claim_Payment_Category_Fact AS (
@@ -1622,7 +1817,106 @@ EXP_Detect_Changes AS (
 	-- lkp_strtgc_bus_dvsn_dim_id <> strtgc_bus_dvsn_dim_id, 
 	-- 'UPDATE','NOCHANGE'))
 	-- 
-	IFF(lkp_claim_pay_ctgry_fact_id IS NULL, 'NEW', IFF(lkp_edw_claim_pay_ctgry_ak_id <> claim_pay_ctgry_ak_id OR lkp_claim_occurrence_dim_id <> claim_occurrence_dim_id_out OR lkp_claimant_dim_id <> claimant_dim_id_out OR lkp_claimant_cov_dim_id <> claimant_cov_dim_id_out OR lkp_cov_dim_id <> cov_dim_id_out OR lkp_claim_rep_dim_prim_claim_rep_id <> claim_rep_dim_prim_claim_rep_id_out OR lkp_claim_rep_dim_examiner_id <> claim_rep_dim_examiner_id_out OR lkp_claim_rep_dim_prim_litigation_handler_id <> claim_rep_dim_prim_litigation_handler_id_out OR lkp_claim_rep_dim_trans_entry_oper_id <> default_dim_id OR lkp_claim_rep_dim_claim_created_by_id <> claim_created_by_dim_id_out OR lkp_pol_key_dim_id <> pol_key_dim_id_out OR lkp_agency_dim_id <> agency_dim_id_out OR lkp_claim_pay_dim_id <> claim_pay_dim_id_out OR lkp_claim_financial_type_dim_id <> claim_financial_type_dim_id_out OR lkp_claim_pay_ctgry_type_dim_id <> claim_pay_ctgry_type_dim_id_out OR ROUND(ABS(lkp_claim_pay_ctgry_amt - claim_pay_ctgry_amt)) > 0.01 OR ROUND(ABS(lkp_claim_pay_ctgry_earned_amt - claim_pay_ctgry_earned_amt)) > 0.01 OR ROUND(ABS(lkp_claim_pay_ctgry_billed_amt - claim_pay_ctgry_billed_amt)) > 0.01 OR lkp_claim_pay_ctgry_start_date_id <> claim_pay_ctgry_start_date_id_out OR lkp_claim_pay_ctgry_end_date_id <> claim_pay_ctgry_end_date_id_out OR lkp_claim_loss_date_id <> claim_loss_date_id OR lkp_claim_discovery_date_id <> claim_discovery_date_id OR lkp_claim_scripted_date_id <> claim_scripted_date_id OR lkp_source_claim_rpted_date_id <> source_claim_scripted_date_id OR lkp_claim_rpted_date_id <> claim_rpted_date_id OR lkp_claim_open_date_id <> claim_open_date_id OR lkp_claim_close_date_id <> claim_close_date_id OR lkp_claim_reopen_date_id <> claim_reopen_date_id OR lkp_claim_closed_after_reopen_date_id <> claim_closed_after_reopen_date_id OR lkp_claim_notice_only_date_id <> claim_notice_only_date_id OR lkp_claim_cat_start_date_id <> claim_cat_start_date_id OR lkp_claim_cat_end_date_id <> claim_cat_end_date_id OR lkp_claim_rep_assigned_date_id <> claim_rep_assigned_date_id OR lkp_claim_rep_unassigned_date_id <> claim_rep_unassigned_date_id OR lkp_pol_eff_date_id <> pol_eff_date_id OR lkp_pol_exp_date_id <> pol_exp_date_id OR lkp_pay_issued_date_id <> pay_issued_date_id OR lkp_pay_cashed_date_id <> pay_cashed_date_id OR lkp_pay_voided_date_id <> pay_voided_date_id OR lkp_pay_reposted_date_id <> pay_reposted_date_id OR lkp_claim_case_dim_id <> claim_case_dim_id_out OR LTRIM(RTRIM(lkp_invc_num)) <> LTRIM(RTRIM(invc_num)) OR ROUND(ABS(lkp_cost_containment_saving_amt - cost_containment_saving_amt)) > 0.01 OR ROUND(ABS(lkp_cost_containment_red_amt - cost_containment_red_amt)) > 0.01 OR ROUND(ABS(lkp_cost_containment_ppo_amt - cost_containment_ppo_amt)) > 0.01 OR ROUND(ABS(lkp_attorney_fee_amt - attorney_fee_amt)) > 0.01 OR ROUND(ABS(lkp_attorney_cost_amt - attorney_cost_amt)) > 0.01 OR LTRIM(RTRIM(lkp_attorney_file_num)) <> LTRIM(RTRIM(attorney_file_num)) OR ROUND(ABS(lkp_hourly_rate - hourly_rate)) > 0.01 OR ROUND(ABS(lkp_hours_worked - hours_worked)) > 0.01 OR lkp_num_of_days <> num_of_days OR lkp_num_of_weeks <> num_of_weeks OR ROUND(ABS(lkp_tpd_rate - tpd_rate)) > 0.01 OR ROUND(ABS(lkp_tpd_rate_fac - tpd_rate_fac)) > 0.01 OR ROUND(ABS(lkp_tpd_wage_loss - tpd_wage_loss)) > 0.01 OR ROUND(ABS(lkp_tpd_wkly_wage - tpd_wkly_wage)) > 0.01 OR lkp_contract_cust_dim_id <> contract_cust_dim_id OR lkp_strtgc_bus_dvsn_dim_id <> strtgc_bus_dvsn_dim_id, 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(lkp_claim_pay_ctgry_fact_id IS NULL,
+		'NEW',
+		IFF(lkp_edw_claim_pay_ctgry_ak_id <> claim_pay_ctgry_ak_id 
+			OR lkp_claim_occurrence_dim_id <> claim_occurrence_dim_id_out 
+			OR lkp_claimant_dim_id <> claimant_dim_id_out 
+			OR lkp_claimant_cov_dim_id <> claimant_cov_dim_id_out 
+			OR lkp_cov_dim_id <> cov_dim_id_out 
+			OR lkp_claim_rep_dim_prim_claim_rep_id <> claim_rep_dim_prim_claim_rep_id_out 
+			OR lkp_claim_rep_dim_examiner_id <> claim_rep_dim_examiner_id_out 
+			OR lkp_claim_rep_dim_prim_litigation_handler_id <> claim_rep_dim_prim_litigation_handler_id_out 
+			OR lkp_claim_rep_dim_trans_entry_oper_id <> default_dim_id 
+			OR lkp_claim_rep_dim_claim_created_by_id <> claim_created_by_dim_id_out 
+			OR lkp_pol_key_dim_id <> pol_key_dim_id_out 
+			OR lkp_agency_dim_id <> agency_dim_id_out 
+			OR lkp_claim_pay_dim_id <> claim_pay_dim_id_out 
+			OR lkp_claim_financial_type_dim_id <> claim_financial_type_dim_id_out 
+			OR lkp_claim_pay_ctgry_type_dim_id <> claim_pay_ctgry_type_dim_id_out 
+			OR ROUND(ABS(lkp_claim_pay_ctgry_amt - claim_pay_ctgry_amt
+				)
+			) > 0.01 
+			OR ROUND(ABS(lkp_claim_pay_ctgry_earned_amt - claim_pay_ctgry_earned_amt
+				)
+			) > 0.01 
+			OR ROUND(ABS(lkp_claim_pay_ctgry_billed_amt - claim_pay_ctgry_billed_amt
+				)
+			) > 0.01 
+			OR lkp_claim_pay_ctgry_start_date_id <> claim_pay_ctgry_start_date_id_out 
+			OR lkp_claim_pay_ctgry_end_date_id <> claim_pay_ctgry_end_date_id_out 
+			OR lkp_claim_loss_date_id <> claim_loss_date_id 
+			OR lkp_claim_discovery_date_id <> claim_discovery_date_id 
+			OR lkp_claim_scripted_date_id <> claim_scripted_date_id 
+			OR lkp_source_claim_rpted_date_id <> source_claim_scripted_date_id 
+			OR lkp_claim_rpted_date_id <> claim_rpted_date_id 
+			OR lkp_claim_open_date_id <> claim_open_date_id 
+			OR lkp_claim_close_date_id <> claim_close_date_id 
+			OR lkp_claim_reopen_date_id <> claim_reopen_date_id 
+			OR lkp_claim_closed_after_reopen_date_id <> claim_closed_after_reopen_date_id 
+			OR lkp_claim_notice_only_date_id <> claim_notice_only_date_id 
+			OR lkp_claim_cat_start_date_id <> claim_cat_start_date_id 
+			OR lkp_claim_cat_end_date_id <> claim_cat_end_date_id 
+			OR lkp_claim_rep_assigned_date_id <> claim_rep_assigned_date_id 
+			OR lkp_claim_rep_unassigned_date_id <> claim_rep_unassigned_date_id 
+			OR lkp_pol_eff_date_id <> pol_eff_date_id 
+			OR lkp_pol_exp_date_id <> pol_exp_date_id 
+			OR lkp_pay_issued_date_id <> pay_issued_date_id 
+			OR lkp_pay_cashed_date_id <> pay_cashed_date_id 
+			OR lkp_pay_voided_date_id <> pay_voided_date_id 
+			OR lkp_pay_reposted_date_id <> pay_reposted_date_id 
+			OR lkp_claim_case_dim_id <> claim_case_dim_id_out 
+			OR LTRIM(RTRIM(lkp_invc_num
+				)
+			) <> LTRIM(RTRIM(invc_num
+				)
+			) 
+			OR ROUND(ABS(lkp_cost_containment_saving_amt - cost_containment_saving_amt
+				)
+			) > 0.01 
+			OR ROUND(ABS(lkp_cost_containment_red_amt - cost_containment_red_amt
+				)
+			) > 0.01 
+			OR ROUND(ABS(lkp_cost_containment_ppo_amt - cost_containment_ppo_amt
+				)
+			) > 0.01 
+			OR ROUND(ABS(lkp_attorney_fee_amt - attorney_fee_amt
+				)
+			) > 0.01 
+			OR ROUND(ABS(lkp_attorney_cost_amt - attorney_cost_amt
+				)
+			) > 0.01 
+			OR LTRIM(RTRIM(lkp_attorney_file_num
+				)
+			) <> LTRIM(RTRIM(attorney_file_num
+				)
+			) 
+			OR ROUND(ABS(lkp_hourly_rate - hourly_rate
+				)
+			) > 0.01 
+			OR ROUND(ABS(lkp_hours_worked - hours_worked
+				)
+			) > 0.01 
+			OR lkp_num_of_days <> num_of_days 
+			OR lkp_num_of_weeks <> num_of_weeks 
+			OR ROUND(ABS(lkp_tpd_rate - tpd_rate
+				)
+			) > 0.01 
+			OR ROUND(ABS(lkp_tpd_rate_fac - tpd_rate_fac
+				)
+			) > 0.01 
+			OR ROUND(ABS(lkp_tpd_wage_loss - tpd_wage_loss
+				)
+			) > 0.01 
+			OR ROUND(ABS(lkp_tpd_wkly_wage - tpd_wkly_wage
+				)
+			) > 0.01 
+			OR lkp_contract_cust_dim_id <> contract_cust_dim_id 
+			OR lkp_strtgc_bus_dvsn_dim_id <> strtgc_bus_dvsn_dim_id,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	SYSDATE AS modified_date,
 	EXP_Date_Ids.strtgc_bus_dvsn_dim_id_out AS strtgc_bus_dvsn_dim_id,

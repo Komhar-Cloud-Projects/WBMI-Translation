@@ -106,41 +106,91 @@ EXP_Modifiers AS (
 	BureauCode8 AS i_BureauCode8,
 	BureauCode9 AS i_BureauCode9,
 	-- *INF*: IIF(i_RiskUnit!='N/A',SUBSTR(i_RiskUnit,1,3),'')
-	IFF(i_RiskUnit != 'N/A', SUBSTR(i_RiskUnit, 1, 3), '') AS v_RiskUnit,
+	IFF(i_RiskUnit != 'N/A',
+		SUBSTR(i_RiskUnit, 1, 3
+		),
+		''
+	) AS v_RiskUnit,
 	-- *INF*: IIF(i_TypeBureauCode='AP','C','L')
-	IFF(i_TypeBureauCode = 'AP', 'C', 'L') AS v_DescriptionSequence,
+	IFF(i_TypeBureauCode = 'AP',
+		'C',
+		'L'
+	) AS v_DescriptionSequence,
 	-- *INF*: DECODE(TRUE,
 	-- i_BureauCode8='100' AND IN(i_TypeBureauCode,'AL','AP')=1,0,
 	-- i_BureauCode9='100' AND i_TypeBureauCode='AN',0,
 	-- 1)
 	DECODE(TRUE,
-		i_BureauCode8 = '100' AND IN(i_TypeBureauCode, 'AL', 'AP') = 1, 0,
-		i_BureauCode9 = '100' AND i_TypeBureauCode = 'AN', 0,
-		1) AS v_ModifiedTransactionFlag,
+		i_BureauCode8 = '100' 
+		AND i_TypeBureauCode IN ('AL','AP') = 1, 0,
+		i_BureauCode9 = '100' 
+		AND i_TypeBureauCode = 'AN', 0,
+		1
+	) AS v_ModifiedTransactionFlag,
 	-- *INF*: DECODE(TRUE,
 	-- v_ModifiedTransactionFlag=0,'1',
 	-- :LKP.LKP_ARCH_PIF_12_STAGE_STATE(i_PolicyKey,v_RiskUnit,v_DescriptionSequence,i_StateProvinceCode))
 	DECODE(TRUE,
 		v_ModifiedTransactionFlag = 0, '1',
-		LKP_ARCH_PIF_12_STAGE_STATE_i_PolicyKey_v_RiskUnit_v_DescriptionSequence_i_StateProvinceCode.Modifiers) AS v_Modifier_State,
+		LKP_ARCH_PIF_12_STAGE_STATE_i_PolicyKey_v_RiskUnit_v_DescriptionSequence_i_StateProvinceCode.Modifiers
+	) AS v_Modifier_State,
 	-- *INF*: IIF(NOT ISNULL(v_Modifier_State),v_Modifier_State,:LKP.LKP_ARCH_PIF_12_STAGE_STATE(i_PolicyKey,'000',v_DescriptionSequence,i_StateProvinceCode))
-	IFF(NOT v_Modifier_State IS NULL, v_Modifier_State, LKP_ARCH_PIF_12_STAGE_STATE_i_PolicyKey_000_v_DescriptionSequence_i_StateProvinceCode.Modifiers) AS v_Modifier_State_Default,
+	IFF(v_Modifier_State IS NOT NULL,
+		v_Modifier_State,
+		LKP_ARCH_PIF_12_STAGE_STATE_i_PolicyKey_000_v_DescriptionSequence_i_StateProvinceCode.Modifiers
+	) AS v_Modifier_State_Default,
 	-- *INF*: IIF(NOT ISNULL(v_Modifier_State_Default),v_Modifier_State_Default,:LKP.LKP_ARCH_PIF_12_STAGE(i_PolicyKey,v_RiskUnit,v_DescriptionSequence))
-	IFF(NOT v_Modifier_State_Default IS NULL, v_Modifier_State_Default, LKP_ARCH_PIF_12_STAGE_i_PolicyKey_v_RiskUnit_v_DescriptionSequence.Modifiers) AS v_Modifier,
+	IFF(v_Modifier_State_Default IS NOT NULL,
+		v_Modifier_State_Default,
+		LKP_ARCH_PIF_12_STAGE_i_PolicyKey_v_RiskUnit_v_DescriptionSequence.Modifiers
+	) AS v_Modifier,
 	-- *INF*: IIF(NOT ISNULL(v_Modifier),v_Modifier,:LKP.LKP_ARCH_PIF_12_STAGE(i_PolicyKey,'000',v_DescriptionSequence))
-	IFF(NOT v_Modifier IS NULL, v_Modifier, LKP_ARCH_PIF_12_STAGE_i_PolicyKey_000_v_DescriptionSequence.Modifiers) AS v_Modifier_Default,
+	IFF(v_Modifier IS NOT NULL,
+		v_Modifier,
+		LKP_ARCH_PIF_12_STAGE_i_PolicyKey_000_v_DescriptionSequence.Modifiers
+	) AS v_Modifier_Default,
 	-- *INF*: IIF(REG_MATCH(v_Modifier_Default,'.*O=[^,]*,.*'),LTRIM(RTRIM(REG_EXTRACT(v_Modifier_Default,'(.*)O=([^,]*),(.*)',2))),'1')
-	IFF(REG_MATCH(v_Modifier_Default, '.*O=[^,]*,.*'), LTRIM(RTRIM(REG_EXTRACT(v_Modifier_Default, '(.*)O=([^,]*),(.*)', 2))), '1') AS v_O_Factor,
+	IFF(REGEXP_LIKE(v_Modifier_Default, '.*O=[^,]*,.*'
+		),
+		LTRIM(RTRIM(REG_EXTRACT(v_Modifier_Default, '(.*)O=([^,]*),(.*)', 2
+				)
+			)
+		),
+		'1'
+	) AS v_O_Factor,
 	-- *INF*: IIF(REG_MATCH(v_Modifier_Default,'.*E=[^,]*,.*'),LTRIM(RTRIM(REG_EXTRACT(v_Modifier_Default,'(.*)E=([^,]*),(.*)',2))),'1')
-	IFF(REG_MATCH(v_Modifier_Default, '.*E=[^,]*,.*'), LTRIM(RTRIM(REG_EXTRACT(v_Modifier_Default, '(.*)E=([^,]*),(.*)', 2))), '1') AS v_E_Factor,
+	IFF(REGEXP_LIKE(v_Modifier_Default, '.*E=[^,]*,.*'
+		),
+		LTRIM(RTRIM(REG_EXTRACT(v_Modifier_Default, '(.*)E=([^,]*),(.*)', 2
+				)
+			)
+		),
+		'1'
+	) AS v_E_Factor,
 	-- *INF*: IIF(REG_MATCH(v_Modifier_Default,'.*P=[^,]*,.*'),LTRIM(RTRIM(REG_EXTRACT(v_Modifier_Default,'(.*)P=([^,]*),(.*)',2))),'1')
-	IFF(REG_MATCH(v_Modifier_Default, '.*P=[^,]*,.*'), LTRIM(RTRIM(REG_EXTRACT(v_Modifier_Default, '(.*)P=([^,]*),(.*)', 2))), '1') AS v_P_Factor,
+	IFF(REGEXP_LIKE(v_Modifier_Default, '.*P=[^,]*,.*'
+		),
+		LTRIM(RTRIM(REG_EXTRACT(v_Modifier_Default, '(.*)P=([^,]*),(.*)', 2
+				)
+			)
+		),
+		'1'
+	) AS v_P_Factor,
 	-- *INF*: IIF(IS_NUMBER(v_O_Factor),TO_DECIMAL(v_O_Factor),1)
-	IFF(IS_NUMBER(v_O_Factor), TO_DECIMAL(v_O_Factor), 1) AS v_OtherModifiedFactor,
+	IFF(REGEXP_LIKE(v_O_Factor, '^[0-9]+$'),
+		CAST(v_O_Factor AS FLOAT),
+		1
+	) AS v_OtherModifiedFactor,
 	-- *INF*: IIF(IS_NUMBER(v_P_Factor),TO_DECIMAL(v_P_Factor),1)
-	IFF(IS_NUMBER(v_P_Factor), TO_DECIMAL(v_P_Factor), 1) AS v_ScheduleModifiedFactor,
+	IFF(REGEXP_LIKE(v_P_Factor, '^[0-9]+$'),
+		CAST(v_P_Factor AS FLOAT),
+		1
+	) AS v_ScheduleModifiedFactor,
 	-- *INF*: IIF(IS_NUMBER(v_E_Factor),TO_DECIMAL(v_E_Factor),1)
-	IFF(IS_NUMBER(v_E_Factor), TO_DECIMAL(v_E_Factor), 1) AS v_ExperienceModifiedFactor,
+	IFF(REGEXP_LIKE(v_E_Factor, '^[0-9]+$'),
+		CAST(v_E_Factor AS FLOAT),
+		1
+	) AS v_ExperienceModifiedFactor,
 	-- *INF*: DECODE(TRUE,
 	-- v_ModifiedTransactionFlag=0,'Default',
 	-- NOT ISNULL(v_Modifier_State),i_PolicyKey||v_RiskUnit||'&CA&'||v_DescriptionSequence||'&'||i_StateProvinceCode,
@@ -149,22 +199,41 @@ EXP_Modifiers AS (
 	-- i_PolicyKey||'&CA&'||'000'||'&'||v_DescriptionSequence)
 	DECODE(TRUE,
 		v_ModifiedTransactionFlag = 0, 'Default',
-		NOT v_Modifier_State IS NULL, i_PolicyKey || v_RiskUnit || '&CA&' || v_DescriptionSequence || '&' || i_StateProvinceCode,
-		NOT v_Modifier_State_Default IS NULL, i_PolicyKey || '&CA&' || '000' || '&' || v_DescriptionSequence || '&' || i_StateProvinceCode,
-		NOT v_Modifier IS NULL, i_PolicyKey || '&CA&' || v_RiskUnit || '&' || v_DescriptionSequence,
-		i_PolicyKey || '&CA&' || '000' || '&' || v_DescriptionSequence) AS v_WorkRatingModifierKey,
+		v_Modifier_State IS NOT NULL, i_PolicyKey || v_RiskUnit || '&CA&' || v_DescriptionSequence || '&' || i_StateProvinceCode,
+		v_Modifier_State_Default IS NOT NULL, i_PolicyKey || '&CA&' || '000' || '&' || v_DescriptionSequence || '&' || i_StateProvinceCode,
+		v_Modifier IS NOT NULL, i_PolicyKey || '&CA&' || v_RiskUnit || '&' || v_DescriptionSequence,
+		i_PolicyKey || '&CA&' || '000' || '&' || v_DescriptionSequence
+	) AS v_WorkRatingModifierKey,
 	i_PremiumTransactionAKID AS o_PremiumTransactionAKID,
 	-- *INF*: IIF(v_ModifiedTransactionFlag=0,'Default',MD5(v_WorkRatingModifierKey))
-	IFF(v_ModifiedTransactionFlag = 0, 'Default', MD5(v_WorkRatingModifierKey)) AS o_WorkRatingModifierHashKey,
+	IFF(v_ModifiedTransactionFlag = 0,
+		'Default',
+		MD5(v_WorkRatingModifierKey
+		)
+	) AS o_WorkRatingModifierHashKey,
 	v_WorkRatingModifierKey AS o_WorkRatingModifierKey,
 	-- *INF*: IIF(v_OtherModifiedFactor>0,v_OtherModifiedFactor,1)
-	IFF(v_OtherModifiedFactor > 0, v_OtherModifiedFactor, 1) AS o_OtherModifiedFactor,
+	IFF(v_OtherModifiedFactor > 0,
+		v_OtherModifiedFactor,
+		1
+	) AS o_OtherModifiedFactor,
 	-- *INF*: IIF(v_ScheduleModifiedFactor>0,v_ScheduleModifiedFactor,1)
-	IFF(v_ScheduleModifiedFactor > 0, v_ScheduleModifiedFactor, 1) AS o_ScheduleModifiedFactor,
+	IFF(v_ScheduleModifiedFactor > 0,
+		v_ScheduleModifiedFactor,
+		1
+	) AS o_ScheduleModifiedFactor,
 	-- *INF*: IIF(v_ExperienceModifiedFactor>0,v_ExperienceModifiedFactor,1)
-	IFF(v_ExperienceModifiedFactor > 0, v_ExperienceModifiedFactor, 1) AS o_ExperienceModifiedFactor,
+	IFF(v_ExperienceModifiedFactor > 0,
+		v_ExperienceModifiedFactor,
+		1
+	) AS o_ExperienceModifiedFactor,
 	-- *INF*: IIF(v_ModifiedTransactionFlag=0,TO_DATE('18000101','YYYYMMDD'),ADD_TO_DATE(TRUNC(GREATEST(i_PremiumTransactionEnteredDate,PremiumTransactionEffectiveDate),'DD'),'SS',86399))
-	IFF(v_ModifiedTransactionFlag = 0, TO_DATE('18000101', 'YYYYMMDD'), ADD_TO_DATE(TRUNC(GREATEST(i_PremiumTransactionEnteredDate, PremiumTransactionEffectiveDate), 'DD'), 'SS', 86399)) AS o_PremiumTransactionBookedDate
+	IFF(v_ModifiedTransactionFlag = 0,
+		TO_DATE('18000101', 'YYYYMMDD'
+		),
+		DATEADD(SECOND,86399,CAST(TRUNC(GREATEST(i_PremiumTransactionEnteredDate, PremiumTransactionEffectiveDate
+		), 'DAY') AS TIMESTAMP_NTZ(0)))
+	) AS o_PremiumTransactionBookedDate
 	FROM SQ_PMS
 	LEFT JOIN LKP_ARCH_PIF_12_STAGE_STATE LKP_ARCH_PIF_12_STAGE_STATE_i_PolicyKey_v_RiskUnit_v_DescriptionSequence_i_StateProvinceCode
 	ON LKP_ARCH_PIF_12_STAGE_STATE_i_PolicyKey_v_RiskUnit_v_DescriptionSequence_i_StateProvinceCode.PolicyKey = i_PolicyKey
@@ -212,9 +281,11 @@ AGGTRANS AS (
 	ExperienceModifiedFactor,
 	PremiumTransactionBookedDate AS i_PremiumTransactionBookedDate,
 	-- *INF*: MIN(i_PremiumTransactionBookedDate)
-	MIN(i_PremiumTransactionBookedDate) AS o_RunDate,
+	MIN(i_PremiumTransactionBookedDate
+	) AS o_RunDate,
 	-- *INF*: MIN(i_PremiumTransactionEffectiveDate)
-	MIN(i_PremiumTransactionEffectiveDate) AS o_RatingModifierEffectiveDate
+	MIN(i_PremiumTransactionEffectiveDate
+	) AS o_RatingModifierEffectiveDate
 	FROM SRTTRANS
 	GROUP BY WorkRatingModifierHashKey
 ),
@@ -255,7 +326,10 @@ EXPTRANS AS (
 	AGGTRANS.o_RunDate AS RunDate,
 	AGGTRANS.o_RatingModifierEffectiveDate AS RatingModifierEffectiveDate,
 	-- *INF*: IIF(ISNULL(lkp_WorkRatingModifierAKId),i_NEXTVAL,lkp_WorkRatingModifierAKId)
-	IFF(lkp_WorkRatingModifierAKId IS NULL, i_NEXTVAL, lkp_WorkRatingModifierAKId) AS WorkRatingModifierAKId
+	IFF(lkp_WorkRatingModifierAKId IS NULL,
+		i_NEXTVAL,
+		lkp_WorkRatingModifierAKId
+	) AS WorkRatingModifierAKId
 	FROM AGGTRANS
 	LEFT JOIN LKP_WorkRatingModifierAKId
 	ON LKP_WorkRatingModifierAKId.WorkRatingModifierHashKey = AGGTRANS.WorkRatingModifierHashKey
@@ -325,18 +399,24 @@ EXP_RatingModifier AS (
 		lkp_OtherModifiedFactor != OtherModifiedFactor, 'NEW',
 		lkp_ScheduleModifiedFactor != ScheduleModifiedFactor, 'NEW',
 		lkp_ExperienceModifiedFactor != ExperienceModifiedFactor, 'NEW',
-		'NOCHANGE') AS v_ChangeFlag,
+		'NOCHANGE'
+	) AS v_ChangeFlag,
 	-- *INF*: IIF(v_ChangeFlag='NEW',i_RunDate,lkp_EffectiveDate)
-	IFF(v_ChangeFlag = 'NEW', i_RunDate, lkp_EffectiveDate) AS o_RunDate,
+	IFF(v_ChangeFlag = 'NEW',
+		i_RunDate,
+		lkp_EffectiveDate
+	) AS o_RunDate,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	v_ChangeFlag AS o_ChangeFlag,
 	-- *INF*: TO_DATE('01/01/1800 0','MM/DD/YYYY SSSSS')
-	TO_DATE('01/01/1800 0', 'MM/DD/YYYY SSSSS') AS EffectiveDate,
+	TO_DATE('01/01/1800 0', 'MM/DD/YYYY SSSSS'
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 86399','MM/DD/YYYY SSSSS')
-	TO_DATE('12/31/2100 86399', 'MM/DD/YYYY SSSSS') AS ExpirationDate,
+	TO_DATE('12/31/2100 86399', 'MM/DD/YYYY SSSSS'
+	) AS ExpirationDate,
 	'1' AS CurrentSnapshotFlag
 	FROM EXPTRANS
 	LEFT JOIN LKP_WorkRatingModifier
@@ -442,7 +522,10 @@ EXP_DetectChanges AS (
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	-- *INF*: IIF(ISNULL(lkp_PremiumTransactionID),'NEW','NOCHANGE')
-	IFF(lkp_PremiumTransactionID IS NULL, 'NEW', 'NOCHANGE') AS o_ChangeFlag
+	IFF(lkp_PremiumTransactionID IS NULL,
+		'NEW',
+		'NOCHANGE'
+	) AS o_ChangeFlag
 	FROM JNRTRANS
 	LEFT JOIN LKP_WorkPremiumTransactionRatingModifierBridge
 	ON LKP_WorkPremiumTransactionRatingModifierBridge.PremiumTransactionAKID = JNRTRANS.PremiumTransactionAKID

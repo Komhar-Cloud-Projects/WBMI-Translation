@@ -49,7 +49,11 @@ EXP_Balance_Flag AS (
 	PolicyKey,
 	DCTWrittenChange,
 	-- *INF*: IIF(abs(EDWDirectWrittenPremium-DCTWrittenChange)>@{pipeline().parameters.LIMIT},'UnBalanced','Balanced')
-	IFF(abs(EDWDirectWrittenPremium - DCTWrittenChange) > @{pipeline().parameters.LIMIT}, 'UnBalanced', 'Balanced') AS Balance_Flag
+	IFF(abs(EDWDirectWrittenPremium - DCTWrittenChange
+		) > @{pipeline().parameters.LIMIT},
+		'UnBalanced',
+		'Balanced'
+	) AS Balance_Flag
 	FROM JNR_EDW_DCT
 ),
 RTR_EDW_DCT AS (

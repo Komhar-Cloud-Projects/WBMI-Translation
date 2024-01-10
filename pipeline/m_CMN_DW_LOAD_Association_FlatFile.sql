@@ -47,8 +47,10 @@ EXPTRANS AS (
 	-- --iif(isnull(LKP_AssociationCode),1,0)
 	decode(True,
 		LKP_AssociationCode IS NULL, 1,
-		NOT LKP_AssociationCode IS NULL AND AssociationDescription <> LKP_AssociationDescription, 2,
-		0) AS V_Change_Flag,
+		LKP_AssociationCode IS NULL 
+		AND AssociationDescription <> LKP_AssociationDescripNOT tion, 2,
+		0
+	) AS V_Change_Flag,
 	V_Change_Flag AS O_Change_Flag
 	FROM SQ_Association
 	LEFT JOIN LKP_Association
@@ -77,12 +79,16 @@ EXP_Insert AS (
 	1 AS CurrentSnapshotFlag,
 	EffectiveDate AS i_EffectiveDate,
 	-- *INF*: TO_DATE(substr(i_EffectiveDate,1,19), 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE(substr(i_EffectiveDate, 1, 19), 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,
+	TO_DATE(substr(i_EffectiveDate, 1, 19
+		), 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: TO_DATE(substr(i_ExpirationDate,1,19), 'YYYY-MM-DD HH24:MI:SS')
 	-- 
 	-- --TO_DATE(i_ExpirationDate, 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE(substr(i_ExpirationDate, 1, 19), 'YYYY-MM-DD HH24:MI:SS') AS O_ExpirationDate,
+	TO_DATE(substr(i_ExpirationDate, 1, 19
+		), 'YYYY-MM-DD HH24:MI:SS'
+	) AS O_ExpirationDate,
 	AssociationCode,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId,
 	-- *INF*: SESSSTARTTIME
@@ -110,11 +116,15 @@ EXP_Update AS (
 	SELECT
 	EffectiveDate AS i_EffectiveDate3,
 	-- *INF*: TO_DATE(substr(i_EffectiveDate3,1,19), 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE(substr(i_EffectiveDate3, 1, 19), 'YYYY-MM-DD HH24:MI:SS') AS O_EffectiveDate3,
+	TO_DATE(substr(i_EffectiveDate3, 1, 19
+		), 'YYYY-MM-DD HH24:MI:SS'
+	) AS O_EffectiveDate3,
 	CURRENT_TIMESTAMP AS ModifiedDate,
 	ExpirationDate AS i_ExpirationDate3,
 	-- *INF*: TO_DATE(substr(i_ExpirationDate3,1,19), 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE(substr(i_ExpirationDate3, 1, 19), 'YYYY-MM-DD HH24:MI:SS') AS O_ExpirationDate3,
+	TO_DATE(substr(i_ExpirationDate3, 1, 19
+		), 'YYYY-MM-DD HH24:MI:SS'
+	) AS O_ExpirationDate3,
 	AssociationCode AS AssociationCode3,
 	AssociationDescription AS AssociationDescription3,
 	AssociationCode4 AS AssociationCode43,

@@ -70,37 +70,61 @@ EXP_GetValues AS (
 	PvahPaymntType5 AS i_PvahPaymntType5,
 	PvahYYMDApplied5 AS i_PvahYYMDApplied5,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_PvahPolicyNumber)))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_PvahPolicyNumber))) AS v_PvahPolicyNumber,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_PvahPolicyNumber
+			)
+		)
+	) AS v_PvahPolicyNumber,
 	-- *INF*: LPAD(:UDF.DEFAULT_VALUE_FOR_STRINGS(TO_CHAR(i_PvahMod)),2,'0')
-	LPAD(:UDF.DEFAULT_VALUE_FOR_STRINGS(TO_CHAR(i_PvahMod)), 2, '0') AS v_PvahMod,
+	LPAD(:UDF.DEFAULT_VALUE_FOR_STRINGS(TO_CHAR(i_PvahMod
+			)
+		), 2, '0'
+	) AS v_PvahMod,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_PvahSymbol)))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_PvahSymbol))) AS v_PvahSymbol,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_PvahSymbol
+			)
+		)
+	) AS v_PvahSymbol,
 	v_PvahSymbol||v_PvahPolicyNumber||v_PvahMod AS o_pol_key,
 	i_PvahCashApplied1 AS o_PvahCashApplied1,
 	-- *INF*: LTRIM(RTRIM(i_PvahPaymntType1))
-	LTRIM(RTRIM(i_PvahPaymntType1)) AS o_PvahPaymntType1,
+	LTRIM(RTRIM(i_PvahPaymntType1
+		)
+	) AS o_PvahPaymntType1,
 	-- *INF*: TO_CHAR(i_PvahYYMDApplied1)
-	TO_CHAR(i_PvahYYMDApplied1) AS o_PvahYYMDApplied1,
+	TO_CHAR(i_PvahYYMDApplied1
+	) AS o_PvahYYMDApplied1,
 	i_PvahCashApplied2 AS o_PvahCashApplied2,
 	-- *INF*: LTRIM(RTRIM(i_PvahPaymntType2))
-	LTRIM(RTRIM(i_PvahPaymntType2)) AS o_PvahPaymntType2,
+	LTRIM(RTRIM(i_PvahPaymntType2
+		)
+	) AS o_PvahPaymntType2,
 	-- *INF*: TO_CHAR(i_PvahYYMDApplied2)
-	TO_CHAR(i_PvahYYMDApplied2) AS o_PvahYYMDApplied2,
+	TO_CHAR(i_PvahYYMDApplied2
+	) AS o_PvahYYMDApplied2,
 	i_PvahCashApplied3 AS o_PvahCashApplied3,
 	-- *INF*: LTRIM(RTRIM(i_PvahPaymntType3))
-	LTRIM(RTRIM(i_PvahPaymntType3)) AS o_PvahPaymntType3,
+	LTRIM(RTRIM(i_PvahPaymntType3
+		)
+	) AS o_PvahPaymntType3,
 	-- *INF*: TO_CHAR(i_PvahYYMDApplied3)
-	TO_CHAR(i_PvahYYMDApplied3) AS o_PvahYYMDApplied3,
+	TO_CHAR(i_PvahYYMDApplied3
+	) AS o_PvahYYMDApplied3,
 	i_PvahCashApplied4 AS o_PvahCashApplied4,
 	-- *INF*: LTRIM(RTRIM(i_PvahPaymntType4))
-	LTRIM(RTRIM(i_PvahPaymntType4)) AS o_PvahPaymntType4,
+	LTRIM(RTRIM(i_PvahPaymntType4
+		)
+	) AS o_PvahPaymntType4,
 	-- *INF*: TO_CHAR(i_PvahYYMDApplied4)
-	TO_CHAR(i_PvahYYMDApplied4) AS o_PvahYYMDApplied4,
+	TO_CHAR(i_PvahYYMDApplied4
+	) AS o_PvahYYMDApplied4,
 	i_PvahCashApplied5 AS o_PvahCashApplied5,
 	-- *INF*: LTRIM(RTRIM(i_PvahPaymntType5))
-	LTRIM(RTRIM(i_PvahPaymntType5)) AS o_PvahPaymntType5,
+	LTRIM(RTRIM(i_PvahPaymntType5
+		)
+	) AS o_PvahPaymntType5,
 	-- *INF*: TO_CHAR(i_PvahYYMDApplied5)
-	TO_CHAR(i_PvahYYMDApplied5) AS o_PvahYYMDApplied5
+	TO_CHAR(i_PvahYYMDApplied5
+	) AS o_PvahYYMDApplied5
 	FROM SQ_PVACCTHistStage
 ),
 LKP_policy AS (
@@ -142,31 +166,103 @@ EXP_UpdateInvalid AS (
 	i_PvahPaymntType1 AS v_PvahPaymntType1,
 	i_PvahYYMDApplied1 AS v_PvahYYMDApplied1,
 	-- *INF*: IIF(v_PvahCashApplied1=0 and v_PvahYYMDApplied1='0' and v_PvahPaymntType1='',0,i_PvahCashApplied2)
-	IFF(v_PvahCashApplied1 = 0 AND v_PvahYYMDApplied1 = '0' AND v_PvahPaymntType1 = '', 0, i_PvahCashApplied2) AS v_PvahCashApplied2,
+	IFF(v_PvahCashApplied1 = 0 
+		AND v_PvahYYMDApplied1 = '0' 
+		AND v_PvahPaymntType1 = '',
+		0,
+		i_PvahCashApplied2
+	) AS v_PvahCashApplied2,
 	-- *INF*: IIF(v_PvahCashApplied1=0 and v_PvahYYMDApplied1='0' and v_PvahPaymntType1='','',i_PvahPaymntType2)
-	IFF(v_PvahCashApplied1 = 0 AND v_PvahYYMDApplied1 = '0' AND v_PvahPaymntType1 = '', '', i_PvahPaymntType2) AS v_PvahPaymntType2,
+	IFF(v_PvahCashApplied1 = 0 
+		AND v_PvahYYMDApplied1 = '0' 
+		AND v_PvahPaymntType1 = '',
+		'',
+		i_PvahPaymntType2
+	) AS v_PvahPaymntType2,
 	-- *INF*: IIF(v_PvahCashApplied1=0 and v_PvahYYMDApplied1='0' and v_PvahPaymntType1='','0',i_PvahYYMDApplied2)
-	IFF(v_PvahCashApplied1 = 0 AND v_PvahYYMDApplied1 = '0' AND v_PvahPaymntType1 = '', '0', i_PvahYYMDApplied2) AS v_PvahYYMDApplied2,
+	IFF(v_PvahCashApplied1 = 0 
+		AND v_PvahYYMDApplied1 = '0' 
+		AND v_PvahPaymntType1 = '',
+		'0',
+		i_PvahYYMDApplied2
+	) AS v_PvahYYMDApplied2,
 	-- *INF*: IIF(v_PvahCashApplied2=0 and v_PvahYYMDApplied2='0' and RTRIM(v_PvahPaymntType2)='',0,i_PvahCashApplied3)
-	IFF(v_PvahCashApplied2 = 0 AND v_PvahYYMDApplied2 = '0' AND RTRIM(v_PvahPaymntType2) = '', 0, i_PvahCashApplied3) AS v_PvahCashApplied3,
+	IFF(v_PvahCashApplied2 = 0 
+		AND v_PvahYYMDApplied2 = '0' 
+		AND RTRIM(v_PvahPaymntType2
+		) = '',
+		0,
+		i_PvahCashApplied3
+	) AS v_PvahCashApplied3,
 	-- *INF*: IIF(v_PvahCashApplied2=0 and v_PvahYYMDApplied2='0' and RTRIM(v_PvahPaymntType2)='','',i_PvahPaymntType3)
-	IFF(v_PvahCashApplied2 = 0 AND v_PvahYYMDApplied2 = '0' AND RTRIM(v_PvahPaymntType2) = '', '', i_PvahPaymntType3) AS v_PvahPaymntType3,
+	IFF(v_PvahCashApplied2 = 0 
+		AND v_PvahYYMDApplied2 = '0' 
+		AND RTRIM(v_PvahPaymntType2
+		) = '',
+		'',
+		i_PvahPaymntType3
+	) AS v_PvahPaymntType3,
 	-- *INF*: IIF(v_PvahCashApplied2=0 and v_PvahYYMDApplied2='0' and RTRIM(v_PvahPaymntType2)='','0',i_PvahYYMDApplied3)
-	IFF(v_PvahCashApplied2 = 0 AND v_PvahYYMDApplied2 = '0' AND RTRIM(v_PvahPaymntType2) = '', '0', i_PvahYYMDApplied3) AS v_PvahYYMDApplied3,
+	IFF(v_PvahCashApplied2 = 0 
+		AND v_PvahYYMDApplied2 = '0' 
+		AND RTRIM(v_PvahPaymntType2
+		) = '',
+		'0',
+		i_PvahYYMDApplied3
+	) AS v_PvahYYMDApplied3,
 	-- *INF*: IIF(v_PvahCashApplied3=0 and v_PvahYYMDApplied3='0' and RTRIM(v_PvahPaymntType3)='',0,i_PvahCashApplied4)
-	IFF(v_PvahCashApplied3 = 0 AND v_PvahYYMDApplied3 = '0' AND RTRIM(v_PvahPaymntType3) = '', 0, i_PvahCashApplied4) AS v_PvahCashApplied4,
+	IFF(v_PvahCashApplied3 = 0 
+		AND v_PvahYYMDApplied3 = '0' 
+		AND RTRIM(v_PvahPaymntType3
+		) = '',
+		0,
+		i_PvahCashApplied4
+	) AS v_PvahCashApplied4,
 	-- *INF*: IIF(v_PvahCashApplied3=0 and v_PvahYYMDApplied3='0' and RTRIM(v_PvahPaymntType3)='','',i_PvahPaymntType4)
-	IFF(v_PvahCashApplied3 = 0 AND v_PvahYYMDApplied3 = '0' AND RTRIM(v_PvahPaymntType3) = '', '', i_PvahPaymntType4) AS v_PvahPaymntType4,
+	IFF(v_PvahCashApplied3 = 0 
+		AND v_PvahYYMDApplied3 = '0' 
+		AND RTRIM(v_PvahPaymntType3
+		) = '',
+		'',
+		i_PvahPaymntType4
+	) AS v_PvahPaymntType4,
 	-- *INF*: IIF(v_PvahCashApplied3=0 and v_PvahYYMDApplied3='0' and RTRIM(v_PvahPaymntType3)='','0',i_PvahYYMDApplied4)
-	IFF(v_PvahCashApplied3 = 0 AND v_PvahYYMDApplied3 = '0' AND RTRIM(v_PvahPaymntType3) = '', '0', i_PvahYYMDApplied4) AS v_PvahYYMDApplied4,
+	IFF(v_PvahCashApplied3 = 0 
+		AND v_PvahYYMDApplied3 = '0' 
+		AND RTRIM(v_PvahPaymntType3
+		) = '',
+		'0',
+		i_PvahYYMDApplied4
+	) AS v_PvahYYMDApplied4,
 	-- *INF*: IIF(v_PvahCashApplied4=0 and v_PvahYYMDApplied4='0' and RTRIM(v_PvahPaymntType4)='',0,i_PvahCashApplied5)
-	IFF(v_PvahCashApplied4 = 0 AND v_PvahYYMDApplied4 = '0' AND RTRIM(v_PvahPaymntType4) = '', 0, i_PvahCashApplied5) AS v_PvahCashApplied5,
+	IFF(v_PvahCashApplied4 = 0 
+		AND v_PvahYYMDApplied4 = '0' 
+		AND RTRIM(v_PvahPaymntType4
+		) = '',
+		0,
+		i_PvahCashApplied5
+	) AS v_PvahCashApplied5,
 	-- *INF*: IIF(v_PvahCashApplied4=0 and v_PvahYYMDApplied4='0' and RTRIM(v_PvahPaymntType4)='','',i_PvahPaymntType5)
-	IFF(v_PvahCashApplied4 = 0 AND v_PvahYYMDApplied4 = '0' AND RTRIM(v_PvahPaymntType4) = '', '', i_PvahPaymntType5) AS v_PvahPaymntType5,
+	IFF(v_PvahCashApplied4 = 0 
+		AND v_PvahYYMDApplied4 = '0' 
+		AND RTRIM(v_PvahPaymntType4
+		) = '',
+		'',
+		i_PvahPaymntType5
+	) AS v_PvahPaymntType5,
 	-- *INF*: IIF(v_PvahCashApplied4=0 and v_PvahYYMDApplied4='0' and RTRIM(v_PvahPaymntType4)='','0',i_PvahYYMDApplied5)
-	IFF(v_PvahCashApplied4 = 0 AND v_PvahYYMDApplied4 = '0' AND RTRIM(v_PvahPaymntType4) = '', '0', i_PvahYYMDApplied5) AS v_PvahYYMDApplied5,
+	IFF(v_PvahCashApplied4 = 0 
+		AND v_PvahYYMDApplied4 = '0' 
+		AND RTRIM(v_PvahPaymntType4
+		) = '',
+		'0',
+		i_PvahYYMDApplied5
+	) AS v_PvahYYMDApplied5,
 	-- *INF*: IIF(ISNULL(i_pol_ak_id),-1,i_pol_ak_id)
-	IFF(i_pol_ak_id IS NULL, - 1, i_pol_ak_id) AS o_pol_ak_id,
+	IFF(i_pol_ak_id IS NULL,
+		- 1,
+		i_pol_ak_id
+	) AS o_pol_ak_id,
 	v_PvahCashApplied1 AS o_PvahCashApplied1,
 	v_PvahPaymntType1 AS o_PvahPaymntType1,
 	v_PvahYYMDApplied1 AS o_PvahYYMDApplied1,
@@ -203,7 +299,9 @@ AGG_SUM AS (
 	pol_ak_id,
 	PvahCashApplied,
 	-- *INF*: ROUND(SUM(PvahCashApplied),2)
-	ROUND(SUM(PvahCashApplied), 2) AS sum_PvahCashApplied,
+	ROUND(SUM(PvahCashApplied
+		), 2
+	) AS sum_PvahCashApplied,
 	PvahPaymntType,
 	PvahYYMDApplied
 	FROM FIL_RemoveInvalid
@@ -240,9 +338,11 @@ EXP_ClaimFreeAwardType AS (
 		'W', 'LIQ-WOFF',
 		'K', 'CHECK',
 		'Z', 'MANUAL-DISB',
-		i_PvahPaymntType) AS o_ClaimFreeAwardType,
+		i_PvahPaymntType
+	) AS o_ClaimFreeAwardType,
 	-- *INF*: TO_DATE( i_PvahYYMDApplied,'YYYYMMDD')
-	TO_DATE(i_PvahYYMDApplied, 'YYYYMMDD') AS o_ClaimFreeAwardTransactionEnteredDate
+	TO_DATE(i_PvahYYMDApplied, 'YYYYMMDD'
+	) AS o_ClaimFreeAwardTransactionEnteredDate
 	FROM AGG_SUM
 ),
 LKP_ClaimFreeAward AS (
@@ -278,17 +378,27 @@ EXP_ChangeFlag AS (
 	EXP_ClaimFreeAwardType.o_ClaimFreeAwardType AS ClaimFreeAwardType,
 	EXP_ClaimFreeAwardType.o_ClaimFreeAwardTransactionEnteredDate AS ClaimFreeAwardTransactionEnteredDate,
 	-- *INF*: LAST_DAY(ClaimFreeAwardTransactionEnteredDate)
-	LAST_DAY(ClaimFreeAwardTransactionEnteredDate) AS v_ClaimFreeAwardRunDate,
+	LAST_DAY(ClaimFreeAwardTransactionEnteredDate
+	) AS v_ClaimFreeAwardRunDate,
 	-- *INF*: IIF(ISNULL(lkp_ClaimFreeAwardAKId),'NEW',IIF(
 	-- ClaimFreeAwardAmount<>lkp_ClaimFreeAwardAmount OR lkp_ClaimFreeAwardRunDate <> v_ClaimFreeAwardRunDate,'UPDATE','NOCHANGE'))
-	IFF(lkp_ClaimFreeAwardAKId IS NULL, 'NEW', IFF(ClaimFreeAwardAmount <> lkp_ClaimFreeAwardAmount OR lkp_ClaimFreeAwardRunDate <> v_ClaimFreeAwardRunDate, 'UPDATE', 'NOCHANGE')) AS o_Change_Flag,
+	IFF(lkp_ClaimFreeAwardAKId IS NULL,
+		'NEW',
+		IFF(ClaimFreeAwardAmount <> lkp_ClaimFreeAwardAmount 
+			OR lkp_ClaimFreeAwardRunDate <> v_ClaimFreeAwardRunDate,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS o_Change_Flag,
 	v_ClaimFreeAwardRunDate AS o_ClaimFreeAwardRunDate,
 	1 AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,
+	TO_DATE('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_ExpirationDate,
+	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate

@@ -136,7 +136,8 @@ EXP_SurchargeExemptCode AS (
 		'State', 'EA',
 		'Local', 'EA',
 		'NonProfitReligious', 'EA',
-		'N/A') AS o_SurchargeExemptCode
+		'N/A'
+	) AS o_SurchargeExemptCode
 	FROM SQ_DCPolicyStaging
 ),
 AGG_Remove_Duplicates AS (
@@ -176,35 +177,79 @@ AGG_Remove_Duplicates AS (
 	SQ_DCPolicyStaging.LineType AS DCLineType,
 	SQ_DCPolicyStaging.PolicyStatus AS Status,
 	-- *INF*: IIF(ISNULL(in_AgencyCode) OR IS_SPACES(in_AgencyCode) OR LENGTH(in_AgencyCode)=0,'N/A',LTRIM(RTRIM(in_AgencyCode)))
-	IFF(in_AgencyCode IS NULL OR IS_SPACES(in_AgencyCode) OR LENGTH(in_AgencyCode) = 0, 'N/A', LTRIM(RTRIM(in_AgencyCode))) AS out_Reference,
+	IFF(in_AgencyCode IS NULL 
+		OR LENGTH(in_AgencyCode)>0 AND TRIM(in_AgencyCode)='' 
+		OR LENGTH(in_AgencyCode
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(in_AgencyCode
+			)
+		)
+	) AS out_Reference,
 	-- *INF*: IIF(
 	--   ISNULL(in_CustomerNumber) OR IS_SPACES(in_CustomerNumber) OR LENGTH(in_CustomerNumber)=0,
 	--   'N/A',
 	--   LTRIM(RTRIM(in_CustomerNumber))
 	-- )
-	IFF(in_CustomerNumber IS NULL OR IS_SPACES(in_CustomerNumber) OR LENGTH(in_CustomerNumber) = 0, 'N/A', LTRIM(RTRIM(in_CustomerNumber))) AS out_CustomerNumber,
+	IFF(in_CustomerNumber IS NULL 
+		OR LENGTH(in_CustomerNumber)>0 AND TRIM(in_CustomerNumber)='' 
+		OR LENGTH(in_CustomerNumber
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(in_CustomerNumber
+			)
+		)
+	) AS out_CustomerNumber,
 	-- *INF*: IIF(
 	--   ISNULL(in_PolicyNumber) OR IS_SPACES(in_PolicyNumber) OR LENGTH(in_PolicyNumber)=0,
 	--   'N/A',
 	--   LTRIM(RTRIM(in_PolicyNumber))
 	-- )
-	IFF(in_PolicyNumber IS NULL OR IS_SPACES(in_PolicyNumber) OR LENGTH(in_PolicyNumber) = 0, 'N/A', LTRIM(RTRIM(in_PolicyNumber))) AS out_PolicyNumber,
+	IFF(in_PolicyNumber IS NULL 
+		OR LENGTH(in_PolicyNumber)>0 AND TRIM(in_PolicyNumber)='' 
+		OR LENGTH(in_PolicyNumber
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(in_PolicyNumber
+			)
+		)
+	) AS out_PolicyNumber,
 	in_Id AS out_Id,
 	in_PolicyVersion AS out_PolicyVersion,
 	-- *INF*: IIF(RTRIM(WBProduct) = 'Commercial Package', 'N/A', DCLineType)
-	IFF(RTRIM(WBProduct) = 'Commercial Package', 'N/A', DCLineType) AS out_SourceLineType,
+	IFF(RTRIM(WBProduct
+		) = 'Commercial Package',
+		'N/A',
+		DCLineType
+	) AS out_SourceLineType,
 	-- *INF*: IIF(
 	--   ISNULL(WBProduct) OR IS_SPACES(WBProduct) OR LENGTH(WBProduct)=0,
 	--   'N/A',
 	--   LTRIM(RTRIM(WBProduct))
 	-- )
-	IFF(WBProduct IS NULL OR IS_SPACES(WBProduct) OR LENGTH(WBProduct) = 0, 'N/A', LTRIM(RTRIM(WBProduct))) AS out_WBProduct,
+	IFF(WBProduct IS NULL 
+		OR LENGTH(WBProduct)>0 AND TRIM(WBProduct)='' 
+		OR LENGTH(WBProduct
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(WBProduct
+			)
+		)
+	) AS out_WBProduct,
 	-- *INF*: IIF(
 	--   ISNULL(WBProductType) OR IS_SPACES(WBProductType) OR LENGTH(WBProductType)=0,
 	--   'N/A',
 	--   LTRIM(RTRIM(WBProductType))
 	-- )
-	IFF(WBProductType IS NULL OR IS_SPACES(WBProductType) OR LENGTH(WBProductType) = 0, 'N/A', LTRIM(RTRIM(WBProductType))) AS out_WBProductType,
+	IFF(WBProductType IS NULL 
+		OR LENGTH(WBProductType)>0 AND TRIM(WBProductType)='' 
+		OR LENGTH(WBProductType
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(WBProductType
+			)
+		)
+	) AS out_WBProductType,
 	SQ_DCPolicyStaging.PriorPolicykey AS Prior_Policy_key,
 	SQ_DCPolicyStaging.RenewalPolicySymbol,
 	SQ_DCPolicyStaging.RenewalPolicyNumber,
@@ -349,7 +394,10 @@ EXP_ConvertPolicyOffering AS (
 	SELECT
 	PolicyOfferingCode,
 	-- *INF*: IIF(ISNULL(PolicyOfferingCode), '000', PolicyOfferingCode)
-	IFF(PolicyOfferingCode IS NULL, '000', PolicyOfferingCode) AS o_PolicyOfferingCode
+	IFF(PolicyOfferingCode IS NULL,
+		'000',
+		PolicyOfferingCode
+	) AS o_PolicyOfferingCode
 	FROM LKP_SupDCTPolicyOfferingLineOfBusinessProductRules
 ),
 LKP_PolicyOffering AS (
@@ -403,7 +451,11 @@ EXP_PolicyKey AS (
 	-- --Per Rob M, this needs to be PolicyNumber and PolicyVersion only.  No GUIDs.  No Symbols. 01/24/2014
 	-- --in_Id||v_PolicyVersion
 	-- --v_cust_num||v_PolicyNumber||v_PolicyVersion
-	rtrim(ltrim(v_PolicyNumber)) || rtrim(ltrim(v_PolicyVersion)) AS v_policy_key,
+	rtrim(ltrim(v_PolicyNumber
+		)
+	) || rtrim(ltrim(v_PolicyVersion
+		)
+	) AS v_policy_key,
 	v_policy_key AS out_policy_key,
 	in_CreatedDate AS out_CreatedDate
 	FROM AGG_Remove_Duplicates
@@ -671,24 +723,52 @@ EXP_values AS (
 	-- --Per Rob M, this needs to be PolicyNumber and PolicyVersion only.  No GUIDs.  No Symbols. 01/24/2014
 	-- --in_Id||v_PolicyVersion
 	-- --v_cust_num||v_PolicyNumber||v_PolicyVersion
-	rtrim(ltrim(v_PolicyNumber)) || rtrim(ltrim(v_PolicyVersion)) AS v_policy_key,
+	rtrim(ltrim(v_PolicyNumber
+		)
+	) || rtrim(ltrim(v_PolicyVersion
+		)
+	) AS v_policy_key,
 	-- *INF*: IIF(ISNULL(Type) OR IS_SPACES(Type) OR LENGTH(Type)=0,'N/A',LTRIM(RTRIM(Type)))
-	IFF(Type IS NULL OR IS_SPACES(Type) OR LENGTH(Type) = 0, 'N/A', LTRIM(RTRIM(Type))) AS v_Type,
+	IFF(Type IS NULL 
+		OR LENGTH(Type)>0 AND TRIM(Type)='' 
+		OR LENGTH(Type
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(Type
+			)
+		)
+	) AS v_Type,
 	-- *INF*: IIF(v_policy_key=v_prev_policy_key ,v_seq+1,1)
-	IFF(v_policy_key = v_prev_policy_key, v_seq + 1, 1) AS v_seq,
+	IFF(v_policy_key = v_prev_policy_key,
+		v_seq + 1,
+		1
+	) AS v_seq,
 	-- *INF*: rtrim(ltrim(in_Id))||rtrim(ltrim(v_PolicyVersion))
 	-- 
 	-- --Per Rob M, this needs to be PolicyNumber and PolicyVersion only.  No GUIDs.  No Symbols. 01/24/2014
 	-- --in_Id||v_PolicyVersion
 	-- --v_cust_num||v_PolicyNumber||v_PolicyVersion
-	rtrim(ltrim(in_Id)) || rtrim(ltrim(v_PolicyVersion)) AS v_policy_id_key,
+	rtrim(ltrim(in_Id
+		)
+	) || rtrim(ltrim(v_PolicyVersion
+		)
+	) AS v_policy_id_key,
 	-- *INF*: IIF(ISNULL(in_CancellationDate),
 	-- TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS'),in_CancellationDate)
-	IFF(in_CancellationDate IS NULL, TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'), in_CancellationDate) AS v_CancellationDate,
+	IFF(in_CancellationDate IS NULL,
+		TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		in_CancellationDate
+	) AS v_CancellationDate,
 	-- *INF*: IIF(v_Type<> 'Cancel',TO_DATE('21001231235959','YYYYMMDDHH24MISS'), LEAST(v_CancellationDate,in_TransactionEffectiveDate))
 	-- 
 	-- --IIF(in_Status<>'Cancelled',TO_DATE('21001231235959','YYYYMMDDHH24MISS'), LEAST(v_CancellationDate,in_TransactionEffectiveDate))
-	IFF(v_Type <> 'Cancel', TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), LEAST(v_CancellationDate, in_TransactionEffectiveDate)) AS v_pol_cancellation_date,
+	IFF(v_Type <> 'Cancel',
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		LEAST(v_CancellationDate, in_TransactionEffectiveDate
+		)
+	) AS v_pol_cancellation_date,
 	-- *INF*: IIF( v_seq=1,
 	-- 
 	-- iif(NOT IN(v_Type,'Reinstate','Cancel') and NOT ISNULL(lkp_pol_ak_id)  
@@ -705,26 +785,70 @@ EXP_values AS (
 	-- 
 	-- --This expression is stores the cancellation date for the records between Cancel and Reinstate so that it assignes the same date for the records between cancel and reinstate.
 	-- --For the first record is not reinstate and the target has cancel within the same date range then it treats the first record same as target(cancel)
-	IFF(v_seq = 1, IFF(NOT IN(v_Type, 'Reinstate', 'Cancel') AND NOT lkp_pol_ak_id IS NULL AND to_char(lkp_pol_cancellation_date, 'YYYYMM') <> '210012', lkp_pol_cancellation_date, v_pol_cancellation_date), IFF(v_seq <> 1 AND IN(v_Type, 'Reinstate', 'Cancel'), v_pol_cancellation_date, v_pol_cancellation_date_persist)) AS v_pol_cancellation_date_persist,
+	IFF(v_seq = 1,
+		IFF(NOT v_Type IN ('Reinstate','Cancel') 
+			AND lkp_pol_ak_id IS NULL 
+			AND to_char(lkp_pol_cancellation_date, 'YYYYMM'
+			) <> '210NOT 012',
+			lkp_pol_cancellation_date,
+			v_pol_cancellation_date
+		),
+		IFF(v_seq <> 1 
+			AND v_Type IN ('Reinstate','Cancel'),
+			v_pol_cancellation_date,
+			v_pol_cancellation_date_persist
+		)
+	) AS v_pol_cancellation_date_persist,
 	-- *INF*: IIF(v_pol_cancellation_date_persist<TO_DATE('21001231','YYYYMMDD'),  'Y','N' )
 	-- --prod 11524 
-	IFF(v_pol_cancellation_date_persist < TO_DATE('21001231', 'YYYYMMDD'), 'Y', 'N') AS v_pol_cancellation_ind,
+	IFF(v_pol_cancellation_date_persist < TO_DATE('21001231', 'YYYYMMDD'
+		),
+		'Y',
+		'N'
+	) AS v_pol_cancellation_ind,
 	-- *INF*: in_PrimaryRatingState
 	-- 
 	-- --IIF(ISNULL(in_PrimaryRatingState) OR IS_SPACES(in_PrimaryRatingState) OR LENGTH(in_PrimaryRatingState)=0,'N/A',in_PrimaryRatingState)
 	in_PrimaryRatingState AS v_PrimaryRatingState,
 	-- *INF*: IIF(ISNULL(in_Term), 0, in_Term)
-	IFF(in_Term IS NULL, 0, in_Term) AS v_Term,
+	IFF(in_Term IS NULL,
+		0,
+		in_Term
+	) AS v_Term,
 	-- *INF*: IIF(v_Term<100, LPAD(TO_CHAR(v_Term), 3, '0'), TO_CHAR(v_Term))
-	IFF(v_Term < 100, LPAD(TO_CHAR(v_Term), 3, '0'), TO_CHAR(v_Term)) AS v_pol_term,
+	IFF(v_Term < 100,
+		LPAD(TO_CHAR(v_Term
+			), 3, '0'
+		),
+		TO_CHAR(v_Term
+		)
+	) AS v_pol_term,
 	-- *INF*: IIF(ISNULL(in_PreviousPolicyNumber) OR IS_SPACES(in_PreviousPolicyNumber) OR LENGTH(in_PreviousPolicyNumber)=0,'N/A',in_PreviousPolicyNumber)
-	IFF(in_PreviousPolicyNumber IS NULL OR IS_SPACES(in_PreviousPolicyNumber) OR LENGTH(in_PreviousPolicyNumber) = 0, 'N/A', in_PreviousPolicyNumber) AS v_PreviousPolicyNumber,
+	IFF(in_PreviousPolicyNumber IS NULL 
+		OR LENGTH(in_PreviousPolicyNumber)>0 AND TRIM(in_PreviousPolicyNumber)='' 
+		OR LENGTH(in_PreviousPolicyNumber
+		) = 0,
+		'N/A',
+		in_PreviousPolicyNumber
+	) AS v_PreviousPolicyNumber,
 	-- *INF*: IIF(ISNULL(in_EffectiveDate),TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS') , in_EffectiveDate)
-	IFF(in_EffectiveDate IS NULL, TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'), in_EffectiveDate) AS v_EffectiveDate,
+	IFF(in_EffectiveDate IS NULL,
+		TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		in_EffectiveDate
+	) AS v_EffectiveDate,
 	-- *INF*: IIF(ISNULL(in_ExpirationDate),TO_DATE('2100-12-31 23:59:59 ','YYYY-MM-DD HH24:MI:SS') , in_ExpirationDate)
-	IFF(in_ExpirationDate IS NULL, TO_DATE('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS'), in_ExpirationDate) AS v_ExpirationDate,
+	IFF(in_ExpirationDate IS NULL,
+		TO_DATE('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		in_ExpirationDate
+	) AS v_ExpirationDate,
 	-- *INF*: IIF(ISNULL(in_InceptionDate),TO_DATE('2100-12-31 23:59:59 ','YYYY-MM-DD HH24:MI:SS') , in_InceptionDate)
-	IFF(in_InceptionDate IS NULL, TO_DATE('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS'), in_InceptionDate) AS v_InceptionDate,
+	IFF(in_InceptionDate IS NULL,
+		TO_DATE('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		in_InceptionDate
+	) AS v_InceptionDate,
 	-- *INF*: IIF( v_EffectiveDate<=in_CreatedDate AND 
 	-- 	      in_CreatedDate< (iif (v_ExpirationDate< v_pol_cancellation_date_persist, v_ExpirationDate,v_pol_cancellation_date_persist)),'I' ,
 	-- iif(v_pol_cancellation_date_persist<=in_CreatedDate OR (v_pol_cancellation_date_persist=v_EffectiveDate AND in_CreatedDate<=v_EffectiveDate),'C',
@@ -734,7 +858,30 @@ EXP_values AS (
 	-- )
 	-- 
 	-- 
-	IFF(v_EffectiveDate <= in_CreatedDate AND in_CreatedDate < ( IFF(v_ExpirationDate < v_pol_cancellation_date_persist, v_ExpirationDate, v_pol_cancellation_date_persist) ), 'I', IFF(v_pol_cancellation_date_persist <= in_CreatedDate OR ( v_pol_cancellation_date_persist = v_EffectiveDate AND in_CreatedDate <= v_EffectiveDate ), 'C', IFF(in_CreatedDate >= v_ExpirationDate, 'N', IFF(in_CreatedDate < v_EffectiveDate AND ( v_pol_cancellation_date_persist > in_CreatedDate OR v_pol_cancellation_date_persist > v_EffectiveDate ), 'F', 'N/A')))) AS v_pol_status_code,
+	IFF(v_EffectiveDate <= in_CreatedDate 
+		AND in_CreatedDate < ( IFF(v_ExpirationDate < v_pol_cancellation_date_persist,
+				v_ExpirationDate,
+				v_pol_cancellation_date_persist
+			) 
+		),
+		'I',
+		IFF(v_pol_cancellation_date_persist <= in_CreatedDate 
+			OR ( v_pol_cancellation_date_persist = v_EffectiveDate 
+				AND in_CreatedDate <= v_EffectiveDate 
+			),
+			'C',
+			IFF(in_CreatedDate >= v_ExpirationDate,
+				'N',
+				IFF(in_CreatedDate < v_EffectiveDate 
+					AND ( v_pol_cancellation_date_persist > in_CreatedDate 
+						OR v_pol_cancellation_date_persist > v_EffectiveDate 
+					),
+					'F',
+					'N/A'
+				)
+			)
+		)
+	) AS v_pol_status_code,
 	-- *INF*: :LKP.LKP_pol_issue_code(v_policy_key)
 	LKP_POL_ISSUE_CODE_v_policy_key.pol_issue_code AS v_lkp_pol_issue_code,
 	-- *INF*: DECODE(TRUE, v_seq=1 and NOT ISNULL(v_lkp_pol_issue_code),v_lkp_pol_issue_code,
@@ -749,67 +896,129 @@ EXP_values AS (
 	--  ) 
 	-- --Note: This logic is obsolete after 5/1/2018. Get the Policy Issue code from v_pol_issue_code_new port
 	DECODE(TRUE,
-		v_seq = 1 AND NOT v_lkp_pol_issue_code IS NULL, v_lkp_pol_issue_code,
+		v_seq = 1 
+		AND v_lkp_pol_issue_code IS NOT NULL, v_lkp_pol_issue_code,
 		v_seq <> 1, v_pol_issue_code,
-		IN(Type, 'New') AND in_PreviousPolicyNumber IS NULL, 'N',
-		IN(Type, 'Rewrite', 'Reissue'), LKP_POL_ISSUE_CODE_Prior_Policy_key.pol_issue_code,
-		IN(Type, 'Renew'), 'R',
-		in_PreviousPolicyNumber IS NULL, 'N') AS v_pol_issue_code_old,
+		Type IN ('New') 
+		AND in_PreviousPolicyNumber IS NULL, 'N',
+		Type IN ('Rewrite','Reissue'), LKP_POL_ISSUE_CODE_Prior_Policy_key.pol_issue_code,
+		Type IN ('Renew'), 'R',
+		in_PreviousPolicyNumber IS NULL, 'N'
+	) AS v_pol_issue_code_old,
 	-- *INF*: IIF(ISNULL(in_PolicyIssueCodeDesc) OR IS_SPACES(in_PolicyIssueCodeDesc) OR LTRIM(RTRIM(in_PolicyIssueCodeDesc))='',v_lkp_pol_issue_code,
 	-- IIF(LTRIM(RTRIM(in_PolicyIssueCodeDesc))='New', 'N','R'
 	-- )
 	-- )
-	IFF(in_PolicyIssueCodeDesc IS NULL OR IS_SPACES(in_PolicyIssueCodeDesc) OR LTRIM(RTRIM(in_PolicyIssueCodeDesc)) = '', v_lkp_pol_issue_code, IFF(LTRIM(RTRIM(in_PolicyIssueCodeDesc)) = 'New', 'N', 'R')) AS v_pol_issue_code_new,
+	IFF(in_PolicyIssueCodeDesc IS NULL 
+		OR LENGTH(in_PolicyIssueCodeDesc)>0 AND TRIM(in_PolicyIssueCodeDesc)='' 
+		OR LTRIM(RTRIM(in_PolicyIssueCodeDesc
+			)
+		) = '',
+		v_lkp_pol_issue_code,
+		IFF(LTRIM(RTRIM(in_PolicyIssueCodeDesc
+				)
+			) = 'New',
+			'N',
+			'R'
+		)
+	) AS v_pol_issue_code_new,
 	-- *INF*: IIF(TO_DATE(TO_CHAR(v_EffectiveDate,'YYYY-MM-DD'),'YYYY-MM-DD') < TO_DATE('2018-05-01','YYYY-MM-DD') OR ISNULL(in_PolicyIssueCodeDesc) OR LTRIM(RTRIM(in_PolicyIssueCodeDesc))='',
 	-- v_pol_issue_code_old,
 	-- v_pol_issue_code_new
 	-- )
 	-- 
 	-- --Note: This logic is obsolete after 5/1/2018. Get the Policy Issue code from v_pol_issue_code_new port
-	IFF(TO_DATE(TO_CHAR(v_EffectiveDate, 'YYYY-MM-DD'), 'YYYY-MM-DD') < TO_DATE('2018-05-01', 'YYYY-MM-DD') OR in_PolicyIssueCodeDesc IS NULL OR LTRIM(RTRIM(in_PolicyIssueCodeDesc)) = '', v_pol_issue_code_old, v_pol_issue_code_new) AS v_pol_issue_code,
+	IFF(TO_DATE(TO_CHAR(v_EffectiveDate, 'YYYY-MM-DD'
+			), 'YYYY-MM-DD'
+		) < TO_DATE('2018-05-01', 'YYYY-MM-DD'
+		) 
+		OR in_PolicyIssueCodeDesc IS NULL 
+		OR LTRIM(RTRIM(in_PolicyIssueCodeDesc
+			)
+		) = '',
+		v_pol_issue_code_old,
+		v_pol_issue_code_new
+	) AS v_pol_issue_code,
 	-- *INF*: IIF(
 	--   ISNULL(in_InceptionDate),
 	--   -1,
 	--   ABS(DATE_DIFF(TRUNC(in_InceptionDate,'YYYY'),TRUNC(v_CurrentDate,'YYYY'),'YYYY'))
 	-- )
-	IFF(in_InceptionDate IS NULL, - 1, ABS(DATE_DIFF(TRUNC(in_InceptionDate, 'YYYY'), TRUNC(v_CurrentDate, 'YYYY'), 'YYYY'))) AS v_pol_age,
+	IFF(in_InceptionDate IS NULL,
+		- 1,
+		ABS(DATEDIFF(YEAR,CAST(TRUNC(in_InceptionDate, 'YEAR') AS TIMESTAMP_NTZ(0)),CAST(TRUNC(v_CurrentDate, 'YEAR') AS TIMESTAMP_NTZ(0)))
+		)
+	) AS v_pol_age,
 	-- *INF*: DECODE(TRUE, in_Status = 'InForce' and Type = 'Renew', '3',
 	-- IN(in_Status,'InForce', 'Quote', 'Application', 'Bound', 'Cancel-Pending') and v_CurrentDate>=v_EffectiveDate and v_CurrentDate<v_ExpirationDate, '1',
 	-- IN(in_Status,'Cancelled', 'PolicyDeclined'), '9',
 	-- in_Status='NonRenewed', '7',
 	-- 'N/A')
 	DECODE(TRUE,
-		in_Status = 'InForce' AND Type = 'Renew', '3',
-		IN(in_Status, 'InForce', 'Quote', 'Application', 'Bound', 'Cancel-Pending') AND v_CurrentDate >= v_EffectiveDate AND v_CurrentDate < v_ExpirationDate, '1',
-		IN(in_Status, 'Cancelled', 'PolicyDeclined'), '9',
+		in_Status = 'InForce' 
+		AND Type = 'Renew', '3',
+		in_Status IN ('InForce','Quote','Application','Bound','Cancel-Pending') 
+		AND v_CurrentDate >= v_EffectiveDate 
+		AND v_CurrentDate < v_ExpirationDate, '1',
+		in_Status IN ('Cancelled','PolicyDeclined'), '9',
 		in_Status = 'NonRenewed', '7',
-		'N/A') AS v_renl_code,
+		'N/A'
+	) AS v_renl_code,
 	-- *INF*: IIF(ISNULL(in_AuditPeriod) OR IS_SPACES(in_AuditPeriod) OR LENGTH(in_AuditPeriod)=0,'N/A',in_AuditPeriod)
-	IFF(in_AuditPeriod IS NULL OR IS_SPACES(in_AuditPeriod) OR LENGTH(in_AuditPeriod) = 0, 'N/A', in_AuditPeriod) AS v_AuditPeriod,
+	IFF(in_AuditPeriod IS NULL 
+		OR LENGTH(in_AuditPeriod)>0 AND TRIM(in_AuditPeriod)='' 
+		OR LENGTH(in_AuditPeriod
+		) = 0,
+		'N/A',
+		in_AuditPeriod
+	) AS v_AuditPeriod,
 	-- *INF*: IIF(ISNULL(in_County) OR IS_SPACES(in_County) OR LENGTH(in_County)=0,'N/A',in_County)
-	IFF(in_County IS NULL OR IS_SPACES(in_County) OR LENGTH(in_County) = 0, 'N/A', in_County) AS v_County,
+	IFF(in_County IS NULL 
+		OR LENGTH(in_County)>0 AND TRIM(in_County)='' 
+		OR LENGTH(in_County
+		) = 0,
+		'N/A',
+		in_County
+	) AS v_County,
 	-- *INF*: IIF(
 	--   LTRIM(RTRIM(in_Division))='WCPool',
 	--   'PoolService',
 	--   'CommercialLines' 
 	-- )
-	IFF(LTRIM(RTRIM(in_Division)) = 'WCPool', 'PoolService', 'CommercialLines') AS v_InsuranceSegmentCode,
+	IFF(LTRIM(RTRIM(in_Division
+			)
+		) = 'WCPool',
+		'PoolService',
+		'CommercialLines'
+	) AS v_InsuranceSegmentCode,
 	v_pol_sym AS out_pol_sym,
 	v_PolicyNumber AS out_PolicyNumber,
 	v_PolicyVersion AS out_PolicyVersion,
 	-1 AS out_producer_code_id,
 	-- *INF*: rtrim(ltrim(v_PolicyNumber))||rtrim(ltrim(v_PolicyVersion))
 	-- --LTRIM(RTRIM(v_policy_key))
-	rtrim(ltrim(v_PolicyNumber)) || rtrim(ltrim(v_PolicyVersion)) AS out_policy_key,
+	rtrim(ltrim(v_PolicyNumber
+		)
+	) || rtrim(ltrim(v_PolicyVersion
+		)
+	) AS out_policy_key,
 	-- *INF*: LTRIM(RTRIM(v_policy_id_key))
-	LTRIM(RTRIM(v_policy_id_key)) AS out_policy_id_key,
+	LTRIM(RTRIM(v_policy_id_key
+		)
+	) AS out_policy_id_key,
 	'05' AS out_mco,
 	'N/A' AS out_pol_co_num,
 	v_EffectiveDate AS out_EffectiveDate,
 	v_ExpirationDate AS out_ExpirationDate,
 	v_InceptionDate AS out_InceptionDate,
 	-- *INF*: IIF(ISNULL(in_BCCCode) OR IS_SPACES(in_BCCCode) OR LENGTH(in_BCCCode)=0,'N/A',in_BCCCode)
-	IFF(in_BCCCode IS NULL OR IS_SPACES(in_BCCCode) OR LENGTH(in_BCCCode) = 0, 'N/A', in_BCCCode) AS out_prim_bus_class_code,
+	IFF(in_BCCCode IS NULL 
+		OR LENGTH(in_BCCCode)>0 AND TRIM(in_BCCCode)='' 
+		OR LENGTH(in_BCCCode
+		) = 0,
+		'N/A',
+		in_BCCCode
+	) AS out_prim_bus_class_code,
 	'N/A' AS out_reins_code,
 	'N/A' AS out_pms_pol_lob_code,
 	'N/A' AS out_pol_co_line_code,
@@ -819,8 +1028,13 @@ EXP_values AS (
 	-- LTRIM(RTRIM(in_cancellation_rsn_code))
 	-- )
 	DECODE(TRUE,
-		LTRIM(RTRIM(in_cancellation_rsn_code)) IS NULL, 'N/A',
-		LTRIM(RTRIM(in_cancellation_rsn_code))) AS out_pol_cancellation_rsn_code,
+		LTRIM(RTRIM(in_cancellation_rsn_code
+			)
+		) IS NULL, 'N/A',
+		LTRIM(RTRIM(in_cancellation_rsn_code
+			)
+		)
+	) AS out_pol_cancellation_rsn_code,
 	v_PrimaryRatingState AS out_state_code,
 	AGG_Remove_Duplicates.CustomerCare,
 	'N/A' AS out_wbconnect_upload_code,
@@ -833,9 +1047,14 @@ EXP_values AS (
 	-- 
 	-- --IIF(customercare='0','0',IIF(customercare='1','1','N/A'))?
 	Decode(True,
-		In(ltrim(rtrim(CustomerCare)), '0'), 'N',
-		In(ltrim(rtrim(CustomerCare)), '1'), 'Y',
-		'N/A') AS out_serv_center_support_code,
+		ltrim(rtrim(CustomerCare
+			)
+		) IN ('0'), 'N',
+		ltrim(rtrim(CustomerCare
+			)
+		) IN ('1'), 'Y',
+		'N/A'
+	) AS out_serv_center_support_code,
 	v_pol_term AS out_pol_term,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(in_Terrorism) OR IS_SPACES(in_Terrorism) OR LENGTH(in_Terrorism)=0,'N/A',
@@ -843,16 +1062,29 @@ EXP_values AS (
 	-- in_Terrorism='0','N',
 	-- 'N/A')
 	DECODE(TRUE,
-		in_Terrorism IS NULL OR IS_SPACES(in_Terrorism) OR LENGTH(in_Terrorism) = 0, 'N/A',
+		in_Terrorism IS NULL 
+		OR LENGTH(in_Terrorism)>0 AND TRIM(in_Terrorism)='' 
+		OR LENGTH(in_Terrorism
+		) = 0, 'N/A',
 		in_Terrorism = '1', 'Y',
 		in_Terrorism = '0', 'N',
-		'N/A') AS out_terrorism_risk_ind,
+		'N/A'
+	) AS out_terrorism_risk_ind,
 	v_pol_status_code AS out_pol_status_code,
 	-- *INF*: IIF(ISNULL(v_pol_issue_code),'R',v_pol_issue_code)
-	IFF(v_pol_issue_code IS NULL, 'R', v_pol_issue_code) AS out_pol_issue_code,
+	IFF(v_pol_issue_code IS NULL,
+		'R',
+		v_pol_issue_code
+	) AS out_pol_issue_code,
 	v_pol_age AS out_pol_age,
 	-- *INF*: IIF(ISNULL(in_RiskGrade) OR IS_SPACES(in_RiskGrade) OR LENGTH(in_RiskGrade)=0,'N/A',in_RiskGrade)
-	IFF(in_RiskGrade IS NULL OR IS_SPACES(in_RiskGrade) OR LENGTH(in_RiskGrade) = 0, 'N/A', in_RiskGrade) AS out_industry_risk_grade_code,
+	IFF(in_RiskGrade IS NULL 
+		OR LENGTH(in_RiskGrade)>0 AND TRIM(in_RiskGrade)='' 
+		OR LENGTH(in_RiskGrade
+		) = 0,
+		'N/A',
+		in_RiskGrade
+	) AS out_industry_risk_grade_code,
 	'N/A' AS out_uw_review_yr,
 	'N/A' AS out_mvr_request_code,
 	v_renl_code AS out_renl_code,
@@ -868,13 +1100,20 @@ EXP_values AS (
 	0 AS out_renl_disc,
 	-1 AS out_renl_safe_driver_disc_count,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59 ','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS') AS out_nonrenewal_flag_date,
+	TO_DATE('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS'
+	) AS out_nonrenewal_flag_date,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59 ','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS') AS out_audit_complt_date,
+	TO_DATE('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS'
+	) AS out_audit_complt_date,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59 ','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS') AS out_orig_acct_date,
+	TO_DATE('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS'
+	) AS out_orig_acct_date,
 	-- *INF*: IIF(NOT ISNULL(in_TransactionDate),in_TransactionDate,TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS'))
-	IFF(NOT in_TransactionDate IS NULL, in_TransactionDate, TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')) AS out_pol_enter_date,
+	IFF(in_TransactionDate IS NOT NULL,
+		in_TransactionDate,
+		TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+		)
+	) AS out_pol_enter_date,
 	'N/A' AS out_excess_claim_code,
 	'N/A' AS out_pol_status_on_pif,
 	'N/A' AS out_target_mrkt_code,
@@ -882,7 +1121,10 @@ EXP_values AS (
 	'N/A' AS out_pol_kind_code,
 	AGG_Remove_Duplicates.BusinessSegmentCode AS in_bus_seg_code,
 	-- *INF*: IIF(NOT ISNULL(in_bus_seg_code),in_bus_seg_code,'N/A')
-	IFF(NOT in_bus_seg_code IS NULL, in_bus_seg_code, 'N/A') AS out_bus_seg_code,
+	IFF(in_bus_seg_code IS NOT NULL,
+		in_bus_seg_code,
+		'N/A'
+	) AS out_bus_seg_code,
 	'N/A' AS out_pif_upload_audit_ind,
 	0 AS out_err_flag_bal_txn,
 	0 AS out_err_flag_bal_reins,
@@ -890,27 +1132,68 @@ EXP_values AS (
 	'N/A' AS out_ClassOfBusiness,
 	0 AS out_ErrorFlagBalancePremiumTransaction,
 	-- *INF*: IIF( Type='Renew' and NOT(ISNULL(in_PreviousPolicyNumber) OR IS_SPACES(in_PreviousPolicyNumber) OR LENGTH(in_PreviousPolicyNumber)=0)  , SUBSTR(in_PreviousPolicyNumber, 1, 7),'N/A')
-	IFF(Type = 'Renew' AND NOT ( in_PreviousPolicyNumber IS NULL OR IS_SPACES(in_PreviousPolicyNumber) OR LENGTH(in_PreviousPolicyNumber) = 0 ), SUBSTR(in_PreviousPolicyNumber, 1, 7), 'N/A') AS out_RenewalPolicyNumber,
+	IFF(Type = 'Renew' 
+		AND NOT ( in_PreviousPolicyNumber IS NULL 
+			OR LENGTH(in_PreviousPolicyNumber)>0 AND TRIM(in_PreviousPolicyNumber)='' 
+			OR LENGTH(in_PreviousPolicyNumber
+			) = 0 
+		),
+		SUBSTR(in_PreviousPolicyNumber, 1, 7
+		),
+		'N/A'
+	) AS out_RenewalPolicyNumber,
 	'000' AS out_RenewalPolicySymbol,
 	-- *INF*: IIF( Type='Renew' and NOT(ISNULL(in_PreviousPolicyNumber) OR IS_SPACES(in_PreviousPolicyNumber) OR LENGTH(in_PreviousPolicyNumber)=0)  , SUBSTR(in_PreviousPolicyNumber, 8, 2),'N/A')
-	IFF(Type = 'Renew' AND NOT ( in_PreviousPolicyNumber IS NULL OR IS_SPACES(in_PreviousPolicyNumber) OR LENGTH(in_PreviousPolicyNumber) = 0 ), SUBSTR(in_PreviousPolicyNumber, 8, 2), 'N/A') AS out_RenewalPolicyMod,
+	IFF(Type = 'Renew' 
+		AND NOT ( in_PreviousPolicyNumber IS NULL 
+			OR LENGTH(in_PreviousPolicyNumber)>0 AND TRIM(in_PreviousPolicyNumber)='' 
+			OR LENGTH(in_PreviousPolicyNumber
+			) = 0 
+		),
+		SUBSTR(in_PreviousPolicyNumber, 8, 2
+		),
+		'N/A'
+	) AS out_RenewalPolicyMod,
 	'N/A' AS out_BillingType,
 	in_Division AS out_strtgc_bus_dvsn_code,
 	in_AgencyAKID AS out_AgencyAKID,
 	-- *INF*: IIF(ISNULL(in_PolicyOfferingAKId),26,in_PolicyOfferingAKId)
-	IFF(in_PolicyOfferingAKId IS NULL, 26, in_PolicyOfferingAKId) AS out_PolicyOfferingAKId,
+	IFF(in_PolicyOfferingAKId IS NULL,
+		26,
+		in_PolicyOfferingAKId
+	) AS out_PolicyOfferingAKId,
 	-- *INF*: IIF(ISNULL(in_Program) OR IS_SPACES(in_Program) OR LENGTH(in_Program)=0,'N/A',LTRIM(RTRIM(in_Program)))
-	IFF(in_Program IS NULL OR IS_SPACES(in_Program) OR LENGTH(in_Program) = 0, 'N/A', LTRIM(RTRIM(in_Program))) AS out_ProgramCode,
+	IFF(in_Program IS NULL 
+		OR LENGTH(in_Program)>0 AND TRIM(in_Program)='' 
+		OR LENGTH(in_Program
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(in_Program
+			)
+		)
+	) AS out_ProgramCode,
 	-- *INF*: IIF(ISNULL(in_SurchargeExemptCode),'N/A',in_SurchargeExemptCode)
-	IFF(in_SurchargeExemptCode IS NULL, 'N/A', in_SurchargeExemptCode) AS out_SurchargeExemptCode,
+	IFF(in_SurchargeExemptCode IS NULL,
+		'N/A',
+		in_SurchargeExemptCode
+	) AS out_SurchargeExemptCode,
 	-- *INF*: IIF(ISNULL(in_StrategicProfitCenterAKId),-1,in_StrategicProfitCenterAKId)
-	IFF(in_StrategicProfitCenterAKId IS NULL, - 1, in_StrategicProfitCenterAKId) AS out_StrategicProfitCenterAKId,
+	IFF(in_StrategicProfitCenterAKId IS NULL,
+		- 1,
+		in_StrategicProfitCenterAKId
+	) AS out_StrategicProfitCenterAKId,
 	-- *INF*: IIF(ISNULL(in_InsuranceSegmentAKId),-1,in_InsuranceSegmentAKId)
-	IFF(in_InsuranceSegmentAKId IS NULL, - 1, in_InsuranceSegmentAKId) AS out_InsuranceSegmentAKId,
+	IFF(in_InsuranceSegmentAKId IS NULL,
+		- 1,
+		in_InsuranceSegmentAKId
+	) AS out_InsuranceSegmentAKId,
 	'N/A' AS out_ObligeeName,
 	'N' AS out_AutomatedUnderwritingServicesIndicator,
 	-- *INF*: IIF(in_AutomaticRenewalIndicator = 'T', '1', '0')
-	IFF(in_AutomaticRenewalIndicator = 'T', '1', '0') AS out_AutomaticRenewalIndicator,
+	IFF(in_AutomaticRenewalIndicator = 'T',
+		'1',
+		'0'
+	) AS out_AutomaticRenewalIndicator,
 	-- *INF*: --Fix for defect 3860
 	--  iif(isnull(in_Association) 
 	-- or IS_SPACES(in_Association) 
@@ -922,7 +1205,14 @@ EXP_values AS (
 	-- 
 	-- 
 	-- 
-	IFF(in_Association IS NULL OR IS_SPACES(in_Association) OR LENGTH(in_Association) = 0 OR in_Association = 'NA', 'N/A', in_Association) AS out_Association,
+	IFF(in_Association IS NULL 
+		OR LENGTH(in_Association)>0 AND TRIM(in_Association)='' 
+		OR LENGTH(in_Association
+		) = 0 
+		OR in_Association = 'NA',
+		'N/A',
+		in_Association
+	) AS out_Association,
 	AGG_Remove_Duplicates.Prior_Policy_key,
 	AGG_Remove_Duplicates.RenewalPolicySymbol,
 	AGG_Remove_Duplicates.RenewalPolicyNumber,
@@ -932,18 +1222,37 @@ EXP_values AS (
 	DECODE(in_IsRollover,
 		'T', 1,
 		'F', 0,
-		0) AS out_IsRollover,
+		0
+	) AS out_IsRollover,
 	AGG_Remove_Duplicates.PriorCarrierName AS in_PriorCarrierName,
 	-- *INF*: IIF(ISNULL(in_PriorCarrierName),'N/A', SUBSTR(LTRIM(RTRIM(in_PriorCarrierName)),1,50))
-	IFF(in_PriorCarrierName IS NULL, 'N/A', SUBSTR(LTRIM(RTRIM(in_PriorCarrierName)), 1, 50)) AS v_PriorCarrierName,
+	IFF(in_PriorCarrierName IS NULL,
+		'N/A',
+		SUBSTR(LTRIM(RTRIM(in_PriorCarrierName
+				)
+			), 1, 50
+		)
+	) AS v_PriorCarrierName,
 	AGG_Remove_Duplicates.PirorCarrierNameOther AS in_PirorCarrierNameOther,
 	-- *INF*: IIF(ISNULL(in_PirorCarrierNameOther),'N/A',SUBSTR(LTRIM(RTRIM(in_PirorCarrierNameOther)),1,50))
-	IFF(in_PirorCarrierNameOther IS NULL, 'N/A', SUBSTR(LTRIM(RTRIM(in_PirorCarrierNameOther)), 1, 50)) AS v_PriorCarrierNameOther,
+	IFF(in_PirorCarrierNameOther IS NULL,
+		'N/A',
+		SUBSTR(LTRIM(RTRIM(in_PirorCarrierNameOther
+				)
+			), 1, 50
+		)
+	) AS v_PriorCarrierNameOther,
 	-- *INF*:  --The chage is implemented for SM 784755 
 	-- IIF(in_IsRollover='T',IIF(v_PriorCarrierName='Other', v_PriorCarrierNameOther,v_PriorCarrierName), 'N/A')
 	-- 
 	-- --IIF(v_PriorCarrierName='Other', in_PirorCarrierNameOther,v_PriorCarrierName)
-	IFF(in_IsRollover = 'T', IFF(v_PriorCarrierName = 'Other', v_PriorCarrierNameOther, v_PriorCarrierName), 'N/A') AS out_RolloverPriorCarrier,
+	IFF(in_IsRollover = 'T',
+		IFF(v_PriorCarrierName = 'Other',
+			v_PriorCarrierNameOther,
+			v_PriorCarrierName
+		),
+		'N/A'
+	) AS out_RolloverPriorCarrier,
 	AGG_Remove_Duplicates.MailPolicyToInsured AS in_MailPolicyToInsured,
 	-- *INF*: DECODE(TRUE,
 	-- in_MailPolicyToInsured='T','1',
@@ -952,13 +1261,20 @@ EXP_values AS (
 	DECODE(TRUE,
 		in_MailPolicyToInsured = 'T', '1',
 		in_MailPolicyToInsured = '1', '1',
-		'0') AS out_MailPolicyToInsured,
+		'0'
+	) AS out_MailPolicyToInsured,
 	LKP_AgencyEmployee_GetAgencyEmployeeAKID.AgencyEmployeeAKID AS in_AgencyEmployeeAKID,
 	-- *INF*: IIF(ISNULL(in_AgencyEmployeeAKID),-1,in_AgencyEmployeeAKID)
-	IFF(in_AgencyEmployeeAKID IS NULL, - 1, in_AgencyEmployeeAKID) AS out_AgencyEmployeeAKID,
+	IFF(in_AgencyEmployeeAKID IS NULL,
+		- 1,
+		in_AgencyEmployeeAKID
+	) AS out_AgencyEmployeeAKID,
 	LKP_AgencyEmployee_GetAgencyEmployeeAKID.ProducerCode AS in_ProducerCode,
 	-- *INF*: IIF(ISNULL(in_ProducerCode),'N/A',in_ProducerCode)
-	IFF(in_ProducerCode IS NULL, 'N/A', in_ProducerCode) AS out_ProducerCode,
+	IFF(in_ProducerCode IS NULL,
+		'N/A',
+		in_ProducerCode
+	) AS out_ProducerCode,
 	-- *INF*: DECODE(TRUE,
 	-- in_PolicyIssueCodeOverride='T','1',
 	-- in_PolicyIssueCodeOverride='1','1',
@@ -966,16 +1282,33 @@ EXP_values AS (
 	DECODE(TRUE,
 		in_PolicyIssueCodeOverride = 'T', '1',
 		in_PolicyIssueCodeOverride = '1', '1',
-		'0') AS o_PolicyIssueCodeOverride,
+		'0'
+	) AS o_PolicyIssueCodeOverride,
 	v_policy_key AS v_prev_policy_key,
 	-- *INF*: IIF(ISNULL(in_PoolCode),'N/A',in_PoolCode)
-	IFF(in_PoolCode IS NULL, 'N/A', in_PoolCode) AS o_PoolCode,
+	IFF(in_PoolCode IS NULL,
+		'N/A',
+		in_PoolCode
+	) AS o_PoolCode,
 	AGG_Remove_Duplicates.IssuedUWID AS in_IssuedUWID,
 	-- *INF*: IIF(ISNULL(in_IssuedUWID) OR IS_SPACES(in_IssuedUWID) OR LENGTH(in_IssuedUWID)=0 OR in_IssuedUWID = '0','N/A',in_IssuedUWID)
-	IFF(in_IssuedUWID IS NULL OR IS_SPACES(in_IssuedUWID) OR LENGTH(in_IssuedUWID) = 0 OR in_IssuedUWID = '0', 'N/A', in_IssuedUWID) AS o_IssuedUWID,
+	IFF(in_IssuedUWID IS NULL 
+		OR LENGTH(in_IssuedUWID)>0 AND TRIM(in_IssuedUWID)='' 
+		OR LENGTH(in_IssuedUWID
+		) = 0 
+		OR in_IssuedUWID = '0',
+		'N/A',
+		in_IssuedUWID
+	) AS o_IssuedUWID,
 	AGG_Remove_Duplicates.IssuedUnderwriter AS in_IssuedUnderwriter,
 	-- *INF*: IIF(ISNULL(in_IssuedUnderwriter) OR IS_SPACES(in_IssuedUnderwriter) OR LENGTH(in_IssuedUnderwriter)=0,'N/A',in_IssuedUnderwriter)
-	IFF(in_IssuedUnderwriter IS NULL OR IS_SPACES(in_IssuedUnderwriter) OR LENGTH(in_IssuedUnderwriter) = 0, 'N/A', in_IssuedUnderwriter) AS o_IssuedUnderwriter
+	IFF(in_IssuedUnderwriter IS NULL 
+		OR LENGTH(in_IssuedUnderwriter)>0 AND TRIM(in_IssuedUnderwriter)='' 
+		OR LENGTH(in_IssuedUnderwriter
+		) = 0,
+		'N/A',
+		in_IssuedUnderwriter
+	) AS o_IssuedUnderwriter
 	FROM AGG_Remove_Duplicates
 	LEFT JOIN LKP_Agency
 	ON LKP_Agency.AgencyCode = AGG_Remove_Duplicates.out_Reference
@@ -1351,91 +1684,144 @@ EXP_Detect_Changes AS (
 	-- --ISNULL(v_LKP_Policy_Contract_Cust_Ak_Id)=--0,v_LKP_Policy_Contract_Cust_Ak_Id,
 	-- --in_contract_cust_ak_id)
 	Decode(TRUE,
-		( lkp_contract_cust_ak_id IS NULL = 0 AND lkp_contract_cust_ak_id <> - 1 ), lkp_contract_cust_ak_id,
+		( lkp_contract_cust_ak_id IS NULL = 0 
+			AND lkp_contract_cust_ak_id <> - 1 
+		), lkp_contract_cust_ak_id,
 		v_LKP_Policy_Contract_Cust_Ak_Id IS NULL = 0, v_LKP_Policy_Contract_Cust_Ak_Id,
-		in_contract_cust_ak_id) AS v_contract_cust_ak_id,
+		in_contract_cust_ak_id
+	) AS v_contract_cust_ak_id,
 	-- *INF*: IIF(ISNULL(in_ProgramAKId),-1,in_ProgramAKId)
-	IFF(in_ProgramAKId IS NULL, - 1, in_ProgramAKId) AS v_ProgramAKId,
+	IFF(in_ProgramAKId IS NULL,
+		- 1,
+		in_ProgramAKId
+	) AS v_ProgramAKId,
 	-- *INF*: IIF(
 	--   ISNULL(in_AgencyAKID),
 	--   -1,
 	--   in_AgencyAKID
 	-- )
-	IFF(in_AgencyAKID IS NULL, - 1, in_AgencyAKID) AS v_AgencyAKID,
+	IFF(in_AgencyAKID IS NULL,
+		- 1,
+		in_AgencyAKID
+	) AS v_AgencyAKID,
 	-- *INF*: IIF(
 	--   ISNULL(in_producer_code_ak_id),
 	--   -1,
 	--   in_producer_code_ak_id
 	-- )
-	IFF(in_producer_code_ak_id IS NULL, - 1, in_producer_code_ak_id) AS v_producer_code_ak_id,
+	IFF(in_producer_code_ak_id IS NULL,
+		- 1,
+		in_producer_code_ak_id
+	) AS v_producer_code_ak_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_sup_bus_class_code_id),
 	--   -1,
 	--   in_sup_bus_class_code_id
 	-- )
-	IFF(in_sup_bus_class_code_id IS NULL, - 1, in_sup_bus_class_code_id) AS v_sup_bus_class_code_id,
+	IFF(in_sup_bus_class_code_id IS NULL,
+		- 1,
+		in_sup_bus_class_code_id
+	) AS v_sup_bus_class_code_id,
 	-- *INF*: :LKP.LKP_STRATEGIC_BUSINESS_DIVISION(in_strtgc_bus_dvsn_code)
 	LKP_STRATEGIC_BUSINESS_DIVISION_in_strtgc_bus_dvsn_code.strtgc_bus_dvsn_ak_id AS v_strtgc_bus_dvsn_ak_id_1,
 	-- *INF*: IIF(ISNULL(v_strtgc_bus_dvsn_ak_id_1),:LKP.LKP_STRATEGIC_BUSINESS_DIVISION('6'),v_strtgc_bus_dvsn_ak_id_1)
-	IFF(v_strtgc_bus_dvsn_ak_id_1 IS NULL, LKP_STRATEGIC_BUSINESS_DIVISION__6.strtgc_bus_dvsn_ak_id, v_strtgc_bus_dvsn_ak_id_1) AS v_strtgc_bus_dvsn_ak_id_2,
+	IFF(v_strtgc_bus_dvsn_ak_id_1 IS NULL,
+		LKP_STRATEGIC_BUSINESS_DIVISION__6.strtgc_bus_dvsn_ak_id,
+		v_strtgc_bus_dvsn_ak_id_1
+	) AS v_strtgc_bus_dvsn_ak_id_2,
 	-- *INF*: IIF(ISNULL(v_strtgc_bus_dvsn_ak_id_2),-1,v_strtgc_bus_dvsn_ak_id_2)
-	IFF(v_strtgc_bus_dvsn_ak_id_2 IS NULL, - 1, v_strtgc_bus_dvsn_ak_id_2) AS v_strtgc_bus_dvsn_ak_id,
+	IFF(v_strtgc_bus_dvsn_ak_id_2 IS NULL,
+		- 1,
+		v_strtgc_bus_dvsn_ak_id_2
+	) AS v_strtgc_bus_dvsn_ak_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_sup_pol_term_id),
 	--   -1,
 	--   in_sup_pol_term_id
 	-- )
-	IFF(in_sup_pol_term_id IS NULL, - 1, in_sup_pol_term_id) AS v_sup_pol_term_id,
+	IFF(in_sup_pol_term_id IS NULL,
+		- 1,
+		in_sup_pol_term_id
+	) AS v_sup_pol_term_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_sup_pol_status_code_id),
 	--   -1,
 	--   in_sup_pol_status_code_id
 	-- )
-	IFF(in_sup_pol_status_code_id IS NULL, - 1, in_sup_pol_status_code_id) AS v_sup_pol_status_code_id,
+	IFF(in_sup_pol_status_code_id IS NULL,
+		- 1,
+		in_sup_pol_status_code_id
+	) AS v_sup_pol_status_code_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_sup_pol_issue_code_id),
 	--   -1,
 	--   in_sup_pol_issue_code_id
 	-- )
-	IFF(in_sup_pol_issue_code_id IS NULL, - 1, in_sup_pol_issue_code_id) AS v_sup_pol_issue_code_id,
+	IFF(in_sup_pol_issue_code_id IS NULL,
+		- 1,
+		in_sup_pol_issue_code_id
+	) AS v_sup_pol_issue_code_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_sup_pol_audit_frqncy_id),
 	--   -1,
 	--   in_sup_pol_audit_frqncy_id
 	-- )
-	IFF(in_sup_pol_audit_frqncy_id IS NULL, - 1, in_sup_pol_audit_frqncy_id) AS v_sup_pol_audit_frqncy_id,
+	IFF(in_sup_pol_audit_frqncy_id IS NULL,
+		- 1,
+		in_sup_pol_audit_frqncy_id
+	) AS v_sup_pol_audit_frqncy_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_sup_industry_risk_grade_code_id),
 	--   -1,
 	--   in_sup_industry_risk_grade_code_id
 	-- )
-	IFF(in_sup_industry_risk_grade_code_id IS NULL, - 1, in_sup_industry_risk_grade_code_id) AS v_sup_industry_risk_grade_code_id,
+	IFF(in_sup_industry_risk_grade_code_id IS NULL,
+		- 1,
+		in_sup_industry_risk_grade_code_id
+	) AS v_sup_industry_risk_grade_code_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_sup_state_id),
 	--   -1,
 	--   in_sup_state_id
 	-- )
-	IFF(in_sup_state_id IS NULL, - 1, in_sup_state_id) AS v_sup_state_id,
+	IFF(in_sup_state_id IS NULL,
+		- 1,
+		in_sup_state_id
+	) AS v_sup_state_id,
 	-- *INF*: IIF(ISNULL(SupSurchargeExemptId),-1,SupSurchargeExemptId)
-	IFF(SupSurchargeExemptId IS NULL, - 1, SupSurchargeExemptId) AS v_SupSurchargeExemptId,
+	IFF(SupSurchargeExemptId IS NULL,
+		- 1,
+		SupSurchargeExemptId
+	) AS v_SupSurchargeExemptId,
 	-- *INF*: DECODE(lkp_AutomaticRenewalIndicator, 'T', '1', 'F', '0', NULL)
 	DECODE(lkp_AutomaticRenewalIndicator,
 		'T', '1',
 		'F', '0',
-		NULL) AS v_lkp_AutomaticRenewalIndicator,
+		NULL
+	) AS v_lkp_AutomaticRenewalIndicator,
 	-- *INF*: iif(isnull(in_AssociationCode ) or IS_SPACES(in_AssociationCode ) or LENGTH(in_AssociationCode )=0,'N/A',in_AssociationCode )
 	-- 
 	-- 
-	IFF(in_AssociationCode IS NULL OR IS_SPACES(in_AssociationCode) OR LENGTH(in_AssociationCode) = 0, 'N/A', in_AssociationCode) AS v_Association,
+	IFF(in_AssociationCode IS NULL 
+		OR LENGTH(in_AssociationCode)>0 AND TRIM(in_AssociationCode)='' 
+		OR LENGTH(in_AssociationCode
+		) = 0,
+		'N/A',
+		in_AssociationCode
+	) AS v_Association,
 	LKP_policy.RolloverPolicyIndicator AS lkp_RolloverPolicyIndicator,
 	-- *INF*: DECODE(lkp_RolloverPolicyIndicator, 'T', '1', 'F', '0', '0')
 	DECODE(lkp_RolloverPolicyIndicator,
 		'T', '1',
 		'F', '0',
-		'0') AS v_lkp_RolloverPolicyIndicator,
+		'0'
+	) AS v_lkp_RolloverPolicyIndicator,
 	LKP_policy.RolloverPriorCarrier AS lkp_RolloverPriorCarrier,
 	-- *INF*: IIF(ISNULL(lkp_RolloverPriorCarrier),'N/A',lkp_RolloverPriorCarrier)
-	IFF(lkp_RolloverPriorCarrier IS NULL, 'N/A', lkp_RolloverPriorCarrier) AS v_lkp_RolloverPriorCarrier,
+	IFF(lkp_RolloverPriorCarrier IS NULL,
+		'N/A',
+		lkp_RolloverPriorCarrier
+	) AS v_lkp_RolloverPriorCarrier,
 	LKP_policy.MailToInsuredFlag AS lkp_MailPolicyToInsured,
 	-- *INF*: DECODE(TRUE,
 	-- lkp_MailPolicyToInsured='T','1',
@@ -1444,7 +1830,8 @@ EXP_Detect_Changes AS (
 	DECODE(TRUE,
 		lkp_MailPolicyToInsured = 'T', '1',
 		lkp_MailPolicyToInsured = '1', '1',
-		'0') AS v_lkp_MailPolicyToInsured,
+		'0'
+	) AS v_lkp_MailPolicyToInsured,
 	LKP_policy.AgencyEmployeeAKId AS lkp_AgencyEmployeeAKId,
 	LKP_policy.PolicyIssueCodeOverride AS lkp_PolicyIssueCodeOverride,
 	-- *INF*: DECODE(TRUE,
@@ -1454,7 +1841,8 @@ EXP_Detect_Changes AS (
 	DECODE(TRUE,
 		lkp_PolicyIssueCodeOverride = 'T', '1',
 		lkp_PolicyIssueCodeOverride = '1', '1',
-		'0') AS v_lkp_PolicyIssueCodeOverride,
+		'0'
+	) AS v_lkp_PolicyIssueCodeOverride,
 	EXP_values.out_IsRollover AS IsRollover,
 	EXP_values.out_RolloverPriorCarrier AS RolloverPriorCarrier,
 	EXP_values.out_MailPolicyToInsured AS MailPolicyToInsured,
@@ -1540,7 +1928,88 @@ EXP_Detect_Changes AS (
 	-- TO_CHAR(AutomaticRenewalIndicator)||
 	-- TO_CHAR(in_PoolCode)
 	-- )
-	MD5(TO_CHAR(v_contract_cust_ak_id) || TO_CHAR(agency_ak_id) || TO_CHAR(v_AgencyAKID) || TO_CHAR(mco) || TO_CHAR(pol_co_num) || TO_CHAR(pol_eff_date) || TO_CHAR(pol_exp_date) || TO_CHAR(orig_incptn_date) || TO_CHAR(prim_bus_class_code) || TO_CHAR(reins_code) || TO_CHAR(pms_pol_lob_code) || TO_CHAR(pol_co_line_code) || TO_CHAR(pol_cancellation_ind) || TO_CHAR(pol_cancellation_date) || TO_CHAR(pol_cancellation_rsn_code) || TO_CHAR(state_of_domicile_code) || TO_CHAR(wbconnect_upload_code) || TO_CHAR(serv_center_support_code) || TO_CHAR(pol_term) || TO_CHAR(terrorism_risk_ind) || TO_CHAR(Prior_Policy_key) || TO_CHAR(pol_status_code) || TO_CHAR(pol_issue_code) || TO_CHAR(pol_age) || TO_CHAR(industry_risk_grade_code) || TO_CHAR(uw_review_yr) || TO_CHAR(mvr_request_code) || TO_CHAR(renl_code) || TO_CHAR(amend_num) || TO_CHAR(anniversary_rerate_code) || TO_CHAR(pol_audit_frqncy) || TO_CHAR(final_audit_code) || TO_CHAR(zip_ind) || TO_CHAR(guarantee_ind) || TO_CHAR(variation_code) || TO_CHAR(county) || TO_CHAR(non_smoker_disc_code) || TO_CHAR(renl_disc) || TO_CHAR(renl_safe_driver_disc_count) || TO_CHAR(nonrenewal_flag_date) || TO_CHAR(audit_complt_date) || TO_CHAR(orig_acct_date) || TO_CHAR(pol_enter_date) || TO_CHAR(excess_claim_code) || TO_CHAR(pol_status_on_pif) || TO_CHAR(target_mrkt_code) || TO_CHAR(pkg_code) || TO_CHAR(pol_kind_code) || TO_CHAR(bus_seg_code) || TO_CHAR(pif_upload_audit_ind) || TO_CHAR(err_flag_bal_txn) || TO_CHAR(err_flag_bal_reins) || TO_CHAR(v_producer_code_ak_id) || TO_CHAR(prdcr_code) || TO_CHAR(ClassOfBusiness) || TO_CHAR(v_strtgc_bus_dvsn_ak_id) || TO_CHAR(ErrorFlagBalancePremiumTransaction) || TO_CHAR(RenewalPolicyNumber) || TO_CHAR(RenewalPolicySymbol) || TO_CHAR(RenewalPolicyMod) || TO_CHAR(BillingType) || TO_CHAR(v_sup_bus_class_code_id) || TO_CHAR(v_sup_pol_term_id) || TO_CHAR(v_sup_pol_status_code_id) || TO_CHAR(v_sup_pol_issue_code_id) || TO_CHAR(v_sup_pol_audit_frqncy_id) || TO_CHAR(v_sup_industry_risk_grade_code_id) || TO_CHAR(v_sup_state_id) || TO_CHAR(in_PolicyOfferingAKId) || TO_CHAR(producer_code_id) || TO_CHAR(SurchargeExemptCode) || TO_CHAR(v_SupSurchargeExemptId) || TO_CHAR(v_Association) || TO_CHAR(in_StrategicProfitCenterAKId) || TO_CHAR(in_InsuranceSegmentAKId) || TO_CHAR(v_ProgramAKId) || TO_CHAR(ObligeeName) || TO_CHAR(AutomatedUnderwritingServicesIndicator) || TO_CHAR(AutomaticRenewalIndicator) || TO_CHAR(in_PoolCode)) AS v_HashKey,
+	MD5(TO_CHAR(v_contract_cust_ak_id
+		) || TO_CHAR(agency_ak_id
+		) || TO_CHAR(v_AgencyAKID
+		) || TO_CHAR(mco
+		) || TO_CHAR(pol_co_num
+		) || TO_CHAR(pol_eff_date
+		) || TO_CHAR(pol_exp_date
+		) || TO_CHAR(orig_incptn_date
+		) || TO_CHAR(prim_bus_class_code
+		) || TO_CHAR(reins_code
+		) || TO_CHAR(pms_pol_lob_code
+		) || TO_CHAR(pol_co_line_code
+		) || TO_CHAR(pol_cancellation_ind
+		) || TO_CHAR(pol_cancellation_date
+		) || TO_CHAR(pol_cancellation_rsn_code
+		) || TO_CHAR(state_of_domicile_code
+		) || TO_CHAR(wbconnect_upload_code
+		) || TO_CHAR(serv_center_support_code
+		) || TO_CHAR(pol_term
+		) || TO_CHAR(terrorism_risk_ind
+		) || TO_CHAR(Prior_Policy_key
+		) || TO_CHAR(pol_status_code
+		) || TO_CHAR(pol_issue_code
+		) || TO_CHAR(pol_age
+		) || TO_CHAR(industry_risk_grade_code
+		) || TO_CHAR(uw_review_yr
+		) || TO_CHAR(mvr_request_code
+		) || TO_CHAR(renl_code
+		) || TO_CHAR(amend_num
+		) || TO_CHAR(anniversary_rerate_code
+		) || TO_CHAR(pol_audit_frqncy
+		) || TO_CHAR(final_audit_code
+		) || TO_CHAR(zip_ind
+		) || TO_CHAR(guarantee_ind
+		) || TO_CHAR(variation_code
+		) || TO_CHAR(county
+		) || TO_CHAR(non_smoker_disc_code
+		) || TO_CHAR(renl_disc
+		) || TO_CHAR(renl_safe_driver_disc_count
+		) || TO_CHAR(nonrenewal_flag_date
+		) || TO_CHAR(audit_complt_date
+		) || TO_CHAR(orig_acct_date
+		) || TO_CHAR(pol_enter_date
+		) || TO_CHAR(excess_claim_code
+		) || TO_CHAR(pol_status_on_pif
+		) || TO_CHAR(target_mrkt_code
+		) || TO_CHAR(pkg_code
+		) || TO_CHAR(pol_kind_code
+		) || TO_CHAR(bus_seg_code
+		) || TO_CHAR(pif_upload_audit_ind
+		) || TO_CHAR(err_flag_bal_txn
+		) || TO_CHAR(err_flag_bal_reins
+		) || TO_CHAR(v_producer_code_ak_id
+		) || TO_CHAR(prdcr_code
+		) || TO_CHAR(ClassOfBusiness
+		) || TO_CHAR(v_strtgc_bus_dvsn_ak_id
+		) || TO_CHAR(ErrorFlagBalancePremiumTransaction
+		) || TO_CHAR(RenewalPolicyNumber
+		) || TO_CHAR(RenewalPolicySymbol
+		) || TO_CHAR(RenewalPolicyMod
+		) || TO_CHAR(BillingType
+		) || TO_CHAR(v_sup_bus_class_code_id
+		) || TO_CHAR(v_sup_pol_term_id
+		) || TO_CHAR(v_sup_pol_status_code_id
+		) || TO_CHAR(v_sup_pol_issue_code_id
+		) || TO_CHAR(v_sup_pol_audit_frqncy_id
+		) || TO_CHAR(v_sup_industry_risk_grade_code_id
+		) || TO_CHAR(v_sup_state_id
+		) || TO_CHAR(in_PolicyOfferingAKId
+		) || TO_CHAR(producer_code_id
+		) || TO_CHAR(SurchargeExemptCode
+		) || TO_CHAR(v_SupSurchargeExemptId
+		) || TO_CHAR(v_Association
+		) || TO_CHAR(in_StrategicProfitCenterAKId
+		) || TO_CHAR(in_InsuranceSegmentAKId
+		) || TO_CHAR(v_ProgramAKId
+		) || TO_CHAR(ObligeeName
+		) || TO_CHAR(AutomatedUnderwritingServicesIndicator
+		) || TO_CHAR(AutomaticRenewalIndicator
+		) || TO_CHAR(in_PoolCode
+		)
+	) AS v_HashKey,
 	-- *INF*: DECODE(TRUE,
 	-- pol_key=v_prev_pol_key AND v_HashKey=v_prev_HashKey, 'NOCHANGE',
 	-- ISNULL(lkp_pol_ak_id), 'NEW',
@@ -1633,11 +2102,108 @@ EXP_Detect_Changes AS (
 	--  'NOCHANGE'
 	--   )
 	DECODE(TRUE,
-		pol_key = v_prev_pol_key AND v_HashKey = v_prev_HashKey, 'NOCHANGE',
+		pol_key = v_prev_pol_key 
+		AND v_HashKey = v_prev_HashKey, 'NOCHANGE',
 		lkp_pol_ak_id IS NULL, 'NEW',
 		in_CreatedDate = lkp_eff_from_date, 'UPDATE',
-		( ( pol_key = v_prev_pol_key AND v_HashKey <> v_prev_HashKey ) OR ( lkp_contract_cust_ak_id != v_contract_cust_ak_id OR lkp_AgencyAKID != v_AgencyAKID OR lkp_agency_ak_id != agency_ak_id OR lkp_mco != mco OR lkp_pol_co_num != pol_co_num OR lkp_pol_eff_date != pol_eff_date OR lkp_pol_exp_date != pol_exp_date OR lkp_orig_incptn_date != orig_incptn_date OR lkp_prim_bus_class_code != prim_bus_class_code OR lkp_reins_code != reins_code OR lkp_pms_pol_lob_code != pms_pol_lob_code OR lkp_pol_co_line_code != pol_co_line_code OR lkp_pol_cancellation_ind != pol_cancellation_ind OR lkp_pol_cancellation_date != pol_cancellation_date OR lkp_pol_cancellation_rsn_code != pol_cancellation_rsn_code OR lkp_state_of_domicile_code != state_of_domicile_code OR lkp_wbconnect_upload_code != wbconnect_upload_code OR lkp_serv_center_support_code != serv_center_support_code OR lkp_pol_term != pol_term OR lkp_terrorism_risk_ind != terrorism_risk_ind OR lkp_prior_pol_key != Prior_Policy_key OR lkp_pol_status_code != pol_status_code OR lkp_pol_issue_code != pol_issue_code OR lkp_pol_age != pol_age OR lkp_industry_risk_grade_code != industry_risk_grade_code OR lkp_uw_review_yr != uw_review_yr OR lkp_mvr_request_code != mvr_request_code OR lkp_renl_code != renl_code OR lkp_amend_num != amend_num OR lkp_anniversary_rerate_code != anniversary_rerate_code OR lkp_pol_audit_frqncy != pol_audit_frqncy OR lkp_final_audit_code != final_audit_code OR lkp_zip_ind != zip_ind OR lkp_guarantee_ind != guarantee_ind OR lkp_variation_code != variation_code OR lkp_county != county OR lkp_non_smoker_disc_code != non_smoker_disc_code OR lkp_renl_disc != renl_disc OR lkp_renl_safe_driver_disc_count != renl_safe_driver_disc_count OR lkp_nonrenewal_flag_date != nonrenewal_flag_date OR lkp_audit_complt_date != audit_complt_date OR lkp_orig_acct_date != orig_acct_date OR lkp_pol_enter_date != pol_enter_date OR lkp_excess_claim_code != excess_claim_code OR lkp_pol_status_on_pif != pol_status_on_pif OR lkp_target_mrkt_code != target_mrkt_code OR lkp_pkg_code != pkg_code OR lkp_pol_kind_code != pol_kind_code OR lkp_bus_seg_code != bus_seg_code OR lkp_pif_upload_audit_ind != pif_upload_audit_ind OR lkp_err_flag_bal_txn != err_flag_bal_txn OR lkp_err_flag_bal_reins != err_flag_bal_reins OR lkp_producer_code_ak_id != v_producer_code_ak_id OR lkp_prdcr_code != prdcr_code OR lkp_ClassOfBusiness != ClassOfBusiness OR lkp_strtgc_bus_dvsn_ak_id != v_strtgc_bus_dvsn_ak_id OR lkp_ErrorFlagBalancePremiumTransaction != ErrorFlagBalancePremiumTransaction OR LTRIM(RTRIM(lkp_RenewalPolicyNumber)) != RenewalPolicyNumber OR LTRIM(RTRIM(lkp_RenewalPolicySymbol)) != RenewalPolicySymbol OR lkp_RenewalPolicyMod != RenewalPolicyMod OR lkp_BillingType != BillingType OR lkp_sup_bus_class_code_id != v_sup_bus_class_code_id OR lkp_sup_pol_term_id != v_sup_pol_term_id OR lkp_sup_pol_status_code_id != v_sup_pol_status_code_id OR lkp_sup_pol_issue_code_id != v_sup_pol_issue_code_id OR lkp_sup_pol_audit_frqncy_id != v_sup_pol_audit_frqncy_id OR lkp_sup_industry_risk_grade_code_id != v_sup_industry_risk_grade_code_id OR lkp_sup_state_id != v_sup_state_id OR lkp_PolicyOfferingAKId != in_PolicyOfferingAKId OR lkp_producer_code_id != producer_code_id OR lkp_SurchargeExemptCode != SurchargeExemptCode OR lkp_SupSurchargeExemptID != v_SupSurchargeExemptId OR lkp_AssociationCode != v_Association OR lkp_StrategicProfitCenterAKId != in_StrategicProfitCenterAKId OR lkp_PoolCode != in_PoolCode OR lkp_InsuranceSegmentAKId != in_InsuranceSegmentAKId OR lkp_ProgramAKId != v_ProgramAKId OR lkp_ObligeeName != ObligeeName OR lkp_AutomatedUnderwritingServicesIndicator != AutomatedUnderwritingServicesIndicator OR v_lkp_AutomaticRenewalIndicator != AutomaticRenewalIndicator OR v_lkp_RolloverPolicyIndicator != IsRollover OR v_lkp_RolloverPriorCarrier != RolloverPriorCarrier OR v_lkp_MailPolicyToInsured != MailPolicyToInsured OR AgencyEmployeeAKId != lkp_AgencyEmployeeAKId OR v_lkp_PolicyIssueCodeOverride != in_PolicyIssueCodeOverride OR lkp_IssuedUWID != in_IssuedUWID OR lkp_IssuedUnderwriter != in_IssuedUnderwriter ) ), 'NEW',
-		'NOCHANGE') AS v_changed_flag,
+		( ( pol_key = v_prev_pol_key 
+				AND v_HashKey <> v_prev_HashKey 
+			) 
+			OR ( lkp_contract_cust_ak_id != v_contract_cust_ak_id 
+				OR lkp_AgencyAKID != v_AgencyAKID 
+				OR lkp_agency_ak_id != agency_ak_id 
+				OR lkp_mco != mco 
+				OR lkp_pol_co_num != pol_co_num 
+				OR lkp_pol_eff_date != pol_eff_date 
+				OR lkp_pol_exp_date != pol_exp_date 
+				OR lkp_orig_incptn_date != orig_incptn_date 
+				OR lkp_prim_bus_class_code != prim_bus_class_code 
+				OR lkp_reins_code != reins_code 
+				OR lkp_pms_pol_lob_code != pms_pol_lob_code 
+				OR lkp_pol_co_line_code != pol_co_line_code 
+				OR lkp_pol_cancellation_ind != pol_cancellation_ind 
+				OR lkp_pol_cancellation_date != pol_cancellation_date 
+				OR lkp_pol_cancellation_rsn_code != pol_cancellation_rsn_code 
+				OR lkp_state_of_domicile_code != state_of_domicile_code 
+				OR lkp_wbconnect_upload_code != wbconnect_upload_code 
+				OR lkp_serv_center_support_code != serv_center_support_code 
+				OR lkp_pol_term != pol_term 
+				OR lkp_terrorism_risk_ind != terrorism_risk_ind 
+				OR lkp_prior_pol_key != Prior_Policy_key 
+				OR lkp_pol_status_code != pol_status_code 
+				OR lkp_pol_issue_code != pol_issue_code 
+				OR lkp_pol_age != pol_age 
+				OR lkp_industry_risk_grade_code != industry_risk_grade_code 
+				OR lkp_uw_review_yr != uw_review_yr 
+				OR lkp_mvr_request_code != mvr_request_code 
+				OR lkp_renl_code != renl_code 
+				OR lkp_amend_num != amend_num 
+				OR lkp_anniversary_rerate_code != anniversary_rerate_code 
+				OR lkp_pol_audit_frqncy != pol_audit_frqncy 
+				OR lkp_final_audit_code != final_audit_code 
+				OR lkp_zip_ind != zip_ind 
+				OR lkp_guarantee_ind != guarantee_ind 
+				OR lkp_variation_code != variation_code 
+				OR lkp_county != county 
+				OR lkp_non_smoker_disc_code != non_smoker_disc_code 
+				OR lkp_renl_disc != renl_disc 
+				OR lkp_renl_safe_driver_disc_count != renl_safe_driver_disc_count 
+				OR lkp_nonrenewal_flag_date != nonrenewal_flag_date 
+				OR lkp_audit_complt_date != audit_complt_date 
+				OR lkp_orig_acct_date != orig_acct_date 
+				OR lkp_pol_enter_date != pol_enter_date 
+				OR lkp_excess_claim_code != excess_claim_code 
+				OR lkp_pol_status_on_pif != pol_status_on_pif 
+				OR lkp_target_mrkt_code != target_mrkt_code 
+				OR lkp_pkg_code != pkg_code 
+				OR lkp_pol_kind_code != pol_kind_code 
+				OR lkp_bus_seg_code != bus_seg_code 
+				OR lkp_pif_upload_audit_ind != pif_upload_audit_ind 
+				OR lkp_err_flag_bal_txn != err_flag_bal_txn 
+				OR lkp_err_flag_bal_reins != err_flag_bal_reins 
+				OR lkp_producer_code_ak_id != v_producer_code_ak_id 
+				OR lkp_prdcr_code != prdcr_code 
+				OR lkp_ClassOfBusiness != ClassOfBusiness 
+				OR lkp_strtgc_bus_dvsn_ak_id != v_strtgc_bus_dvsn_ak_id 
+				OR lkp_ErrorFlagBalancePremiumTransaction != ErrorFlagBalancePremiumTransaction 
+				OR LTRIM(RTRIM(lkp_RenewalPolicyNumber
+					)
+				) != RenewalPolicyNumber 
+				OR LTRIM(RTRIM(lkp_RenewalPolicySymbol
+					)
+				) != RenewalPolicySymbol 
+				OR lkp_RenewalPolicyMod != RenewalPolicyMod 
+				OR lkp_BillingType != BillingType 
+				OR lkp_sup_bus_class_code_id != v_sup_bus_class_code_id 
+				OR lkp_sup_pol_term_id != v_sup_pol_term_id 
+				OR lkp_sup_pol_status_code_id != v_sup_pol_status_code_id 
+				OR lkp_sup_pol_issue_code_id != v_sup_pol_issue_code_id 
+				OR lkp_sup_pol_audit_frqncy_id != v_sup_pol_audit_frqncy_id 
+				OR lkp_sup_industry_risk_grade_code_id != v_sup_industry_risk_grade_code_id 
+				OR lkp_sup_state_id != v_sup_state_id 
+				OR lkp_PolicyOfferingAKId != in_PolicyOfferingAKId 
+				OR lkp_producer_code_id != producer_code_id 
+				OR lkp_SurchargeExemptCode != SurchargeExemptCode 
+				OR lkp_SupSurchargeExemptID != v_SupSurchargeExemptId 
+				OR lkp_AssociationCode != v_Association 
+				OR lkp_StrategicProfitCenterAKId != in_StrategicProfitCenterAKId 
+				OR lkp_PoolCode != in_PoolCode 
+				OR lkp_InsuranceSegmentAKId != in_InsuranceSegmentAKId 
+				OR lkp_ProgramAKId != v_ProgramAKId 
+				OR lkp_ObligeeName != ObligeeName 
+				OR lkp_AutomatedUnderwritingServicesIndicator != AutomatedUnderwritingServicesIndicator 
+				OR v_lkp_AutomaticRenewalIndicator != AutomaticRenewalIndicator 
+				OR v_lkp_RolloverPolicyIndicator != IsRollover 
+				OR v_lkp_RolloverPriorCarrier != RolloverPriorCarrier 
+				OR v_lkp_MailPolicyToInsured != MailPolicyToInsured 
+				OR AgencyEmployeeAKId != lkp_AgencyEmployeeAKId 
+				OR v_lkp_PolicyIssueCodeOverride != in_PolicyIssueCodeOverride 
+				OR lkp_IssuedUWID != in_IssuedUWID 
+				OR lkp_IssuedUnderwriter != in_IssuedUnderwriter 
+			) 
+		), 'NEW',
+		'NOCHANGE'
+	) AS v_changed_flag,
 	pol_key AS v_prev_pol_key,
 	v_HashKey AS v_prev_HashKey,
 	v_producer_code_ak_id AS out_producer_code_ak_id,
@@ -1649,7 +2215,8 @@ EXP_Detect_Changes AS (
 	-- in_CreatedDate
 	in_CreatedDate AS out_eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS out_eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS out_eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS out_source_sys_id,
 	SYSDATE AS out_created_date,
 	SYSDATE AS out_modified_date,
@@ -1668,16 +2235,28 @@ EXP_Detect_Changes AS (
 	v_ProgramAKId AS out_ProgramAKId,
 	v_SupSurchargeExemptId AS out_SupSurchargeExemptId1,
 	-- *INF*: IIF(ISNULL(in_AssociationDiscountFactor), 0, in_AssociationDiscountFactor)
-	IFF(in_AssociationDiscountFactor IS NULL, 0, in_AssociationDiscountFactor) AS AssociationDiscountFactor,
+	IFF(in_AssociationDiscountFactor IS NULL,
+		0,
+		in_AssociationDiscountFactor
+	) AS AssociationDiscountFactor,
 	v_Association AS Association,
 	in_PolicyIssueCodeOverride AS out_PolicyIssueCodeOverride,
 	0 AS DCBillFlag,
 	-- *INF*: IIF(ISNULL(in_PoolCode),'N/A',in_PoolCode)
-	IFF(in_PoolCode IS NULL, 'N/A', in_PoolCode) AS o_PoolCode,
+	IFF(in_PoolCode IS NULL,
+		'N/A',
+		in_PoolCode
+	) AS o_PoolCode,
 	-- *INF*: IIF(ISNULL(in_IssuedUWID),'N/A',in_IssuedUWID)
-	IFF(in_IssuedUWID IS NULL, 'N/A', in_IssuedUWID) AS o_IssuedUWID,
+	IFF(in_IssuedUWID IS NULL,
+		'N/A',
+		in_IssuedUWID
+	) AS o_IssuedUWID,
 	-- *INF*: IIF(ISNULL(in_IssuedUnderwriter),'N/A',in_IssuedUnderwriter)
-	IFF(in_IssuedUnderwriter IS NULL, 'N/A', in_IssuedUnderwriter) AS o_IssuedUnderwriter
+	IFF(in_IssuedUnderwriter IS NULL,
+		'N/A',
+		in_IssuedUnderwriter
+	) AS o_IssuedUnderwriter
 	FROM EXP_values
 	LEFT JOIN LKP_Association
 	ON LKP_Association.AssociationCode = EXP_values.out_Association
@@ -1848,7 +2427,8 @@ EXP_policy_ak_id AS (
 	DECODE(TRUE,
 		policy_key = v_prev_policy_key, v_NEXTVAL,
 		lkp_pol_ak_id IS NULL, in_NEXTVAL,
-		lkp_pol_ak_id) AS v_NEXTVAL,
+		lkp_pol_ak_id
+	) AS v_NEXTVAL,
 	policy_key AS v_prev_policy_key,
 	modified_date,
 	v_NEXTVAL AS out_pol_ak_id,
@@ -2188,8 +2768,9 @@ EXP_Lag_eff_from_date AS (
 	-- in_pol_ak_id = v_prev_pol_ak_id ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
 	DECODE(TRUE,
-		in_pol_ak_id = v_prev_pol_ak_id, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		in_pol_ak_id = v_prev_pol_ak_id, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	in_pol_ak_id AS v_prev_pol_ak_id,
 	eff_from_date AS v_prev_eff_from_date,
 	0 AS out_crrnt_snpsht_flag,

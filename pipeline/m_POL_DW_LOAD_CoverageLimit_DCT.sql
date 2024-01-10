@@ -341,7 +341,10 @@ EXP_DataCollectSRC AS (
 	LimitType,
 	LimitValue,
 	-- *INF*: IIF(IN(LimitValue,'Actual Loss Sustained')=1, 'ActualLossSustained',LimitValue)
-	IFF(IN(LimitValue, 'Actual Loss Sustained') = 1, 'ActualLossSustained', LimitValue) AS o_LimitValue,
+	IFF(LimitValue IN ('Actual Loss Sustained') = 1,
+		'ActualLossSustained',
+		LimitValue
+	) AS o_LimitValue,
 	InsuranceLine,
 	UnderlyingCompanyName,
 	UnderlyingPolicyKey,
@@ -401,9 +404,15 @@ mplt_Load_Limits_IL_Layer_DCT AS (WITH
 		PremiumTransactionAKID AS PremiumTransactionAKId,
 		PremiumTransactionID,
 		-- *INF*: IIF( NOT ISNULL(UnderlyingInsuranceLine), 'UnderlyingUmbrella', i_CoverageType)
-		IFF(NOT UnderlyingInsuranceLine IS NULL, 'UnderlyingUmbrella', i_CoverageType) AS o_CoverageType_LKP,
+		IFF(UnderlyingInsuranceLine IS NOT NULL,
+			'UnderlyingUmbrella',
+			i_CoverageType
+		) AS o_CoverageType_LKP,
 		-- *INF*: IIF( NOT ISNULL(UnderlyingInsuranceLine), UnderlyingInsuranceLine, InsuranceLine)
-		IFF(NOT UnderlyingInsuranceLine IS NULL, UnderlyingInsuranceLine, InsuranceLine) AS o_InsuranceLine_LKP,
+		IFF(UnderlyingInsuranceLine IS NOT NULL,
+			UnderlyingInsuranceLine,
+			InsuranceLine
+		) AS o_InsuranceLine_LKP,
 		AuditId
 		FROM INPUT
 	),
@@ -460,21 +469,42 @@ mplt_Load_Limits_IL_Layer_DCT AS (WITH
 		PremiumTransactionID,
 		AuditId,
 		-- *INF*: IIF(ISNULL(i_BlanketGroupNumber),'',LTRIM(RTRIM(i_BlanketGroupNumber)) || ' ')
-		IFF(i_BlanketGroupNumber IS NULL, '', LTRIM(RTRIM(i_BlanketGroupNumber)) || ' ') AS v_BlanketNumber,
+		IFF(i_BlanketGroupNumber IS NULL,
+			'',
+			LTRIM(RTRIM(i_BlanketGroupNumber
+				)
+			) || ' '
+		) AS v_BlanketNumber,
 		-- *INF*: LTRIM(RTRIM(i_CoverageType))
-		LTRIM(RTRIM(i_CoverageType)) AS v_CoverageType,
+		LTRIM(RTRIM(i_CoverageType
+			)
+		) AS v_CoverageType,
 		-- *INF*: LTRIM(RTRIM(i_LimitType))
-		LTRIM(RTRIM(i_LimitType)) AS v_LimitType,
+		LTRIM(RTRIM(i_LimitType
+			)
+		) AS v_LimitType,
 		-- *INF*: IIF(ISNULL(i_StandardLimitType), v_LimitType, i_StandardLimitType)
-		IFF(i_StandardLimitType IS NULL, v_LimitType, i_StandardLimitType) AS v_CoverageLimitType,
+		IFF(i_StandardLimitType IS NULL,
+			v_LimitType,
+			i_StandardLimitType
+		) AS v_CoverageLimitType,
 		-- *INF*: REPLACESTR(0,LTRIM(RTRIM(i_LimitValue)), '$',CHR(44),'')
-		REPLACESTR(0, LTRIM(RTRIM(i_LimitValue)), '$', CHR(44), '') AS v_CoverageLimitValue,
+		REGEXP_REPLACE(LTRIM(RTRIM(i_LimitValue
+			)
+		),'$',CHR(44
+		),'','i') AS v_CoverageLimitValue,
 		-- *INF*: LTRIM(RTRIM(i_InsuranceLine))
-		LTRIM(RTRIM(i_InsuranceLine)) AS v_InsuranceLine,
+		LTRIM(RTRIM(i_InsuranceLine
+			)
+		) AS v_InsuranceLine,
 		v_InsuranceLine AS o_InsuranceLine,
 		v_BlanketNumber || v_CoverageLimitType AS o_CoverageLimitType,
 		-- *INF*: IIF(v_InsuranceLine='WorkersCompensation' AND IN(v_CoverageLimitType,'EachAccident','EachEmployeeDisease','Policy'),v_CoverageLimitValue || '000',v_CoverageLimitValue)
-		IFF(v_InsuranceLine = 'WorkersCompensation' AND IN(v_CoverageLimitType, 'EachAccident', 'EachEmployeeDisease', 'Policy'), v_CoverageLimitValue || '000', v_CoverageLimitValue) AS o_CoverageLimitValue,
+		IFF(v_InsuranceLine = 'WorkersCompensation' 
+			AND v_CoverageLimitType IN ('EachAccident','EachEmployeeDisease','Policy'),
+			v_CoverageLimitValue || '000',
+			v_CoverageLimitValue
+		) AS o_CoverageLimitValue,
 		v_CoverageType AS o_CoverageType,
 		-- *INF*: DECODE(TRUE,
 		-- ISNULL(UnderlyingInsuranceLine),
@@ -484,8 +514,10 @@ mplt_Load_Limits_IL_Layer_DCT AS (WITH
 		-- 2)
 		DECODE(TRUE,
 			UnderlyingInsuranceLine IS NULL, 0,
-			NOT v_CoverageLimitType IS NULL AND NOT v_CoverageLimitValue IS NULL, 1,
-			2) AS o_UnderlyingFlag
+			v_CoverageLimitType IS NULL 
+			AND v_CoverageLimitValue IS NOT NOT NULL, 1,
+			2
+		) AS o_UnderlyingFlag
 		FROM FIL_UnnecessaryLimits
 	),
 	RTR_EquipmentBreakdown AS (
@@ -524,7 +556,9 @@ mplt_Load_Limits_IL_Layer_DCT AS (WITH
 		CoverageLimitType,
 		CoverageLimitValue AS i_CoverageLimitValue,
 		-- *INF*: TO_CHAR(SUM(TO_DECIMAL(i_CoverageLimitValue)))
-		TO_CHAR(SUM(TO_DECIMAL(i_CoverageLimitValue))) AS o_CoverageLimitValue,
+		TO_CHAR(SUM(CAST(i_CoverageLimitValue AS FLOAT)
+			)
+		) AS o_CoverageLimitValue,
 		AuditId
 		FROM RTR_EquipmentBreakdown_EquipmentBreakdown
 		GROUP BY PremiumTransactionAKId, CoverageLimitType
@@ -540,19 +574,30 @@ mplt_Load_Limits_IL_Layer_DCT AS (WITH
 		'1' AS o_CurrentSnapshotFlag,
 		AuditId AS AuditID,
 		-- *INF*: TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
-		TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,
+		TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+		) AS o_EffectiveDate,
 		-- *INF*: TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-		TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_ExpirationDate,
+		TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+		) AS o_ExpirationDate,
 		@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 		CURRENT_TIMESTAMP AS o_CreatedDate,
 		CURRENT_TIMESTAMP AS o_ModifiedDate,
 		i_PremiumTransactionID AS o_PremiumTransactionId,
 		-- *INF*: IIF(ISNULL(i_UnderlyingCompanyName),'N/A',i_UnderlyingCompanyName)
-		IFF(i_UnderlyingCompanyName IS NULL, 'N/A', i_UnderlyingCompanyName) AS o_UnderlyingInsuranceCompanyName,
+		IFF(i_UnderlyingCompanyName IS NULL,
+			'N/A',
+			i_UnderlyingCompanyName
+		) AS o_UnderlyingInsuranceCompanyName,
 		-- *INF*: IIF(ISNULL(i_UnderLyingPolicyKey),'N/A',i_UnderLyingPolicyKey)
-		IFF(i_UnderLyingPolicyKey IS NULL, 'N/A', i_UnderLyingPolicyKey) AS o_UnderlyingPolicyKey,
+		IFF(i_UnderLyingPolicyKey IS NULL,
+			'N/A',
+			i_UnderLyingPolicyKey
+		) AS o_UnderlyingPolicyKey,
 		-- *INF*: IIF(ISNULL(i_UnderlyingInsuranceLine),'N/A',i_UnderlyingInsuranceLine)
-		IFF(i_UnderlyingInsuranceLine IS NULL, 'N/A', i_UnderlyingInsuranceLine) AS o_UnderlyingPolicyType,
+		IFF(i_UnderlyingInsuranceLine IS NULL,
+			'N/A',
+			i_UnderlyingInsuranceLine
+		) AS o_UnderlyingPolicyType,
 		i_CoverageLimitValue AS o_UnderlyingPolicyLimit,
 		i_CoverageLimitType AS o_UnderlyingPolicyLimitType
 		FROM AGG_Underlying
@@ -668,7 +713,10 @@ mplt_Load_Limits_IL_Layer_DCT AS (WITH
 		AGG_Type_Value.CoverageLimitType,
 		AGG_Type_Value.CoverageLimitValue,
 		-- *INF*: IIF(ISNULL(lkp_CoverageLimitId),i_NEXTVAL,lkp_CoverageLimitId)
-		IFF(lkp_CoverageLimitId IS NULL, i_NEXTVAL, lkp_CoverageLimitId) AS CoverageLimitId,
+		IFF(lkp_CoverageLimitId IS NULL,
+			i_NEXTVAL,
+			lkp_CoverageLimitId
+		) AS CoverageLimitId,
 		AGG_Type_Value.AuditId
 		FROM AGG_Type_Value
 		LEFT JOIN LKP_CoverageLimit_CoverageLimitID
@@ -755,7 +803,8 @@ mplt_Load_Limits_IL_Layer_DCT AS (WITH
 		PremiumTransactionAKId,
 		CoverageLimitId,
 		-- *INF*: COUNT(1)
-		COUNT(1) AS o_CoverageLimitCount,
+		COUNT(1
+		) AS o_CoverageLimitCount,
 		AuditId
 		FROM FIL_Insert_CoverageLimitBridge
 		GROUP BY PremiumTransactionAKId, CoverageLimitId

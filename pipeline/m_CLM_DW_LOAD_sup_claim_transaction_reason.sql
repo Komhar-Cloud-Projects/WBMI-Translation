@@ -17,9 +17,15 @@ EXP_default_values AS (
 	REASON_CODE AS in_REASON_CODE,
 	REASON_DESC AS in_REASON_DESC,
 	-- *INF*: iif(isnull(in_REASON_CODE),'NA',in_REASON_CODE)
-	IFF(in_REASON_CODE IS NULL, 'NA', in_REASON_CODE) AS out_reason_code,
+	IFF(in_REASON_CODE IS NULL,
+		'NA',
+		in_REASON_CODE
+	) AS out_reason_code,
 	-- *INF*: iif(isnull(in_REASON_DESC),'N/A',in_REASON_DESC)
-	IFF(in_REASON_DESC IS NULL, 'N/A', in_REASON_DESC) AS out_reason_desc
+	IFF(in_REASON_DESC IS NULL,
+		'N/A',
+		in_REASON_DESC
+	) AS out_reason_desc
 	FROM SQ_SUP_CHANGE_REASON_STAGE
 ),
 LKP_sup_transaction_reason AS (
@@ -55,15 +61,27 @@ EXP_lkp_Values AS (
 	-- 	iif((old_trans_rsn_descript<> out_reason_desc),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(old_sup_claim_trans_rsn_id IS NULL, 'NEW', IFF(( old_trans_rsn_descript <> out_reason_desc ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(old_sup_claim_trans_rsn_id IS NULL,
+		'NEW',
+		IFF(( old_trans_rsn_descript <> out_reason_desc 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	sysdate AS created_date,
 	sysdate AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_sys_id
@@ -134,8 +152,9 @@ EXP_Lag_eff_from_date AS (
 	-- 	trans_rsn_code = v_PREV_ROW_trans_rsn_code, ADD_TO_DATE(v_PREV_ROW_EFF_FROM_DATE,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		trans_rsn_code = v_PREV_ROW_trans_rsn_code, ADD_TO_DATE(v_PREV_ROW_EFF_FROM_DATE, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		trans_rsn_code = v_PREV_ROW_trans_rsn_code, DATEADD(SECOND,- 1,v_PREV_ROW_EFF_FROM_DATE),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	0 AS crrnt_snpsht_flag,
 	sysdate AS modified_date,

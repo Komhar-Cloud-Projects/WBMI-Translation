@@ -110,33 +110,99 @@ AGG_RemoveDuplicates AS (
 	DECODE(TRUE,
 		i_LineOfBusiness = 'GeneralLiability', i_GLRisk_Type,
 		i_LineOfBusiness = 'WorkersCompensation', i_WCRisk_Desc,
-		'TBD') AS v_reins_risk_unit_grp,
+		'TBD'
+	) AS v_reins_risk_unit_grp,
 	-- *INF*: IIF(i_LineOfBusiness='GeneralLiability' or i_LineOfBusiness='WorkersCompensation', :LKP.LKP_DCSTATCODESTAGING(i_SessionId,'Class'),'TBD')
-	IFF(i_LineOfBusiness = 'GeneralLiability' OR i_LineOfBusiness = 'WorkersCompensation', LKP_DCSTATCODESTAGING_i_SessionId_Class.Value, 'TBD') AS v_reins_risk_unit,
+	IFF(i_LineOfBusiness = 'GeneralLiability' 
+		OR i_LineOfBusiness = 'WorkersCompensation',
+		LKP_DCSTATCODESTAGING_i_SessionId_Class.Value,
+		'TBD'
+	) AS v_reins_risk_unit,
 	-- *INF*: IIF(ISNULL(CustomerNum) or IS_SPACES(CustomerNum) or LENGTH(CustomerNum)=0,'N/A',LTRIM(RTRIM(CustomerNum)))
-	IFF(CustomerNum IS NULL OR IS_SPACES(CustomerNum) OR LENGTH(CustomerNum) = 0, 'N/A', LTRIM(RTRIM(CustomerNum))) AS o_CustomerNumber,
+	IFF(CustomerNum IS NULL 
+		OR LENGTH(CustomerNum)>0 AND TRIM(CustomerNum)='' 
+		OR LENGTH(CustomerNum
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(CustomerNum
+			)
+		)
+	) AS o_CustomerNumber,
 	-- *INF*: IIF(ISNULL(i_Id) or IS_SPACES(i_Id) or LENGTH(i_Id)=0,'N/A',LTRIM(RTRIM(i_Id)))
-	IFF(i_Id IS NULL OR IS_SPACES(i_Id) OR LENGTH(i_Id) = 0, 'N/A', LTRIM(RTRIM(i_Id))) AS o_Id,
+	IFF(i_Id IS NULL 
+		OR LENGTH(i_Id)>0 AND TRIM(i_Id)='' 
+		OR LENGTH(i_Id
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_Id
+			)
+		)
+	) AS o_Id,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_PolicyNumber)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_PolicyNumber) AS o_PolicyNumber,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_PolicyNumber
+	) AS o_PolicyNumber,
 	-- *INF*: IIF(ISNULL(i_PolicyVersion),'00',LPAD(TO_CHAR(i_PolicyVersion),2,'0'))
-	IFF(i_PolicyVersion IS NULL, '00', LPAD(TO_CHAR(i_PolicyVersion), 2, '0')) AS o_PolicyVersion,
+	IFF(i_PolicyVersion IS NULL,
+		'00',
+		LPAD(TO_CHAR(i_PolicyVersion
+			), 2, '0'
+		)
+	) AS o_PolicyVersion,
 	-- *INF*: IIF(ISNULL(i_LineOfBusiness) or IS_SPACES(i_LineOfBusiness) or LENGTH(i_LineOfBusiness)=0,'N/A',LTRIM(RTRIM(i_LineOfBusiness)))
-	IFF(i_LineOfBusiness IS NULL OR IS_SPACES(i_LineOfBusiness) OR LENGTH(i_LineOfBusiness) = 0, 'N/A', LTRIM(RTRIM(i_LineOfBusiness))) AS o_LineOfBusiness,
+	IFF(i_LineOfBusiness IS NULL 
+		OR LENGTH(i_LineOfBusiness)>0 AND TRIM(i_LineOfBusiness)='' 
+		OR LENGTH(i_LineOfBusiness
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_LineOfBusiness
+			)
+		)
+	) AS o_LineOfBusiness,
 	-- *INF*: IIF(ISNULL(i_CompanyNumber) or IS_SPACES(i_CompanyNumber) or LENGTH(i_CompanyNumber)=0,'N/A',LTRIM(RTRIM(i_CompanyNumber)))
-	IFF(i_CompanyNumber IS NULL OR IS_SPACES(i_CompanyNumber) OR LENGTH(i_CompanyNumber) = 0, 'N/A', LTRIM(RTRIM(i_CompanyNumber))) AS o_CompanyNumber,
+	IFF(i_CompanyNumber IS NULL 
+		OR LENGTH(i_CompanyNumber)>0 AND TRIM(i_CompanyNumber)='' 
+		OR LENGTH(i_CompanyNumber
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_CompanyNumber
+			)
+		)
+	) AS o_CompanyNumber,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('18000101','YYYYMMDD'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL, TO_DATE('18000101', 'YYYYMMDD'), i_EffectiveDate) AS o_EffectiveDate,
+	IFF(i_EffectiveDate IS NULL,
+		TO_DATE('18000101', 'YYYYMMDD'
+		),
+		i_EffectiveDate
+	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_TransactionDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_TransactionDate)
-	IFF(i_TransactionDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_TransactionDate) AS o_TransactionDate,
+	IFF(i_TransactionDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_TransactionDate
+	) AS o_TransactionDate,
 	-- *INF*: IIF(ISNULL(i_LocationNumber) or IS_SPACES(i_LocationNumber) or LENGTH(i_LocationNumber)=0,'0000',LPAD(LTRIM(RTRIM(i_LocationNumber)),4,'0'))
-	IFF(i_LocationNumber IS NULL OR IS_SPACES(i_LocationNumber) OR LENGTH(i_LocationNumber) = 0, '0000', LPAD(LTRIM(RTRIM(i_LocationNumber)), 4, '0')) AS o_LocationNumber,
+	IFF(i_LocationNumber IS NULL 
+		OR LENGTH(i_LocationNumber)>0 AND TRIM(i_LocationNumber)='' 
+		OR LENGTH(i_LocationNumber
+		) = 0,
+		'0000',
+		LPAD(LTRIM(RTRIM(i_LocationNumber
+				)
+			), 4, '0'
+		)
+	) AS o_LocationNumber,
 	'N/A' AS o_reins_sub_loc_unit_num,
 	-- *INF*: IIF(ISNULL(v_reins_risk_unit_grp),'N/A',v_reins_risk_unit_grp)
-	IFF(v_reins_risk_unit_grp IS NULL, 'N/A', v_reins_risk_unit_grp) AS o_reins_risk_unit_grp,
+	IFF(v_reins_risk_unit_grp IS NULL,
+		'N/A',
+		v_reins_risk_unit_grp
+	) AS o_reins_risk_unit_grp,
 	'N/A' AS o_reins_risk_unit_grp_seq_num,
 	-- *INF*: IIF(ISNULL(v_reins_risk_unit),'N/A',v_reins_risk_unit)
-	IFF(v_reins_risk_unit IS NULL, 'N/A', v_reins_risk_unit) AS o_reins_risk_unit,
+	IFF(v_reins_risk_unit IS NULL,
+		'N/A',
+		v_reins_risk_unit
+	) AS o_reins_risk_unit,
 	'N/A' AS o_reins_risk_unit_seq_num,
 	'N/A' AS o_reins_section_code,
 	i_Type AS o_Type,
@@ -197,20 +263,42 @@ EXP_Values AS (
 	i_CompanyNumber AS o_reins_co_num,
 	i_EffectiveDate AS o_reins_eff_date,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21000101235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL, TO_DATE('21000101235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_reins_exp_date,
+	IFF(i_ExpirationDate IS NULL,
+		TO_DATE('21000101235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ExpirationDate
+	) AS o_reins_exp_date,
 	-- *INF*: TO_DATE('01011800', 'MMDDYYYY')
-	TO_DATE('01011800', 'MMDDYYYY') AS o_reins_enter_date,
+	TO_DATE('01011800', 'MMDDYYYY'
+	) AS o_reins_enter_date,
 	-- *INF*: IIF(ISNULL(i_Type) or IS_SPACES(i_Type) or LENGTH(i_Type)=0,'N/A',LTRIM(RTRIM(i_Type)))
-	IFF(i_Type IS NULL OR IS_SPACES(i_Type) OR LENGTH(i_Type) = 0, 'N/A', LTRIM(RTRIM(i_Type))) AS o_reins_type,
+	IFF(i_Type IS NULL 
+		OR LENGTH(i_Type)>0 AND TRIM(i_Type)='' 
+		OR LENGTH(i_Type
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_Type
+			)
+		)
+	) AS o_reins_type,
 	-1 AS o_reins_prcnt_prem_ceded,
 	-- *INF*: IIF(ISNULL(i_PercentLoss),0,i_PercentLoss)
-	IFF(i_PercentLoss IS NULL, 0, i_PercentLoss) AS o_reins_prcnt_loss_ceded,
+	IFF(i_PercentLoss IS NULL,
+		0,
+		i_PercentLoss
+	) AS o_reins_prcnt_loss_ceded,
 	0 AS o_reins_prcnt_facultative_commssn,
 	-1 AS o_eins_excess_amt,
 	-- *INF*: IIF(ISNULL(i_OccurrenceLimit),0,i_OccurrenceLimit)
-	IFF(i_OccurrenceLimit IS NULL, 0, i_OccurrenceLimit) AS o_reins_occurrence_lmt,
+	IFF(i_OccurrenceLimit IS NULL,
+		0,
+		i_OccurrenceLimit
+	) AS o_reins_occurrence_lmt,
 	-- *INF*: IIF(ISNULL(i_AggregateLimit),0,i_AggregateLimit)
-	IFF(i_AggregateLimit IS NULL, 0, i_AggregateLimit) AS o_reins_agg_lmt
+	IFF(i_AggregateLimit IS NULL,
+		0,
+		i_AggregateLimit
+	) AS o_reins_agg_lmt
 	FROM AGG_RemoveDuplicates
 ),
 LKP_SupReinsuranceMaster AS (
@@ -330,7 +418,10 @@ EXP_LKP_Values AS (
 	-- 
 	-- 
 	-- --IIF(ISNULL(i_reins_co_name),'N/A',i_reins_co_name)
-	IFF(i_reins_co_name IS NULL, 'N/A', i_reins_co_name) AS o_reins_co_name,
+	IFF(i_reins_co_name IS NULL,
+		'N/A',
+		i_reins_co_name
+	) AS o_reins_co_name,
 	i_reins_eff_date AS o_reins_eff_date,
 	i_reins_exp_date AS o_reins_exp_date,
 	i_reins_enter_date AS o_reins_enter_date,
@@ -342,13 +433,25 @@ EXP_LKP_Values AS (
 	i_reins_occurrence_lmt AS o_reins_occurrence_lmt,
 	i_reins_agg_lmt AS o_reins_agg_lmt,
 	-- *INF*: IIF(ISNULL(i_sup_ins_line_id),-1,i_sup_ins_line_id)
-	IFF(i_sup_ins_line_id IS NULL, - 1, i_sup_ins_line_id) AS o_sup_ins_line_id,
+	IFF(i_sup_ins_line_id IS NULL,
+		- 1,
+		i_sup_ins_line_id
+	) AS o_sup_ins_line_id,
 	-- *INF*: IIF(ISNULL(i_sup_risk_unit_grp_id),-1,i_sup_risk_unit_grp_id)
-	IFF(i_sup_risk_unit_grp_id IS NULL, - 1, i_sup_risk_unit_grp_id) AS o_sup_risk_unit_grp_id,
+	IFF(i_sup_risk_unit_grp_id IS NULL,
+		- 1,
+		i_sup_risk_unit_grp_id
+	) AS o_sup_risk_unit_grp_id,
 	-- *INF*: IIF(ISNULL(i_sup_risk_unit_id),-1,i_sup_risk_unit_id)
-	IFF(i_sup_risk_unit_id IS NULL, - 1, i_sup_risk_unit_id) AS o_sup_risk_unit_id,
+	IFF(i_sup_risk_unit_id IS NULL,
+		- 1,
+		i_sup_risk_unit_id
+	) AS o_sup_risk_unit_id,
 	-- *INF*: IIF(ISNULL(i_SupReinsuranceMasterId),-1,i_SupReinsuranceMasterId)
-	IFF(i_SupReinsuranceMasterId IS NULL, - 1, i_SupReinsuranceMasterId) AS o_SupReinsuranceMasterID,
+	IFF(i_SupReinsuranceMasterId IS NULL,
+		- 1,
+		i_SupReinsuranceMasterId
+	) AS o_SupReinsuranceMasterID,
 	-- *INF*: DECODE(ReinsuranceMasterReinsuranceType,
 	-- '1', 'In House',
 	-- '2', 'Facultative',
@@ -357,7 +460,8 @@ EXP_LKP_Values AS (
 		'1', 'In House',
 		'2', 'Facultative',
 		'3', 'Treaty',
-		'N/A') AS o_ReinsuranceMethod
+		'N/A'
+	) AS o_ReinsuranceMethod
 	FROM EXP_Values
 	LEFT JOIN LKP_SupReinsuranceMaster
 	ON LKP_SupReinsuranceMaster.ReinsuranceMasterReinsuranceCompanyNumber = EXP_Values.o_reins_co_num
@@ -475,7 +579,31 @@ EXP_Detect_Changes AS (
 	-- 	i_reins_agg_lmt <> reins_agg_lmt
 	--   	,'UPDATE'
 	-- 	,'NOCHANGE'))
-	IFF(i_reins_cov_id IS NULL, 'NEW', IFF(LTRIM(RTRIM(i_reins_co_name)) <> LTRIM(RTRIM(reins_co_name)) OR ( i_reins_exp_date <> reins_exp_date ) OR ( LTRIM(RTRIM(i_reins_type)) <> LTRIM(RTRIM(reins_type)) ) OR i_reins_prcnt_prem_ceded <> reins_prcnt_prem_ceded OR i_reins_prcnt_loss_ceded <> reins_prcnt_loss_ceded OR i_reins_prcnt_facultative_commssn <> reins_prcnt_facultative_commssn OR i_reins_excess_amt <> reins_excess_amt OR i_reins_occurrence_lmt <> reins_occurrence_lmt OR i_reins_agg_lmt <> reins_agg_lmt, 'UPDATE', 'NOCHANGE')) AS Changed_Flag,
+	IFF(i_reins_cov_id IS NULL,
+		'NEW',
+		IFF(LTRIM(RTRIM(i_reins_co_name
+				)
+			) <> LTRIM(RTRIM(reins_co_name
+				)
+			) 
+			OR ( i_reins_exp_date <> reins_exp_date 
+			) 
+			OR ( LTRIM(RTRIM(i_reins_type
+					)
+				) <> LTRIM(RTRIM(reins_type
+					)
+				) 
+			) 
+			OR i_reins_prcnt_prem_ceded <> reins_prcnt_prem_ceded 
+			OR i_reins_prcnt_loss_ceded <> reins_prcnt_loss_ceded 
+			OR i_reins_prcnt_facultative_commssn <> reins_prcnt_facultative_commssn 
+			OR i_reins_excess_amt <> reins_excess_amt 
+			OR i_reins_occurrence_lmt <> reins_occurrence_lmt 
+			OR i_reins_agg_lmt <> reins_agg_lmt,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS Changed_Flag,
 	EXP_LKP_Values.o_ReinsuranceMethod
 	FROM EXP_LKP_Values
 	LEFT JOIN LKP_reinsurance_coverage
@@ -550,9 +678,14 @@ EXP_Determine_AK AS (
 	1 AS Crrnt_Snpsht_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(Changed_Flag='NEW', TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'), SYSDATE)
-	IFF(Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS Eff_From_Date,
+	IFF(Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
 	SYSDATE AS Modified_Date,
@@ -560,7 +693,10 @@ EXP_Determine_AK AS (
 	-- *INF*: IIF(Changed_Flag='NEW',
 	-- i_NEXTVAL,
 	-- i_reins_cov_ak_id)
-	IFF(Changed_Flag = 'NEW', i_NEXTVAL, i_reins_cov_ak_id) AS o_reins_cov_ak_id,
+	IFF(Changed_Flag = 'NEW',
+		i_NEXTVAL,
+		i_reins_cov_ak_id
+	) AS o_reins_cov_ak_id,
 	o_ReinsuranceMethod
 	FROM FIL_New_or_Changed
 ),
@@ -641,8 +777,9 @@ EXP_Expire_Rows AS (
 	-- i_reins_cov_ak_id=v_PREV_ROW_reins_cov_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1)
 	-- ,i_orig_eff_to_date)
 	DECODE(TRUE,
-		i_reins_cov_ak_id = v_PREV_ROW_reins_cov_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		i_orig_eff_to_date) AS v_eff_to_date,
+		i_reins_cov_ak_id = v_PREV_ROW_reins_cov_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		i_orig_eff_to_date
+	) AS v_eff_to_date,
 	i_reins_cov_ak_id AS v_PREV_ROW_reins_cov_ak_id,
 	i_eff_from_date AS v_PREV_ROW_eff_from_date,
 	i_orig_eff_to_date AS o_orig_eff_to_date,

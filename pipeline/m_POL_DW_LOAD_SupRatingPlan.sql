@@ -17,11 +17,23 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate) AS o_EffectiveDate,
+	IFF(i_EffectiveDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_EffectiveDate
+	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate,
+	IFF(i_ExpirationDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ExpirationDate
+	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate) AS o_ModifiedDate
+	IFF(i_ModifiedDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ModifiedDate
+	) AS o_ModifiedDate
 	FROM SQ_SupRatingPlan
 ),
 EXP_NumericValues AS (
@@ -29,9 +41,15 @@ EXP_NumericValues AS (
 	SupRatingPlanId AS i_SupRatingPlanId,
 	SupRatingPlanAKId AS i_SupRatingPlanAKId,
 	-- *INF*: IIF(ISNULL(i_SupRatingPlanId),-1,i_SupRatingPlanId)
-	IFF(i_SupRatingPlanId IS NULL, - 1, i_SupRatingPlanId) AS o_SupRatingPlanId,
+	IFF(i_SupRatingPlanId IS NULL,
+		- 1,
+		i_SupRatingPlanId
+	) AS o_SupRatingPlanId,
 	-- *INF*: IIF(ISNULL(i_SupRatingPlanAKId),-1,i_SupRatingPlanAKId)
-	IFF(i_SupRatingPlanAKId IS NULL, - 1, i_SupRatingPlanAKId) AS o_SupRatingPlanAKId
+	IFF(i_SupRatingPlanAKId IS NULL,
+		- 1,
+		i_SupRatingPlanAKId
+	) AS o_SupRatingPlanAKId
 	FROM SQ_SupRatingPlan
 ),
 EXP_StringValues AS (
@@ -41,16 +59,44 @@ EXP_StringValues AS (
 	RatingPlanCode AS i_RatingPlanCode,
 	SourceRatingPlanCode AS i_SourceRatingPlanCode,
 	-- *INF*: IIF(i_ExpirationDate>=TO_DATE('21001231','YYYYMMDD'),1,0)
-	IFF(i_ExpirationDate >= TO_DATE('21001231', 'YYYYMMDD'), 1, 0) AS o_CurrentSnapshotFlag,
+	IFF(i_ExpirationDate >= TO_DATE('21001231', 'YYYYMMDD'
+		),
+		1,
+		0
+	) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_SourceCode) OR LENGTH(i_SourceCode)=0 OR IS_SPACES(i_SourceCode),'N/A',LTRIM(RTRIM(i_SourceCode)))
-	IFF(i_SourceCode IS NULL OR LENGTH(i_SourceCode) = 0 OR IS_SPACES(i_SourceCode), 'N/A', LTRIM(RTRIM(i_SourceCode))) AS o_SourceCode,
+	IFF(i_SourceCode IS NULL 
+		OR LENGTH(i_SourceCode
+		) = 0 
+		OR LENGTH(i_SourceCode)>0 AND TRIM(i_SourceCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_SourceCode
+			)
+		)
+	) AS o_SourceCode,
 	-- *INF*: IIF(ISNULL(i_RatingPlanCode) OR LENGTH(i_RatingPlanCode)=0 OR IS_SPACES(i_RatingPlanCode),'N/A',LTRIM(RTRIM(i_RatingPlanCode)))
-	IFF(i_RatingPlanCode IS NULL OR LENGTH(i_RatingPlanCode) = 0 OR IS_SPACES(i_RatingPlanCode), 'N/A', LTRIM(RTRIM(i_RatingPlanCode))) AS o_RatingPlanCode,
+	IFF(i_RatingPlanCode IS NULL 
+		OR LENGTH(i_RatingPlanCode
+		) = 0 
+		OR LENGTH(i_RatingPlanCode)>0 AND TRIM(i_RatingPlanCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_RatingPlanCode
+			)
+		)
+	) AS o_RatingPlanCode,
 	-- *INF*: IIF(ISNULL(i_SourceRatingPlanCode) OR LENGTH(i_SourceRatingPlanCode)=0 OR IS_SPACES(i_SourceRatingPlanCode),'N/A',LTRIM(RTRIM(i_SourceRatingPlanCode)))
-	IFF(i_SourceRatingPlanCode IS NULL OR LENGTH(i_SourceRatingPlanCode) = 0 OR IS_SPACES(i_SourceRatingPlanCode), 'N/A', LTRIM(RTRIM(i_SourceRatingPlanCode))) AS o_SourceRatingPlanCode
+	IFF(i_SourceRatingPlanCode IS NULL 
+		OR LENGTH(i_SourceRatingPlanCode
+		) = 0 
+		OR LENGTH(i_SourceRatingPlanCode)>0 AND TRIM(i_SourceRatingPlanCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_SourceRatingPlanCode
+			)
+		)
+	) AS o_SourceRatingPlanCode
 	FROM SQ_SupRatingPlan
 ),
 TGT_SupRatingPlan_UpdateElseInsert AS (

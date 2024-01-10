@@ -59,10 +59,16 @@ EXP_PASS_THROUGH AS (
 	bill_review_vendor_code,
 	med_bill_review_code AS in_med_bill_review_code,
 	-- *INF*: iif(isnull(in_med_bill_review_code),'N/A',in_med_bill_review_code)
-	IFF(in_med_bill_review_code IS NULL, 'N/A', in_med_bill_review_code) AS med_bill_review_code,
+	IFF(in_med_bill_review_code IS NULL,
+		'N/A',
+		in_med_bill_review_code
+	) AS med_bill_review_code,
 	autopay_ind AS in_autopay_ind,
 	-- *INF*: iif(isnull(in_autopay_ind),'N/A',in_autopay_ind)
-	IFF(in_autopay_ind IS NULL, 'N/A', in_autopay_ind) AS autopay_ind,
+	IFF(in_autopay_ind IS NULL,
+		'N/A',
+		in_autopay_ind
+	) AS autopay_ind,
 	eor_rcvd_date,
 	OriginalVendorBillNumber,
 	AutoAdjudicatedIndicator
@@ -279,9 +285,11 @@ EXPTRANS AS (
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
+	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	sysdate AS created_date,
 	sysdate AS modified_date,
 	LKP_medical_bill_vendor.vendor_code,
@@ -295,7 +303,10 @@ EXPTRANS AS (
 	LKP_sup_claim_medical_bill_review_code.in_med_bill_review_code AS med_bill_review_code,
 	LKP_sup_claim_medical_bill_review_code.med_bill_review_code_descript AS in_med_bill_review_code_descript,
 	-- *INF*: iif(isnull(in_med_bill_review_code_descript),'Not Applicable',in_med_bill_review_code_descript)
-	IFF(in_med_bill_review_code_descript IS NULL, 'Not Applicable', in_med_bill_review_code_descript) AS med_bill_review_code_descript,
+	IFF(in_med_bill_review_code_descript IS NULL,
+		'Not Applicable',
+		in_med_bill_review_code_descript
+	) AS med_bill_review_code_descript,
 	EXP_PASS_THROUGH.autopay_ind,
 	EXP_PASS_THROUGH.eor_rcvd_date,
 	EXP_PASS_THROUGH.OriginalVendorBillNumber,

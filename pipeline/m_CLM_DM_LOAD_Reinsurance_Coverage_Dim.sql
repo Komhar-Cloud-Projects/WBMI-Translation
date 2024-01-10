@@ -111,14 +111,39 @@ EXP_Get_Values AS (
 	-- *INF*: DECODE(source_sys_id,'DCT', reins_type, 'N/A')
 	DECODE(source_sys_id,
 		'DCT', reins_type,
-		'N/A') AS o_ReinsuranceType,
+		'N/A'
+	) AS o_ReinsuranceType,
 	ReinsuranceMethod AS o_ReinsuranceMethod,
 	-- *INF*: IIF(ISNULL(lkp_StandardInsuranceLineCode) OR IS_SPACES(lkp_StandardInsuranceLineCode) OR LENGTH(lkp_StandardInsuranceLineCode)=0,'N/A',LTRIM(RTRIM(lkp_StandardInsuranceLineCode)))
-	IFF(lkp_StandardInsuranceLineCode IS NULL OR IS_SPACES(lkp_StandardInsuranceLineCode) OR LENGTH(lkp_StandardInsuranceLineCode) = 0, 'N/A', LTRIM(RTRIM(lkp_StandardInsuranceLineCode))) AS o_reins_ins_line,
+	IFF(lkp_StandardInsuranceLineCode IS NULL 
+		OR LENGTH(lkp_StandardInsuranceLineCode)>0 AND TRIM(lkp_StandardInsuranceLineCode)='' 
+		OR LENGTH(lkp_StandardInsuranceLineCode
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(lkp_StandardInsuranceLineCode
+			)
+		)
+	) AS o_reins_ins_line,
 	-- *INF*: IIF(ISNULL(lkp_StandardRiskUnitGroupCode) OR IS_SPACES(lkp_StandardRiskUnitGroupCode) OR LENGTH(lkp_StandardRiskUnitGroupCode)=0,'N/A',LTRIM(RTRIM(lkp_StandardRiskUnitGroupCode)))
-	IFF(lkp_StandardRiskUnitGroupCode IS NULL OR IS_SPACES(lkp_StandardRiskUnitGroupCode) OR LENGTH(lkp_StandardRiskUnitGroupCode) = 0, 'N/A', LTRIM(RTRIM(lkp_StandardRiskUnitGroupCode))) AS o_reins_risk_unit_grp,
+	IFF(lkp_StandardRiskUnitGroupCode IS NULL 
+		OR LENGTH(lkp_StandardRiskUnitGroupCode)>0 AND TRIM(lkp_StandardRiskUnitGroupCode)='' 
+		OR LENGTH(lkp_StandardRiskUnitGroupCode
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(lkp_StandardRiskUnitGroupCode
+			)
+		)
+	) AS o_reins_risk_unit_grp,
 	-- *INF*: IIF(ISNULL(lkp_StandardRiskUnitCode) OR IS_SPACES(lkp_StandardRiskUnitCode) OR LENGTH(lkp_StandardRiskUnitCode)=0,'N/A',LTRIM(RTRIM(lkp_StandardRiskUnitCode)))
-	IFF(lkp_StandardRiskUnitCode IS NULL OR IS_SPACES(lkp_StandardRiskUnitCode) OR LENGTH(lkp_StandardRiskUnitCode) = 0, 'N/A', LTRIM(RTRIM(lkp_StandardRiskUnitCode))) AS o_reins_risk_unit,
+	IFF(lkp_StandardRiskUnitCode IS NULL 
+		OR LENGTH(lkp_StandardRiskUnitCode)>0 AND TRIM(lkp_StandardRiskUnitCode)='' 
+		OR LENGTH(lkp_StandardRiskUnitCode
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(lkp_StandardRiskUnitCode
+			)
+		)
+	) AS o_reins_risk_unit,
 	-- *INF*: DECODE(LTRIM(RTRIM(reins_co_num)),
 	-- '0005','N',
 	-- '0007','N',
@@ -133,7 +158,9 @@ EXP_Get_Values AS (
 	-- '0039','N',
 	-- '0055','N',
 	-- 'F')
-	DECODE(LTRIM(RTRIM(reins_co_num)),
+	DECODE(LTRIM(RTRIM(reins_co_num
+			)
+		),
 		'0005', 'N',
 		'0007', 'N',
 		'0009', 'N',
@@ -146,9 +173,11 @@ EXP_Get_Values AS (
 		'0035', 'N',
 		'0039', 'N',
 		'0055', 'N',
-		'F') AS o_facultative_ind,
+		'F'
+	) AS o_facultative_ind,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_eff_to_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS o_eff_to_Date,
 	1 AS o_crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_Audit_id,
 	SYSDATE AS o_Created_date
@@ -301,8 +330,9 @@ EXP_Lag_eff_from_date AS (
 	-- 	edw_reins_cov_ak_id = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		edw_reins_cov_ak_id = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		edw_reins_cov_ak_id = v_PREV_ROW_occurrence_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	edw_reins_cov_ak_id AS v_PREV_ROW_occurrence_key,
 	v_eff_to_date AS eff_to_date,

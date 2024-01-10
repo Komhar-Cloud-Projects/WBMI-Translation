@@ -45,7 +45,10 @@ EXP_UPDATE_Claim_Transaction_PMS AS (
 	-- *INF*: :LKP.LKP_CLAIM_TRANSACTION(claimant_cov_det_ak_id,cause_of_loss,reserve_ctgry,offset_onset_ind,financial_type_code,'92',trans_ctgry_code, trans_date)
 	LKP_CLAIM_TRANSACTION_claimant_cov_det_ak_id_cause_of_loss_reserve_ctgry_offset_onset_ind_financial_type_code_92_trans_ctgry_code_trans_date.trans_date AS Trans_date_92,
 	-- *INF*: IIF(Trans_date_90>Trans_date_92,Trans_date_90,Trans_date_92)
-	IFF(Trans_date_90 > Trans_date_92, Trans_date_90, Trans_date_92) AS greater_trans_date_90_92,
+	IFF(Trans_date_90 > Trans_date_92,
+		Trans_date_90,
+		Trans_date_92
+	) AS greater_trans_date_90_92,
 	-- *INF*: IIF(
 	--     ISNULL(Trans_date_40) AND ISNULL(Trans_date_90) AND ISNULL(Trans_date_92),
 	--     '90', 
@@ -59,7 +62,28 @@ EXP_UPDATE_Claim_Transaction_PMS AS (
 	-- 		'92',
 	-- 		'65'),
 	-- 	    '65')))))
-	IFF(Trans_date_40 IS NULL AND Trans_date_90 IS NULL AND Trans_date_92 IS NULL, '90', ( IFF(NOT Trans_date_40 IS NULL AND Trans_date_90 IS NULL AND Trans_date_92 IS NULL, '92', ( IFF(( NOT Trans_date_90 IS NULL OR NOT Trans_date_92 IS NULL ) AND NOT Trans_date_40 IS NULL, IFF(Trans_date_40 >= greater_trans_date_90_92, '92', '65'), '65') )) )) AS trans_code_op
+	IFF(Trans_date_40 IS NULL 
+		AND Trans_date_90 IS NULL 
+		AND Trans_date_92 IS NULL,
+		'90',
+		( IFF(Trans_date_40 IS NULL 
+				AND Trans_date_90 IS NULL 
+				AND Trans_date_92 IS NOT NULL,
+				'92',
+				( IFF(( Trans_date_90 IS NULL 
+							OR Trans_date_92 IS NOT NOT NULL 
+						) 
+						AND Trans_date_40 IS NOT NULL,
+						IFF(Trans_date_40 >= greater_trans_date_90_92,
+							'92',
+							'65'
+						),
+						'65'
+					) 
+				)
+			) 
+		)
+	) AS trans_code_op
 	FROM SQ_claim_transaction
 	LEFT JOIN LKP_CLAIM_TRANSACTION LKP_CLAIM_TRANSACTION_claimant_cov_det_ak_id_cause_of_loss_reserve_ctgry_offset_onset_ind_financial_type_code_40_trans_ctgry_code_trans_date
 	ON LKP_CLAIM_TRANSACTION_claimant_cov_det_ak_id_cause_of_loss_reserve_ctgry_offset_onset_ind_financial_type_code_40_trans_ctgry_code_trans_date.claimant_cov_det_ak_id = claimant_cov_det_ak_id

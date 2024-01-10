@@ -93,7 +93,9 @@ EXP_Evaluate_PassThroughCharges AS (
 		TotalPremiumTransactionAmount <> Arch_TotalPremiumAmount, 'AmountDoesNotMatch',
 		StatisticalCoverageID <> Arch_Row_Count, 'RowCountDoesNotMatch',
 		pol_key IS NULL, 'MissingEDWPolicy',
-		StatisticalCoverageID = Arch_Row_Count AND TotalPremiumTransactionAmount = Arch_TotalPremiumAmount, 'MatchFound') AS V_Difference_Flag,
+		StatisticalCoverageID = Arch_Row_Count 
+		AND TotalPremiumTransactionAmount = Arch_TotalPremiumAmount, 'MatchFound'
+	) AS V_Difference_Flag,
 	V_Difference_Flag AS Flag,
 	'PassThroughChargesTransaction' AS EDWPolicyTransactionType,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
@@ -234,7 +236,9 @@ EXP_Evaluate AS (
 		TotalPremiumTransactionAmount <> Arch_TotalPremiumAmount, 'AmountDoesNotMatch',
 		EDW_Row_Count <> Arch_Row_Count, 'RowCountDoesNotMatch',
 		pol_key IS NULL, 'MissingEDWPolicy',
-		EDW_Row_Count = Arch_Row_Count AND TotalPremiumTransactionAmount = Arch_TotalPremiumAmount, 'MatchFound') AS V_Difference_Flag,
+		EDW_Row_Count = Arch_Row_Count 
+		AND TotalPremiumTransactionAmount = Arch_TotalPremiumAmount, 'MatchFound'
+	) AS V_Difference_Flag,
 	V_Difference_Flag AS Flag,
 	'PremiumTransaction' AS EDWPolicyTransactionType,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,

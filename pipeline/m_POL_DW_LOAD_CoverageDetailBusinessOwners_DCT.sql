@@ -35,17 +35,24 @@ EXP_Stage AS (
 	ISOOccupancyType AS i_ISOOccupancyType,
 	PredominantBuildingBCCCode AS i_PredominantBuildingBCCCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ISOOccupancyType)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ISOOccupancyType) AS o_ISOOccupancyType,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ISOOccupancyType
+	) AS o_ISOOccupancyType,
 	-- *INF*: IIF(IN(i_LiabilityClassGroup,'51','52','53','54','55','56','57','58','59')=1 AND i_ISOOccupancyType='Lessors Liability' ,1,0)
-	IFF(IN(i_LiabilityClassGroup, '51', '52', '53', '54', '55', '56', '57', '58', '59') = 1 AND i_ISOOccupancyType = 'Lessors Liability', 1, 0) AS v_LiabilityClassGroup_51_59_Flag,
+	IFF(i_LiabilityClassGroup IN ('51','52','53','54','55','56','57','58','59') = 1 
+		AND i_ISOOccupancyType = 'Lessors Liability',
+		1,
+		0
+	) AS v_LiabilityClassGroup_51_59_Flag,
 	-- *INF*: DECODE(TRUE,
 	-- NOT ISNULL(i_PropertyRateNumber),i_PropertyRateNumber,
 	-- REG_MATCH(i_CoverageType,'.*PlusPak.*')=1,'Plus Pak',
 	-- 'Policy Level')
 	DECODE(TRUE,
-		NOT i_PropertyRateNumber IS NULL, i_PropertyRateNumber,
-		REG_MATCH(i_CoverageType, '.*PlusPak.*') = 1, 'Plus Pak',
-		'Policy Level') AS o_PropertyRateNumber,
+		i_PropertyRateNumber IS NOT NULL, i_PropertyRateNumber,
+		REGEXP_LIKE(i_CoverageType, '.*PlusPak.*'
+		) = 1, 'Plus Pak',
+		'Policy Level'
+	) AS o_PropertyRateNumber,
 	-- *INF*: DECODE(TRUE,
 	-- v_LiabilityClassGroup_51_59_Flag=1 AND i_BCCCode='1328','51-59  Office',
 	-- v_LiabilityClassGroup_51_59_Flag=1 AND IN(i_BCCCode,'1326','189','1098','1330','1408','692','907')=1,'51-59  Shop/Storage',
@@ -53,13 +60,18 @@ EXP_Stage AS (
 	-- REG_MATCH(i_CoverageType,'.*PlusPak.*')=1,'Plus Pak',
 	-- 'Policy Level')
 	DECODE(TRUE,
-		v_LiabilityClassGroup_51_59_Flag = 1 AND i_BCCCode = '1328', '51-59  Office',
-		v_LiabilityClassGroup_51_59_Flag = 1 AND IN(i_BCCCode, '1326', '189', '1098', '1330', '1408', '692', '907') = 1, '51-59  Shop/Storage',
-		NOT i_LiabilityClassGroup IS NULL, i_LiabilityClassGroup,
-		REG_MATCH(i_CoverageType, '.*PlusPak.*') = 1, 'Plus Pak',
-		'Policy Level') AS o_LiabilityClassGroup,
+		v_LiabilityClassGroup_51_59_Flag = 1 
+		AND i_BCCCode = '1328', '51-59  Office',
+		v_LiabilityClassGroup_51_59_Flag = 1 
+		AND i_BCCCode IN ('1326','189','1098','1330','1408','692','907') = 1, '51-59  Shop/Storage',
+		i_LiabilityClassGroup IS NOT NULL, i_LiabilityClassGroup,
+		REGEXP_LIKE(i_CoverageType, '.*PlusPak.*'
+		) = 1, 'Plus Pak',
+		'Policy Level'
+	) AS o_LiabilityClassGroup,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_PredominantBuildingBCCCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_PredominantBuildingBCCCode) AS o_PredominantBuildingBCCCode
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_PredominantBuildingBCCCode
+	) AS o_PredominantBuildingBCCCode
 	FROM SQ_DCTWorkTable
 ),
 SQ_EDW_DCT AS (
@@ -105,16 +117,28 @@ EXP_Metadata AS (
 	PredominantBuildingBCCCode AS i_PredominantBuildingBCCCode,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	-- *INF*: RTRIM(LTRIM(i_CoverageGUID))
-	RTRIM(LTRIM(i_CoverageGUID)) AS o_CoverageGUID,
+	RTRIM(LTRIM(i_CoverageGUID
+		)
+	) AS o_CoverageGUID,
 	-- *INF*: IIF(NOT ISNULL(i_ISOBusinessOwnersPropertyRateNumber),i_ISOBusinessOwnersPropertyRateNumber,'N/A')
-	IFF(NOT i_ISOBusinessOwnersPropertyRateNumber IS NULL, i_ISOBusinessOwnersPropertyRateNumber, 'N/A') AS o_ISOBusinessOwnersPropertyRateNumber,
+	IFF(i_ISOBusinessOwnersPropertyRateNumber IS NOT NULL,
+		i_ISOBusinessOwnersPropertyRateNumber,
+		'N/A'
+	) AS o_ISOBusinessOwnersPropertyRateNumber,
 	-- *INF*: IIF(NOT ISNULL(i_ISOBusinessOwnersLiabilityClassGroup),i_ISOBusinessOwnersLiabilityClassGroup,'N/A')
-	IFF(NOT i_ISOBusinessOwnersLiabilityClassGroup IS NULL, i_ISOBusinessOwnersLiabilityClassGroup, 'N/A') AS o_ISOBusinessOwnersLiabilityClassGroup,
+	IFF(i_ISOBusinessOwnersLiabilityClassGroup IS NOT NULL,
+		i_ISOBusinessOwnersLiabilityClassGroup,
+		'N/A'
+	) AS o_ISOBusinessOwnersLiabilityClassGroup,
 	i_ISOOccupancyType AS o_ISOOccupancyType,
 	-- *INF*: IIF(i_PredominantBuildingBCCCode != 'N/A',LPAD(i_PredominantBuildingBCCCode,5,'0'),i_PredominantBuildingBCCCode)
 	-- 
 	-- -- pad a 4 char code to 5 with a leading zero if valid, else N/A
-	IFF(i_PredominantBuildingBCCCode != 'N/A', LPAD(i_PredominantBuildingBCCCode, 5, '0'), i_PredominantBuildingBCCCode) AS o_PredominantBuildingBCCCode_padded
+	IFF(i_PredominantBuildingBCCCode != 'N/A',
+		LPAD(i_PredominantBuildingBCCCode, 5, '0'
+		),
+		i_PredominantBuildingBCCCode
+	) AS o_PredominantBuildingBCCCode_padded
 	FROM AGG_DuplicateRemove
 ),
 LKP_CoverageDetailBusinessOwners AS (
@@ -171,14 +195,18 @@ EXP_Metadata1 AS (
 	EXP_Metadata.o_ISOBusinessOwnersLiabilityClassGroup AS i_ISOBusinessOwnersLiabilityClassGroup,
 	EXP_Metadata.o_ISOOccupancyType AS i_ISOOccupancyType,
 	-- *INF*: RTRIM(LTRIM(lkp_CoverageGuid))
-	RTRIM(LTRIM(lkp_CoverageGuid)) AS v_lkp_CoverageGuid,
+	RTRIM(LTRIM(lkp_CoverageGuid
+		)
+	) AS v_lkp_CoverageGuid,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_EffectiveDate,
+	TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US'
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_ExpirationDate,
+	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -187,9 +215,11 @@ EXP_Metadata1 AS (
 	i_ISOBusinessOwnersLiabilityClassGroup AS o_ISOBusinessOwnersLiabilityClassGroup,
 	i_ISOOccupancyType AS o_ISOOccupancyType,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_sup_StandardBusinessClassCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_sup_StandardBusinessClassCode) AS o_StandardBusinessClassCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_sup_StandardBusinessClassCode
+	) AS o_StandardBusinessClassCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_sup_StandardBusinessClassCodeDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_sup_StandardBusinessClassCodeDescription) AS o_StandardBusinessClassCodeDescription,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_sup_StandardBusinessClassCodeDescription
+	) AS o_StandardBusinessClassCodeDescription,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(lkp_PremiumTransactionID),'NEW',
 	-- v_lkp_CoverageGuid != i_CoverageGUID
@@ -203,8 +233,14 @@ EXP_Metadata1 AS (
 	-- )
 	DECODE(TRUE,
 		lkp_PremiumTransactionID IS NULL, 'NEW',
-		v_lkp_CoverageGuid != i_CoverageGUID OR lkp_ISOBusinessOwnersPropertyRateNumber != i_ISOBusinessOwnersPropertyRateNumber OR lkp_ISOBusinessOwnersLiabilityClassGroup != i_ISOBusinessOwnersLiabilityClassGroup OR lkp_ISOOccupancyType != i_ISOOccupancyType OR lkp_BuildingBCCCode != lkp_sup_StandardBusinessClassCode OR lkp_BuildingClassCodeDescription != lkp_sup_StandardBusinessClassCodeDescription, 'UPDATE',
-		'NOCHANGE') AS o_ChangeFlag
+		v_lkp_CoverageGuid != i_CoverageGUID 
+		OR lkp_ISOBusinessOwnersPropertyRateNumber != i_ISOBusinessOwnersPropertyRateNumber 
+		OR lkp_ISOBusinessOwnersLiabilityClassGroup != i_ISOBusinessOwnersLiabilityClassGroup 
+		OR lkp_ISOOccupancyType != i_ISOOccupancyType 
+		OR lkp_BuildingBCCCode != lkp_sup_StandardBusinessClassCode 
+		OR lkp_BuildingClassCodeDescription != lkp_sup_StandardBusinessClassCodeDescription, 'UPDATE',
+		'NOCHANGE'
+	) AS o_ChangeFlag
 	FROM EXP_Metadata
 	LEFT JOIN LKP_CoverageDetailBusinessOwners
 	ON LKP_CoverageDetailBusinessOwners.PremiumTransactionID = EXP_Metadata.o_PremiumTransactionID

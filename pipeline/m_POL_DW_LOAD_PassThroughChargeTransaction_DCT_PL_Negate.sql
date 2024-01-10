@@ -135,7 +135,8 @@ EXP_OffsetAttributes AS (
 	WCreatedDate,
 	PassThroughChargeTransactionExpirationDate,
 	-- *INF*: TRUNC(GREATEST(in_PassThroughChargeTransactionBookedDate,WCreatedDate), 'MM')
-	TRUNC(GREATEST(in_PassThroughChargeTransactionBookedDate, WCreatedDate), 'MM') AS PassThroughChargeTransactionBookedDate,
+	CAST(TRUNC(GREATEST(in_PassThroughChargeTransactionBookedDate, WCreatedDate
+	), 'MONTH') AS TIMESTAMP_NTZ(0)) AS PassThroughChargeTransactionBookedDate,
 	PassThroughChargeTransactionAmount,
 	-1 * PassThroughChargeTransactionAmount AS o_PassThroughChargeTransactionAmount,
 	FullTermPremium,

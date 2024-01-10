@@ -94,7 +94,10 @@ EXP_Detect_Changes AS (
 	LKP_RegionalSalesManager.HashKey AS lkp_HashKey,
 	lkp_SalesDirectorAKID.SalesDirectorAKID AS lkp_SalesDirectorAKID,
 	-- *INF*: IIF(IsNull(lkp_SalesDirectorAKID), -1, lkp_SalesDirectorAKID)
-	IFF(lkp_SalesDirectorAKID IS NULL, - 1, lkp_SalesDirectorAKID) AS o_SalesDirectorAKID,
+	IFF(lkp_SalesDirectorAKID IS NULL,
+		- 1,
+		lkp_SalesDirectorAKID
+	) AS o_SalesDirectorAKID,
 	JNR_OuterToReportingRelationship.WestBendAssociateID,
 	JNR_OuterToReportingRelationship.DisplayName,
 	JNR_OuterToReportingRelationship.LastName,
@@ -103,25 +106,45 @@ EXP_Detect_Changes AS (
 	JNR_OuterToReportingRelationship.Suffix,
 	JNR_OuterToReportingRelationship.EmailAddress,
 	-- *INF*: IIF(IsNull(EmailAddress), 'N/A', EmailAddress)
-	IFF(EmailAddress IS NULL, 'N/A', EmailAddress) AS o_EmailAddress,
+	IFF(EmailAddress IS NULL,
+		'N/A',
+		EmailAddress
+	) AS o_EmailAddress,
 	JNR_OuterToReportingRelationship.RoleSpecificUserCode AS RSMCode,
 	JNR_OuterToReportingRelationship.UserId,
 	-- *INF*: IIF(IsNull(UserId), 'N/A', UserId)
-	IFF(UserId IS NULL, 'N/A', UserId) AS o_UserId,
+	IFF(UserId IS NULL,
+		'N/A',
+		UserId
+	) AS o_UserId,
 	-- *INF*: MD5(DisplayName || LastName || FirstName || MiddleName || Suffix || EmailAddress || RSMCode || UserId || to_char(lkp_SalesDirectorAKID))
-	MD5(DisplayName || LastName || FirstName || MiddleName || Suffix || EmailAddress || RSMCode || UserId || to_char(lkp_SalesDirectorAKID)) AS v_NewHashKey,
+	MD5(DisplayName || LastName || FirstName || MiddleName || Suffix || EmailAddress || RSMCode || UserId || to_char(lkp_SalesDirectorAKID
+		)
+	) AS v_NewHashKey,
 	v_NewHashKey AS o_NewHashKey,
 	-- *INF*: IIF(ISNULL(lkp_HashKey), 'NEW', 
 	-- IIF((lkp_HashKey <> v_NewHashKey), 'UPDATE', 'NOCHANGE'))
-	IFF(lkp_HashKey IS NULL, 'NEW', IFF(( lkp_HashKey <> v_NewHashKey ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(lkp_HashKey IS NULL,
+		'NEW',
+		IFF(( lkp_HashKey <> v_NewHashKey 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS EffectiveDate,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	JNR_OuterToReportingRelationship.SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate
@@ -174,7 +197,10 @@ EXP_Assign_AKID AS (
 	HashKey,
 	SEQ_RegionalSalesManager_AKID.NEXTVAL,
 	-- *INF*: iif(isnull(RegionalSalesManagerAKID),NEXTVAL,RegionalSalesManagerAKID)
-	IFF(RegionalSalesManagerAKID IS NULL, NEXTVAL, RegionalSalesManagerAKID) AS o_RegionalSalesManagerAKID,
+	IFF(RegionalSalesManagerAKID IS NULL,
+		NEXTVAL,
+		RegionalSalesManagerAKID
+	) AS o_RegionalSalesManagerAKID,
 	SalesDirectorAKID,
 	WestBendAssociateID,
 	DisplayName,
@@ -243,8 +269,9 @@ EXP_Lag_eff_from_date AS (
 	-- RegionalSalesManagerAKID = v_prev_AKID , ADD_TO_DATE(v_prev_EffectiveFromDate,'SS',-1),
 	-- OriginalEffectiveToDate)
 	DECODE(TRUE,
-		RegionalSalesManagerAKID = v_prev_AKID, ADD_TO_DATE(v_prev_EffectiveFromDate, 'SS', - 1),
-		OriginalEffectiveToDate) AS v_EffectiveToDate,
+		RegionalSalesManagerAKID = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_EffectiveFromDate),
+		OriginalEffectiveToDate
+	) AS v_EffectiveToDate,
 	v_EffectiveToDate AS o_EffectiveToDate,
 	RegionalSalesManagerAKID AS v_prev_AKID,
 	EffectiveFromDate AS v_prev_EffectiveFromDate,

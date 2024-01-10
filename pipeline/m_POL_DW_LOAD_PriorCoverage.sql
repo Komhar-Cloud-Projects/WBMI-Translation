@@ -15,7 +15,9 @@ EXP_GetValues AS (
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	-- *INF*: LTRIM(RTRIM(i_comments_area))
-	LTRIM(RTRIM(i_comments_area)) AS o_PriorCarrierName,
+	LTRIM(RTRIM(i_comments_area
+		)
+	) AS o_PriorCarrierName,
 	'N/A' AS o_PriorPolicyKey,
 	'N/A' AS o_PriorInsuranceLine
 	FROM SQ_pif_03_stage

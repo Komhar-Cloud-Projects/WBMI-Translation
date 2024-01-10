@@ -59,7 +59,10 @@ EXP_Get_Transcode AS (
 	-- *INF*: :LKP.LKP_CLAIM_REINSURANCE_TRASACTION(claimant_cov_det_ak_id, reins_cov_ak_id, claim_reins_financial_type_code, '92',claim_reins_trans_date, offset_onset_ind)
 	LKP_CLAIM_REINSURANCE_TRASACTION_claimant_cov_det_ak_id_reins_cov_ak_id_claim_reins_financial_type_code_92_claim_reins_trans_date_offset_onset_ind.claim_reins_trans_date AS V_Trans_Date_92,
 	-- *INF*: IIF(V_Trans_Date_90>V_Trans_Date_92,V_Trans_Date_90,V_Trans_Date_92)
-	IFF(V_Trans_Date_90 > V_Trans_Date_92, V_Trans_Date_90, V_Trans_Date_92) AS V_greater_trans_date_90_92,
+	IFF(V_Trans_Date_90 > V_Trans_Date_92,
+		V_Trans_Date_90,
+		V_Trans_Date_92
+	) AS V_greater_trans_date_90_92,
 	-- *INF*: IIF(
 	--     ISNULL(V_Trans_Date_40) AND ISNULL(V_Trans_Date_90) AND ISNULL(V_Trans_Date_92),
 	--     '90', 
@@ -73,7 +76,28 @@ EXP_Get_Transcode AS (
 	-- 		'92',
 	-- 		'65'),
 	-- 	    '65')))))
-	IFF(V_Trans_Date_40 IS NULL AND V_Trans_Date_90 IS NULL AND V_Trans_Date_92 IS NULL, '90', ( IFF(NOT V_Trans_Date_40 IS NULL AND V_Trans_Date_90 IS NULL AND V_Trans_Date_92 IS NULL, '92', ( IFF(( NOT V_Trans_Date_90 IS NULL OR NOT V_Trans_Date_92 IS NULL ) AND NOT V_Trans_Date_40 IS NULL, IFF(V_Trans_Date_40 >= V_greater_trans_date_90_92, '92', '65'), '65') )) )) AS OUT_Claim_Reins_Trans_Code
+	IFF(V_Trans_Date_40 IS NULL 
+		AND V_Trans_Date_90 IS NULL 
+		AND V_Trans_Date_92 IS NULL,
+		'90',
+		( IFF(V_Trans_Date_40 IS NULL 
+				AND V_Trans_Date_90 IS NULL 
+				AND V_Trans_Date_92 IS NOT NULL,
+				'92',
+				( IFF(( V_Trans_Date_90 IS NULL 
+							OR V_Trans_Date_92 IS NOT NOT NULL 
+						) 
+						AND V_Trans_Date_40 IS NOT NULL,
+						IFF(V_Trans_Date_40 >= V_greater_trans_date_90_92,
+							'92',
+							'65'
+						),
+						'65'
+					) 
+				)
+			) 
+		)
+	) AS OUT_Claim_Reins_Trans_Code
 	FROM SQ_claim_reinsurance_transaction
 	LEFT JOIN LKP_CLAIM_REINSURANCE_TRASACTION LKP_CLAIM_REINSURANCE_TRASACTION_claimant_cov_det_ak_id_reins_cov_ak_id_claim_reins_financial_type_code_40_claim_reins_trans_date_offset_onset_ind
 	ON LKP_CLAIM_REINSURANCE_TRASACTION_claimant_cov_det_ak_id_reins_cov_ak_id_claim_reins_financial_type_code_40_claim_reins_trans_date_offset_onset_ind.claimant_cov_det_ak_id = claimant_cov_det_ak_id

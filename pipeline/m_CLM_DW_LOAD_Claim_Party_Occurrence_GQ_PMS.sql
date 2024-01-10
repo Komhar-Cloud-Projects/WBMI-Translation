@@ -104,14 +104,22 @@ EXP_Lkp_Values AS (
 	CLAIM_PARTY_KEY,
 	CLAIM_OCCURRENCE_KEY,
 	-- *INF*: LTRIM(RTRIM(SUBSTR(CLAIM_PARTY_KEY,1,26)))
-	LTRIM(RTRIM(SUBSTR(CLAIM_PARTY_KEY, 1, 26))) AS V_Claim_Case_Key,
+	LTRIM(RTRIM(SUBSTR(CLAIM_PARTY_KEY, 1, 26
+			)
+		)
+	) AS V_Claim_Case_Key,
 	-- *INF*: :LKP.LKP_CLAIM_CASE_AK_ID(V_Claim_Case_Key)
 	LKP_CLAIM_CASE_AK_ID_V_Claim_Case_Key.claim_case_ak_id AS v_CLAIM_CASE_AK_ID,
 	-- *INF*: IIF(ISNULL(v_CLAIM_CASE_AK_ID),-1,v_CLAIM_CASE_AK_ID)
-	IFF(v_CLAIM_CASE_AK_ID IS NULL, - 1, v_CLAIM_CASE_AK_ID) AS CLAIM_CASE_AK_ID,
+	IFF(v_CLAIM_CASE_AK_ID IS NULL,
+		- 1,
+		v_CLAIM_CASE_AK_ID
+	) AS CLAIM_CASE_AK_ID,
 	USE_CODE AS IPFCGQ_USE_CODE,
 	-- *INF*: LTRIM(RTRIM(IPFCGQ_USE_CODE))
-	LTRIM(RTRIM(IPFCGQ_USE_CODE)) AS USE_CODE,
+	LTRIM(RTRIM(IPFCGQ_USE_CODE
+		)
+	) AS USE_CODE,
 	-- *INF*: :LKP.LKP_CLAIM_PARTY(CLAIM_PARTY_KEY)
 	-- 
 	-- -- IIF(ISNULL(:LKP.LKP_CLAIM_PARTY(CLAIM_PARTY_KEY)),0,:LKP.LKP_CLAIM_PARTY(CLAIM_PARTY_KEY))
@@ -120,16 +128,27 @@ EXP_Lkp_Values AS (
 	-- ISNULL(:LKP.LKP_CLAIM_OCCURRENCE(CLAIM_OCCURRENCE_KEY)),
 	-- 0,
 	-- :LKP.LKP_CLAIM_OCCURRENCE(CLAIM_OCCURRENCE_KEY))
-	IFF(LKP_CLAIM_OCCURRENCE_CLAIM_OCCURRENCE_KEY.claim_occurrence_ak_id IS NULL, 0, LKP_CLAIM_OCCURRENCE_CLAIM_OCCURRENCE_KEY.claim_occurrence_ak_id) AS CLAIM_OCCURRENCE_AK_ID,
+	IFF(LKP_CLAIM_OCCURRENCE_CLAIM_OCCURRENCE_KEY.claim_occurrence_ak_id IS NULL,
+		0,
+		LKP_CLAIM_OCCURRENCE_CLAIM_OCCURRENCE_KEY.claim_occurrence_ak_id
+	) AS CLAIM_OCCURRENCE_AK_ID,
 	-- *INF*: TO_DATE('1/1/1800','MM/DD/YYYY')
 	-- 
-	TO_DATE('1/1/1800', 'MM/DD/YYYY') AS DENIAL_DATE,
+	TO_DATE('1/1/1800', 'MM/DD/YYYY'
+	) AS DENIAL_DATE,
 	IPFCGQ_OFFSET_ONSET_IND AS in_IPFCGQ_OFFSET_ONSET_IND,
 	-- *INF*: IIF((ISNULL(in_IPFCGQ_OFFSET_ONSET_IND) OR IS_SPACES(in_IPFCGQ_OFFSET_ONSET_IND) OR LENGTH(in_IPFCGQ_OFFSET_ONSET_IND) = 0),
 	-- 'N/A',
 	-- in_IPFCGQ_OFFSET_ONSET_IND)
 	-- 
-	IFF(( in_IPFCGQ_OFFSET_ONSET_IND IS NULL OR IS_SPACES(in_IPFCGQ_OFFSET_ONSET_IND) OR LENGTH(in_IPFCGQ_OFFSET_ONSET_IND) = 0 ), 'N/A', in_IPFCGQ_OFFSET_ONSET_IND) AS IPFCGQ_OFFSET_ONSET_IND
+	IFF(( in_IPFCGQ_OFFSET_ONSET_IND IS NULL 
+			OR LENGTH(in_IPFCGQ_OFFSET_ONSET_IND)>0 AND TRIM(in_IPFCGQ_OFFSET_ONSET_IND)='' 
+			OR LENGTH(in_IPFCGQ_OFFSET_ONSET_IND
+			) = 0 
+		),
+		'N/A',
+		in_IPFCGQ_OFFSET_ONSET_IND
+	) AS IPFCGQ_OFFSET_ONSET_IND
 	FROM EXP_Values
 	LEFT JOIN LKP_CLAIM_CASE_AK_ID LKP_CLAIM_CASE_AK_ID_V_Claim_Case_Key
 	ON LKP_CLAIM_CASE_AK_ID_V_Claim_Case_Key.claim_case_key = V_Claim_Case_Key
@@ -184,14 +203,30 @@ EXP_Detect_Changes AS (
 	-- 	ltrim(rtrim(lkp_offset_onset_ind)) <> ltrim(rtrim(IPFCGQ_OFFSET_ONSET_IND)) , 
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(lkp_claim_party_occurrence_id IS NULL, 'NEW', IFF(lkp_denial_date <> DENIAL_DATE OR ltrim(rtrim(lkp_offset_onset_ind)) <> ltrim(rtrim(IPFCGQ_OFFSET_ONSET_IND)), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(lkp_claim_party_occurrence_id IS NULL,
+		'NEW',
+		IFF(lkp_denial_date <> DENIAL_DATE 
+			OR ltrim(rtrim(lkp_offset_onset_ind
+				)
+			) <> ltrim(rtrim(IPFCGQ_OFFSET_ONSET_IND
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
@@ -233,7 +268,10 @@ EXP_Determine_AK AS (
 	SEQ_claim_party_occurrence.NEXTVAL,
 	lkp_claim_party_occurrence_ak_id,
 	-- *INF*: IIF(Changed_Flag='NEW', NEXTVAL, lkp_claim_party_occurrence_ak_id)
-	IFF(Changed_Flag = 'NEW', NEXTVAL, lkp_claim_party_occurrence_ak_id) AS claim_party_occurrence_ak_id,
+	IFF(Changed_Flag = 'NEW',
+		NEXTVAL,
+		lkp_claim_party_occurrence_ak_id
+	) AS claim_party_occurrence_ak_id,
 	CLAIM_PARTY_AK_ID,
 	CLAIM_OCCURRENCE_AK_ID,
 	CLAIM_CASE_AK_ID,
@@ -316,8 +354,11 @@ EXP_Lag_eff_from_date AS (
 	-- ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- orig_eff_to_date)
 	DECODE(TRUE,
-		claim_occurrence_ak_id = v_PREV_ROW_claim_occurrence_ak_id AND claim_party_ak_id = v_PREV_ROW_claim_party_ak_id AND claim_party_role_code = v_PREV_ROW_claim_party_role_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_occurrence_ak_id = v_PREV_ROW_claim_occurrence_ak_id 
+		AND claim_party_ak_id = v_PREV_ROW_claim_party_ak_id 
+		AND claim_party_role_code = v_PREV_ROW_claim_party_role_code, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	claim_occurrence_ak_id AS v_PREV_ROW_claim_occurrence_ak_id,

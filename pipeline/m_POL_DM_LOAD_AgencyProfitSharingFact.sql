@@ -333,11 +333,20 @@ EXP_DefaultHandle AS (
 	AgencyCode1,
 	LegalPrimaryAgencyCode1,
 	-- *INF*: IIF(ISNULL(EDWAgencyAKID),EDWAgencyAKID1,EDWAgencyAKID)
-	IFF(EDWAgencyAKID IS NULL, EDWAgencyAKID1, EDWAgencyAKID) AS o_EDWAgencyAKID,
+	IFF(EDWAgencyAKID IS NULL,
+		EDWAgencyAKID1,
+		EDWAgencyAKID
+	) AS o_EDWAgencyAKID,
 	-- *INF*: IIF(ISNULL(AgencyCode),AgencyCode1,AgencyCode)
-	IFF(AgencyCode IS NULL, AgencyCode1, AgencyCode) AS o_AgencyCode,
+	IFF(AgencyCode IS NULL,
+		AgencyCode1,
+		AgencyCode
+	) AS o_AgencyCode,
 	-- *INF*: IIF(ISNULL(LegalPrimaryAgencyCode),LegalPrimaryAgencyCode1,LegalPrimaryAgencyCode)
-	IFF(LegalPrimaryAgencyCode IS NULL, LegalPrimaryAgencyCode1, LegalPrimaryAgencyCode) AS o_LegalPrimaryAgencyCode
+	IFF(LegalPrimaryAgencyCode IS NULL,
+		LegalPrimaryAgencyCode1,
+		LegalPrimaryAgencyCode
+	) AS o_LegalPrimaryAgencyCode
 	FROM JNR_Earned_Loss
 ),
 SQ_PremiumMasterFact AS (
@@ -464,11 +473,20 @@ EXP_DefaultHandle1 AS (
 	AgencyCode1,
 	LegalPrimaryAgencyCode1,
 	-- *INF*: IIF(ISNULL(EDWAgencyAKID),EDWAgencyAKID1,EDWAgencyAKID)
-	IFF(EDWAgencyAKID IS NULL, EDWAgencyAKID1, EDWAgencyAKID) AS o_EDWAgencyAKID,
+	IFF(EDWAgencyAKID IS NULL,
+		EDWAgencyAKID1,
+		EDWAgencyAKID
+	) AS o_EDWAgencyAKID,
 	-- *INF*: IIF(ISNULL(AgencyCode),AgencyCode1,AgencyCode)
-	IFF(AgencyCode IS NULL, AgencyCode1, AgencyCode) AS o_AgencyCode,
+	IFF(AgencyCode IS NULL,
+		AgencyCode1,
+		AgencyCode
+	) AS o_AgencyCode,
 	-- *INF*: IIF(ISNULL(LegalPrimaryAgencyCode),LegalPrimaryAgencyCode1,LegalPrimaryAgencyCode)
-	IFF(LegalPrimaryAgencyCode IS NULL, LegalPrimaryAgencyCode1, LegalPrimaryAgencyCode) AS o_LegalPrimaryAgencyCode
+	IFF(LegalPrimaryAgencyCode IS NULL,
+		LegalPrimaryAgencyCode1,
+		LegalPrimaryAgencyCode
+	) AS o_LegalPrimaryAgencyCode
 	FROM JNR_Earned_Loss_PremiumMaster
 ),
 SQ_DCTDividendFact AS (
@@ -549,7 +567,8 @@ AGG_DividendPaidAmount AS (
 	LegalPrimaryAgencyCode,
 	DividendPaidAmount,
 	-- *INF*: SUM(DividendPaidAmount)
-	SUM(DividendPaidAmount) AS o_DividendPaidAmount
+	SUM(DividendPaidAmount
+	) AS o_DividendPaidAmount
 	FROM UN_DCT_and_NonDCT_DividendFact
 	GROUP BY EDWAgencyAKID
 ),
@@ -603,37 +622,79 @@ EXP_DefaultHandle3 AS (
 	LegalPrimaryAgencyCode1,
 	DividendPaidAmount,
 	-- *INF*: IIF(ISNULL(EDWAgencyAKID),EDWAgencyAKID1,EDWAgencyAKID)
-	IFF(EDWAgencyAKID IS NULL, EDWAgencyAKID1, EDWAgencyAKID) AS o_EDWAgencyAKID,
+	IFF(EDWAgencyAKID IS NULL,
+		EDWAgencyAKID1,
+		EDWAgencyAKID
+	) AS o_EDWAgencyAKID,
 	-- *INF*: IIF(ISNULL(AgencyCode),AgencyCode1,AgencyCode)
-	IFF(AgencyCode IS NULL, AgencyCode1, AgencyCode) AS o_AgencyCode,
+	IFF(AgencyCode IS NULL,
+		AgencyCode1,
+		AgencyCode
+	) AS o_AgencyCode,
 	-- *INF*: IIF(ISNULL(LegalPrimaryAgencyCode),LegalPrimaryAgencyCode1,LegalPrimaryAgencyCode)
-	IFF(LegalPrimaryAgencyCode IS NULL, LegalPrimaryAgencyCode1, LegalPrimaryAgencyCode) AS o_LegalPrimaryAgencyCode,
+	IFF(LegalPrimaryAgencyCode IS NULL,
+		LegalPrimaryAgencyCode1,
+		LegalPrimaryAgencyCode
+	) AS o_LegalPrimaryAgencyCode,
 	-- *INF*: IIF(ISNULL(i_BondsDirectWrittenPremium),0,i_BondsDirectWrittenPremium)
-	IFF(i_BondsDirectWrittenPremium IS NULL, 0, i_BondsDirectWrittenPremium) AS o_BondsDirectWrittenPremium,
+	IFF(i_BondsDirectWrittenPremium IS NULL,
+		0,
+		i_BondsDirectWrittenPremium
+	) AS o_BondsDirectWrittenPremium,
 	-- *INF*: IIF(ISNULL(i_NSIDirectWrittenPremium),0,i_NSIDirectWrittenPremium)
-	IFF(i_NSIDirectWrittenPremium IS NULL, 0, i_NSIDirectWrittenPremium) AS o_NSIDirectWrittenPremium,
+	IFF(i_NSIDirectWrittenPremium IS NULL,
+		0,
+		i_NSIDirectWrittenPremium
+	) AS o_NSIDirectWrittenPremium,
 	-- *INF*: IIF(ISNULL(i_ProfitSharingEligibleDirectWrittenPremium),0,i_ProfitSharingEligibleDirectWrittenPremium)
-	IFF(i_ProfitSharingEligibleDirectWrittenPremium IS NULL, 0, i_ProfitSharingEligibleDirectWrittenPremium) AS o_ProfitSharingEligibleDirectWrittenPremium,
+	IFF(i_ProfitSharingEligibleDirectWrittenPremium IS NULL,
+		0,
+		i_ProfitSharingEligibleDirectWrittenPremium
+	) AS o_ProfitSharingEligibleDirectWrittenPremium,
 	-- *INF*: IIF(ISNULL(i_RegularCommission),0,i_RegularCommission)
-	IFF(i_RegularCommission IS NULL, 0, i_RegularCommission) AS o_RegularCommission,
+	IFF(i_RegularCommission IS NULL,
+		0,
+		i_RegularCommission
+	) AS o_RegularCommission,
 	-- *INF*: IIF(ISNULL(i_BondsDirectEarnedPremium),0,i_BondsDirectEarnedPremium)
-	IFF(i_BondsDirectEarnedPremium IS NULL, 0, i_BondsDirectEarnedPremium) AS o_BondsDirectEarnedPremium,
+	IFF(i_BondsDirectEarnedPremium IS NULL,
+		0,
+		i_BondsDirectEarnedPremium
+	) AS o_BondsDirectEarnedPremium,
 	-- *INF*: IIF(ISNULL(i_NSIEarnedPremium),0,i_NSIEarnedPremium)
-	IFF(i_NSIEarnedPremium IS NULL, 0, i_NSIEarnedPremium) AS o_NSIEarnedPremium,
+	IFF(i_NSIEarnedPremium IS NULL,
+		0,
+		i_NSIEarnedPremium
+	) AS o_NSIEarnedPremium,
 	-- *INF*: IIF(ISNULL(i_ProfitSharingEligibleDirectEarnedPremium),0,i_ProfitSharingEligibleDirectEarnedPremium)
-	IFF(i_ProfitSharingEligibleDirectEarnedPremium IS NULL, 0, i_ProfitSharingEligibleDirectEarnedPremium) AS o_ProfitSharingEligibleDirectEarnedPremium,
+	IFF(i_ProfitSharingEligibleDirectEarnedPremium IS NULL,
+		0,
+		i_ProfitSharingEligibleDirectEarnedPremium
+	) AS o_ProfitSharingEligibleDirectEarnedPremium,
 	-- *INF*: IIF(ISNULL(i_BondsDirectIncurredLoss),0,i_BondsDirectIncurredLoss)
-	IFF(i_BondsDirectIncurredLoss IS NULL, 0, i_BondsDirectIncurredLoss) AS o_BondsDirectIncurredLoss,
+	IFF(i_BondsDirectIncurredLoss IS NULL,
+		0,
+		i_BondsDirectIncurredLoss
+	) AS o_BondsDirectIncurredLoss,
 	-- *INF*: IIF(ISNULL(i_BondsDirectIncurredLossSameYear),0,i_BondsDirectIncurredLossSameYear)
-	IFF(i_BondsDirectIncurredLossSameYear IS NULL, 0, i_BondsDirectIncurredLossSameYear) AS o_BondsDirectIncurredLossSameYear,
+	IFF(i_BondsDirectIncurredLossSameYear IS NULL,
+		0,
+		i_BondsDirectIncurredLossSameYear
+	) AS o_BondsDirectIncurredLossSameYear,
 	-- *INF*: IIF(ISNULL(i_ProfitSharingEligibleDirectIncurredLoss),0,i_ProfitSharingEligibleDirectIncurredLoss)
 	-- 
 	-- 
 	-- 
 	-- 
-	IFF(i_ProfitSharingEligibleDirectIncurredLoss IS NULL, 0, i_ProfitSharingEligibleDirectIncurredLoss) AS o_ProfitSharingEligibleDirectIncurredLoss,
+	IFF(i_ProfitSharingEligibleDirectIncurredLoss IS NULL,
+		0,
+		i_ProfitSharingEligibleDirectIncurredLoss
+	) AS o_ProfitSharingEligibleDirectIncurredLoss,
 	-- *INF*: IIF(ISNULL(DividendPaidAmount),0,DividendPaidAmount)
-	IFF(DividendPaidAmount IS NULL, 0, DividendPaidAmount) AS o_DividendAmount,
+	IFF(DividendPaidAmount IS NULL,
+		0,
+		DividendPaidAmount
+	) AS o_DividendAmount,
 	1 AS o_Dummy_Records
 	FROM JNR_All
 ),
@@ -689,7 +750,10 @@ Exp_DataCollect AS (
 	-- *INF*: :LKP.LKP_V3_AGENCYDIMID(EDWAgencyAKID,RunDate)
 	LKP_V3_AGENCYDIMID_EDWAgencyAKID_RunDate.agency_dim_id AS AgencyDimId,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_SALESDIVISIONDIM(AgencyCode)),-1,:LKP.LKP_SALESDIVISIONDIM(AgencyCode))
-	IFF(LKP_SALESDIVISIONDIM_AgencyCode.SalesDivisionDimID IS NULL, - 1, LKP_SALESDIVISIONDIM_AgencyCode.SalesDivisionDimID) AS SalesDivisionDimId,
+	IFF(LKP_SALESDIVISIONDIM_AgencyCode.SalesDivisionDimID IS NULL,
+		- 1,
+		LKP_SALESDIVISIONDIM_AgencyCode.SalesDivisionDimID
+	) AS SalesDivisionDimId,
 	BondsDirectWrittenPremium,
 	NSIDirectWrittenPremium,
 	ProfitSharingEligibleDirectWrittenPremium,
@@ -856,7 +920,10 @@ EXP_DataCollect_Individual_Group AS (
 	Exp_DataCollect.AgencyCode,
 	LKP_V3_AgencyDimID_PrimaryAgency.LegalPrimaryAgencyCode,
 	-- *INF*: iif(isnull(LegalPrimaryAgencyCode),AgencyCode,LegalPrimaryAgencyCode)
-	IFF(LegalPrimaryAgencyCode IS NULL, AgencyCode, LegalPrimaryAgencyCode) AS O_LegalPrimaryAgencyCode,
+	IFF(LegalPrimaryAgencyCode IS NULL,
+		AgencyCode,
+		LegalPrimaryAgencyCode
+	) AS O_LegalPrimaryAgencyCode,
 	Exp_DataCollect.RunDate
 	FROM Exp_DataCollect
 	LEFT JOIN LKP_Agency
@@ -877,43 +944,56 @@ AGG_Data_PrimaryAgency AS (
 	LastYearRunDateID,
 	BondsDirectWrittenPremium,
 	-- *INF*: SUM(BondsDirectWrittenPremium)
-	SUM(BondsDirectWrittenPremium) AS O_BondsDirectWrittenPremium,
+	SUM(BondsDirectWrittenPremium
+	) AS O_BondsDirectWrittenPremium,
 	NSIDirectWrittenPremium,
 	-- *INF*: SUM(NSIDirectWrittenPremium)
-	SUM(NSIDirectWrittenPremium) AS O_NSIDirectWrittenPremium,
+	SUM(NSIDirectWrittenPremium
+	) AS O_NSIDirectWrittenPremium,
 	ProfitSharingEligibleDirectWrittenPremium,
 	-- *INF*: SUM(ProfitSharingEligibleDirectWrittenPremium)
-	SUM(ProfitSharingEligibleDirectWrittenPremium) AS O_ProfitSharingEligibleDirectWrittenPremium,
+	SUM(ProfitSharingEligibleDirectWrittenPremium
+	) AS O_ProfitSharingEligibleDirectWrittenPremium,
 	RegularCommission,
 	-- *INF*: SUM(RegularCommission)
-	SUM(RegularCommission) AS O_RegularCommission,
+	SUM(RegularCommission
+	) AS O_RegularCommission,
 	BondsDirectEarnedPremium,
 	-- *INF*: SUM(BondsDirectEarnedPremium)
-	SUM(BondsDirectEarnedPremium) AS O_BondsDirectEarnedPremium,
+	SUM(BondsDirectEarnedPremium
+	) AS O_BondsDirectEarnedPremium,
 	NSIEarnedPremium,
 	-- *INF*: SUM(NSIEarnedPremium)
-	SUM(NSIEarnedPremium) AS O_NSIEarnedPremium,
+	SUM(NSIEarnedPremium
+	) AS O_NSIEarnedPremium,
 	ProfitSharingEligibleDirectEarnedPremium,
 	-- *INF*: SUM(ProfitSharingEligibleDirectEarnedPremium)
-	SUM(ProfitSharingEligibleDirectEarnedPremium) AS O_ProfitSharingEligibleDirectEarnedPremium,
+	SUM(ProfitSharingEligibleDirectEarnedPremium
+	) AS O_ProfitSharingEligibleDirectEarnedPremium,
 	BondsDirectIncurredLoss,
 	-- *INF*: SUM(BondsDirectIncurredLoss)
-	SUM(BondsDirectIncurredLoss) AS O_BondsDirectIncurredLoss,
+	SUM(BondsDirectIncurredLoss
+	) AS O_BondsDirectIncurredLoss,
 	BondsDirectIncurredLossSameYear,
 	-- *INF*: SUM(BondsDirectIncurredLossSameYear)
-	SUM(BondsDirectIncurredLossSameYear) AS O_BondsDirectIncurredLossSameYear,
+	SUM(BondsDirectIncurredLossSameYear
+	) AS O_BondsDirectIncurredLossSameYear,
 	ProfitSharingEligibleDirectIncurredLoss,
 	-- *INF*: SUM(ProfitSharingEligibleDirectIncurredLoss)
-	SUM(ProfitSharingEligibleDirectIncurredLoss) AS O_ProfitSharingEligibleDirectIncurredLoss,
+	SUM(ProfitSharingEligibleDirectIncurredLoss
+	) AS O_ProfitSharingEligibleDirectIncurredLoss,
 	DividendAmount,
 	-- *INF*: SUM(DividendAmount)
-	SUM(DividendAmount) AS O_DividendAmount,
+	SUM(DividendAmount
+	) AS O_DividendAmount,
 	lkp_LastYearYTDBondsDirectWrittenPremium AS LastYearYTDBondsDirectWrittenPremium,
 	-- *INF*: SUM(LastYearYTDBondsDirectWrittenPremium)
-	SUM(LastYearYTDBondsDirectWrittenPremium) AS O_LastYearYTDBondsDirectWrittenPremium,
+	SUM(LastYearYTDBondsDirectWrittenPremium
+	) AS O_LastYearYTDBondsDirectWrittenPremium,
 	lkp_StopLossAdjustmentAmountOccurrence AS StopLossAdjustmentAmountOccurrence,
 	-- *INF*: SUM(StopLossAdjustmentAmountOccurrence)
-	SUM(StopLossAdjustmentAmountOccurrence) AS O_StopLossAdjustmentAmountOccurrence,
+	SUM(StopLossAdjustmentAmountOccurrence
+	) AS O_StopLossAdjustmentAmountOccurrence,
 	lkp_StopLossAdjustmentAmountCatastrophe AS StopLossAdjustmentAmountCatastrophe,
 	StopLossAdjustmentAmountCatastrophe AS O_StopLossAdjustmentAmountCatastrophe,
 	lkp_ProfitSharingGuaranteeFlag AS ProfitSharingGuaranteeFlag,
@@ -928,7 +1008,10 @@ EXP_Data_PrimaryAgency AS (
 	-- *INF*: :LKP.LKP_V3_AGENCYDIMID_GROUP(LegalPrimaryAgencyCode,RunDate)
 	LKP_V3_AGENCYDIMID_GROUP_LegalPrimaryAgencyCode_RunDate.agency_dim_id AS AgencyDimId,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_SALESDIVISIONDIM(LegalPrimaryAgencyCode)),-1,:LKP.LKP_SALESDIVISIONDIM(LegalPrimaryAgencyCode))
-	IFF(LKP_SALESDIVISIONDIM_LegalPrimaryAgencyCode.SalesDivisionDimID IS NULL, - 1, LKP_SALESDIVISIONDIM_LegalPrimaryAgencyCode.SalesDivisionDimID) AS SalesDivisionDimId,
+	IFF(LKP_SALESDIVISIONDIM_LegalPrimaryAgencyCode.SalesDivisionDimID IS NULL,
+		- 1,
+		LKP_SALESDIVISIONDIM_LegalPrimaryAgencyCode.SalesDivisionDimID
+	) AS SalesDivisionDimId,
 	RunDateID,
 	LastYearRunDateID,
 	O_BondsDirectWrittenPremium,
@@ -1036,7 +1119,8 @@ EXP_CalValues_PrimaryAgency AS (
 	EXP_Data_PrimaryAgency.RunDateID AS i_RunDateID,
 	EXP_Data_PrimaryAgency.RunDate,
 	-- *INF*: GET_DATE_PART(RunDate,'MM')
-	GET_DATE_PART(RunDate, 'MM') AS v_RunMonth,
+	DATE_PART(RunDate, 'MM'
+	) AS v_RunMonth,
 	EXP_Data_PrimaryAgency.SalesDivisionDimId AS i_SalesDivisionDimId,
 	EXP_Data_PrimaryAgency.O_BondsDirectWrittenPremium AS i_BondsDirectWrittenPremium,
 	EXP_Data_PrimaryAgency.O_NSIDirectWrittenPremium AS i_NSIDirectWrittenPremium,
@@ -1053,15 +1137,17 @@ EXP_CalValues_PrimaryAgency AS (
 	EXP_Data_PrimaryAgency.O_StopLossAdjustmentAmountCatastrophe AS lkp_StopLossAdjustmentAmountCatastrophe,
 	LKP_Agency_Primary_Profit_SharingFlag.AgencyAppointedDate,
 	-- *INF*: DATE_DIFF(RunDate,AgencyAppointedDate,'YY')
-	DATE_DIFF(RunDate, AgencyAppointedDate, 'YY') AS v_WB_AgencyYears,
+	DATEDIFF(YEAR,RunDate,AgencyAppointedDate) AS v_WB_AgencyYears,
 	LKP_Agency_Primary_Profit_SharingFlag.ProfitSharingGuaranteeFlag AS lkp_ProfitSharingGuaranteeFlag,
 	LKP_AgencyProfitSharing_GuaranteedCommission.NetProfitSharingAmount AS i_GuaranteedCommission,
 	LKP_AgencyProfitSharing_GuaranteedCommission.IN_LegalPrimaryAgencyCode AS in_LegalPrimaryAgencyCode,
 	-- *INF*: SUBSTR(in_LegalPrimaryAgencyCode,1,2)
-	SUBSTR(in_LegalPrimaryAgencyCode, 1, 2) AS v_NSI_Agencies,
+	SUBSTR(in_LegalPrimaryAgencyCode, 1, 2
+	) AS v_NSI_Agencies,
 	LKP_AgencyProfitSharing_GuaranteedCommission.GuaranteeFee AS i_GuaranteeFee_Sep,
 	-- *INF*: ROUND(i_BondsDirectWrittenPremium-lkp_LastYearYTDBondsDirectWrittenPremium,4)
-	ROUND(i_BondsDirectWrittenPremium - lkp_LastYearYTDBondsDirectWrittenPremium, 4) AS v_BondsGrowthAmount,
+	ROUND(i_BondsDirectWrittenPremium - lkp_LastYearYTDBondsDirectWrittenPremium, 4
+	) AS v_BondsGrowthAmount,
 	-- *INF*: DECODE(TRUE,
 	-- v_BondsGrowthAmount<25000.00,
 	-- 0.00,
@@ -1076,10 +1162,14 @@ EXP_CalValues_PrimaryAgency AS (
 	-- 
 	DECODE(TRUE,
 		v_BondsGrowthAmount < 25000.00, 0.00,
-		v_BondsGrowthAmount >= 25000.00 AND v_BondsGrowthAmount < 50001.00, 1.0,
-		v_BondsGrowthAmount >= 50001.00 AND v_BondsGrowthAmount < 100001.00, 2.0,
-		v_BondsGrowthAmount >= 100001.00 AND v_BondsGrowthAmount < 150001.00, 3.0,
-		v_BondsGrowthAmount >= 150001.00, 4.0) AS v_BondsGrowthBonusRate,
+		v_BondsGrowthAmount >= 25000.00 
+		AND v_BondsGrowthAmount < 50001.00, 1.0,
+		v_BondsGrowthAmount >= 50001.00 
+		AND v_BondsGrowthAmount < 100001.00, 2.0,
+		v_BondsGrowthAmount >= 100001.00 
+		AND v_BondsGrowthAmount < 150001.00, 3.0,
+		v_BondsGrowthAmount >= 150001.00, 4.0
+	) AS v_BondsGrowthBonusRate,
 	-- *INF*: lkp_ProfitSharingGuaranteeFlag
 	-- 
 	-- --DECODE(lkp_ProfitSharingGuaranteeFlag,'T','1','F','0','')
@@ -1088,7 +1178,9 @@ EXP_CalValues_PrimaryAgency AS (
 	DECODE(TRUE,
 		i_BondsDirectEarnedPremium <= 0, 100,
 		i_BondsDirectIncurredLoss <= 0, 0,
-		ROUND(i_BondsDirectIncurredLoss / i_BondsDirectEarnedPremium * 100, 4)) AS v_BondsLossRatio,
+		ROUND(i_BondsDirectIncurredLoss / i_BondsDirectEarnedPremium * 100, 4
+		)
+	) AS v_BondsLossRatio,
 	-- *INF*: DECODE(TRUE,
 	-- v_BondsLossRatio<5.1,
 	-- 4.0,
@@ -1101,23 +1193,35 @@ EXP_CalValues_PrimaryAgency AS (
 	-- 0)
 	DECODE(TRUE,
 		v_BondsLossRatio < 5.1, 4.0,
-		v_BondsLossRatio >= 5.1 AND v_BondsLossRatio < 11.1, 3.0,
-		v_BondsLossRatio >= 11.1 AND v_BondsLossRatio < 15.1, 2.0,
-		v_BondsLossRatio >= 15.1 AND v_BondsLossRatio < 20.1, 1.0,
-		0) AS v_BondsLossRatioBonusRate,
+		v_BondsLossRatio >= 5.1 
+		AND v_BondsLossRatio < 11.1, 3.0,
+		v_BondsLossRatio >= 11.1 
+		AND v_BondsLossRatio < 15.1, 2.0,
+		v_BondsLossRatio >= 15.1 
+		AND v_BondsLossRatio < 20.1, 1.0,
+		0
+	) AS v_BondsLossRatioBonusRate,
 	-- *INF*: IIF(i_NSIDirectWrittenPremium<100000,ROUND(i_NSIDirectWrittenPremium*.1,4),0)
-	IFF(i_NSIDirectWrittenPremium < 100000, ROUND(i_NSIDirectWrittenPremium * .1, 4), 0) AS v_NSIExpense,
+	IFF(i_NSIDirectWrittenPremium < 100000,
+		ROUND(i_NSIDirectWrittenPremium * .1, 4
+		),
+		0
+	) AS v_NSIExpense,
 	-- *INF*: ROUND(i_ProfitSharingEligibleDirectEarnedPremium-i_DividendAmount,4)
-	ROUND(i_ProfitSharingEligibleDirectEarnedPremium - i_DividendAmount, 4) AS v_NetDirectEarnedPremium,
+	ROUND(i_ProfitSharingEligibleDirectEarnedPremium - i_DividendAmount, 4
+	) AS v_NetDirectEarnedPremium,
 	-- *INF*: ROUND(i_ProfitSharingEligibleDirectIncurredLoss-lkp_StopLossAdjustmentAmountOccurrence-lkp_StopLossAdjustmentAmountCatastrophe+0.00,4)
 	-- 
 	-- --had v_NSIExpense value were 0.00 was present as it was removed for PROD-8913 issue 4
-	ROUND(i_ProfitSharingEligibleDirectIncurredLoss - lkp_StopLossAdjustmentAmountOccurrence - lkp_StopLossAdjustmentAmountCatastrophe + 0.00, 4) AS v_NetDirectIncurredLoss,
+	ROUND(i_ProfitSharingEligibleDirectIncurredLoss - lkp_StopLossAdjustmentAmountOccurrence - lkp_StopLossAdjustmentAmountCatastrophe + 0.00, 4
+	) AS v_NetDirectIncurredLoss,
 	-- *INF*: DECODE(TRUE,v_NetDirectEarnedPremium<=0,100,v_NetDirectIncurredLoss<=0,0,ROUND(v_NetDirectIncurredLoss/v_NetDirectEarnedPremium*100,4))
 	DECODE(TRUE,
 		v_NetDirectEarnedPremium <= 0, 100,
 		v_NetDirectIncurredLoss <= 0, 0,
-		ROUND(v_NetDirectIncurredLoss / v_NetDirectEarnedPremium * 100, 4)) AS v_NetLossRatio,
+		ROUND(v_NetDirectIncurredLoss / v_NetDirectEarnedPremium * 100, 4
+		)
+	) AS v_NetLossRatio,
 	-- *INF*: :LKP.LKP_SUPPROFTSHARINGBONUS(TO_INTEGER(ROUND(i_ProfitSharingEligibleDirectWrittenPremium)),ROUND(v_NetLossRatio,1))
 	LKP_SUPPROFTSHARINGBONUS_TO_INTEGER_ROUND_i_ProfitSharingEligibleDirectWrittenPremium_ROUND_v_NetLossRatio_1.ProfitSharingBonusRate AS v_lkpProfitSharingBonusRate,
 	-- *INF*: :LKP.LKP_AGENCYBONUSRATES(in_LegalPrimaryAgencyCode)
@@ -1128,9 +1232,12 @@ EXP_CalValues_PrimaryAgency AS (
 	-- v_WB_AgencyYears > 2 and i_ProfitSharingEligibleDirectWrittenPremium>=250000,v_lkpProfitSharingBonusRate,0)
 	DECODE(TRUE,
 		v_lkpProfitSharingBonusRate IS NULL, 0,
-		v_WB_AgencyYears <= 2 AND i_ProfitSharingEligibleDirectWrittenPremium >= 100000, v_lkpProfitSharingBonusRate,
-		v_WB_AgencyYears > 2 AND i_ProfitSharingEligibleDirectWrittenPremium >= 250000, v_lkpProfitSharingBonusRate,
-		0) AS v_ProfitSharingBonusRate,
+		v_WB_AgencyYears <= 2 
+		AND i_ProfitSharingEligibleDirectWrittenPremium >= 100000, v_lkpProfitSharingBonusRate,
+		v_WB_AgencyYears > 2 
+		AND i_ProfitSharingEligibleDirectWrittenPremium >= 250000, v_lkpProfitSharingBonusRate,
+		0
+	) AS v_ProfitSharingBonusRate,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(v_lkpProfitSharingBonusRateOverride),
 	-- v_ProfitSharingBonusRate,
@@ -1138,34 +1245,54 @@ EXP_CalValues_PrimaryAgency AS (
 	-- -- use Agency Bonus Rate override if it exists else default to calculated Bonus Rate
 	DECODE(TRUE,
 		v_lkpProfitSharingBonusRateOverride IS NULL, v_ProfitSharingBonusRate,
-		v_lkpProfitSharingBonusRateOverride) AS v_ProfitSharingBonusRateFinal,
+		v_lkpProfitSharingBonusRateOverride
+	) AS v_ProfitSharingBonusRateFinal,
 	-- *INF*: DECODE(TRUE,
 	--  NOT ISNULL(v_lkpProfitSharingBonusRateOverride),'0',
 	-- v_ProfitSharingGuaranteeFlag)
 	-- --No Guarantee Fee applies for Agency Bonus Rate overrides
 	DECODE(TRUE,
-		NOT v_lkpProfitSharingBonusRateOverride IS NULL, '0',
-		v_ProfitSharingGuaranteeFlag) AS v_ProfitSharingGuaranteeFlagFinal,
+		v_lkpProfitSharingBonusRateOverride IS NOT NULL, '0',
+		v_ProfitSharingGuaranteeFlag
+	) AS v_ProfitSharingGuaranteeFlagFinal,
 	-- *INF*: ROUND((v_NetDirectEarnedPremium * v_ProfitSharingBonusRateFinal)/100,4)
 	-- 
 	-- --v_ProfitSharingBonusRate)/100,4)
 	-- -- Modified to use override rate if it exists else use computed rate
 	-- -- Made change as part of fix for EDWP-1812, as BonusRate is %, we need divide by 100.
-	ROUND(( v_NetDirectEarnedPremium * v_ProfitSharingBonusRateFinal ) / 100, 4) AS v_ProfitSharingCommission,
+	ROUND(( v_NetDirectEarnedPremium * v_ProfitSharingBonusRateFinal 
+		) / 100, 4
+	) AS v_ProfitSharingCommission,
 	-- *INF*: IIF(IN(v_RunMonth,'10','11','12'),i_GuaranteeFee_Sep,IIF(v_ProfitSharingGuaranteeFlagFinal='1',ROUND(v_ProfitSharingCommission * .15,4),0))
 	-- 
 	-- --modified to check for guarantee flag final to allow for bonus rate overrides 
-	IFF(IN(v_RunMonth, '10', '11', '12'), i_GuaranteeFee_Sep, IFF(v_ProfitSharingGuaranteeFlagFinal = '1', ROUND(v_ProfitSharingCommission * .15, 4), 0)) AS v_GuaranteeFee,
+	IFF(v_RunMonth IN ('10','11','12'),
+		i_GuaranteeFee_Sep,
+		IFF(v_ProfitSharingGuaranteeFlagFinal = '1',
+			ROUND(v_ProfitSharingCommission * .15, 4
+			),
+			0
+		)
+	) AS v_GuaranteeFee,
 	-- *INF*: ROUND(v_ProfitSharingCommission-v_GuaranteeFee,4)
-	ROUND(v_ProfitSharingCommission - v_GuaranteeFee, 4) AS v_NetProfitSharingAmount,
+	ROUND(v_ProfitSharingCommission - v_GuaranteeFee, 4
+	) AS v_NetProfitSharingAmount,
 	-- *INF*: IIF(IN(v_RunMonth,'10','11','12'),IIF(i_GuaranteedCommission>v_NetProfitSharingAmount,i_GuaranteedCommission,v_NetProfitSharingAmount),v_NetProfitSharingAmount)
-	IFF(IN(v_RunMonth, '10', '11', '12'), IFF(i_GuaranteedCommission > v_NetProfitSharingAmount, i_GuaranteedCommission, v_NetProfitSharingAmount), v_NetProfitSharingAmount) AS v_ProfitSharingPaymentAmount,
+	IFF(v_RunMonth IN ('10','11','12'),
+		IFF(i_GuaranteedCommission > v_NetProfitSharingAmount,
+			i_GuaranteedCommission,
+			v_NetProfitSharingAmount
+		),
+		v_NetProfitSharingAmount
+	) AS v_ProfitSharingPaymentAmount,
 	EXP_Data_PrimaryAgency.O_BondsDirectIncurredLossSameYear AS i_BondsDirectIncurredLossSameYear,
 	-- *INF*: DECODE(TRUE,i_BondsDirectEarnedPremium<=0,100,i_BondsDirectIncurredLossSameYear <=0,0,ROUND(i_BondsDirectIncurredLossSameYear/ i_BondsDirectEarnedPremium  * 100,4))
 	DECODE(TRUE,
 		i_BondsDirectEarnedPremium <= 0, 100,
 		i_BondsDirectIncurredLossSameYear <= 0, 0,
-		ROUND(i_BondsDirectIncurredLossSameYear / i_BondsDirectEarnedPremium * 100, 4)) AS v_BondsGrowthLossRatio,
+		ROUND(i_BondsDirectIncurredLossSameYear / i_BondsDirectEarnedPremium * 100, 4
+		)
+	) AS v_BondsGrowthLossRatio,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	i_SalesDivisionDimId AS o_SalesDivisionDimId,
 	i_AgencyDimId AS o_AgencyDimID,
@@ -1181,11 +1308,13 @@ EXP_CalValues_PrimaryAgency AS (
 	v_BondsGrowthAmount AS o_BondsGrowthAmount,
 	v_BondsGrowthBonusRate AS o_BondsGrowthBonusRate,
 	-- *INF*: ROUND(i_BondsDirectWrittenPremium*v_BondsGrowthBonusRate/100,4)
-	ROUND(i_BondsDirectWrittenPremium * v_BondsGrowthBonusRate / 100, 4) AS o_BondsGrowthBonusAmount,
+	ROUND(i_BondsDirectWrittenPremium * v_BondsGrowthBonusRate / 100, 4
+	) AS o_BondsGrowthBonusAmount,
 	v_BondsLossRatio AS o_BondsLossRatio,
 	v_BondsLossRatioBonusRate AS o_BondsLossRatioBonusRate,
 	-- *INF*: ROUND(v_BondsLossRatioBonusRate*i_BondsDirectEarnedPremium/100,4)
-	ROUND(v_BondsLossRatioBonusRate * i_BondsDirectEarnedPremium / 100, 4) AS o_BondsLossRatioBonusAmount,
+	ROUND(v_BondsLossRatioBonusRate * i_BondsDirectEarnedPremium / 100, 4
+	) AS o_BondsLossRatioBonusAmount,
 	i_RegularCommission AS o_RegularCommission,
 	i_DividendAmount AS o_DividendAmount,
 	-- *INF*: 0
@@ -1199,11 +1328,20 @@ EXP_CalValues_PrimaryAgency AS (
 	v_ProfitSharingBonusRateFinal AS o_ProfitSharingBonusRate,
 	v_ProfitSharingCommission AS o_ProfitSharingCommission,
 	-- *INF*: IIF(isnull(v_GuaranteeFee),0,v_GuaranteeFee)
-	IFF(v_GuaranteeFee IS NULL, 0, v_GuaranteeFee) AS o_GuaranteeFee,
+	IFF(v_GuaranteeFee IS NULL,
+		0,
+		v_GuaranteeFee
+	) AS o_GuaranteeFee,
 	-- *INF*: IIF(isnull(v_NetProfitSharingAmount),0,v_NetProfitSharingAmount)
-	IFF(v_NetProfitSharingAmount IS NULL, 0, v_NetProfitSharingAmount) AS o_NetProfitSharingAmount,
+	IFF(v_NetProfitSharingAmount IS NULL,
+		0,
+		v_NetProfitSharingAmount
+	) AS o_NetProfitSharingAmount,
 	-- *INF*: IIF(isnull(v_ProfitSharingPaymentAmount),0,v_ProfitSharingPaymentAmount)
-	IFF(v_ProfitSharingPaymentAmount IS NULL, 0, v_ProfitSharingPaymentAmount) AS o_ProfitSharingPaymentAmount,
+	IFF(v_ProfitSharingPaymentAmount IS NULL,
+		0,
+		v_ProfitSharingPaymentAmount
+	) AS o_ProfitSharingPaymentAmount,
 	v_ProfitSharingGuaranteeFlagFinal AS o_ProfitSharingGuaranteeFlag,
 	'GROUP' AS GroupExperienceIndicator,
 	i_BondsDirectIncurredLossSameYear AS o_BondsDirectIncurredLossSameYear,
@@ -1216,8 +1354,10 @@ EXP_CalValues_PrimaryAgency AS (
 	LEFT JOIN LKP_LastYearAgencyProfitSharingYTDFact_GROUP
 	ON LKP_LastYearAgencyProfitSharingYTDFact_GROUP.AgencyCode = EXP_Data_PrimaryAgency.LegalPrimaryAgencyCode AND LKP_LastYearAgencyProfitSharingYTDFact_GROUP.RunDateId = EXP_Data_PrimaryAgency.LastYearRunDateID
 	LEFT JOIN LKP_SUPPROFTSHARINGBONUS LKP_SUPPROFTSHARINGBONUS_TO_INTEGER_ROUND_i_ProfitSharingEligibleDirectWrittenPremium_ROUND_v_NetLossRatio_1
-	ON LKP_SUPPROFTSHARINGBONUS_TO_INTEGER_ROUND_i_ProfitSharingEligibleDirectWrittenPremium_ROUND_v_NetLossRatio_1.DirectWrittenPremiumLow = TO_INTEGER(ROUND(i_ProfitSharingEligibleDirectWrittenPremium))
-	AND LKP_SUPPROFTSHARINGBONUS_TO_INTEGER_ROUND_i_ProfitSharingEligibleDirectWrittenPremium_ROUND_v_NetLossRatio_1.DirectWrittenPremiumHigh = ROUND(v_NetLossRatio, 1)
+	ON LKP_SUPPROFTSHARINGBONUS_TO_INTEGER_ROUND_i_ProfitSharingEligibleDirectWrittenPremium_ROUND_v_NetLossRatio_1.DirectWrittenPremiumLow = CAST(ROUND(i_ProfitSharingEligibleDirectWrittenPremium
+) AS INTEGER)
+	AND LKP_SUPPROFTSHARINGBONUS_TO_INTEGER_ROUND_i_ProfitSharingEligibleDirectWrittenPremium_ROUND_v_NetLossRatio_1.DirectWrittenPremiumHigh = ROUND(v_NetLossRatio, 1
+)
 
 	LEFT JOIN LKP_AGENCYBONUSRATES LKP_AGENCYBONUSRATES_in_LegalPrimaryAgencyCode
 	ON LKP_AGENCYBONUSRATES_in_LegalPrimaryAgencyCode.Agency = in_LegalPrimaryAgencyCode
@@ -1388,20 +1528,26 @@ EXP_CalValues AS (
 	EXP_DataCollect_Individual_Group.AgencyDimId_cat,
 	EXP_DataCollect_Individual_Group.lkp_StopLossAdjustmentAmountCatastrophe AS StopLossAdjustmentAmountCatastrophe,
 	-- *INF*: IIF(i_AgencyDimID=AgencyDimId_cat,StopLossAdjustmentAmountCatastrophe,0)
-	IFF(i_AgencyDimID = AgencyDimId_cat, StopLossAdjustmentAmountCatastrophe, 0) AS lkp_StopLossAdjustmentAmountCatastrophe,
+	IFF(i_AgencyDimID = AgencyDimId_cat,
+		StopLossAdjustmentAmountCatastrophe,
+		0
+	) AS lkp_StopLossAdjustmentAmountCatastrophe,
 	EXP_DataCollect_Individual_Group.lkp_ProfitSharingGuaranteeFlag,
 	LKP_AgencyDim_LegalPrimary_AppointedDate.AgencyAppointedDate,
 	LKP_AgencyDim_LegalPrimary_AppointedDate.in_LegalPrimaryAgencyCode,
 	-- *INF*: SUBSTR(in_LegalPrimaryAgencyCode,1,2)
-	SUBSTR(in_LegalPrimaryAgencyCode, 1, 2) AS v_NSI_Agencies,
+	SUBSTR(in_LegalPrimaryAgencyCode, 1, 2
+	) AS v_NSI_Agencies,
 	-- *INF*: DATE_DIFF(RunDate,AgencyAppointedDate,'YY')
-	DATE_DIFF(RunDate, AgencyAppointedDate, 'YY') AS v_WB_AgencyYears,
+	DATEDIFF(YEAR,RunDate,AgencyAppointedDate) AS v_WB_AgencyYears,
 	EXP_DataCollect_Individual_Group.RunDate,
 	-- *INF*: GET_DATE_PART(RunDate,'MM')
-	GET_DATE_PART(RunDate, 'MM') AS v_RunMonth,
+	DATE_PART(RunDate, 'MM'
+	) AS v_RunMonth,
 	0 AS GuaranteedCommission,
 	-- *INF*: ROUND(i_BondsDirectWrittenPremium-lkp_LastYearYTDBondsDirectWrittenPremium,4)
-	ROUND(i_BondsDirectWrittenPremium - lkp_LastYearYTDBondsDirectWrittenPremium, 4) AS v_BondsGrowthAmount,
+	ROUND(i_BondsDirectWrittenPremium - lkp_LastYearYTDBondsDirectWrittenPremium, 4
+	) AS v_BondsGrowthAmount,
 	-- *INF*: DECODE(TRUE,
 	-- v_BondsGrowthAmount<25000.00,
 	-- 0.00,
@@ -1416,10 +1562,14 @@ EXP_CalValues AS (
 	-- 
 	DECODE(TRUE,
 		v_BondsGrowthAmount < 25000.00, 0.00,
-		v_BondsGrowthAmount >= 25000.00 AND v_BondsGrowthAmount < 50001.00, 1.0,
-		v_BondsGrowthAmount >= 50001.00 AND v_BondsGrowthAmount < 100001.00, 2.0,
-		v_BondsGrowthAmount >= 100001.00 AND v_BondsGrowthAmount < 150001.00, 3.0,
-		v_BondsGrowthAmount >= 150001.00, 4.0) AS v_BondsGrowthBonusRate,
+		v_BondsGrowthAmount >= 25000.00 
+		AND v_BondsGrowthAmount < 50001.00, 1.0,
+		v_BondsGrowthAmount >= 50001.00 
+		AND v_BondsGrowthAmount < 100001.00, 2.0,
+		v_BondsGrowthAmount >= 100001.00 
+		AND v_BondsGrowthAmount < 150001.00, 3.0,
+		v_BondsGrowthAmount >= 150001.00, 4.0
+	) AS v_BondsGrowthBonusRate,
 	-- *INF*: lkp_ProfitSharingGuaranteeFlag
 	-- 
 	-- --DECODE(lkp_ProfitSharingGuaranteeFlag,'T','1','F','0','')
@@ -1428,12 +1578,16 @@ EXP_CalValues AS (
 	DECODE(TRUE,
 		i_BondsDirectEarnedPremium <= 0, 100,
 		i_BondsDirectIncurredLoss <= 0, 0,
-		ROUND(i_BondsDirectIncurredLoss / i_BondsDirectEarnedPremium * 100, 4)) AS v_BondsLossRatio,
+		ROUND(i_BondsDirectIncurredLoss / i_BondsDirectEarnedPremium * 100, 4
+		)
+	) AS v_BondsLossRatio,
 	-- *INF*: DECODE(TRUE,i_BondsDirectEarnedPremium<=0,100,i_BondsDirectIncurredLossSameYear <=0,0,ROUND(i_BondsDirectIncurredLossSameYear/ i_BondsDirectEarnedPremium  * 100,4))
 	DECODE(TRUE,
 		i_BondsDirectEarnedPremium <= 0, 100,
 		i_BondsDirectIncurredLossSameYear <= 0, 0,
-		ROUND(i_BondsDirectIncurredLossSameYear / i_BondsDirectEarnedPremium * 100, 4)) AS v_BondsGrowthLossRatio,
+		ROUND(i_BondsDirectIncurredLossSameYear / i_BondsDirectEarnedPremium * 100, 4
+		)
+	) AS v_BondsGrowthLossRatio,
 	-- *INF*: DECODE(TRUE,
 	-- v_BondsLossRatio<5.1,
 	-- 4.0,
@@ -1446,23 +1600,35 @@ EXP_CalValues AS (
 	-- 0)
 	DECODE(TRUE,
 		v_BondsLossRatio < 5.1, 4.0,
-		v_BondsLossRatio >= 5.1 AND v_BondsLossRatio < 11.1, 3.0,
-		v_BondsLossRatio >= 11.1 AND v_BondsLossRatio < 15.1, 2.0,
-		v_BondsLossRatio >= 15.1 AND v_BondsLossRatio < 20.1, 1.0,
-		0) AS v_BondsLossRatioBonusRate,
+		v_BondsLossRatio >= 5.1 
+		AND v_BondsLossRatio < 11.1, 3.0,
+		v_BondsLossRatio >= 11.1 
+		AND v_BondsLossRatio < 15.1, 2.0,
+		v_BondsLossRatio >= 15.1 
+		AND v_BondsLossRatio < 20.1, 1.0,
+		0
+	) AS v_BondsLossRatioBonusRate,
 	-- *INF*: IIF(i_NSIDirectWrittenPremium<100000,ROUND(i_NSIDirectWrittenPremium*.1,4),0)
-	IFF(i_NSIDirectWrittenPremium < 100000, ROUND(i_NSIDirectWrittenPremium * .1, 4), 0) AS v_NSIExpense,
+	IFF(i_NSIDirectWrittenPremium < 100000,
+		ROUND(i_NSIDirectWrittenPremium * .1, 4
+		),
+		0
+	) AS v_NSIExpense,
 	-- *INF*: ROUND(i_ProfitSharingEligibleDirectEarnedPremium-i_DividendAmount,4)
-	ROUND(i_ProfitSharingEligibleDirectEarnedPremium - i_DividendAmount, 4) AS v_NetDirectEarnedPremium,
+	ROUND(i_ProfitSharingEligibleDirectEarnedPremium - i_DividendAmount, 4
+	) AS v_NetDirectEarnedPremium,
 	-- *INF*: ROUND(i_ProfitSharingEligibleDirectIncurredLoss-StopLossAdjustmentAmountOccurrence-lkp_StopLossAdjustmentAmountCatastrophe+0.00,4)
 	-- 
 	-- --had v_NSIExpense value were 0.00 was present as it was removed for PROD-8913 issue 4
-	ROUND(i_ProfitSharingEligibleDirectIncurredLoss - StopLossAdjustmentAmountOccurrence - lkp_StopLossAdjustmentAmountCatastrophe + 0.00, 4) AS v_NetDirectIncurredLoss,
+	ROUND(i_ProfitSharingEligibleDirectIncurredLoss - StopLossAdjustmentAmountOccurrence - lkp_StopLossAdjustmentAmountCatastrophe + 0.00, 4
+	) AS v_NetDirectIncurredLoss,
 	-- *INF*: DECODE(TRUE,v_NetDirectEarnedPremium<=0,100,v_NetDirectIncurredLoss<=0,0,ROUND(v_NetDirectIncurredLoss/v_NetDirectEarnedPremium*100,4))
 	DECODE(TRUE,
 		v_NetDirectEarnedPremium <= 0, 100,
 		v_NetDirectIncurredLoss <= 0, 0,
-		ROUND(v_NetDirectIncurredLoss / v_NetDirectEarnedPremium * 100, 4)) AS v_NetLossRatio,
+		ROUND(v_NetDirectIncurredLoss / v_NetDirectEarnedPremium * 100, 4
+		)
+	) AS v_NetLossRatio,
 	-- *INF*: :LKP.LKP_SUPPROFTSHARINGBONUS(TO_INTEGER(ROUND(i_ProfitSharingEligibleDirectWrittenPremium)),ROUND(v_NetLossRatio,1))
 	LKP_SUPPROFTSHARINGBONUS_TO_INTEGER_ROUND_i_ProfitSharingEligibleDirectWrittenPremium_ROUND_v_NetLossRatio_1.ProfitSharingBonusRate AS v_lkpProfitSharingBonusRate,
 	-- *INF*: :LKP.LKP_AGENCYBONUSRATES(in_LegalPrimaryAgencyCode)
@@ -1473,9 +1639,12 @@ EXP_CalValues AS (
 	-- v_WB_AgencyYears > 2 and i_ProfitSharingEligibleDirectWrittenPremium>=250000,v_lkpProfitSharingBonusRate,0)
 	DECODE(TRUE,
 		v_lkpProfitSharingBonusRate IS NULL, 0,
-		v_WB_AgencyYears <= 2 AND i_ProfitSharingEligibleDirectWrittenPremium >= 100000, v_lkpProfitSharingBonusRate,
-		v_WB_AgencyYears > 2 AND i_ProfitSharingEligibleDirectWrittenPremium >= 250000, v_lkpProfitSharingBonusRate,
-		0) AS v_ProfitSharingBonusRate,
+		v_WB_AgencyYears <= 2 
+		AND i_ProfitSharingEligibleDirectWrittenPremium >= 100000, v_lkpProfitSharingBonusRate,
+		v_WB_AgencyYears > 2 
+		AND i_ProfitSharingEligibleDirectWrittenPremium >= 250000, v_lkpProfitSharingBonusRate,
+		0
+	) AS v_ProfitSharingBonusRate,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(v_lkpProfitSharingBonusRateOverride),
 	-- v_ProfitSharingBonusRate,
@@ -1488,27 +1657,45 @@ EXP_CalValues AS (
 	-- 
 	DECODE(TRUE,
 		v_lkpProfitSharingBonusRateOverride IS NULL, v_ProfitSharingBonusRate,
-		v_lkpProfitSharingBonusRateOverride) AS v_ProfitSharingBonusRateFinal,
+		v_lkpProfitSharingBonusRateOverride
+	) AS v_ProfitSharingBonusRateFinal,
 	-- *INF*: ROUND((v_NetDirectEarnedPremium * 
 	-- v_ProfitSharingBonusRateFinal)/100,4)
 	-- --v_ProfitSharingBonusRate)/100,4)
 	-- -- Modified to use override rate if it exists else use computed rate
 	-- -- Made change as part of fix for EDWP-1812, as BonusRate is %, we need divide by 100.
-	ROUND(( v_NetDirectEarnedPremium * v_ProfitSharingBonusRateFinal ) / 100, 4) AS v_ProfitSharingCommission,
+	ROUND(( v_NetDirectEarnedPremium * v_ProfitSharingBonusRateFinal 
+		) / 100, 4
+	) AS v_ProfitSharingCommission,
 	-- *INF*: DECODE(TRUE,
 	--  NOT ISNULL(v_lkpProfitSharingBonusRateOverride),'0',
 	-- v_ProfitSharingGuaranteeFlag)
 	-- --No Guarantee Fee applies for Agency Bonus Rate overrides
 	DECODE(TRUE,
-		NOT v_lkpProfitSharingBonusRateOverride IS NULL, '0',
-		v_ProfitSharingGuaranteeFlag) AS v_ProfitSharingGuaranteeFlagFinal,
+		v_lkpProfitSharingBonusRateOverride IS NOT NULL, '0',
+		v_ProfitSharingGuaranteeFlag
+	) AS v_ProfitSharingGuaranteeFlagFinal,
 	-- *INF*: IIF(IN(v_RunMonth,'10','11','12'),i_GuaranteeFee_Sep,IIF(v_ProfitSharingGuaranteeFlagFinal='1',ROUND(v_ProfitSharingCommission * .15,4),0))
 	-- --modified to check for guarantee flag final to allow for bonus rate overrides 
-	IFF(IN(v_RunMonth, '10', '11', '12'), i_GuaranteeFee_Sep, IFF(v_ProfitSharingGuaranteeFlagFinal = '1', ROUND(v_ProfitSharingCommission * .15, 4), 0)) AS v_GuaranteeFee,
+	IFF(v_RunMonth IN ('10','11','12'),
+		i_GuaranteeFee_Sep,
+		IFF(v_ProfitSharingGuaranteeFlagFinal = '1',
+			ROUND(v_ProfitSharingCommission * .15, 4
+			),
+			0
+		)
+	) AS v_GuaranteeFee,
 	-- *INF*: ROUND(v_ProfitSharingCommission-v_GuaranteeFee,4)
-	ROUND(v_ProfitSharingCommission - v_GuaranteeFee, 4) AS v_NetProfitSharingAmount,
+	ROUND(v_ProfitSharingCommission - v_GuaranteeFee, 4
+	) AS v_NetProfitSharingAmount,
 	-- *INF*: IIF(IN(v_RunMonth,'10','11','12'),IIF(i_GuaranteedCommission>v_NetProfitSharingAmount,i_GuaranteedCommission,v_NetProfitSharingAmount),v_NetProfitSharingAmount)
-	IFF(IN(v_RunMonth, '10', '11', '12'), IFF(i_GuaranteedCommission > v_NetProfitSharingAmount, i_GuaranteedCommission, v_NetProfitSharingAmount), v_NetProfitSharingAmount) AS v_ProfitSharingPaymentAmount,
+	IFF(v_RunMonth IN ('10','11','12'),
+		IFF(i_GuaranteedCommission > v_NetProfitSharingAmount,
+			i_GuaranteedCommission,
+			v_NetProfitSharingAmount
+		),
+		v_NetProfitSharingAmount
+	) AS v_ProfitSharingPaymentAmount,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	i_SalesDivisionDimId AS o_SalesDivisionDimId,
 	i_AgencyDimID AS o_AgencyDimID,
@@ -1524,11 +1711,13 @@ EXP_CalValues AS (
 	v_BondsGrowthAmount AS o_BondsGrowthAmount,
 	v_BondsGrowthBonusRate AS o_BondsGrowthBonusRate,
 	-- *INF*: ROUND(i_BondsDirectWrittenPremium*v_BondsGrowthBonusRate/100,4)
-	ROUND(i_BondsDirectWrittenPremium * v_BondsGrowthBonusRate / 100, 4) AS o_BondsGrowthBonusAmount,
+	ROUND(i_BondsDirectWrittenPremium * v_BondsGrowthBonusRate / 100, 4
+	) AS o_BondsGrowthBonusAmount,
 	v_BondsLossRatio AS o_BondsLossRatio,
 	v_BondsLossRatioBonusRate AS o_BondsLossRatioBonusRate,
 	-- *INF*: ROUND(v_BondsLossRatioBonusRate*i_BondsDirectEarnedPremium/100,4)
-	ROUND(v_BondsLossRatioBonusRate * i_BondsDirectEarnedPremium / 100, 4) AS o_BondsLossRatioBonusAmount,
+	ROUND(v_BondsLossRatioBonusRate * i_BondsDirectEarnedPremium / 100, 4
+	) AS o_BondsLossRatioBonusAmount,
 	i_RegularCommission AS o_RegularCommission,
 	i_DividendAmount AS o_DividendAmount,
 	-- *INF*: 0
@@ -1543,11 +1732,20 @@ EXP_CalValues AS (
 	v_ProfitSharingBonusRateFinal AS o_ProfitSharingBonusRate,
 	v_ProfitSharingCommission AS o_ProfitSharingCommission,
 	-- *INF*: IIF(isnull(v_GuaranteeFee),0,v_GuaranteeFee)
-	IFF(v_GuaranteeFee IS NULL, 0, v_GuaranteeFee) AS o_GuaranteeFee,
+	IFF(v_GuaranteeFee IS NULL,
+		0,
+		v_GuaranteeFee
+	) AS o_GuaranteeFee,
 	-- *INF*: IIF(isnull(v_NetProfitSharingAmount),0,v_NetProfitSharingAmount)
-	IFF(v_NetProfitSharingAmount IS NULL, 0, v_NetProfitSharingAmount) AS o_NetProfitSharingAmount,
+	IFF(v_NetProfitSharingAmount IS NULL,
+		0,
+		v_NetProfitSharingAmount
+	) AS o_NetProfitSharingAmount,
 	-- *INF*: IIF(isnull(v_ProfitSharingPaymentAmount),0,v_ProfitSharingPaymentAmount)
-	IFF(v_ProfitSharingPaymentAmount IS NULL, 0, v_ProfitSharingPaymentAmount) AS o_ProfitSharingPaymentAmount,
+	IFF(v_ProfitSharingPaymentAmount IS NULL,
+		0,
+		v_ProfitSharingPaymentAmount
+	) AS o_ProfitSharingPaymentAmount,
 	v_ProfitSharingGuaranteeFlagFinal AS o_ProfitSharingGuaranteeFlag,
 	'INDIVIDUAL' AS GroupExperienceIndicator,
 	i_BondsDirectIncurredLoss AS o_BondsDirectIncurredLossSameYear,
@@ -1556,8 +1754,10 @@ EXP_CalValues AS (
 	LEFT JOIN LKP_AgencyDim_LegalPrimary_AppointedDate
 	ON LKP_AgencyDim_LegalPrimary_AppointedDate.AgencyCode = EXP_DataCollect_Individual_Group.O_LegalPrimaryAgencyCode
 	LEFT JOIN LKP_SUPPROFTSHARINGBONUS LKP_SUPPROFTSHARINGBONUS_TO_INTEGER_ROUND_i_ProfitSharingEligibleDirectWrittenPremium_ROUND_v_NetLossRatio_1
-	ON LKP_SUPPROFTSHARINGBONUS_TO_INTEGER_ROUND_i_ProfitSharingEligibleDirectWrittenPremium_ROUND_v_NetLossRatio_1.DirectWrittenPremiumLow = TO_INTEGER(ROUND(i_ProfitSharingEligibleDirectWrittenPremium))
-	AND LKP_SUPPROFTSHARINGBONUS_TO_INTEGER_ROUND_i_ProfitSharingEligibleDirectWrittenPremium_ROUND_v_NetLossRatio_1.DirectWrittenPremiumHigh = ROUND(v_NetLossRatio, 1)
+	ON LKP_SUPPROFTSHARINGBONUS_TO_INTEGER_ROUND_i_ProfitSharingEligibleDirectWrittenPremium_ROUND_v_NetLossRatio_1.DirectWrittenPremiumLow = CAST(ROUND(i_ProfitSharingEligibleDirectWrittenPremium
+) AS INTEGER)
+	AND LKP_SUPPROFTSHARINGBONUS_TO_INTEGER_ROUND_i_ProfitSharingEligibleDirectWrittenPremium_ROUND_v_NetLossRatio_1.DirectWrittenPremiumHigh = ROUND(v_NetLossRatio, 1
+)
 
 	LEFT JOIN LKP_AGENCYBONUSRATES LKP_AGENCYBONUSRATES_in_LegalPrimaryAgencyCode
 	ON LKP_AGENCYBONUSRATES_in_LegalPrimaryAgencyCode.Agency = in_LegalPrimaryAgencyCode

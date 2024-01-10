@@ -23,21 +23,34 @@ EXP_Src_Values_Default AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
 	EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	SourceSystemId,
 	sysdate AS CreatedDate,
 	sysdate AS ModifiedDate,
 	NurseReferralAkId AS IN_NurseReferralAkId,
 	-- *INF*: iif(isnull(IN_NurseReferralAkId), -1, IN_NurseReferralAkId)
-	IFF(IN_NurseReferralAkId IS NULL, - 1, IN_NurseReferralAkId) AS v_NurseReferralAkId,
+	IFF(IN_NurseReferralAkId IS NULL,
+		- 1,
+		IN_NurseReferralAkId
+	) AS v_NurseReferralAkId,
 	v_NurseReferralAkId AS EdwNurseReferralAkId,
 	claim_party_ak_id AS IN_claim_party_ak_id,
 	-- *INF*: iif(isnull(ltrim(rtrim(IN_claim_party_ak_id))), -1, IN_claim_party_ak_id)
-	IFF(ltrim(rtrim(IN_claim_party_ak_id)) IS NULL, - 1, IN_claim_party_ak_id) AS v_claim_party_ak_id,
+	IFF(ltrim(rtrim(IN_claim_party_ak_id
+			)
+		) IS NULL,
+		- 1,
+		IN_claim_party_ak_id
+	) AS v_claim_party_ak_id,
 	v_claim_party_ak_id AS claim_party_ak_id,
 	ReferralDate AS IN_ReferralDate,
 	-- *INF*: iif(isnull(IN_ReferralDate), to_date('1/1/1800','MM/DD/YYYY'), IN_ReferralDate)
-	IFF(IN_ReferralDate IS NULL, to_date('1/1/1800', 'MM/DD/YYYY'), IN_ReferralDate) AS v_RefferalDate,
+	IFF(IN_ReferralDate IS NULL,
+		to_date('1/1/1800', 'MM/DD/YYYY'
+		),
+		IN_ReferralDate
+	) AS v_RefferalDate,
 	v_RefferalDate AS ReferralDate
 	FROM SQ_NurseReferral
 ),
@@ -91,9 +104,13 @@ EXP_Lkp_Records AS (
 	-- ltrim(rtrim(NurseFullName)))
 	decode(true,
 		NurseFullName IS NULL, 'N/A',
-		Length(NurseFullName) = 0, 'N/A',
-		is_spaces(NurseFullName), 'N/A',
-		ltrim(rtrim(NurseFullName))) AS NurseFullName1,
+		Length(NurseFullName
+		) = 0, 'N/A',
+		LENGTH(NurseFullName)>0 AND TRIM(NurseFullName)='', 'N/A',
+		ltrim(rtrim(NurseFullName
+			)
+		)
+	) AS NurseFullName1,
 	LKP_claim_party.claim_party_first_name AS NurseFirstName,
 	-- *INF*: decode(true,
 	-- isnull(NurseFirstName),'N/A',
@@ -102,9 +119,13 @@ EXP_Lkp_Records AS (
 	-- ltrim(rtrim(NurseFirstName)))
 	decode(true,
 		NurseFirstName IS NULL, 'N/A',
-		Length(NurseFirstName) = 0, 'N/A',
-		is_spaces(NurseFirstName), 'N/A',
-		ltrim(rtrim(NurseFirstName))) AS NurseFirstName1,
+		Length(NurseFirstName
+		) = 0, 'N/A',
+		LENGTH(NurseFirstName)>0 AND TRIM(NurseFirstName)='', 'N/A',
+		ltrim(rtrim(NurseFirstName
+			)
+		)
+	) AS NurseFirstName1,
 	LKP_claim_party.claim_party_last_name AS NurseLastName,
 	-- *INF*: decode(true,
 	-- isnull(NurseLastName),'N/A',
@@ -113,9 +134,13 @@ EXP_Lkp_Records AS (
 	-- ltrim(rtrim(NurseLastName)))
 	decode(true,
 		NurseLastName IS NULL, 'N/A',
-		Length(NurseLastName) = 0, 'N/A',
-		is_spaces(NurseLastName), 'N/A',
-		ltrim(rtrim(NurseLastName))) AS NurseLastName1,
+		Length(NurseLastName
+		) = 0, 'N/A',
+		LENGTH(NurseLastName)>0 AND TRIM(NurseLastName)='', 'N/A',
+		ltrim(rtrim(NurseLastName
+			)
+		)
+	) AS NurseLastName1,
 	LKP_claim_party.claim_party_mid_name AS NurseMiddleName,
 	-- *INF*: decode(true,
 	-- isnull(NurseMiddleName),'N/A',
@@ -124,9 +149,13 @@ EXP_Lkp_Records AS (
 	-- ltrim(rtrim(NurseMiddleName)))
 	decode(true,
 		NurseMiddleName IS NULL, 'N/A',
-		Length(NurseMiddleName) = 0, 'N/A',
-		is_spaces(NurseMiddleName), 'N/A',
-		ltrim(rtrim(NurseMiddleName))) AS NurseMiddleName1,
+		Length(NurseMiddleName
+		) = 0, 'N/A',
+		LENGTH(NurseMiddleName)>0 AND TRIM(NurseMiddleName)='', 'N/A',
+		ltrim(rtrim(NurseMiddleName
+			)
+		)
+	) AS NurseMiddleName1,
 	LKP_claim_party.claim_party_name_prfx AS NurseNamePrefix,
 	-- *INF*: decode(true,
 	-- isnull(NurseNamePrefix),'N/A',
@@ -135,9 +164,13 @@ EXP_Lkp_Records AS (
 	-- ltrim(rtrim(NurseNamePrefix)))
 	decode(true,
 		NurseNamePrefix IS NULL, 'N/A',
-		Length(NurseNamePrefix) = 0, 'N/A',
-		is_spaces(NurseNamePrefix), 'N/A',
-		ltrim(rtrim(NurseNamePrefix))) AS NurseNamePrefix1,
+		Length(NurseNamePrefix
+		) = 0, 'N/A',
+		LENGTH(NurseNamePrefix)>0 AND TRIM(NurseNamePrefix)='', 'N/A',
+		ltrim(rtrim(NurseNamePrefix
+			)
+		)
+	) AS NurseNamePrefix1,
 	LKP_claim_party.claim_party_name_sfx AS NurseNameSuffix,
 	-- *INF*: decode(true,
 	-- isnull(NurseNameSuffix),'N/A',
@@ -146,9 +179,13 @@ EXP_Lkp_Records AS (
 	-- ltrim(rtrim(NurseNameSuffix)))
 	decode(true,
 		NurseNameSuffix IS NULL, 'N/A',
-		Length(NurseNameSuffix) = 0, 'N/A',
-		is_spaces(NurseNameSuffix), 'N/A',
-		ltrim(rtrim(NurseNameSuffix))) AS NurseNameSuffix1
+		Length(NurseNameSuffix
+		) = 0, 'N/A',
+		LENGTH(NurseNameSuffix)>0 AND TRIM(NurseNameSuffix)='', 'N/A',
+		ltrim(rtrim(NurseNameSuffix
+			)
+		)
+	) AS NurseNameSuffix1
 	FROM 
 	LEFT JOIN LKP_NurseReferralDim
 	ON LKP_NurseReferralDim.EdwNurseReferralAkId = EXP_Src_Values_Default.EdwNurseReferralAkId
@@ -288,8 +325,9 @@ EXP_Lag_ExpirationDate AS (
 	-- add_to_date(v_PREV_ROW_EffectiveDate, 'SS', -1),
 	-- orig_ExpirationDate)
 	decode(true,
-		EdwNurseReferralAkId = v_PREV_ROW_EdwNurseReferralAkId, add_to_date(v_PREV_ROW_EffectiveDate, 'SS', - 1),
-		orig_ExpirationDate) AS v_ExpirationDate,
+		EdwNurseReferralAkId = v_PREV_ROW_EdwNurseReferralAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
+		orig_ExpirationDate
+	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	sysdate AS ModifiedDate,
 	EdwNurseReferralAkId,

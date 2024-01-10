@@ -31,8 +31,11 @@ EXP_offset_PTUpdate_attributes AS (
 	-- 		'UPD',
 	-- 	'NOCHANGE')
 	DECODE(TRUE,
-		( ptToUpdate_ExperienceModificationFactor != ptAttrValues_ExperienceModificationFactor OR ptToUpdate_ExperienceModificationEffectiveDate != ptAttrValues_ExperienceModificationEffectiveDate ), 'UPD',
-		'NOCHANGE') AS v_PTUpdateFlag,
+		( ptToUpdate_ExperienceModificationFactor != ptAttrValues_ExperienceModificationFactor 
+			OR ptToUpdate_ExperienceModificationEffectiveDate != ptAttrValues_ExperienceModificationEffectiveDate 
+		), 'UPD',
+		'NOCHANGE'
+	) AS v_PTUpdateFlag,
 	v_PTUpdateFlag AS PTUpdateFlag
 	FROM SQ_PremiumTransaction_Offset
 ),
@@ -91,8 +94,11 @@ EXP_Deprecated_PTUpdate_attributes AS (
 	-- 		'UPD',
 	-- 	'NOCHANGE')
 	DECODE(TRUE,
-		( ptToUpdate_ExperienceModificationFactor != ptAttrValues_ExperienceModificationFactor OR ptToUpdate_ExperienceModificationEffectiveDate != ptAttrValues_ExperienceModificationEffectiveDate ), 'UPD',
-		'NOCHANGE') AS v_PTUpdateFlag,
+		( ptToUpdate_ExperienceModificationFactor != ptAttrValues_ExperienceModificationFactor 
+			OR ptToUpdate_ExperienceModificationEffectiveDate != ptAttrValues_ExperienceModificationEffectiveDate 
+		), 'UPD',
+		'NOCHANGE'
+	) AS v_PTUpdateFlag,
 	v_PTUpdateFlag AS PTUpdateFlag
 	FROM SQ_PremiumTransaction_Deprecated
 ),

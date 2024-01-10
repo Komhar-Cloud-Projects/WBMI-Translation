@@ -24,22 +24,58 @@ EXP_FormatValues AS (
 	CoverageVersion AS i_CoverageVersion,
 	PerilGroup AS i_PerilGroup,
 	-- *INF*: IIF(IsNull(lkp_StandardInsuranceLineCode),'Line Not Found.  Source Line: ' || i_LineType, lkp_StandardInsuranceLineCode)
-	IFF(lkp_StandardInsuranceLineCode IS NULL, 'Line Not Found.  Source Line: ' || i_LineType, lkp_StandardInsuranceLineCode) AS o_InsuranceLineCode,
+	IFF(lkp_StandardInsuranceLineCode IS NULL,
+		'Line Not Found.  Source Line: ' || i_LineType,
+		lkp_StandardInsuranceLineCode
+	) AS o_InsuranceLineCode,
 	-- *INF*: IIF(IsNull(lkp_StandardInsuranceLineDescription), 'No Description Found For Line', lkp_StandardInsuranceLineDescription)
-	IFF(lkp_StandardInsuranceLineDescription IS NULL, 'No Description Found For Line', lkp_StandardInsuranceLineDescription) AS o_InsuranceLineDescription,
+	IFF(lkp_StandardInsuranceLineDescription IS NULL,
+		'No Description Found For Line',
+		lkp_StandardInsuranceLineDescription
+	) AS o_InsuranceLineDescription,
 	-- *INF*: IIF(IsNull(i_CoverageType) or IS_SPACES(i_CoverageType), 'N/A', rtrim(ltrim(i_CoverageType)))
-	IFF(i_CoverageType IS NULL OR IS_SPACES(i_CoverageType), 'N/A', rtrim(ltrim(i_CoverageType))) AS o_CoverageType,
+	IFF(i_CoverageType IS NULL 
+		OR LENGTH(i_CoverageType)>0 AND TRIM(i_CoverageType)='',
+		'N/A',
+		rtrim(ltrim(i_CoverageType
+			)
+		)
+	) AS o_CoverageType,
 	-- *INF*: IIF(IsNull(i_SubCoverageType) or IS_SPACES(i_SubCoverageType), 'N/A', rtrim(ltrim(i_SubCoverageType)))
 	-- 
-	IFF(i_SubCoverageType IS NULL OR IS_SPACES(i_SubCoverageType), 'N/A', rtrim(ltrim(i_SubCoverageType))) AS o_SubCoverageType,
+	IFF(i_SubCoverageType IS NULL 
+		OR LENGTH(i_SubCoverageType)>0 AND TRIM(i_SubCoverageType)='',
+		'N/A',
+		rtrim(ltrim(i_SubCoverageType
+			)
+		)
+	) AS o_SubCoverageType,
 	-- *INF*: IIF(IsNull(i_RiskType) or IS_SPACES(i_RiskType), 'N/A', rtrim(ltrim(i_RiskType)))
-	IFF(i_RiskType IS NULL OR IS_SPACES(i_RiskType), 'N/A', rtrim(ltrim(i_RiskType))) AS o_RiskType,
+	IFF(i_RiskType IS NULL 
+		OR LENGTH(i_RiskType)>0 AND TRIM(i_RiskType)='',
+		'N/A',
+		rtrim(ltrim(i_RiskType
+			)
+		)
+	) AS o_RiskType,
 	-- *INF*: IIF(IsNull(i_CoverageVersion) or IS_SPACES(i_CoverageVersion), 'N/A', rtrim(ltrim(i_CoverageVersion)))
 	-- 
-	IFF(i_CoverageVersion IS NULL OR IS_SPACES(i_CoverageVersion), 'N/A', rtrim(ltrim(i_CoverageVersion))) AS o_CoverageVersion,
+	IFF(i_CoverageVersion IS NULL 
+		OR LENGTH(i_CoverageVersion)>0 AND TRIM(i_CoverageVersion)='',
+		'N/A',
+		rtrim(ltrim(i_CoverageVersion
+			)
+		)
+	) AS o_CoverageVersion,
 	-- *INF*: IIF(IsNull(i_PerilGroup) or IS_SPACES(i_PerilGroup), 'N/A', rtrim(ltrim(i_PerilGroup)))
 	-- 
-	IFF(i_PerilGroup IS NULL OR IS_SPACES(i_PerilGroup), 'N/A', rtrim(ltrim(i_PerilGroup))) AS o_PerilGroup
+	IFF(i_PerilGroup IS NULL 
+		OR LENGTH(i_PerilGroup)>0 AND TRIM(i_PerilGroup)='',
+		'N/A',
+		rtrim(ltrim(i_PerilGroup
+			)
+		)
+	) AS o_PerilGroup
 	FROM SQ_RatingCoverage
 ),
 Agg_Distinct AS (

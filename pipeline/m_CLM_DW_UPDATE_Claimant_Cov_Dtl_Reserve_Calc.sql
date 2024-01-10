@@ -97,7 +97,8 @@ AGG_get_min_reserve_date AS (
 	created_date,
 	modified_date,
 	-- *INF*: MIN(reserve_date)
-	MIN(reserve_date) AS reserve_date_out
+	MIN(reserve_date
+	) AS reserve_date_out
 	FROM EXP_get_values
 	GROUP BY claimant_cov_det_ak_id, financial_type_code
 ),
@@ -135,11 +136,22 @@ EXP_get_lookup_values AS (
 	-- 
 	-- 
 	-- 
-	IFF(V_reserve_date_open IS NULL, IFF(NOT V_reserve_date_closed IS NULL, 'INSERTOPEN'), 'NOCHANGE') AS V_flag,
+	IFF(V_reserve_date_open IS NULL,
+		IFF(V_reserve_date_closed IS NOT NULL,
+			'INSERTOPEN'
+		),
+		'NOCHANGE'
+	) AS V_flag,
 	V_flag AS flag,
 	-- *INF*: IIF(ISNULL(V_reserve_date_open), 
 	-- IIF(ISNULL(V_reserve_date_closed), reserve_date_out, V_reserve_date_closed), V_reserve_date_open)
-	IFF(V_reserve_date_open IS NULL, IFF(V_reserve_date_closed IS NULL, reserve_date_out, V_reserve_date_closed), V_reserve_date_open) AS reserve_date_new,
+	IFF(V_reserve_date_open IS NULL,
+		IFF(V_reserve_date_closed IS NULL,
+			reserve_date_out,
+			V_reserve_date_closed
+		),
+		V_reserve_date_open
+	) AS reserve_date_new,
 	logical_flag,
 	crrnt_snpsht_flag,
 	audit_id,
@@ -215,7 +227,8 @@ EXP_insert_missing_opens AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	reserve_date AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS') 
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -276,7 +289,14 @@ EXP_find_extra_reopens AS (
 	-- *INF*: IIF(v_Open_date = reserve_date, 'DELETE',  IIF(ISNULL(v_Open_date) AND ISNULL(v_closed_date), 'UPDATE', 'NOCHANGE'))
 	-- 
 	-- 
-	IFF(v_Open_date = reserve_date, 'DELETE', IFF(v_Open_date IS NULL AND v_closed_date IS NULL, 'UPDATE', 'NOCHANGE')) AS delete_flag
+	IFF(v_Open_date = reserve_date,
+		'DELETE',
+		IFF(v_Open_date IS NULL 
+			AND v_closed_date IS NULL,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS delete_flag
 	FROM RTR_delete_reopens_recloses_DELETE_REOPEN
 	LEFT JOIN LKP_CLAIMANT_COV_DL_RSRV_CALC LKP_CLAIMANT_COV_DL_RSRV_CALC_claimant_cov_det_ak_id_financial_type_code_reserve_date_2OPEN
 	ON LKP_CLAIMANT_COV_DL_RSRV_CALC_claimant_cov_det_ak_id_financial_type_code_reserve_date_2OPEN.claimant_cov_det_ak_id = claimant_cov_det_ak_id
@@ -412,7 +432,13 @@ EXP_find_extra_recloses AS (
 	-- *INF*: IIF(v_Closed_date = reserve_date OR(logical_flag = '100' AND v_Closed_date < reserve_date), 'DELETE',  'NOCHANGE')
 	-- 
 	-- 
-	IFF(v_Closed_date = reserve_date OR ( logical_flag = '100' AND v_Closed_date < reserve_date ), 'DELETE', 'NOCHANGE') AS delete_flag
+	IFF(v_Closed_date = reserve_date 
+		OR ( logical_flag = '100' 
+			AND v_Closed_date < reserve_date 
+		),
+		'DELETE',
+		'NOCHANGE'
+	) AS delete_flag
 	FROM RTR_delete_reopens_recloses_DELETE_RECLOSED
 	LEFT JOIN LKP_CLAIMANT_COV_DL_RSRV_CALC LKP_CLAIMANT_COV_DL_RSRV_CALC_claimant_cov_det_ak_id_financial_type_code_reserve_date_3CLOSED
 	ON LKP_CLAIMANT_COV_DL_RSRV_CALC_claimant_cov_det_ak_id_financial_type_code_reserve_date_3CLOSED.claimant_cov_det_ak_id = claimant_cov_det_ak_id
@@ -499,7 +525,22 @@ EXP_determine_insert AS (
 	created_date,
 	modified_date,
 	-- *INF*: IIF(reserve_date_type = '4REOPEN', IIF(claimant_cov_det_ak_id = v_ak_id AND claimant_cov_cause_of_loss = V_prev_row_claimant_cov_cause_of_loss  AND claimant_cov_reserve_ctgry = v_prev_row_claimant_cov_reserve_ctgry AND financial_type_code = v_prev_row_financial_type_code, IIF(v_prev_row_reserve_date_type = '2OPEN', 'INSERT_CLOSED', IIF(v_prev_row_reserve_date_type = '4REOPEN', 'INSERT_RECLOSED', 'NOCHANGE')), 'NOCHANGE'), 'NOCHANGE')
-	IFF(reserve_date_type = '4REOPEN', IFF(claimant_cov_det_ak_id = v_ak_id AND claimant_cov_cause_of_loss = V_prev_row_claimant_cov_cause_of_loss AND claimant_cov_reserve_ctgry = v_prev_row_claimant_cov_reserve_ctgry AND financial_type_code = v_prev_row_financial_type_code, IFF(v_prev_row_reserve_date_type = '2OPEN', 'INSERT_CLOSED', IFF(v_prev_row_reserve_date_type = '4REOPEN', 'INSERT_RECLOSED', 'NOCHANGE')), 'NOCHANGE'), 'NOCHANGE') AS v_insert_flag,
+	IFF(reserve_date_type = '4REOPEN',
+		IFF(claimant_cov_det_ak_id = v_ak_id 
+			AND claimant_cov_cause_of_loss = V_prev_row_claimant_cov_cause_of_loss 
+			AND claimant_cov_reserve_ctgry = v_prev_row_claimant_cov_reserve_ctgry 
+			AND financial_type_code = v_prev_row_financial_type_code,
+			IFF(v_prev_row_reserve_date_type = '2OPEN',
+				'INSERT_CLOSED',
+				IFF(v_prev_row_reserve_date_type = '4REOPEN',
+					'INSERT_RECLOSED',
+					'NOCHANGE'
+				)
+			),
+			'NOCHANGE'
+		),
+		'NOCHANGE'
+	) AS v_insert_flag,
 	v_insert_flag AS insert_flag,
 	v_prev_row_reserve_date AS v_prev_row_reserve_date_out,
 	v_prev_row_reserve_date_out AS prev_row_reserve_date_out,
@@ -547,7 +588,12 @@ EXP_set_default_value AS (
 	-- *INF*: IIF(insert_flag = 'INSERT_CLOSED', '3CLOSED', IIF(insert_flag = 'INSERT_RECLOSED', '5CLOSEDAFTERREOPEN'))
 	-- 
 	-- 
-	IFF(insert_flag = 'INSERT_CLOSED', '3CLOSED', IFF(insert_flag = 'INSERT_RECLOSED', '5CLOSEDAFTERREOPEN')) AS reserve_date_type,
+	IFF(insert_flag = 'INSERT_CLOSED',
+		'3CLOSED',
+		IFF(insert_flag = 'INSERT_RECLOSED',
+			'5CLOSEDAFTERREOPEN'
+		)
+	) AS reserve_date_type,
 	'C' AS financial_type_status_code,
 	claimant_cov_cause_of_loss,
 	claimant_cov_reserve_ctgry,
@@ -556,7 +602,8 @@ EXP_set_default_value AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	prev_row_reserve_date_out AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS') 
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -618,8 +665,11 @@ EXP_Expire_Rows AS (
 	-- *INF*: DECODE (TRUE, claimant_cov_det_ak_id = v_PREV_ROW_claimant_cov_det_ak_id and source_sys_id = v_PREV_ROW_source_sys_id and financial_type_code = v_PREV_ROW_financial_type_code ,ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		claimant_cov_det_ak_id = v_PREV_ROW_claimant_cov_det_ak_id AND source_sys_id = v_PREV_ROW_source_sys_id AND financial_type_code = v_PREV_ROW_financial_type_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claimant_cov_det_ak_id = v_PREV_ROW_claimant_cov_det_ak_id 
+		AND source_sys_id = v_PREV_ROW_source_sys_id 
+		AND financial_type_code = v_PREV_ROW_financial_type_code, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	claimant_cov_det_ak_id AS v_PREV_ROW_claimant_cov_det_ak_id,
 	financial_type_code AS v_PREV_ROW_financial_type_code,

@@ -101,7 +101,8 @@ AGG_UnderlyingPolicy AS (
 		'BOPEmployeeBenefitsLiability', 'Underlying-BOPEmployeeBenefitsLiabilityEachEmployee',
 		'SBOPEmployeeBenefitsLiability', 'Underlying-SBOPEmployeeBenefitsLiabilityEachEmployee',
 		'CPPEmployeeBenefitsLiability', 'Underlying-CPPEmployeeBenefitsLiabilityEachEmployee',
-		'N/A') AS v_UnderlyingPolicyLimitType1,
+		'N/A'
+	) AS v_UnderlyingPolicyLimitType1,
 	-- *INF*: DECODE(UnderlyingPolicyType,
 	-- 'GeneralLiability',
 	-- 'Underlying-GeneralLiability AGGREGATE LIMIT',
@@ -161,7 +162,8 @@ AGG_UnderlyingPolicy AS (
 		'BOPEmployeeBenefitsLiability', 'Underlying-BOPEmployeeBenefitsLiabilityAggregrate',
 		'SBOPEmployeeBenefitsLiability', 'Underlying-SBOPEmployeeBenefitsLiabilityAggregrate',
 		'CPPEmployeeBenefitsLiability', 'Underlying-CPPEmployeeBenefitsLiabilityAggregrate',
-		'N/A') AS v_UnderlyingPolicyLimitType2,
+		'N/A'
+	) AS v_UnderlyingPolicyLimitType2,
 	-- *INF*: DECODE(UnderlyingPolicyType,
 	-- 'GeneralLiability',
 	-- 'Underlying-GeneralLiability PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT',
@@ -202,7 +204,8 @@ AGG_UnderlyingPolicy AS (
 		'AutoOhioStopGapEmployersLiability', 'Underlying-AutoOhioStopGapEmployersLiability-BodilyInjuryByDisease-Aggregate',
 		'SMARTOhioStopGapEmployersLiability', 'Underlying-SMARTOhioStopGapEmployersLiability-BodilyInjuryByDisease-Aggregate',
 		'SBOPOhioStopGapEmployersLiability', 'Underlying-SBOPOhioStopGapEmployersLiability BODILY INJURY BY DISEASE:   POLICY LIMIT',
-		'N/A') AS v_UnderlyingPolicyLimitType3,
+		'N/A'
+	) AS v_UnderlyingPolicyLimitType3,
 	-- *INF*: DECODE(UnderlyingPolicyType,
 	-- 'GeneralLiability',
 	-- 'Underlying-GeneralLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
@@ -225,19 +228,24 @@ AGG_UnderlyingPolicy AS (
 		'SMARTbusinessLiability', 'Underlying-SMARTbusinessLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
 		'SBOPGeneralLiability', 'Underlying-SBOPGeneralLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
 		'CBOPGeneralLiability', 'Underlying-CBOPGeneralLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
-		'N/A') AS v_UnderlyingPolicyLimitType4,
+		'N/A'
+	) AS v_UnderlyingPolicyLimitType4,
 	v_UnderlyingPolicyLimitType1 AS o_UnderlyingPolicyLimitType1,
 	v_UnderlyingPolicyLimitType2 AS o_UnderlyingPolicyLimitType2,
 	v_UnderlyingPolicyLimitType3 AS o_UnderlyingPolicyLimitType3,
 	v_UnderlyingPolicyLimitType4 AS o_UnderlyingPolicyLimitType4,
 	-- *INF*: FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType1)
-	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType1) AS o_UnderlyingPolicyLimit1,
+	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType1
+	) AS o_UnderlyingPolicyLimit1,
 	-- *INF*: FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType2)
-	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType2) AS o_UnderlyingPolicyLimit2,
+	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType2
+	) AS o_UnderlyingPolicyLimit2,
 	-- *INF*: FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType3)
-	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType3) AS o_UnderlyingPolicyLimit3,
+	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType3
+	) AS o_UnderlyingPolicyLimit3,
 	-- *INF*: FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType4)
-	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType4) AS o_UnderlyingPolicyLimit4
+	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType4
+	) AS o_UnderlyingPolicyLimit4
 	FROM EXP_GetValues
 	GROUP BY CoverageDetailDimId, UnderlyingInsuranceCompanyName, UnderlyingPolicyKey, UnderlyingPolicyType
 ),
@@ -259,13 +267,25 @@ EXP_Metadata AS (
 	o_UnderlyingPolicyLimitType3 AS UnderlyingPolicyLimitType3,
 	o_UnderlyingPolicyLimitType4 AS UnderlyingPolicyLimitType4,
 	-- *INF*: IIF(ISNULL(i_UnderlyingPolicyLimit1), 'N/A', i_UnderlyingPolicyLimit1)
-	IFF(i_UnderlyingPolicyLimit1 IS NULL, 'N/A', i_UnderlyingPolicyLimit1) AS o_UnderlyingPolicyLimit1,
+	IFF(i_UnderlyingPolicyLimit1 IS NULL,
+		'N/A',
+		i_UnderlyingPolicyLimit1
+	) AS o_UnderlyingPolicyLimit1,
 	-- *INF*: IIF(ISNULL(i_UnderlyingPolicyLimit2), 'N/A', i_UnderlyingPolicyLimit2)
-	IFF(i_UnderlyingPolicyLimit2 IS NULL, 'N/A', i_UnderlyingPolicyLimit2) AS o_UnderlyingPolicyLimit2,
+	IFF(i_UnderlyingPolicyLimit2 IS NULL,
+		'N/A',
+		i_UnderlyingPolicyLimit2
+	) AS o_UnderlyingPolicyLimit2,
 	-- *INF*: IIF(ISNULL(i_UnderlyingPolicyLimit3), 'N/A', i_UnderlyingPolicyLimit3)
-	IFF(i_UnderlyingPolicyLimit3 IS NULL, 'N/A', i_UnderlyingPolicyLimit3) AS o_UnderlyingPolicyLimit3,
+	IFF(i_UnderlyingPolicyLimit3 IS NULL,
+		'N/A',
+		i_UnderlyingPolicyLimit3
+	) AS o_UnderlyingPolicyLimit3,
 	-- *INF*: IIF(ISNULL(i_UnderlyingPolicyLimit4), 'N/A', i_UnderlyingPolicyLimit4)
-	IFF(i_UnderlyingPolicyLimit4 IS NULL, 'N/A', i_UnderlyingPolicyLimit4) AS o_UnderlyingPolicyLimit4,
+	IFF(i_UnderlyingPolicyLimit4 IS NULL,
+		'N/A',
+		i_UnderlyingPolicyLimit4
+	) AS o_UnderlyingPolicyLimit4,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	CURRENT_TIMESTAMP AS o_CreateDate,
 	CURRENT_TIMESTAMP AS o_ModifiedDate
@@ -359,8 +379,18 @@ EXP_Update AS (
 	-- 'NOCHANGE')
 	DECODE(TRUE,
 		lkp_CoverageDetailUnderlyingPolicyDimId IS NULL, 'NEW',
-		lkp_EffectiveDate != EffectiveDate OR lkp_ExpirationDate != ExpirationDate OR lkp_UnderlyingPolicyLimitType1 != UnderlyingPolicyLimitType1 OR lkp_UnderlyingPolicyLimit1 != UnderlyingPolicyLimit1 OR lkp_UnderlyingPolicyLimitType2 != UnderlyingPolicyLimitType2 OR lkp_UnderlyingPolicyLimit2 != UnderlyingPolicyLimit2 OR lkp_UnderlyingPolicyLimitType3 != UnderlyingPolicyLimitType3 OR lkp_UnderlyingPolicyLimit3 != UnderlyingPolicyLimit3 OR lkp_UnderlyingPolicyLimitType4 != UnderlyingPolicyLimitType4 OR lkp_UnderlyingPolicyLimit4 != UnderlyingPolicyLimit4, 'UPDATE',
-		'NOCHANGE') AS o_ChangeFlag
+		lkp_EffectiveDate != EffectiveDate 
+		OR lkp_ExpirationDate != ExpirationDate 
+		OR lkp_UnderlyingPolicyLimitType1 != UnderlyingPolicyLimitType1 
+		OR lkp_UnderlyingPolicyLimit1 != UnderlyingPolicyLimit1 
+		OR lkp_UnderlyingPolicyLimitType2 != UnderlyingPolicyLimitType2 
+		OR lkp_UnderlyingPolicyLimit2 != UnderlyingPolicyLimit2 
+		OR lkp_UnderlyingPolicyLimitType3 != UnderlyingPolicyLimitType3 
+		OR lkp_UnderlyingPolicyLimit3 != UnderlyingPolicyLimit3 
+		OR lkp_UnderlyingPolicyLimitType4 != UnderlyingPolicyLimitType4 
+		OR lkp_UnderlyingPolicyLimit4 != UnderlyingPolicyLimit4, 'UPDATE',
+		'NOCHANGE'
+	) AS o_ChangeFlag
 	FROM EXP_Metadata
 	LEFT JOIN LKP_CoverageDetailUnderlyingPolicyDim
 	ON LKP_CoverageDetailUnderlyingPolicyDim.CoverageDetailDimId = EXP_Metadata.CoverageDetailDimId AND LKP_CoverageDetailUnderlyingPolicyDim.UnderlyingInsuranceCompanyName = EXP_Metadata.UnderlyingInsuranceCompanyName AND LKP_CoverageDetailUnderlyingPolicyDim.UnderlyingPolicyKey = EXP_Metadata.UnderlyingPolicyKey AND LKP_CoverageDetailUnderlyingPolicyDim.UnderlyingPolicyType = EXP_Metadata.UnderlyingPolicyType

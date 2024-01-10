@@ -103,10 +103,14 @@ EXP_LKP_Values_Claim_Party_Occurrence AS (
 	CCT_CLAIM_NBR,
 	CCT_CLIENT_ID,
 	-- *INF*: LTRIM(RTRIM(CCT_CLIENT_ID))
-	LTRIM(RTRIM(CCT_CLIENT_ID)) AS v_CCT_CLIENT_ID,
+	LTRIM(RTRIM(CCT_CLIENT_ID
+		)
+	) AS v_CCT_CLIENT_ID,
 	CCT_CLIENT_ROLE_CD AS In_CCT_CLIENT_ROLE_CD,
 	-- *INF*: LTRIM(RTRIM(In_CCT_CLIENT_ROLE_CD))
-	LTRIM(RTRIM(In_CCT_CLIENT_ROLE_CD)) AS Out_CCT_CLIENT_ROLE_CD,
+	LTRIM(RTRIM(In_CCT_CLIENT_ROLE_CD
+		)
+	) AS Out_CCT_CLIENT_ROLE_CD,
 	-- *INF*: :LKP.LKP_Claim_Occurrence_id(CCT_CLAIM_NBR)
 	LKP_CLAIM_OCCURRENCE_ID_CCT_CLAIM_NBR.claim_occurrence_ak_id AS claim_occurrence_ak_id,
 	-- *INF*: :LKP.LKP_CLAIM_PARTY_AK_ID(v_CCT_CLIENT_ID)
@@ -116,11 +120,18 @@ EXP_LKP_Values_Claim_Party_Occurrence AS (
 	-- *INF*: :LKP.LKP_CLAIM_CASE_AK_ID(Claim_Case_key)
 	LKP_CLAIM_CASE_AK_ID_Claim_Case_key.claim_case_ak_id AS v_claim_case_ak_id,
 	-- *INF*: IIF(ISNULL(v_claim_case_ak_id),-1,v_claim_case_ak_id)
-	IFF(v_claim_case_ak_id IS NULL, - 1, v_claim_case_ak_id) AS claim_case_ak_id,
+	IFF(v_claim_case_ak_id IS NULL,
+		- 1,
+		v_claim_case_ak_id
+	) AS claim_case_ak_id,
 	-- *INF*: :LKP.LKP_CLAIMANT_NUM(CCT_CLAIM_NBR,CCT_CLIENT_ID)
 	LKP_CLAIMANT_NUM_CCT_CLAIM_NBR_CCT_CLIENT_ID.ccn_claimant_nbr AS v_claimant_num,
 	-- *INF*: IIF(NOT ISNULL(v_claimant_num) AND In_CCT_CLIENT_ROLE_CD ='CLMT' , v_claimant_num,'N/A')
-	IFF(NOT v_claimant_num IS NULL AND In_CCT_CLIENT_ROLE_CD = 'CLMT', v_claimant_num, 'N/A') AS out_Claimant_num,
+	IFF(v_claimant_num IS NULL 
+		AND In_CCT_CLIENT_ROLE_CD = 'CNOT LMT',
+		v_claimant_num,
+		'N/A'
+	) AS out_Claimant_num,
 	'N/A' AS OFFSET_ONSET_IND,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	1 AS CRRNT_SNPSHT_FLAG
@@ -170,20 +181,29 @@ EXP_Detect_Changes AS (
 	LKP_Claim_Party_Occurrence.claim_party_occurrence_ak_id AS lkp_claim_party_occurrence_ak_id,
 	LKP_Claim_Party_Occurrence.claim_party_role_code AS lkp_claim_party_role_code,
 	-- *INF*: TO_DATE('1/1/1800','MM/DD/YYYY')
-	TO_DATE('1/1/1800', 'MM/DD/YYYY') AS denial_date,
+	TO_DATE('1/1/1800', 'MM/DD/YYYY'
+	) AS denial_date,
 	0 AS logical_flag,
 	1 AS crrnt_snpsht_flag,
 	-- *INF*: iif(isnull(lkp_claim_party_occurrence_id), 'NEW', 'NOCHANGE')
-	IFF(lkp_claim_party_occurrence_id IS NULL, 'NEW', 'NOCHANGE') AS v_changed_flag,
+	IFF(lkp_claim_party_occurrence_id IS NULL,
+		'NEW',
+		'NOCHANGE'
+	) AS v_changed_flag,
 	v_changed_flag AS Changed_Flag,
 	EXP_LKP_Values_Claim_Party_Occurrence.OFFSET_ONSET_IND AS offset_onset_ind,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: IIF(v_changed_flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_changed_flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	EXP_LKP_Values_Claim_Party_Occurrence.SOURCE_SYSTEM_ID AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
@@ -224,7 +244,10 @@ EXP_Determine_AK AS (
 	SEQ_claim_party_occurrence.NEXTVAL,
 	lkp_claim_party_occurrence_ak_id,
 	-- *INF*: IIF(Changed_Flag='NEW', NEXTVAL, lkp_claim_party_occurrence_ak_id)
-	IFF(Changed_Flag = 'NEW', NEXTVAL, lkp_claim_party_occurrence_ak_id) AS claim_party_occurrence_ak_id,
+	IFF(Changed_Flag = 'NEW',
+		NEXTVAL,
+		lkp_claim_party_occurrence_ak_id
+	) AS claim_party_occurrence_ak_id,
 	claim_occurrence_ak_id,
 	CCT_CLIENT_ROLE_CD,
 	claim_party_ak_id,
@@ -301,7 +324,10 @@ EXP_expire_eff_from_date AS (
 	claim_party_role_code,
 	claim_party_ak_id AS claim_party_id,
 	-- *INF*: to_char(claim_occurrence_id)||to_char(claim_party_role_code)||to_char(claim_party_id)
-	to_char(claim_occurrence_id) || to_char(claim_party_role_code) || to_char(claim_party_id) AS v_claim_party_occurrence_key,
+	to_char(claim_occurrence_id
+	) || to_char(claim_party_role_code
+	) || to_char(claim_party_id
+	) AS v_claim_party_occurrence_key,
 	denial_date,
 	crrnt_snpsht_flag,
 	0 AS new_crrnt_snpsht_flag,
@@ -312,11 +338,15 @@ EXP_expire_eff_from_date AS (
 	-- 	v_claim_party_occurrence_key = v_prev_row_claim_party_occurrence_key, ADD_TO_DATE(v_prev_row_eff_from_date,'SS',-1),
 	-- 	eff_to_date)
 	DECODE(TRUE,
-		v_claim_party_occurrence_key = v_prev_row_claim_party_occurrence_key, ADD_TO_DATE(v_prev_row_eff_from_date, 'SS', - 1),
-		eff_to_date) AS v_new_eff_to_Date,
+		v_claim_party_occurrence_key = v_prev_row_claim_party_occurrence_key, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
+		eff_to_date
+	) AS v_new_eff_to_Date,
 	eff_from_date AS v_prev_row_eff_from_date,
 	-- *INF*: to_char(claim_occurrence_id)||to_char(claim_party_role_code)||to_char(claim_party_id)
-	to_char(claim_occurrence_id) || to_char(claim_party_role_code) || to_char(claim_party_id) AS v_prev_row_claim_party_occurrence_key,
+	to_char(claim_occurrence_id
+	) || to_char(claim_party_role_code
+	) || to_char(claim_party_id
+	) AS v_prev_row_claim_party_occurrence_key,
 	v_new_eff_to_Date AS new_eff_to_date,
 	source_sys_id,
 	created_date,
@@ -373,11 +403,16 @@ EXP_Evaluate AS (
 	-- *INF*: :LKP.LKP_CLAIM_OCCURRENCE_KEY(claim_occurrence_ak_id)
 	LKP_CLAIM_OCCURRENCE_KEY_claim_occurrence_ak_id.claim_occurrence_key AS v_claim_occurrence_key,
 	-- *INF*: LTRIM(RTRIM(v_claim_occurrence_key|| '//'||v_claim_party_key))
-	LTRIM(RTRIM(v_claim_occurrence_key || '//' || v_claim_party_key)) AS v_Claim_Case_Key,
+	LTRIM(RTRIM(v_claim_occurrence_key || '//' || v_claim_party_key
+		)
+	) AS v_Claim_Case_Key,
 	-- *INF*: :LKP.LKP_CLAIM_CASE_AK_ID(v_Claim_Case_Key)
 	LKP_CLAIM_CASE_AK_ID_v_Claim_Case_Key.claim_case_ak_id AS v_Claim_Case_Ak_id,
 	-- *INF*: IIF(ISNULL(v_Claim_Case_Ak_id),-1,v_Claim_Case_Ak_id)
-	IFF(v_Claim_Case_Ak_id IS NULL, - 1, v_Claim_Case_Ak_id) AS Out_Claim_Case_Ak_id
+	IFF(v_Claim_Case_Ak_id IS NULL,
+		- 1,
+		v_Claim_Case_Ak_id
+	) AS Out_Claim_Case_Ak_id
 	FROM SQ_claim_party_occurrence_Update_Claim_Case_Ak_id
 	LEFT JOIN LKP_CLAIM_PARTY_KEY LKP_CLAIM_PARTY_KEY_claim_party_ak_id
 	ON LKP_CLAIM_PARTY_KEY_claim_party_ak_id.claim_party_ak_id = claim_party_ak_id
@@ -430,7 +465,10 @@ EXP_Lkp_values AS (
 	-- *INF*: :LKP.LKP_CLAIMANT_NUM(v_Claim_Occurrence_Key,v_Claim_Party_Key)
 	LKP_CLAIMANT_NUM_v_Claim_Occurrence_Key_v_Claim_Party_Key.ccn_claimant_nbr AS v_claimant_num,
 	-- *INF*: IIF(ISNULL(v_claimant_num),'N/A',v_claimant_num)
-	IFF(v_claimant_num IS NULL, 'N/A', v_claimant_num) AS Out_Claimant_num,
+	IFF(v_claimant_num IS NULL,
+		'N/A',
+		v_claimant_num
+	) AS Out_Claimant_num,
 	SYSDATE AS Modified_date
 	FROM SQ_claim_party_occurrence_UPD_Claimant_Num
 	LEFT JOIN LKP_CLAIM_OCCURRENCE_KEY LKP_CLAIM_OCCURRENCE_KEY_claim_occurrence_ak_id
@@ -478,7 +516,9 @@ EXP_SQ AS (
 	claim_party_occurrence_id,
 	preferred_contact_method_target,
 	-- *INF*: UPPER(:UDF.DEFAULT_VALUE_FOR_STRINGS(PREFERRED_CONTACT_METHOD))
-	UPPER(:UDF.DEFAULT_VALUE_FOR_STRINGS(PREFERRED_CONTACT_METHOD)) AS o_PREFERRED_CONTACT_METHOD
+	UPPER(:UDF.DEFAULT_VALUE_FOR_STRINGS(PREFERRED_CONTACT_METHOD
+		)
+	) AS o_PREFERRED_CONTACT_METHOD
 	FROM SQ_ClaimClientStage
 ),
 LKP_PreferredContactMethod AS (
@@ -499,12 +539,18 @@ EXP_Derive_PreferredContactMethod_Description AS (
 	EXP_SQ.preferred_contact_method_target,
 	LKP_PreferredContactMethod.PreferredContactMethodDescription AS lkp_PreferredContactMethodDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_PreferredContactMethodDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_PreferredContactMethodDescription) AS o_PreferredContactMethodDescription,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_PreferredContactMethodDescription
+	) AS o_PreferredContactMethodDescription,
 	-- *INF*: IIF((NOT ISNULL(claim_party_occurrence_id)) AND 
 	-- preferred_contact_method_target <> lkp_PreferredContactMethodDescription, 
 	-- 'UPDATE', 
 	-- 'NOACTION')
-	IFF(( NOT claim_party_occurrence_id IS NULL ) AND preferred_contact_method_target <> lkp_PreferredContactMethodDescription, 'UPDATE', 'NOACTION') AS o_Action,
+	IFF(( claim_party_occurrence_id IS NOT NULL 
+		) 
+		AND preferred_contact_method_target <> lkp_PreferredContactMethodDescription,
+		'UPDATE',
+		'NOACTION'
+	) AS o_Action,
 	SYSDATE AS modified_date
 	FROM EXP_SQ
 	LEFT JOIN LKP_PreferredContactMethod

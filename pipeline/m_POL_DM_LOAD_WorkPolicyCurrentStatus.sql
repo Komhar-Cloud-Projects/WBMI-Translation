@@ -63,7 +63,10 @@ EXP_DefaultValue AS (
 	SQ_PremiumTransaction.MaxTransactionEnteredDate AS i_MaxTransactionEnteredDate,
 	SQ_PremiumTransaction.IsUmbrella AS i_IsUmbrella,
 	-- *INF*: IIF(ISNULL(i_StandardReasonAmendedCode),'N/A',i_StandardReasonAmendedCode)
-	IFF(i_StandardReasonAmendedCode IS NULL, 'N/A', i_StandardReasonAmendedCode) AS v_StandardReasonAmendedCode,
+	IFF(i_StandardReasonAmendedCode IS NULL,
+		'N/A',
+		i_StandardReasonAmendedCode
+	) AS v_StandardReasonAmendedCode,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -80,9 +83,12 @@ EXP_DefaultValue AS (
 	-- i_IsUmbrella=1, CONCAT(v_StandardReasonAmendedCode,'_Umbrella'),
 	-- v_StandardReasonAmendedCode)
 	DECODE(TRUE,
-		i_IsUmbrella = 2, CONCAT(v_StandardReasonAmendedCode, '_UmbrellaCancel'),
-		i_IsUmbrella = 1, CONCAT(v_StandardReasonAmendedCode, '_Umbrella'),
-		v_StandardReasonAmendedCode) AS o_StandardReasonAmendedCode,
+		i_IsUmbrella = 2, CONCAT(v_StandardReasonAmendedCode, '_UmbrellaCancel'
+		),
+		i_IsUmbrella = 1, CONCAT(v_StandardReasonAmendedCode, '_Umbrella'
+		),
+		v_StandardReasonAmendedCode
+	) AS o_StandardReasonAmendedCode,
 	i_MaxTransactionEnteredDate AS o_MaxTransactionEnteredDate
 	FROM SQ_PremiumTransaction
 	LEFT JOIN LKP_sup_reason_amended_code

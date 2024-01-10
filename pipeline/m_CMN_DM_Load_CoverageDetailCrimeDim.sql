@@ -55,8 +55,10 @@ EXP_CalValues AS (
 	-- 'NOCHANGE')
 	DECODE(TRUE,
 		lkp_CoverageDetailDimId IS NULL, 'INSERT',
-		i_CrimeIndustryGroup <> lkp_CrimeIndustryGroup OR i_CoverageGUID <> lkp_CoverageGUID, 'UPDATE',
-		'NOCHANGE') AS o_changeflag
+		i_CrimeIndustryGroup <> lkp_CrimeIndustryGroup 
+		OR i_CoverageGUID <> lkp_CoverageGUID, 'UPDATE',
+		'NOCHANGE'
+	) AS o_changeflag
 	FROM SQ_CoverageDetailCrime
 	LEFT JOIN LKP_CDCD
 	ON LKP_CDCD.CoverageDetailDimId = SQ_CoverageDetailCrime.CoverageDetailDimId

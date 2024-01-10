@@ -106,13 +106,22 @@ EXP_GetCleanup AS (
 	EXP_CollectData.st_SalesTerritoryCodeDescription AS in_SalesTerritoryCodeDescription,
 	in_RegionalSalesManagerID AS o_EDWRegionalSalesManagerPKID,
 	-- *INF*: IIF(ISNULL(in_SalesDirectorID),-1,in_SalesDirectorID)
-	IFF(in_SalesDirectorID IS NULL, - 1, in_SalesDirectorID) AS o_EDWSalesDirectorPKID,
+	IFF(in_SalesDirectorID IS NULL,
+		- 1,
+		in_SalesDirectorID
+	) AS o_EDWSalesDirectorPKID,
 	-- *INF*: IIF(ISNULL(in_SalesTerritoryID),-1,in_SalesTerritoryID)
-	IFF(in_SalesTerritoryID IS NULL, - 1, in_SalesTerritoryID) AS o_EDWSalesTerritoryPKID,
+	IFF(in_SalesTerritoryID IS NULL,
+		- 1,
+		in_SalesTerritoryID
+	) AS o_EDWSalesTerritoryPKID,
 	in_RegionalSalesManagerAKID AS o_EDWRegionalSalesManagerAKID,
 	in_SalesDirectorAKID AS o_EDWSalesDirectorAKID,
 	-- *INF*: IIF(ISNULL(in_SalesTerritoryAKID),-1,in_SalesTerritoryAKID)
-	IFF(in_SalesTerritoryAKID IS NULL, - 1, in_SalesTerritoryAKID) AS o_EDWSalesTerritoryAKID,
+	IFF(in_SalesTerritoryAKID IS NULL,
+		- 1,
+		in_SalesTerritoryAKID
+	) AS o_EDWSalesTerritoryAKID,
 	in_RegionalSalesManagerWestBendAssociateID AS o_RegionalSalesManagerWestBendAssociateID,
 	in_RegionalSalesManagerCode AS o_RegionalSalesManagerCode,
 	in_RegionalSalesManagerDisplayName AS o_RegionalSalesManagerDisplayName,
@@ -122,25 +131,55 @@ EXP_GetCleanup AS (
 	in_RegionalSalesManagerSuffix AS o_RegionalSalesManagerSuffix,
 	in_RegionalSalesManagerEmailAddress AS o_RegionalSalesManagerEmailAddress,
 	-- *INF*: IIF(ISNULL(in_WestBendAssociateID),'N/A',in_WestBendAssociateID)
-	IFF(in_WestBendAssociateID IS NULL, 'N/A', in_WestBendAssociateID) AS o_SalesDirectorWestBendAssociateID,
+	IFF(in_WestBendAssociateID IS NULL,
+		'N/A',
+		in_WestBendAssociateID
+	) AS o_SalesDirectorWestBendAssociateID,
 	-- *INF*: IIF(ISNULL(in_SalesDirectorCode),'N/A',in_SalesDirectorCode)
-	IFF(in_SalesDirectorCode IS NULL, 'N/A', in_SalesDirectorCode) AS o_SalesDirectorCode,
+	IFF(in_SalesDirectorCode IS NULL,
+		'N/A',
+		in_SalesDirectorCode
+	) AS o_SalesDirectorCode,
 	-- *INF*: IIF(ISNULL(in_DisplayName),'N/A',in_DisplayName)
-	IFF(in_DisplayName IS NULL, 'N/A', in_DisplayName) AS o_SalesDirectorDisplayName,
+	IFF(in_DisplayName IS NULL,
+		'N/A',
+		in_DisplayName
+	) AS o_SalesDirectorDisplayName,
 	-- *INF*: IIF(ISNULL(in_LastName),'N/A',in_LastName)
-	IFF(in_LastName IS NULL, 'N/A', in_LastName) AS o_SalesDirectorLastName,
+	IFF(in_LastName IS NULL,
+		'N/A',
+		in_LastName
+	) AS o_SalesDirectorLastName,
 	-- *INF*: IIF(ISNULL(in_FirstName),'N/A',in_FirstName)
-	IFF(in_FirstName IS NULL, 'N/A', in_FirstName) AS o_SalesDirectorFirstName,
+	IFF(in_FirstName IS NULL,
+		'N/A',
+		in_FirstName
+	) AS o_SalesDirectorFirstName,
 	-- *INF*: IIF(ISNULL(in_MiddleName),'N/A',in_MiddleName)
-	IFF(in_MiddleName IS NULL, 'N/A', in_MiddleName) AS o_SalesDirectorMiddleName,
+	IFF(in_MiddleName IS NULL,
+		'N/A',
+		in_MiddleName
+	) AS o_SalesDirectorMiddleName,
 	-- *INF*: IIF(ISNULL(in_Suffix),'N/A',in_Suffix)
-	IFF(in_Suffix IS NULL, 'N/A', in_Suffix) AS o_SalesDirectorSuffix,
+	IFF(in_Suffix IS NULL,
+		'N/A',
+		in_Suffix
+	) AS o_SalesDirectorSuffix,
 	-- *INF*: IIF(ISNULL(in_EmailAddress),'N/A',in_EmailAddress)
-	IFF(in_EmailAddress IS NULL, 'N/A', in_EmailAddress) AS o_SalesDirectorEmailAddress,
+	IFF(in_EmailAddress IS NULL,
+		'N/A',
+		in_EmailAddress
+	) AS o_SalesDirectorEmailAddress,
 	-- *INF*: IIF(ISNULL(in_SalesTerritoryCode),'N/A',in_SalesTerritoryCode)
-	IFF(in_SalesTerritoryCode IS NULL, 'N/A', in_SalesTerritoryCode) AS o_SalesTerritoryCode,
+	IFF(in_SalesTerritoryCode IS NULL,
+		'N/A',
+		in_SalesTerritoryCode
+	) AS o_SalesTerritoryCode,
 	-- *INF*: IIF(ISNULL(in_SalesTerritoryCodeDescription),'N/A',in_SalesTerritoryCodeDescription)
-	IFF(in_SalesTerritoryCodeDescription IS NULL, 'N/A', in_SalesTerritoryCodeDescription) AS o_SalesTerritoryCodeDescription
+	IFF(in_SalesTerritoryCodeDescription IS NULL,
+		'N/A',
+		in_SalesTerritoryCodeDescription
+	) AS o_SalesTerritoryCodeDescription
 	FROM EXP_CollectData
 	LEFT JOIN LKP_SalesDirector
 	ON LKP_SalesDirector.SalesDirectorAKID = EXP_CollectData.rsm_SalesDirectorAKID
@@ -202,7 +241,8 @@ EXP_CheckForChange AS (
 	-- 
 	-- 
 	-- 
-	MD5(RegionalSalesManagerCode || '&' || RegionalSalesManagerWestBendAssociateID || '&' || SalesTerritoryCode || '&' || SalesDirectorCode || '&' || SalesDirectorWestBendAssociateID) AS v_NewHashKey,
+	MD5(RegionalSalesManagerCode || '&' || RegionalSalesManagerWestBendAssociateID || '&' || SalesTerritoryCode || '&' || SalesDirectorCode || '&' || SalesDirectorWestBendAssociateID
+	) AS v_NewHashKey,
 	-- *INF*: Decode(true,
 	-- in_SalesTerritoryPKID <> EDWSalesTerritoryPKID, 'Y',
 	-- in_RegionalSalesManagerPKID <> EDWRegionalSalesManagerPKID, 'Y',
@@ -214,7 +254,8 @@ EXP_CheckForChange AS (
 		in_SalesTerritoryPKID <> EDWSalesTerritoryPKID, 'Y',
 		in_RegionalSalesManagerPKID <> EDWRegionalSalesManagerPKID, 'Y',
 		in_SalesDirectorPKID <> EDWSalesDirectorPKID, 'Y',
-		'N') AS v_ChangeToEDWRecord,
+		'N'
+	) AS v_ChangeToEDWRecord,
 	-- *INF*: Decode(true,
 	-- IsNull(in_SalesDivisionDimHashKey), 'Insert',
 	-- in_SalesDivisionDimHashKey = v_NewHashKey and v_ChangeToEDWRecord = 'N', 'Ignore',
@@ -228,9 +269,12 @@ EXP_CheckForChange AS (
 	-- 	
 	Decode(true,
 		in_SalesDivisionDimHashKey IS NULL, 'Insert',
-		in_SalesDivisionDimHashKey = v_NewHashKey AND v_ChangeToEDWRecord = 'N', 'Ignore',
-		in_SalesDivisionDimHashKey <> v_NewHashKey OR v_ChangeToEDWRecord = 'Y', 'Update',
-		'Ignore') AS v_InsertUpdateOrIgnore,
+		in_SalesDivisionDimHashKey = v_NewHashKey 
+		AND v_ChangeToEDWRecord = 'N', 'Ignore',
+		in_SalesDivisionDimHashKey <> v_NewHashKey 
+		OR v_ChangeToEDWRecord = 'Y', 'Update',
+		'Ignore'
+	) AS v_InsertUpdateOrIgnore,
 	1 AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 01:00:00','YYYY-MM-DD HH24:MI:SS')
@@ -242,13 +286,15 @@ EXP_CheckForChange AS (
 	-- --Decode(v_InsertUpdateExpireOrIgnore,
 	-- --'Insert', trunc(sysdate, 'DD'),
 	-- --in_ExistingEffectiveDate)
-	TO_DATE('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,
+	TO_DATE('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS')
 	-- 
 	-- --Decode(v_InsertUpdateExpireOrIgnore,
 	-- --'Expire', add_to_date(trunc(sysdate, 'DD'), 'MS', -1 ),
 	-- --to_date('2099-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'))
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_ExpirationDate,
+	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_ExpirationDate,
 	SYSDATE AS o_CurrentDate,
 	SYSDATE AS o_ModifiedDate,
 	v_NewHashKey AS o_SalesDivisionDimHashKey,

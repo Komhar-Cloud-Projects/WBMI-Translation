@@ -34,33 +34,88 @@ EXP_TL500AStage AS (
 	-- *INF*: IIF(FormDescriptionDate = '99999999',
 	-- TO_DATE( '12/31/2100','mm/dd/yyyy'), 
 	--  IIF(IS_DATE(FormDescriptionDate , 'YYYYMMDD'), TO_DATE(FormDescriptionDate , 'YYYYMMDD' ), TO_DATE( '12/31/2100','mm/dd/yyyy')))
-	IFF(FormDescriptionDate = '99999999', TO_DATE('12/31/2100', 'mm/dd/yyyy'), IFF(IS_DATE(FormDescriptionDate, 'YYYYMMDD'), TO_DATE(FormDescriptionDate, 'YYYYMMDD'), TO_DATE('12/31/2100', 'mm/dd/yyyy'))) AS v_FormDescriptionDate,
+	IFF(FormDescriptionDate = '99999999',
+		TO_DATE('12/31/2100', 'mm/dd/yyyy'
+		),
+		IFF(IS_DATE(FormDescriptionDate, 'YYYYMMDD'
+			),
+			TO_DATE(FormDescriptionDate, 'YYYYMMDD'
+			),
+			TO_DATE('12/31/2100', 'mm/dd/yyyy'
+			)
+		)
+	) AS v_FormDescriptionDate,
 	-- *INF*: IIF(FormExpirationDate = '99999999', 
 	-- TO_DATE( '12/31/2100','mm/dd/yyyy'),
 	--  IIF(IS_DATE(FormExpirationDate, 'YYYYMMDD'), TO_DATE(FormExpirationDate, 'YYYYMMDD' ), TO_DATE( '12/31/2100','mm/dd/yyyy')))
-	IFF(FormExpirationDate = '99999999', TO_DATE('12/31/2100', 'mm/dd/yyyy'), IFF(IS_DATE(FormExpirationDate, 'YYYYMMDD'), TO_DATE(FormExpirationDate, 'YYYYMMDD'), TO_DATE('12/31/2100', 'mm/dd/yyyy'))) AS v_FormExpirationDate,
+	IFF(FormExpirationDate = '99999999',
+		TO_DATE('12/31/2100', 'mm/dd/yyyy'
+		),
+		IFF(IS_DATE(FormExpirationDate, 'YYYYMMDD'
+			),
+			TO_DATE(FormExpirationDate, 'YYYYMMDD'
+			),
+			TO_DATE('12/31/2100', 'mm/dd/yyyy'
+			)
+		)
+	) AS v_FormExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	sysdate AS o_CreatedDate,
 	sysdate AS o_ModifiedDate,
 	-- *INF*: LTRIM(RTRIM(FormNumber)) || LTRIM(RTRIM(FormVersionID))
-	LTRIM(RTRIM(FormNumber)) || LTRIM(RTRIM(FormVersionID)) AS o_FormNumber,
+	LTRIM(RTRIM(FormNumber
+		)
+	) || LTRIM(RTRIM(FormVersionID
+		)
+	) AS o_FormNumber,
 	'99' AS o_StateProvinceCode,
 	'N/A' AS o_InsuranceLineCode,
 	-- *INF*: IIF(IS_DATE(FormDate, 'MMRR'),TO_DATE(FormDate, 'MMRR'), TO_DATE('01011800', 'MMDDYYYY'))
-	IFF(IS_DATE(FormDate, 'MMRR'), TO_DATE(FormDate, 'MMRR'), TO_DATE('01011800', 'MMDDYYYY')) AS o_FormEditionDate,
+	IFF(IS_DATE(FormDate, 'MMRR'
+		),
+		TO_DATE(FormDate, 'MMRR'
+		),
+		TO_DATE('01011800', 'MMDDYYYY'
+		)
+	) AS o_FormEditionDate,
 	-- *INF*: TO_DATE('01-01-1800', 'MM-DD-YYYY')
-	TO_DATE('01-01-1800', 'MM-DD-YYYY') AS o_FormEffectiveDate,
+	TO_DATE('01-01-1800', 'MM-DD-YYYY'
+	) AS o_FormEffectiveDate,
 	-- *INF*: IIF(SUBSTR(FormNumber, 1, 2) = 'WC', v_FormExpirationDate, v_FormDescriptionDate)
-	IFF(SUBSTR(FormNumber, 1, 2) = 'WC', v_FormExpirationDate, v_FormDescriptionDate) AS o_FormExpirationDate,
+	IFF(SUBSTR(FormNumber, 1, 2
+		) = 'WC',
+		v_FormExpirationDate,
+		v_FormDescriptionDate
+	) AS o_FormExpirationDate,
 	-- *INF*: IIF(IS_NUMBER(SUBSTR(RTRIM(FormDescription), -3, 2)) AND TO_INTEGER(SUBSTR(RTRIM(FormDescription), -3, 2)) > 12, 
 	-- SUBSTR(RTRIM(FormDescription), -6, 2) || SUBSTR(RTRIM(FormDescription), -3, 2),
 	-- SUBSTR(RTRIM(FormDescription), -3, 2) || SUBSTR(RTRIM(FormDescription), -6, 2) )
-	IFF(IS_NUMBER(SUBSTR(RTRIM(FormDescription), - 3, 2)) AND TO_INTEGER(SUBSTR(RTRIM(FormDescription), - 3, 2)) > 12, SUBSTR(RTRIM(FormDescription), - 6, 2) || SUBSTR(RTRIM(FormDescription), - 3, 2), SUBSTR(RTRIM(FormDescription), - 3, 2) || SUBSTR(RTRIM(FormDescription), - 6, 2)) AS v_Sort,
+	IFF(REGEXP_LIKE(SUBSTR(RTRIM(FormDescription
+			), - 3, 2
+		), '^[0-9]+$') 
+		AND CAST(SUBSTR(RTRIM(FormDescription
+			), - 3, 2
+		) AS INTEGER) > 12,
+		SUBSTR(RTRIM(FormDescription
+			), - 6, 2
+		) || SUBSTR(RTRIM(FormDescription
+			), - 3, 2
+		),
+		SUBSTR(RTRIM(FormDescription
+			), - 3, 2
+		) || SUBSTR(RTRIM(FormDescription
+			), - 6, 2
+		)
+	) AS v_Sort,
 	-- *INF*: IIF(IS_NUMBER(v_Sort),0,1)
-	IFF(IS_NUMBER(v_Sort), 0, 1) AS o_SortFlag,
+	IFF(REGEXP_LIKE(v_Sort, '^[0-9]+$'),
+		0,
+		1
+	) AS o_SortFlag,
 	-- *INF*: LENGTH(FormDescription)
-	LENGTH(FormDescription) AS o_LenOfFormName
+	LENGTH(FormDescription
+	) AS o_LenOfFormName
 	FROM SQ_GTAMTL500AStage
 ),
 SRT_TL500A AS (
@@ -89,7 +144,8 @@ AGG_TL500A AS (
 	CreatedDate,
 	ModifiedDate,
 	-- *INF*: FIRST(i_FormDescription)
-	FIRST(i_FormDescription) AS o_FormName,
+	FIRST(i_FormDescription
+	) AS o_FormName,
 	FormNumber,
 	StateProvinceCode,
 	InsuranceLineCode,
@@ -125,9 +181,11 @@ EXP_WBSBFM AS (
 	sysdate AS o_CreatedDate,
 	sysdate AS o_ModifiedDate,
 	-- *INF*: TO_DATE('01-01-1800', 'MM-DD-YYYY')
-	TO_DATE('01-01-1800', 'MM-DD-YYYY') AS o_FormEditionDate,
+	TO_DATE('01-01-1800', 'MM-DD-YYYY'
+	) AS o_FormEditionDate,
 	-- *INF*: TO_DATE('01-01-1800', 'MM-DD-YYYY')
-	TO_DATE('01-01-1800', 'MM-DD-YYYY') AS o_FormEffectiveDate,
+	TO_DATE('01-01-1800', 'MM-DD-YYYY'
+	) AS o_FormEffectiveDate,
 	ExpirationDate AS o_FormExpirationDate
 	FROM SQ_GTAMWBSBFMStage
 ),
@@ -213,8 +271,11 @@ EXP_DetectChanges AS (
 	-- )
 	DECODE(TRUE,
 		FormId IS NULL, 'NEW',
-		lkp_StateProvinceCode <> StateProvinceCode OR lkp_InsuranceLineCode <> InsuranceLineCode OR lkp_FormName <> FormName, 'UPDATE',
-		'NO CHANGE') AS o_changeflag
+		lkp_StateProvinceCode <> StateProvinceCode 
+		OR lkp_InsuranceLineCode <> InsuranceLineCode 
+		OR lkp_FormName <> FormName, 'UPDATE',
+		'NO CHANGE'
+	) AS o_changeflag
 	FROM AGG_Form
 	LEFT JOIN LKP_Form
 	ON LKP_Form.StateProvinceCode = AGG_Form.StateProvinceCode AND LKP_Form.InsuranceLineCode = AGG_Form.InsuranceLineCode AND LKP_Form.FormNumber = AGG_Form.FormNumber AND LKP_Form.FormEditionDate = AGG_Form.FormEditionDate AND LKP_Form.FormEffectiveDate = AGG_Form.FormEffectiveDate AND LKP_Form.FormExpirationDate = AGG_Form.FormExpirationDate

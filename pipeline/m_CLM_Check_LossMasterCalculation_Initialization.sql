@@ -26,7 +26,8 @@ EXP_Abort AS (
 	SELECT
 	checkout_type_code,
 	-- *INF*: Abort('There are issues with the EDW data')
-	Abort('There are issues with the EDW data') AS error
+	Abort('There are issues with the EDW data'
+	) AS error
 	FROM FIL_IssueCheck
 ),
 FIL_STOP_PROCESSING AS (

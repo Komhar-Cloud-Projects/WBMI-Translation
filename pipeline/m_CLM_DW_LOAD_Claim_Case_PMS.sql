@@ -28,49 +28,97 @@ EXP_Stage_Validate AS (
 	pif_module,
 	ipfcgq_year_of_loss,
 	-- *INF*: TO_CHAR(ipfcgq_year_of_loss)
-	TO_CHAR(ipfcgq_year_of_loss) AS v_ipfcgq_year_of_loss,
+	TO_CHAR(ipfcgq_year_of_loss
+	) AS v_ipfcgq_year_of_loss,
 	ipfcgq_month_of_loss,
 	-- *INF*: TO_CHAR(ipfcgq_month_of_loss)
-	TO_CHAR(ipfcgq_month_of_loss) AS v_ipfcgq_month_of_loss,
+	TO_CHAR(ipfcgq_month_of_loss
+	) AS v_ipfcgq_month_of_loss,
 	ipfcgq_day_of_loss,
 	-- *INF*: TO_CHAR(ipfcgq_day_of_loss)
-	TO_CHAR(ipfcgq_day_of_loss) AS v_ipfcgq_day_of_loss,
+	TO_CHAR(ipfcgq_day_of_loss
+	) AS v_ipfcgq_day_of_loss,
 	ipfcgq_loss_occurence,
 	-- *INF*: TO_INTEGER(ipfcgq_loss_occurence)
-	TO_INTEGER(ipfcgq_loss_occurence) AS v_ipfcgq_loss_occurence,
+	CAST(ipfcgq_loss_occurence AS INTEGER) AS v_ipfcgq_loss_occurence,
 	ipfcgq_loss_claimant,
 	-- *INF*: TO_INTEGER(ipfcgq_loss_claimant)
-	TO_INTEGER(ipfcgq_loss_claimant) AS v_ipfcgq_loss_claimant,
+	CAST(ipfcgq_loss_claimant AS INTEGER) AS v_ipfcgq_loss_claimant,
 	pif_symbol || pif_policy_number || pif_module AS v_sym_num_mod,
 	-- *INF*: IIF(LENGTH(v_ipfcgq_month_of_loss)=1,'0'||v_ipfcgq_month_of_loss,v_ipfcgq_month_of_loss) 
 	-- || 
 	-- IIF(LENGTH(v_ipfcgq_day_of_loss)=1,'0' || v_ipfcgq_day_of_loss,v_ipfcgq_day_of_loss) 
 	-- || v_ipfcgq_year_of_loss
-	IFF(LENGTH(v_ipfcgq_month_of_loss) = 1, '0' || v_ipfcgq_month_of_loss, v_ipfcgq_month_of_loss) || IFF(LENGTH(v_ipfcgq_day_of_loss) = 1, '0' || v_ipfcgq_day_of_loss, v_ipfcgq_day_of_loss) || v_ipfcgq_year_of_loss AS v_date_of_loss,
+	IFF(LENGTH(v_ipfcgq_month_of_loss
+		) = 1,
+		'0' || v_ipfcgq_month_of_loss,
+		v_ipfcgq_month_of_loss
+	) || IFF(LENGTH(v_ipfcgq_day_of_loss
+		) = 1,
+		'0' || v_ipfcgq_day_of_loss,
+		v_ipfcgq_day_of_loss
+	) || v_ipfcgq_year_of_loss AS v_date_of_loss,
 	v_sym_num_mod || v_date_of_loss || ipfcgq_loss_occurence || ipfcgq_loss_claimant AS V_Claim_Case_Key,
 	V_Claim_Case_Key AS Claim_Case_Key,
 	ipfcgq_last_offer_date AS in_ipfcgq_last_offer_date,
 	-- *INF*: DECODE(TRUE,SUBSTR(in_ipfcgq_last_offer_date,1,2)='00','20'||SUBSTR(in_ipfcgq_last_offer_date,3,6),in_ipfcgq_last_offer_date)
 	DECODE(TRUE,
-		SUBSTR(in_ipfcgq_last_offer_date, 1, 2) = '00', '20' || SUBSTR(in_ipfcgq_last_offer_date, 3, 6),
-		in_ipfcgq_last_offer_date) AS v_ipfcgq_last_offer_date,
+		SUBSTR(in_ipfcgq_last_offer_date, 1, 2
+		) = '00', '20' || SUBSTR(in_ipfcgq_last_offer_date, 3, 6
+		),
+		in_ipfcgq_last_offer_date
+	) AS v_ipfcgq_last_offer_date,
 	-- *INF*: IIF(ISNULL(v_ipfcgq_last_offer_date) or IS_SPACES(LTRIM(RTRIM(v_ipfcgq_last_offer_date))) OR LENGTH(LTRIM(RTRIM(v_ipfcgq_last_offer_date)))  = 0 ,
 	-- TO_DATE('12/31/2100 00:00:00','MM/DD/YYYY HH24:MI:SS'),TO_DATE(v_ipfcgq_last_offer_date,'YYYYMMDD'))
-	IFF(v_ipfcgq_last_offer_date IS NULL OR IS_SPACES(LTRIM(RTRIM(v_ipfcgq_last_offer_date))) OR LENGTH(LTRIM(RTRIM(v_ipfcgq_last_offer_date))) = 0, TO_DATE('12/31/2100 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(v_ipfcgq_last_offer_date, 'YYYYMMDD')) AS out_last_offer_date,
+	IFF(v_ipfcgq_last_offer_date IS NULL 
+		OR LENGTH(LTRIM(RTRIM(v_ipfcgq_last_offer_date
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(v_ipfcgq_last_offer_date
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(v_ipfcgq_last_offer_date
+				)
+			)
+		) = 0,
+		TO_DATE('12/31/2100 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(v_ipfcgq_last_offer_date, 'YYYYMMDD'
+		)
+	) AS out_last_offer_date,
 	ipfcgq_trial_date AS in_ipfcgq_trail_date,
 	-- *INF*: IIF(ISNULL(in_ipfcgq_trail_date) or IS_SPACES(LTRIM(RTRIM(in_ipfcgq_trail_date))) OR LENGTH(LTRIM(RTRIM(in_ipfcgq_trail_date))) = 0,
 	-- TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),TO_DATE(in_ipfcgq_trail_date,'YYYYMMDD'))
 	-- 
 	-- 
-	IFF(in_ipfcgq_trail_date IS NULL OR IS_SPACES(LTRIM(RTRIM(in_ipfcgq_trail_date))) OR LENGTH(LTRIM(RTRIM(in_ipfcgq_trail_date))) = 0, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(in_ipfcgq_trail_date, 'YYYYMMDD')) AS trail_date,
+	IFF(in_ipfcgq_trail_date IS NULL 
+		OR LENGTH(LTRIM(RTRIM(in_ipfcgq_trail_date
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(in_ipfcgq_trail_date
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(in_ipfcgq_trail_date
+				)
+			)
+		) = 0,
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(in_ipfcgq_trail_date, 'YYYYMMDD'
+		)
+	) AS trail_date,
 	ipfcgq_suit_amount AS in_ipfcgq_suit_amount,
 	-- *INF*: IIF(ISNULL(in_ipfcgq_suit_amount),0,in_ipfcgq_suit_amount)
-	IFF(in_ipfcgq_suit_amount IS NULL, 0, in_ipfcgq_suit_amount) AS suit_amount,
+	IFF(in_ipfcgq_suit_amount IS NULL,
+		0,
+		in_ipfcgq_suit_amount
+	) AS suit_amount,
 	ipfcgq_demand_date_1 AS in_ipfcgq_demand_date_1,
 	-- *INF*: DECODE(TRUE,SUBSTR(in_ipfcgq_demand_date_1,1,2)='00','20'||SUBSTR(in_ipfcgq_demand_date_1,3,6),in_ipfcgq_demand_date_1)
 	DECODE(TRUE,
-		SUBSTR(in_ipfcgq_demand_date_1, 1, 2) = '00', '20' || SUBSTR(in_ipfcgq_demand_date_1, 3, 6),
-		in_ipfcgq_demand_date_1) AS v_ipfcgq_demand_date_1,
+		SUBSTR(in_ipfcgq_demand_date_1, 1, 2
+		) = '00', '20' || SUBSTR(in_ipfcgq_demand_date_1, 3, 6
+		),
+		in_ipfcgq_demand_date_1
+	) AS v_ipfcgq_demand_date_1,
 	v_ipfcgq_demand_date_1 AS out_ipfcgq_demand_date_1,
 	V_Claim_Case_Key||'ATTY' AS v_CLAIM_CASE_KEY_ATTY,
 	-- *INF*: --:LKP.LKP_PRIM_LIT_HANDLER_AK_ID(v_CLAIM_CASE_KEY_ATTY)
@@ -84,34 +132,128 @@ EXP_Stage_Validate AS (
 	'' AS Prim_Lit_Handler_ak_id,
 	-- *INF*: IIF(ISNULL(v_ipfcgq_demand_date_1) or IS_SPACES(LTRIM(RTRIM(v_ipfcgq_demand_date_1))) OR LENGTH(LTRIM(RTRIM(v_ipfcgq_demand_date_1))) = 0
 	-- ,TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),TO_DATE(v_ipfcgq_demand_date_1,'YYYYMMDD'))
-	IFF(v_ipfcgq_demand_date_1 IS NULL OR IS_SPACES(LTRIM(RTRIM(v_ipfcgq_demand_date_1))) OR LENGTH(LTRIM(RTRIM(v_ipfcgq_demand_date_1))) = 0, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(v_ipfcgq_demand_date_1, 'YYYYMMDD')) AS suit_open_date,
+	IFF(v_ipfcgq_demand_date_1 IS NULL 
+		OR LENGTH(LTRIM(RTRIM(v_ipfcgq_demand_date_1
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(v_ipfcgq_demand_date_1
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(v_ipfcgq_demand_date_1
+				)
+			)
+		) = 0,
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(v_ipfcgq_demand_date_1, 'YYYYMMDD'
+		)
+	) AS suit_open_date,
 	ipfcgq_offer_date_1 AS in_ipfcgq_offer_date_1,
 	-- *INF*: DECODE(TRUE,SUBSTR(in_ipfcgq_offer_date_1,1,2)='00','20'||SUBSTR(in_ipfcgq_offer_date_1,3,6),in_ipfcgq_offer_date_1)
 	DECODE(TRUE,
-		SUBSTR(in_ipfcgq_offer_date_1, 1, 2) = '00', '20' || SUBSTR(in_ipfcgq_offer_date_1, 3, 6),
-		in_ipfcgq_offer_date_1) AS v_ipfcgq_offer_date_1,
+		SUBSTR(in_ipfcgq_offer_date_1, 1, 2
+		) = '00', '20' || SUBSTR(in_ipfcgq_offer_date_1, 3, 6
+		),
+		in_ipfcgq_offer_date_1
+	) AS v_ipfcgq_offer_date_1,
 	-- *INF*: IIF(ISNULL(v_ipfcgq_offer_date_1)  OR LENGTH(RTRIM(LTRIM(v_ipfcgq_offer_date_1)))  =  0 ,
 	--           IIF(ISNULL(v_ipfcgq_last_offer_date) OR LENGTH(RTRIM(LTRIM(v_ipfcgq_last_offer_date)))  =  0 ,TO_DATE('12/31/2100 00:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 			TO_DATE(v_ipfcgq_last_offer_date,'YYYYMMDD')),TO_DATE(v_ipfcgq_offer_date_1,'YYYYMMDD'))
 	-- 
 	-- 
 	-- 
-	IFF(v_ipfcgq_offer_date_1 IS NULL OR LENGTH(RTRIM(LTRIM(v_ipfcgq_offer_date_1))) = 0, IFF(v_ipfcgq_last_offer_date IS NULL OR LENGTH(RTRIM(LTRIM(v_ipfcgq_last_offer_date))) = 0, TO_DATE('12/31/2100 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(v_ipfcgq_last_offer_date, 'YYYYMMDD')), TO_DATE(v_ipfcgq_offer_date_1, 'YYYYMMDD')) AS suit_close_date,
+	IFF(v_ipfcgq_offer_date_1 IS NULL 
+		OR LENGTH(RTRIM(LTRIM(v_ipfcgq_offer_date_1
+				)
+			)
+		) = 0,
+		IFF(v_ipfcgq_last_offer_date IS NULL 
+			OR LENGTH(RTRIM(LTRIM(v_ipfcgq_last_offer_date
+					)
+				)
+			) = 0,
+			TO_DATE('12/31/2100 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+			),
+			TO_DATE(v_ipfcgq_last_offer_date, 'YYYYMMDD'
+			)
+		),
+		TO_DATE(v_ipfcgq_offer_date_1, 'YYYYMMDD'
+		)
+	) AS suit_close_date,
 	ipfcgq_docket_number AS in_ipfcgq_docket_number,
 	-- *INF*: SUBSTR(in_ipfcgq_docket_number,0,INSTR(in_ipfcgq_docket_number,'"'))
-	SUBSTR(in_ipfcgq_docket_number, 0, INSTR(in_ipfcgq_docket_number, '"')) AS v_ipfcgq_docket_number,
+	SUBSTR(in_ipfcgq_docket_number, 0, REGEXP_INSTR(in_ipfcgq_docket_number, '"'
+		)
+	) AS v_ipfcgq_docket_number,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(v_ipfcgq_docket_number))) OR IS_SPACES(LTRIM(RTRIM(v_ipfcgq_docket_number))) OR LENGTH(LTRIM(RTRIM(v_ipfcgq_docket_number))) = 0 OR LTRIM(RTRIM(v_ipfcgq_docket_number)) = '"' ,'N/A',LTRIM(RTRIM(v_ipfcgq_docket_number)))
-	IFF(LTRIM(RTRIM(v_ipfcgq_docket_number)) IS NULL OR IS_SPACES(LTRIM(RTRIM(v_ipfcgq_docket_number))) OR LENGTH(LTRIM(RTRIM(v_ipfcgq_docket_number))) = 0 OR LTRIM(RTRIM(v_ipfcgq_docket_number)) = '"', 'N/A', LTRIM(RTRIM(v_ipfcgq_docket_number))) AS claim_case_num,
+	IFF(LTRIM(RTRIM(v_ipfcgq_docket_number
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(v_ipfcgq_docket_number
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(v_ipfcgq_docket_number
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(v_ipfcgq_docket_number
+				)
+			)
+		) = 0 
+		OR LTRIM(RTRIM(v_ipfcgq_docket_number
+			)
+		) = '"',
+		'N/A',
+		LTRIM(RTRIM(v_ipfcgq_docket_number
+			)
+		)
+	) AS claim_case_num,
 	ipfcgq_suit_state_county AS in_ipfcgq_suit_state_county,
 	-- *INF*: SUBSTR(in_ipfcgq_suit_state_county,0,2)
-	SUBSTR(in_ipfcgq_suit_state_county, 0, 2) AS v_ipfcgq_suit_state_county,
+	SUBSTR(in_ipfcgq_suit_state_county, 0, 2
+	) AS v_ipfcgq_suit_state_county,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(v_ipfcgq_suit_state_county))) OR  IS_SPACES(LTRIM(RTRIM(v_ipfcgq_suit_state_county)))  OR LENGTH(LTRIM(RTRIM(v_ipfcgq_suit_state_county))) = 0 OR LTRIM(RTRIM(v_ipfcgq_suit_state_county)) ='"', 'N/A',LTRIM(RTRIM(v_ipfcgq_suit_state_county)))
-	IFF(LTRIM(RTRIM(v_ipfcgq_suit_state_county)) IS NULL OR IS_SPACES(LTRIM(RTRIM(v_ipfcgq_suit_state_county))) OR LENGTH(LTRIM(RTRIM(v_ipfcgq_suit_state_county))) = 0 OR LTRIM(RTRIM(v_ipfcgq_suit_state_county)) = '"', 'N/A', LTRIM(RTRIM(v_ipfcgq_suit_state_county))) AS suit_state_county,
+	IFF(LTRIM(RTRIM(v_ipfcgq_suit_state_county
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(v_ipfcgq_suit_state_county
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(v_ipfcgq_suit_state_county
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(v_ipfcgq_suit_state_county
+				)
+			)
+		) = 0 
+		OR LTRIM(RTRIM(v_ipfcgq_suit_state_county
+			)
+		) = '"',
+		'N/A',
+		LTRIM(RTRIM(v_ipfcgq_suit_state_county
+			)
+		)
+	) AS suit_state_county,
 	ipfcgq_court AS in_ipfcgq_court,
 	-- *INF*: SUBSTR(in_ipfcgq_court,0,INSTR(in_ipfcgq_court,'"'))
-	SUBSTR(in_ipfcgq_court, 0, INSTR(in_ipfcgq_court, '"')) AS v_ipfcgq_court,
+	SUBSTR(in_ipfcgq_court, 0, REGEXP_INSTR(in_ipfcgq_court, '"'
+		)
+	) AS v_ipfcgq_court,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(v_ipfcgq_court))) OR  IS_SPACES(LTRIM(RTRIM(v_ipfcgq_court)))  OR LENGTH(LTRIM(RTRIM(v_ipfcgq_court))) = 0 OR v_ipfcgq_court='"', 'N/A',LTRIM(RTRIM(v_ipfcgq_court)))
-	IFF(LTRIM(RTRIM(v_ipfcgq_court)) IS NULL OR IS_SPACES(LTRIM(RTRIM(v_ipfcgq_court))) OR LENGTH(LTRIM(RTRIM(v_ipfcgq_court))) = 0 OR v_ipfcgq_court = '"', 'N/A', LTRIM(RTRIM(v_ipfcgq_court))) AS court
+	IFF(LTRIM(RTRIM(v_ipfcgq_court
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(v_ipfcgq_court
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(v_ipfcgq_court
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(v_ipfcgq_court
+				)
+			)
+		) = 0 
+		OR v_ipfcgq_court = '"',
+		'N/A',
+		LTRIM(RTRIM(v_ipfcgq_court
+			)
+		)
+	) AS court
 	FROM SQ_pif_42gq_lit_stage
 ),
 LKP_prim_lit_handler_role_code AS (
@@ -188,14 +330,29 @@ EXP_LKP_Values AS (
 	EXP_Stage_Validate.trail_date,
 	LKP_suit_status_code.ipfcgq_loss_suit AS suit_status,
 	-- *INF*: IIF(ISNULL(suit_status) OR IS_SPACES(suit_status) OR LENGTH(suit_status) = 0,'N/A',suit_status)
-	IFF(suit_status IS NULL OR IS_SPACES(suit_status) OR LENGTH(suit_status) = 0, 'N/A', suit_status) AS Out_suit_status,
+	IFF(suit_status IS NULL 
+		OR LENGTH(suit_status)>0 AND TRIM(suit_status)='' 
+		OR LENGTH(suit_status
+		) = 0,
+		'N/A',
+		suit_status
+	) AS Out_suit_status,
 	EXP_Stage_Validate.suit_amount,
 	LKP_Prim_Lit_Handler_ak_id.claim_party_ak_id AS Prim_Lit_Handler_ak_id,
 	-- *INF*: IIF(ISNULL(Prim_Lit_Handler_ak_id),-1,Prim_Lit_Handler_ak_id)
-	IFF(Prim_Lit_Handler_ak_id IS NULL, - 1, Prim_Lit_Handler_ak_id) AS Prim_Lit_Handler_ak_id_Out,
+	IFF(Prim_Lit_Handler_ak_id IS NULL,
+		- 1,
+		Prim_Lit_Handler_ak_id
+	) AS Prim_Lit_Handler_ak_id_Out,
 	LKP_prim_lit_handler_role_code.ipfcgq_attorney_type_1 AS prim_litigation_handler_role_code,
 	-- *INF*: IIF(ISNULL(prim_litigation_handler_role_code) OR IS_SPACES(prim_litigation_handler_role_code) OR LENGTH(prim_litigation_handler_role_code) = 0,'N/A',prim_litigation_handler_role_code)
-	IFF(prim_litigation_handler_role_code IS NULL OR IS_SPACES(prim_litigation_handler_role_code) OR LENGTH(prim_litigation_handler_role_code) = 0, 'N/A', prim_litigation_handler_role_code) AS out_prim_litigation_handler_role_code,
+	IFF(prim_litigation_handler_role_code IS NULL 
+		OR LENGTH(prim_litigation_handler_role_code)>0 AND TRIM(prim_litigation_handler_role_code)='' 
+		OR LENGTH(prim_litigation_handler_role_code
+		) = 0,
+		'N/A',
+		prim_litigation_handler_role_code
+	) AS out_prim_litigation_handler_role_code,
 	EXP_Stage_Validate.suit_open_date,
 	EXP_Stage_Validate.suit_close_date,
 	EXP_Stage_Validate.claim_case_num,
@@ -268,7 +425,8 @@ EXP_Detect_Changes AS (
 	'N/A' AS DEFAULT_CHAR,
 	0 AS DEFAULT_INT,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS DEFAULT_DATE,
+	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS DEFAULT_DATE,
 	-- *INF*: IIF(ISNULL(OLD_claim_case_id),'NEW',
 	-- IIF(LTRIM(RTRIM(claim_case_num))<>LTRIM(RTRIM(OLD_claim_case_num)) OR 
 	--        LTRIM(RTRIM(court))<>LTRIM(RTRIM(OLD_suit_county)) OR
@@ -284,15 +442,57 @@ EXP_Detect_Changes AS (
 	--       arbitration_close_date <>Old_arbitration_close_date, 
 	-- 'UPDATE','NOCHANGE')) 
 	-- 
-	IFF(OLD_claim_case_id IS NULL, 'NEW', IFF(LTRIM(RTRIM(claim_case_num)) <> LTRIM(RTRIM(OLD_claim_case_num)) OR LTRIM(RTRIM(court)) <> LTRIM(RTRIM(OLD_suit_county)) OR LTRIM(RTRIM(suit_state_county)) <> LTRIM(RTRIM(OLD_suit_state)) OR trail_date <> OLD_trial_date OR LTRIM(RTRIM(suit_status)) <> LTRIM(RTRIM(OLD_suit_status_code)) OR suit_open_date <> OLD_suit_open_date OR suit_close_date <> OLD_suit_close_date OR suit_amount <> OLD_suit_pay_amt OR Prim_Lit_Handler_ak_id <> Old_prim_litigation_handler_ak_id OR LTRIM(RTRIM(prim_litigation_handler_role_code)) <> LTRIM(RTRIM(Old_prim_litigation_handler_role_code)) OR arbitration_open_date <> Old_arbitration_open_date OR arbitration_close_date <> Old_arbitration_close_date, 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(OLD_claim_case_id IS NULL,
+		'NEW',
+		IFF(LTRIM(RTRIM(claim_case_num
+				)
+			) <> LTRIM(RTRIM(OLD_claim_case_num
+				)
+			) 
+			OR LTRIM(RTRIM(court
+				)
+			) <> LTRIM(RTRIM(OLD_suit_county
+				)
+			) 
+			OR LTRIM(RTRIM(suit_state_county
+				)
+			) <> LTRIM(RTRIM(OLD_suit_state
+				)
+			) 
+			OR trail_date <> OLD_trial_date 
+			OR LTRIM(RTRIM(suit_status
+				)
+			) <> LTRIM(RTRIM(OLD_suit_status_code
+				)
+			) 
+			OR suit_open_date <> OLD_suit_open_date 
+			OR suit_close_date <> OLD_suit_close_date 
+			OR suit_amount <> OLD_suit_pay_amt 
+			OR Prim_Lit_Handler_ak_id <> Old_prim_litigation_handler_ak_id 
+			OR LTRIM(RTRIM(prim_litigation_handler_role_code
+				)
+			) <> LTRIM(RTRIM(Old_prim_litigation_handler_role_code
+				)
+			) 
+			OR arbitration_open_date <> Old_arbitration_open_date 
+			OR arbitration_close_date <> Old_arbitration_close_date,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS CHANGED_FLAG,
 	1 AS CRRNT_SNPSHT_FLAG,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYS_ID,
 	-- *INF*: IIF(v_changed_flag = 'NEW',TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_changed_flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS EFF_FROM_DATE,
+	IFF(v_changed_flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS EFF_FROM_DATE,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS EFF_TO_DATE,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS EFF_TO_DATE,
 	SYSDATE AS CREATED_DATE,
 	SYSDATE AS MODIFIED_DATE,
 	0.0 AS Demand_at_initial_Litigation
@@ -340,7 +540,10 @@ EXP_Determine_AK AS (
 	SELECT
 	OLD_claim_case_ak_id,
 	-- *INF*: IIF(Changed_flag = 'NEW',NEXTVAL,OLD_claim_case_ak_id)
-	IFF(Changed_flag = 'NEW', NEXTVAL, OLD_claim_case_ak_id) AS claim_case_ak_id,
+	IFF(Changed_flag = 'NEW',
+		NEXTVAL,
+		OLD_claim_case_ak_id
+	) AS claim_case_ak_id,
 	claim_case_key,
 	claim_case_num,
 	court,
@@ -435,8 +638,9 @@ EXP_Expire_Row AS (
 	-- 
 	-- 
 	DECODE(TRUE,
-		claim_case_key = v_prev_row_claim_case_key, ADD_TO_DATE(v_prev_row_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_case_key = v_prev_row_claim_case_key, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_prev_row_eff_from_date,
 	claim_case_key AS v_prev_row_claim_case_key,

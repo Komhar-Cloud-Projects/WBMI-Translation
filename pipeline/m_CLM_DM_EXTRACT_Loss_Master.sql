@@ -267,194 +267,273 @@ EXP_Default_Value AS (
 	EXP_Source.pms_trans_code,
 	EXP_Source.trans_ctgry_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(trans_ctgry_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(trans_ctgry_code) AS trans_ctgry_code_out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(trans_ctgry_code
+	) AS trans_ctgry_code_out,
 	EXP_Source.trans_kind_code,
 	EXP_Source.type_disability,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(type_disability)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(type_disability) AS type_disability_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(type_disability
+	) AS type_disability_Out,
 	EXP_Source.pol_sym,
 	EXP_Source.pol_num,
 	EXP_Source.pol_mod,
 	EXP_Source.mco,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(mco)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(mco) AS mco_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(mco
+	) AS mco_Out,
 	EXP_Source.producer_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(producer_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(producer_code) AS producer_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(producer_code
+	) AS producer_code_Out,
 	EXP_Source.pol_co_num,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(pol_co_num)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(pol_co_num) AS pol_co_num_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(pol_co_num
+	) AS pol_co_num_Out,
 	EXP_Source.pol_eff_date,
 	-- *INF*: TO_CHAR(pol_eff_date,'YYYYMMDD')
-	TO_CHAR(pol_eff_date, 'YYYYMMDD') AS pol_eff_date_Out,
+	TO_CHAR(pol_eff_date, 'YYYYMMDD'
+	) AS pol_eff_date_Out,
 	EXP_Source.pol_exp_date,
 	-- *INF*: TO_CHAR(pol_exp_date,'YYYYMMDD')
-	TO_CHAR(pol_exp_date, 'YYYYMMDD') AS pol_exp_date_Out,
+	TO_CHAR(pol_exp_date, 'YYYYMMDD'
+	) AS pol_exp_date_Out,
 	EXP_Source.pms_pol_lob_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(pms_pol_lob_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(pms_pol_lob_code) AS pms_pol_lob_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(pms_pol_lob_code
+	) AS pms_pol_lob_code_Out,
 	EXP_Source.pol_co_line_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(pol_co_line_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(pol_co_line_code) AS pol_co_line_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(pol_co_line_code
+	) AS pol_co_line_code_Out,
 	EXP_Source.ClassOfBusinessCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(ClassOfBusinessCode)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(ClassOfBusinessCode) AS ClassOfBusinessCode_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(ClassOfBusinessCode
+	) AS ClassOfBusinessCode_Out,
 	EXP_Source.agency_state_code,
 	-- *INF*: rtrim(agency_state_code)
-	rtrim(agency_state_code) AS agency_state_code_out,
+	rtrim(agency_state_code
+	) AS agency_state_code_out,
 	EXP_Source.agency_terr_code,
 	EXP_Source.agency_num,
 	-- *INF*: rtrim(agency_state_code) || rtrim(agency_terr_code) || rtrim(agency_num)
-	rtrim(agency_state_code) || rtrim(agency_terr_code) || rtrim(agency_num) AS agency_number_LM,
+	rtrim(agency_state_code
+	) || rtrim(agency_terr_code
+	) || rtrim(agency_num
+	) AS agency_number_LM,
 	-- *INF*: rtrim(agency_state_code) || '00' || rtrim(agency_num)
-	rtrim(agency_state_code) || '00' || rtrim(agency_num) AS account_number_LM,
+	rtrim(agency_state_code
+	) || '00' || rtrim(agency_num
+	) AS account_number_LM,
 	EXP_Source.clndr_date,
 	-- *INF*: SUBSTR(TO_CHAR(clndr_date,'YYYYMMDD'),1,6)
-	SUBSTR(TO_CHAR(clndr_date, 'YYYYMMDD'), 1, 6) AS Loss_Master_Account_Date,
+	SUBSTR(TO_CHAR(clndr_date, 'YYYYMMDD'
+		), 1, 6
+	) AS Loss_Master_Account_Date,
 	EXP_Source.ins_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(ins_line)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(ins_line) AS ins_line_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(ins_line
+	) AS ins_line_Out,
 	EXP_Source.major_peril_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(major_peril_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(major_peril_code) AS major_peril_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(major_peril_code
+	) AS major_peril_code_Out,
 	EXP_Source.major_peril_seq_num,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(major_peril_seq_num)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(major_peril_seq_num) AS major_peril_seq_num_out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(major_peril_seq_num
+	) AS major_peril_seq_num_out,
 	EXP_Source.type_bureau_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(type_bureau_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(type_bureau_code) AS type_bureau_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(type_bureau_code
+	) AS type_bureau_code_Out,
 	EXP_Source.risk_unit_grp,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(risk_unit_grp)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(risk_unit_grp) AS risk_unit_grp_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(risk_unit_grp
+	) AS risk_unit_grp_Out,
 	EXP_Source.risk_unit_grp_seq_num,
 	-- *INF*: IIF(risk_unit_grp_seq_num='N/A','0',
 	-- SUBSTR(:UDF.DEFAULT_VALUE_TO_BLANKS(risk_unit_grp_seq_num),3,1))
-	IFF(risk_unit_grp_seq_num = 'N/A', '0', SUBSTR(:UDF.DEFAULT_VALUE_TO_BLANKS(risk_unit_grp_seq_num), 3, 1)) AS risk_unit_grp_seq_num_pos_3,
+	IFF(risk_unit_grp_seq_num = 'N/A',
+		'0',
+		SUBSTR(:UDF.DEFAULT_VALUE_TO_BLANKS(risk_unit_grp_seq_num
+			), 3, 1
+		)
+	) AS risk_unit_grp_seq_num_pos_3,
 	-- *INF*: IIF(risk_unit_grp_seq_num='N/A','0',
 	-- SUBSTR(:UDF.DEFAULT_VALUE_TO_BLANKS(risk_unit_grp_seq_num),2,1))
-	IFF(risk_unit_grp_seq_num = 'N/A', '0', SUBSTR(:UDF.DEFAULT_VALUE_TO_BLANKS(risk_unit_grp_seq_num), 2, 1)) AS risk_unit_grp_seq_num_pos_2,
+	IFF(risk_unit_grp_seq_num = 'N/A',
+		'0',
+		SUBSTR(:UDF.DEFAULT_VALUE_TO_BLANKS(risk_unit_grp_seq_num
+			), 2, 1
+		)
+	) AS risk_unit_grp_seq_num_pos_2,
 	EXP_Source.risk_unit,
 	-- *INF*: SUBSTR(:UDF.DEFAULT_VALUE_TO_BLANKS(risk_unit),1,3)
-	SUBSTR(:UDF.DEFAULT_VALUE_TO_BLANKS(risk_unit), 1, 3) AS risk_unit_Out,
+	SUBSTR(:UDF.DEFAULT_VALUE_TO_BLANKS(risk_unit
+		), 1, 3
+	) AS risk_unit_Out,
 	EXP_Source.risk_unit_seq_num,
 	-- *INF*: IIF(risk_unit_seq_num='N/A','0',risk_unit_seq_num)
-	IFF(risk_unit_seq_num = 'N/A', '0', risk_unit_seq_num) AS risk_unit_seq_num_out,
+	IFF(risk_unit_seq_num = 'N/A',
+		'0',
+		risk_unit_seq_num
+	) AS risk_unit_seq_num_out,
 	EXP_Source.loc_unit_num,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(loc_unit_num)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(loc_unit_num) AS loc_unit_num_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(loc_unit_num
+	) AS loc_unit_num_Out,
 	EXP_Source.sub_loc_unit_num,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(sub_loc_unit_num)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(sub_loc_unit_num) AS sub_loc_unit_num_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(sub_loc_unit_num
+	) AS sub_loc_unit_num_Out,
 	EXP_Source.risk_state_prov_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(risk_state_prov_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(risk_state_prov_code) AS risk_state_prov_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(risk_state_prov_code
+	) AS risk_state_prov_code_Out,
 	EXP_Source.risk_zip_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(risk_zip_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(risk_zip_code) AS risk_zip_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(risk_zip_code
+	) AS risk_zip_code_Out,
 	EXP_Source.terr_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(terr_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(terr_code) AS terr_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(terr_code
+	) AS terr_code_Out,
 	EXP_Source.tax_loc,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(tax_loc)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(tax_loc) AS tax_loc_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(tax_loc
+	) AS tax_loc_Out,
 	EXP_Source.class_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(class_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(class_code) AS class_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(class_code
+	) AS class_code_Out,
 	EXP_Source.exposure,
 	EXP_Source.sub_line_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(sub_line_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(sub_line_code) AS sub_line_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(sub_line_code
+	) AS sub_line_code_Out,
 	EXP_Source.source_sar_asl,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(source_sar_asl)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(source_sar_asl) AS source_sar_asl_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(source_sar_asl
+	) AS source_sar_asl_Out,
 	EXP_Source.source_sar_prdct_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(source_sar_prdct_line)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(source_sar_prdct_line) AS source_sar_prdct_line_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(source_sar_prdct_line
+	) AS source_sar_prdct_line_Out,
 	EXP_Source.source_sar_sp_use_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(source_sar_sp_use_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(source_sar_sp_use_code) AS source_sar_sp_use_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(source_sar_sp_use_code
+	) AS source_sar_sp_use_code_Out,
 	EXP_Source.source_statistical_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(source_statistical_line)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(source_statistical_line) AS source_statistical_line_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(source_statistical_line
+	) AS source_statistical_line_Out,
 	EXP_Source.variation_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(variation_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(variation_code) AS variation_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(variation_code
+	) AS variation_code_Out,
 	EXP_Source.pol_type,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(pol_type)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(pol_type) AS pol_type_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(pol_type
+	) AS pol_type_Out,
 	EXP_Source.auto_reins_facility,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(auto_reins_facility)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(auto_reins_facility) AS auto_reins_facility_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(auto_reins_facility
+	) AS auto_reins_facility_Out,
 	EXP_Source.statistical_brkdwn_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(statistical_brkdwn_line)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(statistical_brkdwn_line) AS statistical_brkdwn_line_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(statistical_brkdwn_line
+	) AS statistical_brkdwn_line_Out,
 	EXP_Source.statistical_code1,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(statistical_code1)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(statistical_code1) AS statistical_code1_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(statistical_code1
+	) AS statistical_code1_Out,
 	EXP_Source.statistical_code2,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(statistical_code2)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(statistical_code2) AS statistical_code2_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(statistical_code2
+	) AS statistical_code2_Out,
 	EXP_Source.statistical_code3,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(statistical_code3)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(statistical_code3) AS statistical_code3_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(statistical_code3
+	) AS statistical_code3_Out,
 	EXP_Source.loss_master_cov_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(loss_master_cov_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(loss_master_cov_code) AS loss_master_cov_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(loss_master_cov_code
+	) AS loss_master_cov_code_Out,
 	EXP_Source.cause_of_loss,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(cause_of_loss)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(cause_of_loss) AS cause_of_loss_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(cause_of_loss
+	) AS cause_of_loss_Out,
 	EXP_Source.reserve_ctgry,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(reserve_ctgry)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(reserve_ctgry) AS reserve_ctgry_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(reserve_ctgry
+	) AS reserve_ctgry_Out,
 	EXP_Source.source_claim_rpted_date,
 	-- *INF*: TO_CHAR(source_claim_rpted_date,'YYYYMMDD')
-	TO_CHAR(source_claim_rpted_date, 'YYYYMMDD') AS source_claim_rpted_date_out,
+	TO_CHAR(source_claim_rpted_date, 'YYYYMMDD'
+	) AS source_claim_rpted_date_out,
 	EXP_Source.claim_loss_date,
 	-- *INF*: TO_CHAR(claim_loss_date,'YYYYMMDD')
-	TO_CHAR(claim_loss_date, 'YYYYMMDD') AS claim_loss_date_Out,
+	TO_CHAR(claim_loss_date, 'YYYYMMDD'
+	) AS claim_loss_date_Out,
 	EXP_Source.claim_cat_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(claim_cat_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(claim_cat_code) AS claim_cat_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(claim_cat_code
+	) AS claim_cat_code_Out,
 	EXP_Source.claim_num,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(claim_num)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(claim_num) AS claim_num_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(claim_num
+	) AS claim_num_Out,
 	EXP_Source.claim_occurrence_num,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(claim_occurrence_num)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(claim_occurrence_num) AS claim_occurrence_num_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(claim_occurrence_num
+	) AS claim_occurrence_num_Out,
 	EXP_Source.claim_loss_descript,
 	-- *INF*: SUBSTR(:UDF.DEFAULT_VALUE_TO_BLANKS(claim_loss_descript),1,38)
-	SUBSTR(:UDF.DEFAULT_VALUE_TO_BLANKS(claim_loss_descript), 1, 38) AS claim_loss_descript_Out,
+	SUBSTR(:UDF.DEFAULT_VALUE_TO_BLANKS(claim_loss_descript
+		), 1, 38
+	) AS claim_loss_descript_Out,
 	EXP_Source.handling_office_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(handling_office_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(handling_office_code) AS handling_office_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(handling_office_code
+	) AS handling_office_code_Out,
 	EXP_Source.claim_rep_branch_num,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(claim_rep_branch_num)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(claim_rep_branch_num) AS claim_rep_branch_num_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(claim_rep_branch_num
+	) AS claim_rep_branch_num_Out,
 	EXP_Source.cost_center,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(cost_center)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(cost_center) AS cost_center_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(cost_center
+	) AS cost_center_Out,
 	EXP_Source.claim_rep_num_H,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(claim_rep_num_H)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(claim_rep_num_H) AS claim_rep_num_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(claim_rep_num_H
+	) AS claim_rep_num_Out,
 	EXP_Source.reins_co_num,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(reins_co_num)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(reins_co_num) AS reins_co_num_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(reins_co_num
+	) AS reins_co_num_Out,
 	EXP_Source.reins_type,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(reins_type)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(reins_type) AS reins_type_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(reins_type
+	) AS reins_type_Out,
 	EXP_Source.reins_prcnt_loss_ceded,
 	EXP_Source.micro_ecd_draft_num,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(micro_ecd_draft_num)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(micro_ecd_draft_num) AS micro_ecd_draft_num_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(micro_ecd_draft_num
+	) AS micro_ecd_draft_num_Out,
 	EXP_Source.bank_acct_num,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(bank_acct_num)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(bank_acct_num) AS bank_acct_num_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(bank_acct_num
+	) AS bank_acct_num_Out,
 	LKP_Calendar_Dim_Trans_Date.clndr_month AS trans_month,
 	-- *INF*: lpad(to_char(trans_month),2,'0')
-	lpad(to_char(trans_month), 2, '0') AS trans_month_out,
+	lpad(to_char(trans_month
+		), 2, '0'
+	) AS trans_month_out,
 	LKP_Calendar_Dim_Trans_Date.clndr_date AS trans_day,
 	-- *INF*: lpad(to_char(trans_day),2,'0')
-	lpad(to_char(trans_day), 2, '0') AS trans_day_out,
+	lpad(to_char(trans_day
+		), 2, '0'
+	) AS trans_day_out,
 	LKP_Calendar_Dim_Trans_Date.clndr_yr AS trans_year,
 	EXP_Source.new_claim_count,
 	EXP_Source.outstanding_amt,
@@ -464,10 +543,12 @@ EXP_Default_Value AS (
 	EXP_Source.orig_reserve,
 	EXP_Source.claimant_full_name,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(claimant_full_name)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(claimant_full_name) AS claimant_full_name_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(claimant_full_name
+	) AS claimant_full_name_Out,
 	EXP_Source.claimant_num,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(claimant_num)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(claimant_num) AS claimant_num_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(claimant_num
+	) AS claimant_num_Out,
 	EXP_Source.body_part_code,
 	EXP_Source.nature_inj_code,
 	EXP_Source.cause_inj_code,
@@ -476,33 +557,47 @@ EXP_Default_Value AS (
 	-- :UDF.DEFAULT_VALUE_TO_BLANKS(nature_inj_code)
 	--  || 
 	-- :UDF.DEFAULT_VALUE_TO_BLANKS(cause_inj_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(body_part_code) || :UDF.DEFAULT_VALUE_TO_BLANKS(nature_inj_code) || :UDF.DEFAULT_VALUE_TO_BLANKS(cause_inj_code) AS accident_injury_anal_code,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(body_part_code
+	) || :UDF.DEFAULT_VALUE_TO_BLANKS(nature_inj_code
+	) || :UDF.DEFAULT_VALUE_TO_BLANKS(cause_inj_code
+	) AS accident_injury_anal_code,
 	EXP_Source.cust_num,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(cust_num)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(cust_num) AS cust_num_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(cust_num
+	) AS cust_num_Out,
 	EXP_Source.name,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(name)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(name) AS name_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(name
+	) AS name_Out,
 	EXP_Source.sort_name,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(sort_name)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(sort_name) AS sort_name_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(sort_name
+	) AS sort_name_Out,
 	EXP_Source.suit_status_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(suit_status_code)
-	:UDF.DEFAULT_VALUE_TO_BLANKS(suit_status_code) AS suit_status_code_Out,
+	:UDF.DEFAULT_VALUE_TO_BLANKS(suit_status_code
+	) AS suit_status_code_Out,
 	EXP_Source.incptn_date_id,
 	-- *INF*: TO_CHAR(:LKP.LKP_calendar_dim(incptn_date_id),'YYYYMM')
-	TO_CHAR(LKP_CALENDAR_DIM_incptn_date_id.clndr_date, 'YYYYMM') AS incptn_date,
+	TO_CHAR(LKP_CALENDAR_DIM_incptn_date_id.clndr_date, 'YYYYMM'
+	) AS incptn_date,
 	EXP_Source.loss_loc_state,
 	-- *INF*: IIF(loss_loc_state='N/A'
 	-- ,''
 	-- ,:LKP.LKP_sup_state(:UDF.DEFAULT_VALUE_TO_BLANKS(loss_loc_state)))
 	-- 
 	-- 
-	IFF(loss_loc_state = 'N/A', '', LKP_SUP_STATE__UDF_DEFAULT_VALUE_TO_BLANKS_loss_loc_state.state_abbrev) AS loss_loc_state_out,
+	IFF(loss_loc_state = 'N/A',
+		'',
+		LKP_SUP_STATE__UDF_DEFAULT_VALUE_TO_BLANKS_loss_loc_state.state_abbrev
+	) AS loss_loc_state_out,
 	-- *INF*: IIF(trans_kind_code='D',
 	-- '0',
 	-- pol_sym || pol_num)
-	IFF(trans_kind_code = 'D', '0', pol_sym || pol_num) AS reinsurance_cession_number,
+	IFF(trans_kind_code = 'D',
+		'0',
+		pol_sym || pol_num
+	) AS reinsurance_cession_number,
 	EXP_Source.claim_rep_num_E,
 	EXP_Source.mailing_addr_line_1,
 	EXP_Source.mailing_city_name,
@@ -518,7 +613,8 @@ EXP_Default_Value AS (
 	ON LKP_CALENDAR_DIM_incptn_date_id.clndr_id = incptn_date_id
 
 	LEFT JOIN LKP_SUP_STATE LKP_SUP_STATE__UDF_DEFAULT_VALUE_TO_BLANKS_loss_loc_state
-	ON LKP_SUP_STATE__UDF_DEFAULT_VALUE_TO_BLANKS_loss_loc_state.state_code = :UDF.DEFAULT_VALUE_TO_BLANKS(loss_loc_state)
+	ON LKP_SUP_STATE__UDF_DEFAULT_VALUE_TO_BLANKS_loss_loc_state.state_code = :UDF.DEFAULT_VALUE_TO_BLANKS(loss_loc_state
+	)
 
 ),
 UPD_loss_master_file AS (

@@ -7,17 +7,34 @@ SQ_gtam_wbimcls_stage AS (
 EXP_values_wbimcls AS (
 	SELECT
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS v_default_end_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS v_default_end_date,
 	'N/A' AS v_default_str,
 	inland_marine_class_code AS IN_inland_marine_class_code,
 	-- *INF*: IIF(ISNULL(IN_inland_marine_class_code) OR IS_SPACES(IN_inland_marine_class_code) OR LENGTH(IN_inland_marine_class_code)=0
 	-- ,'N/A'
 	-- ,ltrim(rtrim(IN_inland_marine_class_code)))
-	IFF(IN_inland_marine_class_code IS NULL OR IS_SPACES(IN_inland_marine_class_code) OR LENGTH(IN_inland_marine_class_code) = 0, 'N/A', ltrim(rtrim(IN_inland_marine_class_code))) AS class_code,
+	IFF(IN_inland_marine_class_code IS NULL 
+		OR LENGTH(IN_inland_marine_class_code)>0 AND TRIM(IN_inland_marine_class_code)='' 
+		OR LENGTH(IN_inland_marine_class_code
+		) = 0,
+		'N/A',
+		ltrim(rtrim(IN_inland_marine_class_code
+			)
+		)
+	) AS class_code,
 	inland_marine_class_description AS IN_inland_marine_class_description,
 	-- *INF*: IIF(ISNULL(IN_inland_marine_class_description) OR IS_SPACES(IN_inland_marine_class_description) OR
 	-- LENGTH(IN_inland_marine_class_description)=0,'N/A',ltrim(rtrim(IN_inland_marine_class_description)))
-	IFF(IN_inland_marine_class_description IS NULL OR IS_SPACES(IN_inland_marine_class_description) OR LENGTH(IN_inland_marine_class_description) = 0, 'N/A', ltrim(rtrim(IN_inland_marine_class_description))) AS OUT_inland_marine_class_description,
+	IFF(IN_inland_marine_class_description IS NULL 
+		OR LENGTH(IN_inland_marine_class_description)>0 AND TRIM(IN_inland_marine_class_description)='' 
+		OR LENGTH(IN_inland_marine_class_description
+		) = 0,
+		'N/A',
+		ltrim(rtrim(IN_inland_marine_class_description
+			)
+		)
+	) AS OUT_inland_marine_class_description,
 	v_default_str AS OUT_class_loc_code,
 	v_default_str AS OUT_class_descript_ind,
 	v_default_str AS OUT_mco,
@@ -72,14 +89,32 @@ EXP_Detect_Changes_wbimcls AS (
 	-- 	(ltrim(rtrim(inland_marine_class_description)) <> ltrim(rtrim(LKP_class_code_descript))),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(LKP_sup_class_code_id IS NULL, 'NEW', IFF(( ltrim(rtrim(inland_marine_class_description)) <> ltrim(rtrim(LKP_class_code_descript)) ), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(LKP_sup_class_code_id IS NULL,
+		'NEW',
+		IFF(( ltrim(rtrim(inland_marine_class_description
+					)
+				) <> ltrim(rtrim(LKP_class_code_descript
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_ID,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	TO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
+			), 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_System_ID,
 	SYSDATE AS Created_Date,
@@ -155,7 +190,8 @@ SQ_gtam_tl07rx_stage1 AS (
 EXP_values_tl07rx AS (
 	SELECT
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS v_default_end_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS v_default_end_date,
 	'N/A' AS v_default_str,
 	class_code AS IN_class_code,
 	class_description_indicator AS IN_class_description_indicator,
@@ -165,20 +201,57 @@ EXP_values_tl07rx AS (
 	-- *INF*: IIF(ISNULL(IN_class_code) OR IS_SPACES(IN_class_code) OR LENGTH(IN_class_code)=0
 	-- ,'N/A'
 	-- ,ltrim(rtrim(IN_class_code)))
-	IFF(IN_class_code IS NULL OR IS_SPACES(IN_class_code) OR LENGTH(IN_class_code) = 0, 'N/A', ltrim(rtrim(IN_class_code))) AS OUT_class_code,
+	IFF(IN_class_code IS NULL 
+		OR LENGTH(IN_class_code)>0 AND TRIM(IN_class_code)='' 
+		OR LENGTH(IN_class_code
+		) = 0,
+		'N/A',
+		ltrim(rtrim(IN_class_code
+			)
+		)
+	) AS OUT_class_code,
 	v_default_str AS OUT_class_loc_code,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_class_description_indicator )))  ,v_default_str,ltrim(rtrim(IN_class_description_indicator)))
-	IFF(RTRIM(LTRIM(IN_class_description_indicator)) IS NULL, v_default_str, ltrim(rtrim(IN_class_description_indicator))) AS OUT_class_descript_ind,
+	IFF(RTRIM(LTRIM(IN_class_description_indicator
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_class_description_indicator
+			)
+		)
+	) AS OUT_class_descript_ind,
 	v_default_str AS OUT_mco,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_location_state  )))  ,v_default_str,ltrim(rtrim(IN_location_state)))
-	IFF(RTRIM(LTRIM(IN_location_state)) IS NULL, v_default_str, ltrim(rtrim(IN_location_state))) AS OUT_class_loc_state,
+	IFF(RTRIM(LTRIM(IN_location_state
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_location_state
+			)
+		)
+	) AS OUT_class_loc_state,
 	v_default_str AS OUT_subline,
 	v_default_end_date AS OUT_gtam_exp_date,
 	-- *INF*: IIF(ISNULL(IN_class_description_seq) OR IS_SPACES(IN_class_description_seq) OR
 	-- LENGTH(IN_class_description_seq)=0,v_default_str,ltrim(rtrim(IN_class_description_seq)))
-	IFF(IN_class_description_seq IS NULL OR IS_SPACES(IN_class_description_seq) OR LENGTH(IN_class_description_seq) = 0, v_default_str, ltrim(rtrim(IN_class_description_seq))) AS OUT_class_descript_num_seq,
+	IFF(IN_class_description_seq IS NULL 
+		OR LENGTH(IN_class_description_seq)>0 AND TRIM(IN_class_description_seq)='' 
+		OR LENGTH(IN_class_description_seq
+		) = 0,
+		v_default_str,
+		ltrim(rtrim(IN_class_description_seq
+			)
+		)
+	) AS OUT_class_descript_num_seq,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_class_description  )))  ,v_default_str,ltrim(rtrim(IN_class_description)))
-	IFF(RTRIM(LTRIM(IN_class_description)) IS NULL, v_default_str, ltrim(rtrim(IN_class_description))) AS OUT_class_description,
+	IFF(RTRIM(LTRIM(IN_class_description
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_class_description
+			)
+		)
+	) AS OUT_class_description,
 	v_default_str AS OUT_crime_ind
 	FROM SQ_gtam_tl07rx_stage1
 ),
@@ -226,14 +299,32 @@ EXP_Detect_Changes_tl07rx AS (
 	-- 	(ltrim(rtrim(class_description)) <> ltrim(rtrim(LKP_class_code_descript))),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(LKP_sup_class_code_id IS NULL, 'NEW', IFF(( ltrim(rtrim(class_description)) <> ltrim(rtrim(LKP_class_code_descript)) ), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(LKP_sup_class_code_id IS NULL,
+		'NEW',
+		IFF(( ltrim(rtrim(class_description
+					)
+				) <> ltrim(rtrim(LKP_class_code_descript
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_ID,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	TO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
+			), 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_System_ID,
 	SYSDATE AS Created_Date,
@@ -312,7 +403,8 @@ SQ_gtam_tl63y_stage AS (
 EXP_values_tl63y AS (
 	SELECT
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS v_default_end_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS v_default_end_date,
 	'N/A' AS v_default_str,
 	location AS IN_class_loc_code,
 	master_company_number AS IN_mco_code,
@@ -325,15 +417,50 @@ EXP_values_tl63y AS (
 	one_line_of_class_desc AS IN_class_description,
 	v_default_str AS OUT_class_code,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_class_loc_code )))  ,v_default_str,ltrim(rtrim(IN_class_loc_code)))
-	IFF(RTRIM(LTRIM(IN_class_loc_code)) IS NULL, v_default_str, ltrim(rtrim(IN_class_loc_code))) AS OUT_class_loc_code,
+	IFF(RTRIM(LTRIM(IN_class_loc_code
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_class_loc_code
+			)
+		)
+	) AS OUT_class_loc_code,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_class_description_indicator )))  ,v_default_str,ltrim(rtrim(IN_class_description_indicator)))
-	IFF(RTRIM(LTRIM(IN_class_description_indicator)) IS NULL, v_default_str, ltrim(rtrim(IN_class_description_indicator))) AS OUT_class_descript_ind,
+	IFF(RTRIM(LTRIM(IN_class_description_indicator
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_class_description_indicator
+			)
+		)
+	) AS OUT_class_descript_ind,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_mco_code )))  ,v_default_str,ltrim(rtrim(IN_mco_code)))
-	IFF(RTRIM(LTRIM(IN_mco_code)) IS NULL, v_default_str, ltrim(rtrim(IN_mco_code))) AS OUT_mco,
+	IFF(RTRIM(LTRIM(IN_mco_code
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_mco_code
+			)
+		)
+	) AS OUT_mco,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_location_state  )))  ,v_default_str,ltrim(rtrim(IN_location_state)))
-	IFF(RTRIM(LTRIM(IN_location_state)) IS NULL, v_default_str, ltrim(rtrim(IN_location_state))) AS OUT_class_loc_state,
+	IFF(RTRIM(LTRIM(IN_location_state
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_location_state
+			)
+		)
+	) AS OUT_class_loc_state,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_subline  )))  ,v_default_str,ltrim(rtrim(IN_subline)))
-	IFF(RTRIM(LTRIM(IN_subline)) IS NULL, v_default_str, ltrim(rtrim(IN_subline))) AS OUT_subline,
+	IFF(RTRIM(LTRIM(IN_subline
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_subline
+			)
+		)
+	) AS OUT_subline,
 	-- *INF*: DECODE(  RTRIM(LTRIM( IN_exp_date )),
 	--     NULL , v_default_end_date,      
 	--     '99999999', v_default_end_date ,
@@ -351,21 +478,58 @@ EXP_values_tl63y AS (
 	-- 
 	-- ))
 	--          
-	DECODE(RTRIM(LTRIM(IN_exp_date)),
+	DECODE(RTRIM(LTRIM(IN_exp_date
+			)
+		),
 		NULL, v_default_end_date,
 		'99999999', v_default_end_date,
-		IFF(IS_DATE(IN_exp_date, 'YYYYMMDD') = 1, ADD_TO_DATE(TO_DATE(IN_exp_date, 'YYYYMMDD'), 'DD', 1), ADD_TO_DATE(LAST_DAY(TO_DATE(CONCAT(SUBSTR(IN_exp_date, 1, 6), '01'), 'YYYYMMDD')), 'DD', 1))) AS v_exp_date,
+		IFF(IS_DATE(IN_exp_date, 'YYYYMMDD'
+			) = 1,
+			DATEADD(DAY,1,TO_DATE(IN_exp_date, 'YYYYMMDD'
+			)),
+			DATEADD(DAY,1,LAST_DAY(TO_DATE(CONCAT(SUBSTR(IN_exp_date, 1, 6
+						), '01'
+					), 'YYYYMMDD'
+				)
+			))
+		)
+	) AS v_exp_date,
 	v_exp_date AS OUT_exp_date,
 	-- *INF*: IIF(ISNULL(IN_class_description_seq) OR IS_SPACES(IN_class_description_seq) OR
 	-- LENGTH(IN_class_description_seq)=0,v_default_str,ltrim(rtrim(IN_class_description_seq)))
-	IFF(IN_class_description_seq IS NULL OR IS_SPACES(IN_class_description_seq) OR LENGTH(IN_class_description_seq) = 0, v_default_str, ltrim(rtrim(IN_class_description_seq))) AS OUT_class_descript_num_seq,
+	IFF(IN_class_description_seq IS NULL 
+		OR LENGTH(IN_class_description_seq)>0 AND TRIM(IN_class_description_seq)='' 
+		OR LENGTH(IN_class_description_seq
+		) = 0,
+		v_default_str,
+		ltrim(rtrim(IN_class_description_seq
+			)
+		)
+	) AS OUT_class_descript_num_seq,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_class_description  )))  ,v_default_str,ltrim(rtrim(IN_class_description)))
-	IFF(RTRIM(LTRIM(IN_class_description)) IS NULL, v_default_str, ltrim(rtrim(IN_class_description))) AS OUT_class_description,
+	IFF(RTRIM(LTRIM(IN_class_description
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_class_description
+			)
+		)
+	) AS OUT_class_description,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_crime_ind  ))) OR IS_SPACES(IN_crime_ind)
 	-- OR LENGTH( IN_crime_ind) = 0
 	-- 
 	--   ,v_default_str,ltrim(rtrim(IN_crime_ind)))
-	IFF(RTRIM(LTRIM(IN_crime_ind)) IS NULL OR IS_SPACES(IN_crime_ind) OR LENGTH(IN_crime_ind) = 0, v_default_str, ltrim(rtrim(IN_crime_ind))) AS OUT_crime_ind
+	IFF(RTRIM(LTRIM(IN_crime_ind
+			)
+		) IS NULL 
+		OR LENGTH(IN_crime_ind)>0 AND TRIM(IN_crime_ind)='' 
+		OR LENGTH(IN_crime_ind
+		) = 0,
+		v_default_str,
+		ltrim(rtrim(IN_crime_ind
+			)
+		)
+	) AS OUT_crime_ind
 	FROM SQ_gtam_tl63y_stage
 ),
 LKP_sup_class_code_tl63y AS (
@@ -412,14 +576,32 @@ EXP_Detect_Changes_tl63y AS (
 	-- 	(ltrim(rtrim(class_description)) <> ltrim(rtrim(LKP_class_code_descript))),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(LKP_sup_class_code_id IS NULL, 'NEW', IFF(( ltrim(rtrim(class_description)) <> ltrim(rtrim(LKP_class_code_descript)) ), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(LKP_sup_class_code_id IS NULL,
+		'NEW',
+		IFF(( ltrim(rtrim(class_description
+					)
+				) <> ltrim(rtrim(LKP_class_code_descript
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_ID,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	TO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
+			), 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_System_ID,
 	SYSDATE AS Created_Date,
@@ -498,7 +680,8 @@ SQ_gtam_tl63x_stage AS (
 EXP_values_tl63x AS (
 	SELECT
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS v_default_end_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS v_default_end_date,
 	'N/A' AS v_default_str,
 	location AS IN_class_loc_code,
 	master_company_number AS IN_mco_code,
@@ -510,13 +693,41 @@ EXP_values_tl63x AS (
 	one_line_of_class_desc AS IN_class_description,
 	v_default_str AS OUT_class_code,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_class_loc_code )))  ,v_default_str,ltrim(rtrim(IN_class_loc_code)))
-	IFF(RTRIM(LTRIM(IN_class_loc_code)) IS NULL, v_default_str, ltrim(rtrim(IN_class_loc_code))) AS OUT_class_loc_code,
+	IFF(RTRIM(LTRIM(IN_class_loc_code
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_class_loc_code
+			)
+		)
+	) AS OUT_class_loc_code,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_class_description_indicator )))  ,v_default_str,ltrim(rtrim(IN_class_description_indicator)))
-	IFF(RTRIM(LTRIM(IN_class_description_indicator)) IS NULL, v_default_str, ltrim(rtrim(IN_class_description_indicator))) AS OUT_class_descript_ind,
+	IFF(RTRIM(LTRIM(IN_class_description_indicator
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_class_description_indicator
+			)
+		)
+	) AS OUT_class_descript_ind,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_mco_code )))  ,v_default_str,ltrim(rtrim(IN_mco_code)))
-	IFF(RTRIM(LTRIM(IN_mco_code)) IS NULL, v_default_str, ltrim(rtrim(IN_mco_code))) AS OUT_mco,
+	IFF(RTRIM(LTRIM(IN_mco_code
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_mco_code
+			)
+		)
+	) AS OUT_mco,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_location_state  )))  ,v_default_str,ltrim(rtrim(IN_location_state)))
-	IFF(RTRIM(LTRIM(IN_location_state)) IS NULL, v_default_str, ltrim(rtrim(IN_location_state))) AS OUT_class_loc_state,
+	IFF(RTRIM(LTRIM(IN_location_state
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_location_state
+			)
+		)
+	) AS OUT_class_loc_state,
 	v_default_str AS OUT_subline,
 	-- *INF*: DECODE(  RTRIM(LTRIM( IN_exp_date )),
 	--     NULL , v_default_end_date,      
@@ -535,16 +746,43 @@ EXP_values_tl63x AS (
 	-- 
 	-- ))
 	--          
-	DECODE(RTRIM(LTRIM(IN_exp_date)),
+	DECODE(RTRIM(LTRIM(IN_exp_date
+			)
+		),
 		NULL, v_default_end_date,
 		'99999999', v_default_end_date,
-		IFF(IS_DATE(IN_exp_date, 'YYYYMMDD') = 1, ADD_TO_DATE(TO_DATE(IN_exp_date, 'YYYYMMDD'), 'DD', 1), ADD_TO_DATE(LAST_DAY(TO_DATE(CONCAT(SUBSTR(IN_exp_date, 1, 6), '01'), 'YYYYMMDD')), 'DD', 1))) AS v_exp_date,
+		IFF(IS_DATE(IN_exp_date, 'YYYYMMDD'
+			) = 1,
+			DATEADD(DAY,1,TO_DATE(IN_exp_date, 'YYYYMMDD'
+			)),
+			DATEADD(DAY,1,LAST_DAY(TO_DATE(CONCAT(SUBSTR(IN_exp_date, 1, 6
+						), '01'
+					), 'YYYYMMDD'
+				)
+			))
+		)
+	) AS v_exp_date,
 	v_exp_date AS OUT_exp_date,
 	-- *INF*: IIF(ISNULL(IN_class_description_seq) OR IS_SPACES(IN_class_description_seq) OR
 	-- LENGTH(IN_class_description_seq)=0,v_default_str,ltrim(rtrim(IN_class_description_seq)))
-	IFF(IN_class_description_seq IS NULL OR IS_SPACES(IN_class_description_seq) OR LENGTH(IN_class_description_seq) = 0, v_default_str, ltrim(rtrim(IN_class_description_seq))) AS OUT_class_descript_num_seq,
+	IFF(IN_class_description_seq IS NULL 
+		OR LENGTH(IN_class_description_seq)>0 AND TRIM(IN_class_description_seq)='' 
+		OR LENGTH(IN_class_description_seq
+		) = 0,
+		v_default_str,
+		ltrim(rtrim(IN_class_description_seq
+			)
+		)
+	) AS OUT_class_descript_num_seq,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_class_description  )))  ,v_default_str,ltrim(rtrim(IN_class_description)))
-	IFF(RTRIM(LTRIM(IN_class_description)) IS NULL, v_default_str, ltrim(rtrim(IN_class_description))) AS OUT_class_description,
+	IFF(RTRIM(LTRIM(IN_class_description
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_class_description
+			)
+		)
+	) AS OUT_class_description,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_crime_ind  ))) OR IS_SPACES(IN_crime_ind)
 	-- OR LENGTH( IN_crime_ind) = 0
 	-- 
@@ -552,7 +790,17 @@ EXP_values_tl63x AS (
 	-- 
 	-- 
 	--  
-	IFF(RTRIM(LTRIM(IN_crime_ind)) IS NULL OR IS_SPACES(IN_crime_ind) OR LENGTH(IN_crime_ind) = 0, v_default_str, ltrim(rtrim(IN_crime_ind))) AS OUT_crime_ind
+	IFF(RTRIM(LTRIM(IN_crime_ind
+			)
+		) IS NULL 
+		OR LENGTH(IN_crime_ind)>0 AND TRIM(IN_crime_ind)='' 
+		OR LENGTH(IN_crime_ind
+		) = 0,
+		v_default_str,
+		ltrim(rtrim(IN_crime_ind
+			)
+		)
+	) AS OUT_crime_ind
 	FROM SQ_gtam_tl63x_stage
 ),
 LKP_sup_class_code_tl63x AS (
@@ -599,14 +847,32 @@ EXP_Detect_Changes_tl63x AS (
 	-- 	(ltrim(rtrim(class_description)) <> ltrim(rtrim(LKP_class_code_descript))),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(LKP_sup_class_code_id IS NULL, 'NEW', IFF(( ltrim(rtrim(class_description)) <> ltrim(rtrim(LKP_class_code_descript)) ), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(LKP_sup_class_code_id IS NULL,
+		'NEW',
+		IFF(( ltrim(rtrim(class_description
+					)
+				) <> ltrim(rtrim(LKP_class_code_descript
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_ID,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	TO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
+			), 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_System_ID,
 	SYSDATE AS Created_Date,
@@ -683,7 +949,8 @@ SQ_gtam_tm530x_stage AS (
 EXP_values_tm530x AS (
 	SELECT
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS v_default_end_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS v_default_end_date,
 	'N/A' AS v_default_str,
 	location AS IN_class_loc_code,
 	master_company_number AS IN_mco_code,
@@ -694,13 +961,41 @@ EXP_values_tm530x AS (
 	screen_class_descr AS IN_class_description,
 	v_default_str AS OUT_class_code,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_class_loc_code )))  ,v_default_str,ltrim(rtrim(IN_class_loc_code)))
-	IFF(RTRIM(LTRIM(IN_class_loc_code)) IS NULL, v_default_str, ltrim(rtrim(IN_class_loc_code))) AS OUT_class_loc_code,
+	IFF(RTRIM(LTRIM(IN_class_loc_code
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_class_loc_code
+			)
+		)
+	) AS OUT_class_loc_code,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_class_description_indicator )))  ,v_default_str,ltrim(rtrim(IN_class_description_indicator)))
-	IFF(RTRIM(LTRIM(IN_class_description_indicator)) IS NULL, v_default_str, ltrim(rtrim(IN_class_description_indicator))) AS OUT_class_descript_ind,
+	IFF(RTRIM(LTRIM(IN_class_description_indicator
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_class_description_indicator
+			)
+		)
+	) AS OUT_class_descript_ind,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_mco_code )))  ,v_default_str,ltrim(rtrim(IN_mco_code)))
-	IFF(RTRIM(LTRIM(IN_mco_code)) IS NULL, v_default_str, ltrim(rtrim(IN_mco_code))) AS OUT_mco,
+	IFF(RTRIM(LTRIM(IN_mco_code
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_mco_code
+			)
+		)
+	) AS OUT_mco,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_location_state  )))  ,v_default_str,ltrim(rtrim(IN_location_state)))
-	IFF(RTRIM(LTRIM(IN_location_state)) IS NULL, v_default_str, ltrim(rtrim(IN_location_state))) AS OUT_class_loc_state,
+	IFF(RTRIM(LTRIM(IN_location_state
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_location_state
+			)
+		)
+	) AS OUT_class_loc_state,
 	v_default_str AS OUT_subline,
 	-- *INF*: DECODE(  RTRIM(LTRIM( IN_exp_date )),
 	--     NULL , v_default_end_date,      
@@ -719,19 +1014,48 @@ EXP_values_tm530x AS (
 	-- 
 	-- ))
 	--          
-	DECODE(RTRIM(LTRIM(IN_exp_date)),
+	DECODE(RTRIM(LTRIM(IN_exp_date
+			)
+		),
 		NULL, v_default_end_date,
 		'99999999', v_default_end_date,
-		IFF(IS_DATE(IN_exp_date, 'YYYYMMDD') = 1, ADD_TO_DATE(TO_DATE(IN_exp_date, 'YYYYMMDD'), 'DD', 1), ADD_TO_DATE(LAST_DAY(TO_DATE(CONCAT(SUBSTR(IN_exp_date, 1, 6), '01'), 'YYYYMMDD')), 'DD', 1))) AS v_exp_date,
+		IFF(IS_DATE(IN_exp_date, 'YYYYMMDD'
+			) = 1,
+			DATEADD(DAY,1,TO_DATE(IN_exp_date, 'YYYYMMDD'
+			)),
+			DATEADD(DAY,1,LAST_DAY(TO_DATE(CONCAT(SUBSTR(IN_exp_date, 1, 6
+						), '01'
+					), 'YYYYMMDD'
+				)
+			))
+		)
+	) AS v_exp_date,
 	v_exp_date AS OUT_exp_date,
 	v_default_str AS OUT_class_descript_num_seq,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_class_description  )))  ,v_default_str,ltrim(rtrim(IN_class_description)))
-	IFF(RTRIM(LTRIM(IN_class_description)) IS NULL, v_default_str, ltrim(rtrim(IN_class_description))) AS OUT_class_description,
+	IFF(RTRIM(LTRIM(IN_class_description
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_class_description
+			)
+		)
+	) AS OUT_class_description,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_crime_ind  ))) OR IS_SPACES(IN_crime_ind)
 	-- OR LENGTH( IN_crime_ind) = 0
 	-- 
 	--   ,v_default_str,ltrim(rtrim(IN_crime_ind)))
-	IFF(RTRIM(LTRIM(IN_crime_ind)) IS NULL OR IS_SPACES(IN_crime_ind) OR LENGTH(IN_crime_ind) = 0, v_default_str, ltrim(rtrim(IN_crime_ind))) AS OUT_crime_ind
+	IFF(RTRIM(LTRIM(IN_crime_ind
+			)
+		) IS NULL 
+		OR LENGTH(IN_crime_ind)>0 AND TRIM(IN_crime_ind)='' 
+		OR LENGTH(IN_crime_ind
+		) = 0,
+		v_default_str,
+		ltrim(rtrim(IN_crime_ind
+			)
+		)
+	) AS OUT_crime_ind
 	FROM SQ_gtam_tm530x_stage
 ),
 LKP_sup_class_code_tm530x AS (
@@ -778,14 +1102,32 @@ EXP_Detect_Changes_tm530x AS (
 	-- 	(ltrim(rtrim(class_description)) <> ltrim(rtrim(LKP_class_code_descript))),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(LKP_sup_class_code_id IS NULL, 'NEW', IFF(( ltrim(rtrim(class_description)) <> ltrim(rtrim(LKP_class_code_descript)) ), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(LKP_sup_class_code_id IS NULL,
+		'NEW',
+		IFF(( ltrim(rtrim(class_description
+					)
+				) <> ltrim(rtrim(LKP_class_code_descript
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_ID,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	TO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
+			), 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_System_ID,
 	SYSDATE AS Created_Date,
@@ -861,7 +1203,8 @@ SQ_gtam_tm530xe_seq1_stage AS (
 EXP_values_tm530xe_seq1 AS (
 	SELECT
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS v_default_end_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS v_default_end_date,
 	'N/A' AS v_default_str,
 	location AS IN_class_loc_code,
 	policy_company AS IN_mco_code,
@@ -870,14 +1213,42 @@ EXP_values_tm530xe_seq1 AS (
 	expiration_date AS IN_exp_date,
 	long_desc AS IN_class_description,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_class_code )))  ,v_default_str,ltrim(rtrim(IN_class_code)))
-	IFF(RTRIM(LTRIM(IN_class_code)) IS NULL, v_default_str, ltrim(rtrim(IN_class_code))) AS OUT_class_code,
+	IFF(RTRIM(LTRIM(IN_class_code
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_class_code
+			)
+		)
+	) AS OUT_class_code,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_class_loc_code )))  ,v_default_str,ltrim(rtrim(IN_class_loc_code)))
-	IFF(RTRIM(LTRIM(IN_class_loc_code)) IS NULL, v_default_str, ltrim(rtrim(IN_class_loc_code))) AS OUT_class_loc_code,
+	IFF(RTRIM(LTRIM(IN_class_loc_code
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_class_loc_code
+			)
+		)
+	) AS OUT_class_loc_code,
 	v_default_str AS OUT_class_descript_ind,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_mco_code )))  ,v_default_str,ltrim(rtrim(IN_mco_code)))
-	IFF(RTRIM(LTRIM(IN_mco_code)) IS NULL, v_default_str, ltrim(rtrim(IN_mco_code))) AS OUT_mco,
+	IFF(RTRIM(LTRIM(IN_mco_code
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_mco_code
+			)
+		)
+	) AS OUT_mco,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_location_state  )))  ,v_default_str,ltrim(rtrim(IN_location_state)))
-	IFF(RTRIM(LTRIM(IN_location_state)) IS NULL, v_default_str, ltrim(rtrim(IN_location_state))) AS OUT_class_loc_state,
+	IFF(RTRIM(LTRIM(IN_location_state
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_location_state
+			)
+		)
+	) AS OUT_class_loc_state,
 	v_default_str AS OUT_subline,
 	-- *INF*: DECODE(  RTRIM(LTRIM( IN_exp_date )),
 	--     NULL , v_default_end_date,      
@@ -896,14 +1267,33 @@ EXP_values_tm530xe_seq1 AS (
 	-- 
 	-- ))
 	--          
-	DECODE(RTRIM(LTRIM(IN_exp_date)),
+	DECODE(RTRIM(LTRIM(IN_exp_date
+			)
+		),
 		NULL, v_default_end_date,
 		'99999999', v_default_end_date,
-		IFF(IS_DATE(IN_exp_date, 'YYYYMMDD') = 1, ADD_TO_DATE(TO_DATE(IN_exp_date, 'YYYYMMDD'), 'DD', 1), ADD_TO_DATE(LAST_DAY(TO_DATE(CONCAT(SUBSTR(IN_exp_date, 1, 6), '01'), 'YYYYMMDD')), 'DD', 1))) AS v_exp_date,
+		IFF(IS_DATE(IN_exp_date, 'YYYYMMDD'
+			) = 1,
+			DATEADD(DAY,1,TO_DATE(IN_exp_date, 'YYYYMMDD'
+			)),
+			DATEADD(DAY,1,LAST_DAY(TO_DATE(CONCAT(SUBSTR(IN_exp_date, 1, 6
+						), '01'
+					), 'YYYYMMDD'
+				)
+			))
+		)
+	) AS v_exp_date,
 	v_exp_date AS OUT_exp_date,
 	v_default_str AS OUT_class_descript_num_seq,
 	-- *INF*: IIF(ISNULL( RTRIM(LTRIM( IN_class_description  )))  ,v_default_str,ltrim(rtrim(IN_class_description)))
-	IFF(RTRIM(LTRIM(IN_class_description)) IS NULL, v_default_str, ltrim(rtrim(IN_class_description))) AS OUT_class_description,
+	IFF(RTRIM(LTRIM(IN_class_description
+			)
+		) IS NULL,
+		v_default_str,
+		ltrim(rtrim(IN_class_description
+			)
+		)
+	) AS OUT_class_description,
 	v_default_str AS OUT_crime_ind
 	FROM SQ_gtam_tm530xe_seq1_stage
 ),
@@ -951,14 +1341,32 @@ EXP_Detect_Changes_tm530xe_seq1 AS (
 	-- 	(ltrim(rtrim(class_description)) <> ltrim(rtrim(LKP_class_code_descript))),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(LKP_sup_class_code_id IS NULL, 'NEW', IFF(( ltrim(rtrim(class_description)) <> ltrim(rtrim(LKP_class_code_descript)) ), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(LKP_sup_class_code_id IS NULL,
+		'NEW',
+		IFF(( ltrim(rtrim(class_description
+					)
+				) <> ltrim(rtrim(LKP_class_code_descript
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_ID,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	TO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
+			), 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_System_ID,
 	SYSDATE AS Created_Date,
@@ -1104,8 +1512,18 @@ EXP_Lag_Eff_dates AS (
 	-- , ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		source_sys_id = v_PREV_ROW_source_sys_id AND class_code = v_PREV_ROW_class_code AND class_loc_code = v_PREV_ROW_class_loc_code AND class_descript_ind = v_PREV_ROW_class_descript_ind AND mco = v_PREV_ROW_mco AND class_loc_state = v_PREV_ROW_class_loc_state AND subline = v_PREV_ROW_subline AND gtam_exp_date = v_PREV_ROW_gtam_exp_date AND class_descript_num_seq = v_PREV_ROW_class_descript_num_seq AND crime_ind = v_PREV_ROW_crime_ind, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		source_sys_id = v_PREV_ROW_source_sys_id 
+		AND class_code = v_PREV_ROW_class_code 
+		AND class_loc_code = v_PREV_ROW_class_loc_code 
+		AND class_descript_ind = v_PREV_ROW_class_descript_ind 
+		AND mco = v_PREV_ROW_mco 
+		AND class_loc_state = v_PREV_ROW_class_loc_state 
+		AND subline = v_PREV_ROW_subline 
+		AND gtam_exp_date = v_PREV_ROW_gtam_exp_date 
+		AND class_descript_num_seq = v_PREV_ROW_class_descript_num_seq 
+		AND crime_ind = v_PREV_ROW_crime_ind, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	source_sys_id AS v_PREV_ROW_source_sys_id,

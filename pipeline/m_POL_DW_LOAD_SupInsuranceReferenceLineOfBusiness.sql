@@ -17,11 +17,23 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate) AS o_EffectiveDate,
+	IFF(i_EffectiveDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_EffectiveDate
+	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate,
+	IFF(i_ExpirationDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ExpirationDate
+	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate) AS o_ModifiedDate
+	IFF(i_ModifiedDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ModifiedDate
+	) AS o_ModifiedDate
 	FROM SQ_SupLineOfBusiness
 ),
 EXP_NumericValues AS (
@@ -29,9 +41,15 @@ EXP_NumericValues AS (
 	SupLineOfBusinessId,
 	SupLineOfBusinessAKId,
 	-- *INF*: IIF(ISNULL(SupLineOfBusinessId),-1,SupLineOfBusinessId)
-	IFF(SupLineOfBusinessId IS NULL, - 1, SupLineOfBusinessId) AS o_SupLineOfBusinessId,
+	IFF(SupLineOfBusinessId IS NULL,
+		- 1,
+		SupLineOfBusinessId
+	) AS o_SupLineOfBusinessId,
 	-- *INF*: IIF(ISNULL(SupLineOfBusinessAKId),-1,SupLineOfBusinessAKId)
-	IFF(SupLineOfBusinessAKId IS NULL, - 1, SupLineOfBusinessAKId) AS o_SupLineOfBusinessAKId
+	IFF(SupLineOfBusinessAKId IS NULL,
+		- 1,
+		SupLineOfBusinessAKId
+	) AS o_SupLineOfBusinessAKId
 	FROM SQ_SupLineOfBusiness
 ),
 EXP_StringValues AS (
@@ -41,16 +59,44 @@ EXP_StringValues AS (
 	LineOfBusinessCode AS i_LineOfBusinessCode,
 	SourceLineOfBusinessCode AS i_SourceLineOfBusinessCode,
 	-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)
-	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,
+	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'
+		),
+		1,
+		0
+	) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_SourceCode) OR LENGTH(i_SourceCode)=0 OR IS_SPACES(i_SourceCode),'N/A',LTRIM(RTRIM(i_SourceCode)))
-	IFF(i_SourceCode IS NULL OR LENGTH(i_SourceCode) = 0 OR IS_SPACES(i_SourceCode), 'N/A', LTRIM(RTRIM(i_SourceCode))) AS o_SourceCode,
+	IFF(i_SourceCode IS NULL 
+		OR LENGTH(i_SourceCode
+		) = 0 
+		OR LENGTH(i_SourceCode)>0 AND TRIM(i_SourceCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_SourceCode
+			)
+		)
+	) AS o_SourceCode,
 	-- *INF*: IIF(ISNULL(i_LineOfBusinessCode) OR LENGTH(i_LineOfBusinessCode)=0 OR IS_SPACES(i_LineOfBusinessCode),'N/A',LTRIM(RTRIM(i_LineOfBusinessCode)))
-	IFF(i_LineOfBusinessCode IS NULL OR LENGTH(i_LineOfBusinessCode) = 0 OR IS_SPACES(i_LineOfBusinessCode), 'N/A', LTRIM(RTRIM(i_LineOfBusinessCode))) AS o_LineOfBusinessCode,
+	IFF(i_LineOfBusinessCode IS NULL 
+		OR LENGTH(i_LineOfBusinessCode
+		) = 0 
+		OR LENGTH(i_LineOfBusinessCode)>0 AND TRIM(i_LineOfBusinessCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_LineOfBusinessCode
+			)
+		)
+	) AS o_LineOfBusinessCode,
 	-- *INF*: IIF(ISNULL(i_SourceLineOfBusinessCode) OR LENGTH(i_SourceLineOfBusinessCode)=0 OR IS_SPACES(i_SourceLineOfBusinessCode),'N/A',LTRIM(RTRIM(i_SourceLineOfBusinessCode)))
-	IFF(i_SourceLineOfBusinessCode IS NULL OR LENGTH(i_SourceLineOfBusinessCode) = 0 OR IS_SPACES(i_SourceLineOfBusinessCode), 'N/A', LTRIM(RTRIM(i_SourceLineOfBusinessCode))) AS o_SourceLineOfBusinessCode
+	IFF(i_SourceLineOfBusinessCode IS NULL 
+		OR LENGTH(i_SourceLineOfBusinessCode
+		) = 0 
+		OR LENGTH(i_SourceLineOfBusinessCode)>0 AND TRIM(i_SourceLineOfBusinessCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_SourceLineOfBusinessCode
+			)
+		)
+	) AS o_SourceLineOfBusinessCode
 	FROM SQ_SupLineOfBusiness
 ),
 TGT_SupInsuranceReferenceLineOfBusiness_UpdateElseInsert AS (

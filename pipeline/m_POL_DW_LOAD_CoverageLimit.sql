@@ -219,21 +219,54 @@ EXP_Set_Lookup_Conditions AS (
 	-- NULL
 	-- )
 	DECODE(TRUE,
-		NOT i_Pif43RXCPStageId IS NULL, '&&' || i_sar_risk_unit_group || '&&&&&&&&&',
-		i_sar_insurance_line = 'CR' AND in(i_sar_major_peril, '565', '566') AND in(i_sar_type_bureau, 'CR', 'FT', 'BT'), i_sar_insurance_line || '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&' || i_sar_unit || '&&&&&&&',
-		i_sar_insurance_line = 'IM' AND i_sar_major_peril = '551', i_sar_insurance_line || '&' || i_sar_major_peril || '&' || i_sar_risk_unit_group || '&&&' || i_sar_class_1_4 || '&&&&&&',
-		i_sar_insurance_line = 'GA' AND i_sar_major_peril = '100' AND in(i_sar_seq_no, '00', '01') AND i_sar_type_bureau = 'AL', i_sar_insurance_line || '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&' || i_sar_seq_no || '&&' || i_sar_code_2 || '&' || i_sar_code_3 || '&&',
-		i_sar_insurance_line = 'GA' AND i_sar_major_peril = '114' AND i_sar_type_bureau = 'AL', i_sar_insurance_line || '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&&&&' || SUBSTR(i_sar_code_5, 1, 1) || '&',
-		i_sar_insurance_line = 'GA' AND in(i_sar_major_peril, '115', '120') AND i_sar_type_bureau = 'AL', i_sar_insurance_line || '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&&&&' || IFF(LENGTH(i_sar_code_5) > 1, SUBSTR(i_sar_code_5, 2, 1), i_sar_code_5) || '&',
-		i_sar_insurance_line = 'GA' AND i_sar_major_peril = '118' AND i_sar_type_bureau = 'AL', i_sar_insurance_line || '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&&&&&' || i_sar_code_6,
-		i_sar_insurance_line = 'GA' AND i_sar_major_peril = '130' AND i_sar_type_bureau = 'AN', i_sar_insurance_line || '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&' || i_sar_code_1 || '&' || i_sar_code_2 || '&&&',
-		i_sar_insurance_line = 'GA' AND i_sar_type_bureau = 'AP', i_sar_insurance_line || '&&&' || i_sar_type_bureau || '&' || i_sar_unit || '&&&&&&&',
-		i_sar_major_peril = '100' AND i_sar_type_bureau = 'AL', '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&&' || i_sar_code_2 || '&' || i_sar_code_3 || '&&',
-		i_sar_major_peril = '114' AND i_sar_type_bureau = 'AL', '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&&&&' || SUBSTR(i_sar_code_5, 1, 1) || '&',
-		in(i_sar_major_peril, '115', '116') AND i_sar_type_bureau = 'AL', '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&&&&' || IFF(LENGTH(i_sar_code_5) > 1, SUBSTR(i_sar_code_5, 2, 1), i_sar_code_5) || '&',
-		in(i_sar_major_peril, '118', '119') AND i_sar_type_bureau = 'AL', '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&&&&&' || i_sar_code_6,
-		i_sar_major_peril = '130' AND i_sar_type_bureau = 'AN', '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&' || i_sar_code_1 || '&' || i_sar_code_2 || '&&&',
-		NULL) AS o_lkp_condition
+		i_Pif43RXCPStageId IS NOT NULL, '&&' || i_sar_risk_unit_group || '&&&&&&&&&',
+		i_sar_insurance_line = 'CR' 
+		AND i_sar_major_peril IN ('565','566') 
+		AND i_sar_type_bureau IN ('CR','FT','BT'), i_sar_insurance_line || '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&' || i_sar_unit || '&&&&&&&',
+		i_sar_insurance_line = 'IM' 
+		AND i_sar_major_peril = '551', i_sar_insurance_line || '&' || i_sar_major_peril || '&' || i_sar_risk_unit_group || '&&&' || i_sar_class_1_4 || '&&&&&&',
+		i_sar_insurance_line = 'GA' 
+		AND i_sar_major_peril = '100' 
+		AND i_sar_seq_no IN ('00','01') 
+		AND i_sar_type_bureau = 'AL', i_sar_insurance_line || '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&' || i_sar_seq_no || '&&' || i_sar_code_2 || '&' || i_sar_code_3 || '&&',
+		i_sar_insurance_line = 'GA' 
+		AND i_sar_major_peril = '114' 
+		AND i_sar_type_bureau = 'AL', i_sar_insurance_line || '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&&&&' || SUBSTR(i_sar_code_5, 1, 1
+		) || '&',
+		i_sar_insurance_line = 'GA' 
+		AND i_sar_major_peril IN ('115','120') 
+		AND i_sar_type_bureau = 'AL', i_sar_insurance_line || '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&&&&' || IFF(LENGTH(i_sar_code_5
+			) > 1,
+			SUBSTR(i_sar_code_5, 2, 1
+			),
+			i_sar_code_5
+		) || '&',
+		i_sar_insurance_line = 'GA' 
+		AND i_sar_major_peril = '118' 
+		AND i_sar_type_bureau = 'AL', i_sar_insurance_line || '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&&&&&' || i_sar_code_6,
+		i_sar_insurance_line = 'GA' 
+		AND i_sar_major_peril = '130' 
+		AND i_sar_type_bureau = 'AN', i_sar_insurance_line || '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&' || i_sar_code_1 || '&' || i_sar_code_2 || '&&&',
+		i_sar_insurance_line = 'GA' 
+		AND i_sar_type_bureau = 'AP', i_sar_insurance_line || '&&&' || i_sar_type_bureau || '&' || i_sar_unit || '&&&&&&&',
+		i_sar_major_peril = '100' 
+		AND i_sar_type_bureau = 'AL', '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&&' || i_sar_code_2 || '&' || i_sar_code_3 || '&&',
+		i_sar_major_peril = '114' 
+		AND i_sar_type_bureau = 'AL', '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&&&&' || SUBSTR(i_sar_code_5, 1, 1
+		) || '&',
+		i_sar_major_peril IN ('115','116') 
+		AND i_sar_type_bureau = 'AL', '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&&&&' || IFF(LENGTH(i_sar_code_5
+			) > 1,
+			SUBSTR(i_sar_code_5, 2, 1
+			),
+			i_sar_code_5
+		) || '&',
+		i_sar_major_peril IN ('118','119') 
+		AND i_sar_type_bureau = 'AL', '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&&&&&' || i_sar_code_6,
+		i_sar_major_peril = '130' 
+		AND i_sar_type_bureau = 'AN', '&' || i_sar_major_peril || '&&' || i_sar_type_bureau || '&&&&' || i_sar_code_1 || '&' || i_sar_code_2 || '&&&',
+		NULL
+	) AS o_lkp_condition
 	FROM SQ_pif_4514_stage
 ),
 LKP_SupCoverageLimtRule AS (
@@ -267,19 +300,31 @@ EXP_Assign_Value_4514 AS (
 	LKP_SupCoverageLimtRule.CoverageLimitvalue AS i_CoverageLimitvalue,
 	SQ_pif_4514_stage.sar_exposure AS i_sar_exposure,
 	-- *INF*: IIF(ISNULL(i_CoverageLimitvalue) OR IS_SPACES(i_CoverageLimitvalue) OR LENGTH(i_CoverageLimitvalue)=0,'0',LTRIM(RTRIM(i_CoverageLimitvalue)))
-	IFF(i_CoverageLimitvalue IS NULL OR IS_SPACES(i_CoverageLimitvalue) OR LENGTH(i_CoverageLimitvalue) = 0, '0', LTRIM(RTRIM(i_CoverageLimitvalue))) AS v_CoverageLimitvalue,
+	IFF(i_CoverageLimitvalue IS NULL 
+		OR LENGTH(i_CoverageLimitvalue)>0 AND TRIM(i_CoverageLimitvalue)='' 
+		OR LENGTH(i_CoverageLimitvalue
+		) = 0,
+		'0',
+		LTRIM(RTRIM(i_CoverageLimitvalue
+			)
+		)
+	) AS v_CoverageLimitvalue,
 	-- *INF*: TO_CHAR(i_sar_exposure)
-	TO_CHAR(i_sar_exposure) AS v_sar_exposure,
+	TO_CHAR(i_sar_exposure
+	) AS v_sar_exposure,
 	EXP_Set_Lookup_Conditions.pif_4514_stage_id,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_type)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_type) AS o_type,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_type
+	) AS o_type,
 	-- *INF*: DECODE(TRUE,
 	-- NOT ISNULL(i_CoverageLimitvalue) AND NOT ISNULL(i_type),v_CoverageLimitvalue,
 	-- NOT ISNULL(i_type),v_sar_exposure,'0')
 	DECODE(TRUE,
-		NOT i_CoverageLimitvalue IS NULL AND NOT i_type IS NULL, v_CoverageLimitvalue,
-		NOT i_type IS NULL, v_sar_exposure,
-		'0') AS o_value
+		i_CoverageLimitvalue IS NULL 
+		AND i_type IS NOT NOT NULL, v_CoverageLimitvalue,
+		i_type IS NOT NULL, v_sar_exposure,
+		'0'
+	) AS o_value
 	FROM EXP_Set_Lookup_Conditions
 	 -- Manually join with SQ_pif_4514_stage
 	LEFT JOIN LKP_SupCoverageLimtRule
@@ -332,13 +377,26 @@ EXP_EPLI_AggregateLimit AS (
 	-- 'N/A')
 	-- 
 	DECODE(TRUE,
-		( sar_insurance_line = 'GA' AND sar_risk_unit_group = '417' ), '100000',
-		( sar_insurance_line = 'GA' AND sar_risk_unit_group = '418' ), '250000',
-		( sar_insurance_line = 'GL' AND sar_unit = '22222' ), '100000',
-		( sar_insurance_line = 'GL' AND sar_unit = '22250' ), '250000',
-		( sar_insurance_line = 'BP' AND sar_risk_unit_group = '366' ), '100000',
-		( sar_insurance_line = 'BP' AND sar_risk_unit_group = '367' ), '250000',
-		'N/A') AS o_LimitValue
+		( sar_insurance_line = 'GA' 
+			AND sar_risk_unit_group = '417' 
+		), '100000',
+		( sar_insurance_line = 'GA' 
+			AND sar_risk_unit_group = '418' 
+		), '250000',
+		( sar_insurance_line = 'GL' 
+			AND sar_unit = '22222' 
+		), '100000',
+		( sar_insurance_line = 'GL' 
+			AND sar_unit = '22250' 
+		), '250000',
+		( sar_insurance_line = 'BP' 
+			AND sar_risk_unit_group = '366' 
+		), '100000',
+		( sar_insurance_line = 'BP' 
+			AND sar_risk_unit_group = '367' 
+		), '250000',
+		'N/A'
+	) AS o_LimitValue
 	FROM RTR_EPLI_AggregateLimit
 ),
 EXP_EPLI_EachRelatedWrongfulEmploymentPractice AS (
@@ -361,13 +419,26 @@ EXP_EPLI_EachRelatedWrongfulEmploymentPractice AS (
 	-- 'N/A')
 	-- 
 	DECODE(TRUE,
-		( sar_insurance_line = 'GA' AND sar_risk_unit_group = '417' ), '100000',
-		( sar_insurance_line = 'GA' AND sar_risk_unit_group = '418' ), '250000',
-		( sar_insurance_line = 'GL' AND sar_unit = '22222' ), '100000',
-		( sar_insurance_line = 'GL' AND sar_unit = '22250' ), '250000',
-		( sar_insurance_line = 'BP' AND sar_risk_unit_group = '366' ), '100000',
-		( sar_insurance_line = 'BP' AND sar_risk_unit_group = '367' ), '250000',
-		'N/A') AS o_LimitValue
+		( sar_insurance_line = 'GA' 
+			AND sar_risk_unit_group = '417' 
+		), '100000',
+		( sar_insurance_line = 'GA' 
+			AND sar_risk_unit_group = '418' 
+		), '250000',
+		( sar_insurance_line = 'GL' 
+			AND sar_unit = '22222' 
+		), '100000',
+		( sar_insurance_line = 'GL' 
+			AND sar_unit = '22250' 
+		), '250000',
+		( sar_insurance_line = 'BP' 
+			AND sar_risk_unit_group = '366' 
+		), '100000',
+		( sar_insurance_line = 'BP' 
+			AND sar_risk_unit_group = '367' 
+		), '250000',
+		'N/A'
+	) AS o_LimitValue
 	FROM RTR_EPLI_EachRelatedWrongfulEmploymentPractice
 ),
 SQ_Pif351Stage AS (
@@ -416,11 +487,15 @@ EXP_CA_DefaultValue AS (
 	PifModule,
 	UnitNum AS i_UnitNum,
 	-- *INF*: LPAD(TO_CHAR(i_UnitNum),3,'0')
-	LPAD(TO_CHAR(i_UnitNum), 3, '0') AS o_UnitNum,
+	LPAD(TO_CHAR(i_UnitNum
+		), 3, '0'
+	) AS o_UnitNum,
 	VehicleCoverageCode,
 	VehicleCoverageLimit AS i_VehicleCoverageLimit,
 	-- *INF*: LTRIM(RTRIM(i_VehicleCoverageLimit))
-	LTRIM(RTRIM(i_VehicleCoverageLimit)) AS o_VehicleCoverageLimit
+	LTRIM(RTRIM(i_VehicleCoverageLimit
+		)
+	) AS o_VehicleCoverageLimit
 	FROM NRM_CA_Limit
 ),
 JNR_CA AS (SELECT
@@ -448,7 +523,9 @@ EXP_TRANS_CA AS (
 	pif_4514_stage_id AS i_pif_4514_stage_id,
 	sar_state AS i_sar_state,
 	-- *INF*: LTRIM(RTRIM(i_VehicleCoverageLimit))
-	LTRIM(RTRIM(i_VehicleCoverageLimit)) AS v_VehicleCoverageLimit,
+	LTRIM(RTRIM(i_VehicleCoverageLimit
+		)
+	) AS v_VehicleCoverageLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_VehicleCoverageCode='01','CombinedSingleLimit',
 	-- i_VehicleCoverageCode='07','MedicalPaymentLimit',
@@ -491,13 +568,26 @@ EXP_TRANS_CA AS (
 		i_VehicleCoverageCode = '12', 'UnderinsuredMotoristSingleLimit',
 		i_VehicleCoverageCode = '13', 'UnderinsuredMotoristSplitLimit',
 		i_VehicleCoverageCode = '11', 'UninsuredMotoristPropertyDamage',
-		i_VehicleCoverageCode = '14' AND i_sar_state = '22' AND IN(i_VehicleCoverageLimit, 'Y', 'AY'), 'PersonalInjuryProtectionBasicLimit',
-		i_VehicleCoverageCode = '14' AND i_sar_state = '22' AND IN(i_VehicleCoverageLimit, '50', '60', '70', '75', 'A50', 'A60', 'A70', 'A75'), 'PersonalInjuryProtectionExcessLimit',
-		i_VehicleCoverageCode = '14' AND i_sar_state = '15' AND i_VehicleCoverageLimit = 'Y', 'PersonalInjuryProtectionBasicLimit',
-		i_VehicleCoverageCode = '14' AND i_sar_state = '15' AND IN(i_VehicleCoverageLimit, '12', '27'), 'PersonalInjuryProtectionExcessLimit',
-		i_VehicleCoverageCode = '14' AND i_sar_state = '16' AND i_VehicleCoverageLimit = 'Y', 'PersonalInjuryProtectionBasicLimit',
-		i_VehicleCoverageCode = '14' AND i_sar_state = '16' AND IN(i_VehicleCoverageLimit, '10', '20', '30', '40', '65', '90'), 'PersonalInjuryProtectionExcessLimit',
-		'N/A') AS o_LimitType,
+		i_VehicleCoverageCode = '14' 
+		AND i_sar_state = '22' 
+		AND i_VehicleCoverageLimit IN ('Y','AY'), 'PersonalInjuryProtectionBasicLimit',
+		i_VehicleCoverageCode = '14' 
+		AND i_sar_state = '22' 
+		AND i_VehicleCoverageLimit IN ('50','60','70','75','A50','A60','A70','A75'), 'PersonalInjuryProtectionExcessLimit',
+		i_VehicleCoverageCode = '14' 
+		AND i_sar_state = '15' 
+		AND i_VehicleCoverageLimit = 'Y', 'PersonalInjuryProtectionBasicLimit',
+		i_VehicleCoverageCode = '14' 
+		AND i_sar_state = '15' 
+		AND i_VehicleCoverageLimit IN ('12','27'), 'PersonalInjuryProtectionExcessLimit',
+		i_VehicleCoverageCode = '14' 
+		AND i_sar_state = '16' 
+		AND i_VehicleCoverageLimit = 'Y', 'PersonalInjuryProtectionBasicLimit',
+		i_VehicleCoverageCode = '14' 
+		AND i_sar_state = '16' 
+		AND i_VehicleCoverageLimit IN ('10','20','30','40','65','90'), 'PersonalInjuryProtectionExcessLimit',
+		'N/A'
+	) AS o_LimitType,
 	-- *INF*: DECODE(TRUE,
 	-- i_VehicleCoverageCode='01',
 	-- DECODE(TRUE,
@@ -652,15 +742,17 @@ EXP_TRANS_CA AS (
 		v_VehicleCoverageLimit = '1MA', '1000000 Option A',
 		v_VehicleCoverageLimit = '1MB', '1000000 Option B',
 		v_VehicleCoverageLimit = '1MC', '1000000 Option C',
-		'N/A'),
+		'N/A'
+		),
 		i_VehicleCoverageCode = '07', DECODE(TRUE,
 		v_VehicleCoverageLimit = '500', '500',
 		v_VehicleCoverageLimit = '1', '1000',
 		v_VehicleCoverageLimit = '2', '2000',
 		v_VehicleCoverageLimit = '5', '5000',
 		v_VehicleCoverageLimit = '10', '10000',
-		'N/A'),
-		IN(i_VehicleCoverageCode, '08', '12'), DECODE(TRUE,
+		'N/A'
+		),
+		i_VehicleCoverageCode IN ('08','12'), DECODE(TRUE,
 		v_VehicleCoverageLimit = '30', '30000',
 		v_VehicleCoverageLimit = '40', '40000',
 		v_VehicleCoverageLimit = '50', '50000',
@@ -676,8 +768,9 @@ EXP_TRANS_CA AS (
 		v_VehicleCoverageLimit = '600', '600000',
 		v_VehicleCoverageLimit = '750', '750000',
 		v_VehicleCoverageLimit = '1M', '1000000',
-		'N/A'),
-		IN(i_VehicleCoverageCode, '09', '13'), DECODE(TRUE,
+		'N/A'
+		),
+		i_VehicleCoverageCode IN ('09','13'), DECODE(TRUE,
 		v_VehicleCoverageLimit = '15-30', '15000/30000',
 		v_VehicleCoverageLimit = '20-40', '20000/40000',
 		v_VehicleCoverageLimit = '25-50', '25000/50000',
@@ -690,32 +783,39 @@ EXP_TRANS_CA AS (
 		v_VehicleCoverageLimit = '500-500', '500000/500000',
 		v_VehicleCoverageLimit = '500-1M', '500000/1000000',
 		v_VehicleCoverageLimit = '1M-1M', '1000000/1000000',
-		'N/A'),
+		'N/A'
+		),
 		i_VehicleCoverageCode = '11', DECODE(TRUE,
 		v_VehicleCoverageLimit = '7.5', '7500',
 		v_VehicleCoverageLimit = '15', '15000',
 		v_VehicleCoverageLimit = '60P', '60000',
 		v_VehicleCoverageLimit = '100P', '100000',
 		v_VehicleCoverageLimit = '250P', '250000',
-		IN(v_VehicleCoverageLimit, '300', '300P'), '300000',
+		v_VehicleCoverageLimit IN ('300','300P'), '300000',
 		v_VehicleCoverageLimit = '350P', '350000',
 		v_VehicleCoverageLimit = '500P', '500000',
 		v_VehicleCoverageLimit = '750P', '750000',
 		v_VehicleCoverageLimit = '1MP', '1000000',
-		'N/A'),
-		i_VehicleCoverageCode = '14' AND i_sar_state = '22', DECODE(TRUE,
-		IN(v_VehicleCoverageLimit, 'Y', 'AY'), '40000',
-		IN(v_VehicleCoverageLimit, '50', 'A50'), '50000',
-		IN(v_VehicleCoverageLimit, '60', 'A60'), '60000',
-		IN(v_VehicleCoverageLimit, '70', 'A70'), '70000',
-		IN(v_VehicleCoverageLimit, '75', 'A75'), '75000',
-		'N/A'),
-		i_VehicleCoverageCode = '14' AND i_sar_state = '15', DECODE(TRUE,
+		'N/A'
+		),
+		i_VehicleCoverageCode = '14' 
+		AND i_sar_state = '22', DECODE(TRUE,
+		v_VehicleCoverageLimit IN ('Y','AY'), '40000',
+		v_VehicleCoverageLimit IN ('50','A50'), '50000',
+		v_VehicleCoverageLimit IN ('60','A60'), '60000',
+		v_VehicleCoverageLimit IN ('70','A70'), '70000',
+		v_VehicleCoverageLimit IN ('75','A75'), '75000',
+		'N/A'
+		),
+		i_VehicleCoverageCode = '14' 
+		AND i_sar_state = '15', DECODE(TRUE,
 		v_VehicleCoverageLimit = 'Y', '0',
 		v_VehicleCoverageLimit = '12', '12500',
 		v_VehicleCoverageLimit = '27', '27500',
-		'N/A'),
-		i_VehicleCoverageCode = '14' AND i_sar_state = '16', DECODE(TRUE,
+		'N/A'
+		),
+		i_VehicleCoverageCode = '14' 
+		AND i_sar_state = '16', DECODE(TRUE,
 		v_VehicleCoverageLimit = 'Y', '10000',
 		v_VehicleCoverageLimit = '10', '10000',
 		v_VehicleCoverageLimit = '20', '20000',
@@ -723,8 +823,10 @@ EXP_TRANS_CA AS (
 		v_VehicleCoverageLimit = '40', '40000',
 		v_VehicleCoverageLimit = '65', '65000',
 		v_VehicleCoverageLimit = '90', '90000',
-		'N/A'),
-		'N/A') AS o_LimitValue,
+		'N/A'
+		),
+		'N/A'
+	) AS o_LimitValue,
 	i_pif_4514_stage_id AS o_pif_4514_state_id
 	FROM JNR_CA
 ),
@@ -757,20 +859,55 @@ EXP_Values_RXGL AS (
 	pif_4514_stage_id,
 	'MedicalPaymentLimit' AS o_type1,
 	-- *INF*: IIF(ISNULL(i_Pmdrxg1FringeLimit1) OR LENGTH(i_Pmdrxg1FringeLimit1)=0 OR IS_SPACES(i_Pmdrxg1FringeLimit1) OR NOT IS_NUMBER(i_Pmdrxg1FringeLimit1),'0',TO_CHAR(TO_DECIMAL(i_Pmdrxg1FringeLimit1)))
-	IFF(i_Pmdrxg1FringeLimit1 IS NULL OR LENGTH(i_Pmdrxg1FringeLimit1) = 0 OR IS_SPACES(i_Pmdrxg1FringeLimit1) OR NOT IS_NUMBER(i_Pmdrxg1FringeLimit1), '0', TO_CHAR(TO_DECIMAL(i_Pmdrxg1FringeLimit1))) AS o_value1,
+	IFF(i_Pmdrxg1FringeLimit1 IS NULL 
+		OR LENGTH(i_Pmdrxg1FringeLimit1
+		) = 0 
+		OR LENGTH(i_Pmdrxg1FringeLimit1)>0 AND TRIM(i_Pmdrxg1FringeLimit1)='' 
+		OR NOT REGEXP_LIKE(i_Pmdrxg1FringeLimit1, '^[0-9]+$'),
+		'0',
+		TO_CHAR(CAST(i_Pmdrxg1FringeLimit1 AS FLOAT)
+		)
+	) AS o_value1,
 	'DamageToPremisesRentedToYouLimit' AS o_type2,
 	-- *INF*: IIF(ISNULL(i_Pmdrxg1FringeLimit2) OR LENGTH(i_Pmdrxg1FringeLimit2)=0 OR IS_SPACES(i_Pmdrxg1FringeLimit2) OR NOT IS_NUMBER(i_Pmdrxg1FringeLimit2),'0',TO_CHAR(TO_DECIMAL(i_Pmdrxg1FringeLimit2)))
-	IFF(i_Pmdrxg1FringeLimit2 IS NULL OR LENGTH(i_Pmdrxg1FringeLimit2) = 0 OR IS_SPACES(i_Pmdrxg1FringeLimit2) OR NOT IS_NUMBER(i_Pmdrxg1FringeLimit2), '0', TO_CHAR(TO_DECIMAL(i_Pmdrxg1FringeLimit2))) AS o_value2,
+	IFF(i_Pmdrxg1FringeLimit2 IS NULL 
+		OR LENGTH(i_Pmdrxg1FringeLimit2
+		) = 0 
+		OR LENGTH(i_Pmdrxg1FringeLimit2)>0 AND TRIM(i_Pmdrxg1FringeLimit2)='' 
+		OR NOT REGEXP_LIKE(i_Pmdrxg1FringeLimit2, '^[0-9]+$'),
+		'0',
+		TO_CHAR(CAST(i_Pmdrxg1FringeLimit2 AS FLOAT)
+		)
+	) AS o_value2,
 	-- *INF*: iif(i_Pmdrxg1FringeLimit3>'0000000000','PersonalInjuryAndAdvertisingLiabilityLimit','PersonalInjuryLiabilityLimit')
-	IFF(i_Pmdrxg1FringeLimit3 > '0000000000', 'PersonalInjuryAndAdvertisingLiabilityLimit', 'PersonalInjuryLiabilityLimit') AS o_type3,
+	IFF(i_Pmdrxg1FringeLimit3 > '0000000000',
+		'PersonalInjuryAndAdvertisingLiabilityLimit',
+		'PersonalInjuryLiabilityLimit'
+	) AS o_type3,
 	-- *INF*: IIF(ISNULL(i_Pmdrxg1FringeLimit3) OR LENGTH(i_Pmdrxg1FringeLimit3)=0 OR IS_SPACES(i_Pmdrxg1FringeLimit3) OR NOT IS_NUMBER(i_Pmdrxg1FringeLimit3),'0',TO_CHAR(TO_DECIMAL(i_Pmdrxg1FringeLimit3)))
-	IFF(i_Pmdrxg1FringeLimit3 IS NULL OR LENGTH(i_Pmdrxg1FringeLimit3) = 0 OR IS_SPACES(i_Pmdrxg1FringeLimit3) OR NOT IS_NUMBER(i_Pmdrxg1FringeLimit3), '0', TO_CHAR(TO_DECIMAL(i_Pmdrxg1FringeLimit3))) AS o_value3,
+	IFF(i_Pmdrxg1FringeLimit3 IS NULL 
+		OR LENGTH(i_Pmdrxg1FringeLimit3
+		) = 0 
+		OR LENGTH(i_Pmdrxg1FringeLimit3)>0 AND TRIM(i_Pmdrxg1FringeLimit3)='' 
+		OR NOT REGEXP_LIKE(i_Pmdrxg1FringeLimit3, '^[0-9]+$'),
+		'0',
+		TO_CHAR(CAST(i_Pmdrxg1FringeLimit3 AS FLOAT)
+		)
+	) AS o_value3,
 	'VoluntaryPropertyDamageOccurrenceLimit' AS o_type4,
 	-- *INF*: IIF(ISNULL(i_Pmdrxg1VolPdOcc),'0',TO_CHAR(i_Pmdrxg1VolPdOcc))
-	IFF(i_Pmdrxg1VolPdOcc IS NULL, '0', TO_CHAR(i_Pmdrxg1VolPdOcc)) AS o_value4,
+	IFF(i_Pmdrxg1VolPdOcc IS NULL,
+		'0',
+		TO_CHAR(i_Pmdrxg1VolPdOcc
+		)
+	) AS o_value4,
 	'VoluntaryPropertyDamageAggregateLimit' AS o_type5,
 	-- *INF*: IIF(ISNULL(i_Pmdrxg1VolPdAgg),'0',TO_CHAR(i_Pmdrxg1VolPdAgg))
-	IFF(i_Pmdrxg1VolPdAgg IS NULL, '0', TO_CHAR(i_Pmdrxg1VolPdAgg)) AS o_value5
+	IFF(i_Pmdrxg1VolPdAgg IS NULL,
+		'0',
+		TO_CHAR(i_Pmdrxg1VolPdAgg
+		)
+	) AS o_value5
 	FROM SQ_Pif43RXGLStage
 ),
 NRM_Unpivot_Type_Value AS (
@@ -1041,7 +1178,8 @@ EXP_Default_Value_Dept1553 AS (
 	DECLPTSeq0098 AS i_DECLPTSeq0098,
 	pif_4514_stage_id,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_type)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_type) AS v_type,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_type
+	) AS v_type,
 	-- *INF*: :LKP.LKP_PIFDEPT1553STAGE_UNDERLYINGINSURANCELINE(i_PifSymbol, i_PifPolicyNumber, i_PifModule, i_DECLPTFormNumber, i_DECLPTSeqSameForm, i_DECLPTSeq0098)
 	LKP_PIFDEPT1553STAGE_UNDERLYINGINSURANCELINE_i_PifSymbol_i_PifPolicyNumber_i_PifModule_i_DECLPTFormNumber_i_DECLPTSeqSameForm_i_DECLPTSeq0098.UnderlyingInsuranceLine AS v_UnderlyingInsuranceLine,
 	-- *INF*: :LKP.LKP_PIFDEPT1553STAGE_UNDERLYINGCOMPANYNAME(i_PifSymbol, i_PifPolicyNumber, i_PifModule, i_DECLPTFormNumber, i_DECLPTSeqSameForm, i_DECLPTSeq0098)
@@ -1058,12 +1196,26 @@ EXP_Default_Value_Dept1553 AS (
 	-- v_type
 	-- )
 	DECODE(TRUE,
-		v_UnderlyingInsuranceLine IS NULL OR v_UnderlyingInsuranceLine = 'N/A', v_type,
-		v_UnderlyingInsuranceLine = 'Umbrella' AND v_type <> 'N/A', v_UnderlyingInsuranceLine || ' ' || v_type,
-		IN(SUBSTR(i_DECLPTFormNumber, LENGTH(i_DECLPTFormNumber) - 1, 2), '02', '03') AND v_type <> 'N/A', 'Underlying-' || v_UnderlyingInsuranceLine || ' ' || v_type,
-		v_type) AS v_CoverageLimitType,
+		v_UnderlyingInsuranceLine IS NULL 
+		OR v_UnderlyingInsuranceLine = 'N/A', v_type,
+		v_UnderlyingInsuranceLine = 'Umbrella' 
+		AND v_type <> 'N/A', v_UnderlyingInsuranceLine || ' ' || v_type,
+		SUBSTR(i_DECLPTFormNumber, LENGTH(i_DECLPTFormNumber
+			) - 1, 2
+		) IN ('02','03') 
+		AND v_type <> 'N/A', 'Underlying-' || v_UnderlyingInsuranceLine || ' ' || v_type,
+		v_type
+	) AS v_CoverageLimitType,
 	-- *INF*: IIF(ISNULL(i_value) OR NOT IS_NUMBER(i_value) OR LENGTH(i_value)=0 OR IS_SPACES(i_value),'0',TO_CHAR(TO_DECIMAL(i_value)))
-	IFF(i_value IS NULL OR NOT IS_NUMBER(i_value) OR LENGTH(i_value) = 0 OR IS_SPACES(i_value), '0', TO_CHAR(TO_DECIMAL(i_value))) AS v_CoverageLimitValue,
+	IFF(i_value IS NULL 
+		OR NOT REGEXP_LIKE(i_value, '^[0-9]+$') 
+		OR LENGTH(i_value
+		) = 0 
+		OR LENGTH(i_value)>0 AND TRIM(i_value)='',
+		'0',
+		TO_CHAR(CAST(i_value AS FLOAT)
+		)
+	) AS v_CoverageLimitValue,
 	-- *INF*: v_CoverageLimitType
 	-- 
 	-- 
@@ -1077,9 +1229,15 @@ EXP_Default_Value_Dept1553 AS (
 	-- --IIF(ISNULL(i_value) OR LENGTH(i_value)=0 OR IS_SPACES(i_value) OR NOT IS_NUMBER(i_value),'0',TO_CHAR(TO_DECIMAL(i_value)))
 	v_CoverageLimitValue AS o_value,
 	-- *INF*: IIF(ISNULL(v_UnderlyingCompanyName), 'N/A', v_UnderlyingCompanyName)
-	IFF(v_UnderlyingCompanyName IS NULL, 'N/A', v_UnderlyingCompanyName) AS o_UnderlyingCompanyName,
+	IFF(v_UnderlyingCompanyName IS NULL,
+		'N/A',
+		v_UnderlyingCompanyName
+	) AS o_UnderlyingCompanyName,
 	-- *INF*: IIF(ISNULL(v_UnderlyingPolicyKey), 'N/A', v_UnderlyingPolicyKey)
-	IFF(v_UnderlyingPolicyKey IS NULL, 'N/A', v_UnderlyingPolicyKey) AS o_UnderlyingPolicyKey,
+	IFF(v_UnderlyingPolicyKey IS NULL,
+		'N/A',
+		v_UnderlyingPolicyKey
+	) AS o_UnderlyingPolicyKey,
 	v_UnderlyingInsuranceLine AS o_UnderlyingPolicyType,
 	-- *INF*: IIF( NOT ISNULL(v_UnderlyingInsuranceLine) AND v_UnderlyingInsuranceLine<>'Umbrella' AND v_UnderlyingInsuranceLine<>'N/A' AND 
 	-- (
@@ -1087,7 +1245,20 @@ EXP_Default_Value_Dept1553 AS (
 	-- OR 
 	-- (IS_NUMBER(v_CoverageLimitValue)=1 AND TO_DECIMAL(v_CoverageLimitValue)>0)
 	-- ), 1, 0)
-	IFF(NOT v_UnderlyingInsuranceLine IS NULL AND v_UnderlyingInsuranceLine <> 'Umbrella' AND v_UnderlyingInsuranceLine <> 'N/A' AND ( ( v_CoverageLimitType <> 'N/A' AND v_CoverageLimitValue <> 'N/A' AND IS_NUMBER(v_CoverageLimitValue) = 0 ) OR ( IS_NUMBER(v_CoverageLimitValue) = 1 AND TO_DECIMAL(v_CoverageLimitValue) > 0 ) ), 1, 0) AS o_UnderlyingFlag
+	IFF(v_UnderlyingInsuranceLine IS NULL 
+		AND v_UnderlyingInsuranceLine <> 'Umbrella' 
+		AND v_UnderlyingInsuranceLine <> 'N/A' 
+		AND ( ( v_CoverageLimitType <> 'N/A' 
+				AND v_CoverageLimitValue <> 'N/A' 
+				AND REGEXP_LIKE(v_CoverageLimitValue, '^[0-9]+$') = 0 
+			) 
+			OR ( REGEXP_LIKE(v_CoverageLimitValue, '^[0-9]+$') = 1 
+				AND CAST(v_CoverageLimitValue AS FLOAT) > 0 
+			)NOT  
+		),
+		1,
+		0
+	) AS o_UnderlyingFlag
 	FROM SQ_PifDept1553Stage
 	LEFT JOIN LKP_PIFDEPT1553STAGE_UNDERLYINGINSURANCELINE LKP_PIFDEPT1553STAGE_UNDERLYINGINSURANCELINE_i_PifSymbol_i_PifPolicyNumber_i_PifModule_i_DECLPTFormNumber_i_DECLPTSeqSameForm_i_DECLPTSeq0098
 	ON LKP_PIFDEPT1553STAGE_UNDERLYINGINSURANCELINE_i_PifSymbol_i_PifPolicyNumber_i_PifModule_i_DECLPTFormNumber_i_DECLPTSeqSameForm_i_DECLPTSeq0098.PifSymbol = i_PifSymbol
@@ -1163,17 +1334,34 @@ EXP_Calculate AS (
 	-- INSTR(i_type,'PersonalInjuryProtectionLimit',1,1)!=0 and INSTR(i_value,'Basic',1,1)!=0, 'BasicPIP'
 	-- , i_value)
 	DECODE(TRUE,
-		INSTR(i_type, 'PersonalInjuryProtectionLimit', 1, 1) != 0 AND INSTR(i_value, 'Option', 1, 1) != 0, REVERSE(SUBSTR(REVERSE(i_value), 1, INSTR(REVERSE(i_value), ' ', 1, 1) - 1)),
-		INSTR(i_type, 'PersonalInjuryProtectionLimit', 1, 1) != 0 AND INSTR(i_value, 'Basic', 1, 1) != 0, 'BasicPIP',
-		i_value) AS v_value,
+		REGEXP_INSTR(i_type, 'PersonalInjuryProtectionLimit', 1, 1
+		) != 0 
+		AND REGEXP_INSTR(i_value, 'Option', 1, 1
+		) != 0, REVERSE(SUBSTR(REVERSE(i_value
+				), 1, REGEXP_INSTR(REVERSE(i_value
+					), ' ', 1, 1
+				) - 1
+			)
+		),
+		REGEXP_INSTR(i_type, 'PersonalInjuryProtectionLimit', 1, 1
+		) != 0 
+		AND REGEXP_INSTR(i_value, 'Basic', 1, 1
+		) != 0, 'BasicPIP',
+		i_value
+	) AS v_value,
 	-- *INF*: DECODE(TRUE,
 	-- INSTR(i_type,'PersonalInjuryProtectionLimit',1,1)!=0 and v_value='BasicPIP', 'PersonalInjuryProtectionBasicLimit',
 	-- INSTR(i_type,'PersonalInjuryProtectionLimit',1,1)!=0 and v_value!='BasicPIP', 'PersonalInjuryProtectionExcessLimit'
 	-- , i_type)
 	DECODE(TRUE,
-		INSTR(i_type, 'PersonalInjuryProtectionLimit', 1, 1) != 0 AND v_value = 'BasicPIP', 'PersonalInjuryProtectionBasicLimit',
-		INSTR(i_type, 'PersonalInjuryProtectionLimit', 1, 1) != 0 AND v_value != 'BasicPIP', 'PersonalInjuryProtectionExcessLimit',
-		i_type) AS v_type,
+		REGEXP_INSTR(i_type, 'PersonalInjuryProtectionLimit', 1, 1
+		) != 0 
+		AND v_value = 'BasicPIP', 'PersonalInjuryProtectionBasicLimit',
+		REGEXP_INSTR(i_type, 'PersonalInjuryProtectionLimit', 1, 1
+		) != 0 
+		AND v_value != 'BasicPIP', 'PersonalInjuryProtectionExcessLimit',
+		i_type
+	) AS v_type,
 	v_type AS o_type,
 	v_value AS o_value,
 	pif_4514_stage_id
@@ -1213,7 +1401,10 @@ EXP_Set_CoverageLimitID AS (
 	AGG_Type_Value.type AS CoverageLimitType,
 	AGG_Type_Value.value AS CoverageLimitValue,
 	-- *INF*: IIF(ISNULL(lkp_CoverageLimitId),i_NEXTVAL,lkp_CoverageLimitId)
-	IFF(lkp_CoverageLimitId IS NULL, i_NEXTVAL, lkp_CoverageLimitId) AS CoverageLimitId
+	IFF(lkp_CoverageLimitId IS NULL,
+		i_NEXTVAL,
+		lkp_CoverageLimitId
+	) AS CoverageLimitId
 	FROM AGG_Type_Value
 	LEFT JOIN LKP_CoverageLimit_CoverageLimitID
 	ON LKP_CoverageLimit_CoverageLimitID.CoverageLimitType = AGG_Type_Value.type AND LKP_CoverageLimit_CoverageLimitID.CoverageLimitValue = AGG_Type_Value.value
@@ -1290,7 +1481,8 @@ AGG_Group_Count AS (
 	PremiumTransactionAKId,
 	CoverageLimitId,
 	-- *INF*: COUNT(1)
-	COUNT(1) AS o_CoverageLimitCount
+	COUNT(1
+	) AS o_CoverageLimitCount
 	FROM FIL_Insert_CoverageLimitBridge
 	GROUP BY PremiumTransactionAKId, CoverageLimitId
 ),
@@ -1358,9 +1550,11 @@ EXP_Underlying AS (
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,
+	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_ExpirationDate,
+	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	CURRENT_TIMESTAMP AS o_CreatedDate,
 	CURRENT_TIMESTAMP AS o_ModifiedDate,

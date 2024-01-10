@@ -23,17 +23,53 @@ EXP_DefaultValues AS (
 	uw_mgr_suffix AS in_uw_mgr_suffix,
 	routing_station AS in_routing_station,
 	-- *INF*: iif(isnull(in_uw_mgr_id),'N/A',iif(IS_SPACES(in_uw_mgr_id),'N/A',in_uw_mgr_id))
-	IFF(in_uw_mgr_id IS NULL, 'N/A', IFF(IS_SPACES(in_uw_mgr_id), 'N/A', in_uw_mgr_id)) AS uw_mgr_id,
+	IFF(in_uw_mgr_id IS NULL,
+		'N/A',
+		IFF(LENGTH(in_uw_mgr_id)>0 AND TRIM(in_uw_mgr_id)='',
+			'N/A',
+			in_uw_mgr_id
+		)
+	) AS uw_mgr_id,
 	-- *INF*: iif(isnull(in_uw_mgr_first_name),'N/A',iif(IS_SPACES(in_uw_mgr_first_name),'N/A',in_uw_mgr_first_name))
-	IFF(in_uw_mgr_first_name IS NULL, 'N/A', IFF(IS_SPACES(in_uw_mgr_first_name), 'N/A', in_uw_mgr_first_name)) AS uw_mgr_first_name,
+	IFF(in_uw_mgr_first_name IS NULL,
+		'N/A',
+		IFF(LENGTH(in_uw_mgr_first_name)>0 AND TRIM(in_uw_mgr_first_name)='',
+			'N/A',
+			in_uw_mgr_first_name
+		)
+	) AS uw_mgr_first_name,
 	-- *INF*: iif(isnull(in_uw_mgr_middle_name),'N/A',iif(IS_SPACES(in_uw_mgr_middle_name),'N/A',in_uw_mgr_middle_name))
-	IFF(in_uw_mgr_middle_name IS NULL, 'N/A', IFF(IS_SPACES(in_uw_mgr_middle_name), 'N/A', in_uw_mgr_middle_name)) AS uw_mgr_middle_name,
+	IFF(in_uw_mgr_middle_name IS NULL,
+		'N/A',
+		IFF(LENGTH(in_uw_mgr_middle_name)>0 AND TRIM(in_uw_mgr_middle_name)='',
+			'N/A',
+			in_uw_mgr_middle_name
+		)
+	) AS uw_mgr_middle_name,
 	-- *INF*: iif(isnull(in_uw_mgr_last_name),'N/A',iif(IS_SPACES(in_uw_mgr_last_name),'N/A',in_uw_mgr_last_name))
-	IFF(in_uw_mgr_last_name IS NULL, 'N/A', IFF(IS_SPACES(in_uw_mgr_last_name), 'N/A', in_uw_mgr_last_name)) AS uw_mgr_last_name,
+	IFF(in_uw_mgr_last_name IS NULL,
+		'N/A',
+		IFF(LENGTH(in_uw_mgr_last_name)>0 AND TRIM(in_uw_mgr_last_name)='',
+			'N/A',
+			in_uw_mgr_last_name
+		)
+	) AS uw_mgr_last_name,
 	-- *INF*: iif(isnull(in_uw_mgr_suffix),'N/A',iif(IS_SPACES(in_uw_mgr_suffix),'N/A',in_uw_mgr_suffix))
-	IFF(in_uw_mgr_suffix IS NULL, 'N/A', IFF(IS_SPACES(in_uw_mgr_suffix), 'N/A', in_uw_mgr_suffix)) AS uw_mgr_suffix,
+	IFF(in_uw_mgr_suffix IS NULL,
+		'N/A',
+		IFF(LENGTH(in_uw_mgr_suffix)>0 AND TRIM(in_uw_mgr_suffix)='',
+			'N/A',
+			in_uw_mgr_suffix
+		)
+	) AS uw_mgr_suffix,
 	-- *INF*: iif(isnull(in_routing_station),'N/A',iif(IS_SPACES(in_routing_station),'N/A',in_routing_station))
-	IFF(in_routing_station IS NULL, 'N/A', IFF(IS_SPACES(in_routing_station), 'N/A', in_routing_station)) AS routing_station,
+	IFF(in_routing_station IS NULL,
+		'N/A',
+		IFF(LENGTH(in_routing_station)>0 AND TRIM(in_routing_station)='',
+			'N/A',
+			in_routing_station
+		)
+	) AS routing_station,
 	SOURCE_SYSTEM_ID
 	FROM SQ_underwriter_mgr_stage
 ),
@@ -97,16 +133,38 @@ EXP_DetectChanges AS (
 	-- 	(routing_station <> routing_station_old ) ,
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(uw_mgr_id_old IS NULL, 'NEW', IFF(( source_uw_mgr_id <> source_uw_mgr_id_old ) OR ( uw_mgr_first_name <> uw_mgr_first_name_old ) OR ( uw_mgr_middle_name <> uw_mgr_mid_name_old ) OR ( uw_mgr_last_name <> uw_mgr_last_name_old ) OR ( uw_mgr_suffix <> uw_mgr_sfx_old ) OR ( routing_station <> routing_station_old ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(uw_mgr_id_old IS NULL,
+		'NEW',
+		IFF(( source_uw_mgr_id <> source_uw_mgr_id_old 
+			) 
+			OR ( uw_mgr_first_name <> uw_mgr_first_name_old 
+			) 
+			OR ( uw_mgr_middle_name <> uw_mgr_mid_name_old 
+			) 
+			OR ( uw_mgr_last_name <> uw_mgr_last_name_old 
+			) 
+			OR ( uw_mgr_suffix <> uw_mgr_sfx_old 
+			) 
+			OR ( routing_station <> routing_station_old 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
 	-- 
 	-- --sysdate normally has a time value.  We don't want the time value as our effectivity runs from day to day starting at midnight
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	v_changed_flag AS changed_flag,
 	sysdate AS created_date,
 	sysdate AS modified_date,
@@ -115,7 +173,10 @@ EXP_DetectChanges AS (
 	-- *INF*: IIF(v_changed_flag='NEW',
 	-- NEXTVAL,
 	-- uw_mgr_ak_id)
-	IFF(v_changed_flag = 'NEW', NEXTVAL, uw_mgr_ak_id) AS out_uw_mgr_ak_id
+	IFF(v_changed_flag = 'NEW',
+		NEXTVAL,
+		uw_mgr_ak_id
+	) AS out_uw_mgr_ak_id
 	FROM EXP_DefaultValues
 	LEFT JOIN LKP_underwriter_Manager
 	ON LKP_underwriter_Manager.source_uw_mgr_id = EXP_DefaultValues.uw_mgr_id
@@ -196,8 +257,9 @@ EXP_Lag_eff_from_date AS (
 	-- 	orig_eff_to_date)
 	-- 
 	DECODE(TRUE,
-		source_uw_mgr_id = v_PREV_ROW_source_uw_mgr_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		source_uw_mgr_id = v_PREV_ROW_source_uw_mgr_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	source_uw_mgr_id AS v_PREV_ROW_source_uw_mgr_id,

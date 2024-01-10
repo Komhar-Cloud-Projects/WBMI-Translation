@@ -17,11 +17,23 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate) AS o_EffectiveDate,
+	IFF(i_EffectiveDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_EffectiveDate
+	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate,
+	IFF(i_ExpirationDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ExpirationDate
+	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate) AS o_ModifiedDate
+	IFF(i_ModifiedDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ModifiedDate
+	) AS o_ModifiedDate
 	FROM SQ_CoverageType
 ),
 EXP_NumericValues AS (
@@ -31,13 +43,25 @@ EXP_NumericValues AS (
 	CoverageFormId AS i_CoverageFormId,
 	EndorsementCoverageFormId AS i_EndorsementCoverageFormId,
 	-- *INF*: IIF(ISNULL(i_CoverageTypeId),-1,i_CoverageTypeId)
-	IFF(i_CoverageTypeId IS NULL, - 1, i_CoverageTypeId) AS o_CoverageTypeId,
+	IFF(i_CoverageTypeId IS NULL,
+		- 1,
+		i_CoverageTypeId
+	) AS o_CoverageTypeId,
 	-- *INF*: IIF(ISNULL(i_CoverageTypeAKId),-1,i_CoverageTypeAKId)
-	IFF(i_CoverageTypeAKId IS NULL, - 1, i_CoverageTypeAKId) AS o_CoverageTypeAKId,
+	IFF(i_CoverageTypeAKId IS NULL,
+		- 1,
+		i_CoverageTypeAKId
+	) AS o_CoverageTypeAKId,
 	-- *INF*: IIF(ISNULL(i_CoverageFormId),-1,i_CoverageFormId)
-	IFF(i_CoverageFormId IS NULL, - 1, i_CoverageFormId) AS o_CoverageFormId,
+	IFF(i_CoverageFormId IS NULL,
+		- 1,
+		i_CoverageFormId
+	) AS o_CoverageFormId,
 	-- *INF*: IIF(ISNULL(i_EndorsementCoverageFormId),-1,i_EndorsementCoverageFormId)
-	IFF(i_EndorsementCoverageFormId IS NULL, - 1, i_EndorsementCoverageFormId) AS o_EndorsementCoverageFormId
+	IFF(i_EndorsementCoverageFormId IS NULL,
+		- 1,
+		i_EndorsementCoverageFormId
+	) AS o_EndorsementCoverageFormId
 	FROM SQ_CoverageType
 ),
 EXP_StringValues AS (
@@ -45,12 +69,24 @@ EXP_StringValues AS (
 	ExpirationDate AS i_ExpirationDate,
 	CoverageType AS i_CoverageType,
 	-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)
-	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,
+	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'
+		),
+		1,
+		0
+	) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_CoverageType) OR LENGTH(i_CoverageType)=0 OR IS_SPACES(i_CoverageType),'N/A',LTRIM(RTRIM(i_CoverageType)))
-	IFF(i_CoverageType IS NULL OR LENGTH(i_CoverageType) = 0 OR IS_SPACES(i_CoverageType), 'N/A', LTRIM(RTRIM(i_CoverageType))) AS o_CoverageType
+	IFF(i_CoverageType IS NULL 
+		OR LENGTH(i_CoverageType
+		) = 0 
+		OR LENGTH(i_CoverageType)>0 AND TRIM(i_CoverageType)='',
+		'N/A',
+		LTRIM(RTRIM(i_CoverageType
+			)
+		)
+	) AS o_CoverageType
 	FROM SQ_CoverageType
 ),
 TGT_CoverageType_UpdateElseInsert AS (

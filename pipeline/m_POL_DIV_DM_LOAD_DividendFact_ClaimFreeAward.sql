@@ -271,23 +271,50 @@ EXP_GetDimIds AS (
 	LKP_StateDim.StateDimId AS lkp_StateDimId,
 	EXP_GetValues.ClaimFreeAwardAmount,
 	-- *INF*: IIF(ISNULL(lkp_InsuranceReferenceDimId),-1,lkp_InsuranceReferenceDimId)
-	IFF(lkp_InsuranceReferenceDimId IS NULL, - 1, lkp_InsuranceReferenceDimId) AS o_StrategicProfitCenterDimId,
+	IFF(lkp_InsuranceReferenceDimId IS NULL,
+		- 1,
+		lkp_InsuranceReferenceDimId
+	) AS o_StrategicProfitCenterDimId,
 	-- *INF*: IIF(ISNULL(lkp_AgencyDimID),-1,lkp_AgencyDimID)
-	IFF(lkp_AgencyDimID IS NULL, - 1, lkp_AgencyDimID) AS o_AgencyDimId,
+	IFF(lkp_AgencyDimID IS NULL,
+		- 1,
+		lkp_AgencyDimID
+	) AS o_AgencyDimId,
 	-- *INF*: IIF(ISNULL(lkp_SalesDivisionDimID),-1,lkp_SalesDivisionDimID)
-	IFF(lkp_SalesDivisionDimID IS NULL, - 1, lkp_SalesDivisionDimID) AS o_SalesDivisionDimId,
+	IFF(lkp_SalesDivisionDimID IS NULL,
+		- 1,
+		lkp_SalesDivisionDimID
+	) AS o_SalesDivisionDimId,
 	-- *INF*: IIF(ISNULL(lkp_pol_dim_id),-1,lkp_pol_dim_id)
-	IFF(lkp_pol_dim_id IS NULL, - 1, lkp_pol_dim_id) AS o_PolicyDimId,
+	IFF(lkp_pol_dim_id IS NULL,
+		- 1,
+		lkp_pol_dim_id
+	) AS o_PolicyDimId,
 	-- *INF*: IIF(ISNULL(lkp_contract_cust_dim_id),-1,lkp_contract_cust_dim_id)
-	IFF(lkp_contract_cust_dim_id IS NULL, - 1, lkp_contract_cust_dim_id) AS o_ContractCustomerDimId,
+	IFF(lkp_contract_cust_dim_id IS NULL,
+		- 1,
+		lkp_contract_cust_dim_id
+	) AS o_ContractCustomerDimId,
 	-- *INF*: IIF(ISNULL(lkp_DividendTypeDimId),-1,lkp_DividendTypeDimId)
-	IFF(lkp_DividendTypeDimId IS NULL, - 1, lkp_DividendTypeDimId) AS o_DividendTypeDimId,
+	IFF(lkp_DividendTypeDimId IS NULL,
+		- 1,
+		lkp_DividendTypeDimId
+	) AS o_DividendTypeDimId,
 	-- *INF*: IIF(ISNULL(lkp_StateDimId),-1,lkp_StateDimId)
-	IFF(lkp_StateDimId IS NULL, - 1, lkp_StateDimId) AS o_StateDimId,
+	IFF(lkp_StateDimId IS NULL,
+		- 1,
+		lkp_StateDimId
+	) AS o_StateDimId,
 	-- *INF*: IIF(ISNULL(lkp_DividendTransactionEnteredDateId),-1,lkp_DividendTransactionEnteredDateId)
-	IFF(lkp_DividendTransactionEnteredDateId IS NULL, - 1, lkp_DividendTransactionEnteredDateId) AS o_DividendTransactionEnteredDateId,
+	IFF(lkp_DividendTransactionEnteredDateId IS NULL,
+		- 1,
+		lkp_DividendTransactionEnteredDateId
+	) AS o_DividendTransactionEnteredDateId,
 	-- *INF*: IIF(ISNULL(lkp_ClaimFreeAwardRunDateID),-1,lkp_ClaimFreeAwardRunDateID)
-	IFF(lkp_ClaimFreeAwardRunDateID IS NULL, - 1, lkp_ClaimFreeAwardRunDateID) AS o_ClaimFreeAwardRunDateID
+	IFF(lkp_ClaimFreeAwardRunDateID IS NULL,
+		- 1,
+		lkp_ClaimFreeAwardRunDateID
+	) AS o_ClaimFreeAwardRunDateID
 	FROM EXP_GetValues
 	 -- Manually join with mplt_PolicyDimID_PremiumMaster
 	LEFT JOIN LKP_DividendTypeDim
@@ -316,7 +343,9 @@ AGG_SUM AS (
 	o_ClaimFreeAwardRunDateID AS ClaimFreeAwardRunDateID,
 	ClaimFreeAwardAmount,
 	-- *INF*: ROUND(SUM(ClaimFreeAwardAmount),2)
-	ROUND(SUM(ClaimFreeAwardAmount), 2) AS SUM_ClaimFreeAwardAmount
+	ROUND(SUM(ClaimFreeAwardAmount
+		), 2
+	) AS SUM_ClaimFreeAwardAmount
 	FROM EXP_GetDimIds
 	GROUP BY PolicyDimId, DividendTypeDimId, StateDimId, DividendTransactionEnteredDateId, ClaimFreeAwardRunDateID
 ),

@@ -119,14 +119,26 @@ EXP_Modifiers AS (
 	PremiumTransactionEffectiveDate,
 	BureauCode7 AS i_BureauCode7,
 	-- *INF*: IIF(i_BureauCode7='100',0,1)
-	IFF(i_BureauCode7 = '100', 0, 1) AS v_ModifiedTransactionFlag,
+	IFF(i_BureauCode7 = '100',
+		0,
+		1
+	) AS v_ModifiedTransactionFlag,
 	-- *INF*: IIF(v_ModifiedTransactionFlag=0, -1, :LKP.LKP_ArchPif43NXCPStage(i_PolicyKey,i_LocationUnitNumber,i_SubLocationUnitNumber))
-	IFF(v_ModifiedTransactionFlag = 0, - 1, LKP_ARCHPIF43NXCPSTAGE_i_PolicyKey_i_LocationUnitNumber_i_SubLocationUnitNumber.ArchPif43NXCPStageId) AS v_ArchPif43NXCPStageId,
+	IFF(v_ModifiedTransactionFlag = 0,
+		- 1,
+		LKP_ARCHPIF43NXCPSTAGE_i_PolicyKey_i_LocationUnitNumber_i_SubLocationUnitNumber.ArchPif43NXCPStageId
+	) AS v_ArchPif43NXCPStageId,
 	-- *INF*: IIF(NOT ISNULL(v_ArchPif43NXCPStageId), v_ArchPif43NXCPStageId, :LKP.LKP_ArchPif43NXCPStage_LOCATION(i_PolicyKey,i_LocationUnitNumber))
-	IFF(NOT v_ArchPif43NXCPStageId IS NULL, v_ArchPif43NXCPStageId, LKP_ARCHPIF43NXCPSTAGE_LOCATION_i_PolicyKey_i_LocationUnitNumber.ArchPif43NXCPStageId) AS v_ArchPif43NXCPStageId_Location,
+	IFF(v_ArchPif43NXCPStageId IS NOT NULL,
+		v_ArchPif43NXCPStageId,
+		LKP_ARCHPIF43NXCPSTAGE_LOCATION_i_PolicyKey_i_LocationUnitNumber.ArchPif43NXCPStageId
+	) AS v_ArchPif43NXCPStageId_Location,
 	-- *INF*: IIF(NOT ISNULL(v_ArchPif43NXCPStageId_Location), v_ArchPif43NXCPStageId_Location, :LKP.LKP_ArchPif43NXCPStage_FINAL(i_PolicyKey))
 	-- 
-	IFF(NOT v_ArchPif43NXCPStageId_Location IS NULL, v_ArchPif43NXCPStageId_Location, LKP_ARCHPIF43NXCPSTAGE_FINAL_i_PolicyKey.ArchPif43NXCPStageId) AS v_ArchPif43NXCPStageId_Final,
+	IFF(v_ArchPif43NXCPStageId_Location IS NOT NULL,
+		v_ArchPif43NXCPStageId_Location,
+		LKP_ARCHPIF43NXCPSTAGE_FINAL_i_PolicyKey.ArchPif43NXCPStageId
+	) AS v_ArchPif43NXCPStageId_Final,
 	-- *INF*: DECODE(TRUE,
 	-- v_ModifiedTransactionFlag=0,'Default',
 	-- NOT ISNULL(v_ArchPif43NXCPStageId),i_PolicyKey||'&CF&'||i_LocationUnitNumber||'&'||i_SubLocationUnitNumber,
@@ -134,15 +146,25 @@ EXP_Modifiers AS (
 	-- i_PolicyKey||'&CF')
 	DECODE(TRUE,
 		v_ModifiedTransactionFlag = 0, 'Default',
-		NOT v_ArchPif43NXCPStageId IS NULL, i_PolicyKey || '&CF&' || i_LocationUnitNumber || '&' || i_SubLocationUnitNumber,
-		NOT v_ArchPif43NXCPStageId_Location IS NULL, i_PolicyKey || '&CF&' || i_LocationUnitNumber,
-		i_PolicyKey || '&CF') AS v_WorkRatingModifierKey,
+		v_ArchPif43NXCPStageId IS NOT NULL, i_PolicyKey || '&CF&' || i_LocationUnitNumber || '&' || i_SubLocationUnitNumber,
+		v_ArchPif43NXCPStageId_Location IS NOT NULL, i_PolicyKey || '&CF&' || i_LocationUnitNumber,
+		i_PolicyKey || '&CF'
+	) AS v_WorkRatingModifierKey,
 	v_WorkRatingModifierKey AS o_WorkRatingModifierKey,
 	-- *INF*: IIF(v_ModifiedTransactionFlag=0,'Default',MD5(v_WorkRatingModifierKey))
-	IFF(v_ModifiedTransactionFlag = 0, 'Default', MD5(v_WorkRatingModifierKey)) AS o_WorkRatingModifierHashKey,
+	IFF(v_ModifiedTransactionFlag = 0,
+		'Default',
+		MD5(v_WorkRatingModifierKey
+		)
+	) AS o_WorkRatingModifierHashKey,
 	v_ArchPif43NXCPStageId_Final AS o_ArchPif43NXCPStageId,
 	-- *INF*: IIF(v_ModifiedTransactionFlag=0,TO_DATE('18000101','YYYYMMDD'),ADD_TO_DATE(TRUNC(GREATEST(i_PremiumTransactionEnteredDate,PremiumTransactionEffectiveDate),'DD'),'SS',86399))
-	IFF(v_ModifiedTransactionFlag = 0, TO_DATE('18000101', 'YYYYMMDD'), ADD_TO_DATE(TRUNC(GREATEST(i_PremiumTransactionEnteredDate, PremiumTransactionEffectiveDate), 'DD'), 'SS', 86399)) AS o_PremiumTransactionBookedDate,
+	IFF(v_ModifiedTransactionFlag = 0,
+		TO_DATE('18000101', 'YYYYMMDD'
+		),
+		DATEADD(SECOND,86399,CAST(TRUNC(GREATEST(i_PremiumTransactionEnteredDate, PremiumTransactionEffectiveDate
+		), 'DAY') AS TIMESTAMP_NTZ(0)))
+	) AS o_PremiumTransactionBookedDate,
 	SubLocationUnitNumber AS i_SubLocationUnitNumber,
 	LocationUnitNumber AS i_LocationUnitNumber
 	FROM SQ_PMS
@@ -178,9 +200,11 @@ AGGTRANS AS (
 	ArchPif43NXCPStageId,
 	PremiumTransactionBookedDate AS i_PremiumTransactionBookedDate,
 	-- *INF*: MIN(i_PremiumTransactionBookedDate)
-	MIN(i_PremiumTransactionBookedDate) AS o_RunDate,
+	MIN(i_PremiumTransactionBookedDate
+	) AS o_RunDate,
 	-- *INF*: MIN(i_PremiumTransactionEffectiveDate)
-	MIN(i_PremiumTransactionEffectiveDate) AS o_RatingModifierEffectiveDate
+	MIN(i_PremiumTransactionEffectiveDate
+	) AS o_RatingModifierEffectiveDate
 	FROM SRTTRANS
 	GROUP BY WorkRatingModifierHashKey
 ),
@@ -246,11 +270,22 @@ EXPTRANS AS (
 	AGGTRANS.o_RunDate AS RunDate,
 	AGGTRANS.o_RatingModifierEffectiveDate AS RatingModifierEffectiveDate,
 	-- *INF*: IIF(ISNULL(lkp_WorkRatingModifierAKId),i_NEXTVAL,lkp_WorkRatingModifierAKId)
-	IFF(lkp_WorkRatingModifierAKId IS NULL, i_NEXTVAL, lkp_WorkRatingModifierAKId) AS WorkRatingModifierAKId,
+	IFF(lkp_WorkRatingModifierAKId IS NULL,
+		i_NEXTVAL,
+		lkp_WorkRatingModifierAKId
+	) AS WorkRatingModifierAKId,
 	-- *INF*: IIF(NOT ISNULL(i_OtherModifiedFactor) AND i_OtherModifiedFactor>0,i_OtherModifiedFactor,1)
-	IFF(NOT i_OtherModifiedFactor IS NULL AND i_OtherModifiedFactor > 0, i_OtherModifiedFactor, 1) AS o_OtherModifiedFactor,
+	IFF(i_OtherModifiedFactor IS NULL 
+		AND i_OtherModifiedFactorNOT  > 0,
+		i_OtherModifiedFactor,
+		1
+	) AS o_OtherModifiedFactor,
 	-- *INF*: IIF(NOT ISNULL(i_ScheduleModifiedFactor) AND i_ScheduleModifiedFactor>0,i_ScheduleModifiedFactor,1)
-	IFF(NOT i_ScheduleModifiedFactor IS NULL AND i_ScheduleModifiedFactor > 0, i_ScheduleModifiedFactor, 1) AS o_ScheduleModifiedFactor,
+	IFF(i_ScheduleModifiedFactor IS NULL 
+		AND i_ScheduleModifiedFactorNOT  > 0,
+		i_ScheduleModifiedFactor,
+		1
+	) AS o_ScheduleModifiedFactor,
 	1 AS o_ExperienceModifiedFactor
 	FROM AGGTRANS
 	LEFT JOIN LKP_ArchPif43NXCPStage_Modifers
@@ -323,18 +358,24 @@ EXP_RatingModifier AS (
 		lkp_OtherModifiedFactor != OtherModifiedFactor, 'NEW',
 		lkp_ScheduleModifiedFactor != ScheduleModifiedFactor, 'NEW',
 		lkp_ExperienceModifiedFactor != ExperienceModifiedFactor, 'NEW',
-		'NOCHANGE') AS v_ChangeFlag,
+		'NOCHANGE'
+	) AS v_ChangeFlag,
 	-- *INF*: IIF(v_ChangeFlag='NEW',i_RunDate,lkp_EffectiveDate)
-	IFF(v_ChangeFlag = 'NEW', i_RunDate, lkp_EffectiveDate) AS o_RunDate,
+	IFF(v_ChangeFlag = 'NEW',
+		i_RunDate,
+		lkp_EffectiveDate
+	) AS o_RunDate,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	v_ChangeFlag AS o_ChangeFlag,
 	-- *INF*: TO_DATE('01/01/1800 0','MM/DD/YYYY SSSSS')
-	TO_DATE('01/01/1800 0', 'MM/DD/YYYY SSSSS') AS EffectiveDate,
+	TO_DATE('01/01/1800 0', 'MM/DD/YYYY SSSSS'
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 86399','MM/DD/YYYY SSSSS')
-	TO_DATE('12/31/2100 86399', 'MM/DD/YYYY SSSSS') AS ExpirationDate,
+	TO_DATE('12/31/2100 86399', 'MM/DD/YYYY SSSSS'
+	) AS ExpirationDate,
 	'1' AS CurrentSnapshotFlag
 	FROM EXPTRANS
 	LEFT JOIN LKP_WorkRatingModifier
@@ -374,7 +415,10 @@ EXP_DetectChanges AS (
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	-- *INF*: IIF(ISNULL(lkp_PremiumTransactionID),'NEW','NOCHANGE')
-	IFF(lkp_PremiumTransactionID IS NULL, 'NEW', 'NOCHANGE') AS o_ChangeFlag
+	IFF(lkp_PremiumTransactionID IS NULL,
+		'NEW',
+		'NOCHANGE'
+	) AS o_ChangeFlag
 	FROM JNRTRANS
 	LEFT JOIN LKP_WorkPremiumTransactionRatingModifierBridge
 	ON LKP_WorkPremiumTransactionRatingModifierBridge.PremiumTransactionAKID = JNRTRANS.PremiumTransactionAKID

@@ -27,11 +27,23 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate) AS o_EffectiveDate,
+	IFF(i_EffectiveDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_EffectiveDate
+	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate,
+	IFF(i_ExpirationDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ExpirationDate
+	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate) AS o_ModifiedDate
+	IFF(i_ModifiedDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ModifiedDate
+	) AS o_ModifiedDate
 	FROM SQ_SupLineOfBusinessRules
 ),
 EXP_NumericValues AS (
@@ -40,11 +52,20 @@ EXP_NumericValues AS (
 	SupLineOfBusinessRulesAKId AS i_SupLineOfBusinessRulesAKId,
 	SequenceNumber AS i_SequenceNumber,
 	-- *INF*: IIF(ISNULL(i_SupLineOfBusinessRulesId),-1,i_SupLineOfBusinessRulesId)
-	IFF(i_SupLineOfBusinessRulesId IS NULL, - 1, i_SupLineOfBusinessRulesId) AS o_SupLineOfBusinessRulesId,
+	IFF(i_SupLineOfBusinessRulesId IS NULL,
+		- 1,
+		i_SupLineOfBusinessRulesId
+	) AS o_SupLineOfBusinessRulesId,
 	-- *INF*: IIF(ISNULL(i_SupLineOfBusinessRulesAKId),-1,i_SupLineOfBusinessRulesAKId)
-	IFF(i_SupLineOfBusinessRulesAKId IS NULL, - 1, i_SupLineOfBusinessRulesAKId) AS o_SupLineOfBusinessRulesAKId,
+	IFF(i_SupLineOfBusinessRulesAKId IS NULL,
+		- 1,
+		i_SupLineOfBusinessRulesAKId
+	) AS o_SupLineOfBusinessRulesAKId,
 	-- *INF*: IIF(ISNULL(i_SequenceNumber),-1,i_SequenceNumber)
-	IFF(i_SequenceNumber IS NULL, - 1, i_SequenceNumber) AS o_SequenceNumber
+	IFF(i_SequenceNumber IS NULL,
+		- 1,
+		i_SequenceNumber
+	) AS o_SequenceNumber
 	FROM SQ_SupLineOfBusinessRules
 ),
 EXP_StringValues AS (
@@ -63,34 +84,134 @@ EXP_StringValues AS (
 	LocationUnitNumber AS i_LocationUnitNumber,
 	BureauCode2 AS i_BureauCode2,
 	-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)
-	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,
+	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'
+		),
+		1,
+		0
+	) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_SourceCode) OR LENGTH(i_SourceCode)=0 OR IS_SPACES(i_SourceCode),'N/A',LTRIM(RTRIM(i_SourceCode)))
-	IFF(i_SourceCode IS NULL OR LENGTH(i_SourceCode) = 0 OR IS_SPACES(i_SourceCode), 'N/A', LTRIM(RTRIM(i_SourceCode))) AS o_SourceCode,
+	IFF(i_SourceCode IS NULL 
+		OR LENGTH(i_SourceCode
+		) = 0 
+		OR LENGTH(i_SourceCode)>0 AND TRIM(i_SourceCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_SourceCode
+			)
+		)
+	) AS o_SourceCode,
 	-- *INF*: IIF(ISNULL(i_LineOfBusinessCode) OR LENGTH(i_LineOfBusinessCode)=0 OR IS_SPACES(i_LineOfBusinessCode),'N/A',LTRIM(RTRIM(i_LineOfBusinessCode)))
-	IFF(i_LineOfBusinessCode IS NULL OR LENGTH(i_LineOfBusinessCode) = 0 OR IS_SPACES(i_LineOfBusinessCode), 'N/A', LTRIM(RTRIM(i_LineOfBusinessCode))) AS o_LineOfBusinessCode,
+	IFF(i_LineOfBusinessCode IS NULL 
+		OR LENGTH(i_LineOfBusinessCode
+		) = 0 
+		OR LENGTH(i_LineOfBusinessCode)>0 AND TRIM(i_LineOfBusinessCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_LineOfBusinessCode
+			)
+		)
+	) AS o_LineOfBusinessCode,
 	-- *INF*: IIF(ISNULL(i_PolicySymbol) OR LENGTH(i_PolicySymbol)=0 OR IS_SPACES(i_PolicySymbol),'N/A',LTRIM(RTRIM(i_PolicySymbol)))
-	IFF(i_PolicySymbol IS NULL OR LENGTH(i_PolicySymbol) = 0 OR IS_SPACES(i_PolicySymbol), 'N/A', LTRIM(RTRIM(i_PolicySymbol))) AS o_PolicySymbol,
+	IFF(i_PolicySymbol IS NULL 
+		OR LENGTH(i_PolicySymbol
+		) = 0 
+		OR LENGTH(i_PolicySymbol)>0 AND TRIM(i_PolicySymbol)='',
+		'N/A',
+		LTRIM(RTRIM(i_PolicySymbol
+			)
+		)
+	) AS o_PolicySymbol,
 	-- *INF*: IIF(ISNULL(i_ClassOfBusiness) OR LENGTH(i_ClassOfBusiness)=0 OR IS_SPACES(i_ClassOfBusiness),'N/A',LTRIM(RTRIM(i_ClassOfBusiness)))
-	IFF(i_ClassOfBusiness IS NULL OR LENGTH(i_ClassOfBusiness) = 0 OR IS_SPACES(i_ClassOfBusiness), 'N/A', LTRIM(RTRIM(i_ClassOfBusiness))) AS o_ClassOfBusiness,
+	IFF(i_ClassOfBusiness IS NULL 
+		OR LENGTH(i_ClassOfBusiness
+		) = 0 
+		OR LENGTH(i_ClassOfBusiness)>0 AND TRIM(i_ClassOfBusiness)='',
+		'N/A',
+		LTRIM(RTRIM(i_ClassOfBusiness
+			)
+		)
+	) AS o_ClassOfBusiness,
 	-- *INF*: IIF(ISNULL(i_InsuranceLine) OR LENGTH(i_InsuranceLine)=0 OR IS_SPACES(i_InsuranceLine),'N/A',LTRIM(RTRIM(i_InsuranceLine)))
-	IFF(i_InsuranceLine IS NULL OR LENGTH(i_InsuranceLine) = 0 OR IS_SPACES(i_InsuranceLine), 'N/A', LTRIM(RTRIM(i_InsuranceLine))) AS o_InsuranceLine,
+	IFF(i_InsuranceLine IS NULL 
+		OR LENGTH(i_InsuranceLine
+		) = 0 
+		OR LENGTH(i_InsuranceLine)>0 AND TRIM(i_InsuranceLine)='',
+		'N/A',
+		LTRIM(RTRIM(i_InsuranceLine
+			)
+		)
+	) AS o_InsuranceLine,
 	-- *INF*: IIF(ISNULL(i_TypeBureauCode) OR LENGTH(i_TypeBureauCode)=0 OR IS_SPACES(i_TypeBureauCode),'N/A',LTRIM(RTRIM(i_TypeBureauCode)))
-	IFF(i_TypeBureauCode IS NULL OR LENGTH(i_TypeBureauCode) = 0 OR IS_SPACES(i_TypeBureauCode), 'N/A', LTRIM(RTRIM(i_TypeBureauCode))) AS o_TypeBureauCode,
+	IFF(i_TypeBureauCode IS NULL 
+		OR LENGTH(i_TypeBureauCode
+		) = 0 
+		OR LENGTH(i_TypeBureauCode)>0 AND TRIM(i_TypeBureauCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_TypeBureauCode
+			)
+		)
+	) AS o_TypeBureauCode,
 	-- *INF*: IIF(ISNULL(i_MajorPerilCode) OR LENGTH(i_MajorPerilCode)=0 OR IS_SPACES(i_MajorPerilCode),'N/A',LTRIM(RTRIM(i_MajorPerilCode)))
-	IFF(i_MajorPerilCode IS NULL OR LENGTH(i_MajorPerilCode) = 0 OR IS_SPACES(i_MajorPerilCode), 'N/A', LTRIM(RTRIM(i_MajorPerilCode))) AS o_MajorPerilCode,
+	IFF(i_MajorPerilCode IS NULL 
+		OR LENGTH(i_MajorPerilCode
+		) = 0 
+		OR LENGTH(i_MajorPerilCode)>0 AND TRIM(i_MajorPerilCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_MajorPerilCode
+			)
+		)
+	) AS o_MajorPerilCode,
 	-- *INF*: IIF(ISNULL(i_ClassCode) OR LENGTH(i_ClassCode)=0 OR IS_SPACES(i_ClassCode),'N/A',LTRIM(RTRIM(i_ClassCode)))
-	IFF(i_ClassCode IS NULL OR LENGTH(i_ClassCode) = 0 OR IS_SPACES(i_ClassCode), 'N/A', LTRIM(RTRIM(i_ClassCode))) AS o_ClassCode,
+	IFF(i_ClassCode IS NULL 
+		OR LENGTH(i_ClassCode
+		) = 0 
+		OR LENGTH(i_ClassCode)>0 AND TRIM(i_ClassCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_ClassCode
+			)
+		)
+	) AS o_ClassCode,
 	-- *INF*: IIF(ISNULL(i_RiskUnitGroup) OR LENGTH(i_RiskUnitGroup)=0 OR IS_SPACES(i_RiskUnitGroup),'N/A',LTRIM(RTRIM(i_RiskUnitGroup)))
-	IFF(i_RiskUnitGroup IS NULL OR LENGTH(i_RiskUnitGroup) = 0 OR IS_SPACES(i_RiskUnitGroup), 'N/A', LTRIM(RTRIM(i_RiskUnitGroup))) AS o_RiskUnitGroup,
+	IFF(i_RiskUnitGroup IS NULL 
+		OR LENGTH(i_RiskUnitGroup
+		) = 0 
+		OR LENGTH(i_RiskUnitGroup)>0 AND TRIM(i_RiskUnitGroup)='',
+		'N/A',
+		LTRIM(RTRIM(i_RiskUnitGroup
+			)
+		)
+	) AS o_RiskUnitGroup,
 	-- *INF*: IIF(ISNULL(i_BureauSpecialUseCode) OR LENGTH(i_BureauSpecialUseCode)=0 OR IS_SPACES(i_BureauSpecialUseCode),'N/A',LTRIM(RTRIM(i_BureauSpecialUseCode)))
-	IFF(i_BureauSpecialUseCode IS NULL OR LENGTH(i_BureauSpecialUseCode) = 0 OR IS_SPACES(i_BureauSpecialUseCode), 'N/A', LTRIM(RTRIM(i_BureauSpecialUseCode))) AS o_BureauSpecialUseCode,
+	IFF(i_BureauSpecialUseCode IS NULL 
+		OR LENGTH(i_BureauSpecialUseCode
+		) = 0 
+		OR LENGTH(i_BureauSpecialUseCode)>0 AND TRIM(i_BureauSpecialUseCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_BureauSpecialUseCode
+			)
+		)
+	) AS o_BureauSpecialUseCode,
 	-- *INF*: IIF(ISNULL(i_LocationUnitNumber) OR LENGTH(i_LocationUnitNumber)=0 OR IS_SPACES(i_LocationUnitNumber),'N/A',LTRIM(RTRIM(i_LocationUnitNumber)))
-	IFF(i_LocationUnitNumber IS NULL OR LENGTH(i_LocationUnitNumber) = 0 OR IS_SPACES(i_LocationUnitNumber), 'N/A', LTRIM(RTRIM(i_LocationUnitNumber))) AS o_LocationUnitNumber,
+	IFF(i_LocationUnitNumber IS NULL 
+		OR LENGTH(i_LocationUnitNumber
+		) = 0 
+		OR LENGTH(i_LocationUnitNumber)>0 AND TRIM(i_LocationUnitNumber)='',
+		'N/A',
+		LTRIM(RTRIM(i_LocationUnitNumber
+			)
+		)
+	) AS o_LocationUnitNumber,
 	-- *INF*: IIF(ISNULL(i_BureauCode2) OR LENGTH(i_BureauCode2)=0 OR IS_SPACES(i_BureauCode2),'N/A',LTRIM(RTRIM(i_BureauCode2)))
-	IFF(i_BureauCode2 IS NULL OR LENGTH(i_BureauCode2) = 0 OR IS_SPACES(i_BureauCode2), 'N/A', LTRIM(RTRIM(i_BureauCode2))) AS o_BureauCode2
+	IFF(i_BureauCode2 IS NULL 
+		OR LENGTH(i_BureauCode2
+		) = 0 
+		OR LENGTH(i_BureauCode2)>0 AND TRIM(i_BureauCode2)='',
+		'N/A',
+		LTRIM(RTRIM(i_BureauCode2
+			)
+		)
+	) AS o_BureauCode2
 	FROM SQ_SupLineOfBusinessRules
 ),
 TGT_SupInsuranceReferenceLineOfBusinessRules_UpdateElseInsert AS (

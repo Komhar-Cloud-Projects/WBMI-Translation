@@ -198,7 +198,16 @@ EXP_Default AS (
 	--   'N/A',
 	--   LTRIM(RTRIM(sar_transaction))
 	-- )
-	IFF(sar_transaction IS NULL OR LENGTH(LTRIM(RTRIM(sar_transaction))) = 0, 'N/A', LTRIM(RTRIM(sar_transaction))) AS o_sar_transaction,
+	IFF(sar_transaction IS NULL 
+		OR LENGTH(LTRIM(RTRIM(sar_transaction
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(sar_transaction
+			)
+		)
+	) AS o_sar_transaction,
 	sar_premium,
 	sar_subpay_amt,
 	sar_original_prem,
@@ -218,7 +227,10 @@ EXP_Default AS (
 	sar_zip_postal_code,
 	sar_ky_tax_percentage,
 	-- *INF*: IIF(ISNULL(sar_ky_tax_percentage),0.000,sar_ky_tax_percentage)
-	IFF(sar_ky_tax_percentage IS NULL, 0.000, sar_ky_tax_percentage) AS sar_ky_tax_percentage_out,
+	IFF(sar_ky_tax_percentage IS NULL,
+		0.000,
+		sar_ky_tax_percentage
+	) AS sar_ky_tax_percentage_out,
 	logical_flag,
 	sar_special_use,
 	sar_stat_breakdown_line,
@@ -265,10 +277,14 @@ EXP_Values AS (
 	EXP_Default.Policy_Key,
 	EXP_Default.sar_location_x,
 	-- *INF*: LTRIM(RTRIM(sar_location_x))
-	LTRIM(RTRIM(sar_location_x)) AS v_RiskLocation_Unit,
+	LTRIM(RTRIM(sar_location_x
+		)
+	) AS v_RiskLocation_Unit,
 	EXP_Default.sar_state,
 	-- *INF*: LTRIM(RTRIM(sar_state))
-	LTRIM(RTRIM(sar_state)) AS v_sar_state,
+	LTRIM(RTRIM(sar_state
+		)
+	) AS v_sar_state,
 	EXP_Default.sar_loc_prov_territory,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory)
 	-- 
@@ -277,14 +293,17 @@ EXP_Values AS (
 	-- 
 	-- 
 	-- 
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory) AS v_sar_loc_prov_territory,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory
+	) AS v_sar_loc_prov_territory,
 	EXP_Default.sar_city,
 	-- *INF*: LTRIM(RTRIM(sar_city))
 	-- 
 	-- --IIF(IS_SPACES(LTRIM(RTRIM(sar_city)))  OR ISNULL(LTRIM(RTRIM(sar_city))) OR LENGTH(LTRIM(RTRIM(sar_city))) < 3, '000', LTRIM(RTRIM(sar_city)))
 	-- 
 	-- 
-	LTRIM(RTRIM(sar_city)) AS v_sar_city,
+	LTRIM(RTRIM(sar_city
+		)
+	) AS v_sar_city,
 	-- *INF*: IIF(REG_MATCH(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city) ,'(\d{6})')
 	-- ,:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city)
 	-- ,'000000')
@@ -292,10 +311,24 @@ EXP_Values AS (
 	-- --v_sar_county_first_two  ||  v_sar_county_last_one  ||  v_sar_city
 	-- 
 	-- --IIF(ISNULL(Tax_Location)  OR IS_SPACES(Tax_Location)  OR LENGTH(Tax_Location) = 0 , '000000', Tax_Location)
-	IFF(REG_MATCH(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city), '(\d{6})'), :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city), '000000') AS v_Tax_Location,
+	IFF(REGEXP_LIKE(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city
+			), '(\d{6})'
+		),
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city
+		),
+		'000000'
+	) AS v_Tax_Location,
 	EXP_Default.sar_zip_postal_code,
 	-- *INF*: IIF(ISNULL(sar_zip_postal_code)  OR IS_SPACES(sar_zip_postal_code)  OR LENGTH(sar_zip_postal_code) = 0 , 'N/A', LTRIM(RTRIM(sar_zip_postal_code)))
-	IFF(sar_zip_postal_code IS NULL OR IS_SPACES(sar_zip_postal_code) OR LENGTH(sar_zip_postal_code) = 0, 'N/A', LTRIM(RTRIM(sar_zip_postal_code))) AS v_sar_zip_postal_code,
+	IFF(sar_zip_postal_code IS NULL 
+		OR LENGTH(sar_zip_postal_code)>0 AND TRIM(sar_zip_postal_code)='' 
+		OR LENGTH(sar_zip_postal_code
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(sar_zip_postal_code
+			)
+		)
+	) AS v_sar_zip_postal_code,
 	-- *INF*: :LKP.LKP_RISKLOCATION_RISKLOCATIONAKID(pol_ak_id, v_RiskLocation_Unit, v_sar_loc_prov_territory, v_sar_state, v_sar_zip_postal_code, v_Tax_Location)
 	LKP_RISKLOCATION_RISKLOCATIONAKID_pol_ak_id_v_RiskLocation_Unit_v_sar_loc_prov_territory_v_sar_state_v_sar_zip_postal_code_v_Tax_Location.RiskLocationAKID AS v_RiskLocationAKID,
 	-- *INF*: IIF(
@@ -303,60 +336,90 @@ EXP_Values AS (
 	--   -1,
 	--   v_RiskLocationAKID
 	-- )
-	IFF(v_RiskLocationAKID IS NULL, - 1, v_RiskLocationAKID) AS o_RiskLocationAKID,
+	IFF(v_RiskLocationAKID IS NULL,
+		- 1,
+		v_RiskLocationAKID
+	) AS o_RiskLocationAKID,
 	EXP_Default.sar_insurance_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line) AS v_sar_insurance_line,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line
+	) AS v_sar_insurance_line,
 	v_sar_insurance_line AS o_sar_insurance_line,
 	EXP_Default.sar_type_bureau,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_bureau)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_bureau) AS v_sar_type_bureau,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_bureau
+	) AS v_sar_type_bureau,
 	EXP_Default.sar_sub_location_x,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x) AS v_sar_sub_location_x,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x
+	) AS v_sar_sub_location_x,
 	EXP_Default.sar_risk_unit_group,
 	-- *INF*: IIF(REG_MATCH(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group) ,'(\d{3})')
 	-- ,:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group)
 	-- ,'N/A')
-	IFF(REG_MATCH(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group), '(\d{3})'), :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group), 'N/A') AS v_sar_risk_unit_group,
+	IFF(REGEXP_LIKE(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group
+			), '(\d{3})'
+		),
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group
+		),
+		'N/A'
+	) AS v_sar_risk_unit_group,
 	EXP_Default.sar_class_code_grp_x,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code_grp_x)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code_grp_x) AS v_sar_class_code_grp_x,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code_grp_x
+	) AS v_sar_class_code_grp_x,
 	EXP_Default.sar_unit,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_unit)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_unit) AS v_sar_unit,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_unit
+	) AS v_sar_unit,
 	EXP_Default.sar_seq_rsk_unt_a,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a) AS v_sar_seq_rsk_unt_a,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a
+	) AS v_sar_seq_rsk_unt_a,
 	EXP_Default.sar_type_exposure,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure) AS v_sar_type_exposure,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure
+	) AS v_sar_type_exposure,
 	EXP_Default.sar_major_peril,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_major_peril)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_major_peril) AS v_sar_major_peril,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_major_peril
+	) AS v_sar_major_peril,
 	EXP_Default.sar_seq_no,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_no)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_no) AS v_sar_seq_no,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_no
+	) AS v_sar_seq_no,
 	EXP_Default.sar_cov_eff_year,
 	-- *INF*: TO_CHAR(sar_cov_eff_year)
-	TO_CHAR(sar_cov_eff_year) AS v_sar_cov_eff_year,
+	TO_CHAR(sar_cov_eff_year
+	) AS v_sar_cov_eff_year,
 	EXP_Default.sar_cov_eff_month,
 	-- *INF*: TO_CHAR(sar_cov_eff_month)
-	TO_CHAR(sar_cov_eff_month) AS v_sar_cov_eff_month,
+	TO_CHAR(sar_cov_eff_month
+	) AS v_sar_cov_eff_month,
 	EXP_Default.sar_cov_eff_day,
 	-- *INF*: TO_CHAR(sar_cov_eff_day)
-	TO_CHAR(sar_cov_eff_day) AS v_sar_cov_eff_day,
+	TO_CHAR(sar_cov_eff_day
+	) AS v_sar_cov_eff_day,
 	-- *INF*: TO_DATE(v_sar_cov_eff_month || '/' || v_sar_cov_eff_day || '/'|| v_sar_cov_eff_year ,'MM/DD/YYYY')
-	TO_DATE(v_sar_cov_eff_month || '/' || v_sar_cov_eff_day || '/' || v_sar_cov_eff_year, 'MM/DD/YYYY') AS v_sar_cov_eff_date,
+	TO_DATE(v_sar_cov_eff_month || '/' || v_sar_cov_eff_day || '/' || v_sar_cov_eff_year, 'MM/DD/YYYY'
+	) AS v_sar_cov_eff_date,
 	EXP_Default.sar_agents_comm_rate,
 	-- *INF*: IIF(ISNULL(sar_agents_comm_rate) , 0.00000 , sar_agents_comm_rate)
-	IFF(sar_agents_comm_rate IS NULL, 0.00000, sar_agents_comm_rate) AS v_sar_agents_comm_rate,
+	IFF(sar_agents_comm_rate IS NULL,
+		0.00000,
+		sar_agents_comm_rate
+	) AS v_sar_agents_comm_rate,
 	-- *INF*: MD5(TO_CHAR(pol_ak_id)  || 
 	--  TO_CHAR(v_RiskLocationAKID)  || 
 	--  TO_CHAR(v_sar_insurance_line)  || 
 	--  TO_CHAR(v_sar_type_bureau)
 	-- )
-	MD5(TO_CHAR(pol_ak_id) || TO_CHAR(v_RiskLocationAKID) || TO_CHAR(v_sar_insurance_line) || TO_CHAR(v_sar_type_bureau)) AS v_PolicyCoverageHashKey,
+	MD5(TO_CHAR(pol_ak_id
+		) || TO_CHAR(v_RiskLocationAKID
+		) || TO_CHAR(v_sar_insurance_line
+		) || TO_CHAR(v_sar_type_bureau
+		)
+	) AS v_PolicyCoverageHashKey,
 	-- *INF*: :LKP.LKP_POLICYCOVERAGE_POLICYCOVERAGEAKID(v_PolicyCoverageHashKey)
 	LKP_POLICYCOVERAGE_POLICYCOVERAGEAKID_v_PolicyCoverageHashKey.PolicyCoverageAKID AS v_PolicyCoverageAKID,
 	-- *INF*: IIF(
@@ -364,19 +427,26 @@ EXP_Values AS (
 	--   -1,
 	--   v_PolicyCoverageAKID
 	-- )
-	IFF(v_PolicyCoverageAKID IS NULL, - 1, v_PolicyCoverageAKID) AS o_PolicyCoverageAKID,
+	IFF(v_PolicyCoverageAKID IS NULL,
+		- 1,
+		v_PolicyCoverageAKID
+	) AS o_PolicyCoverageAKID,
 	EXP_Default.sar_section,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_section)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_section) AS v_sar_section,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_section
+	) AS v_sar_section,
 	EXP_Default.sar_class_1_4 AS sar_class_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code) AS v_sar_class_code,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code
+	) AS v_sar_class_code,
 	EXP_Default.sar_exposure,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_exposure)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_exposure) AS v_sar_exposure,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_exposure
+	) AS v_sar_exposure,
 	EXP_Default.sar_sub_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_line)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_line) AS v_sar_sub_line,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_line
+	) AS v_sar_sub_line,
 	-- *INF*: MD5(
 	-- TO_CHAR(v_PolicyCoverageAKID)   || 
 	-- v_sar_sub_location_x   || 
@@ -391,7 +461,9 @@ EXP_Values AS (
 	-- v_sar_class_code   || 
 	-- v_sar_section
 	-- )
-	MD5(TO_CHAR(v_PolicyCoverageAKID) || v_sar_sub_location_x || v_sar_risk_unit_group || v_sar_class_code_grp_x || v_sar_unit || v_sar_seq_rsk_unt_a || v_sar_major_peril || v_sar_seq_no || v_sar_sub_line || v_sar_type_exposure || v_sar_class_code || v_sar_section) AS v_StatisticalCoverageHashKey,
+	MD5(TO_CHAR(v_PolicyCoverageAKID
+		) || v_sar_sub_location_x || v_sar_risk_unit_group || v_sar_class_code_grp_x || v_sar_unit || v_sar_seq_rsk_unt_a || v_sar_major_peril || v_sar_seq_no || v_sar_sub_line || v_sar_type_exposure || v_sar_class_code || v_sar_section
+	) AS v_StatisticalCoverageHashKey,
 	-- *INF*: :LKP.LKP_STATISTICALCOVERAGE_STATISTICALCOVERAGEAKID(v_StatisticalCoverageHashKey)
 	LKP_STATISTICALCOVERAGE_STATISTICALCOVERAGEAKID_v_StatisticalCoverageHashKey.StatisticalCoverageAKID AS v_StatisticalCoverageAKID,
 	-- *INF*: IIF(
@@ -399,38 +471,58 @@ EXP_Values AS (
 	--   -1,
 	--   v_StatisticalCoverageAKID
 	-- )
-	IFF(v_StatisticalCoverageAKID IS NULL, - 1, v_StatisticalCoverageAKID) AS StatisticalCoverageAKID,
+	IFF(v_StatisticalCoverageAKID IS NULL,
+		- 1,
+		v_StatisticalCoverageAKID
+	) AS StatisticalCoverageAKID,
 	EXP_Default.sar_id,
 	EXP_Default.sar_part_code,
 	EXP_Default.sar_trans_eff_year,
 	-- *INF*: TO_CHAR(sar_trans_eff_year)
-	TO_CHAR(sar_trans_eff_year) AS v_sar_trans_eff_year,
+	TO_CHAR(sar_trans_eff_year
+	) AS v_sar_trans_eff_year,
 	EXP_Default.sar_trans_eff_month,
 	-- *INF*: IIF(TO_CHAR(sar_trans_eff_month) = '0','1',TO_CHAR(sar_trans_eff_month)
 	-- )
-	IFF(TO_CHAR(sar_trans_eff_month) = '0', '1', TO_CHAR(sar_trans_eff_month)) AS v_sar_trans_eff_month,
+	IFF(TO_CHAR(sar_trans_eff_month
+		) = '0',
+		'1',
+		TO_CHAR(sar_trans_eff_month
+		)
+	) AS v_sar_trans_eff_month,
 	EXP_Default.sar_trans_eff_day,
 	-- *INF*: IIF(TO_CHAR(sar_trans_eff_day) ='0','1',TO_CHAR(sar_trans_eff_day))
-	IFF(TO_CHAR(sar_trans_eff_day) = '0', '1', TO_CHAR(sar_trans_eff_day)) AS v_sar_trans_eff_day,
+	IFF(TO_CHAR(sar_trans_eff_day
+		) = '0',
+		'1',
+		TO_CHAR(sar_trans_eff_day
+		)
+	) AS v_sar_trans_eff_day,
 	-- *INF*: TO_DATE(v_sar_trans_eff_month || '/' || v_sar_trans_eff_day || '/'|| v_sar_trans_eff_year ,'MM/DD/YYYY')
-	TO_DATE(v_sar_trans_eff_month || '/' || v_sar_trans_eff_day || '/' || v_sar_trans_eff_year, 'MM/DD/YYYY') AS v_sar_trans_eff_date,
+	TO_DATE(v_sar_trans_eff_month || '/' || v_sar_trans_eff_day || '/' || v_sar_trans_eff_year, 'MM/DD/YYYY'
+	) AS v_sar_trans_eff_date,
 	v_sar_trans_eff_date AS Trans_eff_date,
 	EXP_Default.sar_reinsurance_company_no,
 	EXP_Default.sar_entrd_date,
 	-- *INF*: TO_DATE(sar_entrd_date,'YYYYMMDD')
-	TO_DATE(sar_entrd_date, 'YYYYMMDD') AS v_sar_entrd_date,
+	TO_DATE(sar_entrd_date, 'YYYYMMDD'
+	) AS v_sar_entrd_date,
 	v_sar_entrd_date AS Trans_entered_date,
 	EXP_Default.sar_exp_year,
 	-- *INF*: TO_CHAR(sar_exp_year)
-	TO_CHAR(sar_exp_year) AS v_sar_exp_year,
+	TO_CHAR(sar_exp_year
+	) AS v_sar_exp_year,
 	EXP_Default.sar_exp_month,
 	-- *INF*: TO_CHAR(sar_exp_month)
-	TO_CHAR(sar_exp_month) AS v_sar_exp_month,
+	TO_CHAR(sar_exp_month
+	) AS v_sar_exp_month,
 	EXP_Default.sar_exp_day,
 	-- *INF*: TO_CHAR(sar_exp_day)
-	TO_CHAR(sar_exp_day) AS v_sar_exp_day,
+	TO_CHAR(sar_exp_day
+	) AS v_sar_exp_day,
 	-- *INF*: TO_DATE(v_sar_exp_month || '/' || v_sar_exp_day || '/'|| v_sar_exp_year ,'MM/DD/YYYY')
-	TO_DATE(v_sar_exp_month || '/' || v_sar_exp_day || '/' || v_sar_exp_year, 'MM/DD/YYYY') AS v_sar_exp_date,
+	TO_DATE(v_sar_exp_month || '/' || v_sar_exp_day || '/' || v_sar_exp_year, 'MM/DD/YYYY'
+	) AS v_sar_exp_date,
 	v_sar_exp_date AS Trans_expiration_date,
 	EXP_Default.o_sar_transaction AS sar_transaction,
 	EXP_Default.sar_premium,
@@ -438,7 +530,8 @@ EXP_Values AS (
 	EXP_Default.sar_original_prem,
 	EXP_Default.sar_acct_entrd_date,
 	-- *INF*: TO_DATE('01'  || sar_acct_entrd_date, 'DDYYYYMM')
-	TO_DATE('01' || sar_acct_entrd_date, 'DDYYYYMM') AS v_sar_acct_entrd_date,
+	TO_DATE('01' || sar_acct_entrd_date, 'DDYYYYMM'
+	) AS v_sar_acct_entrd_date,
 	-- *INF*: SET_DATE_PART(
 	--     SET_DATE_PART(
 	--          SET_DATE_PART(
@@ -448,17 +541,36 @@ EXP_Values AS (
 	--            ,'MI',59)
 	--     ,'SS',59)
 	-- ,'MS', 000)
-	SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(LAST_DAY(v_sar_acct_entrd_date), 'HH', 23), 'MI', 59), 'SS', 59), 'MS', 000) AS Trans_Booked_date,
+	DATEADD(,000-DATE_PART(,DATEADD(SECOND,59-DATE_PART(SECOND,DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,LAST_DAY(v_sar_acct_entrd_date
+	)),LAST_DAY(v_sar_acct_entrd_date
+	))),DATEADD(HOUR,23-DATE_PART(HOUR,LAST_DAY(v_sar_acct_entrd_date
+	)),LAST_DAY(v_sar_acct_entrd_date
+	)))),DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,LAST_DAY(v_sar_acct_entrd_date
+	)),LAST_DAY(v_sar_acct_entrd_date
+	))),DATEADD(HOUR,23-DATE_PART(HOUR,LAST_DAY(v_sar_acct_entrd_date
+	)),LAST_DAY(v_sar_acct_entrd_date
+	))))),DATEADD(SECOND,59-DATE_PART(SECOND,DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,LAST_DAY(v_sar_acct_entrd_date
+	)),LAST_DAY(v_sar_acct_entrd_date
+	))),DATEADD(HOUR,23-DATE_PART(HOUR,LAST_DAY(v_sar_acct_entrd_date
+	)),LAST_DAY(v_sar_acct_entrd_date
+	)))),DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,LAST_DAY(v_sar_acct_entrd_date
+	)),LAST_DAY(v_sar_acct_entrd_date
+	))),DATEADD(HOUR,23-DATE_PART(HOUR,LAST_DAY(v_sar_acct_entrd_date
+	)),LAST_DAY(v_sar_acct_entrd_date
+	))))) AS Trans_Booked_date,
 	EXP_Default.sar_rsn_amend_one,
 	EXP_Default.sar_rsn_amend_two,
 	EXP_Default.sar_rsn_amend_three,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_rsn_amend_one  ||  sar_rsn_amend_two || sar_rsn_amend_three)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_rsn_amend_one || sar_rsn_amend_two || sar_rsn_amend_three) AS v_sar_rsn_amend_code,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_rsn_amend_one || sar_rsn_amend_two || sar_rsn_amend_three
+	) AS v_sar_rsn_amend_code,
 	v_sar_rsn_amend_code AS Reason_amend_code,
 	-- *INF*: Policy_Key  ||  TO_CHAR(v_PolicyCoverageAKID)
-	Policy_Key || TO_CHAR(v_PolicyCoverageAKID) AS v_CoverageKey,
+	Policy_Key || TO_CHAR(v_PolicyCoverageAKID
+	) AS v_CoverageKey,
 	-- *INF*: Policy_Key  ||  TO_CHAR(v_PolicyCoverageAKID)
-	Policy_Key || TO_CHAR(v_PolicyCoverageAKID) AS CoverageKey,
+	Policy_Key || TO_CHAR(v_PolicyCoverageAKID
+	) AS CoverageKey,
 	-- *INF*: MD5(
 	-- TO_CHAR(v_StatisticalCoverageAKID)  ||  
 	-- TO_CHAR(sar_transaction)  ||  
@@ -472,10 +584,25 @@ EXP_Values AS (
 	-- TO_CHAR(sar_ky_tax_percentage)  ||  
 	-- TO_CHAR(v_sar_rsn_amend_code) 
 	-- )
-	MD5(TO_CHAR(v_StatisticalCoverageAKID) || TO_CHAR(sar_transaction) || TO_CHAR(v_sar_entrd_date) || TO_CHAR(v_sar_trans_eff_date) || TO_CHAR(v_sar_exp_date) || TO_CHAR(v_sar_acct_entrd_date) || TO_CHAR(sar_premium) || TO_CHAR(sar_original_prem) || TO_CHAR(sar_subpay_amt) || TO_CHAR(sar_ky_tax_percentage) || TO_CHAR(v_sar_rsn_amend_code)) AS v_PassThroughChargeTransactionHashKey,
+	MD5(TO_CHAR(v_StatisticalCoverageAKID
+		) || TO_CHAR(sar_transaction
+		) || TO_CHAR(v_sar_entrd_date
+		) || TO_CHAR(v_sar_trans_eff_date
+		) || TO_CHAR(v_sar_exp_date
+		) || TO_CHAR(v_sar_acct_entrd_date
+		) || TO_CHAR(sar_premium
+		) || TO_CHAR(sar_original_prem
+		) || TO_CHAR(sar_subpay_amt
+		) || TO_CHAR(sar_ky_tax_percentage
+		) || TO_CHAR(v_sar_rsn_amend_code
+		)
+	) AS v_PassThroughChargeTransactionHashKey,
 	v_PassThroughChargeTransactionHashKey AS PassThroughChargeTransactionHashKey,
 	-- *INF*: IIF(Policy_Key = v_prev_row_Pol_Key, v_prev_row_Premium_Sequence + 1,1)
-	IFF(Policy_Key = v_prev_row_Pol_Key, v_prev_row_Premium_Sequence + 1, 1) AS v_premium_sequence,
+	IFF(Policy_Key = v_prev_row_Pol_Key,
+		v_prev_row_Premium_Sequence + 1,
+		1
+	) AS v_premium_sequence,
 	v_premium_sequence AS PremiumLoadSequence,
 	v_premium_sequence AS v_prev_row_Premium_Sequence,
 	Policy_Key AS v_prev_row_Pol_Key,
@@ -489,7 +616,19 @@ EXP_Values AS (
 	-- v_prev_row_sar_subpay_amt = sar_subpay_amt AND 
 	-- v_prev_row_sar_original_prem = sar_original_prem AND 
 	-- v_prev_row_Reason_amend_code = v_sar_rsn_amend_code, v_prev_row_Duplicate_Sequence + 1,1)
-	IFF(v_prev_row_Statistical_Coverage_AK_ID = v_StatisticalCoverageAKID AND v_prev_row_trans_eff_date = v_sar_trans_eff_date AND v_prev_row_trans_entered_date = v_sar_entrd_date AND v_prev_row_trans_exp_date = v_sar_exp_date AND v_prev_row_trans_booked_date = v_sar_acct_entrd_date AND v_prev_row_sar_transaction = sar_transaction AND v_prev_row_sar_premium = sar_premium AND v_prev_row_sar_subpay_amt = sar_subpay_amt AND v_prev_row_sar_original_prem = sar_original_prem AND v_prev_row_Reason_amend_code = v_sar_rsn_amend_code, v_prev_row_Duplicate_Sequence + 1, 1) AS v_Duplicate_Sequence,
+	IFF(v_prev_row_Statistical_Coverage_AK_ID = v_StatisticalCoverageAKID 
+		AND v_prev_row_trans_eff_date = v_sar_trans_eff_date 
+		AND v_prev_row_trans_entered_date = v_sar_entrd_date 
+		AND v_prev_row_trans_exp_date = v_sar_exp_date 
+		AND v_prev_row_trans_booked_date = v_sar_acct_entrd_date 
+		AND v_prev_row_sar_transaction = sar_transaction 
+		AND v_prev_row_sar_premium = sar_premium 
+		AND v_prev_row_sar_subpay_amt = sar_subpay_amt 
+		AND v_prev_row_sar_original_prem = sar_original_prem 
+		AND v_prev_row_Reason_amend_code = v_sar_rsn_amend_code,
+		v_prev_row_Duplicate_Sequence + 1,
+		1
+	) AS v_Duplicate_Sequence,
 	v_Duplicate_Sequence AS Duplicate_Sequence,
 	v_StatisticalCoverageAKID AS v_prev_row_Statistical_Coverage_AK_ID,
 	v_sar_trans_eff_date AS v_prev_row_trans_eff_date,
@@ -636,9 +775,11 @@ EXP_Detect_Changes AS (
 	'1' AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveDate,
+	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,
 	SYSDATE AS CreateDate,
 	SYSDATE AS ModifiedDate,
@@ -655,7 +796,7 @@ EXP_Detect_Changes AS (
 	EXP_Values.Duplicate_Sequence,
 	EXP_Values.logical_flag,
 	-- *INF*: TO_INTEGER(logical_flag)
-	TO_INTEGER(logical_flag) AS logical_flag_out,
+	CAST(logical_flag AS INTEGER) AS logical_flag_out,
 	EXP_Values.sar_ky_tax_percentage,
 	LKP_sup_premium_transaction_code.sup_prem_trans_code_id,
 	EXP_Values.o_RiskLocationAKID AS RiskLocationAKID,
@@ -779,7 +920,10 @@ EXP_Detemine_AK_ID AS (
 	PremiumLoadSequence,
 	Duplicate_Sequence,
 	-- *INF*: IIF(ISNULL(PassThroughChargeTransactionAKID), NEXTVAL, PassThroughChargeTransactionAKID)
-	IFF(PassThroughChargeTransactionAKID IS NULL, NEXTVAL, PassThroughChargeTransactionAKID) AS PassThroughChargeTransactionAKID_Out,
+	IFF(PassThroughChargeTransactionAKID IS NULL,
+		NEXTVAL,
+		PassThroughChargeTransactionAKID
+	) AS PassThroughChargeTransactionAKID_Out,
 	StatisticalCoverageAKID,
 	CoverageKey,
 	sar_transaction,
@@ -862,18 +1006,22 @@ EXP_Pre_BureauCodeLkp AS (
 	sar_special_use AS BureauSpecialUseCode,
 	sar_annual_state_line AS PMSAnnualStatementLine,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(PMSAnnualStatementLine)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(PMSAnnualStatementLine) AS v_PMSAnnualStatementLine,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(PMSAnnualStatementLine
+	) AS v_PMSAnnualStatementLine,
 	v_PMSAnnualStatementLine AS PMSAnnualStatementLine_out,
 	sar_rating_date_ind AS RatingDateIndicator,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(RatingDateIndicator)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(RatingDateIndicator) AS v_RatingDateIndicator,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(RatingDateIndicator
+	) AS v_RatingDateIndicator,
 	v_RatingDateIndicator AS RatingDateIndicator_out,
 	sar_stat_breakdown_line || sar_user_line AS v_BureauStatisticalUserLine,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_BureauStatisticalUserLine)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_BureauStatisticalUserLine) AS BureauStatisticalUserLine,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_BureauStatisticalUserLine
+	) AS BureauStatisticalUserLine,
 	sar_audit_reinst_ind AS AuditReinstatementIndicator,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(AuditReinstatementIndicator)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(AuditReinstatementIndicator) AS v_AuditReinstatementIndicator,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(AuditReinstatementIndicator
+	) AS v_AuditReinstatementIndicator,
 	v_AuditReinstatementIndicator AS AuditReinstatementIndicator_out,
 	-- *INF*: MD5(
 	-- TO_CHAR(v_PremiumTransactionAKID) || 
@@ -899,7 +1047,10 @@ EXP_Pre_BureauCodeLkp AS (
 	-- v_BureauStatisticalUserLine  ||
 	-- AuditReinstatementIndicator )
 	-- 
-	MD5(TO_CHAR(v_PremiumTransactionAKID) || TO_CHAR(PassThroughChargeTransactionAKID) || BureauCode1 || BureauCode2 || BureauCode3 || BureauCode4 || BureauCode5 || BureauCode6 || BureauCode7 || BureauCode8 || BureauCode9 || BureauCode10 || BureauCode11 || BureauCode12 || BureauCode13 || BureauCode14 || BureauCode15 || BureauSpecialUseCode || PMSAnnualStatementLine || RatingDateIndicator || v_BureauStatisticalUserLine || AuditReinstatementIndicator) AS v_BureauStatisticalCodeHashKey,
+	MD5(TO_CHAR(v_PremiumTransactionAKID
+		) || TO_CHAR(PassThroughChargeTransactionAKID
+		) || BureauCode1 || BureauCode2 || BureauCode3 || BureauCode4 || BureauCode5 || BureauCode6 || BureauCode7 || BureauCode8 || BureauCode9 || BureauCode10 || BureauCode11 || BureauCode12 || BureauCode13 || BureauCode14 || BureauCode15 || BureauSpecialUseCode || PMSAnnualStatementLine || RatingDateIndicator || v_BureauStatisticalUserLine || AuditReinstatementIndicator
+	) AS v_BureauStatisticalCodeHashKey,
 	v_BureauStatisticalCodeHashKey AS BureauStatisticalCodeHashKey
 	FROM EXP_Detemine_AK_ID
 ),
@@ -994,7 +1145,10 @@ EXP_Determine_BureauCode_AKID AS (
 	1 AS LogicalDeleteFlag,
 	BureauStatisticalCodeHashKey,
 	-- *INF*: IIF(ISNULL(BureauStatisticalCodeAKID), NEXTVAL, BureauStatisticalCodeAKID)
-	IFF(BureauStatisticalCodeAKID IS NULL, NEXTVAL, BureauStatisticalCodeAKID) AS BureauStatisticalCodeAKID_Out,
+	IFF(BureauStatisticalCodeAKID IS NULL,
+		NEXTVAL,
+		BureauStatisticalCodeAKID
+	) AS BureauStatisticalCodeAKID_Out,
 	PremiumTransactionAKID,
 	PassThroughChargeTransactionAKID,
 	BureauCode1,

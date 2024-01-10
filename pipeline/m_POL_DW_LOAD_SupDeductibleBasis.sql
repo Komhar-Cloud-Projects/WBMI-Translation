@@ -27,43 +27,63 @@ EXP_Default AS (
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,
+	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_ExpirationDate,
+	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_SyeDate,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_LocationCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_LocationCode) AS o_LocationCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_LocationCode
+	) AS o_LocationCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_MasterCompanyNumber)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_MasterCompanyNumber) AS o_MasterCompanyNumber,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_MasterCompanyNumber
+	) AS o_MasterCompanyNumber,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_TypeBureauCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_TypeBureauCode) AS o_TypeBureauCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_TypeBureauCode
+	) AS o_TypeBureauCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode) AS o_MajorPerilCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode
+	) AS o_MajorPerilCode,
 	-- *INF*: IIF(ISNULL(i_CoverageCode) OR IS_SPACES(i_CoverageCode) OR LENGTH(i_CoverageCode)=0, 
 	-- '000', 
 	-- LTRIM(RTRIM(i_CoverageCode))
 	-- )
-	IFF(i_CoverageCode IS NULL OR IS_SPACES(i_CoverageCode) OR LENGTH(i_CoverageCode) = 0, '000', LTRIM(RTRIM(i_CoverageCode))) AS o_CoverageCode,
+	IFF(i_CoverageCode IS NULL 
+		OR LENGTH(i_CoverageCode)>0 AND TRIM(i_CoverageCode)='' 
+		OR LENGTH(i_CoverageCode
+		) = 0,
+		'000',
+		LTRIM(RTRIM(i_CoverageCode
+			)
+		)
+	) AS o_CoverageCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_BureauCoverageCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_BureauCoverageCode) AS o_BureauCoverageCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_BureauCoverageCode
+	) AS o_BureauCoverageCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_DecutibleType)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_DecutibleType) AS o_DeductibleBasis,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_DecutibleType
+	) AS o_DeductibleBasis,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_DecutibleAmount)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_DecutibleAmount) AS o_DecutibleAmount,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_DecutibleAmount
+	) AS o_DecutibleAmount,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_SublineCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_SublineCode) AS o_SublineCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_SublineCode
+	) AS o_SublineCode,
 	-- *INF*: DECODE(:UDF.DEFAULT_VALUE_FOR_STRINGS(i_DecutibleType),
 	-- 'D','Flat Dollar Deductible',
 	-- 'F','Full coverage Glass Deductible',
 	-- 'P','Percentage Deductible',
 	-- 'N/A'
 	-- )
-	DECODE(:UDF.DEFAULT_VALUE_FOR_STRINGS(i_DecutibleType),
+	DECODE(:UDF.DEFAULT_VALUE_FOR_STRINGS(i_DecutibleType
+		),
 		'D', 'Flat Dollar Deductible',
 		'F', 'Full coverage Glass Deductible',
 		'P', 'Percentage Deductible',
-		'N/A') AS o_DeductibleBasisDescription
+		'N/A'
+	) AS o_DeductibleBasisDescription
 	FROM SQ_GTAMX401Stage
 ),
 LKP_SupDeductibleBasis AS (

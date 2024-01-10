@@ -33,7 +33,13 @@ EXP_values AS (
 	pol_status_code,
 	renl_code,
 	-- *INF*: ltrim(rtrim(pol_sym)) || ltrim(rtrim(pol_num)) || ltrim(rtrim(pol_mod))
-	ltrim(rtrim(pol_sym)) || ltrim(rtrim(pol_num)) || ltrim(rtrim(pol_mod)) AS v_pol_key,
+	ltrim(rtrim(pol_sym
+		)
+	) || ltrim(rtrim(pol_num
+		)
+	) || ltrim(rtrim(pol_mod
+		)
+	) AS v_pol_key,
 	v_pol_key AS out_pol_key,
 	compare_date
 	FROM SQ_policy
@@ -112,11 +118,22 @@ EXP_Detect_CancellationDate_And_Status AS (
 	-- ,TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS'))
 	-- 
 	-- --we are building the entire trans_eff_date with the above expression. if it is not a correct date, then populate a default date of 12/31/2100
-	IFF(IS_DATE(pol_cancellationdate, 'yyyymmdd'), TO_DATE(pol_cancellationdate, 'yyyymmdd'), TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')) AS v_sar_trans_eff_date,
+	IFF(IS_DATE(pol_cancellationdate, 'yyyymmdd'
+		),
+		TO_DATE(pol_cancellationdate, 'yyyymmdd'
+		),
+		TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS v_sar_trans_eff_date,
 	-- *INF*: IIF( NOT ISNULL(v_sar_trans_eff_date) AND renl_code = '9',    v_sar_trans_eff_date,
 	-- TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
 	-- )
-	IFF(NOT v_sar_trans_eff_date IS NULL AND renl_code = '9', v_sar_trans_eff_date, TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')) AS v_new_cancellation_date,
+	IFF(v_sar_trans_eff_date IS NULL 
+		AND renl_code =NOT  '9',
+		v_sar_trans_eff_date,
+		TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS v_new_cancellation_date,
 	v_new_cancellation_date AS out_new_cancellation_date,
 	-- *INF*: iif( pol_eff_date<=compare_date AND 
 	-- 	      compare_date< (iif (pol_exp_date< v_new_cancellation_date, pol_exp_date,v_new_cancellation_date)),'I' ,
@@ -125,10 +142,37 @@ EXP_Detect_CancellationDate_And_Status AS (
 	-- iif(compare_date<pol_eff_date AND (v_new_cancellation_date>compare_date OR v_new_cancellation_date>pol_eff_date),'F', 'N/A' 
 	-- )))
 	-- )
-	IFF(pol_eff_date <= compare_date AND compare_date < ( IFF(pol_exp_date < v_new_cancellation_date, pol_exp_date, v_new_cancellation_date) ), 'I', IFF(v_new_cancellation_date <= compare_date OR ( v_new_cancellation_date = pol_eff_date AND compare_date <= pol_eff_date ), 'C', IFF(compare_date >= pol_exp_date, 'N', IFF(compare_date < pol_eff_date AND ( v_new_cancellation_date > compare_date OR v_new_cancellation_date > pol_eff_date ), 'F', 'N/A')))) AS v_new_pol_status_code,
+	IFF(pol_eff_date <= compare_date 
+		AND compare_date < ( IFF(pol_exp_date < v_new_cancellation_date,
+				pol_exp_date,
+				v_new_cancellation_date
+			) 
+		),
+		'I',
+		IFF(v_new_cancellation_date <= compare_date 
+			OR ( v_new_cancellation_date = pol_eff_date 
+				AND compare_date <= pol_eff_date 
+			),
+			'C',
+			IFF(compare_date >= pol_exp_date,
+				'N',
+				IFF(compare_date < pol_eff_date 
+					AND ( v_new_cancellation_date > compare_date 
+						OR v_new_cancellation_date > pol_eff_date 
+					),
+					'F',
+					'N/A'
+				)
+			)
+		)
+	) AS v_new_pol_status_code,
 	v_new_pol_status_code AS out_new_pol_status_code,
 	-- *INF*: IIF(NOT ISNULL(sar_reason_amend_code) AND renl_code='9',sar_reason_amend_code,'N/A')
-	IFF(NOT sar_reason_amend_code IS NULL AND renl_code = '9', sar_reason_amend_code, 'N/A') AS v_PolicyCancellationReasonCode,
+	IFF(sar_reason_amend_code IS NULL 
+		AND renl_code =NOT  '9',
+		sar_reason_amend_code,
+		'N/A'
+	) AS v_PolicyCancellationReasonCode,
 	v_PolicyCancellationReasonCode AS out_PolicyCancellationReasonCode,
 	-- *INF*: DECODE(true,
 	-- pol_cancellation_date != v_new_cancellation_date,'Y'
@@ -140,7 +184,8 @@ EXP_Detect_CancellationDate_And_Status AS (
 	DECODE(true,
 		pol_cancellation_date != v_new_cancellation_date, 'Y',
 		pol_status_code != v_new_pol_status_code, 'Y',
-		'N') AS Update_Flag,
+		'N'
+	) AS Update_Flag,
 	sysdate AS Modified_date
 	FROM EXP_values
 	LEFT JOIN LKP_4514_Stage_pol_cancellation_date

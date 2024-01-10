@@ -199,28 +199,39 @@ EXP_CoverageDetailCommercialProperty AS (
 	-- v_ISOPropertyCauseofLossGroup='SCL' and i_BureauCode1!='2', '01',
 	--  'N/A')
 	DECODE(true,
-		v_ISOPropertyCauseofLossGroup = 'SCL' AND i_BureauCode1 = '2', LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORYRULE_PMS_i_ClassCode.ISOSpecialCauseOfLossCategoryCode,
-		v_ISOPropertyCauseofLossGroup = 'SCL' AND i_BureauCode1 != '2', '01',
-		'N/A') AS v_ISOSpecialCauseOfLossCategoryCode,
+		v_ISOPropertyCauseofLossGroup = 'SCL' 
+		AND i_BureauCode1 = '2', LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORYRULE_PMS_i_ClassCode.ISOSpecialCauseOfLossCategoryCode,
+		v_ISOPropertyCauseofLossGroup = 'SCL' 
+		AND i_BureauCode1 != '2', '01',
+		'N/A'
+	) AS v_ISOSpecialCauseOfLossCategoryCode,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	-- *INF*: iif(isnull(v_ISOPropertyCauseofLossGroup),'N/A',
 	-- v_ISOPropertyCauseofLossGroup)
-	IFF(v_ISOPropertyCauseofLossGroup IS NULL, 'N/A', v_ISOPropertyCauseofLossGroup) AS o_ISOPropertyCauseofLossGroup,
+	IFF(v_ISOPropertyCauseofLossGroup IS NULL,
+		'N/A',
+		v_ISOPropertyCauseofLossGroup
+	) AS o_ISOPropertyCauseofLossGroup,
 	-- *INF*: IIF(ISNULL(v_ISOSpecialCauseOfLossCategoryCode), 'Unassigned', v_ISOSpecialCauseOfLossCategoryCode)
-	IFF(v_ISOSpecialCauseOfLossCategoryCode IS NULL, 'Unassigned', v_ISOSpecialCauseOfLossCategoryCode) AS o_ISOSpecialCauseOfLossCategory,
+	IFF(v_ISOSpecialCauseOfLossCategoryCode IS NULL,
+		'Unassigned',
+		v_ISOSpecialCauseOfLossCategoryCode
+	) AS o_ISOSpecialCauseOfLossCategory,
 	-- *INF*: SUBSTR(i_ClassCode,1,4)
 	-- 
 	-- 
 	-- --LPAD(i_ClassCode,6, '0')
-	SUBSTR(i_ClassCode, 1, 4) AS o_ClassCode,
+	SUBSTR(i_ClassCode, 1, 4
+	) AS o_ClassCode,
 	-- *INF*: DECODE(TRUE,
 	-- IN(i_BureauCode2, '1', '4', '5', '8'), 'Specific',
 	-- IN(i_BureauCode2, '2', '3', '6', '7'), 'Class', 
 	-- 'N/A')
 	DECODE(TRUE,
-		IN(i_BureauCode2, '1', '4', '5', '8'), 'Specific',
-		IN(i_BureauCode2, '2', '3', '6', '7'), 'Class',
-		'N/A') AS o_RateType,
+		i_BureauCode2 IN ('1','4','5','8'), 'Specific',
+		i_BureauCode2 IN ('2','3','6','7'), 'Class',
+		'N/A'
+	) AS o_RateType,
 	i_StateProvinceCode AS o_StateProvinceCode
 	FROM SQ_PMS
 	LEFT JOIN LKP_SUPISOCOMMERCIALPROPERTYCAUSEOFLOSSGROUP_PMS LKP_SUPISOCOMMERCIALPROPERTYCAUSEOFLOSSGROUP_PMS_i_ProductCode_i_MajorPerilCode
@@ -405,38 +416,71 @@ EXP_CoverageDetailCommercialProperty1 AS (
 	ProductCode AS i_ProductCode,
 	SublineCode AS i_SublineCode,
 	-- *INF*: LTRIM(RTRIM(:LKP.LKP_SupISOCommercialPropertyCauseOfLossGroup_DCT(i_ProductCode,i_SublineCode)))
-	LTRIM(RTRIM(LKP_SUPISOCOMMERCIALPROPERTYCAUSEOFLOSSGROUP_DCT_i_ProductCode_i_SublineCode.ISOCommercialPropertyCauseOfLossGroup)) AS v_ISOPropertyCauseofLossGroup,
+	LTRIM(RTRIM(LKP_SUPISOCOMMERCIALPROPERTYCAUSEOFLOSSGROUP_DCT_i_ProductCode_i_SublineCode.ISOCommercialPropertyCauseOfLossGroup
+		)
+	) AS v_ISOPropertyCauseofLossGroup,
 	-- *INF*: DECODE(TRUE,
 	-- v_ISOPropertyCauseofLossGroup='SCL' AND (i_PropertyType='' OR ISNULL(i_PropertyType)), 'Buildings',
 	-- v_ISOPropertyCauseofLossGroup='SCL' ,iif(isnull(i_OccupanyCategory),'N/A',i_OccupanyCategory),
 	-- 'N/A')
 	DECODE(TRUE,
-		v_ISOPropertyCauseofLossGroup = 'SCL' AND ( i_PropertyType = '' OR i_PropertyType IS NULL ), 'Buildings',
-		v_ISOPropertyCauseofLossGroup = 'SCL', IFF(i_OccupanyCategory IS NULL, 'N/A', i_OccupanyCategory),
-		'N/A') AS v_ISOSpecialCauseOfLossCategory,
+		v_ISOPropertyCauseofLossGroup = 'SCL' 
+		AND ( i_PropertyType = '' 
+			OR i_PropertyType IS NULL 
+		), 'Buildings',
+		v_ISOPropertyCauseofLossGroup = 'SCL', IFF(i_OccupanyCategory IS NULL,
+			'N/A',
+			i_OccupanyCategory
+		),
+		'N/A'
+	) AS v_ISOSpecialCauseOfLossCategory,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	-- *INF*: IIF((i_LineType='Property' or i_LineType='SBOPProperty')and not  isnull(v_ISOPropertyCauseofLossGroup),
 	-- v_ISOPropertyCauseofLossGroup,'N/A')
-	IFF(( i_LineType = 'Property' OR i_LineType = 'SBOPProperty' ) AND NOT v_ISOPropertyCauseofLossGroup IS NULL, v_ISOPropertyCauseofLossGroup, 'N/A') AS o_ISOPropertyCauseofLossGroup,
+	IFF(( i_LineType = 'Property' 
+			OR i_LineType = 'SBOPProperty' 
+		) 
+		AND v_ISOPropertyCauseofLossGroup IS NOT NULL,
+		v_ISOPropertyCauseofLossGroup,
+		'N/A'
+	) AS o_ISOPropertyCauseofLossGroup,
 	-- *INF*: IIF(i_LineType='Property' or i_LineType='SBOPProperty',
 	-- v_ISOSpecialCauseOfLossCategory,'N/A')
-	IFF(i_LineType = 'Property' OR i_LineType = 'SBOPProperty', v_ISOSpecialCauseOfLossCategory, 'N/A') AS o_ISOSpecialCauseOfLossCategory,
+	IFF(i_LineType = 'Property' 
+		OR i_LineType = 'SBOPProperty',
+		v_ISOSpecialCauseOfLossCategory,
+		'N/A'
+	) AS o_ISOSpecialCauseOfLossCategory,
 	-- *INF*: IIF(i_LineType='Property' or i_LineType='SBOPProperty',
 	-- SUBSTR(i_ClassCode,1,4),'N/A')
-	IFF(i_LineType = 'Property' OR i_LineType = 'SBOPProperty', SUBSTR(i_ClassCode, 1, 4), 'N/A') AS o_ClassCode,
+	IFF(i_LineType = 'Property' 
+		OR i_LineType = 'SBOPProperty',
+		SUBSTR(i_ClassCode, 1, 4
+		),
+		'N/A'
+	) AS o_ClassCode,
 	-- *INF*: IIF(i_LineType='Property' or i_LineType='SBOPProperty',
 	-- DECODE(TRUE,
 	-- i_RateType='S', 'Specific',
 	-- i_RateType='C', 'Class',
 	-- 'N/A'),'N/A')
-	IFF(i_LineType = 'Property' OR i_LineType = 'SBOPProperty', DECODE(TRUE,
+	IFF(i_LineType = 'Property' 
+		OR i_LineType = 'SBOPProperty',
+		DECODE(TRUE,
 		i_RateType = 'S', 'Specific',
 		i_RateType = 'C', 'Class',
-		'N/A'), 'N/A') AS o_RateType,
+		'N/A'
+		),
+		'N/A'
+	) AS o_RateType,
 	-- *INF*: IIF(i_LineType='Property' or i_LineType='SBOPProperty',
 	-- i_StateProvinceCode,'N/A')
 	-- 
-	IFF(i_LineType = 'Property' OR i_LineType = 'SBOPProperty', i_StateProvinceCode, 'N/A') AS o_StateProvinceCode
+	IFF(i_LineType = 'Property' 
+		OR i_LineType = 'SBOPProperty',
+		i_StateProvinceCode,
+		'N/A'
+	) AS o_StateProvinceCode
 	FROM SQ_DCT
 	LEFT JOIN LKP_SUPISOCOMMERCIALPROPERTYCAUSEOFLOSSGROUP_DCT LKP_SUPISOCOMMERCIALPROPERTYCAUSEOFLOSSGROUP_DCT_i_ProductCode_i_SublineCode
 	ON LKP_SUPISOCOMMERCIALPROPERTYCAUSEOFLOSSGROUP_DCT_i_ProductCode_i_SublineCode.ProductCode = i_ProductCode
@@ -510,26 +554,44 @@ EXP_Cal AS (
 	-- not isnull(lk_ISOCPRatingGroup),lk_ISOCPRatingGroup,
 	-- not isnull(lk_ISOCPRatingGroup_default),lk_ISOCPRatingGroup_default,
 	-- 'N/A'),'N/A')))
-	RTRIM(LTrim(IFF(i_ISOPropertyCauseofLossGroup = 'BGI', DECODE(TRUE,
-		NOT lk_ISOCPRatingGroup IS NULL, lk_ISOCPRatingGroup,
-		NOT lk_ISOCPRatingGroup_default IS NULL, lk_ISOCPRatingGroup_default,
-		'N/A'), 'N/A'))) AS v_ISOCPRatingGroup,
+	RTRIM(LTrim(IFF(i_ISOPropertyCauseofLossGroup = 'BGI',
+				DECODE(TRUE,
+		lk_ISOCPRatingGroup IS NOT NULL, lk_ISOCPRatingGroup,
+		lk_ISOCPRatingGroup_default IS NOT NULL, lk_ISOCPRatingGroup_default,
+		'N/A'
+				),
+				'N/A'
+			)
+		)
+	) AS v_ISOCPRatingGroup,
 	-- *INF*: Rtrim(LTrim(DECODE(TRUE,
 	-- not isnull(lk_PropertySpecialClass),lk_PropertySpecialClass,
 	-- not isnull(lk_PropertySpecialClass_default),lk_PropertySpecialClass_default,
 	-- 'N/A')))
 	Rtrim(LTrim(DECODE(TRUE,
-		NOT lk_PropertySpecialClass IS NULL, lk_PropertySpecialClass,
-		NOT lk_PropertySpecialClass_default IS NULL, lk_PropertySpecialClass_default,
-		'N/A'))) AS v_PropertySpecialClass,
+		lk_PropertySpecialClass IS NOT NULL, lk_PropertySpecialClass,
+		lk_PropertySpecialClass_default IS NOT NULL, lk_PropertySpecialClass_default,
+		'N/A'
+			)
+		)
+	) AS v_PropertySpecialClass,
 	v_ISOCPRatingGroup AS o_ISOCPRatingGroup,
 	v_PropertySpecialClass AS o_PropertySpecialClass,
 	-- *INF*: iif(isnull(i_ISOPropertyCauseofLossGroup),'N/A',i_ISOPropertyCauseofLossGroup)
-	IFF(i_ISOPropertyCauseofLossGroup IS NULL, 'N/A', i_ISOPropertyCauseofLossGroup) AS o_ISOPropertyCauseofLossGroup,
+	IFF(i_ISOPropertyCauseofLossGroup IS NULL,
+		'N/A',
+		i_ISOPropertyCauseofLossGroup
+	) AS o_ISOPropertyCauseofLossGroup,
 	-- *INF*: iif(isnull(i_ISOSpecialCauseOfLossCategory),'N/A',i_ISOSpecialCauseOfLossCategory)
-	IFF(i_ISOSpecialCauseOfLossCategory IS NULL, 'N/A', i_ISOSpecialCauseOfLossCategory) AS o_ISOSpecialCauseOfLossCategory,
+	IFF(i_ISOSpecialCauseOfLossCategory IS NULL,
+		'N/A',
+		i_ISOSpecialCauseOfLossCategory
+	) AS o_ISOSpecialCauseOfLossCategory,
 	-- *INF*: iif(isnull(i_RateType),'N/A',i_RateType)
-	IFF(i_RateType IS NULL, 'N/A', i_RateType) AS o_RateType
+	IFF(i_RateType IS NULL,
+		'N/A',
+		i_RateType
+	) AS o_RateType
 	FROM Union_PMS_DCT
 	LEFT JOIN LKP_SupClassificationCommercialProperty
 	ON LKP_SupClassificationCommercialProperty.ClassCode = Union_PMS_DCT.o_ClassCode AND LKP_SupClassificationCommercialProperty.RatingStateCode = Union_PMS_DCT.o_StateProvinceCode

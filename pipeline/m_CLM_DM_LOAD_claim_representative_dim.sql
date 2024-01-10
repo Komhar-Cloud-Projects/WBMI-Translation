@@ -47,7 +47,10 @@ EXP_claim_rep_DM AS (
 	-- *INF*: IIF(old_claim_rep_wbconnect_user_id='N/A',claim_rep_key,old_claim_rep_wbconnect_user_id)
 	-- 
 	-- -- For certain PMS records, the wbconnect_user_id is N/A. For these records, we use rep_key which is the three letter adjuster code
-	IFF(old_claim_rep_wbconnect_user_id = 'N/A', claim_rep_key, old_claim_rep_wbconnect_user_id) AS claim_rep_wbconnect_user_id_op,
+	IFF(old_claim_rep_wbconnect_user_id = 'N/A',
+		claim_rep_key,
+		old_claim_rep_wbconnect_user_id
+	) AS claim_rep_wbconnect_user_id_op,
 	crrnt_snpsht_flag,
 	audit_id,
 	eff_from_date,
@@ -74,10 +77,15 @@ EXP_claim_rep_DM AS (
 	-- 
 	-- -- Bit types are inconsistantly handled in Informatica as integers and strings.  I'm forcing an integer check to  just in case the type needs to change..
 	DECODE(true,
-		RTRIM(LTRIM(ExceedAuthorityFlag)) = 'T', 'Yes',
-		RTRIM(LTRIM(ExceedAuthorityFlag)) = 'Y', 'Yes',
-		TO_INTEGER(ExceedAuthorityFlag) = 1, 'Yes',
-		'No') AS ExceedAuthorityFlag_out,
+		RTRIM(LTRIM(ExceedAuthorityFlag
+			)
+		) = 'T', 'Yes',
+		RTRIM(LTRIM(ExceedAuthorityFlag
+			)
+		) = 'Y', 'Yes',
+		CAST(ExceedAuthorityFlag AS INTEGER) = 1, 'Yes',
+		'No'
+	) AS ExceedAuthorityFlag_out,
 	ClaimsDesktopAuthorityType
 	FROM SQ_claim_representative
 ),
@@ -166,7 +174,8 @@ EXP_claim_representative_dim_detect_changes AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	FIL_Claim_rep_DM.eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	FIL_Claim_rep_DM.source_sys_id,
 	sysdate AS created_date,
 	sysdate AS modified_date,
@@ -349,8 +358,9 @@ EXP_Lag_eff_from_date111 AS (
 	-- 	edw_claim_rep_ak_id = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		edw_claim_rep_ak_id = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		edw_claim_rep_ak_id = v_PREV_ROW_occurrence_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	edw_claim_rep_ak_id AS v_PREV_ROW_occurrence_key,

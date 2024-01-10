@@ -76,11 +76,15 @@ EXP_Commission AS (
 	pol_exp_date AS i_pol_exp_date,
 	PremiumMasterAgencyDirectWrittenCommission AS i_PremiumMasterAgencyDirectWrittenCommission,
 	-- *INF*: ADD_TO_DATE(SESSSTARTTIME, 'MM', @{pipeline().parameters.NUMOFMONTH})
-	ADD_TO_DATE(SESSSTARTTIME, 'MM', @{pipeline().parameters.NUMOFMONTH}) AS v_PreviousMonthDate,
+	DATEADD(MONTH,@{pipeline().parameters.NUMOFMONTH},SESSSTARTTIME) AS v_PreviousMonthDate,
 	-- *INF*: TO_CHAR(v_PreviousMonthDate, 'Mon YYYY')
-	TO_CHAR(v_PreviousMonthDate, 'Mon YYYY') AS o_YearMonth,
+	TO_CHAR(v_PreviousMonthDate, 'Mon YYYY'
+	) AS o_YearMonth,
 	-- *INF*: IIF(ISNULL(i_PolicyReference), i_pol_num, i_PolicyReference)
-	IFF(i_PolicyReference IS NULL, i_pol_num, i_PolicyReference) AS o_PolicyNumber,
+	IFF(i_PolicyReference IS NULL,
+		i_pol_num,
+		i_PolicyReference
+	) AS o_PolicyNumber,
 	i_PolicyTermEffectiveDate AS o_SourceEffectiveDate,
 	i_pol_eff_date AS o_TargetEffectiveDate,
 	'Validate that $ Commission between BillingODS and DM match for month end reporting.' AS o_ComparisonType,
@@ -166,11 +170,15 @@ EXP_DWP AS (
 	pol_exp_date AS i_pol_exp_date,
 	PremiumMasterDirectWrittenPremium AS i_PremiumMasterDirectWrittenPremium,
 	-- *INF*: ADD_TO_DATE(SESSSTARTTIME, 'MM', @{pipeline().parameters.NUMOFMONTH})
-	ADD_TO_DATE(SESSSTARTTIME, 'MM', @{pipeline().parameters.NUMOFMONTH}) AS v_PreviousMonthDate,
+	DATEADD(MONTH,@{pipeline().parameters.NUMOFMONTH},SESSSTARTTIME) AS v_PreviousMonthDate,
 	-- *INF*: TO_CHAR(v_PreviousMonthDate, 'Mon YYYY')
-	TO_CHAR(v_PreviousMonthDate, 'Mon YYYY') AS o_YearMonth,
+	TO_CHAR(v_PreviousMonthDate, 'Mon YYYY'
+	) AS o_YearMonth,
 	-- *INF*: IIF(ISNULL(i_PolicyReference), i_pol_num, i_PolicyReference)
-	IFF(i_PolicyReference IS NULL, i_pol_num, i_PolicyReference) AS o_PolicyNumber,
+	IFF(i_PolicyReference IS NULL,
+		i_pol_num,
+		i_PolicyReference
+	) AS o_PolicyNumber,
 	i_PolicyTermEffectiveDate AS o_SourceEffectiveDate,
 	i_pol_eff_date AS o_TargetEffectiveDate,
 	'Validate that $ DWP between BillingODS and DM match for month end reporting.' AS o_ComparisonType,
@@ -254,11 +262,15 @@ EXP_PassThrough AS (
 	pol_exp_date AS i_pol_exp_date,
 	PassThroughChargeTransactionAmount AS i_PassThroughChargeTransactionAmount,
 	-- *INF*: ADD_TO_DATE(SESSSTARTTIME, 'MM', @{pipeline().parameters.NUMOFMONTH})
-	ADD_TO_DATE(SESSSTARTTIME, 'MM', @{pipeline().parameters.NUMOFMONTH}) AS v_PreviousMonthDate,
+	DATEADD(MONTH,@{pipeline().parameters.NUMOFMONTH},SESSSTARTTIME) AS v_PreviousMonthDate,
 	-- *INF*: TO_CHAR(v_PreviousMonthDate, 'Mon YYYY')
-	TO_CHAR(v_PreviousMonthDate, 'Mon YYYY') AS o_YearMonth,
+	TO_CHAR(v_PreviousMonthDate, 'Mon YYYY'
+	) AS o_YearMonth,
 	-- *INF*: IIF(ISNULL(i_PolicyReference), i_pol_num, i_PolicyReference)
-	IFF(i_PolicyReference IS NULL, i_pol_num, i_PolicyReference) AS o_PolicyNumber,
+	IFF(i_PolicyReference IS NULL,
+		i_pol_num,
+		i_PolicyReference
+	) AS o_PolicyNumber,
 	i_PolicyTermEffectiveDate AS o_SourceEffectiveDate,
 	i_pol_eff_date AS o_TargetEffectiveDate,
 	'Validate that $ Pass Through between BillingODS and DM match for month end reporting.' AS o_ComparisonType,
@@ -287,13 +299,25 @@ EXP_FileName AS (
 	Amount_From_DM,
 	BillingAccountNumber AS i_BillingAccountNumber,
 	-- *INF*: IIF(ISNULL(Amount_From_BillingODS), 0, Amount_From_BillingODS)
-	IFF(Amount_From_BillingODS IS NULL, 0, Amount_From_BillingODS) AS v_Amount_From_BillingODS,
+	IFF(Amount_From_BillingODS IS NULL,
+		0,
+		Amount_From_BillingODS
+	) AS v_Amount_From_BillingODS,
 	-- *INF*: IIF(ISNULL(Amount_From_DM), 0, Amount_From_DM)
-	IFF(Amount_From_DM IS NULL, 0, Amount_From_DM) AS v_Amount_From_DM,
+	IFF(Amount_From_DM IS NULL,
+		0,
+		Amount_From_DM
+	) AS v_Amount_From_DM,
 	-- *INF*: CHR(39) || i_BillingAccountNumber
-	CHR(39) || i_BillingAccountNumber AS o_BillingAccountNumber,
+	CHR(39
+	) || i_BillingAccountNumber AS o_BillingAccountNumber,
 	-- *INF*: IIF(SUBSTR(i_PolicyNumber, 1, 1)='0', CHR(39) || i_PolicyNumber, i_PolicyNumber)
-	IFF(SUBSTR(i_PolicyNumber, 1, 1) = '0', CHR(39) || i_PolicyNumber, i_PolicyNumber) AS o_PolicyNumber,
+	IFF(SUBSTR(i_PolicyNumber, 1, 1
+		) = '0',
+		CHR(39
+		) || i_PolicyNumber,
+		i_PolicyNumber
+	) AS o_PolicyNumber,
 	v_Amount_From_BillingODS - v_Amount_From_DM AS o_Difference
 	FROM Union
 ),

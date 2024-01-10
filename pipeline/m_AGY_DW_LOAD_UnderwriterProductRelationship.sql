@@ -30,8 +30,9 @@ EXP_Lag_eff_from_date AS (
 	-- UnderwriterProductRelationshipAKId = v_prev_AKID , ADD_TO_DATE(v_prev_EffectiveFromDate,'SS',-1),
 	-- OriginalEffectiveToDate)
 	DECODE(TRUE,
-		UnderwriterProductRelationshipAKId = v_prev_AKID, ADD_TO_DATE(v_prev_EffectiveFromDate, 'SS', - 1),
-		OriginalEffectiveToDate) AS v_EffectiveToDate,
+		UnderwriterProductRelationshipAKId = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_EffectiveFromDate),
+		OriginalEffectiveToDate
+	) AS v_EffectiveToDate,
 	v_EffectiveToDate AS o_EffectiveToDate,
 	UnderwriterProductRelationshipAKId AS v_prev_AKID,
 	EffectiveFromDate AS v_prev_EffectiveFromDate,
@@ -221,31 +222,63 @@ EXP_Detect_Changes AS (
 	EXP_GetAKIDs.BondCategory,
 	LKP_Existing.HashKey AS lkp_HashKey,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentAKId),-1,i_InsuranceSegmentAKId)
-	IFF(i_InsuranceSegmentAKId IS NULL, - 1, i_InsuranceSegmentAKId) AS v_InsuranceSegmentAKId,
+	IFF(i_InsuranceSegmentAKId IS NULL,
+		- 1,
+		i_InsuranceSegmentAKId
+	) AS v_InsuranceSegmentAKId,
 	-- *INF*: MD5(to_char(UnderwritingAssociateAKID) || '&' || to_char(StrategicProfitCenterAKId) || '&' || to_char(PolicyOfferingAKId) || '&' || to_char(ProgramAKId) || '&' || to_char(PolicyAmountMinimum) || '&' || to_char(PolicyAmountMaximum))
-	MD5(to_char(UnderwritingAssociateAKID) || '&' || to_char(StrategicProfitCenterAKId) || '&' || to_char(PolicyOfferingAKId) || '&' || to_char(ProgramAKId) || '&' || to_char(PolicyAmountMinimum) || '&' || to_char(PolicyAmountMaximum)) AS v_NewHashKey,
+	MD5(to_char(UnderwritingAssociateAKID
+		) || '&' || to_char(StrategicProfitCenterAKId
+		) || '&' || to_char(PolicyOfferingAKId
+		) || '&' || to_char(ProgramAKId
+		) || '&' || to_char(PolicyAmountMinimum
+		) || '&' || to_char(PolicyAmountMaximum
+		)
+	) AS v_NewHashKey,
 	-- *INF*: IIF(IsNull(lkp_UnderwriterProductRelationshipAKId), 'Insert', 'Update')
-	IFF(lkp_UnderwriterProductRelationshipAKId IS NULL, 'Insert', 'Update') AS v_InsertOrUpdate,
+	IFF(lkp_UnderwriterProductRelationshipAKId IS NULL,
+		'Insert',
+		'Update'
+	) AS v_InsertOrUpdate,
 	-- *INF*: IIF(IsNull(StrategicProfitCenterAKId), -1, StrategicProfitCenterAKId)
-	IFF(StrategicProfitCenterAKId IS NULL, - 1, StrategicProfitCenterAKId) AS o_StrategicProfitCenterAKID,
+	IFF(StrategicProfitCenterAKId IS NULL,
+		- 1,
+		StrategicProfitCenterAKId
+	) AS o_StrategicProfitCenterAKID,
 	-- *INF*: IIF(IsNull(PolicyOfferingAKId), -1, PolicyOfferingAKId)
-	IFF(PolicyOfferingAKId IS NULL, - 1, PolicyOfferingAKId) AS o_PolicyOfferingAKID,
+	IFF(PolicyOfferingAKId IS NULL,
+		- 1,
+		PolicyOfferingAKId
+	) AS o_PolicyOfferingAKID,
 	-- *INF*: IIF(IsNull(ProgramAKId), -1, ProgramAKId)
-	IFF(ProgramAKId IS NULL, - 1, ProgramAKId) AS o_ProgramAKID,
+	IFF(ProgramAKId IS NULL,
+		- 1,
+		ProgramAKId
+	) AS o_ProgramAKID,
 	v_NewHashKey AS o_NewHashKey,
 	-- *INF*: IIF(lkp_HashKey = v_NewHashKey 
 	-- AND lkp_InsuranceSegmentAKId=v_InsuranceSegmentAKId
 	-- AND lkp_BondCategory=BondCategory, 
 	-- 'Ignore', v_InsertOrUpdate)
-	IFF(lkp_HashKey = v_NewHashKey AND lkp_InsuranceSegmentAKId = v_InsuranceSegmentAKId AND lkp_BondCategory = BondCategory, 'Ignore', v_InsertOrUpdate) AS o_InsertUpdateOrIgnore,
+	IFF(lkp_HashKey = v_NewHashKey 
+		AND lkp_InsuranceSegmentAKId = v_InsuranceSegmentAKId 
+		AND lkp_BondCategory = BondCategory,
+		'Ignore',
+		v_InsertOrUpdate
+	) AS o_InsertUpdateOrIgnore,
 	v_InsuranceSegmentAKId AS o_InsuranceSegmentAKId,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: iif(v_InsertOrUpdate='Insert',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_InsertOrUpdate = 'Insert', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS EffectiveDate,
+	IFF(v_InsertOrUpdate = 'Insert',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate
@@ -295,7 +328,10 @@ EXP_Assign_AKID AS (
 	UnderwriterProductRelationshipAKId,
 	SEQ_UnderwriterProductRelationship_AKID.NEXTVAL,
 	-- *INF*: iif(isnull(UnderwriterProductRelationshipAKId),NEXTVAL,UnderwriterProductRelationshipAKId)
-	IFF(UnderwriterProductRelationshipAKId IS NULL, NEXTVAL, UnderwriterProductRelationshipAKId) AS o_UnderwriterProductRelationshipAKID,
+	IFF(UnderwriterProductRelationshipAKId IS NULL,
+		NEXTVAL,
+		UnderwriterProductRelationshipAKId
+	) AS o_UnderwriterProductRelationshipAKID,
 	UnderwritingAssociateAKID,
 	StrategicProfitCenterAKId,
 	ProductAKId,

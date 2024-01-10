@@ -109,20 +109,36 @@ EXP_Detect_Changes AS (
 	EXP_GetAKIDs.StrategicProfitCenterAKId,
 	EXP_GetAKIDs.AgencyODSRelationshipId,
 	-- *INF*: MD5(to_char(AgencyAKID) || '&'|| to_char(UnderwritingAssociateAKID) || '&'|| to_char(StrategicProfitCenterAKId))
-	MD5(to_char(AgencyAKID) || '&' || to_char(UnderwritingAssociateAKID) || '&' || to_char(StrategicProfitCenterAKId)) AS v_NewHashKey,
+	MD5(to_char(AgencyAKID
+		) || '&' || to_char(UnderwritingAssociateAKID
+		) || '&' || to_char(StrategicProfitCenterAKId
+		)
+	) AS v_NewHashKey,
 	v_NewHashKey AS o_NewHashKey,
 	LKP_ExistingRelationship.HashKey AS lkp_HashKey,
 	-- *INF*: IIF(ISNULL(lkp_UnderwriterAgencyRelationshipAKID), 'NEW', 
 	-- IIF((v_NewHashKey <> lkp_HashKey), 'UPDATE', 'NOCHANGE'))
-	IFF(lkp_UnderwriterAgencyRelationshipAKID IS NULL, 'NEW', IFF(( v_NewHashKey <> lkp_HashKey ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(lkp_UnderwriterAgencyRelationshipAKID IS NULL,
+		'NEW',
+		IFF(( v_NewHashKey <> lkp_HashKey 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS EffectiveDate,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	EXP_GetAKIDs.SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate
@@ -167,7 +183,10 @@ EXP_Assign_AKID AS (
 	lkp_UnderwriterRelationshipAKID,
 	SEQ_UnderwriterAgencyRelationship_AKID.NEXTVAL,
 	-- *INF*: iif(isnull(lkp_UnderwriterRelationshipAKID),NEXTVAL,lkp_UnderwriterRelationshipAKID)
-	IFF(lkp_UnderwriterRelationshipAKID IS NULL, NEXTVAL, lkp_UnderwriterRelationshipAKID) AS UnderwriterRelationshipAKID,
+	IFF(lkp_UnderwriterRelationshipAKID IS NULL,
+		NEXTVAL,
+		lkp_UnderwriterRelationshipAKID
+	) AS UnderwriterRelationshipAKID,
 	AgencyAKID,
 	UnderwritingAssociateAKID,
 	StrategicProfitCenterAKId,
@@ -225,8 +244,9 @@ EXP_Lag_eff_from_date AS (
 	-- UnderwriterAgencyRelationshipAKID = v_prev_AKID , ADD_TO_DATE(v_prev_EffectiveFromDate,'SS',-1),
 	-- OriginalEffectiveToDate)
 	DECODE(TRUE,
-		UnderwriterAgencyRelationshipAKID = v_prev_AKID, ADD_TO_DATE(v_prev_EffectiveFromDate, 'SS', - 1),
-		OriginalEffectiveToDate) AS v_EffectiveToDate,
+		UnderwriterAgencyRelationshipAKID = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_EffectiveFromDate),
+		OriginalEffectiveToDate
+	) AS v_EffectiveToDate,
 	v_EffectiveToDate AS o_EffectiveToDate,
 	UnderwriterAgencyRelationshipAKID AS v_prev_AKID,
 	EffectiveFromDate AS v_prev_EffectiveFromDate,

@@ -12,16 +12,80 @@ EXP_VALIDATE AS (
 	SELECT
 	app_context_guid AS IN_app_context_guid,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_app_context_guid))) OR IS_SPACES(LTRIM(RTRIM(IN_app_context_guid))) OR LENGTH(LTRIM(RTRIM(IN_app_context_guid)))=0,'N/A' ,LTRIM(RTRIM(IN_app_context_guid)))
-	IFF(LTRIM(RTRIM(IN_app_context_guid)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_app_context_guid))) OR LENGTH(LTRIM(RTRIM(IN_app_context_guid))) = 0, 'N/A', LTRIM(RTRIM(IN_app_context_guid))) AS app_context_guid,
+	IFF(LTRIM(RTRIM(IN_app_context_guid
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_app_context_guid
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_app_context_guid
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_app_context_guid
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_app_context_guid
+			)
+		)
+	) AS app_context_guid,
 	app_guid AS IN_app_guid,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_app_guid))) OR IS_SPACES(LTRIM(RTRIM(IN_app_guid))) OR LENGTH(LTRIM(RTRIM(IN_app_guid)))=0,'N/A' ,LTRIM(RTRIM(IN_app_guid)))
-	IFF(LTRIM(RTRIM(IN_app_guid)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_app_guid))) OR LENGTH(LTRIM(RTRIM(IN_app_guid))) = 0, 'N/A', LTRIM(RTRIM(IN_app_guid))) AS app_guid,
+	IFF(LTRIM(RTRIM(IN_app_guid
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_app_guid
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_app_guid
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_app_guid
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_app_guid
+			)
+		)
+	) AS app_guid,
 	app_context_ent_name AS IN_app_context_ent_name,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_app_context_ent_name))) OR IS_SPACES(LTRIM(RTRIM(IN_app_context_ent_name))) OR LENGTH(LTRIM(RTRIM(IN_app_context_ent_name)))=0,'N/A' ,LTRIM(RTRIM(IN_app_context_ent_name)))
-	IFF(LTRIM(RTRIM(IN_app_context_ent_name)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_app_context_ent_name))) OR LENGTH(LTRIM(RTRIM(IN_app_context_ent_name))) = 0, 'N/A', LTRIM(RTRIM(IN_app_context_ent_name))) AS app_context_ent_name,
+	IFF(LTRIM(RTRIM(IN_app_context_ent_name
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_app_context_ent_name
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_app_context_ent_name
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_app_context_ent_name
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_app_context_ent_name
+			)
+		)
+	) AS app_context_ent_name,
 	display_name AS IN_display_name,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_display_name))) OR IS_SPACES(LTRIM(RTRIM(IN_display_name))) OR LENGTH(LTRIM(RTRIM(IN_display_name)))=0,'N/A' ,LTRIM(RTRIM(IN_display_name)))
-	IFF(LTRIM(RTRIM(IN_display_name)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_display_name))) OR LENGTH(LTRIM(RTRIM(IN_display_name))) = 0, 'N/A', LTRIM(RTRIM(IN_display_name))) AS display_name,
+	IFF(LTRIM(RTRIM(IN_display_name
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_display_name
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_display_name
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_display_name
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_display_name
+			)
+		)
+	) AS display_name,
 	source_system_id
 	FROM SQ_application_context_stage
 ),
@@ -69,7 +133,10 @@ EXP_DETECT_CHANGES1 AS (
 	SELECT
 	LKP_APPLICATION.app_ak_id AS IN_app_ak_id,
 	-- *INF*: IIF(ISNULL(IN_app_ak_id),-1,IN_app_ak_id)
-	IFF(IN_app_ak_id IS NULL, - 1, IN_app_ak_id) AS v_app_ak_id,
+	IFF(IN_app_ak_id IS NULL,
+		- 1,
+		IN_app_ak_id
+	) AS v_app_ak_id,
 	v_app_ak_id AS app_ak_id,
 	LKP_APPLICATION_CONTEXT.app_context_guid AS LKP_app_context_guid,
 	LKP_APPLICATION_CONTEXT.app_context_ak_id AS LKP_app_context_ak_id,
@@ -91,19 +158,46 @@ EXP_DETECT_CHANGES1 AS (
 	--      ,
 	-- 	'UPDATE','NOCHANGE'))
 	-- 
-	IFF(LKP_app_context_ak_id IS NULL, 'NEW', IFF(LKP_app_ak_id <> v_app_ak_id OR LTRIM(RTRIM(LKP_app_context_guid)) <> LTRIM(RTRIM(app_context_guid)) OR LTRIM(RTRIM(LKP_display_name)) <> LTRIM(RTRIM(display_name)) OR LTRIM(RTRIM(LKP_app_context_entity_name)) <> LTRIM(RTRIM(app_context_entity_name)), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(LKP_app_context_ak_id IS NULL,
+		'NEW',
+		IFF(LKP_app_ak_id <> v_app_ak_id 
+			OR LTRIM(RTRIM(LKP_app_context_guid
+				)
+			) <> LTRIM(RTRIM(app_context_guid
+				)
+			) 
+			OR LTRIM(RTRIM(LKP_display_name
+				)
+			) <> LTRIM(RTRIM(display_name
+				)
+			) 
+			OR LTRIM(RTRIM(LKP_app_context_entity_name
+				)
+			) <> LTRIM(RTRIM(app_context_entity_name
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: IIF(v_changed_flag='NEW',TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_changed_flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM:DD:YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM:DD:YYYY HH24:MI:SS') AS default_date
+	TO_DATE('01/01/1800 00:00:00', 'MM:DD:YYYY HH24:MI:SS'
+	) AS default_date
 	FROM EXP_VALIDATE
 	LEFT JOIN LKP_APPLICATION
 	ON LKP_APPLICATION.app_guid = EXP_VALIDATE.app_guid AND LKP_APPLICATION.source_sys_id = EXP_VALIDATE.source_system_id
@@ -139,7 +233,10 @@ EXP_Determine_AK11 AS (
 	SELECT
 	LKP_app_context_ak_id,
 	-- *INF*: IIF(changed_flag ='NEW',NEXTVAL,LKP_app_context_ak_id)
-	IFF(changed_flag = 'NEW', NEXTVAL, LKP_app_context_ak_id) AS app_context_ak_id,
+	IFF(changed_flag = 'NEW',
+		NEXTVAL,
+		LKP_app_context_ak_id
+	) AS app_context_ak_id,
 	app_context_guid,
 	app_guid,
 	app_context_entity_name,
@@ -203,8 +300,9 @@ EXP_Lag_eff_from_date AS (
 	eff_to_date AS orig_eff_to_date,
 	-- *INF*: DECODE(TRUE,app_context_guid=v_prev_row_app_context_guid,ADD_TO_DATE(v_prev_row_eff_from_date,'SS',-1),orig_eff_to_date)
 	DECODE(TRUE,
-		app_context_guid = v_prev_row_app_context_guid, ADD_TO_DATE(v_prev_row_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		app_context_guid = v_prev_row_app_context_guid, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	app_context_guid AS v_prev_row_app_context_guid,
 	eff_from_date AS v_prev_row_eff_from_date,

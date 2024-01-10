@@ -41,7 +41,17 @@ EXP_Set_Keys AS (
 	PolicyNumber,
 	PolicyVersion,
 	-- *INF*: PolicyNumber || IIF(ISNULL(ltrim(rtrim(PolicyVersion))) or Length(ltrim(rtrim(PolicyVersion)))=0 or IS_SPACES(PolicyVersion),'00',PolicyVersion)
-	PolicyNumber || IFF(ltrim(rtrim(PolicyVersion)) IS NULL OR Length(ltrim(rtrim(PolicyVersion))) = 0 OR IS_SPACES(PolicyVersion), '00', PolicyVersion) AS v_PolicyKey,
+	PolicyNumber || IFF(ltrim(rtrim(PolicyVersion
+			)
+		) IS NULL 
+		OR Length(ltrim(rtrim(PolicyVersion
+				)
+			)
+		) = 0 
+		OR LENGTH(PolicyVersion)>0 AND TRIM(PolicyVersion)='',
+		'00',
+		PolicyVersion
+	) AS v_PolicyKey,
 	v_PolicyKey AS o_PolicyKey,
 	v_PolicyKey || '|' || Locationid || '|' || LocationNumber AS o_RiskLocationKey,
 	Locationid,
@@ -99,16 +109,26 @@ EXP_Values AS (
 	LKP_Policy.pol_ak_id AS i_pol_ak_id,
 	LKP_RiskLocation.RiskLocationAKID AS i_RiskLocationAKID,
 	-- *INF*: IIF(ISNULL(i_pol_ak_id),-1,i_pol_ak_id)
-	IFF(i_pol_ak_id IS NULL, - 1, i_pol_ak_id) AS o_Pol_AK_ID,
+	IFF(i_pol_ak_id IS NULL,
+		- 1,
+		i_pol_ak_id
+	) AS o_Pol_AK_ID,
 	-- *INF*: IIF(ISNULL(i_RiskLocationAKID),-1,i_RiskLocationAKID)
 	-- --i_pol_ak_id||i_LocationNumber||i_Territory||i_LocationXmlId
 	-- 
 	-- --i_Id||i_PolicyVersion||i_LocationNumber||i_Territory||i_LocationXmlId
-	IFF(i_RiskLocationAKID IS NULL, - 1, i_RiskLocationAKID) AS o_RiskLocationAKID,
+	IFF(i_RiskLocationAKID IS NULL,
+		- 1,
+		i_RiskLocationAKID
+	) AS o_RiskLocationAKID,
 	i_Type AS o_Type,
 	i_EffectiveDate AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959' , 'YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate,
+	IFF(i_ExpirationDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ExpirationDate
+	) AS o_ExpirationDate,
 	'0' AS o_AuditableIndicator,
 	'N/A' AS o_RiskGradeCode,
 	i_LineOfBusiness AS o_PriorInsuranceLine,
@@ -160,30 +180,54 @@ EXP_MD5 AS (
 	EXP_Values.o_AuditableIndicator AS AuditableIndicator,
 	EXP_Values.o_RiskGradeCode AS RiskGradeCode,
 	-- *INF*: IIF(ISNULL(i_pol_ak_id),ERROR('Pol_ak_id can not be blank!'),i_pol_ak_id)
-	IFF(i_pol_ak_id IS NULL, ERROR('Pol_ak_id can not be blank!'), i_pol_ak_id) AS v_pol_ak_id,
+	IFF(i_pol_ak_id IS NULL,
+		ERROR('Pol_ak_id can not be blank!'
+		),
+		i_pol_ak_id
+	) AS v_pol_ak_id,
 	-- *INF*: IIF(ISNULL(i_RiskLocationAKID),ERROR('RiskLocationAKID can not be blank!'),i_RiskLocationAKID)
-	IFF(i_RiskLocationAKID IS NULL, ERROR('RiskLocationAKID can not be blank!'), i_RiskLocationAKID) AS v_RiskLocationAKID,
+	IFF(i_RiskLocationAKID IS NULL,
+		ERROR('RiskLocationAKID can not be blank!'
+		),
+		i_RiskLocationAKID
+	) AS v_RiskLocationAKID,
 	-- *INF*: TO_CHAR(i_pol_ak_id)||'~'||TO_CHAR(i_RiskLocationAKID)
 	-- 
 	-- --- Change ID and version with Pol_ak_id for UID Project
-	TO_CHAR(i_pol_ak_id) || '~' || TO_CHAR(i_RiskLocationAKID) AS v_PolicyCoverageKey,
+	TO_CHAR(i_pol_ak_id
+	) || '~' || TO_CHAR(i_RiskLocationAKID
+	) AS v_PolicyCoverageKey,
 	-- *INF*: MD5(TO_CHAR(v_pol_ak_id)||TO_CHAR(v_RiskLocationAKID)||i_Type||TO_CHAR(i_EffectiveDate))
-	MD5(TO_CHAR(v_pol_ak_id) || TO_CHAR(v_RiskLocationAKID) || i_Type || TO_CHAR(i_EffectiveDate)) AS o_PolicyCoverageHashKey,
+	MD5(TO_CHAR(v_pol_ak_id
+		) || TO_CHAR(v_RiskLocationAKID
+		) || i_Type || TO_CHAR(i_EffectiveDate
+		)
+	) AS o_PolicyCoverageHashKey,
 	v_pol_ak_id AS o_PolicyAKID,
 	v_RiskLocationAKID AS o_RiskLocationAKID,
 	-- *INF*: IIF(ISNULL(v_PolicyCoverageKey),'N/A',v_PolicyCoverageKey)
-	IFF(v_PolicyCoverageKey IS NULL, 'N/A', v_PolicyCoverageKey) AS o_PolicyCoverageKey,
+	IFF(v_PolicyCoverageKey IS NULL,
+		'N/A',
+		v_PolicyCoverageKey
+	) AS o_PolicyCoverageKey,
 	i_Type AS o_InsuranceLine,
 	i_Type AS o_TypeBureauCode,
 	i_EffectiveDate AS o_PolicyCoverageEffectiveDate,
 	i_ExpirationDate AS o_PolicyCoverageExpirationDate,
 	-- *INF*: IIF(ISNULL(i_sup_ins_line_id),-1,i_sup_ins_line_id)
-	IFF(i_sup_ins_line_id IS NULL, - 1, i_sup_ins_line_id) AS o_sup_ins_line_id,
+	IFF(i_sup_ins_line_id IS NULL,
+		- 1,
+		i_sup_ins_line_id
+	) AS o_sup_ins_line_id,
 	-- *INF*: -1
 	-- --IIF(ISNULL(i_sup_type_bureau_code_id),---1,i_sup_type_bureau_code_id)
 	- 1 AS o_sup_type_bureau_code_id,
 	-- *INF*: IIF(ISNULL(i_InterstateRiskID),'N/A',TO_CHAR(i_InterstateRiskID))
-	IFF(i_InterstateRiskID IS NULL, 'N/A', TO_CHAR(i_InterstateRiskID)) AS o_InterstateRiskId,
+	IFF(i_InterstateRiskID IS NULL,
+		'N/A',
+		TO_CHAR(i_InterstateRiskID
+		)
+	) AS o_InterstateRiskId,
 	EXP_Values.PolicyLimitAKId,
 	EXP_Values.PriorCoverageId,
 	EXP_Values.CommissionCustomerCareAmount,
@@ -246,7 +290,8 @@ EXP_DetectChange AS (
 	DECODE(i_AuditableIndicator,
 		'T', '1',
 		'F', '0',
-		NULL) AS v_LKP_AuditableIndicator,
+		NULL
+	) AS v_LKP_AuditableIndicator,
 	EXP_MD5.AuditableIndicator,
 	EXP_MD5.RiskGradeCode,
 	EXP_MD5.o_PolicyCoverageHashKey AS PolicyCoverageHashKey,
@@ -266,7 +311,21 @@ EXP_DetectChange AS (
 	EXP_MD5.RatingPlanAKId,
 	-- *INF*: IIF(ISNULL(i_PolicyCoverageAKID), 'NEW', IIF(i_PolicyCoverageExpirationDate<>PolicyCoverageExpirationDate OR v_LKP_AuditableIndicator<>AuditableIndicator OR i_RiskGradeCode<>RiskGradeCode OR i_InterstateRiskId<>InterstateRiskId OR i_PolicyLimitAKId<>PolicyLimitAKId OR i_PriorCoverageId<>PriorCoverageId OR ISNULL(i_CustomerCareCommissionRate) OR i_CustomerCareCommissionRate<>CommissionCustomerCareAmount OR i_RatingPlanAkId <> RatingPlanAKId,
 	-- 'UPDATE', 'NOCHANGE'))
-	IFF(i_PolicyCoverageAKID IS NULL, 'NEW', IFF(i_PolicyCoverageExpirationDate <> PolicyCoverageExpirationDate OR v_LKP_AuditableIndicator <> AuditableIndicator OR i_RiskGradeCode <> RiskGradeCode OR i_InterstateRiskId <> InterstateRiskId OR i_PolicyLimitAKId <> PolicyLimitAKId OR i_PriorCoverageId <> PriorCoverageId OR i_CustomerCareCommissionRate IS NULL OR i_CustomerCareCommissionRate <> CommissionCustomerCareAmount OR i_RatingPlanAkId <> RatingPlanAKId, 'UPDATE', 'NOCHANGE')) AS o_ChangeFlag
+	IFF(i_PolicyCoverageAKID IS NULL,
+		'NEW',
+		IFF(i_PolicyCoverageExpirationDate <> PolicyCoverageExpirationDate 
+			OR v_LKP_AuditableIndicator <> AuditableIndicator 
+			OR i_RiskGradeCode <> RiskGradeCode 
+			OR i_InterstateRiskId <> InterstateRiskId 
+			OR i_PolicyLimitAKId <> PolicyLimitAKId 
+			OR i_PriorCoverageId <> PriorCoverageId 
+			OR i_CustomerCareCommissionRate IS NULL 
+			OR i_CustomerCareCommissionRate <> CommissionCustomerCareAmount 
+			OR i_RatingPlanAkId <> RatingPlanAKId,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS o_ChangeFlag
 	FROM EXP_MD5
 	LEFT JOIN LKP_PolicyCoverage
 	ON LKP_PolicyCoverage.PolicyCoverageHashKey = EXP_MD5.o_PolicyCoverageHashKey
@@ -320,16 +379,24 @@ EXP_AKandMetaData AS (
 	1 AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: IIF(i_ChangeFlag='NEW', TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE)
-	IFF(i_ChangeFlag = 'NEW', TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS o_EffectiveDate,
+	IFF(i_ChangeFlag = 'NEW',
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59' , 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreateDate,
 	SYSDATE AS o_ModifiedDate,
 	0 AS o_LogicalIndicator,
 	i_PolicyCoverageHashKey AS o_PolicyCoverageHashKey,
 	-- *INF*: IIF(ISNULL(i_PolicyCoverageAKID),NEXTVAL, i_PolicyCoverageAKID)
-	IFF(i_PolicyCoverageAKID IS NULL, NEXTVAL, i_PolicyCoverageAKID) AS o_PolicyCoverageAKID,
+	IFF(i_PolicyCoverageAKID IS NULL,
+		NEXTVAL,
+		i_PolicyCoverageAKID
+	) AS o_PolicyCoverageAKID,
 	i_PolicyAKID AS o_PolicyAKID,
 	i_RiskLocationAKID AS o_RiskLocationAKID,
 	i_PolicyCoverageKey AS o_PolicyCoverageKey,
@@ -416,8 +483,9 @@ EXP_Lag_eff_from_date AS (
 	-- i_PolicyCoverageAKID = v_prev_cust_ak_id  ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
 	DECODE(TRUE,
-		i_PolicyCoverageAKID = v_prev_cust_ak_id, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		i_PolicyCoverageAKID = v_prev_cust_ak_id, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	i_PolicyCoverageAKID AS v_prev_cust_ak_id,
 	i_eff_from_date AS v_prev_eff_from_date,
 	0 AS crrnt_snpsht_flag,

@@ -228,21 +228,45 @@ Exp_get_data AS (
 	RatingPlanCode AS i_RatingPlanCode,
 	SupLGTLineOfInsuranceID,
 	-- *INF*: IIF(NOT ISNULL(i_ProductCode), i_ProductCode, '000')
-	IFF(NOT i_ProductCode IS NULL, i_ProductCode, '000') AS ProductCode,
+	IFF(i_ProductCode IS NOT NULL,
+		i_ProductCode,
+		'000'
+	) AS ProductCode,
 	-- *INF*: IIF(NOT ISNULL(i_PolicyOfferingCode), i_PolicyOfferingCode, '000')
-	IFF(NOT i_PolicyOfferingCode IS NULL, i_PolicyOfferingCode, '000') AS PolicyOfferingCode,
+	IFF(i_PolicyOfferingCode IS NOT NULL,
+		i_PolicyOfferingCode,
+		'000'
+	) AS PolicyOfferingCode,
 	-- *INF*: IIF(NOT ISNULL(i_InsuranceReferenceLineOfBusinessCode), i_InsuranceReferenceLineOfBusinessCode, '000')
-	IFF(NOT i_InsuranceReferenceLineOfBusinessCode IS NULL, i_InsuranceReferenceLineOfBusinessCode, '000') AS InsuranceReferenceLineOfBusinessCode,
+	IFF(i_InsuranceReferenceLineOfBusinessCode IS NOT NULL,
+		i_InsuranceReferenceLineOfBusinessCode,
+		'000'
+	) AS InsuranceReferenceLineOfBusinessCode,
 	-- *INF*: IIF(NOT ISNULL(i_EnterpriseGroupCode), i_EnterpriseGroupCode, '1')
-	IFF(NOT i_EnterpriseGroupCode IS NULL, i_EnterpriseGroupCode, '1') AS EnterpriseGroupCode,
+	IFF(i_EnterpriseGroupCode IS NOT NULL,
+		i_EnterpriseGroupCode,
+		'1'
+	) AS EnterpriseGroupCode,
 	-- *INF*: IIF(NOT ISNULL(i_InsuranceReferenceLegalEntityCode), i_InsuranceReferenceLegalEntityCode, '1')
-	IFF(NOT i_InsuranceReferenceLegalEntityCode IS NULL, i_InsuranceReferenceLegalEntityCode, '1') AS InsuranceReferenceLegalEntityCode,
+	IFF(i_InsuranceReferenceLegalEntityCode IS NOT NULL,
+		i_InsuranceReferenceLegalEntityCode,
+		'1'
+	) AS InsuranceReferenceLegalEntityCode,
 	-- *INF*: IIF(NOT ISNULL(i_StrategicProfitCenterCode), i_StrategicProfitCenterCode, '6')
-	IFF(NOT i_StrategicProfitCenterCode IS NULL, i_StrategicProfitCenterCode, '6') AS StrategicProfitCenterCode,
+	IFF(i_StrategicProfitCenterCode IS NOT NULL,
+		i_StrategicProfitCenterCode,
+		'6'
+	) AS StrategicProfitCenterCode,
 	-- *INF*: IIF(NOT ISNULL(i_InsuranceSegmentCode), i_InsuranceSegmentCode, 'N/A')
-	IFF(NOT i_InsuranceSegmentCode IS NULL, i_InsuranceSegmentCode, 'N/A') AS InsuranceSegmentCode,
+	IFF(i_InsuranceSegmentCode IS NOT NULL,
+		i_InsuranceSegmentCode,
+		'N/A'
+	) AS InsuranceSegmentCode,
 	-- *INF*: IIF(ISNULL(i_RatingPlanCode), '1', i_RatingPlanCode)
-	IFF(i_RatingPlanCode IS NULL, '1', i_RatingPlanCode) AS RatingPlanCode
+	IFF(i_RatingPlanCode IS NULL,
+		'1',
+		i_RatingPlanCode
+	) AS RatingPlanCode
 	FROM SQ_PassThroughChargeTransaction
 ),
 LKP_SupLGTLineOfInsurance AS (
@@ -442,41 +466,83 @@ EXP_FinalizeIDs AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS out_AuditId,
 	in_PassThroughChargeTransactionID AS out_PassThroughChargeTransactionID,
 	-- *INF*: IIF(ISNULL(in_agency_dim_id),-1,in_agency_dim_id)
-	IFF(in_agency_dim_id IS NULL, - 1, in_agency_dim_id) AS out_agency_dim_id,
+	IFF(in_agency_dim_id IS NULL,
+		- 1,
+		in_agency_dim_id
+	) AS out_agency_dim_id,
 	-- *INF*: IIF(ISNULL(in_pol_dim_id),-1,in_pol_dim_id)
-	IFF(in_pol_dim_id IS NULL, - 1, in_pol_dim_id) AS out_pol_dim_id,
+	IFF(in_pol_dim_id IS NULL,
+		- 1,
+		in_pol_dim_id
+	) AS out_pol_dim_id,
 	-- *INF*: IIF(ISNULL(in_contract_cust_dim_id),-1,in_contract_cust_dim_id)
-	IFF(in_contract_cust_dim_id IS NULL, - 1, in_contract_cust_dim_id) AS out_contract_cust_dim_id,
+	IFF(in_contract_cust_dim_id IS NULL,
+		- 1,
+		in_contract_cust_dim_id
+	) AS out_contract_cust_dim_id,
 	-- *INF*: IIF(ISNULL(in_RiskLocationDimID),-1,in_RiskLocationDimID)
-	IFF(in_RiskLocationDimID IS NULL, - 1, in_RiskLocationDimID) AS out_RiskLocationDimID,
+	IFF(in_RiskLocationDimID IS NULL,
+		- 1,
+		in_RiskLocationDimID
+	) AS out_RiskLocationDimID,
 	-- *INF*: -1
 	-- --wreq-9642 removed lookup on statisticalcoveragedim table
 	- 1 AS out_StatisticalCoverageDimID,
 	-- *INF*: IIF(ISNULL(in_PassThroughChargeTransactionTypeDimID),-1,in_PassThroughChargeTransactionTypeDimID)
-	IFF(in_PassThroughChargeTransactionTypeDimID IS NULL, - 1, in_PassThroughChargeTransactionTypeDimID) AS out_PassThroughChargeTransactionTypeDimID,
+	IFF(in_PassThroughChargeTransactionTypeDimID IS NULL,
+		- 1,
+		in_PassThroughChargeTransactionTypeDimID
+	) AS out_PassThroughChargeTransactionTypeDimID,
 	-- *INF*: IIF(ISNULL(v_pol_eff_date),-1,v_pol_eff_date)
-	IFF(v_pol_eff_date IS NULL, - 1, v_pol_eff_date) AS out_PolicyEffectiveDateID,
+	IFF(v_pol_eff_date IS NULL,
+		- 1,
+		v_pol_eff_date
+	) AS out_PolicyEffectiveDateID,
 	-- *INF*: IIF(ISNULL(v_pol_exp_date),-1,v_pol_exp_date)
-	IFF(v_pol_exp_date IS NULL, - 1, v_pol_exp_date) AS out_PolicyExpirationDateID,
+	IFF(v_pol_exp_date IS NULL,
+		- 1,
+		v_pol_exp_date
+	) AS out_PolicyExpirationDateID,
 	-- *INF*: IIF(ISNULL(v_PassThroughChargeTransactionEffectiveDateID),-1,v_PassThroughChargeTransactionEffectiveDateID)
-	IFF(v_PassThroughChargeTransactionEffectiveDateID IS NULL, - 1, v_PassThroughChargeTransactionEffectiveDateID) AS out_PassThroughChargeTransactionEffectiveDateID,
+	IFF(v_PassThroughChargeTransactionEffectiveDateID IS NULL,
+		- 1,
+		v_PassThroughChargeTransactionEffectiveDateID
+	) AS out_PassThroughChargeTransactionEffectiveDateID,
 	-- *INF*: IIF(ISNULL(v_PassThroughChargeTransactionExpirationDateID),-1,v_PassThroughChargeTransactionExpirationDateID)
-	IFF(v_PassThroughChargeTransactionExpirationDateID IS NULL, - 1, v_PassThroughChargeTransactionExpirationDateID) AS out_PassThroughChargeTransactionExpirationDateID,
+	IFF(v_PassThroughChargeTransactionExpirationDateID IS NULL,
+		- 1,
+		v_PassThroughChargeTransactionExpirationDateID
+	) AS out_PassThroughChargeTransactionExpirationDateID,
 	-- *INF*: IIF(ISNULL(v_PassThroughChargeTransactionBookedDateID),-1,v_PassThroughChargeTransactionBookedDateID)
-	IFF(v_PassThroughChargeTransactionBookedDateID IS NULL, - 1, v_PassThroughChargeTransactionBookedDateID) AS out_PassThroughChargeTransactionBookedDateID,
+	IFF(v_PassThroughChargeTransactionBookedDateID IS NULL,
+		- 1,
+		v_PassThroughChargeTransactionBookedDateID
+	) AS out_PassThroughChargeTransactionBookedDateID,
 	-- *INF*: IIF(ISNULL(v_PassThroughChargeTransactionEnteredDateID),-1,v_PassThroughChargeTransactionEnteredDateID)
-	IFF(v_PassThroughChargeTransactionEnteredDateID IS NULL, - 1, v_PassThroughChargeTransactionEnteredDateID) AS out_PassThroughChargeTransactionEnteredDateID,
+	IFF(v_PassThroughChargeTransactionEnteredDateID IS NULL,
+		- 1,
+		v_PassThroughChargeTransactionEnteredDateID
+	) AS out_PassThroughChargeTransactionEnteredDateID,
 	in_FullTaxAmount AS out_FullTaxAmount,
 	in_TaxPercentageRate AS out_TaxPercentageRate,
 	in_PassThroughChargeTransactionAmount AS out_PassThroughChargeTransactionAmount,
 	-- *INF*: IIF(ISNULL(v_pol_cancellation_date),-1,v_pol_cancellation_date)
-	IFF(v_pol_cancellation_date IS NULL, - 1, v_pol_cancellation_date) AS out_PolicyCancellationDateID,
+	IFF(v_pol_cancellation_date IS NULL,
+		- 1,
+		v_pol_cancellation_date
+	) AS out_PolicyCancellationDateID,
 	-1 AS out_asl_dim_id,
 	-- *INF*: IIF(ISNULL(in_LGTLineOfInsuranceDimId),-1,in_LGTLineOfInsuranceDimId)
-	IFF(in_LGTLineOfInsuranceDimId IS NULL, - 1, in_LGTLineOfInsuranceDimId) AS out_LGTLineOfInsuranceDimId,
+	IFF(in_LGTLineOfInsuranceDimId IS NULL,
+		- 1,
+		in_LGTLineOfInsuranceDimId
+	) AS out_LGTLineOfInsuranceDimId,
 	in_TotalAnnualPremiumSubjectToTax AS out_TotalAnnualPremiumSubjectToTax,
 	-- *INF*: IIF(ISNULL(v_InsuranceReferenceDimId),-1,v_InsuranceReferenceDimId)
-	IFF(v_InsuranceReferenceDimId IS NULL, - 1, v_InsuranceReferenceDimId) AS out_InsuranceReferenceDimId
+	IFF(v_InsuranceReferenceDimId IS NULL,
+		- 1,
+		v_InsuranceReferenceDimId
+	) AS out_InsuranceReferenceDimId
 	FROM Exp_get_data
 	LEFT JOIN LKP_LGTLineOfInsuranceDim
 	ON LKP_LGTLineOfInsuranceDim.LGTLineOfInsuranceCode = LKP_SupLGTLineOfInsurance.StandardLGTLineOfInsuranceCode
@@ -501,25 +567,39 @@ EXP_FinalizeIDs AS (
 	AND LKP_INSURANCEREFERENCEDIM_in_ProductCode_in_PolicyOfferingCode_in_InsuranceReferenceLineOfBusinessCode_in_EnterpriseGroupCode_in_InsuranceReferenceLegalEntityCode_in_StrategicProfitCenterCode_in_InsuranceSegmentCode_in_RatingPlanCode.RatingPlanCode = in_RatingPlanCode
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_pol_eff_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_pol_eff_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(in_pol_eff_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_pol_eff_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(in_pol_eff_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_pol_exp_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_pol_exp_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(in_pol_exp_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_pol_exp_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(in_pol_exp_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_pol_cancellation_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_pol_cancellation_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(in_pol_cancellation_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_pol_cancellation_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(in_pol_cancellation_date, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_PassThroughChargeTransactionEffectiveDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_PassThroughChargeTransactionEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(in_PassThroughChargeTransactionEffectiveDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_PassThroughChargeTransactionEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(in_PassThroughChargeTransactionEffectiveDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_PassThroughChargeTransactionExpirationDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_PassThroughChargeTransactionExpirationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(in_PassThroughChargeTransactionExpirationDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_PassThroughChargeTransactionExpirationDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(in_PassThroughChargeTransactionExpirationDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_PassThroughChargeTransactionBookedDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_PassThroughChargeTransactionBookedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(in_PassThroughChargeTransactionBookedDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_PassThroughChargeTransactionBookedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(in_PassThroughChargeTransactionBookedDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_PassThroughChargeTransactionEnteredDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_PassThroughChargeTransactionEnteredDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(in_PassThroughChargeTransactionEnteredDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALENDER_DIM_TO_DATE_TO_CHAR_in_PassThroughChargeTransactionEnteredDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(in_PassThroughChargeTransactionEnteredDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 	LEFT JOIN LKP_INSURANCEREFERENCEDIM LKP_INSURANCEREFERENCEDIM_in_ProductCode_in_PolicyOfferingCode_300_in_EnterpriseGroupCode_in_InsuranceReferenceLegalEntityCode_in_StrategicProfitCenterCode_in_InsuranceSegmentCode_in_RatingPlanCode
 	ON LKP_INSURANCEREFERENCEDIM_in_ProductCode_in_PolicyOfferingCode_300_in_EnterpriseGroupCode_in_InsuranceReferenceLegalEntityCode_in_StrategicProfitCenterCode_in_InsuranceSegmentCode_in_RatingPlanCode.EnterpriseGroupCode = in_ProductCode

@@ -19,9 +19,41 @@ EXP_DefaultValues AS (
 	ISOGeneralLiabilityClassSummary_336 AS i_ISOGLClassSummary_336,
 	RatingBasis AS i_RatingBasis,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_LineofBusinessAbbreviation))) OR IS_SPACES(LTRIM(RTRIM(i_LineofBusinessAbbreviation))) OR LENGTH(LTRIM(RTRIM(i_LineofBusinessAbbreviation)))=0,'N/A',LTRIM(RTRIM(i_LineofBusinessAbbreviation)))
-	IFF(LTRIM(RTRIM(i_LineofBusinessAbbreviation)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_LineofBusinessAbbreviation))) OR LENGTH(LTRIM(RTRIM(i_LineofBusinessAbbreviation))) = 0, 'N/A', LTRIM(RTRIM(i_LineofBusinessAbbreviation))) AS o_LineofBusinessAbbreviation,
+	IFF(LTRIM(RTRIM(i_LineofBusinessAbbreviation
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_LineofBusinessAbbreviation
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(i_LineofBusinessAbbreviation
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(i_LineofBusinessAbbreviation
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_LineofBusinessAbbreviation
+			)
+		)
+	) AS o_LineofBusinessAbbreviation,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_RatingStateCode))) OR IS_SPACES(LTRIM(RTRIM(i_RatingStateCode))) OR LENGTH(LTRIM(RTRIM(i_RatingStateCode)))=0,'N/A',LTRIM(RTRIM(i_RatingStateCode)))
-	IFF(LTRIM(RTRIM(i_RatingStateCode)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_RatingStateCode))) OR LENGTH(LTRIM(RTRIM(i_RatingStateCode))) = 0, 'N/A', LTRIM(RTRIM(i_RatingStateCode))) AS o_RatingStateCode,
+	IFF(LTRIM(RTRIM(i_RatingStateCode
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_RatingStateCode
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(i_RatingStateCode
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(i_RatingStateCode
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_RatingStateCode
+			)
+		)
+	) AS o_RatingStateCode,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_ClassEffectiveDate))) 
 	-- OR IS_SPACES(LTRIM(RTRIM(i_ClassEffectiveDate))) 
 	-- OR LENGTH(LTRIM(RTRIM(i_ClassEffectiveDate)))=0
@@ -30,7 +62,26 @@ EXP_DefaultValues AS (
 	-- 
 	-- 
 	-- --IIF(ISNULL(i_ClassEffectiveDate) OR i_ClassEffectiveDate=TO_DATE('01/01/1900 00:00:00','MM/DD/YYYY HH24:MI:SS'),'01/01/1800 01:00:00', TO_CHAR(i_ClassEffectiveDate,'MM/DD/YYYY HH24:MI:SS'))
-	IFF(LTRIM(RTRIM(i_ClassEffectiveDate)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_ClassEffectiveDate))) OR LENGTH(LTRIM(RTRIM(i_ClassEffectiveDate))) = 0 OR LTRIM(RTRIM(i_ClassEffectiveDate)) = '1900-01-01 01:00:00', '1800-01-01 01:00:00', LTRIM(RTRIM(i_ClassEffectiveDate))) AS o_ClassEffectiveDate,
+	IFF(LTRIM(RTRIM(i_ClassEffectiveDate
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_ClassEffectiveDate
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(i_ClassEffectiveDate
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(i_ClassEffectiveDate
+				)
+			)
+		) = 0 
+		OR LTRIM(RTRIM(i_ClassEffectiveDate
+			)
+		) = '1900-01-01 01:00:00',
+		'1800-01-01 01:00:00',
+		LTRIM(RTRIM(i_ClassEffectiveDate
+			)
+		)
+	) AS o_ClassEffectiveDate,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_ClassExpirationDate))) 
 	-- OR IS_SPACES(LTRIM(RTRIM(i_ClassExpirationDate)))
 	-- OR LENGTH(LTRIM(RTRIM(i_ClassExpirationDate)))=0
@@ -39,25 +90,172 @@ EXP_DefaultValues AS (
 	-- 
 	-- 
 	-- --IIF(ISNULL(i_ClassExpirationDate) OR i_ClassExpirationDate=TO_DATE('01/01/2999 00:00:00','MM/DD/YYYY HH24:MI:SS'),'12/31/2100 23:59:59', TO_CHAR(i_ClassExpirationDate,'MM/DD/YYYY HH24:MI:SS'))
-	IFF(LTRIM(RTRIM(i_ClassExpirationDate)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_ClassExpirationDate))) OR LENGTH(LTRIM(RTRIM(i_ClassExpirationDate))) = 0 OR LTRIM(RTRIM(i_ClassExpirationDate)) = '2999-01-01 01:00:00', '2100-12-31 23:59:59', LTRIM(RTRIM(i_ClassExpirationDate))) AS o_ClassExpirationDate,
+	IFF(LTRIM(RTRIM(i_ClassExpirationDate
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_ClassExpirationDate
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(i_ClassExpirationDate
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(i_ClassExpirationDate
+				)
+			)
+		) = 0 
+		OR LTRIM(RTRIM(i_ClassExpirationDate
+			)
+		) = '2999-01-01 01:00:00',
+		'2100-12-31 23:59:59',
+		LTRIM(RTRIM(i_ClassExpirationDate
+			)
+		)
+	) AS o_ClassExpirationDate,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_ClassCode))) OR IS_SPACES(LTRIM(RTRIM(i_ClassCode))) OR LENGTH(LTRIM(RTRIM(i_ClassCode)))=0,'N/A',LTRIM(RTRIM(i_ClassCode)))
-	IFF(LTRIM(RTRIM(i_ClassCode)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_ClassCode))) OR LENGTH(LTRIM(RTRIM(i_ClassCode))) = 0, 'N/A', LTRIM(RTRIM(i_ClassCode))) AS o_ClassCode,
+	IFF(LTRIM(RTRIM(i_ClassCode
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_ClassCode
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(i_ClassCode
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(i_ClassCode
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_ClassCode
+			)
+		)
+	) AS o_ClassCode,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_ClassDescription))) OR IS_SPACES(LTRIM(RTRIM(i_ClassDescription))) OR LENGTH(LTRIM(RTRIM(i_ClassDescription)))=0,'N/A',LTRIM(RTRIM(i_ClassDescription)))
-	IFF(LTRIM(RTRIM(i_ClassDescription)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_ClassDescription))) OR LENGTH(LTRIM(RTRIM(i_ClassDescription))) = 0, 'N/A', LTRIM(RTRIM(i_ClassDescription))) AS o_ClassDescription,
+	IFF(LTRIM(RTRIM(i_ClassDescription
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_ClassDescription
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(i_ClassDescription
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(i_ClassDescription
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_ClassDescription
+			)
+		)
+	) AS o_ClassDescription,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_ClassCodeOriginatingOrganization))) OR IS_SPACES(LTRIM(RTRIM(i_ClassCodeOriginatingOrganization))) OR LENGTH(LTRIM(RTRIM(i_ClassCodeOriginatingOrganization)))=0,'N/A',LTRIM(RTRIM(i_ClassCodeOriginatingOrganization)))
-	IFF(LTRIM(RTRIM(i_ClassCodeOriginatingOrganization)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_ClassCodeOriginatingOrganization))) OR LENGTH(LTRIM(RTRIM(i_ClassCodeOriginatingOrganization))) = 0, 'N/A', LTRIM(RTRIM(i_ClassCodeOriginatingOrganization))) AS o_ClassCodeOriginatingOrganization,
+	IFF(LTRIM(RTRIM(i_ClassCodeOriginatingOrganization
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_ClassCodeOriginatingOrganization
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(i_ClassCodeOriginatingOrganization
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(i_ClassCodeOriginatingOrganization
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_ClassCodeOriginatingOrganization
+			)
+		)
+	) AS o_ClassCodeOriginatingOrganization,
 	'334' AS o_Subline_334,
 	'336' AS o_Subline_336,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_ISOGLClassGroupPremOp_Subline334))) OR IS_SPACES(LTRIM(RTRIM(i_ISOGLClassGroupPremOp_Subline334))) OR LENGTH(LTRIM(RTRIM(i_ISOGLClassGroupPremOp_Subline334)))=0,'N/A',LTRIM(RTRIM(i_ISOGLClassGroupPremOp_Subline334)))
-	IFF(LTRIM(RTRIM(i_ISOGLClassGroupPremOp_Subline334)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_ISOGLClassGroupPremOp_Subline334))) OR LENGTH(LTRIM(RTRIM(i_ISOGLClassGroupPremOp_Subline334))) = 0, 'N/A', LTRIM(RTRIM(i_ISOGLClassGroupPremOp_Subline334))) AS o_ISOGLClassGroupPremOp_Subline334,
+	IFF(LTRIM(RTRIM(i_ISOGLClassGroupPremOp_Subline334
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_ISOGLClassGroupPremOp_Subline334
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(i_ISOGLClassGroupPremOp_Subline334
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(i_ISOGLClassGroupPremOp_Subline334
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_ISOGLClassGroupPremOp_Subline334
+			)
+		)
+	) AS o_ISOGLClassGroupPremOp_Subline334,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_ISOGLClassGroupProdCO_Subline336))) OR IS_SPACES(LTRIM(RTRIM(i_ISOGLClassGroupProdCO_Subline336))) OR LENGTH(LTRIM(RTRIM(i_ISOGLClassGroupProdCO_Subline336)))=0,'N/A',LTRIM(RTRIM(i_ISOGLClassGroupProdCO_Subline336)))
-	IFF(LTRIM(RTRIM(i_ISOGLClassGroupProdCO_Subline336)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_ISOGLClassGroupProdCO_Subline336))) OR LENGTH(LTRIM(RTRIM(i_ISOGLClassGroupProdCO_Subline336))) = 0, 'N/A', LTRIM(RTRIM(i_ISOGLClassGroupProdCO_Subline336))) AS o_ISOGLClassGroupProdCO_Subline336,
+	IFF(LTRIM(RTRIM(i_ISOGLClassGroupProdCO_Subline336
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_ISOGLClassGroupProdCO_Subline336
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(i_ISOGLClassGroupProdCO_Subline336
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(i_ISOGLClassGroupProdCO_Subline336
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_ISOGLClassGroupProdCO_Subline336
+			)
+		)
+	) AS o_ISOGLClassGroupProdCO_Subline336,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_ISOGLClassSummary_334))) OR IS_SPACES(LTRIM(RTRIM(i_ISOGLClassSummary_334))) OR LENGTH(LTRIM(RTRIM(i_ISOGLClassSummary_334)))=0,'N/A',LTRIM(RTRIM(i_ISOGLClassSummary_334)))
-	IFF(LTRIM(RTRIM(i_ISOGLClassSummary_334)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_ISOGLClassSummary_334))) OR LENGTH(LTRIM(RTRIM(i_ISOGLClassSummary_334))) = 0, 'N/A', LTRIM(RTRIM(i_ISOGLClassSummary_334))) AS o_ISOGLClassSummary_334,
+	IFF(LTRIM(RTRIM(i_ISOGLClassSummary_334
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_ISOGLClassSummary_334
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(i_ISOGLClassSummary_334
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(i_ISOGLClassSummary_334
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_ISOGLClassSummary_334
+			)
+		)
+	) AS o_ISOGLClassSummary_334,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_ISOGLClassSummary_336))) OR IS_SPACES(LTRIM(RTRIM(i_ISOGLClassSummary_336))) OR LENGTH(LTRIM(RTRIM(i_ISOGLClassSummary_336)))=0,'N/A',LTRIM(RTRIM(i_ISOGLClassSummary_336)))
-	IFF(LTRIM(RTRIM(i_ISOGLClassSummary_336)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_ISOGLClassSummary_336))) OR LENGTH(LTRIM(RTRIM(i_ISOGLClassSummary_336))) = 0, 'N/A', LTRIM(RTRIM(i_ISOGLClassSummary_336))) AS o_ISOGLClassSummary_336,
+	IFF(LTRIM(RTRIM(i_ISOGLClassSummary_336
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_ISOGLClassSummary_336
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(i_ISOGLClassSummary_336
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(i_ISOGLClassSummary_336
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_ISOGLClassSummary_336
+			)
+		)
+	) AS o_ISOGLClassSummary_336,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(i_RatingBasis))) OR IS_SPACES(LTRIM(RTRIM(i_RatingBasis))) OR LENGTH(LTRIM(RTRIM(i_RatingBasis)))=0,'N/A',LTRIM(RTRIM(i_RatingBasis)))
-	IFF(LTRIM(RTRIM(i_RatingBasis)) IS NULL OR IS_SPACES(LTRIM(RTRIM(i_RatingBasis))) OR LENGTH(LTRIM(RTRIM(i_RatingBasis))) = 0, 'N/A', LTRIM(RTRIM(i_RatingBasis))) AS o_RatingBasis
+	IFF(LTRIM(RTRIM(i_RatingBasis
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_RatingBasis
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(i_RatingBasis
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(i_RatingBasis
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_RatingBasis
+			)
+		)
+	) AS o_RatingBasis
 	FROM SQ_GenLiabClass
 ),
 NRM_ClassGroup_ClassSummary AS (
@@ -77,23 +275,43 @@ EXP_CalculateData AS (
 	RatingBasis,
 	LineofBusinessAbbreviation AS o_LineofBusinessAbbreviation,
 	-- *INF*: TO_DATE(SUBSTR(ClassEffectiveDate,1,19),'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE(SUBSTR(ClassEffectiveDate, 1, 19), 'YYYY-MM-DD HH24:MI:SS') AS o_ClassEffectiveDate,
+	TO_DATE(SUBSTR(ClassEffectiveDate, 1, 19
+		), 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_ClassEffectiveDate,
 	-- *INF*: TO_DATE(SUBSTR(ClassExpirationDate,1,19),'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE(SUBSTR(ClassExpirationDate, 1, 19), 'YYYY-MM-DD HH24:MI:SS') AS o_ClassExpirationDate,
+	TO_DATE(SUBSTR(ClassExpirationDate, 1, 19
+		), 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_ClassExpirationDate,
 	-- *INF*: LTRIM(RTRIM(RatingStateCode))
-	LTRIM(RTRIM(RatingStateCode)) AS o_RatingStateCode,
+	LTRIM(RTRIM(RatingStateCode
+		)
+	) AS o_RatingStateCode,
 	Subline AS o_Subline,
 	ClassCode AS o_ClassCode,
 	-- *INF*: LTRIM(RTRIM(REPLACESTR(1,ClassDescription,'"','')))
-	LTRIM(RTRIM(REPLACESTR(1, ClassDescription, '"', ''))) AS o_ClassDescription,
+	LTRIM(RTRIM(REGEXP_REPLACE(ClassDescription,'"','')
+		)
+	) AS o_ClassDescription,
 	-- *INF*: LTRIM(RTRIM(ClassCodeOriginatingOrganization))
-	LTRIM(RTRIM(ClassCodeOriginatingOrganization)) AS o_ClassCodeOriginatingOrganization,
+	LTRIM(RTRIM(ClassCodeOriginatingOrganization
+		)
+	) AS o_ClassCodeOriginatingOrganization,
 	-- *INF*: LTRIM(RTRIM(IIF(ISOGLClassGroup!='N/A',LPAD(ISOGLClassGroup,2,'0'),ISOGLClassGroup)))
-	LTRIM(RTRIM(IFF(ISOGLClassGroup != 'N/A', LPAD(ISOGLClassGroup, 2, '0'), ISOGLClassGroup))) AS o_ISOGLClassGroup,
+	LTRIM(RTRIM(IFF(ISOGLClassGroup != 'N/A',
+				LPAD(ISOGLClassGroup, 2, '0'
+				),
+				ISOGLClassGroup
+			)
+		)
+	) AS o_ISOGLClassGroup,
 	-- *INF*: LTRIM(RTRIM(REPLACESTR(1,ISOGLClassSummary,'"','')))
-	LTRIM(RTRIM(REPLACESTR(1, ISOGLClassSummary, '"', ''))) AS o_ISOGLClassSummary,
+	LTRIM(RTRIM(REGEXP_REPLACE(ISOGLClassSummary,'"','')
+		)
+	) AS o_ISOGLClassSummary,
 	-- *INF*: LTRIM(RTRIM(RatingBasis))
-	LTRIM(RTRIM(RatingBasis)) AS o_RatingBasis
+	LTRIM(RTRIM(RatingBasis
+		)
+	) AS o_RatingBasis
 	FROM NRM_ClassGroup_ClassSummary
 ),
 FIL_ValidClassGroup AS (

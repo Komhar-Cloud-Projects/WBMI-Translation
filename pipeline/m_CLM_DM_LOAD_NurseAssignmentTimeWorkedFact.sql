@@ -33,20 +33,31 @@ EXP_Scr_values_Default AS (
 	NurseAssignmentAkId,
 	TimeWorkedSequence AS IN_TimeWorkedSequence,
 	-- *INF*: iif(isnull(IN_TimeWorkedSequence),-1,IN_TimeWorkedSequence)
-	IFF(IN_TimeWorkedSequence IS NULL, - 1, IN_TimeWorkedSequence) AS v_TimeWorkedSequence,
+	IFF(IN_TimeWorkedSequence IS NULL,
+		- 1,
+		IN_TimeWorkedSequence
+	) AS v_TimeWorkedSequence,
 	v_TimeWorkedSequence AS TimeWorkedSequence,
 	WorkedDate AS IN_WorkedDate,
 	-- *INF*: :LKP.LKP_CALANDER_DIM(to_date(to_char(IN_WorkedDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALANDER_DIM_to_date_to_char_IN_WorkedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_WorkedDate,
 	-- *INF*: iif(isnull(v_WorkedDate),-1,v_WorkedDate)
-	IFF(v_WorkedDate IS NULL, - 1, v_WorkedDate) AS TimeWorkedEnteredDateId,
+	IFF(v_WorkedDate IS NULL,
+		- 1,
+		v_WorkedDate
+	) AS TimeWorkedEnteredDateId,
 	TimeWorkedHours AS IN_TimeWorkedHours,
 	-- *INF*: iif(isnull(IN_TimeWorkedHours), 0,IN_TimeWorkedHours) 
-	IFF(IN_TimeWorkedHours IS NULL, 0, IN_TimeWorkedHours) AS v_TimeWorkedHours,
+	IFF(IN_TimeWorkedHours IS NULL,
+		0,
+		IN_TimeWorkedHours
+	) AS v_TimeWorkedHours,
 	v_TimeWorkedHours AS TimeWorkedHours
 	FROM SQ_NurseAssignmentTimeWorked
 	LEFT JOIN LKP_CALANDER_DIM LKP_CALANDER_DIM_to_date_to_char_IN_WorkedDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALANDER_DIM_to_date_to_char_IN_WorkedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(IN_WorkedDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
+	ON LKP_CALANDER_DIM_to_date_to_char_IN_WorkedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(IN_WorkedDate, 'MM/DD/YYYY'
+	), 'MM/DD/YYYY'
+)
 
 ),
 LKP_NurseAssignment AS (
@@ -180,15 +191,24 @@ EXP_Defualt_Values AS (
 	SELECT
 	LKP_NurseAssignmentDim.NurseAssignmentDimId AS IN_NurseAssignmentDimId,
 	-- *INF*: iif(isnull(IN_NurseAssignmentDimId), -1,IN_NurseAssignmentDimId)
-	IFF(IN_NurseAssignmentDimId IS NULL, - 1, IN_NurseAssignmentDimId) AS v_NurseAssignmentDimId,
+	IFF(IN_NurseAssignmentDimId IS NULL,
+		- 1,
+		IN_NurseAssignmentDimId
+	) AS v_NurseAssignmentDimId,
 	v_NurseAssignmentDimId AS NurseAssignmentDimId,
 	mplt_Claimant_Occurrence_dim_ids.claim_occurrence_dim_id AS IN_claim_occurrence_dim_id,
 	-- *INF*: iif(isnull(IN_claim_occurrence_dim_id), -1,IN_claim_occurrence_dim_id)
-	IFF(IN_claim_occurrence_dim_id IS NULL, - 1, IN_claim_occurrence_dim_id) AS v_claim_occurrence_dim_id,
+	IFF(IN_claim_occurrence_dim_id IS NULL,
+		- 1,
+		IN_claim_occurrence_dim_id
+	) AS v_claim_occurrence_dim_id,
 	v_claim_occurrence_dim_id AS claim_occurrence_dim_id,
 	mplt_Claimant_Occurrence_dim_ids.claimant_dim_id AS IN_claimant_dim_id,
 	-- *INF*: iif(isnull(IN_claimant_dim_id),-1,IN_claimant_dim_id)
-	IFF(IN_claimant_dim_id IS NULL, - 1, IN_claimant_dim_id) AS v_claimant_dim_id,
+	IFF(IN_claimant_dim_id IS NULL,
+		- 1,
+		IN_claimant_dim_id
+	) AS v_claimant_dim_id,
 	v_claimant_dim_id AS claimant_dim_id,
 	EXP_Scr_values_Default.NurseAssignmentTimeWorkedId,
 	EXP_Scr_values_Default.TimeWorkedSequence,
@@ -256,7 +276,19 @@ EXP_Detect_Changes AS (
 	--   'UPDATE','NOCHANGE' )
 	-- 
 	--   )       
-	IFF(Lkp_NurseAssignmentTimeWorkedFactId IS NULL, 'NEW', IFF(Lkp_EdwNurseAssignmentTimeWorkedPkId != NurseAssignmentTimeWorkedId OR Lkp_claimant_dim_id != claimant_dim_id OR Lkp_claim_occurrence_dim_id != claim_occurrence_dim_id OR Lkp_NurseAssignmentDimId != NurseAssignmentDimId OR Lkp_TimeWorkedEnteredDateId != TimeWorkedEnteredDateId OR Lkp_TimeWorkedSequence != TimeWorkedSequence OR Lkp_TimeWorkedHours != TimeWorkedHours, 'UPDATE', 'NOCHANGE')) AS v_ChangedFlag,
+	IFF(Lkp_NurseAssignmentTimeWorkedFactId IS NULL,
+		'NEW',
+		IFF(Lkp_EdwNurseAssignmentTimeWorkedPkId != NurseAssignmentTimeWorkedId 
+			OR Lkp_claimant_dim_id != claimant_dim_id 
+			OR Lkp_claim_occurrence_dim_id != claim_occurrence_dim_id 
+			OR Lkp_NurseAssignmentDimId != NurseAssignmentDimId 
+			OR Lkp_TimeWorkedEnteredDateId != TimeWorkedEnteredDateId 
+			OR Lkp_TimeWorkedSequence != TimeWorkedSequence 
+			OR Lkp_TimeWorkedHours != TimeWorkedHours,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangedFlag,
 	EXP_Defualt_Values.NurseAssignmentDimId,
 	EXP_Defualt_Values.claim_occurrence_dim_id,

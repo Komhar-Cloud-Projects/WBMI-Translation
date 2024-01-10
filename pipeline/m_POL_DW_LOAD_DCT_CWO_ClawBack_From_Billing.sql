@@ -227,9 +227,14 @@ EXP_CWOAmountCal AS (
 	DECODE(TRUE,
 		i_CWOType = 'BothMatch', LKP_TOTALPREMIUM_PERPOLICYANDRATE_i_pol_num_i_AgencyActualCommissionRate.TotalEDWPremium,
 		i_CWOType = 'OnlyPolicyMatch', LKP_TOTALPREMIUM_PERPOLICY_i_pol_num.TotalEDWPremium,
-		0) AS v_TotalPremium,
+		0
+	) AS v_TotalPremium,
 	-- *INF*: IIF(v_TotalPremium=0 or ISNULL(v_TotalPremium), 0, i_PremiumTransactionAmount/v_TotalPremium)
-	IFF(v_TotalPremium = 0 OR v_TotalPremium IS NULL, 0, i_PremiumTransactionAmount / v_TotalPremium) AS v_AllocationFactor,
+	IFF(v_TotalPremium = 0 
+		OR v_TotalPremium IS NULL,
+		0,
+		i_PremiumTransactionAmount / v_TotalPremium
+	) AS v_AllocationFactor,
 	i_CWOAmount*v_AllocationFactor AS v_CWOAmount,
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
@@ -237,7 +242,8 @@ EXP_CWOAmountCal AS (
 	-- --i_AuthorizationDate
 	i_EffectiveDate AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -246,7 +252,8 @@ EXP_CWOAmountCal AS (
 	DECODE(TRUE,
 		i_LogicalDeleteFlag = 'T', '1',
 		i_LogicalDeleteFlag = 'F', '0',
-		'0') AS o_LogicalDeleteFlag,
+		'0'
+	) AS o_LogicalDeleteFlag,
 	i_PremiumTransactionHashKey AS o_PremiumTransactionHashKey,
 	i_PremiumLoadSequence AS o_PremiumLoadSequence,
 	i_DuplicateSequence AS o_DuplicateSequence,
@@ -264,12 +271,14 @@ EXP_CWOAmountCal AS (
 	DECODE(TRUE,
 		i_CWOType = 'BothMatch', LKP_LASTUPDATEDATE_PERPOLICYANDRATE_i_pol_num_i_AuthorizationDate_i_AgencyActualCommissionRate.LastUpdatedTimestamp,
 		i_CWOType = 'OnlyPolicyMatch', LKP_LASTUPDATEDATE_PERPOLICY_i_pol_num_i_AuthorizationDate.LastUpdatedTimestamp,
-		TO_DATE('18000101', 'YYYYMMDD')) AS o_PremiumTransactionEnteredDate,
+		TO_DATE('18000101', 'YYYYMMDD'
+		)
+	) AS o_PremiumTransactionEnteredDate,
 	i_AuthorizationDate AS o_PremiumTransactionEffectiveDate,
 	-- *INF*: ADD_TO_DATE(i_AuthorizationDate,'DD',1)
-	ADD_TO_DATE(i_AuthorizationDate, 'DD', 1) AS o_PremiumTransactionExpirationDate,
+	DATEADD(DAY,1,i_AuthorizationDate) AS o_PremiumTransactionExpirationDate,
 	-- *INF*: TRUNC(i_AuthorizationDate,'MM')
-	TRUNC(i_AuthorizationDate, 'MM') AS o_PremiumTransactionBookedDate,
+	CAST(TRUNC(i_AuthorizationDate, 'MONTH') AS TIMESTAMP_NTZ(0)) AS o_PremiumTransactionBookedDate,
 	v_CWOAmount AS o_PremiumTransactionAmount,
 	0.00 AS o_FullTermPremium,
 	i_PremiumType AS o_PremiumType,
@@ -298,7 +307,8 @@ EXP_CWOAmountCal AS (
 	DECODE(TRUE,
 		i_WindCoverageFlag = 'T', '1',
 		i_WindCoverageFlag = 'F', '0',
-		'0') AS o_WindCoverageFlag,
+		'0'
+	) AS o_WindCoverageFlag,
 	i_DeductibleBasis AS o_DeductibleBasis,
 	i_ExposureBasis AS o_ExposureBasis,
 	i_pol_eff_date AS o_pol_eff_date,
@@ -371,9 +381,14 @@ EXP_ClawBackAmountCal AS (
 	DECODE(TRUE,
 		i_CWBType = 'BothMatch', LKP_TOTALPREMIUM_PERPOLICYANDRATE_i_pol_num_i_AgencyActualCommissionRate.TotalEDWPremium,
 		i_CWBType = 'OnlyPolicyMatch', LKP_TOTALPREMIUM_PERPOLICY_i_pol_num.TotalEDWPremium,
-		0) AS v_TotalPremium,
+		0
+	) AS v_TotalPremium,
 	-- *INF*: IIF(v_TotalPremium=0 or ISNULL(v_TotalPremium), 0, i_PremiumTransactionAmount/v_TotalPremium)
-	IFF(v_TotalPremium = 0 OR v_TotalPremium IS NULL, 0, i_PremiumTransactionAmount / v_TotalPremium) AS v_AllocationFactor,
+	IFF(v_TotalPremium = 0 
+		OR v_TotalPremium IS NULL,
+		0,
+		i_PremiumTransactionAmount / v_TotalPremium
+	) AS v_AllocationFactor,
 	i_AuthorizedAmount*v_AllocationFactor AS v_ClawBackAmount,
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
@@ -381,7 +396,8 @@ EXP_ClawBackAmountCal AS (
 	-- --i_AuthorizationDate
 	i_EffectiveDate AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -390,7 +406,8 @@ EXP_ClawBackAmountCal AS (
 	DECODE(TRUE,
 		i_LogicalDeleteFlag = 'T', '1',
 		i_LogicalDeleteFlag = 'F', '0',
-		'0') AS o_LogicalDeleteFlag,
+		'0'
+	) AS o_LogicalDeleteFlag,
 	i_PremiumTransactionHashKey AS o_PremiumTransactionHashKey,
 	i_PremiumLoadSequence AS o_PremiumLoadSequence,
 	i_DuplicateSequence AS o_DuplicateSequence,
@@ -408,12 +425,14 @@ EXP_ClawBackAmountCal AS (
 	DECODE(TRUE,
 		i_CWBType = 'BothMatch', LKP_LASTUPDATEDATE_PERPOLICYANDRATE_i_pol_num_i_AuthorizationDate_i_AgencyActualCommissionRate.LastUpdatedTimestamp,
 		i_CWBType = 'OnlyPolicyMatch', LKP_LASTUPDATEDATE_PERPOLICY_i_pol_num_i_AuthorizationDate.LastUpdatedTimestamp,
-		TO_DATE('18000101', 'YYYYMMDD')) AS o_PremiumTransactionEnteredDate,
+		TO_DATE('18000101', 'YYYYMMDD'
+		)
+	) AS o_PremiumTransactionEnteredDate,
 	i_AuthorizationDate AS o_PremiumTransactionEffectiveDate,
 	-- *INF*: ADD_TO_DATE(i_AuthorizationDate,'DD',1)
-	ADD_TO_DATE(i_AuthorizationDate, 'DD', 1) AS o_PremiumTransactionExpirationDate,
+	DATEADD(DAY,1,i_AuthorizationDate) AS o_PremiumTransactionExpirationDate,
 	-- *INF*: TRUNC(i_AuthorizationDate,'MM')
-	TRUNC(i_AuthorizationDate, 'MM') AS o_PremiumTransactionBookedDate,
+	CAST(TRUNC(i_AuthorizationDate, 'MONTH') AS TIMESTAMP_NTZ(0)) AS o_PremiumTransactionBookedDate,
 	v_ClawBackAmount AS o_PremiumTransactionAmount,
 	0.00 AS o_FullTermPremium,
 	i_PremiumType AS o_PremiumType,
@@ -442,7 +461,8 @@ EXP_ClawBackAmountCal AS (
 	DECODE(TRUE,
 		i_WindCoverageFlag = 'T', '1',
 		i_WindCoverageFlag = 'F', '0',
-		'0') AS o_WindCoverageFlag,
+		'0'
+	) AS o_WindCoverageFlag,
 	i_DeductibleBasis AS o_DeductibleBasis,
 	i_ExposureBasis AS o_ExposureBasis,
 	i_pol_eff_date AS o_pol_eff_date,

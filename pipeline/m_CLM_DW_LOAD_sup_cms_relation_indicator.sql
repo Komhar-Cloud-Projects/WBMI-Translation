@@ -21,15 +21,20 @@ EXP_Default_Values AS (
 	cms_relation_desc,
 	cms_rel_file_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(cms_party_type)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(cms_party_type) AS cms_party_type1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(cms_party_type
+	) AS cms_party_type1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(cms_relation_ind)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(cms_relation_ind) AS cms_relation_ind1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(cms_relation_ind
+	) AS cms_relation_ind1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(is_individual)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(is_individual) AS is_individual1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(is_individual
+	) AS is_individual1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(cms_relation_desc)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(cms_relation_desc) AS cms_relation_desc1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(cms_relation_desc
+	) AS cms_relation_desc1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(cms_rel_file_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(cms_rel_file_code) AS cms_rel_file_code1
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(cms_rel_file_code
+	) AS cms_rel_file_code1
 	FROM SQ_cms_relation_ind_stage
 ),
 LKP_Target AS (
@@ -71,15 +76,28 @@ EXP_detect_changes AS (
 	-- cms_relation_file_code != cms_rel_file_code1)
 	-- , 'UPDATE', 'NOCHANGE'))
 	-- 
-	IFF(sup_cms_relation_ind_id IS NULL, 'NEW', IFF(( cms_relation_descript != cms_relation_desc1 OR cms_relation_file_code != cms_rel_file_code1 ), 'UPDATE', 'NOCHANGE')) AS v_CHANGED_FLAG,
+	IFF(sup_cms_relation_ind_id IS NULL,
+		'NEW',
+		IFF(( cms_relation_descript != cms_relation_desc1 
+				OR cms_relation_file_code != cms_rel_file_code1 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_CHANGED_FLAG,
 	v_CHANGED_FLAG AS CHANGED_FLAG,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_CHANGED_FLAG='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_CHANGED_FLAG = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,
+	IFF(v_CHANGED_FLAG = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -157,8 +175,11 @@ EXP_lag_eff_from_date AS (
 	-- 	orig_eff_to_date)
 	-- 	
 	DECODE(TRUE,
-		cms_party_type = v_Prev_row_cms_party_type AND cms_relation_ind = v_Prev_row_cms_relation_ind AND is_cms_party_individ = v_Prev_row_cms_party_individ, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		cms_party_type = v_Prev_row_cms_party_type 
+		AND cms_relation_ind = v_Prev_row_cms_relation_ind 
+		AND is_cms_party_individ = v_Prev_row_cms_party_individ, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	cms_party_type AS v_Prev_row_cms_party_type,
 	cms_relation_ind AS v_Prev_row_cms_relation_ind,

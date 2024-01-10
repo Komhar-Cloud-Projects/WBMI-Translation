@@ -274,82 +274,108 @@ AGG_loss_master_fact AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM SQ_loss_master_fact
 	GROUP BY clndr_date
 ),
@@ -460,82 +486,108 @@ AGG_vwLossMasterFact AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM SQ_vwLossMasterFact
 	GROUP BY clndr_date
 ),
@@ -769,7 +821,8 @@ EXPTRANS AS (
 	DECODE(TRUE,
 		Table_name = 'loss_master_fact', 1,
 		Table_name = 'vwLossMasterFact', 2,
-		Table_name = 'Difference', 3) AS OrderInd
+		Table_name = 'Difference', 3
+	) AS OrderInd
 	FROM Union
 ),
 SRTTRANS AS (
@@ -876,70 +929,92 @@ AGG_claim_loss_transaction_fact AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM SQ_claim_loss_transaction_fact
 	GROUP BY clndr_date
 ),
@@ -1141,17 +1216,33 @@ EXPTRANS1 AS (
 	clndr_date,
 	outstanding_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(outstanding_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(outstanding_amt)) AS o_outstanding_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(outstanding_amt
+		)
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_loss_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_loss_amt)) AS o_paid_loss_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_loss_amt
+		)
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_exp_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_exp_amt)) AS o_paid_exp_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_exp_amt
+		)
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(ChangeInOutstandingAmount))
 	-- 
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(ChangeInOutstandingAmount)) AS o_ChangeInOutstandingAmount,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(ChangeInOutstandingAmount
+		)
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	DirectLossPaidIR,
 	DirectALAEPaidER,
@@ -1182,7 +1273,8 @@ EXPTRANS1 AS (
 	DECODE(TRUE,
 		table_name = 'loss_master_fact', 1,
 		table_name = 'claim_loss_transaction_fact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM Union1
 ),
 SRTTRANS1 AS (
@@ -1386,16 +1478,32 @@ EXPTRANS2 AS (
 	clndr_date,
 	outstanding_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(outstanding_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(outstanding_amt)) AS o_outstanding_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(outstanding_amt
+		)
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_loss_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_loss_amt)) AS o_paid_loss_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_loss_amt
+		)
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_exp_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_exp_amt)) AS o_paid_exp_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_exp_amt
+		)
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(ChangeInOutstandingAmount))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(ChangeInOutstandingAmount)) AS o_ChangeInOutstandingAmount,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(ChangeInOutstandingAmount
+		)
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	DirectLossPaidIR,
 	DirectALAEPaidER,
@@ -1426,7 +1534,8 @@ EXPTRANS2 AS (
 	DECODE(TRUE,
 		table_name = 'vwLossMasterFact', 1,
 		table_name = 'claim_loss_transaction_fact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM Union2
 ),
 SRTTRANS2 AS (
@@ -1663,19 +1772,40 @@ EXP_loss_master_fact_vwLossMasterFact1 AS (
 	'loss_master_fact' AS table_name,
 	clndr_date,
 	-- *INF*: IIF(NOT ISNULL(clndr_date),clndr_date,clndr_date1)
-	IFF(NOT clndr_date IS NULL, clndr_date, clndr_date1) AS o_clndr_date,
+	IFF(clndr_date IS NOT NULL,
+		clndr_date,
+		clndr_date1
+	) AS o_clndr_date,
 	-- *INF*: IIF(NOT ISNULL(EnterpriseGroupDescription),EnterpriseGroupDescription,EnterpriseGroupDescription1)
-	IFF(NOT EnterpriseGroupDescription IS NULL, EnterpriseGroupDescription, EnterpriseGroupDescription1) AS v_EnterpriseGroupDescription,
+	IFF(EnterpriseGroupDescription IS NOT NULL,
+		EnterpriseGroupDescription,
+		EnterpriseGroupDescription1
+	) AS v_EnterpriseGroupDescription,
 	-- *INF*: IIF(NOT ISNULL(StrategicProfitCenterDescription),StrategicProfitCenterDescription,StrategicProfitCenterDescription1)
-	IFF(NOT StrategicProfitCenterDescription IS NULL, StrategicProfitCenterDescription, StrategicProfitCenterDescription1) AS v_StrategicProfitCenterDescription,
+	IFF(StrategicProfitCenterDescription IS NOT NULL,
+		StrategicProfitCenterDescription,
+		StrategicProfitCenterDescription1
+	) AS v_StrategicProfitCenterDescription,
 	-- *INF*: IIF(NOT ISNULL(InsuranceReferenceLegalEntityDescription),InsuranceReferenceLegalEntityDescription,InsuranceReferenceLegalEntityDescription1)
-	IFF(NOT InsuranceReferenceLegalEntityDescription IS NULL, InsuranceReferenceLegalEntityDescription, InsuranceReferenceLegalEntityDescription1) AS v_InsuranceReferenceLegalEntityDescription,
+	IFF(InsuranceReferenceLegalEntityDescription IS NOT NULL,
+		InsuranceReferenceLegalEntityDescription,
+		InsuranceReferenceLegalEntityDescription1
+	) AS v_InsuranceReferenceLegalEntityDescription,
 	-- *INF*: IIF(NOT ISNULL(PolicyOfferingDescription),PolicyOfferingDescription,PolicyOfferingDescription1)
-	IFF(NOT PolicyOfferingDescription IS NULL, PolicyOfferingDescription, PolicyOfferingDescription1) AS v_PolicyOfferingDescription,
+	IFF(PolicyOfferingDescription IS NOT NULL,
+		PolicyOfferingDescription,
+		PolicyOfferingDescription1
+	) AS v_PolicyOfferingDescription,
 	-- *INF*: IIF(NOT ISNULL(ProductDescription),ProductDescription,ProductDescription1)
-	IFF(NOT ProductDescription IS NULL, ProductDescription, ProductDescription1) AS v_ProductDescription,
+	IFF(ProductDescription IS NOT NULL,
+		ProductDescription,
+		ProductDescription1
+	) AS v_ProductDescription,
 	-- *INF*: IIF(NOT ISNULL(InsuranceReferenceLineOfBusinessDescription),InsuranceReferenceLineOfBusinessDescription,InsuranceReferenceLineOfBusinessDescription1)
-	IFF(NOT InsuranceReferenceLineOfBusinessDescription IS NULL, InsuranceReferenceLineOfBusinessDescription, InsuranceReferenceLineOfBusinessDescription1) AS v_InsuranceReferenceLineOfBusinessDescription,
+	IFF(InsuranceReferenceLineOfBusinessDescription IS NOT NULL,
+		InsuranceReferenceLineOfBusinessDescription,
+		InsuranceReferenceLineOfBusinessDescription1
+	) AS v_InsuranceReferenceLineOfBusinessDescription,
 	EnterpriseGroupDescription,
 	v_EnterpriseGroupDescription AS o_EnterpriseGroupDescription,
 	StrategicProfitCenterDescription,
@@ -1690,112 +1820,193 @@ EXP_loss_master_fact_vwLossMasterFact1 AS (
 	v_InsuranceReferenceLineOfBusinessDescription AS o_InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: IIF(ISNULL(outstanding_amt),0,outstanding_amt)
-	IFF(outstanding_amt IS NULL, 0, outstanding_amt) AS v_outstanding_amt,
+	IFF(outstanding_amt IS NULL,
+		0,
+		outstanding_amt
+	) AS v_outstanding_amt,
 	v_outstanding_amt AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: IIF(ISNULL(paid_loss_amt),0,paid_loss_amt)
-	IFF(paid_loss_amt IS NULL, 0, paid_loss_amt) AS v_paid_loss_amt,
+	IFF(paid_loss_amt IS NULL,
+		0,
+		paid_loss_amt
+	) AS v_paid_loss_amt,
 	v_paid_loss_amt AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: IIF(ISNULL(paid_exp_amt),0,paid_exp_amt)
-	IFF(paid_exp_amt IS NULL, 0, paid_exp_amt) AS v_paid_exp_amt,
+	IFF(paid_exp_amt IS NULL,
+		0,
+		paid_exp_amt
+	) AS v_paid_exp_amt,
 	v_paid_exp_amt AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: IIF(ISNULL(ChangeInOutstandingAmount),0,ChangeInOutstandingAmount)
-	IFF(ChangeInOutstandingAmount IS NULL, 0, ChangeInOutstandingAmount) AS v_ChangeInOutstandingAmount,
+	IFF(ChangeInOutstandingAmount IS NULL,
+		0,
+		ChangeInOutstandingAmount
+	) AS v_ChangeInOutstandingAmount,
 	v_ChangeInOutstandingAmount AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: IIF(ISNULL(DirectLossPaidER),0,DirectLossPaidER)
-	IFF(DirectLossPaidER IS NULL, 0, DirectLossPaidER) AS v_DirectLossPaidER,
+	IFF(DirectLossPaidER IS NULL,
+		0,
+		DirectLossPaidER
+	) AS v_DirectLossPaidER,
 	v_DirectLossPaidER AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: IIF(ISNULL(DirectLossPaidIR),0,DirectLossPaidIR)
-	IFF(DirectLossPaidIR IS NULL, 0, DirectLossPaidIR) AS v_DirectLossPaidIR,
+	IFF(DirectLossPaidIR IS NULL,
+		0,
+		DirectLossPaidIR
+	) AS v_DirectLossPaidIR,
 	v_DirectLossPaidIR AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: IIF(ISNULL(DirectALAEPaidER),0,DirectALAEPaidER)
-	IFF(DirectALAEPaidER IS NULL, 0, DirectALAEPaidER) AS v_DirectALAEPaidER,
+	IFF(DirectALAEPaidER IS NULL,
+		0,
+		DirectALAEPaidER
+	) AS v_DirectALAEPaidER,
 	v_DirectALAEPaidER AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: IIF(ISNULL(DirectALAEPaidIR),0,DirectALAEPaidIR)
-	IFF(DirectALAEPaidIR IS NULL, 0, DirectALAEPaidIR) AS v_DirectALAEPaidIR,
+	IFF(DirectALAEPaidIR IS NULL,
+		0,
+		DirectALAEPaidIR
+	) AS v_DirectALAEPaidIR,
 	v_DirectALAEPaidIR AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: IIF(ISNULL(DirectSalvagePaid),0,DirectSalvagePaid)
-	IFF(DirectSalvagePaid IS NULL, 0, DirectSalvagePaid) AS v_DirectSalvagePaid,
+	IFF(DirectSalvagePaid IS NULL,
+		0,
+		DirectSalvagePaid
+	) AS v_DirectSalvagePaid,
 	v_DirectSalvagePaid AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: IIF(ISNULL(DirectSubrogationPaid),0,DirectSubrogationPaid)
-	IFF(DirectSubrogationPaid IS NULL, 0, DirectSubrogationPaid) AS v_DirectSubrogationPaid,
+	IFF(DirectSubrogationPaid IS NULL,
+		0,
+		DirectSubrogationPaid
+	) AS v_DirectSubrogationPaid,
 	v_DirectSubrogationPaid AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryPaid),0,DirectOtherRecoveryPaid)
-	IFF(DirectOtherRecoveryPaid IS NULL, 0, DirectOtherRecoveryPaid) AS v_DirectOtherRecoveryPaid,
+	IFF(DirectOtherRecoveryPaid IS NULL,
+		0,
+		DirectOtherRecoveryPaid
+	) AS v_DirectOtherRecoveryPaid,
 	v_DirectOtherRecoveryPaid AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryLossPaid),0,DirectOtherRecoveryLossPaid)
-	IFF(DirectOtherRecoveryLossPaid IS NULL, 0, DirectOtherRecoveryLossPaid) AS v_DirectOtherRecoveryLossPaid,
+	IFF(DirectOtherRecoveryLossPaid IS NULL,
+		0,
+		DirectOtherRecoveryLossPaid
+	) AS v_DirectOtherRecoveryLossPaid,
 	v_DirectOtherRecoveryLossPaid AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryALAEPaid),0,DirectOtherRecoveryALAEPaid)
-	IFF(DirectOtherRecoveryALAEPaid IS NULL, 0, DirectOtherRecoveryALAEPaid) AS v_DirectOtherRecoveryALAEPaid,
+	IFF(DirectOtherRecoveryALAEPaid IS NULL,
+		0,
+		DirectOtherRecoveryALAEPaid
+	) AS v_DirectOtherRecoveryALAEPaid,
 	v_DirectOtherRecoveryALAEPaid AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: IIF(ISNULL(DirectLossOutstandingER),0,DirectLossOutstandingER)
-	IFF(DirectLossOutstandingER IS NULL, 0, DirectLossOutstandingER) AS v_DirectLossOutstandingER,
+	IFF(DirectLossOutstandingER IS NULL,
+		0,
+		DirectLossOutstandingER
+	) AS v_DirectLossOutstandingER,
 	v_DirectLossOutstandingER AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: IIF(ISNULL(DirectLossOutstandingIR),0,DirectLossOutstandingIR)
-	IFF(DirectLossOutstandingIR IS NULL, 0, DirectLossOutstandingIR) AS v_DirectLossOutstandingIR,
+	IFF(DirectLossOutstandingIR IS NULL,
+		0,
+		DirectLossOutstandingIR
+	) AS v_DirectLossOutstandingIR,
 	v_DirectLossOutstandingIR AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: IIF(ISNULL(DirectALAEOutstandingER),0,DirectALAEOutstandingER)
-	IFF(DirectALAEOutstandingER IS NULL, 0, DirectALAEOutstandingER) AS v_DirectALAEOutstandingER,
+	IFF(DirectALAEOutstandingER IS NULL,
+		0,
+		DirectALAEOutstandingER
+	) AS v_DirectALAEOutstandingER,
 	v_DirectALAEOutstandingER AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: IIF(ISNULL(DirectALAEOutstandingIR),0,DirectALAEOutstandingIR)
-	IFF(DirectALAEOutstandingIR IS NULL, 0, DirectALAEOutstandingIR) AS v_DirectALAEOutstandingIR,
+	IFF(DirectALAEOutstandingIR IS NULL,
+		0,
+		DirectALAEOutstandingIR
+	) AS v_DirectALAEOutstandingIR,
 	v_DirectALAEOutstandingIR AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryOutstanding),0,DirectOtherRecoveryOutstanding)
-	IFF(DirectOtherRecoveryOutstanding IS NULL, 0, DirectOtherRecoveryOutstanding) AS v_DirectOtherRecoveryOutstanding,
+	IFF(DirectOtherRecoveryOutstanding IS NULL,
+		0,
+		DirectOtherRecoveryOutstanding
+	) AS v_DirectOtherRecoveryOutstanding,
 	v_DirectOtherRecoveryOutstanding AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryLossOutstanding),0,DirectOtherRecoveryLossOutstanding)
-	IFF(DirectOtherRecoveryLossOutstanding IS NULL, 0, DirectOtherRecoveryLossOutstanding) AS v_DirectOtherRecoveryLossOutstanding,
+	IFF(DirectOtherRecoveryLossOutstanding IS NULL,
+		0,
+		DirectOtherRecoveryLossOutstanding
+	) AS v_DirectOtherRecoveryLossOutstanding,
 	v_DirectOtherRecoveryLossOutstanding AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryALAEOutstanding),0,DirectOtherRecoveryALAEOutstanding)
-	IFF(DirectOtherRecoveryALAEOutstanding IS NULL, 0, DirectOtherRecoveryALAEOutstanding) AS v_DirectOtherRecoveryALAEOutstanding,
+	IFF(DirectOtherRecoveryALAEOutstanding IS NULL,
+		0,
+		DirectOtherRecoveryALAEOutstanding
+	) AS v_DirectOtherRecoveryALAEOutstanding,
 	v_DirectOtherRecoveryALAEOutstanding AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: IIF(ISNULL(DirectSubroOutstanding),0,DirectSubroOutstanding)
-	IFF(DirectSubroOutstanding IS NULL, 0, DirectSubroOutstanding) AS v_DirectSubroOutstanding,
+	IFF(DirectSubroOutstanding IS NULL,
+		0,
+		DirectSubroOutstanding
+	) AS v_DirectSubroOutstanding,
 	v_DirectSubroOutstanding AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: IIF(ISNULL(DirectSalvageOutstanding),0,DirectSalvageOutstanding)
-	IFF(DirectSalvageOutstanding IS NULL, 0, DirectSalvageOutstanding) AS v_DirectSalvageOutstanding,
+	IFF(DirectSalvageOutstanding IS NULL,
+		0,
+		DirectSalvageOutstanding
+	) AS v_DirectSalvageOutstanding,
 	v_DirectSalvageOutstanding AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: IIF(ISNULL(DirectLossIncurredER),0,DirectLossIncurredER)
-	IFF(DirectLossIncurredER IS NULL, 0, DirectLossIncurredER) AS v_DirectLossIncurredER,
+	IFF(DirectLossIncurredER IS NULL,
+		0,
+		DirectLossIncurredER
+	) AS v_DirectLossIncurredER,
 	v_DirectLossIncurredER AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: IIF(ISNULL(DirectLossIncurredIR),0,DirectLossIncurredIR)
-	IFF(DirectLossIncurredIR IS NULL, 0, DirectLossIncurredIR) AS v_DirectLossIncurredIR,
+	IFF(DirectLossIncurredIR IS NULL,
+		0,
+		DirectLossIncurredIR
+	) AS v_DirectLossIncurredIR,
 	v_DirectLossIncurredIR AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: IIF(ISNULL(DirectALAEIncurredER),0,DirectALAEIncurredER)
-	IFF(DirectALAEIncurredER IS NULL, 0, DirectALAEIncurredER) AS v_DirectALAEIncurredER,
+	IFF(DirectALAEIncurredER IS NULL,
+		0,
+		DirectALAEIncurredER
+	) AS v_DirectALAEIncurredER,
 	v_DirectALAEIncurredER AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: IIF(ISNULL(DirectALAEIncurredIR),0,DirectALAEIncurredIR)
-	IFF(DirectALAEIncurredIR IS NULL, 0, DirectALAEIncurredIR) AS v_DirectALAEIncurredIR,
+	IFF(DirectALAEIncurredIR IS NULL,
+		0,
+		DirectALAEIncurredIR
+	) AS v_DirectALAEIncurredIR,
 	v_DirectALAEIncurredIR AS o_DirectALAEIncurredIR,
 	'vwLossMasterFact' AS table_name1,
 	clndr_date1,
 	-- *INF*: IIF(NOT ISNULL(clndr_date1),clndr_date1,clndr_date)
-	IFF(NOT clndr_date1 IS NULL, clndr_date1, clndr_date) AS o_clndr_date1,
+	IFF(clndr_date1 IS NOT NULL,
+		clndr_date1,
+		clndr_date
+	) AS o_clndr_date1,
 	EnterpriseGroupDescription1,
 	v_EnterpriseGroupDescription AS o_EnterpriseGroupDescription1,
 	StrategicProfitCenterDescription1,
@@ -1810,111 +2021,192 @@ EXP_loss_master_fact_vwLossMasterFact1 AS (
 	v_InsuranceReferenceLineOfBusinessDescription AS o_InsuranceReferenceLineOfBusinessDescription1,
 	outstanding_amt1,
 	-- *INF*: IIF(ISNULL(outstanding_amt1),0,outstanding_amt1)
-	IFF(outstanding_amt1 IS NULL, 0, outstanding_amt1) AS v_outstanding_amt1,
+	IFF(outstanding_amt1 IS NULL,
+		0,
+		outstanding_amt1
+	) AS v_outstanding_amt1,
 	v_outstanding_amt1 AS o_outstanding_amt1,
 	paid_loss_amt1,
 	-- *INF*: IIF(ISNULL(paid_loss_amt),0,paid_loss_amt1)
-	IFF(paid_loss_amt IS NULL, 0, paid_loss_amt1) AS v_paid_loss_amt1,
+	IFF(paid_loss_amt IS NULL,
+		0,
+		paid_loss_amt1
+	) AS v_paid_loss_amt1,
 	v_paid_loss_amt1 AS o_paid_loss_amt1,
 	paid_exp_amt1,
 	-- *INF*: IIF(ISNULL(paid_exp_amt1),0,paid_exp_amt1)
-	IFF(paid_exp_amt1 IS NULL, 0, paid_exp_amt1) AS v_paid_exp_amt1,
+	IFF(paid_exp_amt1 IS NULL,
+		0,
+		paid_exp_amt1
+	) AS v_paid_exp_amt1,
 	v_paid_exp_amt1 AS o_paid_exp_amt1,
 	ChangeInOutstandingAmount1,
 	-- *INF*: IIF(ISNULL(ChangeInOutstandingAmount1),0,ChangeInOutstandingAmount1)
-	IFF(ChangeInOutstandingAmount1 IS NULL, 0, ChangeInOutstandingAmount1) AS v_ChangeInOutstandingAmount1,
+	IFF(ChangeInOutstandingAmount1 IS NULL,
+		0,
+		ChangeInOutstandingAmount1
+	) AS v_ChangeInOutstandingAmount1,
 	v_ChangeInOutstandingAmount1 AS o_ChangeInOutstandingAmount1,
 	DirectLossPaidER1,
 	-- *INF*: IIF(ISNULL(DirectLossPaidER1),0,DirectLossPaidER1)
-	IFF(DirectLossPaidER1 IS NULL, 0, DirectLossPaidER1) AS v_DirectLossPaidER1,
+	IFF(DirectLossPaidER1 IS NULL,
+		0,
+		DirectLossPaidER1
+	) AS v_DirectLossPaidER1,
 	v_DirectLossPaidER1 AS o_DirectLossPaidER1,
 	DirectLossPaidIR1,
 	-- *INF*: IIF(ISNULL(DirectLossPaidIR1),0,DirectLossPaidIR1)
-	IFF(DirectLossPaidIR1 IS NULL, 0, DirectLossPaidIR1) AS v_DirectLossPaidIR1,
+	IFF(DirectLossPaidIR1 IS NULL,
+		0,
+		DirectLossPaidIR1
+	) AS v_DirectLossPaidIR1,
 	v_DirectLossPaidIR1 AS o_DirectLossPaidIR1,
 	DirectALAEPaidER1,
 	-- *INF*: IIF(ISNULL(DirectALAEPaidER1),0,DirectALAEPaidER1)
-	IFF(DirectALAEPaidER1 IS NULL, 0, DirectALAEPaidER1) AS v_DirectALAEPaidER1,
+	IFF(DirectALAEPaidER1 IS NULL,
+		0,
+		DirectALAEPaidER1
+	) AS v_DirectALAEPaidER1,
 	v_DirectALAEPaidER1 AS o_DirectALAEPaidER1,
 	DirectALAEPaidIR1,
 	-- *INF*: IIF(ISNULL(DirectALAEPaidIR1),0,DirectALAEPaidIR1)
-	IFF(DirectALAEPaidIR1 IS NULL, 0, DirectALAEPaidIR1) AS v_DirectALAEPaidIR1,
+	IFF(DirectALAEPaidIR1 IS NULL,
+		0,
+		DirectALAEPaidIR1
+	) AS v_DirectALAEPaidIR1,
 	v_DirectALAEPaidIR1 AS o_DirectALAEPaidIR1,
 	DirectSalvagePaid1,
 	-- *INF*: IIF(ISNULL(DirectSalvagePaid1),0,DirectSalvagePaid1)
-	IFF(DirectSalvagePaid1 IS NULL, 0, DirectSalvagePaid1) AS v_DirectSalvagePaid1,
+	IFF(DirectSalvagePaid1 IS NULL,
+		0,
+		DirectSalvagePaid1
+	) AS v_DirectSalvagePaid1,
 	v_DirectSalvagePaid1 AS o_DirectSalvagePaid1,
 	DirectSubrogationPaid1,
 	-- *INF*: IIF(ISNULL(DirectSubrogationPaid1),0,DirectSubrogationPaid1)
-	IFF(DirectSubrogationPaid1 IS NULL, 0, DirectSubrogationPaid1) AS v_DirectSubrogationPaid1,
+	IFF(DirectSubrogationPaid1 IS NULL,
+		0,
+		DirectSubrogationPaid1
+	) AS v_DirectSubrogationPaid1,
 	v_DirectSubrogationPaid1 AS o_DirectSubrogationPaid1,
 	DirectOtherRecoveryPaid1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryPaid1),0,DirectOtherRecoveryPaid1)
-	IFF(DirectOtherRecoveryPaid1 IS NULL, 0, DirectOtherRecoveryPaid1) AS v_DirectOtherRecoveryPaid1,
+	IFF(DirectOtherRecoveryPaid1 IS NULL,
+		0,
+		DirectOtherRecoveryPaid1
+	) AS v_DirectOtherRecoveryPaid1,
 	v_DirectOtherRecoveryPaid1 AS o_DirectOtherRecoveryPaid1,
 	DirectOtherRecoveryLossPaid1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryLossPaid1),0,DirectOtherRecoveryLossPaid1)
-	IFF(DirectOtherRecoveryLossPaid1 IS NULL, 0, DirectOtherRecoveryLossPaid1) AS v_DirectOtherRecoveryLossPaid1,
+	IFF(DirectOtherRecoveryLossPaid1 IS NULL,
+		0,
+		DirectOtherRecoveryLossPaid1
+	) AS v_DirectOtherRecoveryLossPaid1,
 	v_DirectOtherRecoveryLossPaid1 AS o_DirectOtherRecoveryLossPaid1,
 	DirectOtherRecoveryALAEPaid1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryALAEPaid1),0,DirectOtherRecoveryALAEPaid1)
-	IFF(DirectOtherRecoveryALAEPaid1 IS NULL, 0, DirectOtherRecoveryALAEPaid1) AS v_DirectOtherRecoveryALAEPaid1,
+	IFF(DirectOtherRecoveryALAEPaid1 IS NULL,
+		0,
+		DirectOtherRecoveryALAEPaid1
+	) AS v_DirectOtherRecoveryALAEPaid1,
 	v_DirectOtherRecoveryALAEPaid1 AS o_DirectOtherRecoveryALAEPaid1,
 	DirectLossOutstandingER1,
 	-- *INF*: IIF(ISNULL(DirectLossOutstandingER1),0,DirectLossOutstandingER1)
-	IFF(DirectLossOutstandingER1 IS NULL, 0, DirectLossOutstandingER1) AS v_DirectLossOutstandingER1,
+	IFF(DirectLossOutstandingER1 IS NULL,
+		0,
+		DirectLossOutstandingER1
+	) AS v_DirectLossOutstandingER1,
 	v_DirectLossOutstandingER1 AS o_DirectLossOutstandingER1,
 	DirectLossOutstandingIR1,
 	-- *INF*: IIF(ISNULL(DirectLossOutstandingIR1),0,DirectLossOutstandingIR1)
-	IFF(DirectLossOutstandingIR1 IS NULL, 0, DirectLossOutstandingIR1) AS v_DirectLossOutstandingIR1,
+	IFF(DirectLossOutstandingIR1 IS NULL,
+		0,
+		DirectLossOutstandingIR1
+	) AS v_DirectLossOutstandingIR1,
 	v_DirectLossOutstandingIR1 AS o_DirectLossOutstandingIR1,
 	DirectALAEOutstandingER1,
 	-- *INF*: IIF(ISNULL(DirectALAEOutstandingER1),0,DirectALAEOutstandingER1)
-	IFF(DirectALAEOutstandingER1 IS NULL, 0, DirectALAEOutstandingER1) AS v_DirectALAEOutstandingER1,
+	IFF(DirectALAEOutstandingER1 IS NULL,
+		0,
+		DirectALAEOutstandingER1
+	) AS v_DirectALAEOutstandingER1,
 	v_DirectALAEOutstandingER1 AS o_DirectALAEOutstandingER1,
 	DirectALAEOutstandingIR1,
 	-- *INF*: IIF(ISNULL(DirectALAEOutstandingIR1),0,DirectALAEOutstandingIR1)
-	IFF(DirectALAEOutstandingIR1 IS NULL, 0, DirectALAEOutstandingIR1) AS v_DirectALAEOutstandingIR1,
+	IFF(DirectALAEOutstandingIR1 IS NULL,
+		0,
+		DirectALAEOutstandingIR1
+	) AS v_DirectALAEOutstandingIR1,
 	v_DirectALAEOutstandingIR1 AS o_DirectALAEOutstandingIR1,
 	DirectOtherRecoveryOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryOutstanding1),0,DirectOtherRecoveryOutstanding1)
-	IFF(DirectOtherRecoveryOutstanding1 IS NULL, 0, DirectOtherRecoveryOutstanding1) AS v_DirectOtherRecoveryOutstanding1,
+	IFF(DirectOtherRecoveryOutstanding1 IS NULL,
+		0,
+		DirectOtherRecoveryOutstanding1
+	) AS v_DirectOtherRecoveryOutstanding1,
 	v_DirectOtherRecoveryOutstanding1 AS o_DirectOtherRecoveryOutstanding1,
 	DirectOtherRecoveryLossOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryLossOutstanding1),0,DirectOtherRecoveryLossOutstanding1)
-	IFF(DirectOtherRecoveryLossOutstanding1 IS NULL, 0, DirectOtherRecoveryLossOutstanding1) AS v_DirectOtherRecoveryLossOutstanding1,
+	IFF(DirectOtherRecoveryLossOutstanding1 IS NULL,
+		0,
+		DirectOtherRecoveryLossOutstanding1
+	) AS v_DirectOtherRecoveryLossOutstanding1,
 	v_DirectOtherRecoveryLossOutstanding1 AS o_DirectOtherRecoveryLossOutstanding1,
 	DirectOtherRecoveryALAEOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryALAEOutstanding1),0,DirectOtherRecoveryALAEOutstanding1)
-	IFF(DirectOtherRecoveryALAEOutstanding1 IS NULL, 0, DirectOtherRecoveryALAEOutstanding1) AS v_DirectOtherRecoveryALAEOutstanding1,
+	IFF(DirectOtherRecoveryALAEOutstanding1 IS NULL,
+		0,
+		DirectOtherRecoveryALAEOutstanding1
+	) AS v_DirectOtherRecoveryALAEOutstanding1,
 	v_DirectOtherRecoveryALAEOutstanding1 AS o_DirectOtherRecoveryALAEOutstanding1,
 	DirectSubroOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectSubroOutstanding1),0,DirectSubroOutstanding1)
-	IFF(DirectSubroOutstanding1 IS NULL, 0, DirectSubroOutstanding1) AS v_DirectSubroOutstanding1,
+	IFF(DirectSubroOutstanding1 IS NULL,
+		0,
+		DirectSubroOutstanding1
+	) AS v_DirectSubroOutstanding1,
 	v_DirectSubroOutstanding1 AS o_DirectSubroOutstanding1,
 	DirectSalvageOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectSalvageOutstanding1),0,DirectSalvageOutstanding1)
-	IFF(DirectSalvageOutstanding1 IS NULL, 0, DirectSalvageOutstanding1) AS v_DirectSalvageOutstanding1,
+	IFF(DirectSalvageOutstanding1 IS NULL,
+		0,
+		DirectSalvageOutstanding1
+	) AS v_DirectSalvageOutstanding1,
 	v_DirectSalvageOutstanding1 AS o_DirectSalvageOutstanding1,
 	DirectLossIncurredER1,
 	-- *INF*: IIF(ISNULL(DirectLossIncurredER1),0,DirectLossIncurredER1)
-	IFF(DirectLossIncurredER1 IS NULL, 0, DirectLossIncurredER1) AS v_DirectLossIncurredER1,
+	IFF(DirectLossIncurredER1 IS NULL,
+		0,
+		DirectLossIncurredER1
+	) AS v_DirectLossIncurredER1,
 	v_DirectLossIncurredER1 AS o_DirectLossIncurredER1,
 	DirectLossIncurredIR1,
 	-- *INF*: IIF(ISNULL(DirectLossIncurredIR1),0,DirectLossIncurredIR1)
-	IFF(DirectLossIncurredIR1 IS NULL, 0, DirectLossIncurredIR1) AS v_DirectLossIncurredIR1,
+	IFF(DirectLossIncurredIR1 IS NULL,
+		0,
+		DirectLossIncurredIR1
+	) AS v_DirectLossIncurredIR1,
 	v_DirectLossIncurredIR1 AS o_DirectLossIncurredIR1,
 	DirectALAEIncurredER1,
 	-- *INF*: IIF(ISNULL(DirectALAEIncurredER1),0,DirectALAEIncurredER1)
-	IFF(DirectALAEIncurredER1 IS NULL, 0, DirectALAEIncurredER1) AS v_DirectALAEIncurredER1,
+	IFF(DirectALAEIncurredER1 IS NULL,
+		0,
+		DirectALAEIncurredER1
+	) AS v_DirectALAEIncurredER1,
 	v_DirectALAEIncurredER1 AS o_DirectALAEIncurredER1,
 	DirectALAEIncurredIR1,
 	-- *INF*: IIF(ISNULL(DirectALAEIncurredIR1),0,DirectALAEIncurredIR1)
-	IFF(DirectALAEIncurredIR1 IS NULL, 0, DirectALAEIncurredIR1) AS v_DirectALAEIncurredIR1,
+	IFF(DirectALAEIncurredIR1 IS NULL,
+		0,
+		DirectALAEIncurredIR1
+	) AS v_DirectALAEIncurredIR1,
 	v_DirectALAEIncurredIR1 AS o_DirectALAEIncurredIR1,
 	'Difference' AS table_name11,
 	-- *INF*: IIF(NOT ISNULL(clndr_date),clndr_date,clndr_date1)
-	IFF(NOT clndr_date IS NULL, clndr_date, clndr_date1) AS clndr_date11,
+	IFF(clndr_date IS NOT NULL,
+		clndr_date,
+		clndr_date1
+	) AS clndr_date11,
 	v_EnterpriseGroupDescription AS o_EnterpriseGroupDescription11,
 	v_StrategicProfitCenterDescription AS o_StrategicProfitCenterDescription11,
 	v_InsuranceReferenceLegalEntityDescription AS o_InsuranceReferenceLegalEntityDescription11,
@@ -1971,82 +2263,108 @@ AGG_ByEnterpriseGroup AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union3
 	GROUP BY table_name, clndr_date, EnterpriseGroupDescription
 ),
@@ -2090,7 +2408,8 @@ EXP_ByEnterpriseGroup AS (
 	DECODE(TRUE,
 		Table_name = 'loss_master_fact', 1,
 		Table_name = 'vwLossMasterFact', 2,
-		Table_name = 'Difference', 3) AS OrderInd
+		Table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByEnterpriseGroup
 ),
 SRT_ByEnterpriseGroup AS (
@@ -2245,19 +2564,40 @@ EXP_loss_master_fact_claim_loss_transaction_fact1 AS (
 	'loss_master_fact' AS table_name,
 	clndr_date,
 	-- *INF*: IIF(NOT ISNULL(clndr_date),clndr_date,clndr_date1)
-	IFF(NOT clndr_date IS NULL, clndr_date, clndr_date1) AS o_clndr_date,
+	IFF(clndr_date IS NOT NULL,
+		clndr_date,
+		clndr_date1
+	) AS o_clndr_date,
 	-- *INF*: IIF(NOT ISNULL(EnterpriseGroupDescription),EnterpriseGroupDescription,EnterpriseGroupDescription1)
-	IFF(NOT EnterpriseGroupDescription IS NULL, EnterpriseGroupDescription, EnterpriseGroupDescription1) AS v_EnterpriseGroupDescription,
+	IFF(EnterpriseGroupDescription IS NOT NULL,
+		EnterpriseGroupDescription,
+		EnterpriseGroupDescription1
+	) AS v_EnterpriseGroupDescription,
 	-- *INF*: IIF(NOT ISNULL(StrategicProfitCenterDescription),StrategicProfitCenterDescription,StrategicProfitCenterDescription1)
-	IFF(NOT StrategicProfitCenterDescription IS NULL, StrategicProfitCenterDescription, StrategicProfitCenterDescription1) AS v_StrategicProfitCenterDescription,
+	IFF(StrategicProfitCenterDescription IS NOT NULL,
+		StrategicProfitCenterDescription,
+		StrategicProfitCenterDescription1
+	) AS v_StrategicProfitCenterDescription,
 	-- *INF*: IIF(NOT ISNULL(InsuranceReferenceLegalEntityDescription),InsuranceReferenceLegalEntityDescription,InsuranceReferenceLegalEntityDescription1)
-	IFF(NOT InsuranceReferenceLegalEntityDescription IS NULL, InsuranceReferenceLegalEntityDescription, InsuranceReferenceLegalEntityDescription1) AS v_InsuranceReferenceLegalEntityDescription,
+	IFF(InsuranceReferenceLegalEntityDescription IS NOT NULL,
+		InsuranceReferenceLegalEntityDescription,
+		InsuranceReferenceLegalEntityDescription1
+	) AS v_InsuranceReferenceLegalEntityDescription,
 	-- *INF*: IIF(NOT ISNULL(PolicyOfferingDescription),PolicyOfferingDescription,PolicyOfferingDescription1)
-	IFF(NOT PolicyOfferingDescription IS NULL, PolicyOfferingDescription, PolicyOfferingDescription1) AS v_PolicyOfferingDescription,
+	IFF(PolicyOfferingDescription IS NOT NULL,
+		PolicyOfferingDescription,
+		PolicyOfferingDescription1
+	) AS v_PolicyOfferingDescription,
 	-- *INF*: IIF(NOT ISNULL(ProductDescription),ProductDescription,ProductDescription1)
-	IFF(NOT ProductDescription IS NULL, ProductDescription, ProductDescription1) AS v_ProductDescription,
+	IFF(ProductDescription IS NOT NULL,
+		ProductDescription,
+		ProductDescription1
+	) AS v_ProductDescription,
 	-- *INF*: IIF(NOT ISNULL(InsuranceReferenceLineOfBusinessDescription),InsuranceReferenceLineOfBusinessDescription,InsuranceReferenceLineOfBusinessDescription1)
-	IFF(NOT InsuranceReferenceLineOfBusinessDescription IS NULL, InsuranceReferenceLineOfBusinessDescription, InsuranceReferenceLineOfBusinessDescription1) AS v_InsuranceReferenceLineOfBusinessDescription,
+	IFF(InsuranceReferenceLineOfBusinessDescription IS NOT NULL,
+		InsuranceReferenceLineOfBusinessDescription,
+		InsuranceReferenceLineOfBusinessDescription1
+	) AS v_InsuranceReferenceLineOfBusinessDescription,
 	EnterpriseGroupDescription,
 	v_EnterpriseGroupDescription AS o_EnterpriseGroupDescription,
 	StrategicProfitCenterDescription,
@@ -2272,112 +2612,193 @@ EXP_loss_master_fact_claim_loss_transaction_fact1 AS (
 	v_InsuranceReferenceLineOfBusinessDescription AS o_InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: IIF(ISNULL(outstanding_amt),0,outstanding_amt)
-	IFF(outstanding_amt IS NULL, 0, outstanding_amt) AS v_outstanding_amt,
+	IFF(outstanding_amt IS NULL,
+		0,
+		outstanding_amt
+	) AS v_outstanding_amt,
 	v_outstanding_amt AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: IIF(ISNULL(paid_loss_amt),0,paid_loss_amt)
-	IFF(paid_loss_amt IS NULL, 0, paid_loss_amt) AS v_paid_loss_amt,
+	IFF(paid_loss_amt IS NULL,
+		0,
+		paid_loss_amt
+	) AS v_paid_loss_amt,
 	v_paid_loss_amt AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: IIF(ISNULL(paid_exp_amt),0,paid_exp_amt)
-	IFF(paid_exp_amt IS NULL, 0, paid_exp_amt) AS v_paid_exp_amt,
+	IFF(paid_exp_amt IS NULL,
+		0,
+		paid_exp_amt
+	) AS v_paid_exp_amt,
 	v_paid_exp_amt AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: IIF(ISNULL(ChangeInOutstandingAmount),0,ChangeInOutstandingAmount)
-	IFF(ChangeInOutstandingAmount IS NULL, 0, ChangeInOutstandingAmount) AS v_ChangeInOutstandingAmount,
+	IFF(ChangeInOutstandingAmount IS NULL,
+		0,
+		ChangeInOutstandingAmount
+	) AS v_ChangeInOutstandingAmount,
 	v_ChangeInOutstandingAmount AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: IIF(ISNULL(DirectLossPaidER),0,DirectLossPaidER)
-	IFF(DirectLossPaidER IS NULL, 0, DirectLossPaidER) AS v_DirectLossPaidER,
+	IFF(DirectLossPaidER IS NULL,
+		0,
+		DirectLossPaidER
+	) AS v_DirectLossPaidER,
 	v_DirectLossPaidER AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: IIF(ISNULL(DirectLossPaidIR),0,DirectLossPaidIR)
-	IFF(DirectLossPaidIR IS NULL, 0, DirectLossPaidIR) AS v_DirectLossPaidIR,
+	IFF(DirectLossPaidIR IS NULL,
+		0,
+		DirectLossPaidIR
+	) AS v_DirectLossPaidIR,
 	v_DirectLossPaidIR AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: IIF(ISNULL(DirectALAEPaidER),0,DirectALAEPaidER)
-	IFF(DirectALAEPaidER IS NULL, 0, DirectALAEPaidER) AS v_DirectALAEPaidER,
+	IFF(DirectALAEPaidER IS NULL,
+		0,
+		DirectALAEPaidER
+	) AS v_DirectALAEPaidER,
 	v_DirectALAEPaidER AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: IIF(ISNULL(DirectALAEPaidIR),0,DirectALAEPaidIR)
-	IFF(DirectALAEPaidIR IS NULL, 0, DirectALAEPaidIR) AS v_DirectALAEPaidIR,
+	IFF(DirectALAEPaidIR IS NULL,
+		0,
+		DirectALAEPaidIR
+	) AS v_DirectALAEPaidIR,
 	v_DirectALAEPaidIR AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: IIF(ISNULL(DirectSalvagePaid),0,DirectSalvagePaid)
-	IFF(DirectSalvagePaid IS NULL, 0, DirectSalvagePaid) AS v_DirectSalvagePaid,
+	IFF(DirectSalvagePaid IS NULL,
+		0,
+		DirectSalvagePaid
+	) AS v_DirectSalvagePaid,
 	v_DirectSalvagePaid AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: IIF(ISNULL(DirectSubrogationPaid),0,DirectSubrogationPaid)
-	IFF(DirectSubrogationPaid IS NULL, 0, DirectSubrogationPaid) AS v_DirectSubrogationPaid,
+	IFF(DirectSubrogationPaid IS NULL,
+		0,
+		DirectSubrogationPaid
+	) AS v_DirectSubrogationPaid,
 	v_DirectSubrogationPaid AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryPaid),0,DirectOtherRecoveryPaid)
-	IFF(DirectOtherRecoveryPaid IS NULL, 0, DirectOtherRecoveryPaid) AS v_DirectOtherRecoveryPaid,
+	IFF(DirectOtherRecoveryPaid IS NULL,
+		0,
+		DirectOtherRecoveryPaid
+	) AS v_DirectOtherRecoveryPaid,
 	v_DirectOtherRecoveryPaid AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryLossPaid),0,DirectOtherRecoveryLossPaid)
-	IFF(DirectOtherRecoveryLossPaid IS NULL, 0, DirectOtherRecoveryLossPaid) AS v_DirectOtherRecoveryLossPaid,
+	IFF(DirectOtherRecoveryLossPaid IS NULL,
+		0,
+		DirectOtherRecoveryLossPaid
+	) AS v_DirectOtherRecoveryLossPaid,
 	v_DirectOtherRecoveryLossPaid AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryALAEPaid),0,DirectOtherRecoveryALAEPaid)
-	IFF(DirectOtherRecoveryALAEPaid IS NULL, 0, DirectOtherRecoveryALAEPaid) AS v_DirectOtherRecoveryALAEPaid,
+	IFF(DirectOtherRecoveryALAEPaid IS NULL,
+		0,
+		DirectOtherRecoveryALAEPaid
+	) AS v_DirectOtherRecoveryALAEPaid,
 	v_DirectOtherRecoveryALAEPaid AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: IIF(ISNULL(DirectLossOutstandingER),0,DirectLossOutstandingER)
-	IFF(DirectLossOutstandingER IS NULL, 0, DirectLossOutstandingER) AS v_DirectLossOutstandingER,
+	IFF(DirectLossOutstandingER IS NULL,
+		0,
+		DirectLossOutstandingER
+	) AS v_DirectLossOutstandingER,
 	v_DirectLossOutstandingER AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: IIF(ISNULL(DirectLossOutstandingIR),0,DirectLossOutstandingIR)
-	IFF(DirectLossOutstandingIR IS NULL, 0, DirectLossOutstandingIR) AS v_DirectLossOutstandingIR,
+	IFF(DirectLossOutstandingIR IS NULL,
+		0,
+		DirectLossOutstandingIR
+	) AS v_DirectLossOutstandingIR,
 	v_DirectLossOutstandingIR AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: IIF(ISNULL(DirectALAEOutstandingER),0,DirectALAEOutstandingER)
-	IFF(DirectALAEOutstandingER IS NULL, 0, DirectALAEOutstandingER) AS v_DirectALAEOutstandingER,
+	IFF(DirectALAEOutstandingER IS NULL,
+		0,
+		DirectALAEOutstandingER
+	) AS v_DirectALAEOutstandingER,
 	v_DirectALAEOutstandingER AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: IIF(ISNULL(DirectALAEOutstandingIR),0,DirectALAEOutstandingIR)
-	IFF(DirectALAEOutstandingIR IS NULL, 0, DirectALAEOutstandingIR) AS v_DirectALAEOutstandingIR,
+	IFF(DirectALAEOutstandingIR IS NULL,
+		0,
+		DirectALAEOutstandingIR
+	) AS v_DirectALAEOutstandingIR,
 	v_DirectALAEOutstandingIR AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryOutstanding),0,DirectOtherRecoveryOutstanding)
-	IFF(DirectOtherRecoveryOutstanding IS NULL, 0, DirectOtherRecoveryOutstanding) AS v_DirectOtherRecoveryOutstanding,
+	IFF(DirectOtherRecoveryOutstanding IS NULL,
+		0,
+		DirectOtherRecoveryOutstanding
+	) AS v_DirectOtherRecoveryOutstanding,
 	v_DirectOtherRecoveryOutstanding AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryLossOutstanding),0,DirectOtherRecoveryLossOutstanding)
-	IFF(DirectOtherRecoveryLossOutstanding IS NULL, 0, DirectOtherRecoveryLossOutstanding) AS v_DirectOtherRecoveryLossOutstanding,
+	IFF(DirectOtherRecoveryLossOutstanding IS NULL,
+		0,
+		DirectOtherRecoveryLossOutstanding
+	) AS v_DirectOtherRecoveryLossOutstanding,
 	v_DirectOtherRecoveryLossOutstanding AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryALAEOutstanding),0,DirectOtherRecoveryALAEOutstanding)
-	IFF(DirectOtherRecoveryALAEOutstanding IS NULL, 0, DirectOtherRecoveryALAEOutstanding) AS v_DirectOtherRecoveryALAEOutstanding,
+	IFF(DirectOtherRecoveryALAEOutstanding IS NULL,
+		0,
+		DirectOtherRecoveryALAEOutstanding
+	) AS v_DirectOtherRecoveryALAEOutstanding,
 	v_DirectOtherRecoveryALAEOutstanding AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: IIF(ISNULL(DirectSubroOutstanding),0,DirectSubroOutstanding)
-	IFF(DirectSubroOutstanding IS NULL, 0, DirectSubroOutstanding) AS v_DirectSubroOutstanding,
+	IFF(DirectSubroOutstanding IS NULL,
+		0,
+		DirectSubroOutstanding
+	) AS v_DirectSubroOutstanding,
 	v_DirectSubroOutstanding AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: IIF(ISNULL(DirectSalvageOutstanding),0,DirectSalvageOutstanding)
-	IFF(DirectSalvageOutstanding IS NULL, 0, DirectSalvageOutstanding) AS v_DirectSalvageOutstanding,
+	IFF(DirectSalvageOutstanding IS NULL,
+		0,
+		DirectSalvageOutstanding
+	) AS v_DirectSalvageOutstanding,
 	v_DirectSalvageOutstanding AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: IIF(ISNULL(DirectLossIncurredER),0,DirectLossIncurredER)
-	IFF(DirectLossIncurredER IS NULL, 0, DirectLossIncurredER) AS v_DirectLossIncurredER,
+	IFF(DirectLossIncurredER IS NULL,
+		0,
+		DirectLossIncurredER
+	) AS v_DirectLossIncurredER,
 	v_DirectLossIncurredER AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: IIF(ISNULL(DirectLossIncurredIR),0,DirectLossIncurredIR)
-	IFF(DirectLossIncurredIR IS NULL, 0, DirectLossIncurredIR) AS v_DirectLossIncurredIR,
+	IFF(DirectLossIncurredIR IS NULL,
+		0,
+		DirectLossIncurredIR
+	) AS v_DirectLossIncurredIR,
 	v_DirectLossIncurredIR AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: IIF(ISNULL(DirectALAEIncurredER),0,DirectALAEIncurredER)
-	IFF(DirectALAEIncurredER IS NULL, 0, DirectALAEIncurredER) AS v_DirectALAEIncurredER,
+	IFF(DirectALAEIncurredER IS NULL,
+		0,
+		DirectALAEIncurredER
+	) AS v_DirectALAEIncurredER,
 	v_DirectALAEIncurredER AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: IIF(ISNULL(DirectALAEIncurredIR),0,DirectALAEIncurredIR)
-	IFF(DirectALAEIncurredIR IS NULL, 0, DirectALAEIncurredIR) AS v_DirectALAEIncurredIR,
+	IFF(DirectALAEIncurredIR IS NULL,
+		0,
+		DirectALAEIncurredIR
+	) AS v_DirectALAEIncurredIR,
 	v_DirectALAEIncurredIR AS o_DirectALAEIncurredIR,
 	'claim_loss_transaction_fact' AS table_name1,
 	clndr_date1,
 	-- *INF*: IIF(NOT ISNULL(clndr_date1),clndr_date1,clndr_date)
-	IFF(NOT clndr_date1 IS NULL, clndr_date1, clndr_date) AS o_clndr_date1,
+	IFF(clndr_date1 IS NOT NULL,
+		clndr_date1,
+		clndr_date
+	) AS o_clndr_date1,
 	EnterpriseGroupDescription1,
 	v_EnterpriseGroupDescription AS o_EnterpriseGroupDescription1,
 	StrategicProfitCenterDescription1,
@@ -2392,111 +2813,192 @@ EXP_loss_master_fact_claim_loss_transaction_fact1 AS (
 	v_InsuranceReferenceLineOfBusinessDescription AS o_InsuranceReferenceLineOfBusinessDescription1,
 	outstanding_amt1,
 	-- *INF*: IIF(ISNULL(outstanding_amt1),0,outstanding_amt1)
-	IFF(outstanding_amt1 IS NULL, 0, outstanding_amt1) AS v_outstanding_amt1,
+	IFF(outstanding_amt1 IS NULL,
+		0,
+		outstanding_amt1
+	) AS v_outstanding_amt1,
 	v_outstanding_amt1 AS o_outstanding_amt1,
 	paid_loss_amt1,
 	-- *INF*: IIF(ISNULL(paid_loss_amt),0,paid_loss_amt1)
-	IFF(paid_loss_amt IS NULL, 0, paid_loss_amt1) AS v_paid_loss_amt1,
+	IFF(paid_loss_amt IS NULL,
+		0,
+		paid_loss_amt1
+	) AS v_paid_loss_amt1,
 	v_paid_loss_amt1 AS o_paid_loss_amt1,
 	paid_exp_amt1,
 	-- *INF*: IIF(ISNULL(paid_exp_amt1),0,paid_exp_amt1)
-	IFF(paid_exp_amt1 IS NULL, 0, paid_exp_amt1) AS v_paid_exp_amt1,
+	IFF(paid_exp_amt1 IS NULL,
+		0,
+		paid_exp_amt1
+	) AS v_paid_exp_amt1,
 	v_paid_exp_amt1 AS o_paid_exp_amt1,
 	ChangeInOutstandingAmount1,
 	-- *INF*: IIF(ISNULL(ChangeInOutstandingAmount1),0,ChangeInOutstandingAmount1)
-	IFF(ChangeInOutstandingAmount1 IS NULL, 0, ChangeInOutstandingAmount1) AS v_ChangeInOutstandingAmount1,
+	IFF(ChangeInOutstandingAmount1 IS NULL,
+		0,
+		ChangeInOutstandingAmount1
+	) AS v_ChangeInOutstandingAmount1,
 	v_ChangeInOutstandingAmount1 AS o_ChangeInOutstandingAmount1,
 	DirectLossPaidER1,
 	-- *INF*: IIF(ISNULL(DirectLossPaidER1),0,DirectLossPaidER1)
-	IFF(DirectLossPaidER1 IS NULL, 0, DirectLossPaidER1) AS v_DirectLossPaidER1,
+	IFF(DirectLossPaidER1 IS NULL,
+		0,
+		DirectLossPaidER1
+	) AS v_DirectLossPaidER1,
 	v_DirectLossPaidER1 AS o_DirectLossPaidER1,
 	DirectLossPaidIR1,
 	-- *INF*: IIF(ISNULL(DirectLossPaidIR1),0,DirectLossPaidIR1)
-	IFF(DirectLossPaidIR1 IS NULL, 0, DirectLossPaidIR1) AS v_DirectLossPaidIR1,
+	IFF(DirectLossPaidIR1 IS NULL,
+		0,
+		DirectLossPaidIR1
+	) AS v_DirectLossPaidIR1,
 	v_DirectLossPaidIR1 AS o_DirectLossPaidIR1,
 	DirectALAEPaidER1,
 	-- *INF*: IIF(ISNULL(DirectALAEPaidER1),0,DirectALAEPaidER1)
-	IFF(DirectALAEPaidER1 IS NULL, 0, DirectALAEPaidER1) AS v_DirectALAEPaidER1,
+	IFF(DirectALAEPaidER1 IS NULL,
+		0,
+		DirectALAEPaidER1
+	) AS v_DirectALAEPaidER1,
 	v_DirectALAEPaidER1 AS o_DirectALAEPaidER1,
 	DirectALAEPaidIR1,
 	-- *INF*: IIF(ISNULL(DirectALAEPaidIR1),0,DirectALAEPaidIR1)
-	IFF(DirectALAEPaidIR1 IS NULL, 0, DirectALAEPaidIR1) AS v_DirectALAEPaidIR1,
+	IFF(DirectALAEPaidIR1 IS NULL,
+		0,
+		DirectALAEPaidIR1
+	) AS v_DirectALAEPaidIR1,
 	v_DirectALAEPaidIR1 AS o_DirectALAEPaidIR1,
 	DirectSalvagePaid1,
 	-- *INF*: IIF(ISNULL(DirectSalvagePaid1),0,DirectSalvagePaid1)
-	IFF(DirectSalvagePaid1 IS NULL, 0, DirectSalvagePaid1) AS v_DirectSalvagePaid1,
+	IFF(DirectSalvagePaid1 IS NULL,
+		0,
+		DirectSalvagePaid1
+	) AS v_DirectSalvagePaid1,
 	v_DirectSalvagePaid1 AS o_DirectSalvagePaid1,
 	DirectSubrogationPaid1,
 	-- *INF*: IIF(ISNULL(DirectSubrogationPaid1),0,DirectSubrogationPaid1)
-	IFF(DirectSubrogationPaid1 IS NULL, 0, DirectSubrogationPaid1) AS v_DirectSubrogationPaid1,
+	IFF(DirectSubrogationPaid1 IS NULL,
+		0,
+		DirectSubrogationPaid1
+	) AS v_DirectSubrogationPaid1,
 	v_DirectSubrogationPaid1 AS o_DirectSubrogationPaid1,
 	DirectOtherRecoveryPaid1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryPaid1),0,DirectOtherRecoveryPaid1)
-	IFF(DirectOtherRecoveryPaid1 IS NULL, 0, DirectOtherRecoveryPaid1) AS v_DirectOtherRecoveryPaid1,
+	IFF(DirectOtherRecoveryPaid1 IS NULL,
+		0,
+		DirectOtherRecoveryPaid1
+	) AS v_DirectOtherRecoveryPaid1,
 	v_DirectOtherRecoveryPaid1 AS o_DirectOtherRecoveryPaid1,
 	DirectOtherRecoveryLossPaid1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryLossPaid1),0,DirectOtherRecoveryLossPaid1)
-	IFF(DirectOtherRecoveryLossPaid1 IS NULL, 0, DirectOtherRecoveryLossPaid1) AS v_DirectOtherRecoveryLossPaid1,
+	IFF(DirectOtherRecoveryLossPaid1 IS NULL,
+		0,
+		DirectOtherRecoveryLossPaid1
+	) AS v_DirectOtherRecoveryLossPaid1,
 	v_DirectOtherRecoveryLossPaid1 AS o_DirectOtherRecoveryLossPaid1,
 	DirectOtherRecoveryALAEPaid1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryALAEPaid1),0,DirectOtherRecoveryALAEPaid1)
-	IFF(DirectOtherRecoveryALAEPaid1 IS NULL, 0, DirectOtherRecoveryALAEPaid1) AS v_DirectOtherRecoveryALAEPaid1,
+	IFF(DirectOtherRecoveryALAEPaid1 IS NULL,
+		0,
+		DirectOtherRecoveryALAEPaid1
+	) AS v_DirectOtherRecoveryALAEPaid1,
 	v_DirectOtherRecoveryALAEPaid1 AS o_DirectOtherRecoveryALAEPaid1,
 	DirectLossOutstandingER1,
 	-- *INF*: IIF(ISNULL(DirectLossOutstandingER1),0,DirectLossOutstandingER1)
-	IFF(DirectLossOutstandingER1 IS NULL, 0, DirectLossOutstandingER1) AS v_DirectLossOutstandingER1,
+	IFF(DirectLossOutstandingER1 IS NULL,
+		0,
+		DirectLossOutstandingER1
+	) AS v_DirectLossOutstandingER1,
 	v_DirectLossOutstandingER1 AS o_DirectLossOutstandingER1,
 	DirectLossOutstandingIR1,
 	-- *INF*: IIF(ISNULL(DirectLossOutstandingIR1),0,DirectLossOutstandingIR1)
-	IFF(DirectLossOutstandingIR1 IS NULL, 0, DirectLossOutstandingIR1) AS v_DirectLossOutstandingIR1,
+	IFF(DirectLossOutstandingIR1 IS NULL,
+		0,
+		DirectLossOutstandingIR1
+	) AS v_DirectLossOutstandingIR1,
 	v_DirectLossOutstandingIR1 AS o_DirectLossOutstandingIR1,
 	DirectALAEOutstandingER1,
 	-- *INF*: IIF(ISNULL(DirectALAEOutstandingER1),0,DirectALAEOutstandingER1)
-	IFF(DirectALAEOutstandingER1 IS NULL, 0, DirectALAEOutstandingER1) AS v_DirectALAEOutstandingER1,
+	IFF(DirectALAEOutstandingER1 IS NULL,
+		0,
+		DirectALAEOutstandingER1
+	) AS v_DirectALAEOutstandingER1,
 	v_DirectALAEOutstandingER1 AS o_DirectALAEOutstandingER1,
 	DirectALAEOutstandingIR1,
 	-- *INF*: IIF(ISNULL(DirectALAEOutstandingIR1),0,DirectALAEOutstandingIR1)
-	IFF(DirectALAEOutstandingIR1 IS NULL, 0, DirectALAEOutstandingIR1) AS v_DirectALAEOutstandingIR1,
+	IFF(DirectALAEOutstandingIR1 IS NULL,
+		0,
+		DirectALAEOutstandingIR1
+	) AS v_DirectALAEOutstandingIR1,
 	v_DirectALAEOutstandingIR1 AS o_DirectALAEOutstandingIR1,
 	DirectOtherRecoveryOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryOutstanding1),0,DirectOtherRecoveryOutstanding1)
-	IFF(DirectOtherRecoveryOutstanding1 IS NULL, 0, DirectOtherRecoveryOutstanding1) AS v_DirectOtherRecoveryOutstanding1,
+	IFF(DirectOtherRecoveryOutstanding1 IS NULL,
+		0,
+		DirectOtherRecoveryOutstanding1
+	) AS v_DirectOtherRecoveryOutstanding1,
 	v_DirectOtherRecoveryOutstanding1 AS o_DirectOtherRecoveryOutstanding1,
 	DirectOtherRecoveryLossOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryLossOutstanding1),0,DirectOtherRecoveryLossOutstanding1)
-	IFF(DirectOtherRecoveryLossOutstanding1 IS NULL, 0, DirectOtherRecoveryLossOutstanding1) AS v_DirectOtherRecoveryLossOutstanding1,
+	IFF(DirectOtherRecoveryLossOutstanding1 IS NULL,
+		0,
+		DirectOtherRecoveryLossOutstanding1
+	) AS v_DirectOtherRecoveryLossOutstanding1,
 	v_DirectOtherRecoveryLossOutstanding1 AS o_DirectOtherRecoveryLossOutstanding1,
 	DirectOtherRecoveryALAEOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryALAEOutstanding1),0,DirectOtherRecoveryALAEOutstanding1)
-	IFF(DirectOtherRecoveryALAEOutstanding1 IS NULL, 0, DirectOtherRecoveryALAEOutstanding1) AS v_DirectOtherRecoveryALAEOutstanding1,
+	IFF(DirectOtherRecoveryALAEOutstanding1 IS NULL,
+		0,
+		DirectOtherRecoveryALAEOutstanding1
+	) AS v_DirectOtherRecoveryALAEOutstanding1,
 	v_DirectOtherRecoveryALAEOutstanding1 AS o_DirectOtherRecoveryALAEOutstanding1,
 	DirectSubroOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectSubroOutstanding1),0,DirectSubroOutstanding1)
-	IFF(DirectSubroOutstanding1 IS NULL, 0, DirectSubroOutstanding1) AS v_DirectSubroOutstanding1,
+	IFF(DirectSubroOutstanding1 IS NULL,
+		0,
+		DirectSubroOutstanding1
+	) AS v_DirectSubroOutstanding1,
 	v_DirectSubroOutstanding1 AS o_DirectSubroOutstanding1,
 	DirectSalvageOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectSalvageOutstanding1),0,DirectSalvageOutstanding1)
-	IFF(DirectSalvageOutstanding1 IS NULL, 0, DirectSalvageOutstanding1) AS v_DirectSalvageOutstanding1,
+	IFF(DirectSalvageOutstanding1 IS NULL,
+		0,
+		DirectSalvageOutstanding1
+	) AS v_DirectSalvageOutstanding1,
 	v_DirectSalvageOutstanding1 AS o_DirectSalvageOutstanding1,
 	DirectLossIncurredER1,
 	-- *INF*: IIF(ISNULL(DirectLossIncurredER1),0,DirectLossIncurredER1)
-	IFF(DirectLossIncurredER1 IS NULL, 0, DirectLossIncurredER1) AS v_DirectLossIncurredER1,
+	IFF(DirectLossIncurredER1 IS NULL,
+		0,
+		DirectLossIncurredER1
+	) AS v_DirectLossIncurredER1,
 	v_DirectLossIncurredER1 AS o_DirectLossIncurredER1,
 	DirectLossIncurredIR1,
 	-- *INF*: IIF(ISNULL(DirectLossIncurredIR1),0,DirectLossIncurredIR1)
-	IFF(DirectLossIncurredIR1 IS NULL, 0, DirectLossIncurredIR1) AS v_DirectLossIncurredIR1,
+	IFF(DirectLossIncurredIR1 IS NULL,
+		0,
+		DirectLossIncurredIR1
+	) AS v_DirectLossIncurredIR1,
 	v_DirectLossIncurredIR1 AS o_DirectLossIncurredIR1,
 	DirectALAEIncurredER1,
 	-- *INF*: IIF(ISNULL(DirectALAEIncurredER1),0,DirectALAEIncurredER1)
-	IFF(DirectALAEIncurredER1 IS NULL, 0, DirectALAEIncurredER1) AS v_DirectALAEIncurredER1,
+	IFF(DirectALAEIncurredER1 IS NULL,
+		0,
+		DirectALAEIncurredER1
+	) AS v_DirectALAEIncurredER1,
 	v_DirectALAEIncurredER1 AS o_DirectALAEIncurredER1,
 	DirectALAEIncurredIR1,
 	-- *INF*: IIF(ISNULL(DirectALAEIncurredIR1),0,DirectALAEIncurredIR1)
-	IFF(DirectALAEIncurredIR1 IS NULL, 0, DirectALAEIncurredIR1) AS v_DirectALAEIncurredIR1,
+	IFF(DirectALAEIncurredIR1 IS NULL,
+		0,
+		DirectALAEIncurredIR1
+	) AS v_DirectALAEIncurredIR1,
 	v_DirectALAEIncurredIR1 AS o_DirectALAEIncurredIR1,
 	'Difference' AS table_name11,
 	-- *INF*: IIF(NOT ISNULL(clndr_date),clndr_date,clndr_date1)
-	IFF(NOT clndr_date IS NULL, clndr_date, clndr_date1) AS clndr_date11,
+	IFF(clndr_date IS NOT NULL,
+		clndr_date,
+		clndr_date1
+	) AS clndr_date11,
 	v_EnterpriseGroupDescription AS o_EnterpriseGroupDescription11,
 	v_StrategicProfitCenterDescription AS o_StrategicProfitCenterDescription11,
 	v_InsuranceReferenceLegalEntityDescription AS o_InsuranceReferenceLegalEntityDescription11,
@@ -2553,82 +3055,108 @@ AGG_ByEnterpriseGroup1 AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union31
 	GROUP BY table_name, clndr_date, EnterpriseGroupDescription
 ),
@@ -2640,16 +3168,32 @@ EXP_ByEnterpriseGroup1 AS (
 	EnterpriseGroupDescription,
 	o_outstanding_amt AS outstanding_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(outstanding_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(outstanding_amt)) AS o_outstanding_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(outstanding_amt
+		)
+	) AS o_outstanding_amt,
 	o_paid_loss_amt AS paid_loss_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_loss_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_loss_amt)) AS o_paid_loss_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_loss_amt
+		)
+	) AS o_paid_loss_amt,
 	o_paid_exp_amt AS paid_exp_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_exp_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_exp_amt)) AS o_paid_exp_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_exp_amt
+		)
+	) AS o_paid_exp_amt,
 	o_ChangeInOutstandingAmount AS ChangeInOutstandingAmount,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(ChangeInOutstandingAmount))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(ChangeInOutstandingAmount)) AS o_ChangeInOutstandingAmount,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(ChangeInOutstandingAmount
+		)
+	) AS o_ChangeInOutstandingAmount,
 	o_DirectLossPaidER AS DirectLossPaidER,
 	o_DirectLossPaidIR AS DirectLossPaidIR,
 	o_DirectALAEPaidER AS DirectALAEPaidER,
@@ -2680,7 +3224,8 @@ EXP_ByEnterpriseGroup1 AS (
 	DECODE(TRUE,
 		table_name = 'loss_master_fact', 1,
 		table_name = 'claim_loss_transaction_fact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByEnterpriseGroup1
 ),
 SRT_ByEnterpriseGroup1 AS (
@@ -2797,19 +3342,40 @@ EXP_vwLossMasterFact_claim_loss_transaction_fact1 AS (
 	'vwLossMasterFact' AS table_name,
 	clndr_date,
 	-- *INF*: IIF(NOT ISNULL(clndr_date),clndr_date,clndr_date1)
-	IFF(NOT clndr_date IS NULL, clndr_date, clndr_date1) AS o_clndr_date,
+	IFF(clndr_date IS NOT NULL,
+		clndr_date,
+		clndr_date1
+	) AS o_clndr_date,
 	-- *INF*: IIF(NOT ISNULL(EnterpriseGroupDescription),EnterpriseGroupDescription,EnterpriseGroupDescription1)
-	IFF(NOT EnterpriseGroupDescription IS NULL, EnterpriseGroupDescription, EnterpriseGroupDescription1) AS v_EnterpriseGroupDescription,
+	IFF(EnterpriseGroupDescription IS NOT NULL,
+		EnterpriseGroupDescription,
+		EnterpriseGroupDescription1
+	) AS v_EnterpriseGroupDescription,
 	-- *INF*: IIF(NOT ISNULL(StrategicProfitCenterDescription),StrategicProfitCenterDescription,StrategicProfitCenterDescription1)
-	IFF(NOT StrategicProfitCenterDescription IS NULL, StrategicProfitCenterDescription, StrategicProfitCenterDescription1) AS v_StrategicProfitCenterDescription,
+	IFF(StrategicProfitCenterDescription IS NOT NULL,
+		StrategicProfitCenterDescription,
+		StrategicProfitCenterDescription1
+	) AS v_StrategicProfitCenterDescription,
 	-- *INF*: IIF(NOT ISNULL(InsuranceReferenceLegalEntityDescription),InsuranceReferenceLegalEntityDescription,InsuranceReferenceLegalEntityDescription1)
-	IFF(NOT InsuranceReferenceLegalEntityDescription IS NULL, InsuranceReferenceLegalEntityDescription, InsuranceReferenceLegalEntityDescription1) AS v_InsuranceReferenceLegalEntityDescription,
+	IFF(InsuranceReferenceLegalEntityDescription IS NOT NULL,
+		InsuranceReferenceLegalEntityDescription,
+		InsuranceReferenceLegalEntityDescription1
+	) AS v_InsuranceReferenceLegalEntityDescription,
 	-- *INF*: IIF(NOT ISNULL(PolicyOfferingDescription),PolicyOfferingDescription,PolicyOfferingDescription1)
-	IFF(NOT PolicyOfferingDescription IS NULL, PolicyOfferingDescription, PolicyOfferingDescription1) AS v_PolicyOfferingDescription,
+	IFF(PolicyOfferingDescription IS NOT NULL,
+		PolicyOfferingDescription,
+		PolicyOfferingDescription1
+	) AS v_PolicyOfferingDescription,
 	-- *INF*: IIF(NOT ISNULL(ProductDescription),ProductDescription,ProductDescription1)
-	IFF(NOT ProductDescription IS NULL, ProductDescription, ProductDescription1) AS v_ProductDescription,
+	IFF(ProductDescription IS NOT NULL,
+		ProductDescription,
+		ProductDescription1
+	) AS v_ProductDescription,
 	-- *INF*: IIF(NOT ISNULL(InsuranceReferenceLineOfBusinessDescription),InsuranceReferenceLineOfBusinessDescription,InsuranceReferenceLineOfBusinessDescription1)
-	IFF(NOT InsuranceReferenceLineOfBusinessDescription IS NULL, InsuranceReferenceLineOfBusinessDescription, InsuranceReferenceLineOfBusinessDescription1) AS v_InsuranceReferenceLineOfBusinessDescription,
+	IFF(InsuranceReferenceLineOfBusinessDescription IS NOT NULL,
+		InsuranceReferenceLineOfBusinessDescription,
+		InsuranceReferenceLineOfBusinessDescription1
+	) AS v_InsuranceReferenceLineOfBusinessDescription,
 	EnterpriseGroupDescription,
 	v_EnterpriseGroupDescription AS o_EnterpriseGroupDescription,
 	StrategicProfitCenterDescription,
@@ -2824,112 +3390,193 @@ EXP_vwLossMasterFact_claim_loss_transaction_fact1 AS (
 	v_InsuranceReferenceLineOfBusinessDescription AS o_InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: IIF(ISNULL(outstanding_amt),0,outstanding_amt)
-	IFF(outstanding_amt IS NULL, 0, outstanding_amt) AS v_outstanding_amt,
+	IFF(outstanding_amt IS NULL,
+		0,
+		outstanding_amt
+	) AS v_outstanding_amt,
 	v_outstanding_amt AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: IIF(ISNULL(paid_loss_amt),0,paid_loss_amt)
-	IFF(paid_loss_amt IS NULL, 0, paid_loss_amt) AS v_paid_loss_amt,
+	IFF(paid_loss_amt IS NULL,
+		0,
+		paid_loss_amt
+	) AS v_paid_loss_amt,
 	v_paid_loss_amt AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: IIF(ISNULL(paid_exp_amt),0,paid_exp_amt)
-	IFF(paid_exp_amt IS NULL, 0, paid_exp_amt) AS v_paid_exp_amt,
+	IFF(paid_exp_amt IS NULL,
+		0,
+		paid_exp_amt
+	) AS v_paid_exp_amt,
 	v_paid_exp_amt AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: IIF(ISNULL(ChangeInOutstandingAmount),0,ChangeInOutstandingAmount)
-	IFF(ChangeInOutstandingAmount IS NULL, 0, ChangeInOutstandingAmount) AS v_ChangeInOutstandingAmount,
+	IFF(ChangeInOutstandingAmount IS NULL,
+		0,
+		ChangeInOutstandingAmount
+	) AS v_ChangeInOutstandingAmount,
 	v_ChangeInOutstandingAmount AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: IIF(ISNULL(DirectLossPaidER),0,DirectLossPaidER)
-	IFF(DirectLossPaidER IS NULL, 0, DirectLossPaidER) AS v_DirectLossPaidER,
+	IFF(DirectLossPaidER IS NULL,
+		0,
+		DirectLossPaidER
+	) AS v_DirectLossPaidER,
 	v_DirectLossPaidER AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: IIF(ISNULL(DirectLossPaidIR),0,DirectLossPaidIR)
-	IFF(DirectLossPaidIR IS NULL, 0, DirectLossPaidIR) AS v_DirectLossPaidIR,
+	IFF(DirectLossPaidIR IS NULL,
+		0,
+		DirectLossPaidIR
+	) AS v_DirectLossPaidIR,
 	v_DirectLossPaidIR AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: IIF(ISNULL(DirectALAEPaidER),0,DirectALAEPaidER)
-	IFF(DirectALAEPaidER IS NULL, 0, DirectALAEPaidER) AS v_DirectALAEPaidER,
+	IFF(DirectALAEPaidER IS NULL,
+		0,
+		DirectALAEPaidER
+	) AS v_DirectALAEPaidER,
 	v_DirectALAEPaidER AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: IIF(ISNULL(DirectALAEPaidIR),0,DirectALAEPaidIR)
-	IFF(DirectALAEPaidIR IS NULL, 0, DirectALAEPaidIR) AS v_DirectALAEPaidIR,
+	IFF(DirectALAEPaidIR IS NULL,
+		0,
+		DirectALAEPaidIR
+	) AS v_DirectALAEPaidIR,
 	v_DirectALAEPaidIR AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: IIF(ISNULL(DirectSalvagePaid),0,DirectSalvagePaid)
-	IFF(DirectSalvagePaid IS NULL, 0, DirectSalvagePaid) AS v_DirectSalvagePaid,
+	IFF(DirectSalvagePaid IS NULL,
+		0,
+		DirectSalvagePaid
+	) AS v_DirectSalvagePaid,
 	v_DirectSalvagePaid AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: IIF(ISNULL(DirectSubrogationPaid),0,DirectSubrogationPaid)
-	IFF(DirectSubrogationPaid IS NULL, 0, DirectSubrogationPaid) AS v_DirectSubrogationPaid,
+	IFF(DirectSubrogationPaid IS NULL,
+		0,
+		DirectSubrogationPaid
+	) AS v_DirectSubrogationPaid,
 	v_DirectSubrogationPaid AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryPaid),0,DirectOtherRecoveryPaid)
-	IFF(DirectOtherRecoveryPaid IS NULL, 0, DirectOtherRecoveryPaid) AS v_DirectOtherRecoveryPaid,
+	IFF(DirectOtherRecoveryPaid IS NULL,
+		0,
+		DirectOtherRecoveryPaid
+	) AS v_DirectOtherRecoveryPaid,
 	v_DirectOtherRecoveryPaid AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryLossPaid),0,DirectOtherRecoveryLossPaid)
-	IFF(DirectOtherRecoveryLossPaid IS NULL, 0, DirectOtherRecoveryLossPaid) AS v_DirectOtherRecoveryLossPaid,
+	IFF(DirectOtherRecoveryLossPaid IS NULL,
+		0,
+		DirectOtherRecoveryLossPaid
+	) AS v_DirectOtherRecoveryLossPaid,
 	v_DirectOtherRecoveryLossPaid AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryALAEPaid),0,DirectOtherRecoveryALAEPaid)
-	IFF(DirectOtherRecoveryALAEPaid IS NULL, 0, DirectOtherRecoveryALAEPaid) AS v_DirectOtherRecoveryALAEPaid,
+	IFF(DirectOtherRecoveryALAEPaid IS NULL,
+		0,
+		DirectOtherRecoveryALAEPaid
+	) AS v_DirectOtherRecoveryALAEPaid,
 	v_DirectOtherRecoveryALAEPaid AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: IIF(ISNULL(DirectLossOutstandingER),0,DirectLossOutstandingER)
-	IFF(DirectLossOutstandingER IS NULL, 0, DirectLossOutstandingER) AS v_DirectLossOutstandingER,
+	IFF(DirectLossOutstandingER IS NULL,
+		0,
+		DirectLossOutstandingER
+	) AS v_DirectLossOutstandingER,
 	v_DirectLossOutstandingER AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: IIF(ISNULL(DirectLossOutstandingIR),0,DirectLossOutstandingIR)
-	IFF(DirectLossOutstandingIR IS NULL, 0, DirectLossOutstandingIR) AS v_DirectLossOutstandingIR,
+	IFF(DirectLossOutstandingIR IS NULL,
+		0,
+		DirectLossOutstandingIR
+	) AS v_DirectLossOutstandingIR,
 	v_DirectLossOutstandingIR AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: IIF(ISNULL(DirectALAEOutstandingER),0,DirectALAEOutstandingER)
-	IFF(DirectALAEOutstandingER IS NULL, 0, DirectALAEOutstandingER) AS v_DirectALAEOutstandingER,
+	IFF(DirectALAEOutstandingER IS NULL,
+		0,
+		DirectALAEOutstandingER
+	) AS v_DirectALAEOutstandingER,
 	v_DirectALAEOutstandingER AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: IIF(ISNULL(DirectALAEOutstandingIR),0,DirectALAEOutstandingIR)
-	IFF(DirectALAEOutstandingIR IS NULL, 0, DirectALAEOutstandingIR) AS v_DirectALAEOutstandingIR,
+	IFF(DirectALAEOutstandingIR IS NULL,
+		0,
+		DirectALAEOutstandingIR
+	) AS v_DirectALAEOutstandingIR,
 	v_DirectALAEOutstandingIR AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryOutstanding),0,DirectOtherRecoveryOutstanding)
-	IFF(DirectOtherRecoveryOutstanding IS NULL, 0, DirectOtherRecoveryOutstanding) AS v_DirectOtherRecoveryOutstanding,
+	IFF(DirectOtherRecoveryOutstanding IS NULL,
+		0,
+		DirectOtherRecoveryOutstanding
+	) AS v_DirectOtherRecoveryOutstanding,
 	v_DirectOtherRecoveryOutstanding AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryLossOutstanding),0,DirectOtherRecoveryLossOutstanding)
-	IFF(DirectOtherRecoveryLossOutstanding IS NULL, 0, DirectOtherRecoveryLossOutstanding) AS v_DirectOtherRecoveryLossOutstanding,
+	IFF(DirectOtherRecoveryLossOutstanding IS NULL,
+		0,
+		DirectOtherRecoveryLossOutstanding
+	) AS v_DirectOtherRecoveryLossOutstanding,
 	v_DirectOtherRecoveryLossOutstanding AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryALAEOutstanding),0,DirectOtherRecoveryALAEOutstanding)
-	IFF(DirectOtherRecoveryALAEOutstanding IS NULL, 0, DirectOtherRecoveryALAEOutstanding) AS v_DirectOtherRecoveryALAEOutstanding,
+	IFF(DirectOtherRecoveryALAEOutstanding IS NULL,
+		0,
+		DirectOtherRecoveryALAEOutstanding
+	) AS v_DirectOtherRecoveryALAEOutstanding,
 	v_DirectOtherRecoveryALAEOutstanding AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: IIF(ISNULL(DirectSubroOutstanding),0,DirectSubroOutstanding)
-	IFF(DirectSubroOutstanding IS NULL, 0, DirectSubroOutstanding) AS v_DirectSubroOutstanding,
+	IFF(DirectSubroOutstanding IS NULL,
+		0,
+		DirectSubroOutstanding
+	) AS v_DirectSubroOutstanding,
 	v_DirectSubroOutstanding AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: IIF(ISNULL(DirectSalvageOutstanding),0,DirectSalvageOutstanding)
-	IFF(DirectSalvageOutstanding IS NULL, 0, DirectSalvageOutstanding) AS v_DirectSalvageOutstanding,
+	IFF(DirectSalvageOutstanding IS NULL,
+		0,
+		DirectSalvageOutstanding
+	) AS v_DirectSalvageOutstanding,
 	v_DirectSalvageOutstanding AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: IIF(ISNULL(DirectLossIncurredER),0,DirectLossIncurredER)
-	IFF(DirectLossIncurredER IS NULL, 0, DirectLossIncurredER) AS v_DirectLossIncurredER,
+	IFF(DirectLossIncurredER IS NULL,
+		0,
+		DirectLossIncurredER
+	) AS v_DirectLossIncurredER,
 	v_DirectLossIncurredER AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: IIF(ISNULL(DirectLossIncurredIR),0,DirectLossIncurredIR)
-	IFF(DirectLossIncurredIR IS NULL, 0, DirectLossIncurredIR) AS v_DirectLossIncurredIR,
+	IFF(DirectLossIncurredIR IS NULL,
+		0,
+		DirectLossIncurredIR
+	) AS v_DirectLossIncurredIR,
 	v_DirectLossIncurredIR AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: IIF(ISNULL(DirectALAEIncurredER),0,DirectALAEIncurredER)
-	IFF(DirectALAEIncurredER IS NULL, 0, DirectALAEIncurredER) AS v_DirectALAEIncurredER,
+	IFF(DirectALAEIncurredER IS NULL,
+		0,
+		DirectALAEIncurredER
+	) AS v_DirectALAEIncurredER,
 	v_DirectALAEIncurredER AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: IIF(ISNULL(DirectALAEIncurredIR),0,DirectALAEIncurredIR)
-	IFF(DirectALAEIncurredIR IS NULL, 0, DirectALAEIncurredIR) AS v_DirectALAEIncurredIR,
+	IFF(DirectALAEIncurredIR IS NULL,
+		0,
+		DirectALAEIncurredIR
+	) AS v_DirectALAEIncurredIR,
 	v_DirectALAEIncurredIR AS o_DirectALAEIncurredIR,
 	'claim_loss_transaction_fact' AS table_name1,
 	clndr_date1,
 	-- *INF*: IIF(NOT ISNULL(clndr_date1),clndr_date1,clndr_date)
-	IFF(NOT clndr_date1 IS NULL, clndr_date1, clndr_date) AS o_clndr_date1,
+	IFF(clndr_date1 IS NOT NULL,
+		clndr_date1,
+		clndr_date
+	) AS o_clndr_date1,
 	EnterpriseGroupDescription1,
 	v_EnterpriseGroupDescription AS o_EnterpriseGroupDescription1,
 	StrategicProfitCenterDescription1,
@@ -2944,111 +3591,192 @@ EXP_vwLossMasterFact_claim_loss_transaction_fact1 AS (
 	v_InsuranceReferenceLineOfBusinessDescription AS o_InsuranceReferenceLineOfBusinessDescription1,
 	outstanding_amt1,
 	-- *INF*: IIF(ISNULL(outstanding_amt1),0,outstanding_amt1)
-	IFF(outstanding_amt1 IS NULL, 0, outstanding_amt1) AS v_outstanding_amt1,
+	IFF(outstanding_amt1 IS NULL,
+		0,
+		outstanding_amt1
+	) AS v_outstanding_amt1,
 	v_outstanding_amt1 AS o_outstanding_amt1,
 	paid_loss_amt1,
 	-- *INF*: IIF(ISNULL(paid_loss_amt),0,paid_loss_amt1)
-	IFF(paid_loss_amt IS NULL, 0, paid_loss_amt1) AS v_paid_loss_amt1,
+	IFF(paid_loss_amt IS NULL,
+		0,
+		paid_loss_amt1
+	) AS v_paid_loss_amt1,
 	v_paid_loss_amt1 AS o_paid_loss_amt1,
 	paid_exp_amt1,
 	-- *INF*: IIF(ISNULL(paid_exp_amt1),0,paid_exp_amt1)
-	IFF(paid_exp_amt1 IS NULL, 0, paid_exp_amt1) AS v_paid_exp_amt1,
+	IFF(paid_exp_amt1 IS NULL,
+		0,
+		paid_exp_amt1
+	) AS v_paid_exp_amt1,
 	v_paid_exp_amt1 AS o_paid_exp_amt1,
 	ChangeInOutstandingAmount1,
 	-- *INF*: IIF(ISNULL(ChangeInOutstandingAmount1),0,ChangeInOutstandingAmount1)
-	IFF(ChangeInOutstandingAmount1 IS NULL, 0, ChangeInOutstandingAmount1) AS v_ChangeInOutstandingAmount1,
+	IFF(ChangeInOutstandingAmount1 IS NULL,
+		0,
+		ChangeInOutstandingAmount1
+	) AS v_ChangeInOutstandingAmount1,
 	v_ChangeInOutstandingAmount1 AS o_ChangeInOutstandingAmount1,
 	DirectLossPaidER1,
 	-- *INF*: IIF(ISNULL(DirectLossPaidER1),0,DirectLossPaidER1)
-	IFF(DirectLossPaidER1 IS NULL, 0, DirectLossPaidER1) AS v_DirectLossPaidER1,
+	IFF(DirectLossPaidER1 IS NULL,
+		0,
+		DirectLossPaidER1
+	) AS v_DirectLossPaidER1,
 	v_DirectLossPaidER1 AS o_DirectLossPaidER1,
 	DirectLossPaidIR1,
 	-- *INF*: IIF(ISNULL(DirectLossPaidIR1),0,DirectLossPaidIR1)
-	IFF(DirectLossPaidIR1 IS NULL, 0, DirectLossPaidIR1) AS v_DirectLossPaidIR1,
+	IFF(DirectLossPaidIR1 IS NULL,
+		0,
+		DirectLossPaidIR1
+	) AS v_DirectLossPaidIR1,
 	v_DirectLossPaidIR1 AS o_DirectLossPaidIR1,
 	DirectALAEPaidER1,
 	-- *INF*: IIF(ISNULL(DirectALAEPaidER1),0,DirectALAEPaidER1)
-	IFF(DirectALAEPaidER1 IS NULL, 0, DirectALAEPaidER1) AS v_DirectALAEPaidER1,
+	IFF(DirectALAEPaidER1 IS NULL,
+		0,
+		DirectALAEPaidER1
+	) AS v_DirectALAEPaidER1,
 	v_DirectALAEPaidER1 AS o_DirectALAEPaidER1,
 	DirectALAEPaidIR1,
 	-- *INF*: IIF(ISNULL(DirectALAEPaidIR1),0,DirectALAEPaidIR1)
-	IFF(DirectALAEPaidIR1 IS NULL, 0, DirectALAEPaidIR1) AS v_DirectALAEPaidIR1,
+	IFF(DirectALAEPaidIR1 IS NULL,
+		0,
+		DirectALAEPaidIR1
+	) AS v_DirectALAEPaidIR1,
 	v_DirectALAEPaidIR1 AS o_DirectALAEPaidIR1,
 	DirectSalvagePaid1,
 	-- *INF*: IIF(ISNULL(DirectSalvagePaid1),0,DirectSalvagePaid1)
-	IFF(DirectSalvagePaid1 IS NULL, 0, DirectSalvagePaid1) AS v_DirectSalvagePaid1,
+	IFF(DirectSalvagePaid1 IS NULL,
+		0,
+		DirectSalvagePaid1
+	) AS v_DirectSalvagePaid1,
 	v_DirectSalvagePaid1 AS o_DirectSalvagePaid1,
 	DirectSubrogationPaid1,
 	-- *INF*: IIF(ISNULL(DirectSubrogationPaid1),0,DirectSubrogationPaid1)
-	IFF(DirectSubrogationPaid1 IS NULL, 0, DirectSubrogationPaid1) AS v_DirectSubrogationPaid1,
+	IFF(DirectSubrogationPaid1 IS NULL,
+		0,
+		DirectSubrogationPaid1
+	) AS v_DirectSubrogationPaid1,
 	v_DirectSubrogationPaid1 AS o_DirectSubrogationPaid1,
 	DirectOtherRecoveryPaid1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryPaid1),0,DirectOtherRecoveryPaid1)
-	IFF(DirectOtherRecoveryPaid1 IS NULL, 0, DirectOtherRecoveryPaid1) AS v_DirectOtherRecoveryPaid1,
+	IFF(DirectOtherRecoveryPaid1 IS NULL,
+		0,
+		DirectOtherRecoveryPaid1
+	) AS v_DirectOtherRecoveryPaid1,
 	v_DirectOtherRecoveryPaid1 AS o_DirectOtherRecoveryPaid1,
 	DirectOtherRecoveryLossPaid1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryLossPaid1),0,DirectOtherRecoveryLossPaid1)
-	IFF(DirectOtherRecoveryLossPaid1 IS NULL, 0, DirectOtherRecoveryLossPaid1) AS v_DirectOtherRecoveryLossPaid1,
+	IFF(DirectOtherRecoveryLossPaid1 IS NULL,
+		0,
+		DirectOtherRecoveryLossPaid1
+	) AS v_DirectOtherRecoveryLossPaid1,
 	v_DirectOtherRecoveryLossPaid1 AS o_DirectOtherRecoveryLossPaid1,
 	DirectOtherRecoveryALAEPaid1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryALAEPaid1),0,DirectOtherRecoveryALAEPaid1)
-	IFF(DirectOtherRecoveryALAEPaid1 IS NULL, 0, DirectOtherRecoveryALAEPaid1) AS v_DirectOtherRecoveryALAEPaid1,
+	IFF(DirectOtherRecoveryALAEPaid1 IS NULL,
+		0,
+		DirectOtherRecoveryALAEPaid1
+	) AS v_DirectOtherRecoveryALAEPaid1,
 	v_DirectOtherRecoveryALAEPaid1 AS o_DirectOtherRecoveryALAEPaid1,
 	DirectLossOutstandingER1,
 	-- *INF*: IIF(ISNULL(DirectLossOutstandingER1),0,DirectLossOutstandingER1)
-	IFF(DirectLossOutstandingER1 IS NULL, 0, DirectLossOutstandingER1) AS v_DirectLossOutstandingER1,
+	IFF(DirectLossOutstandingER1 IS NULL,
+		0,
+		DirectLossOutstandingER1
+	) AS v_DirectLossOutstandingER1,
 	v_DirectLossOutstandingER1 AS o_DirectLossOutstandingER1,
 	DirectLossOutstandingIR1,
 	-- *INF*: IIF(ISNULL(DirectLossOutstandingIR1),0,DirectLossOutstandingIR1)
-	IFF(DirectLossOutstandingIR1 IS NULL, 0, DirectLossOutstandingIR1) AS v_DirectLossOutstandingIR1,
+	IFF(DirectLossOutstandingIR1 IS NULL,
+		0,
+		DirectLossOutstandingIR1
+	) AS v_DirectLossOutstandingIR1,
 	v_DirectLossOutstandingIR1 AS o_DirectLossOutstandingIR1,
 	DirectALAEOutstandingER1,
 	-- *INF*: IIF(ISNULL(DirectALAEOutstandingER1),0,DirectALAEOutstandingER1)
-	IFF(DirectALAEOutstandingER1 IS NULL, 0, DirectALAEOutstandingER1) AS v_DirectALAEOutstandingER1,
+	IFF(DirectALAEOutstandingER1 IS NULL,
+		0,
+		DirectALAEOutstandingER1
+	) AS v_DirectALAEOutstandingER1,
 	v_DirectALAEOutstandingER1 AS o_DirectALAEOutstandingER1,
 	DirectALAEOutstandingIR1,
 	-- *INF*: IIF(ISNULL(DirectALAEOutstandingIR1),0,DirectALAEOutstandingIR1)
-	IFF(DirectALAEOutstandingIR1 IS NULL, 0, DirectALAEOutstandingIR1) AS v_DirectALAEOutstandingIR1,
+	IFF(DirectALAEOutstandingIR1 IS NULL,
+		0,
+		DirectALAEOutstandingIR1
+	) AS v_DirectALAEOutstandingIR1,
 	v_DirectALAEOutstandingIR1 AS o_DirectALAEOutstandingIR1,
 	DirectOtherRecoveryOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryOutstanding1),0,DirectOtherRecoveryOutstanding1)
-	IFF(DirectOtherRecoveryOutstanding1 IS NULL, 0, DirectOtherRecoveryOutstanding1) AS v_DirectOtherRecoveryOutstanding1,
+	IFF(DirectOtherRecoveryOutstanding1 IS NULL,
+		0,
+		DirectOtherRecoveryOutstanding1
+	) AS v_DirectOtherRecoveryOutstanding1,
 	v_DirectOtherRecoveryOutstanding1 AS o_DirectOtherRecoveryOutstanding1,
 	DirectOtherRecoveryLossOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryLossOutstanding1),0,DirectOtherRecoveryLossOutstanding1)
-	IFF(DirectOtherRecoveryLossOutstanding1 IS NULL, 0, DirectOtherRecoveryLossOutstanding1) AS v_DirectOtherRecoveryLossOutstanding1,
+	IFF(DirectOtherRecoveryLossOutstanding1 IS NULL,
+		0,
+		DirectOtherRecoveryLossOutstanding1
+	) AS v_DirectOtherRecoveryLossOutstanding1,
 	v_DirectOtherRecoveryLossOutstanding1 AS o_DirectOtherRecoveryLossOutstanding1,
 	DirectOtherRecoveryALAEOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectOtherRecoveryALAEOutstanding1),0,DirectOtherRecoveryALAEOutstanding1)
-	IFF(DirectOtherRecoveryALAEOutstanding1 IS NULL, 0, DirectOtherRecoveryALAEOutstanding1) AS v_DirectOtherRecoveryALAEOutstanding1,
+	IFF(DirectOtherRecoveryALAEOutstanding1 IS NULL,
+		0,
+		DirectOtherRecoveryALAEOutstanding1
+	) AS v_DirectOtherRecoveryALAEOutstanding1,
 	v_DirectOtherRecoveryALAEOutstanding1 AS o_DirectOtherRecoveryALAEOutstanding1,
 	DirectSubroOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectSubroOutstanding1),0,DirectSubroOutstanding1)
-	IFF(DirectSubroOutstanding1 IS NULL, 0, DirectSubroOutstanding1) AS v_DirectSubroOutstanding1,
+	IFF(DirectSubroOutstanding1 IS NULL,
+		0,
+		DirectSubroOutstanding1
+	) AS v_DirectSubroOutstanding1,
 	v_DirectSubroOutstanding1 AS o_DirectSubroOutstanding1,
 	DirectSalvageOutstanding1,
 	-- *INF*: IIF(ISNULL(DirectSalvageOutstanding1),0,DirectSalvageOutstanding1)
-	IFF(DirectSalvageOutstanding1 IS NULL, 0, DirectSalvageOutstanding1) AS v_DirectSalvageOutstanding1,
+	IFF(DirectSalvageOutstanding1 IS NULL,
+		0,
+		DirectSalvageOutstanding1
+	) AS v_DirectSalvageOutstanding1,
 	v_DirectSalvageOutstanding1 AS o_DirectSalvageOutstanding1,
 	DirectLossIncurredER1,
 	-- *INF*: IIF(ISNULL(DirectLossIncurredER1),0,DirectLossIncurredER1)
-	IFF(DirectLossIncurredER1 IS NULL, 0, DirectLossIncurredER1) AS v_DirectLossIncurredER1,
+	IFF(DirectLossIncurredER1 IS NULL,
+		0,
+		DirectLossIncurredER1
+	) AS v_DirectLossIncurredER1,
 	v_DirectLossIncurredER1 AS o_DirectLossIncurredER1,
 	DirectLossIncurredIR1,
 	-- *INF*: IIF(ISNULL(DirectLossIncurredIR1),0,DirectLossIncurredIR1)
-	IFF(DirectLossIncurredIR1 IS NULL, 0, DirectLossIncurredIR1) AS v_DirectLossIncurredIR1,
+	IFF(DirectLossIncurredIR1 IS NULL,
+		0,
+		DirectLossIncurredIR1
+	) AS v_DirectLossIncurredIR1,
 	v_DirectLossIncurredIR1 AS o_DirectLossIncurredIR1,
 	DirectALAEIncurredER1,
 	-- *INF*: IIF(ISNULL(DirectALAEIncurredER1),0,DirectALAEIncurredER1)
-	IFF(DirectALAEIncurredER1 IS NULL, 0, DirectALAEIncurredER1) AS v_DirectALAEIncurredER1,
+	IFF(DirectALAEIncurredER1 IS NULL,
+		0,
+		DirectALAEIncurredER1
+	) AS v_DirectALAEIncurredER1,
 	v_DirectALAEIncurredER1 AS o_DirectALAEIncurredER1,
 	DirectALAEIncurredIR1,
 	-- *INF*: IIF(ISNULL(DirectALAEIncurredIR1),0,DirectALAEIncurredIR1)
-	IFF(DirectALAEIncurredIR1 IS NULL, 0, DirectALAEIncurredIR1) AS v_DirectALAEIncurredIR1,
+	IFF(DirectALAEIncurredIR1 IS NULL,
+		0,
+		DirectALAEIncurredIR1
+	) AS v_DirectALAEIncurredIR1,
 	v_DirectALAEIncurredIR1 AS o_DirectALAEIncurredIR1,
 	'Difference' AS table_name11,
 	-- *INF*: IIF(NOT ISNULL(clndr_date),clndr_date,clndr_date1)
-	IFF(NOT clndr_date IS NULL, clndr_date, clndr_date1) AS clndr_date11,
+	IFF(clndr_date IS NOT NULL,
+		clndr_date,
+		clndr_date1
+	) AS clndr_date11,
 	v_EnterpriseGroupDescription AS o_EnterpriseGroupDescription11,
 	v_StrategicProfitCenterDescription AS o_StrategicProfitCenterDescription11,
 	v_InsuranceReferenceLegalEntityDescription AS o_InsuranceReferenceLegalEntityDescription11,
@@ -3105,82 +3833,108 @@ AGG_ByEnterpriseGroup11 AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union311
 	GROUP BY table_name, clndr_date, EnterpriseGroupDescription
 ),
@@ -3192,16 +3946,32 @@ EXP_ByEnterpriseGroup11 AS (
 	EnterpriseGroupDescription,
 	o_outstanding_amt AS outstanding_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(outstanding_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(outstanding_amt)) AS o_outstanding_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(outstanding_amt
+		)
+	) AS o_outstanding_amt,
 	o_paid_loss_amt AS paid_loss_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_loss_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_loss_amt)) AS o_paid_loss_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_loss_amt
+		)
+	) AS o_paid_loss_amt,
 	o_paid_exp_amt AS paid_exp_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_exp_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_exp_amt)) AS o_paid_exp_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_exp_amt
+		)
+	) AS o_paid_exp_amt,
 	o_ChangeInOutstandingAmount AS ChangeInOutstandingAmount,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(ChangeInOutstandingAmount))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(ChangeInOutstandingAmount)) AS o_ChangeInOutstandingAmount,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(ChangeInOutstandingAmount
+		)
+	) AS o_ChangeInOutstandingAmount,
 	o_DirectLossPaidER AS DirectLossPaidER,
 	o_DirectLossPaidIR AS DirectLossPaidIR,
 	o_DirectALAEPaidER AS DirectALAEPaidER,
@@ -3232,7 +4002,8 @@ EXP_ByEnterpriseGroup11 AS (
 	DECODE(TRUE,
 		table_name = 'vwLossMasterFact', 1,
 		table_name = 'claim_loss_transaction_fact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByEnterpriseGroup11
 ),
 SRT_ByEnterpriseGroup11 AS (
@@ -3329,82 +4100,108 @@ AGG_ByStrategicProfitCenter AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union3
 	GROUP BY table_name, clndr_date, StrategicProfitCenterDescription
 ),
@@ -3448,7 +4245,8 @@ EXP_ByStrategicProfitCenter AS (
 	DECODE(TRUE,
 		table_name = 'loss_master_fact', 1,
 		table_name = 'vwLossMasterFact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByStrategicProfitCenter
 ),
 SRT_ByStrategicProfitCenter AS (
@@ -3499,82 +4297,108 @@ AGG_ByStrategicProfitCenter1 AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union31
 	GROUP BY table_name, clndr_date, StrategicProfitCenterDescription
 ),
@@ -3586,16 +4410,32 @@ EXP_ByStrategicProfitCenter1 AS (
 	StrategicProfitCenterDescription,
 	o_outstanding_amt AS outstanding_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(outstanding_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(outstanding_amt)) AS o_outstanding_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(outstanding_amt
+		)
+	) AS o_outstanding_amt,
 	o_paid_loss_amt AS paid_loss_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_loss_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_loss_amt)) AS o_paid_loss_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_loss_amt
+		)
+	) AS o_paid_loss_amt,
 	o_paid_exp_amt AS paid_exp_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_exp_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_exp_amt)) AS o_paid_exp_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_exp_amt
+		)
+	) AS o_paid_exp_amt,
 	o_ChangeInOutstandingAmount AS ChangeInOutstandingAmount,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(ChangeInOutstandingAmount))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(ChangeInOutstandingAmount)) AS o_ChangeInOutstandingAmount,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(ChangeInOutstandingAmount
+		)
+	) AS o_ChangeInOutstandingAmount,
 	o_DirectLossPaidER AS DirectLossPaidER,
 	o_DirectLossPaidIR AS DirectLossPaidIR,
 	o_DirectALAEPaidER AS DirectALAEPaidER,
@@ -3626,7 +4466,8 @@ EXP_ByStrategicProfitCenter1 AS (
 	DECODE(TRUE,
 		table_name = 'loss_master_fact', 1,
 		table_name = 'claim_loss_transaction_fact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByStrategicProfitCenter1
 ),
 SRT_ByStrategicProfitCenter1 AS (
@@ -3677,82 +4518,108 @@ AGG_ByStrategicProfitCenter11 AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union311
 	GROUP BY table_name, clndr_date, StrategicProfitCenterDescription
 ),
@@ -3764,16 +4631,32 @@ EXP_ByStrategicProfitCenter11 AS (
 	StrategicProfitCenterDescription,
 	o_outstanding_amt AS outstanding_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(outstanding_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(outstanding_amt)) AS o_outstanding_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(outstanding_amt
+		)
+	) AS o_outstanding_amt,
 	o_paid_loss_amt AS paid_loss_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_loss_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_loss_amt)) AS o_paid_loss_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_loss_amt
+		)
+	) AS o_paid_loss_amt,
 	o_paid_exp_amt AS paid_exp_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_exp_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_exp_amt)) AS o_paid_exp_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_exp_amt
+		)
+	) AS o_paid_exp_amt,
 	o_ChangeInOutstandingAmount AS ChangeInOutstandingAmount,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(ChangeInOutstandingAmount))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(ChangeInOutstandingAmount)) AS o_ChangeInOutstandingAmount,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(ChangeInOutstandingAmount
+		)
+	) AS o_ChangeInOutstandingAmount,
 	o_DirectLossPaidER AS DirectLossPaidER,
 	o_DirectLossPaidIR AS DirectLossPaidIR,
 	o_DirectALAEPaidER AS DirectALAEPaidER,
@@ -3804,7 +4687,8 @@ EXP_ByStrategicProfitCenter11 AS (
 	DECODE(TRUE,
 		table_name = 'vwLossMasterFact', 1,
 		table_name = 'claim_loss_transaction_fact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByStrategicProfitCenter11
 ),
 SRT_ByStrategicProfitCenter11 AS (
@@ -3901,82 +4785,108 @@ AGG_ByInsuranceReferenceLegalEntity AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union3
 	GROUP BY table_name, clndr_date, InsuranceReferenceLegalEntityDescription
 ),
@@ -4020,7 +4930,8 @@ EXP_ByInsuranceReferenceLegalEntity AS (
 	DECODE(TRUE,
 		table_name = 'loss_master_fact', 1,
 		table_name = 'vwLossMasterFact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByInsuranceReferenceLegalEntity
 ),
 SRT_ByInsuranceReferenceLegalEntity AS (
@@ -4071,82 +4982,108 @@ AGG_ByInsuranceReferenceLegalEntity1 AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union31
 	GROUP BY table_name, clndr_date, InsuranceReferenceLegalEntityDescription
 ),
@@ -4158,16 +5095,32 @@ EXP_ByInsuranceReferenceLegalEntity1 AS (
 	InsuranceReferenceLegalEntityDescription,
 	o_outstanding_amt AS outstanding_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(outstanding_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(outstanding_amt)) AS o_outstanding_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(outstanding_amt
+		)
+	) AS o_outstanding_amt,
 	o_paid_loss_amt AS paid_loss_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_loss_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_loss_amt)) AS o_paid_loss_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_loss_amt
+		)
+	) AS o_paid_loss_amt,
 	o_paid_exp_amt AS paid_exp_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_exp_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_exp_amt)) AS o_paid_exp_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_exp_amt
+		)
+	) AS o_paid_exp_amt,
 	o_ChangeInOutstandingAmount AS ChangeInOutstandingAmount,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(ChangeInOutstandingAmount))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(ChangeInOutstandingAmount)) AS o_ChangeInOutstandingAmount,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(ChangeInOutstandingAmount
+		)
+	) AS o_ChangeInOutstandingAmount,
 	o_DirectLossPaidER AS DirectLossPaidER,
 	o_DirectLossPaidIR AS DirectLossPaidIR,
 	o_DirectALAEPaidER AS DirectALAEPaidER,
@@ -4198,7 +5151,8 @@ EXP_ByInsuranceReferenceLegalEntity1 AS (
 	DECODE(TRUE,
 		table_name = 'loss_master_fact', 1,
 		table_name = 'claim_loss_transaction_fact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByInsuranceReferenceLegalEntity1
 ),
 SRT_ByInsuranceReferenceLegalEntity1 AS (
@@ -4249,82 +5203,108 @@ AGG_ByInsuranceReferenceLegalEntity11 AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union311
 	GROUP BY table_name, clndr_date, InsuranceReferenceLegalEntityDescription
 ),
@@ -4336,16 +5316,32 @@ EXP_ByInsuranceReferenceLegalEntity11 AS (
 	InsuranceReferenceLegalEntityDescription,
 	o_outstanding_amt AS outstanding_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(outstanding_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(outstanding_amt)) AS o_outstanding_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(outstanding_amt
+		)
+	) AS o_outstanding_amt,
 	o_paid_loss_amt AS paid_loss_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_loss_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_loss_amt)) AS o_paid_loss_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_loss_amt
+		)
+	) AS o_paid_loss_amt,
 	o_paid_exp_amt AS paid_exp_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_exp_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_exp_amt)) AS o_paid_exp_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_exp_amt
+		)
+	) AS o_paid_exp_amt,
 	o_ChangeInOutstandingAmount AS ChangeInOutstandingAmount,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(ChangeInOutstandingAmount))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(ChangeInOutstandingAmount)) AS o_ChangeInOutstandingAmount,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(ChangeInOutstandingAmount
+		)
+	) AS o_ChangeInOutstandingAmount,
 	o_DirectLossPaidER AS DirectLossPaidER,
 	o_DirectLossPaidIR AS DirectLossPaidIR,
 	o_DirectALAEPaidER AS DirectALAEPaidER,
@@ -4376,7 +5372,8 @@ EXP_ByInsuranceReferenceLegalEntity11 AS (
 	DECODE(TRUE,
 		table_name = 'vwLossMasterFact', 1,
 		table_name = 'claim_loss_transaction_fact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByInsuranceReferenceLegalEntity11
 ),
 SRT_ByInsuranceReferenceLegalEntity11 AS (
@@ -4473,82 +5470,108 @@ AGG_ByPolicyOffering AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union3
 	GROUP BY table_name, clndr_date, PolicyOfferingDescription
 ),
@@ -4592,7 +5615,8 @@ EXP_ByPolicyOffering AS (
 	DECODE(TRUE,
 		table_name = 'loss_master_fact', 1,
 		table_name = 'vwLossMasterFact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByPolicyOffering
 ),
 SRT_ByPolicyOffering AS (
@@ -4643,82 +5667,108 @@ AGG_ByPolicyOffering1 AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union31
 	GROUP BY table_name, clndr_date, PolicyOfferingDescription
 ),
@@ -4730,16 +5780,32 @@ EXP_ByPolicyOffering1 AS (
 	PolicyOfferingDescription,
 	o_outstanding_amt AS outstanding_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(outstanding_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(outstanding_amt)) AS o_outstanding_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(outstanding_amt
+		)
+	) AS o_outstanding_amt,
 	o_paid_loss_amt AS paid_loss_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_loss_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_loss_amt)) AS o_paid_loss_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_loss_amt
+		)
+	) AS o_paid_loss_amt,
 	o_paid_exp_amt AS paid_exp_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_exp_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_exp_amt)) AS o_paid_exp_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_exp_amt
+		)
+	) AS o_paid_exp_amt,
 	o_ChangeInOutstandingAmount AS ChangeInOutstandingAmount,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(ChangeInOutstandingAmount))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(ChangeInOutstandingAmount)) AS o_ChangeInOutstandingAmount,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(ChangeInOutstandingAmount
+		)
+	) AS o_ChangeInOutstandingAmount,
 	o_DirectLossPaidER AS DirectLossPaidER,
 	o_DirectLossPaidIR AS DirectLossPaidIR,
 	o_DirectALAEPaidER AS DirectALAEPaidER,
@@ -4770,7 +5836,8 @@ EXP_ByPolicyOffering1 AS (
 	DECODE(TRUE,
 		table_name = 'loss_master_fact', 1,
 		table_name = 'claim_loss_transaction_fact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByPolicyOffering1
 ),
 SRT_ByPolicyOffering1 AS (
@@ -4821,82 +5888,108 @@ AGG_ByPolicyOffering11 AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union311
 	GROUP BY table_name, clndr_date, PolicyOfferingDescription
 ),
@@ -4908,16 +6001,32 @@ EXP_ByPolicyOffering11 AS (
 	PolicyOfferingDescription,
 	o_outstanding_amt AS outstanding_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(outstanding_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(outstanding_amt)) AS o_outstanding_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(outstanding_amt
+		)
+	) AS o_outstanding_amt,
 	o_paid_loss_amt AS paid_loss_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_loss_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_loss_amt)) AS o_paid_loss_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_loss_amt
+		)
+	) AS o_paid_loss_amt,
 	o_paid_exp_amt AS paid_exp_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_exp_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_exp_amt)) AS o_paid_exp_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_exp_amt
+		)
+	) AS o_paid_exp_amt,
 	o_ChangeInOutstandingAmount AS ChangeInOutstandingAmount,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(ChangeInOutstandingAmount))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(ChangeInOutstandingAmount)) AS o_ChangeInOutstandingAmount,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(ChangeInOutstandingAmount
+		)
+	) AS o_ChangeInOutstandingAmount,
 	o_DirectLossPaidER AS DirectLossPaidER,
 	o_DirectLossPaidIR AS DirectLossPaidIR,
 	o_DirectALAEPaidER AS DirectALAEPaidER,
@@ -4948,7 +6057,8 @@ EXP_ByPolicyOffering11 AS (
 	DECODE(TRUE,
 		table_name = 'vwLossMasterFact', 1,
 		table_name = 'claim_loss_transaction_fact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByPolicyOffering11
 ),
 SRT_ByPolicyOffering11 AS (
@@ -5045,82 +6155,108 @@ AGG_ByProduct AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union3
 	GROUP BY table_name, clndr_date, ProductDescription
 ),
@@ -5164,7 +6300,8 @@ EXP_ByProduct AS (
 	DECODE(TRUE,
 		table_name = 'loss_master_fact', 1,
 		table_name = 'vwLossMasterFact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByProduct
 ),
 SRT_ByProduct AS (
@@ -5215,82 +6352,108 @@ AGG_ByProduct1 AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union31
 	GROUP BY table_name, clndr_date, ProductDescription
 ),
@@ -5302,16 +6465,32 @@ EXP_ByProduct1 AS (
 	ProductDescription,
 	o_outstanding_amt AS outstanding_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(outstanding_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(outstanding_amt)) AS o_outstanding_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(outstanding_amt
+		)
+	) AS o_outstanding_amt,
 	o_paid_loss_amt AS paid_loss_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_loss_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_loss_amt)) AS o_paid_loss_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_loss_amt
+		)
+	) AS o_paid_loss_amt,
 	o_paid_exp_amt AS paid_exp_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_exp_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_exp_amt)) AS o_paid_exp_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_exp_amt
+		)
+	) AS o_paid_exp_amt,
 	o_ChangeInOutstandingAmount AS ChangeInOutstandingAmount,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(ChangeInOutstandingAmount))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(ChangeInOutstandingAmount)) AS o_ChangeInOutstandingAmount,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(ChangeInOutstandingAmount
+		)
+	) AS o_ChangeInOutstandingAmount,
 	o_DirectLossPaidER AS DirectLossPaidER,
 	o_DirectLossPaidIR AS DirectLossPaidIR,
 	o_DirectALAEPaidER AS DirectALAEPaidER,
@@ -5342,7 +6521,8 @@ EXP_ByProduct1 AS (
 	DECODE(TRUE,
 		table_name = 'loss_master_fact', 1,
 		table_name = 'claim_loss_transaction_fact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByProduct1
 ),
 SRT_ByProduct1 AS (
@@ -5393,82 +6573,108 @@ AGG_ByProduct11 AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union311
 	GROUP BY table_name, clndr_date, ProductDescription
 ),
@@ -5480,16 +6686,32 @@ EXP_ByProduct11 AS (
 	ProductDescription,
 	o_outstanding_amt AS outstanding_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(outstanding_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(outstanding_amt)) AS o_outstanding_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(outstanding_amt
+		)
+	) AS o_outstanding_amt,
 	o_paid_loss_amt AS paid_loss_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_loss_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_loss_amt)) AS o_paid_loss_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_loss_amt
+		)
+	) AS o_paid_loss_amt,
 	o_paid_exp_amt AS paid_exp_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_exp_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_exp_amt)) AS o_paid_exp_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_exp_amt
+		)
+	) AS o_paid_exp_amt,
 	o_ChangeInOutstandingAmount AS ChangeInOutstandingAmount,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(ChangeInOutstandingAmount))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(ChangeInOutstandingAmount)) AS o_ChangeInOutstandingAmount,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(ChangeInOutstandingAmount
+		)
+	) AS o_ChangeInOutstandingAmount,
 	o_DirectLossPaidER AS DirectLossPaidER,
 	o_DirectLossPaidIR AS DirectLossPaidIR,
 	o_DirectALAEPaidER AS DirectALAEPaidER,
@@ -5520,7 +6742,8 @@ EXP_ByProduct11 AS (
 	DECODE(TRUE,
 		table_name = 'vwLossMasterFact', 1,
 		table_name = 'claim_loss_transaction_fact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByProduct11
 ),
 SRT_ByProduct11 AS (
@@ -5617,82 +6840,108 @@ AGG_ByLineOfBusiness AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union3
 	GROUP BY table_name, clndr_date, InsuranceReferenceLineOfBusinessDescription
 ),
@@ -5736,7 +6985,8 @@ EXP_ByLineOfBusiness AS (
 	DECODE(TRUE,
 		table_name = 'loss_master_fact', 1,
 		table_name = 'vwLossMasterFact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByLineOfBusiness
 ),
 SRT_ByLineOfBusiness AS (
@@ -5787,82 +7037,108 @@ AGG_ByLineOfBusiness1 AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union31
 	GROUP BY table_name, clndr_date, InsuranceReferenceLineOfBusinessDescription
 ),
@@ -5874,16 +7150,32 @@ EXP_ByLineOfBusiness1 AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	o_outstanding_amt AS outstanding_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(outstanding_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(outstanding_amt)) AS o_outstanding_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(outstanding_amt
+		)
+	) AS o_outstanding_amt,
 	o_paid_loss_amt AS paid_loss_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_loss_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_loss_amt)) AS o_paid_loss_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_loss_amt
+		)
+	) AS o_paid_loss_amt,
 	o_paid_exp_amt AS paid_exp_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_exp_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_exp_amt)) AS o_paid_exp_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_exp_amt
+		)
+	) AS o_paid_exp_amt,
 	o_ChangeInOutstandingAmount AS ChangeInOutstandingAmount,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(ChangeInOutstandingAmount))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(ChangeInOutstandingAmount)) AS o_ChangeInOutstandingAmount,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(ChangeInOutstandingAmount
+		)
+	) AS o_ChangeInOutstandingAmount,
 	o_DirectLossPaidER AS DirectLossPaidER,
 	o_DirectLossPaidIR AS DirectLossPaidIR,
 	o_DirectALAEPaidER AS DirectALAEPaidER,
@@ -5914,7 +7206,8 @@ EXP_ByLineOfBusiness1 AS (
 	DECODE(TRUE,
 		table_name = 'loss_master_fact', 1,
 		table_name = 'claim_loss_transaction_fact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByLineOfBusiness1
 ),
 SRT_ByLineOfBusiness1 AS (
@@ -5965,82 +7258,108 @@ AGG_ByLineOfBusiness11 AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	outstanding_amt,
 	-- *INF*: sum(outstanding_amt)
-	sum(outstanding_amt) AS o_outstanding_amt,
+	sum(outstanding_amt
+	) AS o_outstanding_amt,
 	paid_loss_amt,
 	-- *INF*: sum(paid_loss_amt)
-	sum(paid_loss_amt) AS o_paid_loss_amt,
+	sum(paid_loss_amt
+	) AS o_paid_loss_amt,
 	paid_exp_amt,
 	-- *INF*: sum(paid_exp_amt)
-	sum(paid_exp_amt) AS o_paid_exp_amt,
+	sum(paid_exp_amt
+	) AS o_paid_exp_amt,
 	ChangeInOutstandingAmount,
 	-- *INF*: sum(ChangeInOutstandingAmount)
-	sum(ChangeInOutstandingAmount) AS o_ChangeInOutstandingAmount,
+	sum(ChangeInOutstandingAmount
+	) AS o_ChangeInOutstandingAmount,
 	DirectLossPaidER,
 	-- *INF*: sum(DirectLossPaidER)
-	sum(DirectLossPaidER) AS o_DirectLossPaidER,
+	sum(DirectLossPaidER
+	) AS o_DirectLossPaidER,
 	DirectLossPaidIR,
 	-- *INF*: sum(DirectLossPaidIR)
-	sum(DirectLossPaidIR) AS o_DirectLossPaidIR,
+	sum(DirectLossPaidIR
+	) AS o_DirectLossPaidIR,
 	DirectALAEPaidER,
 	-- *INF*: sum(DirectALAEPaidER)
-	sum(DirectALAEPaidER) AS o_DirectALAEPaidER,
+	sum(DirectALAEPaidER
+	) AS o_DirectALAEPaidER,
 	DirectALAEPaidIR,
 	-- *INF*: sum(DirectALAEPaidIR)
-	sum(DirectALAEPaidIR) AS o_DirectALAEPaidIR,
+	sum(DirectALAEPaidIR
+	) AS o_DirectALAEPaidIR,
 	DirectSalvagePaid,
 	-- *INF*: sum(DirectSalvagePaid)
-	sum(DirectSalvagePaid) AS o_DirectSalvagePaid,
+	sum(DirectSalvagePaid
+	) AS o_DirectSalvagePaid,
 	DirectSubrogationPaid,
 	-- *INF*: sum(DirectSubrogationPaid)
-	sum(DirectSubrogationPaid) AS o_DirectSubrogationPaid,
+	sum(DirectSubrogationPaid
+	) AS o_DirectSubrogationPaid,
 	DirectOtherRecoveryPaid,
 	-- *INF*: sum(DirectOtherRecoveryPaid)
-	sum(DirectOtherRecoveryPaid) AS o_DirectOtherRecoveryPaid,
+	sum(DirectOtherRecoveryPaid
+	) AS o_DirectOtherRecoveryPaid,
 	DirectOtherRecoveryLossPaid,
 	-- *INF*: sum(DirectOtherRecoveryLossPaid)
-	sum(DirectOtherRecoveryLossPaid) AS o_DirectOtherRecoveryLossPaid,
+	sum(DirectOtherRecoveryLossPaid
+	) AS o_DirectOtherRecoveryLossPaid,
 	DirectOtherRecoveryALAEPaid,
 	-- *INF*: sum(DirectOtherRecoveryALAEPaid)
-	sum(DirectOtherRecoveryALAEPaid) AS o_DirectOtherRecoveryALAEPaid,
+	sum(DirectOtherRecoveryALAEPaid
+	) AS o_DirectOtherRecoveryALAEPaid,
 	DirectLossOutstandingER,
 	-- *INF*: sum(DirectLossOutstandingER)
-	sum(DirectLossOutstandingER) AS o_DirectLossOutstandingER,
+	sum(DirectLossOutstandingER
+	) AS o_DirectLossOutstandingER,
 	DirectLossOutstandingIR,
 	-- *INF*: sum(DirectLossOutstandingIR)
-	sum(DirectLossOutstandingIR) AS o_DirectLossOutstandingIR,
+	sum(DirectLossOutstandingIR
+	) AS o_DirectLossOutstandingIR,
 	DirectALAEOutstandingER,
 	-- *INF*: sum(DirectALAEOutstandingER)
-	sum(DirectALAEOutstandingER) AS o_DirectALAEOutstandingER,
+	sum(DirectALAEOutstandingER
+	) AS o_DirectALAEOutstandingER,
 	DirectALAEOutstandingIR,
 	-- *INF*: sum(DirectALAEOutstandingIR)
-	sum(DirectALAEOutstandingIR) AS o_DirectALAEOutstandingIR,
+	sum(DirectALAEOutstandingIR
+	) AS o_DirectALAEOutstandingIR,
 	DirectOtherRecoveryOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryOutstanding)
-	sum(DirectOtherRecoveryOutstanding) AS o_DirectOtherRecoveryOutstanding,
+	sum(DirectOtherRecoveryOutstanding
+	) AS o_DirectOtherRecoveryOutstanding,
 	DirectOtherRecoveryLossOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryLossOutstanding)
-	sum(DirectOtherRecoveryLossOutstanding) AS o_DirectOtherRecoveryLossOutstanding,
+	sum(DirectOtherRecoveryLossOutstanding
+	) AS o_DirectOtherRecoveryLossOutstanding,
 	DirectOtherRecoveryALAEOutstanding,
 	-- *INF*: sum(DirectOtherRecoveryALAEOutstanding)
-	sum(DirectOtherRecoveryALAEOutstanding) AS o_DirectOtherRecoveryALAEOutstanding,
+	sum(DirectOtherRecoveryALAEOutstanding
+	) AS o_DirectOtherRecoveryALAEOutstanding,
 	DirectSubroOutstanding,
 	-- *INF*: sum(DirectSubroOutstanding)
-	sum(DirectSubroOutstanding) AS o_DirectSubroOutstanding,
+	sum(DirectSubroOutstanding
+	) AS o_DirectSubroOutstanding,
 	DirectSalvageOutstanding,
 	-- *INF*: sum(DirectSalvageOutstanding)
-	sum(DirectSalvageOutstanding) AS o_DirectSalvageOutstanding,
+	sum(DirectSalvageOutstanding
+	) AS o_DirectSalvageOutstanding,
 	DirectLossIncurredER,
 	-- *INF*: sum(DirectLossIncurredER)
-	sum(DirectLossIncurredER) AS o_DirectLossIncurredER,
+	sum(DirectLossIncurredER
+	) AS o_DirectLossIncurredER,
 	DirectLossIncurredIR,
 	-- *INF*: sum(DirectLossIncurredIR)
-	sum(DirectLossIncurredIR) AS o_DirectLossIncurredIR,
+	sum(DirectLossIncurredIR
+	) AS o_DirectLossIncurredIR,
 	DirectALAEIncurredER,
 	-- *INF*: sum(DirectALAEIncurredER)
-	sum(DirectALAEIncurredER) AS o_DirectALAEIncurredER,
+	sum(DirectALAEIncurredER
+	) AS o_DirectALAEIncurredER,
 	DirectALAEIncurredIR,
 	-- *INF*: sum(DirectALAEIncurredIR)
-	sum(DirectALAEIncurredIR) AS o_DirectALAEIncurredIR
+	sum(DirectALAEIncurredIR
+	) AS o_DirectALAEIncurredIR
 	FROM Union311
 	GROUP BY table_name, clndr_date, InsuranceReferenceLineOfBusinessDescription
 ),
@@ -6052,16 +7371,32 @@ EXP_ByLineOfBusiness11 AS (
 	InsuranceReferenceLineOfBusinessDescription,
 	o_outstanding_amt AS outstanding_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(outstanding_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(outstanding_amt)) AS o_outstanding_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(outstanding_amt
+		)
+	) AS o_outstanding_amt,
 	o_paid_loss_amt AS paid_loss_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_loss_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_loss_amt)) AS o_paid_loss_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_loss_amt
+		)
+	) AS o_paid_loss_amt,
 	o_paid_exp_amt AS paid_exp_amt,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(paid_exp_amt))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(paid_exp_amt)) AS o_paid_exp_amt,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(paid_exp_amt
+		)
+	) AS o_paid_exp_amt,
 	o_ChangeInOutstandingAmount AS ChangeInOutstandingAmount,
 	-- *INF*: IIF(IN(table_name,'claim_loss_transaction_fact','Difference'),'Not Available',TO_CHAR(ChangeInOutstandingAmount))
-	IFF(IN(table_name, 'claim_loss_transaction_fact', 'Difference'), 'Not Available', TO_CHAR(ChangeInOutstandingAmount)) AS o_ChangeInOutstandingAmount,
+	IFF(table_name IN ('claim_loss_transaction_fact','Difference'),
+		'Not Available',
+		TO_CHAR(ChangeInOutstandingAmount
+		)
+	) AS o_ChangeInOutstandingAmount,
 	o_DirectLossPaidER AS DirectLossPaidER,
 	o_DirectLossPaidIR AS DirectLossPaidIR,
 	o_DirectALAEPaidER AS DirectALAEPaidER,
@@ -6092,7 +7427,8 @@ EXP_ByLineOfBusiness11 AS (
 	DECODE(TRUE,
 		table_name = 'vwLossMasterFact', 1,
 		table_name = 'claim_loss_transaction_fact', 2,
-		table_name = 'Difference', 3) AS OrderInd
+		table_name = 'Difference', 3
+	) AS OrderInd
 	FROM AGG_ByLineOfBusiness11
 ),
 SRT_ByLineOfBusiness11 AS (

@@ -90,7 +90,8 @@ EXP_values AS (
 	DECODE(TRUE,
 		i_FutureAutomaticRenewalIndicator = 'T', '1',
 		i_FutureAutomaticRenewalIndicator = '1', '1',
-		'0') AS o_FutureAutomaticRenewalIndicator,
+		'0'
+	) AS o_FutureAutomaticRenewalIndicator,
 	CustomerCarePolicyQualifiedAutomaticRenewalIndicator,
 	-- *INF*: DECODE(TRUE,
 	-- CustomerCarePolicyQualifiedAutomaticRenewalIndicator='T','1',
@@ -99,7 +100,8 @@ EXP_values AS (
 	DECODE(TRUE,
 		CustomerCarePolicyQualifiedAutomaticRenewalIndicator = 'T', '1',
 		CustomerCarePolicyQualifiedAutomaticRenewalIndicator = '1', '1',
-		'0') AS o_CustomerCarePolicyQualifiedAutomaticRenewalIndicator
+		'0'
+	) AS o_CustomerCarePolicyQualifiedAutomaticRenewalIndicator
 	FROM FILTRANS
 ),
 LKP_PolicyExtension AS (
@@ -127,9 +129,15 @@ EXP_Detect_Changes AS (
 	LKP_PolicyExtension.FutureAutomaticRenewalFlag AS lkp_FutureAutomaticRenewalFlag,
 	LKP_PolicyExtension.CustomerCarePolicyFutureAutomaticRenewalFlag AS lkp_CustomerCarePolicyFutureAutomaticRenewalFlag,
 	-- *INF*: IIF(lkp_FutureAutomaticRenewalFlag='T','1','0')
-	IFF(lkp_FutureAutomaticRenewalFlag = 'T', '1', '0') AS v_lkp_FutureAutomaticRenewalFlag,
+	IFF(lkp_FutureAutomaticRenewalFlag = 'T',
+		'1',
+		'0'
+	) AS v_lkp_FutureAutomaticRenewalFlag,
 	-- *INF*: iif(lkp_CustomerCarePolicyFutureAutomaticRenewalFlag='T','1','0')
-	IFF(lkp_CustomerCarePolicyFutureAutomaticRenewalFlag = 'T', '1', '0') AS v_lkp_CustomerCarePolicyFutureAutomaticRenewalFlag,
+	IFF(lkp_CustomerCarePolicyFutureAutomaticRenewalFlag = 'T',
+		'1',
+		'0'
+	) AS v_lkp_CustomerCarePolicyFutureAutomaticRenewalFlag,
 	-- *INF*: --DECODE(TRUE, lkp_PolicyExtensionId=-1,'NEW', FutureAutomaticRenewalIndicator<>v_lkp_FutureAutomaticRenewalFlag,'UPDATE', 'NOCHANGE' )
 	-- DECODE(TRUE, lkp_PolicyExtensionId=-1,'NEW', FutureAutomaticRenewalIndicator<>v_lkp_FutureAutomaticRenewalFlag,'UPDATE', 
 	-- CustomerCarePolicyQualifiedAutomaticRenewalIndicator<>v_lkp_CustomerCarePolicyFutureAutomaticRenewalFlag,'UPDATE',
@@ -138,7 +146,8 @@ EXP_Detect_Changes AS (
 		lkp_PolicyExtensionId = - 1, 'NEW',
 		FutureAutomaticRenewalIndicator <> v_lkp_FutureAutomaticRenewalFlag, 'UPDATE',
 		CustomerCarePolicyQualifiedAutomaticRenewalIndicator <> v_lkp_CustomerCarePolicyFutureAutomaticRenewalFlag, 'UPDATE',
-		'NOCHANGE') AS o_changed_flag,
+		'NOCHANGE'
+	) AS o_changed_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_audit_id,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_source_sys_id,
 	SYSDATE AS o_created_date,

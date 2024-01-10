@@ -13,10 +13,16 @@ EXP_sup_eor_autopay_exclude_reason1 AS (
 	description,
 	exclude_from_manualpay,
 	-- *INF*: IIF(ISNULL(description), 'N/A',description)
-	IFF(description IS NULL, 'N/A', description) AS description_out,
+	IFF(description IS NULL,
+		'N/A',
+		description
+	) AS description_out,
 	-- *INF*: IIF(ISNULL( exclude_from_manualpay), 'N/A',exclude_from_manualpay)
 	--  
-	IFF(exclude_from_manualpay IS NULL, 'N/A', exclude_from_manualpay) AS exclude_from_manualpay_out
+	IFF(exclude_from_manualpay IS NULL,
+		'N/A',
+		exclude_from_manualpay
+	) AS exclude_from_manualpay_out
 	FROM SQ_sup_eor_excl_rsn_stage
 ),
 LKP_sup_eor_autopay_exclude_reason AS (
@@ -46,11 +52,30 @@ EXP_sup_eor_autopay_exclude_reason2 AS (
 	-- IIF(ltrim(rtrim(IN_LKP_excl_from_manualpay)) != ltrim(rtrim( IN_exclude_from_manualpay)  ) OR
 	-- ltrim(rtrim(IN_LKP_autopay_excl_rsn_descript)) != ltrim(rtrim( IN_description)  ) ,
 	-- 'UPDATE', 'NOCHANGE'))
-	IFF(IN_LKP_autopay_excl_rsn_code IS NULL, 'NEW', IFF(ltrim(rtrim(IN_LKP_excl_from_manualpay)) != ltrim(rtrim(IN_exclude_from_manualpay)) OR ltrim(rtrim(IN_LKP_autopay_excl_rsn_descript)) != ltrim(rtrim(IN_description)), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(IN_LKP_autopay_excl_rsn_code IS NULL,
+		'NEW',
+		IFF(ltrim(rtrim(IN_LKP_excl_from_manualpay
+				)
+			) != ltrim(rtrim(IN_exclude_from_manualpay
+				)
+			) 
+			OR ltrim(rtrim(IN_LKP_autopay_excl_rsn_descript
+				)
+			) != ltrim(rtrim(IN_description
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS v_eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS v_eff_from_date,
 	v_eff_from_date AS eff_from_date
 	FROM EXP_sup_eor_autopay_exclude_reason1
 	LEFT JOIN LKP_sup_eor_autopay_exclude_reason
@@ -75,7 +100,8 @@ EXP_default_values1 AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -126,8 +152,9 @@ EXP_sup_eor_autopay_exclude_reason AS (
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
 	-- 
 	DECODE(TRUE,
-		autopay_excl_rsn_code = v_prev_autopay_excl_rsn_code, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		autopay_excl_rsn_code = v_prev_autopay_excl_rsn_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	autopay_excl_rsn_code AS v_prev_autopay_excl_rsn_code,
 	eff_from_date AS v_prev_eff_from_date,

@@ -41,43 +41,135 @@ EXP_AGY_address_convert AS (
 	AGENCY_CODE AS IN_AGENCY_CODE,
 	COUNTY_LOCATION AS IN_COUNTY_LOCATION,
 	-- *INF*: iif(isnull(IN_STATE_CODE),'N/A',iif(IS_SPACES(IN_STATE_CODE),'N/A',IN_STATE_CODE))
-	IFF(IN_STATE_CODE IS NULL, 'N/A', IFF(IS_SPACES(IN_STATE_CODE), 'N/A', IN_STATE_CODE)) AS STATE_CODE,
+	IFF(IN_STATE_CODE IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_STATE_CODE)>0 AND TRIM(IN_STATE_CODE)='',
+			'N/A',
+			IN_STATE_CODE
+		)
+	) AS STATE_CODE,
 	-- *INF*: iif(isnull(IN_AGENCY_NUM),'N/A',iif(IS_SPACES(IN_AGENCY_NUM),'N/A',IN_AGENCY_NUM))
-	IFF(IN_AGENCY_NUM IS NULL, 'N/A', IFF(IS_SPACES(IN_AGENCY_NUM), 'N/A', IN_AGENCY_NUM)) AS AGENCY_NUM,
+	IFF(IN_AGENCY_NUM IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_AGENCY_NUM)>0 AND TRIM(IN_AGENCY_NUM)='',
+			'N/A',
+			IN_AGENCY_NUM
+		)
+	) AS AGENCY_NUM,
 	-- *INF*: iif(isnull(in_ADDRESS_TYPE),'N/A',
 	-- iif(IS_SPACES(in_ADDRESS_TYPE),'N/A',
 	-- rpad(in_ADDRESS_TYPE,3)))
-	IFF(in_ADDRESS_TYPE IS NULL, 'N/A', IFF(IS_SPACES(in_ADDRESS_TYPE), 'N/A', rpad(in_ADDRESS_TYPE, 3))) AS ADDRESS_TYPE,
+	IFF(in_ADDRESS_TYPE IS NULL,
+		'N/A',
+		IFF(LENGTH(in_ADDRESS_TYPE)>0 AND TRIM(in_ADDRESS_TYPE)='',
+			'N/A',
+			rpad(in_ADDRESS_TYPE, 3
+			)
+		)
+	) AS ADDRESS_TYPE,
 	-- *INF*: iif(isnull(IN_CITY),'Not Available',iif(IS_SPACES(IN_CITY),'Not Available',IN_CITY))
-	IFF(IN_CITY IS NULL, 'Not Available', IFF(IS_SPACES(IN_CITY), 'Not Available', IN_CITY)) AS CITY,
+	IFF(IN_CITY IS NULL,
+		'Not Available',
+		IFF(LENGTH(IN_CITY)>0 AND TRIM(IN_CITY)='',
+			'Not Available',
+			IN_CITY
+		)
+	) AS CITY,
 	-- *INF*: iif(isnull(IN_POSTAL_CODE),'N/A',iif(IS_SPACES(IN_POSTAL_CODE),'N/A',
 	-- iif(length(IN_POSTAL_CODE)=0,'N/A',IN_POSTAL_CODE)))
-	IFF(IN_POSTAL_CODE IS NULL, 'N/A', IFF(IS_SPACES(IN_POSTAL_CODE), 'N/A', IFF(length(IN_POSTAL_CODE) = 0, 'N/A', IN_POSTAL_CODE))) AS POSTAL_CODE,
+	IFF(IN_POSTAL_CODE IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_POSTAL_CODE)>0 AND TRIM(IN_POSTAL_CODE)='',
+			'N/A',
+			IFF(length(IN_POSTAL_CODE
+				) = 0,
+				'N/A',
+				IN_POSTAL_CODE
+			)
+		)
+	) AS POSTAL_CODE,
 	-- *INF*: iif(isnull(IN_ZIP_PLUS_4),'N/A',iif(IS_SPACES(IN_ZIP_PLUS_4),'N/A',IN_ZIP_PLUS_4))
-	IFF(IN_ZIP_PLUS_4 IS NULL, 'N/A', IFF(IS_SPACES(IN_ZIP_PLUS_4), 'N/A', IN_ZIP_PLUS_4)) AS ZIP_PLUS_4,
+	IFF(IN_ZIP_PLUS_4 IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_ZIP_PLUS_4)>0 AND TRIM(IN_ZIP_PLUS_4)='',
+			'N/A',
+			IN_ZIP_PLUS_4
+		)
+	) AS ZIP_PLUS_4,
 	-- *INF*: iif(isnull(IN_COUNTY),'Not Available',iif(IS_SPACES(IN_COUNTY),'Not Available',IN_COUNTY))
-	IFF(IN_COUNTY IS NULL, 'Not Available', IFF(IS_SPACES(IN_COUNTY), 'Not Available', IN_COUNTY)) AS COUNTY,
+	IFF(IN_COUNTY IS NULL,
+		'Not Available',
+		IFF(LENGTH(IN_COUNTY)>0 AND TRIM(IN_COUNTY)='',
+			'Not Available',
+			IN_COUNTY
+		)
+	) AS COUNTY,
 	-- *INF*: iif(isnull(IN_STATE_ABBREV),'N/A',iif(IS_SPACES(IN_STATE_ABBREV),'N/A',rpad(IN_STATE_ABBREV,3)))
-	IFF(IN_STATE_ABBREV IS NULL, 'N/A', IFF(IS_SPACES(IN_STATE_ABBREV), 'N/A', rpad(IN_STATE_ABBREV, 3))) AS STATE_ABBREV,
+	IFF(IN_STATE_ABBREV IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_STATE_ABBREV)>0 AND TRIM(IN_STATE_ABBREV)='',
+			'N/A',
+			rpad(IN_STATE_ABBREV, 3
+			)
+		)
+	) AS STATE_ABBREV,
 	-- *INF*: iif(isnull(IN_COUNTRY),'Not Available',iif(IS_SPACES(IN_COUNTRY),'Not Available',IN_COUNTRY))
-	IFF(IN_COUNTRY IS NULL, 'Not Available', IFF(IS_SPACES(IN_COUNTRY), 'Not Available', IN_COUNTRY)) AS COUNTRY,
+	IFF(IN_COUNTRY IS NULL,
+		'Not Available',
+		IFF(LENGTH(IN_COUNTRY)>0 AND TRIM(IN_COUNTRY)='',
+			'Not Available',
+			IN_COUNTRY
+		)
+	) AS COUNTRY,
 	-- *INF*: iif(isnull(IN_AGENCY_CODE),'N/A',iif(IS_SPACES(IN_AGENCY_CODE),'N/A',IN_AGENCY_CODE))
-	IFF(IN_AGENCY_CODE IS NULL, 'N/A', IFF(IS_SPACES(IN_AGENCY_CODE), 'N/A', IN_AGENCY_CODE)) AS AGENCY_CODE,
+	IFF(IN_AGENCY_CODE IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_AGENCY_CODE)>0 AND TRIM(IN_AGENCY_CODE)='',
+			'N/A',
+			IN_AGENCY_CODE
+		)
+	) AS AGENCY_CODE,
 	-- *INF*: iif(isnull(IN_COUNTY_LOCATION),'Not Available',iif(IS_SPACES(IN_COUNTY_LOCATION),'Not Available',
 	-- iif(length(IN_COUNTY_LOCATION)=0,'Not Available',IN_COUNTY_LOCATION)))
-	IFF(IN_COUNTY_LOCATION IS NULL, 'Not Available', IFF(IS_SPACES(IN_COUNTY_LOCATION), 'Not Available', IFF(length(IN_COUNTY_LOCATION) = 0, 'Not Available', IN_COUNTY_LOCATION))) AS COUNTY_LOCATION,
+	IFF(IN_COUNTY_LOCATION IS NULL,
+		'Not Available',
+		IFF(LENGTH(IN_COUNTY_LOCATION)>0 AND TRIM(IN_COUNTY_LOCATION)='',
+			'Not Available',
+			IFF(length(IN_COUNTY_LOCATION
+				) = 0,
+				'Not Available',
+				IN_COUNTY_LOCATION
+			)
+		)
+	) AS COUNTY_LOCATION,
 	SOURCE_SYSTEM_ID,
 	-- *INF*: iif(isnull
 	-- ((ADDRESS_LINE_1 || ADDRESS_LINE_2 || ADDRESS_LINE_3)),'Not Available',
 	-- iif(is_spaces((ADDRESS_LINE_1 || ADDRESS_LINE_2 || ADDRESS_LINE_3)),'Not Available',
 	-- (ADDRESS_LINE_1 || ADDRESS_LINE_2 || ADDRESS_LINE_3)
 	-- ))
-	IFF(( ADDRESS_LINE_1 || ADDRESS_LINE_2 || ADDRESS_LINE_3 ) IS NULL, 'Not Available', IFF(is_spaces(( ADDRESS_LINE_1 || ADDRESS_LINE_2 || ADDRESS_LINE_3 )), 'Not Available', ( ADDRESS_LINE_1 || ADDRESS_LINE_2 || ADDRESS_LINE_3 ))) AS OUT_AGENCY_ADDRESS,
+	IFF(( ADDRESS_LINE_1 || ADDRESS_LINE_2 || ADDRESS_LINE_3 
+		) IS NULL,
+		'Not Available',
+		IFF(LENGTH(( ADDRESS_LINE_1 || ADDRESS_LINE_2 || ADDRESS_LINE_3 
+			))>0 AND TRIM(( ADDRESS_LINE_1 || ADDRESS_LINE_2 || ADDRESS_LINE_3 
+			))='',
+			'Not Available',
+			( ADDRESS_LINE_1 || ADDRESS_LINE_2 || ADDRESS_LINE_3 
+			)
+		)
+	) AS OUT_AGENCY_ADDRESS,
 	IN_STATE_CODE || IN_AGENCY_NUM AS v_agency_key,
 	-- *INF*: iif(isnull(STATE_CODE || AGENCY_NUM),'N/A',
 	-- iif(is_spaces(STATE_CODE || AGENCY_NUM),'N/A',
 	-- STATE_CODE || AGENCY_NUM))
-	IFF(STATE_CODE || AGENCY_NUM IS NULL, 'N/A', IFF(is_spaces(STATE_CODE || AGENCY_NUM), 'N/A', STATE_CODE || AGENCY_NUM)) AS OUT_AGENCY_KEY
+	IFF(STATE_CODE || AGENCY_NUM IS NULL,
+		'N/A',
+		IFF(LENGTH(STATE_CODE || AGENCY_NUM)>0 AND TRIM(STATE_CODE || AGENCY_NUM)='',
+			'N/A',
+			STATE_CODE || AGENCY_NUM
+		)
+	) AS OUT_AGENCY_KEY
 	FROM Agency_address_Stage
 ),
 LKP_Agency AS (
@@ -150,7 +242,8 @@ EXP_Load_AGY_Address AS (
 	EXP_AGY_address_convert.POSTAL_CODE,
 	EXP_AGY_address_convert.ZIP_PLUS_4 AS in_zip_plus_4,
 	-- *INF*: rpad(in_zip_plus_4,4)
-	rpad(in_zip_plus_4, 4) AS v_zip_plus_4,
+	rpad(in_zip_plus_4, 4
+	) AS v_zip_plus_4,
 	v_zip_plus_4 AS ZIP_PLUS_4,
 	EXP_AGY_address_convert.COUNTY,
 	EXP_AGY_address_convert.STATE_ABBREV,
@@ -182,7 +275,30 @@ EXP_Load_AGY_Address AS (
 	-- 	(OUT_AGENCY_ak_ID <> OLD_agency_ak_id),
 	-- 		'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(agency_address_id IS NULL, 'NEW', IFF(( CITY <> OLD_city ) OR ( POSTAL_CODE <> OLD_postal_code ) OR ( v_zip_plus_4 <> OLD_zip_plus_4 ) OR ( COUNTY <> OLD_county ) OR ( STATE_ABBREV <> OLD_state_abbrev ) OR ( COUNTRY <> OLD_country ) OR ( COUNTY_LOCATION <> OLD_county_location ) OR ( OUT_AGENCY_ADDRESS <> OLD_agency_address ) OR ( OUT_AGENCY_ak_ID <> OLD_agency_ak_id ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(agency_address_id IS NULL,
+		'NEW',
+		IFF(( CITY <> OLD_city 
+			) 
+			OR ( POSTAL_CODE <> OLD_postal_code 
+			) 
+			OR ( v_zip_plus_4 <> OLD_zip_plus_4 
+			) 
+			OR ( COUNTY <> OLD_county 
+			) 
+			OR ( STATE_ABBREV <> OLD_state_abbrev 
+			) 
+			OR ( COUNTRY <> OLD_country 
+			) 
+			OR ( COUNTY_LOCATION <> OLD_county_location 
+			) 
+			OR ( OUT_AGENCY_ADDRESS <> OLD_agency_address 
+			) 
+			OR ( OUT_AGENCY_ak_ID <> OLD_agency_ak_id 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	1 AS Crrnt_SnapSht_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_id,
 	EXP_AGY_address_convert.SOURCE_SYSTEM_ID,
@@ -190,20 +306,29 @@ EXP_Load_AGY_Address AS (
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
 	-- 
 	-- --sysdate normally has a time value.  We don't want the time value as our effectivity runs from day to day starting at midnight
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS Eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS Eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_to_date,
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_to_date,
 	sysdate AS Created_date,
 	sysdate AS Modified_date,
 	v_changed_flag AS changed_flag,
 	EXP_AGY_address_convert.IN_STATE_CODE,
 	-- *INF*: RPAD(IN_STATE_CODE,3)
-	RPAD(IN_STATE_CODE, 3) AS out_state_code,
+	RPAD(IN_STATE_CODE, 3
+	) AS out_state_code,
 	SEQ_Agency_Address.NEXTVAL,
 	-- *INF*: IIF(v_changed_flag='NEW',
 	-- NEXTVAL,
 	-- agency_addr_ak_id)
-	IFF(v_changed_flag = 'NEW', NEXTVAL, agency_addr_ak_id) AS out_agency_addr_ak_id
+	IFF(v_changed_flag = 'NEW',
+		NEXTVAL,
+		agency_addr_ak_id
+	) AS out_agency_addr_ak_id
 	FROM EXP_AGY_address_convert
 	LEFT JOIN LKP_Agency
 	ON LKP_Agency.agency_key = EXP_AGY_address_convert.OUT_AGENCY_KEY
@@ -302,8 +427,10 @@ EXP_Agy_Address_Upd_desc AS (
 	-- *INF*: DECODE (TRUE, address_type = v_PREV_ROW_address_type and agency_key = v_PREV_ROW_agency_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		address_type = v_PREV_ROW_address_type AND agency_key = v_PREV_ROW_agency_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		address_type = v_PREV_ROW_address_type 
+		AND agency_key = v_PREV_ROW_agency_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	address_type AS v_PREV_ROW_address_type,

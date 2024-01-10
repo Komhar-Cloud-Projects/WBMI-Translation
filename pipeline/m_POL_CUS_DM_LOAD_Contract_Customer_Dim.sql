@@ -399,53 +399,125 @@ EXP_values AS (
 	LKP_Program.ProgramCode AS in_ProgramCode,
 	LKP_Program.ProgramDescription AS in_ProgramDescription,
 	-- *INF*: IIF(ISNULL(in_ProgramCode),'N/A',in_ProgramCode)
-	IFF(in_ProgramCode IS NULL, 'N/A', in_ProgramCode) AS out_ProgramCode,
+	IFF(in_ProgramCode IS NULL,
+		'N/A',
+		in_ProgramCode
+	) AS out_ProgramCode,
 	-- *INF*: IIF(ISNULL(in_ProgramDescription),'N/A',in_ProgramDescription)
-	IFF(in_ProgramDescription IS NULL, 'N/A', in_ProgramDescription) AS out_ProgramDescription,
+	IFF(in_ProgramDescription IS NULL,
+		'N/A',
+		in_ProgramDescription
+	) AS out_ProgramDescription,
 	-- *INF*: IIF(ISNULL(in_contract_cust_addr_id_M),-1,in_contract_cust_addr_id_M)
-	IFF(in_contract_cust_addr_id_M IS NULL, - 1, in_contract_cust_addr_id_M) AS out_contract_cust_addr_id_M,
+	IFF(in_contract_cust_addr_id_M IS NULL,
+		- 1,
+		in_contract_cust_addr_id_M
+	) AS out_contract_cust_addr_id_M,
 	-- *INF*: IIF(ISNULL(in_loc_unit_num_M),'N/A',in_loc_unit_num_M)
-	IFF(in_loc_unit_num_M IS NULL, 'N/A', in_loc_unit_num_M) AS out_loc_unit_num_M,
+	IFF(in_loc_unit_num_M IS NULL,
+		'N/A',
+		in_loc_unit_num_M
+	) AS out_loc_unit_num_M,
 	-- *INF*: IIF(ISNULL(in_addr_line_1_M),'N/A',in_addr_line_1_M)
-	IFF(in_addr_line_1_M IS NULL, 'N/A', in_addr_line_1_M) AS out_addr_line_1_M,
+	IFF(in_addr_line_1_M IS NULL,
+		'N/A',
+		in_addr_line_1_M
+	) AS out_addr_line_1_M,
 	-- *INF*: IIF(ISNULL(in_addr_line_2_M),'N/A',in_addr_line_2_M)
-	IFF(in_addr_line_2_M IS NULL, 'N/A', in_addr_line_2_M) AS out_addr_line_2_M,
+	IFF(in_addr_line_2_M IS NULL,
+		'N/A',
+		in_addr_line_2_M
+	) AS out_addr_line_2_M,
 	-- *INF*: IIF(ISNULL(in_addr_line_3_M),'N/A',in_addr_line_3_M)
-	IFF(in_addr_line_3_M IS NULL, 'N/A', in_addr_line_3_M) AS out_addr_line_3_M,
+	IFF(in_addr_line_3_M IS NULL,
+		'N/A',
+		in_addr_line_3_M
+	) AS out_addr_line_3_M,
 	-- *INF*: IIF(ISNULL(in_city_name_M),'N/A',in_city_name_M)
-	IFF(in_city_name_M IS NULL, 'N/A', in_city_name_M) AS out_city_name_M,
+	IFF(in_city_name_M IS NULL,
+		'N/A',
+		in_city_name_M
+	) AS out_city_name_M,
 	-- *INF*: IIF(ISNULL(in_state_prov_code_M),'N/A',in_state_prov_code_M)
-	IFF(in_state_prov_code_M IS NULL, 'N/A', in_state_prov_code_M) AS out_state_prov_code_M,
+	IFF(in_state_prov_code_M IS NULL,
+		'N/A',
+		in_state_prov_code_M
+	) AS out_state_prov_code_M,
 	-- *INF*: IIF(ISNULL(in_zip_postal_code_M),'N/A',in_zip_postal_code_M)
-	IFF(in_zip_postal_code_M IS NULL, 'N/A', in_zip_postal_code_M) AS out_zip_postal_code_M,
+	IFF(in_zip_postal_code_M IS NULL,
+		'N/A',
+		in_zip_postal_code_M
+	) AS out_zip_postal_code_M,
 	-- *INF*: IIF(ISNULL(in_zip_postal_code_extension_M),'N/A',in_zip_postal_code_extension_M)
-	IFF(in_zip_postal_code_extension_M IS NULL, 'N/A', in_zip_postal_code_extension_M) AS out_zip_postal_code_extension_M,
+	IFF(in_zip_postal_code_extension_M IS NULL,
+		'N/A',
+		in_zip_postal_code_extension_M
+	) AS out_zip_postal_code_extension_M,
 	-- *INF*: IIF(ISNULL(in_county_parish_name_M),'N/A',in_county_parish_name_M)
-	IFF(in_county_parish_name_M IS NULL, 'N/A', in_county_parish_name_M) AS out_county_parish_name_M,
+	IFF(in_county_parish_name_M IS NULL,
+		'N/A',
+		in_county_parish_name_M
+	) AS out_county_parish_name_M,
 	-- *INF*: IIF(ISNULL(in_country_name_M),'N/A',in_country_name_M)
-	IFF(in_country_name_M IS NULL, 'N/A', in_country_name_M) AS out_country_name_M,
+	IFF(in_country_name_M IS NULL,
+		'N/A',
+		in_country_name_M
+	) AS out_country_name_M,
 	-- *INF*: IIF(ISNULL(in_contract_cust_addr_id_O),-1,in_contract_cust_addr_id_O)
-	IFF(in_contract_cust_addr_id_O IS NULL, - 1, in_contract_cust_addr_id_O) AS out_contract_cust_addr_id_O,
+	IFF(in_contract_cust_addr_id_O IS NULL,
+		- 1,
+		in_contract_cust_addr_id_O
+	) AS out_contract_cust_addr_id_O,
 	-- *INF*: IIF(ISNULL(in_loc_unit_num_O),'N/A',in_loc_unit_num_O)
-	IFF(in_loc_unit_num_O IS NULL, 'N/A', in_loc_unit_num_O) AS out_loc_unit_num_O,
+	IFF(in_loc_unit_num_O IS NULL,
+		'N/A',
+		in_loc_unit_num_O
+	) AS out_loc_unit_num_O,
 	-- *INF*: IIF(ISNULL(in_addr_line_1_O),'N/A',in_addr_line_1_O)
-	IFF(in_addr_line_1_O IS NULL, 'N/A', in_addr_line_1_O) AS out_addr_line_1_O,
+	IFF(in_addr_line_1_O IS NULL,
+		'N/A',
+		in_addr_line_1_O
+	) AS out_addr_line_1_O,
 	-- *INF*: IIF(ISNULL(in_addr_line_2_O),'N/A',in_addr_line_2_O)
-	IFF(in_addr_line_2_O IS NULL, 'N/A', in_addr_line_2_O) AS out_addr_line_2_O,
+	IFF(in_addr_line_2_O IS NULL,
+		'N/A',
+		in_addr_line_2_O
+	) AS out_addr_line_2_O,
 	-- *INF*: IIF(ISNULL(in_addr_line_3_O),'N/A',in_addr_line_3_O)
-	IFF(in_addr_line_3_O IS NULL, 'N/A', in_addr_line_3_O) AS out_addr_line_3_O,
+	IFF(in_addr_line_3_O IS NULL,
+		'N/A',
+		in_addr_line_3_O
+	) AS out_addr_line_3_O,
 	-- *INF*: IIF(ISNULL(in_city_name_O),'N/A',in_city_name_O)
-	IFF(in_city_name_O IS NULL, 'N/A', in_city_name_O) AS out_city_name_O,
+	IFF(in_city_name_O IS NULL,
+		'N/A',
+		in_city_name_O
+	) AS out_city_name_O,
 	-- *INF*: IIF(ISNULL(in_state_prov_code_O),'N/A',in_state_prov_code_O)
-	IFF(in_state_prov_code_O IS NULL, 'N/A', in_state_prov_code_O) AS out_state_prov_code_O,
+	IFF(in_state_prov_code_O IS NULL,
+		'N/A',
+		in_state_prov_code_O
+	) AS out_state_prov_code_O,
 	-- *INF*: IIF(ISNULL(in_zip_postal_code_O),'N/A',in_zip_postal_code_O)
-	IFF(in_zip_postal_code_O IS NULL, 'N/A', in_zip_postal_code_O) AS out_zip_postal_code_O,
+	IFF(in_zip_postal_code_O IS NULL,
+		'N/A',
+		in_zip_postal_code_O
+	) AS out_zip_postal_code_O,
 	-- *INF*: IIF(ISNULL(in_zip_postal_code_extension_O),'N/A',in_zip_postal_code_extension_O)
-	IFF(in_zip_postal_code_extension_O IS NULL, 'N/A', in_zip_postal_code_extension_O) AS out_zip_postal_code_extension_O,
+	IFF(in_zip_postal_code_extension_O IS NULL,
+		'N/A',
+		in_zip_postal_code_extension_O
+	) AS out_zip_postal_code_extension_O,
 	-- *INF*: IIF(ISNULL(in_county_parish_name_O),'N/A',in_county_parish_name_O)
-	IFF(in_county_parish_name_O IS NULL, 'N/A', in_county_parish_name_O) AS out_county_parish_name_O,
+	IFF(in_county_parish_name_O IS NULL,
+		'N/A',
+		in_county_parish_name_O
+	) AS out_county_parish_name_O,
 	-- *INF*: IIF(ISNULL(in_country_name_O),'N/A',in_country_name_O)
-	IFF(in_country_name_O IS NULL, 'N/A', in_country_name_O) AS out_country_name_O,
+	IFF(in_country_name_O IS NULL,
+		'N/A',
+		in_country_name_O
+	) AS out_country_name_O,
 	SQ_contract_customer_sources.DIST_EFF_FROM_DATE
 	FROM SQ_contract_customer_sources
 	LEFT JOIN LKP_Program
@@ -501,11 +573,20 @@ EXP_sup_description AS (
 	-- 
 	LKP_ALL_SUPPORT_TABLES__N_A_sup_sic_code_sic_code.descript AS v_sic_code_descript,
 	-- *INF*: IIF(ISNULL(v_sic_code_descript) or IS_SPACES(v_sic_code_descript)  or LENGTH(v_sic_code_descript)=0,'N/A',LTRIM(RTRIM(v_sic_code_descript)))
-	IFF(v_sic_code_descript IS NULL OR IS_SPACES(v_sic_code_descript) OR LENGTH(v_sic_code_descript) = 0, 'N/A', LTRIM(RTRIM(v_sic_code_descript))) AS sic_code_descript,
+	IFF(v_sic_code_descript IS NULL 
+		OR LENGTH(v_sic_code_descript)>0 AND TRIM(v_sic_code_descript)='' 
+		OR LENGTH(v_sic_code_descript
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(v_sic_code_descript
+			)
+		)
+	) AS sic_code_descript,
 	EXP_values.naics_code,
 	LKP_SupNaicsCode.NAICSCodeDesc AS IN_NAICSCodeDesc,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSCodeDesc)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSCodeDesc) AS naics_code_description,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSCodeDesc
+	) AS naics_code_description,
 	EXP_values.lgl_ent_code,
 	EXP_values.lgl_ent_code_descript,
 	EXP_values.yr_in_bus,
@@ -528,7 +609,15 @@ EXP_sup_description AS (
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES('EXCEED','sup_state',state_prov_code_M)
 	LKP_ALL_SUPPORT_TABLES__EXCEED_sup_state_state_prov_code_M.descript AS v_state_prov_code_description_M,
 	-- *INF*: IIF(ISNULL(v_state_prov_code_description_M) or IS_SPACES(v_state_prov_code_description_M)  or LENGTH(v_state_prov_code_description_M)=0,'N/A',LTRIM(RTRIM(v_state_prov_code_description_M)))
-	IFF(v_state_prov_code_description_M IS NULL OR IS_SPACES(v_state_prov_code_description_M) OR LENGTH(v_state_prov_code_description_M) = 0, 'N/A', LTRIM(RTRIM(v_state_prov_code_description_M))) AS state_prov_code_description_M,
+	IFF(v_state_prov_code_description_M IS NULL 
+		OR LENGTH(v_state_prov_code_description_M)>0 AND TRIM(v_state_prov_code_description_M)='' 
+		OR LENGTH(v_state_prov_code_description_M
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(v_state_prov_code_description_M
+			)
+		)
+	) AS state_prov_code_description_M,
 	EXP_values.out_zip_postal_code_M AS zip_postal_code_M,
 	EXP_values.out_zip_postal_code_extension_M AS zip_postal_code_extension_M,
 	EXP_values.out_county_parish_name_M AS county_parish_name_M,
@@ -543,7 +632,15 @@ EXP_sup_description AS (
 	-- *INF*: :LKP.LKP_ALL_SUPPORT_TABLES('EXCEED','sup_state',state_prov_code_O)
 	LKP_ALL_SUPPORT_TABLES__EXCEED_sup_state_state_prov_code_O.descript AS v_state_prov_code_description_O,
 	-- *INF*: IIF(ISNULL(v_state_prov_code_description_O) or IS_SPACES(v_state_prov_code_description_O)  or LENGTH(v_state_prov_code_description_O)=0,'N/A',LTRIM(RTRIM(v_state_prov_code_description_O)))
-	IFF(v_state_prov_code_description_O IS NULL OR IS_SPACES(v_state_prov_code_description_O) OR LENGTH(v_state_prov_code_description_O) = 0, 'N/A', LTRIM(RTRIM(v_state_prov_code_description_O))) AS state_prov_code_description_O,
+	IFF(v_state_prov_code_description_O IS NULL 
+		OR LENGTH(v_state_prov_code_description_O)>0 AND TRIM(v_state_prov_code_description_O)='' 
+		OR LENGTH(v_state_prov_code_description_O
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(v_state_prov_code_description_O
+			)
+		)
+	) AS state_prov_code_description_O,
 	EXP_values.out_zip_postal_code_O AS zip_postal_code_O,
 	EXP_values.out_zip_postal_code_extension_O AS zip_postal_code_extension_O,
 	EXP_values.out_county_parish_name_O AS county_parish_name_O,
@@ -552,7 +649,8 @@ EXP_sup_description AS (
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	LKP_SupNaicsCode.NAICSIndustryGroupCode AS IN_NAICSIndustryGroupCode,
@@ -562,17 +660,23 @@ EXP_sup_description AS (
 	LKP_SupNaicsCode.NAICSSectorCode AS IN_NAICSSectorCode,
 	LKP_SupNaicsCode.NAICSSectorCodeDesc AS IN_NAICSSectorCodeDesc,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSIndustryGroupCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSIndustryGroupCode) AS NAICSIndustryGroupCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSIndustryGroupCode
+	) AS NAICSIndustryGroupCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSIndustryGroupCodeDesc)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSIndustryGroupCodeDesc) AS NAICSIndustryGroupCodeDesc,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSIndustryGroupCodeDesc
+	) AS NAICSIndustryGroupCodeDesc,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSSubsectorCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSSubsectorCode) AS NAICSSubsectorCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSSubsectorCode
+	) AS NAICSSubsectorCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSSubsectorCodeDesc)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSSubsectorCodeDesc) AS NAICSSubsectorCodeDesc,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSSubsectorCodeDesc
+	) AS NAICSSubsectorCodeDesc,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSSectorCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSSectorCode) AS NAICSSectorCode,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSSectorCode
+	) AS NAICSSectorCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSSectorCodeDesc)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSSectorCodeDesc) AS NAICSSectorCodeDesc
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(IN_NAICSSectorCodeDesc
+	) AS NAICSSectorCodeDesc
 	FROM EXP_values
 	LEFT JOIN LKP_SupNaicsCode
 	ON LKP_SupNaicsCode.NAICSCode = EXP_values.naics_code
@@ -845,8 +949,9 @@ EXP_Lag_eff_from_date AS (
 	-- edw_contract_cust_ak_id = v_prev_edw_contract_cust_ak_id  ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
 	DECODE(TRUE,
-		edw_contract_cust_ak_id = v_prev_edw_contract_cust_ak_id, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		edw_contract_cust_ak_id = v_prev_edw_contract_cust_ak_id, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	edw_contract_cust_ak_id AS v_prev_edw_contract_cust_ak_id,
 	in_eff_from_date AS v_prev_eff_from_date,

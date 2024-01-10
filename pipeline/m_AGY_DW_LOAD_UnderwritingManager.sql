@@ -48,21 +48,37 @@ EXP_Detect_Changes AS (
 	SQ_AssociateStage.SourceSystemID,
 	SQ_AssociateStage.UserId,
 	-- *INF*: IIF(IsNull(UserId), 'N/A', UserId)
-	IFF(UserId IS NULL, 'N/A', UserId) AS o_UserId,
+	IFF(UserId IS NULL,
+		'N/A',
+		UserId
+	) AS o_UserId,
 	-- *INF*: MD5(UnderwriterManagerCode || DisplayName || LastName || FirstName || MiddleName || Suffix || EmailAddress || UserId)
-	MD5(UnderwriterManagerCode || DisplayName || LastName || FirstName || MiddleName || Suffix || EmailAddress || UserId) AS v_NewHashKey,
+	MD5(UnderwriterManagerCode || DisplayName || LastName || FirstName || MiddleName || Suffix || EmailAddress || UserId
+	) AS v_NewHashKey,
 	v_NewHashKey AS o_NewHashKey,
 	-- *INF*: IIF(ISNULL(lkp_UnderwritingManagerAKID), 'NEW', 
 	-- IIF((lkp_HashKey <> v_NewHashKey), 'UPDATE', 'NOCHANGE'))
-	IFF(lkp_UnderwritingManagerAKID IS NULL, 'NEW', IFF(( lkp_HashKey <> v_NewHashKey ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(lkp_UnderwritingManagerAKID IS NULL,
+		'NEW',
+		IFF(( lkp_HashKey <> v_NewHashKey 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS EffectiveDate,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate
 	FROM SQ_AssociateStage
@@ -111,7 +127,10 @@ EXP_Assign_AKID AS (
 	SEQ_UnderwritingManager_AKID.NEXTVAL,
 	HashKey,
 	-- *INF*: iif(isnull(lkp_UnderwritingManagerAKID),NEXTVAL,lkp_UnderwritingManagerAKID)
-	IFF(lkp_UnderwritingManagerAKID IS NULL, NEXTVAL, lkp_UnderwritingManagerAKID) AS UnderwritingManagerAKID,
+	IFF(lkp_UnderwritingManagerAKID IS NULL,
+		NEXTVAL,
+		lkp_UnderwritingManagerAKID
+	) AS UnderwritingManagerAKID,
 	WestBendAssociateID,
 	UnderwriterManagerCode,
 	DisplayName,
@@ -178,8 +197,9 @@ EXP_Lag_eff_from_date AS (
 	-- UnderwritingManagerAKID = v_prev_AKID , ADD_TO_DATE(v_prev_EffectiveFromDate,'SS',-1),
 	-- OriginalEffectiveToDate)
 	DECODE(TRUE,
-		UnderwritingManagerAKID = v_prev_AKID, ADD_TO_DATE(v_prev_EffectiveFromDate, 'SS', - 1),
-		OriginalEffectiveToDate) AS v_EffectiveToDate,
+		UnderwritingManagerAKID = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_EffectiveFromDate),
+		OriginalEffectiveToDate
+	) AS v_EffectiveToDate,
 	v_EffectiveToDate AS o_EffectiveToDate,
 	UnderwritingManagerAKID AS v_prev_AKID,
 	EffectiveFromDate AS v_prev_EffectiveFromDate,

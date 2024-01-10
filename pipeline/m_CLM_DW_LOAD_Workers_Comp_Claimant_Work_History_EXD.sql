@@ -75,32 +75,120 @@ EXP_Lkp_Values_workers_comp_claimant_detail AS (
 	-- 
 	-- 
 	-- 
-	IFF(IN_wch_last_wrk_dt IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), IN_wch_last_wrk_dt) AS EMP_LAST_DAY_WORKED,
+	IFF(IN_wch_last_wrk_dt IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		IN_wch_last_wrk_dt
+	) AS EMP_LAST_DAY_WORKED,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_CWC_CLAIM_NBR))),'N/A',IIF(IS_SPACES(IN_CWC_CLAIM_NBR),'N/A',LTRIM(RTRIM(IN_CWC_CLAIM_NBR))))
-	IFF(LTRIM(RTRIM(IN_CWC_CLAIM_NBR)) IS NULL, 'N/A', IFF(IS_SPACES(IN_CWC_CLAIM_NBR), 'N/A', LTRIM(RTRIM(IN_CWC_CLAIM_NBR)))) AS CWC_CLAIM_NBR,
+	IFF(LTRIM(RTRIM(IN_CWC_CLAIM_NBR
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_CWC_CLAIM_NBR)>0 AND TRIM(IN_CWC_CLAIM_NBR)='',
+			'N/A',
+			LTRIM(RTRIM(IN_CWC_CLAIM_NBR
+				)
+			)
+		)
+	) AS CWC_CLAIM_NBR,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_CWC_CLIENT_ID))),'N/A',IIF(IS_SPACES(IN_CWC_CLIENT_ID),'N/A',LTRIM(RTRIM(IN_CWC_CLIENT_ID))))
-	IFF(LTRIM(RTRIM(IN_CWC_CLIENT_ID)) IS NULL, 'N/A', IFF(IS_SPACES(IN_CWC_CLIENT_ID), 'N/A', LTRIM(RTRIM(IN_CWC_CLIENT_ID)))) AS CWC_CLIENT_ID,
+	IFF(LTRIM(RTRIM(IN_CWC_CLIENT_ID
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_CWC_CLIENT_ID)>0 AND TRIM(IN_CWC_CLIENT_ID)='',
+			'N/A',
+			LTRIM(RTRIM(IN_CWC_CLIENT_ID
+				)
+			)
+		)
+	) AS CWC_CLIENT_ID,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_SOURCE_SYSTEM_ID))),'N/A',IIF(IS_SPACES(IN_SOURCE_SYSTEM_ID),'N/A',LTRIM(RTRIM(IN_SOURCE_SYSTEM_ID))))
-	IFF(LTRIM(RTRIM(IN_SOURCE_SYSTEM_ID)) IS NULL, 'N/A', IFF(IS_SPACES(IN_SOURCE_SYSTEM_ID), 'N/A', LTRIM(RTRIM(IN_SOURCE_SYSTEM_ID)))) AS SOURCE_SYSTEM_ID,
+	IFF(LTRIM(RTRIM(IN_SOURCE_SYSTEM_ID
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_SOURCE_SYSTEM_ID)>0 AND TRIM(IN_SOURCE_SYSTEM_ID)='',
+			'N/A',
+			LTRIM(RTRIM(IN_SOURCE_SYSTEM_ID
+				)
+			)
+		)
+	) AS SOURCE_SYSTEM_ID,
 	-- *INF*: IIF(ISNULL(IN_CWC_OBJECT_SEQ_NBR),0,IN_CWC_OBJECT_SEQ_NBR)
-	IFF(IN_CWC_OBJECT_SEQ_NBR IS NULL, 0, IN_CWC_OBJECT_SEQ_NBR) AS CWC_OBJECT_SEQ_NBR,
+	IFF(IN_CWC_OBJECT_SEQ_NBR IS NULL,
+		0,
+		IN_CWC_OBJECT_SEQ_NBR
+	) AS CWC_OBJECT_SEQ_NBR,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_wrh_empr_pd_lit))),'N/A',IIF(IS_SPACES(IN_wrh_empr_pd_lit),'N/A',LTRIM(RTRIM(IN_wrh_empr_pd_lit))))
-	IFF(LTRIM(RTRIM(IN_wrh_empr_pd_lit)) IS NULL, 'N/A', IFF(IS_SPACES(IN_wrh_empr_pd_lit), 'N/A', LTRIM(RTRIM(IN_wrh_empr_pd_lit)))) AS EMPLYR_PAID_LITIGATED_IND,
+	IFF(LTRIM(RTRIM(IN_wrh_empr_pd_lit
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_wrh_empr_pd_lit)>0 AND TRIM(IN_wrh_empr_pd_lit)='',
+			'N/A',
+			LTRIM(RTRIM(IN_wrh_empr_pd_lit
+				)
+			)
+		)
+	) AS EMPLYR_PAID_LITIGATED_IND,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_wrh_restrictions))),'N/A',IIF(IS_SPACES(IN_wrh_restrictions),'N/A',LTRIM(RTRIM(IN_wrh_restrictions))))
 	-- 
 	-- 
-	IFF(LTRIM(RTRIM(IN_wrh_restrictions)) IS NULL, 'N/A', IFF(IS_SPACES(IN_wrh_restrictions), 'N/A', LTRIM(RTRIM(IN_wrh_restrictions)))) AS RETURN_TO_WORK_WITH_RESTRICTION_IND,
+	IFF(LTRIM(RTRIM(IN_wrh_restrictions
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_wrh_restrictions)>0 AND TRIM(IN_wrh_restrictions)='',
+			'N/A',
+			LTRIM(RTRIM(IN_wrh_restrictions
+				)
+			)
+		)
+	) AS RETURN_TO_WORK_WITH_RESTRICTION_IND,
 	-- *INF*: IIF(ISNULL(IN_wrh_empr_pd_amt),0,IN_wrh_empr_pd_amt)
-	IFF(IN_wrh_empr_pd_amt IS NULL, 0, IN_wrh_empr_pd_amt) AS EMPLYR_PAID_AMT,
+	IFF(IN_wrh_empr_pd_amt IS NULL,
+		0,
+		IN_wrh_empr_pd_amt
+	) AS EMPLYR_PAID_AMT,
 	-- *INF*: IIF(ISNULL(IN_wch_return_dt),TO_DATE('1/1/1800','MM/DD/YYYY'),IN_wch_return_dt)
-	IFF(IN_wch_return_dt IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), IN_wch_return_dt) AS RETURN_TO_WORK_DATE,
+	IFF(IN_wch_return_dt IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		IN_wch_return_dt
+	) AS RETURN_TO_WORK_DATE,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_wch_same_emp_ind))),'N/A',IIF(IS_SPACES(IN_wch_same_emp_ind),'N/A',LTRIM(RTRIM(IN_wch_same_emp_ind))))
-	IFF(LTRIM(RTRIM(IN_wch_same_emp_ind)) IS NULL, 'N/A', IFF(IS_SPACES(IN_wch_same_emp_ind), 'N/A', LTRIM(RTRIM(IN_wch_same_emp_ind)))) AS RETURN_TO_WORK_WITH_SAME_EMPLYR,
+	IFF(LTRIM(RTRIM(IN_wch_same_emp_ind
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_wch_same_emp_ind)>0 AND TRIM(IN_wch_same_emp_ind)='',
+			'N/A',
+			LTRIM(RTRIM(IN_wch_same_emp_ind
+				)
+			)
+		)
+	) AS RETURN_TO_WORK_WITH_SAME_EMPLYR,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_wch_ret_type_cd))),'N/A',IIF(IS_SPACES(IN_wch_ret_type_cd),'N/A',LTRIM(RTRIM(IN_wch_ret_type_cd))))
-	IFF(LTRIM(RTRIM(IN_wch_ret_type_cd)) IS NULL, 'N/A', IFF(IS_SPACES(IN_wch_ret_type_cd), 'N/A', LTRIM(RTRIM(IN_wch_ret_type_cd)))) AS RETURN_TO_WORK_TYPE,
+	IFF(LTRIM(RTRIM(IN_wch_ret_type_cd
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_wch_ret_type_cd)>0 AND TRIM(IN_wch_ret_type_cd)='',
+			'N/A',
+			LTRIM(RTRIM(IN_wch_ret_type_cd
+				)
+			)
+		)
+	) AS RETURN_TO_WORK_TYPE,
 	-- *INF*: IIF(ISNULL(IN_wch_create_ts),TO_DATE('1/1/1800','MM/DD/YYYY'),IN_wch_create_ts)
 	-- 
-	IFF(IN_wch_create_ts IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), IN_wch_create_ts) AS wch_create_ts
+	IFF(IN_wch_create_ts IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		IN_wch_create_ts
+	) AS wch_create_ts
 	FROM EXP_Workers_Comp_Claimant_Work_History
 ),
 LKP_Claim_Party_Occurrence_AK_ID AS (
@@ -178,16 +266,51 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail AS (
 	-- *INF*: IIF(ISNULL(wc_claimant_work_hist_ak_id),'NEW',
 	-- IIF(LKP_return_to_work_date <> RETURN_TO_WORK_DATE OR LKP_emplyr_paid_amt <> EMPLYR_PAID_AMT OR ltrim(rtrim(LKP_emplyr_paid_litigated_ind)) <> ltrim(rtrim(EMPLYR_PAID_LITIGATED_IND)) OR  ltrim(rtrim(LKP_return_to_work_with_same_emplyr_ind)) <>  ltrim(rtrim(RETURN_TO_WORK_WITH_SAME_EMPLYR)) OR LKP_emp_last_day_worked <> EMP_LAST_DAY_WORKED  OR ltrim(rtrim(RETURN_TO_WORK_TYPE ))<> ltrim(rtrim(LKP_return_to_work_type))  OR ltrim(rtrim(LKP_return_to_work_with_restriction_ind)) <> ltrim(rtrim( RETURN_TO_WORK_WITH_RESTRICTION_IND))  ,'UPDATE',
 	-- 'NOCHANGE') )
-	IFF(wc_claimant_work_hist_ak_id IS NULL, 'NEW', IFF(LKP_return_to_work_date <> RETURN_TO_WORK_DATE OR LKP_emplyr_paid_amt <> EMPLYR_PAID_AMT OR ltrim(rtrim(LKP_emplyr_paid_litigated_ind)) <> ltrim(rtrim(EMPLYR_PAID_LITIGATED_IND)) OR ltrim(rtrim(LKP_return_to_work_with_same_emplyr_ind)) <> ltrim(rtrim(RETURN_TO_WORK_WITH_SAME_EMPLYR)) OR LKP_emp_last_day_worked <> EMP_LAST_DAY_WORKED OR ltrim(rtrim(RETURN_TO_WORK_TYPE)) <> ltrim(rtrim(LKP_return_to_work_type)) OR ltrim(rtrim(LKP_return_to_work_with_restriction_ind)) <> ltrim(rtrim(RETURN_TO_WORK_WITH_RESTRICTION_IND)), 'UPDATE', 'NOCHANGE')) AS V_CHANGE_FLAG,
+	IFF(wc_claimant_work_hist_ak_id IS NULL,
+		'NEW',
+		IFF(LKP_return_to_work_date <> RETURN_TO_WORK_DATE 
+			OR LKP_emplyr_paid_amt <> EMPLYR_PAID_AMT 
+			OR ltrim(rtrim(LKP_emplyr_paid_litigated_ind
+				)
+			) <> ltrim(rtrim(EMPLYR_PAID_LITIGATED_IND
+				)
+			) 
+			OR ltrim(rtrim(LKP_return_to_work_with_same_emplyr_ind
+				)
+			) <> ltrim(rtrim(RETURN_TO_WORK_WITH_SAME_EMPLYR
+				)
+			) 
+			OR LKP_emp_last_day_worked <> EMP_LAST_DAY_WORKED 
+			OR ltrim(rtrim(RETURN_TO_WORK_TYPE
+				)
+			) <> ltrim(rtrim(LKP_return_to_work_type
+				)
+			) 
+			OR ltrim(rtrim(LKP_return_to_work_with_restriction_ind
+				)
+			) <> ltrim(rtrim(RETURN_TO_WORK_WITH_RESTRICTION_IND
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS V_CHANGE_FLAG,
 	V_CHANGE_FLAG AS CHANGE_FLAG_OP,
 	1 AS CRRNT_SNPSHT_FLAG,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID,
 	-- *INF*: IIF(V_CHANGE_FLAG='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	TO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))
-	IFF(V_CHANGE_FLAG = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')) AS EFF_FROM_DATE,
+	IFF(V_CHANGE_FLAG = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
+			), 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS EFF_FROM_DATE,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS EFF_TO_DATE,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS EFF_TO_DATE,
 	EXP_Lkp_Values_workers_comp_claimant_detail.SOURCE_SYSTEM_ID,
 	SYSDATE AS CREATED_DATE,
 	SYSDATE AS MODIFIED_DATE,
@@ -259,7 +382,10 @@ EXP_INSERT AS (
 	MODIFIED_DATE,
 	LKP_wc_claimant_det_ak_id,
 	-- *INF*: IIF(CHANGE_FLAG_OP='NEW', NEXTVAL, IN_wc_claimant_work_hist_ak_id)
-	IFF(CHANGE_FLAG_OP = 'NEW', NEXTVAL, IN_wc_claimant_work_hist_ak_id) AS WC_CLAIMANT_WORK_HIST_AK_ID,
+	IFF(CHANGE_FLAG_OP = 'NEW',
+		NEXTVAL,
+		IN_wc_claimant_work_hist_ak_id
+	) AS WC_CLAIMANT_WORK_HIST_AK_ID,
 	RETURN_TO_WORK_WITH_RESTRICTION_IND,
 	EMPLYR_PAID_LITIGATED_IND,
 	EMPLYR_PAID_AMT,
@@ -316,7 +442,10 @@ EXP_Lag_eff_from_date1 AS (
 	eff_from_date,
 	eff_to_date AS orig_eff_to_date,
 	-- *INF*: IIF(wc_claimant_work_hist_ak_id = v_PREV_ROW_wc_claimant_det_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),orig_eff_to_date)
-	IFF(wc_claimant_work_hist_ak_id = v_PREV_ROW_wc_claimant_det_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1), orig_eff_to_date) AS v_eff_to_date,
+	IFF(wc_claimant_work_hist_ak_id = v_PREV_ROW_wc_claimant_det_ak_id,
+		DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	wc_claimant_work_hist_ak_id AS v_PREV_ROW_wc_claimant_det_ak_id,

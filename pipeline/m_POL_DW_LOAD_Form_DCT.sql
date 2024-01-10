@@ -12,25 +12,37 @@ EXP_Form_DCT AS (
 	FormName AS i_FormNumber,
 	Caption AS i_FormName,
 	-- *INF*: LTRIM(RTRIM(i_FormNumber))
-	LTRIM(RTRIM(i_FormNumber)) AS v_FormNumberTrim,
+	LTRIM(RTRIM(i_FormNumber
+		)
+	) AS v_FormNumberTrim,
 	-- *INF*: REG_REPLACE(v_FormNumberTrim,'[^0-9]','')
-	REG_REPLACE(v_FormNumberTrim, '[^0-9]', '') AS v_FormNumberRemoveChar,
+	REG_REPLACE(v_FormNumberTrim, '[^0-9]', ''
+	) AS v_FormNumberRemoveChar,
 	-- *INF*: SUBSTR(v_FormNumberRemoveChar,LENGTH(v_FormNumberRemoveChar)-3,4)
-	SUBSTR(v_FormNumberRemoveChar, LENGTH(v_FormNumberRemoveChar) - 3, 4) AS v_FormEditionDate,
+	SUBSTR(v_FormNumberRemoveChar, LENGTH(v_FormNumberRemoveChar
+		) - 3, 4
+	) AS v_FormEditionDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	sysdate AS o_CreatedDate,
 	sysdate AS o_ModifiedDate,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_FormName)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_FormName) AS o_FormName,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_FormName
+	) AS o_FormName,
 	-- *INF*: LTRIM(RTRIM(i_FormNumber))
-	LTRIM(RTRIM(i_FormNumber)) AS o_FormNumber,
+	LTRIM(RTRIM(i_FormNumber
+		)
+	) AS o_FormNumber,
 	-- *INF*: TO_DATE(LPAD(v_FormEditionDate,4,'0'),'MMRR')
-	TO_DATE(LPAD(v_FormEditionDate, 4, '0'), 'MMRR') AS o_FormEditionDate,
+	TO_DATE(LPAD(v_FormEditionDate, 4, '0'
+		), 'MMRR'
+	) AS o_FormEditionDate,
 	-- *INF*: TO_DATE('01/01/1800', 'MM/DD/YYYY')
-	TO_DATE('01/01/1800', 'MM/DD/YYYY') AS o_FormEffectiveDate,
+	TO_DATE('01/01/1800', 'MM/DD/YYYY'
+	) AS o_FormEffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100', 'MM/DD/YYYY')
-	TO_DATE('12/31/2100', 'MM/DD/YYYY') AS o_FormExpirationDate
+	TO_DATE('12/31/2100', 'MM/DD/YYYY'
+	) AS o_FormExpirationDate
 	FROM SQ_WBCLPrintDocStage
 ),
 LKP_Form AS (

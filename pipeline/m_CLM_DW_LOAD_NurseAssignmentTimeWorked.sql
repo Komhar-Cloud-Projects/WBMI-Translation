@@ -19,16 +19,37 @@ EXP_Src_Values AS (
 	nurse_assignment_id,
 	-- *INF*: iif(isnull(ltrim(rtrim(nurse_assignment_id))),
 	--  -1,nurse_assignment_id)
-	IFF(ltrim(rtrim(nurse_assignment_id)) IS NULL, - 1, nurse_assignment_id) AS o_nurse_assignment_id,
+	IFF(ltrim(rtrim(nurse_assignment_id
+			)
+		) IS NULL,
+		- 1,
+		nurse_assignment_id
+	) AS o_nurse_assignment_id,
 	time_worked_seq,
 	-- *INF*: iif(isnull(ltrim(rtrim(time_worked_seq))), -1, time_worked_seq)
-	IFF(ltrim(rtrim(time_worked_seq)) IS NULL, - 1, time_worked_seq) AS o_time_worked_seq,
+	IFF(ltrim(rtrim(time_worked_seq
+			)
+		) IS NULL,
+		- 1,
+		time_worked_seq
+	) AS o_time_worked_seq,
 	date_worked,
 	-- *INF*: iif(isnull(ltrim(rtrim(date_worked))), to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'), date_worked)
-	IFF(ltrim(rtrim(date_worked)) IS NULL, to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), date_worked) AS o_date_worked,
+	IFF(ltrim(rtrim(date_worked
+			)
+		) IS NULL,
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		date_worked
+	) AS o_date_worked,
 	time_worked_hours,
 	-- *INF*: iif(isnull(ltrim(rtrim(time_worked_hours))), 0, time_worked_hours)
-	IFF(ltrim(rtrim(time_worked_hours)) IS NULL, 0, time_worked_hours) AS o_time_worked_hours
+	IFF(ltrim(rtrim(time_worked_hours
+			)
+		) IS NULL,
+		0,
+		time_worked_hours
+	) AS o_time_worked_hours
 	FROM SQ_nurse_assignment_time_worked_stage
 ),
 LKP_NurseAssignment AS (
@@ -52,7 +73,10 @@ EXP_Lkp_Defualt AS (
 	SELECT
 	NurseAssignmentAkId,
 	-- *INF*: iif(isnull(NurseAssignmentAkId), -1,NurseAssignmentAkId)
-	IFF(NurseAssignmentAkId IS NULL, - 1, NurseAssignmentAkId) AS o_NurseAssignmentAkId
+	IFF(NurseAssignmentAkId IS NULL,
+		- 1,
+		NurseAssignmentAkId
+	) AS o_NurseAssignmentAkId
 	FROM LKP_NurseAssignment
 ),
 LKP_NurseAssignmentTimeWorked AS (
@@ -113,15 +137,45 @@ EXP_TargetLkp_Detect_Changes AS (
 	--    'UPDATE', 'NOCHANGE')
 	--   
 	--    )
-	IFF(Lkp_NurseAssignmentTimeWorkedId IS NULL, 'NEW', IFF(ltrim(rtrim(Lkp_NurseAssignmentAkId)) != ltrim(rtrim(NurseAssignmentAkId)) OR ltrim(rtrim(Lkp_TimeWorkedSequence)) != ltrim(rtrim(TimeWorkedSequence)) OR ltrim(rtrim(Lkp_WorkedDate)) != ltrim(rtrim(WorkedDate)) OR ltrim(rtrim(Lkp_TimeWorkedHours)) != ltrim(rtrim(TimeWorkedHours)), 'UPDATE', 'NOCHANGE')) AS v_ChangedFlag,
+	IFF(Lkp_NurseAssignmentTimeWorkedId IS NULL,
+		'NEW',
+		IFF(ltrim(rtrim(Lkp_NurseAssignmentAkId
+				)
+			) != ltrim(rtrim(NurseAssignmentAkId
+				)
+			) 
+			OR ltrim(rtrim(Lkp_TimeWorkedSequence
+				)
+			) != ltrim(rtrim(TimeWorkedSequence
+				)
+			) 
+			OR ltrim(rtrim(Lkp_WorkedDate
+				)
+			) != ltrim(rtrim(WorkedDate
+				)
+			) 
+			OR ltrim(rtrim(Lkp_TimeWorkedHours
+				)
+			) != ltrim(rtrim(TimeWorkedHours
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangedFlag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
 	-- *INF*: iif(v_ChangedFlag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_ChangedFlag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS EffectiveDate,
+	IFF(v_ChangedFlag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
@@ -172,7 +226,10 @@ EXP_Akid_Insert_Target AS (
 	WorkedDate,
 	TimeWorkedHours,
 	-- *INF*: iif(ChangedFlag = 'NEW', NEXTVAL, Lkp_NurseAssignmentTimeWorkedAkId)
-	IFF(ChangedFlag = 'NEW', NEXTVAL, Lkp_NurseAssignmentTimeWorkedAkId) AS NurseAssignmentTimeWorkedAkId,
+	IFF(ChangedFlag = 'NEW',
+		NEXTVAL,
+		Lkp_NurseAssignmentTimeWorkedAkId
+	) AS NurseAssignmentTimeWorkedAkId,
 	Lkp_NurseAssignmentTimeWorkedAkId,
 	SEQ_NurseAssignmentTimeWorked.NEXTVAL
 	FROM FIL_Lkp_Target
@@ -239,8 +296,9 @@ EXP_Lag_ExpirationDate AS (
 	-- 	orig_ExpirationDate)
 	-- 
 	DECODE(TRUE,
-		NurseAssignmentTimeWorkedAkId = v_PREV_ROW_NurseAssignmentTimeWorkedAkId, ADD_TO_DATE(v_PREV_ROW_EffectiveDate, 'SS', - 1),
-		orig_ExpirationDate) AS v_ExpirationDate,
+		NurseAssignmentTimeWorkedAkId = v_PREV_ROW_NurseAssignmentTimeWorkedAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
+		orig_ExpirationDate
+	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	EffectiveDate AS v_PREV_ROW_EffectiveDate,
 	NurseAssignmentTimeWorkedAkId AS v_PREV_ROW_NurseAssignmentTimeWorkedAkId,

@@ -137,9 +137,10 @@ EXP_Output AS (
 	-- 'N/A')
 	DECODE(TRUE,
 		i_CyberOneIncreasedLimitQuestionOne IS NULL, 'N/A',
-		IN(i_CyberOneIncreasedLimitQuestionOne, 'T', '1'), '1',
-		IN(i_CyberOneIncreasedLimitQuestionOne, 'F', '0'), '0',
-		'N/A') AS o_CyberOneIncreasedLimitQuestionOne,
+		i_CyberOneIncreasedLimitQuestionOne IN ('T','1'), '1',
+		i_CyberOneIncreasedLimitQuestionOne IN ('F','0'), '0',
+		'N/A'
+	) AS o_CyberOneIncreasedLimitQuestionOne,
 	CyberOneIncreasedLimitQuestionTwo AS i_CyberOneIncreasedLimitQuestionTwo,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_CyberOneIncreasedLimitQuestionTwo),'N/A',
@@ -148,9 +149,10 @@ EXP_Output AS (
 	-- 'N/A')
 	DECODE(TRUE,
 		i_CyberOneIncreasedLimitQuestionTwo IS NULL, 'N/A',
-		IN(i_CyberOneIncreasedLimitQuestionTwo, 'T', '1'), '1',
-		IN(i_CyberOneIncreasedLimitQuestionTwo, 'F', '0'), '0',
-		'N/A') AS o_CyberOneIncreasedLimitQuestionTwo,
+		i_CyberOneIncreasedLimitQuestionTwo IN ('T','1'), '1',
+		i_CyberOneIncreasedLimitQuestionTwo IN ('F','0'), '0',
+		'N/A'
+	) AS o_CyberOneIncreasedLimitQuestionTwo,
 	CyberOneIncreasedLimitQuestionThree AS i_CyberOneIncreasedLimitQuestionThree,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_CyberOneIncreasedLimitQuestionThree),'N/A',
@@ -159,9 +161,10 @@ EXP_Output AS (
 	-- 'N/A')
 	DECODE(TRUE,
 		i_CyberOneIncreasedLimitQuestionThree IS NULL, 'N/A',
-		IN(i_CyberOneIncreasedLimitQuestionThree, 'T', '1'), '1',
-		IN(i_CyberOneIncreasedLimitQuestionThree, 'F', '0'), '0',
-		'N/A') AS o_CyberOneIncreasedLimitQuestionThree,
+		i_CyberOneIncreasedLimitQuestionThree IN ('T','1'), '1',
+		i_CyberOneIncreasedLimitQuestionThree IN ('F','0'), '0',
+		'N/A'
+	) AS o_CyberOneIncreasedLimitQuestionThree,
 	CyberOneIncreasedLimitQuestionFour AS i_CyberOneIncreasedLimitQuestionFour,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_CyberOneIncreasedLimitQuestionFour),'N/A',
@@ -170,9 +173,10 @@ EXP_Output AS (
 	-- 'N/A')
 	DECODE(TRUE,
 		i_CyberOneIncreasedLimitQuestionFour IS NULL, 'N/A',
-		IN(i_CyberOneIncreasedLimitQuestionFour, 'T', '1'), '1',
-		IN(i_CyberOneIncreasedLimitQuestionFour, 'F', '0'), '0',
-		'N/A') AS o_CyberOneIncreasedLimitQuestionFour,
+		i_CyberOneIncreasedLimitQuestionFour IN ('T','1'), '1',
+		i_CyberOneIncreasedLimitQuestionFour IN ('F','0'), '0',
+		'N/A'
+	) AS o_CyberOneIncreasedLimitQuestionFour,
 	CyberOneIncreasedLimitQuestionFive AS i_CyberOneIncreasedLimitQuestionFive,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_CyberOneIncreasedLimitQuestionFive),'N/A',
@@ -181,9 +185,10 @@ EXP_Output AS (
 	-- 'N/A')
 	DECODE(TRUE,
 		i_CyberOneIncreasedLimitQuestionFive IS NULL, 'N/A',
-		IN(i_CyberOneIncreasedLimitQuestionFive, 'T', '1'), '1',
-		IN(i_CyberOneIncreasedLimitQuestionFive, 'F', '0'), '0',
-		'N/A') AS o_CyberOneIncreasedLimitQuestionFive,
+		i_CyberOneIncreasedLimitQuestionFive IN ('T','1'), '1',
+		i_CyberOneIncreasedLimitQuestionFive IN ('F','0'), '0',
+		'N/A'
+	) AS o_CyberOneIncreasedLimitQuestionFive,
 	CyberOneIncreasedLimitQuestionSix AS i_CyberOneIncreasedLimitQuestionSix,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_CyberOneIncreasedLimitQuestionSix),'N/A',
@@ -192,14 +197,18 @@ EXP_Output AS (
 	-- 'N/A')
 	DECODE(TRUE,
 		i_CyberOneIncreasedLimitQuestionSix IS NULL, 'N/A',
-		IN(i_CyberOneIncreasedLimitQuestionSix, 'T', '1'), '1',
-		IN(i_CyberOneIncreasedLimitQuestionSix, 'F', '0'), '0',
-		'N/A') AS o_CyberOneIncreasedLimitQuestionSix,
+		i_CyberOneIncreasedLimitQuestionSix IN ('T','1'), '1',
+		i_CyberOneIncreasedLimitQuestionSix IN ('F','0'), '0',
+		'N/A'
+	) AS o_CyberOneIncreasedLimitQuestionSix,
 	RatingTier AS i_RatingTier,
 	-- *INF*: IIF(ISNULL(i_RatingTier),-1,i_RatingTier)
 	-- 
 	-- -- this should never be null, but it turns out sometimes DCT sends us nulls
-	IFF(i_RatingTier IS NULL, - 1, i_RatingTier) AS o_RatingTier,
+	IFF(i_RatingTier IS NULL,
+		- 1,
+		i_RatingTier
+	) AS o_RatingTier,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId,
 	SYSDATE AS DefaultDate

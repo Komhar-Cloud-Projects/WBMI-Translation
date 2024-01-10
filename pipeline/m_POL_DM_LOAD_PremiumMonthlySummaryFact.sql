@@ -186,37 +186,59 @@ AGG_EP_PM AS (
 	SalesDivisionDimID,
 	MonthlyChangeinDirectEarnedPremium,
 	-- *INF*: ROUND(SUM(MonthlyChangeinDirectEarnedPremium),4)
-	ROUND(SUM(MonthlyChangeinDirectEarnedPremium), 4) AS MonthlyChangeinDirectEarnedPremium_out,
+	ROUND(SUM(MonthlyChangeinDirectEarnedPremium
+		), 4
+	) AS MonthlyChangeinDirectEarnedPremium_out,
 	MonthlyChangeinCededEarnedPremium,
 	-- *INF*: ROUND(SUM(MonthlyChangeinCededEarnedPremium),4)
-	ROUND(SUM(MonthlyChangeinCededEarnedPremium), 4) AS MonthlyChangeinCededEarnedPremium_out,
+	ROUND(SUM(MonthlyChangeinCededEarnedPremium
+		), 4
+	) AS MonthlyChangeinCededEarnedPremium_out,
 	MonthlyChangeInDirectUnearnedPremium,
 	-- *INF*: ROUND(SUM(MonthlyChangeInDirectUnearnedPremium),4)
-	ROUND(SUM(MonthlyChangeInDirectUnearnedPremium), 4) AS MonthlyChangeInDirectUnearnedPremium_out,
+	ROUND(SUM(MonthlyChangeInDirectUnearnedPremium
+		), 4
+	) AS MonthlyChangeInDirectUnearnedPremium_out,
 	MonthlyChangeInCededUnearnedPremium,
 	-- *INF*: ROUND(SUM(MonthlyChangeInCededUnearnedPremium),4)
-	ROUND(SUM(MonthlyChangeInCededUnearnedPremium), 4) AS MonthlyChangeInCededUnearnedPremium_out,
+	ROUND(SUM(MonthlyChangeInCededUnearnedPremium
+		), 4
+	) AS MonthlyChangeInCededUnearnedPremium_out,
 	PremiumMasterAgencyCededWrittenCommission,
 	-- *INF*: ROUND(SUM(PremiumMasterAgencyCededWrittenCommission),4)
-	ROUND(SUM(PremiumMasterAgencyCededWrittenCommission), 4) AS PremiumMasterAgencyCededWrittenCommission_out,
+	ROUND(SUM(PremiumMasterAgencyCededWrittenCommission
+		), 4
+	) AS PremiumMasterAgencyCededWrittenCommission_out,
 	PremiumMasterAgencyDirectWrittenCommission,
 	-- *INF*: ROUND(SUM(PremiumMasterAgencyDirectWrittenCommission),4)
-	ROUND(SUM(PremiumMasterAgencyDirectWrittenCommission), 4) AS PremiumMasterAgencyDirectWrittenCommission_out,
+	ROUND(SUM(PremiumMasterAgencyDirectWrittenCommission
+		), 4
+	) AS PremiumMasterAgencyDirectWrittenCommission_out,
 	PremiumMasterAuditPremium,
 	-- *INF*: ROUND(SUM(PremiumMasterAuditPremium),4)
-	ROUND(SUM(PremiumMasterAuditPremium), 4) AS PremiumMasterAuditPremium_out,
+	ROUND(SUM(PremiumMasterAuditPremium
+		), 4
+	) AS PremiumMasterAuditPremium_out,
 	PremiumMasterCededWrittenPremium,
 	-- *INF*: ROUND(SUM(PremiumMasterCededWrittenPremium),4)
-	ROUND(SUM(PremiumMasterCededWrittenPremium), 4) AS PremiumMasterCededWrittenPremium_out,
+	ROUND(SUM(PremiumMasterCededWrittenPremium
+		), 4
+	) AS PremiumMasterCededWrittenPremium_out,
 	PremiumMasterCollectionWriteOffPremium,
 	-- *INF*: ROUND(SUM(PremiumMasterCollectionWriteOffPremium),4)
-	ROUND(SUM(PremiumMasterCollectionWriteOffPremium), 4) AS PremiumMasterCollectionWriteOffPremium_out,
+	ROUND(SUM(PremiumMasterCollectionWriteOffPremium
+		), 4
+	) AS PremiumMasterCollectionWriteOffPremium_out,
 	PremiumMasterDirectWrittenPremium,
 	-- *INF*: ROUND(SUM(PremiumMasterDirectWrittenPremium),4)
-	ROUND(SUM(PremiumMasterDirectWrittenPremium), 4) AS PremiumMasterDirectWrittenPremium_out,
+	ROUND(SUM(PremiumMasterDirectWrittenPremium
+		), 4
+	) AS PremiumMasterDirectWrittenPremium_out,
 	PremiumMasterReturnedPremium,
 	-- *INF*: ROUND(SUM(PremiumMasterReturnedPremium),4)
-	ROUND(SUM(PremiumMasterReturnedPremium), 4) AS PremiumMasterReturnedPremium_out,
+	ROUND(SUM(PremiumMasterReturnedPremium
+		), 4
+	) AS PremiumMasterReturnedPremium_out,
 	TransactionInforceFlag
 	FROM SRT_Records
 	GROUP BY SnapshotDateID, AgencyDimID, PolicyDimId, ContractCustomerDimID, InsuranceReferenceDimId, SalesDivisionDimID
@@ -330,15 +352,25 @@ EXP_Target AS (
 	AGG_EP_PM.PremiumMasterReturnedPremium_out AS PremiumMasterReturnedPremium,
 	AGG_EP_PM.TransactionInforceFlag,
 	-- *INF*: LTRIM(RTRIM(lkp_pol_key))
-	LTRIM(RTRIM(lkp_pol_key)) AS v_pol_key,
+	LTRIM(RTRIM(lkp_pol_key
+		)
+	) AS v_pol_key,
 	-- *INF*: LTRIM(RTRIM(lkp_ProgramCode))
-	LTRIM(RTRIM(lkp_ProgramCode)) AS v_ProgramCode,
+	LTRIM(RTRIM(lkp_ProgramCode
+		)
+	) AS v_ProgramCode,
 	-- *INF*: LTRIM(RTRIM(lkp_ProductCode))
-	LTRIM(RTRIM(lkp_ProductCode)) AS v_ProductCode,
+	LTRIM(RTRIM(lkp_ProductCode
+		)
+	) AS v_ProductCode,
 	-- *INF*: LTRIM(RTRIM(lkp_InsuranceReferenceLineOfBusinessCode))
-	LTRIM(RTRIM(lkp_InsuranceReferenceLineOfBusinessCode)) AS v_InsuranceReferenceLineOfBusinessCode,
+	LTRIM(RTRIM(lkp_InsuranceReferenceLineOfBusinessCode
+		)
+	) AS v_InsuranceReferenceLineOfBusinessCode,
 	-- *INF*: LTRIM(RTRIM(lkp_assoc_code))
-	LTRIM(RTRIM(lkp_assoc_code)) AS v_assoc_code,
+	LTRIM(RTRIM(lkp_assoc_code
+		)
+	) AS v_assoc_code,
 	v_pol_key AS v_DistinctPolicyKeyCounter,
 	v_pol_key||'/'||v_ProductCode AS v_DistinctPolicyProductCounter,
 	v_pol_key||'/'||v_InsuranceReferenceLineOfBusinessCode AS v_DistinctPolicyLineOfBusinessCounter,
@@ -346,39 +378,122 @@ EXP_Target AS (
 	v_pol_key||'/'||v_assoc_code AS v_DistinctPolicyAssociationCounter,
 	lkp_CalendarDate AS v_RunDate,
 	-- *INF*: IIF(TransactionInforceFlag='Y',v_DistinctPolicyKeyCounter,NULL)
-	IFF(TransactionInforceFlag = 'Y', v_DistinctPolicyKeyCounter, NULL) AS o_InforceDistinctPolicyCounter,
+	IFF(TransactionInforceFlag = 'Y',
+		v_DistinctPolicyKeyCounter,
+		NULL
+	) AS o_InforceDistinctPolicyCounter,
 	-- *INF*: IIF(lkp_pol_exp_date>ADD_TO_DATE(v_RunDate,'MM',-1) AND lkp_pol_exp_date<=v_RunDate,v_DistinctPolicyKeyCounter,NULL)
-	IFF(lkp_pol_exp_date > ADD_TO_DATE(v_RunDate, 'MM', - 1) AND lkp_pol_exp_date <= v_RunDate, v_DistinctPolicyKeyCounter, NULL) AS o_ExpiredPolicyOfferingCounter,
+	IFF(lkp_pol_exp_date > DATEADD(MONTH,- 1,v_RunDate) 
+		AND lkp_pol_exp_date <= v_RunDate,
+		v_DistinctPolicyKeyCounter,
+		NULL
+	) AS o_ExpiredPolicyOfferingCounter,
 	-- *INF*: IIF(lkp_PolicyStatusDescription='Cancelled' AND GET_DATE_PART(lkp_PolicyCancellationDate,'MM')=GET_DATE_PART(v_RunDate,'MM'),v_DistinctPolicyKeyCounter,NULL)
-	IFF(lkp_PolicyStatusDescription = 'Cancelled' AND GET_DATE_PART(lkp_PolicyCancellationDate, 'MM') = GET_DATE_PART(v_RunDate, 'MM'), v_DistinctPolicyKeyCounter, NULL) AS o_CancelledPolicyCounter,
+	IFF(lkp_PolicyStatusDescription = 'Cancelled' 
+		AND DATE_PART(lkp_PolicyCancellationDate, 'MM'
+		) = DATE_PART(v_RunDate, 'MM'
+		),
+		v_DistinctPolicyKeyCounter,
+		NULL
+	) AS o_CancelledPolicyCounter,
 	-- *INF*: IIF(TransactionInforceFlag='Y' AND lkp_pol_issue_code='N' ,v_DistinctPolicyKeyCounter,NULL)
-	IFF(TransactionInforceFlag = 'Y' AND lkp_pol_issue_code = 'N', v_DistinctPolicyKeyCounter, NULL) AS o_NewInforceDistinctPolicyCounter,
+	IFF(TransactionInforceFlag = 'Y' 
+		AND lkp_pol_issue_code = 'N',
+		v_DistinctPolicyKeyCounter,
+		NULL
+	) AS o_NewInforceDistinctPolicyCounter,
 	-- *INF*: IIF(
 	-- ((TRUNC(lkp_pol_eff_date,'MM')<=TRUNC(v_RunDate,'MM') AND TRUNC(lkp_pol_enter_date,'MM')=TRUNC(v_RunDate,'MM')) OR (TRUNC(lkp_pol_eff_date,'MM')=TRUNC(v_RunDate,'MM') AND TRUNC(lkp_pol_enter_date,'MM')<=TRUNC(v_RunDate,'MM'))) AND lkp_pol_issue_code='N',v_DistinctPolicyKeyCounter,NULL
 	-- )
-	IFF(( ( TRUNC(lkp_pol_eff_date, 'MM') <= TRUNC(v_RunDate, 'MM') AND TRUNC(lkp_pol_enter_date, 'MM') = TRUNC(v_RunDate, 'MM') ) OR ( TRUNC(lkp_pol_eff_date, 'MM') = TRUNC(v_RunDate, 'MM') AND TRUNC(lkp_pol_enter_date, 'MM') <= TRUNC(v_RunDate, 'MM') ) ) AND lkp_pol_issue_code = 'N', v_DistinctPolicyKeyCounter, NULL) AS o_NewPolicyCounterUsingBusinessLogic,
+	IFF(( ( CAST(TRUNC(lkp_pol_eff_date, 'MONTH') AS TIMESTAMP_NTZ(0)) <= CAST(TRUNC(v_RunDate, 'MONTH') AS TIMESTAMP_NTZ(0)) 
+				AND CAST(TRUNC(lkp_pol_enter_date, 'MONTH') AS TIMESTAMP_NTZ(0)) = CAST(TRUNC(v_RunDate, 'MONTH') AS TIMESTAMP_NTZ(0)) 
+			) 
+			OR ( CAST(TRUNC(lkp_pol_eff_date, 'MONTH') AS TIMESTAMP_NTZ(0)) = CAST(TRUNC(v_RunDate, 'MONTH') AS TIMESTAMP_NTZ(0)) 
+				AND CAST(TRUNC(lkp_pol_enter_date, 'MONTH') AS TIMESTAMP_NTZ(0)) <= CAST(TRUNC(v_RunDate, 'MONTH') AS TIMESTAMP_NTZ(0)) 
+			) 
+		) 
+		AND lkp_pol_issue_code = 'N',
+		v_DistinctPolicyKeyCounter,
+		NULL
+	) AS o_NewPolicyCounterUsingBusinessLogic,
 	-- *INF*: IIF((lkp_pol_issue_code='N') AND (lkp_PolicyStatusDescription='Cancelled' AND GET_DATE_PART(lkp_PolicyCancellationDate,'MM')=GET_DATE_PART(v_RunDate,'MM')),v_DistinctPolicyKeyCounter,NULL)
-	IFF(( lkp_pol_issue_code = 'N' ) AND ( lkp_PolicyStatusDescription = 'Cancelled' AND GET_DATE_PART(lkp_PolicyCancellationDate, 'MM') = GET_DATE_PART(v_RunDate, 'MM') ), v_DistinctPolicyKeyCounter, NULL) AS o_NewOffsetCounterUsingBusinessLogic,
+	IFF(( lkp_pol_issue_code = 'N' 
+		) 
+		AND ( lkp_PolicyStatusDescription = 'Cancelled' 
+			AND DATE_PART(lkp_PolicyCancellationDate, 'MM'
+			) = DATE_PART(v_RunDate, 'MM'
+			) 
+		),
+		v_DistinctPolicyKeyCounter,
+		NULL
+	) AS o_NewOffsetCounterUsingBusinessLogic,
 	-- *INF*: IIF(
 	-- ((TRUNC(lkp_pol_eff_date,'MM')<=TRUNC(v_RunDate,'MM') AND TRUNC(lkp_pol_enter_date,'MM')=TRUNC(v_RunDate,'MM')) OR (TRUNC(lkp_pol_eff_date,'MM')=TRUNC(v_RunDate,'MM') AND TRUNC(lkp_pol_enter_date,'MM')<=TRUNC(v_RunDate,'MM'))) AND IN(lkp_pol_issue_code,'N' ,'R'),v_DistinctPolicyKeyCounter,NULL
 	-- )
-	IFF(( ( TRUNC(lkp_pol_eff_date, 'MM') <= TRUNC(v_RunDate, 'MM') AND TRUNC(lkp_pol_enter_date, 'MM') = TRUNC(v_RunDate, 'MM') ) OR ( TRUNC(lkp_pol_eff_date, 'MM') = TRUNC(v_RunDate, 'MM') AND TRUNC(lkp_pol_enter_date, 'MM') <= TRUNC(v_RunDate, 'MM') ) ) AND IN(lkp_pol_issue_code, 'N', 'R'), v_DistinctPolicyKeyCounter, NULL) AS o_IssuedPolicyCounter,
+	IFF(( ( CAST(TRUNC(lkp_pol_eff_date, 'MONTH') AS TIMESTAMP_NTZ(0)) <= CAST(TRUNC(v_RunDate, 'MONTH') AS TIMESTAMP_NTZ(0)) 
+				AND CAST(TRUNC(lkp_pol_enter_date, 'MONTH') AS TIMESTAMP_NTZ(0)) = CAST(TRUNC(v_RunDate, 'MONTH') AS TIMESTAMP_NTZ(0)) 
+			) 
+			OR ( CAST(TRUNC(lkp_pol_eff_date, 'MONTH') AS TIMESTAMP_NTZ(0)) = CAST(TRUNC(v_RunDate, 'MONTH') AS TIMESTAMP_NTZ(0)) 
+				AND CAST(TRUNC(lkp_pol_enter_date, 'MONTH') AS TIMESTAMP_NTZ(0)) <= CAST(TRUNC(v_RunDate, 'MONTH') AS TIMESTAMP_NTZ(0)) 
+			) 
+		) 
+		AND lkp_pol_issue_code IN ('N','R'),
+		v_DistinctPolicyKeyCounter,
+		NULL
+	) AS o_IssuedPolicyCounter,
 	-- *INF*: IIF(IN(lkp_pol_issue_code,'N','R') AND (lkp_PolicyStatusDescription='Cancelled' AND GET_DATE_PART(lkp_PolicyCancellationDate,'MM')=GET_DATE_PART(v_RunDate,'MM')),v_DistinctPolicyKeyCounter,NULL)
-	IFF(IN(lkp_pol_issue_code, 'N', 'R') AND ( lkp_PolicyStatusDescription = 'Cancelled' AND GET_DATE_PART(lkp_PolicyCancellationDate, 'MM') = GET_DATE_PART(v_RunDate, 'MM') ), v_DistinctPolicyKeyCounter, NULL) AS o_IssuedOffsetCounterUsingBusinessLogic,
+	IFF(lkp_pol_issue_code IN ('N','R') 
+		AND ( lkp_PolicyStatusDescription = 'Cancelled' 
+			AND DATE_PART(lkp_PolicyCancellationDate, 'MM'
+			) = DATE_PART(v_RunDate, 'MM'
+			) 
+		),
+		v_DistinctPolicyKeyCounter,
+		NULL
+	) AS o_IssuedOffsetCounterUsingBusinessLogic,
 	-- *INF*: IIF(
 	-- ((TRUNC(lkp_pol_eff_date,'MM')<=TRUNC(v_RunDate,'MM') AND TRUNC(lkp_pol_enter_date,'MM')=TRUNC(v_RunDate,'MM')) OR (TRUNC(lkp_pol_eff_date,'MM')=TRUNC(v_RunDate,'MM') AND TRUNC(lkp_pol_enter_date,'MM')<=TRUNC(v_RunDate,'MM'))) AND lkp_pol_issue_code='R' ,v_DistinctPolicyKeyCounter,NULL
 	-- )
-	IFF(( ( TRUNC(lkp_pol_eff_date, 'MM') <= TRUNC(v_RunDate, 'MM') AND TRUNC(lkp_pol_enter_date, 'MM') = TRUNC(v_RunDate, 'MM') ) OR ( TRUNC(lkp_pol_eff_date, 'MM') = TRUNC(v_RunDate, 'MM') AND TRUNC(lkp_pol_enter_date, 'MM') <= TRUNC(v_RunDate, 'MM') ) ) AND lkp_pol_issue_code = 'R', v_DistinctPolicyKeyCounter, NULL) AS o_RenewedPolicyCounter,
+	IFF(( ( CAST(TRUNC(lkp_pol_eff_date, 'MONTH') AS TIMESTAMP_NTZ(0)) <= CAST(TRUNC(v_RunDate, 'MONTH') AS TIMESTAMP_NTZ(0)) 
+				AND CAST(TRUNC(lkp_pol_enter_date, 'MONTH') AS TIMESTAMP_NTZ(0)) = CAST(TRUNC(v_RunDate, 'MONTH') AS TIMESTAMP_NTZ(0)) 
+			) 
+			OR ( CAST(TRUNC(lkp_pol_eff_date, 'MONTH') AS TIMESTAMP_NTZ(0)) = CAST(TRUNC(v_RunDate, 'MONTH') AS TIMESTAMP_NTZ(0)) 
+				AND CAST(TRUNC(lkp_pol_enter_date, 'MONTH') AS TIMESTAMP_NTZ(0)) <= CAST(TRUNC(v_RunDate, 'MONTH') AS TIMESTAMP_NTZ(0)) 
+			) 
+		) 
+		AND lkp_pol_issue_code = 'R',
+		v_DistinctPolicyKeyCounter,
+		NULL
+	) AS o_RenewedPolicyCounter,
 	-- *INF*: IIF(lkp_pol_issue_code='N',PremiumMasterDirectWrittenPremium,NULL)
-	IFF(lkp_pol_issue_code = 'N', PremiumMasterDirectWrittenPremium, NULL) AS o_NewBusinessDirectWrittenPremiumUsingBusinesLogic,
+	IFF(lkp_pol_issue_code = 'N',
+		PremiumMasterDirectWrittenPremium,
+		NULL
+	) AS o_NewBusinessDirectWrittenPremiumUsingBusinesLogic,
 	-- *INF*: IIF(lkp_pol_issue_code='N',PremiumMasterDirectWrittenPremium+PremiumMasterCollectionWriteOffPremium,NULL)
-	IFF(lkp_pol_issue_code = 'N', PremiumMasterDirectWrittenPremium + PremiumMasterCollectionWriteOffPremium, NULL) AS o_NewBusinessProductionPremiumUsingBusinesLogic,
+	IFF(lkp_pol_issue_code = 'N',
+		PremiumMasterDirectWrittenPremium + PremiumMasterCollectionWriteOffPremium,
+		NULL
+	) AS o_NewBusinessProductionPremiumUsingBusinesLogic,
 	-- *INF*: IIF(lkp_pol_issue_code='R',PremiumMasterDirectWrittenPremium,NULL)
-	IFF(lkp_pol_issue_code = 'R', PremiumMasterDirectWrittenPremium, NULL) AS o_RenewedDirectWrittenPremium,
+	IFF(lkp_pol_issue_code = 'R',
+		PremiumMasterDirectWrittenPremium,
+		NULL
+	) AS o_RenewedDirectWrittenPremium,
 	-- *INF*: IIF(lkp_PolicyStatusDescription='Cancelled' AND GET_DATE_PART(lkp_PolicyCancellationDate,'MM')=GET_DATE_PART(v_RunDate,'MM'),PremiumMasterDirectWrittenPremium,NULL)
-	IFF(lkp_PolicyStatusDescription = 'Cancelled' AND GET_DATE_PART(lkp_PolicyCancellationDate, 'MM') = GET_DATE_PART(v_RunDate, 'MM'), PremiumMasterDirectWrittenPremium, NULL) AS o_CancelledDirectWrittenPremium,
+	IFF(lkp_PolicyStatusDescription = 'Cancelled' 
+		AND DATE_PART(lkp_PolicyCancellationDate, 'MM'
+		) = DATE_PART(v_RunDate, 'MM'
+		),
+		PremiumMasterDirectWrittenPremium,
+		NULL
+	) AS o_CancelledDirectWrittenPremium,
 	-- *INF*: IIF(lkp_pol_exp_date>ADD_TO_DATE(v_RunDate,'MM',-1) AND lkp_pol_exp_date<=v_RunDate,PremiumMasterDirectWrittenPremium,NULL)
-	IFF(lkp_pol_exp_date > ADD_TO_DATE(v_RunDate, 'MM', - 1) AND lkp_pol_exp_date <= v_RunDate, PremiumMasterDirectWrittenPremium, NULL) AS o_ExpiredDirectWrittenPremium
+	IFF(lkp_pol_exp_date > DATEADD(MONTH,- 1,v_RunDate) 
+		AND lkp_pol_exp_date <= v_RunDate,
+		PremiumMasterDirectWrittenPremium,
+		NULL
+	) AS o_ExpiredDirectWrittenPremium
 	FROM AGG_EP_PM
 	LEFT JOIN LKP_InsuranceReferenceDim
 	ON LKP_InsuranceReferenceDim.InsuranceReferenceDimId = AGG_EP_PM.InsuranceReferenceDimId

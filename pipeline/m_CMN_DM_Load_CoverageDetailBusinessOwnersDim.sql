@@ -56,8 +56,15 @@ EXP_GetMetaData AS (
 	-- , 'UPDATE', 'NOCHANGE')
 	DECODE(TRUE,
 		i_CoverageDetailDimId_BP IS NULL, 'NEW',
-		i_IsoBusinessOwnersPropertyRateNumber_BP != IsoBusinessOwnersPropertyRateNumber OR i_IsoBusinessOwnersLiabilityClassGroup_BP != IsoBusinessOwnersLiabilityClassGroup OR i_ISOOccupancyType_BP != ISOOccupancyType OR i_EffectiveDate_BP != i_EffectiveDate OR i_ExpirationDate_BP != i_ExpirationDate OR i_BuildingBCCCode_BP != BuildingBCCCode OR i_BuildingClassCodeDescription_BP != BuildingClassCodeDescription, 'UPDATE',
-		'NOCHANGE') AS o_ChangeFlag,
+		i_IsoBusinessOwnersPropertyRateNumber_BP != IsoBusinessOwnersPropertyRateNumber 
+		OR i_IsoBusinessOwnersLiabilityClassGroup_BP != IsoBusinessOwnersLiabilityClassGroup 
+		OR i_ISOOccupancyType_BP != ISOOccupancyType 
+		OR i_EffectiveDate_BP != i_EffectiveDate 
+		OR i_ExpirationDate_BP != i_ExpirationDate 
+		OR i_BuildingBCCCode_BP != BuildingBCCCode 
+		OR i_BuildingClassCodeDescription_BP != BuildingClassCodeDescription, 'UPDATE',
+		'NOCHANGE'
+	) AS o_ChangeFlag,
 	i_CoverageDetailDimId AS o_CoverageDetailDimId,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	SYSDATE AS o_CreatedDate,

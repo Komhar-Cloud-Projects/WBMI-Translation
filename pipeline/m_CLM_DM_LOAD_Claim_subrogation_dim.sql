@@ -188,16 +188,23 @@ EXPTRANS AS (
 	SQ_claim_representative_subrogation.closure_date,
 	SQ_claim_representative_subrogation.eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	sysdate AS created_modified_Date,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	LKP_sup_claim_subrogation_deductible_status_code.ded_status_code_descript,
 	-- *INF*: IIF(ISNULL(ded_status_code_descript), 'N/A', ded_status_code_descript)
-	IFF(ded_status_code_descript IS NULL, 'N/A', ded_status_code_descript) AS ded_status_code_descript_out,
+	IFF(ded_status_code_descript IS NULL,
+		'N/A',
+		ded_status_code_descript
+	) AS ded_status_code_descript_out,
 	LKP_sup_claim_subrogation_file_status_code.file_status_code_descript,
 	-- *INF*: IIF(ISNULL(file_status_code_descript), 'N/A', file_status_code_descript)
-	IFF(file_status_code_descript IS NULL, 'N/A', file_status_code_descript) AS file_status_code_descript_out,
+	IFF(file_status_code_descript IS NULL,
+		'N/A',
+		file_status_code_descript
+	) AS file_status_code_descript_out,
 	LKP_claim_representative_subro_rep.claim_rep_key AS claim_rep_key_subro_rep,
 	LKP_claim_representative_subro_rep.claim_rep_full_name AS claim_rep_full_name_subro_rep,
 	LKP_claim_representative_subro_rep.claim_rep_first_name AS claim_rep_first_name_subro_rep,
@@ -500,8 +507,9 @@ EXP_Source AS (
 	-- 	edw_claim_subrogation_ak_id=v_PREV_ROW_edw_claim_subrogation_ak_id , 	ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1)
 	--        ,orig_eff_to_date)
 	DECODE(TRUE,
-		edw_claim_subrogation_ak_id = v_PREV_ROW_edw_claim_subrogation_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		edw_claim_subrogation_ak_id = v_PREV_ROW_edw_claim_subrogation_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS o_eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	edw_claim_subrogation_ak_id AS v_PREV_ROW_edw_claim_subrogation_ak_id,

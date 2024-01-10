@@ -111,13 +111,24 @@ EXP_Default_Values AS (
 	tpoc_code,
 	tpoc_date,
 	-- *INF*: IIF(ISNULL(tpoc_date), TO_DATE('1/1/1800','MM/DD/YYYY'), tpoc_date)
-	IFF(tpoc_date IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), tpoc_date) AS tpoc_date1,
+	IFF(tpoc_date IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		tpoc_date
+	) AS tpoc_date1,
 	tpoc_amount,
 	-- *INF*: IIF(ISNULL(tpoc_amount), 0.00, tpoc_amount)
-	IFF(tpoc_amount IS NULL, 0.00, tpoc_amount) AS tpoc_amount1,
+	IFF(tpoc_amount IS NULL,
+		0.00,
+		tpoc_amount
+	) AS tpoc_amount1,
 	tpoc_fund_dlay_dt,
 	-- *INF*: IIF(ISNULL(tpoc_fund_dlay_dt), TO_DATE('1/1/1800','MM/DD/YYYY'), tpoc_fund_dlay_dt)
-	IFF(tpoc_fund_dlay_dt IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), tpoc_fund_dlay_dt) AS tpoc_fund_dlay_dt1
+	IFF(tpoc_fund_dlay_dt IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		tpoc_fund_dlay_dt
+	) AS tpoc_fund_dlay_dt1
 	FROM FIL_Valid_Codes
 ),
 LKP_Target AS (
@@ -152,15 +163,28 @@ EXP_Detect_Changes AS (
 	-- lkp_tpoc_date != tpoc_date1 OR
 	-- lkp_tpoc_amt != tpoc_amount1
 	-- , 'UPDATE','NOCHANGE'))
-	IFF(lkp_claim_med_plan_tpoc_ak_id IS NULL, 'NEW', IFF(lkp_tpoc_fund_delay_date != tpoc_fund_dlay_dt1 OR lkp_tpoc_date != tpoc_date1 OR lkp_tpoc_amt != tpoc_amount1, 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(lkp_claim_med_plan_tpoc_ak_id IS NULL,
+		'NEW',
+		IFF(lkp_tpoc_fund_delay_date != tpoc_fund_dlay_dt1 
+			OR lkp_tpoc_date != tpoc_date1 
+			OR lkp_tpoc_amt != tpoc_amount1,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	1 AS Crrnt_Snpsht_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
@@ -206,7 +230,10 @@ EXP_Insert AS (
 	Modified_Date,
 	SEQ_claim_medical_plan_tpoc.NEXTVAL,
 	-- *INF*: IIF(Changed_Flag='NEW', NEXTVAL, lkp_claim_med_plan_tpoc_ak_id)
-	IFF(Changed_Flag = 'NEW', NEXTVAL, lkp_claim_med_plan_tpoc_ak_id) AS claim_med_plan_tpoc_ak_id_out,
+	IFF(Changed_Flag = 'NEW',
+		NEXTVAL,
+		lkp_claim_med_plan_tpoc_ak_id
+	) AS claim_med_plan_tpoc_ak_id_out,
 	claim_med_plan_ak_id,
 	tpoc_code1,
 	tpoc_date1,
@@ -367,8 +394,9 @@ EXP_Lag_eff_from_date AS (
 	-- 	claim_med_plan_tpoc_ak_id = v_PREV_ROW_claim_med_plan_tpoc_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		claim_med_plan_tpoc_ak_id = v_PREV_ROW_claim_med_plan_tpoc_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_med_plan_tpoc_ak_id = v_PREV_ROW_claim_med_plan_tpoc_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	claim_med_plan_tpoc_ak_id AS v_PREV_ROW_claim_med_plan_tpoc_ak_id,

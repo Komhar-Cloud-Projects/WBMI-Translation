@@ -46,21 +46,29 @@ mplt_Compute_DCT_NonWC_ModifiedPremium AS (WITH
 		i_TransitionFactor,
 		i_DirectWrittenPremium AS DirectWrittenPremium,
 		-- *INF*: TO_DECIMAL((DirectWrittenPremium/i_TransitionFactor),8)
-		TO_DECIMAL(( DirectWrittenPremium / i_TransitionFactor ), 8) AS v_OtherModifiedPremium_div,
+		CAST(( DirectWrittenPremium / i_TransitionFactor 
+		) AS FLOAT) AS v_OtherModifiedPremium_div,
 		-- *INF*: TO_DECIMAL((v_OtherModifiedPremium_div/ i_OtherModifiedFactor),8)
-		TO_DECIMAL(( v_OtherModifiedPremium_div / i_OtherModifiedFactor ), 8) AS v_ScheduleModifiedPremium_div,
+		CAST(( v_OtherModifiedPremium_div / i_OtherModifiedFactor 
+		) AS FLOAT) AS v_ScheduleModifiedPremium_div,
 		-- *INF*: TO_DECIMAL((v_ScheduleModifiedPremium_div/i_ScheduleModifiedFactor),8)
-		TO_DECIMAL(( v_ScheduleModifiedPremium_div / i_ScheduleModifiedFactor ), 8) AS v_ExperienceModifiedPremium_div,
+		CAST(( v_ScheduleModifiedPremium_div / i_ScheduleModifiedFactor 
+		) AS FLOAT) AS v_ExperienceModifiedPremium_div,
 		-- *INF*: TO_DECIMAL((v_ExperienceModifiedPremium_div/i_ExperienceModifiedFactor),8)
-		TO_DECIMAL(( v_ExperienceModifiedPremium_div / i_ExperienceModifiedFactor ), 8) AS v_SubjectDirectWrittenPremium_div,
+		CAST(( v_ExperienceModifiedPremium_div / i_ExperienceModifiedFactor 
+		) AS FLOAT) AS v_SubjectDirectWrittenPremium_div,
 		-- *INF*: ROUND(v_OtherModifiedPremium_div,4)
-		ROUND(v_OtherModifiedPremium_div, 4) AS v_OtherModifiedPremium,
+		ROUND(v_OtherModifiedPremium_div, 4
+		) AS v_OtherModifiedPremium,
 		-- *INF*: ROUND(v_ScheduleModifiedPremium_div,4)
-		ROUND(v_ScheduleModifiedPremium_div, 4) AS v_ScheduleModifiedPremium,
+		ROUND(v_ScheduleModifiedPremium_div, 4
+		) AS v_ScheduleModifiedPremium,
 		-- *INF*: ROUND(v_ExperienceModifiedPremium_div,4)
-		ROUND(v_ExperienceModifiedPremium_div, 4) AS v_ExperienceModifiedPremium,
+		ROUND(v_ExperienceModifiedPremium_div, 4
+		) AS v_ExperienceModifiedPremium,
 		-- *INF*: ROUND(v_SubjectDirectWrittenPremium_div,4)
-		ROUND(v_SubjectDirectWrittenPremium_div, 4) AS v_SubjectDirectWrittenPremium,
+		ROUND(v_SubjectDirectWrittenPremium_div, 4
+		) AS v_SubjectDirectWrittenPremium,
 		v_OtherModifiedPremium AS o_OtherModifiedPremium,
 		v_ScheduleModifiedPremium AS o_ScheduleModifiedPremium,
 		v_ExperienceModifiedPremium AS o_ExperienceModifiedPremium,

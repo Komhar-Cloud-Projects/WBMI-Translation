@@ -68,19 +68,38 @@ EXP_Source AS (
 	-- ,LTRIM(RTRIM(CAJ_EMP_CLIENT_ID))
 	-- )
 	-- 
-	IFF(IS_SPACES(CAJ_EMP_CLIENT_ID) OR CAJ_EMP_CLIENT_ID IS NULL, 'N/A', LTRIM(RTRIM(CAJ_EMP_CLIENT_ID))) AS SOURCE_CAJ_EMP_CLIENT_ID,
+	IFF(LENGTH(CAJ_EMP_CLIENT_ID)>0 AND TRIM(CAJ_EMP_CLIENT_ID)='' 
+		OR CAJ_EMP_CLIENT_ID IS NULL,
+		'N/A',
+		LTRIM(RTRIM(CAJ_EMP_CLIENT_ID
+			)
+		)
+	) AS SOURCE_CAJ_EMP_CLIENT_ID,
 	CAJ_USER_ID,
 	-- *INF*: IIF(IS_SPACES(CAJ_USER_ID) OR ISNULL(CAJ_USER_ID)
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(CAJ_USER_ID))
 	-- )
-	IFF(IS_SPACES(CAJ_USER_ID) OR CAJ_USER_ID IS NULL, 'N/A', LTRIM(RTRIM(CAJ_USER_ID))) AS SOURCE_CAJ_USER_ID,
+	IFF(LENGTH(CAJ_USER_ID)>0 AND TRIM(CAJ_USER_ID)='' 
+		OR CAJ_USER_ID IS NULL,
+		'N/A',
+		LTRIM(RTRIM(CAJ_USER_ID
+			)
+		)
+	) AS SOURCE_CAJ_USER_ID,
 	CAJ_OFFICE_ID,
 	-- *INF*: IIF(IS_SPACES(CAJ_OFFICE_ID) OR ISNULL(CAJ_OFFICE_ID)  OR CAJ_OFFICE_ID = ''
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(CAJ_OFFICE_ID))
 	-- )
-	IFF(IS_SPACES(CAJ_OFFICE_ID) OR CAJ_OFFICE_ID IS NULL OR CAJ_OFFICE_ID = '', 'N/A', LTRIM(RTRIM(CAJ_OFFICE_ID))) AS SOURCE_CAJ_OFFICE_ID,
+	IFF(LENGTH(CAJ_OFFICE_ID)>0 AND TRIM(CAJ_OFFICE_ID)='' 
+		OR CAJ_OFFICE_ID IS NULL 
+		OR CAJ_OFFICE_ID = '',
+		'N/A',
+		LTRIM(RTRIM(CAJ_OFFICE_ID
+			)
+		)
+	) AS SOURCE_CAJ_OFFICE_ID,
 	CAJ_DIR_AUT_RES,
 	CAJ_DIR_AUT_PMT
 	FROM SQ_ADJUSTER_TAB_STAGE
@@ -90,19 +109,46 @@ EXP_DeterminePmsId AS (
 	SOURCE_CAJ_EMP_CLIENT_ID,
 	-- *INF*: IIF(SOURCE_CAJ_EMP_CLIENT_ID = 'N/A',SOURCE_CAJ_EMP_CLIENT_ID,:LKP.LKP_CLT_REF_RELATION_CLIENT_ID(SOURCE_CAJ_EMP_CLIENT_ID,'AJO '))
 	-- -- if N/A do return N/A else perform lookup
-	IFF(SOURCE_CAJ_EMP_CLIENT_ID = 'N/A', SOURCE_CAJ_EMP_CLIENT_ID, LKP_CLT_REF_RELATION_CLIENT_ID_SOURCE_CAJ_EMP_CLIENT_ID_AJO.cirf_ref_id) AS var_Ref_Id,
+	IFF(SOURCE_CAJ_EMP_CLIENT_ID = 'N/A',
+		SOURCE_CAJ_EMP_CLIENT_ID,
+		LKP_CLT_REF_RELATION_CLIENT_ID_SOURCE_CAJ_EMP_CLIENT_ID_AJO.cirf_ref_id
+	) AS var_Ref_Id,
 	-- *INF*: IIF(ISNULL(var_Ref_Id),'N/A',IIF(rtrim(ltrim(var_Ref_Id))='','N/A',var_Ref_Id))
 	-- -- if N/A or blank return N/A else return the refid
-	IFF(var_Ref_Id IS NULL, 'N/A', IFF(rtrim(ltrim(var_Ref_Id)) = '', 'N/A', var_Ref_Id)) AS var_Ref_Id_Response,
+	IFF(var_Ref_Id IS NULL,
+		'N/A',
+		IFF(rtrim(ltrim(var_Ref_Id
+				)
+			) = '',
+			'N/A',
+			var_Ref_Id
+		)
+	) AS var_Ref_Id_Response,
 	-- *INF*: IIF(var_Ref_Id_Response='N/A','N/A',:LKP.LKP_GTAM_WBADJ_STAGE_COST_CENTER(var_Ref_Id_Response))
-	IFF(var_Ref_Id_Response = 'N/A', 'N/A', LKP_GTAM_WBADJ_STAGE_COST_CENTER_var_Ref_Id_Response.Cost_Center_Number) AS var_cost_center,
+	IFF(var_Ref_Id_Response = 'N/A',
+		'N/A',
+		LKP_GTAM_WBADJ_STAGE_COST_CENTER_var_Ref_Id_Response.Cost_Center_Number
+	) AS var_cost_center,
 	-- *INF*: IIF(ISNULL(var_cost_center),'N/A',:UDF.DEFAULT_VALUE_FOR_STRINGS(var_cost_center))
 	-- -- need to decrease lenght from 5 to 4
-	IFF(var_cost_center IS NULL, 'N/A', :UDF.DEFAULT_VALUE_FOR_STRINGS(var_cost_center)) AS cost_center_out,
+	IFF(var_cost_center IS NULL,
+		'N/A',
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(var_cost_center
+		)
+	) AS cost_center_out,
 	-- *INF*: IIF(var_Ref_Id_Response='N/A' ,'N/A',TO_CHAR(:LKP.LKP_PMS_ADJUSTER_MASTER_STAGE_BRANCH_NUMBER(var_Ref_Id_Response)))
-	IFF(var_Ref_Id_Response = 'N/A', 'N/A', TO_CHAR(LKP_PMS_ADJUSTER_MASTER_STAGE_BRANCH_NUMBER_var_Ref_Id_Response.adnm_adjustor_branch_number)) AS var_branch_number,
+	IFF(var_Ref_Id_Response = 'N/A',
+		'N/A',
+		TO_CHAR(LKP_PMS_ADJUSTER_MASTER_STAGE_BRANCH_NUMBER_var_Ref_Id_Response.adnm_adjustor_branch_number
+		)
+	) AS var_branch_number,
 	-- *INF*: IIF(isnull(var_branch_number),'N/A',LPAD(:UDF.DEFAULT_VALUE_FOR_STRINGS(var_branch_number),3,'0'))
-	IFF(var_branch_number IS NULL, 'N/A', LPAD(:UDF.DEFAULT_VALUE_FOR_STRINGS(var_branch_number), 3, '0')) AS branch_number_out,
+	IFF(var_branch_number IS NULL,
+		'N/A',
+		LPAD(:UDF.DEFAULT_VALUE_FOR_STRINGS(var_branch_number
+			), 3, '0'
+		)
+	) AS branch_number_out,
 	var_Ref_Id_Response AS claim_rep_number
 	FROM EXP_Source
 	LEFT JOIN LKP_CLT_REF_RELATION_CLIENT_ID LKP_CLT_REF_RELATION_CLIENT_ID_SOURCE_CAJ_EMP_CLIENT_ID_AJO
@@ -328,17 +374,26 @@ EXP_Target AS (
 	-- *INF*: IIF(Manager_first_name = 'N/A'
 	--       ,' '
 	--       ,Manager_first_name)
-	IFF(Manager_first_name = 'N/A', ' ', Manager_first_name) AS v_Manager_first_name,
+	IFF(Manager_first_name = 'N/A',
+		' ',
+		Manager_first_name
+	) AS v_Manager_first_name,
 	LKP_Claim_Party1_EDW.claim_party_last_name AS Manager_last_name,
 	-- *INF*: iif(Manager_last_name = 'N/A'
 	--      ,' '
 	--      ,Manager_last_name)
-	IFF(Manager_last_name = 'N/A', ' ', Manager_last_name) AS v_Manager_last_name,
+	IFF(Manager_last_name = 'N/A',
+		' ',
+		Manager_last_name
+	) AS v_Manager_last_name,
 	LKP_Claim_Party1_EDW.claim_party_mid_name AS Manager_mid_name,
 	-- *INF*: iif(Manager_mid_name = 'N/A'
 	--      ,' '
 	--      ,Manager_mid_name)
-	IFF(Manager_mid_name = 'N/A', ' ', Manager_mid_name) AS v_Manager_mid_name,
+	IFF(Manager_mid_name = 'N/A',
+		' ',
+		Manager_mid_name
+	) AS v_Manager_mid_name,
 	LKP_Claim_Party1_EDW.claim_party_name_prfx AS Manager_name_prfx,
 	LKP_Claim_Party1_EDW.claim_party_name_sfx AS Manager_name_sfx,
 	-- *INF*: IIF(IS_SPACES(v_Manager_first_name || v_Manager_mid_name || v_Manager_last_name) = 1
@@ -353,35 +408,61 @@ EXP_Target AS (
 	-- --IIF(IS_SPACES(v_Manager_first_name || v_Manager_mid_name || v_Manager_last_name) = 1
 	--    --    ,'N/A'
 	--       -- ,LTRIM(RTRIM(v_Manager_first_name || ' ' || v_Manager_mid_name || ' ' || v_Manager_last_name)))
-	IFF(IS_SPACES(v_Manager_first_name || v_Manager_mid_name || v_Manager_last_name) = 1, 'N/A', IFF(Manager_mid_name = 'N/A', LTRIM(RTRIM(v_Manager_first_name || v_Manager_mid_name || v_Manager_last_name)), LTRIM(RTRIM(v_Manager_first_name || ' ' || v_Manager_mid_name || ' ' || v_Manager_last_name)))) AS CICL_LNG_NM,
+	IFF(LENGTH(v_Manager_first_name || v_Manager_mid_name || v_Manager_last_name)>0 AND TRIM(v_Manager_first_name || v_Manager_mid_name || v_Manager_last_name)='' = 1,
+		'N/A',
+		IFF(Manager_mid_name = 'N/A',
+			LTRIM(RTRIM(v_Manager_first_name || v_Manager_mid_name || v_Manager_last_name
+				)
+			),
+			LTRIM(RTRIM(v_Manager_first_name || ' ' || v_Manager_mid_name || ' ' || v_Manager_last_name
+				)
+			)
+		)
+	) AS CICL_LNG_NM,
 	LKP_PMS_Adjuster_Master_Stage.adnm_name AS in_adnm_name,
 	-- *INF*: IIF(ISNULL(in_adnm_name),'N/A',LTRIM(RTRIM(in_adnm_name)))
 	-- 
 	-- --converting to variable and routing through a diff output port so the length will match target length and not force unnecessary updates.
-	IFF(in_adnm_name IS NULL, 'N/A', LTRIM(RTRIM(in_adnm_name))) AS v_dept_mgr,
+	IFF(in_adnm_name IS NULL,
+		'N/A',
+		LTRIM(RTRIM(in_adnm_name
+			)
+		)
+	) AS v_dept_mgr,
 	v_dept_mgr AS dept_mgr_out,
 	EXP_Source.SOURCE_CAJ_USER_ID AS wbconnect_user_id_claim_rep,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_SUP_CLAIM_STAFF_EMAIL(wbconnect_user_id_claim_rep))
 	-- ,'N/A'
 	-- ,:LKP.LKP_SUP_CLAIM_STAFF_EMAIL(wbconnect_user_id_claim_rep))
-	IFF(LKP_SUP_CLAIM_STAFF_EMAIL_wbconnect_user_id_claim_rep.EMAIL IS NULL, 'N/A', LKP_SUP_CLAIM_STAFF_EMAIL_wbconnect_user_id_claim_rep.EMAIL) AS Claim_Rep_Email,
+	IFF(LKP_SUP_CLAIM_STAFF_EMAIL_wbconnect_user_id_claim_rep.EMAIL IS NULL,
+		'N/A',
+		LKP_SUP_CLAIM_STAFF_EMAIL_wbconnect_user_id_claim_rep.EMAIL
+	) AS Claim_Rep_Email,
 	LKP_Claim_Party1_EDW.wbconnect_user_id_handling_office_mgr AS wbconnect_user_id_handling_officer_mgr,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_SUP_CLAIM_STAFF_EMAIL(wbconnect_user_id_handling_officer_mgr))
 	-- ,'N/A'
 	-- ,:LKP.LKP_SUP_CLAIM_STAFF_EMAIL(wbconnect_user_id_handling_officer_mgr))
-	IFF(LKP_SUP_CLAIM_STAFF_EMAIL_wbconnect_user_id_handling_officer_mgr.EMAIL IS NULL, 'N/A', LKP_SUP_CLAIM_STAFF_EMAIL_wbconnect_user_id_handling_officer_mgr.EMAIL) AS Handling_Office_Mgr_Email,
+	IFF(LKP_SUP_CLAIM_STAFF_EMAIL_wbconnect_user_id_handling_officer_mgr.EMAIL IS NULL,
+		'N/A',
+		LKP_SUP_CLAIM_STAFF_EMAIL_wbconnect_user_id_handling_officer_mgr.EMAIL
+	) AS Handling_Office_Mgr_Email,
 	EXP_Source.CAJ_DIR_AUT_RES AS CLAIM_REP_DIR_AUT_RES,
 	EXP_Source.CAJ_DIR_AUT_PMT AS CLAIM_REP_DIR_AUT_PMT,
 	LKP_Claim_Party1_EDW.CAJ_DIR_AUT_PMT AS MGR_DIR_AUT_PMT,
 	LKP_Claim_Party1_EDW.CAJ_DIR_AUT_RES AS MGR_DIR_AUT_RES,
 	-- *INF*: rtrim(ltrim(:LKP.LKP_CLT_REF_RELATION_CLIENT_ID(CAJ_EMP_CLIENT_ID,'AJO')))
-	rtrim(ltrim(LKP_CLT_REF_RELATION_CLIENT_ID_CAJ_EMP_CLIENT_ID_AJO.cirf_ref_id)) AS v_adjustor_ref_id,
+	rtrim(ltrim(LKP_CLT_REF_RELATION_CLIENT_ID_CAJ_EMP_CLIENT_ID_AJO.cirf_ref_id
+		)
+	) AS v_adjustor_ref_id,
 	EXP_DeterminePmsId.cost_center_out AS cost_center,
 	EXP_DeterminePmsId.branch_number_out AS branch_number,
 	EXP_DeterminePmsId.claim_rep_number,
 	LKP_SecUsrsStage.SecUsrsStageId,
 	-- *INF*: IIF(ISNULL(SecUsrsStageId),'F','T')
-	IFF(SecUsrsStageId IS NULL, 'F', 'T') AS SecUsrsStageId_out,
+	IFF(SecUsrsStageId IS NULL,
+		'F',
+		'T'
+	) AS SecUsrsStageId_out,
 	LKP_claims_desktop_access.GroupType,
 	-- *INF*: DECODE( TRUE,
 	-- ltrim(rtrim(GroupType))='cr','Read Only',
@@ -401,15 +482,29 @@ EXP_Target AS (
 	-- --cts = Transformation Station
 	-- --ca = Agent
 	DECODE(TRUE,
-		ltrim(rtrim(GroupType)) = 'cr', 'Read Only',
-		ltrim(rtrim(GroupType)) = 'cm', 'Manager',
-		ltrim(rtrim(GroupType)) = 'cu', 'Change',
-		ltrim(rtrim(GroupType)) = 'cq', 'Quest',
-		ltrim(rtrim(GroupType)) = 'cts', 'Transformation Station',
-		ltrim(rtrim(GroupType)) = 'ca', 'Agent',
-		'N/A') AS v_GroupType,
+		ltrim(rtrim(GroupType
+			)
+		) = 'cr', 'Read Only',
+		ltrim(rtrim(GroupType
+			)
+		) = 'cm', 'Manager',
+		ltrim(rtrim(GroupType
+			)
+		) = 'cu', 'Change',
+		ltrim(rtrim(GroupType
+			)
+		) = 'cq', 'Quest',
+		ltrim(rtrim(GroupType
+			)
+		) = 'cts', 'Transformation Station',
+		ltrim(rtrim(GroupType
+			)
+		) = 'ca', 'Agent',
+		'N/A'
+	) AS v_GroupType,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_GroupType)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_GroupType) AS GroupName_out
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_GroupType
+	) AS GroupName_out
 	FROM EXP_DeterminePmsId
 	 -- Manually join with EXP_Source
 	LEFT JOIN LKP_Claim_Party1_EDW
@@ -602,7 +697,121 @@ EXP_Detect_Changes AS (
 	-- OR ltrim(rtrim(lkp_ClaimsDesktopAuthorityType)) !=ltrim(rtrim(ClaimsDesktopAuthorityType))
 	-- ,'UPDATE'
 	-- ,'NOCHANGE'))
-	IFF(claim_rep_id IS NULL, 'NEW', IFF(ltrim(rtrim(lkp_claim_rep_first_name)) != ltrim(rtrim(CICL_FST_NM)) OR ltrim(rtrim(lkp_claim_rep_last_name)) != ltrim(rtrim(CICL_LST_NM)) OR ltrim(rtrim(lkp_claim_rep_mid_name)) != ltrim(rtrim(CICL_MDL_NM)) OR ltrim(rtrim(lkp_claim_rep_name_prfx)) != ltrim(rtrim(NM_PFX)) OR ltrim(rtrim(lkp_claim_rep_name_sfx)) != ltrim(rtrim(NM_SFX)) OR ltrim(rtrim(lkp_dvsn_code)) != ltrim(rtrim(DIVISION_CODE)) OR ltrim(rtrim(lkp_dvsn_descript)) != ltrim(rtrim(DIVISION_DESC)) OR ltrim(rtrim(lkp_dept_descript)) != ltrim(rtrim(DEPT_DESC)) OR ltrim(rtrim(lkp_dept_name)) != ltrim(rtrim(DEPT_CODE)) OR ltrim(rtrim(lkp_dept_mgr)) != ltrim(rtrim(DEPT_MGR)) OR ltrim(rtrim(handling_office_code)) != ltrim(rtrim(CAJ_OFFICE_ID)) OR ltrim(rtrim(handling_office_descript)) != ltrim(rtrim(REPORT_OFFICE_NAME)) OR ltrim(rtrim(handling_office_mgr)) != ltrim(rtrim(CICL_LNG_NM)) OR ltrim(rtrim(claim_rep_wbconnect_user_id)) != ltrim(rtrim(SOURCE_CAJ_USER_ID)) OR ltrim(rtrim(claim_rep_email1)) != ltrim(rtrim(Claim_Rep_Email)) OR ltrim(rtrim(handling_office_mgr_email)) != ltrim(rtrim(Handling_Office_Mgr_Email1)) OR claim_rep_direct_automatic_pay_lmt != CLAIM_REP_DIR_AUT_PMT OR claim_rep_direct_automatic_reserve_lmt != CLAIM_REP_DIR_AUT_RES OR handling_office_mgr_direct_automatic_pay_lmt != MGR_DIR_AUT_PMT OR handling_office_mgr_direct_automatic_reserver_lmt != MGR_DIR_AUT_RES OR ltrim(rtrim(lkp_cost_center)) != ltrim(rtrim(cost_center)) OR ltrim(rtrim(lkp_claim_rep_branch_num)) != ltrim(rtrim(claim_rep_branch_num)) OR ltrim(rtrim(lkp_claim_rep_num)) != ltrim(rtrim(claim_rep_num)) OR ltrim(rtrim(lkp_ExceedAuthorityFlag)) != ltrim(rtrim(ExceedAuthorityFlag)) OR ltrim(rtrim(lkp_ClaimsDesktopAuthorityType)) != ltrim(rtrim(ClaimsDesktopAuthorityType)), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(claim_rep_id IS NULL,
+		'NEW',
+		IFF(ltrim(rtrim(lkp_claim_rep_first_name
+				)
+			) != ltrim(rtrim(CICL_FST_NM
+				)
+			) 
+			OR ltrim(rtrim(lkp_claim_rep_last_name
+				)
+			) != ltrim(rtrim(CICL_LST_NM
+				)
+			) 
+			OR ltrim(rtrim(lkp_claim_rep_mid_name
+				)
+			) != ltrim(rtrim(CICL_MDL_NM
+				)
+			) 
+			OR ltrim(rtrim(lkp_claim_rep_name_prfx
+				)
+			) != ltrim(rtrim(NM_PFX
+				)
+			) 
+			OR ltrim(rtrim(lkp_claim_rep_name_sfx
+				)
+			) != ltrim(rtrim(NM_SFX
+				)
+			) 
+			OR ltrim(rtrim(lkp_dvsn_code
+				)
+			) != ltrim(rtrim(DIVISION_CODE
+				)
+			) 
+			OR ltrim(rtrim(lkp_dvsn_descript
+				)
+			) != ltrim(rtrim(DIVISION_DESC
+				)
+			) 
+			OR ltrim(rtrim(lkp_dept_descript
+				)
+			) != ltrim(rtrim(DEPT_DESC
+				)
+			) 
+			OR ltrim(rtrim(lkp_dept_name
+				)
+			) != ltrim(rtrim(DEPT_CODE
+				)
+			) 
+			OR ltrim(rtrim(lkp_dept_mgr
+				)
+			) != ltrim(rtrim(DEPT_MGR
+				)
+			) 
+			OR ltrim(rtrim(handling_office_code
+				)
+			) != ltrim(rtrim(CAJ_OFFICE_ID
+				)
+			) 
+			OR ltrim(rtrim(handling_office_descript
+				)
+			) != ltrim(rtrim(REPORT_OFFICE_NAME
+				)
+			) 
+			OR ltrim(rtrim(handling_office_mgr
+				)
+			) != ltrim(rtrim(CICL_LNG_NM
+				)
+			) 
+			OR ltrim(rtrim(claim_rep_wbconnect_user_id
+				)
+			) != ltrim(rtrim(SOURCE_CAJ_USER_ID
+				)
+			) 
+			OR ltrim(rtrim(claim_rep_email1
+				)
+			) != ltrim(rtrim(Claim_Rep_Email
+				)
+			) 
+			OR ltrim(rtrim(handling_office_mgr_email
+				)
+			) != ltrim(rtrim(Handling_Office_Mgr_Email1
+				)
+			) 
+			OR claim_rep_direct_automatic_pay_lmt != CLAIM_REP_DIR_AUT_PMT 
+			OR claim_rep_direct_automatic_reserve_lmt != CLAIM_REP_DIR_AUT_RES 
+			OR handling_office_mgr_direct_automatic_pay_lmt != MGR_DIR_AUT_PMT 
+			OR handling_office_mgr_direct_automatic_reserver_lmt != MGR_DIR_AUT_RES 
+			OR ltrim(rtrim(lkp_cost_center
+				)
+			) != ltrim(rtrim(cost_center
+				)
+			) 
+			OR ltrim(rtrim(lkp_claim_rep_branch_num
+				)
+			) != ltrim(rtrim(claim_rep_branch_num
+				)
+			) 
+			OR ltrim(rtrim(lkp_claim_rep_num
+				)
+			) != ltrim(rtrim(claim_rep_num
+				)
+			) 
+			OR ltrim(rtrim(lkp_ExceedAuthorityFlag
+				)
+			) != ltrim(rtrim(ExceedAuthorityFlag
+				)
+			) 
+			OR ltrim(rtrim(lkp_ClaimsDesktopAuthorityType
+				)
+			) != ltrim(rtrim(ClaimsDesktopAuthorityType
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	EXP_Target.CAJ_EMP_CLIENT_ID,
 	EXP_Target.CO_Description,
 	1 AS Crrnt_SnapSht_Flag,
@@ -610,9 +819,14 @@ EXP_Detect_Changes AS (
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	v_changed_flag AS changed_flag,
 	sysdate AS created_date,
 	sysdate AS modified_date,
@@ -677,7 +891,10 @@ EXP_Determine_AK AS (
 	-- *INF*: iif(isnull(claim_rep_ak_id)
 	-- ,NEXTVAL
 	-- ,claim_rep_ak_id)
-	IFF(claim_rep_ak_id IS NULL, NEXTVAL, claim_rep_ak_id) AS out_claim_rep_ak_id,
+	IFF(claim_rep_ak_id IS NULL,
+		NEXTVAL,
+		claim_rep_ak_id
+	) AS out_claim_rep_ak_id,
 	CAJ_EMP_CLIENT_ID,
 	CICL_FULL_NAME,
 	CICL_FST_NM,
@@ -798,8 +1015,10 @@ EXP_Expire_Rows AS (
 	-- *INF*: DECODE (TRUE, claim_rep_key = v_PREV_ROW_claim_rep_key and source_sys_id = v_PREV_ROW_source_sys_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		claim_rep_key = v_PREV_ROW_claim_rep_key AND source_sys_id = v_PREV_ROW_source_sys_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_rep_key = v_PREV_ROW_claim_rep_key 
+		AND source_sys_id = v_PREV_ROW_source_sys_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	claim_rep_key AS v_PREV_ROW_claim_rep_key,
 	source_sys_id AS v_PREV_ROW_source_sys_id,

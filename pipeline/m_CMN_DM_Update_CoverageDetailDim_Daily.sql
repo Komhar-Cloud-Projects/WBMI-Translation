@@ -223,11 +223,23 @@ EXP_Value AS (
 	PremiumTransactionExpirationDate AS i_PremiumTransactionExpirationDate,
 	PolicyAKID AS i_PolicyAKID,
 	-- *INF*: IIF( ISNULL( i_CoverageEffectiveDate ),  TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')   , i_CoverageEffectiveDate )
-	IFF(i_CoverageEffectiveDate IS NULL, TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), i_CoverageEffectiveDate) AS v_CoverageEffectiveDate,
+	IFF(i_CoverageEffectiveDate IS NULL,
+		TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		i_CoverageEffectiveDate
+	) AS v_CoverageEffectiveDate,
 	-- *INF*: IIF( ISNULL( i_StatisticalCoverageCancellationDate ),  TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')  , i_StatisticalCoverageCancellationDate)
-	IFF(i_StatisticalCoverageCancellationDate IS NULL, TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'), i_StatisticalCoverageCancellationDate) AS v_StatisticalCoverageCancellationDate,
+	IFF(i_StatisticalCoverageCancellationDate IS NULL,
+		TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		i_StatisticalCoverageCancellationDate
+	) AS v_StatisticalCoverageCancellationDate,
 	-- *INF*: IIF( ISNULL(  i_PremiumTransactionEffectiveDate ),  TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')  , i_PremiumTransactionEffectiveDate )
-	IFF(i_PremiumTransactionEffectiveDate IS NULL, TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), i_PremiumTransactionEffectiveDate) AS v_PremiumTransactionEffectiveDate,
+	IFF(i_PremiumTransactionEffectiveDate IS NULL,
+		TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		i_PremiumTransactionEffectiveDate
+	) AS v_PremiumTransactionEffectiveDate,
 	-- *INF*: IIF( (v_PremiumTransactionEffectiveDate<=v_RunDate AND i_PremiumTransactionExpirationDate > v_RunDate  AND  
 	-- TO_CHAR(  v_RunDate,'YYYY-MM_DD')  = TO_CHAR(SYSDATE,'YYYY-MM-DD')   )
 	-- OR
@@ -235,15 +247,49 @@ EXP_Value AS (
 	-- OR
 	-- (   v_PremiumTransactionEffectiveDate<=v_RunDate AND GET_DATE_PART( i_PremiumTransactionExpirationDate ,'YYYY') = GET_DATE_PART( v_RunDate ,'YYYY') AND   GET_DATE_PART( i_PremiumTransactionExpirationDate ,'MM') >=  GET_DATE_PART( v_RunDate,'MM')   ), v_StatisticalCoverageCancellationDate,                                             TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
 	--   )
-	IFF(( v_PremiumTransactionEffectiveDate <= v_RunDate AND i_PremiumTransactionExpirationDate > v_RunDate AND TO_CHAR(v_RunDate, 'YYYY-MM_DD') = TO_CHAR(SYSDATE, 'YYYY-MM-DD') ) OR ( v_PremiumTransactionEffectiveDate <= v_RunDate AND GET_DATE_PART(i_PremiumTransactionExpirationDate, 'YYYY') > GET_DATE_PART(v_RunDate, 'YYYY') ) OR ( v_PremiumTransactionEffectiveDate <= v_RunDate AND GET_DATE_PART(i_PremiumTransactionExpirationDate, 'YYYY') = GET_DATE_PART(v_RunDate, 'YYYY') AND GET_DATE_PART(i_PremiumTransactionExpirationDate, 'MM') >= GET_DATE_PART(v_RunDate, 'MM') ), v_StatisticalCoverageCancellationDate, TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')) AS v_CoverageCancellationDate,
+	IFF(( v_PremiumTransactionEffectiveDate <= v_RunDate 
+			AND i_PremiumTransactionExpirationDate > v_RunDate 
+			AND TO_CHAR(v_RunDate, 'YYYY-MM_DD'
+			) = TO_CHAR(SYSDATE, 'YYYY-MM-DD'
+			) 
+		) 
+		OR ( v_PremiumTransactionEffectiveDate <= v_RunDate 
+			AND DATE_PART(i_PremiumTransactionExpirationDate, 'YYYY'
+			) > DATE_PART(v_RunDate, 'YYYY'
+			) 
+		) 
+		OR ( v_PremiumTransactionEffectiveDate <= v_RunDate 
+			AND DATE_PART(i_PremiumTransactionExpirationDate, 'YYYY'
+			) = DATE_PART(v_RunDate, 'YYYY'
+			) 
+			AND DATE_PART(i_PremiumTransactionExpirationDate, 'MM'
+			) >= DATE_PART(v_RunDate, 'MM'
+			) 
+		),
+		v_StatisticalCoverageCancellationDate,
+		TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+		)
+	) AS v_CoverageCancellationDate,
 	-- *INF*: IIF( ISNULL( i_RunDate ),  TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')   , i_RunDate )
-	IFF(i_RunDate IS NULL, TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), i_RunDate) AS v_RunDate,
+	IFF(i_RunDate IS NULL,
+		TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		i_RunDate
+	) AS v_RunDate,
 	-- *INF*: (:LKP.LKP_Policy(i_PolicyAKID))
-	( LKP_POLICY_i_PolicyAKID.pol_cancellation_date ) AS v_lkp_policy,
+	( LKP_POLICY_i_PolicyAKID.pol_cancellation_date 
+	) AS v_lkp_policy,
 	-- *INF*: IIF( v_CoverageEffectiveDate>v_PremiumTransactionEffectiveDate,v_CoverageEffectiveDate,v_PremiumTransactionEffectiveDate )
-	IFF(v_CoverageEffectiveDate > v_PremiumTransactionEffectiveDate, v_CoverageEffectiveDate, v_PremiumTransactionEffectiveDate) AS o_CoverageEffectiveDate,
+	IFF(v_CoverageEffectiveDate > v_PremiumTransactionEffectiveDate,
+		v_CoverageEffectiveDate,
+		v_PremiumTransactionEffectiveDate
+	) AS o_CoverageEffectiveDate,
 	-- *INF*: IIF( ISNULL( i_PremiumTransactionExpirationDate ),  TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')  , i_PremiumTransactionExpirationDate )
-	IFF(i_PremiumTransactionExpirationDate IS NULL, TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'), i_PremiumTransactionExpirationDate) AS o_CoverageExpirationDate,
+	IFF(i_PremiumTransactionExpirationDate IS NULL,
+		TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		i_PremiumTransactionExpirationDate
+	) AS o_CoverageExpirationDate,
 	-- *INF*: DECODE(TRUE,
 	--  ISNULL(v_lkp_policy), v_CoverageCancellationDate,
 	-- v_CoverageCancellationDate<= v_lkp_policy ,v_CoverageCancellationDate,
@@ -251,7 +297,8 @@ EXP_Value AS (
 	DECODE(TRUE,
 		v_lkp_policy IS NULL, v_CoverageCancellationDate,
 		v_CoverageCancellationDate <= v_lkp_policy, v_CoverageCancellationDate,
-		v_lkp_policy) AS o_CoverageCancellationDate
+		v_lkp_policy
+	) AS o_CoverageCancellationDate
 	FROM Union
 	LEFT JOIN LKP_POLICY LKP_POLICY_i_PolicyAKID
 	ON LKP_POLICY_i_PolicyAKID.PolicyAKID = i_PolicyAKID
@@ -309,7 +356,12 @@ EXP_UPDATE_Change AS (
 	-- and CoverageCancellationDate=i_CoverageCancellationDate,
 	-- 'UNCHANGED',
 	-- 'UPDATE')
-	IFF(CoverageEffectiveDate = i_CoverageEffectiveDate AND CoverageExpirationDate = i_CoverageExpirationDate AND CoverageCancellationDate = i_CoverageCancellationDate, 'UNCHANGED', 'UPDATE') AS Change_Flag
+	IFF(CoverageEffectiveDate = i_CoverageEffectiveDate 
+		AND CoverageExpirationDate = i_CoverageExpirationDate 
+		AND CoverageCancellationDate = i_CoverageCancellationDate,
+		'UNCHANGED',
+		'UPDATE'
+	) AS Change_Flag
 	FROM JNR_IL_And_DM
 ),
 FLTR_ONLY_CHANGED_UPDATE AS (

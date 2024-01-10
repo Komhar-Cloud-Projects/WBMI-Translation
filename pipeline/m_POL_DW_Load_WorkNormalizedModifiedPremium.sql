@@ -97,11 +97,21 @@ EXP_Default AS (
 	PremiumMasterRunDate AS i_PremiumMasterRunDate,
 	PremiumTransactionEnteredDate AS i_PremiumTransactionEnteredDate,
 	-- *INF*: IIF(i_GeneratedRecordIndicator='F',i_PremiumMasterRunDate,ADD_TO_DATE(LAST_DAY(TRUNC(RunDate,'MM')),'SS',86399))
-	IFF(i_GeneratedRecordIndicator = 'F', i_PremiumMasterRunDate, ADD_TO_DATE(LAST_DAY(TRUNC(RunDate, 'MM')), 'SS', 86399)) AS PremiumMasterRunDate,
+	IFF(i_GeneratedRecordIndicator = 'F',
+		i_PremiumMasterRunDate,
+		DATEADD(SECOND,86399,LAST_DAY(CAST(TRUNC(RunDate, 'MONTH') AS TIMESTAMP_NTZ(0))
+		))
+	) AS PremiumMasterRunDate,
 	-- *INF*: IIF(i_GeneratedRecordIndicator='F',TRUNC(i_PremiumTransactionEnteredDate,'DD'),TRUNC(RunDate,'DD'))
-	IFF(i_GeneratedRecordIndicator = 'F', TRUNC(i_PremiumTransactionEnteredDate, 'DD'), TRUNC(RunDate, 'DD')) AS PremiumTransactionEnteredDate,
+	IFF(i_GeneratedRecordIndicator = 'F',
+		CAST(TRUNC(i_PremiumTransactionEnteredDate, 'DAY') AS TIMESTAMP_NTZ(0)),
+		CAST(TRUNC(RunDate, 'DAY') AS TIMESTAMP_NTZ(0))
+	) AS PremiumTransactionEnteredDate,
 	-- *INF*: IIF(i_GeneratedRecordIndicator='F','0','1')
-	IFF(i_GeneratedRecordIndicator = 'F', '0', '1') AS GeneratedRecordIndicator,
+	IFF(i_GeneratedRecordIndicator = 'F',
+		'0',
+		'1'
+	) AS GeneratedRecordIndicator,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
 	SourceSystemID,
 	SYSDATE AS CreatedDate,

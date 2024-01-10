@@ -96,16 +96,28 @@ EXP_Values AS (
 	SQ_claims_survey_result.claims_survey_result_ak_id AS edw_claims_survey_result_ak_id,
 	lkp_claims_survey_form_dim.claims_survey_form_dim_id AS in_claims_survey_form_dim_id,
 	-- *INF*: iif(isnull(in_claims_survey_form_dim_id),-1,in_claims_survey_form_dim_id)
-	IFF(in_claims_survey_form_dim_id IS NULL, - 1, in_claims_survey_form_dim_id) AS claims_survey_form_dim_id,
+	IFF(in_claims_survey_form_dim_id IS NULL,
+		- 1,
+		in_claims_survey_form_dim_id
+	) AS claims_survey_form_dim_id,
 	LKP_claim_occurrence_dim.claim_occurrence_dim_id AS in_claim_occurrence_dim_id,
 	-- *INF*: iif(isnull(in_claim_occurrence_dim_id),-1,in_claim_occurrence_dim_id)
-	IFF(in_claim_occurrence_dim_id IS NULL, - 1, in_claim_occurrence_dim_id) AS claim_occurrence_dim_id,
+	IFF(in_claim_occurrence_dim_id IS NULL,
+		- 1,
+		in_claim_occurrence_dim_id
+	) AS claim_occurrence_dim_id,
 	LKP_claim_representative_dim.claim_rep_dim_id AS in_claim_rep_dim_id,
 	-- *INF*: iif(isnull(in_claim_rep_dim_id),-1,in_claim_rep_dim_id)
-	IFF(in_claim_rep_dim_id IS NULL, - 1, in_claim_rep_dim_id) AS claim_rep_dim_id,
+	IFF(in_claim_rep_dim_id IS NULL,
+		- 1,
+		in_claim_rep_dim_id
+	) AS claim_rep_dim_id,
 	LKP_calender_dim.clndr_id AS in_entry_date_clndr_id,
 	-- *INF*: iif(isnull(in_entry_date_clndr_id),-1,in_entry_date_clndr_id)
-	IFF(in_entry_date_clndr_id IS NULL, - 1, in_entry_date_clndr_id) AS entry_date_clndr_id,
+	IFF(in_entry_date_clndr_id IS NULL,
+		- 1,
+		in_entry_date_clndr_id
+	) AS entry_date_clndr_id,
 	SQ_claims_survey_result.ques1_resp_val,
 	SQ_claims_survey_result.ques2_resp_val,
 	SQ_claims_survey_result.ques3_resp_val,
@@ -125,7 +137,10 @@ EXP_Values AS (
 	SQ_claims_survey_result.ques17_resp_val,
 	SQ_claims_survey_result.ques18_resp_val,
 	-- *INF*: IIF(ques10_resp_val>3,1,0)
-	IFF(ques10_resp_val > 3, 1, 0) AS raving_fan_flag,
+	IFF(ques10_resp_val > 3,
+		1,
+		0
+	) AS raving_fan_flag,
 	0 AS dtrctr_flag
 	FROM SQ_claims_survey_result
 	LEFT JOIN LKP_calender_dim
@@ -286,7 +301,36 @@ EXP_Detect_Changes AS (
 	-- ,
 	-- 'UPDATE','NOCHANGE'))
 	-- 
-	IFF(lkp_claims_survey_fact_id IS NULL, 'NEW', IFF(lkp_claims_survey_form_dim_id <> claims_survey_form_dim_id OR lkp_claim_occurrence_dim_id <> claim_occurrence_dim_id OR lkp_claim_rep_dim_id <> claim_rep_dim_id OR lkp_entry_date_clndr_id <> entry_date_clndr_id OR lkp_ques1_resp_val <> ques1_resp_val OR lkp_ques2_resp_val <> ques2_resp_val OR lkp_ques3_resp_val <> ques3_resp_val OR lkp_ques4_resp_val <> ques4_resp_val OR lkp_ques5_resp_val <> ques5_resp_val OR lkp_ques6_resp_val <> ques6_resp_val OR lkp_ques7_resp_val <> ques7_resp_val OR lkp_ques8_resp_val <> ques8_resp_val OR lkp_ques9_resp_val <> ques9_resp_val OR lkp_ques10_resp_val <> ques10_resp_val OR lkp_ques11_resp_val <> ques11_resp_val OR lkp_ques12_resp_val <> ques12_resp_val OR lkp_ques13_resp_val <> ques13_resp_val OR lkp_ques14_resp_val <> ques14_resp_val OR lkp_ques15_resp_val <> ques15_resp_val OR lkp_ques16_resp_val <> ques16_resp_val OR lkp_ques17_resp_val <> ques17_resp_val OR lkp_ques18_resp_val <> ques18_resp_val OR lkp_raving_fan_flag <> raving_fan_flag OR lkp_dtrctr_flag <> dtrctr_flag, 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(lkp_claims_survey_fact_id IS NULL,
+		'NEW',
+		IFF(lkp_claims_survey_form_dim_id <> claims_survey_form_dim_id 
+			OR lkp_claim_occurrence_dim_id <> claim_occurrence_dim_id 
+			OR lkp_claim_rep_dim_id <> claim_rep_dim_id 
+			OR lkp_entry_date_clndr_id <> entry_date_clndr_id 
+			OR lkp_ques1_resp_val <> ques1_resp_val 
+			OR lkp_ques2_resp_val <> ques2_resp_val 
+			OR lkp_ques3_resp_val <> ques3_resp_val 
+			OR lkp_ques4_resp_val <> ques4_resp_val 
+			OR lkp_ques5_resp_val <> ques5_resp_val 
+			OR lkp_ques6_resp_val <> ques6_resp_val 
+			OR lkp_ques7_resp_val <> ques7_resp_val 
+			OR lkp_ques8_resp_val <> ques8_resp_val 
+			OR lkp_ques9_resp_val <> ques9_resp_val 
+			OR lkp_ques10_resp_val <> ques10_resp_val 
+			OR lkp_ques11_resp_val <> ques11_resp_val 
+			OR lkp_ques12_resp_val <> ques12_resp_val 
+			OR lkp_ques13_resp_val <> ques13_resp_val 
+			OR lkp_ques14_resp_val <> ques14_resp_val 
+			OR lkp_ques15_resp_val <> ques15_resp_val 
+			OR lkp_ques16_resp_val <> ques16_resp_val 
+			OR lkp_ques17_resp_val <> ques17_resp_val 
+			OR lkp_ques18_resp_val <> ques18_resp_val 
+			OR lkp_raving_fan_flag <> raving_fan_flag 
+			OR lkp_dtrctr_flag <> dtrctr_flag,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	SYSDATE AS modified_date
 	FROM EXP_Values

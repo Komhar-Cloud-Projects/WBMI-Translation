@@ -17,10 +17,42 @@ EXP_default AS (
 	SELECT
 	memo_phrase_on_pucl,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(memo_phrase_on_pucl)))OR IS_SPACES(LTRIM(RTRIM(memo_phrase_on_pucl))) OR LENGTH(LTRIM(RTRIM(memo_phrase_on_pucl))) =0, 'N/A',LTRIM(RTRIM(memo_phrase_on_pucl)))
-	IFF(LTRIM(RTRIM(memo_phrase_on_pucl)) IS NULL OR IS_SPACES(LTRIM(RTRIM(memo_phrase_on_pucl))) OR LENGTH(LTRIM(RTRIM(memo_phrase_on_pucl))) = 0, 'N/A', LTRIM(RTRIM(memo_phrase_on_pucl))) AS memo_phrase_on_pucl_out,
+	IFF(LTRIM(RTRIM(memo_phrase_on_pucl
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(memo_phrase_on_pucl
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(memo_phrase_on_pucl
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(memo_phrase_on_pucl
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(memo_phrase_on_pucl
+			)
+		)
+	) AS memo_phrase_on_pucl_out,
 	memo_phrase_verbiage,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(memo_phrase_verbiage))) OR IS_SPACES(LTRIM(RTRIM(memo_phrase_verbiage))) OR LENGTH(LTRIM(RTRIM(memo_phrase_verbiage))) = 0 ,'N/A' , LTRIM(RTRIM(memo_phrase_verbiage)))
-	IFF(LTRIM(RTRIM(memo_phrase_verbiage)) IS NULL OR IS_SPACES(LTRIM(RTRIM(memo_phrase_verbiage))) OR LENGTH(LTRIM(RTRIM(memo_phrase_verbiage))) = 0, 'N/A', LTRIM(RTRIM(memo_phrase_verbiage))) AS memo_phrase_verbiage_out
+	IFF(LTRIM(RTRIM(memo_phrase_verbiage
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(memo_phrase_verbiage
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(memo_phrase_verbiage
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(memo_phrase_verbiage
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(memo_phrase_verbiage
+			)
+		)
+	) AS memo_phrase_verbiage_out
 	FROM SQ_gtam_TC09_stage
 ),
 LKP_Claim_memo_pharse AS (
@@ -44,14 +76,30 @@ EXP_detect_changes AS (
 	EXP_default.memo_phrase_verbiage_out,
 	-- *INF*: IIF(ISNULL(sup_memo_phrase_code_id), 'NEW', 
 	-- IIF(LTRIM(RTRIM(memo_phrase_comment)) != (LTRIM(RTRIM(memo_phrase_verbiage_out))), 'UPDATE', 'NOCHANGE'))
-	IFF(sup_memo_phrase_code_id IS NULL, 'NEW', IFF(LTRIM(RTRIM(memo_phrase_comment)) != ( LTRIM(RTRIM(memo_phrase_verbiage_out)) ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(sup_memo_phrase_code_id IS NULL,
+		'NEW',
+		IFF(LTRIM(RTRIM(memo_phrase_comment
+				)
+			) != ( LTRIM(RTRIM(memo_phrase_verbiage_out
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS Changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: IIF(v_changed_flag = 'NEW', TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_changed_flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS eff_from_date,
 	-- *INF*:  TO_DATE('12/31/2100 11:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 11:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 11:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -122,8 +170,9 @@ EXP_lag_eff_from_date AS (
 	-- 	orig_eff_to_date)
 	-- 	
 	DECODE(TRUE,
-		memo_phrase_code = v_Prev_row_memo_phrase_code, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		memo_phrase_code = v_Prev_row_memo_phrase_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	memo_phrase_code AS v_Prev_row_memo_phrase_code,
 	eff_from_date AS v_prev_eff_from_date,

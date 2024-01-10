@@ -582,69 +582,192 @@ EXP_Default AS (
 	-- NOT ISNULL(lkp_PeriodStartDate),GREATEST(lkp_PeriodStartDate,i_TransactionEffectiveDate),
 	-- GREATEST(i_PeriodStartDate,i_TransactionEffectiveDate))
 	DECODE(TRUE,
-		i_PeriodStartDate IS NULL AND lkp_PeriodStartDate IS NULL, i_TransactionEffectiveDate,
-		NOT lkp_PeriodStartDate IS NULL, GREATEST(lkp_PeriodStartDate, i_TransactionEffectiveDate),
-		GREATEST(i_PeriodStartDate, i_TransactionEffectiveDate)) AS v_TransactionEffectiveDate,
+		i_PeriodStartDate IS NULL 
+		AND lkp_PeriodStartDate IS NULL, i_TransactionEffectiveDate,
+		lkp_PeriodStartDate IS NOT NULL, GREATEST(lkp_PeriodStartDate, i_TransactionEffectiveDate
+		),
+		GREATEST(i_PeriodStartDate, i_TransactionEffectiveDate
+		)
+	) AS v_TransactionEffectiveDate,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_PeriodEndDate) AND ISNULL(lkp_PeriodEndDate),i_TransactionExpirationDate,
 	-- NOT ISNULL(lkp_PeriodEndDate),LEAST(lkp_PeriodEndDate,i_TransactionExpirationDate),
 	-- LEAST(i_PeriodEndDate,i_TransactionExpirationDate))
 	DECODE(TRUE,
-		i_PeriodEndDate IS NULL AND lkp_PeriodEndDate IS NULL, i_TransactionExpirationDate,
-		NOT lkp_PeriodEndDate IS NULL, LEAST(lkp_PeriodEndDate, i_TransactionExpirationDate),
-		LEAST(i_PeriodEndDate, i_TransactionExpirationDate)) AS v_TransactionExpirationDate,
+		i_PeriodEndDate IS NULL 
+		AND lkp_PeriodEndDate IS NULL, i_TransactionExpirationDate,
+		lkp_PeriodEndDate IS NOT NULL, LEAST(lkp_PeriodEndDate, i_TransactionExpirationDate
+		),
+		LEAST(i_PeriodEndDate, i_TransactionExpirationDate
+		)
+	) AS v_TransactionExpirationDate,
 	-- *INF*: IIF(
 	--   ISNULL(i_CommissionPercentage),
 	--   -1,
 	--   i_CommissionPercentage
 	-- )
-	IFF(i_CommissionPercentage IS NULL, - 1, i_CommissionPercentage) AS v_CommissionPercentage,
+	IFF(i_CommissionPercentage IS NULL,
+		- 1,
+		i_CommissionPercentage
+	) AS v_CommissionPercentage,
 	-- *INF*: IIF(ISNULL(i_Exposure),0,i_Exposure)
-	IFF(i_Exposure IS NULL, 0, i_Exposure) AS v_Exposure,
+	IFF(i_Exposure IS NULL,
+		0,
+		i_Exposure
+	) AS v_Exposure,
 	-- *INF*: IIF(
 	--   ISNULL(i_CoverageForm) OR LENGTH(LTRIM(RTRIM(i_CoverageForm)))=0,
 	--   'N/A',
 	--   LTRIM(RTRIM(i_CoverageForm))
 	-- )
-	IFF(i_CoverageForm IS NULL OR LENGTH(LTRIM(RTRIM(i_CoverageForm))) = 0, 'N/A', LTRIM(RTRIM(i_CoverageForm))) AS v_CoverageForm,
+	IFF(i_CoverageForm IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_CoverageForm
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_CoverageForm
+			)
+		)
+	) AS v_CoverageForm,
 	-- *INF*: IIF(ISNULL(i_Id) or IS_SPACES(i_Id) or LENGTH(i_Id)=0,'N/A',LTRIM(RTRIM(i_Id)))
-	IFF(i_Id IS NULL OR IS_SPACES(i_Id) OR LENGTH(i_Id) = 0, 'N/A', LTRIM(RTRIM(i_Id))) AS v_Id,
+	IFF(i_Id IS NULL 
+		OR LENGTH(i_Id)>0 AND TRIM(i_Id)='' 
+		OR LENGTH(i_Id
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_Id
+			)
+		)
+	) AS v_Id,
 	-- *INF*: IIF(ISNULL(i_PolicyVersion),'00',LPAD(TO_CHAR(i_PolicyVersion),2,'0'))
-	IFF(i_PolicyVersion IS NULL, '00', LPAD(TO_CHAR(i_PolicyVersion), 2, '0')) AS v_PolicyVersion,
+	IFF(i_PolicyVersion IS NULL,
+		'00',
+		LPAD(TO_CHAR(i_PolicyVersion
+			), 2, '0'
+		)
+	) AS v_PolicyVersion,
 	-- *INF*: IIF(ISNULL(i_PolicyNumber) or IS_SPACES(i_PolicyNumber) or LENGTH(i_PolicyNumber)=0, 'N/A', LTRIM(RTRIM(i_PolicyNumber)))
-	IFF(i_PolicyNumber IS NULL OR IS_SPACES(i_PolicyNumber) OR LENGTH(i_PolicyNumber) = 0, 'N/A', LTRIM(RTRIM(i_PolicyNumber))) AS v_PolicyNumber,
+	IFF(i_PolicyNumber IS NULL 
+		OR LENGTH(i_PolicyNumber)>0 AND TRIM(i_PolicyNumber)='' 
+		OR LENGTH(i_PolicyNumber
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_PolicyNumber
+			)
+		)
+	) AS v_PolicyNumber,
 	-- *INF*: IIF(ISNULL(i_Territory) OR IS_SPACES(i_Territory) OR LENGTH(i_Territory)=0,'N/A',LTRIM(RTRIM(i_Territory)))
-	IFF(i_Territory IS NULL OR IS_SPACES(i_Territory) OR LENGTH(i_Territory) = 0, 'N/A', LTRIM(RTRIM(i_Territory))) AS v_Territory,
+	IFF(i_Territory IS NULL 
+		OR LENGTH(i_Territory)>0 AND TRIM(i_Territory)='' 
+		OR LENGTH(i_Territory
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_Territory
+			)
+		)
+	) AS v_Territory,
 	-- *INF*: IIF(ISNULL(i_LocationXmlId) OR IS_SPACES(i_LocationXmlId) OR LENGTH(i_LocationXmlId)=0,'N/A',LTRIM(RTRIM(i_LocationXmlId)))
-	IFF(i_LocationXmlId IS NULL OR IS_SPACES(i_LocationXmlId) OR LENGTH(i_LocationXmlId) = 0, 'N/A', LTRIM(RTRIM(i_LocationXmlId))) AS v_LocationXmlID,
+	IFF(i_LocationXmlId IS NULL 
+		OR LENGTH(i_LocationXmlId)>0 AND TRIM(i_LocationXmlId)='' 
+		OR LENGTH(i_LocationXmlId
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_LocationXmlId
+			)
+		)
+	) AS v_LocationXmlID,
 	-- *INF*: IIF(ISNULL(i_LocationNumber) or IS_SPACES(i_LocationNumber) or LENGTH(i_LocationNumber)=0,'0000', LPAD(LTRIM(RTRIM (i_LocationNumber)), 4, '0')) 
-	IFF(i_LocationNumber IS NULL OR IS_SPACES(i_LocationNumber) OR LENGTH(i_LocationNumber) = 0, '0000', LPAD(LTRIM(RTRIM(i_LocationNumber)), 4, '0')) AS v_LocationNumber,
+	IFF(i_LocationNumber IS NULL 
+		OR LENGTH(i_LocationNumber)>0 AND TRIM(i_LocationNumber)='' 
+		OR LENGTH(i_LocationNumber
+		) = 0,
+		'0000',
+		LPAD(LTRIM(RTRIM(i_LocationNumber
+				)
+			), 4, '0'
+		)
+	) AS v_LocationNumber,
 	-- *INF*: IIF(
 	--   ISNULL(i_LineType) OR LENGTH(LTRIM(RTRIM(i_LineType)))=0,
 	--   'N/A',
 	--   LTRIM(RTRIM(i_LineType))
 	-- )
-	IFF(i_LineType IS NULL OR LENGTH(LTRIM(RTRIM(i_LineType))) = 0, 'N/A', LTRIM(RTRIM(i_LineType))) AS v_LineType,
+	IFF(i_LineType IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_LineType
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_LineType
+			)
+		)
+	) AS v_LineType,
 	-- *INF*: IIF(ISNULL(i_PolicyEffectiveDate),TO_DATE('2100-12-31 23:59:59.000','YYYY-MM-DD HH24:MI:SS.MS'),i_PolicyEffectiveDate)
-	IFF(i_PolicyEffectiveDate IS NULL, TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.MS'), i_PolicyEffectiveDate) AS v_PolicyEffectiveDate,
+	IFF(i_PolicyEffectiveDate IS NULL,
+		TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.MS'
+		),
+		i_PolicyEffectiveDate
+	) AS v_PolicyEffectiveDate,
 	-- *INF*: IIF(
 	--   ISNULL(i_RiskType) OR LENGTH(LTRIM(RTRIM(i_RiskType)))=0,
 	--   'N/A',
 	--   LTRIM(RTRIM(i_RiskType))
 	-- )
-	IFF(i_RiskType IS NULL OR LENGTH(LTRIM(RTRIM(i_RiskType))) = 0, 'N/A', LTRIM(RTRIM(i_RiskType))) AS v_RiskType,
+	IFF(i_RiskType IS NULL 
+		OR LENGTH(LTRIM(RTRIM(i_RiskType
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_RiskType
+			)
+		)
+	) AS v_RiskType,
 	-- *INF*: IIF(ISNULL(i_CoverageType) OR IS_SPACES(i_CoverageType) OR LENGTH(i_CoverageType)=0,'N/A',LTRIM(RTRIM(i_CoverageType)))
-	IFF(i_CoverageType IS NULL OR IS_SPACES(i_CoverageType) OR LENGTH(i_CoverageType) = 0, 'N/A', LTRIM(RTRIM(i_CoverageType))) AS v_CoverageType,
+	IFF(i_CoverageType IS NULL 
+		OR LENGTH(i_CoverageType)>0 AND TRIM(i_CoverageType)='' 
+		OR LENGTH(i_CoverageType
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_CoverageType
+			)
+		)
+	) AS v_CoverageType,
 	-- *INF*: IIF(ISNULL(i_ILFTableAssignmentCode) OR IS_SPACES(i_ILFTableAssignmentCode) OR LENGTH(i_ILFTableAssignmentCode)=0, 'N/A', i_ILFTableAssignmentCode)
-	IFF(i_ILFTableAssignmentCode IS NULL OR IS_SPACES(i_ILFTableAssignmentCode) OR LENGTH(i_ILFTableAssignmentCode) = 0, 'N/A', i_ILFTableAssignmentCode) AS v_ILFTableAssignmentCode,
+	IFF(i_ILFTableAssignmentCode IS NULL 
+		OR LENGTH(i_ILFTableAssignmentCode)>0 AND TRIM(i_ILFTableAssignmentCode)='' 
+		OR LENGTH(i_ILFTableAssignmentCode
+		) = 0,
+		'N/A',
+		i_ILFTableAssignmentCode
+	) AS v_ILFTableAssignmentCode,
 	-- *INF*: IIF(ISNULL(i_Value) OR i_Value='N/A',:LKP.LKP_DCMODIFIERSTAGING_DCLINE(i_LineId),i_Value)
-	IFF(i_Value IS NULL OR i_Value = 'N/A', LKP_DCMODIFIERSTAGING_DCLINE_i_LineId.Value, i_Value) AS v_IndividualRiskPremiumModification,
+	IFF(i_Value IS NULL 
+		OR i_Value = 'N/A',
+		LKP_DCMODIFIERSTAGING_DCLINE_i_LineId.Value,
+		i_Value
+	) AS v_IndividualRiskPremiumModification,
 	-- *INF*: IIF(ISNULL(i_TransactionPurpose) or IS_SPACES(i_TransactionPurpose) or LENGTH(i_TransactionPurpose)=0,'N/A', LTRIM(RTRIM (i_TransactionPurpose))) 
-	IFF(i_TransactionPurpose IS NULL OR IS_SPACES(i_TransactionPurpose) OR LENGTH(i_TransactionPurpose) = 0, 'N/A', LTRIM(RTRIM(i_TransactionPurpose))) AS v_TransactionPurpose,
+	IFF(i_TransactionPurpose IS NULL 
+		OR LENGTH(i_TransactionPurpose)>0 AND TRIM(i_TransactionPurpose)='' 
+		OR LENGTH(i_TransactionPurpose
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_TransactionPurpose
+			)
+		)
+	) AS v_TransactionPurpose,
 	-- *INF*: IIF(v_TransactionPurpose ='Onset', i_TransactionCreatedDate,:LKP.LKP_WORKDCTPOLICY_ENTEREDDATE_INITIAL(v_PolicyNumber,v_PolicyVersion,i_TransactionCreatedDate,i_TransactionEffectiveDate))
-	IFF(v_TransactionPurpose = 'Onset', i_TransactionCreatedDate, LKP_WORKDCTPOLICY_ENTEREDDATE_INITIAL_v_PolicyNumber_v_PolicyVersion_i_TransactionCreatedDate_i_TransactionEffectiveDate.TransactionCreatedDate) AS v_PremiumTransactionEnteredDate_Initial,
+	IFF(v_TransactionPurpose = 'Onset',
+		i_TransactionCreatedDate,
+		LKP_WORKDCTPOLICY_ENTEREDDATE_INITIAL_v_PolicyNumber_v_PolicyVersion_i_TransactionCreatedDate_i_TransactionEffectiveDate.TransactionCreatedDate
+	) AS v_PremiumTransactionEnteredDate_Initial,
 	-- *INF*: IIF(NOT ISNULL(v_PremiumTransactionEnteredDate_Initial),v_PremiumTransactionEnteredDate_Initial,:LKP.LKP_WORKDCTPOLICY_ENTEREDDATE(v_PolicyNumber,v_PolicyVersion,i_TransactionCreatedDate,i_TransactionEffectiveDate))
-	IFF(NOT v_PremiumTransactionEnteredDate_Initial IS NULL, v_PremiumTransactionEnteredDate_Initial, LKP_WORKDCTPOLICY_ENTEREDDATE_v_PolicyNumber_v_PolicyVersion_i_TransactionCreatedDate_i_TransactionEffectiveDate.TransactionCreatedDate) AS v_PremiumTransactionEnteredDate,
+	IFF(v_PremiumTransactionEnteredDate_Initial IS NOT NULL,
+		v_PremiumTransactionEnteredDate_Initial,
+		LKP_WORKDCTPOLICY_ENTEREDDATE_v_PolicyNumber_v_PolicyVersion_i_TransactionCreatedDate_i_TransactionEffectiveDate.TransactionCreatedDate
+	) AS v_PremiumTransactionEnteredDate,
 	-- *INF*: --IIF(ISNULL(i_AccountingDate), TO_DATE('1800-01-01', 'YYYY-MM-DD'), TRUNC(i_AccountingDate, 'MM'))
 	-- 
 	-- --The lookup to get the AccountingDate may fail, we have to do regular null check and assign the default date '1800-01-01' to pass the job. Then support team need to investigate why and correct the data.
@@ -657,38 +780,94 @@ EXP_Default AS (
 	'' AS v_BookedDate,
 	-- *INF*: TRUNC(CreatedDate,'MM')
 	-- --IIF(NOT ISNULL(v_PremiumTransactionBookedDate_Initial),v_PremiumTransactionBookedDate_Initial,GREATEST(TRUNC(:LKP.LKP_WORKDCTPOLICY(v_PolicyNumber,v_PolicyVersion,i_CreatedDate,i_EffectiveDate),'MM'),v_BookedDate))
-	TRUNC(CreatedDate, 'MM') AS v_PremiumTransactionBookedDate,
+	CAST(TRUNC(CreatedDate, 'MONTH') AS TIMESTAMP_NTZ(0)) AS v_PremiumTransactionBookedDate,
 	-- *INF*: IIF(ISNULL(i_ExposureBasis) OR IS_SPACES(i_ExposureBasis) OR LENGTH(i_ExposureBasis)=0,'N/A',LTRIM(RTRIM(i_ExposureBasis)))
-	IFF(i_ExposureBasis IS NULL OR IS_SPACES(i_ExposureBasis) OR LENGTH(i_ExposureBasis) = 0, 'N/A', LTRIM(RTRIM(i_ExposureBasis))) AS v_ExposureBasis,
+	IFF(i_ExposureBasis IS NULL 
+		OR LENGTH(i_ExposureBasis)>0 AND TRIM(i_ExposureBasis)='' 
+		OR LENGTH(i_ExposureBasis
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_ExposureBasis
+			)
+		)
+	) AS v_ExposureBasis,
 	v_PolicyVersion AS o_PolicyVersion,
 	-- *INF*: IIF(ISNULL(i_Written),0,i_Written)
-	IFF(i_Written IS NULL, 0, i_Written) AS o_Written,
+	IFF(i_Written IS NULL,
+		0,
+		i_Written
+	) AS o_Written,
 	-- *INF*: LTRIM(RTRIM(i_Type))
-	LTRIM(RTRIM(i_Type)) AS o_Type,
+	LTRIM(RTRIM(i_Type
+		)
+	) AS o_Type,
 	-- *INF*: IIF(ISNULL(i_TransactionCreatedDate),TO_DATE('2100-12-31 23:59:59.000','YYYY-MM-DD HH24:MI:SS.MS'),i_TransactionCreatedDate)
-	IFF(i_TransactionCreatedDate IS NULL, TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.MS'), i_TransactionCreatedDate) AS o_CreatedDate,
+	IFF(i_TransactionCreatedDate IS NULL,
+		TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.MS'
+		),
+		i_TransactionCreatedDate
+	) AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(v_TransactionEffectiveDate),TO_DATE('21001231235959' , 'YYYYMMDDHH24MISS'),v_TransactionEffectiveDate)
-	IFF(v_TransactionEffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), v_TransactionEffectiveDate) AS o_TransactionEffectiveDate,
+	IFF(v_TransactionEffectiveDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		v_TransactionEffectiveDate
+	) AS o_TransactionEffectiveDate,
 	-- *INF*: IIF(ISNULL(v_TransactionExpirationDate),TO_DATE('21001231235959' , 'YYYYMMDDHH24MISS'),v_TransactionExpirationDate) 
-	IFF(v_TransactionExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), v_TransactionExpirationDate) AS o_TransactionExpirationDate,
+	IFF(v_TransactionExpirationDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		v_TransactionExpirationDate
+	) AS o_TransactionExpirationDate,
 	-- *INF*: IIF(ISNULL(i_TransactionCancellationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_TransactionCancellationDate)
-	IFF(i_TransactionCancellationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_TransactionCancellationDate) AS o_TransactionCancellationDate,
+	IFF(i_TransactionCancellationDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_TransactionCancellationDate
+	) AS o_TransactionCancellationDate,
 	-- *INF*: IIF(NOT ISNULL(v_PremiumTransactionEnteredDate),v_PremiumTransactionEnteredDate,i_TransactionCreatedDate)
-	IFF(NOT v_PremiumTransactionEnteredDate IS NULL, v_PremiumTransactionEnteredDate, i_TransactionCreatedDate) AS o_PremiumTransactionEnteredDate,
+	IFF(v_PremiumTransactionEnteredDate IS NOT NULL,
+		v_PremiumTransactionEnteredDate,
+		i_TransactionCreatedDate
+	) AS o_PremiumTransactionEnteredDate,
 	-- *INF*: IIF(NOT ISNULL(v_PremiumTransactionBookedDate),v_PremiumTransactionBookedDate,v_BookedDate)
-	IFF(NOT v_PremiumTransactionBookedDate IS NULL, v_PremiumTransactionBookedDate, v_BookedDate) AS o_PremiumTransactionBookedDate,
+	IFF(v_PremiumTransactionBookedDate IS NOT NULL,
+		v_PremiumTransactionBookedDate,
+		v_BookedDate
+	) AS o_PremiumTransactionBookedDate,
 	v_PolicyEffectiveDate AS o_PolicyEffectiveDate,
 	-- *INF*: IIF(ISNULL(i_PolicyExpirationDate),TO_DATE('2100-12-31 23:59:59.000','YYYY-MM-DD HH24:MI:SS.MS'),i_PolicyExpirationDate)
-	IFF(i_PolicyExpirationDate IS NULL, TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.MS'), i_PolicyExpirationDate) AS o_PolicyExpirationDate,
+	IFF(i_PolicyExpirationDate IS NULL,
+		TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.MS'
+		),
+		i_PolicyExpirationDate
+	) AS o_PolicyExpirationDate,
 	-- *INF*: IIF(ISNULL(i_Premium),0,i_Premium)
-	IFF(i_Premium IS NULL, 0, i_Premium) AS o_Premium,
+	IFF(i_Premium IS NULL,
+		0,
+		i_Premium
+	) AS o_Premium,
 	-- *INF*: IIF(ISNULL(i_Change),0,i_Change)
-	IFF(i_Change IS NULL, 0, i_Change) AS o_Change,
+	IFF(i_Change IS NULL,
+		0,
+		i_Change
+	) AS o_Change,
 	-- *INF*: IIF(ISNULL(i_Prior),0,i_Prior)
-	IFF(i_Prior IS NULL, 0, i_Prior) AS o_Prior,
+	IFF(i_Prior IS NULL,
+		0,
+		i_Prior
+	) AS o_Prior,
 	'D' AS o_PremiumType,
 	-- *INF*: IIF(ISNULL(i_Code) or IS_SPACES(i_Code) or LENGTH(i_Code)=0,'N/A', LTRIM(RTRIM (i_Code))) 
-	IFF(i_Code IS NULL OR IS_SPACES(i_Code) OR LENGTH(i_Code) = 0, 'N/A', LTRIM(RTRIM(i_Code))) AS v_ReasonAmendedCode,
+	IFF(i_Code IS NULL 
+		OR LENGTH(i_Code)>0 AND TRIM(i_Code)='' 
+		OR LENGTH(i_Code
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_Code
+			)
+		)
+	) AS v_ReasonAmendedCode,
 	-- *INF*: DECODE(TRUE,
 	-- LTRIM(RTRIM(i_Type))='FinalAudit','AK',
 	-- LTRIM(RTRIM(i_Type))='VoidFinalAudit','DK',
@@ -697,73 +876,198 @@ EXP_Default AS (
 	-- :UDF.DEFAULT_VALUE_FOR_STRINGS(i_Code)
 	-- )
 	DECODE(TRUE,
-		LTRIM(RTRIM(i_Type)) = 'FinalAudit', 'AK',
-		LTRIM(RTRIM(i_Type)) = 'VoidFinalAudit', 'DK',
-		LTRIM(RTRIM(i_Type)) = 'RevisedFinalAudit', 'CK',
-		IN(LTRIM(RTRIM(i_Type)), 'FinalReporting', 'VoidFinalReporting'), 'OX1',
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(i_Code)) AS o_ReasonAmendedCode,
+		LTRIM(RTRIM(i_Type
+			)
+		) = 'FinalAudit', 'AK',
+		LTRIM(RTRIM(i_Type
+			)
+		) = 'VoidFinalAudit', 'DK',
+		LTRIM(RTRIM(i_Type
+			)
+		) = 'RevisedFinalAudit', 'CK',
+		LTRIM(RTRIM(i_Type
+			)
+		) IN ('FinalReporting','VoidFinalReporting'), 'OX1',
+		:UDF.DEFAULT_VALUE_FOR_STRINGS(i_Code
+		)
+	) AS o_ReasonAmendedCode,
 	-- *INF*: IIF(ISNULL(i_CodeCaption) or IS_SPACES(i_CodeCaption) or LENGTH(i_CodeCaption)=0,'N/A', LTRIM(RTRIM (i_CodeCaption))) 
-	IFF(i_CodeCaption IS NULL OR IS_SPACES(i_CodeCaption) OR LENGTH(i_CodeCaption) = 0, 'N/A', LTRIM(RTRIM(i_CodeCaption))) AS o_CodeCaption,
+	IFF(i_CodeCaption IS NULL 
+		OR LENGTH(i_CodeCaption)>0 AND TRIM(i_CodeCaption)='' 
+		OR LENGTH(i_CodeCaption
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_CodeCaption
+			)
+		)
+	) AS o_CodeCaption,
 	-- *INF*: IIF(ISNULL(i_CoverageGUID) OR IS_SPACES(i_CoverageGUID) OR LENGTH(i_CoverageGUID)=0, 'N/A', LTRIM(RTRIM(i_CoverageGUID)))
-	IFF(i_CoverageGUID IS NULL OR IS_SPACES(i_CoverageGUID) OR LENGTH(i_CoverageGUID) = 0, 'N/A', LTRIM(RTRIM(i_CoverageGUID))) AS o_CoverageGUID,
+	IFF(i_CoverageGUID IS NULL 
+		OR LENGTH(i_CoverageGUID)>0 AND TRIM(i_CoverageGUID)='' 
+		OR LENGTH(i_CoverageGUID
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_CoverageGUID
+			)
+		)
+	) AS o_CoverageGUID,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_DCDEDUCTIBLESTAGING_VALUE(i_CoverageId)),'0',:LKP.LKP_DCDEDUCTIBLESTAGING_VALUE(i_CoverageId))
-	IFF(LKP_DCDEDUCTIBLESTAGING_VALUE_i_CoverageId.Value IS NULL, '0', LKP_DCDEDUCTIBLESTAGING_VALUE_i_CoverageId.Value) AS o_DeductibleAmount,
+	IFF(LKP_DCDEDUCTIBLESTAGING_VALUE_i_CoverageId.Value IS NULL,
+		'0',
+		LKP_DCDEDUCTIBLESTAGING_VALUE_i_CoverageId.Value
+	) AS o_DeductibleAmount,
 	-- *INF*: IIF(ISNULL(i_RetroactiveDate), TO_DATE('2100-12-31', 'YYYY-MM-DD'), TRUNC(i_RetroactiveDate, 'DD'))
-	IFF(i_RetroactiveDate IS NULL, TO_DATE('2100-12-31', 'YYYY-MM-DD'), TRUNC(i_RetroactiveDate, 'DD')) AS o_RetroactiveDate,
+	IFF(i_RetroactiveDate IS NULL,
+		TO_DATE('2100-12-31', 'YYYY-MM-DD'
+		),
+		CAST(TRUNC(i_RetroactiveDate, 'DAY') AS TIMESTAMP_NTZ(0))
+	) AS o_RetroactiveDate,
 	-- *INF*: IIF(ISNULL(i_ExperienceMod_DCModifier) OR IS_SPACES(i_ExperienceMod_DCModifier) OR LENGTH(i_ExperienceMod_DCModifier)=0 OR IS_NUMBER(LTRIM(RTRIM(i_ExperienceMod_DCModifier)))=0,  0,  TO_DECIMAL(LTRIM(RTRIM(i_ExperienceMod_DCModifier))))
 	-- 
 	-- --DECODE(TRUE, ISNULL(i_ExperienceMod_DCModifier) OR IS_SPACES(i_ExperienceMod_DCModifier) OR LENGTH(i_ExperienceMod_DCModifier)=0,  0,  LOWER(i_LineType)='workerscompensation' AND IS_NUMBER(LTRIM(RTRIM(i_ExperienceMod_DCModifier))), TO_DECIMAL(LTRIM(RTRIM(i_ExperienceMod_DCModifier))), 0)
-	IFF(i_ExperienceMod_DCModifier IS NULL OR IS_SPACES(i_ExperienceMod_DCModifier) OR LENGTH(i_ExperienceMod_DCModifier) = 0 OR IS_NUMBER(LTRIM(RTRIM(i_ExperienceMod_DCModifier))) = 0, 0, TO_DECIMAL(LTRIM(RTRIM(i_ExperienceMod_DCModifier)))) AS o_ExperienceModificationFactor,
+	IFF(i_ExperienceMod_DCModifier IS NULL 
+		OR LENGTH(i_ExperienceMod_DCModifier)>0 AND TRIM(i_ExperienceMod_DCModifier)='' 
+		OR LENGTH(i_ExperienceMod_DCModifier
+		) = 0 
+		OR REGEXP_LIKE(LTRIM(RTRIM(i_ExperienceMod_DCModifier
+			)
+		), '^[0-9]+$') = 0,
+		0,
+		CAST(LTRIM(RTRIM(i_ExperienceMod_DCModifier
+			)
+		) AS FLOAT)
+	) AS o_ExperienceModificationFactor,
 	-- *INF*: IIF(ISNULL(i_ExperienceModEffectiveDate), TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'), i_ExperienceModEffectiveDate) 
-	IFF(i_ExperienceModEffectiveDate IS NULL, TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'), i_ExperienceModEffectiveDate) AS o_ExperienceModificationEffectiveDate,
+	IFF(i_ExperienceModEffectiveDate IS NULL,
+		TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		i_ExperienceModEffectiveDate
+	) AS o_ExperienceModificationEffectiveDate,
 	-- *INF*: IIF(ISNULL(i_OriginalPackageModifier), 0, i_OriginalPackageModifier)
-	IFF(i_OriginalPackageModifier IS NULL, 0, i_OriginalPackageModifier) AS o_PackageModificationAdjustmentFactor,
+	IFF(i_OriginalPackageModifier IS NULL,
+		0,
+		i_OriginalPackageModifier
+	) AS o_PackageModificationAdjustmentFactor,
 	-- *INF*: IIF(ISNULL(i_OccupancyType) OR IS_SPACES(i_OccupancyType) OR LENGTH(i_OccupancyType)=0,'N/A',LTRIM(RTRIM(i_OccupancyType)))
-	IFF(i_OccupancyType IS NULL OR IS_SPACES(i_OccupancyType) OR LENGTH(i_OccupancyType) = 0, 'N/A', LTRIM(RTRIM(i_OccupancyType))) AS o_PackageModificationAdjustmentGroupCode,
+	IFF(i_OccupancyType IS NULL 
+		OR LENGTH(i_OccupancyType)>0 AND TRIM(i_OccupancyType)='' 
+		OR LENGTH(i_OccupancyType
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_OccupancyType
+			)
+		)
+	) AS o_PackageModificationAdjustmentGroupCode,
 	-- *INF*: IIF(ISNULL(i_IncreasedLimitFactor) OR IS_SPACES(i_IncreasedLimitFactor) OR LENGTH(i_IncreasedLimitFactor)=0 OR IS_NUMBER(LTRIM(RTRIM(i_IncreasedLimitFactor)))=0, 0, TO_DECIMAL(LTRIM(RTRIM(i_IncreasedLimitFactor))))
-	IFF(i_IncreasedLimitFactor IS NULL OR IS_SPACES(i_IncreasedLimitFactor) OR LENGTH(i_IncreasedLimitFactor) = 0 OR IS_NUMBER(LTRIM(RTRIM(i_IncreasedLimitFactor))) = 0, 0, TO_DECIMAL(LTRIM(RTRIM(i_IncreasedLimitFactor)))) AS o_IncreasedLimitFactor,
+	IFF(i_IncreasedLimitFactor IS NULL 
+		OR LENGTH(i_IncreasedLimitFactor)>0 AND TRIM(i_IncreasedLimitFactor)='' 
+		OR LENGTH(i_IncreasedLimitFactor
+		) = 0 
+		OR REGEXP_LIKE(LTRIM(RTRIM(i_IncreasedLimitFactor
+			)
+		), '^[0-9]+$') = 0,
+		0,
+		CAST(LTRIM(RTRIM(i_IncreasedLimitFactor
+			)
+		) AS FLOAT)
+	) AS o_IncreasedLimitFactor,
 	-- *INF*: DECODE(TRUE, v_ILFTableAssignmentCode='N/A', 'N/A', v_CoverageType='PremisesOperations', SUBSTR(v_ILFTableAssignmentCode,1,1), v_CoverageType='ProductsCompletedOps' and SUBSTR(v_ILFTableAssignmentCode,2,1) = '-', 'I', SUBSTR(v_ILFTableAssignmentCode,2,1))
 	DECODE(TRUE,
 		v_ILFTableAssignmentCode = 'N/A', 'N/A',
-		v_CoverageType = 'PremisesOperations', SUBSTR(v_ILFTableAssignmentCode, 1, 1),
-		v_CoverageType = 'ProductsCompletedOps' AND SUBSTR(v_ILFTableAssignmentCode, 2, 1) = '-', 'I',
-		SUBSTR(v_ILFTableAssignmentCode, 2, 1)) AS o_IncreasedLimitGroupCode,
+		v_CoverageType = 'PremisesOperations', SUBSTR(v_ILFTableAssignmentCode, 1, 1
+		),
+		v_CoverageType = 'ProductsCompletedOps' 
+		AND SUBSTR(v_ILFTableAssignmentCode, 2, 1
+		) = '-', 'I',
+		SUBSTR(v_ILFTableAssignmentCode, 2, 1
+		)
+	) AS o_IncreasedLimitGroupCode,
 	-- *INF*: IIF(ISNULL(i_YearBuilt), '0000', TO_CHAR(i_YearBuilt))
-	IFF(i_YearBuilt IS NULL, '0000', TO_CHAR(i_YearBuilt)) AS o_YearBuilt,
+	IFF(i_YearBuilt IS NULL,
+		'0000',
+		TO_CHAR(i_YearBuilt
+		)
+	) AS o_YearBuilt,
 	-- *INF*: IIF(ISNULL(i_CommissionPercentage) or i_CommissionPercentage=-1,
 	-- iif(isnull(i_FinalCommission),0,i_FinalCommission)
 	--  ,iif(isnull(i_CommissionPercentage),0,i_CommissionPercentage)
 	-- )
 	-- --IIF(ISNULL(i_FinalCommission), 0 , i_FinalCommission)
-	IFF(i_CommissionPercentage IS NULL OR i_CommissionPercentage = - 1, IFF(i_FinalCommission IS NULL, 0, i_FinalCommission), IFF(i_CommissionPercentage IS NULL, 0, i_CommissionPercentage)) AS o_AgencyActualCommissionRate,
+	IFF(i_CommissionPercentage IS NULL 
+		OR i_CommissionPercentage = - 1,
+		IFF(i_FinalCommission IS NULL,
+			0,
+			i_FinalCommission
+		),
+		IFF(i_CommissionPercentage IS NULL,
+			0,
+			i_CommissionPercentage
+		)
+	) AS o_AgencyActualCommissionRate,
 	-- *INF*: ROUND(IIF(NOT ISNULL(i_BaseRate), i_BaseRate, 0),4)
-	ROUND(IFF(NOT i_BaseRate IS NULL, i_BaseRate, 0), 4) AS o_BaseRate,
+	ROUND(IFF(i_BaseRate IS NOT NULL,
+			i_BaseRate,
+			0
+		), 4
+	) AS o_BaseRate,
 	-- *INF*: IIF(ISNULL(i_ConstructionCode) OR IS_SPACES(i_ConstructionCode) OR LENGTH(i_ConstructionCode)=0, 'N/A', LTRIM(RTRIM(i_ConstructionCode)))
-	IFF(i_ConstructionCode IS NULL OR IS_SPACES(i_ConstructionCode) OR LENGTH(i_ConstructionCode) = 0, 'N/A', LTRIM(RTRIM(i_ConstructionCode))) AS o_ConstructionCode,
+	IFF(i_ConstructionCode IS NULL 
+		OR LENGTH(i_ConstructionCode)>0 AND TRIM(i_ConstructionCode)='' 
+		OR LENGTH(i_ConstructionCode
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_ConstructionCode
+			)
+		)
+	) AS o_ConstructionCode,
 	-- *INF*: IIF(NOT ISNULL(i_RateEffectiveDate),i_RateEffectiveDate,TO_DATE('18000101','YYYYMMDD'))
-	IFF(NOT i_RateEffectiveDate IS NULL, i_RateEffectiveDate, TO_DATE('18000101', 'YYYYMMDD')) AS o_StateRatingEffectiveDate,
+	IFF(i_RateEffectiveDate IS NOT NULL,
+		i_RateEffectiveDate,
+		TO_DATE('18000101', 'YYYYMMDD'
+		)
+	) AS o_StateRatingEffectiveDate,
 	i_CoverageId AS o_CoverageId,
 	-- *INF*: IIF(IS_NUMBER(v_IndividualRiskPremiumModification),TO_DECIMAL(v_IndividualRiskPremiumModification,4),0)
-	IFF(IS_NUMBER(v_IndividualRiskPremiumModification), TO_DECIMAL(v_IndividualRiskPremiumModification, 4), 0) AS o_IndividualRiskPremiumModification,
+	IFF(REGEXP_LIKE(v_IndividualRiskPremiumModification, '^[0-9]+$'),
+		CAST(v_IndividualRiskPremiumModification AS FLOAT),
+		0
+	) AS o_IndividualRiskPremiumModification,
 	-- *INF*: DECODE(i_WindCoverageFlag,'T','1','0')
 	DECODE(i_WindCoverageFlag,
 		'T', '1',
-		'0') AS o_WindCoverageFlag,
+		'0'
+	) AS o_WindCoverageFlag,
 	-- *INF*: IIF(NOT ISNULL(i_CoverageDeleteFlag),i_CoverageDeleteFlag,'0')
-	IFF(NOT i_CoverageDeleteFlag IS NULL, i_CoverageDeleteFlag, '0') AS o_CoverageDeleteFlag,
+	IFF(i_CoverageDeleteFlag IS NOT NULL,
+		i_CoverageDeleteFlag,
+		'0'
+	) AS o_CoverageDeleteFlag,
 	v_TransactionPurpose AS o_TransactionPurpose,
 	i_ParentCoverageObjectId AS o_ParentCoverageObjectId,
 	-- *INF*: LTRIM(RTRIM(i_ParentCoverageObjectName))
-	LTRIM(RTRIM(i_ParentCoverageObjectName)) AS o_ParentCoverageObjectName,
+	LTRIM(RTRIM(i_ParentCoverageObjectName
+		)
+	) AS o_ParentCoverageObjectName,
 	-- *INF*: LTRIM(RTRIM(i_CoverageType))
-	LTRIM(RTRIM(i_CoverageType)) AS o_CoverageType,
+	LTRIM(RTRIM(i_CoverageType
+		)
+	) AS o_CoverageType,
 	v_ExposureBasis AS o_ExposureBasis,
 	-- *INF*: IIF(i_FullCoverageGlass='T','F','D')
-	IFF(i_FullCoverageGlass = 'T', 'F', 'D') AS o_DeductibleBasis,
+	IFF(i_FullCoverageGlass = 'T',
+		'F',
+		'D'
+	) AS o_DeductibleBasis,
 	-- *INF*: IIF(ISNULL(TransactionCreatedUserID),'N/A',TransactionCreatedUserID)
-	IFF(TransactionCreatedUserID IS NULL, 'N/A', TransactionCreatedUserID) AS o_TransactionCreatedUserId,
+	IFF(TransactionCreatedUserID IS NULL,
+		'N/A',
+		TransactionCreatedUserID
+	) AS o_TransactionCreatedUserId,
 	-- *INF*: IIF(ISNULL(EndorsedProcessedBy),'N/A',EndorsedProcessedBy)
-	IFF(EndorsedProcessedBy IS NULL, 'N/A', EndorsedProcessedBy) AS o_ServiceCentreName,
+	IFF(EndorsedProcessedBy IS NULL,
+		'N/A',
+		EndorsedProcessedBy
+	) AS o_ServiceCentreName,
 	v_PolicyNumber||v_PolicyVersion AS o_Policy_Key,
 	v_LocationNumber|| '~'  || v_Territory || '~'  || v_LocationXmlID AS o_RiskLocation_Key,
 	v_LineType AS o_LineType,
@@ -812,7 +1116,10 @@ EXP_RatingCoverageKey AS (
 	SELECT
 	LKP_PolicyAKID.pol_ak_id AS i_pol_ak_id,
 	-- *INF*: IIF(ISNULL(i_pol_ak_id),-1,i_pol_ak_id)
-	IFF(i_pol_ak_id IS NULL, - 1, i_pol_ak_id) AS o_pol_ak_id,
+	IFF(i_pol_ak_id IS NULL,
+		- 1,
+		i_pol_ak_id
+	) AS o_pol_ak_id,
 	EXP_Default.o_CoverageGUID AS CoverageGUID,
 	EXP_Default.o_CreatedDate AS CreatedDate,
 	EXP_Default.PolicyStatus,
@@ -1084,7 +1391,10 @@ mplt_get_RiskLocation_PolicyCoverage_RatingCoverage_Akids_Hierarchy AS (WITH
 		CoverageGuid,
 		TransactionCreatedDate,
 		-- *INF*: IIF(ISNULL(PolicyAKID),-1,PolicyAKID)
-		IFF(PolicyAKID IS NULL, - 1, PolicyAKID) AS o_PolicyAKID
+		IFF(PolicyAKID IS NULL,
+			- 1,
+			PolicyAKID
+		) AS o_PolicyAKID
 		FROM Input_Policy
 	),
 	LKP_Policy_Heirarchy_With_Date AS (
@@ -1208,7 +1518,10 @@ mplt_get_RiskLocation_PolicyCoverage_RatingCoverage_Akids_Hierarchy AS (WITH
 		SELECT
 		LKP_Policy_Heirarchy_With_Date.RatingCoverageAKID AS RatingCoverageAKID_WithDate,
 		-- *INF*: IIF(isnull(RatingCoverageAKID_WithDate),0,1)
-		IFF(RatingCoverageAKID_WithDate IS NULL, 0, 1) AS Flag,
+		IFF(RatingCoverageAKID_WithDate IS NULL,
+			0,
+			1
+		) AS Flag,
 		LKP_Policy_Heirarchy_With_Date.RiskLocationAKID AS RiskLocationAKID_Date,
 		LKP_Policy_Heirarchy_With_Date.PolicyCoverageAKID AS PolicyCoverageAKID_Date,
 		LKP_Policy_Heirarchy_With_Date.PolicyAKID AS PolicyAKID_Date,
@@ -1233,35 +1546,71 @@ mplt_get_RiskLocation_PolicyCoverage_RatingCoverage_Akids_Hierarchy AS (WITH
 		LKP_Policy_Heirarchy_Without_Date.RatingCoverageEffectivedate,
 		LKP_Policy_Heirarchy_Without_Date.RatingCoverageExpirationdate,
 		-- *INF*: iif(Flag=1,PolicyAKID_Date,PolicyAKID)
-		IFF(Flag = 1, PolicyAKID_Date, PolicyAKID) AS v_PolicyAKID,
+		IFF(Flag = 1,
+			PolicyAKID_Date,
+			PolicyAKID
+		) AS v_PolicyAKID,
 		-- *INF*: IIF(Flag=1,RiskLocationAKID_Date,RiskLocationAKID)
-		IFF(Flag = 1, RiskLocationAKID_Date, RiskLocationAKID) AS v_RiskLocationAKID,
+		IFF(Flag = 1,
+			RiskLocationAKID_Date,
+			RiskLocationAKID
+		) AS v_RiskLocationAKID,
 		-- *INF*: iif(Flag=1,PolicyCoverageAKID_Date,PolicyCoverageAKID)
-		IFF(Flag = 1, PolicyCoverageAKID_Date, PolicyCoverageAKID) AS v_PolicyCoverageAKID,
+		IFF(Flag = 1,
+			PolicyCoverageAKID_Date,
+			PolicyCoverageAKID
+		) AS v_PolicyCoverageAKID,
 		-- *INF*: iif(Flag=1,CoverageGUID_Date,CoverageGUID)
-		IFF(Flag = 1, CoverageGUID_Date, CoverageGUID) AS v_CoverageGUID,
+		IFF(Flag = 1,
+			CoverageGUID_Date,
+			CoverageGUID
+		) AS v_CoverageGUID,
 		v_CoverageGUID AS o_CoverageGUID,
 		-- *INF*: iif(Flag=1,LocationUnitNumber_Date,LocationUnitNumber)
-		IFF(Flag = 1, LocationUnitNumber_Date, LocationUnitNumber) AS v_LocationUnitNumber,
+		IFF(Flag = 1,
+			LocationUnitNumber_Date,
+			LocationUnitNumber
+		) AS v_LocationUnitNumber,
 		v_RiskLocationAKID AS o_RiskLocationAKID,
 		-- *INF*: iif(@{pipeline().parameters.PMSESSIONNAME}='s_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',NULL,RatingCoverageCancellationDate_Date)
-		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT', NULL, RatingCoverageCancellationDate_Date) AS o_RatingCoverageCancellationDate,
+		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',
+			NULL,
+			RatingCoverageCancellationDate_Date
+		) AS o_RatingCoverageCancellationDate,
 		-- *INF*: iif(@{pipeline().parameters.PMSESSIONNAME}='s_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',NULL,iif(Flag=1,RatingCoverageAKID_WithDate,RatingCoverageAKID))
-		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT', NULL, IFF(Flag = 1, RatingCoverageAKID_WithDate, RatingCoverageAKID)) AS o_RatingCoverageAKID,
+		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',
+			NULL,
+			IFF(Flag = 1,
+				RatingCoverageAKID_WithDate,
+				RatingCoverageAKID
+			)
+		) AS o_RatingCoverageAKID,
 		v_PolicyCoverageAKID AS o_PolicyCoverageAKID,
 		-- *INF*: TO_CHAR(v_PolicyAKID) || '~'  || TO_CHAR(v_RiskLocationAKID)  || '~' || TO_CHAR( v_PolicyCoverageAKID)  || '~' || v_CoverageGUID  || '~'  || v_LocationUnitNumber
-		TO_CHAR(v_PolicyAKID) || '~' || TO_CHAR(v_RiskLocationAKID) || '~' || TO_CHAR(v_PolicyCoverageAKID) || '~' || v_CoverageGUID || '~' || v_LocationUnitNumber AS o_PremiumTransactionKey,
+		TO_CHAR(v_PolicyAKID
+		) || '~' || TO_CHAR(v_RiskLocationAKID
+		) || '~' || TO_CHAR(v_PolicyCoverageAKID
+		) || '~' || v_CoverageGUID || '~' || v_LocationUnitNumber AS o_PremiumTransactionKey,
 		-- *INF*: iif(@{pipeline().parameters.PMSESSIONNAME}='s_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',NULL,RatingCoverageKey_Date)
-		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT', NULL, RatingCoverageKey_Date) AS o_RatingCoverageKey,
+		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',
+			NULL,
+			RatingCoverageKey_Date
+		) AS o_RatingCoverageKey,
 		-- *INF*: iif(@{pipeline().parameters.PMSESSIONNAME}='s_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',NULL,RatingCoverageHashKey_Date)
-		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT', NULL, RatingCoverageHashKey_Date) AS o_RatingCoverageHashKey,
+		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',
+			NULL,
+			RatingCoverageHashKey_Date
+		) AS o_RatingCoverageHashKey,
 		-- *INF*: iif(@{pipeline().parameters.PMSESSIONNAME}='s_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',NULL,RatingCoverageId_Date)
 		-- 
 		-- --IIF(Flag=1,RatingCoverageId_Date,RatingCoverageId)
 		-- 
 		-- 
 		-- 
-		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT', NULL, RatingCoverageId_Date) AS o_RatingCoverageId,
+		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',
+			NULL,
+			RatingCoverageId_Date
+		) AS o_RatingCoverageId,
 		LKP_Policy_Heirarchy_With_Date.ClassCode,
 		LKP_Policy_Heirarchy_With_Date.CoverageType AS i_CoverageType_Date,
 		LKP_Policy_Heirarchy_With_Date.ProductAbbreviation AS i_ProductAbbreviation_Date,
@@ -1271,19 +1620,43 @@ mplt_get_RiskLocation_PolicyCoverage_RatingCoverage_Akids_Hierarchy AS (WITH
 		-- IIF(Flag=1,RatingCoverageEffectivedate_Date,RatingCoverageEffectivedate))
 		-- 
 		-- ---IIF(Flag=1,RatingCoverageEffectivedate_Date,RatingCoverageEffectivedate)
-		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT', NULL, IFF(Flag = 1, RatingCoverageEffectivedate_Date, RatingCoverageEffectivedate)) AS o_RatingCoverageEffectivedate,
+		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',
+			NULL,
+			IFF(Flag = 1,
+				RatingCoverageEffectivedate_Date,
+				RatingCoverageEffectivedate
+			)
+		) AS o_RatingCoverageEffectivedate,
 		-- *INF*: IIF(@{pipeline().parameters.PMSESSIONNAME}='s_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',NULL,
 		-- IIF(Flag=1,RatingCoverageExpirationdate_Date,RatingCoverageExpirationdate))
 		-- 
 		-- 
 		-- --IIF(Flag=1,RatingCoverageExpirationdate_Date,RatingCoverageExpirationdate)
-		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT', NULL, IFF(Flag = 1, RatingCoverageExpirationdate_Date, RatingCoverageExpirationdate)) AS o_RatingCoverageExpirationdate,
+		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',
+			NULL,
+			IFF(Flag = 1,
+				RatingCoverageExpirationdate_Date,
+				RatingCoverageExpirationdate
+			)
+		) AS o_RatingCoverageExpirationdate,
 		-- *INF*: IIF(@{pipeline().parameters.PMSESSIONNAME}='s_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',NULL,
 		-- IIF(Flag=1,i_CoverageType_Date,i_CoverageType))
-		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT', NULL, IFF(Flag = 1, i_CoverageType_Date, i_CoverageType)) AS o_CoverageType,
+		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',
+			NULL,
+			IFF(Flag = 1,
+				i_CoverageType_Date,
+				i_CoverageType
+			)
+		) AS o_CoverageType,
 		-- *INF*: IIF(@{pipeline().parameters.PMSESSIONNAME}='s_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',NULL,
 		-- IIF(Flag=1,i_ProductAbbreviation_Date,i_ProductAbbreviation))
-		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT', NULL, IFF(Flag = 1, i_ProductAbbreviation_Date, i_ProductAbbreviation)) AS o_ProductAbbreviation
+		IFF(@{pipeline().parameters.PMSESSIONNAME} = 's_m_POL_DW_LOAD_RatingCoverage_Restate_DCT',
+			NULL,
+			IFF(Flag = 1,
+				i_ProductAbbreviation_Date,
+				i_ProductAbbreviation
+			)
+		) AS o_ProductAbbreviation
 		FROM 
 		LEFT JOIN LKP_Policy_Heirarchy_With_Date
 		ON LKP_Policy_Heirarchy_With_Date.PolicyAKID = EXP_Get_Value.o_PolicyAKID AND LKP_Policy_Heirarchy_With_Date.CoverageGUID = EXP_Get_Value.CoverageGuid AND LKP_Policy_Heirarchy_With_Date.EffectiveDate = EXP_Get_Value.TransactionCreatedDate
@@ -1322,7 +1695,10 @@ EXP_CoverageStatus AS (
 	mplt_get_RiskLocation_PolicyCoverage_RatingCoverage_Akids_Hierarchy.RatingCoverageCancellationDate,
 	LKP_RatingCoverage.Exposure,
 	-- *INF*: IIF(ISNULL(Exposure),0,Exposure)
-	IFF(Exposure IS NULL, 0, Exposure) AS o_Exposure,
+	IFF(Exposure IS NULL,
+		0,
+		Exposure
+	) AS o_Exposure,
 	EXP_PostAgg.PolicyStatus,
 	EXP_PostAgg.Written,
 	mplt_get_RiskLocation_PolicyCoverage_RatingCoverage_Akids_Hierarchy.PremiumTransactionKey,
@@ -1370,17 +1746,23 @@ EXP_CoverageStatus AS (
 	DECODE(TRUE,
 		CoverageDeleteFlag = '1', 1,
 		PolicyStatus = 'Cancelled', 1,
-		0) AS v_RatingCoverageCancellationFlag,
+		0
+	) AS v_RatingCoverageCancellationFlag,
 	-- *INF*: DECODE(TRUE,
 	-- TType='New' OR TType='Renew', 'New',
 	-- TType='Endorse', 'Endorse',
 	-- 'Other')
 	DECODE(TRUE,
-		TType = 'New' OR TType = 'Renew', 'New',
+		TType = 'New' 
+		OR TType = 'Renew', 'New',
 		TType = 'Endorse', 'Endorse',
-		'Other') AS o_EndorsementFlag,
+		'Other'
+	) AS o_EndorsementFlag,
 	-- *INF*: IIF(i_ParentCoverageObjectName!='WB_CU_PremiumDetail','0',:LKP.LKP_WBCUPREMIUMDETAILSTAGE(i_ParentCoverageObjectId))
-	IFF(i_ParentCoverageObjectName != 'WB_CU_PremiumDetail', '0', LKP_WBCUPREMIUMDETAILSTAGE_i_ParentCoverageObjectId.Override) AS o_Override,
+	IFF(i_ParentCoverageObjectName != 'WB_CU_PremiumDetail',
+		'0',
+		LKP_WBCUPREMIUMDETAILSTAGE_i_ParentCoverageObjectId.Override
+	) AS o_Override,
 	-- *INF*: DECODE(TRUE,
 	-- PremiumTransactionBookedDate=TO_DATE('1800-01-01', 'YYYY-MM-DD'),0,
 	-- CoverageDeleteFlag='0',1,
@@ -1389,12 +1771,17 @@ EXP_CoverageStatus AS (
 	-- Change<>0,1,
 	-- 0)
 	DECODE(TRUE,
-		PremiumTransactionBookedDate = TO_DATE('1800-01-01', 'YYYY-MM-DD'), 0,
+		PremiumTransactionBookedDate = TO_DATE('1800-01-01', 'YYYY-MM-DD'
+		), 0,
 		CoverageDeleteFlag = '0', 1,
-		CoverageDeleteFlag = '1' AND lkp_StageCoverageDeleteFlag = '0', 1,
-		CoverageDeleteFlag = '1' AND lkp_RatingCoverageCancellationDate >= TO_DATE('21001231', 'YYYYMMDD'), 1,
+		CoverageDeleteFlag = '1' 
+		AND lkp_StageCoverageDeleteFlag = '0', 1,
+		CoverageDeleteFlag = '1' 
+		AND lkp_RatingCoverageCancellationDate >= TO_DATE('21001231', 'YYYYMMDD'
+		), 1,
 		Change <> 0, 1,
-		0) AS o_FilterFlag,
+		0
+	) AS o_FilterFlag,
 	-- *INF*: DECODE(TRUE,
 	-- TType='New','10',
 	-- TType='Renew','11',
@@ -1420,24 +1807,46 @@ EXP_CoverageStatus AS (
 	DECODE(TRUE,
 		TType = 'New', '10',
 		TType = 'Renew', '11',
-		TType = 'Endorse' AND CoverageDeleteFlag = '0' AND Change >= 0, '12',
-		TType = 'Endorse' AND CoverageDeleteFlag = '0' AND Change < 0, '22',
-		TType = 'Endorse' AND CoverageDeleteFlag = '1', '28',
-		TType = 'Cancel' AND i_TCancellationDate = PolicyEffectiveDate AND i_PolicyVersion = '00', '20',
-		TType = 'Cancel' AND i_TCancellationDate > PolicyEffectiveDate AND i_PolicyVersion = '00', '23',
-		TType = 'Cancel' AND i_TCancellationDate = PolicyEffectiveDate AND i_PolicyVersion <> '00', '21',
-		TType = 'Cancel' AND i_TCancellationDate > PolicyEffectiveDate AND i_PolicyVersion <> '00', '25',
+		TType = 'Endorse' 
+		AND CoverageDeleteFlag = '0' 
+		AND Change >= 0, '12',
+		TType = 'Endorse' 
+		AND CoverageDeleteFlag = '0' 
+		AND Change < 0, '22',
+		TType = 'Endorse' 
+		AND CoverageDeleteFlag = '1', '28',
+		TType = 'Cancel' 
+		AND i_TCancellationDate = PolicyEffectiveDate 
+		AND i_PolicyVersion = '00', '20',
+		TType = 'Cancel' 
+		AND i_TCancellationDate > PolicyEffectiveDate 
+		AND i_PolicyVersion = '00', '23',
+		TType = 'Cancel' 
+		AND i_TCancellationDate = PolicyEffectiveDate 
+		AND i_PolicyVersion <> '00', '21',
+		TType = 'Cancel' 
+		AND i_TCancellationDate > PolicyEffectiveDate 
+		AND i_PolicyVersion <> '00', '25',
 		TType = 'Reinstate', '15',
 		TType = 'Reissue', '30',
 		TType = 'Rewrite', '31',
-		TType = 'Rescind' AND Change >= 0, '12',
-		TType = 'Rescind' AND Change < 0, '22',
-		IN(TType, 'FinalAudit', 'VoidFinalAudit', 'RevisedFinalAudit') AND Change >= 0, '14',
-		IN(TType, 'FinalAudit', 'VoidFinalAudit', 'RevisedFinalAudit') AND Change < 0, '24',
-		IN(TType, 'RetroCalculation', 'RevisedRetroCalculation', 'RetrospectiveCalculation') AND Change >= 0, '57',
-		IN(TType, 'RetroCalculation', 'RevisedRetroCalculation', 'RetrospectiveCalculation') AND Change < 0, '67',
-		IN(TType, 'FinalReporting', 'VoidFinalReporting') AND Change >= 0, '12',
-		IN(TType, 'FinalReporting', 'VoidFinalReporting') AND Change < 0, '22') AS o_StandardTransactionCode,
+		TType = 'Rescind' 
+		AND Change >= 0, '12',
+		TType = 'Rescind' 
+		AND Change < 0, '22',
+		TType IN ('FinalAudit','VoidFinalAudit','RevisedFinalAudit') 
+		AND Change >= 0, '14',
+		TType IN ('FinalAudit','VoidFinalAudit','RevisedFinalAudit') 
+		AND Change < 0, '24',
+		TType IN ('RetroCalculation','RevisedRetroCalculation','RetrospectiveCalculation') 
+		AND Change >= 0, '57',
+		TType IN ('RetroCalculation','RevisedRetroCalculation','RetrospectiveCalculation') 
+		AND Change < 0, '67',
+		TType IN ('FinalReporting','VoidFinalReporting') 
+		AND Change >= 0, '12',
+		TType IN ('FinalReporting','VoidFinalReporting') 
+		AND Change < 0, '22'
+	) AS o_StandardTransactionCode,
 	EXP_PostAgg.TransactionPurpose,
 	EXP_PostAgg.ExposureBasis,
 	EXP_PostAgg.DeductibleBasis,
@@ -1454,7 +1863,21 @@ EXP_CoverageStatus AS (
 	-- or (i_CoverageType='OTC' and i_ProductAbbreviation='Garage Liab'),'1',i_WindCoverageFlag)
 	-- 
 	-- --IIF ((i_CoverageType='Building' and i_ProductAbbreviation='SBOP')  or (i_CoverageType='BLDG' and i_ProductAbbreviation='SBOP')  or (i_CoverageType='Building' and i_ProductAbbreviation='SMART')  or (i_CoverageType='OTC' and i_ProductAbbreviation='Garage  Liab'),'1',i_WindCoverageFlag) 
-	IFF(( i_CoverageType = 'Building' AND i_ProductAbbreviation = 'SBOP' ) OR ( i_CoverageType = 'BLDG' AND i_ProductAbbreviation = 'SBOP' ) OR ( IN(i_CoverageType, 'Building', 'FunctionalBuildingValuation') AND i_ProductAbbreviation = 'SMART' ) OR ( i_CoverageType = 'OTC' AND i_ProductAbbreviation = 'Garage Liab' ), '1', i_WindCoverageFlag) AS v_WindCoverageFlag,
+	IFF(( i_CoverageType = 'Building' 
+			AND i_ProductAbbreviation = 'SBOP' 
+		) 
+		OR ( i_CoverageType = 'BLDG' 
+			AND i_ProductAbbreviation = 'SBOP' 
+		) 
+		OR ( i_CoverageType IN ('Building','FunctionalBuildingValuation') 
+			AND i_ProductAbbreviation = 'SMART' 
+		) 
+		OR ( i_CoverageType = 'OTC' 
+			AND i_ProductAbbreviation = 'Garage Liab' 
+		),
+		'1',
+		i_WindCoverageFlag
+	) AS v_WindCoverageFlag,
 	v_WindCoverageFlag AS o_WindCoverageFlag,
 	EXP_PostAgg.DeclaredEvent,
 	-- *INF*: 
@@ -1466,7 +1889,8 @@ EXP_CoverageStatus AS (
 	DECODE(TRUE,
 		DeclaredEvent = 'T', 1,
 		DeclaredEvent = 'F', 0,
-		DeclaredEvent IS NULL, 0) AS O_DeclaredEvent
+		DeclaredEvent IS NULL, 0
+	) AS O_DeclaredEvent
 	FROM EXP_PostAgg
 	 -- Manually join with mplt_get_RiskLocation_PolicyCoverage_RatingCoverage_Akids_Hierarchy
 	LEFT JOIN LKP_DCCoverageStaging
@@ -1600,22 +2024,30 @@ EXP_Calculate_Endorse_Onset_Offset AS (
 	Change AS i_Change,
 	Prior AS i_Prior,
 	-- *INF*: DATE_DIFF(TransactionExpirationDate,TransactionEffectiveDate,'D')
-	DATE_DIFF(TransactionExpirationDate, TransactionEffectiveDate, 'D') AS v_TransactionPeriod,
+	DATEDIFF(DAY,TransactionExpirationDate,TransactionEffectiveDate) AS v_TransactionPeriod,
 	-- *INF*: DATE_DIFF(i_PolicyExpirationDate,i_PolicyEffectiveDate,'D')
-	DATE_DIFF(i_PolicyExpirationDate, i_PolicyEffectiveDate, 'D') AS v_PolicyPeriod,
+	DATEDIFF(DAY,i_PolicyExpirationDate,i_PolicyEffectiveDate) AS v_PolicyPeriod,
 	-- *INF*: -1*IIF(
 	--   v_TransactionPeriod<=0 OR v_PolicyPeriod<=0,
 	--   i_Prior,
 	--   i_Prior*v_TransactionPeriod/v_PolicyPeriod
 	-- )
-	- 1 * IFF(v_TransactionPeriod <= 0 OR v_PolicyPeriod <= 0, i_Prior, i_Prior * v_TransactionPeriod / v_PolicyPeriod) AS o_PremiumTransactionAmount_Offset,
+	- 1 * IFF(v_TransactionPeriod <= 0 
+		OR v_PolicyPeriod <= 0,
+		i_Prior,
+		i_Prior * v_TransactionPeriod / v_PolicyPeriod
+	) AS o_PremiumTransactionAmount_Offset,
 	-1*i_Prior AS o_FullTermPremium_Offset,
 	-- *INF*: IIF(
 	--   v_TransactionPeriod<=0 OR v_PolicyPeriod<=0,
 	--   i_Change+i_Prior,
 	-- i_Change+i_Prior*v_TransactionPeriod/v_PolicyPeriod
 	-- )
-	IFF(v_TransactionPeriod <= 0 OR v_PolicyPeriod <= 0, i_Change + i_Prior, i_Change + i_Prior * v_TransactionPeriod / v_PolicyPeriod) AS o_PremiumTransactionAmount_Onset,
+	IFF(v_TransactionPeriod <= 0 
+		OR v_PolicyPeriod <= 0,
+		i_Change + i_Prior,
+		i_Change + i_Prior * v_TransactionPeriod / v_PolicyPeriod
+	) AS o_PremiumTransactionAmount_Onset,
 	i_Premium AS o_FullTermPremium_Onset
 	FROM RTR_Classify_New_Endorse_GRP_GRP_ENDORSE
 ),
@@ -1636,9 +2068,11 @@ EXP_OtherTransactions AS (
 	-- Change4=0,0,
 	-- i_Premium)
 	DECODE(TRUE,
-		i_RatingCoverageCancellationDate4 < TO_DATE('21001231', 'YYYYMMDD'), - 1 * i_Premium,
+		i_RatingCoverageCancellationDate4 < TO_DATE('21001231', 'YYYYMMDD'
+		), - 1 * i_Premium,
 		Change4 = 0, 0,
-		i_Premium) AS o_Premium,
+		i_Premium
+	) AS o_Premium,
 	Change AS Change4,
 	PremiumType AS PremiumType4,
 	New_OffsetOnsetCode AS New_OffsetOnsetCode4,
@@ -1729,15 +2163,29 @@ EXP_Calculate_PremiumTransactionHashKey AS (
 	ExposureBasis,
 	Exposure,
 	-- *INF*: IIF(i_TransactionPurpose!='Offset',i_PremiumTransactionAmount,-1*i_PremiumTransactionAmount)
-	IFF(i_TransactionPurpose != 'Offset', i_PremiumTransactionAmount, - 1 * i_PremiumTransactionAmount) AS v_PremiumTransactionAmount,
+	IFF(i_TransactionPurpose != 'Offset',
+		i_PremiumTransactionAmount,
+		- 1 * i_PremiumTransactionAmount
+	) AS v_PremiumTransactionAmount,
 	-- *INF*: IIF(i_TransactionPurpose!='Offset',i_FullTermPremium,-1*i_FullTermPremium)
-	IFF(i_TransactionPurpose != 'Offset', i_FullTermPremium, - 1 * i_FullTermPremium) AS v_FullTermPremium,
+	IFF(i_TransactionPurpose != 'Offset',
+		i_FullTermPremium,
+		- 1 * i_FullTermPremium
+	) AS v_FullTermPremium,
 	-- *INF*: IIF(NOT ISNULL(i_RatingCoverageAKID), i_RatingCoverageAKID,-1)
-	IFF(NOT i_RatingCoverageAKID IS NULL, i_RatingCoverageAKID, - 1) AS v_RatingCoverageAKId,
+	IFF(i_RatingCoverageAKID IS NOT NULL,
+		i_RatingCoverageAKID,
+		- 1
+	) AS v_RatingCoverageAKId,
 	-- *INF*: IIF(i_TransactionPurpose!='Offset',i_OffsetOnsetCode,'Deprecated')
-	IFF(i_TransactionPurpose != 'Offset', i_OffsetOnsetCode, 'Deprecated') AS o_OffsetOnsetCode,
+	IFF(i_TransactionPurpose != 'Offset',
+		i_OffsetOnsetCode,
+		'Deprecated'
+	) AS o_OffsetOnsetCode,
 	-- *INF*: LTRIM(RTRIM(i_PremiumTransactionCode))
-	LTRIM(RTRIM(i_PremiumTransactionCode)) AS o_PremiumTransactionCode,
+	LTRIM(RTRIM(i_PremiumTransactionCode
+		)
+	) AS o_PremiumTransactionCode,
 	-- *INF*: DECODE(TRUE,
 	-- i_Override='0',v_PremiumTransactionAmount,
 	-- i_Override='1',v_PremiumTransactionAmount,
@@ -1748,7 +2196,8 @@ EXP_Calculate_PremiumTransactionHashKey AS (
 		i_Override = '0', v_PremiumTransactionAmount,
 		i_Override = '1', v_PremiumTransactionAmount,
 		i_CoverageType = 'Revised', v_PremiumTransactionAmount,
-		0) AS o_PremiumTransactionAmount,
+		0
+	) AS o_PremiumTransactionAmount,
 	-- *INF*: DECODE(TRUE,
 	-- i_Override='0',v_FullTermPremium,
 	-- i_CoverageType='Revised',v_FullTermPremium,
@@ -1757,7 +2206,8 @@ EXP_Calculate_PremiumTransactionHashKey AS (
 	DECODE(TRUE,
 		i_Override = '0', v_FullTermPremium,
 		i_CoverageType = 'Revised', v_FullTermPremium,
-		0) AS o_FullTermPremium,
+		0
+	) AS o_FullTermPremium,
 	v_RatingCoverageAKId AS o_RatingCoverageAKId,
 	-- *INF*: MD5(v_RatingCoverageAKId || CoverageGUID || TO_CHAR(CreatedDate)||  i_OffsetOnsetCode || i_TransactionPurpose)
 	-- 
@@ -1765,18 +2215,26 @@ EXP_Calculate_PremiumTransactionHashKey AS (
 	-- -- MD5(CoverageGUID|| TO_CHAR(CreatedDate)||  i_OffsetOnsetCode || i_TransactionPurpose
 	--  
 	-- 
-	MD5(v_RatingCoverageAKId || CoverageGUID || TO_CHAR(CreatedDate) || i_OffsetOnsetCode || i_TransactionPurpose) AS o_PremiumTransactionHashKey,
+	MD5(v_RatingCoverageAKId || CoverageGUID || TO_CHAR(CreatedDate
+		) || i_OffsetOnsetCode || i_TransactionPurpose
+	) AS o_PremiumTransactionHashKey,
 	TransactionCreatedUserId AS TransactionCreatedUserId5,
 	ServiceCentreName AS ServiceCentreName5,
 	-- *INF*: :LKP.LKP_NUMBEROFEMPLOYEES(CoverageId)
 	LKP_NUMBEROFEMPLOYEES_CoverageId.NumberOfEmployees AS v_NumberOfEmployees,
 	-- *INF*: IIF(ISNULL(v_NumberOfEmployees),0,v_NumberOfEmployees)
-	IFF(v_NumberOfEmployees IS NULL, 0, v_NumberOfEmployees) AS o_NumberOfEmployees,
+	IFF(v_NumberOfEmployees IS NULL,
+		0,
+		v_NumberOfEmployees
+	) AS o_NumberOfEmployees,
 	'Restate' AS NegateRestateCode,
 	-- *INF*: :LKP.LKP_SUP_PREMIUM_TRANSACTION_CODE(i_PremiumTransactionCode,StandardTransactionCode)
 	LKP_SUP_PREMIUM_TRANSACTION_CODE_i_PremiumTransactionCode_StandardTransactionCode.sup_prem_trans_code_id AS v_sup_premium_transaction_id,
 	-- *INF*: IIF(ISNULL(v_sup_premium_transaction_id),-1,v_sup_premium_transaction_id)
-	IFF(v_sup_premium_transaction_id IS NULL, - 1, v_sup_premium_transaction_id) AS o_sup_premium_transaction_id,
+	IFF(v_sup_premium_transaction_id IS NULL,
+		- 1,
+		v_sup_premium_transaction_id
+	) AS o_sup_premium_transaction_id,
 	IterationId,
 	IterationId +1 AS PremiumLoadSequence,
 	ClassCode,
@@ -1839,22 +2297,27 @@ mplt_Evaluate_WrittenExposure_DCT AS (WITH
 		-- 'N/A')
 		-- --Change coverage type coming in from staging as necessary to include subtypes like USL&H
 		DECODE(TRUE,
-			INSTR(CoverageType, 'ManualPremium') > 0, 'ManualPremium',
-			'N/A') AS v_CoverageType,
+			REGEXP_INSTR(CoverageType, 'ManualPremium'
+			) > 0, 'ManualPremium',
+			'N/A'
+		) AS v_CoverageType,
 		v_CoverageType AS o_CoverageType,
 		BaseRate,
 		PremiumTransactionAmount,
 		PremiumTransactionCode,
 		ReasonAmendedCode,
 		-- *INF*: ROUND(PremiumTransactionAmount,4)
-		ROUND(PremiumTransactionAmount, 4) AS v_PremiumTransactionAmount,
+		ROUND(PremiumTransactionAmount, 4
+		) AS v_PremiumTransactionAmount,
 		-- *INF*: DECODE(TRUE,
 		-- BaseRate = 0,0,
 		-- BaseRate <> 0, (v_PremiumTransactionAmount  / BaseRate)
 		-- )
 		DECODE(TRUE,
 			BaseRate = 0, 0,
-			BaseRate <> 0, ( v_PremiumTransactionAmount / BaseRate )) AS v_CalculatedExposure,
+			BaseRate <> 0, ( v_PremiumTransactionAmount / BaseRate 
+			)
+		) AS v_CalculatedExposure,
 		-- *INF*: DECODE(TRUE,
 		-- v_CoverageType = 'ManualPremium'  AND ClassCode = '0908',1,
 		-- v_CoverageType = 'ManualPremium' AND ClassCode = '0913',1,
@@ -1863,11 +2326,15 @@ mplt_Evaluate_WrittenExposure_DCT AS (WITH
 		-- 0)
 		-- --Flag eligible class codes of Exposure Basis 'Unit' to compensate for historical issue where ExampleData didn't pass along correct exposure basis to us. Determine the multipler for DomesticWorkers  class codes as 1, VolunteerFirefighters as 0 and all other Manual Premium typically Payroll as 100. the default value is zero for all coverage types that are not ManualPremium
 		DECODE(TRUE,
-			v_CoverageType = 'ManualPremium' AND ClassCode = '0908', 1,
-			v_CoverageType = 'ManualPremium' AND ClassCode = '0913', 1,
-			v_CoverageType = 'ManualPremium' AND ClassCode = '7709', 0,
+			v_CoverageType = 'ManualPremium' 
+			AND ClassCode = '0908', 1,
+			v_CoverageType = 'ManualPremium' 
+			AND ClassCode = '0913', 1,
+			v_CoverageType = 'ManualPremium' 
+			AND ClassCode = '7709', 0,
 			v_CoverageType = 'ManualPremium', 100,
-			0) AS v_UnitMultiplier,
+			0
+		) AS v_UnitMultiplier,
 		-- *INF*: DECODE(TRUE,
 		-- INSTR(PremiumTransactionCode,'Audit') = 0  AND v_CoverageType = 'ManualPremium', v_CalculatedExposure * v_UnitMultiplier,
 		-- INSTR(PremiumTransactionCode,'Audit') > 0  AND  v_CoverageType = 'ManualPremium',0,
@@ -1876,9 +2343,14 @@ mplt_Evaluate_WrittenExposure_DCT AS (WITH
 		-- -- For eligible manual premium coverage records with audit type transactions, we zero out the written exposure for subsequent true up downstream
 		-- --For all non manual premium coverages with audit or non audit transactions, we default to zero for written exposure
 		DECODE(TRUE,
-			INSTR(PremiumTransactionCode, 'Audit') = 0 AND v_CoverageType = 'ManualPremium', v_CalculatedExposure * v_UnitMultiplier,
-			INSTR(PremiumTransactionCode, 'Audit') > 0 AND v_CoverageType = 'ManualPremium', 0,
-			0) AS v_WrittenExposure,
+			REGEXP_INSTR(PremiumTransactionCode, 'Audit'
+			) = 0 
+			AND v_CoverageType = 'ManualPremium', v_CalculatedExposure * v_UnitMultiplier,
+			REGEXP_INSTR(PremiumTransactionCode, 'Audit'
+			) > 0 
+			AND v_CoverageType = 'ManualPremium', 0,
+			0
+		) AS v_WrittenExposure,
 		-- *INF*: DECODE(TRUE,
 		-- ISNULL(v_WrittenExposure),0,
 		-- IN(ReasonAmendedCode,'CWO','Claw Back'), 0,
@@ -1886,8 +2358,10 @@ mplt_Evaluate_WrittenExposure_DCT AS (WITH
 		-- -- If CWO or ClawBack premium, then we zero out written exposure else we round up calculated written exposure value to 4 decimal places
 		DECODE(TRUE,
 			v_WrittenExposure IS NULL, 0,
-			IN(ReasonAmendedCode, 'CWO', 'Claw Back'), 0,
-			ROUND(v_WrittenExposure, 4)) AS WrittenExposure
+			ReasonAmendedCode IN ('CWO','Claw Back'), 0,
+			ROUND(v_WrittenExposure, 4
+			)
+		) AS WrittenExposure
 		FROM INPUT
 	),
 	OUTPUT AS (
@@ -1927,7 +2401,8 @@ EXP_Format_PremiumTransaction AS (
 	-- ---i_PremiumTransactionEnteredDate
 	CreatedDate AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,

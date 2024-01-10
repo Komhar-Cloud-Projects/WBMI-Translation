@@ -81,17 +81,29 @@ EXP_IDO_PTHashKey AS (
 	EXP_IDO_Data.Sequence,
 	LKP_RatingCoverageAKID.RatingCoverageAKID,
 	-- *INF*: MD5(RatingCoverageAKID|| Id||TO_CHAR(TransactionDate)|| 'Onset' || 'Onset')
-	MD5(RatingCoverageAKID || Id || TO_CHAR(TransactionDate) || 'Onset' || 'Onset') AS Onset_HashKey,
+	MD5(RatingCoverageAKID || Id || TO_CHAR(TransactionDate
+		) || 'Onset' || 'Onset'
+	) AS Onset_HashKey,
 	-- *INF*: MD5(RatingCoverageAKID|| Id||TO_CHAR(TransactionDate)|| 'Offset' || 'Onset')
-	MD5(RatingCoverageAKID || Id || TO_CHAR(TransactionDate) || 'Offset' || 'Onset') AS Offset_HashKey,
+	MD5(RatingCoverageAKID || Id || TO_CHAR(TransactionDate
+		) || 'Offset' || 'Onset'
+	) AS Offset_HashKey,
 	-- *INF*: MD5(RatingCoverageAKID|| Id||TO_CHAR(TransactionDate)|| 'N/A' || 'Onset')
-	MD5(RatingCoverageAKID || Id || TO_CHAR(TransactionDate) || 'N/A' || 'Onset') AS NA_HashKey,
+	MD5(RatingCoverageAKID || Id || TO_CHAR(TransactionDate
+		) || 'N/A' || 'Onset'
+	) AS NA_HashKey,
 	-- *INF*: MD5(RatingCoverageAKID|| Id||TO_CHAR(TransactionDate)|| 'Onset' || 'Offset')
-	MD5(RatingCoverageAKID || Id || TO_CHAR(TransactionDate) || 'Onset' || 'Offset') AS DepOnset_HashKey,
+	MD5(RatingCoverageAKID || Id || TO_CHAR(TransactionDate
+		) || 'Onset' || 'Offset'
+	) AS DepOnset_HashKey,
 	-- *INF*: MD5(RatingCoverageAKID|| Id||TO_CHAR(TransactionDate)|| 'Offset' || 'Offset')
-	MD5(RatingCoverageAKID || Id || TO_CHAR(TransactionDate) || 'Offset' || 'Offset') AS DepOffset_HashKey,
+	MD5(RatingCoverageAKID || Id || TO_CHAR(TransactionDate
+		) || 'Offset' || 'Offset'
+	) AS DepOffset_HashKey,
 	-- *INF*: MD5(RatingCoverageAKID|| Id||TO_CHAR(TransactionDate)|| 'N/A' || 'Offset')
-	MD5(RatingCoverageAKID || Id || TO_CHAR(TransactionDate) || 'N/A' || 'Offset') AS DepNA_HashKey
+	MD5(RatingCoverageAKID || Id || TO_CHAR(TransactionDate
+		) || 'N/A' || 'Offset'
+	) AS DepNA_HashKey
 	FROM EXP_IDO_Data
 	LEFT JOIN LKP_RatingCoverageAKID
 	ON LKP_RatingCoverageAKID.Pol_key = EXP_IDO_Data.Pol_key AND LKP_RatingCoverageAKID.CoverageGUID = EXP_IDO_Data.Id AND LKP_RatingCoverageAKID.EffectiveDate = EXP_IDO_Data.TransactionDate

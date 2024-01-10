@@ -16,7 +16,7 @@ EXPTRANS AS (
 	SupportingPolicyKey,
 	SupportingPolicyType,
 	-- *INF*: ADD_TO_DATE(RunDate,'SS',-1)
-	ADD_TO_DATE(RunDate, 'SS', - 1) AS o_RunDate
+	DATEADD(SECOND,- 1,RunDate) AS o_RunDate
 	FROM SQ_SupportingPolicy
 ),
 LKP_policy_dim AS (

@@ -16,34 +16,96 @@ EXP_VALIDATE AS (
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(app_guid))) OR IS_SPACES(LTRIM(RTRIM(app_guid))) OR LENGTH(LTRIM(RTRIM(app_guid)))=0,'N/A',LTRIM(RTRIM(app_guid)))
 	-- 
 	-- 
-	IFF(LTRIM(RTRIM(app_guid)) IS NULL OR IS_SPACES(LTRIM(RTRIM(app_guid))) OR LENGTH(LTRIM(RTRIM(app_guid))) = 0, 'N/A', LTRIM(RTRIM(app_guid))) AS v_app_guid,
+	IFF(LTRIM(RTRIM(app_guid
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(app_guid
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(app_guid
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(app_guid
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(app_guid
+			)
+		)
+	) AS v_app_guid,
 	v_app_guid AS o_app_guid,
 	display_name,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(display_name))) OR IS_SPACES(LTRIM(RTRIM(display_name))) OR LENGTH(LTRIM(RTRIM(display_name)))=0,'N/A',LTRIM(RTRIM(display_name)))
 	-- 
 	-- 
-	IFF(LTRIM(RTRIM(display_name)) IS NULL OR IS_SPACES(LTRIM(RTRIM(display_name))) OR LENGTH(LTRIM(RTRIM(display_name))) = 0, 'N/A', LTRIM(RTRIM(display_name))) AS v_display_name,
+	IFF(LTRIM(RTRIM(display_name
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(display_name
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(display_name
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(display_name
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(display_name
+			)
+		)
+	) AS v_display_name,
 	v_display_name AS o_display_name,
 	published_to_prod_flag,
 	-- *INF*: IIF(ISNULL(published_to_prod_flag),' ',published_to_prod_flag)
-	IFF(published_to_prod_flag IS NULL, ' ', published_to_prod_flag) AS v_published_to_prod_flag,
+	IFF(published_to_prod_flag IS NULL,
+		' ',
+		published_to_prod_flag
+	) AS v_published_to_prod_flag,
 	v_published_to_prod_flag AS o_published_to_prod_flag,
 	enabled_flag,
 	-- *INF*: IIF(ISNULL(enabled_flag),' ',enabled_flag)
-	IFF(enabled_flag IS NULL, ' ', enabled_flag) AS v_enabled_flag,
+	IFF(enabled_flag IS NULL,
+		' ',
+		enabled_flag
+	) AS v_enabled_flag,
 	v_enabled_flag AS o_enabled_flag,
 	version_num,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(version_num))) OR IS_SPACES(LTRIM(RTRIM(version_num))) OR LENGTH(LTRIM(RTRIM(version_num)))=0,'N/A',LTRIM(RTRIM(version_num)))
-	IFF(LTRIM(RTRIM(version_num)) IS NULL OR IS_SPACES(LTRIM(RTRIM(version_num))) OR LENGTH(LTRIM(RTRIM(version_num))) = 0, 'N/A', LTRIM(RTRIM(version_num))) AS v_version_num,
+	IFF(LTRIM(RTRIM(version_num
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(version_num
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(version_num
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(version_num
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(version_num
+			)
+		)
+	) AS v_version_num,
 	v_version_num AS o_version_num,
 	source_system_id,
 	eff_date,
 	-- *INF*: IIF(ISNULL(eff_date),TO_DATE('1/1/1800','MM/DD/YYYY'),eff_date)
-	IFF(eff_date IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), eff_date) AS v_eff_date,
+	IFF(eff_date IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		eff_date
+	) AS v_eff_date,
 	v_eff_date AS o_eff_date,
 	exp_date,
 	-- *INF*: IIF(ISNULL(exp_date),TO_DATE('1/1/1800','MM/DD/YYYY'),exp_date)
-	IFF(exp_date IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), exp_date) AS v_exp_date,
+	IFF(exp_date IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		exp_date
+	) AS v_exp_date,
 	v_exp_date AS o_exp_date
 	FROM SQ_application_stage
 ),
@@ -97,7 +159,34 @@ EXP_DETECT_CHANGES AS (
 	-- 	LTRIM(RTRIM(o_enabled_flag)) <> LTRIM(RTRIM(LKP_enabled_flag)) OR 
 	-- 	LTRIM(RTRIM(o_version_num)) <> LTRIM(RTRIM(LKP_version_num))    OR LKP_eff_date <> o_eff_date  OR LKP_exp_date <> o_exp_date ,
 	-- 	'UPDATE','NOCHANGE'))
-	IFF(LKP_app_id IS NULL, 'NEW', IFF(LTRIM(RTRIM(o_display_name)) <> LTRIM(RTRIM(LKP_display_name)) OR LTRIM(RTRIM(o_published_to_prod_flag)) <> LTRIM(RTRIM(LKP_published_to_prod_flag)) OR LTRIM(RTRIM(o_enabled_flag)) <> LTRIM(RTRIM(LKP_enabled_flag)) OR LTRIM(RTRIM(o_version_num)) <> LTRIM(RTRIM(LKP_version_num)) OR LKP_eff_date <> o_eff_date OR LKP_exp_date <> o_exp_date, 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(LKP_app_id IS NULL,
+		'NEW',
+		IFF(LTRIM(RTRIM(o_display_name
+				)
+			) <> LTRIM(RTRIM(LKP_display_name
+				)
+			) 
+			OR LTRIM(RTRIM(o_published_to_prod_flag
+				)
+			) <> LTRIM(RTRIM(LKP_published_to_prod_flag
+				)
+			) 
+			OR LTRIM(RTRIM(o_enabled_flag
+				)
+			) <> LTRIM(RTRIM(LKP_enabled_flag
+				)
+			) 
+			OR LTRIM(RTRIM(o_version_num
+				)
+			) <> LTRIM(RTRIM(LKP_version_num
+				)
+			) 
+			OR LKP_eff_date <> o_eff_date 
+			OR LKP_exp_date <> o_exp_date,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
@@ -105,9 +194,14 @@ EXP_DETECT_CHANGES AS (
 	sysdate AS created_date,
 	sysdate AS modified_date,
 	-- *INF*: IIF(v_changed_flag='NEW',TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_changed_flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	EXP_VALIDATE.o_eff_date,
 	EXP_VALIDATE.o_exp_date
 	FROM EXP_VALIDATE
@@ -146,7 +240,10 @@ EXP_Determine_AK AS (
 	SELECT
 	old_app_ak_id,
 	-- *INF*: IIF(changed_flag ='NEW',NEXTVAL,old_app_ak_id)
-	IFF(changed_flag = 'NEW', NEXTVAL, old_app_ak_id) AS app_ak_id,
+	IFF(changed_flag = 'NEW',
+		NEXTVAL,
+		old_app_ak_id
+	) AS app_ak_id,
 	changed_flag,
 	crrnt_snpsht_flag,
 	audit_id,
@@ -216,8 +313,9 @@ EXP_Lag_eff_from_date AS (
 	eff_to_date AS orig_eff_to_date,
 	-- *INF*: DECODE(TRUE,app_guid=v_prev_row_app_guid  ,ADD_TO_DATE(v_prev_row_eff_from_date,'SS',-1),orig_eff_to_date)
 	DECODE(TRUE,
-		app_guid = v_prev_row_app_guid, ADD_TO_DATE(v_prev_row_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		app_guid = v_prev_row_app_guid, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	app_guid AS v_prev_row_app_guid,
 	eff_from_date AS v_prev_row_eff_from_date,

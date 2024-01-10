@@ -75,16 +75,41 @@ EXP_Values AS (
 	pms_loss_claimant,
 	cms_source_system_id,
 	-- *INF*: replaceChr(0,to_char(pms_date_of_loss),'/','')
-	replaceChr(0, to_char(pms_date_of_loss), '/', '') AS v_pms_date_of_loss,
+	REGEXP_REPLACE(to_char(pms_date_of_loss
+	),'/','','i') AS v_pms_date_of_loss,
 	-- *INF*: IIF(length(exceed_claim_key)>0,ltrim(rtrim(exceed_claim_key)),
 	-- IIF(length(pms_policy_sym)>0,ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence)),
 	-- 'N/A'))
 	-- 
-	IFF(length(exceed_claim_key) > 0, ltrim(rtrim(exceed_claim_key)), IFF(length(pms_policy_sym) > 0, ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence)), 'N/A')) AS claim_key1,
+	IFF(length(exceed_claim_key
+		) > 0,
+		ltrim(rtrim(exceed_claim_key
+			)
+		),
+		IFF(length(pms_policy_sym
+			) > 0,
+			ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence
+				)
+			),
+			'N/A'
+		)
+	) AS claim_key1,
 	-- *INF*: IIF(length(exceed_claim_key)>0,ltrim(rtrim(exceed_claimnt_key)),
 	-- IIF(length(pms_policy_sym)>0,ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence || pms_loss_claimant || 'CMT')),
 	-- 'N/A'))
-	IFF(length(exceed_claim_key) > 0, ltrim(rtrim(exceed_claimnt_key)), IFF(length(pms_policy_sym) > 0, ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence || pms_loss_claimant || 'CMT')), 'N/A')) AS claimnt_key1,
+	IFF(length(exceed_claim_key
+		) > 0,
+		ltrim(rtrim(exceed_claimnt_key
+			)
+		),
+		IFF(length(pms_policy_sym
+			) > 0,
+			ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence || pms_loss_claimant || 'CMT'
+				)
+			),
+			'N/A'
+		)
+	) AS claimnt_key1,
 	diag_code2,
 	diag_code3,
 	diag_code4,
@@ -141,7 +166,9 @@ EXP_Default_values AS (
 	in_diag_code + 1 AS diag_code,
 	diag_code_val AS in_diag_code_val,
 	-- *INF*: LTRIM(RTRIM(in_diag_code_val))
-	LTRIM(RTRIM(in_diag_code_val)) AS diag_code_val
+	LTRIM(RTRIM(in_diag_code_val
+		)
+	) AS diag_code_val
 	FROM NRM_Values
 ),
 FIL_Valid_Codes AS (
@@ -181,15 +208,26 @@ EXP_Detect_Changes AS (
 	-- *INF*: iif(isnull(claim_med_patient_diag_add_ak_id),'NEW',	
 	-- 	iif (diag_code_val <> patient_diag_code,
 	--  'UPDATE','NOCHANGE'))
-	IFF(claim_med_patient_diag_add_ak_id IS NULL, 'NEW', IFF(diag_code_val <> patient_diag_code, 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(claim_med_patient_diag_add_ak_id IS NULL,
+		'NEW',
+		IFF(diag_code_val <> patient_diag_code,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	1 AS Crrnt_Snpsht_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
@@ -233,7 +271,10 @@ EXP_Insert AS (
 	Modified_Date,
 	SEQ_claim_medical_patient_icd9_additional.NEXTVAL,
 	-- *INF*: IIF(Changed_Flag='NEW', NEXTVAL, claim_med_patient_diag_add_ak_id)
-	IFF(Changed_Flag = 'NEW', NEXTVAL, claim_med_patient_diag_add_ak_id) AS claim_med_patient_diag_add_ak_id_out,
+	IFF(Changed_Flag = 'NEW',
+		NEXTVAL,
+		claim_med_patient_diag_add_ak_id
+	) AS claim_med_patient_diag_add_ak_id_out,
 	claim_med_ak_id,
 	diag_code,
 	diag_code_val
@@ -288,7 +329,9 @@ EXP_input_refresh AS (
 	patient_add_code,
 	patient_diag_code,
 	-- *INF*: rtrim(ltrim(patient_diag_code))
-	rtrim(ltrim(patient_diag_code)) AS patient_diag_code_val_out
+	rtrim(ltrim(patient_diag_code
+		)
+	) AS patient_diag_code_val_out
 	FROM SQ_claim_medical_patient_icd9_additional_REFRESH
 ),
 JNR_refresh AS (SELECT
@@ -380,8 +423,9 @@ EXP_Lag_eff_from_date AS (
 	-- 	claim_med_patient_diag_add_ak_id = v_PREV_ROW_claim_med_patient_icd9_add_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		claim_med_patient_diag_add_ak_id = v_PREV_ROW_claim_med_patient_icd9_add_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_med_patient_diag_add_ak_id = v_PREV_ROW_claim_med_patient_icd9_add_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	claim_med_patient_diag_add_ak_id AS v_PREV_ROW_claim_med_patient_icd9_add_ak_id,

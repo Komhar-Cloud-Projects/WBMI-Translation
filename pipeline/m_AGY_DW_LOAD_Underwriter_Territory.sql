@@ -38,17 +38,36 @@ EXP_DefaultValues AS (
 	uw_code AS in_uw_code,
 	uw_mgr_id AS in_uw_mgr_id,
 	-- *INF*: iif(isnull(in_rsm_id),'N/A',iif(IS_SPACES(in_rsm_id),'N/A',in_rsm_id))
-	IFF(in_rsm_id IS NULL, 'N/A', IFF(IS_SPACES(in_rsm_id), 'N/A', in_rsm_id)) AS rsm_id,
+	IFF(in_rsm_id IS NULL,
+		'N/A',
+		IFF(LENGTH(in_rsm_id)>0 AND TRIM(in_rsm_id)='',
+			'N/A',
+			in_rsm_id
+		)
+	) AS rsm_id,
 	-- *INF*: to_char(to_integer(in_territory_code))
 	-- --substr(in_territory_code,1,(INSTR(in_territory_code,'.',1,1)-1))
 	-- 
 	-- 
 	-- 
-	to_char(to_integer(in_territory_code)) AS territory_code,
+	to_char(CAST(in_territory_code AS INTEGER)
+	) AS territory_code,
 	-- *INF*: iif(isnull(in_uw_code),'N/A',iif(IS_SPACES(in_uw_code),'N/A',in_uw_code))
-	IFF(in_uw_code IS NULL, 'N/A', IFF(IS_SPACES(in_uw_code), 'N/A', in_uw_code)) AS uw_code,
+	IFF(in_uw_code IS NULL,
+		'N/A',
+		IFF(LENGTH(in_uw_code)>0 AND TRIM(in_uw_code)='',
+			'N/A',
+			in_uw_code
+		)
+	) AS uw_code,
 	-- *INF*: iif(isnull(in_uw_mgr_id),'N/A',iif(IS_SPACES(in_uw_mgr_id),'N/A',in_uw_mgr_id))
-	IFF(in_uw_mgr_id IS NULL, 'N/A', IFF(IS_SPACES(in_uw_mgr_id), 'N/A', in_uw_mgr_id)) AS uw_mgr_id,
+	IFF(in_uw_mgr_id IS NULL,
+		'N/A',
+		IFF(LENGTH(in_uw_mgr_id)>0 AND TRIM(in_uw_mgr_id)='',
+			'N/A',
+			in_uw_mgr_id
+		)
+	) AS uw_mgr_id,
 	SOURCE_SYSTEM_ID
 	FROM SQ_underwriter_terr_stage
 ),
@@ -66,7 +85,7 @@ EXP_lookupvalues AS (
 	LKP_UNDERWRITER_uw_code.uw_ak_id AS out_uw_ak_id,
 	uw_mgr_id AS source_uw_mgr_id,
 	-- *INF*: TO_INTEGER(source_uw_mgr_id)
-	TO_INTEGER(source_uw_mgr_id) AS lkp_uw_mgr_id,
+	CAST(source_uw_mgr_id AS INTEGER) AS lkp_uw_mgr_id,
 	-- *INF*: :LKP.LKP_UNDERWRITER_MANAGER(lkp_uw_mgr_id)
 	LKP_UNDERWRITER_MANAGER_lkp_uw_mgr_id.uw_mgr_ak_id AS out_uw_mgr_ak_id,
 	SOURCE_SYSTEM_ID
@@ -86,14 +105,20 @@ EXP_Detectchanges AS (
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
+	to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	SOURCE_SYSTEM_ID,
 	sysdate AS created_date,
 	sysdate AS modified_date,
 	-- *INF*: IIF(ISNULL(v_uw_terr_ak_id) OR v_uw_terr_ak_id=0,1,v_uw_terr_ak_id +1)
-	IFF(v_uw_terr_ak_id IS NULL OR v_uw_terr_ak_id = 0, 1, v_uw_terr_ak_id + 1) AS v_uw_terr_ak_id,
+	IFF(v_uw_terr_ak_id IS NULL 
+		OR v_uw_terr_ak_id = 0,
+		1,
+		v_uw_terr_ak_id + 1
+	) AS v_uw_terr_ak_id,
 	v_uw_terr_ak_id AS out_uw_terr_ak_id
 	FROM EXP_lookupvalues
 ),

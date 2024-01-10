@@ -54,19 +54,35 @@ EXP_Detect_Changes AS (
 	SQ_AssociateStage.RoleSpecificUserCode AS SalesDirectorCode,
 	SQ_AssociateStage.UserId,
 	-- *INF*: IIF(IsNull(UserId), 'N/A', UserId)
-	IFF(UserId IS NULL, 'N/A', UserId) AS o_UserId,
+	IFF(UserId IS NULL,
+		'N/A',
+		UserId
+	) AS o_UserId,
 	-- *INF*: MD5(DisplayName || LastName || FirstName || MiddleName || Suffix || EmailAddress || SalesDirectorCode || UserId)
-	MD5(DisplayName || LastName || FirstName || MiddleName || Suffix || EmailAddress || SalesDirectorCode || UserId) AS v_NewHashKey,
+	MD5(DisplayName || LastName || FirstName || MiddleName || Suffix || EmailAddress || SalesDirectorCode || UserId
+	) AS v_NewHashKey,
 	v_NewHashKey AS o_NewHashKey,
 	-- *INF*: IIF(ISNULL(lkp_HashKey), 'NEW', IIF((lkp_HashKey <> v_NewHashKey), 'UPDATE', 'NOCHANGE'))
-	IFF(lkp_HashKey IS NULL, 'NEW', IFF(( lkp_HashKey <> v_NewHashKey ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(lkp_HashKey IS NULL,
+		'NEW',
+		IFF(( lkp_HashKey <> v_NewHashKey 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: iif(v_changed_flag='NEW', to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'), sysdate)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS EffectiveDate,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	SQ_AssociateStage.SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate
@@ -115,7 +131,10 @@ EXP_Assign_AKID AS (
 	lkp_SalesDirector_AKID,
 	SEQ_SalesDirector_AKID.NEXTVAL,
 	-- *INF*: iif(isnull(lkp_SalesDirector_AKID),NEXTVAL,lkp_SalesDirector_AKID)
-	IFF(lkp_SalesDirector_AKID IS NULL, NEXTVAL, lkp_SalesDirector_AKID) AS SalesDirectorAKID,
+	IFF(lkp_SalesDirector_AKID IS NULL,
+		NEXTVAL,
+		lkp_SalesDirector_AKID
+	) AS SalesDirectorAKID,
 	0 AS Default_Int,
 	'N/A' AS Default_char,
 	HashKey,
@@ -185,8 +204,9 @@ EXP_Lag_eff_from_date AS (
 	-- SalesDirectorAKID = v_prev_AKID , ADD_TO_DATE(v_prev_EffectiveDate,'SS',-1),
 	-- OriginalExpirationDate)
 	DECODE(TRUE,
-		SalesDirectorAKID = v_prev_AKID, ADD_TO_DATE(v_prev_EffectiveDate, 'SS', - 1),
-		OriginalExpirationDate) AS v_ExpirationDate,
+		SalesDirectorAKID = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_EffectiveDate),
+		OriginalExpirationDate
+	) AS v_ExpirationDate,
 	v_ExpirationDate AS o_ExpirationDate,
 	SalesDirectorAKID AS v_prev_AKID,
 	EffectiveDate AS v_prev_EffectiveDate,

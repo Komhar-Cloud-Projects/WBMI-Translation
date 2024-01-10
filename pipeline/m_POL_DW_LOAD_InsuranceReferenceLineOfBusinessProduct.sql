@@ -15,11 +15,23 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate) AS o_EffectiveDate,
+	IFF(i_EffectiveDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_EffectiveDate
+	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate,
+	IFF(i_ExpirationDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ExpirationDate
+	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate) AS o_ModifiedDate
+	IFF(i_ModifiedDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ModifiedDate
+	) AS o_ModifiedDate
 	FROM SQ_LineOfBusinessProduct
 ),
 EXP_NumericValues AS (
@@ -28,11 +40,20 @@ EXP_NumericValues AS (
 	LineOfBusinessId AS i_LineOfBusinessId,
 	ProductId AS i_ProductId,
 	-- *INF*: IIF(ISNULL(i_LineOfBusinessProductId),-1,i_LineOfBusinessProductId)
-	IFF(i_LineOfBusinessProductId IS NULL, - 1, i_LineOfBusinessProductId) AS o_LineOfBusinessProductId,
+	IFF(i_LineOfBusinessProductId IS NULL,
+		- 1,
+		i_LineOfBusinessProductId
+	) AS o_LineOfBusinessProductId,
 	-- *INF*: IIF(ISNULL(i_LineOfBusinessId),-1,i_LineOfBusinessId)
-	IFF(i_LineOfBusinessId IS NULL, - 1, i_LineOfBusinessId) AS o_LineOfBusinessId,
+	IFF(i_LineOfBusinessId IS NULL,
+		- 1,
+		i_LineOfBusinessId
+	) AS o_LineOfBusinessId,
 	-- *INF*: IIF(ISNULL(i_ProductId),-1,i_ProductId)
-	IFF(i_ProductId IS NULL, - 1, i_ProductId) AS o_ProductId
+	IFF(i_ProductId IS NULL,
+		- 1,
+		i_ProductId
+	) AS o_ProductId
 	FROM SQ_LineOfBusinessProduct
 ),
 EXP_StringValues AS (

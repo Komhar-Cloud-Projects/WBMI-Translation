@@ -315,7 +315,9 @@ EXP_GetVal AS (
 	pif_4514_stage_id,
 	Type,
 	-- *INF*: rtrim(ltrim(i_Value))
-	rtrim(ltrim(i_Value)) AS o_Value
+	rtrim(ltrim(i_Value
+		)
+	) AS o_Value
 	FROM SQ_pif_4514_stage
 ),
 FIL_Value AS (
@@ -392,7 +394,10 @@ EXP_Existing AS (
 	AGG_RemoveDup.Type,
 	AGG_RemoveDup.Value,
 	-- *INF*: IIF(ISNULL(lkp_CoverageDeductibleId),NEXTVAL,lkp_CoverageDeductibleId)
-	IFF(lkp_CoverageDeductibleId IS NULL, NEXTVAL, lkp_CoverageDeductibleId) AS o_CoverageDeductibleId
+	IFF(lkp_CoverageDeductibleId IS NULL,
+		NEXTVAL,
+		lkp_CoverageDeductibleId
+	) AS o_CoverageDeductibleId
 	FROM AGG_RemoveDup
 	LEFT JOIN LKP_CoverageDeductible
 	ON LKP_CoverageDeductible.CoverageDeductibleType = AGG_RemoveDup.Type AND LKP_CoverageDeductible.CoverageDeductibleValue = AGG_RemoveDup.Value
@@ -445,7 +450,8 @@ AGG_Cnt AS (
 	PremiumTransactionAKId,
 	CoverageDeductibleId,
 	-- *INF*: COUNT(1)
-	COUNT(1) AS o_CoverageDeductibleIdCount
+	COUNT(1
+	) AS o_CoverageDeductibleIdCount
 	FROM FIL_Bridge
 	GROUP BY PremiumTransactionAKId, CoverageDeductibleId
 ),

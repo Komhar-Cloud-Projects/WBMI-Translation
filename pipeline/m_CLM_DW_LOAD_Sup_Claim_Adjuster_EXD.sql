@@ -58,13 +58,24 @@ EXP_Detect_Changes AS (
 	-- ,'UPDATE'
 	-- ,'NO CHANGE')
 	-- )
-	IFF(sup_claim_adjuster_id IS NULL, 'NEW', IFF(CS01_CODE_DES != old_wbconnect_user_id, 'UPDATE', 'NO CHANGE')) AS v_Changed_Flag,
+	IFF(sup_claim_adjuster_id IS NULL,
+		'NEW',
+		IFF(CS01_CODE_DES != old_wbconnect_user_id,
+			'UPDATE',
+			'NO CHANGE'
+		)
+	) AS v_Changed_Flag,
 	v_Changed_Flag AS changed_flag,
 	-- *INF*: iif(v_Changed_Flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_Changed_Flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,
+	IFF(v_Changed_Flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date
 	FROM EXP_Source
 	LEFT JOIN LKP_sup_claim_adjuster
 	ON LKP_sup_claim_adjuster.adjuster_code = EXP_Source.CS01_CODE
@@ -141,8 +152,9 @@ EXP_Expire_Rows AS (
 	-- , ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1)
 	-- ,orig_eff_to_date)
 	decode(true,
-		adjuster_code = v_PREV_ROW_ADJUSTER_CODE, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		adjuster_code = v_PREV_ROW_ADJUSTER_CODE, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	adjuster_code AS v_PREV_ROW_ADJUSTER_CODE,
 	source_sys_id AS v_PREV_ROW_source_sys_id,

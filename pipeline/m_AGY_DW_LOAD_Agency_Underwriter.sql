@@ -52,26 +52,64 @@ EXP_LkpValues AS (
 	SQ_agency_underwriter_stage.uw_assistant_flag AS IN_uw_assistant_flag,
 	SQ_agency_underwriter_stage.uw_code AS IN_in_uw_code,
 	-- *INF*: iif(isnull(IN_uw_assistant_flag),'X',iif(IS_SPACES(IN_uw_assistant_flag),'X',IN_uw_assistant_flag))
-	IFF(IN_uw_assistant_flag IS NULL, 'X', IFF(IS_SPACES(IN_uw_assistant_flag), 'X', IN_uw_assistant_flag)) AS uw_assistant_flag,
+	IFF(IN_uw_assistant_flag IS NULL,
+		'X',
+		IFF(LENGTH(IN_uw_assistant_flag)>0 AND TRIM(IN_uw_assistant_flag)='',
+			'X',
+			IN_uw_assistant_flag
+		)
+	) AS uw_assistant_flag,
 	-- *INF*: iif(isnull(IN_insurance_line),'N/A',iif(IS_SPACES(IN_insurance_line),'N/A',
 	-- rpad(IN_insurance_line,3)))
-	IFF(IN_insurance_line IS NULL, 'N/A', IFF(IS_SPACES(IN_insurance_line), 'N/A', rpad(IN_insurance_line, 3))) AS insurance_line,
+	IFF(IN_insurance_line IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_insurance_line)>0 AND TRIM(IN_insurance_line)='',
+			'N/A',
+			rpad(IN_insurance_line, 3
+			)
+		)
+	) AS insurance_line,
 	-- *INF*: iif(isnull(IN_state_code),'N/A',iif(IS_SPACES(IN_state_code),'N/A',IN_state_code))
-	IFF(IN_state_code IS NULL, 'N/A', IFF(IS_SPACES(IN_state_code), 'N/A', IN_state_code)) AS state_code,
+	IFF(IN_state_code IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_state_code)>0 AND TRIM(IN_state_code)='',
+			'N/A',
+			IN_state_code
+		)
+	) AS state_code,
 	-- *INF*: iif(isnull(IN_agency_num),'N/A',iif(IS_SPACES(IN_agency_num),'N/A',IN_agency_num))
-	IFF(IN_agency_num IS NULL, 'N/A', IFF(IS_SPACES(IN_agency_num), 'N/A', IN_agency_num)) AS agency_num,
+	IFF(IN_agency_num IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_agency_num)>0 AND TRIM(IN_agency_num)='',
+			'N/A',
+			IN_agency_num
+		)
+	) AS agency_num,
 	-- *INF*: iif(isnull(IN_in_uw_code),'N/A',iif(IS_SPACES(IN_in_uw_code),'N/A',IN_in_uw_code))
-	IFF(IN_in_uw_code IS NULL, 'N/A', IFF(IS_SPACES(IN_in_uw_code), 'N/A', IN_in_uw_code)) AS in_uw_code,
+	IFF(IN_in_uw_code IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_in_uw_code)>0 AND TRIM(IN_in_uw_code)='',
+			'N/A',
+			IN_in_uw_code
+		)
+	) AS in_uw_code,
 	IN_state_code || IN_agency_num AS v_agency_key,
 	-- *INF*: iif(isnull(state_code || agency_num),'N/A',
 	-- iif(is_spaces(state_code || agency_num),'N/A',state_code || agency_num))
-	IFF(state_code || agency_num IS NULL, 'N/A', IFF(is_spaces(state_code || agency_num), 'N/A', state_code || agency_num)) AS out_agency_key,
+	IFF(state_code || agency_num IS NULL,
+		'N/A',
+		IFF(LENGTH(state_code || agency_num)>0 AND TRIM(state_code || agency_num)='',
+			'N/A',
+			state_code || agency_num
+		)
+	) AS out_agency_key,
 	LKP_Agency.agency_ak_id AS out_agency_ak_id,
 	-- *INF*: :LKP.LKP_UNDERWRITER(IN_in_uw_code)
 	LKP_UNDERWRITER_IN_in_uw_code.uw_ak_id AS out_uw_ak_id,
 	SQ_agency_underwriter_stage.SOURCE_SYSTEM_ID,
 	-- *INF*: rpad(IN_state_code,3)
-	rpad(IN_state_code, 3) AS out_state_code,
+	rpad(IN_state_code, 3
+	) AS out_state_code,
 	LKP_Agency.agency_state_code
 	FROM SQ_agency_underwriter_stage
 	LEFT JOIN LKP_Agency
@@ -137,14 +175,26 @@ EXP_DetectChanges AS (
 	-- 
 	-- 
 	-- 
-	IFF(agency_uw_id_old IS NULL, 'NEW', IFF(( uw_ak_id_old <> out_uw_ak_id ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(agency_uw_id_old IS NULL,
+		'NEW',
+		IFF(( uw_ak_id_old <> out_uw_ak_id 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	v_changed_flag AS changed_flag,
 	sysdate AS created_date,
 	sysdate AS modified_date,
@@ -155,7 +205,10 @@ EXP_DetectChanges AS (
 	-- *INF*: IIF(v_changed_flag='NEW',
 	-- NEXTVAL,
 	-- agency_uw_ak_id)
-	IFF(v_changed_flag = 'NEW', NEXTVAL, agency_uw_ak_id) AS out_Agency_uw_ak_id,
+	IFF(v_changed_flag = 'NEW',
+		NEXTVAL,
+		agency_uw_ak_id
+	) AS out_Agency_uw_ak_id,
 	EXP_LkpValues.out_uw_ak_id
 	FROM EXP_LkpValues
 	LEFT JOIN LKP_Agency_Underwriter
@@ -248,8 +301,11 @@ EXP_Lag_eff_from_date AS (
 	-- 
 	-- 
 	DECODE(TRUE,
-		insurance_line = v_Prev_Row_insurance_line AND uw_assistant_flag = v_Prev_Row_uw_assistant_flag AND agency_ak_id = v_Prev_Row_agency_ak_id, ADD_TO_DATE(v_Prev_Row_Eff_From_Date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		insurance_line = v_Prev_Row_insurance_line 
+		AND uw_assistant_flag = v_Prev_Row_uw_assistant_flag 
+		AND agency_ak_id = v_Prev_Row_agency_ak_id, DATEADD(SECOND,- 1,v_Prev_Row_Eff_From_Date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_Prev_Row_Eff_From_Date,
 	agency_ak_id AS v_Prev_Row_agency_ak_id,

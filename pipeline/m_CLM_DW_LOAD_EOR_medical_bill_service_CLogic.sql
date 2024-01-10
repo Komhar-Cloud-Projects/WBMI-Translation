@@ -54,34 +54,50 @@ EXP_ASSIGN_DEFAULTS1 AS (
 	SQ_med_bill_service_stage.serv_seq_num,
 	SQ_med_bill_service_stage.serv_from_date AS in_serv_from_date,
 	-- *INF*: IIF(ISNULL(in_serv_from_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_serv_from_date)
-	IFF(in_serv_from_date IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), in_serv_from_date) AS serv_from_date,
+	IFF(in_serv_from_date IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		in_serv_from_date
+	) AS serv_from_date,
 	SQ_med_bill_service_stage.serv_to_date AS in_serv_to_date,
 	-- *INF*: IIF(ISNULL(in_serv_to_date),TO_DATE('12/31/2100','MM/DD/YYYY'),in_serv_to_date)
-	IFF(in_serv_to_date IS NULL, TO_DATE('12/31/2100', 'MM/DD/YYYY'), in_serv_to_date) AS serv_to_date,
+	IFF(in_serv_to_date IS NULL,
+		TO_DATE('12/31/2100', 'MM/DD/YYYY'
+		),
+		in_serv_to_date
+	) AS serv_to_date,
 	SQ_med_bill_service_stage.serv_place_code AS in_serv_place_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_serv_place_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_serv_place_code) AS serv_place_code,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_serv_place_code
+	) AS serv_place_code,
 	SQ_med_bill_service_stage.serv_type_code AS in_serv_type_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_serv_type_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_serv_type_code) AS serv_type_code,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_serv_type_code
+	) AS serv_type_code,
 	SQ_med_bill_service_stage.adjusted_code1 AS in_adjusted_code1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_adjusted_code1)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_adjusted_code1) AS adjusted_code1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_adjusted_code1
+	) AS adjusted_code1,
 	SQ_med_bill_service_stage.adjusted_code2 AS in_adjusted_code2,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_adjusted_code2)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_adjusted_code2) AS adjusted_code2,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_adjusted_code2
+	) AS adjusted_code2,
 	SQ_med_bill_service_stage.mod_proc_code1 AS in_mod_proc_code1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_mod_proc_code1)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_mod_proc_code1) AS mod_proc_code1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_mod_proc_code1
+	) AS mod_proc_code1,
 	SQ_med_bill_service_stage.mod_proc_descript1 AS in_mod_proc_descript1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_mod_proc_descript1)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_mod_proc_descript1) AS mod_proc_descript1,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_mod_proc_descript1
+	) AS mod_proc_descript1,
 	SQ_med_bill_service_stage.mod_proc_code2 AS in_mod_proc_code2,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_mod_proc_code2)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_mod_proc_code2) AS mod_proc_code2,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_mod_proc_code2
+	) AS mod_proc_code2,
 	SQ_med_bill_service_stage.mod_proc_descript2 AS in_mod_proc_descript2,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_mod_proc_descript2)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_mod_proc_descript2) AS mod_proc_descript2,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_mod_proc_descript2
+	) AS mod_proc_descript2,
 	SQ_med_bill_service_stage.serv_minutes,
 	SQ_med_bill_service_stage.serv_units,
 	SQ_med_bill_service_stage.drug_qty_dispensed,
@@ -89,23 +105,28 @@ EXP_ASSIGN_DEFAULTS1 AS (
 	SQ_med_bill_service_stage.drug_awp,
 	SQ_med_bill_service_stage.proc_drug_rev_ind AS in_proc_drug_rev_ind,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_proc_drug_rev_ind)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_proc_drug_rev_ind) AS proc_drug_rev_ind,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_proc_drug_rev_ind
+	) AS proc_drug_rev_ind,
 	SQ_med_bill_service_stage.proc_drug_rev_code AS in_proc_drug_rev_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_proc_drug_rev_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_proc_drug_rev_code) AS proc_drug_rev_code,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_proc_drug_rev_code
+	) AS proc_drug_rev_code,
 	SQ_med_bill_service_stage.proc_drug_rev_des AS in_proc_drug_rev_des,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_proc_drug_rev_des)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_proc_drug_rev_des) AS proc_drug_rev_des,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_proc_drug_rev_des
+	) AS proc_drug_rev_des,
 	SQ_med_bill_service_stage.serv_charge,
 	SQ_med_bill_service_stage.serv_red,
 	SQ_med_bill_service_stage.serv_network_red,
 	SQ_med_bill_service_stage.serv_recom_pay,
 	SQ_med_bill_service_stage.serv_review_cmnt AS in_serv_review_cmnt,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_serv_review_cmnt)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_serv_review_cmnt) AS serv_review_cmnt,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_serv_review_cmnt
+	) AS serv_review_cmnt,
 	SQ_med_bill_service_stage.diagnose_cross_ref AS in_diagnose_cross_ref,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_diagnose_cross_ref)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_diagnose_cross_ref) AS diagnose_cross_ref
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_diagnose_cross_ref
+	) AS diagnose_cross_ref
 	FROM SQ_med_bill_service_stage
 	LEFT JOIN LKP_MED_BILL_KEY
 	ON LKP_MED_BILL_KEY.med_bill_key = SQ_med_bill_service_stage.med_bill_id
@@ -224,7 +245,10 @@ EXP_Detect_Changes AS (
 	--    , LKP_med_bill_serv_ak_id
 	-- )
 	-- 
-	IFF(LKP_med_bill_serv_ak_id IS NULL, NEXTVAL, LKP_med_bill_serv_ak_id) AS out_med_bill_serv_ak_id,
+	IFF(LKP_med_bill_serv_ak_id IS NULL,
+		NEXTVAL,
+		LKP_med_bill_serv_ak_id
+	) AS out_med_bill_serv_ak_id,
 	LKP_medical_bill_service1.serv_from_date AS LKP_serv_from_date,
 	LKP_medical_bill_service1.serv_to_date AS LKP_serv_to_date,
 	LKP_medical_bill_service1.serv_place_code AS LKP_serv_place_code,
@@ -282,15 +306,101 @@ EXP_Detect_Changes AS (
 	--         , 'NOCHANGE'
 	--    )
 	-- )
-	IFF(LKP_med_bill_serv_ak_id IS NULL, 'NEW', IFF(LKP_serv_from_date != serv_from_date OR LKP_serv_to_date != serv_to_date OR ltrim(rtrim(LKP_serv_place_code)) != ltrim(rtrim(serv_place_code)) OR ltrim(rtrim(LKP_serv_type_code)) != ltrim(rtrim(serv_type_code)) OR ltrim(rtrim(LKP_bill_review_adjusted_code1)) != ltrim(rtrim(adjusted_code1)) OR ltrim(rtrim(LKP_bill_review_adjusted_code2)) != ltrim(rtrim(adjusted_code2)) OR ltrim(rtrim(LKP_modified_proc_code1)) != ltrim(rtrim(mod_proc_code1)) OR ltrim(rtrim(LKP_modified_proc_descript1)) != ltrim(rtrim(mod_proc_descript1)) OR ltrim(rtrim(LKP_modified_proc_code2)) != ltrim(rtrim(mod_proc_code2)) OR ltrim(rtrim(LKP_modified_proc_descript2)) != ltrim(rtrim(mod_proc_descript2)) OR LKP_serv_minutes != serv_minutes OR LKP_serv_units != serv_units OR LKP_drug_qty_dispensed != drug_qty_dispensed OR LKP_drug_qty_allowed != drug_qty_allowed OR LKP_drug_actual_wholesale_price != drug_awp OR ltrim(rtrim(LKP_proc_drug_revenue_type_ind)) != ltrim(rtrim(proc_drug_rev_ind)) OR ltrim(rtrim(LKP_proc_drug_revenue_code)) != ltrim(rtrim(proc_drug_rev_code)) OR ltrim(rtrim(LKP_proc_drug_revenue_descript)) != ltrim(rtrim(proc_drug_rev_des)) OR LKP_serv_charge != serv_charge OR LKP_serv_bill_review_red != serv_red OR LKP_serv_network_red != serv_network_red OR LKP_serv_recommend_pay != serv_recom_pay OR ltrim(rtrim(LKP_serv_review_comment)) != ltrim(rtrim(serv_review_cmnt)) OR ltrim(rtrim(LKP_diagnose_cross_ref)) != ltrim(rtrim(diagnose_cross_ref)), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(LKP_med_bill_serv_ak_id IS NULL,
+		'NEW',
+		IFF(LKP_serv_from_date != serv_from_date 
+			OR LKP_serv_to_date != serv_to_date 
+			OR ltrim(rtrim(LKP_serv_place_code
+				)
+			) != ltrim(rtrim(serv_place_code
+				)
+			) 
+			OR ltrim(rtrim(LKP_serv_type_code
+				)
+			) != ltrim(rtrim(serv_type_code
+				)
+			) 
+			OR ltrim(rtrim(LKP_bill_review_adjusted_code1
+				)
+			) != ltrim(rtrim(adjusted_code1
+				)
+			) 
+			OR ltrim(rtrim(LKP_bill_review_adjusted_code2
+				)
+			) != ltrim(rtrim(adjusted_code2
+				)
+			) 
+			OR ltrim(rtrim(LKP_modified_proc_code1
+				)
+			) != ltrim(rtrim(mod_proc_code1
+				)
+			) 
+			OR ltrim(rtrim(LKP_modified_proc_descript1
+				)
+			) != ltrim(rtrim(mod_proc_descript1
+				)
+			) 
+			OR ltrim(rtrim(LKP_modified_proc_code2
+				)
+			) != ltrim(rtrim(mod_proc_code2
+				)
+			) 
+			OR ltrim(rtrim(LKP_modified_proc_descript2
+				)
+			) != ltrim(rtrim(mod_proc_descript2
+				)
+			) 
+			OR LKP_serv_minutes != serv_minutes 
+			OR LKP_serv_units != serv_units 
+			OR LKP_drug_qty_dispensed != drug_qty_dispensed 
+			OR LKP_drug_qty_allowed != drug_qty_allowed 
+			OR LKP_drug_actual_wholesale_price != drug_awp 
+			OR ltrim(rtrim(LKP_proc_drug_revenue_type_ind
+				)
+			) != ltrim(rtrim(proc_drug_rev_ind
+				)
+			) 
+			OR ltrim(rtrim(LKP_proc_drug_revenue_code
+				)
+			) != ltrim(rtrim(proc_drug_rev_code
+				)
+			) 
+			OR ltrim(rtrim(LKP_proc_drug_revenue_descript
+				)
+			) != ltrim(rtrim(proc_drug_rev_des
+				)
+			) 
+			OR LKP_serv_charge != serv_charge 
+			OR LKP_serv_bill_review_red != serv_red 
+			OR LKP_serv_network_red != serv_network_red 
+			OR LKP_serv_recommend_pay != serv_recom_pay 
+			OR ltrim(rtrim(LKP_serv_review_comment
+				)
+			) != ltrim(rtrim(serv_review_cmnt
+				)
+			) 
+			OR ltrim(rtrim(LKP_diagnose_cross_ref
+				)
+			) != ltrim(rtrim(diagnose_cross_ref
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	'DCT' AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date

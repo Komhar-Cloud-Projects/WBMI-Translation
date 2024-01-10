@@ -206,7 +206,7 @@ EXP_ClassCode AS (
 	ClassCode,
 	RunDate,
 	-- *INF*: ADD_TO_DATE(RunDate,'SS',86399)
-	ADD_TO_DATE(RunDate, 'SS', 86399) AS o_RunDate,
+	DATEADD(SECOND,86399,RunDate) AS o_RunDate,
 	DirectWrittenPremium,
 	SubjectDirectWrittenPremium,
 	ExperienceModifiedAdjustmentAmount,

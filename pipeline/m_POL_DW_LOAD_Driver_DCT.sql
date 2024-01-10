@@ -75,14 +75,43 @@ AGG_Remove_Duplicates AS (
 	MVRStatus,
 	i_SessionId AS o_SessionId,
 	-- *INF*: IIF(ISNULL(i_Id) or IS_SPACES(i_Id) or LENGTH(i_Id)=0, 'N/A', LTRIM(RTRIM(i_Id)))
-	IFF(i_Id IS NULL OR IS_SPACES(i_Id) OR LENGTH(i_Id) = 0, 'N/A', LTRIM(RTRIM(i_Id))) AS o_Id,
+	IFF(i_Id IS NULL 
+		OR LENGTH(i_Id)>0 AND TRIM(i_Id)='' 
+		OR LENGTH(i_Id
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_Id
+			)
+		)
+	) AS o_Id,
 	-- *INF*: IIF(ISNULL(i_DriversLicenseNumber) or IS_SPACES(i_DriversLicenseNumber) or LENGTH(i_DriversLicenseNumber)=0, 'N/A', LTRIM(RTRIM(i_DriversLicenseNumber)))
-	IFF(i_DriversLicenseNumber IS NULL OR IS_SPACES(i_DriversLicenseNumber) OR LENGTH(i_DriversLicenseNumber) = 0, 'N/A', LTRIM(RTRIM(i_DriversLicenseNumber))) AS o_DriversLicenseNumber,
+	IFF(i_DriversLicenseNumber IS NULL 
+		OR LENGTH(i_DriversLicenseNumber)>0 AND TRIM(i_DriversLicenseNumber)='' 
+		OR LENGTH(i_DriversLicenseNumber
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_DriversLicenseNumber
+			)
+		)
+	) AS o_DriversLicenseNumber,
 	-- *INF*: IIF(ISNULL(i_StateLicensed) or IS_SPACES(i_StateLicensed) or LENGTH(i_StateLicensed)=0, 'N/A', LTRIM(RTRIM(i_StateLicensed)))
-	IFF(i_StateLicensed IS NULL OR IS_SPACES(i_StateLicensed) OR LENGTH(i_StateLicensed) = 0, 'N/A', LTRIM(RTRIM(i_StateLicensed))) AS o_LicenseState,
+	IFF(i_StateLicensed IS NULL 
+		OR LENGTH(i_StateLicensed)>0 AND TRIM(i_StateLicensed)='' 
+		OR LENGTH(i_StateLicensed
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_StateLicensed
+			)
+		)
+	) AS o_LicenseState,
 	PolicyNumber,
 	-- *INF*: IIF(ISNULL(i_PolicyVersion), '00', LPAD(TO_CHAR(i_PolicyVersion),2,'0'))
-	IFF(i_PolicyVersion IS NULL, '00', LPAD(TO_CHAR(i_PolicyVersion), 2, '0')) AS o_PolicyVersion
+	IFF(i_PolicyVersion IS NULL,
+		'00',
+		LPAD(TO_CHAR(i_PolicyVersion
+			), 2, '0'
+		)
+	) AS o_PolicyVersion
 	FROM EXP_Source
 	GROUP BY o_Id, o_DriversLicenseNumber, o_LicenseState, PolicyNumber, o_PolicyVersion
 ),
@@ -121,7 +150,10 @@ EXP_Pre_Target_Lookup AS (
 	SELECT
 	LKP_policy.pol_ak_id AS i_PolicyAKID,
 	-- *INF*: IIF(ISNULL(i_PolicyAKID), -1, i_PolicyAKID)
-	IFF(i_PolicyAKID IS NULL, - 1, i_PolicyAKID) AS v_PolicyAKID,
+	IFF(i_PolicyAKID IS NULL,
+		- 1,
+		i_PolicyAKID
+	) AS v_PolicyAKID,
 	v_PolicyAKID AS o_PolicyAKID,
 	EXP_PostAggregator.LicenseState,
 	EXP_PostAggregator.DriversLicenseNumber,
@@ -132,24 +164,67 @@ EXP_Pre_Target_Lookup AS (
 	EXP_PostAggregator.ExcludeDriver,
 	EXP_PostAggregator.MVRStatus,
 	-- *INF*: IIF(ISNULL(LastName) or IS_SPACES(LastName)  or LENGTH(LastName)=0,'N/A',LTRIM(RTRIM(LastName)))
-	IFF(LastName IS NULL OR IS_SPACES(LastName) OR LENGTH(LastName) = 0, 'N/A', LTRIM(RTRIM(LastName))) AS o_LastName,
+	IFF(LastName IS NULL 
+		OR LENGTH(LastName)>0 AND TRIM(LastName)='' 
+		OR LENGTH(LastName
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(LastName
+			)
+		)
+	) AS o_LastName,
 	-- *INF*: IIF(ISNULL(FirstName) or IS_SPACES(FirstName)  or LENGTH(FirstName)=0,'N/A',LTRIM(RTRIM(FirstName)))
-	IFF(FirstName IS NULL OR IS_SPACES(FirstName) OR LENGTH(FirstName) = 0, 'N/A', LTRIM(RTRIM(FirstName))) AS o_FirstName,
+	IFF(FirstName IS NULL 
+		OR LENGTH(FirstName)>0 AND TRIM(FirstName)='' 
+		OR LENGTH(FirstName
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(FirstName
+			)
+		)
+	) AS o_FirstName,
 	-- *INF*: IIF(ISNULL(MiddleInitial) or IS_SPACES(MiddleInitial)  or LENGTH(MiddleInitial)=0,'N/A',LTRIM(RTRIM(MiddleInitial)))
-	IFF(MiddleInitial IS NULL OR IS_SPACES(MiddleInitial) OR LENGTH(MiddleInitial) = 0, 'N/A', LTRIM(RTRIM(MiddleInitial))) AS o_MiddleInitial,
+	IFF(MiddleInitial IS NULL 
+		OR LENGTH(MiddleInitial)>0 AND TRIM(MiddleInitial)='' 
+		OR LENGTH(MiddleInitial
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(MiddleInitial
+			)
+		)
+	) AS o_MiddleInitial,
 	-- *INF*: DECODE
 	-- (LTRIM(RTRIM(Gender)),
 	-- 'Male','M',
 	-- 'Female','F',
 	-- 'U')
-	DECODE(LTRIM(RTRIM(Gender)),
+	DECODE(LTRIM(RTRIM(Gender
+			)
+		),
 		'Male', 'M',
 		'Female', 'F',
-		'U') AS o_Gender,
+		'U'
+	) AS o_Gender,
 	-- *INF*: IIF(ISNULL(ExcludeDriver) or IS_SPACES(ExcludeDriver)  or LENGTH(ExcludeDriver)=0,'N/A',LTRIM(RTRIM(ExcludeDriver)))
-	IFF(ExcludeDriver IS NULL OR IS_SPACES(ExcludeDriver) OR LENGTH(ExcludeDriver) = 0, 'N/A', LTRIM(RTRIM(ExcludeDriver))) AS o_ExcludeDriver,
+	IFF(ExcludeDriver IS NULL 
+		OR LENGTH(ExcludeDriver)>0 AND TRIM(ExcludeDriver)='' 
+		OR LENGTH(ExcludeDriver
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(ExcludeDriver
+			)
+		)
+	) AS o_ExcludeDriver,
 	-- *INF*: IIF(ISNULL(MVRStatus) or IS_SPACES(MVRStatus)  or LENGTH(MVRStatus)=0,'N/A',LTRIM(RTRIM(MVRStatus)))
-	IFF(MVRStatus IS NULL OR IS_SPACES(MVRStatus) OR LENGTH(MVRStatus) = 0, 'N/A', LTRIM(RTRIM(MVRStatus))) AS o_MVRStatus,
+	IFF(MVRStatus IS NULL 
+		OR LENGTH(MVRStatus)>0 AND TRIM(MVRStatus)='' 
+		OR LENGTH(MVRStatus
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(MVRStatus
+			)
+		)
+	) AS o_MVRStatus,
 	EXP_PostAggregator.DateOfBirth
 	FROM EXP_PostAggregator
 	LEFT JOIN LKP_policy
@@ -212,7 +287,10 @@ EXP_Detect_Changes AS (
 	EXP_Pre_Target_Lookup.o_ExcludeDriver AS i_ExcludeDriver,
 	EXP_Pre_Target_Lookup.o_MVRStatus AS i_MVRStatus,
 	-- *INF*: IIF(ISNULL(i_PolicyAKID), -1, i_PolicyAKID)
-	IFF(i_PolicyAKID IS NULL, - 1, i_PolicyAKID) AS v_pol_ak_id,
+	IFF(i_PolicyAKID IS NULL,
+		- 1,
+		i_PolicyAKID
+	) AS v_pol_ak_id,
 	v_pol_ak_id AS o_PolicyAKID,
 	-- *INF*: IIF(ISNULL(lkp_DriverAKId), 'NEW', 
 	-- IIF(
@@ -222,7 +300,43 @@ EXP_Detect_Changes AS (
 	-- LTRIM(RTRIM(lkp_ExcludeDriver)) != LTRIM(RTRIM(i_ExcludeDriver)) OR
 	-- LTRIM(RTRIM(lkp_MVRStatus)) != LTRIM(RTRIM(i_MVRStatus)),
 	-- 'UPDATE', 'NOCHANGE'))
-	IFF(lkp_DriverAKId IS NULL, 'NEW', IFF(LTRIM(RTRIM(lkp_LastName)) != LTRIM(RTRIM(i_LastName)) OR LTRIM(RTRIM(lkp_FirstName)) != LTRIM(RTRIM(i_FirstName)) OR LTRIM(RTRIM(lkp_MiddleName)) != LTRIM(RTRIM(i_MiddleInitial)) OR lkp_Birthdate != i_DateOfBirth OR LTRIM(RTRIM(lkp_GenderCode)) != LTRIM(RTRIM(i_Gender)) OR LTRIM(RTRIM(lkp_ExcludeDriver)) != LTRIM(RTRIM(i_ExcludeDriver)) OR LTRIM(RTRIM(lkp_MVRStatus)) != LTRIM(RTRIM(i_MVRStatus)), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(lkp_DriverAKId IS NULL,
+		'NEW',
+		IFF(LTRIM(RTRIM(lkp_LastName
+				)
+			) != LTRIM(RTRIM(i_LastName
+				)
+			) 
+			OR LTRIM(RTRIM(lkp_FirstName
+				)
+			) != LTRIM(RTRIM(i_FirstName
+				)
+			) 
+			OR LTRIM(RTRIM(lkp_MiddleName
+				)
+			) != LTRIM(RTRIM(i_MiddleInitial
+				)
+			) 
+			OR lkp_Birthdate != i_DateOfBirth 
+			OR LTRIM(RTRIM(lkp_GenderCode
+				)
+			) != LTRIM(RTRIM(i_Gender
+				)
+			) 
+			OR LTRIM(RTRIM(lkp_ExcludeDriver
+				)
+			) != LTRIM(RTRIM(i_ExcludeDriver
+				)
+			) 
+			OR LTRIM(RTRIM(lkp_MVRStatus
+				)
+			) != LTRIM(RTRIM(i_MVRStatus
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	v_Changed_Flag AS o_Changed_Flag
 	FROM EXP_Pre_Target_Lookup
 	LEFT JOIN LKP_Driver
@@ -257,18 +371,26 @@ EXP_Detemine_AK_ID AS (
 	DriverAKID AS i_DriverAKID,
 	-- *INF*: IIF(i_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(i_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS v_EffectiveDate,
+	IFF(i_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS v_EffectiveDate,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	v_EffectiveDate AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	PolicyAKID,
 	-- *INF*: IIF(ISNULL(i_DriverAKID),NEXTVAL,i_DriverAKID)
-	IFF(i_DriverAKID IS NULL, NEXTVAL, i_DriverAKID) AS DriverAKID,
+	IFF(i_DriverAKID IS NULL,
+		NEXTVAL,
+		i_DriverAKID
+	) AS DriverAKID,
 	DriversLicenseNumber,
 	LicenseState,
 	DateOfBirth,
@@ -331,8 +453,9 @@ EXP_Lag_eff_from_date AS (
 	-- i_DriverAKID = v_PrevDriverAKID ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
 	DECODE(TRUE,
-		i_DriverAKID = v_PrevDriverAKID, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		i_DriverAKID = v_PrevDriverAKID, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	i_DriverAKID AS v_PrevDriverAKID,
 	i_eff_from_date AS v_prev_eff_from_date,
 	0 AS o_crrnt_snpsht_flag,

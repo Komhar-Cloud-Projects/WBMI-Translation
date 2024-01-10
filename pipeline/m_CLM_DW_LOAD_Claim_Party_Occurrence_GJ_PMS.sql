@@ -134,7 +134,9 @@ EXP_Lkp_Values AS (
 	EXP_Values.CLAIM_OCCURRENCE_KEY,
 	EXP_Values.IPFC4J_USE_CODE,
 	-- *INF*: LTRIM(RTRIM(IPFC4J_USE_CODE))
-	LTRIM(RTRIM(IPFC4J_USE_CODE)) AS USE_CODE,
+	LTRIM(RTRIM(IPFC4J_USE_CODE
+		)
+	) AS USE_CODE,
 	-- *INF*: :LKP.LKP_CLAIM_PARTY(CLAIM_PARTY_KEY)
 	-- 
 	-- --IIF(ISNULL(:LKP.LKP_CLAIM_PARTY(CLAIM_PARTY_KEY)),0,:LKP.LKP_CLAIM_PARTY(CLAIM_PARTY_KEY))
@@ -145,21 +147,43 @@ EXP_Lkp_Values AS (
 	LKP_CLAIM_OCCURRENCE_CLAIM_OCCURRENCE_KEY.claim_occurrence_ak_id AS CLAIM_OCCURRENCE_AK_ID,
 	-- *INF*: LTRIM(RTRIM(SUBSTR(CLAIM_PARTY_KEY,1,26)))
 	-- 
-	LTRIM(RTRIM(SUBSTR(CLAIM_PARTY_KEY, 1, 26))) AS V_Claim_case_key,
+	LTRIM(RTRIM(SUBSTR(CLAIM_PARTY_KEY, 1, 26
+			)
+		)
+	) AS V_Claim_case_key,
 	-- *INF*: :LKP.LKP_CLAIM_CASE_AK_ID(V_Claim_case_key)
 	LKP_CLAIM_CASE_AK_ID_V_Claim_case_key.claim_case_ak_id AS v_Claim_Case_AK_ID,
 	-- *INF*: IIF(ISNULL(v_Claim_Case_AK_ID),-1,v_Claim_Case_AK_ID)
-	IFF(v_Claim_Case_AK_ID IS NULL, - 1, v_Claim_Case_AK_ID) AS Claim_Case_AK_ID,
+	IFF(v_Claim_Case_AK_ID IS NULL,
+		- 1,
+		v_Claim_Case_AK_ID
+	) AS Claim_Case_AK_ID,
 	EXP_Values.IPFC4J_LOSS_CLAIMANT AS IPFCGQ_LOSS_CLAIMANT,
 	-- *INF*: iif((ISNULL(IPFCGQ_LOSS_CLAIMANT) OR IS_SPACES(IPFCGQ_LOSS_CLAIMANT) OR LENGTH(IPFCGQ_LOSS_CLAIMANT)=0),
 	-- 'N/A',
 	-- rtrim(IPFCGQ_LOSS_CLAIMANT))
-	IFF(( IPFCGQ_LOSS_CLAIMANT IS NULL OR IS_SPACES(IPFCGQ_LOSS_CLAIMANT) OR LENGTH(IPFCGQ_LOSS_CLAIMANT) = 0 ), 'N/A', rtrim(IPFCGQ_LOSS_CLAIMANT)) AS out_IPFCGQ_LOSS_CLAIMANT,
+	IFF(( IPFCGQ_LOSS_CLAIMANT IS NULL 
+			OR LENGTH(IPFCGQ_LOSS_CLAIMANT)>0 AND TRIM(IPFCGQ_LOSS_CLAIMANT)='' 
+			OR LENGTH(IPFCGQ_LOSS_CLAIMANT
+			) = 0 
+		),
+		'N/A',
+		rtrim(IPFCGQ_LOSS_CLAIMANT
+		)
+	) AS out_IPFCGQ_LOSS_CLAIMANT,
 	EXP_Values.IPFC4J_OFFSET_ONSET_IND,
 	-- *INF*: IIF((ISNULL(IPFC4J_OFFSET_ONSET_IND) OR IS_SPACES(IPFC4J_OFFSET_ONSET_IND) OR LENGTH(IPFC4J_OFFSET_ONSET_IND)=0),
 	-- 'N/A',
 	-- RTRIM(IPFC4J_OFFSET_ONSET_IND))
-	IFF(( IPFC4J_OFFSET_ONSET_IND IS NULL OR IS_SPACES(IPFC4J_OFFSET_ONSET_IND) OR LENGTH(IPFC4J_OFFSET_ONSET_IND) = 0 ), 'N/A', RTRIM(IPFC4J_OFFSET_ONSET_IND)) AS out_IPFC4J_OFFSET_ONSET_IND,
+	IFF(( IPFC4J_OFFSET_ONSET_IND IS NULL 
+			OR LENGTH(IPFC4J_OFFSET_ONSET_IND)>0 AND TRIM(IPFC4J_OFFSET_ONSET_IND)='' 
+			OR LENGTH(IPFC4J_OFFSET_ONSET_IND
+			) = 0 
+		),
+		'N/A',
+		RTRIM(IPFC4J_OFFSET_ONSET_IND
+		)
+	) AS out_IPFC4J_OFFSET_ONSET_IND,
 	EXP_Values.logical_flag,
 	LKP_PIF_42GQ_CMT.pif_symbol,
 	LKP_PIF_42GQ_CMT.pif_policy_number,
@@ -174,18 +198,56 @@ EXP_Lkp_Values AS (
 	LKP_PIF_42GQ_CMT.ipfcgq_denial_month,
 	LKP_PIF_42GQ_CMT.ipfcgq_denial_day,
 	-- *INF*: IIF(ISNULL(ipfcgq_denial_year) OR LENGTH(to_char(ipfcgq_denial_year)) =0, '0000', TO_CHAR(ipfcgq_denial_year))
-	IFF(ipfcgq_denial_year IS NULL OR LENGTH(to_char(ipfcgq_denial_year)) = 0, '0000', TO_CHAR(ipfcgq_denial_year)) AS var_DENIAL_year,
+	IFF(ipfcgq_denial_year IS NULL 
+		OR LENGTH(to_char(ipfcgq_denial_year
+			)
+		) = 0,
+		'0000',
+		TO_CHAR(ipfcgq_denial_year
+		)
+	) AS var_DENIAL_year,
 	-- *INF*: IIF(ISNULL(ipfcgq_denial_month) OR LENGTH(to_char(ipfcgq_denial_month)) =0, '00', 
 	-- IIF(LENGTH(to_char(ipfcgq_denial_month)) =1, '0'  || TO_CHAR(ipfcgq_denial_month)))
-	IFF(ipfcgq_denial_month IS NULL OR LENGTH(to_char(ipfcgq_denial_month)) = 0, '00', IFF(LENGTH(to_char(ipfcgq_denial_month)) = 1, '0' || TO_CHAR(ipfcgq_denial_month))) AS var_DENIAL_month,
+	IFF(ipfcgq_denial_month IS NULL 
+		OR LENGTH(to_char(ipfcgq_denial_month
+			)
+		) = 0,
+		'00',
+		IFF(LENGTH(to_char(ipfcgq_denial_month
+				)
+			) = 1,
+			'0' || TO_CHAR(ipfcgq_denial_month
+			)
+		)
+	) AS var_DENIAL_month,
 	-- *INF*: IIF(ISNULL(ipfcgq_denial_day) OR LENGTH(to_char(ipfcgq_denial_day)) =0, '00', 
 	-- IIF(LENGTH(to_char(ipfcgq_denial_day)) =1, '0'  || TO_CHAR(ipfcgq_denial_day)))
-	IFF(ipfcgq_denial_day IS NULL OR LENGTH(to_char(ipfcgq_denial_day)) = 0, '00', IFF(LENGTH(to_char(ipfcgq_denial_day)) = 1, '0' || TO_CHAR(ipfcgq_denial_day))) AS var_DENIAL_day,
+	IFF(ipfcgq_denial_day IS NULL 
+		OR LENGTH(to_char(ipfcgq_denial_day
+			)
+		) = 0,
+		'00',
+		IFF(LENGTH(to_char(ipfcgq_denial_day
+				)
+			) = 1,
+			'0' || TO_CHAR(ipfcgq_denial_day
+			)
+		)
+	) AS var_DENIAL_day,
 	var_DENIAL_month || '/' || var_DENIAL_day || '/' ||  var_DENIAL_year AS var_DENIAL_DATE,
 	-- *INF*: IIF(LENGTH(var_DENIAL_DATE) < 10 OR var_DENIAL_year='0000' OR var_DENIAL_month = '00' OR var_DENIAL_day = '00',
 	-- TO_DATE('1/1/1800','MM/DD/YYYY'),
 	-- TO_DATE(var_DENIAL_DATE,'MM/DD/YYYY'))
-	IFF(LENGTH(var_DENIAL_DATE) < 10 OR var_DENIAL_year = '0000' OR var_DENIAL_month = '00' OR var_DENIAL_day = '00', TO_DATE('1/1/1800', 'MM/DD/YYYY'), TO_DATE(var_DENIAL_DATE, 'MM/DD/YYYY')) AS out_DENIAL_DATE
+	IFF(LENGTH(var_DENIAL_DATE
+		) < 10 
+		OR var_DENIAL_year = '0000' 
+		OR var_DENIAL_month = '00' 
+		OR var_DENIAL_day = '00',
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		TO_DATE(var_DENIAL_DATE, 'MM/DD/YYYY'
+		)
+	) AS out_DENIAL_DATE
 	FROM EXP_Values
 	LEFT JOIN LKP_PIF_42GQ_CMT
 	ON LKP_PIF_42GQ_CMT.pif_symbol = EXP_Values.PIF_SYMBOL AND LKP_PIF_42GQ_CMT.pif_policy_number = EXP_Values.PIF_POLICY_NUMBER AND LKP_PIF_42GQ_CMT.pif_module = EXP_Values.PIF_MODULE AND LKP_PIF_42GQ_CMT.ipfcgq_year_of_loss = EXP_Values.IPFC4J_LOSS_YEAR AND LKP_PIF_42GQ_CMT.ipfcgq_month_of_loss = EXP_Values.IPFC4J_LOSS_MONTH AND LKP_PIF_42GQ_CMT.ipfcgq_day_of_loss = EXP_Values.IPFC4J_LOSS_DAY AND LKP_PIF_42GQ_CMT.ipfcgq_loss_occurence = EXP_Values.IPFC4J_LOSS_OCCURENCE AND LKP_PIF_42GQ_CMT.ipfcgq_loss_claimant = EXP_Values.IPFC4J_LOSS_CLAIMANT AND LKP_PIF_42GQ_CMT.ipfcgq_claimant_use_code = EXP_Values.IPFC4J_USE_CODE
@@ -247,14 +309,35 @@ EXP_Detect_Changes AS (
 	-- 	ltrim(rtrim(lkp_offset_onset_ind)) <> ltrim(rtrim(IPFC4J_OFFSET_ONSET_IND)) , 
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(lkp_claim_party_occurrence_id IS NULL, 'NEW', IFF(lkp_denial_date <> DENIAL_DATE OR ltrim(rtrim(lkp_claimant_num)) <> ltrim(rtrim(IPFCGQ_LOSS_CLAIMANT)) OR ltrim(rtrim(lkp_offset_onset_ind)) <> ltrim(rtrim(IPFC4J_OFFSET_ONSET_IND)), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(lkp_claim_party_occurrence_id IS NULL,
+		'NEW',
+		IFF(lkp_denial_date <> DENIAL_DATE 
+			OR ltrim(rtrim(lkp_claimant_num
+				)
+			) <> ltrim(rtrim(IPFCGQ_LOSS_CLAIMANT
+				)
+			) 
+			OR ltrim(rtrim(lkp_offset_onset_ind
+				)
+			) <> ltrim(rtrim(IPFC4J_OFFSET_ONSET_IND
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
@@ -295,7 +378,10 @@ EXP_Determine_AK AS (
 	SEQ_claim_party_occurrence.NEXTVAL,
 	lkp_claim_party_occurrence_ak_id,
 	-- *INF*: IIF(Changed_Flag='NEW', NEXTVAL, lkp_claim_party_occurrence_ak_id)
-	IFF(Changed_Flag = 'NEW', NEXTVAL, lkp_claim_party_occurrence_ak_id) AS claim_party_occurrence_ak_id,
+	IFF(Changed_Flag = 'NEW',
+		NEXTVAL,
+		lkp_claim_party_occurrence_ak_id
+	) AS claim_party_occurrence_ak_id,
 	CLAIM_OCCURRENCE_AK_ID,
 	CLAIM_PARTY_AK_ID,
 	Claim_Case_AK_ID,
@@ -378,8 +464,11 @@ EXP_Lag_eff_from_date AS (
 	-- ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- orig_eff_to_date)
 	DECODE(TRUE,
-		claim_occurrence_ak_id = v_PREV_ROW_claim_occurrence_ak_id AND claim_party_ak_id = v_PREV_ROW_claim_party_ak_id AND claim_party_role_code = v_PREV_ROW_claim_party_role_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_occurrence_ak_id = v_PREV_ROW_claim_occurrence_ak_id 
+		AND claim_party_ak_id = v_PREV_ROW_claim_party_ak_id 
+		AND claim_party_role_code = v_PREV_ROW_claim_party_role_code, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	claim_occurrence_ak_id AS v_PREV_ROW_claim_occurrence_ak_id,
@@ -443,11 +532,15 @@ EXP_Evaluate AS (
 	-- *INF*: :LKP.LKP_CLAIM_PARTY_KEY(claim_party_ak_id)
 	LKP_CLAIM_PARTY_KEY_claim_party_ak_id.claim_party_key AS v_claim_party_key,
 	-- *INF*: SUBSTR(v_claim_party_key,1,26)
-	SUBSTR(v_claim_party_key, 1, 26) AS v_Claim_Case_Key,
+	SUBSTR(v_claim_party_key, 1, 26
+	) AS v_Claim_Case_Key,
 	-- *INF*: :LKP.LKP_CLAIM_CASE_AK_ID(v_Claim_Case_Key)
 	LKP_CLAIM_CASE_AK_ID_v_Claim_Case_Key.claim_case_ak_id AS v_Claim_Case_Ak_id,
 	-- *INF*: IIF(ISNULL(v_Claim_Case_Ak_id),-1,v_Claim_Case_Ak_id)
-	IFF(v_Claim_Case_Ak_id IS NULL, - 1, v_Claim_Case_Ak_id) AS Out_Claim_Case_Ak_id
+	IFF(v_Claim_Case_Ak_id IS NULL,
+		- 1,
+		v_Claim_Case_Ak_id
+	) AS Out_Claim_Case_Ak_id
 	FROM SQ_claim_party_occurrence_claim_case_ak_id_update
 	LEFT JOIN LKP_CLAIM_PARTY_KEY LKP_CLAIM_PARTY_KEY_claim_party_ak_id
 	ON LKP_CLAIM_PARTY_KEY_claim_party_ak_id.claim_party_ak_id = claim_party_ak_id

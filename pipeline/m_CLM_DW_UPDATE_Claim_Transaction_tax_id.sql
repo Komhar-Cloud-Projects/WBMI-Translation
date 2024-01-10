@@ -13,7 +13,9 @@ EXP_claim_master_1099_list_ak_id AS (
 	claim_trans_id,
 	tax_id AS in_tax_id,
 	-- *INF*: ltrim(rtrim(in_tax_id))
-	ltrim(rtrim(in_tax_id)) AS tax_id
+	ltrim(rtrim(in_tax_id
+		)
+	) AS tax_id
 	FROM SQ_claim_transaction
 ),
 LKP_claim_master_1099_list AS (
@@ -35,7 +37,10 @@ EXP_claim_master_ak_id AS (
 	EXP_claim_master_1099_list_ak_id.claim_trans_id,
 	LKP_claim_master_1099_list.claim_master_1099_list_ak_id AS lkp_claim_master_1099_list_ak_id,
 	-- *INF*: iif(isnull(lkp_claim_master_1099_list_ak_id),-1,lkp_claim_master_1099_list_ak_id)
-	IFF(lkp_claim_master_1099_list_ak_id IS NULL, - 1, lkp_claim_master_1099_list_ak_id) AS claim_master_1099_list_ak_id
+	IFF(lkp_claim_master_1099_list_ak_id IS NULL,
+		- 1,
+		lkp_claim_master_1099_list_ak_id
+	) AS claim_master_1099_list_ak_id
 	FROM EXP_claim_master_1099_list_ak_id
 	LEFT JOIN LKP_claim_master_1099_list
 	ON LKP_claim_master_1099_list.tax_id = EXP_claim_master_1099_list_ak_id.tax_id

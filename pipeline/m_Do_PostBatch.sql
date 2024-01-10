@@ -79,7 +79,8 @@ EXP_batch_control_run AS (
 	-- 	TO_DATE('01/01/1800','MM/DD/YYYY'),
 	-- 	'SS',
 	-- 	DATE_DIFF(sysdate,start_ts,'SS'))
-	ADD_TO_DATE(TO_DATE('01/01/1800', 'MM/DD/YYYY'), 'SS', DATE_DIFF(sysdate, start_ts, 'SS')) AS elapsed_time,
+	DATEADD(SECOND,DATEDIFF(SECOND,sysdate,start_ts),TO_DATE('01/01/1800', 'MM/DD/YYYY'
+	)) AS elapsed_time,
 	sysdate AS modified_date
 	FROM SQ_wbmi_batch_control_run_EXPIRE
 ),

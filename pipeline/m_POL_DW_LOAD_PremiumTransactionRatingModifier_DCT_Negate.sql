@@ -64,7 +64,8 @@ DetectChanges AS (
 	-- -- 1 Insert  0 Ignore
 	DECODE(TRUE,
 		lkp_PremiumTransactionID IS NULL, 1,
-		0) AS DetectChanges
+		0
+	) AS DetectChanges
 	FROM EXP_IN_PremiumTransactionRatingModifier
 	LEFT JOIN LKP_PremiumTransactionRatingModifier
 	ON LKP_PremiumTransactionRatingModifier.PremiumTransactionID = EXP_IN_PremiumTransactionRatingModifier.NewNegatePremiumTransactionID

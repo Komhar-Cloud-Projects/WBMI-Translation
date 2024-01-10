@@ -49,7 +49,10 @@ EXP_Evaluate AS (
 	STG_claim_occurrence_key,
 	STG_SUM_Trans_Amt,
 	-- *INF*: IIF(STG_SUM_Trans_Amt = EDW_SUM_Trans_Amt,'Y','N')
-	IFF(STG_SUM_Trans_Amt = EDW_SUM_Trans_Amt, 'Y', 'N') AS v_Balance_Amount,
+	IFF(STG_SUM_Trans_Amt = EDW_SUM_Trans_Amt,
+		'Y',
+		'N'
+	) AS v_Balance_Amount,
 	-- *INF*: DECODE(TRUE,
 	-- ROUND(abs(EDW_SUM_Trans_Amt - STG_SUM_Trans_Amt),2) > 0.01 , -3,
 	-- ROUND(abs(EDW_SUM_Trans_Amt - STG_SUM_Trans_Amt),2) <= 0.01  
@@ -69,9 +72,15 @@ EXP_Evaluate AS (
 	--  ---- (-1,-2) is used to identify the PMS claims that are not balancing either by amount or no. of transactions.
 	--  ---- (-3,-4) is used to identify EXCEED claims that are not balancing either by amount or no. of transactions.
 	DECODE(TRUE,
-		ROUND(abs(EDW_SUM_Trans_Amt - STG_SUM_Trans_Amt), 2) > 0.01, - 3,
-		ROUND(abs(EDW_SUM_Trans_Amt - STG_SUM_Trans_Amt), 2) <= 0.01 AND EDW_COUNT_of_Transactions != STG_COUNT_of_Transactions, - 4,
-		0) AS err_flag_change,
+		ROUND(abs(EDW_SUM_Trans_Amt - STG_SUM_Trans_Amt
+			), 2
+		) > 0.01, - 3,
+		ROUND(abs(EDW_SUM_Trans_Amt - STG_SUM_Trans_Amt
+			), 2
+		) <= 0.01 
+		AND EDW_COUNT_of_Transactions != STG_COUNT_of_Transactions, - 4,
+		0
+	) AS err_flag_change,
 	err_flag_change AS out_err_flag_bal_txn
 	FROM JNR_EDW_STAGE
 ),
@@ -100,7 +109,10 @@ EXP_UpdateFlag AS (
 	LKP_Claim_Occurrence_id.err_flag_bal_txn AS lkp_err_flag_bal_txn,
 	EXP_Evaluate.out_err_flag_bal_txn,
 	-- *INF*: IIF(out_err_flag_bal_txn = lkp_err_flag_bal_txn, 'NOUPDATE', 'UPDATE')
-	IFF(out_err_flag_bal_txn = lkp_err_flag_bal_txn, 'NOUPDATE', 'UPDATE') AS v_update_flag,
+	IFF(out_err_flag_bal_txn = lkp_err_flag_bal_txn,
+		'NOUPDATE',
+		'UPDATE'
+	) AS v_update_flag,
 	v_update_flag AS update_flag
 	FROM EXP_Evaluate
 	LEFT JOIN LKP_Claim_Occurrence_id

@@ -37,11 +37,43 @@ EXP_VALIDATE AS (
 	tch_client_id3 AS tch_client_id_cld,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(tch_claim_nbr_cld))) OR IS_SPACES(LTRIM(RTRIM(tch_claim_nbr_cld))) OR LENGTH(LTRIM(RTRIM(tch_claim_nbr_cld)))=0,'N/A',LTRIM(RTRIM(tch_claim_nbr_cld)))
 	--                                                                                 
-	IFF(LTRIM(RTRIM(tch_claim_nbr_cld)) IS NULL OR IS_SPACES(LTRIM(RTRIM(tch_claim_nbr_cld))) OR LENGTH(LTRIM(RTRIM(tch_claim_nbr_cld))) = 0, 'N/A', LTRIM(RTRIM(tch_claim_nbr_cld))) AS v_tch_claim_nbr,
+	IFF(LTRIM(RTRIM(tch_claim_nbr_cld
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(tch_claim_nbr_cld
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(tch_claim_nbr_cld
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(tch_claim_nbr_cld
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(tch_claim_nbr_cld
+			)
+		)
+	) AS v_tch_claim_nbr,
 	v_tch_claim_nbr AS tch_claim_nbr,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(tch_client_id_cld))) OR IS_SPACES(LTRIM(RTRIM(tch_client_id_cld))) OR LENGTH(LTRIM(RTRIM(tch_client_id_cld)))=0,'N/A',LTRIM(RTRIM(tch_client_id_cld)))
 	--                                                                            
-	IFF(LTRIM(RTRIM(tch_client_id_cld)) IS NULL OR IS_SPACES(LTRIM(RTRIM(tch_client_id_cld))) OR LENGTH(LTRIM(RTRIM(tch_client_id_cld))) = 0, 'N/A', LTRIM(RTRIM(tch_client_id_cld))) AS v_tch_client_id,
+	IFF(LTRIM(RTRIM(tch_client_id_cld
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(tch_client_id_cld
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(tch_client_id_cld
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(tch_client_id_cld
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(tch_client_id_cld
+			)
+		)
+	) AS v_tch_client_id,
 	v_tch_client_id AS tch_client_id,
 	-- *INF*: v_tch_claim_nbr || '//'||v_tch_client_id
 	v_tch_claim_nbr || '//' || v_tch_client_id AS CLAIM_CASE_KEY,
@@ -53,13 +85,35 @@ EXP_VALIDATE AS (
 	-- *INF*: :LKP.LKP_LIEN_CLIENT_NAME(IN_lien_client_id)
 	LKP_LIEN_CLIENT_NAME_IN_lien_client_id.claim_party_full_name AS v_lien_client,
 	-- *INF*: IIF(ISNULL(v_lien_client),'N/A',v_lien_client)
-	IFF(v_lien_client IS NULL, 'N/A', v_lien_client) AS lien_client,
+	IFF(v_lien_client IS NULL,
+		'N/A',
+		v_lien_client
+	) AS lien_client,
 	lien_role AS IN_lien_role,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_lien_role))) OR IS_SPACES(LTRIM(RTRIM(IN_lien_role))) OR LENGTH(LTRIM(RTRIM(IN_lien_role)))=0,'N/A',LTRIM(RTRIM(IN_lien_role)))
-	IFF(LTRIM(RTRIM(IN_lien_role)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_lien_role))) OR LENGTH(LTRIM(RTRIM(IN_lien_role))) = 0, 'N/A', LTRIM(RTRIM(IN_lien_role))) AS lien_role,
+	IFF(LTRIM(RTRIM(IN_lien_role
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_lien_role
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_lien_role
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_lien_role
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_lien_role
+			)
+		)
+	) AS lien_role,
 	lien_amt AS IN_lien_amt,
 	-- *INF*: IIF(ISNULL(IN_lien_amt) ,0,IN_lien_amt)
-	IFF(IN_lien_amt IS NULL, 0, IN_lien_amt) AS lien_amt
+	IFF(IN_lien_amt IS NULL,
+		0,
+		IN_lien_amt
+	) AS lien_amt
 	FROM SQ_CLM_LIEN_DETAILS_STAGE
 	LEFT JOIN LKP_CLAIM_CASE_AK_ID LKP_CLAIM_CASE_AK_ID_CLAIM_CASE_KEY
 	ON LKP_CLAIM_CASE_AK_ID_CLAIM_CASE_KEY.claim_case_key = CLAIM_CASE_KEY
@@ -104,14 +158,25 @@ EXP_DETECT_CHANGES AS (
 	-- *INF*: IIF(ISNULL(old_claim_case_lien_det_id),'NEW',
 	--      IIF(lien_amt <> old_lien_amt,'UPDATE','NOCHANGE'))
 	-- 
-	IFF(old_claim_case_lien_det_id IS NULL, 'NEW', IFF(lien_amt <> old_lien_amt, 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(old_claim_case_lien_det_id IS NULL,
+		'NEW',
+		IFF(lien_amt <> old_lien_amt,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: IIF(v_changed_flag='NEW',TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_changed_flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -147,7 +212,10 @@ EXP_Determine_AK AS (
 	SELECT
 	old_claim_case_lien_det_ak_id,
 	-- *INF*: IIF(changed_flag ='NEW',NEXTVAL,old_claim_case_lien_det_ak_id)
-	IFF(changed_flag = 'NEW', NEXTVAL, old_claim_case_lien_det_ak_id) AS claim_case_lien_det_ak_id,
+	IFF(changed_flag = 'NEW',
+		NEXTVAL,
+		old_claim_case_lien_det_ak_id
+	) AS claim_case_lien_det_ak_id,
 	Out_Claim_Case_key,
 	claim_case_ak_id,
 	lien_client,
@@ -217,8 +285,11 @@ EXP_Lag_eff_from_date AS (
 	-- and lien_client = v_prev_row_lien_client 
 	-- and lien_client_role_code = v_prev_row_lien_client_role_code ,ADD_TO_DATE(v_prev_row_eff_from_date,'SS',-1),orig_eff_to_date)
 	DECODE(TRUE,
-		claim_case_ak_id = v_prev_row_claim_case_ak_id AND lien_client = v_prev_row_lien_client AND lien_client_role_code = v_prev_row_lien_client_role_code, ADD_TO_DATE(v_prev_row_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_case_ak_id = v_prev_row_claim_case_ak_id 
+		AND lien_client = v_prev_row_lien_client 
+		AND lien_client_role_code = v_prev_row_lien_client_role_code, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	claim_case_ak_id AS v_prev_row_claim_case_ak_id,
 	lien_client AS v_prev_row_lien_client,

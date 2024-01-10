@@ -70,40 +70,61 @@ Exp_SetDefaultValue AS (
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveDate,
+	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	'DCT' AS SourceSystemId,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	LKP_contract_customer_dim.contract_cust_dim_id AS i_contract_cust_dim_id,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_INTEGERS(i_contract_cust_dim_id)
-	:UDF.DEFAULT_VALUE_FOR_INTEGERS(i_contract_cust_dim_id) AS o_contract_cust_dim_id,
+	:UDF.DEFAULT_VALUE_FOR_INTEGERS(i_contract_cust_dim_id
+	) AS o_contract_cust_dim_id,
 	SQ_ContractCustomerEmailAddress.CustomerEmailAddress AS i_CustomerEmailAddress,
 	-- *INF*: IIF(ISNULL(i_CustomerEmailAddress),'N/A',i_CustomerEmailAddress)
-	IFF(i_CustomerEmailAddress IS NULL, 'N/A', i_CustomerEmailAddress) AS o_CustomerEmailAddress,
+	IFF(i_CustomerEmailAddress IS NULL,
+		'N/A',
+		i_CustomerEmailAddress
+	) AS o_CustomerEmailAddress,
 	LKP_SupEmailPriorityCode.EmailPriorityCode AS i_EmailPriorityCode,
 	-- *INF*: IIF(ISNULL(i_EmailPriorityCode),'N/A',i_EmailPriorityCode)
-	IFF(i_EmailPriorityCode IS NULL, 'N/A', i_EmailPriorityCode) AS o_EmailPriorityCode,
+	IFF(i_EmailPriorityCode IS NULL,
+		'N/A',
+		i_EmailPriorityCode
+	) AS o_EmailPriorityCode,
 	LKP_SupEmailPriorityCode.EmailPriorityDescription AS i_EmailPriorityDescription,
 	-- *INF*: IIF(ISNULL(i_EmailPriorityDescription),'N/A',i_EmailPriorityDescription)
-	IFF(i_EmailPriorityDescription IS NULL, 'N/A', i_EmailPriorityDescription) AS o_EmailPriorityDescription,
+	IFF(i_EmailPriorityDescription IS NULL,
+		'N/A',
+		i_EmailPriorityDescription
+	) AS o_EmailPriorityDescription,
 	LKP_SupEmailTypeCode.SupEmailTypeCodeCode AS i_SupEmailTypeCodeCode,
 	-- *INF*: IIF(ISNULL(i_SupEmailTypeCodeCode),'N/A',i_SupEmailTypeCodeCode)
-	IFF(i_SupEmailTypeCodeCode IS NULL, 'N/A', i_SupEmailTypeCodeCode) AS o_SupEmailTypeCodeCode,
+	IFF(i_SupEmailTypeCodeCode IS NULL,
+		'N/A',
+		i_SupEmailTypeCodeCode
+	) AS o_SupEmailTypeCodeCode,
 	LKP_SupEmailTypeCode.SupEmailTypeDescription AS i_SupEmailTypeDescription,
 	-- *INF*: IIF(ISNULL(i_SupEmailTypeDescription),'N/A',i_SupEmailTypeDescription)
-	IFF(i_SupEmailTypeDescription IS NULL, 'N/A', i_SupEmailTypeDescription) AS o_SupEmailTypeDescription,
+	IFF(i_SupEmailTypeDescription IS NULL,
+		'N/A',
+		i_SupEmailTypeDescription
+	) AS o_SupEmailTypeDescription,
 	LKP_contract_customer_dim.cust_num AS i_cust_num,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_cust_num)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_cust_num) AS o_cust_num,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_cust_num
+	) AS o_cust_num,
 	0 AS MasterFlag,
 	SQ_ContractCustomerEmailAddress.ContractCustomerEmailAddressAKID AS i_ContractCustomerEmailAddressAKID,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_INTEGERS(i_ContractCustomerEmailAddressAKID)
-	:UDF.DEFAULT_VALUE_FOR_INTEGERS(i_ContractCustomerEmailAddressAKID) AS o_ContractCustomerEmailAddressAKID,
+	:UDF.DEFAULT_VALUE_FOR_INTEGERS(i_ContractCustomerEmailAddressAKID
+	) AS o_ContractCustomerEmailAddressAKID,
 	SQ_ContractCustomerEmailAddress.ContractCustomerEmailAddressID AS i_ContractCustomerEmailAddressID,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_INTEGERS(i_ContractCustomerEmailAddressID)
-	:UDF.DEFAULT_VALUE_FOR_INTEGERS(i_ContractCustomerEmailAddressID) AS o_ContractCustomerEmailAddressID
+	:UDF.DEFAULT_VALUE_FOR_INTEGERS(i_ContractCustomerEmailAddressID
+	) AS o_ContractCustomerEmailAddressID
 	FROM SQ_ContractCustomerEmailAddress
 	LEFT JOIN LKP_ContractCustomerEmailAddressDim
 	ON LKP_ContractCustomerEmailAddressDim.EDWContractCustomerEmailAddressPKID = SQ_ContractCustomerEmailAddress.ContractCustomerEmailAddressID
@@ -219,7 +240,10 @@ EXP_Set_MasterEmailFlag AS (
 	ContractCustomerEmailAddressDimID,
 	CustomerNumber,
 	-- *INF*: IIF(CustomerNumber=v_Prev_CustomerNumber,0,1)
-	IFF(CustomerNumber = v_Prev_CustomerNumber, 0, 1) AS v_MasterEmailFlag,
+	IFF(CustomerNumber = v_Prev_CustomerNumber,
+		0,
+		1
+	) AS v_MasterEmailFlag,
 	CustomerNumber AS v_Prev_CustomerNumber,
 	v_MasterEmailFlag AS MasterEmailFlag
 	FROM SQ_ContractCustomerEmailAddressDim

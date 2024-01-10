@@ -24,11 +24,43 @@ EXP_VALIDATE AS (
 	tch_client_id2 AS tch_client_id_cdo,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(tch_claim_nbr_cdo))) OR IS_SPACES(LTRIM(RTRIM(tch_claim_nbr_cdo))) OR LENGTH(LTRIM(RTRIM(tch_claim_nbr_cdo)))=0,'N/A',LTRIM(RTRIM(tch_claim_nbr_cdo)))
 	--                                                                                            	
-	IFF(LTRIM(RTRIM(tch_claim_nbr_cdo)) IS NULL OR IS_SPACES(LTRIM(RTRIM(tch_claim_nbr_cdo))) OR LENGTH(LTRIM(RTRIM(tch_claim_nbr_cdo))) = 0, 'N/A', LTRIM(RTRIM(tch_claim_nbr_cdo))) AS v_tch_claim_nbr,
+	IFF(LTRIM(RTRIM(tch_claim_nbr_cdo
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(tch_claim_nbr_cdo
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(tch_claim_nbr_cdo
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(tch_claim_nbr_cdo
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(tch_claim_nbr_cdo
+			)
+		)
+	) AS v_tch_claim_nbr,
 	v_tch_claim_nbr AS tch_claim_nbr,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(tch_client_id_cdo))) OR IS_SPACES(LTRIM(RTRIM(tch_client_id_cdo))) OR LENGTH(LTRIM(RTRIM(tch_client_id_cdo)))=0,'N/A',LTRIM(RTRIM(tch_client_id_cdo)))
 	--                                                                                          
-	IFF(LTRIM(RTRIM(tch_client_id_cdo)) IS NULL OR IS_SPACES(LTRIM(RTRIM(tch_client_id_cdo))) OR LENGTH(LTRIM(RTRIM(tch_client_id_cdo))) = 0, 'N/A', LTRIM(RTRIM(tch_client_id_cdo))) AS v_tch_client_id,
+	IFF(LTRIM(RTRIM(tch_client_id_cdo
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(tch_client_id_cdo
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(tch_client_id_cdo
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(tch_client_id_cdo
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(tch_client_id_cdo
+			)
+		)
+	) AS v_tch_client_id,
 	v_tch_client_id AS tch_client_id,
 	-- *INF*: v_tch_claim_nbr || '//'||v_tch_client_id
 	v_tch_claim_nbr || '//' || v_tch_client_id AS v_Claim_Case_Key,
@@ -38,7 +70,10 @@ EXP_VALIDATE AS (
 	-- *INF*: IIF(ISNULL(v_claim_case_ak_id),-1,v_claim_case_ak_id)
 	-- 
 	-- ---v_claim_case_ak_id
-	IFF(v_claim_case_ak_id IS NULL, - 1, v_claim_case_ak_id) AS claim_case_ak_id,
+	IFF(v_claim_case_ak_id IS NULL,
+		- 1,
+		v_claim_case_ak_id
+	) AS claim_case_ak_id,
 	claim_case_ak_id AS out_claim_case_ak_id,
 	demand_offer_dt AS IN_demand_offer_dt,
 	-- *INF*: IIF(v_prev_row_claim_case_ak_id = v_claim_case_ak_id,
@@ -46,21 +81,57 @@ EXP_VALIDATE AS (
 	-- IIF(ISNULL(IN_demand_amt),TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),IN_demand_offer_dt))
 	-- 
 	-- 
-	IFF(v_prev_row_claim_case_ak_id = v_claim_case_ak_id, IFF(IN_demand_amt IS NULL, v_prev_row_demand_date, IN_demand_offer_dt), IFF(IN_demand_amt IS NULL, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), IN_demand_offer_dt)) AS v_demand_dt,
+	IFF(v_prev_row_claim_case_ak_id = v_claim_case_ak_id,
+		IFF(IN_demand_amt IS NULL,
+			v_prev_row_demand_date,
+			IN_demand_offer_dt
+		),
+		IFF(IN_demand_amt IS NULL,
+			TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+			),
+			IN_demand_offer_dt
+		)
+	) AS v_demand_dt,
 	v_demand_dt AS out_demand_date,
 	-- *INF*: IIF(ISNULL(IN_offer_amt),TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),IN_demand_offer_dt)
-	IFF(IN_offer_amt IS NULL, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), IN_demand_offer_dt) AS v_demand_offer_dt,
+	IFF(IN_offer_amt IS NULL,
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		IN_demand_offer_dt
+	) AS v_demand_offer_dt,
 	v_demand_offer_dt AS out_demand_offer_date,
 	create_ts2,
 	demand_amt AS IN_demand_amt,
 	-- *INF*: IIF(ISNULL(IN_demand_amt) ,0 ,IN_demand_amt)
-	IFF(IN_demand_amt IS NULL, 0, IN_demand_amt) AS demand_amt,
+	IFF(IN_demand_amt IS NULL,
+		0,
+		IN_demand_amt
+	) AS demand_amt,
 	offer_amt AS IN_offer_amt,
 	-- *INF*: IIF(ISNULL(IN_offer_amt) ,0 ,IN_offer_amt)
-	IFF(IN_offer_amt IS NULL, 0, IN_offer_amt) AS offer_amt,
+	IFF(IN_offer_amt IS NULL,
+		0,
+		IN_offer_amt
+	) AS offer_amt,
 	damage_desc1 AS IN_damage_desc_do,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_damage_desc_do))) OR IS_SPACES(LTRIM(RTRIM(IN_damage_desc_do))) OR LENGTH(LTRIM(RTRIM(IN_damage_desc_do)))=0,'N/A' ,LTRIM(RTRIM(IN_damage_desc_do)))
-	IFF(LTRIM(RTRIM(IN_damage_desc_do)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_damage_desc_do))) OR LENGTH(LTRIM(RTRIM(IN_damage_desc_do))) = 0, 'N/A', LTRIM(RTRIM(IN_damage_desc_do))) AS damage_desc_do,
+	IFF(LTRIM(RTRIM(IN_damage_desc_do
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_damage_desc_do
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_damage_desc_do
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_damage_desc_do
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_damage_desc_do
+			)
+		)
+	) AS damage_desc_do,
 	claim_case_ak_id AS v_prev_row_claim_case_ak_id,
 	v_demand_dt AS v_prev_row_demand_date,
 	v_demand_offer_dt AS v_prev_row_offer_date
@@ -119,7 +190,17 @@ EXP_DETECT_CHANGES AS (
 	-- 
 	-- LTRIM(RTRIM(damage_desc_do)) <> LTRIM(RTRIM(old_demand_comment)),'UPDATE','NOCHANGE'))
 	-- 
-	IFF(old_claim_case_demand_det_id IS NULL, 'NEW', IFF(LTRIM(RTRIM(damage_desc_do)) <> LTRIM(RTRIM(old_demand_comment)), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(old_claim_case_demand_det_id IS NULL,
+		'NEW',
+		IFF(LTRIM(RTRIM(damage_desc_do
+				)
+			) <> LTRIM(RTRIM(old_demand_comment
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
@@ -128,7 +209,8 @@ EXP_DETECT_CHANGES AS (
 	-- --IIF(v_changed_flag='NEW',TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),demand_dt)
 	demand_create_dt AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS modified_date,
 	SYSDATE AS created_date
@@ -167,7 +249,10 @@ EXP_Determine_AK AS (
 	SELECT
 	old_claim_case_demand_det_ak_id,
 	-- *INF*: IIF(changed_flag ='NEW',NEXTVAL,old_claim_case_demand_det_ak_id)
-	IFF(changed_flag = 'NEW', NEXTVAL, old_claim_case_demand_det_ak_id) AS claim_case_demand_det_ak_id,
+	IFF(changed_flag = 'NEW',
+		NEXTVAL,
+		old_claim_case_demand_det_ak_id
+	) AS claim_case_demand_det_ak_id,
 	claim_case_ak_id,
 	Out_Claim_Case_key,
 	demand_dt,
@@ -245,8 +330,9 @@ EXP_Lag_eff_from_date AS (
 	-- claim_case_ak_id=v_prev_row_claim_case_ak_id 
 	-- ,ADD_TO_DATE(v_prev_row_eff_from_date,'SS',-1),orig_eff_to_date)
 	DECODE(TRUE,
-		claim_case_ak_id = v_prev_row_claim_case_ak_id, ADD_TO_DATE(v_prev_row_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_case_ak_id = v_prev_row_claim_case_ak_id, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	claim_case_ak_id AS v_prev_row_claim_case_ak_id,
 	demand_date AS v_prev_row_demand_date,

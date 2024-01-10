@@ -290,46 +290,78 @@ EXP_Default_Values AS (
 	EXP_Scr_Values.NurseAssignmentId,
 	LKP_NurseAssignmentDim.NurseAssignmentDimId AS IN_NurseAssignmentDimId,
 	-- *INF*: iif(isnull(IN_NurseAssignmentDimId),-1,IN_NurseAssignmentDimId)
-	IFF(IN_NurseAssignmentDimId IS NULL, - 1, IN_NurseAssignmentDimId) AS v_NurseAssignmentDimId,
+	IFF(IN_NurseAssignmentDimId IS NULL,
+		- 1,
+		IN_NurseAssignmentDimId
+	) AS v_NurseAssignmentDimId,
 	v_NurseAssignmentDimId AS NurseAssignmentDimId,
 	mplt_Claimant_Occurrence_dim_ids.claimant_dim_id AS IN_claimant_dim_id,
 	-- *INF*: iif(isnull(IN_claimant_dim_id),-1,IN_claimant_dim_id)
-	IFF(IN_claimant_dim_id IS NULL, - 1, IN_claimant_dim_id) AS v_claimant_dim_id,
+	IFF(IN_claimant_dim_id IS NULL,
+		- 1,
+		IN_claimant_dim_id
+	) AS v_claimant_dim_id,
 	v_claimant_dim_id AS claimant_dim_id,
 	mplt_Claimant_Occurrence_dim_ids.claim_occurrence_dim_id AS IN_claim_occurrence_dim_id,
 	-- *INF*: iif(isnull(IN_claim_occurrence_dim_id),-1,IN_claim_occurrence_dim_id)
-	IFF(IN_claim_occurrence_dim_id IS NULL, - 1, IN_claim_occurrence_dim_id) AS v_claim_occurrence_dim_id,
+	IFF(IN_claim_occurrence_dim_id IS NULL,
+		- 1,
+		IN_claim_occurrence_dim_id
+	) AS v_claim_occurrence_dim_id,
 	v_claim_occurrence_dim_id AS claim_occurrence_dim_id,
 	LKP_NurseAssignmentImpact.TimeSavedWeeks AS IN_TimeSavedWeeks,
 	-- *INF*: iif(isnull(IN_TimeSavedWeeks),0,IN_TimeSavedWeeks)
-	IFF(IN_TimeSavedWeeks IS NULL, 0, IN_TimeSavedWeeks) AS v_TimeSavedWeeks,
+	IFF(IN_TimeSavedWeeks IS NULL,
+		0,
+		IN_TimeSavedWeeks
+	) AS v_TimeSavedWeeks,
 	v_TimeSavedWeeks AS TimeSavedWeeks,
 	LKP_NurseAssignmentImpact.TimeSavedDays AS IN_TimeSavedDays,
 	-- *INF*: iif(isnull(IN_TimeSavedDays),0,IN_TimeSavedDays)
-	IFF(IN_TimeSavedDays IS NULL, 0, IN_TimeSavedDays) AS v_TimeSavedDays,
+	IFF(IN_TimeSavedDays IS NULL,
+		0,
+		IN_TimeSavedDays
+	) AS v_TimeSavedDays,
 	v_TimeSavedDays AS TimeSavedDays,
 	LKP_workers_comp_claimant_detail.ttd_rate AS IN_ttd_rate,
 	-- *INF*: iif(isnull(IN_ttd_rate),0,IN_ttd_rate)
-	IFF(IN_ttd_rate IS NULL, 0, IN_ttd_rate) AS v_ttd_rate,
+	IFF(IN_ttd_rate IS NULL,
+		0,
+		IN_ttd_rate
+	) AS v_ttd_rate,
 	v_ttd_rate AS ttd_rate,
 	LKP_workers_comp_claimant_detail.dtd_rate AS IN_dtd_rate,
 	-- *INF*: iif(isnull(IN_dtd_rate),0,IN_dtd_rate)
-	IFF(IN_dtd_rate IS NULL, 0, IN_dtd_rate) AS v_dtd_rate,
+	IFF(IN_dtd_rate IS NULL,
+		0,
+		IN_dtd_rate
+	) AS v_dtd_rate,
 	v_dtd_rate AS dtd_rate,
 	-- *INF*:  ( v_TimeSavedWeeks * v_ttd_rate )  +  ( v_TimeSavedDays * v_dtd_rate ) 
-	( v_TimeSavedWeeks * v_ttd_rate ) + ( v_TimeSavedDays * v_dtd_rate ) AS v_EarlyReturnToWorkSavings,
+	( v_TimeSavedWeeks * v_ttd_rate 
+	) + ( v_TimeSavedDays * v_dtd_rate 
+	) AS v_EarlyReturnToWorkSavings,
 	v_EarlyReturnToWorkSavings AS EarlyReturnToWorkSavings,
 	LKP_NurseAssignmentTimeWorked.TotalAssignmentTimeWorked AS IN_TotalAssignmentTimeWorked,
 	-- *INF*: iif(isnull(IN_TotalAssignmentTimeWorked),0,IN_TotalAssignmentTimeWorked)
-	IFF(IN_TotalAssignmentTimeWorked IS NULL, 0, IN_TotalAssignmentTimeWorked) AS v_TotalAssignmentTimeWorked,
+	IFF(IN_TotalAssignmentTimeWorked IS NULL,
+		0,
+		IN_TotalAssignmentTimeWorked
+	) AS v_TotalAssignmentTimeWorked,
 	v_TotalAssignmentTimeWorked AS TotalAssignmentTimeWorked,
 	LKP_NurseAssignmentImpact_Medical.TotalMedicalCostSavings AS IN_TotalMedicalCostSavings,
 	-- *INF*: iif(isnull(IN_TotalMedicalCostSavings),0,IN_TotalMedicalCostSavings)
-	IFF(IN_TotalMedicalCostSavings IS NULL, 0, IN_TotalMedicalCostSavings) AS v_TotalMedicalCostSavings,
+	IFF(IN_TotalMedicalCostSavings IS NULL,
+		0,
+		IN_TotalMedicalCostSavings
+	) AS v_TotalMedicalCostSavings,
 	v_TotalMedicalCostSavings AS TotalMedicalCostSavings,
 	LKP_NurseAssignmentImpact_Indemnity.TotalIndemnityVocationalCategorySavings AS IN_TotalIndemnityVocationalCategorySavings,
 	-- *INF*: iif(isnull(IN_TotalIndemnityVocationalCategorySavings),0,IN_TotalIndemnityVocationalCategorySavings)
-	IFF(IN_TotalIndemnityVocationalCategorySavings IS NULL, 0, IN_TotalIndemnityVocationalCategorySavings) AS v_TotalIndemnityVocationalCategorySavings,
+	IFF(IN_TotalIndemnityVocationalCategorySavings IS NULL,
+		0,
+		IN_TotalIndemnityVocationalCategorySavings
+	) AS v_TotalIndemnityVocationalCategorySavings,
 	v_TotalIndemnityVocationalCategorySavings AS TotalIndemnityVocationalCategorySavings,
 	v_EarlyReturnToWorkSavings + v_TotalIndemnityVocationalCategorySavings AS v_TotalIndemnityVocationalSavings,
 	v_TotalIndemnityVocationalSavings AS TotalIndemnityVocationalSavings,
@@ -432,7 +464,24 @@ EXP_Detect_Changes AS (
 	--   )
 	-- 
 	-- 
-	IFF(Lkp_NurseAssignmentFactId IS NULL, 'NEW', IFF(Lkp_EdwNurseAssignmentPkId != NurseAssignmentId OR Lkp_claimant_dim_id != claimant_dim_id OR Lkp_claim_occurrence_dim_id != claim_occurrence_dim_id OR Lkp_NurseAssignmentDimId != NurseAssignmentDimId OR Lkp_TimeSavedWeeks != TimeSavedWeeks OR Lkp_TimeSavedDays != TimeSavedDays OR Lkp_EarlyReturnToWorkSavings != EarlyReturnToWorkSavings OR Lkp_TotalAssignmentTimeWorkedHours != TotalAssignmentTimeWorked OR Lkp_TotalMedicalCostSavings != TotalMedicalCostSavings OR Lkp_TotalIndemnityVocationalCategorySavings != TotalIndemnityVocationalCategorySavings OR Lkp_TotalIndemnityVocationalSavings != TotalIndemnityVocationalSavings OR Lkp_TotalCostImpact != TotalCostImpact, 'UPDATE', 'NOCHANGE')) AS v_ChangedFlag,
+	IFF(Lkp_NurseAssignmentFactId IS NULL,
+		'NEW',
+		IFF(Lkp_EdwNurseAssignmentPkId != NurseAssignmentId 
+			OR Lkp_claimant_dim_id != claimant_dim_id 
+			OR Lkp_claim_occurrence_dim_id != claim_occurrence_dim_id 
+			OR Lkp_NurseAssignmentDimId != NurseAssignmentDimId 
+			OR Lkp_TimeSavedWeeks != TimeSavedWeeks 
+			OR Lkp_TimeSavedDays != TimeSavedDays 
+			OR Lkp_EarlyReturnToWorkSavings != EarlyReturnToWorkSavings 
+			OR Lkp_TotalAssignmentTimeWorkedHours != TotalAssignmentTimeWorked 
+			OR Lkp_TotalMedicalCostSavings != TotalMedicalCostSavings 
+			OR Lkp_TotalIndemnityVocationalCategorySavings != TotalIndemnityVocationalCategorySavings 
+			OR Lkp_TotalIndemnityVocationalSavings != TotalIndemnityVocationalSavings 
+			OR Lkp_TotalCostImpact != TotalCostImpact,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangedFlag,
 	EXP_Default_Values.NurseAssignmentId,
 	EXP_Default_Values.NurseAssignmentDimId,

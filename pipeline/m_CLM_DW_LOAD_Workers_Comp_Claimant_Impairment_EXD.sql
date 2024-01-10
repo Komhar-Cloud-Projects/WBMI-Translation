@@ -32,17 +32,63 @@ EXP_LKP_Value_Workers_comp_claimant_detila AS (
 	impair_percentage AS IN_impair_percentage,
 	source_system_id AS IN_source_system_id,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_claim_nbr))),'N/A',IIF(IS_SPACES(IN_claim_nbr),'N/A',LTRIM(RTRIM(IN_claim_nbr))))
-	IFF(LTRIM(RTRIM(IN_claim_nbr)) IS NULL, 'N/A', IFF(IS_SPACES(IN_claim_nbr), 'N/A', LTRIM(RTRIM(IN_claim_nbr)))) AS CLAIM_NBR,
+	IFF(LTRIM(RTRIM(IN_claim_nbr
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_claim_nbr)>0 AND TRIM(IN_claim_nbr)='',
+			'N/A',
+			LTRIM(RTRIM(IN_claim_nbr
+				)
+			)
+		)
+	) AS CLAIM_NBR,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_client_id))),'N/A',IIF(IS_SPACES(IN_client_id),'N/A',LTRIM(RTRIM(IN_client_id))))
-	IFF(LTRIM(RTRIM(IN_client_id)) IS NULL, 'N/A', IFF(IS_SPACES(IN_client_id), 'N/A', LTRIM(RTRIM(IN_client_id)))) AS CLIENT_ID,
+	IFF(LTRIM(RTRIM(IN_client_id
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_client_id)>0 AND TRIM(IN_client_id)='',
+			'N/A',
+			LTRIM(RTRIM(IN_client_id
+				)
+			)
+		)
+	) AS CLIENT_ID,
 	-- *INF*: IIF(ISNULL(IN_seq_nbr),0,IN_seq_nbr)
-	IFF(IN_seq_nbr IS NULL, 0, IN_seq_nbr) AS SEQ_NBR,
+	IFF(IN_seq_nbr IS NULL,
+		0,
+		IN_seq_nbr
+	) AS SEQ_NBR,
 	-- *INF*: IIF(ISNULL(IN_impair_percentage),0,IN_impair_percentage)
-	IFF(IN_impair_percentage IS NULL, 0, IN_impair_percentage) AS IMPAIRMENT_PERCENTAGE,
+	IFF(IN_impair_percentage IS NULL,
+		0,
+		IN_impair_percentage
+	) AS IMPAIRMENT_PERCENTAGE,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_source_system_id))),'N/A',IIF(IS_SPACES(IN_source_system_id),'N/A',LTRIM(RTRIM(IN_source_system_id))))
-	IFF(LTRIM(RTRIM(IN_source_system_id)) IS NULL, 'N/A', IFF(IS_SPACES(IN_source_system_id), 'N/A', LTRIM(RTRIM(IN_source_system_id)))) AS SOURCE_SYSTEM_ID,
+	IFF(LTRIM(RTRIM(IN_source_system_id
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_source_system_id)>0 AND TRIM(IN_source_system_id)='',
+			'N/A',
+			LTRIM(RTRIM(IN_source_system_id
+				)
+			)
+		)
+	) AS SOURCE_SYSTEM_ID,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_body_part_code))),'N/A',IIF(IS_SPACES(IN_body_part_code),'N/A',LTRIM(RTRIM(IN_body_part_code))))
-	IFF(LTRIM(RTRIM(IN_body_part_code)) IS NULL, 'N/A', IFF(IS_SPACES(IN_body_part_code), 'N/A', LTRIM(RTRIM(IN_body_part_code)))) AS BODY_PART_CODE
+	IFF(LTRIM(RTRIM(IN_body_part_code
+			)
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(IN_body_part_code)>0 AND TRIM(IN_body_part_code)='',
+			'N/A',
+			LTRIM(RTRIM(IN_body_part_code
+				)
+			)
+		)
+	) AS BODY_PART_CODE
 	FROM EXP_Workers_Comp_Claimant_Impairment
 ),
 LKP_Claim_Party_Occurrence_AK_ID1 AS (
@@ -129,16 +175,34 @@ EXP_DETECT_CHANGES_workers_comp_claimant_detail11 AS (
 	-- 
 	-- 
 	-- ---'NOCHANGE') )
-	IFF(wc_claimant_impairment_ak_id IS NULL, 'NEW', IFF(LKP_IMPAIRMENT_PERCENTAGE <> IMPAIRMENT_PERCENTAGE OR ltrim(rtrim(LKP_BODY_PART_CODE)) <> ltrim(rtrim(BODY_PART_CODE)), 'UPDATE', 'UPDATE')) AS V_CHANGE_FLAG,
+	IFF(wc_claimant_impairment_ak_id IS NULL,
+		'NEW',
+		IFF(LKP_IMPAIRMENT_PERCENTAGE <> IMPAIRMENT_PERCENTAGE 
+			OR ltrim(rtrim(LKP_BODY_PART_CODE
+				)
+			) <> ltrim(rtrim(BODY_PART_CODE
+				)
+			),
+			'UPDATE',
+			'UPDATE'
+		)
+	) AS V_CHANGE_FLAG,
 	V_CHANGE_FLAG AS CHANGE_FLAG_OP,
 	'1' AS CRRNT_SNPSHT_FLAG,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID,
 	-- *INF*: IIF(V_CHANGE_FLAG='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	TO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))
-	IFF(V_CHANGE_FLAG = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')) AS EFF_FROM_DATE,
+	IFF(V_CHANGE_FLAG = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
+			), 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS EFF_FROM_DATE,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS EFF_TO_DATE,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS EFF_TO_DATE,
 	EXP_Set_LKP_Val.SOURCE_SYSTEM_ID,
 	SYSDATE AS CREATED_DATE,
 	SYSDATE AS MODIFIED_DATE,
@@ -189,7 +253,10 @@ EXP_INSERT1 AS (
 	MODIFIED_DATE,
 	wc_claimant_impairment_ak_id AS IN_wc_claimant_impairment_ak_id,
 	-- *INF*: IIF(CHANGE_FLAG_OP='NEW', NEXTVAL, IN_wc_claimant_impairment_ak_id)
-	IFF(CHANGE_FLAG_OP = 'NEW', NEXTVAL, IN_wc_claimant_impairment_ak_id) AS WC_CLAIMANT_IMPAIRMENT_AK_ID,
+	IFF(CHANGE_FLAG_OP = 'NEW',
+		NEXTVAL,
+		IN_wc_claimant_impairment_ak_id
+	) AS WC_CLAIMANT_IMPAIRMENT_AK_ID,
 	LKP_wc_claimant_det_ak_id,
 	BODY_PART_CODE,
 	IMPAIRMENT_PERCENTAGE,
@@ -236,7 +303,10 @@ EXP_Lag_eff_from_date11 AS (
 	eff_from_date,
 	eff_to_date AS orig_eff_to_date,
 	-- *INF*: IIF(wc_claimant_impairment_ak_id = v_PREV_ROW_wc_claimant_det_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),orig_eff_to_date)
-	IFF(wc_claimant_impairment_ak_id = v_PREV_ROW_wc_claimant_det_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1), orig_eff_to_date) AS v_eff_to_date,
+	IFF(wc_claimant_impairment_ak_id = v_PREV_ROW_wc_claimant_det_ak_id,
+		DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	wc_claimant_impairment_ak_id AS v_PREV_ROW_wc_claimant_det_ak_id,

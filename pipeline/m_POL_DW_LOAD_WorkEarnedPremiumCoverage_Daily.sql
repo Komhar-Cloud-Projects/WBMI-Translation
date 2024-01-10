@@ -151,29 +151,32 @@ EXP_DirectTransactions AS (
 	ReasonAmendedCode,
 	RatingCoverageAKId,
 	-- *INF*: TO_DATE('21001231235959','YYYYMMDDHH24MISS')
-	TO_DATE('21001231235959', 'YYYYMMDDHH24MISS') AS RatingCoverageEffectiveDate,
+	TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+	) AS RatingCoverageEffectiveDate,
 	-- *INF*: TO_DATE('21001231235959','YYYYMMDDHH24MISS')
-	TO_DATE('21001231235959', 'YYYYMMDDHH24MISS') AS RatingCoverageExpirationDate,
+	TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+	) AS RatingCoverageExpirationDate,
 	-- *INF*: Add_To_Date(eff_from_date, 'MS', -Get_Date_Part(eff_from_date, 'MS'))
 	-- 
 	-- --eff_from_date
 	-- 
 	-- --- This day is already set to day prior to current day in the source qualifier query.
-	Add_To_Date(eff_from_date, 'MS', - Get_Date_Part(eff_from_date, 'MS')) AS V_Yesterday,
+	DATEADD(MS,- DATE_PART(eff_from_date, 'MS'
+	),eff_from_date) AS V_Yesterday,
 	-- *INF*: SET_DATE_PART(
 	--          SET_DATE_PART(
 	--                      SET_DATE_PART( V_Yesterday, 'HH', 23) 
 	--                                           ,'MI',59)
 	--                                ,'SS',59)
-	SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(V_Yesterday, 'HH', 23), 'MI', 59), 'SS', 59) AS V_RunDate,
+	DATEADD(SECOND,59-DATE_PART(SECOND,DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,V_Yesterday),V_Yesterday)),DATEADD(HOUR,23-DATE_PART(HOUR,V_Yesterday),V_Yesterday))),DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,V_Yesterday),V_Yesterday)),DATEADD(HOUR,23-DATE_PART(HOUR,V_Yesterday),V_Yesterday))) AS V_RunDate,
 	V_RunDate AS RunDate,
 	-- *INF*: Trunc(V_RunDate,'DAY')
-	Trunc(V_RunDate, 'DAY') AS RunDate_Date,
+	CAST(TRUNC(V_RunDate, 'DAY') AS TIMESTAMP_NTZ(0)) AS RunDate_Date,
 	-- *INF*: ADD_TO_DATE(V_RunDate,'DD',-1)
-	ADD_TO_DATE(V_RunDate, 'DD', - 1) AS v_DayPriorToRunDate,
+	DATEADD(DAY,- 1,V_RunDate) AS v_DayPriorToRunDate,
 	v_DayPriorToRunDate AS DayPriorToRunDate,
 	-- *INF*: Trunc(v_DayPriorToRunDate,'DAY')
-	Trunc(v_DayPriorToRunDate, 'DAY') AS DayPriorToRunDate_Date,
+	CAST(TRUNC(v_DayPriorToRunDate, 'DAY') AS TIMESTAMP_NTZ(0)) AS DayPriorToRunDate_Date,
 	v_DayPriorToRunDate AS PreviousMonthsRunDate,
 	-- *INF*: SET_DATE_PART(
 	--                         SET_DATE_PART(
@@ -184,7 +187,7 @@ EXP_DirectTransactions AS (
 	-- 'SS',0)
 	-- 
 	-- ---- Changing the RunDate to FirstDay of the Run Month 
-	SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(V_Yesterday, 'DD', 1), 'HH', 0), 'MI', 0), 'SS', 0) AS v_FirstDayOfRunMonth,
+	DATEADD(SECOND,0-DATE_PART(SECOND,DATEADD(MINUTE,0-DATE_PART(MINUTE,DATEADD(HOUR,0-DATE_PART(HOUR,DATEADD(DAY,1-DATE_PART(DAY,V_Yesterday),V_Yesterday)),DATEADD(DAY,1-DATE_PART(DAY,V_Yesterday),V_Yesterday))),DATEADD(HOUR,0-DATE_PART(HOUR,DATEADD(DAY,1-DATE_PART(DAY,V_Yesterday),V_Yesterday)),DATEADD(DAY,1-DATE_PART(DAY,V_Yesterday),V_Yesterday)))),DATEADD(MINUTE,0-DATE_PART(MINUTE,DATEADD(HOUR,0-DATE_PART(HOUR,DATEADD(DAY,1-DATE_PART(DAY,V_Yesterday),V_Yesterday)),DATEADD(DAY,1-DATE_PART(DAY,V_Yesterday),V_Yesterday))),DATEADD(HOUR,0-DATE_PART(HOUR,DATEADD(DAY,1-DATE_PART(DAY,V_Yesterday),V_Yesterday)),DATEADD(DAY,1-DATE_PART(DAY,V_Yesterday),V_Yesterday)))) AS v_FirstDayOfRunMonth,
 	v_FirstDayOfRunMonth AS FirstDayOfRunMonth
 	FROM SQ_PremiumTransaction
 ),
@@ -289,9 +292,17 @@ EXP_GetOrderRunDate AS (
 	RatingCoverageAKId,
 	RunDate,
 	-- *INF*: DATE_DIFF(RunDate,IIF(in(PremiumTransactionCode,'14','24'),TO_DATE('1800/01/01','YYYY/MM/DD'),greatest(PremiumTransactionEnteredDate,PremiumTransactionBookedDate)),'DD')
-	DATE_DIFF(RunDate, IFF(in(PremiumTransactionCode, '14', '24'), TO_DATE('1800/01/01', 'YYYY/MM/DD'), greatest(PremiumTransactionEnteredDate, PremiumTransactionBookedDate)), 'DD') AS LatestRecordDate,
+	DATEDIFF(DAY,RunDate,IFF(PremiumTransactionCode IN ('14','24'),
+		TO_DATE('1800/01/01', 'YYYY/MM/DD'
+		),
+		greatest(PremiumTransactionEnteredDate, PremiumTransactionBookedDate
+		)
+	)) AS LatestRecordDate,
 	-- *INF*: IIF(PremiumTransactionCode='29',1,0)
-	IFF(PremiumTransactionCode = '29', 1, 0) AS CancellationSubjectedToAuditFlag
+	IFF(PremiumTransactionCode = '29',
+		1,
+		0
+	) AS CancellationSubjectedToAuditFlag
 	FROM RTR_RunDate_DayPriorRunDate_RUNDATE
 ),
 SRT_GetOrderRunDate AS (
@@ -345,19 +356,26 @@ AGG_CoverageCancellationDate_RunDate AS (
 	RatingCoverageEffectiveDate,
 	RatingCoverageExpirationDate,
 	-- *INF*: SUM(PremiumTransactionAmount)
-	SUM(PremiumTransactionAmount) AS TotalPremiumTransactionAmount,
+	SUM(PremiumTransactionAmount
+	) AS TotalPremiumTransactionAmount,
 	-- *INF*: SUM(FullTermPremium)
-	SUM(FullTermPremium) AS TotalFullTermPremium,
+	SUM(FullTermPremium
+	) AS TotalFullTermPremium,
 	-- *INF*: MAX(PremiumTransactionAmount)
-	MAX(PremiumTransactionAmount) AS Max_Premium,
+	MAX(PremiumTransactionAmount
+	) AS Max_Premium,
 	-- *INF*: MIN(ABS(PremiumTransactionAmount))
-	MIN(ABS(PremiumTransactionAmount)) AS Min_Premium,
+	MIN(ABS(PremiumTransactionAmount
+		)
+	) AS Min_Premium,
 	-- *INF*: MAX(PremiumTransactionEffectiveDate)
-	MAX(PremiumTransactionEffectiveDate) AS StatisticalCoverageCancellationDate,
+	MAX(PremiumTransactionEffectiveDate
+	) AS StatisticalCoverageCancellationDate,
 	RunDate,
 	LatestRecordDate,
 	-- *INF*: Min(LatestRecordDate)
-	Min(LatestRecordDate) AS CurrentDateFalg,
+	Min(LatestRecordDate
+	) AS CurrentDateFalg,
 	CancellationSubjectedToAuditFlag
 	FROM SRT_GetOrderRunDate
 	GROUP BY agency_ak_id, pol_ak_id, contract_cust_ak_id, RiskLocationAKID, PolicyCoverageAKID, StatisticalCoverageAKID, PremiumType
@@ -382,19 +400,30 @@ EXP_Values_RunDate AS (
 	TotalFullTermPremium,
 	StatisticalCoverageCancellationDate,
 	-- *INF*: IIF(TotalFullTermPremium = 0.0 , StatisticalCoverageCancellationDate, TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS'))
-	IFF(TotalFullTermPremium = 0.0, StatisticalCoverageCancellationDate, TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')) AS v_StatisticalCoverageCancellationDate,
+	IFF(TotalFullTermPremium = 0.0,
+		StatisticalCoverageCancellationDate,
+		TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS v_StatisticalCoverageCancellationDate,
 	-- *INF*: :LKP.LKP_WORKEARNEDPREMIUMCOVERAGE(pol_ak_id,StatisticalCoverageAKID,RatingCoverageAKId,RunDate)
 	LKP_WORKEARNEDPREMIUMCOVERAGE_pol_ak_id_StatisticalCoverageAKID_RatingCoverageAKId_RunDate.WorkEarnedPremiumCoverageDailyID AS v_WorkEarnedPremiumCoverageDailyID,
 	v_StatisticalCoverageCancellationDate AS StatisticalCoverageCancellationDate_Out,
 	-- *INF*: IIF(v_StatisticalCoverageCancellationDate = TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS') OR NOT ISNULL(v_WorkEarnedPremiumCoverageDailyID),'FILTER','NOFILTER')
-	IFF(v_StatisticalCoverageCancellationDate = TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') OR NOT v_WorkEarnedPremiumCoverageDailyID IS NULL, 'FILTER', 'NOFILTER') AS Flag,
+	IFF(v_StatisticalCoverageCancellationDate = TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+		) 
+		OR v_WorkEarnedPremiumCoverageDailyID IS NOT NULL,
+		'FILTER',
+		'NOFILTER'
+	) AS Flag,
 	RunDate,
 	'1' AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveDate,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	SYSDATE AS CreatedDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,
 	Max_Premium,
@@ -410,22 +439,40 @@ EXP_Values_RunDate AS (
 	-- 
 	-- 
 	-- --IIF(ISNULL(:LKP.LKP_POOL_POLICIES(pol_ak_id)) or (not isnull(:LKP.LKP_CLASSCODE_9115(StatisticalCoverageAKID))),1.00,Min_Premium)
-	IFF(LKP_ClassCode IS NULL, 1.00, IFF(LKP_ClassCode = '9115', 1.00, IFF(LatestRecordDate = CurrentDateFalg AND CancellationSubjectedToAuditFlag = '1', 0.0, 1.00))) AS O_Min_Premium,
+	IFF(LKP_ClassCode IS NULL,
+		1.00,
+		IFF(LKP_ClassCode = '9115',
+			1.00,
+			IFF(LatestRecordDate = CurrentDateFalg 
+				AND CancellationSubjectedToAuditFlag = '1',
+				0.0,
+				1.00
+			)
+		)
+	) AS O_Min_Premium,
 	-- *INF*: DATE_DIFF(
 	-- v_StatisticalCoverageCancellationDate,
 	--                             PremiumTransactionEffectiveDate,'DAY')
 	-- 
 	-- 
-	DATE_DIFF(v_StatisticalCoverageCancellationDate, PremiumTransactionEffectiveDate, 'DAY') AS v_Numerator,
+	DATEDIFF(DAY,v_StatisticalCoverageCancellationDate,PremiumTransactionEffectiveDate) AS v_Numerator,
 	-- *INF*: DATE_DIFF(
 	-- PremiumTransactionExpirationDate,
 	--                             PremiumTransactionEffectiveDate,'DAY')
 	-- 
-	DATE_DIFF(PremiumTransactionExpirationDate, PremiumTransactionEffectiveDate, 'DAY') AS v_Denominator,
+	DATEDIFF(DAY,PremiumTransactionExpirationDate,PremiumTransactionEffectiveDate) AS v_Denominator,
 	-- *INF*: IIF((v_Numerator  = 0 AND v_Denominator = 0)  OR v_Denominator =  0, TotalPremiumTransactionAmount,
 	-- ROUND(TotalPremiumTransactionAmount * (v_Numerator/v_Denominator),4)
 	-- )
-	IFF(( v_Numerator = 0 AND v_Denominator = 0 ) OR v_Denominator = 0, TotalPremiumTransactionAmount, ROUND(TotalPremiumTransactionAmount * ( v_Numerator / v_Denominator ), 4)) AS v_Earned_Premium,
+	IFF(( v_Numerator = 0 
+			AND v_Denominator = 0 
+		) 
+		OR v_Denominator = 0,
+		TotalPremiumTransactionAmount,
+		ROUND(TotalPremiumTransactionAmount * ( v_Numerator / v_Denominator 
+			), 4
+		)
+	) AS v_Earned_Premium,
 	v_Earned_Premium AS Earned_Premium,
 	PremiumType,
 	LatestRecordDate,
@@ -529,9 +576,17 @@ EXP_GetOrderDayPriorDate AS (
 	RatingCoverageAKId,
 	DayPriorToRunDate,
 	-- *INF*: DATE_DIFF(DayPriorToRunDate,IIF(in(PremiumTransactionCode,'14','24'),TO_DATE('1800/01/01','YYYY/MM/DD'),greatest(PremiumTransactionEnteredDate,PremiumTransactionBookedDate)),'DD')
-	DATE_DIFF(DayPriorToRunDate, IFF(in(PremiumTransactionCode, '14', '24'), TO_DATE('1800/01/01', 'YYYY/MM/DD'), greatest(PremiumTransactionEnteredDate, PremiumTransactionBookedDate)), 'DD') AS LatestRecordDate,
+	DATEDIFF(DAY,DayPriorToRunDate,IFF(PremiumTransactionCode IN ('14','24'),
+		TO_DATE('1800/01/01', 'YYYY/MM/DD'
+		),
+		greatest(PremiumTransactionEnteredDate, PremiumTransactionBookedDate
+		)
+	)) AS LatestRecordDate,
 	-- *INF*: IIF(PremiumTransactionCode='29',1,0)
-	IFF(PremiumTransactionCode = '29', 1, 0) AS CancellationSubjectedToAuditFlag
+	IFF(PremiumTransactionCode = '29',
+		1,
+		0
+	) AS CancellationSubjectedToAuditFlag
 	FROM RTR_RunDate_DayPriorRunDate_DAYPRIORRUNDATE
 ),
 SRT_SortOrderDayPriorDate AS (
@@ -583,19 +638,26 @@ AGG_CoverageCancellationDate_DayPriorRunDate AS (
 	RatingCoverageEffectiveDate,
 	RatingCoverageExpirationDate,
 	-- *INF*: SUM(PremiumTransactionAmount)
-	SUM(PremiumTransactionAmount) AS TotalPremiumTransactionAmount,
+	SUM(PremiumTransactionAmount
+	) AS TotalPremiumTransactionAmount,
 	-- *INF*: SUM(FullTermPremium)
-	SUM(FullTermPremium) AS TotalFullTermPremium,
+	SUM(FullTermPremium
+	) AS TotalFullTermPremium,
 	-- *INF*: MAX(PremiumTransactionAmount)
-	MAX(PremiumTransactionAmount) AS Max_Premium,
+	MAX(PremiumTransactionAmount
+	) AS Max_Premium,
 	-- *INF*: MIN(ABS(PremiumTransactionAmount))
-	MIN(ABS(PremiumTransactionAmount)) AS Min_Premium,
+	MIN(ABS(PremiumTransactionAmount
+		)
+	) AS Min_Premium,
 	-- *INF*: MAX(PremiumTransactionEffectiveDate)
-	MAX(PremiumTransactionEffectiveDate) AS StatisticalCoverageCancellationDate,
+	MAX(PremiumTransactionEffectiveDate
+	) AS StatisticalCoverageCancellationDate,
 	DayPriorToRunDate,
 	LatestRecordDate,
 	-- *INF*: Min(LatestRecordDate)
-	Min(LatestRecordDate) AS CurrentDateFlag,
+	Min(LatestRecordDate
+	) AS CurrentDateFlag,
 	CancellationSubjectedToAuditFlag
 	FROM SRT_SortOrderDayPriorDate
 	GROUP BY agency_ak_id, pol_ak_id, contract_cust_ak_id, RiskLocationAKID, PolicyCoverageAKID, StatisticalCoverageAKID, PremiumType
@@ -620,19 +682,31 @@ EXP_Values_DayPriorRunDate AS (
 	TotalFullTermPremium,
 	StatisticalCoverageCancellationDate,
 	-- *INF*: IIF(TotalFullTermPremium = 0.0 , StatisticalCoverageCancellationDate, TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS'))
-	IFF(TotalFullTermPremium = 0.0, StatisticalCoverageCancellationDate, TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')) AS v_StatisticalCoverageCancellationDate,
+	IFF(TotalFullTermPremium = 0.0,
+		StatisticalCoverageCancellationDate,
+		TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS v_StatisticalCoverageCancellationDate,
 	-- *INF*: :LKP.LKP_WORKEARNEDPREMIUMCOVERAGE(pol_ak_id,StatisticalCoverageAKID,RatingCoverageAKId,DayPriorToRunDate)
 	LKP_WORKEARNEDPREMIUMCOVERAGE_pol_ak_id_StatisticalCoverageAKID_RatingCoverageAKId_DayPriorToRunDate.WorkEarnedPremiumCoverageDailyID AS v_WorkEarnedPremiumCoverageDailyID,
 	v_StatisticalCoverageCancellationDate AS StatisticalCoverageCancellationDate_Out,
 	-- *INF*: IIF(v_StatisticalCoverageCancellationDate = TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS') AND NOT(ISNULL(v_WorkEarnedPremiumCoverageDailyID)),'FILTER','NOFILTER')
-	IFF(v_StatisticalCoverageCancellationDate = TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AND NOT ( v_WorkEarnedPremiumCoverageDailyID IS NULL ), 'FILTER', 'NOFILTER') AS Flag,
+	IFF(v_StatisticalCoverageCancellationDate = TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+		) 
+		AND NOT ( v_WorkEarnedPremiumCoverageDailyID IS NULL 
+		),
+		'FILTER',
+		'NOFILTER'
+	) AS Flag,
 	DayPriorToRunDate,
 	'1' AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveDate,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	SYSDATE AS CreatedDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,
 	Max_Premium,
@@ -644,22 +718,40 @@ EXP_Values_DayPriorRunDate AS (
 	-- --IIF(isnull(LKP_ClassCode),1.00,iif(LKP_ClassCode='9115',1.00,Min_Premium))   
 	-- 
 	-- --IIF(ISNULL(:LKP.LKP_POOL_POLICIES(pol_ak_id)) or (not isnull(:LKP.LKP_CLASSCODE_9115(StatisticalCoverageAKID))),1.00,Min_Premium)
-	IFF(LKP_ClassCode IS NULL, 1.00, IFF(LKP_ClassCode = '9115', 1.00, IFF(LatestRecordDate = CurrentDateFlag AND CancellationSubjectedToAuditFlag = '1', 0.0, 1.00))) AS O_Min_Premium,
+	IFF(LKP_ClassCode IS NULL,
+		1.00,
+		IFF(LKP_ClassCode = '9115',
+			1.00,
+			IFF(LatestRecordDate = CurrentDateFlag 
+				AND CancellationSubjectedToAuditFlag = '1',
+				0.0,
+				1.00
+			)
+		)
+	) AS O_Min_Premium,
 	-- *INF*: DATE_DIFF(
 	-- v_StatisticalCoverageCancellationDate,
 	--                             PremiumTransactionEffectiveDate,'DAY')
 	-- 
 	-- 
-	DATE_DIFF(v_StatisticalCoverageCancellationDate, PremiumTransactionEffectiveDate, 'DAY') AS v_Numerator,
+	DATEDIFF(DAY,v_StatisticalCoverageCancellationDate,PremiumTransactionEffectiveDate) AS v_Numerator,
 	-- *INF*: DATE_DIFF(
 	-- PremiumTransactionExpirationDate,
 	--                             PremiumTransactionEffectiveDate,'DAY')
 	-- 
-	DATE_DIFF(PremiumTransactionExpirationDate, PremiumTransactionEffectiveDate, 'DAY') AS v_Denominator,
+	DATEDIFF(DAY,PremiumTransactionExpirationDate,PremiumTransactionEffectiveDate) AS v_Denominator,
 	-- *INF*: IIF((v_Numerator  = 0 AND v_Denominator = 0)  OR v_Denominator =  0, TotalPremiumTransactionAmount,
 	-- ROUND(TotalPremiumTransactionAmount * (v_Numerator/v_Denominator),4)
 	-- )
-	IFF(( v_Numerator = 0 AND v_Denominator = 0 ) OR v_Denominator = 0, TotalPremiumTransactionAmount, ROUND(TotalPremiumTransactionAmount * ( v_Numerator / v_Denominator ), 4)) AS v_Earned_Premium,
+	IFF(( v_Numerator = 0 
+			AND v_Denominator = 0 
+		) 
+		OR v_Denominator = 0,
+		TotalPremiumTransactionAmount,
+		ROUND(TotalPremiumTransactionAmount * ( v_Numerator / v_Denominator 
+			), 4
+		)
+	) AS v_Earned_Premium,
 	v_Earned_Premium AS Earned_Premium,
 	PremiumType,
 	LatestRecordDate,
@@ -792,10 +884,10 @@ EXP_Src_DataCollect_DCT AS (
 	SELECT
 	RunDate,
 	-- *INF*: Trunc(RunDate,'DAY')
-	Trunc(RunDate, 'DAY') AS RunDate_Date,
+	CAST(TRUNC(RunDate, 'DAY') AS TIMESTAMP_NTZ(0)) AS RunDate_Date,
 	DayPriorToRunDate,
 	-- *INF*: Trunc(DayPriorToRunDate,'DAY')
-	Trunc(DayPriorToRunDate, 'DAY') AS DayPriorToRunDate_Date,
+	CAST(TRUNC(DayPriorToRunDate, 'DAY') AS TIMESTAMP_NTZ(0)) AS DayPriorToRunDate_Date,
 	PremiumTransactionEnteredDate,
 	PremiumTransactionEffectiveDate,
 	PremiumTransactionExpirationDate,
@@ -889,7 +981,9 @@ AGG_CoverageCancellationDate_DayPriorRunDateDCT AS (
 	RatingCoverageExpirationDate,
 	RatingCoverageCancellationDate,
 	-- *INF*: Min(abs(PremiumTransactionAmount))
-	Min(abs(PremiumTransactionAmount)) AS MinimumPremium
+	Min(abs(PremiumTransactionAmount
+		)
+	) AS MinimumPremium
 	FROM SRT_DayPriorRunDate
 	GROUP BY PolicyAKID, PremiumType, RatingCoverageAKId
 ),
@@ -939,7 +1033,10 @@ EXP_Values_DayPriorRunDateDCT AS (
 	-- *INF*: :LKP.LKP_CLASSCODE_9115(PolicyAKID,-1,RatingCoverageAKId)
 	LKP_CLASSCODE_9115_PolicyAKID_1_RatingCoverageAKId.ClassCode AS LKP_ClassCode,
 	-- *INF*: IIF(isnull(LKP_ClassCode),1.00,MinimumPremium)
-	IFF(LKP_ClassCode IS NULL, 1.00, MinimumPremium) AS O_MinimumPremium,
+	IFF(LKP_ClassCode IS NULL,
+		1.00,
+		MinimumPremium
+	) AS O_MinimumPremium,
 	-- *INF*: :LKP.LKP_WORKEARNEDPREMIUMCOVERAGE(PolicyAKID,StatisticalCoverageAKID,RatingCoverageAKId,DayPriorRunDate)
 	LKP_WORKEARNEDPREMIUMCOVERAGE_PolicyAKID_StatisticalCoverageAKID_RatingCoverageAKId_DayPriorRunDate.WorkEarnedPremiumCoverageDailyID AS v_WorkEarnedPremiumCoverageDailyID,
 	-- *INF*: IIF(NOT ISNULL(v_WorkEarnedPremiumCoverageDailyID),'FILTER','NOFILTER')
@@ -947,13 +1044,18 @@ EXP_Values_DayPriorRunDateDCT AS (
 	-- 
 	-- 
 	-- --should use RatingCoverageCancellationDate
-	IFF(NOT v_WorkEarnedPremiumCoverageDailyID IS NULL, 'FILTER', 'NOFILTER') AS Flag,
+	IFF(v_WorkEarnedPremiumCoverageDailyID IS NOT NULL,
+		'FILTER',
+		'NOFILTER'
+	) AS Flag,
 	'1' AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveDate,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	'DCT' AS SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate
@@ -1075,7 +1177,9 @@ AGG_CoverageCancellationDate_RunDateDCT AS (
 	RatingCoverageExpirationDate,
 	RatingCoverageCancellationDate,
 	-- *INF*: Min(abs(PremiumTransactionAmount))
-	Min(abs(PremiumTransactionAmount)) AS MinimumPremium
+	Min(abs(PremiumTransactionAmount
+		)
+	) AS MinimumPremium
 	FROM SRT_RunDate
 	GROUP BY PolicyAKID, PremiumType, RatingCoverageAKId
 ),
@@ -1125,7 +1229,10 @@ EXP_Values_RunDateDCT AS (
 	-- *INF*: :LKP.LKP_CLASSCODE_9115(PolicyAKID,-1,RatingCoverageAKId)
 	LKP_CLASSCODE_9115_PolicyAKID_1_RatingCoverageAKId.ClassCode AS LKP_ClassCode,
 	-- *INF*: IIF(isnull(LKP_ClassCode),1.00,MinimumPremium)
-	IFF(LKP_ClassCode IS NULL, 1.00, MinimumPremium) AS O_MinimumPremium,
+	IFF(LKP_ClassCode IS NULL,
+		1.00,
+		MinimumPremium
+	) AS O_MinimumPremium,
 	-- *INF*: :LKP.LKP_WORKEARNEDPREMIUMCOVERAGE(PolicyAKID,StatisticalCoverageAKID,RatingCoverageAKId,RunDate)
 	LKP_WORKEARNEDPREMIUMCOVERAGE_PolicyAKID_StatisticalCoverageAKID_RatingCoverageAKId_RunDate.WorkEarnedPremiumCoverageDailyID AS v_WorkEarnedPremiumCoverageDailyID,
 	-- *INF*: IIF(NOT ISNULL(v_WorkEarnedPremiumCoverageDailyID),'FILTER','NOFILTER')
@@ -1133,13 +1240,18 @@ EXP_Values_RunDateDCT AS (
 	-- 
 	-- 
 	-- --should use RatingCoverageCancellationDate
-	IFF(NOT v_WorkEarnedPremiumCoverageDailyID IS NULL, 'FILTER', 'NOFILTER') AS Flag,
+	IFF(v_WorkEarnedPremiumCoverageDailyID IS NOT NULL,
+		'FILTER',
+		'NOFILTER'
+	) AS Flag,
 	'1' AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveDate,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	'DCT' AS SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate

@@ -127,11 +127,20 @@ EXP_GetMetaData AS (
 	SQ_CoverageDetailGeneralLiability.ISOGeneralLiabilityClassGroupCode AS i_ISOGeneralLiabilityClassGroupCode,
 	LKP_SupISOClassGroup.ISOGeneralLiabilityClassGroupDescription AS i_ISOGeneralLiabilityClassGroupDescription,
 	-- *INF*: IIF(isnull(i_ISOGeneralLiabilityClassSummary),'N/A',i_ISOGeneralLiabilityClassSummary)
-	IFF(i_ISOGeneralLiabilityClassSummary IS NULL, 'N/A', i_ISOGeneralLiabilityClassSummary) AS o_ISOGeneralLiabilityClassSummary,
+	IFF(i_ISOGeneralLiabilityClassSummary IS NULL,
+		'N/A',
+		i_ISOGeneralLiabilityClassSummary
+	) AS o_ISOGeneralLiabilityClassSummary,
 	-- *INF*: IIF(isnull(i_ISOGeneralLiabilityClassGroupCode),'N/A',i_ISOGeneralLiabilityClassGroupCode)
-	IFF(i_ISOGeneralLiabilityClassGroupCode IS NULL, 'N/A', i_ISOGeneralLiabilityClassGroupCode) AS o_ISOGeneralLiabilityClassGroupCode,
+	IFF(i_ISOGeneralLiabilityClassGroupCode IS NULL,
+		'N/A',
+		i_ISOGeneralLiabilityClassGroupCode
+	) AS o_ISOGeneralLiabilityClassGroupCode,
 	-- *INF*: IIF(isnull(i_ISOGeneralLiabilityClassGroupDescription),'N/A',i_ISOGeneralLiabilityClassGroupDescription)
-	IFF(i_ISOGeneralLiabilityClassGroupDescription IS NULL, 'N/A', i_ISOGeneralLiabilityClassGroupDescription) AS o_ISOGeneralLiabilityClassGroupDescription
+	IFF(i_ISOGeneralLiabilityClassGroupDescription IS NULL,
+		'N/A',
+		i_ISOGeneralLiabilityClassGroupDescription
+	) AS o_ISOGeneralLiabilityClassGroupDescription
 	FROM SQ_CoverageDetailGeneralLiability
 	LEFT JOIN LKP_SupISOClassGroup
 	ON LKP_SupISOClassGroup.ISOGeneralLiabilityClassSummary = SQ_CoverageDetailGeneralLiability.ISOGeneralLiabilityClassSummary AND LKP_SupISOClassGroup.ISOGeneralLiabilityClassGroupCode = SQ_CoverageDetailGeneralLiability.ISOGeneralLiabilityClassGroupCode AND LKP_SupISOClassGroup.SublineCode = SQ_CoverageDetailGeneralLiability.SublineCode

@@ -95,11 +95,15 @@ EXPTRANS AS (
 	EXP_CODE_TYPE.code AS in_code,
 	EXP_CODE_TYPE.descript AS in_descript,
 	-- *INF*: TO_DATE('01/01/1800','MM/DD/YYYY')
-	TO_DATE('01/01/1800', 'MM/DD/YYYY') AS out_med_bill_date,
+	TO_DATE('01/01/1800', 'MM/DD/YYYY'
+	) AS out_med_bill_date,
 	LKP_MEDICAL_BILL_CODE1.med_bill_code_ak_id,
 	-- *INF*: IIF(ISnull(med_bill_code_ak_id),'NEW'
 	-- ,'NOCHANGE')
-	IFF(med_bill_code_ak_id IS NULL, 'NEW', 'NOCHANGE') AS V_ChangeFlag,
+	IFF(med_bill_code_ak_id IS NULL,
+		'NEW',
+		'NOCHANGE'
+	) AS V_ChangeFlag,
 	V_ChangeFlag AS ChangeFlag
 	FROM EXP_CODE_TYPE
 	LEFT JOIN LKP_MEDICAL_BILL_CODE1
@@ -121,7 +125,10 @@ router_update_insert_NEW_ROW AS (SELECT * FROM router_update_insert WHERE Change
 EXP_AUDIT_FIELDS AS (
 	SELECT
 	-- *INF*:   IIF(ChangeFlag='NEW', NEXTVAL, med_bill_code_ak_id)
-	IFF(ChangeFlag = 'NEW', NEXTVAL, med_bill_code_ak_id) AS med_bill_code_ak_id_out,
+	IFF(ChangeFlag = 'NEW',
+		NEXTVAL,
+		med_bill_code_ak_id
+	) AS med_bill_code_ak_id_out,
 	med_bill_code_ak_id,
 	med_bill_ak_id,
 	med_bill_serv_ak_id,
@@ -135,9 +142,14 @@ EXP_AUDIT_FIELDS AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(ChangeFlag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(ChangeFlag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,
+	IFF(ChangeFlag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	sysdate AS created_date
 	FROM router_update_insert_NEW_ROW

@@ -108,22 +108,42 @@ EXP_GetData AS (
 	EXP_METADATE.CommercialPropertySpecialClass AS i_CommercialPropertySpecialClass,
 	i_CoverageDetailDimId AS o_CoverageDetailDimId,
 	-- *INF*: iif(isnull(i_ISOCommercialPropertyCauseofLossGroup),'N/A',i_ISOCommercialPropertyCauseofLossGroup)
-	IFF(i_ISOCommercialPropertyCauseofLossGroup IS NULL, 'N/A', i_ISOCommercialPropertyCauseofLossGroup) AS o_ISOCommercialPropertyCauseofLossGroup,
+	IFF(i_ISOCommercialPropertyCauseofLossGroup IS NULL,
+		'N/A',
+		i_ISOCommercialPropertyCauseofLossGroup
+	) AS o_ISOCommercialPropertyCauseofLossGroup,
 	-- *INF*: iif(isnull(i_ISOCommercialPropertyRatingGroupCode),'N/A',i_ISOCommercialPropertyRatingGroupCode)
-	IFF(i_ISOCommercialPropertyRatingGroupCode IS NULL, 'N/A', i_ISOCommercialPropertyRatingGroupCode) AS o_ISOCommercialPropertyRatingGroupCode,
+	IFF(i_ISOCommercialPropertyRatingGroupCode IS NULL,
+		'N/A',
+		i_ISOCommercialPropertyRatingGroupCode
+	) AS o_ISOCommercialPropertyRatingGroupCode,
 	-- *INF*: iif(isnull(i_ISOCommercialPropertyRatingGroupDescription),'N/A',i_ISOCommercialPropertyRatingGroupDescription)
-	IFF(i_ISOCommercialPropertyRatingGroupDescription IS NULL, 'N/A', i_ISOCommercialPropertyRatingGroupDescription) AS o_ISOCommercialPropertyRatingGroupDescription,
+	IFF(i_ISOCommercialPropertyRatingGroupDescription IS NULL,
+		'N/A',
+		i_ISOCommercialPropertyRatingGroupDescription
+	) AS o_ISOCommercialPropertyRatingGroupDescription,
 	-- *INF*: iif(isnull(i_ISOSpecialCauseOfLossCategoryCode),'N/A',i_ISOSpecialCauseOfLossCategoryCode)
-	IFF(i_ISOSpecialCauseOfLossCategoryCode IS NULL, 'N/A', i_ISOSpecialCauseOfLossCategoryCode) AS o_ISOSpecialCauseOfLossCategoryCode,
+	IFF(i_ISOSpecialCauseOfLossCategoryCode IS NULL,
+		'N/A',
+		i_ISOSpecialCauseOfLossCategoryCode
+	) AS o_ISOSpecialCauseOfLossCategoryCode,
 	-- *INF*: DECODE(TRUE,
 	-- i_ISOCommercialPropertyCauseofLossGroup='SCL' and not isnull(:LKP.LKP_SupISOSpecialCauseOfLossCategory(i_ISOSpecialCauseOfLossCategoryCode)),:LKP.LKP_SupISOSpecialCauseOfLossCategory(i_ISOSpecialCauseOfLossCategoryCode),'N/A')
 	DECODE(TRUE,
-		i_ISOCommercialPropertyCauseofLossGroup = 'SCL' AND NOT LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORY_i_ISOSpecialCauseOfLossCategoryCode.ISOSpecialCauseOfLossCategoryDescription IS NULL, LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORY_i_ISOSpecialCauseOfLossCategoryCode.ISOSpecialCauseOfLossCategoryDescription,
-		'N/A') AS o_ISOSpecialCauseOfLossCategoryDescription,
+		i_ISOCommercialPropertyCauseofLossGroup = 'SCL' 
+		AND LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORY_i_ISOSpecialCauseOfLossCategoryCode.ISOSpecialCauseOfLossCategoryDescription IS NOT NULL, LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORY_i_ISOSpecialCauseOfLossCategoryCode.ISOSpecialCauseOfLossCategoryDescription,
+		'N/A'
+	) AS o_ISOSpecialCauseOfLossCategoryDescription,
 	-- *INF*: iif(isnull(i_RateType),'N/A',i_RateType)
-	IFF(i_RateType IS NULL, 'N/A', i_RateType) AS o_RateType,
+	IFF(i_RateType IS NULL,
+		'N/A',
+		i_RateType
+	) AS o_RateType,
 	-- *INF*: iif(isnull(i_CommercialPropertySpecialClass),'N/A',i_CommercialPropertySpecialClass)
-	IFF(i_CommercialPropertySpecialClass IS NULL, 'N/A', i_CommercialPropertySpecialClass) AS o_CommercialPropertySpecialClass
+	IFF(i_CommercialPropertySpecialClass IS NULL,
+		'N/A',
+		i_CommercialPropertySpecialClass
+	) AS o_CommercialPropertySpecialClass
 	FROM EXP_METADATE
 	LEFT JOIN LKP_SupISOCommercialPropertyRatingGroup
 	ON LKP_SupISOCommercialPropertyRatingGroup.ISOCommercialPropertyRatingGroupCode = EXP_METADATE.ISOCommercialPropertyRatingGroupCode

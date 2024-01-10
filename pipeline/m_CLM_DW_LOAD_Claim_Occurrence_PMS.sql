@@ -27,26 +27,37 @@ EXP_Value AS (
 	-- *INF*: iif(isnull(in_CLM_CATASTROPHE_CODE),'N/A',
 	--    iif(is_spaces(in_CLM_CATASTROPHE_CODE),'N/A',
 	--     LPAD(rtrim(in_CLM_CATASTROPHE_CODE),3,'0')))
-	IFF(in_CLM_CATASTROPHE_CODE IS NULL, 'N/A', IFF(is_spaces(in_CLM_CATASTROPHE_CODE), 'N/A', LPAD(rtrim(in_CLM_CATASTROPHE_CODE), 3, '0'))) AS CLM_CATASTROPHE_CODE,
+	IFF(in_CLM_CATASTROPHE_CODE IS NULL,
+		'N/A',
+		IFF(LENGTH(in_CLM_CATASTROPHE_CODE)>0 AND TRIM(in_CLM_CATASTROPHE_CODE)='',
+			'N/A',
+			LPAD(rtrim(in_CLM_CATASTROPHE_CODE
+				), 3, '0'
+			)
+		)
+	) AS CLM_CATASTROPHE_CODE,
 	pif_symbol AS PIF_SYMBOL,
 	pif_policy_number AS PIF_POLICY_NUMBER,
 	pif_module AS PIF_MODULE,
 	ipfcgp_year_of_loss AS IPFCGP_YEAR_OF_LOSS,
 	-- *INF*: TO_CHAR(IPFCGP_YEAR_OF_LOSS)
-	TO_CHAR(IPFCGP_YEAR_OF_LOSS) AS v_IPFCGP_YEAR_OF_LOSS,
+	TO_CHAR(IPFCGP_YEAR_OF_LOSS
+	) AS v_IPFCGP_YEAR_OF_LOSS,
 	ipfcgp_month_of_loss AS IPFCGP_MONTH_OF_LOSS,
 	-- *INF*: TO_CHAR(IPFCGP_MONTH_OF_LOSS)
-	TO_CHAR(IPFCGP_MONTH_OF_LOSS) AS v_IPFCGP_MONTH_OF_LOSS,
+	TO_CHAR(IPFCGP_MONTH_OF_LOSS
+	) AS v_IPFCGP_MONTH_OF_LOSS,
 	ipfcgp_day_of_loss AS IPFCGP_DAY_OF_LOSS,
 	-- *INF*: TO_CHAR(IPFCGP_DAY_OF_LOSS)
-	TO_CHAR(IPFCGP_DAY_OF_LOSS) AS v_IPFCGP_DAY_OF_LOSS,
+	TO_CHAR(IPFCGP_DAY_OF_LOSS
+	) AS v_IPFCGP_DAY_OF_LOSS,
 	ipfcgp_loss_occurence AS in_IPFCGP_LOSS_OCCURENCE,
 	-- *INF*: TO_INTEGER(in_IPFCGP_LOSS_OCCURENCE)
-	TO_INTEGER(in_IPFCGP_LOSS_OCCURENCE) AS v_IPFCGP_LOSS_OCCURENCE,
+	CAST(in_IPFCGP_LOSS_OCCURENCE AS INTEGER) AS v_IPFCGP_LOSS_OCCURENCE,
 	v_IPFCGP_LOSS_OCCURENCE AS IPFCGP_LOSS_OCCURENCE,
 	ipfcgp_loss_time AS IPFCGP_LOSS_TIME,
 	-- *INF*: TO_INTEGER(IPFCGP_LOSS_TIME)
-	TO_INTEGER(IPFCGP_LOSS_TIME) AS v_IPFCGP_LOSS_TIME,
+	CAST(IPFCGP_LOSS_TIME AS INTEGER) AS v_IPFCGP_LOSS_TIME,
 	ipfcgp_discovery_year AS IPFCGP_DISCOVERY_YEAR,
 	ipfcgp_discovery_month AS IPFCGP_DISCOVERY_MONTH,
 	ipfcgp_discovery_day AS IPFCGP_DISCOVERY_DAY,
@@ -58,12 +69,28 @@ EXP_Value AS (
 	-- v_IPFCGP_YEAR_OF_LOSS
 	-- 
 	-- 
-	IFF(LENGTH(v_IPFCGP_MONTH_OF_LOSS) = 1, '0' || v_IPFCGP_MONTH_OF_LOSS, v_IPFCGP_MONTH_OF_LOSS) || IFF(LENGTH(v_IPFCGP_DAY_OF_LOSS) = 1, '0' || v_IPFCGP_DAY_OF_LOSS, v_IPFCGP_DAY_OF_LOSS) || v_IPFCGP_YEAR_OF_LOSS AS v_CLM_LOSS_DT,
+	IFF(LENGTH(v_IPFCGP_MONTH_OF_LOSS
+		) = 1,
+		'0' || v_IPFCGP_MONTH_OF_LOSS,
+		v_IPFCGP_MONTH_OF_LOSS
+	) || IFF(LENGTH(v_IPFCGP_DAY_OF_LOSS
+		) = 1,
+		'0' || v_IPFCGP_DAY_OF_LOSS,
+		v_IPFCGP_DAY_OF_LOSS
+	) || v_IPFCGP_YEAR_OF_LOSS AS v_CLM_LOSS_DT,
 	-- *INF*: IIF ((ISNULL(IPFCGP_MONTH_OF_LOSS ) OR ISNULL(IPFCGP_DAY_OF_LOSS) OR ISNULL(IPFCGP_YEAR_OF_LOSS) )
 	-- , TO_DATE ('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
 	-- ,TO_DATE(v_IPFCGP_MONTH_OF_LOSS  || '/' ||  v_IPFCGP_DAY_OF_LOSS  || '/' ||  v_IPFCGP_YEAR_OF_LOSS , 'MM/DD/YYYY')
 	-- )
-	IFF(( IPFCGP_MONTH_OF_LOSS IS NULL OR IPFCGP_DAY_OF_LOSS IS NULL OR IPFCGP_YEAR_OF_LOSS IS NULL ), TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), TO_DATE(v_IPFCGP_MONTH_OF_LOSS || '/' || v_IPFCGP_DAY_OF_LOSS || '/' || v_IPFCGP_YEAR_OF_LOSS, 'MM/DD/YYYY')) AS CLM_LOSS_DT,
+	IFF(( IPFCGP_MONTH_OF_LOSS IS NULL 
+			OR IPFCGP_DAY_OF_LOSS IS NULL 
+			OR IPFCGP_YEAR_OF_LOSS IS NULL 
+		),
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		TO_DATE(v_IPFCGP_MONTH_OF_LOSS || '/' || v_IPFCGP_DAY_OF_LOSS || '/' || v_IPFCGP_YEAR_OF_LOSS, 'MM/DD/YYYY'
+		)
+	) AS CLM_LOSS_DT,
 	-- *INF*: v_SYM_NUM_MODE  || v_CLM_LOSS_DT  || in_IPFCGP_LOSS_OCCURENCE
 	-- 
 	-- --v_SYM_NUM_MODE  || v_CLM_LOSS_DT  || v_IPFCGP_LOSS_OCCURENCE
@@ -72,7 +99,19 @@ EXP_Value AS (
 	-- , TO_DATE ('01/01/1800','MM/DD/YYYY')
 	-- ,TO_DATE ((IPFCGP_DISCOVERY_MONTH || '/' || IPFCGP_DISCOVERY_DAY || '/' || IPFCGP_DISCOVERY_YEAR),'MM/DD/YYYY')
 	-- )
-	IFF(( IPFCGP_DISCOVERY_MONTH IS NULL OR IPFCGP_DISCOVERY_DAY IS NULL OR IPFCGP_DISCOVERY_YEAR IS NULL OR IS_SPACES(IPFCGP_DISCOVERY_MONTH) OR IS_SPACES(IPFCGP_DISCOVERY_DAY) OR IS_SPACES(IPFCGP_DISCOVERY_YEAR) ), TO_DATE('01/01/1800', 'MM/DD/YYYY'), TO_DATE(( IPFCGP_DISCOVERY_MONTH || '/' || IPFCGP_DISCOVERY_DAY || '/' || IPFCGP_DISCOVERY_YEAR ), 'MM/DD/YYYY')) AS CLM_DISCOVERY_DT,
+	IFF(( IPFCGP_DISCOVERY_MONTH IS NULL 
+			OR IPFCGP_DISCOVERY_DAY IS NULL 
+			OR IPFCGP_DISCOVERY_YEAR IS NULL 
+			OR LENGTH(IPFCGP_DISCOVERY_MONTH)>0 AND TRIM(IPFCGP_DISCOVERY_MONTH)='' 
+			OR LENGTH(IPFCGP_DISCOVERY_DAY)>0 AND TRIM(IPFCGP_DISCOVERY_DAY)='' 
+			OR LENGTH(IPFCGP_DISCOVERY_YEAR)>0 AND TRIM(IPFCGP_DISCOVERY_YEAR)='' 
+		),
+		TO_DATE('01/01/1800', 'MM/DD/YYYY'
+		),
+		TO_DATE(( IPFCGP_DISCOVERY_MONTH || '/' || IPFCGP_DISCOVERY_DAY || '/' || IPFCGP_DISCOVERY_YEAR 
+			), 'MM/DD/YYYY'
+		)
+	) AS CLM_DISCOVERY_DT,
 	v_SYM_NUM_MODE AS CON_POLICY_KEY,
 	ipfcgp_accident_description,
 	ipfcgp_offset_onset_ind,
@@ -320,22 +359,34 @@ EXP_Lkp_Values AS (
 	-- *INF*: iif(isnull(in_CLM_DISCOVERY_DT),
 	-- TO_DATE('1/1/1800','MM/DD/YYYY'),
 	-- in_CLM_DISCOVERY_DT)
-	IFF(in_CLM_DISCOVERY_DT IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), in_CLM_DISCOVERY_DT) AS CLM_DISCOVERY_DT,
+	IFF(in_CLM_DISCOVERY_DT IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		in_CLM_DISCOVERY_DT
+	) AS CLM_DISCOVERY_DT,
 	EXP_Value.CLM_LOSS_DT AS in_CLM_LOSS_DT,
 	-- *INF*: iif(isnull(in_CLM_LOSS_DT),
 	-- TO_DATE('1/1/1800','MM/DD/YYYY'),
 	-- in_CLM_LOSS_DT)
-	IFF(in_CLM_LOSS_DT IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), in_CLM_LOSS_DT) AS CLM_LOSS_DT,
+	IFF(in_CLM_LOSS_DT IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		in_CLM_LOSS_DT
+	) AS CLM_LOSS_DT,
 	'N/A' AS CLM_LOSS_CITY,
 	'N/A' AS CLM_LOSS_COUNTY,
 	EXP_Value.CLM_LOSS_STATE_CD AS in_CLM_LOSS_STATE_CD,
 	-- *INF*: IIF(ISNULL(:LKP.lkp_sup_state(in_CLM_LOSS_STATE_CD)),
 	-- 'N/A',
 	-- :LKP.lkp_sup_state(in_CLM_LOSS_STATE_CD))
-	IFF(LKP_SUP_STATE_in_CLM_LOSS_STATE_CD.state_code IS NULL, 'N/A', LKP_SUP_STATE_in_CLM_LOSS_STATE_CD.state_code) AS CLM_LOSS_STATE_CD,
+	IFF(LKP_SUP_STATE_in_CLM_LOSS_STATE_CD.state_code IS NULL,
+		'N/A',
+		LKP_SUP_STATE_in_CLM_LOSS_STATE_CD.state_code
+	) AS CLM_LOSS_STATE_CD,
 	-- *INF*: TO_DATE('1/1/1800','MM/DD/YYYY')
 	-- 
-	TO_DATE('1/1/1800', 'MM/DD/YYYY') AS CLM_REI_NOTIFY_DT,
+	TO_DATE('1/1/1800', 'MM/DD/YYYY'
+	) AS CLM_REI_NOTIFY_DT,
 	'N/A' AS CLM_METHOD_RPTD,
 	'N/A' AS CLM_HOW_CLM_RPTD,
 	'N/A' AS CLM_VIOL_CIT_DESC,
@@ -344,78 +395,155 @@ EXP_Lkp_Values AS (
 	--    LPAD(rtrim( in_CON_OCCURRENCE_NBR),3,'0'))
 	-- 
 	-- -- Changed the logic to LPAD with '0' on 8/4/2010
-	IFF(in_CON_OCCURRENCE_NBR IS NULL OR IS_SPACES(in_CON_OCCURRENCE_NBR), 'N/A', LPAD(rtrim(in_CON_OCCURRENCE_NBR), 3, '0')) AS CON_OCCURRENCE_NBR,
+	IFF(in_CON_OCCURRENCE_NBR IS NULL 
+		OR LENGTH(in_CON_OCCURRENCE_NBR)>0 AND TRIM(in_CON_OCCURRENCE_NBR)='',
+		'N/A',
+		LPAD(rtrim(in_CON_OCCURRENCE_NBR
+			), 3, '0'
+		)
+	) AS CON_OCCURRENCE_NBR,
 	EXP_Value.CLM_CATASTROPHE_CODE AS in_CLM_CATASTROPHE_CODE,
 	-- *INF*: iif(isnull(in_CLM_CATASTROPHE_CODE),'N/A',
 	--    iif(is_spaces(in_CLM_CATASTROPHE_CODE),'N/A',
 	--     rtrim(in_CLM_CATASTROPHE_CODE)))
-	IFF(in_CLM_CATASTROPHE_CODE IS NULL, 'N/A', IFF(is_spaces(in_CLM_CATASTROPHE_CODE), 'N/A', rtrim(in_CLM_CATASTROPHE_CODE))) AS v_CLM_CATASTROPHE_CODE,
+	IFF(in_CLM_CATASTROPHE_CODE IS NULL,
+		'N/A',
+		IFF(LENGTH(in_CLM_CATASTROPHE_CODE)>0 AND TRIM(in_CLM_CATASTROPHE_CODE)='',
+			'N/A',
+			rtrim(in_CLM_CATASTROPHE_CODE
+			)
+		)
+	) AS v_CLM_CATASTROPHE_CODE,
 	v_CLM_CATASTROPHE_CODE AS CLM_CATASTROPHE_CODE,
 	'N/A' AS TCC_COMMENT_TXT,
 	LKP_Sup_Claim_Catastrophe_Code.cat_start_date AS in_COC_START_DT,
 	-- *INF*: IIF(v_CLM_CATASTROPHE_CODE = 'N/A', TO_DATE('1/1/1800', 'MM/DD/YYYY'), 
 	-- IIF(ISNULL(in_COC_START_DT),TO_DATE('1/1/1800','MM/DD/YYYY'),
 	-- in_COC_START_DT))
-	IFF(v_CLM_CATASTROPHE_CODE = 'N/A', TO_DATE('1/1/1800', 'MM/DD/YYYY'), IFF(in_COC_START_DT IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), in_COC_START_DT)) AS COC_START_DT,
+	IFF(v_CLM_CATASTROPHE_CODE = 'N/A',
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		IFF(in_COC_START_DT IS NULL,
+			TO_DATE('1/1/1800', 'MM/DD/YYYY'
+			),
+			in_COC_START_DT
+		)
+	) AS COC_START_DT,
 	LKP_Sup_Claim_Catastrophe_Code.cat_end_date AS in_COC_END_DT,
 	-- *INF*: IIF(v_CLM_CATASTROPHE_CODE = 'N/A', TO_DATE('12/31/2100', 'MM/DD/YYYY'), 
 	-- IIF(ISNULL(in_COC_END_DT),TO_DATE('12/31/2100','MM/DD/YYYY'),
 	-- in_COC_END_DT))
-	IFF(v_CLM_CATASTROPHE_CODE = 'N/A', TO_DATE('12/31/2100', 'MM/DD/YYYY'), IFF(in_COC_END_DT IS NULL, TO_DATE('12/31/2100', 'MM/DD/YYYY'), in_COC_END_DT)) AS COC_END_DT,
+	IFF(v_CLM_CATASTROPHE_CODE = 'N/A',
+		TO_DATE('12/31/2100', 'MM/DD/YYYY'
+		),
+		IFF(in_COC_END_DT IS NULL,
+			TO_DATE('12/31/2100', 'MM/DD/YYYY'
+			),
+			in_COC_END_DT
+		)
+	) AS COC_END_DT,
 	LKP_V2_Policy.pol_key_ak_id AS CON_pol_key_ak_id,
 	-- *INF*: IIF(ISNULL(CON_pol_key_ak_id) , 
 	-- -1, 
 	-- CON_pol_key_ak_id)
-	IFF(CON_pol_key_ak_id IS NULL, - 1, CON_pol_key_ak_id) AS out_CON_pol_key_ak_id,
+	IFF(CON_pol_key_ak_id IS NULL,
+		- 1,
+		CON_pol_key_ak_id
+	) AS out_CON_pol_key_ak_id,
 	'N/A' AS CLM_STATUS_CD,
 	-- *INF*: TO_DATE('1/1/1800','MM/DD/YYYY')
-	TO_DATE('1/1/1800', 'MM/DD/YYYY') AS CLM_CREATE_TS,
+	TO_DATE('1/1/1800', 'MM/DD/YYYY'
+	) AS CLM_CREATE_TS,
 	EXP_Value.ipfcgp_offset_onset_ind AS in_ipfcgp_offset_onset_ind,
 	-- *INF*: IIF(
 	-- (ISNULL(in_ipfcgp_offset_onset_ind) OR IS_SPACES(in_ipfcgp_offset_onset_ind)),
 	-- 'N/A',
 	-- in_ipfcgp_offset_onset_ind)
-	IFF(( in_ipfcgp_offset_onset_ind IS NULL OR IS_SPACES(in_ipfcgp_offset_onset_ind) ), 'N/A', in_ipfcgp_offset_onset_ind) AS OFFSET_ONSET_INDICATOR,
+	IFF(( in_ipfcgp_offset_onset_ind IS NULL 
+			OR LENGTH(in_ipfcgp_offset_onset_ind)>0 AND TRIM(in_ipfcgp_offset_onset_ind)='' 
+		),
+		'N/A',
+		in_ipfcgp_offset_onset_ind
+	) AS OFFSET_ONSET_INDICATOR,
 	LKP_Pif_42gm_Stage.ipfc4m_rsk_rmk_verbg AS in_ipfc4m_rsk_rmk_verbg,
 	EXP_Value.ipfcgp_accident_description AS in_ipfcgp_accident_description,
 	-- *INF*: IIF ((ISNULL(in_ipfc4m_rsk_rmk_verbg) OR IS_SPACES (in_ipfc4m_rsk_rmk_verbg)),
 	-- IIF ((ISNULL(in_ipfcgp_accident_description) OR IS_SPACES (in_ipfcgp_accident_description)),'N/A',in_ipfcgp_accident_description)
 	-- ,in_ipfc4m_rsk_rmk_verbg)
 	-- 
-	IFF(( in_ipfc4m_rsk_rmk_verbg IS NULL OR IS_SPACES(in_ipfc4m_rsk_rmk_verbg) ), IFF(( in_ipfcgp_accident_description IS NULL OR IS_SPACES(in_ipfcgp_accident_description) ), 'N/A', in_ipfcgp_accident_description), in_ipfc4m_rsk_rmk_verbg) AS LOSS_DESCRIPTION,
+	IFF(( in_ipfc4m_rsk_rmk_verbg IS NULL 
+			OR LENGTH(in_ipfc4m_rsk_rmk_verbg)>0 AND TRIM(in_ipfc4m_rsk_rmk_verbg)='' 
+		),
+		IFF(( in_ipfcgp_accident_description IS NULL 
+				OR LENGTH(in_ipfcgp_accident_description)>0 AND TRIM(in_ipfcgp_accident_description)='' 
+			),
+			'N/A',
+			in_ipfcgp_accident_description
+		),
+		in_ipfc4m_rsk_rmk_verbg
+	) AS LOSS_DESCRIPTION,
 	LKP_Pif_4578_Stage.loss_fault_code AS in_loss_fault_code,
 	-- *INF*: IIF((ISNULL(in_loss_fault_code) OR IS_SPACES(in_loss_fault_code)),
 	-- 'N/A',
 	-- in_loss_fault_code)
-	IFF(( in_loss_fault_code IS NULL OR IS_SPACES(in_loss_fault_code) ), 'N/A', in_loss_fault_code) AS CLM_AT_FAULT_CD,
+	IFF(( in_loss_fault_code IS NULL 
+			OR LENGTH(in_loss_fault_code)>0 AND TRIM(in_loss_fault_code)='' 
+		),
+		'N/A',
+		in_loss_fault_code
+	) AS CLM_AT_FAULT_CD,
 	-- *INF*: RTRIM(LTRIM(IIF((ISNULL(in_loss_fault_code) OR IS_SPACES(in_loss_fault_code)),
 	-- 'N/A',
 	-- in_loss_fault_code)))
-	RTRIM(LTRIM(IFF(( in_loss_fault_code IS NULL OR IS_SPACES(in_loss_fault_code) ), 'N/A', in_loss_fault_code))) AS o_CLM_AT_FAULT_CD,
+	RTRIM(LTRIM(IFF(( in_loss_fault_code IS NULL 
+					OR LENGTH(in_loss_fault_code)>0 AND TRIM(in_loss_fault_code)='' 
+				),
+				'N/A',
+				in_loss_fault_code
+			)
+		)
+	) AS o_CLM_AT_FAULT_CD,
 	LKP_Pif_42gq_Aut_Stage.ipfcgq_driver_number AS in_CLM_DRIVER_NBR,
 	-- *INF*: IIF(
 	-- ISNULL(in_CLM_DRIVER_NBR)  ,
 	-- -1,in_CLM_DRIVER_NBR)
 	-- 
-	IFF(in_CLM_DRIVER_NBR IS NULL, - 1, in_CLM_DRIVER_NBR) AS CLM_DRIVER_NBR,
+	IFF(in_CLM_DRIVER_NBR IS NULL,
+		- 1,
+		in_CLM_DRIVER_NBR
+	) AS CLM_DRIVER_NBR,
 	-- *INF*: IIF(
 	-- ISNULL(in_CLM_DRIVER_NBR)  ,
 	-- 0,1)
-	IFF(in_CLM_DRIVER_NBR IS NULL, 0, 1) AS CLM_DRV_SAME_IND,
+	IFF(in_CLM_DRIVER_NBR IS NULL,
+		0,
+		1
+	) AS CLM_DRV_SAME_IND,
 	LKP_Log_Note_Stage.create_date AS in_LOG_NOTE_LAST_ACTIVITY_DATE,
 	-- *INF*: iif(isnull(in_LOG_NOTE_LAST_ACTIVITY_DATE), TO_DATE('1/1/1800','MM/DD/YYYY'),
 	--    in_LOG_NOTE_LAST_ACTIVITY_DATE)
-	IFF(in_LOG_NOTE_LAST_ACTIVITY_DATE IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), in_LOG_NOTE_LAST_ACTIVITY_DATE) AS LOG_NOTE_LAST_ACTIVITY_DATE,
+	IFF(in_LOG_NOTE_LAST_ACTIVITY_DATE IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		in_LOG_NOTE_LAST_ACTIVITY_DATE
+	) AS LOG_NOTE_LAST_ACTIVITY_DATE,
 	mplt_claim_occurrence_next_diary.DueDate AS in_CLAIM_NEXT_DIARY_DATE,
 	-- *INF*: iif(isnull(in_CLAIM_NEXT_DIARY_DATE), TO_DATE('1/1/1800','MM/DD/YYYY'),
 	--   in_CLAIM_NEXT_DIARY_DATE)
-	IFF(in_CLAIM_NEXT_DIARY_DATE IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), in_CLAIM_NEXT_DIARY_DATE) AS CLAIM_NEXT_DIARY_DATE,
+	IFF(in_CLAIM_NEXT_DIARY_DATE IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		in_CLAIM_NEXT_DIARY_DATE
+	) AS CLAIM_NEXT_DIARY_DATE,
 	'N/A' AS CLM_NOT_CLAIM_IND,
 	EXP_Value.logical_flag,
 	EXP_Value.CON_POLICY_KEY,
 	EXP_Value.ipfcgp_claim_status AS in_ipfcgp_claim_status,
 	-- *INF*: IIF(ISNULL(in_ipfcgp_claim_status),'N/A',in_ipfcgp_claim_status)
-	IFF(in_ipfcgp_claim_status IS NULL, 'N/A', in_ipfcgp_claim_status) AS v_ipfcgp_claim_status,
+	IFF(in_ipfcgp_claim_status IS NULL,
+		'N/A',
+		in_ipfcgp_claim_status
+	) AS v_ipfcgp_claim_status,
 	-- *INF*: DECODE(v_ipfcgp_claim_status,
 	-- 'N/A' , 'N/A',
 	-- 'O' , 'OPE',
@@ -429,22 +557,34 @@ EXP_Lkp_Values AS (
 		'C', 'CWP',
 		'Z', 'OFF',
 		'N', 'NOT',
-		'CNP') AS ipfcgp_claim_status,
+		'CNP'
+	) AS ipfcgp_claim_status,
 	-- *INF*: DECODE(in_ipfcgp_claim_status,
 	-- 'N' , 'Y',
 	-- 'N/A')
 	DECODE(in_ipfcgp_claim_status,
 		'N', 'Y',
-		'N/A') AS ipfcgp_notice_claim_ind,
+		'N/A'
+	) AS ipfcgp_notice_claim_ind,
 	LKP_PIF_42X6_Stage.min_reported_date AS in_reported_date,
 	-- *INF*: IIF(ISNULL(in_reported_date), TO_DATE ('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'), in_reported_date)
-	IFF(in_reported_date IS NULL, TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), in_reported_date) AS reported_date,
+	IFF(in_reported_date IS NULL,
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		in_reported_date
+	) AS reported_date,
 	mplt_claim_occurrence_next_diary.AssignedUserName AS claim_rep_full_name,
 	-- *INF*: IIF(ISNULL(claim_rep_full_name),'N/A',claim_rep_full_name)
-	IFF(claim_rep_full_name IS NULL, 'N/A', claim_rep_full_name) AS claim_rep_full_name_out,
+	IFF(claim_rep_full_name IS NULL,
+		'N/A',
+		claim_rep_full_name
+	) AS claim_rep_full_name_out,
 	LKP_Sup_State_sup_state_id.sup_state_id AS in_sup_state_id,
 	-- *INF*: IIF(ISNULL(in_sup_state_id), -1,in_sup_state_id)
-	IFF(in_sup_state_id IS NULL, - 1, in_sup_state_id) AS SupStateID
+	IFF(in_sup_state_id IS NULL,
+		- 1,
+		in_sup_state_id
+	) AS SupStateID
 	FROM EXP_Value
 	 -- Manually join with mplt_claim_occurrence_next_diary
 	LEFT JOIN LKP_Log_Note_Stage
@@ -654,14 +794,155 @@ EXP_Detect_Changes AS (
 	--        reported_date <> source_claim_rpted_date  ,
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(claim_occurrence_id IS NULL, 'NEW', IFF(( ltrim(rtrim(CLM_CSR_CLAIM_NBR)) <> ltrim(rtrim(s3p_claim_num)) ) OR ( ltrim(rtrim(CLM_POSTAL_CD)) <> ltrim(rtrim(loss_loc_zip)) ) OR ( CLM_DISCOVERY_DT <> claim_discovery_date ) OR ( CLM_LOSS_DT <> claim_loss_date ) OR ( ltrim(rtrim(CLM_LOSS_CITY)) <> ltrim(rtrim(loss_loc_city)) ) OR ( ltrim(rtrim(CLM_LOSS_COUNTY)) <> ltrim(rtrim(loss_loc_county)) ) OR ( ltrim(rtrim(CLM_LOSS_STATE_CD)) <> ltrim(rtrim(loss_loc_state)) ) OR ( ltrim(rtrim(CLM_TYPE_CD)) <> ltrim(rtrim(claim_occurrence_type_code)) ) OR ( CLM_REI_NOTIFY_DT <> reins_notified_date ) OR ( ltrim(rtrim(CLM_METHOD_RPTD)) <> ltrim(rtrim(rpt_method)) ) OR ( ltrim(rtrim(CLM_HOW_CLM_RPTD)) <> ltrim(rtrim(how_claim_rpted)) ) OR ( ltrim(rtrim(CLM_VIOL_CIT_DESC)) <> ltrim(rtrim(claim_voilation_citation_descript)) ) OR ( ltrim(rtrim(CON_OCCURRENCE_NBR)) <> ltrim(rtrim(claim_occurrence_num)) ) OR ( ltrim(rtrim(CLM_CATASTROPHE_CODE)) <> ltrim(rtrim(claim_cat_code)) ) OR ( ltrim(rtrim(TCC_COMMENT_TXT)) <> ltrim(rtrim(loss_loc_addr)) ) OR ( COC_START_DT <> claim_cat_start_date ) OR ( COC_END_DT <> claim_cat_end_date ) OR ( CLM_CREATE_TS <> s3p_claim_created_date ) OR ( ltrim(rtrim(LOSS_DESCRIPTION)) <> ltrim(rtrim(claim_loss_descript)) ) OR ( ltrim(rtrim(CLM_AT_FAULT_CD)) <> ltrim(rtrim(claim_insd_at_fault_code)) ) OR ( CLM_DRIVER_NBR <> claim_insd_drvr_num ) OR ( ltrim(rtrim(CLM_DRV_SAME_IND)) <> ltrim(rtrim(claim_insd_drvr_ind)) ) OR ( LOG_NOTE_LAST_ACTIVITY_DATE <> claim_log_note_last_act_date ) OR ( claim_rep_full_name_out <> next_diary_date_rep ) OR ( CLAIM_NEXT_DIARY_DATE <> next_diary_date ) OR ( ltrim(rtrim(OFFSET_ONSET_INDICATOR)) <> ltrim(rtrim(offset_onset_ind)) ) OR ( CON_pol_key_ak_id <> pol_key_ak_id ) OR ( ltrim(rtrim(ipfcgp_claim_status)) <> ltrim(rtrim(claim_occurrence_status_code)) ) OR ( ltrim(rtrim(ipfcgp_notice_claim_ind)) <> ltrim(rtrim(notice_claim_ind)) ) OR reported_date <> source_claim_rpted_date, 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(claim_occurrence_id IS NULL,
+		'NEW',
+		IFF(( ltrim(rtrim(CLM_CSR_CLAIM_NBR
+					)
+				) <> ltrim(rtrim(s3p_claim_num
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CLM_POSTAL_CD
+					)
+				) <> ltrim(rtrim(loss_loc_zip
+					)
+				) 
+			) 
+			OR ( CLM_DISCOVERY_DT <> claim_discovery_date 
+			) 
+			OR ( CLM_LOSS_DT <> claim_loss_date 
+			) 
+			OR ( ltrim(rtrim(CLM_LOSS_CITY
+					)
+				) <> ltrim(rtrim(loss_loc_city
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CLM_LOSS_COUNTY
+					)
+				) <> ltrim(rtrim(loss_loc_county
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CLM_LOSS_STATE_CD
+					)
+				) <> ltrim(rtrim(loss_loc_state
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CLM_TYPE_CD
+					)
+				) <> ltrim(rtrim(claim_occurrence_type_code
+					)
+				) 
+			) 
+			OR ( CLM_REI_NOTIFY_DT <> reins_notified_date 
+			) 
+			OR ( ltrim(rtrim(CLM_METHOD_RPTD
+					)
+				) <> ltrim(rtrim(rpt_method
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CLM_HOW_CLM_RPTD
+					)
+				) <> ltrim(rtrim(how_claim_rpted
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CLM_VIOL_CIT_DESC
+					)
+				) <> ltrim(rtrim(claim_voilation_citation_descript
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CON_OCCURRENCE_NBR
+					)
+				) <> ltrim(rtrim(claim_occurrence_num
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CLM_CATASTROPHE_CODE
+					)
+				) <> ltrim(rtrim(claim_cat_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(TCC_COMMENT_TXT
+					)
+				) <> ltrim(rtrim(loss_loc_addr
+					)
+				) 
+			) 
+			OR ( COC_START_DT <> claim_cat_start_date 
+			) 
+			OR ( COC_END_DT <> claim_cat_end_date 
+			) 
+			OR ( CLM_CREATE_TS <> s3p_claim_created_date 
+			) 
+			OR ( ltrim(rtrim(LOSS_DESCRIPTION
+					)
+				) <> ltrim(rtrim(claim_loss_descript
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CLM_AT_FAULT_CD
+					)
+				) <> ltrim(rtrim(claim_insd_at_fault_code
+					)
+				) 
+			) 
+			OR ( CLM_DRIVER_NBR <> claim_insd_drvr_num 
+			) 
+			OR ( ltrim(rtrim(CLM_DRV_SAME_IND
+					)
+				) <> ltrim(rtrim(claim_insd_drvr_ind
+					)
+				) 
+			) 
+			OR ( LOG_NOTE_LAST_ACTIVITY_DATE <> claim_log_note_last_act_date 
+			) 
+			OR ( claim_rep_full_name_out <> next_diary_date_rep 
+			) 
+			OR ( CLAIM_NEXT_DIARY_DATE <> next_diary_date 
+			) 
+			OR ( ltrim(rtrim(OFFSET_ONSET_INDICATOR
+					)
+				) <> ltrim(rtrim(offset_onset_ind
+					)
+				) 
+			) 
+			OR ( CON_pol_key_ak_id <> pol_key_ak_id 
+			) 
+			OR ( ltrim(rtrim(ipfcgp_claim_status
+					)
+				) <> ltrim(rtrim(claim_occurrence_status_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(ipfcgp_notice_claim_ind
+					)
+				) <> ltrim(rtrim(notice_claim_ind
+					)
+				) 
+			) 
+			OR reported_date <> source_claim_rpted_date,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
@@ -677,7 +958,10 @@ EXP_Detect_Changes AS (
 	EXP_Lkp_Values.SupStateID,
 	LKP_Sup_Claim_Insured_At_Fault_Code.sup_claim_insd_at_fault_code_id AS in_sup_claim_insd_at_fault_code_id,
 	-- *INF*: IIF(ISNULL(in_sup_claim_insd_at_fault_code_id),-1, in_sup_claim_insd_at_fault_code_id)
-	IFF(in_sup_claim_insd_at_fault_code_id IS NULL, - 1, in_sup_claim_insd_at_fault_code_id) AS sup_claim_insd_at_fault_code_id
+	IFF(in_sup_claim_insd_at_fault_code_id IS NULL,
+		- 1,
+		in_sup_claim_insd_at_fault_code_id
+	) AS sup_claim_insd_at_fault_code_id
 	FROM EXP_Lkp_Values
 	LEFT JOIN LKP_Claim_Occurrence
 	ON LKP_Claim_Occurrence.claim_occurrence_key = EXP_Lkp_Values.CLM_CLAIM_NBR
@@ -748,7 +1032,10 @@ EXP_Determine_AK AS (
 	-- *INF*: IIF(Changed_Flag='NEW',
 	-- NEXTVAL,
 	-- LKP_claim_occurrence_ak_id)
-	IFF(Changed_Flag = 'NEW', NEXTVAL, LKP_claim_occurrence_ak_id) AS Out_claim_occurrence_ak_id,
+	IFF(Changed_Flag = 'NEW',
+		NEXTVAL,
+		LKP_claim_occurrence_ak_id
+	) AS Out_claim_occurrence_ak_id,
 	CLM_CLAIM_NBR,
 	CLM_CSR_CLAIM_NBR,
 	CLM_POSTAL_CD,
@@ -885,8 +1172,9 @@ EXP_Lag_Eff_From_Date AS (
 	-- 	claim_occurrence_key = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		claim_occurrence_key = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_occurrence_key = v_PREV_ROW_occurrence_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	claim_occurrence_key AS v_PREV_ROW_occurrence_key,
@@ -986,12 +1274,19 @@ EXP_Default_Values AS (
 	-- TO_DATE('1/1/1800','MM/DD/YYYY'),
 	-- IN_DueDate
 	-- )
-	IFF(IN_DueDate IS NULL, TO_DATE('1/1/1800', 'MM/DD/YYYY'), IN_DueDate) AS OUT_DueDate,
+	IFF(IN_DueDate IS NULL,
+		TO_DATE('1/1/1800', 'MM/DD/YYYY'
+		),
+		IN_DueDate
+	) AS OUT_DueDate,
 	AssignedUserName AS IN_AssignedUserName,
 	-- *INF*: IIF(ISNULL(IN_AssignedUserName),
 	-- 'N/A',
 	-- IN_AssignedUserName)
-	IFF(IN_AssignedUserName IS NULL, 'N/A', IN_AssignedUserName) AS OUT_AssignedUserName
+	IFF(IN_AssignedUserName IS NULL,
+		'N/A',
+		IN_AssignedUserName
+	) AS OUT_AssignedUserName
 	FROM mplt_claim_occurrence_next_diary1
 ),
 LKP_claim_occurrence_active_record AS (

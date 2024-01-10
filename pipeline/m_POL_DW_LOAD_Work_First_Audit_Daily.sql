@@ -200,7 +200,22 @@ EXP_Flag_First_Audits AS (
 	-- ,Lkp_StatisticalCoverageCancellationDate,TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')),Lkp_StatisticalCoverageCancellationDate)
 	-- 
 	-- --If premiumMasterPremiumType is Direct and the Cancelled Coverage PremiumType is Ceded then the cancelled date will be '12/31/2100 23:59:59'.
-	IFF(NOT Lkp_StatisticalCoverageCancellationDate IS NULL, IFF(( PremiumTransactionPremiumType = 'D' AND Lkp_PremiumType = 'D' ) OR ( PremiumTransactionPremiumType = 'C' AND Lkp_PremiumType = 'D' ) OR ( PremiumTransactionPremiumType = 'C' AND Lkp_PremiumType = 'C' ), Lkp_StatisticalCoverageCancellationDate, TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')), Lkp_StatisticalCoverageCancellationDate) AS v_StatisticalCoverageCancellationDate,
+	IFF(Lkp_StatisticalCoverageCancellationDate IS NOT NULL,
+		IFF(( PremiumTransactionPremiumType = 'D' 
+				AND Lkp_PremiumType = 'D' 
+			) 
+			OR ( PremiumTransactionPremiumType = 'C' 
+				AND Lkp_PremiumType = 'D' 
+			) 
+			OR ( PremiumTransactionPremiumType = 'C' 
+				AND Lkp_PremiumType = 'C' 
+			),
+			Lkp_StatisticalCoverageCancellationDate,
+			TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+			)
+		),
+		Lkp_StatisticalCoverageCancellationDate
+	) AS v_StatisticalCoverageCancellationDate,
 	v_StatisticalCoverageCancellationDate AS StatisticalCoverageCancellationDate,
 	LKP_Get_CancellationDate.Min_Premium,
 	LKP_Get_CancellationDate.Rundate AS Lkp_Rundate,
@@ -211,30 +226,59 @@ EXP_Flag_First_Audits AS (
 	-- --eff_from_date
 	-- 
 	-- --- This day is already set to day prior to current day in the source qualifier query.
-	Add_To_Date(eff_from_date, 'MS', - Get_Date_Part(eff_from_date, 'MS')) AS v_Yesterday,
+	DATEADD(MS,- DATE_PART(eff_from_date, 'MS'
+	),eff_from_date) AS v_Yesterday,
 	-- *INF*: SET_DATE_PART(
 	--          SET_DATE_PART(
 	--                      SET_DATE_PART( v_Yesterday, 'HH', 23) 
 	--                                           ,'MI',59)
 	--                                ,'SS',59)
-	SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(v_Yesterday, 'HH', 23), 'MI', 59), 'SS', 59) AS v_Rundate,
+	DATEADD(SECOND,59-DATE_PART(SECOND,DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,v_Yesterday),v_Yesterday)),DATEADD(HOUR,23-DATE_PART(HOUR,v_Yesterday),v_Yesterday))),DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,v_Yesterday),v_Yesterday)),DATEADD(HOUR,23-DATE_PART(HOUR,v_Yesterday),v_Yesterday))) AS v_Rundate,
 	v_Rundate AS Rundate,
 	AGG_Supress_Multiple_Audits.PremiumTransactionEffectiveDate,
 	AGG_Supress_Multiple_Audits.PremiumTransactionExpirationDate,
 	-- *INF*: IIF((PremiumTransactionPremiumType='D' and Lkp_PremiumType='D') OR (PremiumTransactionPremiumType='C' and Lkp_PremiumType='D') OR (PremiumTransactionPremiumType='C' and Lkp_PremiumType='C'),'TRUE','FALSE')
-	IFF(( PremiumTransactionPremiumType = 'D' AND Lkp_PremiumType = 'D' ) OR ( PremiumTransactionPremiumType = 'C' AND Lkp_PremiumType = 'D' ) OR ( PremiumTransactionPremiumType = 'C' AND Lkp_PremiumType = 'C' ), 'TRUE', 'FALSE') AS v_Direct_Ceded_Flag,
+	IFF(( PremiumTransactionPremiumType = 'D' 
+			AND Lkp_PremiumType = 'D' 
+		) 
+		OR ( PremiumTransactionPremiumType = 'C' 
+			AND Lkp_PremiumType = 'D' 
+		) 
+		OR ( PremiumTransactionPremiumType = 'C' 
+			AND Lkp_PremiumType = 'C' 
+		),
+		'TRUE',
+		'FALSE'
+	) AS v_Direct_Ceded_Flag,
 	-- *INF*: IIF((v_Rundate=Lkp_Rundate) OR (to_char(v_Yesterday,'YYYYMM')>to_char(PremiumTransactionExpirationDate,'YYYYMM')),'TRUE','FALSE')
 	-- 
 	-- 
 	-- --IIF(PremiumMasterRunDate>=PremiumMasterCoverageEffectiveDate and PremiumMasterRunDate----<=PremiumMasterCoverageExpirationDate and v_Rundate=Lkp_Rundate,'TRUE','FLASE')
-	IFF(( v_Rundate = Lkp_Rundate ) OR ( to_char(v_Yesterday, 'YYYYMM') > to_char(PremiumTransactionExpirationDate, 'YYYYMM') ), 'TRUE', 'FALSE') AS v_Audit_After_Cancellation_Reinstatement,
+	IFF(( v_Rundate = Lkp_Rundate 
+		) 
+		OR ( to_char(v_Yesterday, 'YYYYMM'
+			) > to_char(PremiumTransactionExpirationDate, 'YYYYMM'
+			) 
+		),
+		'TRUE',
+		'FALSE'
+	) AS v_Audit_After_Cancellation_Reinstatement,
 	-- *INF*: 'TRUE'
 	-- 
 	-- 
 	-- --IIF(to_char(PremiumMasterRunDate,'YYYYMM')=to_char(Lkp_StatisticalCoverageCancellationDate,'YYYYMM'),'FALSE','TRUE')
 	'TRUE' AS v_Flag_First_Audit,
 	-- *INF*: IIF(ISNULL(v_StatisticalCoverageCancellationDate) OR v_StatisticalCoverageCancellationDate=TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS'),'FALSE',IIF(Min_Premium=0.0 and v_Direct_Ceded_Flag='TRUE','TRUE','FALSE'))
-	IFF(v_StatisticalCoverageCancellationDate IS NULL OR v_StatisticalCoverageCancellationDate = TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'), 'FALSE', IFF(Min_Premium = 0.0 AND v_Direct_Ceded_Flag = 'TRUE', 'TRUE', 'FALSE')) AS Flag
+	IFF(v_StatisticalCoverageCancellationDate IS NULL 
+		OR v_StatisticalCoverageCancellationDate = TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		'FALSE',
+		IFF(Min_Premium = 0.0 
+			AND v_Direct_Ceded_Flag = 'TRUE',
+			'TRUE',
+			'FALSE'
+		)
+	) AS Flag
 	FROM AGG_Supress_Multiple_Audits
 	LEFT JOIN LKP_Get_CancellationDate
 	ON LKP_Get_CancellationDate.PolicyAKID = AGG_Supress_Multiple_Audits.PolicyAKID AND LKP_Get_CancellationDate.StatisticalCoverageAKID = AGG_Supress_Multiple_Audits.StatisticalCoverageAKID AND LKP_Get_CancellationDate.RatingCoverageAKID = AGG_Supress_Multiple_Audits.RatingCoverageAKId

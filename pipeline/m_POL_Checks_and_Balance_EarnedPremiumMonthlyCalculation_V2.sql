@@ -210,7 +210,8 @@ XP_SRC_DataCollect AS (
 		'4', 'Policy Life cycle end event: Regular Cancellation: Earned Premium = Written but unearned premium<>0',
 		'5', 'Policy Life cycle end event: Regular Cancellation: Earned Premium <> Written',
 		'6', 'Policy Life cycle end event: Regular Expiration: Earned Premium = Written but unearned premium<>0',
-		'7', 'Policy Life cycle end event: Regular Expiration: Earned Premium <> Written') AS V_Message,
+		'7', 'Policy Life cycle end event: Regular Expiration: Earned Premium <> Written'
+	) AS V_Message,
 	V_Message AS O_Message
 	FROM SQ_WorkCheckAndBalanceEarnedPremiumMonthlyCalculation
 ),
@@ -233,7 +234,10 @@ XP_GetLKP_Values AS (
 	XP_SRC_DataCollect.pol_key,
 	LKP_Product.ProductDescription,
 	-- *INF*: IIF(ISNULL(ProductDescription),'',ProductDescription)
-	IFF(ProductDescription IS NULL, '', ProductDescription) AS v_ProductDescription,
+	IFF(ProductDescription IS NULL,
+		'',
+		ProductDescription
+	) AS v_ProductDescription,
 	XP_SRC_DataCollect.PremiumTransactionAmount,
 	XP_SRC_DataCollect.EarnedPremium,
 	XP_SRC_DataCollect.UnearnedPremium,
@@ -249,15 +253,24 @@ AGG_Detail AS (
 	ProductDescription,
 	PremiumTransactionAmount,
 	-- *INF*: TO_CHAR(SUM(PremiumTransactionAmount))
-	TO_CHAR(SUM(PremiumTransactionAmount)) AS O_PremiumTransactionAmount,
+	TO_CHAR(SUM(PremiumTransactionAmount
+		)
+	) AS O_PremiumTransactionAmount,
 	EarnedPremium,
 	-- *INF*: TO_CHAR(SUM(EarnedPremium))
-	TO_CHAR(SUM(EarnedPremium)) AS O_EarnedPremium,
+	TO_CHAR(SUM(EarnedPremium
+		)
+	) AS O_EarnedPremium,
 	UnearnedPremium,
 	-- *INF*: TO_CHAR(SUM(UnearnedPremium))
-	TO_CHAR(SUM(UnearnedPremium)) AS O_UnearnedPremium,
+	TO_CHAR(SUM(UnearnedPremium
+		)
+	) AS O_UnearnedPremium,
 	-- *INF*: TO_CHAR(SUM(PremiumTransactionAmount)-sum(EarnedPremium))
-	TO_CHAR(SUM(PremiumTransactionAmount) - sum(EarnedPremium)) AS DIFF,
+	TO_CHAR(SUM(PremiumTransactionAmount
+		) - sum(EarnedPremium
+		)
+	) AS DIFF,
 	Message,
 	RunDate
 	FROM XP_GetLKP_Values
@@ -288,21 +301,35 @@ EXP_Format_Email_Message AS (
 	v_row_count AS v_row_count_temp,
 	@{pipeline().parameters.EMAIL_ADDRESS} AS email_address,
 	-- *INF*: TO_CHAR(i_RunDate) || '  ' || @{pipeline().parameters.EMAIL_SUBJECT}
-	TO_CHAR(i_RunDate) || '  ' || @{pipeline().parameters.EMAIL_SUBJECT} AS email_subject,
+	TO_CHAR(i_RunDate
+	) || '  ' || @{pipeline().parameters.EMAIL_SUBJECT} AS email_subject,
 	v_row_count_temp + 1 AS v_row_count,
 	-- *INF*: '</table>' ||  CHR(10) ||'<br></br>' || CHR(10) ||   '<table width="100%" style="border-collapse: collapse" bordercolor="#111111" cellpadding="3" cellspacing="0">' || CHR(10) ||
 	-- '	<tr><td width="50"><b><font face="Arial" size="5">Details</font></b></td></tr>' || CHR(10) 
-	'</table>' || CHR(10) || '<br></br>' || CHR(10) || '<table width="100%" style="border-collapse: collapse" bordercolor="#111111" cellpadding="3" cellspacing="0">' || CHR(10) || '	<tr><td width="50"><b><font face="Arial" size="5">Details</font></b></td></tr>' || CHR(10) AS v_email_body_header,
+	'</table>' || CHR(10
+	) || '<br></br>' || CHR(10
+	) || '<table width="100%" style="border-collapse: collapse" bordercolor="#111111" cellpadding="3" cellspacing="0">' || CHR(10
+	) || '	<tr><td width="50"><b><font face="Arial" size="5">Details</font></b></td></tr>' || CHR(10
+	) AS v_email_body_header,
 	-- *INF*: '	<tr><td width="100"><font face="Arial" size="2">' || Message || ':' || '</font></td>' ||CHR(10)
 	--  || '<td width="200"><font face="Arial" size="2">' || v_policy_info || '</font></td></tr>' || CHR(10)
-	'	<tr><td width="100"><font face="Arial" size="2">' || Message || ':' || '</font></td>' || CHR(10) || '<td width="200"><font face="Arial" size="2">' || v_policy_info || '</font></td></tr>' || CHR(10) AS v_email_body_content,
+	'	<tr><td width="100"><font face="Arial" size="2">' || Message || ':' || '</font></td>' || CHR(10
+	) || '<td width="200"><font face="Arial" size="2">' || v_policy_info || '</font></td></tr>' || CHR(10
+	) AS v_email_body_content,
 	-- *INF*: IIF(v_row_count = 1,
 	-- 	v_email_body_header || CHR(10) || v_email_body_content,
 	-- 	v_email_body_content)
-	IFF(v_row_count = 1, v_email_body_header || CHR(10) || v_email_body_content, v_email_body_content) AS v_email_body,
+	IFF(v_row_count = 1,
+		v_email_body_header || CHR(10
+		) || v_email_body_content,
+		v_email_body_content
+	) AS v_email_body,
 	v_email_body AS out_email_body,
 	-- *INF*: IIF(v_row_count = 1, 'C','D')
-	IFF(v_row_count = 1, 'C', 'D') AS sort_indicator
+	IFF(v_row_count = 1,
+		'C',
+		'D'
+	) AS sort_indicator
 	FROM AGG_Detail
 ),
 AGG_Distinct_Email_Address_Subject AS (
@@ -331,7 +358,9 @@ AGG_PolicyCount AS (
 	pol_key,
 	Message,
 	-- *INF*: TO_CHAR(count(pol_key))
-	TO_CHAR(count(pol_key)) AS PolicyCount
+	TO_CHAR(count(pol_key
+		)
+	) AS PolicyCount
 	FROM SRT_ErrorMessage
 	GROUP BY Message
 ),
@@ -343,16 +372,26 @@ EXP_Format_Email_Message1 AS (
 	v_row_count_temp + 1 AS v_row_count,
 	-- *INF*: '<table width="100%" style="border-collapse: collapse" bordercolor="#111111" cellpadding="3" cellspacing="0">' || CHR(10) ||
 	-- '	<tr><td width="50"><b><font face="Arial" size="5">Summary</font></b></td></tr>' || CHR(10)
-	'<table width="100%" style="border-collapse: collapse" bordercolor="#111111" cellpadding="3" cellspacing="0">' || CHR(10) || '	<tr><td width="50"><b><font face="Arial" size="5">Summary</font></b></td></tr>' || CHR(10) AS v_email_body_header,
+	'<table width="100%" style="border-collapse: collapse" bordercolor="#111111" cellpadding="3" cellspacing="0">' || CHR(10
+	) || '	<tr><td width="50"><b><font face="Arial" size="5">Summary</font></b></td></tr>' || CHR(10
+	) AS v_email_body_header,
 	-- *INF*: '	<tr><td width="150"><font face="Arial" size="2">' || Message||':     ' ||   'Count of Policies: '||PolicyCount || '</font></td></tr>' || CHR(10)
-	'	<tr><td width="150"><font face="Arial" size="2">' || Message || ':     ' || 'Count of Policies: ' || PolicyCount || '</font></td></tr>' || CHR(10) AS v_email_body_content,
+	'	<tr><td width="150"><font face="Arial" size="2">' || Message || ':     ' || 'Count of Policies: ' || PolicyCount || '</font></td></tr>' || CHR(10
+	) AS v_email_body_content,
 	-- *INF*: IIF(v_row_count = 1,
 	-- 	v_email_body_header || CHR(10) || v_email_body_content,
 	-- 	v_email_body_content)
-	IFF(v_row_count = 1, v_email_body_header || CHR(10) || v_email_body_content, v_email_body_content) AS v_email_body,
+	IFF(v_row_count = 1,
+		v_email_body_header || CHR(10
+		) || v_email_body_content,
+		v_email_body_content
+	) AS v_email_body,
 	v_email_body AS out_email_body,
 	-- *INF*: IIF(v_row_count = 1,'A','B')
-	IFF(v_row_count = 1, 'A', 'B') AS sort_indicator
+	IFF(v_row_count = 1,
+		'A',
+		'B'
+	) AS sort_indicator
 	FROM AGG_PolicyCount
 ),
 Union AS (

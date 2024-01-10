@@ -94,41 +94,77 @@ EXP_Detect_Changes AS (
 	LKP_ExistingUnderwritingAssociate.HashKey AS lkp_HashKey,
 	LKP_UWManagerAKID.UnderwritingManagerAKID AS lkp_UnderwritingManagerAKID,
 	-- *INF*: IIF(IsNull(lkp_UnderwritingManagerAKID), -1, lkp_UnderwritingManagerAKID)
-	IFF(lkp_UnderwritingManagerAKID IS NULL, - 1, lkp_UnderwritingManagerAKID) AS o_UnderwritingManagerAKID,
+	IFF(lkp_UnderwritingManagerAKID IS NULL,
+		- 1,
+		lkp_UnderwritingManagerAKID
+	) AS o_UnderwritingManagerAKID,
 	JNR_OuterToRelationship.WestBendAssociateID,
 	JNR_OuterToRelationship.AssociateRole,
 	JNR_OuterToRelationship.RoleSpecificUserCode AS UnderwriterCode,
 	JNR_OuterToRelationship.DisplayName,
 	-- *INF*: IIF(IsNull(DisplayName), 'UNKNOWN', DisplayName)
-	IFF(DisplayName IS NULL, 'UNKNOWN', DisplayName) AS o_DisplayName,
+	IFF(DisplayName IS NULL,
+		'UNKNOWN',
+		DisplayName
+	) AS o_DisplayName,
 	JNR_OuterToRelationship.LastName,
 	-- *INF*: IIF(IsNull(LastName), 'N/A', LastName)
-	IFF(LastName IS NULL, 'N/A', LastName) AS o_LastName,
+	IFF(LastName IS NULL,
+		'N/A',
+		LastName
+	) AS o_LastName,
 	JNR_OuterToRelationship.FirstName,
 	-- *INF*: IIF(IsNull(FirstName), 'N/A', FirstName)
-	IFF(FirstName IS NULL, 'N/A', FirstName) AS o_FirstName,
+	IFF(FirstName IS NULL,
+		'N/A',
+		FirstName
+	) AS o_FirstName,
 	JNR_OuterToRelationship.MiddleName,
 	JNR_OuterToRelationship.Suffix,
 	JNR_OuterToRelationship.EmailAddress,
 	-- *INF*: IIF(IsNull(rtrim(ltrim(EmailAddress))), 'N/A', EmailAddress)
-	IFF(rtrim(ltrim(EmailAddress)) IS NULL, 'N/A', EmailAddress) AS o_EmailAddress,
+	IFF(rtrim(ltrim(EmailAddress
+			)
+		) IS NULL,
+		'N/A',
+		EmailAddress
+	) AS o_EmailAddress,
 	JNR_OuterToRelationship.UserId,
 	-- *INF*: IIF(IsNull(rtrim(ltrim(UserId))), 'N/A', UserId)
-	IFF(rtrim(ltrim(UserId)) IS NULL, 'N/A', UserId) AS o_UserId,
+	IFF(rtrim(ltrim(UserId
+			)
+		) IS NULL,
+		'N/A',
+		UserId
+	) AS o_UserId,
 	-- *INF*: MD5(AssociateRole || UnderwriterCode || DisplayName || LastName || FirstName || MiddleName || Suffix || EmailAddress || UserId || to_char(lkp_UnderwritingManagerAKID))
-	MD5(AssociateRole || UnderwriterCode || DisplayName || LastName || FirstName || MiddleName || Suffix || EmailAddress || UserId || to_char(lkp_UnderwritingManagerAKID)) AS v_NewHashKey,
+	MD5(AssociateRole || UnderwriterCode || DisplayName || LastName || FirstName || MiddleName || Suffix || EmailAddress || UserId || to_char(lkp_UnderwritingManagerAKID
+		)
+	) AS v_NewHashKey,
 	v_NewHashKey AS o_NewHashKey,
 	-- *INF*: IIF(ISNULL(lkp_UnderwritingAssociateAKID), 'NEW', 
 	-- IIF((lkp_HashKey <> v_NewHashKey), 'UPDATE', 'NOCHANGE'))
-	IFF(lkp_UnderwritingAssociateAKID IS NULL, 'NEW', IFF(( lkp_HashKey <> v_NewHashKey ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(lkp_UnderwritingAssociateAKID IS NULL,
+		'NEW',
+		IFF(( lkp_HashKey <> v_NewHashKey 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS EffectiveDate,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	JNR_OuterToRelationship.SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
@@ -183,7 +219,10 @@ EXP_Assign_AKID AS (
 	SEQ_UnderwritingAssociate_AKID.NEXTVAL,
 	HashKey,
 	-- *INF*: iif(isnull(lkp_UnderwritingAssociateAKID),NEXTVAL,lkp_UnderwritingAssociateAKID)
-	IFF(lkp_UnderwritingAssociateAKID IS NULL, NEXTVAL, lkp_UnderwritingAssociateAKID) AS UnderwritingAssociateAKID,
+	IFF(lkp_UnderwritingAssociateAKID IS NULL,
+		NEXTVAL,
+		lkp_UnderwritingAssociateAKID
+	) AS UnderwritingAssociateAKID,
 	UnderwritingManagerAKID,
 	WestBendAssociateID,
 	AssociateRole,
@@ -256,8 +295,9 @@ EXP_Lag_eff_from_date AS (
 	-- UnderwritingAssociateAKID = v_prev_AKID , ADD_TO_DATE(v_prev_EffectiveFromDate,'SS',-1),
 	-- OriginalEffectiveToDate)
 	DECODE(TRUE,
-		UnderwritingAssociateAKID = v_prev_AKID, ADD_TO_DATE(v_prev_EffectiveFromDate, 'SS', - 1),
-		OriginalEffectiveToDate) AS v_EffectiveToDate,
+		UnderwritingAssociateAKID = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_EffectiveFromDate),
+		OriginalEffectiveToDate
+	) AS v_EffectiveToDate,
 	v_EffectiveToDate AS o_EffectiveToDate,
 	UnderwritingAssociateAKID AS v_prev_AKID,
 	EffectiveFromDate AS v_prev_EffectiveFromDate,

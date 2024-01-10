@@ -58,7 +58,17 @@ EXP_Src_DataCollect AS (
 	PolicyNumber,
 	PolicyVersion,
 	-- *INF*: PolicyNumber || IIF(ISNULL(ltrim(rtrim(PolicyVersion))) or Length(ltrim(rtrim(PolicyVersion)))=0 or IS_SPACES(PolicyVersion),'00',PolicyVersion)
-	PolicyNumber || IFF(ltrim(rtrim(PolicyVersion)) IS NULL OR Length(ltrim(rtrim(PolicyVersion))) = 0 OR IS_SPACES(PolicyVersion), '00', PolicyVersion) AS v_PolicyKey,
+	PolicyNumber || IFF(ltrim(rtrim(PolicyVersion
+			)
+		) IS NULL 
+		OR Length(ltrim(rtrim(PolicyVersion
+				)
+			)
+		) = 0 
+		OR LENGTH(PolicyVersion)>0 AND TRIM(PolicyVersion)='',
+		'00',
+		PolicyVersion
+	) AS v_PolicyKey,
 	v_PolicyKey AS o_Policykey,
 	Locationid,
 	'0000' AS v_LocationNumber,
@@ -175,25 +185,85 @@ EXP_Detect_Changes AS (
 	EXP_Src_DataCollect.StreetAddressLine1 AS i_Address1,
 	EXP_Src_DataCollect.o_ISOFireProtectCity AS i_ISOFireProtectCity,
 	-- *INF*: IIF(i_state_abbrev='12' and NOT ISNULL(i_ISOFireProtectCity),i_ISOFireProtectCity,'N/A')
-	IFF(i_state_abbrev = '12' AND NOT i_ISOFireProtectCity IS NULL, i_ISOFireProtectCity, 'N/A') AS v_ISOFireProtectCity,
+	IFF(i_state_abbrev = '12' 
+		AND i_ISOFireProtectCity IS NOT NULL,
+		i_ISOFireProtectCity,
+		'N/A'
+	) AS v_ISOFireProtectCity,
 	-- *INF*: IIF(ISNULL(i_state_abbrev), 'N/A', i_state_abbrev)
-	IFF(i_state_abbrev IS NULL, 'N/A', i_state_abbrev) AS v_StateProvinceCode,
+	IFF(i_state_abbrev IS NULL,
+		'N/A',
+		i_state_abbrev
+	) AS v_StateProvinceCode,
 	-- *INF*: MD5(i_Address1||i_RatingCity||v_StateProvinceCode||i_ZipPostalCode)
-	MD5(i_Address1 || i_RatingCity || v_StateProvinceCode || i_ZipPostalCode) AS v_RiskLocationHashKey,
+	MD5(i_Address1 || i_RatingCity || v_StateProvinceCode || i_ZipPostalCode
+	) AS v_RiskLocationHashKey,
 	-- *INF*:   IIF(ISNULL(lkp_RiskLocationAKID), 'NEW', 
 	-- IIF(
 	-- LTRIM(RTRIM(lkp_LocationIndicator)) != LTRIM(RTRIM(v_LocationIndicator)) OR LTRIM(RTRIM(lkp_LocationUnitNumber)) != LTRIM(RTRIM(i_LocationUnitNumber)) OR LTRIM(RTRIM(lkp_RiskTerritory)) != LTRIM(RTRIM(i_RiskTerritory)) OR
 	-- LTRIM(RTRIM(lkp_TaxLocation)) != LTRIM(RTRIM(i_TaxLocation)) OR lkp_sup_state_id != i_sup_state_id OR LTRIM(RTRIM(lkp_KYTaxCode)) != LTRIM(RTRIM(i_TaxCode)) OR LTRIM(RTRIM(lkp_RiskLocationHashKey)) != LTRIM(RTRIM(v_RiskLocationHashKey))  OR LTRIM(RTRIM(lkp_IntrastateRiskId)) != LTRIM(RTRIM(IntrastateRiskID)) OR LTRIM(RTRIM(lkp_ISOFireProtectCity)) != LTRIM(RTRIM(v_ISOFireProtectCity)) ,
 	-- 'UPDATE', 'NOCHANGE'))
-	IFF(lkp_RiskLocationAKID IS NULL, 'NEW', IFF(LTRIM(RTRIM(lkp_LocationIndicator)) != LTRIM(RTRIM(v_LocationIndicator)) OR LTRIM(RTRIM(lkp_LocationUnitNumber)) != LTRIM(RTRIM(i_LocationUnitNumber)) OR LTRIM(RTRIM(lkp_RiskTerritory)) != LTRIM(RTRIM(i_RiskTerritory)) OR LTRIM(RTRIM(lkp_TaxLocation)) != LTRIM(RTRIM(i_TaxLocation)) OR lkp_sup_state_id != i_sup_state_id OR LTRIM(RTRIM(lkp_KYTaxCode)) != LTRIM(RTRIM(i_TaxCode)) OR LTRIM(RTRIM(lkp_RiskLocationHashKey)) != LTRIM(RTRIM(v_RiskLocationHashKey)) OR LTRIM(RTRIM(lkp_IntrastateRiskId)) != LTRIM(RTRIM(IntrastateRiskID)) OR LTRIM(RTRIM(lkp_ISOFireProtectCity)) != LTRIM(RTRIM(v_ISOFireProtectCity)), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(lkp_RiskLocationAKID IS NULL,
+		'NEW',
+		IFF(LTRIM(RTRIM(lkp_LocationIndicator
+				)
+			) != LTRIM(RTRIM(v_LocationIndicator
+				)
+			) 
+			OR LTRIM(RTRIM(lkp_LocationUnitNumber
+				)
+			) != LTRIM(RTRIM(i_LocationUnitNumber
+				)
+			) 
+			OR LTRIM(RTRIM(lkp_RiskTerritory
+				)
+			) != LTRIM(RTRIM(i_RiskTerritory
+				)
+			) 
+			OR LTRIM(RTRIM(lkp_TaxLocation
+				)
+			) != LTRIM(RTRIM(i_TaxLocation
+				)
+			) 
+			OR lkp_sup_state_id != i_sup_state_id 
+			OR LTRIM(RTRIM(lkp_KYTaxCode
+				)
+			) != LTRIM(RTRIM(i_TaxCode
+				)
+			) 
+			OR LTRIM(RTRIM(lkp_RiskLocationHashKey
+				)
+			) != LTRIM(RTRIM(v_RiskLocationHashKey
+				)
+			) 
+			OR LTRIM(RTRIM(lkp_IntrastateRiskId
+				)
+			) != LTRIM(RTRIM(IntrastateRiskID
+				)
+			) 
+			OR LTRIM(RTRIM(lkp_ISOFireProtectCity
+				)
+			) != LTRIM(RTRIM(v_ISOFireProtectCity
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	v_Changed_Flag AS o_Changed_Flag,
 	lkp_RiskLocationAKID AS o_RiskLocationAKID,
 	v_LogicalIndicator AS o_LogicalIndicator,
 	LKP_policy.pol_ak_id AS lkp_PolicyAKID,
 	-- *INF*: IIF(ISNULL(lkp_PolicyAKID),-1,lkp_PolicyAKID)
-	IFF(lkp_PolicyAKID IS NULL, - 1, lkp_PolicyAKID) AS o_PolicyAkid,
+	IFF(lkp_PolicyAKID IS NULL,
+		- 1,
+		lkp_PolicyAKID
+	) AS o_PolicyAkid,
 	-- *INF*: IIF(ISNULL(lkp_RiskLocationAKID),i_RiskLocationKey,lkp_RiskLocationKey)
-	IFF(lkp_RiskLocationAKID IS NULL, i_RiskLocationKey, lkp_RiskLocationKey) AS o_RiskLocationKey,
+	IFF(lkp_RiskLocationAKID IS NULL,
+		i_RiskLocationKey,
+		lkp_RiskLocationKey
+	) AS o_RiskLocationKey,
 	i_LocationUnitNumber AS o_LocationUnitNumber,
 	v_LocationIndicator AS o_LocationIndicator,
 	i_RiskTerritory AS o_RiskTerritory,
@@ -265,7 +335,11 @@ EXP_Detemine_AK_ID AS (
 	TaxCode,
 	-- *INF*: IIF(i_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(i_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS v_EffectiveDate,
+	IFF(i_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS v_EffectiveDate,
 	RiskLocationHashKey,
 	Address1,
 	IntrastateRiskID,
@@ -274,12 +348,16 @@ EXP_Detemine_AK_ID AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	v_EffectiveDate AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	-- *INF*: IIF(ISNULL(i_RiskLocationAKID),NEXTVAL,i_RiskLocationAKID)
-	IFF(i_RiskLocationAKID IS NULL, NEXTVAL, i_RiskLocationAKID) AS RiskLocationAKID,
+	IFF(i_RiskLocationAKID IS NULL,
+		NEXTVAL,
+		i_RiskLocationAKID
+	) AS RiskLocationAKID,
 	'N/A' AS o_ISOFireProtectCounty
 	FROM FIL_Insert
 ),
@@ -348,8 +426,9 @@ EXP_Lag_eff_from_date AS (
 	-- i_RiskLocationAKID = v_PrevRiskLocationAKID ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
 	DECODE(TRUE,
-		i_RiskLocationAKID = v_PrevRiskLocationAKID, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		i_RiskLocationAKID = v_PrevRiskLocationAKID, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	i_RiskLocationAKID AS v_PrevRiskLocationAKID,
 	i_eff_from_date AS v_prev_eff_from_date,
 	0 AS o_crrnt_snpsht_flag,

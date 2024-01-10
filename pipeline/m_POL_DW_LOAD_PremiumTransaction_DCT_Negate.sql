@@ -144,7 +144,7 @@ EXP_Default AS (
 	IndividualRiskPremiumModification,
 	WindCoverageFlag,
 	-- *INF*: TO_INTEGER(WindCoverageFlag)
-	TO_INTEGER(WindCoverageFlag) AS o_WindCoverageFlag,
+	CAST(WindCoverageFlag AS INTEGER) AS o_WindCoverageFlag,
 	DeductibleBasis,
 	ExposureBasis,
 	TransactionCreatedUserId,
@@ -161,7 +161,8 @@ EXP_Default AS (
 	DECODE(TRUE,
 		DeclaredEventFlag = 'T', 1,
 		DeclaredEventFlag = 'F', 0,
-		DeclaredEventFlag IS NULL, 0) AS O_DeclaredEventFlag,
+		DeclaredEventFlag IS NULL, 0
+	) AS O_DeclaredEventFlag,
 	PolicyKey,
 	IterationId,
 	WCreatedDate
@@ -196,7 +197,7 @@ EXP_OffsetAttributes AS (
 	WCreatedDate,
 	PremiumTransactionExpirationDate,
 	-- *INF*: TRUNC(WCreatedDate,'MM')
-	TRUNC(WCreatedDate, 'MM') AS PremiumTransactionBookedDate,
+	CAST(TRUNC(WCreatedDate, 'MONTH') AS TIMESTAMP_NTZ(0)) AS PremiumTransactionBookedDate,
 	PremiumTransactionAmount,
 	-1 * PremiumTransactionAmount AS o_PremiumTransactionAmount,
 	FullTermPremium,

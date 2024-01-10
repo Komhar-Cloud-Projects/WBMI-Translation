@@ -141,47 +141,61 @@ AGG_Umbrella AS (
 	Id AS CoverageGUID,
 	BO_Description,
 	-- *INF*: MAX(BO_Description)
-	MAX(BO_Description) AS o_BO_Description,
+	MAX(BO_Description
+	) AS o_BO_Description,
 	BO_PolicyNumber,
 	-- *INF*: MAX(BO_PolicyNumber)
-	MAX(BO_PolicyNumber) AS o_BO_PolicyNumber,
+	MAX(BO_PolicyNumber
+	) AS o_BO_PolicyNumber,
 	CA_Description,
 	-- *INF*: MAX(CA_Description)
 	-- 
-	MAX(CA_Description) AS o_CA_Description,
+	MAX(CA_Description
+	) AS o_CA_Description,
 	CA_PolicyNumber,
 	-- *INF*: MAX(CA_PolicyNumber)
-	MAX(CA_PolicyNumber) AS o_CA_PolicyNumber,
+	MAX(CA_PolicyNumber
+	) AS o_CA_PolicyNumber,
 	EL_Description,
 	-- *INF*: MAX(EL_Description)
-	MAX(EL_Description) AS o_EL_Description,
+	MAX(EL_Description
+	) AS o_EL_Description,
 	EL_PolicyNumber,
 	-- *INF*: MAX(EL_PolicyNumber)
-	MAX(EL_PolicyNumber) AS o_EL_PolicyNumber,
+	MAX(EL_PolicyNumber
+	) AS o_EL_PolicyNumber,
 	GL_Description,
 	-- *INF*: MAX(GL_Description)
-	MAX(GL_Description) AS o_GL_Description,
+	MAX(GL_Description
+	) AS o_GL_Description,
 	GL_PolicyNumber,
 	-- *INF*: MAX(GL_PolicyNumber)
-	MAX(GL_PolicyNumber) AS o_GL_PolicyNumber,
+	MAX(GL_PolicyNumber
+	) AS o_GL_PolicyNumber,
 	SMART_Description,
 	-- *INF*: MAX(SMART_Description)
-	MAX(SMART_Description) AS o_SMART_Description,
+	MAX(SMART_Description
+	) AS o_SMART_Description,
 	SMART_PolicyNumber,
 	-- *INF*: max(SMART_PolicyNumber)
-	max(SMART_PolicyNumber) AS o_SMART_PolicyNumber,
+	max(SMART_PolicyNumber
+	) AS o_SMART_PolicyNumber,
 	SBOP_Description,
 	-- *INF*: max(SBOP_Description)
-	max(SBOP_Description) AS o_SBOP_Description,
+	max(SBOP_Description
+	) AS o_SBOP_Description,
 	SBOP_PolicyNumber,
 	-- *INF*: MAX(SBOP_PolicyNumber)
-	MAX(SBOP_PolicyNumber) AS o_SBOP_PolicyNumber,
+	MAX(SBOP_PolicyNumber
+	) AS o_SBOP_PolicyNumber,
 	RetroDate,
 	-- *INF*: MAX(RetroDate)
-	MAX(RetroDate) AS o_RetroDate,
+	MAX(RetroDate
+	) AS o_RetroDate,
 	Million,
 	-- *INF*: MAX(Million)
-	MAX(Million) AS o_Million
+	MAX(Million
+	) AS o_Million
 	FROM SQ_DCCUUmbrella
 	GROUP BY PremiumTransactionID
 ),
@@ -207,42 +221,63 @@ EXP_DefaultValue AS (
 	1 AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS o_EffectiveDate,
+	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	i_CoverageGuid AS o_CoverageGuid,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_EL_Description)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_EL_Description) AS o_UmbrellaEmployersLiabilityUnderlyingInsuranceCompanyName,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_EL_Description
+	) AS o_UmbrellaEmployersLiabilityUnderlyingInsuranceCompanyName,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_EL_PolicyNumber)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_EL_PolicyNumber) AS o_UmbrellaEmployersLiabilityUnderlyingInsurancePolicyKey,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_EL_PolicyNumber
+	) AS o_UmbrellaEmployersLiabilityUnderlyingInsurancePolicyKey,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_BO_Description)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_BO_Description) AS o_UmbrellaBusinessOwnersUnderlyingInsuranceCompanyName,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_BO_Description
+	) AS o_UmbrellaBusinessOwnersUnderlyingInsuranceCompanyName,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_BO_PolicyNumber)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_BO_PolicyNumber) AS o_UmbrellaBusinessOwnersUnderlyingInsurancePolicyKey,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_BO_PolicyNumber
+	) AS o_UmbrellaBusinessOwnersUnderlyingInsurancePolicyKey,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_GL_Description)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_GL_Description) AS o_UmbrellaGeneralLiabilityUnderlyingInsuranceCompanyName,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_GL_Description
+	) AS o_UmbrellaGeneralLiabilityUnderlyingInsuranceCompanyName,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_GL_PolicyNumber)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_GL_PolicyNumber) AS o_UmbrellaGeneralLiabilityUnderlyingInsurancePolicyKey,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_GL_PolicyNumber
+	) AS o_UmbrellaGeneralLiabilityUnderlyingInsurancePolicyKey,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_CA_Description)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_CA_Description) AS o_UmbrellaCommercialAutoUnderlyingInsuranceCompanyName,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_CA_Description
+	) AS o_UmbrellaCommercialAutoUnderlyingInsuranceCompanyName,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_CA_PolicyNumber)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_CA_PolicyNumber) AS o_UmbrellaCommercialAutoUnderlyingInsurancePolicyKey,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_CA_PolicyNumber
+	) AS o_UmbrellaCommercialAutoUnderlyingInsurancePolicyKey,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_SMART_Description)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_SMART_Description) AS o_UmbrellaSMARTbusinessUnderlyingInsuranceCompanyName,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_SMART_Description
+	) AS o_UmbrellaSMARTbusinessUnderlyingInsuranceCompanyName,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_SMART_PolicyNumber)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_SMART_PolicyNumber) AS o_UmbrellaSMARTbusinessUnderlyingInsurancePolicyKey,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_SMART_PolicyNumber
+	) AS o_UmbrellaSMARTbusinessUnderlyingInsurancePolicyKey,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_SBOP_Description)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_SBOP_Description) AS o_UmbrellaSBOPUnderlyingInsuranceCompanyName,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_SBOP_Description
+	) AS o_UmbrellaSBOPUnderlyingInsuranceCompanyName,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_SBOP_PolicyNumber)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_SBOP_PolicyNumber) AS o_UmbrellaSBOPUnderlyingInsurancePolicyKey,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_SBOP_PolicyNumber
+	) AS o_UmbrellaSBOPUnderlyingInsurancePolicyKey,
 	'N/A' AS o_UmbrellaCoverageScope,
 	-- *INF*: IIF(ISNULL(i_RetroActiveDate), TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS'), i_RetroActiveDate)
-	IFF(i_RetroActiveDate IS NULL, TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'), i_RetroActiveDate) AS o_RetroActiveDate,
+	IFF(i_RetroActiveDate IS NULL,
+		TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		i_RetroActiveDate
+	) AS o_RetroActiveDate,
 	-- *INF*: IIF(ISNULL(i_Million), -1, i_Million)
-	IFF(i_Million IS NULL, - 1, i_Million) AS o_UmbrellaLayer
+	IFF(i_Million IS NULL,
+		- 1,
+		i_Million
+	) AS o_UmbrellaLayer
 	FROM AGG_Umbrella
 ),
 LKP_CoverageDetailCommercialUmbrella AS (
@@ -306,8 +341,12 @@ EXP_DetectChange AS (
 	-- 
 	DECODE(TRUE,
 		lkp_PremiumTransactionID IS NULL, 'New',
-		lkp_CoverageGuid <> CoverageGuid OR lkp_UmbrellaCoverageScope <> UmbrellaCoverageScope OR lkp_RetroActiveDate <> RetroActiveDate OR lkp_UmbrellaLayer <> UmbrellaLayer, 'Update',
-		'No Change') AS v_ChangeFlag,
+		lkp_CoverageGuid <> CoverageGuid 
+		OR lkp_UmbrellaCoverageScope <> UmbrellaCoverageScope 
+		OR lkp_RetroActiveDate <> RetroActiveDate 
+		OR lkp_UmbrellaLayer <> UmbrellaLayer, 'Update',
+		'No Change'
+	) AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag
 	FROM EXP_DefaultValue
 	LEFT JOIN LKP_CoverageDetailCommercialUmbrella

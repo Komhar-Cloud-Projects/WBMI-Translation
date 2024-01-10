@@ -16,7 +16,7 @@ EXP_Values AS (
 	pif_symbol  ||  pif_policy_number  || pif_module AS PolicyKey,
 	logical_flag,
 	-- *INF*: TO_INTEGER(logical_flag)
-	TO_INTEGER(logical_flag) AS logical_flag_Out,
+	CAST(logical_flag AS INTEGER) AS logical_flag_Out,
 	@{pipeline().parameters.SOURCE_TABLE_NAME} AS StageTableName,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	SYSDATE AS CreatedDate,

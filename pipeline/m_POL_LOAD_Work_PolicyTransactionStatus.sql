@@ -305,10 +305,24 @@ EXP_Evaluate AS (
 	DECODE(TRUE,
 		arch_sar_yr2000_cust_use = sar_yr2000_cust_use, 'NOCHANGE',
 		arch_sar_yr2000_cust_use IS NULL, 'NEWTRANSACTION',
-		arch_sar_yr2000_cust_use <> sar_yr2000_cust_use AND ( arch_sar_state <> sar_state OR arch_sar_loc_prov_territory <> sar_loc_prov_territory OR arch_sar_city <> sar_city OR arch_sar_zip_postal_code <> sar_zip_postal_code ), 'RISKLOCATIONLEVELCHANGE',
-		arch_sar_yr2000_cust_use <> sar_yr2000_cust_use AND ( arch_sar_agents_comm_rate <> sar_agents_comm_rate OR arch_sar_section <> sar_section OR arch_sar_class_code <> sar_class_code OR arch_sar_sub_line <> sar_sub_line ), 'COVERAGEDETAILLEVELCHANGE') AS v_Status_flag,
+		arch_sar_yr2000_cust_use <> sar_yr2000_cust_use 
+		AND ( arch_sar_state <> sar_state 
+			OR arch_sar_loc_prov_territory <> sar_loc_prov_territory 
+			OR arch_sar_city <> sar_city 
+			OR arch_sar_zip_postal_code <> sar_zip_postal_code 
+		), 'RISKLOCATIONLEVELCHANGE',
+		arch_sar_yr2000_cust_use <> sar_yr2000_cust_use 
+		AND ( arch_sar_agents_comm_rate <> sar_agents_comm_rate 
+			OR arch_sar_section <> sar_section 
+			OR arch_sar_class_code <> sar_class_code 
+			OR arch_sar_sub_line <> sar_sub_line 
+		), 'COVERAGEDETAILLEVELCHANGE'
+	) AS v_Status_flag,
 	-- *INF*: IIF(ISNULL(v_Status_flag),'UNKNOWN',v_Status_flag)
-	IFF(v_Status_flag IS NULL, 'UNKNOWN', v_Status_flag) AS StatusFlag
+	IFF(v_Status_flag IS NULL,
+		'UNKNOWN',
+		v_Status_flag
+	) AS StatusFlag
 	FROM JNR_Stage_Archive_Data
 ),
 FIL_Records AS (

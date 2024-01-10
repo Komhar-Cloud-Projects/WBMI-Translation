@@ -9,12 +9,16 @@ EXPTRANS AS (
 	ctx_claim_nbr,
 	ctx_client_id,
 	-- *INF*: LTRIM(RTRIM(ctx_client_id))
-	LTRIM(RTRIM(ctx_client_id)) AS ctx_client_id_out,
+	LTRIM(RTRIM(ctx_client_id
+		)
+	) AS ctx_client_id_out,
 	ctx_object_type_cd,
 	-- *INF*: LTRIM(RTRIM(ctx_object_type_cd))
 	-- 
 	-- --IIF(IS_SPACES(ctx_object_type_cd) OR ISNULL(ctx_object_type_cd),'N/A',LTRIM(RTRIM(ctx_object_type_cd)))
-	LTRIM(RTRIM(ctx_object_type_cd)) AS ctx_object_type_cd_out,
+	LTRIM(RTRIM(ctx_object_type_cd
+		)
+	) AS ctx_object_type_cd_out,
 	ctx_object_seq_nbr,
 	-- *INF*: --IIF(ISNULL(ctx_object_seq_nbr)
 	-- --,0,
@@ -25,7 +29,9 @@ EXPTRANS AS (
 	-- *INF*: --IIF(IS_SPACES(ctx_cov_type_cd) OR ISNULL(ctx_cov_type_cd),'N/A',
 	-- LTRIM(RTRIM(ctx_cov_type_cd))
 	-- --)
-	LTRIM(RTRIM(ctx_cov_type_cd)) AS ctx_cov_type_cd_out,
+	LTRIM(RTRIM(ctx_cov_type_cd
+		)
+	) AS ctx_cov_type_cd_out,
 	ctx_cov_seq_nbr,
 	-- *INF*: --IIF(ISNULL(ctx_cov_seq_nbr),0,
 	-- ctx_cov_seq_nbr
@@ -46,10 +52,14 @@ EXP_Claim_Object_Clt AS (
 	SELECT
 	CCT_CLAIM_NBR,
 	-- *INF*: ltrim(rtrim(CCT_CLAIM_NBR))
-	ltrim(rtrim(CCT_CLAIM_NBR)) AS out_CCT_CLAIM_NBR,
+	ltrim(rtrim(CCT_CLAIM_NBR
+		)
+	) AS out_CCT_CLAIM_NBR,
 	CCT_CLIENT_ID,
 	-- *INF*: ltrim(rtrim(CCT_CLIENT_ID))
-	ltrim(rtrim(CCT_CLIENT_ID)) AS out_CCT_CLIENT_ID
+	ltrim(rtrim(CCT_CLIENT_ID
+		)
+	) AS out_CCT_CLIENT_ID
 	FROM SQ_CLAIM_OBJECT_CLT_STAGE
 ),
 SQ_CLM_COV_PKG_STAGE AS (
@@ -92,12 +102,21 @@ EXP_CLM_COV_PKG AS (
 	-- *INF*: IIF(IS_SPACES(CCP_PKG_TYPE_CD) OR ISNULL(CCP_PKG_TYPE_CD)
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(CCP_PKG_TYPE_CD)))
-	IFF(IS_SPACES(CCP_PKG_TYPE_CD) OR CCP_PKG_TYPE_CD IS NULL, 'N/A', LTRIM(RTRIM(CCP_PKG_TYPE_CD))) AS out_PKG_TYPE_CD,
+	IFF(LENGTH(CCP_PKG_TYPE_CD)>0 AND TRIM(CCP_PKG_TYPE_CD)='' 
+		OR CCP_PKG_TYPE_CD IS NULL,
+		'N/A',
+		LTRIM(RTRIM(CCP_PKG_TYPE_CD
+			)
+		)
+	) AS out_PKG_TYPE_CD,
 	CCP_PKG_SEQ_NBR,
 	-- *INF*: IIF(ISNULL(CCP_PKG_SEQ_NBR)
 	-- ,0
 	-- ,CCP_PKG_SEQ_NBR)
-	IFF(CCP_PKG_SEQ_NBR IS NULL, 0, CCP_PKG_SEQ_NBR) AS out_PKG_SEQ_NBR,
+	IFF(CCP_PKG_SEQ_NBR IS NULL,
+		0,
+		CCP_PKG_SEQ_NBR
+	) AS out_PKG_SEQ_NBR,
 	CCP_PKG_DED_AMT,
 	CCP_PKG_EFF_DT,
 	CCP_PKG_EXP_DT,
@@ -106,12 +125,22 @@ EXP_CLM_COV_PKG AS (
 	-- *INF*: IIF(IS_SPACES(CCP_MNL_ENTRY_IND) OR ISNULL(CCP_MNL_ENTRY_IND)
 	-- ,'N/A'
 	-- ,ltrim(rtrim(CCP_MNL_ENTRY_IND)))
-	IFF(IS_SPACES(CCP_MNL_ENTRY_IND) OR CCP_MNL_ENTRY_IND IS NULL, 'N/A', ltrim(rtrim(CCP_MNL_ENTRY_IND))) AS out_CCP_MNL_ENTRY_IND,
+	IFF(LENGTH(CCP_MNL_ENTRY_IND)>0 AND TRIM(CCP_MNL_ENTRY_IND)='' 
+		OR CCP_MNL_ENTRY_IND IS NULL,
+		'N/A',
+		ltrim(rtrim(CCP_MNL_ENTRY_IND
+			)
+		)
+	) AS out_CCP_MNL_ENTRY_IND,
 	CCP_INS_LINE_CD,
 	-- *INF*: IIF(IS_SPACES(CCP_INS_LINE_CD) OR ISNULL(CCP_INS_LINE_CD)
 	-- ,'N/A'
 	-- ,CCP_INS_LINE_CD)
-	IFF(IS_SPACES(CCP_INS_LINE_CD) OR CCP_INS_LINE_CD IS NULL, 'N/A', CCP_INS_LINE_CD) AS out_CCP_INS_LINE_CD,
+	IFF(LENGTH(CCP_INS_LINE_CD)>0 AND TRIM(CCP_INS_LINE_CD)='' 
+		OR CCP_INS_LINE_CD IS NULL,
+		'N/A',
+		CCP_INS_LINE_CD
+	) AS out_CCP_INS_LINE_CD,
 	CCP_MAJR_PERIL_SEQ,
 	CCP_SAR_ID,
 	CCP_INS_LINE,
@@ -125,7 +154,9 @@ EXP_CLM_COV_PKG AS (
 	ccp_coverage_form,
 	ccp_coverage_type,
 	-- *INF*: LTRIM(RTRIM(ccp_coverage_type))
-	LTRIM(RTRIM(ccp_coverage_type)) AS o_ccp_coverage_type,
+	LTRIM(RTRIM(ccp_coverage_type
+		)
+	) AS o_ccp_coverage_type,
 	ccp_risk_type,
 	cvr_policy_src_id,
 	ccp_pol_cov_id
@@ -162,17 +193,28 @@ EXP_Claim_Coverage AS (
 	SELECT
 	COB_CLAIM_NBR,
 	-- *INF*: ltrim(rtrim(COB_CLAIM_NBR))
-	ltrim(rtrim(COB_CLAIM_NBR)) AS out_COB_CLAIM_NBR,
+	ltrim(rtrim(COB_CLAIM_NBR
+		)
+	) AS out_COB_CLAIM_NBR,
 	COB_OBJECT_TYPE_CD,
 	-- *INF*: IIF(IS_SPACES(COB_OBJECT_TYPE_CD) OR ISNULL(COB_OBJECT_TYPE_CD)
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(COB_OBJECT_TYPE_CD)))
-	IFF(IS_SPACES(COB_OBJECT_TYPE_CD) OR COB_OBJECT_TYPE_CD IS NULL, 'N/A', LTRIM(RTRIM(COB_OBJECT_TYPE_CD))) AS out_OBJECT_TYPE_CD,
+	IFF(LENGTH(COB_OBJECT_TYPE_CD)>0 AND TRIM(COB_OBJECT_TYPE_CD)='' 
+		OR COB_OBJECT_TYPE_CD IS NULL,
+		'N/A',
+		LTRIM(RTRIM(COB_OBJECT_TYPE_CD
+			)
+		)
+	) AS out_OBJECT_TYPE_CD,
 	COB_OBJECT_SEQ_NBR,
 	-- *INF*: IIF(ISNULL(COB_OBJECT_SEQ_NBR)
 	-- ,0
 	-- ,COB_OBJECT_SEQ_NBR)
-	IFF(COB_OBJECT_SEQ_NBR IS NULL, 0, COB_OBJECT_SEQ_NBR) AS out_OBJECT_SEQ_NBR,
+	IFF(COB_OBJECT_SEQ_NBR IS NULL,
+		0,
+		COB_OBJECT_SEQ_NBR
+	) AS out_OBJECT_SEQ_NBR,
 	COB_OBJECT_CMT_ID,
 	COB_UNIT_DES_ID,
 	COB_COV_UNIT_NBR,
@@ -180,12 +222,22 @@ EXP_Claim_Coverage AS (
 	-- *INF*: IIF(IS_SPACES(COB_UNIT_TYPE_CD) OR ISNULL(COB_UNIT_TYPE_CD)
 	-- ,'N/A'
 	-- ,COB_UNIT_TYPE_CD)
-	IFF(IS_SPACES(COB_UNIT_TYPE_CD) OR COB_UNIT_TYPE_CD IS NULL, 'N/A', COB_UNIT_TYPE_CD) AS out_COB_UNIT_TYPE_CD,
+	IFF(LENGTH(COB_UNIT_TYPE_CD)>0 AND TRIM(COB_UNIT_TYPE_CD)='' 
+		OR COB_UNIT_TYPE_CD IS NULL,
+		'N/A',
+		COB_UNIT_TYPE_CD
+	) AS out_COB_UNIT_TYPE_CD,
 	COB_SPP_USE_CD,
 	-- *INF*: IIF(IS_SPACES(COB_SPP_USE_CD) OR ISNULL(COB_SPP_USE_CD)
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(COB_SPP_USE_CD)))
-	IFF(IS_SPACES(COB_SPP_USE_CD) OR COB_SPP_USE_CD IS NULL, 'N/A', LTRIM(RTRIM(COB_SPP_USE_CD))) AS out_SPP_USE_CD,
+	IFF(LENGTH(COB_SPP_USE_CD)>0 AND TRIM(COB_SPP_USE_CD)='' 
+		OR COB_SPP_USE_CD IS NULL,
+		'N/A',
+		LTRIM(RTRIM(COB_SPP_USE_CD
+			)
+		)
+	) AS out_SPP_USE_CD,
 	COB_SAR_ID,
 	COB_INS_LINE,
 	COB_LOC_UNIT_NUM,
@@ -198,16 +250,24 @@ EXP_Claim_Coverage AS (
 	COB_SR_SEQ,
 	COB_CLIENT_ID,
 	-- *INF*: ltrim(rtrim(COB_CLIENT_ID))
-	ltrim(rtrim(COB_CLIENT_ID)) AS out_COB_CLIENT_ID,
+	ltrim(rtrim(COB_CLIENT_ID
+		)
+	) AS out_COB_CLIENT_ID,
 	cob_coverage_form,
 	-- *INF*: LTRIM(RTRIM(cob_coverage_form))
-	LTRIM(RTRIM(cob_coverage_form)) AS o_cob_coverage_form,
+	LTRIM(RTRIM(cob_coverage_form
+		)
+	) AS o_cob_coverage_form,
 	cob_coverage_type,
 	-- *INF*: LTRIM(RTRIM(cob_coverage_type))
-	LTRIM(RTRIM(cob_coverage_type)) AS o_cob_coverage_type,
+	LTRIM(RTRIM(cob_coverage_type
+		)
+	) AS o_cob_coverage_type,
 	cob_risk_type,
 	-- *INF*: LTRIM(RTRIM(cob_risk_type))
-	LTRIM(RTRIM(cob_risk_type)) AS o_cob_risk_type
+	LTRIM(RTRIM(cob_risk_type
+		)
+	) AS o_cob_risk_type
 	FROM SQ_CLAIM_OBJECT_STAGE
 ),
 JNR_COVERAGE_PKG AS (SELECT
@@ -422,7 +482,16 @@ EXP_Client_ID AS (
 	-- *INF*: IIF(UPPER(LTRIM(RTRIM(COB_INS_LINE))) != 'WC'and (isnull(COB_CLIENT_ID) or is_spaces(COB_CLIENT_ID))
 	--    ,CCT_CLIENT_ID
 	--    ,COB_CLIENT_ID)
-	IFF(UPPER(LTRIM(RTRIM(COB_INS_LINE))) != 'WC' AND ( COB_CLIENT_ID IS NULL OR is_spaces(COB_CLIENT_ID) ), CCT_CLIENT_ID, COB_CLIENT_ID) AS out_CLIENT_ID
+	IFF(UPPER(LTRIM(RTRIM(COB_INS_LINE
+				)
+			)
+		) != 'WC' 
+		AND ( COB_CLIENT_ID IS NULL 
+			OR LENGTH(COB_CLIENT_ID)>0 AND TRIM(COB_CLIENT_ID)='' 
+		),
+		CCT_CLIENT_ID,
+		COB_CLIENT_ID
+	) AS out_CLIENT_ID
 	FROM JNR_coverage_transaction
 ),
 LKP_Claim_Party_Occurrence_AK_ID AS (
@@ -501,7 +570,10 @@ EXP_Values AS (
 	SELECT
 	LKP_Claim_Party_Occurrence_AK_ID.claim_party_occurrence_ak_id,
 	-- *INF*: IIF(ISNULL(claim_party_occurrence_ak_id),-1,claim_party_occurrence_ak_id)
-	IFF(claim_party_occurrence_ak_id IS NULL, - 1, claim_party_occurrence_ak_id) AS v_claim_party_occurrence_ak_id,
+	IFF(claim_party_occurrence_ak_id IS NULL,
+		- 1,
+		claim_party_occurrence_ak_id
+	) AS v_claim_party_occurrence_ak_id,
 	JNR_coverage_transaction.out_OBJECT_TYPE_CD AS COB_OBJECT_TYPE_CD,
 	JNR_coverage_transaction.out_OBJECT_SEQ_NBR AS COB_OBJECT_SEQ_NBR,
 	JNR_coverage_transaction.out_PKG_TYPE_CD AS MAJOR_PERIL_CODE,
@@ -515,7 +587,15 @@ EXP_Values AS (
 	-- *INF*: iif(CCP_MNL_ENTRY_IND = '1' or claim_occurrence_type_code = 'COM'
 	-- 	,ltrim(rtrim(CCP_SAR_ID))
 	--       ,ltrim(rtrim(COB_SAR_ID)))
-	IFF(CCP_MNL_ENTRY_IND = '1' OR claim_occurrence_type_code = 'COM', ltrim(rtrim(CCP_SAR_ID)), ltrim(rtrim(COB_SAR_ID))) AS SAR_ID,
+	IFF(CCP_MNL_ENTRY_IND = '1' 
+		OR claim_occurrence_type_code = 'COM',
+		ltrim(rtrim(CCP_SAR_ID
+			)
+		),
+		ltrim(rtrim(COB_SAR_ID
+			)
+		)
+	) AS SAR_ID,
 	JNR_coverage_transaction.COB_LOC_UNIT_NUM,
 	JNR_coverage_transaction.CCP_LOC_UNIT_NUM,
 	JNR_coverage_transaction.CCP_RISK_UNIT,
@@ -537,10 +617,22 @@ EXP_Values AS (
 	-- 
 	-- 
 	DECODE(claim_occurrence_type_code,
-		'WCC', ltrim(rtrim(COB_LOC_UNIT_NUM)),
-		'COM', ltrim(rtrim(CCP_LOC_UNIT_NUM))) AS var_LOC_UNIT_NUM,
+		'WCC', ltrim(rtrim(COB_LOC_UNIT_NUM
+			)
+		),
+		'COM', ltrim(rtrim(CCP_LOC_UNIT_NUM
+			)
+		)
+	) AS var_LOC_UNIT_NUM,
 	-- *INF*: IIF(ISNULL(var_LOC_UNIT_NUM) OR LENGTH(var_LOC_UNIT_NUM) = 0, '0000', ltrim(rtrim(var_LOC_UNIT_NUM)))
-	IFF(var_LOC_UNIT_NUM IS NULL OR LENGTH(var_LOC_UNIT_NUM) = 0, '0000', ltrim(rtrim(var_LOC_UNIT_NUM))) AS LOC_UNIT_NUM,
+	IFF(var_LOC_UNIT_NUM IS NULL 
+		OR LENGTH(var_LOC_UNIT_NUM
+		) = 0,
+		'0000',
+		ltrim(rtrim(var_LOC_UNIT_NUM
+			)
+		)
+	) AS LOC_UNIT_NUM,
 	JNR_coverage_transaction.COB_SR_SEQ,
 	JNR_coverage_transaction.CCP_MAJR_PERIL_SEQ,
 	JNR_coverage_transaction.COB_INS_LINE,
@@ -552,7 +644,17 @@ EXP_Values AS (
 	-- 
 	-- --IIF(CCP_MNL_ENTRY_IND = '1'      ,IIF(COB_INS_LINE = 'WC'   ,ltrim(rtrim(COB_SR_SEQ))  ,ltrim(rtrim(CCP_MAJR_PERIL_SEQ)))      ,IIF(claim_occurrence_type_code = 'COM'             , ltrim(rtrim(CCP_MAJR_PERIL_SEQ))
 	-- --             ,ltrim(rtrim(COB_SR_SEQ))))
-	IFF(COB_SR_SEQ IS NULL, IFF(CCP_MAJR_PERIL_SEQ IS NULL, '00', LTRIM(RTRIM(CCP_MAJR_PERIL_SEQ))), LTRIM(RTRIM(COB_SR_SEQ))) AS MAJOR_PERIL_SEQ_NUM,
+	IFF(COB_SR_SEQ IS NULL,
+		IFF(CCP_MAJR_PERIL_SEQ IS NULL,
+			'00',
+			LTRIM(RTRIM(CCP_MAJR_PERIL_SEQ
+				)
+			)
+		),
+		LTRIM(RTRIM(COB_SR_SEQ
+			)
+		)
+	) AS MAJOR_PERIL_SEQ_NUM,
 	JNR_coverage_transaction.CCP_INS_LINE,
 	-- *INF*: IIF(CCP_MNL_ENTRY_IND = '1'
 	--       ,ltrim(rtrim(COB_INS_LINE))
@@ -560,7 +662,19 @@ EXP_Values AS (
 	--              ,ltrim(rtrim(CCP_INS_LINE))
 	--              ,ltrim(rtrim(COB_INS_LINE)))
 	-- )
-	IFF(CCP_MNL_ENTRY_IND = '1', ltrim(rtrim(COB_INS_LINE)), IFF(claim_occurrence_type_code = 'COM', ltrim(rtrim(CCP_INS_LINE)), ltrim(rtrim(COB_INS_LINE)))) AS INS_LINE,
+	IFF(CCP_MNL_ENTRY_IND = '1',
+		ltrim(rtrim(COB_INS_LINE
+			)
+		),
+		IFF(claim_occurrence_type_code = 'COM',
+			ltrim(rtrim(CCP_INS_LINE
+				)
+			),
+			ltrim(rtrim(COB_INS_LINE
+				)
+			)
+		)
+	) AS INS_LINE,
 	JNR_coverage_transaction.COB_SUB_LOC_NUM,
 	JNR_coverage_transaction.CCP_SUB_LOC_NUM,
 	-- *INF*: IIF(CCP_MNL_ENTRY_IND = '1'
@@ -569,7 +683,19 @@ EXP_Values AS (
 	--              ,ltrim(rtrim(CCP_SUB_LOC_NUM))
 	--              ,ltrim(rtrim(COB_SUB_LOC_NUM)))
 	-- )
-	IFF(CCP_MNL_ENTRY_IND = '1', ltrim(rtrim(COB_SUB_LOC_NUM)), IFF(claim_occurrence_type_code = 'COM', ltrim(rtrim(CCP_SUB_LOC_NUM)), ltrim(rtrim(COB_SUB_LOC_NUM)))) AS SUB_LOC_UNIT_NUM,
+	IFF(CCP_MNL_ENTRY_IND = '1',
+		ltrim(rtrim(COB_SUB_LOC_NUM
+			)
+		),
+		IFF(claim_occurrence_type_code = 'COM',
+			ltrim(rtrim(CCP_SUB_LOC_NUM
+				)
+			),
+			ltrim(rtrim(COB_SUB_LOC_NUM
+				)
+			)
+		)
+	) AS SUB_LOC_UNIT_NUM,
 	JNR_coverage_transaction.COB_RISK_UNIT_GRP,
 	JNR_coverage_transaction.CCP_RISK_UNIT_GRP,
 	-- *INF*: IIF(CCP_MNL_ENTRY_IND = '1'
@@ -578,7 +704,19 @@ EXP_Values AS (
 	--              ,ltrim(rtrim(CCP_RISK_UNIT_GRP))
 	--              ,ltrim(rtrim(COB_RISK_UNIT_GRP)))
 	-- )
-	IFF(CCP_MNL_ENTRY_IND = '1', ltrim(rtrim(COB_RISK_UNIT_GRP)), IFF(claim_occurrence_type_code = 'COM', ltrim(rtrim(CCP_RISK_UNIT_GRP)), ltrim(rtrim(COB_RISK_UNIT_GRP)))) AS RISK_UNIT_GROUP,
+	IFF(CCP_MNL_ENTRY_IND = '1',
+		ltrim(rtrim(COB_RISK_UNIT_GRP
+			)
+		),
+		IFF(claim_occurrence_type_code = 'COM',
+			ltrim(rtrim(CCP_RISK_UNIT_GRP
+				)
+			),
+			ltrim(rtrim(COB_RISK_UNIT_GRP
+				)
+			)
+		)
+	) AS RISK_UNIT_GROUP,
 	JNR_coverage_transaction.COB_RSK_UNT_GR_SEQ,
 	JNR_coverage_transaction.CCP_RSK_UNT_GR_SEQ,
 	-- *INF*: IIF(CCP_MNL_ENTRY_IND = '1'
@@ -587,7 +725,19 @@ EXP_Values AS (
 	--              ,ltrim(rtrim(CCP_RSK_UNT_GR_SEQ))
 	--              ,ltrim(rtrim(COB_RSK_UNT_GR_SEQ)))
 	-- )
-	IFF(CCP_MNL_ENTRY_IND = '1', ltrim(rtrim(COB_RSK_UNT_GR_SEQ)), IFF(claim_occurrence_type_code = 'COM', ltrim(rtrim(CCP_RSK_UNT_GR_SEQ)), ltrim(rtrim(COB_RSK_UNT_GR_SEQ)))) AS RISK_UNIT_GRP_SEQ,
+	IFF(CCP_MNL_ENTRY_IND = '1',
+		ltrim(rtrim(COB_RSK_UNT_GR_SEQ
+			)
+		),
+		IFF(claim_occurrence_type_code = 'COM',
+			ltrim(rtrim(CCP_RSK_UNT_GR_SEQ
+				)
+			),
+			ltrim(rtrim(COB_RSK_UNT_GR_SEQ
+				)
+			)
+		)
+	) AS RISK_UNIT_GRP_SEQ,
 	JNR_coverage_transaction.COB_RISK_UNIT,
 	-- *INF*: DECODE(TRUE,CCP_MNL_ENTRY_IND = '1',ltrim(rtrim(COB_RISK_UNIT)),
 	--                                     claim_occurrence_type_code = 'COM', ltrim(rtrim(CCP_RISK_UNIT)),
@@ -599,11 +749,22 @@ EXP_Values AS (
 	-- --- Changed to above logic on 7/20/2010 when we found old logic was incorrect.
 	-- 
 	DECODE(TRUE,
-		CCP_MNL_ENTRY_IND = '1', ltrim(rtrim(COB_RISK_UNIT)),
-		claim_occurrence_type_code = 'COM', ltrim(rtrim(CCP_RISK_UNIT)),
-		claim_occurrence_type_code = 'AUT', LTRIM(RTRIM(COB_COV_UNIT_NBR)),
-		claim_occurrence_type_code = 'HOM', LTRIM(RTRIM(COB_COV_UNIT_NBR)),
-		claim_occurrence_type_code = 'WCC', LTRIM(RTRIM(COB_RISK_UNIT))) AS RISK_UNIT,
+		CCP_MNL_ENTRY_IND = '1', ltrim(rtrim(COB_RISK_UNIT
+			)
+		),
+		claim_occurrence_type_code = 'COM', ltrim(rtrim(CCP_RISK_UNIT
+			)
+		),
+		claim_occurrence_type_code = 'AUT', LTRIM(RTRIM(COB_COV_UNIT_NBR
+			)
+		),
+		claim_occurrence_type_code = 'HOM', LTRIM(RTRIM(COB_COV_UNIT_NBR
+			)
+		),
+		claim_occurrence_type_code = 'WCC', LTRIM(RTRIM(COB_RISK_UNIT
+			)
+		)
+	) AS RISK_UNIT,
 	JNR_coverage_transaction.COB_SEQ_RISK_UNIT,
 	JNR_coverage_transaction.CCP_SEQ_RISK_UNIT,
 	-- *INF*: IIF(CCP_MNL_ENTRY_IND = '1' ,ltrim(rtrim(COB_SEQ_RISK_UNIT)) ,
@@ -615,9 +776,27 @@ EXP_Values AS (
 	--                                 ---   claim_occurrence_type_code = 'COM' ,ltrim(rtrim(CCP_SEQ_RISK_UNIT)),
 	--                                --     claim_occurrence_type_code  <> 'COM', ltrim(rtrim(COB_SEQ_RISK_UNIT)),
 	--                                 --    '0') 
-	IFF(CCP_MNL_ENTRY_IND = '1', ltrim(rtrim(COB_SEQ_RISK_UNIT)), IFF(claim_occurrence_type_code = 'COM', ltrim(rtrim(CCP_SEQ_RISK_UNIT)), ltrim(rtrim(COB_SEQ_RISK_UNIT)))) AS V_RISK_UNIT_SEQ,
+	IFF(CCP_MNL_ENTRY_IND = '1',
+		ltrim(rtrim(COB_SEQ_RISK_UNIT
+			)
+		),
+		IFF(claim_occurrence_type_code = 'COM',
+			ltrim(rtrim(CCP_SEQ_RISK_UNIT
+				)
+			),
+			ltrim(rtrim(COB_SEQ_RISK_UNIT
+				)
+			)
+		)
+	) AS V_RISK_UNIT_SEQ,
 	-- *INF*: IIF(ISNULL(V_RISK_UNIT_SEQ) OR IS_SPACES(V_RISK_UNIT_SEQ) OR LENGTH(V_RISK_UNIT_SEQ)= 0 ,'0',V_RISK_UNIT_SEQ)
-	IFF(V_RISK_UNIT_SEQ IS NULL OR IS_SPACES(V_RISK_UNIT_SEQ) OR LENGTH(V_RISK_UNIT_SEQ) = 0, '0', V_RISK_UNIT_SEQ) AS RISK_UNIT_SEQ,
+	IFF(V_RISK_UNIT_SEQ IS NULL 
+		OR LENGTH(V_RISK_UNIT_SEQ)>0 AND TRIM(V_RISK_UNIT_SEQ)='' 
+		OR LENGTH(V_RISK_UNIT_SEQ
+		) = 0,
+		'0',
+		V_RISK_UNIT_SEQ
+	) AS RISK_UNIT_SEQ,
 	JNR_coverage_transaction.COB_RISK_TYPE_IND,
 	JNR_coverage_transaction.CCP_RISK_TYPE_IND,
 	-- *INF*:  IIF(CCP_MNL_ENTRY_IND = '1'
@@ -626,75 +805,155 @@ EXP_Values AS (
 	--              ,ltrim(rtrim(CCP_RISK_TYPE_IND))
 	--              ,ltrim(rtrim(COB_RISK_TYPE_IND)))
 	-- )
-	IFF(CCP_MNL_ENTRY_IND = '1', ltrim(rtrim(COB_RISK_TYPE_IND)), IFF(claim_occurrence_type_code = 'COM', ltrim(rtrim(CCP_RISK_TYPE_IND)), ltrim(rtrim(COB_RISK_TYPE_IND)))) AS RISK_TYPE_IND,
+	IFF(CCP_MNL_ENTRY_IND = '1',
+		ltrim(rtrim(COB_RISK_TYPE_IND
+			)
+		),
+		IFF(claim_occurrence_type_code = 'COM',
+			ltrim(rtrim(CCP_RISK_TYPE_IND
+				)
+			),
+			ltrim(rtrim(COB_RISK_TYPE_IND
+				)
+			)
+		)
+	) AS RISK_TYPE_IND,
 	LKP_Comments_Stage_Coverage_Class_Desc.TCC_COMMENT_TXT AS s3p_WC_CLASS_DESCRIPTION,
 	-- *INF*: IIF(ISNULL(s3p_WC_CLASS_DESCRIPTION) OR IS_SPACES(s3p_WC_CLASS_DESCRIPTION)
 	-- ,'N/A'
 	-- ,ltrim(rtrim(s3p_WC_CLASS_DESCRIPTION)))
-	IFF(s3p_WC_CLASS_DESCRIPTION IS NULL OR IS_SPACES(s3p_WC_CLASS_DESCRIPTION), 'N/A', ltrim(rtrim(s3p_WC_CLASS_DESCRIPTION))) AS s3p_WC_CLASS_DESCRIPTION_OUT,
+	IFF(s3p_WC_CLASS_DESCRIPTION IS NULL 
+		OR LENGTH(s3p_WC_CLASS_DESCRIPTION)>0 AND TRIM(s3p_WC_CLASS_DESCRIPTION)='',
+		'N/A',
+		ltrim(rtrim(s3p_WC_CLASS_DESCRIPTION
+			)
+		)
+	) AS s3p_WC_CLASS_DESCRIPTION_OUT,
 	JNR_coverage_transaction.out_SPP_USE_CD AS spec_pers_prop_use_code,
 	-- *INF*: IIF(ISNULL(spec_pers_prop_use_code) OR IS_SPACES(spec_pers_prop_use_code)
 	-- ,'N/A'
 	-- ,ltrim(rtrim(spec_pers_prop_use_code)))
-	IFF(spec_pers_prop_use_code IS NULL OR IS_SPACES(spec_pers_prop_use_code), 'N/A', ltrim(rtrim(spec_pers_prop_use_code))) AS spec_pers_prop_use_code_out,
+	IFF(spec_pers_prop_use_code IS NULL 
+		OR LENGTH(spec_pers_prop_use_code)>0 AND TRIM(spec_pers_prop_use_code)='',
+		'N/A',
+		ltrim(rtrim(spec_pers_prop_use_code
+			)
+		)
+	) AS spec_pers_prop_use_code_out,
 	JNR_coverage_transaction.CCP_PKG_EFF_DT,
 	JNR_coverage_transaction.CCP_PKG_EXP_DT,
 	JNR_coverage_transaction.CCP_PKG_DED_AMT,
 	-- *INF*: IIF(ISNULL(CCP_PKG_DED_AMT) 
 	-- ,0
 	-- ,CCP_PKG_DED_AMT)
-	IFF(CCP_PKG_DED_AMT IS NULL, 0, CCP_PKG_DED_AMT) AS CCP_PKG_DED_AMT_OUT,
+	IFF(CCP_PKG_DED_AMT IS NULL,
+		0,
+		CCP_PKG_DED_AMT
+	) AS CCP_PKG_DED_AMT_OUT,
 	JNR_coverage_transaction.CCP_PKG_LIMIT_AMT,
 	-- *INF*: IIF(ISNULL(CCP_PKG_LIMIT_AMT) 
 	-- ,0
 	-- ,CCP_PKG_LIMIT_AMT)
-	IFF(CCP_PKG_LIMIT_AMT IS NULL, 0, CCP_PKG_LIMIT_AMT) AS CCP_PKG_LIMIT_AMT_OUT,
+	IFF(CCP_PKG_LIMIT_AMT IS NULL,
+		0,
+		CCP_PKG_LIMIT_AMT
+	) AS CCP_PKG_LIMIT_AMT_OUT,
 	LKP_Claim_Comments_Stage_Unit_Desc.TCC_COMMENT_TXT AS s3p_UNIT_DESCRIPTION,
 	-- *INF*: IIF(ISNULL(s3p_UNIT_DESCRIPTION) OR IS_SPACES(s3p_UNIT_DESCRIPTION)
 	-- ,'N/A'
 	-- ,ltrim(rtrim(s3p_UNIT_DESCRIPTION)))
-	IFF(s3p_UNIT_DESCRIPTION IS NULL OR IS_SPACES(s3p_UNIT_DESCRIPTION), 'N/A', ltrim(rtrim(s3p_UNIT_DESCRIPTION))) AS S3P_UNIT_DESCRIPTION_OUT,
+	IFF(s3p_UNIT_DESCRIPTION IS NULL 
+		OR LENGTH(s3p_UNIT_DESCRIPTION)>0 AND TRIM(s3p_UNIT_DESCRIPTION)='',
+		'N/A',
+		ltrim(rtrim(s3p_UNIT_DESCRIPTION
+			)
+		)
+	) AS S3P_UNIT_DESCRIPTION_OUT,
 	LKP_Auto_Loss_Stage.CAU_CAR_YR,
 	-- *INF*: IIF(ISNULL(CAU_CAR_YR)
 	-- ,0
 	-- ,CAU_CAR_YR)
-	IFF(CAU_CAR_YR IS NULL, 0, CAU_CAR_YR) AS CAU_CAR_YR_OUT,
+	IFF(CAU_CAR_YR IS NULL,
+		0,
+		CAU_CAR_YR
+	) AS CAU_CAR_YR_OUT,
 	LKP_Auto_Loss_Stage.CAU_CAR_MAKE_NM,
 	-- *INF*: IIF(ISNULL(CAU_CAR_MAKE_NM) OR IS_SPACES(CAU_CAR_MAKE_NM)
 	-- ,'N/A'
 	-- ,ltrim(rtrim(CAU_CAR_MAKE_NM)))
-	IFF(CAU_CAR_MAKE_NM IS NULL OR IS_SPACES(CAU_CAR_MAKE_NM), 'N/A', ltrim(rtrim(CAU_CAR_MAKE_NM))) AS CAU_CAR_MAKE_NM_OUT,
+	IFF(CAU_CAR_MAKE_NM IS NULL 
+		OR LENGTH(CAU_CAR_MAKE_NM)>0 AND TRIM(CAU_CAR_MAKE_NM)='',
+		'N/A',
+		ltrim(rtrim(CAU_CAR_MAKE_NM
+			)
+		)
+	) AS CAU_CAR_MAKE_NM_OUT,
 	LKP_Auto_Loss_Stage.CAU_CAR_RGS_NBR,
 	-- *INF*: IIF(ISNULL(CAU_CAR_RGS_NBR) OR IS_SPACES(CAU_CAR_RGS_NBR)
 	-- ,'N/A'
 	-- ,ltrim(rtrim(CAU_CAR_RGS_NBR)))
-	IFF(CAU_CAR_RGS_NBR IS NULL OR IS_SPACES(CAU_CAR_RGS_NBR), 'N/A', ltrim(rtrim(CAU_CAR_RGS_NBR))) AS CAU_CAR_RGS_NBR_OUT,
+	IFF(CAU_CAR_RGS_NBR IS NULL 
+		OR LENGTH(CAU_CAR_RGS_NBR)>0 AND TRIM(CAU_CAR_RGS_NBR)='',
+		'N/A',
+		ltrim(rtrim(CAU_CAR_RGS_NBR
+			)
+		)
+	) AS CAU_CAR_RGS_NBR_OUT,
 	LKP_Auto_Loss_Stage.CAU_VEHICLE_ID_NBR,
 	-- *INF*: IIF(ISNULL(CAU_VEHICLE_ID_NBR) OR IS_SPACES(CAU_VEHICLE_ID_NBR)
 	-- ,'N/A'
 	-- ,ltrim(rtrim(CAU_VEHICLE_ID_NBR)))
-	IFF(CAU_VEHICLE_ID_NBR IS NULL OR IS_SPACES(CAU_VEHICLE_ID_NBR), 'N/A', ltrim(rtrim(CAU_VEHICLE_ID_NBR))) AS CAU_VEHICLE_ID_NBR_OUT,
+	IFF(CAU_VEHICLE_ID_NBR IS NULL 
+		OR LENGTH(CAU_VEHICLE_ID_NBR)>0 AND TRIM(CAU_VEHICLE_ID_NBR)='',
+		'N/A',
+		ltrim(rtrim(CAU_VEHICLE_ID_NBR
+			)
+		)
+	) AS CAU_VEHICLE_ID_NBR_OUT,
 	LKP_Auto_Loss_Stage.CAU_RGS_STATE_CD,
 	-- *INF*: IIF(ISNULL(CAU_RGS_STATE_CD) OR IS_SPACES(CAU_RGS_STATE_CD)
 	-- ,'N/A'
 	-- ,ltrim(rtrim(CAU_RGS_STATE_CD)))
-	IFF(CAU_RGS_STATE_CD IS NULL OR IS_SPACES(CAU_RGS_STATE_CD), 'N/A', ltrim(rtrim(CAU_RGS_STATE_CD))) AS CAU_RGS_STATE_CD_OUT,
+	IFF(CAU_RGS_STATE_CD IS NULL 
+		OR LENGTH(CAU_RGS_STATE_CD)>0 AND TRIM(CAU_RGS_STATE_CD)='',
+		'N/A',
+		ltrim(rtrim(CAU_RGS_STATE_CD
+			)
+		)
+	) AS CAU_RGS_STATE_CD_OUT,
 	LKP_Auto_Loss_Stage.CAU_VEH_ST_AMT,
 	-- *INF*: IIF(ISNULL(CAU_VEH_ST_AMT)
 	-- ,0
 	-- ,CAU_VEH_ST_AMT)
-	IFF(CAU_VEH_ST_AMT IS NULL, 0, CAU_VEH_ST_AMT) AS CAU_VEH_ST_AMT_OUT,
+	IFF(CAU_VEH_ST_AMT IS NULL,
+		0,
+		CAU_VEH_ST_AMT
+	) AS CAU_VEH_ST_AMT_OUT,
 	LKP_Comments_Stage_Unit_Damage_Description.TCC_COMMENT_TXT AS UNIT_DAMAGE_DESCRIPTION,
 	-- *INF*: IIF(ISNULL(UNIT_DAMAGE_DESCRIPTION) OR IS_SPACES(UNIT_DAMAGE_DESCRIPTION)
 	-- ,'N/A'
 	-- ,UNIT_DAMAGE_DESCRIPTION)
-	IFF(UNIT_DAMAGE_DESCRIPTION IS NULL OR IS_SPACES(UNIT_DAMAGE_DESCRIPTION), 'N/A', UNIT_DAMAGE_DESCRIPTION) AS UNIT_DAMAGE_DESCRIPTION_OUT,
+	IFF(UNIT_DAMAGE_DESCRIPTION IS NULL 
+		OR LENGTH(UNIT_DAMAGE_DESCRIPTION)>0 AND TRIM(UNIT_DAMAGE_DESCRIPTION)='',
+		'N/A',
+		UNIT_DAMAGE_DESCRIPTION
+	) AS UNIT_DAMAGE_DESCRIPTION_OUT,
 	JNR_coverage_transaction.ctx_bur_cause_loss,
 	-- *INF*: IIF(ISNULL(ctx_bur_cause_loss) OR IS_SPACES(ctx_bur_cause_loss), 'N/A', SUBSTR(ctx_bur_cause_loss, 1,2))
-	IFF(ctx_bur_cause_loss IS NULL OR IS_SPACES(ctx_bur_cause_loss), 'N/A', SUBSTR(ctx_bur_cause_loss, 1, 2)) AS cause_of_loss_out,
+	IFF(ctx_bur_cause_loss IS NULL 
+		OR LENGTH(ctx_bur_cause_loss)>0 AND TRIM(ctx_bur_cause_loss)='',
+		'N/A',
+		SUBSTR(ctx_bur_cause_loss, 1, 2
+		)
+	) AS cause_of_loss_out,
 	-- *INF*: IIF(ISNULL(ctx_bur_cause_loss) OR IS_SPACES(ctx_bur_cause_loss), 'N/A', SUBSTR(ctx_bur_cause_loss, 3,1))
 	-- 
-	IFF(ctx_bur_cause_loss IS NULL OR IS_SPACES(ctx_bur_cause_loss), 'N/A', SUBSTR(ctx_bur_cause_loss, 3, 1)) AS reserve_ctgry_out,
+	IFF(ctx_bur_cause_loss IS NULL 
+		OR LENGTH(ctx_bur_cause_loss)>0 AND TRIM(ctx_bur_cause_loss)='',
+		'N/A',
+		SUBSTR(ctx_bur_cause_loss, 3, 1
+		)
+	) AS reserve_ctgry_out,
 	JNR_coverage_transaction.ccp_coverage_form,
 	JNR_coverage_transaction.cob_coverage_form,
 	-- *INF*:  IIF(CCP_MNL_ENTRY_IND = '1'
@@ -703,7 +962,19 @@ EXP_Values AS (
 	--              ,ltrim(rtrim(ccp_coverage_form))
 	--              ,ltrim(rtrim(cob_coverage_form)))
 	-- )
-	IFF(CCP_MNL_ENTRY_IND = '1', ltrim(rtrim(cob_coverage_form)), IFF(claim_occurrence_type_code = 'COM', ltrim(rtrim(ccp_coverage_form)), ltrim(rtrim(cob_coverage_form)))) AS o_CoverageForm,
+	IFF(CCP_MNL_ENTRY_IND = '1',
+		ltrim(rtrim(cob_coverage_form
+			)
+		),
+		IFF(claim_occurrence_type_code = 'COM',
+			ltrim(rtrim(ccp_coverage_form
+				)
+			),
+			ltrim(rtrim(cob_coverage_form
+				)
+			)
+		)
+	) AS o_CoverageForm,
 	JNR_coverage_transaction.ccp_coverage_type,
 	JNR_coverage_transaction.cob_coverage_type,
 	-- *INF*:  IIF(CCP_MNL_ENTRY_IND = '1'
@@ -712,7 +983,19 @@ EXP_Values AS (
 	--              ,ltrim(rtrim(ccp_coverage_type))
 	--              ,ltrim(rtrim(cob_coverage_type)))
 	-- )
-	IFF(CCP_MNL_ENTRY_IND = '1', ltrim(rtrim(cob_coverage_type)), IFF(claim_occurrence_type_code = 'COM', ltrim(rtrim(ccp_coverage_type)), ltrim(rtrim(cob_coverage_type)))) AS o_Coveragetype,
+	IFF(CCP_MNL_ENTRY_IND = '1',
+		ltrim(rtrim(cob_coverage_type
+			)
+		),
+		IFF(claim_occurrence_type_code = 'COM',
+			ltrim(rtrim(ccp_coverage_type
+				)
+			),
+			ltrim(rtrim(cob_coverage_type
+				)
+			)
+		)
+	) AS o_Coveragetype,
 	JNR_coverage_transaction.ccp_risk_type,
 	JNR_coverage_transaction.cob_risk_type,
 	-- *INF*:  IIF(CCP_MNL_ENTRY_IND = '1'
@@ -721,11 +1004,25 @@ EXP_Values AS (
 	--              ,ltrim(rtrim(ccp_risk_type))
 	--              ,ltrim(rtrim(cob_risk_type)))
 	-- )
-	IFF(CCP_MNL_ENTRY_IND = '1', ltrim(rtrim(cob_risk_type)), IFF(claim_occurrence_type_code = 'COM', ltrim(rtrim(ccp_risk_type)), ltrim(rtrim(cob_risk_type)))) AS o_RiskType,
+	IFF(CCP_MNL_ENTRY_IND = '1',
+		ltrim(rtrim(cob_risk_type
+			)
+		),
+		IFF(claim_occurrence_type_code = 'COM',
+			ltrim(rtrim(ccp_risk_type
+				)
+			),
+			ltrim(rtrim(cob_risk_type
+				)
+			)
+		)
+	) AS o_RiskType,
 	JNR_coverage_transaction.cvr_policy_src_id,
 	JNR_coverage_transaction.ccp_pol_cov_id AS i_ccp_pol_cov_id,
 	-- *INF*: LTRIM(RTRIM(i_ccp_pol_cov_id))
-	LTRIM(RTRIM(i_ccp_pol_cov_id)) AS ccp_pol_cov_id
+	LTRIM(RTRIM(i_ccp_pol_cov_id
+		)
+	) AS ccp_pol_cov_id
 	FROM JNR_coverage_transaction
 	LEFT JOIN LKP_Auto_Loss_Stage
 	ON LKP_Auto_Loss_Stage.CAU_CLAIM_NBR = JNR_coverage_transaction.COB_CLAIM_NBR AND LKP_Auto_Loss_Stage.CAU_OBJECT_SEQ_NBR = JNR_coverage_transaction.out_OBJECT_SEQ_NBR
@@ -850,7 +1147,8 @@ EXP_LOBCode AS (
 	DECODE(TRUE,
 		PolicyOfferingCode = '801', 'CHO',
 		pms_pol_lob_code = 'N/A', LOBCode,
-		pms_pol_lob_code) AS LOBCode_Out
+		pms_pol_lob_code
+	) AS LOBCode_Out
 	FROM 
 	LEFT JOIN LKP_Policy
 	ON LKP_Policy.pol_ak_id = LKP_claim_occurrence.pol_key_ak_id
@@ -877,7 +1175,10 @@ EXP_Get_CauseOfLossID AS (
 	SELECT
 	CauseOfLossId,
 	-- *INF*: IIF(ISNULL(CauseOfLossId), -1, CauseOfLossId)
-	IFF(CauseOfLossId IS NULL, - 1, CauseOfLossId) AS CauseOfLossId_out
+	IFF(CauseOfLossId IS NULL,
+		- 1,
+		CauseOfLossId
+	) AS CauseOfLossId_out
 	FROM LKP_sup_CauseOfLoss
 ),
 LKP_sup_insurance_line_code AS (
@@ -912,12 +1213,18 @@ EXP_Get_Ins_Line AS (
 	-- 
 	-- --IIF(ISNULL(i_StandardInsuranceLineCode_ins_line_code),IIF(ISNULL(i_ins_line_code),'N/A',i_ins_line_code),i_StandardInsuranceLineCode_ins_line_code)
 	DECODE(TRUE,
-		i_StandardInsuranceLineCode_ins_line_code IS NULL AND i_ins_line_code IS NULL, 'N/A',
-		i_StandardInsuranceLineCode_ins_line_code IS NULL AND cvr_policy_src_id = 'PMS', i_ins_line_code,
+		i_StandardInsuranceLineCode_ins_line_code IS NULL 
+		AND i_ins_line_code IS NULL, 'N/A',
+		i_StandardInsuranceLineCode_ins_line_code IS NULL 
+		AND cvr_policy_src_id = 'PMS', i_ins_line_code,
 		i_StandardInsuranceLineCode_ins_line_code IS NULL, 'N/A',
-		i_StandardInsuranceLineCode_ins_line_code) AS o_ins_line,
+		i_StandardInsuranceLineCode_ins_line_code
+	) AS o_ins_line,
 	-- *INF*: IIF(ISNULL(i_sup_ins_line_id_code),-1,i_sup_ins_line_id_code)
-	IFF(i_sup_ins_line_id_code IS NULL, - 1, i_sup_ins_line_id_code) AS o_SupInsuranceLineID
+	IFF(i_sup_ins_line_id_code IS NULL,
+		- 1,
+		i_sup_ins_line_id_code
+	) AS o_SupInsuranceLineID
 	FROM EXP_Values
 	LEFT JOIN LKP_sup_insurance_line_code
 	ON LKP_sup_insurance_line_code.ins_line_code = EXP_Values.INS_LINE
@@ -943,11 +1250,20 @@ EXP_Get_Risk_Unit AS (
 	SELECT
 	sup_risk_unit_id,
 	-- *INF*: IIF(ISNULL(sup_risk_unit_id), -1, sup_risk_unit_id)
-	IFF(sup_risk_unit_id IS NULL, - 1, sup_risk_unit_id) AS out_sup_risk_unit_id,
+	IFF(sup_risk_unit_id IS NULL,
+		- 1,
+		sup_risk_unit_id
+	) AS out_sup_risk_unit_id,
 	IN_risk_unit_code AS risk_unit_code,
 	StandardRiskUnitCode,
 	-- *INF*: IIF(ISNULL(StandardRiskUnitCode),IIF(ISNULL(risk_unit_code),'N/A',risk_unit_code),StandardRiskUnitCode)
-	IFF(StandardRiskUnitCode IS NULL, IFF(risk_unit_code IS NULL, 'N/A', risk_unit_code), StandardRiskUnitCode) AS out_StandardRiskUnitCode
+	IFF(StandardRiskUnitCode IS NULL,
+		IFF(risk_unit_code IS NULL,
+			'N/A',
+			risk_unit_code
+		),
+		StandardRiskUnitCode
+	) AS out_StandardRiskUnitCode
 	FROM LKP_sup_risk_unit
 ),
 LKP_sup_risk_unit_group_code AS (
@@ -973,10 +1289,19 @@ EXP_Get_Risk_Unit_Grp_Id AS (
 	IN_risk_unit_grp_code AS risk_unit_grp_code,
 	risk_unit_grp_code AS lkp_risk_unit_grp_code,
 	-- *INF*: IIF(ISNULL(lkp_risk_unit_grp_code),IIF(ISNULL(risk_unit_grp_code),'N/A',risk_unit_grp_code),lkp_risk_unit_grp_code)
-	IFF(lkp_risk_unit_grp_code IS NULL, IFF(risk_unit_grp_code IS NULL, 'N/A', risk_unit_grp_code), lkp_risk_unit_grp_code) AS risk_unit_grp,
+	IFF(lkp_risk_unit_grp_code IS NULL,
+		IFF(risk_unit_grp_code IS NULL,
+			'N/A',
+			risk_unit_grp_code
+		),
+		lkp_risk_unit_grp_code
+	) AS risk_unit_grp,
 	sup_risk_unit_grp_id AS sup_risk_unit_grp_id_code,
 	-- *INF*: IIF(ISNULL(sup_risk_unit_grp_id_code),-1,sup_risk_unit_grp_id_code)
-	IFF(sup_risk_unit_grp_id_code IS NULL, - 1, sup_risk_unit_grp_id_code) AS sup_risk_unit_grp_id
+	IFF(sup_risk_unit_grp_id_code IS NULL,
+		- 1,
+		sup_risk_unit_grp_id_code
+	) AS sup_risk_unit_grp_id
 	FROM LKP_sup_risk_unit_group_code
 ),
 LKP_PolicyCoverage_PMS AS (
@@ -1000,7 +1325,15 @@ EXP_Get_TypBureauCode AS (
 	-- *INF*: IIF(ltrim(rtrim(cvr_policy_src_id))='DUC', IIF(ISNULL(TypeBureauCode_DCT), 'N/A', TypeBureauCode_DCT), 'N/A')
 	-- 
 	-- --We will be only evaluating DuckCreek records and the PMS evaluation is done in a different mapping which updates the Type Bureau code from N/A to the correct value.
-	IFF(ltrim(rtrim(cvr_policy_src_id)) = 'DUC', IFF(TypeBureauCode_DCT IS NULL, 'N/A', TypeBureauCode_DCT), 'N/A') AS TypeBureauCode,
+	IFF(ltrim(rtrim(cvr_policy_src_id
+			)
+		) = 'DUC',
+		IFF(TypeBureauCode_DCT IS NULL,
+			'N/A',
+			TypeBureauCode_DCT
+		),
+		'N/A'
+	) AS TypeBureauCode,
 	LKP_PolicyCoverage_PMS.cvr_policy_src_id
 	FROM 
 	LEFT JOIN LKP_PolicyCoverage_PMS
@@ -1229,7 +1562,10 @@ EXP_Detect_Changes AS (
 	LKP_RatingCoverage.ProductAKId AS ProductAKId_DCT,
 	LKP_RatingCoverage.InsuranceReferenceLineOfBusinessAKId AS InsuranceReferenceLineOfBusinessAKId_DCT,
 	-- *INF*: IIF(ISNULL(ccp_pol_cov_id), 'N/A', ccp_pol_cov_id)
-	IFF(ccp_pol_cov_id IS NULL, 'N/A', ccp_pol_cov_id) AS v_ccp_pol_cov_id,
+	IFF(ccp_pol_cov_id IS NULL,
+		'N/A',
+		ccp_pol_cov_id
+	) AS v_ccp_pol_cov_id,
 	-- *INF*: iif(isnull(claimant_cov_det_ak_id)
 	-- , 'NEW'
 	-- ,iif(ltrim(rtrim(old_s3p_ins_line_code))  != ltrim(rtrim(CCP_INS_LINE_CD)) or 
@@ -1261,7 +1597,116 @@ EXP_Detect_Changes AS (
 	-- ,'UPDATE'
 	-- ,'NOCHANGE')
 	-- )
-	IFF(claimant_cov_det_ak_id IS NULL, 'NEW', IFF(ltrim(rtrim(old_s3p_ins_line_code)) != ltrim(rtrim(CCP_INS_LINE_CD)) OR ltrim(rtrim(old_s3p_unit_type_code)) != ltrim(rtrim(COB_UNIT_TYPE_CD)) OR ltrim(rtrim(old_s3p_wc_class_descript)) != ltrim(rtrim(s3p_WC_CLASS_DESCRIPTION)) OR ltrim(rtrim(old_loc_unit_num)) != ltrim(rtrim(LOC_UNIT_NUM)) OR ltrim(rtrim(old_sub_loc_unit_num)) != ltrim(rtrim(SUB_LOC_UNIT_NUM)) OR ltrim(rtrim(old_ins_line)) != ltrim(rtrim(INS_LINE)) OR ltrim(rtrim(old_risk_unit_grp)) != ltrim(rtrim(RISK_UNIT_GROUP)) OR ltrim(rtrim(old_risk_unit_grp_seq_num)) != ltrim(rtrim(RISK_UNIT_GRP_SEQ)) OR ltrim(rtrim(old_risk_unit)) != ltrim(rtrim(RISK_UNIT)) OR ltrim(rtrim(old_risk_unit_seq_num)) != ltrim(rtrim(RISK_UNIT_SEQ)) OR ltrim(rtrim(old_major_peril_seq)) != ltrim(rtrim(MAJOR_PERIL_SEQ_NUM)) OR old_claimant_cov_eff_date != CCP_PKG_EFF_DT OR old_claimant_cov_exp_date != CCP_PKG_EXP_DT OR ltrim(rtrim(old_risk_type_ind)) != ltrim(rtrim(RISK_TYPE_IND)) OR ltrim(rtrim(old_s3p_unit_descript)) != ltrim(rtrim(s3p_UNIT_DESCRIPTION)) OR ltrim(rtrim(old_spec_pers_prop_use_code)) != ltrim(rtrim(spec_pers_prop_use_code)) OR old_pkg_ded_amt != CCP_PKG_DED_AMT OR old_pkg_lmt_amt != CCP_PKG_LIMIT_AMT OR ltrim(rtrim(old_manual_entry_ind)) != ltrim(rtrim(CCP_MNL_ENTRY_IND)) OR ltrim(rtrim(old_unit_veh_registration_state_code)) != ltrim(rtrim(CAU_RGS_STATE_CD)) OR old_unit_veh_stated_amt != CAU_VEH_ST_AMT OR ltrim(rtrim(old_unit_dam_descript)) != ltrim(rtrim(UNIT_DAMAGE_DESCRIPTION)) OR old_unit_veh_yr != CAU_CAR_YR OR ltrim(rtrim(old_unit_veh_make)) != ltrim(rtrim(CAU_CAR_MAKE_NM)) OR ltrim(rtrim(old_unit_vin_num)) != ltrim(rtrim(CAU_VEHICLE_ID_NBR)) OR ( cvr_policy_src_id = 'DUC' AND old_CoverageGUID <> v_ccp_pol_cov_id ), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(claimant_cov_det_ak_id IS NULL,
+		'NEW',
+		IFF(ltrim(rtrim(old_s3p_ins_line_code
+				)
+			) != ltrim(rtrim(CCP_INS_LINE_CD
+				)
+			) 
+			OR ltrim(rtrim(old_s3p_unit_type_code
+				)
+			) != ltrim(rtrim(COB_UNIT_TYPE_CD
+				)
+			) 
+			OR ltrim(rtrim(old_s3p_wc_class_descript
+				)
+			) != ltrim(rtrim(s3p_WC_CLASS_DESCRIPTION
+				)
+			) 
+			OR ltrim(rtrim(old_loc_unit_num
+				)
+			) != ltrim(rtrim(LOC_UNIT_NUM
+				)
+			) 
+			OR ltrim(rtrim(old_sub_loc_unit_num
+				)
+			) != ltrim(rtrim(SUB_LOC_UNIT_NUM
+				)
+			) 
+			OR ltrim(rtrim(old_ins_line
+				)
+			) != ltrim(rtrim(INS_LINE
+				)
+			) 
+			OR ltrim(rtrim(old_risk_unit_grp
+				)
+			) != ltrim(rtrim(RISK_UNIT_GROUP
+				)
+			) 
+			OR ltrim(rtrim(old_risk_unit_grp_seq_num
+				)
+			) != ltrim(rtrim(RISK_UNIT_GRP_SEQ
+				)
+			) 
+			OR ltrim(rtrim(old_risk_unit
+				)
+			) != ltrim(rtrim(RISK_UNIT
+				)
+			) 
+			OR ltrim(rtrim(old_risk_unit_seq_num
+				)
+			) != ltrim(rtrim(RISK_UNIT_SEQ
+				)
+			) 
+			OR ltrim(rtrim(old_major_peril_seq
+				)
+			) != ltrim(rtrim(MAJOR_PERIL_SEQ_NUM
+				)
+			) 
+			OR old_claimant_cov_eff_date != CCP_PKG_EFF_DT 
+			OR old_claimant_cov_exp_date != CCP_PKG_EXP_DT 
+			OR ltrim(rtrim(old_risk_type_ind
+				)
+			) != ltrim(rtrim(RISK_TYPE_IND
+				)
+			) 
+			OR ltrim(rtrim(old_s3p_unit_descript
+				)
+			) != ltrim(rtrim(s3p_UNIT_DESCRIPTION
+				)
+			) 
+			OR ltrim(rtrim(old_spec_pers_prop_use_code
+				)
+			) != ltrim(rtrim(spec_pers_prop_use_code
+				)
+			) 
+			OR old_pkg_ded_amt != CCP_PKG_DED_AMT 
+			OR old_pkg_lmt_amt != CCP_PKG_LIMIT_AMT 
+			OR ltrim(rtrim(old_manual_entry_ind
+				)
+			) != ltrim(rtrim(CCP_MNL_ENTRY_IND
+				)
+			) 
+			OR ltrim(rtrim(old_unit_veh_registration_state_code
+				)
+			) != ltrim(rtrim(CAU_RGS_STATE_CD
+				)
+			) 
+			OR old_unit_veh_stated_amt != CAU_VEH_ST_AMT 
+			OR ltrim(rtrim(old_unit_dam_descript
+				)
+			) != ltrim(rtrim(UNIT_DAMAGE_DESCRIPTION
+				)
+			) 
+			OR old_unit_veh_yr != CAU_CAR_YR 
+			OR ltrim(rtrim(old_unit_veh_make
+				)
+			) != ltrim(rtrim(CAU_CAR_MAKE_NM
+				)
+			) 
+			OR ltrim(rtrim(old_unit_vin_num
+				)
+			) != ltrim(rtrim(CAU_VEHICLE_ID_NBR
+				)
+			) 
+			OR ( cvr_policy_src_id = 'DUC' 
+				AND old_CoverageGUID <> v_ccp_pol_cov_id 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	1 AS Crrnt_SnapSht_Flag,
 	0 AS logical_flag,
 	v_Changed_Flag AS changed_flag,
@@ -1269,32 +1714,70 @@ EXP_Detect_Changes AS (
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	-- *INF*: iif(v_Changed_Flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_Changed_Flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,
+	IFF(v_Changed_Flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	sysdate AS created_date,
 	-- *INF*: IIF(ISNULL(SupMajorPerilID), -1, SupMajorPerilID)
-	IFF(SupMajorPerilID IS NULL, - 1, SupMajorPerilID) AS out_SupMajorPerilID,
+	IFF(SupMajorPerilID IS NULL,
+		- 1,
+		SupMajorPerilID
+	) AS out_SupMajorPerilID,
 	-- *INF*: IIF(ISNULL(coverage_form), 'N/A', coverage_form)
-	IFF(coverage_form IS NULL, 'N/A', coverage_form) AS coverage_form_out,
+	IFF(coverage_form IS NULL,
+		'N/A',
+		coverage_form
+	) AS coverage_form_out,
 	-- *INF*: IIF(ISNULL(coverage_type), 'N/A', coverage_type)
-	IFF(coverage_type IS NULL, 'N/A', coverage_type) AS coverage_type_out,
+	IFF(coverage_type IS NULL,
+		'N/A',
+		coverage_type
+	) AS coverage_type_out,
 	-- *INF*: IIF(ISNULL(risk_type), 'N/A', risk_type)
-	IFF(risk_type IS NULL, 'N/A', risk_type) AS risk_type_out,
+	IFF(risk_type IS NULL,
+		'N/A',
+		risk_type
+	) AS risk_type_out,
 	-- *INF*: IIF(ISNULL(sup_state_id), -1, sup_state_id)
-	IFF(sup_state_id IS NULL, - 1, sup_state_id) AS sup_state_id_out,
+	IFF(sup_state_id IS NULL,
+		- 1,
+		sup_state_id
+	) AS sup_state_id_out,
 	-- *INF*: IIF(ISNULL(sup_type_bureau_code_id), -1, sup_type_bureau_code_id)
-	IFF(sup_type_bureau_code_id IS NULL, - 1, sup_type_bureau_code_id) AS sup_type_bureau_code_id_out,
+	IFF(sup_type_bureau_code_id IS NULL,
+		- 1,
+		sup_type_bureau_code_id
+	) AS sup_type_bureau_code_id_out,
 	-- *INF*: IIF(ISNULL(CoverageVersion), 'N/A', CoverageVersion)
-	IFF(CoverageVersion IS NULL, 'N/A', CoverageVersion) AS CoverageVersion_out,
+	IFF(CoverageVersion IS NULL,
+		'N/A',
+		CoverageVersion
+	) AS CoverageVersion_out,
 	-- *INF*: IIF(ISNULL(AnnualStatementLineNumber), 'N/A', AnnualStatementLineNumber)
-	IFF(AnnualStatementLineNumber IS NULL, 'N/A', AnnualStatementLineNumber) AS AnnualStatementLineNumber_out,
+	IFF(AnnualStatementLineNumber IS NULL,
+		'N/A',
+		AnnualStatementLineNumber
+	) AS AnnualStatementLineNumber_out,
 	-- *INF*: IIF(ISNULL(ClassCode), 'N/A', ClassCode)
-	IFF(ClassCode IS NULL, 'N/A', ClassCode) AS ClassCode_out,
+	IFF(ClassCode IS NULL,
+		'N/A',
+		ClassCode
+	) AS ClassCode_out,
 	-- *INF*: IIF(ISNULL(SublineCode), 'N/A', SublineCode)
-	IFF(SublineCode IS NULL, 'N/A', SublineCode) AS SublineCode_out,
+	IFF(SublineCode IS NULL,
+		'N/A',
+		SublineCode
+	) AS SublineCode_out,
 	-- *INF*: IIF(ISNULL(RatingCoverageAKID), -1, RatingCoverageAKID)
-	IFF(RatingCoverageAKID IS NULL, - 1, RatingCoverageAKID) AS RatingCoverageAKID_out,
+	IFF(RatingCoverageAKID IS NULL,
+		- 1,
+		RatingCoverageAKID
+	) AS RatingCoverageAKID_out,
 	v_ccp_pol_cov_id AS ccp_pol_cov_id_out,
 	-- *INF*: DECODE(TRUE,
 	-- RISK_UNIT_SEQ='0' AND INS_LINE='WC',
@@ -1306,14 +1789,22 @@ EXP_Detect_Changes AS (
 	-- RISK_UNIT_SEQ
 	-- )
 	DECODE(TRUE,
-		RISK_UNIT_SEQ = '0' AND INS_LINE = 'WC', '00',
-		IN(RISK_UNIT_SEQ, '0', '1') AND INS_LINE <> 'WC' AND RISK_TYPE_IND = 'N/A', 'N/A',
-		IN(RISK_UNIT_SEQ, '0', '1', '2', '3', '4', '8') AND INS_LINE = 'GL', RISK_UNIT_SEQ || RISK_TYPE_IND,
-		RISK_UNIT_SEQ) AS o_RiskUnitSequenceNumber_AKId,
+		RISK_UNIT_SEQ = '0' 
+		AND INS_LINE = 'WC', '00',
+		RISK_UNIT_SEQ IN ('0','1') 
+		AND INS_LINE <> 'WC' 
+		AND RISK_TYPE_IND = 'N/A', 'N/A',
+		RISK_UNIT_SEQ IN ('0','1','2','3','4','8') 
+		AND INS_LINE = 'GL', RISK_UNIT_SEQ || RISK_TYPE_IND,
+		RISK_UNIT_SEQ
+	) AS o_RiskUnitSequenceNumber_AKId,
 	'N/A' AS o_pms_type_bureau_code,
 	LKP_InsuranceSegment_PMS.InsuranceSegmentCode AS i_InsuranceSegmentCode,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentCode),'N/A',i_InsuranceSegmentCode)
-	IFF(i_InsuranceSegmentCode IS NULL, 'N/A', i_InsuranceSegmentCode) AS o_InsuranceSegmentCode
+	IFF(i_InsuranceSegmentCode IS NULL,
+		'N/A',
+		i_InsuranceSegmentCode
+	) AS o_InsuranceSegmentCode
 	FROM EXP_Get_CauseOfLossID
 	 -- Manually join with EXP_Get_Ins_Line
 	 -- Manually join with EXP_Get_Risk_Unit
@@ -1511,7 +2002,10 @@ EXP_Determine_AK AS (
 	-- *INF*: iif(isnull(claimant_cov_det_ak_id)
 	-- ,NEXTVAL
 	-- ,claimant_cov_det_ak_id)
-	IFF(claimant_cov_det_ak_id IS NULL, NEXTVAL, claimant_cov_det_ak_id) AS out_claimant_cov_det_ak_id,
+	IFF(claimant_cov_det_ak_id IS NULL,
+		NEXTVAL,
+		claimant_cov_det_ak_id
+	) AS out_claimant_cov_det_ak_id,
 	FIL_Insert.claim_party_occurrence_ak_id,
 	FIL_Insert.COB_OBJECT_TYPE_CD,
 	FIL_Insert.COB_OBJECT_SEQ_NBR,
@@ -1573,10 +2067,16 @@ EXP_Determine_AK AS (
 	FIL_Insert.RatingCoverageAKID_out,
 	FIL_Insert.ccp_pol_cov_id_out AS ccp_pol_cov_id_in,
 	-- *INF*: IIF(ISNULL(i_CoverageGuid_PMS),'N/A',i_CoverageGuid_PMS)
-	IFF(i_CoverageGuid_PMS IS NULL, 'N/A', i_CoverageGuid_PMS) AS v_CoverageGuid_PMS,
+	IFF(i_CoverageGuid_PMS IS NULL,
+		'N/A',
+		i_CoverageGuid_PMS
+	) AS v_CoverageGuid_PMS,
 	-- *INF*: IIF(IN(cvr_policy_src_id,'DUC','PDC'),ccp_pol_cov_id_in,
 	-- v_CoverageGuid_PMS)
-	IFF(IN(cvr_policy_src_id, 'DUC', 'PDC'), ccp_pol_cov_id_in, v_CoverageGuid_PMS) AS ccp_pol_cov_id_out,
+	IFF(cvr_policy_src_id IN ('DUC','PDC'),
+		ccp_pol_cov_id_in,
+		v_CoverageGuid_PMS
+	) AS ccp_pol_cov_id_out,
 	LKP_StatisticalCoverageForPMSExceed.InsuranceReferenceLineOfBusinessAKId AS i_InsuranceReferenceLineOfBusinessAKId_PMS,
 	LKP_StatisticalCoverageForPMSExceed.ProductAKId AS i_ProductAKId_PMS,
 	LKP_StatisticalCoverageForPMSExceed.StatisticalCoverageAKID AS i_StatisticalCoverageAKID_PMS,
@@ -1592,10 +2092,14 @@ EXP_Determine_AK AS (
 	-- i_InsuranceReferenceLineOfBusinessAKId_DCT,
 	-- -1)
 	DECODE(TRUE,
-		cvr_policy_src_id = 'PMS' AND NOT i_InsuranceReferenceLineOfBusinessAKId_PMS IS NULL, i_InsuranceReferenceLineOfBusinessAKId_PMS,
-		cvr_policy_src_id = 'PMS' AND i_InsuranceReferenceLineOfBusinessAKId_PMS IS NULL, - 1,
-		IN(cvr_policy_src_id, 'DUC', 'PDC') AND NOT i_InsuranceReferenceLineOfBusinessAKId_DCT IS NULL, i_InsuranceReferenceLineOfBusinessAKId_DCT,
-		- 1) AS o_InsuranceReferenceLineOfBusinessAKId,
+		cvr_policy_src_id = 'PMS' 
+		AND i_InsuranceReferenceLineOfBusinessAKId_PMS IS NOT NULL, i_InsuranceReferenceLineOfBusinessAKId_PMS,
+		cvr_policy_src_id = 'PMS' 
+		AND i_InsuranceReferenceLineOfBusinessAKId_PMS IS NULL, - 1,
+		cvr_policy_src_id IN ('DUC','PDC') 
+		AND i_InsuranceReferenceLineOfBusinessAKId_DCT IS NOT NULL, i_InsuranceReferenceLineOfBusinessAKId_DCT,
+		- 1
+	) AS o_InsuranceReferenceLineOfBusinessAKId,
 	-- *INF*: DECODE(TRUE,
 	-- cvr_policy_src_id='PMS'  AND  NOT ISNULL(i_ProductAKId_PMS),
 	-- i_ProductAKId_PMS,
@@ -1605,31 +2109,49 @@ EXP_Determine_AK AS (
 	-- i_ProductAKId_DCT,
 	-- -1)
 	DECODE(TRUE,
-		cvr_policy_src_id = 'PMS' AND NOT i_ProductAKId_PMS IS NULL, i_ProductAKId_PMS,
-		cvr_policy_src_id = 'PMS' AND i_ProductAKId_PMS IS NULL, - 1,
-		IN(cvr_policy_src_id, 'DUC', 'PDC') AND NOT i_ProductAKId_DCT IS NULL, i_ProductAKId_DCT,
-		- 1) AS o_ProductAKId,
+		cvr_policy_src_id = 'PMS' 
+		AND i_ProductAKId_PMS IS NOT NULL, i_ProductAKId_PMS,
+		cvr_policy_src_id = 'PMS' 
+		AND i_ProductAKId_PMS IS NULL, - 1,
+		cvr_policy_src_id IN ('DUC','PDC') 
+		AND i_ProductAKId_DCT IS NOT NULL, i_ProductAKId_DCT,
+		- 1
+	) AS o_ProductAKId,
 	-- *INF*: DECODE(TRUE,
 	-- cvr_policy_src_id='PMS'  AND  NOT ISNULL(i_StatisticalCoverageAKID_PMS),
 	-- i_StatisticalCoverageAKID_PMS,
 	-- -1)
 	DECODE(TRUE,
-		cvr_policy_src_id = 'PMS' AND NOT i_StatisticalCoverageAKID_PMS IS NULL, i_StatisticalCoverageAKID_PMS,
-		- 1) AS o_StatisticalCoverageAKId,
+		cvr_policy_src_id = 'PMS' 
+		AND i_StatisticalCoverageAKID_PMS IS NOT NULL, i_StatisticalCoverageAKID_PMS,
+		- 1
+	) AS o_StatisticalCoverageAKId,
 	LKP_SupTypeOfLossRules.TypeOfLoss AS i_TypeOfLoss,
 	-- *INF*: IIF(ISNULL(i_TypeOfLoss) ,'N/A',i_TypeOfLoss)
 	-- 
 	-- --IIF(ISNULL(i_TypeOfLoss)  OR i_TypeOfLoss = 'Unassigned'   ,'N/A',i_TypeOfLoss)
-	IFF(i_TypeOfLoss IS NULL, 'N/A', i_TypeOfLoss) AS o_TypeOfLoss,
+	IFF(i_TypeOfLoss IS NULL,
+		'N/A',
+		i_TypeOfLoss
+	) AS o_TypeOfLoss,
 	LKP_SupTypeOfLossRules.ClaimTypeCategory AS i_ClaimTypeCategory,
 	-- *INF*: IIF(ISNULL(i_ClaimTypeCategory) ,'N/A',i_ClaimTypeCategory)
-	IFF(i_ClaimTypeCategory IS NULL, 'N/A', i_ClaimTypeCategory) AS o_ClaimTypeCategory,
+	IFF(i_ClaimTypeCategory IS NULL,
+		'N/A',
+		i_ClaimTypeCategory
+	) AS o_ClaimTypeCategory,
 	LKP_SupTypeOfLossRules.ClaimTypeGroup AS i_ClaimTypeGroup,
 	-- *INF*: IIF(ISNULL(i_ClaimTypeGroup),'N/A',i_ClaimTypeGroup)
-	IFF(i_ClaimTypeGroup IS NULL, 'N/A', i_ClaimTypeGroup) AS o_ClaimTypeGroup,
+	IFF(i_ClaimTypeGroup IS NULL,
+		'N/A',
+		i_ClaimTypeGroup
+	) AS o_ClaimTypeGroup,
 	LKP_SupTypeOfLossRules.SubrogationEligibleIndicator AS i_SubrogationEligibleIndicator,
 	-- *INF*: IIF(ISNULL(i_SubrogationEligibleIndicator),'N/A',i_SubrogationEligibleIndicator)
-	IFF(i_SubrogationEligibleIndicator IS NULL, 'N/A', i_SubrogationEligibleIndicator) AS o_SubrogationEligibleIndicator
+	IFF(i_SubrogationEligibleIndicator IS NULL,
+		'N/A',
+		i_SubrogationEligibleIndicator
+	) AS o_SubrogationEligibleIndicator
 	FROM FIL_Insert
 	LEFT JOIN LKP_StatisticalCoverageForPMSExceed
 	ON LKP_StatisticalCoverageForPMSExceed.PolicyAKID = FIL_Insert.pol_key_ak_id AND LKP_StatisticalCoverageForPMSExceed.InsuranceLine = FIL_Insert.INS_LINE AND LKP_StatisticalCoverageForPMSExceed.LocationNumber = FIL_Insert.LOC_UNIT_NUM AND LKP_StatisticalCoverageForPMSExceed.MajorPerilCode = FIL_Insert.MAJOR_PERIL_CODE AND LKP_StatisticalCoverageForPMSExceed.MajorPerilSequenceNumber = FIL_Insert.MAJOR_PERIL_SEQ_NUM AND LKP_StatisticalCoverageForPMSExceed.RiskUnit = FIL_Insert.RISK_UNIT AND LKP_StatisticalCoverageForPMSExceed.RiskUnitSequenceNumber = FIL_Insert.RiskUnitSequenceNumber_AKId AND LKP_StatisticalCoverageForPMSExceed.RiskUnitGroup = FIL_Insert.RISK_UNIT_GROUP AND LKP_StatisticalCoverageForPMSExceed.RiskUnitGroupSequenceNumber = FIL_Insert.RISK_UNIT_GRP_SEQ AND LKP_StatisticalCoverageForPMSExceed.SubLocationUnitNumber = FIL_Insert.SUB_LOC_UNIT_NUM AND LKP_StatisticalCoverageForPMSExceed.TypeBureauCode = FIL_Insert.TypeBureauCode AND LKP_StatisticalCoverageForPMSExceed.MaxPolicyCovEffDate = FIL_Insert.CCP_PKG_EFF_DT
@@ -2180,8 +2702,16 @@ EXP_Expire_Rows AS (
 	-- , ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1)
 	-- ,orig_eff_to_date)
 	DECODE(TRUE,
-		claim_party_occurrence_ak_id = v_PREV_ROW_claim_party_occurrence_ak_id AND s3p_object_type_code = v_PREV_ROW_s3p_object_type_code AND s3p_object_seq_num = v_PREV_ROW_object_seq_num AND major_peril_code = v_PREV_ROW_major_peril_code AND s3p_pkg_seq_num = v_PREV_ROW_s3p_pkg_seq_num AND pms_loss_cause = v_PEV_ROW_pms_loss_cause AND pms_reserve_ctgry = v_PREV_ROW_pms_reserve_ctgry AND source_sys_id = v_PREV_ROW_source_sys_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_party_occurrence_ak_id = v_PREV_ROW_claim_party_occurrence_ak_id 
+		AND s3p_object_type_code = v_PREV_ROW_s3p_object_type_code 
+		AND s3p_object_seq_num = v_PREV_ROW_object_seq_num 
+		AND major_peril_code = v_PREV_ROW_major_peril_code 
+		AND s3p_pkg_seq_num = v_PREV_ROW_s3p_pkg_seq_num 
+		AND pms_loss_cause = v_PEV_ROW_pms_loss_cause 
+		AND pms_reserve_ctgry = v_PREV_ROW_pms_reserve_ctgry 
+		AND source_sys_id = v_PREV_ROW_source_sys_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	claim_party_occurrence_ak_id AS v_PREV_ROW_claim_party_occurrence_ak_id,
 	s3p_object_type_code AS v_PREV_ROW_s3p_object_type_code,

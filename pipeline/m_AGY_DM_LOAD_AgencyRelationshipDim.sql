@@ -93,20 +93,35 @@ EXP_Detect_Changes AS (
 	EXP_GetAKIDs.Agencycode,
 	EXP_GetAKIDs.Legalprimarycode,
 	-- *INF*: MD5(EDWAgencyAKID||RelatedEDWAgencyAKID||RelationshipType||to_char(AgencyRelationshipEffectiveDate)||to_char(AgencyRelationshipExpirationDate))
-	MD5(EDWAgencyAKID || RelatedEDWAgencyAKID || RelationshipType || to_char(AgencyRelationshipEffectiveDate) || to_char(AgencyRelationshipExpirationDate)) AS v_NewHashKey,
+	MD5(EDWAgencyAKID || RelatedEDWAgencyAKID || RelationshipType || to_char(AgencyRelationshipEffectiveDate
+		) || to_char(AgencyRelationshipExpirationDate
+		)
+	) AS v_NewHashKey,
 	v_NewHashKey AS o_NewHashKey,
 	-- *INF*: IIF(ISNULL(lkp_EDWAgencyRelationshipAKId), 'NEW', 
 	-- IIF((v_NewHashKey <> lkp_AgencyRelationshipDimHashKey), 'UPDATE', 'NOCHANGE'))
-	IFF(lkp_EDWAgencyRelationshipAKId IS NULL, 'NEW', IFF(( v_NewHashKey <> lkp_AgencyRelationshipDimHashKey ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(lkp_EDWAgencyRelationshipAKId IS NULL,
+		'NEW',
+		IFF(( v_NewHashKey <> lkp_AgencyRelationshipDimHashKey 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS o_changed_flag,
 	1 AS CurrentSnapshotFlag,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModiifiedDate,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS EffectiveDate,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate
 	FROM EXP_GetAKIDs
 	LEFT JOIN LKP_Agencyrelationshipdim
 	ON LKP_Agencyrelationshipdim.EDWAgencyAKId = EXP_GetAKIDs.EDWAgencyAKID AND LKP_Agencyrelationshipdim.EDWLegalPrimaryAgencyAKId = EXP_GetAKIDs.RelatedEDWAgencyAKID
@@ -197,8 +212,9 @@ EXP_Agencyrelationshipdates AS (
 	-- EDWAgencyRelationshipAKId = v_prev_AKID , ADD_TO_DATE(v_prev_Effectivefromdate,'SS',-1),
 	-- OrginaleffectivetoDate)
 	DECODE(TRUE,
-		EDWAgencyRelationshipAKId = v_prev_AKID, ADD_TO_DATE(v_prev_Effectivefromdate, 'SS', - 1),
-		OrginaleffectivetoDate) AS V_effectivetodate,
+		EDWAgencyRelationshipAKId = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_Effectivefromdate),
+		OrginaleffectivetoDate
+	) AS V_effectivetodate,
 	V_effectivetodate AS o_effectivetodate,
 	EDWAgencyRelationshipAKId AS v_prev_AKID,
 	EffectivefromDate AS v_prev_Effectivefromdate,

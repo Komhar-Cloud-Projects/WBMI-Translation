@@ -10,16 +10,39 @@ EXP_Default_Values AS (
 	CS01_CODE,
 	CS01_CODE_DES,
 	-- *INF*: iif(isnull(CS01_CODE),'N/A',SUBSTR(LTRIM(RTRIM(CS01_CODE)),1,3))
-	IFF(CS01_CODE IS NULL, 'N/A', SUBSTR(LTRIM(RTRIM(CS01_CODE)), 1, 3)) AS v_major_peril_code,
+	IFF(CS01_CODE IS NULL,
+		'N/A',
+		SUBSTR(LTRIM(RTRIM(CS01_CODE
+				)
+			), 1, 3
+		)
+	) AS v_major_peril_code,
 	v_major_peril_code AS major_peril_code_out,
 	-- *INF*: iif(isnull(CS01_CODE),'N/A',SUBSTR(LTRIM(RTRIM(CS01_CODE)),5,2))
-	IFF(CS01_CODE IS NULL, 'N/A', SUBSTR(LTRIM(RTRIM(CS01_CODE)), 5, 2)) AS v_cause_of_loss_code,
+	IFF(CS01_CODE IS NULL,
+		'N/A',
+		SUBSTR(LTRIM(RTRIM(CS01_CODE
+				)
+			), 5, 2
+		)
+	) AS v_cause_of_loss_code,
 	v_cause_of_loss_code AS cause_of_loss_code_out,
 	-- *INF*: iif(isnull(CS01_CODE),'N/A',SUBSTR(LTRIM(RTRIM(CS01_CODE)),7,1))
-	IFF(CS01_CODE IS NULL, 'N/A', SUBSTR(LTRIM(RTRIM(CS01_CODE)), 7, 1)) AS v_reserve_ctgry_code,
+	IFF(CS01_CODE IS NULL,
+		'N/A',
+		SUBSTR(LTRIM(RTRIM(CS01_CODE
+				)
+			), 7, 1
+		)
+	) AS v_reserve_ctgry_code,
 	v_reserve_ctgry_code AS reserve_ctgry_code_out,
 	-- *INF*: iif(isnull(CS01_CODE_DES),'N/A',LTRIM(RTRIM(CS01_CODE_DES)))
-	IFF(CS01_CODE_DES IS NULL, 'N/A', LTRIM(RTRIM(CS01_CODE_DES))) AS v_cause_of_loss_description,
+	IFF(CS01_CODE_DES IS NULL,
+		'N/A',
+		LTRIM(RTRIM(CS01_CODE_DES
+			)
+		)
+	) AS v_cause_of_loss_description,
 	v_cause_of_loss_description AS cause_of_loss_description
 	FROM SQ_CLAIM_SUPPORT_01_STAGE
 ),
@@ -54,15 +77,30 @@ EXP_detect_changes AS (
 	-- 'UPDATE',
 	--  'NOCHANGE'))
 	-- 
-	IFF(sup_claim_cause_of_loss_id IS NULL, 'NEW', IFF(ltrim(rtrim(old_cause_of_loss_long_descript)) != ltrim(rtrim(cause_of_loss_description)), 'UPDATE', 'NOCHANGE')) AS v_CHANGED_FLAG,
+	IFF(sup_claim_cause_of_loss_id IS NULL,
+		'NEW',
+		IFF(ltrim(rtrim(old_cause_of_loss_long_descript
+				)
+			) != ltrim(rtrim(cause_of_loss_description
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_CHANGED_FLAG,
 	v_CHANGED_FLAG AS CHANGED_FLAG,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_CHANGED_FLAG='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_CHANGED_FLAG = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,
+	IFF(v_CHANGED_FLAG = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id
@@ -147,8 +185,11 @@ EXP_lag_eff_from_date AS (
 	-- 	orig_eff_to_date)
 	-- 	
 	DECODE(TRUE,
-		cause_of_loss_code = v_prev_row_cause_of_loss_code AND reserve_ctgry_code = v_prev_row_reserve_ctgry_code AND major_peril_code = v_prev_row_major_peril_code, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		cause_of_loss_code = v_prev_row_cause_of_loss_code 
+		AND reserve_ctgry_code = v_prev_row_reserve_ctgry_code 
+		AND major_peril_code = v_prev_row_major_peril_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	major_peril_code AS v_prev_row_major_peril_code,
 	cause_of_loss_code AS v_prev_row_cause_of_loss_code,

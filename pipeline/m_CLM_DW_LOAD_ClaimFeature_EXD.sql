@@ -19,7 +19,8 @@ EXP_Validate_Source_Values AS (
 	Bur_Cause_Loss,
 	Adjuster_Client_Id AS in_Adjuster_Client_Id,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_Adjuster_Client_Id)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Adjuster_Client_Id) AS out_Adjuster_Client_Id,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_Adjuster_Client_Id
+	) AS out_Adjuster_Client_Id,
 	Created_TS,
 	Modified_TS,
 	SourceSystemId
@@ -56,7 +57,8 @@ mplt_claim_party_occurrence_Claimant AS (WITH
 		DECODE(source_sys_id,
 			'EXCEED', 'CLMT',
 			'PMS', 'CMT',
-			NULL) AS ClaimantRoleCode
+			NULL
+		) AS ClaimantRoleCode
 		FROM INPUT
 	),
 	LKP_Claim_Party_Occurrence_AK_ID AS (
@@ -95,29 +97,40 @@ EXP_Lookup_Values AS (
 	mplt_claim_party_occurrence_Claimant.claim_party_occurrence_ak_id,
 	EXP_Validate_Source_Values.Cov_Type_Cd AS in_MajorPerilCode,
 	-- *INF*: SUBSTR(in_MajorPerilCode,1,3)
-	SUBSTR(in_MajorPerilCode, 1, 3) AS out_MajorPerilCode,
+	SUBSTR(in_MajorPerilCode, 1, 3
+	) AS out_MajorPerilCode,
 	EXP_Validate_Source_Values.Bur_Cause_Loss AS in_Bur_Cause_Loss,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(in_Bur_Cause_Loss,1,2))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(in_Bur_Cause_Loss, 1, 2)) AS CauseOfLoss,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(in_Bur_Cause_Loss, 1, 2
+		)
+	) AS CauseOfLoss,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(in_Bur_Cause_Loss,3,1))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(in_Bur_Cause_Loss, 3, 1)) AS ReserveCategory,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(in_Bur_Cause_Loss, 3, 1
+		)
+	) AS ReserveCategory,
 	EXP_Validate_Source_Values.Created_TS,
 	EXP_Validate_Source_Values.Modified_TS,
 	LKP_FeatureRepAkId.claim_rep_ak_id AS in_FeatureRepresentativeAkId,
 	-- *INF*: IIF(ISNULL(in_FeatureRepresentativeAkId),
 	-- 	-1,
 	-- 	in_FeatureRepresentativeAkId)
-	IFF(in_FeatureRepresentativeAkId IS NULL, - 1, in_FeatureRepresentativeAkId) AS FeatureRepresentativeAkId,
+	IFF(in_FeatureRepresentativeAkId IS NULL,
+		- 1,
+		in_FeatureRepresentativeAkId
+	) AS FeatureRepresentativeAkId,
 	-- *INF*: DECODE(TRUE,
 	-- 	ISNULL(in_FeatureRepresentativeAkId), TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
 	-- 	NOT ISNULL(Modified_TS), Modified_TS,
 	-- 	NOT ISNULL(Created_TS), Created_TS,
 	-- 	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))
 	DECODE(TRUE,
-		in_FeatureRepresentativeAkId IS NULL, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
-		NOT Modified_TS IS NULL, Modified_TS,
-		NOT Created_TS IS NULL, Created_TS,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')) AS FeatureRepresentativeAssignedDate,
+		in_FeatureRepresentativeAkId IS NULL, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		Modified_TS IS NOT NULL, Modified_TS,
+		Created_TS IS NOT NULL, Created_TS,
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		)
+	) AS FeatureRepresentativeAssignedDate,
 	EXP_Validate_Source_Values.SourceSystemId
 	FROM EXP_Validate_Source_Values
 	 -- Manually join with mplt_claim_party_occurrence_Claimant
@@ -177,7 +190,13 @@ EXP_Detect_Changes AS (
 	-- 	IIF(lkp_ClaimRepresentativeAkId != FeatureRepresentativeAkId,
 	-- 		'UPDATE',
 	-- 		'NOCHANGE'))
-	IFF(lkp_ClaimFeatureAKId IS NULL, 'NEW', IFF(lkp_ClaimRepresentativeAkId != FeatureRepresentativeAkId, 'UPDATE', 'NOCHANGE')) AS v_ChangedFlag,
+	IFF(lkp_ClaimFeatureAKId IS NULL,
+		'NEW',
+		IFF(lkp_ClaimRepresentativeAkId != FeatureRepresentativeAkId,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangedFlag
 	FROM EXP_Lookup_Values
 	LEFT JOIN LKP_ClaimFeature
@@ -210,15 +229,23 @@ EXP_Insert_Target AS (
 	-- *INF*: IIF(ChangedFlag='NEW',
 	-- 	NEXTVAL,
 	-- 	lkp_ClaimFeatureAKId)
-	IFF(ChangedFlag = 'NEW', NEXTVAL, lkp_ClaimFeatureAKId) AS ClaimFeatureAkId,
+	IFF(ChangedFlag = 'NEW',
+		NEXTVAL,
+		lkp_ClaimFeatureAKId
+	) AS ClaimFeatureAkId,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
 	-- *INF*: IIF(ChangedFlag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(ChangedFlag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS EffectiveDate,
+	IFF(ChangedFlag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	SourceSystemId,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
@@ -272,8 +299,9 @@ EXP_Lag_Eff_From_Date AS (
 	-- 	ClaimFeatureAKId = v_PREV_ROW_ClaimFeatureAKId, ADD_TO_DATE(v_PREV_ROW_EffectiveDate,'SS',-1),
 	-- 	orig_ExpirationDate)
 	DECODE(TRUE,
-		ClaimFeatureAKId = v_PREV_ROW_ClaimFeatureAKId, ADD_TO_DATE(v_PREV_ROW_EffectiveDate, 'SS', - 1),
-		orig_ExpirationDate) AS v_ExpirationDate,
+		ClaimFeatureAKId = v_PREV_ROW_ClaimFeatureAKId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
+		orig_ExpirationDate
+	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	EffectiveDate AS v_PREV_ROW_EffectiveDate,
 	ClaimFeatureAKId AS v_PREV_ROW_ClaimFeatureAKId,

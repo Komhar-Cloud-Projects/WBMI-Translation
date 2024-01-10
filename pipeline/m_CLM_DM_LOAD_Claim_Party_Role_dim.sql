@@ -23,20 +23,26 @@ EXP_default AS (
 	-- 
 	-- 
 	-- --IIF(LTRIM(RTRIM(claim_party_role_code))='CMT','CLMT',LTRIM(RTRIM(claim_party_role_code)))
-	DECODE(LTRIM(RTRIM(claim_party_role_code)),
+	DECODE(LTRIM(RTRIM(claim_party_role_code
+			)
+		),
 		'CMT', 'CLMT',
 		'DRV', 'DRVR',
 		'HS', 'HOSP',
 		'PS', 'PSTH',
 		'UNL', 'UNSP',
-		LTRIM(RTRIM(claim_party_role_code))) AS v_claim_party_role_code,
+		LTRIM(RTRIM(claim_party_role_code
+			)
+		)
+	) AS v_claim_party_role_code,
 	v_claim_party_role_code AS claim_party_role_code_out,
 	claim_party_ak_id AS edw_claim_party_ak_id,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59' , 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	preferred_contact_method
@@ -61,7 +67,10 @@ EXP_Lookup_Values AS (
 	EXP_default.claim_party_role_code_out,
 	LKP_sup_claim_party_role_code.claim_party_role_descript,
 	-- *INF*: IIF(ISNULL(claim_party_role_descript),'N/A',claim_party_role_descript)
-	IFF(claim_party_role_descript IS NULL, 'N/A', claim_party_role_descript) AS claim_party_role_descript_Out,
+	IFF(claim_party_role_descript IS NULL,
+		'N/A',
+		claim_party_role_descript
+	) AS claim_party_role_descript_Out,
 	EXP_default.edw_claim_party_ak_id,
 	EXP_default.crrnt_snpsht_flag,
 	EXP_default.audit_id,
@@ -113,7 +122,17 @@ EXP_Detect_Changes AS (
 	-- 	IIF(ltrim(rtrim(LKP_preferred_contact_method)) <> ltrim(rtrim(preferred_contact_method)), 
 	-- 			'UPDATE',
 	-- 		'NOCHANGE'))
-	IFF(LKP_claim_party_role_dim_id IS NULL, 'NEW', IFF(ltrim(rtrim(LKP_preferred_contact_method)) <> ltrim(rtrim(preferred_contact_method)), 'UPDATE', 'NOCHANGE')) AS v_ChangeFlag,
+	IFF(LKP_claim_party_role_dim_id IS NULL,
+		'NEW',
+		IFF(ltrim(rtrim(LKP_preferred_contact_method
+				)
+			) <> ltrim(rtrim(preferred_contact_method
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag
 	FROM EXP_Lookup_Values
 	LEFT JOIN LKP_Claim_Party_Role_Dim
@@ -225,8 +244,11 @@ EXP_Lag_eff_from_date AS (
 	--        , ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		edw_claim_occurrence_ak_id = v_PREV_ROW_edw_claim_occurrence_ak_id AND edw_claim_party_ak_id = v_PREV_ROW_edw_claim_party_ak_id AND claim_party_role_code = v_PREV_ROW_claim_party_role_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		edw_claim_occurrence_ak_id = v_PREV_ROW_edw_claim_occurrence_ak_id 
+		AND edw_claim_party_ak_id = v_PREV_ROW_edw_claim_party_ak_id 
+		AND claim_party_role_code = v_PREV_ROW_claim_party_role_code, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	edw_claim_occurrence_ak_id AS v_PREV_ROW_edw_claim_occurrence_ak_id,

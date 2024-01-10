@@ -16,11 +16,23 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate) AS o_EffectiveDate,
+	IFF(i_EffectiveDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_EffectiveDate
+	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate,
+	IFF(i_ExpirationDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ExpirationDate
+	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate) AS o_ModifiedDate
+	IFF(i_ModifiedDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ModifiedDate
+	) AS o_ModifiedDate
 	FROM SQ_Association
 ),
 EXP_NumericValues AS (
@@ -28,9 +40,15 @@ EXP_NumericValues AS (
 	AssociationId AS i_AssociationId,
 	AssociationAKId AS i_AssociationAKId,
 	-- *INF*: IIF(ISNULL(i_AssociationId),-1,i_AssociationId)
-	IFF(i_AssociationId IS NULL, - 1, i_AssociationId) AS o_AssociationId,
+	IFF(i_AssociationId IS NULL,
+		- 1,
+		i_AssociationId
+	) AS o_AssociationId,
 	-- *INF*: IIF(ISNULL(i_AssociationAKId),-1,i_AssociationAKId)
-	IFF(i_AssociationAKId IS NULL, - 1, i_AssociationAKId) AS o_AssociationAKId
+	IFF(i_AssociationAKId IS NULL,
+		- 1,
+		i_AssociationAKId
+	) AS o_AssociationAKId
 	FROM SQ_Association
 ),
 EXP_StringValues AS (
@@ -39,14 +57,34 @@ EXP_StringValues AS (
 	AssociationCode AS i_AssociationCode,
 	AssociationDescription AS i_AssociationDescription,
 	-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)
-	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,
+	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'
+		),
+		1,
+		0
+	) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_AssociationCode) OR LENGTH(i_AssociationCode)=0 OR IS_SPACES(i_AssociationCode),'N/A',LTRIM(RTRIM(i_AssociationCode)))
-	IFF(i_AssociationCode IS NULL OR LENGTH(i_AssociationCode) = 0 OR IS_SPACES(i_AssociationCode), 'N/A', LTRIM(RTRIM(i_AssociationCode))) AS o_AssociationCode,
+	IFF(i_AssociationCode IS NULL 
+		OR LENGTH(i_AssociationCode
+		) = 0 
+		OR LENGTH(i_AssociationCode)>0 AND TRIM(i_AssociationCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_AssociationCode
+			)
+		)
+	) AS o_AssociationCode,
 	-- *INF*: IIF(ISNULL(i_AssociationDescription) OR LENGTH(i_AssociationDescription)=0 OR IS_SPACES(i_AssociationDescription),'N/A',LTRIM(RTRIM(i_AssociationDescription)))
-	IFF(i_AssociationDescription IS NULL OR LENGTH(i_AssociationDescription) = 0 OR IS_SPACES(i_AssociationDescription), 'N/A', LTRIM(RTRIM(i_AssociationDescription))) AS o_AssociationDescription
+	IFF(i_AssociationDescription IS NULL 
+		OR LENGTH(i_AssociationDescription
+		) = 0 
+		OR LENGTH(i_AssociationDescription)>0 AND TRIM(i_AssociationDescription)='',
+		'N/A',
+		LTRIM(RTRIM(i_AssociationDescription
+			)
+		)
+	) AS o_AssociationDescription
 	FROM SQ_Association
 ),
 TGT_Association_UpdateElseInsert AS (

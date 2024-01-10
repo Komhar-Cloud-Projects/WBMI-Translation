@@ -58,11 +58,26 @@ EXP_Values AS (
 	LineId AS i_LineId,
 	TransactionCreatedDate,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_PolicyNumber)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_PolicyNumber) AS v_PolicyNumber,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_PolicyNumber
+	) AS v_PolicyNumber,
 	-- *INF*: IIF(ISNULL(i_PolicyVersion),'00',LPAD(LTRIM(RTRIM(i_PolicyVersion)),2,'0'))
-	IFF(i_PolicyVersion IS NULL, '00', LPAD(LTRIM(RTRIM(i_PolicyVersion)), 2, '0')) AS v_PolicyVersion,
+	IFF(i_PolicyVersion IS NULL,
+		'00',
+		LPAD(LTRIM(RTRIM(i_PolicyVersion
+				)
+			), 2, '0'
+		)
+	) AS v_PolicyVersion,
 	-- *INF*: IIF(ISNULL(i_LineType) or IS_SPACES(i_LineType) or LENGTH(i_LineType)=0,'N/A',LTRIM(RTRIM(i_LineType)))
-	IFF(i_LineType IS NULL OR IS_SPACES(i_LineType) OR LENGTH(i_LineType) = 0, 'N/A', LTRIM(RTRIM(i_LineType))) AS v_InsuranceLine,
+	IFF(i_LineType IS NULL 
+		OR LENGTH(i_LineType)>0 AND TRIM(i_LineType)='' 
+		OR LENGTH(i_LineType
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_LineType
+			)
+		)
+	) AS v_InsuranceLine,
 	-- *INF*: DECODE(TRUE,
 	-- IN(lower(v_InsuranceLine),'generalliability','sbopgeneralliability'), :LKP.LKP_DCLIMITSTAGING(i_SessionId, i_LineId, 'PolicyPerOccurenceLimit'),
 	-- lower(v_InsuranceLine)='commercialumbrella',
@@ -70,10 +85,17 @@ EXP_Values AS (
 	-- lower(v_InsuranceLine)='businessowners',:LKP.LKP_DCLIMITSTAGING(i_SessionId, i_LineId, 'Liability'),
 	-- 'N/A')
 	DECODE(TRUE,
-		IN(lower(v_InsuranceLine), 'generalliability', 'sbopgeneralliability'), LKP_DCLIMITSTAGING_i_SessionId_i_LineId_PolicyPerOccurenceLimit.Value,
-		lower(v_InsuranceLine) = 'commercialumbrella', IFF(NOT LKP_DCLIMITSTAGING_i_SessionId_i_LineId_UmbrellaLimit.Value IS NULL, LKP_DCLIMITSTAGING_i_SessionId_i_LineId_UmbrellaLimit.Value, LKP_DCLIMITSTAGING_i_SessionId_i_LineId_HigherLimit.Value),
-		lower(v_InsuranceLine) = 'businessowners', LKP_DCLIMITSTAGING_i_SessionId_i_LineId_Liability.Value,
-		'N/A') AS v_PolicyPerOccurenceLimit,
+		lower(v_InsuranceLine
+		) IN ('generalliability','sbopgeneralliability'), LKP_DCLIMITSTAGING_i_SessionId_i_LineId_PolicyPerOccurenceLimit.Value,
+		lower(v_InsuranceLine
+		) = 'commercialumbrella', IFF(LKP_DCLIMITSTAGING_i_SessionId_i_LineId_UmbrellaLimit.Value IS NOT NULL,
+			LKP_DCLIMITSTAGING_i_SessionId_i_LineId_UmbrellaLimit.Value,
+			LKP_DCLIMITSTAGING_i_SessionId_i_LineId_HigherLimit.Value
+		),
+		lower(v_InsuranceLine
+		) = 'businessowners', LKP_DCLIMITSTAGING_i_SessionId_i_LineId_Liability.Value,
+		'N/A'
+	) AS v_PolicyPerOccurenceLimit,
 	-- *INF*: DECODE(lower(v_InsuranceLine),
 	-- 'generalliability', 
 	-- :LKP.LKP_DCLIMITSTAGING(i_SessionId, i_LineId, 'PolicyAggregateLimit'), 
@@ -82,59 +104,119 @@ EXP_Values AS (
 	-- 'workerscompensation',
 	-- :LKP.LKP_DCLIMITSTAGING(i_SessionId, i_LineId, 'Policy'), 
 	-- 'N/A')
-	DECODE(lower(v_InsuranceLine),
+	DECODE(lower(v_InsuranceLine
+		),
 		'generalliability', LKP_DCLIMITSTAGING_i_SessionId_i_LineId_PolicyAggregateLimit.Value,
 		'sbopgeneralliability', LKP_DCLIMITSTAGING_i_SessionId_i_LineId_PolicyAggregateLimit.Value,
 		'workerscompensation', LKP_DCLIMITSTAGING_i_SessionId_i_LineId_Policy.Value,
-		'N/A') AS v_PolicyAggregateLimit,
+		'N/A'
+	) AS v_PolicyAggregateLimit,
 	-- *INF*: IIF(in(lower(v_InsuranceLine),'generalliability','sbopgeneralliability'), :LKP.LKP_DCLIMITSTAGING(i_SessionId, i_LineId, 'ProductsAggregateLimit'), 'N/A')
-	IFF(in(lower(v_InsuranceLine), 'generalliability', 'sbopgeneralliability'), LKP_DCLIMITSTAGING_i_SessionId_i_LineId_ProductsAggregateLimit.Value, 'N/A') AS v_PolicyProductAggregateLimit,
+	IFF(lower(v_InsuranceLine
+		) IN ('generalliability','sbopgeneralliability'),
+		LKP_DCLIMITSTAGING_i_SessionId_i_LineId_ProductsAggregateLimit.Value,
+		'N/A'
+	) AS v_PolicyProductAggregateLimit,
 	-- *INF*: IIF(lower(v_InsuranceLine)='workerscompensation', :LKP.LKP_DCLIMITSTAGING(i_SessionId, i_LineId, 'EachAccident'), 'N/A')
-	IFF(lower(v_InsuranceLine) = 'workerscompensation', LKP_DCLIMITSTAGING_i_SessionId_i_LineId_EachAccident.Value, 'N/A') AS v_PolicyPerAccidentLimit,
+	IFF(lower(v_InsuranceLine
+		) = 'workerscompensation',
+		LKP_DCLIMITSTAGING_i_SessionId_i_LineId_EachAccident.Value,
+		'N/A'
+	) AS v_PolicyPerAccidentLimit,
 	-- *INF*: IIF(lower(v_InsuranceLine)='workerscompensation', :LKP.LKP_DCLIMITSTAGING(i_SessionId, i_LineId, 'EachEmployeeDisease'), 'N/A')
-	IFF(lower(v_InsuranceLine) = 'workerscompensation', LKP_DCLIMITSTAGING_i_SessionId_i_LineId_EachEmployeeDisease.Value, 'N/A') AS v_PolicyPerDiseaseLimit,
+	IFF(lower(v_InsuranceLine
+		) = 'workerscompensation',
+		LKP_DCLIMITSTAGING_i_SessionId_i_LineId_EachEmployeeDisease.Value,
+		'N/A'
+	) AS v_PolicyPerDiseaseLimit,
 	v_PolicyNumber || v_PolicyVersion AS o_PolicyKey,
 	v_InsuranceLine AS o_InsuranceLine,
 	-- *INF*: IIF(ISNULL(v_PolicyPerOccurenceLimit) OR IS_SPACES(v_PolicyPerOccurenceLimit) OR LENGTH(v_PolicyPerOccurenceLimit)=0, 'N/A', LTRIM(RTRIM(v_PolicyPerOccurenceLimit)))
-	IFF(v_PolicyPerOccurenceLimit IS NULL OR IS_SPACES(v_PolicyPerOccurenceLimit) OR LENGTH(v_PolicyPerOccurenceLimit) = 0, 'N/A', LTRIM(RTRIM(v_PolicyPerOccurenceLimit))) AS o_PolicyPerOccurenceLimit,
+	IFF(v_PolicyPerOccurenceLimit IS NULL 
+		OR LENGTH(v_PolicyPerOccurenceLimit)>0 AND TRIM(v_PolicyPerOccurenceLimit)='' 
+		OR LENGTH(v_PolicyPerOccurenceLimit
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(v_PolicyPerOccurenceLimit
+			)
+		)
+	) AS o_PolicyPerOccurenceLimit,
 	-- *INF*: IIF(ISNULL(v_PolicyAggregateLimit) OR IS_SPACES(v_PolicyAggregateLimit) OR LENGTH(v_PolicyAggregateLimit)=0, 'N/A', LTRIM(RTRIM(v_PolicyAggregateLimit)))
-	IFF(v_PolicyAggregateLimit IS NULL OR IS_SPACES(v_PolicyAggregateLimit) OR LENGTH(v_PolicyAggregateLimit) = 0, 'N/A', LTRIM(RTRIM(v_PolicyAggregateLimit))) AS v_PolicyAggregateLimit_new,
+	IFF(v_PolicyAggregateLimit IS NULL 
+		OR LENGTH(v_PolicyAggregateLimit)>0 AND TRIM(v_PolicyAggregateLimit)='' 
+		OR LENGTH(v_PolicyAggregateLimit
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(v_PolicyAggregateLimit
+			)
+		)
+	) AS v_PolicyAggregateLimit_new,
 	-- *INF*: DECODE(lower(v_InsuranceLine),
 	-- 'generalliability', v_PolicyAggregateLimit_new,
 	-- 'sbopgeneralliability', v_PolicyAggregateLimit_new,
 	-- 'workerscompensation',v_PolicyAggregateLimit_new || '000',
 	-- 'N/A')
-	DECODE(lower(v_InsuranceLine),
+	DECODE(lower(v_InsuranceLine
+		),
 		'generalliability', v_PolicyAggregateLimit_new,
 		'sbopgeneralliability', v_PolicyAggregateLimit_new,
 		'workerscompensation', v_PolicyAggregateLimit_new || '000',
-		'N/A') AS o_PolicyAggregateLimit,
+		'N/A'
+	) AS o_PolicyAggregateLimit,
 	-- *INF*: IIF(ISNULL(v_PolicyProductAggregateLimit) OR IS_SPACES(v_PolicyProductAggregateLimit) OR LENGTH(v_PolicyProductAggregateLimit)=0, 'N/A', LTRIM(RTRIM(v_PolicyProductAggregateLimit)))
-	IFF(v_PolicyProductAggregateLimit IS NULL OR IS_SPACES(v_PolicyProductAggregateLimit) OR LENGTH(v_PolicyProductAggregateLimit) = 0, 'N/A', LTRIM(RTRIM(v_PolicyProductAggregateLimit))) AS o_PolicyProductAggregateLimit,
+	IFF(v_PolicyProductAggregateLimit IS NULL 
+		OR LENGTH(v_PolicyProductAggregateLimit)>0 AND TRIM(v_PolicyProductAggregateLimit)='' 
+		OR LENGTH(v_PolicyProductAggregateLimit
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(v_PolicyProductAggregateLimit
+			)
+		)
+	) AS o_PolicyProductAggregateLimit,
 	-- *INF*: IIF(ISNULL(v_PolicyPerAccidentLimit) OR IS_SPACES(v_PolicyPerAccidentLimit) OR LENGTH(v_PolicyPerAccidentLimit)=0, 'N/A', LTRIM(RTRIM(v_PolicyPerAccidentLimit)))
-	IFF(v_PolicyPerAccidentLimit IS NULL OR IS_SPACES(v_PolicyPerAccidentLimit) OR LENGTH(v_PolicyPerAccidentLimit) = 0, 'N/A', LTRIM(RTRIM(v_PolicyPerAccidentLimit))) AS v_PolicyPerAccidentLimit_new,
+	IFF(v_PolicyPerAccidentLimit IS NULL 
+		OR LENGTH(v_PolicyPerAccidentLimit)>0 AND TRIM(v_PolicyPerAccidentLimit)='' 
+		OR LENGTH(v_PolicyPerAccidentLimit
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(v_PolicyPerAccidentLimit
+			)
+		)
+	) AS v_PolicyPerAccidentLimit_new,
 	-- *INF*: DECODE(lower(v_InsuranceLine),
 	-- 'generalliability', v_PolicyPerAccidentLimit_new,
 	-- 'sbopgeneralliability', v_PolicyPerAccidentLimit_new,
 	-- 'workerscompensation', v_PolicyPerAccidentLimit_new|| '000',
 	-- 'N/A')
-	DECODE(lower(v_InsuranceLine),
+	DECODE(lower(v_InsuranceLine
+		),
 		'generalliability', v_PolicyPerAccidentLimit_new,
 		'sbopgeneralliability', v_PolicyPerAccidentLimit_new,
 		'workerscompensation', v_PolicyPerAccidentLimit_new || '000',
-		'N/A') AS o_PolicyPerAccidentLimit,
+		'N/A'
+	) AS o_PolicyPerAccidentLimit,
 	-- *INF*: IIF(ISNULL(v_PolicyPerDiseaseLimit) OR IS_SPACES(v_PolicyPerDiseaseLimit) OR LENGTH(v_PolicyPerDiseaseLimit)=0, 'N/A', LTRIM(RTRIM(v_PolicyPerDiseaseLimit)))
-	IFF(v_PolicyPerDiseaseLimit IS NULL OR IS_SPACES(v_PolicyPerDiseaseLimit) OR LENGTH(v_PolicyPerDiseaseLimit) = 0, 'N/A', LTRIM(RTRIM(v_PolicyPerDiseaseLimit))) AS v_PolicyPerDiseaseLimit_new,
+	IFF(v_PolicyPerDiseaseLimit IS NULL 
+		OR LENGTH(v_PolicyPerDiseaseLimit)>0 AND TRIM(v_PolicyPerDiseaseLimit)='' 
+		OR LENGTH(v_PolicyPerDiseaseLimit
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(v_PolicyPerDiseaseLimit
+			)
+		)
+	) AS v_PolicyPerDiseaseLimit_new,
 	-- *INF*: DECODE(lower(v_InsuranceLine),
 	-- 'generalliability',v_PolicyPerDiseaseLimit_new ,
 	-- 'sbopgeneralliability',v_PolicyPerDiseaseLimit_new ,
 	-- 'workerscompensation',v_PolicyPerDiseaseLimit_new || '000',
 	-- 'N/A')
-	DECODE(lower(v_InsuranceLine),
+	DECODE(lower(v_InsuranceLine
+		),
 		'generalliability', v_PolicyPerDiseaseLimit_new,
 		'sbopgeneralliability', v_PolicyPerDiseaseLimit_new,
 		'workerscompensation', v_PolicyPerDiseaseLimit_new || '000',
-		'N/A') AS o_PolicyPerDiseaseLimit
+		'N/A'
+	) AS o_PolicyPerDiseaseLimit
 	FROM SQ_PolicyLimit
 	LEFT JOIN LKP_DCLIMITSTAGING LKP_DCLIMITSTAGING_i_SessionId_i_LineId_PolicyPerOccurenceLimit
 	ON LKP_DCLIMITSTAGING_i_SessionId_i_LineId_PolicyPerOccurenceLimit.SessionId = i_SessionId
@@ -186,7 +268,8 @@ AGG_RemoveDuplicates AS (
 	SELECT
 	TransactionCreatedDate AS i_TransactionCreatedDate,
 	-- *INF*: MIN(i_TransactionCreatedDate)
-	MIN(i_TransactionCreatedDate) AS o_TransactionCreatedDate,
+	MIN(i_TransactionCreatedDate
+	) AS o_TransactionCreatedDate,
 	o_PolicyKey AS PolicyKey,
 	o_InsuranceLine AS InsuranceLine,
 	o_PolicyPerOccurenceLimit AS PolicyPerOccurenceLimit,
@@ -293,18 +376,32 @@ EXP_DetectChange AS (
 	-- OR lkp_PolicyPerDiseaseLimit<>PolicyPerDiseaseLimit
 	-- OR lkp_PolicyPerClaimLimit<>v_PolicyPerClaimLimit), IIF(lkp_EffectiveDate != i_TransactionCreatedDate, 'NEW', 'UPDATE'),'NOCHANGE')
 	DECODE(TRUE,
-		lkp_PolicyLimitId IS NULL AND pol_ak_id <> - 1, 'NEW',
-		pol_ak_id <> - 1 AND ( lkp_PolicyPerOccurenceLimit <> PolicyPerOccurenceLimit OR lkp_PolicyAggregateLimit <> PolicyAggregateLimit OR lkp_PolicyProductAggregateLimit <> PolicyProductAggregateLimit OR lkp_PolicyPerAccidentLimit <> PolicyPerAccidentLimit OR lkp_PolicyPerDiseaseLimit <> PolicyPerDiseaseLimit OR lkp_PolicyPerClaimLimit <> v_PolicyPerClaimLimit ), IFF(lkp_EffectiveDate != i_TransactionCreatedDate, 'NEW', 'UPDATE'),
-		'NOCHANGE') AS v_change_flag,
+		lkp_PolicyLimitId IS NULL 
+		AND pol_ak_id <> - 1, 'NEW',
+		pol_ak_id <> - 1 
+		AND ( lkp_PolicyPerOccurenceLimit <> PolicyPerOccurenceLimit 
+			OR lkp_PolicyAggregateLimit <> PolicyAggregateLimit 
+			OR lkp_PolicyProductAggregateLimit <> PolicyProductAggregateLimit 
+			OR lkp_PolicyPerAccidentLimit <> PolicyPerAccidentLimit 
+			OR lkp_PolicyPerDiseaseLimit <> PolicyPerDiseaseLimit 
+			OR lkp_PolicyPerClaimLimit <> v_PolicyPerClaimLimit 
+		), IFF(lkp_EffectiveDate != i_TransactionCreatedDate,
+			'NEW',
+			'UPDATE'
+		),
+		'NOCHANGE'
+	) AS v_change_flag,
 	-- *INF*: DECODE(TRUE,
 	-- pol_ak_id = v_Prev_pol_ak_id AND InsuranceLine = v_Prev_InsuranceLine,v_Prev_PolicyLimitAKId,
 	--  NOT ISNULL(lkp_PolicyLimitAKId), lkp_PolicyLimitAKId,
 	-- i_NEXTVAL 
 	-- )
 	DECODE(TRUE,
-		pol_ak_id = v_Prev_pol_ak_id AND InsuranceLine = v_Prev_InsuranceLine, v_Prev_PolicyLimitAKId,
-		NOT lkp_PolicyLimitAKId IS NULL, lkp_PolicyLimitAKId,
-		i_NEXTVAL) AS v_PolicyLimitAKId,
+		pol_ak_id = v_Prev_pol_ak_id 
+		AND InsuranceLine = v_Prev_InsuranceLine, v_Prev_PolicyLimitAKId,
+		lkp_PolicyLimitAKId IS NOT NULL, lkp_PolicyLimitAKId,
+		i_NEXTVAL
+	) AS v_PolicyLimitAKId,
 	pol_ak_id AS v_Prev_pol_ak_id,
 	InsuranceLine AS v_Prev_InsuranceLine,
 	v_PolicyLimitAKId AS v_Prev_PolicyLimitAKId,
@@ -312,7 +409,8 @@ EXP_DetectChange AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	i_TransactionCreatedDate AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	CURRENT_TIMESTAMP AS o_CreatedDate,
 	CURRENT_TIMESTAMP AS o_ModifiedDate,
@@ -418,8 +516,9 @@ EXP_Lag_eff_from_date AS (
 	-- in_PolicyLimitAKId = v_prev_PolicyLimitAKId ,
 	-- ADD_TO_DATE(v_prev_EffectiveDate,'SS',-1),orig_ExpirationDate)
 	DECODE(TRUE,
-		in_PolicyLimitAKId = v_prev_PolicyLimitAKId, ADD_TO_DATE(v_prev_EffectiveDate, 'SS', - 1),
-		orig_ExpirationDate) AS v_ExpirationDate,
+		in_PolicyLimitAKId = v_prev_PolicyLimitAKId, DATEADD(SECOND,- 1,v_prev_EffectiveDate),
+		orig_ExpirationDate
+	) AS v_ExpirationDate,
 	in_PolicyLimitAKId AS v_prev_PolicyLimitAKId,
 	EffectiveDate AS v_prev_EffectiveDate,
 	0 AS out_CurrentSnapshotFlag,

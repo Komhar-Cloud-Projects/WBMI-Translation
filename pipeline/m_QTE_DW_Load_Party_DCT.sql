@@ -45,7 +45,9 @@ AGG_Remove_Duplicates AS (
 	i_MiddleName AS o_MiddleName,
 	i_Title AS o_PrefixTitleCode,
 	-- *INF*: LTRIM(RTRIM(CustomerNum))
-	LTRIM(RTRIM(CustomerNum)) AS o_PartyNumber,
+	LTRIM(RTRIM(CustomerNum
+		)
+	) AS o_PartyNumber,
 	i_SICCode AS o_SicCode,
 	i_SICCodeDesc AS o_SicCodeTitle,
 	i_NAICSCode AS o_NaicsCode,
@@ -139,33 +141,141 @@ EXP_Detect_Change AS (
 	'N/A' AS i_Suffix,
 	'TBD' AS i_SocialSecurityNumber,
 	-- *INF*: IIF(ISNULL(i_PrimaryPhoneNumber) or IS_SPACES(i_PrimaryPhoneNumber) or LENGTH(i_PrimaryPhoneNumber)=0,'N/A',LTRIM(RTRIM(i_PrimaryPhoneNumber)))
-	IFF(i_PrimaryPhoneNumber IS NULL OR IS_SPACES(i_PrimaryPhoneNumber) OR LENGTH(i_PrimaryPhoneNumber) = 0, 'N/A', LTRIM(RTRIM(i_PrimaryPhoneNumber))) AS v_PrimaryPhoneNumber,
+	IFF(i_PrimaryPhoneNumber IS NULL 
+		OR LENGTH(i_PrimaryPhoneNumber)>0 AND TRIM(i_PrimaryPhoneNumber)='' 
+		OR LENGTH(i_PrimaryPhoneNumber
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_PrimaryPhoneNumber
+			)
+		)
+	) AS v_PrimaryPhoneNumber,
 	-- *INF*: IIF(ISNULL(i_Name) or IS_SPACES(i_Name) or LENGTH(i_Name)=0,'N/A',LTRIM(RTRIM(i_Name)))
-	IFF(i_Name IS NULL OR IS_SPACES(i_Name) OR LENGTH(i_Name) = 0, 'N/A', LTRIM(RTRIM(i_Name))) AS v_Name,
+	IFF(i_Name IS NULL 
+		OR LENGTH(i_Name)>0 AND TRIM(i_Name)='' 
+		OR LENGTH(i_Name
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_Name
+			)
+		)
+	) AS v_Name,
 	-- *INF*: IIF(ISNULL(i_DoingBusinessAs) or IS_SPACES(i_DoingBusinessAs) or LENGTH(i_DoingBusinessAs)=0,'N/A',LTRIM(RTRIM(i_DoingBusinessAs)))
-	IFF(i_DoingBusinessAs IS NULL OR IS_SPACES(i_DoingBusinessAs) OR LENGTH(i_DoingBusinessAs) = 0, 'N/A', LTRIM(RTRIM(i_DoingBusinessAs))) AS v_DoingBusinessAs,
+	IFF(i_DoingBusinessAs IS NULL 
+		OR LENGTH(i_DoingBusinessAs)>0 AND TRIM(i_DoingBusinessAs)='' 
+		OR LENGTH(i_DoingBusinessAs
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_DoingBusinessAs
+			)
+		)
+	) AS v_DoingBusinessAs,
 	-- *INF*: IIF(ISNULL(i_EntityType) OR IS_SPACES(i_EntityType) OR LENGTH(i_EntityType)=0,'N/A',LTRIM(RTRIM(i_EntityType)))
-	IFF(i_EntityType IS NULL OR IS_SPACES(i_EntityType) OR LENGTH(i_EntityType) = 0, 'N/A', LTRIM(RTRIM(i_EntityType))) AS v_LegalEntityTypeCode,
+	IFF(i_EntityType IS NULL 
+		OR LENGTH(i_EntityType)>0 AND TRIM(i_EntityType)='' 
+		OR LENGTH(i_EntityType
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_EntityType
+			)
+		)
+	) AS v_LegalEntityTypeCode,
 	-- *INF*: IIF(ISNULL(i_SicCode) OR IS_SPACES(i_SicCode) OR LENGTH(i_SicCode)=0,'N/A',LTRIM(RTRIM(i_SicCode)))
-	IFF(i_SicCode IS NULL OR IS_SPACES(i_SicCode) OR LENGTH(i_SicCode) = 0, 'N/A', LTRIM(RTRIM(i_SicCode))) AS v_SicCode,
+	IFF(i_SicCode IS NULL 
+		OR LENGTH(i_SicCode)>0 AND TRIM(i_SicCode)='' 
+		OR LENGTH(i_SicCode
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_SicCode
+			)
+		)
+	) AS v_SicCode,
 	-- *INF*: IIF(ISNULL(i_SicCodeTitle) OR IS_SPACES(i_SicCodeTitle) OR LENGTH(i_SicCodeTitle)=0,'N/A',LTRIM(RTRIM(i_SicCodeTitle)))
-	IFF(i_SicCodeTitle IS NULL OR IS_SPACES(i_SicCodeTitle) OR LENGTH(i_SicCodeTitle) = 0, 'N/A', LTRIM(RTRIM(i_SicCodeTitle))) AS v_SicCodeTitle,
+	IFF(i_SicCodeTitle IS NULL 
+		OR LENGTH(i_SicCodeTitle)>0 AND TRIM(i_SicCodeTitle)='' 
+		OR LENGTH(i_SicCodeTitle
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_SicCodeTitle
+			)
+		)
+	) AS v_SicCodeTitle,
 	-- *INF*: IIF(ISNULL(i_NaicsCode) OR IS_SPACES(i_NaicsCode) OR LENGTH(i_NaicsCode)=0,'N/A',LTRIM(RTRIM(i_NaicsCode)))
-	IFF(i_NaicsCode IS NULL OR IS_SPACES(i_NaicsCode) OR LENGTH(i_NaicsCode) = 0, 'N/A', LTRIM(RTRIM(i_NaicsCode))) AS v_NaicsCode,
+	IFF(i_NaicsCode IS NULL 
+		OR LENGTH(i_NaicsCode)>0 AND TRIM(i_NaicsCode)='' 
+		OR LENGTH(i_NaicsCode
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_NaicsCode
+			)
+		)
+	) AS v_NaicsCode,
 	-- *INF*: IIF(ISNULL(i_NaicsCodeTitle) OR IS_SPACES(i_NaicsCodeTitle) OR LENGTH(i_NaicsCodeTitle)=0,'N/A',LTRIM(RTRIM(i_NaicsCodeTitle)))
-	IFF(i_NaicsCodeTitle IS NULL OR IS_SPACES(i_NaicsCodeTitle) OR LENGTH(i_NaicsCodeTitle) = 0, 'N/A', LTRIM(RTRIM(i_NaicsCodeTitle))) AS v_NaicsCodeTitle,
+	IFF(i_NaicsCodeTitle IS NULL 
+		OR LENGTH(i_NaicsCodeTitle)>0 AND TRIM(i_NaicsCodeTitle)='' 
+		OR LENGTH(i_NaicsCodeTitle
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_NaicsCodeTitle
+			)
+		)
+	) AS v_NaicsCodeTitle,
 	-- *INF*: IIF(ISNULL(i_PrefixTitleCode) OR IS_SPACES(i_PrefixTitleCode) OR LENGTH(i_PrefixTitleCode)=0,'N/A',LTRIM(RTRIM(i_PrefixTitleCode)))
-	IFF(i_PrefixTitleCode IS NULL OR IS_SPACES(i_PrefixTitleCode) OR LENGTH(i_PrefixTitleCode) = 0, 'N/A', LTRIM(RTRIM(i_PrefixTitleCode))) AS v_PrefixTitleCode,
+	IFF(i_PrefixTitleCode IS NULL 
+		OR LENGTH(i_PrefixTitleCode)>0 AND TRIM(i_PrefixTitleCode)='' 
+		OR LENGTH(i_PrefixTitleCode
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_PrefixTitleCode
+			)
+		)
+	) AS v_PrefixTitleCode,
 	-- *INF*: IIF(ISNULL(i_FirstName) OR IS_SPACES(i_FirstName) OR LENGTH(i_FirstName)=0,'N/A',LTRIM(RTRIM(i_FirstName)))
-	IFF(i_FirstName IS NULL OR IS_SPACES(i_FirstName) OR LENGTH(i_FirstName) = 0, 'N/A', LTRIM(RTRIM(i_FirstName))) AS v_FirstName,
+	IFF(i_FirstName IS NULL 
+		OR LENGTH(i_FirstName)>0 AND TRIM(i_FirstName)='' 
+		OR LENGTH(i_FirstName
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_FirstName
+			)
+		)
+	) AS v_FirstName,
 	-- *INF*: IIF(ISNULL(i_MiddleName) OR IS_SPACES(i_MiddleName) OR LENGTH(i_MiddleName)=0,'N/A',LTRIM(RTRIM(i_MiddleName)))
-	IFF(i_MiddleName IS NULL OR IS_SPACES(i_MiddleName) OR LENGTH(i_MiddleName) = 0, 'N/A', LTRIM(RTRIM(i_MiddleName))) AS v_MiddleName,
+	IFF(i_MiddleName IS NULL 
+		OR LENGTH(i_MiddleName)>0 AND TRIM(i_MiddleName)='' 
+		OR LENGTH(i_MiddleName
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_MiddleName
+			)
+		)
+	) AS v_MiddleName,
 	-- *INF*: IIF(ISNULL(i_LastName) OR IS_SPACES(i_LastName) OR LENGTH(i_LastName)=0,'N/A',LTRIM(RTRIM(i_LastName)))
-	IFF(i_LastName IS NULL OR IS_SPACES(i_LastName) OR LENGTH(i_LastName) = 0, 'N/A', LTRIM(RTRIM(i_LastName))) AS v_LastName,
+	IFF(i_LastName IS NULL 
+		OR LENGTH(i_LastName)>0 AND TRIM(i_LastName)='' 
+		OR LENGTH(i_LastName
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_LastName
+			)
+		)
+	) AS v_LastName,
 	-- *INF*: IIF(ISNULL(i_OriginalPolicyInceptionDate), TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'), i_OriginalPolicyInceptionDate)
-	IFF(i_OriginalPolicyInceptionDate IS NULL, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), i_OriginalPolicyInceptionDate) AS v_OriginalPolicyInceptionDate,
+	IFF(i_OriginalPolicyInceptionDate IS NULL,
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		i_OriginalPolicyInceptionDate
+	) AS v_OriginalPolicyInceptionDate,
 	-- *INF*: IIF(ISNULL(i_AssociationCode) OR IS_SPACES(i_AssociationCode) OR LENGTH(i_AssociationCode)=0,'N/A',LTRIM(RTRIM(i_AssociationCode)))
-	IFF(i_AssociationCode IS NULL OR IS_SPACES(i_AssociationCode) OR LENGTH(i_AssociationCode) = 0, 'N/A', LTRIM(RTRIM(i_AssociationCode))) AS v_AssociationCode,
+	IFF(i_AssociationCode IS NULL 
+		OR LENGTH(i_AssociationCode)>0 AND TRIM(i_AssociationCode)='' 
+		OR LENGTH(i_AssociationCode
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_AssociationCode
+			)
+		)
+	) AS v_AssociationCode,
 	-- *INF*: IIF(ISNULL(lkp_PartyAKId), 'NEW', 
 	-- IIF(
 	-- lkp_PrimaryPhoneNumber != v_PrimaryPhoneNumber OR
@@ -182,10 +292,31 @@ EXP_Detect_Change AS (
 	-- lkp_MiddleName != v_MiddleName OR
 	-- lkp_LastName != v_LastName,
 	-- 'UPDATE', 'NOCHANGE'))
-	IFF(lkp_PartyAKId IS NULL, 'NEW', IFF(lkp_PrimaryPhoneNumber != v_PrimaryPhoneNumber OR lkp_OriginalPolicyInceptionDate != v_OriginalPolicyInceptionDate OR lkp_Name != v_Name OR lkp_DoingBusinessAs != v_DoingBusinessAs OR lkp_LegalEntityTypeCode != v_LegalEntityTypeCode OR lkp_SicCode != v_SicCode OR lkp_SicCodeTitle != v_SicCodeTitle OR lkp_NaicsCode != v_NaicsCode OR lkp_NaicsCodeTitle != v_NaicsCodeTitle OR lkp_PrefixTitleCode != v_PrefixTitleCode OR lkp_FirstName != v_FirstName OR lkp_MiddleName != v_MiddleName OR lkp_LastName != v_LastName, 'UPDATE', 'NOCHANGE')) AS o_ChangeFlag,
+	IFF(lkp_PartyAKId IS NULL,
+		'NEW',
+		IFF(lkp_PrimaryPhoneNumber != v_PrimaryPhoneNumber 
+			OR lkp_OriginalPolicyInceptionDate != v_OriginalPolicyInceptionDate 
+			OR lkp_Name != v_Name 
+			OR lkp_DoingBusinessAs != v_DoingBusinessAs 
+			OR lkp_LegalEntityTypeCode != v_LegalEntityTypeCode 
+			OR lkp_SicCode != v_SicCode 
+			OR lkp_SicCodeTitle != v_SicCodeTitle 
+			OR lkp_NaicsCode != v_NaicsCode 
+			OR lkp_NaicsCodeTitle != v_NaicsCodeTitle 
+			OR lkp_PrefixTitleCode != v_PrefixTitleCode 
+			OR lkp_FirstName != v_FirstName 
+			OR lkp_MiddleName != v_MiddleName 
+			OR lkp_LastName != v_LastName,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS o_ChangeFlag,
 	lkp_PartyAKId AS o_PartyAKId,
 	-- *INF*: IIF(ISNULL(i_PartyNumber),'N/A',i_PartyNumber)
-	IFF(i_PartyNumber IS NULL, 'N/A', i_PartyNumber) AS o_PartyNumber,
+	IFF(i_PartyNumber IS NULL,
+		'N/A',
+		i_PartyNumber
+	) AS o_PartyNumber,
 	v_PrimaryPhoneNumber AS o_PrimaryPhoneNumber,
 	v_OriginalPolicyInceptionDate AS o_OriginalPolicyInceptionDate,
 	'Not Deleted' AS o_DeletedIndicator,
@@ -278,14 +409,22 @@ EXP_Determine_AK_ID AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: IIF(i_ChangeFlag='NEW',
 	-- 	TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(i_ChangeFlag = 'NEW', TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS o_EffectiveDate,
+	IFF(i_ChangeFlag = 'NEW',
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	-- *INF*: IIF(ISNULL(i_PartyAKId),NEXTVAL,i_PartyAKId)
-	IFF(i_PartyAKId IS NULL, NEXTVAL, i_PartyAKId) AS o_PartyAKId,
+	IFF(i_PartyAKId IS NULL,
+		NEXTVAL,
+		i_PartyAKId
+	) AS o_PartyAKId,
 	i_PartyNumber AS o_PartyNumber,
 	i_PrimaryPhoneNumber AS o_PrimaryPhoneNumber,
 	i_OriginalPolicyInceptionDate AS o_OriginalPolicyInceptionDate,
@@ -303,7 +442,10 @@ EXP_Determine_AK_ID AS (
 	i_MiddleName AS o_MiddleName,
 	i_LastName AS o_LastName,
 	-- *INF*: IIF(ISNULL(i_AssociationId),-1,i_AssociationId)
-	IFF(i_AssociationId IS NULL, - 1, i_AssociationId) AS o_AssociationId,
+	IFF(i_AssociationId IS NULL,
+		- 1,
+		i_AssociationId
+	) AS o_AssociationId,
 	i_AssociationCode AS o_AssociationCode
 	FROM FIL_Insert
 ),
@@ -365,8 +507,9 @@ EXP_Lag_eff_from_date AS (
 	-- i_PartyAKID = v_PrevPartyAKID ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),i_orig_eff_to_date)
 	DECODE(TRUE,
-		i_PartyAKID = v_PrevPartyAKID, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		i_orig_eff_to_date) AS v_eff_to_date,
+		i_PartyAKID = v_PrevPartyAKID, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		i_orig_eff_to_date
+	) AS v_eff_to_date,
 	i_PartyAKID AS v_PrevPartyAKID,
 	i_eff_from_date AS v_prev_eff_from_date,
 	i_PartyId AS o_PartyId,

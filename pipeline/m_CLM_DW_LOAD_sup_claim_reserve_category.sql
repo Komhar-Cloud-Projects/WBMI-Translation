@@ -10,9 +10,19 @@ EXP_Default_Values AS (
 	CS01_CODE,
 	CS01_CODE_DES,
 	-- *INF*: iif(isnull(CS01_CODE),'N/A',LTRIM(RTRIM(CS01_CODE)))
-	IFF(CS01_CODE IS NULL, 'N/A', LTRIM(RTRIM(CS01_CODE))) AS RESERVE_CATEGORY_out,
+	IFF(CS01_CODE IS NULL,
+		'N/A',
+		LTRIM(RTRIM(CS01_CODE
+			)
+		)
+	) AS RESERVE_CATEGORY_out,
 	-- *INF*: iif(isnull(CS01_CODE_DES),'N/A',LTRIM(RTRIM(CS01_CODE_DES)))
-	IFF(CS01_CODE_DES IS NULL, 'N/A', LTRIM(RTRIM(CS01_CODE_DES))) AS RESERVE_CATEGORY_DESCRIPTION_out
+	IFF(CS01_CODE_DES IS NULL,
+		'N/A',
+		LTRIM(RTRIM(CS01_CODE_DES
+			)
+		)
+	) AS RESERVE_CATEGORY_DESCRIPTION_out
 	FROM SQ_CLAIM_SUPPORT_01_STAGE
 ),
 LKP_sup_claim_reserve_category AS (
@@ -39,15 +49,32 @@ EXP_Detect_Changes AS (
 	-- 	iif((ltrim(rtrim(RESERVE_CATEGORY_DESCRIPTION_out)))!= (ltrim(rtrim(old_reserve_ctgry_descript))),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(old_sup_claim_reserve_ctgry_id IS NULL, 'NEW', IFF(( ltrim(rtrim(RESERVE_CATEGORY_DESCRIPTION_out)) ) != ( ltrim(rtrim(old_reserve_ctgry_descript)) ), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(old_sup_claim_reserve_ctgry_id IS NULL,
+		'NEW',
+		IFF(( ltrim(rtrim(RESERVE_CATEGORY_DESCRIPTION_out
+					)
+				) 
+			) != ( ltrim(rtrim(old_reserve_ctgry_descript
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS CHANGED_FLAG,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	sysdate AS created_date,
 	sysdate AS modified_date
@@ -120,8 +147,9 @@ EXP_lag_from_date AS (
 	-- 	orig_eff_to_date)
 	-- 	
 	DECODE(TRUE,
-		reserve_ctgry_code = v_PREV_ROW_reserve_ctgry_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		reserve_ctgry_code = v_PREV_ROW_reserve_ctgry_code, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	reserve_ctgry_code AS v_PREV_ROW_reserve_ctgry_code,

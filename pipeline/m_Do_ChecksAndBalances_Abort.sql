@@ -31,9 +31,9 @@ EXP_Get_Values AS (
 	SourceTable,
 	SourceSQL,
 	-- *INF*: REPLACESTR(1, SourceSQL, '@{pipeline().parameters.NO_OF_DAY}', @{pipeline().parameters.NO_OF_DAY})
-	REPLACESTR(1, SourceSQL, '@{pipeline().parameters.NO_OF_DAY}', @{pipeline().parameters.NO_OF_DAY}) AS v_SourceSQL,
+	REGEXP_REPLACE(SourceSQL,'@{pipeline().parameters.NO_OF_DAY}',@{pipeline().parameters.NO_OF_DAY}) AS v_SourceSQL,
 	-- *INF*: REPLACESTR(1, v_SourceSQL, '@{pipeline().parameters.NO_OF_MONTH}', @{pipeline().parameters.NO_OF_MONTH})
-	REPLACESTR(1, v_SourceSQL, '@{pipeline().parameters.NO_OF_MONTH}', @{pipeline().parameters.NO_OF_MONTH}) AS o_SourceSQL,
+	REGEXP_REPLACE(v_SourceSQL,'@{pipeline().parameters.NO_OF_MONTH}',@{pipeline().parameters.NO_OF_MONTH}) AS o_SourceSQL,
 	SourceSQLDescription,
 	InformaticaTargetServerConnection,
 	WBMITargetSystemNameID,
@@ -41,12 +41,18 @@ EXP_Get_Values AS (
 	TargetSQL,
 	-- *INF*: IIF(NOT ISNULL(TargetSQL),REPLACESTR(1,TargetSQL,'@{pipeline().parameters.NO_OF_DAY}',@{pipeline().parameters.NO_OF_DAY}) ,NULL)
 	-- 
-	IFF(NOT TargetSQL IS NULL, REPLACESTR(1, TargetSQL, '@{pipeline().parameters.NO_OF_DAY}', @{pipeline().parameters.NO_OF_DAY}), NULL) AS v_TargetSQL,
+	IFF(TargetSQL IS NOT NULL,
+		REGEXP_REPLACE(TargetSQL,'@{pipeline().parameters.NO_OF_DAY}',@{pipeline().parameters.NO_OF_DAY}),
+		NULL
+	) AS v_TargetSQL,
 	-- *INF*: IIF(NOT ISNULL(v_TargetSQL),REPLACESTR(1,v_TargetSQL,'@{pipeline().parameters.NO_OF_MONTH}',@{pipeline().parameters.NO_OF_MONTH}) ,'select 0')
 	-- 
 	-- 
 	-- --IIF(NOT ISNULL(TargetSQL),TargetSQL,'select 0')
-	IFF(NOT v_TargetSQL IS NULL, REPLACESTR(1, v_TargetSQL, '@{pipeline().parameters.NO_OF_MONTH}', @{pipeline().parameters.NO_OF_MONTH}), 'select 0') AS o_TargetSQL,
+	IFF(v_TargetSQL IS NOT NULL,
+		REGEXP_REPLACE(v_TargetSQL,'@{pipeline().parameters.NO_OF_MONTH}',@{pipeline().parameters.NO_OF_MONTH}),
+		'select 0'
+	) AS o_TargetSQL,
 	TargetSQLDescription,
 	WBMIThresholdValue,
 	Frequency,
@@ -106,28 +112,56 @@ EXP_CountActiveORDeleted AS (
 	TargetWBMIChecksAndBalancingRuleId,
 	SourceTable,
 	-- *INF*: IIF(in(WBMIBalancingType,'SupportID','Count','AKID','ActiveOrDeleted'),TO_DECIMAL(SourceOutPut),NULL)
-	IFF(in(WBMIBalancingType, 'SupportID', 'Count', 'AKID', 'ActiveOrDeleted'), TO_DECIMAL(SourceOutPut), NULL) AS SourceCount,
+	IFF(WBMIBalancingType IN ('SupportID','Count','AKID','ActiveOrDeleted'),
+		CAST(SourceOutPut AS FLOAT),
+		NULL
+	) AS SourceCount,
 	-- *INF*: IIF(WBMIBalancingType='Amount',TO_DECIMAL(SourceOutPut),NULL)
-	IFF(WBMIBalancingType = 'Amount', TO_DECIMAL(SourceOutPut), NULL) AS SourceAmount,
+	IFF(WBMIBalancingType = 'Amount',
+		CAST(SourceOutPut AS FLOAT),
+		NULL
+	) AS SourceAmount,
 	TargetTable,
 	-- *INF*: IIF( ISNULL(TargetTable),NULL,
 	-- IIF(in(WBMIBalancingType,'SupportID','Count','AKID','ActiveOrDeleted'),TO_DECIMAL(TargetOutPut),NULL))
-	IFF(TargetTable IS NULL, NULL, IFF(in(WBMIBalancingType, 'SupportID', 'Count', 'AKID', 'ActiveOrDeleted'), TO_DECIMAL(TargetOutPut), NULL)) AS TargetCount,
+	IFF(TargetTable IS NULL,
+		NULL,
+		IFF(WBMIBalancingType IN ('SupportID','Count','AKID','ActiveOrDeleted'),
+			CAST(TargetOutPut AS FLOAT),
+			NULL
+		)
+	) AS TargetCount,
 	-- *INF*: IIF( ISNULL(TargetTable),NULL,IIF(WBMIBalancingType='Amount',TO_DECIMAL(TargetOutPut),NULL))
-	IFF(TargetTable IS NULL, NULL, IFF(WBMIBalancingType = 'Amount', TO_DECIMAL(TargetOutPut), NULL)) AS TargetAmount,
+	IFF(TargetTable IS NULL,
+		NULL,
+		IFF(WBMIBalancingType = 'Amount',
+			CAST(TargetOutPut AS FLOAT),
+			NULL
+		)
+	) AS TargetAmount,
 	SourceWBMIActionStepCode AS WBMIActionStepCode,
 	WBMIThresholdValue,
 	WBMIBalancingType,
 	WBMIBalancingRuleDescription,
 	TargetOutPut-SourceOutPut AS v_TargetCount_SourceCount_diff,
 	-- *INF*: IIF(ABS(v_TargetCount_SourceCount_diff)<=ABS(TO_DECIMAL(WBMIThresholdValue)),'I',WBMIActionStepCode)
-	IFF(ABS(v_TargetCount_SourceCount_diff) <= ABS(TO_DECIMAL(WBMIThresholdValue)), 'I', WBMIActionStepCode) AS v_CheckOutTypeCode,
+	IFF(ABS(v_TargetCount_SourceCount_diff
+		) <= ABS(CAST(WBMIThresholdValue AS FLOAT)
+		),
+		'I',
+		WBMIActionStepCode
+	) AS v_CheckOutTypeCode,
 	v_CheckOutTypeCode AS CheckOutTypeCode,
 	-- *INF*: ' For ' || TO_CHAR(SYSDATE,'MM/DD/YYYY') || WBMIBalancingRuleDescription|| v_TargetCount_SourceCount_diff
 	-- 
-	' For ' || TO_CHAR(SYSDATE, 'MM/DD/YYYY') || WBMIBalancingRuleDescription || v_TargetCount_SourceCount_diff AS CheckOutMessage,
+	' For ' || TO_CHAR(SYSDATE, 'MM/DD/YYYY'
+	) || WBMIBalancingRuleDescription || v_TargetCount_SourceCount_diff AS CheckOutMessage,
 	-- *INF*: IIF(ISNULL(@{pipeline().parameters.NO_OF_MONTH}),NULL ,TRUNC(LAST_DAY(ADD_TO_DATE(SYSDATE,'MM',-TO_INTEGER(@{pipeline().parameters.NO_OF_MONTH}))),'DD'))
-	IFF(@{pipeline().parameters.NO_OF_MONTH} IS NULL, NULL, TRUNC(LAST_DAY(ADD_TO_DATE(SYSDATE, 'MM', - TO_INTEGER(@{pipeline().parameters.NO_OF_MONTH}))), 'DD')) AS SourceDate,
+	IFF(@{pipeline().parameters.NO_OF_MONTH} IS NULL,
+		NULL,
+		CAST(TRUNC(LAST_DAY(DATEADD(MONTH,- CAST(@{pipeline().parameters.NO_OF_MONTH} AS INTEGER),SYSDATE)
+		), 'DAY') AS TIMESTAMP_NTZ(0))
+	) AS SourceDate,
 	'InformS' AS CreatedModifiedUserID,
 	SYSDATE AS CreatedModiFiedDate,
 	@{pipeline().parameters.WBMI_SESSION_CONTROL_RUN_ID} AS wbmi_session_control_run_id,
@@ -137,10 +171,16 @@ EXP_CountActiveORDeleted AS (
 	SourceWBMIBalancingTypeID AS WBMIBalancingTypeID,
 	SourceSQLError,
 	-- *INF*: iif(not isnull(SourceSQLError),error(SourceSQLError))
-	IFF(NOT SourceSQLError IS NULL, error(SourceSQLError)) AS v_SourceSQLError,
+	IFF(SourceSQLError IS NOT NULL,
+		error(SourceSQLError
+		)
+	) AS v_SourceSQLError,
 	TargetSQLError,
 	-- *INF*: iif(not isnull(TargetSQLError),error(TargetSQLError))
-	IFF(NOT TargetSQLError IS NULL, error(TargetSQLError)) AS v_TargetSQLError
+	IFF(TargetSQLError IS NOT NULL,
+		error(TargetSQLError
+		)
+	) AS v_TargetSQLError
 	FROM JNR_CountActiveORDeleted
 ),
 wbmi_checkout AS (
@@ -240,7 +280,8 @@ EXP_Email_Subject1 AS (
 	checkout_type_code,
 	checkout_message,
 	-- *INF*: ABORT('There are issues with the EDW data')
-	ABORT('There are issues with the EDW data') AS error
+	ABORT('There are issues with the EDW data'
+	) AS error
 	FROM SQ_wbmi_checkout1
 ),
 FIL_STOP_PROCESSING AS (

@@ -37,19 +37,58 @@ EXP_Accept_Inputs_Set_Defaults AS (
 	-- 
 	-- 
 	DECODE(TRUE,
-		IN(LTRIM(RTRIM(line_of_business)), 'ACV', 'AFV', 'BO', 'BOP', 'CF', 'GL', 'SMP'), bur_cause_of_loss2,
-		LTRIM(RTRIM(line_of_business)) = 'CPP' AND :UDF.DEFAULT_VALUE_FOR_STRINGS(bur_cause_of_loss2) <> 'N/A', bur_cause_of_loss2,
-		LTRIM(RTRIM(line_of_business)) = 'CPP' AND :UDF.DEFAULT_VALUE_FOR_STRINGS(bur_cause_of_loss2) = 'N/A', bur_cause_of_loss1,
-		LTRIM(RTRIM(line_of_business)) = 'IMC', bur_cause_of_loss1,
-		'TBD') AS v_BureauCauseOfLoss,
+		LTRIM(RTRIM(line_of_business
+			)
+		) IN ('ACV','AFV','BO','BOP','CF','GL','SMP'), bur_cause_of_loss2,
+		LTRIM(RTRIM(line_of_business
+			)
+		) = 'CPP' 
+		AND :UDF.DEFAULT_VALUE_FOR_STRINGS(bur_cause_of_loss2
+		) <> 'N/A', bur_cause_of_loss2,
+		LTRIM(RTRIM(line_of_business
+			)
+		) = 'CPP' 
+		AND :UDF.DEFAULT_VALUE_FOR_STRINGS(bur_cause_of_loss2
+		) = 'N/A', bur_cause_of_loss1,
+		LTRIM(RTRIM(line_of_business
+			)
+		) = 'IMC', bur_cause_of_loss1,
+		'TBD'
+	) AS v_BureauCauseOfLoss,
 	-- *INF*: IIF(ISNULL(cause_of_loss_nm),'N/A',rtrim(ltrim(cause_of_loss_nm)))
-	IFF(cause_of_loss_nm IS NULL, 'N/A', rtrim(ltrim(cause_of_loss_nm))) AS OUT_cause_of_loss_nm,
+	IFF(cause_of_loss_nm IS NULL,
+		'N/A',
+		rtrim(ltrim(cause_of_loss_nm
+			)
+		)
+	) AS OUT_cause_of_loss_nm,
 	source_system_id,
 	-- *INF*: IIF(ISNULL(source_system_id),'N/A',rtrim(ltrim(source_system_id)))
-	IFF(source_system_id IS NULL, 'N/A', rtrim(ltrim(source_system_id))) AS OUT_source_system_id,
+	IFF(source_system_id IS NULL,
+		'N/A',
+		rtrim(ltrim(source_system_id
+			)
+		)
+	) AS OUT_source_system_id,
 	'1' AS current_snapshot_flag,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(v_BureauCauseOfLoss))) OR LENGTH(LTRIM(RTRIM(v_BureauCauseOfLoss)))=0 OR IS_SPACES(LTRIM(RTRIM(v_BureauCauseOfLoss))),'N/A',LTRIM(RTRIM(v_BureauCauseOfLoss)))
-	IFF(LTRIM(RTRIM(v_BureauCauseOfLoss)) IS NULL OR LENGTH(LTRIM(RTRIM(v_BureauCauseOfLoss))) = 0 OR IS_SPACES(LTRIM(RTRIM(v_BureauCauseOfLoss))), 'N/A', LTRIM(RTRIM(v_BureauCauseOfLoss))) AS OUT_BureauCauseOfLoss
+	IFF(LTRIM(RTRIM(v_BureauCauseOfLoss
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(v_BureauCauseOfLoss
+				)
+			)
+		) = 0 
+		OR LENGTH(LTRIM(RTRIM(v_BureauCauseOfLoss
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(v_BureauCauseOfLoss
+			)
+		))='',
+		'N/A',
+		LTRIM(RTRIM(v_BureauCauseOfLoss
+			)
+		)
+	) AS OUT_BureauCauseOfLoss
 	FROM SQ_cause_of_loss_stage
 ),
 LKP_Sup_CauseOfLoss AS (
@@ -98,13 +137,28 @@ EXP_Detect_Changes AS (
 	-- 
 	DECODE(TRUE,
 		lkp_CauseOfLossId IS NULL, 'NEW',
-		RTRIM(LTRIM(lkp_CauseOfLossName)) <> RTRIM(LTRIM(cause_of_loss_nm)) OR RTRIM(LTRIM(lkp_BureauCauseOfLoss)) <> RTRIM(LTRIM(BureauCauseOfLoss)), 'UPDATE',
-		'NOCHANGE') AS v_change_flag,
+		RTRIM(LTRIM(lkp_CauseOfLossName
+			)
+		) <> RTRIM(LTRIM(cause_of_loss_nm
+			)
+		) 
+		OR RTRIM(LTRIM(lkp_BureauCauseOfLoss
+			)
+		) <> RTRIM(LTRIM(BureauCauseOfLoss
+			)
+		), 'UPDATE',
+		'NOCHANGE'
+	) AS v_change_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: IIF(v_change_flag='NEW',TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_change_flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS eff_date,
+	IFF(v_change_flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS eff_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS exp_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS exp_date,
 	SYSDATE AS current_date,
 	v_change_flag AS change_flag,
 	'0' AS expire_snapshot_flag,
@@ -112,7 +166,10 @@ EXP_Detect_Changes AS (
 	-- 
 	-- -- if we have the scenario where the lookup will be expired then the SYSDATE  minus one second will be the new exp date as SYSDATE will be the new records eff date.
 	-- 
-	IFF(v_change_flag = 'UPDATE', ADD_TO_DATE(SYSDATE, 'SS', - 1), SYSDATE) AS lkp_exp_date_OUT
+	IFF(v_change_flag = 'UPDATE',
+		DATEADD(SECOND,- 1,SYSDATE),
+		SYSDATE
+	) AS lkp_exp_date_OUT
 	FROM EXP_Accept_Inputs_Set_Defaults
 	LEFT JOIN LKP_Sup_CauseOfLoss
 	ON LKP_Sup_CauseOfLoss.CauseOfLoss = EXP_Accept_Inputs_Set_Defaults.cause_of_loss AND LKP_Sup_CauseOfLoss.LineOfBusiness = EXP_Accept_Inputs_Set_Defaults.line_of_business AND LKP_Sup_CauseOfLoss.MajorPeril = EXP_Accept_Inputs_Set_Defaults.major_peril
@@ -154,7 +211,10 @@ EXP_prepare_insert AS (
 	current_date,
 	CauseOfLossAKID,
 	-- *INF*: IIF(change_flag='NEW',NEXTVAL,CauseOfLossAKID)
-	IFF(change_flag = 'NEW', NEXTVAL, CauseOfLossAKID) AS OUT_cause_of_loss_AKID,
+	IFF(change_flag = 'NEW',
+		NEXTVAL,
+		CauseOfLossAKID
+	) AS OUT_cause_of_loss_AKID,
 	line_of_business,
 	major_peril,
 	cause_of_loss,

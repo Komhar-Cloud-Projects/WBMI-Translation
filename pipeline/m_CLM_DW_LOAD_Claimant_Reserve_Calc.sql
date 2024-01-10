@@ -104,15 +104,22 @@ EXP_detect_insert_update AS (
 	reserve_date_type,
 	source_sys_id,
 	-- *INF*: IIF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id ,'OLD','NEW')
-	IFF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, 'OLD', 'NEW') AS v_claimant,
+	IFF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id,
+		'OLD',
+		'NEW'
+	) AS v_claimant,
 	v_claimant AS v_claimant_out,
 	-- *INF*: IIF(v_claimant ='NEW', 'TRUNCATE' ,DECODE(NewLookupRow,1,'INSERT',
 	--                                                        	                                                                                   2,'UPDATE',
 	-- 	                                                                                                                                0,'NOCHANGE'))
-	IFF(v_claimant = 'NEW', 'TRUNCATE', DECODE(NewLookupRow,
+	IFF(v_claimant = 'NEW',
+		'TRUNCATE',
+		DECODE(NewLookupRow,
 		1, 'INSERT',
 		2, 'UPDATE',
-		0, 'NOCHANGE')) AS V_SQL,
+		0, 'NOCHANGE'
+		)
+	) AS V_SQL,
 	V_SQL AS OUT_SQL,
 	claim_party_occurrence_ak_id AS v_prev_row_claim_party_occurrence_ak_id
 	FROM LKP_Work_Claimant_Reserve_Calculation
@@ -144,21 +151,54 @@ EXP_Inserts_Noninserts AS (
 	count_notice_only,
 	-- *INF*: IIF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IIF(financial_type_code = 'D' AND v_claimant_D_old = 'NEW' or v_claimant_D_old = 'OLD', 'OLD', 'NEW' ), IIF(financial_type_code = 'D', 'NEW', 'NA'))
 	-- 
-	IFF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IFF(financial_type_code = 'D' AND v_claimant_D_old = 'NEW' OR v_claimant_D_old = 'OLD', 'OLD', 'NEW'), IFF(financial_type_code = 'D', 'NEW', 'NA')) AS v_claimant_D,
+	IFF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id,
+		IFF(financial_type_code = 'D' 
+			AND v_claimant_D_old = 'NEW' 
+			OR v_claimant_D_old = 'OLD',
+			'OLD',
+			'NEW'
+		),
+		IFF(financial_type_code = 'D',
+			'NEW',
+			'NA'
+		)
+	) AS v_claimant_D,
 	v_claimant_D AS v_claimant_D_old,
 	-- *INF*: IIF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IIF(financial_type_code = 'E' AND v_claimant_E_old = 'NEW' or v_claimant_E_old = 'OLD', 'OLD' , 'NEW'), IIF(financial_type_code = 'E', 'NEW', 'NA'))
 	-- 
 	-- 
 	-- 
 	-- --IIF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IIF(financial_type_code = 'D' AND v_claimant_D_old = 'NEW' or v_claimant_D_old = 'OLD', 'OLD', 'NEW' ), IIF(financial_type_code = 'D', 'NEW', 'NA'))
-	IFF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IFF(financial_type_code = 'E' AND v_claimant_E_old = 'NEW' OR v_claimant_E_old = 'OLD', 'OLD', 'NEW'), IFF(financial_type_code = 'E', 'NEW', 'NA')) AS v_claimant_E,
+	IFF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id,
+		IFF(financial_type_code = 'E' 
+			AND v_claimant_E_old = 'NEW' 
+			OR v_claimant_E_old = 'OLD',
+			'OLD',
+			'NEW'
+		),
+		IFF(financial_type_code = 'E',
+			'NEW',
+			'NA'
+		)
+	) AS v_claimant_E,
 	v_claimant_E AS v_claimant_E_old,
 	-- *INF*: IIF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IIF(financial_type_code = 'S' AND v_claimant_S_old = 'NEW' or v_claimant_S_old = 'OLD', 'OLD' , 'NEW'), IIF(financial_type_code = 'S', 'NEW', 'NA'))
 	-- 
 	-- 
 	-- 
 	-- --IIF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IIF(financial_type_code = 'S' AND v_claimant_S_old = 'NEW' or v_claimant_S_old = 'OLD', 'OLD' ), 'NEW')
-	IFF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IFF(financial_type_code = 'S' AND v_claimant_S_old = 'NEW' OR v_claimant_S_old = 'OLD', 'OLD', 'NEW'), IFF(financial_type_code = 'S', 'NEW', 'NA')) AS v_claimant_S,
+	IFF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id,
+		IFF(financial_type_code = 'S' 
+			AND v_claimant_S_old = 'NEW' 
+			OR v_claimant_S_old = 'OLD',
+			'OLD',
+			'NEW'
+		),
+		IFF(financial_type_code = 'S',
+			'NEW',
+			'NA'
+		)
+	) AS v_claimant_S,
 	v_claimant_S AS v_claimant_S_old,
 	-- *INF*: IIF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IIF(financial_type_code = 'B' AND v_claimant_B_old = 'NEW' or v_claimant_B_old = 'OLD', 'OLD' , 'NEW'), IIF(financial_type_code = 'B', 'NEW', 'NA'))
 	-- 
@@ -168,35 +208,102 @@ EXP_Inserts_Noninserts AS (
 	-- 
 	-- 
 	-- --IIF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IIF(financial_type_code = 'B' AND v_claimant_B_old = 'NEW' or v_claimant_B_old = 'OLD', 'OLD' ), 'NEW')
-	IFF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IFF(financial_type_code = 'B' AND v_claimant_B_old = 'NEW' OR v_claimant_B_old = 'OLD', 'OLD', 'NEW'), IFF(financial_type_code = 'B', 'NEW', 'NA')) AS v_claimant_B,
+	IFF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id,
+		IFF(financial_type_code = 'B' 
+			AND v_claimant_B_old = 'NEW' 
+			OR v_claimant_B_old = 'OLD',
+			'OLD',
+			'NEW'
+		),
+		IFF(financial_type_code = 'B',
+			'NEW',
+			'NA'
+		)
+	) AS v_claimant_B,
 	v_claimant_B AS v_claimant_B_old,
 	-- *INF*: IIF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IIF(financial_type_code = 'R' AND v_claimant_R_old = 'NEW' or v_claimant_R_old = 'OLD', 'OLD' , 'NEW'), IIF(financial_type_code = 'R', 'NEW', 'NA'))
 	-- 
 	-- 
 	-- 
 	-- --IIF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IIF(financial_type_code = 'R' AND v_claimant_R_old = 'NEW' or v_claimant_R_old = 'OLD', 'OLD' ), 'NEW')
-	IFF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IFF(financial_type_code = 'R' AND v_claimant_R_old = 'NEW' OR v_claimant_R_old = 'OLD', 'OLD', 'NEW'), IFF(financial_type_code = 'R', 'NEW', 'NA')) AS v_claimant_R,
+	IFF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id,
+		IFF(financial_type_code = 'R' 
+			AND v_claimant_R_old = 'NEW' 
+			OR v_claimant_R_old = 'OLD',
+			'OLD',
+			'NEW'
+		),
+		IFF(financial_type_code = 'R',
+			'NEW',
+			'NA'
+		)
+	) AS v_claimant_R,
 	v_claimant_R AS v_claimant_R_old,
 	-- *INF*: IIF(v_claimant_D='NEW',IIF(financial_type_code = 'D', reserve_date_type, 'NA'), IIF(financial_type_code = 'D',reserve_date_type, v_claimant_fin_type_D_old))
 	-- 
 	-- 
 	-- --IIF(v_claimant_D='NEW',IIF(financial_type_code = 'D', reserve_date_type, 'NA'), IIF(financial_type_code = 'D',v_claimant_fin_type_D_old))
-	IFF(v_claimant_D = 'NEW', IFF(financial_type_code = 'D', reserve_date_type, 'NA'), IFF(financial_type_code = 'D', reserve_date_type, v_claimant_fin_type_D_old)) AS v_claimant_fin_type_D,
+	IFF(v_claimant_D = 'NEW',
+		IFF(financial_type_code = 'D',
+			reserve_date_type,
+			'NA'
+		),
+		IFF(financial_type_code = 'D',
+			reserve_date_type,
+			v_claimant_fin_type_D_old
+		)
+	) AS v_claimant_fin_type_D,
 	v_claimant_fin_type_D AS v_claimant_fin_type_D_old,
 	-- *INF*: IIF(v_claimant_E='NEW',IIF(financial_type_code='E',reserve_date_type,'NA'),IIF(financial_type_code = 'E', reserve_date_type, v_claimant_fin_type_E_old))
 	-- 
 	-- 
 	-- --IIF(v_claimant='NEW',IIF(financial_type_code='E',reserve_date_type,'NA'),IIF(financial_type_code = 'E', v_claimant_fin_type_E_old))
-	IFF(v_claimant_E = 'NEW', IFF(financial_type_code = 'E', reserve_date_type, 'NA'), IFF(financial_type_code = 'E', reserve_date_type, v_claimant_fin_type_E_old)) AS v_claimant_fin_type_E,
+	IFF(v_claimant_E = 'NEW',
+		IFF(financial_type_code = 'E',
+			reserve_date_type,
+			'NA'
+		),
+		IFF(financial_type_code = 'E',
+			reserve_date_type,
+			v_claimant_fin_type_E_old
+		)
+	) AS v_claimant_fin_type_E,
 	v_claimant_fin_type_E AS v_claimant_fin_type_E_old,
 	-- *INF*: IIF(v_claimant_S='NEW',IIF(financial_type_code='S',reserve_date_type,'NA'),IIF(financial_type_code = 'S', reserve_date_type, v_claimant_fin_type_S_old))
-	IFF(v_claimant_S = 'NEW', IFF(financial_type_code = 'S', reserve_date_type, 'NA'), IFF(financial_type_code = 'S', reserve_date_type, v_claimant_fin_type_S_old)) AS v_claimant_fin_type_S,
+	IFF(v_claimant_S = 'NEW',
+		IFF(financial_type_code = 'S',
+			reserve_date_type,
+			'NA'
+		),
+		IFF(financial_type_code = 'S',
+			reserve_date_type,
+			v_claimant_fin_type_S_old
+		)
+	) AS v_claimant_fin_type_S,
 	v_claimant_fin_type_S AS v_claimant_fin_type_S_old,
 	-- *INF*: IIF(v_claimant_B='NEW',IIF(financial_type_code='B',reserve_date_type,'NA'),IIF(financial_type_code = 'B', reserve_date_type, v_claimant_fin_type_B_old))
-	IFF(v_claimant_B = 'NEW', IFF(financial_type_code = 'B', reserve_date_type, 'NA'), IFF(financial_type_code = 'B', reserve_date_type, v_claimant_fin_type_B_old)) AS v_claimant_fin_type_B,
+	IFF(v_claimant_B = 'NEW',
+		IFF(financial_type_code = 'B',
+			reserve_date_type,
+			'NA'
+		),
+		IFF(financial_type_code = 'B',
+			reserve_date_type,
+			v_claimant_fin_type_B_old
+		)
+	) AS v_claimant_fin_type_B,
 	v_claimant_fin_type_B AS v_claimant_fin_type_B_old,
 	-- *INF*: IIF(v_claimant_R='NEW',IIF(financial_type_code='R',reserve_date_type,'NA'),IIF(financial_type_code = 'R', reserve_date_type, v_claimant_fin_type_R_old))
-	IFF(v_claimant_R = 'NEW', IFF(financial_type_code = 'R', reserve_date_type, 'NA'), IFF(financial_type_code = 'R', reserve_date_type, v_claimant_fin_type_R_old)) AS v_claimant_fin_type_R,
+	IFF(v_claimant_R = 'NEW',
+		IFF(financial_type_code = 'R',
+			reserve_date_type,
+			'NA'
+		),
+		IFF(financial_type_code = 'R',
+			reserve_date_type,
+			v_claimant_fin_type_R_old
+		)
+	) AS v_claimant_fin_type_R,
 	v_claimant_fin_type_R AS v_claimant_fin_type_R_old,
 	-- *INF*: IIF(financial_type_code='D',IIF(count_coverages = count_notice_only,'1NOTICEONLY',IIF(count_open_reopen>=1,'2OPEN','3CLOSED')),IIF(v_claimant_D = 'OLD' OR v_claimant_D = 'NEW'  ,v_claimant_overall_status_old_D))
 	-- 
@@ -207,14 +314,38 @@ EXP_Inserts_Noninserts AS (
 	-- 
 	-- 
 	-- 
-	IFF(financial_type_code = 'D', IFF(count_coverages = count_notice_only, '1NOTICEONLY', IFF(count_open_reopen >= 1, '2OPEN', '3CLOSED')), IFF(v_claimant_D = 'OLD' OR v_claimant_D = 'NEW', v_claimant_overall_status_old_D)) AS v_claimant_overall_status_crrnt_D,
+	IFF(financial_type_code = 'D',
+		IFF(count_coverages = count_notice_only,
+			'1NOTICEONLY',
+			IFF(count_open_reopen >= 1,
+				'2OPEN',
+				'3CLOSED'
+			)
+		),
+		IFF(v_claimant_D = 'OLD' 
+			OR v_claimant_D = 'NEW',
+			v_claimant_overall_status_old_D
+		)
+	) AS v_claimant_overall_status_crrnt_D,
 	-- *INF*: IIF(financial_type_code='E',IIF(count_coverages = count_notice_only,'1NOTICEONLY',IIF(count_open_reopen>=1,'2OPEN','3CLOSED')),IIF(v_claimant_E = 'OLD' OR v_claimant_E = 'NEW' ,v_claimant_overall_status_old_E))
 	-- 
 	-- 
 	-- 
 	-- 
 	-- 
-	IFF(financial_type_code = 'E', IFF(count_coverages = count_notice_only, '1NOTICEONLY', IFF(count_open_reopen >= 1, '2OPEN', '3CLOSED')), IFF(v_claimant_E = 'OLD' OR v_claimant_E = 'NEW', v_claimant_overall_status_old_E)) AS v_claimant_overall_status_crrnt_E,
+	IFF(financial_type_code = 'E',
+		IFF(count_coverages = count_notice_only,
+			'1NOTICEONLY',
+			IFF(count_open_reopen >= 1,
+				'2OPEN',
+				'3CLOSED'
+			)
+		),
+		IFF(v_claimant_E = 'OLD' 
+			OR v_claimant_E = 'NEW',
+			v_claimant_overall_status_old_E
+		)
+	) AS v_claimant_overall_status_crrnt_E,
 	-- *INF*: IIF(financial_type_code='S',IIF(count_coverages = count_notice_only,'1NOTICEONLY',IIF(count_open_reopen>=1,'2OPEN','3CLOSED')),IIF(v_claimant_S = 'OLD' OR v_claimant_S = 'NEW' ,v_claimant_overall_status_old_S))
 	-- 
 	-- 
@@ -223,13 +354,37 @@ EXP_Inserts_Noninserts AS (
 	-- 
 	-- 
 	-- 
-	IFF(financial_type_code = 'S', IFF(count_coverages = count_notice_only, '1NOTICEONLY', IFF(count_open_reopen >= 1, '2OPEN', '3CLOSED')), IFF(v_claimant_S = 'OLD' OR v_claimant_S = 'NEW', v_claimant_overall_status_old_S)) AS v_claimant_overall_status_crrnt_S,
+	IFF(financial_type_code = 'S',
+		IFF(count_coverages = count_notice_only,
+			'1NOTICEONLY',
+			IFF(count_open_reopen >= 1,
+				'2OPEN',
+				'3CLOSED'
+			)
+		),
+		IFF(v_claimant_S = 'OLD' 
+			OR v_claimant_S = 'NEW',
+			v_claimant_overall_status_old_S
+		)
+	) AS v_claimant_overall_status_crrnt_S,
 	-- *INF*: IIF(financial_type_code='B',IIF(count_coverages = count_notice_only,'1NOTICEONLY',IIF(count_open_reopen>=1,'2OPEN','3CLOSED')),IIF(v_claimant_B = 'OLD' OR v_claimant_B = 'NEW' ,v_claimant_overall_status_old_B))
 	-- 
 	-- 
 	-- 
 	-- 
-	IFF(financial_type_code = 'B', IFF(count_coverages = count_notice_only, '1NOTICEONLY', IFF(count_open_reopen >= 1, '2OPEN', '3CLOSED')), IFF(v_claimant_B = 'OLD' OR v_claimant_B = 'NEW', v_claimant_overall_status_old_B)) AS v_claimant_overall_status_crrnt_B,
+	IFF(financial_type_code = 'B',
+		IFF(count_coverages = count_notice_only,
+			'1NOTICEONLY',
+			IFF(count_open_reopen >= 1,
+				'2OPEN',
+				'3CLOSED'
+			)
+		),
+		IFF(v_claimant_B = 'OLD' 
+			OR v_claimant_B = 'NEW',
+			v_claimant_overall_status_old_B
+		)
+	) AS v_claimant_overall_status_crrnt_B,
 	-- *INF*: IIF(financial_type_code='R',IIF(count_coverages = count_notice_only,'1NOTICEONLY',IIF(count_open_reopen>=1,'2OPEN','3CLOSED')),IIF(v_claimant_R = 'OLD' OR v_claimant_R = 'NEW' ,v_claimant_overall_status_old_R))
 	-- 
 	-- 
@@ -241,7 +396,19 @@ EXP_Inserts_Noninserts AS (
 	-- 
 	-- 
 	-- 
-	IFF(financial_type_code = 'R', IFF(count_coverages = count_notice_only, '1NOTICEONLY', IFF(count_open_reopen >= 1, '2OPEN', '3CLOSED')), IFF(v_claimant_R = 'OLD' OR v_claimant_R = 'NEW', v_claimant_overall_status_old_R)) AS v_claimant_overall_status_crrnt_R,
+	IFF(financial_type_code = 'R',
+		IFF(count_coverages = count_notice_only,
+			'1NOTICEONLY',
+			IFF(count_open_reopen >= 1,
+				'2OPEN',
+				'3CLOSED'
+			)
+		),
+		IFF(v_claimant_R = 'OLD' 
+			OR v_claimant_R = 'NEW',
+			v_claimant_overall_status_old_R
+		)
+	) AS v_claimant_overall_status_crrnt_R,
 	-- *INF*: IIF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, 
 	-- 
 	-- IIF(financial_type_code = 'D', IIF(v_claimant_D = 'NEW', 'INSERT', IIF(v_claimant_overall_status_crrnt_D = v_claimant_overall_status_old_D, 'NOCHANGE', 'INSERT')), 
@@ -254,7 +421,54 @@ EXP_Inserts_Noninserts AS (
 	-- 
 	-- 
 	-- 
-	IFF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id, IFF(financial_type_code = 'D', IFF(v_claimant_D = 'NEW', 'INSERT', IFF(v_claimant_overall_status_crrnt_D = v_claimant_overall_status_old_D, 'NOCHANGE', 'INSERT')), IFF(financial_type_code = 'E', IFF(v_claimant_E = 'NEW', 'INSERT', IFF(v_claimant_overall_status_crrnt_E = v_claimant_overall_status_old_E, 'NOCHANGE', 'INSERT')), IFF(financial_type_code = 'S', IFF(v_claimant_S = 'NEW', 'INSERT', IFF(v_claimant_overall_status_crrnt_S = v_claimant_overall_status_old_S, 'NOCHANGE', 'INSERT')), IFF(financial_type_code = 'B', IFF(v_claimant_B = 'NEW', 'INSERT', IFF(v_claimant_overall_status_crrnt_B = v_claimant_overall_status_old_B, 'NOCHANGE', 'INSERT')), IFF(financial_type_code = 'R', IFF(v_claimant_R = 'NEW', 'INSERT', IFF(v_claimant_overall_status_crrnt_R = v_claimant_overall_status_old_R, 'NOCHANGE', 'INSERT'))))))), 'INSERT') AS v_insert_flag,
+	IFF(claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id,
+		IFF(financial_type_code = 'D',
+			IFF(v_claimant_D = 'NEW',
+				'INSERT',
+				IFF(v_claimant_overall_status_crrnt_D = v_claimant_overall_status_old_D,
+					'NOCHANGE',
+					'INSERT'
+				)
+			),
+			IFF(financial_type_code = 'E',
+				IFF(v_claimant_E = 'NEW',
+					'INSERT',
+					IFF(v_claimant_overall_status_crrnt_E = v_claimant_overall_status_old_E,
+						'NOCHANGE',
+						'INSERT'
+					)
+				),
+				IFF(financial_type_code = 'S',
+					IFF(v_claimant_S = 'NEW',
+						'INSERT',
+						IFF(v_claimant_overall_status_crrnt_S = v_claimant_overall_status_old_S,
+							'NOCHANGE',
+							'INSERT'
+						)
+					),
+					IFF(financial_type_code = 'B',
+						IFF(v_claimant_B = 'NEW',
+							'INSERT',
+							IFF(v_claimant_overall_status_crrnt_B = v_claimant_overall_status_old_B,
+								'NOCHANGE',
+								'INSERT'
+							)
+						),
+						IFF(financial_type_code = 'R',
+							IFF(v_claimant_R = 'NEW',
+								'INSERT',
+								IFF(v_claimant_overall_status_crrnt_R = v_claimant_overall_status_old_R,
+									'NOCHANGE',
+									'INSERT'
+								)
+							)
+						)
+					)
+				)
+			)
+		),
+		'INSERT'
+	) AS v_insert_flag,
 	v_insert_flag AS insert_flag_out,
 	-- *INF*: IIF(financial_type_code = 'D',
 	-- IIF(v_insert_flag = 'INSERT',
@@ -283,10 +497,26 @@ EXP_Inserts_Noninserts AS (
 	-- 
 	-- 
 	-- 
-	IFF(financial_type_code = 'D', IFF(v_insert_flag = 'INSERT', DECODE(v_claimant_overall_status_crrnt_D,
+	IFF(financial_type_code = 'D',
+		IFF(v_insert_flag = 'INSERT',
+			DECODE(v_claimant_overall_status_crrnt_D,
 		'1NOTICEONLY', '1NOTICEONLY',
-		'2OPEN', IFF(v_claimant_overall_status_old_D = '3CLOSED', IFF(v_claimant_D = 'OLD', '4REOPEN', '2OPEN'), '2OPEN'),
-		'3CLOSED', IFF(v_claimant_reserve_date_type_out_old_D = '4REOPEN', '5CLOSEDAFTERREOPEN', '3CLOSED')), v_claimant_reserve_date_type_out_old_D), v_claimant_reserve_date_type_out_old_D) AS v_claimant_reserve_date_type_out_crrnt_D,
+		'2OPEN', IFF(v_claimant_overall_status_old_D = '3CLOSED',
+					IFF(v_claimant_D = 'OLD',
+						'4REOPEN',
+						'2OPEN'
+					),
+					'2OPEN'
+				),
+		'3CLOSED', IFF(v_claimant_reserve_date_type_out_old_D = '4REOPEN',
+					'5CLOSEDAFTERREOPEN',
+					'3CLOSED'
+				)
+			),
+			v_claimant_reserve_date_type_out_old_D
+		),
+		v_claimant_reserve_date_type_out_old_D
+	) AS v_claimant_reserve_date_type_out_crrnt_D,
 	-- *INF*: IIF(financial_type_code = 'E',
 	-- IIF(v_insert_flag = 'INSERT',
 	-- DECODE(v_claimant_overall_status_crrnt_E,'1NOTICEONLY','1NOTICEONLY',
@@ -305,10 +535,26 @@ EXP_Inserts_Noninserts AS (
 	-- 
 	-- 
 	-- 
-	IFF(financial_type_code = 'E', IFF(v_insert_flag = 'INSERT', DECODE(v_claimant_overall_status_crrnt_E,
+	IFF(financial_type_code = 'E',
+		IFF(v_insert_flag = 'INSERT',
+			DECODE(v_claimant_overall_status_crrnt_E,
 		'1NOTICEONLY', '1NOTICEONLY',
-		'2OPEN', IFF(v_claimant_overall_status_old_E = '3CLOSED', IFF(v_claimant_E = 'OLD', '4REOPEN', '2OPEN'), '2OPEN'),
-		'3CLOSED', IFF(v_claimant_reserve_date_type_out_old_E = '4REOPEN', '5CLOSEDAFTERREOPEN', '3CLOSED')), v_claimant_reserve_date_type_out_old_E), v_claimant_reserve_date_type_out_old_E) AS v_claimant_reserve_date_type_out_crrnt_E,
+		'2OPEN', IFF(v_claimant_overall_status_old_E = '3CLOSED',
+					IFF(v_claimant_E = 'OLD',
+						'4REOPEN',
+						'2OPEN'
+					),
+					'2OPEN'
+				),
+		'3CLOSED', IFF(v_claimant_reserve_date_type_out_old_E = '4REOPEN',
+					'5CLOSEDAFTERREOPEN',
+					'3CLOSED'
+				)
+			),
+			v_claimant_reserve_date_type_out_old_E
+		),
+		v_claimant_reserve_date_type_out_old_E
+	) AS v_claimant_reserve_date_type_out_crrnt_E,
 	-- *INF*: IIF(financial_type_code = 'S',
 	-- IIF(v_insert_flag = 'INSERT',
 	-- DECODE(v_claimant_overall_status_crrnt_S,'1NOTICEONLY','1NOTICEONLY',
@@ -330,10 +576,26 @@ EXP_Inserts_Noninserts AS (
 	-- 
 	-- 
 	-- 
-	IFF(financial_type_code = 'S', IFF(v_insert_flag = 'INSERT', DECODE(v_claimant_overall_status_crrnt_S,
+	IFF(financial_type_code = 'S',
+		IFF(v_insert_flag = 'INSERT',
+			DECODE(v_claimant_overall_status_crrnt_S,
 		'1NOTICEONLY', '1NOTICEONLY',
-		'2OPEN', IFF(v_claimant_overall_status_old_S = '3CLOSED', IFF(v_claimant_S = 'OLD', '4REOPEN', '2OPEN'), '2OPEN'),
-		'3CLOSED', IFF(v_claimant_reserve_date_type_out_old_S = '4REOPEN', '5CLOSEDAFTERREOPEN', '3CLOSED')), v_claimant_reserve_date_type_out_old_S), v_claimant_reserve_date_type_out_old_S) AS v_claimant_reserve_date_type_out_crrnt_S,
+		'2OPEN', IFF(v_claimant_overall_status_old_S = '3CLOSED',
+					IFF(v_claimant_S = 'OLD',
+						'4REOPEN',
+						'2OPEN'
+					),
+					'2OPEN'
+				),
+		'3CLOSED', IFF(v_claimant_reserve_date_type_out_old_S = '4REOPEN',
+					'5CLOSEDAFTERREOPEN',
+					'3CLOSED'
+				)
+			),
+			v_claimant_reserve_date_type_out_old_S
+		),
+		v_claimant_reserve_date_type_out_old_S
+	) AS v_claimant_reserve_date_type_out_crrnt_S,
 	-- *INF*: IIF(financial_type_code = 'B',
 	-- IIF(v_insert_flag = 'INSERT',
 	-- DECODE(v_claimant_overall_status_crrnt_B,'1NOTICEONLY','1NOTICEONLY',
@@ -354,10 +616,26 @@ EXP_Inserts_Noninserts AS (
 	-- 
 	-- 
 	-- 
-	IFF(financial_type_code = 'B', IFF(v_insert_flag = 'INSERT', DECODE(v_claimant_overall_status_crrnt_B,
+	IFF(financial_type_code = 'B',
+		IFF(v_insert_flag = 'INSERT',
+			DECODE(v_claimant_overall_status_crrnt_B,
 		'1NOTICEONLY', '1NOTICEONLY',
-		'2OPEN', IFF(v_claimant_overall_status_old_B = '3CLOSED', IFF(v_claimant_B = 'OLD', '4REOPEN', '2OPEN'), '2OPEN'),
-		'3CLOSED', IFF(v_claimant_reserve_date_type_out_old_B = '4REOPEN', '5CLOSEDAFTERREOPEN', '3CLOSED')), v_claimant_reserve_date_type_out_old_B), v_claimant_reserve_date_type_out_old_B) AS v_claimant_reserve_date_type_out_crrnt_B,
+		'2OPEN', IFF(v_claimant_overall_status_old_B = '3CLOSED',
+					IFF(v_claimant_B = 'OLD',
+						'4REOPEN',
+						'2OPEN'
+					),
+					'2OPEN'
+				),
+		'3CLOSED', IFF(v_claimant_reserve_date_type_out_old_B = '4REOPEN',
+					'5CLOSEDAFTERREOPEN',
+					'3CLOSED'
+				)
+			),
+			v_claimant_reserve_date_type_out_old_B
+		),
+		v_claimant_reserve_date_type_out_old_B
+	) AS v_claimant_reserve_date_type_out_crrnt_B,
 	-- *INF*: IIF(financial_type_code = 'R',
 	-- IIF(v_insert_flag = 'INSERT',
 	-- DECODE(v_claimant_overall_status_crrnt_R,'1NOTICEONLY','1NOTICEONLY',
@@ -384,10 +662,26 @@ EXP_Inserts_Noninserts AS (
 	-- 
 	-- 
 	-- 
-	IFF(financial_type_code = 'R', IFF(v_insert_flag = 'INSERT', DECODE(v_claimant_overall_status_crrnt_R,
+	IFF(financial_type_code = 'R',
+		IFF(v_insert_flag = 'INSERT',
+			DECODE(v_claimant_overall_status_crrnt_R,
 		'1NOTICEONLY', '1NOTICEONLY',
-		'2OPEN', IFF(v_claimant_overall_status_old_R = '3CLOSED', IFF(v_claimant_R = 'OLD', '4REOPEN', '2OPEN'), '2OPEN'),
-		'3CLOSED', IFF(v_claimant_reserve_date_type_out_old_R = '4REOPEN', '5CLOSEDAFTERREOPEN', '3CLOSED')), v_claimant_reserve_date_type_out_old_R), v_claimant_reserve_date_type_out_old_R) AS v_claimant_reserve_date_type_out_crrnt_R,
+		'2OPEN', IFF(v_claimant_overall_status_old_R = '3CLOSED',
+					IFF(v_claimant_R = 'OLD',
+						'4REOPEN',
+						'2OPEN'
+					),
+					'2OPEN'
+				),
+		'3CLOSED', IFF(v_claimant_reserve_date_type_out_old_R = '4REOPEN',
+					'5CLOSEDAFTERREOPEN',
+					'3CLOSED'
+				)
+			),
+			v_claimant_reserve_date_type_out_old_R
+		),
+		v_claimant_reserve_date_type_out_old_R
+	) AS v_claimant_reserve_date_type_out_crrnt_R,
 	-- *INF*: DECODE(financial_type_code,'D',v_claimant_reserve_date_type_out_crrnt_D,
 	--                                                                'E',v_claimant_reserve_date_type_out_crrnt_E,
 	-- 		                                                  'S',v_claimant_reserve_date_type_out_crrnt_S,
@@ -398,7 +692,8 @@ EXP_Inserts_Noninserts AS (
 		'E', v_claimant_reserve_date_type_out_crrnt_E,
 		'S', v_claimant_reserve_date_type_out_crrnt_S,
 		'B', v_claimant_reserve_date_type_out_crrnt_B,
-		'R', v_claimant_reserve_date_type_out_crrnt_R) AS claimant_reserve_date_type_out,
+		'R', v_claimant_reserve_date_type_out_crrnt_R
+	) AS claimant_reserve_date_type_out,
 	v_claimant_reserve_date_type_out_crrnt_D AS v_claimant_reserve_date_type_out_old_D,
 	v_claimant_reserve_date_type_out_crrnt_E AS v_claimant_reserve_date_type_out_old_E,
 	v_claimant_reserve_date_type_out_crrnt_S AS v_claimant_reserve_date_type_out_old_S,
@@ -478,12 +773,14 @@ EXP_Metadata AS (
 		'2OPEN', 'O',
 		'3CLOSED', 'C',
 		'4REOPEN', 'O',
-		'5CLOSEDAFTERREOPEN', 'C') AS financial_type_status_code,
+		'5CLOSEDAFTERREOPEN', 'C'
+	) AS financial_type_status_code,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	reserve_date AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -559,8 +856,11 @@ EXP_Expire_rows AS (
 	-- 
 	-- 
 	DECODE(TRUE,
-		claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id AND source_sys_id = v_source_sys_id AND financial_type_code = v_prev_row_financial_type_code, ADD_TO_DATE(v_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_party_occurrence_ak_id = v_prev_row_claim_party_occurrence_ak_id 
+		AND source_sys_id = v_source_sys_id 
+		AND financial_type_code = v_prev_row_financial_type_code, DATEADD(SECOND,- 1,v_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	claim_party_occurrence_ak_id AS v_prev_row_claim_party_occurrence_ak_id,
 	financial_type_code AS v_prev_row_financial_type_code,

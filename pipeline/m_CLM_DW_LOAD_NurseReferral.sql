@@ -18,10 +18,20 @@ EXP_Src_Values AS (
 	SELECT
 	nurse_referral_id,
 	-- *INF*: iif(isnull(ltrim(rtrim(nurse_referral_id))),-1,nurse_referral_id)
-	IFF(ltrim(rtrim(nurse_referral_id)) IS NULL, - 1, nurse_referral_id) AS o_nurse_referral_id,
+	IFF(ltrim(rtrim(nurse_referral_id
+			)
+		) IS NULL,
+		- 1,
+		nurse_referral_id
+	) AS o_nurse_referral_id,
 	clmt_nurse_manage_id,
 	-- *INF*: iif(isnull(ltrim(rtrim(clmt_nurse_manage_id))),0,clmt_nurse_manage_id)
-	IFF(ltrim(rtrim(clmt_nurse_manage_id)) IS NULL, 0, clmt_nurse_manage_id) AS o_clmt_nurse_manage_id,
+	IFF(ltrim(rtrim(clmt_nurse_manage_id
+			)
+		) IS NULL,
+		0,
+		clmt_nurse_manage_id
+	) AS o_clmt_nurse_manage_id,
 	referred_to_nurse_id,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(referred_to_nurse_id),'N/A',
@@ -30,12 +40,22 @@ EXP_Src_Values AS (
 	-- LTRIM(RTRIM(referred_to_nurse_id)))
 	DECODE(TRUE,
 		referred_to_nurse_id IS NULL, 'N/A',
-		IS_SPACES(referred_to_nurse_id), 'N/A',
-		LENGTH(referred_to_nurse_id) = 0, 'N/A',
-		LTRIM(RTRIM(referred_to_nurse_id))) AS o_referred_to_nurse_id,
+		LENGTH(referred_to_nurse_id)>0 AND TRIM(referred_to_nurse_id)='', 'N/A',
+		LENGTH(referred_to_nurse_id
+		) = 0, 'N/A',
+		LTRIM(RTRIM(referred_to_nurse_id
+			)
+		)
+	) AS o_referred_to_nurse_id,
 	referral_date,
 	-- *INF*: iif(isnull(ltrim(rtrim(referral_date))),to_date('1/1/1800','MM/DD/YYYY'),referral_date)
-	IFF(ltrim(rtrim(referral_date)) IS NULL, to_date('1/1/1800', 'MM/DD/YYYY'), referral_date) AS o_referral_date
+	IFF(ltrim(rtrim(referral_date
+			)
+		) IS NULL,
+		to_date('1/1/1800', 'MM/DD/YYYY'
+		),
+		referral_date
+	) AS o_referral_date
 	FROM SQ_clmt_nurse_referral_stage
 ),
 LKP_NurseCase AS (
@@ -74,10 +94,16 @@ EXP_Lkp_Defualt AS (
 	SELECT
 	LKP_NurseCase.NurseCaseAkid,
 	-- *INF*: iif(isnull(NurseCaseAkid), -1, NurseCaseAkid)
-	IFF(NurseCaseAkid IS NULL, - 1, NurseCaseAkid) AS o_NurseCaseAkid,
+	IFF(NurseCaseAkid IS NULL,
+		- 1,
+		NurseCaseAkid
+	) AS o_NurseCaseAkid,
 	LKP_claim_party.claim_party_ak_id,
 	-- *INF*: iif(isnull(claim_party_ak_id), -1,claim_party_ak_id)
-	IFF(claim_party_ak_id IS NULL, - 1, claim_party_ak_id) AS o_claim_party_ak_id
+	IFF(claim_party_ak_id IS NULL,
+		- 1,
+		claim_party_ak_id
+	) AS o_claim_party_ak_id
 	FROM 
 	LEFT JOIN LKP_NurseCase
 	ON LKP_NurseCase.clmt_nurse_manage_id = EXP_Src_Values.o_clmt_nurse_manage_id
@@ -137,7 +163,32 @@ EXP_TargetLkp_Detect_Changes AS (
 	--     'UPDATE', 'NOCHANGE')
 	-- 
 	--    )
-	IFF(Lkp_NurseReferralId IS NULL, 'NEW', IFF(ltrim(rtrim(Lkp_NurseCaseAkId)) != ltrim(rtrim(NurseCaseAkId)) OR ltrim(rtrim(Lkp_claim_party_ak_id)) != ltrim(rtrim(claim_party_ak_id)) OR ltrim(rtrim(LKp_nurse_referral_id)) != ltrim(rtrim(nurse_referral_id)) OR ltrim(rtrim(Lkp_ReferralDate)) != ltrim(rtrim(ReferralDate)), 'UPDATE', 'NOCHANGE')) AS v_ChangedFlag,
+	IFF(Lkp_NurseReferralId IS NULL,
+		'NEW',
+		IFF(ltrim(rtrim(Lkp_NurseCaseAkId
+				)
+			) != ltrim(rtrim(NurseCaseAkId
+				)
+			) 
+			OR ltrim(rtrim(Lkp_claim_party_ak_id
+				)
+			) != ltrim(rtrim(claim_party_ak_id
+				)
+			) 
+			OR ltrim(rtrim(LKp_nurse_referral_id
+				)
+			) != ltrim(rtrim(nurse_referral_id
+				)
+			) 
+			OR ltrim(rtrim(Lkp_ReferralDate
+				)
+			) != ltrim(rtrim(ReferralDate
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangedFlag,
 	EXP_Lkp_Defualt.o_NurseCaseAkid AS NurseCaseAkId,
 	EXP_Lkp_Defualt.o_claim_party_ak_id AS claim_party_ak_id,
@@ -145,9 +196,14 @@ EXP_TargetLkp_Detect_Changes AS (
 	EXP_Src_Values.o_referral_date AS ReferralDate,
 	-- *INF*: IIF(v_ChangedFlag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'), SYSDATE)
-	IFF(v_ChangedFlag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS EffectiveDate,
+	IFF(v_ChangedFlag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
@@ -198,7 +254,10 @@ EXP_Akid_Insert_Target AS (
 	AuditId,
 	Lkp_NurseReferralAkId,
 	-- *INF*: iif(ChangedFlag = 'NEW', NEXTVAL, Lkp_NurseReferralAkId)
-	IFF(ChangedFlag = 'NEW', NEXTVAL, Lkp_NurseReferralAkId) AS NurseReferralAkId,
+	IFF(ChangedFlag = 'NEW',
+		NEXTVAL,
+		Lkp_NurseReferralAkId
+	) AS NurseReferralAkId,
 	SEQ_NurseReferral.NEXTVAL
 	FROM FIL_Lkp_Records
 ),
@@ -263,8 +322,9 @@ EXP_Lag_ExpirationDate AS (
 	-- 	NurseReferralAkId= v_PREV_ROW_NurseReferralAkId, ADD_TO_DATE(v_PREV_ROW_EffectiveDate,'SS',-1),
 	-- 	orig_ExpirationDate)
 	DECODE(TRUE,
-		NurseReferralAkId = v_PREV_ROW_NurseReferralAkId, ADD_TO_DATE(v_PREV_ROW_EffectiveDate, 'SS', - 1),
-		orig_ExpirationDate) AS v_ExpirationDate,
+		NurseReferralAkId = v_PREV_ROW_NurseReferralAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
+		orig_ExpirationDate
+	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	EffectiveDate AS v_PREV_ROW_EffectiveDate,
 	NurseReferralAkId AS v_PREV_ROW_NurseReferralAkId,

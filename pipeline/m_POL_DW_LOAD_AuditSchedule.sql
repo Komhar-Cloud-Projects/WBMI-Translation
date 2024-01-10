@@ -76,7 +76,8 @@ EXP_Status_Decode AS (
 		'O', 6,
 		'X', 7,
 		'R', 8,
-		9) AS v_Status_Rank,
+		9
+	) AS v_Status_Rank,
 	v_Status_Rank AS o_Status_Rank
 	FROM Union_AuditSchedule
 ),
@@ -118,9 +119,11 @@ EXP_MetaValues AS (
 	1 AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	-- *INF*: TO_DATE('18000101','YYYYMMDD')
-	TO_DATE('18000101', 'YYYYMMDD') AS o_EffectiveDate,
+	TO_DATE('18000101', 'YYYYMMDD'
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('21001231','YYYYMMDD')
-	TO_DATE('21001231', 'YYYYMMDD') AS o_ExpirationDate,
+	TO_DATE('21001231', 'YYYYMMDD'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -154,13 +157,22 @@ EXP_MetaValues AS (
 		i_pmd4d_status = 'U', 'Unscheduled Request',
 		i_pmd4d_status = 'K', 'Unscheduled Complete',
 		i_pmd4d_status = 'P', 'Unscheduled Overdue',
-		i_pmd4d_status = 'D', 'Deleted') AS o_AuditStatus,
+		i_pmd4d_status = 'D', 'Deleted'
+	) AS o_AuditStatus,
 	-- *INF*: TO_DATE(TO_CHAR(i_pmd4d_effective_date),'yyyymmdd')
-	TO_DATE(TO_CHAR(i_pmd4d_effective_date), 'yyyymmdd') AS o_AuditEffectiveDate,
+	TO_DATE(TO_CHAR(i_pmd4d_effective_date
+		), 'yyyymmdd'
+	) AS o_AuditEffectiveDate,
 	-- *INF*: IIF(ISNULL(i_pmd4d_expiration_date) OR i_pmd4d_expiration_date=0,21001231,i_pmd4d_expiration_date)
-	IFF(i_pmd4d_expiration_date IS NULL OR i_pmd4d_expiration_date = 0, 21001231, i_pmd4d_expiration_date) AS v_pmd4d_expiration_date,
+	IFF(i_pmd4d_expiration_date IS NULL 
+		OR i_pmd4d_expiration_date = 0,
+		21001231,
+		i_pmd4d_expiration_date
+	) AS v_pmd4d_expiration_date,
 	-- *INF*: TO_DATE(TO_CHAR(i_pmd4d_expiration_date),'yyyymmdd')
-	TO_DATE(TO_CHAR(i_pmd4d_expiration_date), 'yyyymmdd') AS o_AuditExpirationDate
+	TO_DATE(TO_CHAR(i_pmd4d_expiration_date
+		), 'yyyymmdd'
+	) AS o_AuditExpirationDate
 	FROM AGG_Duplicate
 ),
 LKP_AuditSchedule AS (

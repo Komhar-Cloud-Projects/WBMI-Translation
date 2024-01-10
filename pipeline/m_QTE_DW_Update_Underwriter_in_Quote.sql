@@ -302,7 +302,10 @@ EXP_Quote_ProductRelationship AS (
 	SQ_Quote.QuoteId AS i_QuoteId,
 	SQ_Quote.WrittenPremium AS i_WrittenPremium,
 	-- *INF*: IIF(i_StrategicProfitCenterCode='5',i_WrittenPremium,0)
-	IFF(i_StrategicProfitCenterCode = '5', i_WrittenPremium, 0) AS v_WrittenPremium,
+	IFF(i_StrategicProfitCenterCode = '5',
+		i_WrittenPremium,
+		0
+	) AS v_WrittenPremium,
 	LKP_PolicyOffering.PolicyOfferingCode AS i_PolicyOfferingCode,
 	LKP_Program.ProgramCode AS i_ProgramCode,
 	LKP_Agency_V2.TerminatedDate AS i_TerminatedDate,
@@ -311,23 +314,27 @@ EXP_Quote_ProductRelationship AS (
 	-- ISNULL(:LKP.LKP_UNDERWRITERPRODUCTRELATIONSHIP_UNDERWRITINGASSOCIATEAKID_BYAGENCY(i_StrategicProfitCenterCode,i_AgencyCode)),NULL,:LKP.LKP_UNDERWRITERPRODUCTRELATIONSHIP_UNDERWRITINGASSOCIATEAKID_BYAGENCY(i_StrategicProfitCenterCode,i_AgencyCode))
 	DECODE(TRUE,
 		LKP_UNDERWRITERPRODUCTRELATIONSHIP_UNDERWRITINGASSOCIATEAKID_BYAGENCY_i_StrategicProfitCenterCode_i_AgencyCode.AssociateCode IS NULL, NULL,
-		LKP_UNDERWRITERPRODUCTRELATIONSHIP_UNDERWRITINGASSOCIATEAKID_BYAGENCY_i_StrategicProfitCenterCode_i_AgencyCode.AssociateCode) AS v_UnderwritingAssociateAKID_Agy,
+		LKP_UNDERWRITERPRODUCTRELATIONSHIP_UNDERWRITINGASSOCIATEAKID_BYAGENCY_i_StrategicProfitCenterCode_i_AgencyCode.AssociateCode
+	) AS v_UnderwritingAssociateAKID_Agy,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(v_UnderwritingAssociateAKID_Agy), :LKP.LKP_UNDERWRITERPRODUCTRELATIONSHIP_UNDERWRITINGASSOCIATEAKID_BYAGYSPC(i_StrategicProfitCenterCode,i_AgencyCode,v_WrittenPremium),v_UnderwritingAssociateAKID_Agy)
 	DECODE(TRUE,
 		v_UnderwritingAssociateAKID_Agy IS NULL, LKP_UNDERWRITERPRODUCTRELATIONSHIP_UNDERWRITINGASSOCIATEAKID_BYAGYSPC_i_StrategicProfitCenterCode_i_AgencyCode_v_WrittenPremium.AssociateCode,
-		v_UnderwritingAssociateAKID_Agy) AS v_UnderwritingAssociateAKID_AgySPC,
+		v_UnderwritingAssociateAKID_Agy
+	) AS v_UnderwritingAssociateAKID_AgySPC,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(v_UnderwritingAssociateAKID_AgySPC), :LKP.LKP_UNDERWRITERPRODUCTRELATIONSHIP_UNDERWRITINGASSOCIATEAKID_BYAGYSPCPO(i_StrategicProfitCenterCode,i_AgencyCode,v_WrittenPremium,i_PolicyOfferingCode),v_UnderwritingAssociateAKID_AgySPC)
 	DECODE(TRUE,
 		v_UnderwritingAssociateAKID_AgySPC IS NULL, LKP_UNDERWRITERPRODUCTRELATIONSHIP_UNDERWRITINGASSOCIATEAKID_BYAGYSPCPO_i_StrategicProfitCenterCode_i_AgencyCode_v_WrittenPremium_i_PolicyOfferingCode.AssociateCode,
-		v_UnderwritingAssociateAKID_AgySPC) AS v_UnderwritingAssociateAKID_AgySPCPO,
+		v_UnderwritingAssociateAKID_AgySPC
+	) AS v_UnderwritingAssociateAKID_AgySPCPO,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(v_UnderwritingAssociateAKID_AgySPCPO),
 	-- :LKP.LKP_UNDERWRITERPRODUCTRELATIONSHIP_UNDERWRITINGASSOCIATEAKID_BYAGYSPCPOPROG(i_StrategicProfitCenterCode,i_AgencyCode,v_WrittenPremium,i_PolicyOfferingCode, i_ProgramCode),v_UnderwritingAssociateAKID_AgySPCPO)
 	DECODE(TRUE,
 		v_UnderwritingAssociateAKID_AgySPCPO IS NULL, LKP_UNDERWRITERPRODUCTRELATIONSHIP_UNDERWRITINGASSOCIATEAKID_BYAGYSPCPOPROG_i_StrategicProfitCenterCode_i_AgencyCode_v_WrittenPremium_i_PolicyOfferingCode_i_ProgramCode.AssociateCode,
-		v_UnderwritingAssociateAKID_AgySPCPO) AS v_UnderwritingAssociateAKID_AgySPCPOProg,
+		v_UnderwritingAssociateAKID_AgySPCPO
+	) AS v_UnderwritingAssociateAKID_AgySPCPOProg,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(v_UnderwritingAssociateAKID_AgySPCPOProg),
 	-- 
@@ -344,10 +351,15 @@ EXP_Quote_ProductRelationship AS (
 	DECODE(TRUE,
 		v_UnderwritingAssociateAKID_AgySPCPOProg IS NULL, DECODE(TRUE,
 		LKP_BONDPRODUCTS_i_QuoteId.ProductCode = '610', LKP_UNDERWRITERPRODUCTRELATIONSHIP_UNDERWRITINGASSOCIATEAKID_BYAGYSPCPOPROGBOND_i_StrategicProfitCenterCode_i_AgencyCode_v_WrittenPremium_i_PolicyOfferingCode_i_ProgramCode_Contract.AssociateCode,
-		IN(LKP_BONDPRODUCTS_i_QuoteId.ProductCode, '620', '630', '640', '650', '660'), LKP_UNDERWRITERPRODUCTRELATIONSHIP_UNDERWRITINGASSOCIATEAKID_BYAGYSPCPOPROGBOND_i_StrategicProfitCenterCode_i_AgencyCode_v_WrittenPremium_i_PolicyOfferingCode_i_ProgramCode_NonContract.AssociateCode),
-		v_UnderwritingAssociateAKID_AgySPCPOProg) AS v_UnderwritingAssociateAKID_AgySPCPOProgBond,
+		LKP_BONDPRODUCTS_i_QuoteId.ProductCode IN ('620','630','640','650','660'), LKP_UNDERWRITERPRODUCTRELATIONSHIP_UNDERWRITINGASSOCIATEAKID_BYAGYSPCPOPROGBOND_i_StrategicProfitCenterCode_i_AgencyCode_v_WrittenPremium_i_PolicyOfferingCode_i_ProgramCode_NonContract.AssociateCode
+		),
+		v_UnderwritingAssociateAKID_AgySPCPOProg
+	) AS v_UnderwritingAssociateAKID_AgySPCPOProgBond,
 	-- *INF*: IIF(ISNULL(v_UnderwritingAssociateAKID_AgySPCPOProgBond),'N/A', v_UnderwritingAssociateAKID_AgySPCPOProgBond)
-	IFF(v_UnderwritingAssociateAKID_AgySPCPOProgBond IS NULL, 'N/A', v_UnderwritingAssociateAKID_AgySPCPOProgBond) AS v_UnderwritingAssociateCode,
+	IFF(v_UnderwritingAssociateAKID_AgySPCPOProgBond IS NULL,
+		'N/A',
+		v_UnderwritingAssociateAKID_AgySPCPOProgBond
+	) AS v_UnderwritingAssociateCode,
 	i_QuoteId AS o_QuoteId,
 	-- *INF*: DECODE(TRUE,
 	-- --Look for work comp pool underwriter
@@ -360,11 +372,22 @@ EXP_Quote_ProductRelationship AS (
 	-- v_UnderwritingAssociateCode='N/A' AND i_PolicyOfferingCode='000','0999',
 	-- LTRIM(RTRIM(v_UnderwritingAssociateCode)))
 	DECODE(TRUE,
-		v_UnderwritingAssociateCode = 'N/A' AND i_InsuranceSegmentCode = '3', IFF(LKP_UNDERWRITERWORKCOMPPOOL_1.AssociateCode IS NULL, 'N/A', LKP_UNDERWRITERWORKCOMPPOOL_1.AssociateCode),
-		v_UnderwritingAssociateCode = 'N/A' AND i_TerminatedDate <> TO_DATE('12/31/2100', 'MM/DD/YYYY'), '0998',
-		v_UnderwritingAssociateCode = 'N/A' AND IN(i_AgencyCode, '16998', '14998', '21999', '34999', '16999', '34998', '12999', '22999', '98999', '26999', '55555', '13999', '24999', '15999', '48001', '48966', '14967', '15966'), '0999',
-		v_UnderwritingAssociateCode = 'N/A' AND i_PolicyOfferingCode = '000', '0999',
-		LTRIM(RTRIM(v_UnderwritingAssociateCode))) AS o_UnderwritingAssociateCode,
+		v_UnderwritingAssociateCode = 'N/A' 
+		AND i_InsuranceSegmentCode = '3', IFF(LKP_UNDERWRITERWORKCOMPPOOL_1.AssociateCode IS NULL,
+			'N/A',
+			LKP_UNDERWRITERWORKCOMPPOOL_1.AssociateCode
+		),
+		v_UnderwritingAssociateCode = 'N/A' 
+		AND i_TerminatedDate <> TO_DATE('12/31/2100', 'MM/DD/YYYY'
+		), '0998',
+		v_UnderwritingAssociateCode = 'N/A' 
+		AND i_AgencyCode IN ('16998','14998','21999','34999','16999','34998','12999','22999','98999','26999','55555','13999','24999','15999','48001','48966','14967','15966'), '0999',
+		v_UnderwritingAssociateCode = 'N/A' 
+		AND i_PolicyOfferingCode = '000', '0999',
+		LTRIM(RTRIM(v_UnderwritingAssociateCode
+			)
+		)
+	) AS o_UnderwritingAssociateCode,
 	sysdate AS o_ModifiedDate
 	FROM SQ_Quote
 	LEFT JOIN LKP_Agency_V2

@@ -38,14 +38,26 @@ EXP_Detect_Changes AS (
 	-- 	IIF(:UDF.DEFAULT_VALUE_FOR_STRINGS(PaymentWorkflow) != lkp_payment_workflow,
 	-- 		'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(lkp_sup_claim_payment_workflow_id IS NULL, 'NEW', IFF(:UDF.DEFAULT_VALUE_FOR_STRINGS(PaymentWorkflow) != lkp_payment_workflow, 'UPDATE', 'NOCHANGE')) AS v_ChangeFlag,
+	IFF(lkp_sup_claim_payment_workflow_id IS NULL,
+		'NEW',
+		IFF(:UDF.DEFAULT_VALUE_FOR_STRINGS(PaymentWorkflow
+			) != lkp_payment_workflow,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag,
 	-- *INF*: IIF(v_ChangeFlag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	--     SYSDATE)
-	IFF(v_ChangeFlag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS eff_from_date,
+	IFF(v_ChangeFlag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	SYSDATE AS CurrentDate
@@ -108,8 +120,9 @@ EXP_eff_to_date AS (
 	-- 		ADD_TO_DATE(v_prev_row_eff_from_date,'SS',-1), 
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		source_payment_workflow_id = v_prev_row_source_payment_workflow_id, ADD_TO_DATE(v_prev_row_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		source_payment_workflow_id = v_prev_row_source_payment_workflow_id, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	source_payment_workflow_id AS v_prev_row_source_payment_workflow_id,
 	eff_from_date AS v_prev_row_eff_from_date,

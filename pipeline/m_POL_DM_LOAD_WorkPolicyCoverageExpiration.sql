@@ -31,7 +31,10 @@ EXP_CalculationValue AS (
 	-- *INF*: IIF(i_PolicyAKID=v_prev_PolicyAKID,
 	-- i_FullTermPremium+v_FullTermPremium,
 	-- i_FullTermPremium)
-	IFF(i_PolicyAKID = v_prev_PolicyAKID, i_FullTermPremium + v_FullTermPremium, i_FullTermPremium) AS v_FullTermPremium,
+	IFF(i_PolicyAKID = v_prev_PolicyAKID,
+		i_FullTermPremium + v_FullTermPremium,
+		i_FullTermPremium
+	) AS v_FullTermPremium,
 	i_PolicyAKID AS v_prev_PolicyAKID,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	SYSDATE AS o_CreatedDate,

@@ -19,11 +19,23 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate) AS o_ModifiedDate,
+	IFF(i_ModifiedDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ModifiedDate
+	) AS o_ModifiedDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate) AS o_EffectiveDate,
+	IFF(i_EffectiveDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_EffectiveDate
+	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate
+	IFF(i_ExpirationDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ExpirationDate
+	) AS o_ExpirationDate
 	FROM SQ_InsuranceReferenceBridge
 ),
 EXP_NumericValues AS (
@@ -36,17 +48,35 @@ EXP_NumericValues AS (
 	ProductId AS i_ProductId,
 	ModifiedUserId,
 	-- *INF*: IIF(ISNULL(i_InsuranceReferenceBridgeId),-1,i_InsuranceReferenceBridgeId)
-	IFF(i_InsuranceReferenceBridgeId IS NULL, - 1, i_InsuranceReferenceBridgeId) AS o_InsuranceReferenceBridgeId,
+	IFF(i_InsuranceReferenceBridgeId IS NULL,
+		- 1,
+		i_InsuranceReferenceBridgeId
+	) AS o_InsuranceReferenceBridgeId,
 	-- *INF*: IIF(ISNULL(i_StrategicProfitCenterId),-1,i_StrategicProfitCenterId)
-	IFF(i_StrategicProfitCenterId IS NULL, - 1, i_StrategicProfitCenterId) AS o_StrategicProfitCenterId,
+	IFF(i_StrategicProfitCenterId IS NULL,
+		- 1,
+		i_StrategicProfitCenterId
+	) AS o_StrategicProfitCenterId,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentId),-1,i_InsuranceSegmentId)
-	IFF(i_InsuranceSegmentId IS NULL, - 1, i_InsuranceSegmentId) AS o_InsuranceSegmentId,
+	IFF(i_InsuranceSegmentId IS NULL,
+		- 1,
+		i_InsuranceSegmentId
+	) AS o_InsuranceSegmentId,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingId),-1,i_PolicyOfferingId)
-	IFF(i_PolicyOfferingId IS NULL, - 1, i_PolicyOfferingId) AS o_PolicyOfferingId,
+	IFF(i_PolicyOfferingId IS NULL,
+		- 1,
+		i_PolicyOfferingId
+	) AS o_PolicyOfferingId,
 	-- *INF*: IIF(ISNULL(i_LineOfBusinessId),-1,i_LineOfBusinessId)
-	IFF(i_LineOfBusinessId IS NULL, - 1, i_LineOfBusinessId) AS o_LineOfBusinessId,
+	IFF(i_LineOfBusinessId IS NULL,
+		- 1,
+		i_LineOfBusinessId
+	) AS o_LineOfBusinessId,
 	-- *INF*: IIF(ISNULL(i_ProductId),-1,i_ProductId)
-	IFF(i_ProductId IS NULL, - 1, i_ProductId) AS o_ProductId
+	IFF(i_ProductId IS NULL,
+		- 1,
+		i_ProductId
+	) AS o_ProductId
 	FROM SQ_InsuranceReferenceBridge
 ),
 TGT_InsuranceReferenceBridge_UpdateElseInsert AS (

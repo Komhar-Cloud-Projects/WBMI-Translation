@@ -41,14 +41,34 @@ EXP_Detect_Changes AS (
 	--     LTRIM(RTRIM(CS01_CODE_DES)) != LTRIM(RTRIM(lkp_ClaimReportedMethodDescription)),
 	--         'UPDATE', 
 	-- 'NOCHANGE'))
-	IFF(lkp_SupClaimReportedMethodDescriptionId IS NULL, 'NEW', IFF(LTRIM(RTRIM(CS01_CODE)) != LTRIM(RTRIM(lkp_ClaimReportedMethodCode)) OR LTRIM(RTRIM(CS01_CODE_DES)) != LTRIM(RTRIM(lkp_ClaimReportedMethodDescription)), 'UPDATE', 'NOCHANGE')) AS v_ChangedFlag,
+	IFF(lkp_SupClaimReportedMethodDescriptionId IS NULL,
+		'NEW',
+		IFF(LTRIM(RTRIM(CS01_CODE
+				)
+			) != LTRIM(RTRIM(lkp_ClaimReportedMethodCode
+				)
+			) 
+			OR LTRIM(RTRIM(CS01_CODE_DES
+				)
+			) != LTRIM(RTRIM(lkp_ClaimReportedMethodDescription
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangeFlag,
 	-- *INF*: iif(v_ChangedFlag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	--     sysdate)
-	IFF(v_ChangedFlag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS EffectiveDate,
+	IFF(v_ChangedFlag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS ExpirationDate,
 	SYSDATE AS CurrentDate,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId
@@ -113,8 +133,9 @@ EXPTRANS AS (
 	-- 		ADD_TO_DATE(v_PREV_ROW_EffectiveDate,'SS',-1), 
 	-- 	orig_ExpirationDate)
 	DECODE(TRUE,
-		ClaimReportedMethodCode = v_PREV_ROW_ClaimReportedMethodCode, ADD_TO_DATE(v_PREV_ROW_EffectiveDate, 'SS', - 1),
-		orig_ExpirationDate) AS v_ExpirationDate,
+		ClaimReportedMethodCode = v_PREV_ROW_ClaimReportedMethodCode, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
+		orig_ExpirationDate
+	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	ClaimReportedMethodCode AS v_PREV_ROW_ClaimReportedMethodCode,
 	EffectiveDate AS v_PREV_ROW_EffectiveDate,

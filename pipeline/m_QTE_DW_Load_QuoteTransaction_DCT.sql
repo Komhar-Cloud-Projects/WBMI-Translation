@@ -53,21 +53,67 @@ EXP_GetValues AS (
 	RiskGrade AS i_RiskGrade,
 	Written AS i_Written,
 	-- *INF*: LTRIM(RTRIM(i_QuoteKey))
-	LTRIM(RTRIM(i_QuoteKey)) AS o_QuoteKey,
+	LTRIM(RTRIM(i_QuoteKey
+		)
+	) AS o_QuoteKey,
 	i_StatusDate AS o_StatusDate,
 	-- *INF*: IIF(ISNULL(i_Division) OR IS_SPACES(i_Division) OR LENGTH(i_Division)=0, 'N/A', LTRIM(RTRIM(i_Division)))
-	IFF(i_Division IS NULL OR IS_SPACES(i_Division) OR LENGTH(i_Division) = 0, 'N/A', LTRIM(RTRIM(i_Division))) AS o_Division,
+	IFF(i_Division IS NULL 
+		OR LENGTH(i_Division)>0 AND TRIM(i_Division)='' 
+		OR LENGTH(i_Division
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_Division
+			)
+		)
+	) AS o_Division,
 	-- *INF*: IIF(ISNULL(i_WBProduct) OR IS_SPACES(i_WBProduct) OR LENGTH(i_WBProduct)=0, 'N/A', LTRIM(RTRIM(i_WBProduct)))
-	IFF(i_WBProduct IS NULL OR IS_SPACES(i_WBProduct) OR LENGTH(i_WBProduct) = 0, 'N/A', LTRIM(RTRIM(i_WBProduct))) AS o_WBProduct,
+	IFF(i_WBProduct IS NULL 
+		OR LENGTH(i_WBProduct)>0 AND TRIM(i_WBProduct)='' 
+		OR LENGTH(i_WBProduct
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_WBProduct
+			)
+		)
+	) AS o_WBProduct,
 	-- *INF*: IIF(ISNULL(i_WBProductType) OR IS_SPACES(i_WBProductType) OR LENGTH(i_WBProductType)=0, 'N/A', LTRIM(RTRIM(i_WBProductType)))
-	IFF(i_WBProductType IS NULL OR IS_SPACES(i_WBProductType) OR LENGTH(i_WBProductType) = 0, 'N/A', LTRIM(RTRIM(i_WBProductType))) AS o_WBProductType,
+	IFF(i_WBProductType IS NULL 
+		OR LENGTH(i_WBProductType)>0 AND TRIM(i_WBProductType)='' 
+		OR LENGTH(i_WBProductType
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_WBProductType
+			)
+		)
+	) AS o_WBProductType,
 	-- *INF*: IIF(ISNULL(i_LType) OR IS_SPACES(i_LType) OR LENGTH(i_LType)=0, 'N/A', LTRIM(RTRIM(i_LType)))
-	IFF(i_LType IS NULL OR IS_SPACES(i_LType) OR LENGTH(i_LType) = 0, 'N/A', LTRIM(RTRIM(i_LType))) AS o_LType,
+	IFF(i_LType IS NULL 
+		OR LENGTH(i_LType)>0 AND TRIM(i_LType)='' 
+		OR LENGTH(i_LType
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(i_LType
+			)
+		)
+	) AS o_LType,
 	-- *INF*: IIF(ISNULL(i_Written),0,i_Written)
-	IFF(i_Written IS NULL, 0, i_Written) AS o_WrittenPremium,
+	IFF(i_Written IS NULL,
+		0,
+		i_Written
+	) AS o_WrittenPremium,
 	-- *INF*: IIF(ISNULL(i_RiskGrade) OR IS_SPACES(i_RiskGrade) OR LENGTH(i_RiskGrade)=0 OR IS_NUMBER(i_RiskGrade)=0, 'N/A', LTRIM(RTRIM(i_RiskGrade)))
 	-- 
-	IFF(i_RiskGrade IS NULL OR IS_SPACES(i_RiskGrade) OR LENGTH(i_RiskGrade) = 0 OR IS_NUMBER(i_RiskGrade) = 0, 'N/A', LTRIM(RTRIM(i_RiskGrade))) AS o_RiskGrade
+	IFF(i_RiskGrade IS NULL 
+		OR LENGTH(i_RiskGrade)>0 AND TRIM(i_RiskGrade)='' 
+		OR LENGTH(i_RiskGrade
+		) = 0 
+		OR REGEXP_LIKE(i_RiskGrade, '^[0-9]+$') = 0,
+		'N/A',
+		LTRIM(RTRIM(i_RiskGrade
+			)
+		)
+	) AS o_RiskGrade
 	FROM AGG_RemoveDuplicates
 ),
 LKP_SupDCTPolicyOfferingLineOfBusinessProductRules AS (
@@ -145,11 +191,20 @@ EXP_NewFlag AS (
 	EXP_GetValues.o_WrittenPremium AS WrittenPremium,
 	EXP_GetValues.o_RiskGrade AS RiskGrade,
 	-- *INF*: IIF(ISNULL(i_ProductAKId),-1,i_ProductAKId)
-	IFF(i_ProductAKId IS NULL, - 1, i_ProductAKId) AS v_ProductAKId,
+	IFF(i_ProductAKId IS NULL,
+		- 1,
+		i_ProductAKId
+	) AS v_ProductAKId,
 	-- *INF*: IIF(ISNULL(i_InsuranceReferenceLineOfBusinessAKId),-1,i_InsuranceReferenceLineOfBusinessAKId)
-	IFF(i_InsuranceReferenceLineOfBusinessAKId IS NULL, - 1, i_InsuranceReferenceLineOfBusinessAKId) AS v_InsuranceReferenceLineOfBusinessAKId,
+	IFF(i_InsuranceReferenceLineOfBusinessAKId IS NULL,
+		- 1,
+		i_InsuranceReferenceLineOfBusinessAKId
+	) AS v_InsuranceReferenceLineOfBusinessAKId,
 	-- *INF*: IIF(ISNULL(i_QuoteAKId),-1,i_QuoteAKId)
-	IFF(i_QuoteAKId IS NULL, - 1, i_QuoteAKId) AS o_QuoteAKId,
+	IFF(i_QuoteAKId IS NULL,
+		- 1,
+		i_QuoteAKId
+	) AS o_QuoteAKId,
 	v_ProductAKId AS o_ProductAKId,
 	v_InsuranceReferenceLineOfBusinessAKId AS o_InsuranceReferenceLineOfBusinessAKId
 	FROM EXP_GetValues
@@ -164,7 +219,8 @@ AGG_SumPremium AS (
 	SELECT
 	WrittenPremium AS i_WrittenPremium,
 	-- *INF*: SUM(i_WrittenPremium)
-	SUM(i_WrittenPremium) AS WrittenPremium,
+	SUM(i_WrittenPremium
+	) AS WrittenPremium,
 	o_QuoteAKId AS QuoteAKId,
 	StatusDate,
 	o_ProductAKId AS ProductAKId,
@@ -261,14 +317,20 @@ EXP_GetSupportIds AS (
 	FIL_NewFlag.ProductAKId AS i_ProductAKId,
 	FIL_NewFlag.InsuranceReferenceLineOfBusinessAKId AS i_InsuranceReferenceLineOfBusinessAKId,
 	-- *INF*: IIF(i_QuoteAKId=v_prev_QuoteAKId,v_NEXTVAL,i_NEXTVAL)
-	IFF(i_QuoteAKId = v_prev_QuoteAKId, v_NEXTVAL, i_NEXTVAL) AS v_NEXTVAL,
+	IFF(i_QuoteAKId = v_prev_QuoteAKId,
+		v_NEXTVAL,
+		i_NEXTVAL
+	) AS v_NEXTVAL,
 	i_QuoteAKId AS v_prev_QuoteAKId,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	-- *INF*: IIF(ISNULL(i_QuoteTransactionAKID),v_NEXTVAL,i_QuoteTransactionAKID)
-	IFF(i_QuoteTransactionAKID IS NULL, v_NEXTVAL, i_QuoteTransactionAKID) AS o_QuoteTransactionAKID,
+	IFF(i_QuoteTransactionAKID IS NULL,
+		v_NEXTVAL,
+		i_QuoteTransactionAKID
+	) AS o_QuoteTransactionAKID,
 	i_QuoteAKId AS o_QuoteAKId,
 	i_StatusDate AS o_StatusDate,
 	i_WrittenPremium AS o_WrittenPremium,

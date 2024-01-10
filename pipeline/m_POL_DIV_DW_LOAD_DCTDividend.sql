@@ -93,11 +93,25 @@ EXP_GetValue AS (
 	PolicyVersionFormatted AS i_PolicyVersionFormatted,
 	ManualDividendCalculation AS i_ManualDividendCalculation,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(iif (not isnull(i_Dividend_state),i_Dividend_state,i_Line_state))))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(IFF(NOT i_Dividend_state IS NULL, i_Dividend_state, i_Line_state)))) AS v_PrimaryLocationState,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(IFF(i_Dividend_state IS NOT NULL,
+					i_Dividend_state,
+					i_Line_state
+				)
+			)
+		)
+	) AS v_PrimaryLocationState,
 	-- *INF*: :LKP.LKP_POLICY(i_PolicyNumber,i_PolicyVersionFormatted)
 	LKP_POLICY_i_PolicyNumber_i_PolicyVersionFormatted.pol_ak_id AS v_pol_ak_id,
 	-- *INF*: REPLACESTR(1,:UDF.DEFAULT_VALUE_FOR_STRINGS(IIF(LTRIM(RTRIM(i_DividendType))='None','N/A',LTRIM(RTRIM(i_DividendType)))),' ','')
-	REPLACESTR(1, :UDF.DEFAULT_VALUE_FOR_STRINGS(IFF(LTRIM(RTRIM(i_DividendType)) = 'None', 'N/A', LTRIM(RTRIM(i_DividendType)))), ' ', '') AS v_DividendType,
+	REGEXP_REPLACE(:UDF.DEFAULT_VALUE_FOR_STRINGS(IFF(LTRIM(RTRIM(i_DividendType
+				)
+			) = 'None',
+			'N/A',
+			LTRIM(RTRIM(i_DividendType
+				)
+			)
+		)
+	),' ','') AS v_DividendType,
 	-- *INF*: REPLACESTR(1,:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_DividendOption))),' ','')
 	-- 
 	-- 
@@ -106,32 +120,61 @@ EXP_GetValue AS (
 	-- 
 	-- 
 	-- 
-	REPLACESTR(1, :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_DividendOption))), ' ', '') AS v_DividendOption,
+	REGEXP_REPLACE(:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_DividendOption
+			)
+		)
+	),' ','') AS v_DividendOption,
 	-- *INF*: IIF(i_ManualDividendCalculation='T',1,0)
-	IFF(i_ManualDividendCalculation = 'T', 1, 0) AS v_ManualDividendCalculation,
+	IFF(i_ManualDividendCalculation = 'T',
+		1,
+		0
+	) AS v_ManualDividendCalculation,
 	-- *INF*: iif(not isnull(i_DividendChange),i_DividendChange, 0.00)
-	IFF(NOT i_DividendChange IS NULL, i_DividendChange, 0.00) AS v_DividendChange,
+	IFF(i_DividendChange IS NOT NULL,
+		i_DividendChange,
+		0.00
+	) AS v_DividendChange,
 	-- *INF*: iif(not isnull(i_DividendPremium),i_DividendPremium, 0.00)
-	IFF(NOT i_DividendPremium IS NULL, i_DividendPremium, 0.00) AS v_DividendPremium,
+	IFF(i_DividendPremium IS NOT NULL,
+		i_DividendPremium,
+		0.00
+	) AS v_DividendPremium,
 	-- *INF*: iif(not isnull(i_DividendPaid),i_DividendPaid, 0.00)
-	IFF(NOT i_DividendPaid IS NULL, i_DividendPaid, 0.00) AS v_DividendPaid,
+	IFF(i_DividendPaid IS NOT NULL,
+		i_DividendPaid,
+		0.00
+	) AS v_DividendPaid,
 	-- *INF*: decode(TRUE, i_Type = 'Dividend' and i_Purpose = 'Onset' ,v_DividendPremium,
 	-- 	 i_Type = 'Dividend' and i_Purpose = 'Offset', v_DividendPremium * -1, i_Type = 'RevisedDividend' and i_Purpose = 'Onset', v_DividendChange, i_Type = 'RevisedDividend' and i_Purpose = 'Offset' , v_DividendChange * -1,
 	--  i_Type = 'VoidDividend' , 0 )
 	decode(TRUE,
-		i_Type = 'Dividend' AND i_Purpose = 'Onset', v_DividendPremium,
-		i_Type = 'Dividend' AND i_Purpose = 'Offset', v_DividendPremium * - 1,
-		i_Type = 'RevisedDividend' AND i_Purpose = 'Onset', v_DividendChange,
-		i_Type = 'RevisedDividend' AND i_Purpose = 'Offset', v_DividendChange * - 1,
-		i_Type = 'VoidDividend', 0) AS v_DividendPaidAmount,
+		i_Type = 'Dividend' 
+		AND i_Purpose = 'Onset', v_DividendPremium,
+		i_Type = 'Dividend' 
+		AND i_Purpose = 'Offset', v_DividendPremium * - 1,
+		i_Type = 'RevisedDividend' 
+		AND i_Purpose = 'Onset', v_DividendChange,
+		i_Type = 'RevisedDividend' 
+		AND i_Purpose = 'Offset', v_DividendChange * - 1,
+		i_Type = 'VoidDividend', 0
+	) AS v_DividendPaidAmount,
 	DividendPaidDate AS i_DividendPaidDate,
 	-- *INF*: iif(not isnull(v_pol_ak_id),v_pol_ak_id,-1)
-	IFF(NOT v_pol_ak_id IS NULL, v_pol_ak_id, - 1) AS o_pol_ak_id,
+	IFF(v_pol_ak_id IS NOT NULL,
+		v_pol_ak_id,
+		- 1
+	) AS o_pol_ak_id,
 	v_DividendPaidAmount AS o_DividendPaidAmount,
 	-- *INF*: TO_DATE(TO_CHAR(
 	-- IIF(ISNULL(i_TransactionDate),TO_DATE('1800-01-01 00:00:00.000','YYYY-MM-DD HH24:MI:SS.MS'),i_TransactionDate)
 	-- ,'YYYYMMDD'),'YYYYMMDD')
-	TO_DATE(TO_CHAR(IFF(i_TransactionDate IS NULL, TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.MS'), i_TransactionDate), 'YYYYMMDD'), 'YYYYMMDD') AS o_TransactionDate,
+	TO_DATE(TO_CHAR(IFF(i_TransactionDate IS NULL,
+				TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.MS'
+				),
+				i_TransactionDate
+			), 'YYYYMMDD'
+		), 'YYYYMMDD'
+	) AS o_TransactionDate,
 	v_PrimaryLocationState AS o_PrimaryLocationState,
 	-- *INF*: v_DividendType
 	-- 
@@ -143,8 +186,9 @@ EXP_GetValue AS (
 	-- REPLACESTR(0,v_DividendOption,'with','w/'))
 	DECODE(TRUE,
 		v_DividendOption = '0', 'N/A',
-		IS_NUMBER(v_DividendOption), v_DividendOption || '%',
-		REPLACESTR(0, v_DividendOption, 'with', 'w/')) AS o_DividendOption,
+		REGEXP_LIKE(v_DividendOption, '^[0-9]+$'), v_DividendOption || '%',
+		REGEXP_REPLACE(v_DividendOption,'with','w/','i')
+	) AS o_DividendOption,
 	i_HistoryID AS o_HistoryID,
 	i_Purpose AS o_Purpose,
 	i_Type AS o_Type,
@@ -152,7 +196,11 @@ EXP_GetValue AS (
 	i_DividendChange AS o_DividendChange,
 	i_DividendPremium AS o_DividendPremium,
 	-- *INF*: IIF(ISNULL(i_DividendPaidDate),TO_DATE('1800-01-01 00:00:00.000','YYYY-MM-DD HH24:MI:SS.MS'),i_DividendPaidDate)
-	IFF(i_DividendPaidDate IS NULL, TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.MS'), i_DividendPaidDate) AS o_DividendPaidDate,
+	IFF(i_DividendPaidDate IS NULL,
+		TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.MS'
+		),
+		i_DividendPaidDate
+	) AS o_DividendPaidDate,
 	TransactionPostedDate,
 	SessionId
 	FROM FLT_Remove_Invalid_Policies
@@ -241,13 +289,23 @@ mplt_Evaluate_DCTDividend AS (WITH
 		LKP_SupDividendType.StandardDividendPlan AS lkp_StandardDividendPlan,
 		i_pol_ak_id AS o_PolicyAKId,
 		-- *INF*: IIF(ISNULL(i_DividendPaidAmount),0,i_DividendPaidAmount)
-		IFF(i_DividendPaidAmount IS NULL, 0, i_DividendPaidAmount) AS o_DividendPaidAmount,
+		IFF(i_DividendPaidAmount IS NULL,
+			0,
+			i_DividendPaidAmount
+		) AS o_DividendPaidAmount,
 		-- *INF*: IIF(ISNULL(i_TransactionDate),TO_DATE('1800-01-01 00:00:00.000','YYYY-MM-DD HH24:MI:SS.MS'),i_TransactionDate)
-		IFF(i_TransactionDate IS NULL, TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.MS'), i_TransactionDate) AS o_DividendTransactionEnteredDate,
+		IFF(i_TransactionDate IS NULL,
+			TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.MS'
+			),
+			i_TransactionDate
+		) AS o_DividendTransactionEnteredDate,
 		-- *INF*: IIF(ISNULL(i_PrimaryLocationState),'N/A',i_PrimaryLocationState)
 		-- 
 		-- --IIF(ISNULL(lkp_PMSStateCode),'N/A',lkp_PMSStateCode)
-		IFF(i_PrimaryLocationState IS NULL, 'N/A', i_PrimaryLocationState) AS o_StateCode,
+		IFF(i_PrimaryLocationState IS NULL,
+			'N/A',
+			i_PrimaryLocationState
+		) AS o_StateCode,
 		-- *INF*: DECODE(TRUE,
 		-- ISNULL(lkp_DividendPlan) or lkp_DividendPlan='N/A','No Dividend',
 		-- lkp_DividendType='FlatVariable', 'Flat '||lkp_StandardDividendPlan||' Variable',
@@ -256,25 +314,37 @@ mplt_Evaluate_DCTDividend AS (WITH
 		-- )
 		-- 
 		DECODE(TRUE,
-			lkp_DividendPlan IS NULL OR lkp_DividendPlan = 'N/A', 'No Dividend',
+			lkp_DividendPlan IS NULL 
+			OR lkp_DividendPlan = 'N/A', 'No Dividend',
 			lkp_DividendType = 'FlatVariable', 'Flat ' || lkp_StandardDividendPlan || ' Variable',
 			lkp_DividendType = 'Flat', lkp_StandardDividendPlan || ' Flat',
-			lkp_StandardDividendType || ' ' || lkp_StandardDividendPlan) AS v_DividendPlan,
+			lkp_StandardDividendType || ' ' || lkp_StandardDividendPlan
+		) AS v_DividendPlan,
 		-- *INF*: DECODE(TRUE,
 		-- NOT ISNULL(lkp_DividendType),lkp_StandardDividendType,
 		-- 'No Dividend')
 		-- 
 		DECODE(TRUE,
-			NOT lkp_DividendType IS NULL, lkp_StandardDividendType,
-			'No Dividend') AS v_DividendType,
+			lkp_DividendType IS NOT NULL, lkp_StandardDividendType,
+			'No Dividend'
+		) AS v_DividendType,
 		-- *INF*: IIF(ISNULL(v_DividendPlan),'N/A',v_DividendPlan)
 		-- 
-		IFF(v_DividendPlan IS NULL, 'N/A', v_DividendPlan) AS o_DividendPlan,
+		IFF(v_DividendPlan IS NULL,
+			'N/A',
+			v_DividendPlan
+		) AS o_DividendPlan,
 		-- *INF*: IIF(ISNULL(v_DividendType),'N/A',v_DividendType)
 		-- 
-		IFF(v_DividendType IS NULL, 'N/A', v_DividendType) AS o_DividendType,
+		IFF(v_DividendType IS NULL,
+			'N/A',
+			v_DividendType
+		) AS o_DividendType,
 		-- *INF*: IIF(ISNULL(lkp_SupDividendTypeID),-1,lkp_SupDividendTypeID)
-		IFF(lkp_SupDividendTypeID IS NULL, - 1, lkp_SupDividendTypeID) AS o_SupDividendTypeId,
+		IFF(lkp_SupDividendTypeID IS NULL,
+			- 1,
+			lkp_SupDividendTypeID
+		) AS o_SupDividendTypeId,
 		AGG_RemoveDuplicate.HistoryID AS i_HistoryID,
 		AGG_RemoveDuplicate.Purpose AS i_Purpose,
 		AGG_RemoveDuplicate.Type AS i_Type,
@@ -319,7 +389,10 @@ mplt_Evaluate_DCTDividend AS (WITH
 		EXP_PlanandType.i_DividendPaidDate AS DividendPaidDate,
 		LKP_sup_state.sup_state_id AS lkp_sup_state_id,
 		-- *INF*: IIF(ISNULL(lkp_sup_state_id),-1,lkp_sup_state_id)
-		IFF(lkp_sup_state_id IS NULL, - 1, lkp_sup_state_id) AS o_sup_state_id,
+		IFF(lkp_sup_state_id IS NULL,
+			- 1,
+			lkp_sup_state_id
+		) AS o_sup_state_id,
 		EXP_PlanandType.SessionId,
 		EXP_PlanandType.PolicyKey,
 		EXP_PlanandType.TransactionPostedDate
@@ -384,7 +457,8 @@ mplt_Evaluate_DCTDividend AS (WITH
 		-- 'Onset')
 		decode(TRUE,
 			Purpose = 'Onset', 'Offset',
-			'Onset') AS DerivedPurpose,
+			'Onset'
+		) AS DerivedPurpose,
 		LKP_DCTDividend_find_prior.DCTDividendPriorAmount AS lkp_DCTDividendPriorAmount,
 		LKP_DCTDividend_find_prior.DCTDividendChangeAmount AS lkp_DCTDividendChangeAmount,
 		LKP_DCTDividend_find_prior.DCTDividendPremiumAmount AS lkp_DCTDividendPremiumAmount,
@@ -397,12 +471,22 @@ mplt_Evaluate_DCTDividend AS (WITH
 		-- NOT isnull(lkp_DCTDividendId)  AND Type = 'VoidDividend','S',
 		-- 'N')
 		DECODE(TRUE,
-			NOT lkp_DCTDividendId IS NULL AND Type = 'Dividend' AND lkp_DCTDividendPremiumAmount != DividendPremium, 'Y',
-			NOT lkp_DCTDividendId IS NULL AND Type = 'RevisedDividend' AND lkp_DCTDividendChangeAmount != DividendChange, 'Y',
-			NOT lkp_DCTDividendId IS NULL AND Type = 'Dividend' AND lkp_DCTDividendPremiumAmount = DividendPremium, 'S',
-			NOT lkp_DCTDividendId IS NULL AND Type = 'RevisedDividend' AND lkp_DCTDividendChangeAmount = DividendChange, 'S',
-			NOT lkp_DCTDividendId IS NULL AND Type = 'VoidDividend', 'S',
-			'N') AS Deprecate_Flag,
+			lkp_DCTDividendId IS NULL 
+			AND Type = 'Dividend' 
+			AND lkp_DCTDividendPremiumAmount != DividendPreNOT mium, 'Y',
+			lkp_DCTDividendId IS NULL 
+			AND Type = 'RevisedDividend' 
+			AND lkp_DCTDividendChangeAmount != DividendChNOT ange, 'Y',
+			lkp_DCTDividendId IS NULL 
+			AND Type = 'Dividend' 
+			AND lkp_DCTDividendPremiumAmount = DividendPreNOT mium, 'S',
+			lkp_DCTDividendId IS NULL 
+			AND Type = 'RevisedDividend' 
+			AND lkp_DCTDividendChangeAmount = DividendChNOT ange, 'S',
+			lkp_DCTDividendId IS NULL 
+			AND Type = 'VoidDividNOT end', 'S',
+			'N'
+		) AS Deprecate_Flag,
 		EXP_sup_state.TransactionPostedDate
 		FROM EXP_sup_state
 		LEFT JOIN LKP_DCTDividend_find_prior
@@ -502,7 +586,7 @@ EXP_MetaData AS (
 	DividendTransactionPostedDate,
 	-- *INF*: ADD_TO_DATE(TRUNC(ADD_TO_DATE(DividendTransactionPostedDate,'MM',1), 'MM'),'DD',-1)
 	-- 
-	ADD_TO_DATE(TRUNC(ADD_TO_DATE(DividendTransactionPostedDate, 'MM', 1), 'MM'), 'DD', - 1) AS DividendRunDate,
+	DATEADD(DAY,- 1,CAST(TRUNC(DATEADD(MONTH,1,DividendTransactionPostedDate), 'MONTH') AS TIMESTAMP_NTZ(0))) AS DividendRunDate,
 	StateCode,
 	DividendPlan,
 	DividendType1 AS DividendType,
@@ -519,9 +603,11 @@ EXP_MetaData AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	SessionId1 AS o_DCTDividendAKId,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,
+	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_ExpirationDate,
+	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate

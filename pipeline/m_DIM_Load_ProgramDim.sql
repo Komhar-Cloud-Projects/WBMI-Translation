@@ -24,13 +24,18 @@ EXP_Value AS (
 	SELECT
 	LKP_ProgramDim.ProgramDimId AS lkp_ProgramDimId,
 	-- *INF*: IIF(ISNULL(lkp_ProgramDimId), 'INSERT', 'UPDATE')
-	IFF(lkp_ProgramDimId IS NULL, 'INSERT', 'UPDATE') AS Flag,
+	IFF(lkp_ProgramDimId IS NULL,
+		'INSERT',
+		'UPDATE'
+	) AS Flag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS EffectiveDate,
+	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+	) AS EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS ExpirationDate,
+	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+	) AS ExpirationDate,
 	SQ_Program.SourceSystemId,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,

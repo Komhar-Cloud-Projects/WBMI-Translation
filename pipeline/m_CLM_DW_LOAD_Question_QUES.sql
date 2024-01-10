@@ -22,46 +22,246 @@ EXP_VALIDATE AS (
 	SELECT
 	question_guid AS IN_question_guid,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_question_guid))) OR IS_SPACES(LTRIM(RTRIM(IN_question_guid))) OR LENGTH(LTRIM(RTRIM(IN_question_guid)))=0,'N/A' ,LTRIM(RTRIM(IN_question_guid)))
-	IFF(LTRIM(RTRIM(IN_question_guid)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_question_guid))) OR LENGTH(LTRIM(RTRIM(IN_question_guid))) = 0, 'N/A', LTRIM(RTRIM(IN_question_guid))) AS question_guid,
+	IFF(LTRIM(RTRIM(IN_question_guid
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_question_guid
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_question_guid
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_question_guid
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_question_guid
+			)
+		)
+	) AS question_guid,
 	optn_set_guid AS IN_optn_set_guid,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_optn_set_guid))) OR IS_SPACES(LTRIM(RTRIM(IN_optn_set_guid))) OR LENGTH(LTRIM(RTRIM(IN_optn_set_guid)))=0,'N/A' ,LTRIM(RTRIM(IN_optn_set_guid)))
-	IFF(LTRIM(RTRIM(IN_optn_set_guid)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_optn_set_guid))) OR LENGTH(LTRIM(RTRIM(IN_optn_set_guid))) = 0, 'N/A', LTRIM(RTRIM(IN_optn_set_guid))) AS optn_set_guid,
+	IFF(LTRIM(RTRIM(IN_optn_set_guid
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_optn_set_guid
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_optn_set_guid
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_optn_set_guid
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_optn_set_guid
+			)
+		)
+	) AS optn_set_guid,
 	app_context_guid AS IN_app_context_guid,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_app_context_guid))) OR IS_SPACES(LTRIM(RTRIM(IN_app_context_guid))) OR LENGTH(LTRIM(RTRIM(IN_app_context_guid)))=0,'N/A' ,LTRIM(RTRIM(IN_app_context_guid)))
-	IFF(LTRIM(RTRIM(IN_app_context_guid)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_app_context_guid))) OR LENGTH(LTRIM(RTRIM(IN_app_context_guid))) = 0, 'N/A', LTRIM(RTRIM(IN_app_context_guid))) AS app_context_guid,
+	IFF(LTRIM(RTRIM(IN_app_context_guid
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_app_context_guid
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_app_context_guid
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_app_context_guid
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_app_context_guid
+			)
+		)
+	) AS app_context_guid,
 	app_context_grp_guid AS IN_app_context_group_guid,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_app_context_group_guid))) OR IS_SPACES(LTRIM(RTRIM(IN_app_context_group_guid))) OR LENGTH(LTRIM(RTRIM(IN_app_context_group_guid)))=0,'N/A' ,LTRIM(RTRIM(IN_app_context_group_guid)))
-	IFF(LTRIM(RTRIM(IN_app_context_group_guid)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_app_context_group_guid))) OR LENGTH(LTRIM(RTRIM(IN_app_context_group_guid))) = 0, 'N/A', LTRIM(RTRIM(IN_app_context_group_guid))) AS app_context_group_guid,
+	IFF(LTRIM(RTRIM(IN_app_context_group_guid
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_app_context_group_guid
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_app_context_group_guid
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_app_context_group_guid
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_app_context_group_guid
+			)
+		)
+	) AS app_context_group_guid,
 	display_name AS IN_display_name,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_display_name))) OR IS_SPACES(LTRIM(RTRIM(IN_display_name))) OR LENGTH(LTRIM(RTRIM(IN_display_name)))=0,'N/A' ,LTRIM(RTRIM(IN_display_name)))
-	IFF(LTRIM(RTRIM(IN_display_name)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_display_name))) OR LENGTH(LTRIM(RTRIM(IN_display_name))) = 0, 'N/A', LTRIM(RTRIM(IN_display_name))) AS display_name,
+	IFF(LTRIM(RTRIM(IN_display_name
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_display_name
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_display_name
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_display_name
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_display_name
+			)
+		)
+	) AS display_name,
 	logical_name AS IN_logical_name,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_logical_name))) OR IS_SPACES(LTRIM(RTRIM(IN_logical_name))) OR LENGTH(LTRIM(RTRIM(IN_logical_name)))=0,'N/A' ,LTRIM(RTRIM(IN_logical_name)))
-	IFF(LTRIM(RTRIM(IN_logical_name)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_logical_name))) OR LENGTH(LTRIM(RTRIM(IN_logical_name))) = 0, 'N/A', LTRIM(RTRIM(IN_logical_name))) AS logical_name,
+	IFF(LTRIM(RTRIM(IN_logical_name
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_logical_name
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_logical_name
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_logical_name
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_logical_name
+			)
+		)
+	) AS logical_name,
 	published_to_prod_flag AS IN_published_to_prod_flag,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_published_to_prod_flag))) OR IS_SPACES(LTRIM(RTRIM(IN_published_to_prod_flag))) OR LENGTH(LTRIM(RTRIM(IN_published_to_prod_flag)))=0,' ' ,LTRIM(RTRIM(IN_published_to_prod_flag)))
-	IFF(LTRIM(RTRIM(IN_published_to_prod_flag)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_published_to_prod_flag))) OR LENGTH(LTRIM(RTRIM(IN_published_to_prod_flag))) = 0, ' ', LTRIM(RTRIM(IN_published_to_prod_flag))) AS published_to_prod_flag,
+	IFF(LTRIM(RTRIM(IN_published_to_prod_flag
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_published_to_prod_flag
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_published_to_prod_flag
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_published_to_prod_flag
+				)
+			)
+		) = 0,
+		' ',
+		LTRIM(RTRIM(IN_published_to_prod_flag
+			)
+		)
+	) AS published_to_prod_flag,
 	enabled_flag AS IN_enabled_flag,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_enabled_flag))) OR IS_SPACES(LTRIM(RTRIM(IN_enabled_flag))) OR LENGTH(LTRIM(RTRIM(IN_enabled_flag)))=0,' ' ,LTRIM(RTRIM(IN_enabled_flag)))
-	IFF(LTRIM(RTRIM(IN_enabled_flag)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_enabled_flag))) OR LENGTH(LTRIM(RTRIM(IN_enabled_flag))) = 0, ' ', LTRIM(RTRIM(IN_enabled_flag))) AS enabled_flag,
+	IFF(LTRIM(RTRIM(IN_enabled_flag
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_enabled_flag
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_enabled_flag
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_enabled_flag
+				)
+			)
+		) = 0,
+		' ',
+		LTRIM(RTRIM(IN_enabled_flag
+			)
+		)
+	) AS enabled_flag,
 	help_text AS IN_help_text,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_help_text))) OR IS_SPACES(LTRIM(RTRIM(IN_help_text))) OR LENGTH(LTRIM(RTRIM(IN_help_text)))=0,'N/A' ,LTRIM(RTRIM(IN_help_text)))
-	IFF(LTRIM(RTRIM(IN_help_text)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_help_text))) OR LENGTH(LTRIM(RTRIM(IN_help_text))) = 0, 'N/A', LTRIM(RTRIM(IN_help_text))) AS help_text,
+	IFF(LTRIM(RTRIM(IN_help_text
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_help_text
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_help_text
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_help_text
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_help_text
+			)
+		)
+	) AS help_text,
 	prompt AS IN_prompt,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_prompt))) OR IS_SPACES(LTRIM(RTRIM(IN_prompt))) OR LENGTH(LTRIM(RTRIM(IN_prompt)))=0,'N/A' ,LTRIM(RTRIM(IN_prompt)))
-	IFF(LTRIM(RTRIM(IN_prompt)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_prompt))) OR LENGTH(LTRIM(RTRIM(IN_prompt))) = 0, 'N/A', LTRIM(RTRIM(IN_prompt))) AS prompt,
+	IFF(LTRIM(RTRIM(IN_prompt
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_prompt
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_prompt
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_prompt
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_prompt
+			)
+		)
+	) AS prompt,
 	notes AS IN_notes,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_notes))) OR IS_SPACES(LTRIM(RTRIM(IN_notes))) OR LENGTH(LTRIM(RTRIM(IN_notes)))=0,'N/A' ,LTRIM(RTRIM(IN_notes)))
-	IFF(LTRIM(RTRIM(IN_notes)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_notes))) OR LENGTH(LTRIM(RTRIM(IN_notes))) = 0, 'N/A', LTRIM(RTRIM(IN_notes))) AS notes,
+	IFF(LTRIM(RTRIM(IN_notes
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_notes
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_notes
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_notes
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_notes
+			)
+		)
+	) AS notes,
 	surrogate_question_guid AS IN_surrogate_question_guid,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_surrogate_question_guid))) OR IS_SPACES(LTRIM(RTRIM(IN_surrogate_question_guid))) OR LENGTH(LTRIM(RTRIM(IN_surrogate_question_guid)))=0,'N/A' ,LTRIM(RTRIM(IN_surrogate_question_guid)))
-	IFF(LTRIM(RTRIM(IN_surrogate_question_guid)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_surrogate_question_guid))) OR LENGTH(LTRIM(RTRIM(IN_surrogate_question_guid))) = 0, 'N/A', LTRIM(RTRIM(IN_surrogate_question_guid))) AS surrogate_question_guid,
+	IFF(LTRIM(RTRIM(IN_surrogate_question_guid
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_surrogate_question_guid
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_surrogate_question_guid
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_surrogate_question_guid
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_surrogate_question_guid
+			)
+		)
+	) AS surrogate_question_guid,
 	eff_date AS IN_eff_date,
 	-- *INF*: IIF(ISNULL(IN_eff_date) ,TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') ,IN_eff_date)
-	IFF(IN_eff_date IS NULL, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), IN_eff_date) AS eff_date,
+	IFF(IN_eff_date IS NULL,
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		IN_eff_date
+	) AS eff_date,
 	exp_date AS IN_exp_date,
 	-- *INF*: IIF(ISNULL(IN_exp_date) ,TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') ,IN_exp_date)
-	IFF(IN_exp_date IS NULL, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'), IN_exp_date) AS exp_date,
+	IFF(IN_exp_date IS NULL,
+		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		IN_exp_date
+	) AS exp_date,
 	source_system_id
 	FROM SQ_question_stage
 ),
@@ -127,7 +327,10 @@ EXP_DETECT_CHANGES AS (
 	-- *INF*: IIF(ISNULL(IN_app_context_ak_id),-1,IN_app_context_ak_id)
 	--  
 	--  
-	IFF(IN_app_context_ak_id IS NULL, - 1, IN_app_context_ak_id) AS v_app_context_ak_id,
+	IFF(IN_app_context_ak_id IS NULL,
+		- 1,
+		IN_app_context_ak_id
+	) AS v_app_context_ak_id,
 	v_app_context_ak_id AS app_context_ak_id,
 	EXP_VALIDATE.app_context_group_guid,
 	EXP_VALIDATE.display_name,
@@ -170,19 +373,83 @@ EXP_DETECT_CHANGES AS (
 	-- 	LTRIM(RTRIM(surrogate_question_guid)) <> LTRIM(RTRIM(LKP_surrogate_question_guid) ) ,
 	-- 	'UPDATE','NOCHANGE'))
 	-- 
-	IFF(LKP_question_ak_id IS NULL, 'NEW', IFF(LTRIM(RTRIM(optn_set_guid)) <> LTRIM(RTRIM(LKP_optn_set_guid)) OR LTRIM(RTRIM(display_name)) <> LTRIM(RTRIM(LKP_display_name)) OR LTRIM(RTRIM(logical_name)) <> LTRIM(RTRIM(LKP_logical_name)) OR LTRIM(RTRIM(published_to_prod_flag)) <> LTRIM(RTRIM(LKP_published_to_prod_flag)) OR exp_date <> LKP_exp_date OR eff_date <> LKP_eff_date OR LTRIM(RTRIM(enabled_flag)) <> LTRIM(RTRIM(LKP_enabled_flag)) OR LTRIM(RTRIM(help_text)) <> LTRIM(RTRIM(LKP_help_text)) OR LTRIM(RTRIM(prompt)) <> LTRIM(RTRIM(LKP_prompt)) OR v_app_context_ak_id <> LKP_app_context_ak_id OR LTRIM(RTRIM(notes)) <> LTRIM(RTRIM(LKP_notes)) OR LTRIM(RTRIM(app_context_group_guid)) <> LTRIM(RTRIM(LKP_app_context_group_guid)) OR LTRIM(RTRIM(surrogate_question_guid)) <> LTRIM(RTRIM(LKP_surrogate_question_guid)), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(LKP_question_ak_id IS NULL,
+		'NEW',
+		IFF(LTRIM(RTRIM(optn_set_guid
+				)
+			) <> LTRIM(RTRIM(LKP_optn_set_guid
+				)
+			) 
+			OR LTRIM(RTRIM(display_name
+				)
+			) <> LTRIM(RTRIM(LKP_display_name
+				)
+			) 
+			OR LTRIM(RTRIM(logical_name
+				)
+			) <> LTRIM(RTRIM(LKP_logical_name
+				)
+			) 
+			OR LTRIM(RTRIM(published_to_prod_flag
+				)
+			) <> LTRIM(RTRIM(LKP_published_to_prod_flag
+				)
+			) 
+			OR exp_date <> LKP_exp_date 
+			OR eff_date <> LKP_eff_date 
+			OR LTRIM(RTRIM(enabled_flag
+				)
+			) <> LTRIM(RTRIM(LKP_enabled_flag
+				)
+			) 
+			OR LTRIM(RTRIM(help_text
+				)
+			) <> LTRIM(RTRIM(LKP_help_text
+				)
+			) 
+			OR LTRIM(RTRIM(prompt
+				)
+			) <> LTRIM(RTRIM(LKP_prompt
+				)
+			) 
+			OR v_app_context_ak_id <> LKP_app_context_ak_id 
+			OR LTRIM(RTRIM(notes
+				)
+			) <> LTRIM(RTRIM(LKP_notes
+				)
+			) 
+			OR LTRIM(RTRIM(app_context_group_guid
+				)
+			) <> LTRIM(RTRIM(LKP_app_context_group_guid
+				)
+			) 
+			OR LTRIM(RTRIM(surrogate_question_guid
+				)
+			) <> LTRIM(RTRIM(LKP_surrogate_question_guid
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: IIF(v_changed_flag='NEW',TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_changed_flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM:DD:YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM:DD:YYYY HH24:MI:SS') AS default_date
+	TO_DATE('01/01/1800 00:00:00', 'MM:DD:YYYY HH24:MI:SS'
+	) AS default_date
 	FROM EXP_VALIDATE
 	LEFT JOIN LKP_APP_CONTEXT
 	ON LKP_APP_CONTEXT.app_context_guid = EXP_VALIDATE.app_context_guid
@@ -227,7 +494,10 @@ EXP_Determine_AK1 AS (
 	SELECT
 	LKP_questoin_ak_id AS LKP_question_ak_id,
 	-- *INF*: IIF(changed_flag ='NEW',NEXTVAL,LKP_question_ak_id)
-	IFF(changed_flag = 'NEW', NEXTVAL, LKP_question_ak_id) AS question_ak_id,
+	IFF(changed_flag = 'NEW',
+		NEXTVAL,
+		LKP_question_ak_id
+	) AS question_ak_id,
 	app_context_ak_id,
 	question_guid,
 	optn_set_guid,
@@ -310,8 +580,9 @@ EXP_Lag_eff_from_date AS (
 	eff_to_date AS orig_eff_to_date,
 	-- *INF*: DECODE(TRUE, question_quid=v_prev_row_question_guid  ,ADD_TO_DATE(v_prev_row_eff_from_date,'SS',-1),orig_eff_to_date)
 	DECODE(TRUE,
-		question_quid = v_prev_row_question_guid, ADD_TO_DATE(v_prev_row_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		question_quid = v_prev_row_question_guid, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	question_quid AS v_prev_row_question_guid,
 	eff_from_date AS v_prev_row_eff_from_date,

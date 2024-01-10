@@ -41,24 +41,38 @@ EXP_set_values AS (
 	EXP_get_values.claim_pay_ctgry_type,
 	LKP_sup_claim_benefit_type.benefit_type_code_descript AS IN_benefit_type_code_descript,
 	-- *INF*: IIF(ISNULL(IN_benefit_type_code_descript), 'N/A', IN_benefit_type_code_descript)
-	IFF(IN_benefit_type_code_descript IS NULL, 'N/A', IN_benefit_type_code_descript) AS claim_pay_ctgry_type_descript,
+	IFF(IN_benefit_type_code_descript IS NULL,
+		'N/A',
+		IN_benefit_type_code_descript
+	) AS claim_pay_ctgry_type_descript,
 	EXP_get_values.claim_pay_ctgry_lump_sum_ind AS IN_claim_pay_ctgry_lump_sum_ind,
 	-- *INF*: IIF(ISNULL(IN_claim_pay_ctgry_lump_sum_ind), 'N/A', IN_claim_pay_ctgry_lump_sum_ind)
-	IFF(IN_claim_pay_ctgry_lump_sum_ind IS NULL, 'N/A', IN_claim_pay_ctgry_lump_sum_ind) AS claim_pay_ctgry_lump_sum_ind,
+	IFF(IN_claim_pay_ctgry_lump_sum_ind IS NULL,
+		'N/A',
+		IN_claim_pay_ctgry_lump_sum_ind
+	) AS claim_pay_ctgry_lump_sum_ind,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	EXP_get_values.cov_ctgry_code AS IN_cov_ctgry_code,
 	-- *INF*: IIF(ISNULL(IN_cov_ctgry_code), 'N/A', IN_cov_ctgry_code)
-	IFF(IN_cov_ctgry_code IS NULL, 'N/A', IN_cov_ctgry_code) AS cov_ctgry_code,
+	IFF(IN_cov_ctgry_code IS NULL,
+		'N/A',
+		IN_cov_ctgry_code
+	) AS cov_ctgry_code,
 	LKP_sup_coverage_category.cov_ctgry_descript AS IN_cov_ctgry_descript,
 	-- *INF*: IIF(ISNULL(IN_cov_ctgry_descript), 'N/A', IN_cov_ctgry_descript)
-	IFF(IN_cov_ctgry_descript IS NULL, 'N/A', IN_cov_ctgry_descript) AS cov_ctgry_descript
+	IFF(IN_cov_ctgry_descript IS NULL,
+		'N/A',
+		IN_cov_ctgry_descript
+	) AS cov_ctgry_descript
 	FROM EXP_get_values
 	LEFT JOIN LKP_sup_claim_benefit_type
 	ON LKP_sup_claim_benefit_type.benefit_type_code = EXP_get_values.claim_pay_ctgry_type

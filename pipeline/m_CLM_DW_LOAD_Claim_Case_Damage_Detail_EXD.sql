@@ -24,11 +24,43 @@ EXP_VALIDATE AS (
 	tch_client_id1 AS tch_client_id_ccd,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(tch_claim_nbr_ccd))) OR IS_SPACES(LTRIM(RTRIM(tch_claim_nbr_ccd))) OR LENGTH(LTRIM(RTRIM(tch_claim_nbr_ccd)))=0,'N/A',LTRIM(RTRIM(tch_claim_nbr_ccd))) 
 	--                                                                                                                
-	IFF(LTRIM(RTRIM(tch_claim_nbr_ccd)) IS NULL OR IS_SPACES(LTRIM(RTRIM(tch_claim_nbr_ccd))) OR LENGTH(LTRIM(RTRIM(tch_claim_nbr_ccd))) = 0, 'N/A', LTRIM(RTRIM(tch_claim_nbr_ccd))) AS v_tch_claim_nbr,
+	IFF(LTRIM(RTRIM(tch_claim_nbr_ccd
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(tch_claim_nbr_ccd
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(tch_claim_nbr_ccd
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(tch_claim_nbr_ccd
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(tch_claim_nbr_ccd
+			)
+		)
+	) AS v_tch_claim_nbr,
 	v_tch_claim_nbr AS tch_claim_nbr,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(tch_client_id_ccd))) OR IS_SPACES(LTRIM(RTRIM(tch_client_id_ccd))) OR LENGTH(LTRIM(RTRIM(tch_client_id_ccd)))=0,'N/A',LTRIM(RTRIM(tch_client_id_ccd)))
 	--                                                                                                              
-	IFF(LTRIM(RTRIM(tch_client_id_ccd)) IS NULL OR IS_SPACES(LTRIM(RTRIM(tch_client_id_ccd))) OR LENGTH(LTRIM(RTRIM(tch_client_id_ccd))) = 0, 'N/A', LTRIM(RTRIM(tch_client_id_ccd))) AS v_tch_client_id,
+	IFF(LTRIM(RTRIM(tch_client_id_ccd
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(tch_client_id_ccd
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(tch_client_id_ccd
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(tch_client_id_ccd
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(tch_client_id_ccd
+			)
+		)
+	) AS v_tch_client_id,
 	v_tch_client_id AS tch_client_id,
 	-- *INF*: v_tch_claim_nbr || '//'||v_tch_client_id
 	v_tch_claim_nbr || '//' || v_tch_client_id AS v_Claim_Case_Key,
@@ -39,25 +71,85 @@ EXP_VALIDATE AS (
 	-- 
 	-- 
 	-- ---v_Claim_case_ak_id
-	IFF(v_Claim_case_ak_id IS NULL, - 1, v_Claim_case_ak_id) AS Claim_case_ak_id,
+	IFF(v_Claim_case_ak_id IS NULL,
+		- 1,
+		v_Claim_case_ak_id
+	) AS Claim_case_ak_id,
 	damage_seq AS IN_damage_seq,
 	-- *INF*: IIF(ISNULL(IN_damage_seq) ,-1 ,IN_damage_seq)
-	IFF(IN_damage_seq IS NULL, - 1, IN_damage_seq) AS damage_seq,
+	IFF(IN_damage_seq IS NULL,
+		- 1,
+		IN_damage_seq
+	) AS damage_seq,
 	damage_cd AS IN_damage_cd,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_damage_cd))) OR IS_SPACES(LTRIM(RTRIM(IN_damage_cd))) OR LENGTH(LTRIM(RTRIM(IN_damage_cd)))=0,'N/A' ,LTRIM(RTRIM(IN_damage_cd)))
-	IFF(LTRIM(RTRIM(IN_damage_cd)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_damage_cd))) OR LENGTH(LTRIM(RTRIM(IN_damage_cd))) = 0, 'N/A', LTRIM(RTRIM(IN_damage_cd))) AS damage_cd,
+	IFF(LTRIM(RTRIM(IN_damage_cd
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_damage_cd
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_damage_cd
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_damage_cd
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_damage_cd
+			)
+		)
+	) AS damage_cd,
 	damage_amt AS IN_damage_amt,
 	-- *INF*: IIF(ISNULL(IN_damage_amt),0.0 ,IN_damage_amt)
-	IFF(IN_damage_amt IS NULL, 0.0, IN_damage_amt) AS damage_amt,
+	IFF(IN_damage_amt IS NULL,
+		0.0,
+		IN_damage_amt
+	) AS damage_amt,
 	damage_high_amt AS IN_damage_high_amt,
 	-- *INF*: IIF(ISNULL(IN_damage_high_amt) ,0.0 ,IN_damage_high_amt)
-	IFF(IN_damage_high_amt IS NULL, 0.0, IN_damage_high_amt) AS damage_high_amt,
+	IFF(IN_damage_high_amt IS NULL,
+		0.0,
+		IN_damage_high_amt
+	) AS damage_high_amt,
 	damage_desc AS IN_damage_desc,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_damage_desc))) OR IS_SPACES(LTRIM(RTRIM(IN_damage_desc))) OR LENGTH(LTRIM(RTRIM(IN_damage_desc)))=0,'N/A' ,LTRIM(RTRIM(IN_damage_desc)))
-	IFF(LTRIM(RTRIM(IN_damage_desc)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_damage_desc))) OR LENGTH(LTRIM(RTRIM(IN_damage_desc))) = 0, 'N/A', LTRIM(RTRIM(IN_damage_desc))) AS damage_desc,
+	IFF(LTRIM(RTRIM(IN_damage_desc
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_damage_desc
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_damage_desc
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_damage_desc
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_damage_desc
+			)
+		)
+	) AS damage_desc,
 	damage_type AS IN_damage_type,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_damage_type))) OR IS_SPACES(LTRIM(RTRIM(IN_damage_type))) OR LENGTH(LTRIM(RTRIM(IN_damage_type)))=0,'N/A' ,LTRIM(RTRIM(IN_damage_type)))
-	IFF(LTRIM(RTRIM(IN_damage_type)) IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_damage_type))) OR LENGTH(LTRIM(RTRIM(IN_damage_type))) = 0, 'N/A', LTRIM(RTRIM(IN_damage_type))) AS damage_type
+	IFF(LTRIM(RTRIM(IN_damage_type
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_damage_type
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_damage_type
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_damage_type
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_damage_type
+			)
+		)
+	) AS damage_type
 	FROM SQ_CLAIM_CASE_STAGE_TABLES
 	LEFT JOIN LKP_CLAIM_CASE_AK_ID LKP_CLAIM_CASE_AK_ID_v_Claim_Case_Key
 	ON LKP_CLAIM_CASE_AK_ID_v_Claim_Case_Key.claim_case_key = v_Claim_Case_Key
@@ -112,14 +204,36 @@ EXP_DETECT_CHANGES AS (
 	-- 		LTRIM(RTRIM(damage_type)) <> LTRIM(RTRIM(old_dam_type_code)) 
 	-- 		,'UPDATE','NOCHANGE'))
 	-- 
-	IFF(old_claim_case_dam_det_id IS NULL, 'NEW', IFF(damage_amt <> old_dam_low_amt OR damage_high_amt <> old_dam_high_amt OR LTRIM(RTRIM(damage_desc)) <> LTRIM(RTRIM(old_dam_comment)) OR LTRIM(RTRIM(damage_type)) <> LTRIM(RTRIM(old_dam_type_code)), 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(old_claim_case_dam_det_id IS NULL,
+		'NEW',
+		IFF(damage_amt <> old_dam_low_amt 
+			OR damage_high_amt <> old_dam_high_amt 
+			OR LTRIM(RTRIM(damage_desc
+				)
+			) <> LTRIM(RTRIM(old_dam_comment
+				)
+			) 
+			OR LTRIM(RTRIM(damage_type
+				)
+			) <> LTRIM(RTRIM(old_dam_type_code
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: IIF(v_changed_flag='NEW',TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_changed_flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -158,7 +272,10 @@ EXP_Determine_AK AS (
 	SELECT
 	old_claim_case_dam_det_ak_id,
 	-- *INF*: IIF(changed_flag ='NEW',NEXTVAL,old_claim_case_dam_det_ak_id)
-	IFF(changed_flag = 'NEW', NEXTVAL, old_claim_case_dam_det_ak_id) AS claim_case_dam_det_ak_id,
+	IFF(changed_flag = 'NEW',
+		NEXTVAL,
+		old_claim_case_dam_det_ak_id
+	) AS claim_case_dam_det_ak_id,
 	claim_case_ak_id,
 	out_Claim_Case_Key,
 	damage_seq,
@@ -234,8 +351,11 @@ EXP_Lag_eff_from_date AS (
 	--  and dam_seq_num = v_prev_row_dam_seq_num 
 	-- and dam_code=v_prev_row_dam_code,ADD_TO_DATE(v_prev_row_eff_from_date,'SS',-1),orig_eff_to_date)
 	DECODE(TRUE,
-		claim_case_ak_id = v_prev_row_claim_case_ak_id AND dam_seq_num = v_prev_row_dam_seq_num AND dam_code = v_prev_row_dam_code, ADD_TO_DATE(v_prev_row_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_case_ak_id = v_prev_row_claim_case_ak_id 
+		AND dam_seq_num = v_prev_row_dam_seq_num 
+		AND dam_code = v_prev_row_dam_code, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	claim_case_ak_id AS v_prev_row_claim_case_ak_id,
 	dam_seq_num AS v_prev_row_dam_seq_num,

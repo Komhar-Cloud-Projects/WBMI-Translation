@@ -67,7 +67,8 @@ EXP_DetectChanges AS (
 	-- -- 1 Insert  0 Ignore
 	DECODE(TRUE,
 		lkp_PremiumTransactionId IS NULL, 1,
-		0) AS o_ChangeFlag
+		0
+	) AS o_ChangeFlag
 	FROM EXP_CoverageDetailCommercialProperty
 	LEFT JOIN LKP_PremiumTransactionRatingRisk
 	ON LKP_PremiumTransactionRatingRisk.PremiumTransactionID = EXP_CoverageDetailCommercialProperty.NewNegatePremiumTransactionID

@@ -15,11 +15,33 @@ EXP_Values AS (
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	-- *INF*: IIF(ISNULL(i_CoverageSummaryId) OR LENGTH(i_CoverageSummaryId)=0, Error('Coverage Summary is missing an ID'), i_CoverageSummaryId)
-	IFF(i_CoverageSummaryId IS NULL OR LENGTH(i_CoverageSummaryId) = 0, Error('Coverage Summary is missing an ID'), i_CoverageSummaryId) AS o_CoverageSummaryId,
+	IFF(i_CoverageSummaryId IS NULL 
+		OR LENGTH(i_CoverageSummaryId
+		) = 0,
+		Error('Coverage Summary is missing an ID'
+		),
+		i_CoverageSummaryId
+	) AS o_CoverageSummaryId,
 	-- *INF*: IIF(ISNULL(i_CoverageSummaryCode) OR LENGTH(i_CoverageSummaryCode)=0 OR IS_SPACES(i_CoverageSummaryCode), 'N/A', LTRIM(RTRIM(i_CoverageSummaryCode)))
-	IFF(i_CoverageSummaryCode IS NULL OR LENGTH(i_CoverageSummaryCode) = 0 OR IS_SPACES(i_CoverageSummaryCode), 'N/A', LTRIM(RTRIM(i_CoverageSummaryCode))) AS o_CoverageSummaryCode,
+	IFF(i_CoverageSummaryCode IS NULL 
+		OR LENGTH(i_CoverageSummaryCode
+		) = 0 
+		OR LENGTH(i_CoverageSummaryCode)>0 AND TRIM(i_CoverageSummaryCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_CoverageSummaryCode
+			)
+		)
+	) AS o_CoverageSummaryCode,
 	-- *INF*: IIF(ISNULL(i_CoverageSummaryDescription) OR LENGTH(i_CoverageSummaryDescription)=0 OR IS_SPACES(i_CoverageSummaryDescription), 'N/A', LTRIM(RTRIM(i_CoverageSummaryDescription)))
-	IFF(i_CoverageSummaryDescription IS NULL OR LENGTH(i_CoverageSummaryDescription) = 0 OR IS_SPACES(i_CoverageSummaryDescription), 'N/A', LTRIM(RTRIM(i_CoverageSummaryDescription))) AS o_CoverageSummaryDescription
+	IFF(i_CoverageSummaryDescription IS NULL 
+		OR LENGTH(i_CoverageSummaryDescription
+		) = 0 
+		OR LENGTH(i_CoverageSummaryDescription)>0 AND TRIM(i_CoverageSummaryDescription)='',
+		'N/A',
+		LTRIM(RTRIM(i_CoverageSummaryDescription
+			)
+		)
+	) AS o_CoverageSummaryDescription
 	FROM SQ_CoverageSummary
 ),
 LKP_CoverageSummary AS (
@@ -55,7 +77,8 @@ EXP_ChangeFlag AS (
 		lkp_CoverageSummaryId IS NULL, 1,
 		lkp_CoverageSummaryDescription <> CoverageSummaryDescription, 2,
 		lkp_CoverageSummaryCode <> CoverageSummaryCode, 2,
-		0) AS o_ChangeFlag
+		0
+	) AS o_ChangeFlag
 	FROM EXP_Values
 	LEFT JOIN LKP_CoverageSummary
 	ON LKP_CoverageSummary.CoverageSummaryId = EXP_Values.o_CoverageSummaryId

@@ -89,13 +89,42 @@ EXP_Source AS (
 	-- IIF ( LENGTH(to_char(loss_day)) = 1, '0' || TO_CHAR(loss_day), TO_CHAR(loss_day) )
 	-- ||  
 	-- TO_CHAR(loss_year)
-	IFF(LENGTH(to_char(loss_month)) = 1, '0' || TO_CHAR(loss_month), TO_CHAR(loss_month)) || IFF(LENGTH(to_char(loss_day)) = 1, '0' || TO_CHAR(loss_day), TO_CHAR(loss_day)) || TO_CHAR(loss_year) AS v_CLM_LOSS_DT,
+	IFF(LENGTH(to_char(loss_month
+			)
+		) = 1,
+		'0' || TO_CHAR(loss_month
+		),
+		TO_CHAR(loss_month
+		)
+	) || IFF(LENGTH(to_char(loss_day
+			)
+		) = 1,
+		'0' || TO_CHAR(loss_day
+		),
+		TO_CHAR(loss_day
+		)
+	) || TO_CHAR(loss_year
+	) AS v_CLM_LOSS_DT,
 	loss_occurence,
 	loss_claimant,
 	v_SYM_NUM_MODE || v_CLM_LOSS_DT || loss_occurence AS claim_occurrence,
 	loss_adjustor_no AS IN_loss_adjustor_no,
 	-- *INF*: IIF(ISNULL(IN_loss_adjustor_no) OR IS_SPACES(LTRIM(RTRIM(IN_loss_adjustor_no))) OR LENGTH(LTRIM(RTRIM(IN_loss_adjustor_no))) = 0, 'N/A', LTRIM(RTRIM(IN_loss_adjustor_no)))
-	IFF(IN_loss_adjustor_no IS NULL OR IS_SPACES(LTRIM(RTRIM(IN_loss_adjustor_no))) OR LENGTH(LTRIM(RTRIM(IN_loss_adjustor_no))) = 0, 'N/A', LTRIM(RTRIM(IN_loss_adjustor_no))) AS o_loss_adjustor_no,
+	IFF(IN_loss_adjustor_no IS NULL 
+		OR LENGTH(LTRIM(RTRIM(IN_loss_adjustor_no
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(IN_loss_adjustor_no
+			)
+		))='' 
+		OR LENGTH(LTRIM(RTRIM(IN_loss_adjustor_no
+				)
+			)
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(IN_loss_adjustor_no
+			)
+		)
+	) AS o_loss_adjustor_no,
 	-- *INF*: :LKP.LKP_PMS_ADJUSTOR(IN_loss_adjustor_no)
 	LKP_PMS_ADJUSTOR_IN_loss_adjustor_no.adnm_type_adjustor AS adnm_type_adjustor
 	FROM SQ_pif_4578_stage
@@ -119,9 +148,13 @@ EXP_LKP_Values AS (
 	-- ,-1
 	-- ,:LKP.LKP_CLAIM_CASE_AK_ID(v_claim_case_key)
 	-- )
-	IFF(LKP_CLAIM_CASE_AK_ID_v_claim_case_key.claim_case_ak_id IS NULL, - 1, LKP_CLAIM_CASE_AK_ID_v_claim_case_key.claim_case_ak_id) AS claim_case_ak_id,
+	IFF(LKP_CLAIM_CASE_AK_ID_v_claim_case_key.claim_case_ak_id IS NULL,
+		- 1,
+		LKP_CLAIM_CASE_AK_ID_v_claim_case_key.claim_case_ak_id
+	) AS claim_case_ak_id,
 	-- *INF*: TO_DATE('1/1/1800','MM/DD/YYYY')
-	TO_DATE('1/1/1800', 'MM/DD/YYYY') AS denial_date
+	TO_DATE('1/1/1800', 'MM/DD/YYYY'
+	) AS denial_date
 	FROM EXP_Source
 	LEFT JOIN LKP_CLAIM_PARTY LKP_CLAIM_PARTY_v_claim_party_key
 	ON LKP_CLAIM_PARTY_v_claim_party_key.claim_party_key = v_claim_party_key
@@ -183,14 +216,26 @@ EXP_Detect_Changes AS (
 	-- 	iif ((lkp_denial_date <> DENIAL_DATE), 
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(lkp_claim_party_occurrence_id IS NULL, 'NEW', IFF(( lkp_denial_date <> DENIAL_DATE ), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(lkp_claim_party_occurrence_id IS NULL,
+		'NEW',
+		IFF(( lkp_denial_date <> DENIAL_DATE 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
@@ -232,7 +277,10 @@ EXP_Determine_Ak AS (
 	lkp_claim_party_occurrence_ak_id,
 	SEQ_claim_party_occurrence.NEXTVAL,
 	-- *INF*: IIF(Changed_Flag='NEW', NEXTVAL, lkp_claim_party_occurrence_ak_id)
-	IFF(Changed_Flag = 'NEW', NEXTVAL, lkp_claim_party_occurrence_ak_id) AS claim_party_occurrence_ak_id,
+	IFF(Changed_Flag = 'NEW',
+		NEXTVAL,
+		lkp_claim_party_occurrence_ak_id
+	) AS claim_party_occurrence_ak_id,
 	CLAIM_PARTY_AK_ID,
 	CLAIM_OCCURRENCE_AK_ID,
 	CLAIM_CASE_AK_ID,
@@ -319,8 +367,12 @@ EXP_Lag_eff_from_date AS (
 	-- ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- orig_eff_to_date)
 	DECODE(TRUE,
-		claim_occurrence_ak_id = v_PREV_ROW_claim_occurrence_ak_id AND claim_party_ak_id = v_PREV_ROW_claim_party_ak_id AND claim_party_role_code = v_PREV_ROW_claim_party_role_code AND claim_case_ak_id = v_PREV_ROW_claim_case_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_occurrence_ak_id = v_PREV_ROW_claim_occurrence_ak_id 
+		AND claim_party_ak_id = v_PREV_ROW_claim_party_ak_id 
+		AND claim_party_role_code = v_PREV_ROW_claim_party_role_code 
+		AND claim_case_ak_id = v_PREV_ROW_claim_case_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	claim_occurrence_ak_id AS v_PREV_ROW_claim_occurrence_ak_id,

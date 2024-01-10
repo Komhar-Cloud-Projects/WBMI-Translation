@@ -288,17 +288,18 @@ EXP_Offset_Insert AS (
 	-- 
 	-- 
 	DECODE(TRUE,
-		IN(pms_trans_code, '90', '92'), '41',
-		IN(pms_trans_code, '21', '22', '23', '24', '25', '28', '29'), '29',
-		IN(pms_trans_code, '26', '27', '37'), '26',
-		IN(pms_trans_code, '81', '83', '88'), '88',
-		IN(pms_trans_code, '82', '84', '89'), '89',
-		IN(pms_trans_code, '74', '75', '76'), '76',
+		pms_trans_code IN ('90','92'), '41',
+		pms_trans_code IN ('21','22','23','24','25','28','29'), '29',
+		pms_trans_code IN ('26','27','37'), '26',
+		pms_trans_code IN ('81','83','88'), '88',
+		pms_trans_code IN ('82','84','89'), '89',
+		pms_trans_code IN ('74','75','76'), '76',
 		pms_trans_code = '86', '87',
 		pms_trans_code = '71', '78',
 		pms_trans_code = '72', '79',
 		pms_trans_code = '73', '77',
-		pms_trans_code) AS v_pms_trans_code,
+		pms_trans_code
+	) AS v_pms_trans_code,
 	v_pms_trans_code AS pms_trans_code_out,
 	v_pms_trans_code AS lkp_PMSTransactionCodeID,
 	trans_code,
@@ -311,13 +312,27 @@ EXP_Offset_Insert AS (
 	-- )
 	-- 
 	-- ---- Above rules are for Claim_Transaction_PMS mapping. Used these rules as logic is based on pms_trans_code.
-	IFF(RTRIM(v_trans_code) <> '0', v_trans_code, DECODE(TRUE,
-		IN(v_pms_trans_code, '76', '26', '88', '89'), IFF(trans_hist_amt = 0.0, '39', '38'),
-		IN(v_pms_trans_code, '27', '83', '84'), IFF(trans_amt = 0.0, '40', '30'))) AS trans_code_out,
+	IFF(RTRIM(v_trans_code
+		) <> '0',
+		v_trans_code,
+		DECODE(TRUE,
+		v_pms_trans_code IN ('76','26','88','89'), IFF(trans_hist_amt = 0.0,
+				'39',
+				'38'
+			),
+		v_pms_trans_code IN ('27','83','84'), IFF(trans_amt = 0.0,
+				'40',
+				'30'
+			)
+		)
+	) AS trans_code_out,
 	off_onset_ts_output,
 	trans_date,
 	-- *INF*: IIF(v_pms_trans_code = '41',off_onset_ts_output,trans_date)
-	IFF(v_pms_trans_code = '41', off_onset_ts_output, trans_date) AS trans_date_Out,
+	IFF(v_pms_trans_code = '41',
+		off_onset_ts_output,
+		trans_date
+	) AS trans_date_Out,
 	s3p_updated_date,
 	s3p_to_pms_trans_date,
 	pms_acct_entered_date,
@@ -326,10 +341,16 @@ EXP_Offset_Insert AS (
 	trans_ctgry_code,
 	trans_amt,
 	-- *INF*: IIF(v_pms_trans_code= '41', 0.0, -1* trans_amt)
-	IFF(v_pms_trans_code = '41', 0.0, - 1 * trans_amt) AS trans_amt_Out,
+	IFF(v_pms_trans_code = '41',
+		0.0,
+		- 1 * trans_amt
+	) AS trans_amt_Out,
 	trans_hist_amt,
 	-- *INF*: IIF(v_pms_trans_code= '41', -1* trans_amt,-1 * trans_hist_amt )
-	IFF(v_pms_trans_code = '41', - 1 * trans_amt, - 1 * trans_hist_amt) AS trans_hist_amt_Out,
+	IFF(v_pms_trans_code = '41',
+		- 1 * trans_amt,
+		- 1 * trans_hist_amt
+	) AS trans_hist_amt_Out,
 	trans_rsn,
 	draft_num,
 	single_check_ind,
@@ -383,7 +404,10 @@ EXP_Onset_Insert AS (
 	s3p_to_pms_trans_date,
 	pms_acct_entered_date,
 	-- *INF*: IIF(IN(pms_trans_code,'90','92','95','97','98','99','43','65','66','91'),pms_acct_entered_date,off_onset_ts_output)
-	IFF(IN(pms_trans_code, '90', '92', '95', '97', '98', '99', '43', '65', '66', '91'), pms_acct_entered_date, off_onset_ts_output) AS pms_acct_entered_date_Out,
+	IFF(pms_trans_code IN ('90','92','95','97','98','99','43','65','66','91'),
+		pms_acct_entered_date,
+		off_onset_ts_output
+	) AS pms_acct_entered_date_Out,
 	trans_base_type_code,
 	trans_ctgry_code,
 	trans_amt,
@@ -455,9 +479,11 @@ EXP_Claim_Trans_AK_ID AS (
 	crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	tax_id,
 	claim_master_1099_list_ak_id,
@@ -540,20 +566,29 @@ EXP_Offset_Update AS (
 	financial_type_code,
 	s3p_trans_code,
 	-- *INF*: IIF(IN(s3p_trans_code,'90','92'),'91',s3p_trans_code)
-	IFF(IN(s3p_trans_code, '90', '92'), '91', s3p_trans_code) AS v_s3p_trans_code,
+	IFF(s3p_trans_code IN ('90','92'),
+		'91',
+		s3p_trans_code
+	) AS v_s3p_trans_code,
 	v_s3p_trans_code AS o_s3p_trans_code,
 	-- *INF*: :LKP.LKP_SUP_CLAIM_TRANSACTION_CODE(v_s3p_trans_code)
 	LKP_SUP_CLAIM_TRANSACTION_CODE_v_s3p_trans_code.sup_claim_trans_code_id AS lkp_S3PTransactionCodeID,
 	pms_trans_code,
 	-- *INF*: IIF(IN(pms_trans_code,'90','92'),'91',pms_trans_code)
-	IFF(IN(pms_trans_code, '90', '92'), '91', pms_trans_code) AS v_pms_trans_code,
+	IFF(pms_trans_code IN ('90','92'),
+		'91',
+		pms_trans_code
+	) AS v_pms_trans_code,
 	v_pms_trans_code AS o_pms_trans_code,
 	-- *INF*: :LKP.LKP_SUP_CLAIM_TRANSACTION_CODE(v_pms_trans_code)
 	LKP_SUP_CLAIM_TRANSACTION_CODE_v_pms_trans_code.sup_claim_trans_code_id AS lkp_PMSTransactionCodeID,
 	trans_code,
 	off_onset_ts_output,
 	-- *INF*: IIF(IN(trans_code,'90','92'),'91',trans_code)
-	IFF(IN(trans_code, '90', '92'), '91', trans_code) AS v_Claim_trans_code,
+	IFF(trans_code IN ('90','92'),
+		'91',
+		trans_code
+	) AS v_Claim_trans_code,
 	v_Claim_trans_code AS o_trans_code,
 	-- *INF*: :LKP.LKP_SUP_CLAIM_TRANSACTION_CODE(v_Claim_trans_code)
 	LKP_SUP_CLAIM_TRANSACTION_CODE_v_Claim_trans_code.sup_claim_trans_code_id AS lkp_TransactionCodeID,
@@ -562,7 +597,8 @@ EXP_Offset_Update AS (
 	s3p_to_pms_trans_date,
 	pms_acct_entered_date,
 	-- *INF*: GREATEST(trans_date, pms_acct_entered_date)
-	GREATEST(trans_date, pms_acct_entered_date) AS v_Greatest_trans_date_pms_acct_entered_date,
+	GREATEST(trans_date, pms_acct_entered_date
+	) AS v_Greatest_trans_date_pms_acct_entered_date,
 	-- *INF*: DECODE(TRUE,
 	-- IN(pms_trans_code,'90','92','95','97','98','99','43','65','66','91'),
 	-- pms_acct_entered_date,
@@ -571,14 +607,26 @@ EXP_Offset_Update AS (
 	-- SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(LAST_DAY(v_Greatest_trans_date_pms_acct_entered_date), 'HH24', 23), 'MI', 59), 'SS',59)
 	-- )
 	DECODE(TRUE,
-		IN(pms_trans_code, '90', '92', '95', '97', '98', '99', '43', '65', '66', '91'), pms_acct_entered_date,
-		TRUNC(v_Greatest_trans_date_pms_acct_entered_date, 'MM') = TRUNC(off_onset_ts_output, 'MM'), off_onset_ts_output,
-		SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(LAST_DAY(v_Greatest_trans_date_pms_acct_entered_date), 'HH24', 23), 'MI', 59), 'SS', 59)) AS o_pms_acct_entered_date,
+		pms_trans_code IN ('90','92','95','97','98','99','43','65','66','91'), pms_acct_entered_date,
+		CAST(TRUNC(v_Greatest_trans_date_pms_acct_entered_date, 'MONTH') AS TIMESTAMP_NTZ(0)) = CAST(TRUNC(off_onset_ts_output, 'MONTH') AS TIMESTAMP_NTZ(0)), off_onset_ts_output,
+		DATEADD(SECOND,59-DATE_PART(SECOND,DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,LAST_DAY(v_Greatest_trans_date_pms_acct_entered_date
+		)),LAST_DAY(v_Greatest_trans_date_pms_acct_entered_date
+		))),DATEADD(HOUR,23-DATE_PART(HOUR,LAST_DAY(v_Greatest_trans_date_pms_acct_entered_date
+		)),LAST_DAY(v_Greatest_trans_date_pms_acct_entered_date
+		)))),DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,LAST_DAY(v_Greatest_trans_date_pms_acct_entered_date
+		)),LAST_DAY(v_Greatest_trans_date_pms_acct_entered_date
+		))),DATEADD(HOUR,23-DATE_PART(HOUR,LAST_DAY(v_Greatest_trans_date_pms_acct_entered_date
+		)),LAST_DAY(v_Greatest_trans_date_pms_acct_entered_date
+		))))
+	) AS o_pms_acct_entered_date,
 	trans_base_type_code,
 	trans_ctgry_code,
 	trans_amt,
 	-- *INF*: IIF(IN(pms_trans_code,'90','92'),0.0,trans_amt)
-	IFF(IN(pms_trans_code, '90', '92'), 0.0, trans_amt) AS trans_amt_Out,
+	IFF(pms_trans_code IN ('90','92'),
+		0.0,
+		trans_amt
+	) AS trans_amt_Out,
 	trans_hist_amt,
 	trans_rsn,
 	draft_num,
@@ -604,11 +652,20 @@ EXP_Offset_Update AS (
 	SYSDATE AS Modified_date,
 	FinancialTypeCodeID,
 	-- *INF*: IIF(ISNULL(lkp_S3PTransactionCodeID),-1,lkp_S3PTransactionCodeID)
-	IFF(lkp_S3PTransactionCodeID IS NULL, - 1, lkp_S3PTransactionCodeID) AS o_S3PTransactionCodeID,
+	IFF(lkp_S3PTransactionCodeID IS NULL,
+		- 1,
+		lkp_S3PTransactionCodeID
+	) AS o_S3PTransactionCodeID,
 	-- *INF*: IIF(ISNULL(lkp_PMSTransactionCodeID),-1,lkp_PMSTransactionCodeID)
-	IFF(lkp_PMSTransactionCodeID IS NULL, - 1, lkp_PMSTransactionCodeID) AS o_PMSTransactionCodeID,
+	IFF(lkp_PMSTransactionCodeID IS NULL,
+		- 1,
+		lkp_PMSTransactionCodeID
+	) AS o_PMSTransactionCodeID,
 	-- *INF*: IIF(ISNULL(lkp_TransactionCodeID),-1,lkp_TransactionCodeID)
-	IFF(lkp_TransactionCodeID IS NULL, - 1, lkp_TransactionCodeID) AS o_TransactionCodeID
+	IFF(lkp_TransactionCodeID IS NULL,
+		- 1,
+		lkp_TransactionCodeID
+	) AS o_TransactionCodeID
 	FROM RTR_Offset_Onset_OFFSET_UPDATE
 	LEFT JOIN LKP_SUP_CLAIM_TRANSACTION_CODE LKP_SUP_CLAIM_TRANSACTION_CODE_v_s3p_trans_code
 	ON LKP_SUP_CLAIM_TRANSACTION_CODE_v_s3p_trans_code.trans_code = v_s3p_trans_code
@@ -668,7 +725,8 @@ EXP_Offset_Update_NonReg_Res AS (
 		pms_trans_code = '95', '40',
 		pms_trans_code = '97', '27',
 		pms_trans_code = '98', '83',
-		pms_trans_code = '99', '84') AS v_pms_trans_code,
+		pms_trans_code = '99', '84'
+	) AS v_pms_trans_code,
 	v_pms_trans_code AS o_pms_trans_code,
 	-- *INF*: :LKP.LKP_SUP_CLAIM_TRANSACTION_CODE(v_pms_trans_code)
 	LKP_SUP_CLAIM_TRANSACTION_CODE_v_pms_trans_code.sup_claim_trans_code_id AS lkp_PMSTransactionCodeID,
@@ -682,9 +740,20 @@ EXP_Offset_Update_NonReg_Res AS (
 	-- )
 	-- 
 	-- --- Above rules are from Claim_Transaction_PMS mapping, as we are using PMS_trans_code, and since we are updating the pms_trans_code in this pipeline from one value to other. Updating the edw_trans_code as well.
-	IFF(RTRIM(v_trans_code) <> '0', v_trans_code, DECODE(TRUE,
-		IN(v_pms_trans_code, '76', '26', '88', '89'), IFF(trans_hist_amt = 0.0, '39', '38'),
-		IN(v_pms_trans_code, '27', '83', '84'), IFF(trans_amt = 0.0, '40', '30'))) AS trans_code_out,
+	IFF(RTRIM(v_trans_code
+		) <> '0',
+		v_trans_code,
+		DECODE(TRUE,
+		v_pms_trans_code IN ('76','26','88','89'), IFF(trans_hist_amt = 0.0,
+				'39',
+				'38'
+			),
+		v_pms_trans_code IN ('27','83','84'), IFF(trans_amt = 0.0,
+				'40',
+				'30'
+			)
+		)
+	) AS trans_code_out,
 	trans_code_out AS o_claim_trans_code,
 	-- *INF*: :LKP.LKP_SUP_CLAIM_TRANSACTION_CODE(v_trans_code)
 	LKP_SUP_CLAIM_TRANSACTION_CODE_v_trans_code.sup_claim_trans_code_id AS lkp_claim_trans_code_id,
@@ -723,9 +792,15 @@ EXP_Offset_Update_NonReg_Res AS (
 	claim_master_1099_list_ak_id,
 	SYSDATE AS Modified_date,
 	-- *INF*: IIF(ISNULL(lkp_PMSTransactionCodeID),-1,lkp_PMSTransactionCodeID)
-	IFF(lkp_PMSTransactionCodeID IS NULL, - 1, lkp_PMSTransactionCodeID) AS o_PMSTransactionCodeID,
+	IFF(lkp_PMSTransactionCodeID IS NULL,
+		- 1,
+		lkp_PMSTransactionCodeID
+	) AS o_PMSTransactionCodeID,
 	-- *INF*: IIF(ISNULL(lkp_claim_trans_code_id),-1,lkp_claim_trans_code_id)
-	IFF(lkp_claim_trans_code_id IS NULL, - 1, lkp_claim_trans_code_id) AS o_TransactionCodeID
+	IFF(lkp_claim_trans_code_id IS NULL,
+		- 1,
+		lkp_claim_trans_code_id
+	) AS o_TransactionCodeID
 	FROM RTR_Offset_Onset_OFFSET_UPDATE_NONREG_RES
 	LEFT JOIN LKP_SUP_CLAIM_TRANSACTION_CODE LKP_SUP_CLAIM_TRANSACTION_CODE_v_pms_trans_code
 	ON LKP_SUP_CLAIM_TRANSACTION_CODE_v_pms_trans_code.trans_code = v_pms_trans_code

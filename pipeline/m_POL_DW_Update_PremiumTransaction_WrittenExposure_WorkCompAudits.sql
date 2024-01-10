@@ -87,7 +87,8 @@ AGG_Non_Audit_Transaction_WrittenExposure AS (
 	PremiumTransactionID,
 	WrittenExposure,
 	-- *INF*: SUM(WrittenExposure)
-	SUM(WrittenExposure) AS OutWrittenExposure
+	SUM(WrittenExposure
+	) AS OutWrittenExposure
 	FROM SRT_Non_Audits
 	GROUP BY PolicyAKID, RatingCoverageAKId, ParentAuditTransactionID
 ),
@@ -151,8 +152,10 @@ EXP_Collect AS (
 	-- INSTR(PremiumTransactionCode,'Audit')>0,0,
 	-- WrittenExposure)
 	DECODE(TRUE,
-		INSTR(PremiumTransactionCode, 'Audit') > 0, 0,
-		WrittenExposure) AS BaseWrittenExposure
+		REGEXP_INSTR(PremiumTransactionCode, 'Audit'
+		) > 0, 0,
+		WrittenExposure
+	) AS BaseWrittenExposure
 	FROM SQ_PremiumTransaction_WorkCompAudits
 ),
 SRT_Transactions AS (
@@ -199,13 +202,15 @@ EXP_EVAL_WrittenExposure AS (
 	-- -- Cleansing nulls from Master Joins of Void audit Transactions as well as incoming audit transactions with ratingcoverageakids that appear to have no corresponding non audit transactions
 	DECODE(TRUE,
 		i_NonAuditNetWrittenExposure IS NULL, 0,
-		i_NonAuditNetWrittenExposure) AS v_NonAuditNetWrittenExposure,
+		i_NonAuditNetWrittenExposure
+	) AS v_NonAuditNetWrittenExposure,
 	-- *INF*: DECODE(TRUE,
 	-- OffsetOnsetCode = 'Deprecated',-1,
 	-- 1)
 	DECODE(TRUE,
 		OffsetOnsetCode = 'Deprecated', - 1,
-		1) AS v_Multiplier,
+		1
+	) AS v_Multiplier,
 	-- *INF*: Exposure - v_NonAuditNetWrittenExposure
 	-- -- True up exposure in magnitude is equal to the mathematical difference between incoming InForce Exposure on Audit Transaction less the cumulative computed written exposure from the non audit transaction effective and entered prior to the audit transaction
 	Exposure - v_NonAuditNetWrittenExposure AS v_TrueUpExposureValue,
@@ -216,15 +221,20 @@ EXP_EVAL_WrittenExposure AS (
 	-- --we zero out the value of writtenexposure for VoidFinalAudits else we compute the mathematical value with sign correct to four decimal places. Note that deprecated audit transactions have the multipler of -1 effectively nullify what was added by the original audit transaction
 	DECODE(TRUE,
 		PremiumTransactionCode = 'VoidFinalAudit', 0,
-		ROUND(v_TrueUpExposureValue * v_Multiplier, 4)) AS v_WrittenExposureTruedUp,
+		ROUND(v_TrueUpExposureValue * v_Multiplier, 4
+		)
+	) AS v_WrittenExposureTruedUp,
 	v_WrittenExposureTruedUp AS o_WrittenExposure,
 	-- *INF*: DECODE(TRUE,
 	-- INSTR(PremiumTransactionCode,'Audit') > 0  AND v_WrittenExposureTruedUp  !=  WrittenExposure,1,
 	-- 0)
 	-- -- We only permit Audit type transactions where the recalculated Audit true up exposure is different than the incoming WrittenExposure on the record
 	DECODE(TRUE,
-		INSTR(PremiumTransactionCode, 'Audit') > 0 AND v_WrittenExposureTruedUp != WrittenExposure, 1,
-		0) AS FilterFlag
+		REGEXP_INSTR(PremiumTransactionCode, 'Audit'
+		) > 0 
+		AND v_WrittenExposureTruedUp != WrittenExposure, 1,
+		0
+	) AS FilterFlag
 	FROM JNR_Transaction_NetWrittenExposure_Coverage
 ),
 FIL_Unchanged_WrittenExposure AS (

@@ -55,72 +55,131 @@ EXP_Detect_Changes AS (
 	1 AS Crrnt_Snpsht_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS Eff_From_Date,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
 	SYSDATE AS Modified_Date,
 	SEQ_claim_survey.NEXTVAL AS claims_survey_result_ak_id,
 	lkp_claim_representative_occurrence.claim_rep_occurrence_ak_id AS lkp_claim_rep_occurrence_ak_id,
 	-- *INF*: iif(isnull(lkp_claim_rep_occurrence_ak_id),-1,lkp_claim_rep_occurrence_ak_id)
-	IFF(lkp_claim_rep_occurrence_ak_id IS NULL, - 1, lkp_claim_rep_occurrence_ak_id) AS claim_rep_occurrence_ak_id,
+	IFF(lkp_claim_rep_occurrence_ak_id IS NULL,
+		- 1,
+		lkp_claim_rep_occurrence_ak_id
+	) AS claim_rep_occurrence_ak_id,
 	SQ_claims_survey_result_stage.form_num,
 	SQ_claims_survey_result_stage.entry_date,
 	SQ_claims_survey_result_stage.ques1_resp_val AS in_ques1_resp_val,
 	-- *INF*: iif(isnull(in_ques1_resp_val),0,in_ques1_resp_val)
-	IFF(in_ques1_resp_val IS NULL, 0, in_ques1_resp_val) AS ques1_resp_val,
+	IFF(in_ques1_resp_val IS NULL,
+		0,
+		in_ques1_resp_val
+	) AS ques1_resp_val,
 	SQ_claims_survey_result_stage.ques2_resp_val AS in_ques2_resp_val,
 	-- *INF*: iif(isnull(in_ques2_resp_val),0,in_ques2_resp_val)
-	IFF(in_ques2_resp_val IS NULL, 0, in_ques2_resp_val) AS ques2_resp_val,
+	IFF(in_ques2_resp_val IS NULL,
+		0,
+		in_ques2_resp_val
+	) AS ques2_resp_val,
 	SQ_claims_survey_result_stage.ques3_resp_val AS in_ques3_resp_val,
 	-- *INF*: iif(isnull(in_ques3_resp_val),0,in_ques3_resp_val)
-	IFF(in_ques3_resp_val IS NULL, 0, in_ques3_resp_val) AS ques3_resp_val,
+	IFF(in_ques3_resp_val IS NULL,
+		0,
+		in_ques3_resp_val
+	) AS ques3_resp_val,
 	SQ_claims_survey_result_stage.ques4_resp_val AS in_ques4_resp_val,
 	-- *INF*: iif(isnull(in_ques4_resp_val),0,in_ques4_resp_val)
-	IFF(in_ques4_resp_val IS NULL, 0, in_ques4_resp_val) AS ques4_resp_val,
+	IFF(in_ques4_resp_val IS NULL,
+		0,
+		in_ques4_resp_val
+	) AS ques4_resp_val,
 	SQ_claims_survey_result_stage.ques5_resp_val AS in_ques5_resp_val,
 	-- *INF*: iif(isnull(in_ques5_resp_val),0,in_ques5_resp_val)
-	IFF(in_ques5_resp_val IS NULL, 0, in_ques5_resp_val) AS ques5_resp_val,
+	IFF(in_ques5_resp_val IS NULL,
+		0,
+		in_ques5_resp_val
+	) AS ques5_resp_val,
 	SQ_claims_survey_result_stage.ques6_resp_val AS in_ques6_resp_val,
 	-- *INF*: iif(isnull(in_ques6_resp_val),0,in_ques6_resp_val)
-	IFF(in_ques6_resp_val IS NULL, 0, in_ques6_resp_val) AS ques6_resp_val,
+	IFF(in_ques6_resp_val IS NULL,
+		0,
+		in_ques6_resp_val
+	) AS ques6_resp_val,
 	SQ_claims_survey_result_stage.ques7_resp_val AS in_ques7_resp_val,
 	-- *INF*: iif(isnull(in_ques7_resp_val),0,in_ques7_resp_val)
-	IFF(in_ques7_resp_val IS NULL, 0, in_ques7_resp_val) AS ques7_resp_val,
+	IFF(in_ques7_resp_val IS NULL,
+		0,
+		in_ques7_resp_val
+	) AS ques7_resp_val,
 	SQ_claims_survey_result_stage.ques8_resp_val AS in_ques8_resp_val,
 	-- *INF*: iif(isnull(in_ques8_resp_val),0,in_ques8_resp_val)
-	IFF(in_ques8_resp_val IS NULL, 0, in_ques8_resp_val) AS ques8_resp_val,
+	IFF(in_ques8_resp_val IS NULL,
+		0,
+		in_ques8_resp_val
+	) AS ques8_resp_val,
 	SQ_claims_survey_result_stage.ques9_resp_val AS in_ques9_resp_val,
 	-- *INF*: iif(isnull(in_ques9_resp_val),0,in_ques9_resp_val)
-	IFF(in_ques9_resp_val IS NULL, 0, in_ques9_resp_val) AS ques9_resp_val,
+	IFF(in_ques9_resp_val IS NULL,
+		0,
+		in_ques9_resp_val
+	) AS ques9_resp_val,
 	SQ_claims_survey_result_stage.ques10_resp_val AS in_ques10_resp_val,
 	-- *INF*: iif(isnull(in_ques10_resp_val),0,in_ques10_resp_val)
-	IFF(in_ques10_resp_val IS NULL, 0, in_ques10_resp_val) AS ques10_resp_val,
+	IFF(in_ques10_resp_val IS NULL,
+		0,
+		in_ques10_resp_val
+	) AS ques10_resp_val,
 	SQ_claims_survey_result_stage.ques11_resp_val AS in_ques11_resp_val,
 	-- *INF*: iif(isnull(in_ques11_resp_val),0,in_ques11_resp_val)
-	IFF(in_ques11_resp_val IS NULL, 0, in_ques11_resp_val) AS ques11_resp_val,
+	IFF(in_ques11_resp_val IS NULL,
+		0,
+		in_ques11_resp_val
+	) AS ques11_resp_val,
 	SQ_claims_survey_result_stage.ques12_resp_val AS in_ques12_resp_val,
 	-- *INF*: iif(isnull(in_ques12_resp_val),0,in_ques12_resp_val)
-	IFF(in_ques12_resp_val IS NULL, 0, in_ques12_resp_val) AS ques12_resp_val,
+	IFF(in_ques12_resp_val IS NULL,
+		0,
+		in_ques12_resp_val
+	) AS ques12_resp_val,
 	SQ_claims_survey_result_stage.ques13_resp_val AS in_ques13_resp_val,
 	-- *INF*: iif(isnull(in_ques13_resp_val),0,in_ques13_resp_val)
-	IFF(in_ques13_resp_val IS NULL, 0, in_ques13_resp_val) AS ques13_resp_val,
+	IFF(in_ques13_resp_val IS NULL,
+		0,
+		in_ques13_resp_val
+	) AS ques13_resp_val,
 	SQ_claims_survey_result_stage.ques14_resp_val AS in_ques14_resp_val,
 	-- *INF*: iif(isnull(in_ques14_resp_val),0,in_ques14_resp_val)
-	IFF(in_ques14_resp_val IS NULL, 0, in_ques14_resp_val) AS ques14_resp_val,
+	IFF(in_ques14_resp_val IS NULL,
+		0,
+		in_ques14_resp_val
+	) AS ques14_resp_val,
 	SQ_claims_survey_result_stage.ques15_resp_val AS in_ques15_resp_val,
 	-- *INF*: iif(isnull(in_ques15_resp_val),0,in_ques15_resp_val)
-	IFF(in_ques15_resp_val IS NULL, 0, in_ques15_resp_val) AS ques15_resp_val,
+	IFF(in_ques15_resp_val IS NULL,
+		0,
+		in_ques15_resp_val
+	) AS ques15_resp_val,
 	SQ_claims_survey_result_stage.ques16_resp_val AS in_ques16_resp_val,
 	-- *INF*: iif(isnull(in_ques16_resp_val),0,in_ques16_resp_val)
-	IFF(in_ques16_resp_val IS NULL, 0, in_ques16_resp_val) AS ques16_resp_val,
+	IFF(in_ques16_resp_val IS NULL,
+		0,
+		in_ques16_resp_val
+	) AS ques16_resp_val,
 	SQ_claims_survey_result_stage.ques17_resp_val AS in_ques17_resp_val,
 	-- *INF*: iif(isnull(in_ques17_resp_val),0,in_ques17_resp_val)
-	IFF(in_ques17_resp_val IS NULL, 0, in_ques17_resp_val) AS ques17_resp_val,
+	IFF(in_ques17_resp_val IS NULL,
+		0,
+		in_ques17_resp_val
+	) AS ques17_resp_val,
 	SQ_claims_survey_result_stage.ques18_resp_val AS in_ques18_resp_val,
 	-- *INF*: iif(isnull(in_ques18_resp_val),0,in_ques18_resp_val)
-	IFF(in_ques18_resp_val IS NULL, 0, in_ques18_resp_val) AS ques18_resp_val
+	IFF(in_ques18_resp_val IS NULL,
+		0,
+		in_ques18_resp_val
+	) AS ques18_resp_val
 	FROM SQ_claims_survey_result_stage
 	LEFT JOIN lkp_claim_representative_occurrence
 	ON lkp_claim_representative_occurrence.s3p_claim_num = SQ_claims_survey_result_stage.claim_num

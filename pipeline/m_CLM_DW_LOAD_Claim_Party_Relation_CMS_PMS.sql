@@ -90,7 +90,8 @@ EXP_Values AS (
 	pms_loss_occurence,
 	pms_loss_claimant,
 	-- *INF*: replaceChr(0,to_char(pms_date_of_loss),'/','')
-	replaceChr(0, to_char(pms_date_of_loss), '/', '') AS v_pms_date_of_loss,
+	REGEXP_REPLACE(to_char(pms_date_of_loss
+	),'/','','i') AS v_pms_date_of_loss,
 	pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence AS cre_claim_nbr,
 	pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence || pms_loss_claimant || cms_party_type AS cre_client_id,
 	pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence || pms_loss_claimant || 'CMT' AS cre_rel_to_clt_id
@@ -119,19 +120,37 @@ EXP_Lkp_Values AS (
 	-- *INF*: IIF(ISNULL(in_cre_client_role_cd), 'N/A',
 	--  IIF(IS_SPACES(in_cre_client_role_cd), 'N/A',
 	-- in_cre_client_role_cd))
-	IFF(in_cre_client_role_cd IS NULL, 'N/A', IFF(IS_SPACES(in_cre_client_role_cd), 'N/A', in_cre_client_role_cd)) AS cre_client_role_cd,
+	IFF(in_cre_client_role_cd IS NULL,
+		'N/A',
+		IFF(LENGTH(in_cre_client_role_cd)>0 AND TRIM(in_cre_client_role_cd)='',
+			'N/A',
+			in_cre_client_role_cd
+		)
+	) AS cre_client_role_cd,
 	cms_party_type AS in_cms_party_type,
 	-- *INF*: IIF(ISNULL(in_cms_party_type), 'N/A',
 	--  IIF(IS_SPACES(in_cms_party_type), 'N/A',
 	-- in_cms_party_type))
-	IFF(in_cms_party_type IS NULL, 'N/A', IFF(IS_SPACES(in_cms_party_type), 'N/A', in_cms_party_type)) AS cms_party_type,
+	IFF(in_cms_party_type IS NULL,
+		'N/A',
+		IFF(LENGTH(in_cms_party_type)>0 AND TRIM(in_cms_party_type)='',
+			'N/A',
+			in_cms_party_type
+		)
+	) AS cms_party_type,
 	is_individual AS in_is_individual,
 	-- *INF*: IIF(ISNULL(in_is_individual), 'N/A',
 	--  IIF(IS_SPACES(in_is_individual), 'N/A',
 	-- in_is_individual))
 	-- 
 	-- 
-	IFF(in_is_individual IS NULL, 'N/A', IFF(IS_SPACES(in_is_individual), 'N/A', in_is_individual)) AS is_individual
+	IFF(in_is_individual IS NULL,
+		'N/A',
+		IFF(LENGTH(in_is_individual)>0 AND TRIM(in_is_individual)='',
+			'N/A',
+			in_is_individual
+		)
+	) AS is_individual
 	FROM EXP_Values
 	LEFT JOIN LKP_CLAIM_OCCURRENCE LKP_CLAIM_OCCURRENCE_cre_claim_nbr
 	ON LKP_CLAIM_OCCURRENCE_cre_claim_nbr.claim_occurrence_key = cre_claim_nbr
@@ -251,14 +270,29 @@ EXP_Detect_Changes AS (
 	-- --iif(isnull(lkp_claim_party_relation_id),'NEW','NOCHANGE')
 	-- 
 	-- 
-	IFF(lkp_claim_party_relation_id IS NULL, 'NEW', IFF(ltrim(rtrim(lkp_is_cms_party_individ)) <> ltrim(rtrim(is_individual)), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(lkp_claim_party_relation_id IS NULL,
+		'NEW',
+		IFF(ltrim(rtrim(lkp_is_cms_party_individ
+				)
+			) <> ltrim(rtrim(is_individual
+				)
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
@@ -296,7 +330,10 @@ EXP_Determine_AK AS (
 	SELECT
 	lkp_claim_party_relation_ak_id,
 	-- *INF*: IIF(Changed_Flag='NEW', NEXTVAL, lkp_claim_party_relation_ak_id)
-	IFF(Changed_Flag = 'NEW', NEXTVAL, lkp_claim_party_relation_ak_id) AS claim_party_relation_ak_id,
+	IFF(Changed_Flag = 'NEW',
+		NEXTVAL,
+		lkp_claim_party_relation_ak_id
+	) AS claim_party_relation_ak_id,
 	claim_party_occurrence_ak_id,
 	claim_party_relation_from_ak_id,
 	claim_party_relation_to_ak_id,
@@ -375,8 +412,12 @@ EXP_Lag_eff_from_date AS (
 	--   ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	--   orig_eff_to_date)
 	DECODE(TRUE,
-		claim_party_occurrence_ak_id = v_PREV_ROW_claim_party_occurrence_ak_id AND claim_party_relation_from_ak_id = v_PREV_ROW_claim_party_relation_from_ak_id AND claim_party_relation_to_ak_id = v_PREV_ROW_claim_party_relation_to_ak_id AND claim_party_relation_role_code = v_claim_party_relation_role_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_party_occurrence_ak_id = v_PREV_ROW_claim_party_occurrence_ak_id 
+		AND claim_party_relation_from_ak_id = v_PREV_ROW_claim_party_relation_from_ak_id 
+		AND claim_party_relation_to_ak_id = v_PREV_ROW_claim_party_relation_to_ak_id 
+		AND claim_party_relation_role_code = v_claim_party_relation_role_code, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	claim_party_occurrence_ak_id AS v_PREV_ROW_claim_party_occurrence_ak_id,

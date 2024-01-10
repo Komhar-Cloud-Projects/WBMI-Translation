@@ -88,7 +88,10 @@ EXP_Detect_Changes AS (
 	EXP_GetAKIDs.SourceSystemID,
 	-- *INF*: IIF(ISNULL(lkp_UnderwriterAgencyRelationshipID), 'IGNORE', 'UPDATE')
 	-- 
-	IFF(lkp_UnderwriterAgencyRelationshipID IS NULL, 'IGNORE', 'UPDATE') AS v_changed_flag,
+	IFF(lkp_UnderwriterAgencyRelationshipID IS NULL,
+		'IGNORE',
+		'UPDATE'
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	0 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,

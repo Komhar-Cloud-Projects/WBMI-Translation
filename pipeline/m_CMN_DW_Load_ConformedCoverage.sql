@@ -21,15 +21,52 @@ EXP_Values AS (
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	-- *INF*: IIF(ISNULL(i_CoverageCode) OR LENGTH(i_CoverageCode)=0 OR IS_SPACES(i_CoverageCode), 'N/A', LTRIM(RTRIM(i_CoverageCode)))
-	IFF(i_CoverageCode IS NULL OR LENGTH(i_CoverageCode) = 0 OR IS_SPACES(i_CoverageCode), 'N/A', LTRIM(RTRIM(i_CoverageCode))) AS o_CoverageCode,
+	IFF(i_CoverageCode IS NULL 
+		OR LENGTH(i_CoverageCode
+		) = 0 
+		OR LENGTH(i_CoverageCode)>0 AND TRIM(i_CoverageCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_CoverageCode
+			)
+		)
+	) AS o_CoverageCode,
 	-- *INF*: IIF(ISNULL(i_CoverageDescription) OR LENGTH(i_CoverageDescription)=0 OR IS_SPACES(i_CoverageDescription), 'N/A', LTRIM(RTRIM(i_CoverageDescription)))
-	IFF(i_CoverageDescription IS NULL OR LENGTH(i_CoverageDescription) = 0 OR IS_SPACES(i_CoverageDescription), 'N/A', LTRIM(RTRIM(i_CoverageDescription))) AS o_CoverageDescription,
+	IFF(i_CoverageDescription IS NULL 
+		OR LENGTH(i_CoverageDescription
+		) = 0 
+		OR LENGTH(i_CoverageDescription)>0 AND TRIM(i_CoverageDescription)='',
+		'N/A',
+		LTRIM(RTRIM(i_CoverageDescription
+			)
+		)
+	) AS o_CoverageDescription,
 	-- *INF*: IIF(ISNULL(i_RatedCoverageCode) OR LENGTH(i_RatedCoverageCode)=0 OR IS_SPACES(i_RatedCoverageCode), 'N/A', LTRIM(RTRIM(i_RatedCoverageCode)))
-	IFF(i_RatedCoverageCode IS NULL OR LENGTH(i_RatedCoverageCode) = 0 OR IS_SPACES(i_RatedCoverageCode), 'N/A', LTRIM(RTRIM(i_RatedCoverageCode))) AS o_RatedCoverageCode,
+	IFF(i_RatedCoverageCode IS NULL 
+		OR LENGTH(i_RatedCoverageCode
+		) = 0 
+		OR LENGTH(i_RatedCoverageCode)>0 AND TRIM(i_RatedCoverageCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_RatedCoverageCode
+			)
+		)
+	) AS o_RatedCoverageCode,
 	-- *INF*: IIF(ISNULL(i_RatedCoverageDescription) OR LENGTH(i_RatedCoverageDescription)=0 OR IS_SPACES(i_RatedCoverageDescription), 'N/A', LTRIM(RTRIM(i_RatedCoverageDescription)))
-	IFF(i_RatedCoverageDescription IS NULL OR LENGTH(i_RatedCoverageDescription) = 0 OR IS_SPACES(i_RatedCoverageDescription), 'N/A', LTRIM(RTRIM(i_RatedCoverageDescription))) AS o_RatedCoverageDescription,
+	IFF(i_RatedCoverageDescription IS NULL 
+		OR LENGTH(i_RatedCoverageDescription
+		) = 0 
+		OR LENGTH(i_RatedCoverageDescription)>0 AND TRIM(i_RatedCoverageDescription)='',
+		'N/A',
+		LTRIM(RTRIM(i_RatedCoverageDescription
+			)
+		)
+	) AS o_RatedCoverageDescription,
 	-- *INF*: IIF(ISNULL(i_CoverageGroupId) OR LENGTH(i_CoverageGroupId)=0, -99, i_CoverageGroupId)
-	IFF(i_CoverageGroupId IS NULL OR LENGTH(i_CoverageGroupId) = 0, - 99, i_CoverageGroupId) AS o_CoverageGroupId
+	IFF(i_CoverageGroupId IS NULL 
+		OR LENGTH(i_CoverageGroupId
+		) = 0,
+		- 99,
+		i_CoverageGroupId
+	) AS o_CoverageGroupId
 	FROM SQ_ConformedCoverage
 ),
 LKP_ConformedCoverage AS (
@@ -93,7 +130,8 @@ EXP_Detect_Changes AS (
 		lkp_CoverageDescription <> CoverageDescription, 'Update',
 		lkp_RatedCoverageCode <> RatedCoverageCode, 'Update',
 		lkp_RatedCoverageDescription <> RatedCoverageDescription, 'Update',
-		'Ignore') AS o_Change_Flag
+		'Ignore'
+	) AS o_Change_Flag
 	FROM EXP_Values
 	LEFT JOIN LKP_ConformedCoverage
 	ON LKP_ConformedCoverage.ConformedCoverageId = EXP_Values.i_ConformedCoverageId

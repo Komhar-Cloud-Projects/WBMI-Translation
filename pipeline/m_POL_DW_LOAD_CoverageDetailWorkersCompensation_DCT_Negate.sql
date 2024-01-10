@@ -47,9 +47,11 @@ EXP_Metadata AS (
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_EffectiveDate,
+	TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US'
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_ExpirationDate,
+	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -111,7 +113,8 @@ EXP_DetectChanges AS (
 	-- )
 	DECODE(TRUE,
 		lkp_PremiumTransactionID IS NULL, 'NEW',
-		'UPDATE') AS o_ChangeFlag,
+		'UPDATE'
+	) AS o_ChangeFlag,
 	EXP_Metadata.AdmiraltyActFlag,
 	EXP_Metadata.FederalEmployersLiabilityActFlag,
 	EXP_Metadata.USLongShoreAndHarborWorkersCompensationActFlag,

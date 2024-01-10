@@ -14,7 +14,8 @@ EXP_Default AS (
 	pif_symbol  ||  pif_policy_number  || pif_module AS Pol_Key,
 	loss_reins_co_no AS in_loss_reins_co_no,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_loss_reins_co_no)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_loss_reins_co_no) AS loss_reins_co_no
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_loss_reins_co_no
+	) AS loss_reins_co_no
 	FROM SQ_pifmstr_PIF_4578_stage
 ),
 LKP_Policy_1 AS (
@@ -57,7 +58,10 @@ EXP_Default_Values1 AS (
 	-1 AS SupReinsuranceMasterId_out,
 	LKP_SupReinsuranceMaster_1.ReinsuranceMasterReinsuranceCompanyName AS rcm_company_name,
 	-- *INF*: IIF(ISNULL(rcm_company_name),'N/A',rcm_company_name)
-	IFF(rcm_company_name IS NULL, 'N/A', rcm_company_name) AS rcm_company_name_out
+	IFF(rcm_company_name IS NULL,
+		'N/A',
+		rcm_company_name
+	) AS rcm_company_name_out
 	FROM EXP_Default
 	LEFT JOIN LKP_Policy_1
 	ON LKP_Policy_1.pol_key = EXP_Default.Pol_Key
@@ -98,16 +102,37 @@ EXP_Detect_Existing_Row AS (
 	-- 	(ltrim(rtrim(lkp_reins_type))  <> ltrim(rtrim(rcm_reins_type)))
 	--   	,'UPDATE'
 	-- 	,'NOCHANGE'))
-	IFF(lkp_reins_cov_id IS NULL, 'NEW', IFF(ltrim(rtrim(lkp_reins_co_name)) <> ltrim(rtrim(rcm_company_name)) OR ( ltrim(rtrim(lkp_reins_type)) <> ltrim(rtrim(rcm_reins_type)) ), 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(lkp_reins_cov_id IS NULL,
+		'NEW',
+		IFF(ltrim(rtrim(lkp_reins_co_name
+				)
+			) <> ltrim(rtrim(rcm_company_name
+				)
+			) 
+			OR ( ltrim(rtrim(lkp_reins_type
+					)
+				) <> ltrim(rtrim(rcm_reins_type
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	v_Changed_Flag AS Changed_Flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS eff_from_date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
@@ -119,12 +144,18 @@ EXP_Detect_Existing_Row AS (
 	loss_reins_co_no AS reins_co_num,
 	rcm_company_name AS reins_co_name,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS reins_eff_date,
+	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS reins_eff_date,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS reins_exp_date,
+	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS reins_exp_date,
 	SYSDATE AS reins_enter_date,
 	-- *INF*: IIF(ISNULL(rcm_reins_type),'N/A',TO_CHAR(rcm_reins_type))
-	IFF(rcm_reins_type IS NULL, 'N/A', TO_CHAR(rcm_reins_type)) AS reins_type,
+	IFF(rcm_reins_type IS NULL,
+		'N/A',
+		TO_CHAR(rcm_reins_type
+		)
+	) AS reins_type,
 	0 AS reins_prcnt_prem_ceded,
 	0 AS reins_prcnt_loss_ceded,
 	0 AS reins_prcnt_facultative_commssn,
@@ -184,7 +215,10 @@ EXP_AK_id AS (
 	-- *INF*: IIF(Changed_Flag='NEW',
 	-- NEXTVAL,
 	-- lkp_reins_cov_ak_id)
-	IFF(Changed_Flag = 'NEW', NEXTVAL, lkp_reins_cov_ak_id) AS reins_cov_ak_id,
+	IFF(Changed_Flag = 'NEW',
+		NEXTVAL,
+		lkp_reins_cov_ak_id
+	) AS reins_cov_ak_id,
 	pol_key_ak_id,
 	crrnt_snpsht_flag,
 	audit_id,
@@ -327,8 +361,24 @@ EXP_Expire_Rows AS (
 	-- , ADD_TO_DATE(v_PREV_ROW_eff_from_date1,'SS',-1)
 	-- ,orig_eff_to_date)
 	DECODE(TRUE,
-		pol_ak_id = v_PREV_ROW_pol_ak_id1 AND reins_ins_line = v_PREV_ROW_reins_ins_line1 AND reins_loc_unit_num = v_PREV_ROW_reins_loc_unit_num1 AND reins_sub_loc_unit_num = v_PREV_ROW_reins_sub_loc_unit_num1 AND reins_risk_unit_grp = v_PREV_ROW_reins_risk_unit_grp1 AND reins_risk_unit_grp_seq_num = v_PREV_ROW_reins_risk_unit_grp_seq_num1 AND reins_risk_unit = v_PREV_ROW_reins_risk_unit1 AND reins_risk_unit_seq_num = v_PREV_ROW_reins_risk_unit_seq_num1 AND reins_section_code = v_PREV_ROW_reins_section_code1 AND reins_co_num = v_PREV_ROW_reins_co_num1 AND reins_eff_date = v_PREV_ROW_reins_eff_date1 AND IFF(reins_section_code = 'N/A', 1 = 1, reins_enter_date = v_PREV_ROW_reins_enter_date1) AND source_sys_id = v_PREV_ROW_source_sys_id1, ADD_TO_DATE(v_PREV_ROW_eff_from_date1, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		pol_ak_id = v_PREV_ROW_pol_ak_id1 
+		AND reins_ins_line = v_PREV_ROW_reins_ins_line1 
+		AND reins_loc_unit_num = v_PREV_ROW_reins_loc_unit_num1 
+		AND reins_sub_loc_unit_num = v_PREV_ROW_reins_sub_loc_unit_num1 
+		AND reins_risk_unit_grp = v_PREV_ROW_reins_risk_unit_grp1 
+		AND reins_risk_unit_grp_seq_num = v_PREV_ROW_reins_risk_unit_grp_seq_num1 
+		AND reins_risk_unit = v_PREV_ROW_reins_risk_unit1 
+		AND reins_risk_unit_seq_num = v_PREV_ROW_reins_risk_unit_seq_num1 
+		AND reins_section_code = v_PREV_ROW_reins_section_code1 
+		AND reins_co_num = v_PREV_ROW_reins_co_num1 
+		AND reins_eff_date = v_PREV_ROW_reins_eff_date1 
+		AND IFF(reins_section_code = 'N/A',
+			1 = 1,
+			reins_enter_date = v_PREV_ROW_reins_enter_date1
+		) 
+		AND source_sys_id = v_PREV_ROW_source_sys_id1, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date1),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	pol_ak_id AS v_PREV_ROW_pol_ak_id1,
 	reins_ins_line AS v_PREV_ROW_reins_ins_line1,

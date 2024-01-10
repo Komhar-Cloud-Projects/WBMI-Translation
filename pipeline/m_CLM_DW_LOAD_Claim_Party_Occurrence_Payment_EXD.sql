@@ -22,9 +22,11 @@ EXPTRANS AS (
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
+	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	'EXCEED' AS source_sys_id,
 	SYSDATE AS created_date
 	FROM SQ_CLAIM_DRAFT_STAGE
@@ -92,7 +94,10 @@ EXP_get_CPO_ID AS (
 	LKP_CLAIM_PARTY_OCC_AK_ID.claim_party_occurrence_ak_id AS claim_party_occurrence_ak_id_cpo,
 	LKP_CLAIMANT_COV_DETAIL.claim_party_occurrence_ak_id AS claim_party_occurrence_ak_id_ccd,
 	-- *INF*: IIF(ISNULL(claim_party_occurrence_ak_id_cpo), claim_party_occurrence_ak_id_ccd, claim_party_occurrence_ak_id_cpo)
-	IFF(claim_party_occurrence_ak_id_cpo IS NULL, claim_party_occurrence_ak_id_ccd, claim_party_occurrence_ak_id_cpo) AS CLAIM_PARTY_OCCURRENCE_AK_ID_OUT
+	IFF(claim_party_occurrence_ak_id_cpo IS NULL,
+		claim_party_occurrence_ak_id_ccd,
+		claim_party_occurrence_ak_id_cpo
+	) AS CLAIM_PARTY_OCCURRENCE_AK_ID_OUT
 	FROM 
 	LEFT JOIN LKP_CLAIMANT_COV_DETAIL
 	ON LKP_CLAIMANT_COV_DETAIL.claimant_cov_det_ak_id = LKP_CLAIM_TRANSACTION.claimant_cov_det_ak_id

@@ -35,33 +35,60 @@ EXP_values AS (
 	SQ_pif_02_stage.pif_policy_number,
 	SQ_pif_02_stage.pif_module,
 	-- *INF*: ltrim(rtrim(pif_symbol)) || ltrim(rtrim(pif_policy_number)) || ltrim(rtrim(pif_module))
-	ltrim(rtrim(pif_symbol)) || ltrim(rtrim(pif_policy_number)) || ltrim(rtrim(pif_module)) AS v_contract_key,
+	ltrim(rtrim(pif_symbol
+		)
+	) || ltrim(rtrim(pif_policy_number
+		)
+	) || ltrim(rtrim(pif_module
+		)
+	) AS v_contract_key,
 	-- *INF*: ltrim(rtrim(v_contract_key))
-	ltrim(rtrim(v_contract_key)) AS contract_key,
+	ltrim(rtrim(v_contract_key
+		)
+	) AS contract_key,
 	-- *INF*: LTRIM(RTRIM('MAILING'))
-	LTRIM(RTRIM('MAILING')) AS addr_type,
+	LTRIM(RTRIM('MAILING'
+		)
+	) AS addr_type,
 	SQ_pif_02_stage.pif_customer_number AS in_pif_customer_number,
 	SQ_pif_02_stage.pif_zip_5_digit_code AS in_pif_zip_5_digit_code,
 	-- *INF*: iif(isnull(in_pif_customer_number) or IS_SPACES(in_pif_customer_number) or LENGTH(in_pif_customer_number)=0,'0000000000',ltrim(rtrim(in_pif_customer_number)))
-	IFF(in_pif_customer_number IS NULL OR IS_SPACES(in_pif_customer_number) OR LENGTH(in_pif_customer_number) = 0, '0000000000', ltrim(rtrim(in_pif_customer_number))) AS v_customer_num,
+	IFF(in_pif_customer_number IS NULL 
+		OR LENGTH(in_pif_customer_number)>0 AND TRIM(in_pif_customer_number)='' 
+		OR LENGTH(in_pif_customer_number
+		) = 0,
+		'0000000000',
+		ltrim(rtrim(in_pif_customer_number
+			)
+		)
+	) AS v_customer_num,
 	v_customer_num AS customer_number,
 	'INS' AS cust_role_code,
 	SQ_pif_02_stage.pif_address_line_1 AS in_pif_address_line_1,
 	-- *INF*: ltrim(rtrim(in_pif_address_line_1))
-	ltrim(rtrim(in_pif_address_line_1)) AS v_pif_address_line_1,
+	ltrim(rtrim(in_pif_address_line_1
+		)
+	) AS v_pif_address_line_1,
 	SQ_pif_02_stage.pif_insured_name_cont AS in_pif_insured_name_cont,
 	SQ_pif_02_stage.pif_address_line_2_b AS in_pif_address_line_2_b,
 	-- *INF*: ltrim(rtrim(in_pif_address_line_2_b))
-	ltrim(rtrim(in_pif_address_line_2_b)) AS v_pif_address_line_2_b,
+	ltrim(rtrim(in_pif_address_line_2_b
+		)
+	) AS v_pif_address_line_2_b,
 	SQ_pif_02_stage.pif_address_line_3 AS in_pif_address_line_3,
 	-- *INF*: ltrim(rtrim(in_pif_address_line_3))
-	ltrim(rtrim(in_pif_address_line_3)) AS v_pif_address_line_3,
+	ltrim(rtrim(in_pif_address_line_3
+		)
+	) AS v_pif_address_line_3,
 	SQ_pif_02_stage.pif_address_line_4 AS in_pif_address_line_4,
 	SQ_pif_02_stage.pif_wbc_county AS in_pif_wbc_county,
 	-- *INF*: ltrim(rtrim(in_pif_address_line_4))
-	ltrim(rtrim(in_pif_address_line_4)) AS v_pif_address_line_4,
+	ltrim(rtrim(in_pif_address_line_4
+		)
+	) AS v_pif_address_line_4,
 	-- *INF*: ltrim(in_pif_insured_name_cont || v_pif_address_line_2_b)
-	ltrim(in_pif_insured_name_cont || v_pif_address_line_2_b) AS v_pif_insured_cont_add_line_2,
+	ltrim(in_pif_insured_name_cont || v_pif_address_line_2_b
+	) AS v_pif_insured_cont_add_line_2,
 	-- *INF*: iif(iif(IS_SPACES(v_pif_address_line_4) or isnull(v_pif_address_line_4) or LENGTH(v_pif_address_line_4)=0,
 	-- 1,0)=1,
 	-- (iif(decode(SUBSTR(v_pif_address_line_2_b,(LENGTH(v_pif_address_line_2_b)-3),4),
@@ -89,7 +116,17 @@ EXP_values AS (
 	-- 'PLAN',1,
 	-- 'CORP',1,
 	-- 0)=1,1,iif(IIF(NOT (ISNULL(v_pif_address_line_2_b)) OR NOT (IS_SPACES(v_pif_address_line_2_b)), instr(v_pif_address_line_2_b,'TRUST'),0) != 0,1,iif(IIF(NOT (ISNULL(v_pif_address_line_1)) OR NOT (IS_SPACES(v_pif_address_line_1)), instr(v_pif_address_line_1,'TRUST'),0) != 0,1,0))) =1,v_pif_address_line_3,v_pif_insured_cont_add_line_2)))
-	IFF(IFF(IS_SPACES(v_pif_address_line_4) OR v_pif_address_line_4 IS NULL OR LENGTH(v_pif_address_line_4) = 0, 1, 0) = 1, ( IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b) - 3 ), 4),
+	IFF(IFF(LENGTH(v_pif_address_line_4)>0 AND TRIM(v_pif_address_line_4)='' 
+			OR v_pif_address_line_4 IS NULL 
+			OR LENGTH(v_pif_address_line_4
+			) = 0,
+			1,
+			0
+		) = 1,
+		( IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b
+							) - 3 
+						), 4
+					),
 		' LLC', 1,
 		' DBA', 1,
 		' BA;', 1,
@@ -97,14 +134,41 @@ EXP_values AS (
 		' SOC', 1,
 		'PLAN', 1,
 		'CORP', 1,
-		0) = 1, 'N/A', v_pif_insured_cont_add_line_2) ), IFF(IFF(IN(SUBSTR(v_pif_address_line_2_b, 1, 1), '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 0) = 1, 1, IFF(decode(substr(v_pif_insured_cont_add_line_2, 1, 4),
+		0
+				) = 1,
+				'N/A',
+				v_pif_insured_cont_add_line_2
+			) 
+		),
+		IFF(IFF(SUBSTR(v_pif_address_line_2_b, 1, 1
+				) IN ('1','2','3','4','5','6','7','8','9','0',0) = 1,
+				1,
+				IFF(decode(substr(v_pif_insured_cont_add_line_2, 1, 4
+						),
 		'POST', 1,
 		'PO B', 1,
-		0) = 1, 1, 0)) = 0, IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b) - 2 ), 3),
+		0
+					) = 1,
+					1,
+					0
+				)
+			) = 0,
+			IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b
+							) - 2 
+						), 3
+					),
 		' ST', 1,
 		' RD', 1,
 		' PL', 1,
-		0) = 1, v_pif_insured_cont_add_line_2, v_pif_address_line_3), IFF(IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b) - 3 ), 4),
+		0
+				) = 1,
+				v_pif_insured_cont_add_line_2,
+				v_pif_address_line_3
+			),
+			IFF(IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b
+								) - 3 
+							), 4
+						),
 		' LLC', 1,
 		' DBA', 1,
 		' BA;', 1,
@@ -112,7 +176,36 @@ EXP_values AS (
 		' SOC', 1,
 		'PLAN', 1,
 		'CORP', 1,
-		0) = 1, 1, IFF(IFF(NOT ( v_pif_address_line_2_b IS NULL ) OR NOT ( IS_SPACES(v_pif_address_line_2_b) ), instr(v_pif_address_line_2_b, 'TRUST'), 0) != 0, 1, IFF(IFF(NOT ( v_pif_address_line_1 IS NULL ) OR NOT ( IS_SPACES(v_pif_address_line_1) ), instr(v_pif_address_line_1, 'TRUST'), 0) != 0, 1, 0))) = 1, v_pif_address_line_3, v_pif_insured_cont_add_line_2))) AS v_addr_line_1,
+		0
+					) = 1,
+					1,
+					IFF(IFF(NOT ( v_pif_address_line_2_b IS NULL 
+							) 
+							OR NOT ( LENGTH(v_pif_address_line_2_b)>0 AND TRIM(v_pif_address_line_2_b)='' 
+							),
+							REGEXP_INSTR(v_pif_address_line_2_b, 'TRUST'
+							),
+							0
+						) != 0,
+						1,
+						IFF(IFF(NOT ( v_pif_address_line_1 IS NULL 
+								) 
+								OR NOT ( LENGTH(v_pif_address_line_1)>0 AND TRIM(v_pif_address_line_1)='' 
+								),
+								REGEXP_INSTR(v_pif_address_line_1, 'TRUST'
+								),
+								0
+							) != 0,
+							1,
+							0
+						)
+					)
+				) = 1,
+				v_pif_address_line_3,
+				v_pif_insured_cont_add_line_2
+			)
+		)
+	) AS v_addr_line_1,
 	-- *INF*: iif(iif(IS_SPACES(v_pif_address_line_4) or isnull(v_pif_address_line_4) or LENGTH(v_pif_address_line_4)=0,
 	-- 1,0)=1,
 	-- (iif(decode(SUBSTR(v_pif_address_line_2_b,(LENGTH(v_pif_address_line_2_b)-3),4),
@@ -140,7 +233,17 @@ EXP_values AS (
 	-- 'PLAN',1,
 	-- 'CORP',1,
 	-- 0)=1,1,iif(IIF(NOT (ISNULL(v_pif_address_line_2_b)) OR NOT (IS_SPACES(v_pif_address_line_2_b)), instr(v_pif_address_line_2_b,'TRUST'),0) != 0,1,iif(IIF(NOT (ISNULL(v_pif_address_line_1)) OR NOT (IS_SPACES(v_pif_address_line_1)), instr(v_pif_address_line_1,'TRUST'),0) != 0,1,0))) =1,v_pif_address_line_3,v_pif_insured_cont_add_line_2)))
-	IFF(IFF(IS_SPACES(v_pif_address_line_4) OR v_pif_address_line_4 IS NULL OR LENGTH(v_pif_address_line_4) = 0, 1, 0) = 1, ( IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b) - 3 ), 4),
+	IFF(IFF(LENGTH(v_pif_address_line_4)>0 AND TRIM(v_pif_address_line_4)='' 
+			OR v_pif_address_line_4 IS NULL 
+			OR LENGTH(v_pif_address_line_4
+			) = 0,
+			1,
+			0
+		) = 1,
+		( IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b
+							) - 3 
+						), 4
+					),
 		' LLC', 1,
 		' DBA', 1,
 		' BA;', 1,
@@ -148,14 +251,41 @@ EXP_values AS (
 		' SOC', 1,
 		'PLAN', 1,
 		'CORP', 1,
-		0) = 1, 'N/A', v_pif_insured_cont_add_line_2) ), IFF(IFF(IN(SUBSTR(v_pif_address_line_2_b, 1, 1), '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 0) = 1, 1, IFF(decode(substr(v_pif_insured_cont_add_line_2, 1, 4),
+		0
+				) = 1,
+				'N/A',
+				v_pif_insured_cont_add_line_2
+			) 
+		),
+		IFF(IFF(SUBSTR(v_pif_address_line_2_b, 1, 1
+				) IN ('1','2','3','4','5','6','7','8','9','0',0) = 1,
+				1,
+				IFF(decode(substr(v_pif_insured_cont_add_line_2, 1, 4
+						),
 		'POST', 1,
 		'PO B', 1,
-		0) = 1, 1, 0)) = 0, IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b) - 2 ), 3),
+		0
+					) = 1,
+					1,
+					0
+				)
+			) = 0,
+			IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b
+							) - 2 
+						), 3
+					),
 		' ST', 1,
 		' RD', 1,
 		' PL', 1,
-		0) = 1, v_pif_insured_cont_add_line_2, v_pif_address_line_3), IFF(IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b) - 3 ), 4),
+		0
+				) = 1,
+				v_pif_insured_cont_add_line_2,
+				v_pif_address_line_3
+			),
+			IFF(IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b
+								) - 3 
+							), 4
+						),
 		' LLC', 1,
 		' DBA', 1,
 		' BA;', 1,
@@ -163,9 +293,46 @@ EXP_values AS (
 		' SOC', 1,
 		'PLAN', 1,
 		'CORP', 1,
-		0) = 1, 1, IFF(IFF(NOT ( v_pif_address_line_2_b IS NULL ) OR NOT ( IS_SPACES(v_pif_address_line_2_b) ), instr(v_pif_address_line_2_b, 'TRUST'), 0) != 0, 1, IFF(IFF(NOT ( v_pif_address_line_1 IS NULL ) OR NOT ( IS_SPACES(v_pif_address_line_1) ), instr(v_pif_address_line_1, 'TRUST'), 0) != 0, 1, 0))) = 1, v_pif_address_line_3, v_pif_insured_cont_add_line_2))) AS v_address_line_1,
+		0
+					) = 1,
+					1,
+					IFF(IFF(NOT ( v_pif_address_line_2_b IS NULL 
+							) 
+							OR NOT ( LENGTH(v_pif_address_line_2_b)>0 AND TRIM(v_pif_address_line_2_b)='' 
+							),
+							REGEXP_INSTR(v_pif_address_line_2_b, 'TRUST'
+							),
+							0
+						) != 0,
+						1,
+						IFF(IFF(NOT ( v_pif_address_line_1 IS NULL 
+								) 
+								OR NOT ( LENGTH(v_pif_address_line_1)>0 AND TRIM(v_pif_address_line_1)='' 
+								),
+								REGEXP_INSTR(v_pif_address_line_1, 'TRUST'
+								),
+								0
+							) != 0,
+							1,
+							0
+						)
+					)
+				) = 1,
+				v_pif_address_line_3,
+				v_pif_insured_cont_add_line_2
+			)
+		)
+	) AS v_address_line_1,
 	-- *INF*: iif(isnull(v_address_line_1) or IS_SPACES(v_address_line_1) or LENGTH(v_address_line_1)=0,'N/A',LTRIM(RTRIM(v_address_line_1)))
-	IFF(v_address_line_1 IS NULL OR IS_SPACES(v_address_line_1) OR LENGTH(v_address_line_1) = 0, 'N/A', LTRIM(RTRIM(v_address_line_1))) AS addr_line_1,
+	IFF(v_address_line_1 IS NULL 
+		OR LENGTH(v_address_line_1)>0 AND TRIM(v_address_line_1)='' 
+		OR LENGTH(v_address_line_1
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(v_address_line_1
+			)
+		)
+	) AS addr_line_1,
 	-- *INF*: iif(iif(IS_SPACES(v_pif_address_line_4) or isnull(v_pif_address_line_4) or LENGTH(v_pif_address_line_4)=0,
 	-- 1,0)=1,'N/A',
 	-- iif(iif(IN(SUBSTR(v_pif_address_line_2_b,1,1),'1','2','3','4','5','6','7','8','9','0',0)=1,1,iif(decode(substr(v_pif_insured_cont_add_line_2,1,4),
@@ -184,14 +351,43 @@ EXP_values AS (
 	-- 'PLAN',1,
 	-- 'CORP',1,
 	-- 0)=1,1,iif(IIF(NOT (ISNULL(v_pif_address_line_2_b)) OR NOT (IS_SPACES(v_pif_address_line_2_b)), instr(v_pif_address_line_2_b,'TRUST'),0) != 0,1,iif(IIF(NOT (ISNULL(v_pif_address_line_1)) OR NOT (IS_SPACES(v_pif_address_line_1)), instr(v_pif_address_line_1,'TRUST'),0) != 0,1,0))) =1,'N/A',v_pif_address_line_3)))
-	IFF(IFF(IS_SPACES(v_pif_address_line_4) OR v_pif_address_line_4 IS NULL OR LENGTH(v_pif_address_line_4) = 0, 1, 0) = 1, 'N/A', IFF(IFF(IN(SUBSTR(v_pif_address_line_2_b, 1, 1), '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 0) = 1, 1, IFF(decode(substr(v_pif_insured_cont_add_line_2, 1, 4),
+	IFF(IFF(LENGTH(v_pif_address_line_4)>0 AND TRIM(v_pif_address_line_4)='' 
+			OR v_pif_address_line_4 IS NULL 
+			OR LENGTH(v_pif_address_line_4
+			) = 0,
+			1,
+			0
+		) = 1,
+		'N/A',
+		IFF(IFF(SUBSTR(v_pif_address_line_2_b, 1, 1
+				) IN ('1','2','3','4','5','6','7','8','9','0',0) = 1,
+				1,
+				IFF(decode(substr(v_pif_insured_cont_add_line_2, 1, 4
+						),
 		'POST', 1,
 		'PO B', 1,
-		0) = 1, 1, 0)) = 0, IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b) - 2 ), 3),
+		0
+					) = 1,
+					1,
+					0
+				)
+			) = 0,
+			IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b
+							) - 2 
+						), 3
+					),
 		' ST', 1,
 		' RD', 1,
 		' PL', 1,
-		0) = 1, v_pif_address_line_3, 'N/A'), IFF(IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b) - 3 ), 4),
+		0
+				) = 1,
+				v_pif_address_line_3,
+				'N/A'
+			),
+			IFF(IFF(decode(SUBSTR(v_pif_address_line_2_b, ( LENGTH(v_pif_address_line_2_b
+								) - 3 
+							), 4
+						),
 		' LLC', 1,
 		' DBA', 1,
 		' BA;', 1,
@@ -199,9 +395,46 @@ EXP_values AS (
 		' SOC', 1,
 		'PLAN', 1,
 		'CORP', 1,
-		0) = 1, 1, IFF(IFF(NOT ( v_pif_address_line_2_b IS NULL ) OR NOT ( IS_SPACES(v_pif_address_line_2_b) ), instr(v_pif_address_line_2_b, 'TRUST'), 0) != 0, 1, IFF(IFF(NOT ( v_pif_address_line_1 IS NULL ) OR NOT ( IS_SPACES(v_pif_address_line_1) ), instr(v_pif_address_line_1, 'TRUST'), 0) != 0, 1, 0))) = 1, 'N/A', v_pif_address_line_3))) AS v_addr_line_2,
+		0
+					) = 1,
+					1,
+					IFF(IFF(NOT ( v_pif_address_line_2_b IS NULL 
+							) 
+							OR NOT ( LENGTH(v_pif_address_line_2_b)>0 AND TRIM(v_pif_address_line_2_b)='' 
+							),
+							REGEXP_INSTR(v_pif_address_line_2_b, 'TRUST'
+							),
+							0
+						) != 0,
+						1,
+						IFF(IFF(NOT ( v_pif_address_line_1 IS NULL 
+								) 
+								OR NOT ( LENGTH(v_pif_address_line_1)>0 AND TRIM(v_pif_address_line_1)='' 
+								),
+								REGEXP_INSTR(v_pif_address_line_1, 'TRUST'
+								),
+								0
+							) != 0,
+							1,
+							0
+						)
+					)
+				) = 1,
+				'N/A',
+				v_pif_address_line_3
+			)
+		)
+	) AS v_addr_line_2,
 	-- *INF*: iif(isnull(v_addr_line_2) or IS_SPACES(v_addr_line_2) or LENGTH(v_addr_line_2)=0,'N/A',LTRIM(RTRIM(v_addr_line_2)))
-	IFF(v_addr_line_2 IS NULL OR IS_SPACES(v_addr_line_2) OR LENGTH(v_addr_line_2) = 0, 'N/A', LTRIM(RTRIM(v_addr_line_2))) AS v_address_line_2,
+	IFF(v_addr_line_2 IS NULL 
+		OR LENGTH(v_addr_line_2)>0 AND TRIM(v_addr_line_2)='' 
+		OR LENGTH(v_addr_line_2
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(v_addr_line_2
+			)
+		)
+	) AS v_address_line_2,
 	-- *INF*: v_address_line_2
 	-- 
 	-- --iif(isnull(v_addr_line_2) or IS_SPACES(v_addr_line_2) or LENGTH(v_addr_line_2)=0,'N/A',LTRIM(RTRIM(v_addr_line_2)))
@@ -215,9 +448,34 @@ EXP_values AS (
 	-- --iif(iif(IS_SPACES(v_pif_address_line_4) or isnull(v_pif_address_line_4) or LENGTH(v_pif_address_line_4)=0,
 	-- --1,0)=1,ltrim(rtrim(REPLACECHR( 1,SUBSTR(v_pif_address_line_3,1,INSTR(v_pif_address_line_3,',')),',',''))),
 	-- --ltrim(rtrim--(REPLACECHR( 1,SUBSTR(v_pif_address_line_4,1,INSTR(v_pif_address_line_4,',')),',',''))))
-	IFF(IFF(IS_SPACES(v_pif_address_line_4) OR v_pif_address_line_4 IS NULL OR LENGTH(v_pif_address_line_4) = 0, 1, 0) = 1, ltrim(rtrim(SUBSTR(v_pif_address_line_3, 1, INSTR(v_pif_address_line_3, ',') - 1))), ltrim(rtrim(SUBSTR(v_pif_address_line_4, 1, INSTR(v_pif_address_line_4, ',') - 1)))) AS v_city,
+	IFF(IFF(LENGTH(v_pif_address_line_4)>0 AND TRIM(v_pif_address_line_4)='' 
+			OR v_pif_address_line_4 IS NULL 
+			OR LENGTH(v_pif_address_line_4
+			) = 0,
+			1,
+			0
+		) = 1,
+		ltrim(rtrim(SUBSTR(v_pif_address_line_3, 1, REGEXP_INSTR(v_pif_address_line_3, ','
+					) - 1
+				)
+			)
+		),
+		ltrim(rtrim(SUBSTR(v_pif_address_line_4, 1, REGEXP_INSTR(v_pif_address_line_4, ','
+					) - 1
+				)
+			)
+		)
+	) AS v_city,
 	-- *INF*: iif(isnull(v_city) or IS_SPACES(v_city) or LENGTH(v_city)=0,'N/A',ltrim(rtrim(v_city)))
-	IFF(v_city IS NULL OR IS_SPACES(v_city) OR LENGTH(v_city) = 0, 'N/A', ltrim(rtrim(v_city))) AS v_city_1,
+	IFF(v_city IS NULL 
+		OR LENGTH(v_city)>0 AND TRIM(v_city)='' 
+		OR LENGTH(v_city
+		) = 0,
+		'N/A',
+		ltrim(rtrim(v_city
+			)
+		)
+	) AS v_city_1,
 	-- *INF*: iif(iif(IS_SPACES(v_pif_address_line_4) or isnull(v_pif_address_line_4) or LENGTH(v_pif_address_line_4)=0,
 	-- 1,0)=1,ltrim(rtrim(SUBSTR(v_pif_address_line_3,INSTR(v_pif_address_line_3,',',-1)+1))),ltrim(rtrim(SUBSTR(v_pif_address_line_4,INSTR(v_pif_address_line_4,',',-1)+1))))
 	-- 
@@ -234,36 +492,115 @@ EXP_values AS (
 	-- --1,0)=1,ltrim(rtrim(REPLACECHR(1,SUBSTR(v_pif_address_line_3,INSTR(v_pif_address_line_3,',')),',',''))),
 	-- --ltrim(rtrim--(REPLACECHR(1,SUBSTR(v_pif_address_line_4,INSTR(v_pif_address_line_4,',')),',',''))))
 	-- 
-	IFF(IFF(IS_SPACES(v_pif_address_line_4) OR v_pif_address_line_4 IS NULL OR LENGTH(v_pif_address_line_4) = 0, 1, 0) = 1, ltrim(rtrim(SUBSTR(v_pif_address_line_3, INSTR(v_pif_address_line_3, ',', - 1) + 1))), ltrim(rtrim(SUBSTR(v_pif_address_line_4, INSTR(v_pif_address_line_4, ',', - 1) + 1)))) AS v_state,
+	IFF(IFF(LENGTH(v_pif_address_line_4)>0 AND TRIM(v_pif_address_line_4)='' 
+			OR v_pif_address_line_4 IS NULL 
+			OR LENGTH(v_pif_address_line_4
+			) = 0,
+			1,
+			0
+		) = 1,
+		ltrim(rtrim(SUBSTR(v_pif_address_line_3, REGEXP_INSTR(v_pif_address_line_3, ',', - 1
+					) + 1
+				)
+			)
+		),
+		ltrim(rtrim(SUBSTR(v_pif_address_line_4, REGEXP_INSTR(v_pif_address_line_4, ',', - 1
+					) + 1
+				)
+			)
+		)
+	) AS v_state,
 	-- *INF*: REPLACECHR(1,v_state,',.',NULL)
 	-- 
 	-- 
 	-- 
-	REPLACECHR(1, v_state, ',.', NULL) AS v_state_replacechr,
+	REGEXP_REPLACE(v_state,',.','') AS v_state_replacechr,
 	-- *INF*: iif(isnull(v_state_replacechr) or IS_SPACES(v_state_replacechr) or LENGTH(v_state_replacechr)=0,'N/A',ltrim(rtrim(v_state_replacechr)))
-	IFF(v_state_replacechr IS NULL OR IS_SPACES(v_state_replacechr) OR LENGTH(v_state_replacechr) = 0, 'N/A', ltrim(rtrim(v_state_replacechr))) AS v_state_1,
+	IFF(v_state_replacechr IS NULL 
+		OR LENGTH(v_state_replacechr)>0 AND TRIM(v_state_replacechr)='' 
+		OR LENGTH(v_state_replacechr
+		) = 0,
+		'N/A',
+		ltrim(rtrim(v_state_replacechr
+			)
+		)
+	) AS v_state_1,
 	-- *INF*: IIF((v_state_1=('N/A')) AND (v_city_1=('N/A')) AND (v_address_line_2=('N/A')),LTRIM(RTRIM(SUBSTR(v_address_line_1,1,INSTR(v_address_line_1,',')-1))),v_city_1)
 	-- 
 	-- 
 	-- 
 	-- 
 	-- 
-	IFF(( v_state_1 = ( 'N/A' ) ) AND ( v_city_1 = ( 'N/A' ) ) AND ( v_address_line_2 = ( 'N/A' ) ), LTRIM(RTRIM(SUBSTR(v_address_line_1, 1, INSTR(v_address_line_1, ',') - 1))), v_city_1) AS v_city_1_1,
+	IFF(( v_state_1 = ( 'N/A' 
+			) 
+		) 
+		AND ( v_city_1 = ( 'N/A' 
+			) 
+		) 
+		AND ( v_address_line_2 = ( 'N/A' 
+			) 
+		),
+		LTRIM(RTRIM(SUBSTR(v_address_line_1, 1, REGEXP_INSTR(v_address_line_1, ','
+					) - 1
+				)
+			)
+		),
+		v_city_1
+	) AS v_city_1_1,
 	-- *INF*: IIF((v_state_1=('N/A')) AND (v_city_1=('N/A')) AND (v_address_line_2=('N/A')),ltrim(rtrim(SUBSTR(v_address_line_1,INSTR(v_address_line_1,',',-1)+1))),v_state_1)
 	-- 
 	-- 
 	-- --iif(iif(IS_SPACES(v_pif_address_line_4) or isnull(v_pif_address_line_4) or LENGTH(v_pif_address_line_4)=0,
 	-- --1,0)=1,ltrim(rtrim(SUBSTR(v_pif_address_line_3,INSTR(v_pif_address_line_3,',',-1)+1))),ltrim(rtrim(SUBSTR(v_pif_address_line_4,INSTR(v_pif_address_line_4,',',-1)+1))))
-	IFF(( v_state_1 = ( 'N/A' ) ) AND ( v_city_1 = ( 'N/A' ) ) AND ( v_address_line_2 = ( 'N/A' ) ), ltrim(rtrim(SUBSTR(v_address_line_1, INSTR(v_address_line_1, ',', - 1) + 1))), v_state_1) AS v_state_1_1,
+	IFF(( v_state_1 = ( 'N/A' 
+			) 
+		) 
+		AND ( v_city_1 = ( 'N/A' 
+			) 
+		) 
+		AND ( v_address_line_2 = ( 'N/A' 
+			) 
+		),
+		ltrim(rtrim(SUBSTR(v_address_line_1, REGEXP_INSTR(v_address_line_1, ',', - 1
+					) + 1
+				)
+			)
+		),
+		v_state_1
+	) AS v_state_1_1,
 	-- *INF*: IIF((v_city_1_1=('N/A')) AND (v_address_line_2 != ('N/A')),LTRIM(RTRIM(SUBSTR(v_address_line_2,1,INSTR(v_address_line_2,',')-1))),v_city_1_1)
 	-- 
 	-- 
 	-- 
-	IFF(( v_city_1_1 = ( 'N/A' ) ) AND ( v_address_line_2 != ( 'N/A' ) ), LTRIM(RTRIM(SUBSTR(v_address_line_2, 1, INSTR(v_address_line_2, ',') - 1))), v_city_1_1) AS v_final_city_name,
+	IFF(( v_city_1_1 = ( 'N/A' 
+			) 
+		) 
+		AND ( v_address_line_2 != ( 'N/A' 
+			) 
+		),
+		LTRIM(RTRIM(SUBSTR(v_address_line_2, 1, REGEXP_INSTR(v_address_line_2, ','
+					) - 1
+				)
+			)
+		),
+		v_city_1_1
+	) AS v_final_city_name,
 	-- *INF*: IIF((v_city_1_1=('N/A')) AND (v_address_line_2 != ('N/A')),ltrim(rtrim(SUBSTR(v_address_line_2,INSTR(v_address_line_2,',',-1)+1))),v_state_1_1)
 	-- 
 	-- 
-	IFF(( v_city_1_1 = ( 'N/A' ) ) AND ( v_address_line_2 != ( 'N/A' ) ), ltrim(rtrim(SUBSTR(v_address_line_2, INSTR(v_address_line_2, ',', - 1) + 1))), v_state_1_1) AS v_final_state_prov_name,
+	IFF(( v_city_1_1 = ( 'N/A' 
+			) 
+		) 
+		AND ( v_address_line_2 != ( 'N/A' 
+			) 
+		),
+		ltrim(rtrim(SUBSTR(v_address_line_2, REGEXP_INSTR(v_address_line_2, ',', - 1
+					) + 1
+				)
+			)
+		),
+		v_state_1_1
+	) AS v_final_state_prov_name,
 	LKP_sup_state.state_code AS lkp_state_code,
 	-- *INF*: iif(isnull(v_final_city_name) or IS_SPACES(v_final_city_name) or LENGTH(v_final_city_name)=0,'N/A',ltrim(rtrim(v_final_city_name)))
 	-- 
@@ -271,17 +608,55 @@ EXP_values AS (
 	-- 
 	-- --v_city_1_1
 	-- --iif(isnull(v_final_city_name) or IS_SPACES(v_final_city_name) or LENGTH(v_final_city_name)=0,'N/A',ltrim(rtrim(v_final_city_name)))
-	IFF(v_final_city_name IS NULL OR IS_SPACES(v_final_city_name) OR LENGTH(v_final_city_name) = 0, 'N/A', ltrim(rtrim(v_final_city_name))) AS city,
+	IFF(v_final_city_name IS NULL 
+		OR LENGTH(v_final_city_name)>0 AND TRIM(v_final_city_name)='' 
+		OR LENGTH(v_final_city_name
+		) = 0,
+		'N/A',
+		ltrim(rtrim(v_final_city_name
+			)
+		)
+	) AS city,
 	-- *INF*: iif(isnull(v_final_state_prov_name) or IS_SPACES(v_final_state_prov_name) or LENGTH(v_final_state_prov_name)=0,lkp_state_code,iif(LENGTH(ltrim(rtrim(v_final_state_prov_name)))!= 2,lkp_state_code,ltrim(rtrim(v_final_state_prov_name))))
 	-- 
 	-- 
 	-- --iif(isnull(v_final_state_prov_name) or IS_SPACES(v_final_state_prov_name) or LENGTH(v_final_state_prov_name)=0,'N/A',ltrim(rtrim(v_final_state_prov_name)))
-	IFF(v_final_state_prov_name IS NULL OR IS_SPACES(v_final_state_prov_name) OR LENGTH(v_final_state_prov_name) = 0, lkp_state_code, IFF(LENGTH(ltrim(rtrim(v_final_state_prov_name))) != 2, lkp_state_code, ltrim(rtrim(v_final_state_prov_name)))) AS state,
+	IFF(v_final_state_prov_name IS NULL 
+		OR LENGTH(v_final_state_prov_name)>0 AND TRIM(v_final_state_prov_name)='' 
+		OR LENGTH(v_final_state_prov_name
+		) = 0,
+		lkp_state_code,
+		IFF(LENGTH(ltrim(rtrim(v_final_state_prov_name
+					)
+				)
+			) != 2,
+			lkp_state_code,
+			ltrim(rtrim(v_final_state_prov_name
+				)
+			)
+		)
+	) AS state,
 	-- *INF*: iif(isnull(in_pif_zip_5_digit_code) or IS_SPACES(in_pif_zip_5_digit_code) or LENGTH(in_pif_zip_5_digit_code)=0,'N/A',LTRIM(RTRIM(in_pif_zip_5_digit_code)))
-	IFF(in_pif_zip_5_digit_code IS NULL OR IS_SPACES(in_pif_zip_5_digit_code) OR LENGTH(in_pif_zip_5_digit_code) = 0, 'N/A', LTRIM(RTRIM(in_pif_zip_5_digit_code))) AS zip_postal_code,
+	IFF(in_pif_zip_5_digit_code IS NULL 
+		OR LENGTH(in_pif_zip_5_digit_code)>0 AND TRIM(in_pif_zip_5_digit_code)='' 
+		OR LENGTH(in_pif_zip_5_digit_code
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(in_pif_zip_5_digit_code
+			)
+		)
+	) AS zip_postal_code,
 	'N/A' AS zip_postal_code_extension,
 	-- *INF*: iif(isnull(in_pif_wbc_county) or IS_SPACES(in_pif_wbc_county) or LENGTH(in_pif_wbc_county)=0,'N/A',LTRIM(RTRIM(in_pif_wbc_county)))
-	IFF(in_pif_wbc_county IS NULL OR IS_SPACES(in_pif_wbc_county) OR LENGTH(in_pif_wbc_county) = 0, 'N/A', LTRIM(RTRIM(in_pif_wbc_county))) AS county_parish_name,
+	IFF(in_pif_wbc_county IS NULL 
+		OR LENGTH(in_pif_wbc_county)>0 AND TRIM(in_pif_wbc_county)='' 
+		OR LENGTH(in_pif_wbc_county
+		) = 0,
+		'N/A',
+		LTRIM(RTRIM(in_pif_wbc_county
+			)
+		)
+	) AS county_parish_name,
 	'0000' AS loc_unit_num,
 	-- *INF*: ltrim(rtrim(decode(v_state,
 	-- 'AB','CANADA',
@@ -312,7 +687,10 @@ EXP_values AS (
 		'PQ', 'CANADA',
 		'SA', 'CANADA',
 		'YN', 'CANADA',
-		'USA'))) AS country,
+		'USA'
+			)
+		)
+	) AS country,
 	'N/A' AS no_match_flag,
 	'N/A' AS delivery_confirmation_flag,
 	'N/A' AS group1_match_code,
@@ -442,16 +820,43 @@ EXP_Detect_Changes AS (
 	-- 
 	-- 
 	-- --iif(NewLookupRow=1,'NEW',IIF(NewLookupRow=2,'UPDATE','NOCHANGE'))
-	IFF(lkp_cust_addr_ak_id IS NULL, 'NEW', IFF(lkp_addr_line_1 != addr_line_1 OR lkp_addr_line_2 != addr_line_2 OR lkp_addr_line_3 != addr_line_3 OR lkp_city != city OR lkp_state != state OR lkp_zip_code != zip_postal_code OR lkp_zip_postal_code_extension != zip_postal_code_extension OR LTRIM(RTRIM(lkp_loc_unit_num)) != loc_unit_num OR lkp_county != county_parish_name OR lkp_country != country OR lkp_no_match_flag != no_match_flag OR lkp_delivery_confirmation_flag != delivery_confirmation_flag OR lkp_group1_match_code != group1_match_code OR lkp_latitude != latitude OR lkp_longitude != longitude, 'UPDATE', 'NOCHANGE')) AS v_changed_flag,
+	IFF(lkp_cust_addr_ak_id IS NULL,
+		'NEW',
+		IFF(lkp_addr_line_1 != addr_line_1 
+			OR lkp_addr_line_2 != addr_line_2 
+			OR lkp_addr_line_3 != addr_line_3 
+			OR lkp_city != city 
+			OR lkp_state != state 
+			OR lkp_zip_code != zip_postal_code 
+			OR lkp_zip_postal_code_extension != zip_postal_code_extension 
+			OR LTRIM(RTRIM(lkp_loc_unit_num
+				)
+			) != loc_unit_num 
+			OR lkp_county != county_parish_name 
+			OR lkp_country != country 
+			OR lkp_no_match_flag != no_match_flag 
+			OR lkp_delivery_confirmation_flag != delivery_confirmation_flag 
+			OR lkp_group1_match_code != group1_match_code 
+			OR lkp_latitude != latitude 
+			OR lkp_longitude != longitude,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS v_eff_from_date,
+	IFF(v_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS v_eff_from_date,
 	v_eff_from_date AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -503,7 +908,10 @@ EXP_customer_address_ak_id AS (
 	SELECT
 	lkp_cust_addr_ak_id,
 	-- *INF*: IIF(ISNULL(lkp_cust_addr_ak_id),NEXTVAL,lkp_cust_addr_ak_id)
-	IFF(lkp_cust_addr_ak_id IS NULL, NEXTVAL, lkp_cust_addr_ak_id) AS cust_addr_ak_id,
+	IFF(lkp_cust_addr_ak_id IS NULL,
+		NEXTVAL,
+		lkp_cust_addr_ak_id
+	) AS cust_addr_ak_id,
 	contract_key,
 	addr_type,
 	customer_number,
@@ -588,8 +996,9 @@ EXP_Lag_eff_from_date AS (
 	-- cust_addr_ak_id = v_prev_cust_addr_ak_id ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
 	DECODE(TRUE,
-		cust_addr_ak_id = v_prev_cust_addr_ak_id, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		cust_addr_ak_id = v_prev_cust_addr_ak_id, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	cust_addr_ak_id AS v_prev_cust_addr_ak_id,
 	in_eff_from_date AS v_prev_eff_from_date,

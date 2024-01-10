@@ -21,19 +21,44 @@ EXP_Default_Values AS (
 	SELECT
 	risk_unit_group AS RISK_UNIT_GROUP,
 	-- *INF*: IIF(ISNULL(RISK_UNIT_GROUP), 'N/A', LTRIM(RTRIM(RISK_UNIT_GROUP)))
-	IFF(RISK_UNIT_GROUP IS NULL, 'N/A', LTRIM(RTRIM(RISK_UNIT_GROUP))) AS RISK_UNIT_GROUP_OUT,
+	IFF(RISK_UNIT_GROUP IS NULL,
+		'N/A',
+		LTRIM(RTRIM(RISK_UNIT_GROUP
+			)
+		)
+	) AS RISK_UNIT_GROUP_OUT,
 	risk_unit_group_literal AS RISK_UNIT_GROUP_LITERAL,
 	-- *INF*: IIF(ISNULL(RISK_UNIT_GROUP_LITERAL), 'N/A', LTRIM(RTRIM(RISK_UNIT_GROUP_LITERAL)))
-	IFF(RISK_UNIT_GROUP_LITERAL IS NULL, 'N/A', LTRIM(RTRIM(RISK_UNIT_GROUP_LITERAL))) AS RISK_UNIT_GROUP_LITERAL_OUT,
+	IFF(RISK_UNIT_GROUP_LITERAL IS NULL,
+		'N/A',
+		LTRIM(RTRIM(RISK_UNIT_GROUP_LITERAL
+			)
+		)
+	) AS RISK_UNIT_GROUP_LITERAL_OUT,
 	line_of_business AS IN_line_of_business,
 	-- *INF*: IIF(ISNULL(IN_line_of_business),'N/A',LTRIM(RTRIM(IN_line_of_business)))
-	IFF(IN_line_of_business IS NULL, 'N/A', LTRIM(RTRIM(IN_line_of_business))) AS line_of_business_OUT,
+	IFF(IN_line_of_business IS NULL,
+		'N/A',
+		LTRIM(RTRIM(IN_line_of_business
+			)
+		)
+	) AS line_of_business_OUT,
 	insurance_line AS IN_insurance_line,
 	-- *INF*: iif(isnull(IN_insurance_line),'N/A',LTRIM(RTRIM(IN_insurance_line)))
-	IFF(IN_insurance_line IS NULL, 'N/A', LTRIM(RTRIM(IN_insurance_line))) AS insurance_line_OUT,
+	IFF(IN_insurance_line IS NULL,
+		'N/A',
+		LTRIM(RTRIM(IN_insurance_line
+			)
+		)
+	) AS insurance_line_OUT,
 	product_type_code AS IN_product_type_code,
 	-- *INF*: iif(isnull(IN_product_type_code),'N/A',LTRIM(RTRIM(IN_product_type_code)))
-	IFF(IN_product_type_code IS NULL, 'N/A', LTRIM(RTRIM(IN_product_type_code))) AS product_type_code_OUT
+	IFF(IN_product_type_code IS NULL,
+		'N/A',
+		LTRIM(RTRIM(IN_product_type_code
+			)
+		)
+	) AS product_type_code_OUT
 	FROM SQ_gtam_tm517c_stage
 ),
 LKP_sup_risk_unit_group AS (
@@ -70,15 +95,26 @@ EXP_detect_changes AS (
 	EXP_Default_Values.product_type_code_OUT,
 	-- *INF*: IIF(ISNULL(old_sup_risk_unit_grp_id), 'NEW', IIF(old_risk_unit_grp_descript != RISK_UNIT_GROUP_LITERAL_OUT, 'UPDATE', 'NOCHANGE'))
 	-- 
-	IFF(old_sup_risk_unit_grp_id IS NULL, 'NEW', IFF(old_risk_unit_grp_descript != RISK_UNIT_GROUP_LITERAL_OUT, 'UPDATE', 'NOCHANGE')) AS v_CHANGED_FLAG,
+	IFF(old_sup_risk_unit_grp_id IS NULL,
+		'NEW',
+		IFF(old_risk_unit_grp_descript != RISK_UNIT_GROUP_LITERAL_OUT,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_CHANGED_FLAG,
 	v_CHANGED_FLAG AS CHANGED_FLAG,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_CHANGED_FLAG='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_CHANGED_FLAG = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,
+	IFF(v_CHANGED_FLAG = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id
@@ -161,8 +197,12 @@ EXP_lag_eff_from_date AS (
 	-- 	orig_eff_to_date)
 	-- 	
 	DECODE(TRUE,
-		risk_unit_grp_code = v_Prev_row_risk_unit_grp_code AND prdct_type_code = v_Prev_row_prdct_type_code AND lob = v_Prev_row_lob AND v_Prev_row_ins_line = v_Prev_row_ins_line, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		risk_unit_grp_code = v_Prev_row_risk_unit_grp_code 
+		AND prdct_type_code = v_Prev_row_prdct_type_code 
+		AND lob = v_Prev_row_lob 
+		AND v_Prev_row_ins_line = v_Prev_row_ins_line, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	risk_unit_grp_code AS v_Prev_row_risk_unit_grp_code,
 	prdct_type_code AS v_Prev_row_prdct_type_code,

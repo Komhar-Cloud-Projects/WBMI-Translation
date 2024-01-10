@@ -93,16 +93,31 @@ EXP_GetMetaData AS (
 	SQ_CoverageDetailCrimeDim.EffectiveDate AS i_EffectiveDate,
 	SQ_CoverageDetailCrimeDim.ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF( i_ClassCodeOrganizationCode<>'SFAA', 'N/A', IIF(ISNULL(i_ClassCode), 'N/A', i_ClassCode))
-	IFF(i_ClassCodeOrganizationCode <> 'SFAA', 'N/A', IFF(i_ClassCode IS NULL, 'N/A', i_ClassCode)) AS v_SfaaClassCode,
+	IFF(i_ClassCodeOrganizationCode <> 'SFAA',
+		'N/A',
+		IFF(i_ClassCode IS NULL,
+			'N/A',
+			i_ClassCode
+		)
+	) AS v_SfaaClassCode,
 	-- *INF*: IIF(ISNULL(i_ClassDescription), 'N/A', i_ClassDescription)
-	IFF(i_ClassDescription IS NULL, 'N/A', i_ClassDescription) AS v_SfaaClassDescription,
+	IFF(i_ClassDescription IS NULL,
+		'N/A',
+		i_ClassDescription
+	) AS v_SfaaClassDescription,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_CoverageDetailDimId_BN), 'NEW',
 	-- LTRIM(RTRIM(i_SFAAClassCode_BN)) != v_SfaaClassCode OR i_SFAAClassDescription_BN != v_SfaaClassDescription OR i_EffectiveDate_BN != i_EffectiveDate OR i_ExpirationDate_BN != i_ExpirationDate, 'UPDATE', 'NOCHANGE')
 	DECODE(TRUE,
 		i_CoverageDetailDimId_BN IS NULL, 'NEW',
-		LTRIM(RTRIM(i_SFAAClassCode_BN)) != v_SfaaClassCode OR i_SFAAClassDescription_BN != v_SfaaClassDescription OR i_EffectiveDate_BN != i_EffectiveDate OR i_ExpirationDate_BN != i_ExpirationDate, 'UPDATE',
-		'NOCHANGE') AS o_ChangeFlag,
+		LTRIM(RTRIM(i_SFAAClassCode_BN
+			)
+		) != v_SfaaClassCode 
+		OR i_SFAAClassDescription_BN != v_SfaaClassDescription 
+		OR i_EffectiveDate_BN != i_EffectiveDate 
+		OR i_ExpirationDate_BN != i_ExpirationDate, 'UPDATE',
+		'NOCHANGE'
+	) AS o_ChangeFlag,
 	i_CoverageDetailDimId AS o_CoverageDetailDimId,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	SYSDATE AS o_CreatedDate,

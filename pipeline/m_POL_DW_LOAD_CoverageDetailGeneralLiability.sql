@@ -61,28 +61,49 @@ EXP_Metadata AS (
 	RiskUnitGroup AS i_RiskUnitGroup,
 	PremiumTransactionAKID AS i_PremiumTransactionAKID,
 	-- *INF*: RTRIM(LTRIM(i_ClassCode))
-	RTRIM(LTRIM(i_ClassCode)) AS v_ClassCode,
+	RTRIM(LTRIM(i_ClassCode
+		)
+	) AS v_ClassCode,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	i_PremiumTransactionAKID AS o_PremiumTransactionAKID,
 	-- *INF*: RTRIM(LTRIM(i_StatisticalCoverageHashKey))
-	RTRIM(LTRIM(i_StatisticalCoverageHashKey)) AS o_StatisticalCoverageHashKey,
+	RTRIM(LTRIM(i_StatisticalCoverageHashKey
+		)
+	) AS o_StatisticalCoverageHashKey,
 	-- *INF*: IIF(IN(v_ClassCode,'22222','22250'),1,0)
-	IFF(IN(v_ClassCode, '22222', '22250'), 1, 0) AS o_EmploymentPracticesLiabilityInsuranceRollOnIndicator,
+	IFF(v_ClassCode IN ('22222','22250'),
+		1,
+		0
+	) AS o_EmploymentPracticesLiabilityInsuranceRollOnIndicator,
 	-- *INF*: RTRIM(LTRIM(i_pol_sym))
-	RTRIM(LTRIM(i_pol_sym)) AS o_pol_sym,
+	RTRIM(LTRIM(i_pol_sym
+		)
+	) AS o_pol_sym,
 	-- *INF*: RTRIM(LTRIM(i_pol_num))
-	RTRIM(LTRIM(i_pol_num)) AS o_pol_num,
+	RTRIM(LTRIM(i_pol_num
+		)
+	) AS o_pol_num,
 	-- *INF*: RTRIM(LTRIM(i_pol_mod))
-	RTRIM(LTRIM(i_pol_mod)) AS o_pol_mod,
+	RTRIM(LTRIM(i_pol_mod
+		)
+	) AS o_pol_mod,
 	-- *INF*: RTRIM(LTRIM(i_RiskUnitGroup))
-	RTRIM(LTRIM(i_RiskUnitGroup)) AS o_RiskUnitGroup,
+	RTRIM(LTRIM(i_RiskUnitGroup
+		)
+	) AS o_RiskUnitGroup,
 	v_ClassCode AS o_ClassCode,
 	-- *INF*: RTRIM(LTRIM(i_SublineCode))
-	RTRIM(LTRIM(i_SublineCode)) AS o_SublineCode,
+	RTRIM(LTRIM(i_SublineCode
+		)
+	) AS o_SublineCode,
 	-- *INF*: RTRIM(LTRIM(i_RatingStateCode))
-	RTRIM(LTRIM(i_RatingStateCode)) AS o_RatingStateCode,
+	RTRIM(LTRIM(i_RatingStateCode
+		)
+	) AS o_RatingStateCode,
 	-- *INF*: LTRIM(RTRIM(i_OriginatingOrganizationCode))
-	LTRIM(RTRIM(i_OriginatingOrganizationCode)) AS o_OriginatingOrganizationCode
+	LTRIM(RTRIM(i_OriginatingOrganizationCode
+		)
+	) AS o_OriginatingOrganizationCode
 	FROM SQ_PMS
 ),
 LKP_Pif43LXGLStage AS (
@@ -185,9 +206,10 @@ EXP_CoverageDetailGeneralLiabiliity AS (
 	-- NOT ISNULL(:LKP.LKP_SupClassificationGeneralLiability(i_ClassCode,i_SublineCode,'99')),:LKP.LKP_SupClassificationGeneralLiability(i_ClassCode,i_SublineCode,'99'),
 	-- 'N/A')
 	DECODE(true,
-		NOT LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode.lkp_result IS NULL, LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode.lkp_result,
-		NOT LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_99.lkp_result IS NULL, LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_99.lkp_result,
-		'N/A') AS v_lkp_result,
+		LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode.lkp_result IS NOT NULL, LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode.lkp_result,
+		LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_99.lkp_result IS NOT NULL, LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_99.lkp_result,
+		'N/A'
+	) AS v_lkp_result,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_Pmdlxg1YearRetro),1800,
 	-- i_Pmdlxg1YearRetro=0,1800,
@@ -197,7 +219,8 @@ EXP_CoverageDetailGeneralLiabiliity AS (
 	DECODE(TRUE,
 		i_Pmdlxg1YearRetro IS NULL, 1800,
 		i_Pmdlxg1YearRetro = 0, 1800,
-		TO_INTEGER(i_Pmdlxg1YearRetro)) AS v_Pmdlxg1YearRetro,
+		CAST(i_Pmdlxg1YearRetro AS INTEGER)
+	) AS v_Pmdlxg1YearRetro,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_Pmdlxg1MonthRetro),1,
 	-- i_Pmdlxg1MonthRetro=0,1,
@@ -209,7 +232,8 @@ EXP_CoverageDetailGeneralLiabiliity AS (
 	DECODE(TRUE,
 		i_Pmdlxg1MonthRetro IS NULL, 1,
 		i_Pmdlxg1MonthRetro = 0, 1,
-		TO_INTEGER(i_Pmdlxg1MonthRetro)) AS v_Pmdlxg1MonthRetro,
+		CAST(i_Pmdlxg1MonthRetro AS INTEGER)
+	) AS v_Pmdlxg1MonthRetro,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_Pmdlxg1DayRetro),1,
 	-- i_Pmdlxg1DayRetro=0,1,
@@ -220,24 +244,47 @@ EXP_CoverageDetailGeneralLiabiliity AS (
 	DECODE(TRUE,
 		i_Pmdlxg1DayRetro IS NULL, 1,
 		i_Pmdlxg1DayRetro = 0, 1,
-		TO_INTEGER(i_Pmdlxg1DayRetro)) AS v_Pmdlxg1DayRetro,
+		CAST(i_Pmdlxg1DayRetro AS INTEGER)
+	) AS v_Pmdlxg1DayRetro,
 	-- *INF*: REPLACESTR(0,LTRIM(RTRIM(i_RetroDate_EPLI)),' ','')
-	REPLACESTR(0, LTRIM(RTRIM(i_RetroDate_EPLI)), ' ', '') AS v_RetroDate_EPLI_Trim,
+	REGEXP_REPLACE(LTRIM(RTRIM(i_RetroDate_EPLI
+		)
+	),' ','','i') AS v_RetroDate_EPLI_Trim,
 	-- *INF*: DECODE(TRUE,
 	-- INSTR(v_RetroDate_EPLI_Trim,'/')>0 AND INSTR(v_RetroDate_EPLI_Trim,'-')=0,'/',
 	-- INSTR(v_RetroDate_EPLI_Trim,'/')=0 AND INSTR(v_RetroDate_EPLI_Trim,'-')>0,'-',
 	-- NULL)
 	DECODE(TRUE,
-		INSTR(v_RetroDate_EPLI_Trim, '/') > 0 AND INSTR(v_RetroDate_EPLI_Trim, '-') = 0, '/',
-		INSTR(v_RetroDate_EPLI_Trim, '/') = 0 AND INSTR(v_RetroDate_EPLI_Trim, '-') > 0, '-',
-		NULL) AS v_DateDelimiter,
+		REGEXP_INSTR(v_RetroDate_EPLI_Trim, '/'
+		) > 0 
+		AND REGEXP_INSTR(v_RetroDate_EPLI_Trim, '-'
+		) = 0, '/',
+		REGEXP_INSTR(v_RetroDate_EPLI_Trim, '/'
+		) = 0 
+		AND REGEXP_INSTR(v_RetroDate_EPLI_Trim, '-'
+		) > 0, '-',
+		NULL
+	) AS v_DateDelimiter,
 	-- *INF*: IIF(
 	-- ISNULL(v_DateDelimiter),v_RetroDate_EPLI_Trim,
 	-- LPAD(SUBSTR(v_RetroDate_EPLI_Trim,1,INSTR(v_RetroDate_EPLI_Trim,v_DateDelimiter)-1),2,'0')
 	--  || LPAD(SUBSTR(v_RetroDate_EPLI_Trim,INSTR(v_RetroDate_EPLI_Trim,v_DateDelimiter)+1,INSTR(v_RetroDate_EPLI_Trim,v_DateDelimiter,1,2)-INSTR(v_RetroDate_EPLI_Trim,v_DateDelimiter)-1),2,'0')
 	--  || SUBSTR(v_RetroDate_EPLI_Trim,INSTR(v_RetroDate_EPLI_Trim,v_DateDelimiter,1,2)+1)
 	-- )
-	IFF(v_DateDelimiter IS NULL, v_RetroDate_EPLI_Trim, LPAD(SUBSTR(v_RetroDate_EPLI_Trim, 1, INSTR(v_RetroDate_EPLI_Trim, v_DateDelimiter) - 1), 2, '0') || LPAD(SUBSTR(v_RetroDate_EPLI_Trim, INSTR(v_RetroDate_EPLI_Trim, v_DateDelimiter) + 1, INSTR(v_RetroDate_EPLI_Trim, v_DateDelimiter, 1, 2) - INSTR(v_RetroDate_EPLI_Trim, v_DateDelimiter) - 1), 2, '0') || SUBSTR(v_RetroDate_EPLI_Trim, INSTR(v_RetroDate_EPLI_Trim, v_DateDelimiter, 1, 2) + 1)) AS v_RetroDate_EPLI_Cleasing,
+	IFF(v_DateDelimiter IS NULL,
+		v_RetroDate_EPLI_Trim,
+		LPAD(SUBSTR(v_RetroDate_EPLI_Trim, 1, REGEXP_INSTR(v_RetroDate_EPLI_Trim, v_DateDelimiter
+				) - 1
+			), 2, '0'
+		) || LPAD(SUBSTR(v_RetroDate_EPLI_Trim, REGEXP_INSTR(v_RetroDate_EPLI_Trim, v_DateDelimiter
+				) + 1, REGEXP_INSTR(v_RetroDate_EPLI_Trim, v_DateDelimiter, 1, 2
+				) - REGEXP_INSTR(v_RetroDate_EPLI_Trim, v_DateDelimiter
+				) - 1
+			), 2, '0'
+		) || SUBSTR(v_RetroDate_EPLI_Trim, REGEXP_INSTR(v_RetroDate_EPLI_Trim, v_DateDelimiter, 1, 2
+			) + 1
+		)
+	) AS v_RetroDate_EPLI_Cleasing,
 	-- *INF*: DECODE(TRUE,
 	-- IS_DATE(v_RetroDate_EPLI_Cleasing,'MMDDYYYY') AND LENGTH(v_RetroDate_EPLI_Cleasing)=8 and SUBSTR(v_RetroDate_EPLI_Cleasing,5,4)>'1753',TO_DATE(v_RetroDate_EPLI_Cleasing,'MMDDYYYY'),
 	-- IS_DATE(v_RetroDate_EPLI_Cleasing,'MMDDRR') AND LENGTH(v_RetroDate_EPLI_Cleasing)=6,TO_DATE(v_RetroDate_EPLI_Cleasing,'MMDDRR'),
@@ -246,28 +293,82 @@ EXP_CoverageDetailGeneralLiabiliity AS (
 	-- TO_DATE('01011800','MMDDYYYY')
 	-- )
 	DECODE(TRUE,
-		IS_DATE(v_RetroDate_EPLI_Cleasing, 'MMDDYYYY') AND LENGTH(v_RetroDate_EPLI_Cleasing) = 8 AND SUBSTR(v_RetroDate_EPLI_Cleasing, 5, 4) > '1753', TO_DATE(v_RetroDate_EPLI_Cleasing, 'MMDDYYYY'),
-		IS_DATE(v_RetroDate_EPLI_Cleasing, 'MMDDRR') AND LENGTH(v_RetroDate_EPLI_Cleasing) = 6, TO_DATE(v_RetroDate_EPLI_Cleasing, 'MMDDRR'),
-		IS_DATE(v_RetroDate_EPLI_Cleasing, 'MONTHDD,YYYY') AND INSTR(v_RetroDate_EPLI_Cleasing, ',') > 0, TO_DATE(v_RetroDate_EPLI_Cleasing, 'MONTHDD,YYYY'),
-		IS_DATE(v_RetroDate_EPLI_Cleasing, 'MONTHDDYYYY'), TO_DATE(v_RetroDate_EPLI_Cleasing, 'MONTHDDYYYY'),
-		TO_DATE('01011800', 'MMDDYYYY')) AS v_RetroDate_EPLI,
+		IS_DATE(v_RetroDate_EPLI_Cleasing, 'MMDDYYYY'
+		) 
+		AND LENGTH(v_RetroDate_EPLI_Cleasing
+		) = 8 
+		AND SUBSTR(v_RetroDate_EPLI_Cleasing, 5, 4
+		) > '1753', TO_DATE(v_RetroDate_EPLI_Cleasing, 'MMDDYYYY'
+		),
+		IS_DATE(v_RetroDate_EPLI_Cleasing, 'MMDDRR'
+		) 
+		AND LENGTH(v_RetroDate_EPLI_Cleasing
+		) = 6, TO_DATE(v_RetroDate_EPLI_Cleasing, 'MMDDRR'
+		),
+		IS_DATE(v_RetroDate_EPLI_Cleasing, 'MONTHDD,YYYY'
+		) 
+		AND REGEXP_INSTR(v_RetroDate_EPLI_Cleasing, ','
+		) > 0, TO_DATE(v_RetroDate_EPLI_Cleasing, 'MONTHDD,YYYY'
+		),
+		IS_DATE(v_RetroDate_EPLI_Cleasing, 'MONTHDDYYYY'
+		), TO_DATE(v_RetroDate_EPLI_Cleasing, 'MONTHDDYYYY'
+		),
+		TO_DATE('01011800', 'MMDDYYYY'
+		)
+	) AS v_RetroDate_EPLI,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_sar_code_7)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_sar_code_7) AS v_sar_code_7,
+	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_sar_code_7
+	) AS v_sar_code_7,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	i_StatisticalCoverageHashKey AS o_StatisticalCoverageHashKey,
 	-- *INF*: IIF(IN(i_RiskUnitGroup,'366','901','286','287','903','902'),v_RetroDate_EPLI,
 	-- MAKE_DATE_TIME(v_Pmdlxg1YearRetro,v_Pmdlxg1MonthRetro,v_Pmdlxg1DayRetro))
-	IFF(IN(i_RiskUnitGroup, '366', '901', '286', '287', '903', '902'), v_RetroDate_EPLI, MAKE_DATE_TIME(v_Pmdlxg1YearRetro, v_Pmdlxg1MonthRetro, v_Pmdlxg1DayRetro)) AS o_RetroactiveDate,
+	IFF(i_RiskUnitGroup IN ('366','901','286','287','903','902'),
+		v_RetroDate_EPLI,
+		TIMESTAMP_FROM_PARTS(v_Pmdlxg1YearRetro,v_Pmdlxg1MonthRetro,v_Pmdlxg1DayRetro,00,00,00)
+	) AS o_RetroactiveDate,
 	i_EmploymentPracticesLiabilityInsuranceRollOnIndicator AS o_EmploymentPracticesLiabilityInsuranceRollOnIndicator,
 	-- *INF*: IIF(v_sar_code_7 = 'N/A','N/A',SUBSTR(v_sar_code_7,1,1))
-	IFF(v_sar_code_7 = 'N/A', 'N/A', SUBSTR(v_sar_code_7, 1, 1)) AS o_LiabilityFormCode,
+	IFF(v_sar_code_7 = 'N/A',
+		'N/A',
+		SUBSTR(v_sar_code_7, 1, 1
+		)
+	) AS o_LiabilityFormCode,
 	-- *INF*: IIF(ISNULL(SUBSTR(v_lkp_result,1,instr(v_lkp_result,'@1')-1)) OR LENGTH(SUBSTR(v_lkp_result,1,instr(v_lkp_result,'@1')-1))=0 ,'N/A' , SUBSTR(v_lkp_result,1,instr(v_lkp_result,'@1')-1))
-	IFF(SUBSTR(v_lkp_result, 1, instr(v_lkp_result, '@1') - 1) IS NULL OR LENGTH(SUBSTR(v_lkp_result, 1, instr(v_lkp_result, '@1') - 1)) = 0, 'N/A', SUBSTR(v_lkp_result, 1, instr(v_lkp_result, '@1') - 1)) AS o_ISOGeneralLiabilityClassSummary,
+	IFF(SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1'
+			) - 1
+		) IS NULL 
+		OR LENGTH(SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1'
+				) - 1
+			)
+		) = 0,
+		'N/A',
+		SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1'
+			) - 1
+		)
+	) AS o_ISOGeneralLiabilityClassSummary,
 	-- *INF*: IIF(ISNULL(SUBSTR(v_lkp_result,instr(v_lkp_result,'@1')+2,instr(v_lkp_result,'@2')-instr(v_lkp_result,'@1')-2))  
 	-- OR LENGTH(SUBSTR(v_lkp_result,instr(v_lkp_result,'@1')+2,instr(v_lkp_result,'@2')-instr(v_lkp_result,'@1')-2))=0
 	-- ,'N/A'
 	-- ,SUBSTR(v_lkp_result,instr(v_lkp_result,'@1')+2,instr(v_lkp_result,'@2')-instr(v_lkp_result,'@1')-2))
-	IFF(SUBSTR(v_lkp_result, instr(v_lkp_result, '@1') + 2, instr(v_lkp_result, '@2') - instr(v_lkp_result, '@1') - 2) IS NULL OR LENGTH(SUBSTR(v_lkp_result, instr(v_lkp_result, '@1') + 2, instr(v_lkp_result, '@2') - instr(v_lkp_result, '@1') - 2)) = 0, 'N/A', SUBSTR(v_lkp_result, instr(v_lkp_result, '@1') + 2, instr(v_lkp_result, '@2') - instr(v_lkp_result, '@1') - 2)) AS o_ISOGeneralLiabilityClassGroupCode
+	IFF(SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@1'
+			) + 2, REGEXP_INSTR(v_lkp_result, '@2'
+			) - REGEXP_INSTR(v_lkp_result, '@1'
+			) - 2
+		) IS NULL 
+		OR LENGTH(SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@1'
+				) + 2, REGEXP_INSTR(v_lkp_result, '@2'
+				) - REGEXP_INSTR(v_lkp_result, '@1'
+				) - 2
+			)
+		) = 0,
+		'N/A',
+		SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@1'
+			) + 2, REGEXP_INSTR(v_lkp_result, '@2'
+			) - REGEXP_INSTR(v_lkp_result, '@1'
+			) - 2
+		)
+	) AS o_ISOGeneralLiabilityClassGroupCode
 	FROM EXP_Metadata
 	LEFT JOIN LKP_Pif43LXGLStage
 	ON LKP_Pif43LXGLStage.PifSymbol = EXP_Metadata.o_pol_sym AND LKP_Pif43LXGLStage.PifPolicyNumber = EXP_Metadata.o_pol_num AND LKP_Pif43LXGLStage.PifModule = EXP_Metadata.o_pol_mod
@@ -326,9 +427,11 @@ EXP_DetectChanges AS (
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_EffectiveDate,
+	TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US'
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_ExpirationDate,
+	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -336,9 +439,13 @@ EXP_DetectChanges AS (
 	i_RetroactiveDate AS o_RetroactiveDate,
 	i_LiabilityFormCode AS o_LiabilityFormCode,
 	-- *INF*: RTRIM(LTRIM(i_ISOGeneralLiabilityClassSummary))
-	RTRIM(LTRIM(i_ISOGeneralLiabilityClassSummary)) AS o_ISOGeneralLiabilityClassSummary,
+	RTRIM(LTRIM(i_ISOGeneralLiabilityClassSummary
+		)
+	) AS o_ISOGeneralLiabilityClassSummary,
 	-- *INF*: RTRIM(LTRIM(i_ISOGeneralLiabilityClassGroupCode))
-	RTRIM(LTRIM(i_ISOGeneralLiabilityClassGroupCode)) AS o_ISOGeneralLiabilityClassGroupCode,
+	RTRIM(LTRIM(i_ISOGeneralLiabilityClassGroupCode
+		)
+	) AS o_ISOGeneralLiabilityClassGroupCode,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(lkp_PremiumTransactionID),'NEW',
 	--  lkp_RetroactiveDate != i_RetroactiveDate 
@@ -350,8 +457,12 @@ EXP_DetectChanges AS (
 	-- )
 	DECODE(TRUE,
 		lkp_PremiumTransactionID IS NULL, 'NEW',
-		lkp_RetroactiveDate != i_RetroactiveDate OR lkp_LiabilityFormCode != i_LiabilityFormCode OR lkp_ClassSummary != i_ISOGeneralLiabilityClassSummary OR lkp_ClassGroupCode != i_ISOGeneralLiabilityClassGroupCode, 'UPDATE',
-		'NOCHANGE') AS o_ChangeFlag
+		lkp_RetroactiveDate != i_RetroactiveDate 
+		OR lkp_LiabilityFormCode != i_LiabilityFormCode 
+		OR lkp_ClassSummary != i_ISOGeneralLiabilityClassSummary 
+		OR lkp_ClassGroupCode != i_ISOGeneralLiabilityClassGroupCode, 'UPDATE',
+		'NOCHANGE'
+	) AS o_ChangeFlag
 	FROM EXP_CoverageDetailGeneralLiabiliity
 	LEFT JOIN LKP_CoverageDetailGeneralLiability
 	ON LKP_CoverageDetailGeneralLiability.PremiumTransactionID = EXP_CoverageDetailGeneralLiabiliity.o_PremiumTransactionID

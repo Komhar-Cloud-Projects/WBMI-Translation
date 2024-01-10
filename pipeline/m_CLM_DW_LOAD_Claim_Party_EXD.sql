@@ -338,9 +338,17 @@ EXP_phone AS (
 	-- *INF*: IIF(isnull(ciph_phn_nbr),'N/A',rtrim(ltrim(ciph_phn_nbr)))
 	-- 
 	-- 
-	IFF(ciph_phn_nbr IS NULL, 'N/A', rtrim(ltrim(ciph_phn_nbr))) AS v_Phone_Num,
+	IFF(ciph_phn_nbr IS NULL,
+		'N/A',
+		rtrim(ltrim(ciph_phn_nbr
+			)
+		)
+	) AS v_Phone_Num,
 	-- *INF*: IIF(isnull(phn_typ_cd),'N/A',phn_typ_cd)
-	IFF(phn_typ_cd IS NULL, 'N/A', phn_typ_cd) AS v_Phone_Type,
+	IFF(phn_typ_cd IS NULL,
+		'N/A',
+		phn_typ_cd
+	) AS v_Phone_Type,
 	-- *INF*: IIF(ISNULL(v_Phone_Num),'N/A',
 	-- REPLACECHR(FALSE,REPLACECHR(FALSE,REPLACECHR(FALSE,v_Phone_Num,'-',''),')',''),'(','')
 	-- )
@@ -349,12 +357,19 @@ EXP_phone AS (
 	-- ---Replace ( ) and - in phone number with blanks so (320)259-0824EXT becomes 3202590824EXT
 	-- 
 	-- 
-	IFF(v_Phone_Num IS NULL, 'N/A', REPLACECHR(FALSE, REPLACECHR(FALSE, REPLACECHR(FALSE, v_Phone_Num, '-', ''), ')', ''), '(', '')) AS v_Phone,
+	IFF(v_Phone_Num IS NULL,
+		'N/A',
+		REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(v_Phone_Num,'-',''),')',''),'(','')
+	) AS v_Phone,
 	ciph_phn_seq_nbr,
 	-- *INF*: IIF(v_Phone = 'N/A', 'N/A',SUBSTR(v_Phone,1,10))
 	-- 
 	-- --take value before EXT
-	IFF(v_Phone = 'N/A', 'N/A', SUBSTR(v_Phone, 1, 10)) AS Phone,
+	IFF(v_Phone = 'N/A',
+		'N/A',
+		SUBSTR(v_Phone, 1, 10
+		)
+	) AS Phone,
 	-- *INF*: IIF(v_Phone = 'N/A', 'N/A',IIF(LENGTH(SUBSTR(v_Phone,12,7))=0,'N/A', SUBSTR(v_Phone,12,7)))
 	-- 
 	-- //Take value after X
@@ -363,9 +378,21 @@ EXP_phone AS (
 	-- //Changed to code above do to DAP-399
 	-- //IIF(v_Phone = 'N/A', 'N/A',IIF(LENGTH(SUBSTR(v_Phone,14,5))=0,'N/A', SUBSTR(v_Phone,14,5)))
 	-- ----Take value after EXT
-	IFF(v_Phone = 'N/A', 'N/A', IFF(LENGTH(SUBSTR(v_Phone, 12, 7)) = 0, 'N/A', SUBSTR(v_Phone, 12, 7))) AS Phone_Extn,
+	IFF(v_Phone = 'N/A',
+		'N/A',
+		IFF(LENGTH(SUBSTR(v_Phone, 12, 7
+				)
+			) = 0,
+			'N/A',
+			SUBSTR(v_Phone, 12, 7
+			)
+		)
+	) AS Phone_Extn,
 	-- *INF*: IIF(ISNULL(v_Phone_Type),'N/A',v_Phone_Type)
-	IFF(v_Phone_Type IS NULL, 'N/A', v_Phone_Type) AS Phone_Type
+	IFF(v_Phone_Type IS NULL,
+		'N/A',
+		v_Phone_Type
+	) AS Phone_Type
 	FROM LKP_client_phone_stage_by_priority
 ),
 LKP_CLIENT_ADDRESS_STAGE_ALL AS (
@@ -1101,37 +1128,58 @@ mplt_split_client_tab_long_name AS (WITH
 		long_name,
 		-- *INF*: instr(long_name,'+',1,1,0)
 		-- -- we are using instr to find the value "+" starting at position 1 and occurrence 1 not case sensitive
-		instr(long_name, '+', 1, 1, 0) AS v_prefix,
+		REGEXP_INSTR(long_name, '+', 1, 1, 0
+		) AS v_prefix,
 		-- *INF*: instr(long_name,'+',1,2,0)
 		-- -- we are using instr to find the value "+" starting at position 1 and occurrence 2 not case sensitive
-		instr(long_name, '+', 1, 2, 0) AS v_first,
+		REGEXP_INSTR(long_name, '+', 1, 2, 0
+		) AS v_first,
 		-- *INF*: instr(long_name,'+',1,3,0)
 		-- -- we are using instr to find the value "+" starting at position 1 and occurrence 3 not case sensitive
-		instr(long_name, '+', 1, 3, 0) AS v_middle,
+		REGEXP_INSTR(long_name, '+', 1, 3, 0
+		) AS v_middle,
 		-- *INF*: instr(long_name,'+',1,4,0)
 		-- -- we are using instr to find the value "+" starting at position 1 and occurrence 4 not case sensitive
-		instr(long_name, '+', 1, 4, 0) AS v_last,
+		REGEXP_INSTR(long_name, '+', 1, 4, 0
+		) AS v_last,
 		-- *INF*: instr(long_name,'+',1,5,0)
 		-- -- we are using instr to find the value "+" starting at position 1 and occurrence 5 not case sensitive
-		instr(long_name, '+', 1, 5, 0) AS v_suffix,
+		REGEXP_INSTR(long_name, '+', 1, 5, 0
+		) AS v_suffix,
 		-- *INF*: instr(long_name,'+',1,6,0)
 		-- -- we are using instr to find the value "+" starting at position 1 and occurrence 6 not case sensitive
-		instr(long_name, '+', 1, 6, 0) AS v_end,
+		REGEXP_INSTR(long_name, '+', 1, 6, 0
+		) AS v_end,
 		-- *INF*: ltrim(rtrim(replacestr(0,substr(long_name,v_prefix,v_first - v_prefix),'+','')))
 		-- --we use substring to find the characters in long_name starting at the position v_prefix for a length of v_first - v_prefix.  Then we replace the "+" which will be the leading character with an empty string and finally we trim it
-		ltrim(rtrim(replacestr(0, substr(long_name, v_prefix, v_first - v_prefix), '+', ''))) AS prefix,
+		ltrim(rtrim(REGEXP_REPLACE(substr(long_name, v_prefix, v_first - v_prefix
+				),'+','','i')
+			)
+		) AS prefix,
 		-- *INF*: ltrim(rtrim(replacestr(0,substr(long_name,v_first,v_middle - v_first),'+','')))
 		-- --we use substring to find the characters in long_name starting at the position v_first for a length of v_middle - v_first.  Then we replace the "+" which will be the leading character with an empty string and finally we trim it
-		ltrim(rtrim(replacestr(0, substr(long_name, v_first, v_middle - v_first), '+', ''))) AS first_name,
+		ltrim(rtrim(REGEXP_REPLACE(substr(long_name, v_first, v_middle - v_first
+				),'+','','i')
+			)
+		) AS first_name,
 		-- *INF*: ltrim(rtrim(replacestr(0,substr(long_name,v_middle,v_last - v_middle),'+','')))
 		-- --we use substring to find the characters in long_name starting at the position v_middle for a length of v_last - v_middle.  Then we replace the "+" which will be the leading character with an empty string and finally we trim it
-		ltrim(rtrim(replacestr(0, substr(long_name, v_middle, v_last - v_middle), '+', ''))) AS middle_name,
+		ltrim(rtrim(REGEXP_REPLACE(substr(long_name, v_middle, v_last - v_middle
+				),'+','','i')
+			)
+		) AS middle_name,
 		-- *INF*: ltrim(rtrim(replacestr(0,substr(long_name,v_last,v_suffix - v_last),'+','')))
 		-- --we use substring to find the characters in long_name starting at the position v_last for a length of v_suffix - v_last.  Then we replace the "+" which will be the leading character with an empty string and finally we trim it
-		ltrim(rtrim(replacestr(0, substr(long_name, v_last, v_suffix - v_last), '+', ''))) AS last_name,
+		ltrim(rtrim(REGEXP_REPLACE(substr(long_name, v_last, v_suffix - v_last
+				),'+','','i')
+			)
+		) AS last_name,
 		-- *INF*: ltrim(rtrim(replacestr(0,substr(long_name,v_suffix,v_end - v_suffix),'+','')))
 		-- --we use substring to find the characters in long_name starting at the position v_suffix for a length of v_end - v_suffix.  Then we replace the "+" which will be the leading character with an empty string and finally we trim it
-		ltrim(rtrim(replacestr(0, substr(long_name, v_suffix, v_end - v_suffix), '+', ''))) AS suffix
+		ltrim(rtrim(REGEXP_REPLACE(substr(long_name, v_suffix, v_end - v_suffix
+				),'+','','i')
+			)
+		) AS suffix
 		FROM EXP_accept_input
 	),
 	EXP_build_full_name AS (
@@ -1153,7 +1201,29 @@ mplt_split_client_tab_long_name AS (WITH
 		-- IIF(length(suffix)>0,suffix || ' ','')
 		-- )
 		-- )
-		rtrim(ltrim(IFF(length(prefix) > 0, prefix || ' ', '') || IFF(length(first_name) > 0, first_name || ' ', '') || IFF(length(middle_name) > 0, middle_name || ' ', '') || IFF(length(last_name) > 0, last_name || ' ', '') || IFF(length(suffix) > 0, suffix || ' ', ''))) AS full_name
+		rtrim(ltrim(IFF(length(prefix
+					) > 0,
+					prefix || ' ',
+					''
+				) || IFF(length(first_name
+					) > 0,
+					first_name || ' ',
+					''
+				) || IFF(length(middle_name
+					) > 0,
+					middle_name || ' ',
+					''
+				) || IFF(length(last_name
+					) > 0,
+					last_name || ' ',
+					''
+				) || IFF(length(suffix
+					) > 0,
+					suffix || ' ',
+					''
+				)
+			)
+		) AS full_name
 		FROM EXP_split_name
 	),
 	EXP_accept_output AS (
@@ -1186,44 +1256,96 @@ EXP_Lkp_Values AS (
 	--     rtrim(in_CICL_FST_NM)))
 	-- 
 	-- 
-	IFF(in_CICL_FST_NM IS NULL, 'N/A', IFF(is_spaces(in_CICL_FST_NM), 'N/A', rtrim(in_CICL_FST_NM))) AS CICL_FST_NM,
+	IFF(in_CICL_FST_NM IS NULL,
+		'N/A',
+		IFF(LENGTH(in_CICL_FST_NM)>0 AND TRIM(in_CICL_FST_NM)='',
+			'N/A',
+			rtrim(in_CICL_FST_NM
+			)
+		)
+	) AS CICL_FST_NM,
 	EXP_Values.CICL_LST_NM AS in_CICL_LST_NM,
 	-- *INF*: iif(isnull(in_CICL_LST_NM),'N/A',
 	--    iif(is_spaces(in_CICL_LST_NM),'N/A',
 	--     rtrim(in_CICL_LST_NM)))
-	IFF(in_CICL_LST_NM IS NULL, 'N/A', IFF(is_spaces(in_CICL_LST_NM), 'N/A', rtrim(in_CICL_LST_NM))) AS CICL_LST_NM,
+	IFF(in_CICL_LST_NM IS NULL,
+		'N/A',
+		IFF(LENGTH(in_CICL_LST_NM)>0 AND TRIM(in_CICL_LST_NM)='',
+			'N/A',
+			rtrim(in_CICL_LST_NM
+			)
+		)
+	) AS CICL_LST_NM,
 	EXP_Values.CICL_MDL_NM AS in_CICL_MDL_NM,
 	-- *INF*: iif(isnull(in_CICL_MDL_NM),'N/A',
 	--    iif(is_spaces(in_CICL_MDL_NM),'N/A',
 	--     rtrim(in_CICL_MDL_NM)))
-	IFF(in_CICL_MDL_NM IS NULL, 'N/A', IFF(is_spaces(in_CICL_MDL_NM), 'N/A', rtrim(in_CICL_MDL_NM))) AS CICL_MDL_NM,
+	IFF(in_CICL_MDL_NM IS NULL,
+		'N/A',
+		IFF(LENGTH(in_CICL_MDL_NM)>0 AND TRIM(in_CICL_MDL_NM)='',
+			'N/A',
+			rtrim(in_CICL_MDL_NM
+			)
+		)
+	) AS CICL_MDL_NM,
 	EXP_Values.NM_PFX AS in_NM_PFX,
 	-- *INF*: iif(isnull(in_NM_PFX),'N/A',
 	--    iif(is_spaces(in_NM_PFX),'N/A',
 	--     rtrim(in_NM_PFX)))
 	-- 
 	-- 
-	IFF(in_NM_PFX IS NULL, 'N/A', IFF(is_spaces(in_NM_PFX), 'N/A', rtrim(in_NM_PFX))) AS NM_PFX,
+	IFF(in_NM_PFX IS NULL,
+		'N/A',
+		IFF(LENGTH(in_NM_PFX)>0 AND TRIM(in_NM_PFX)='',
+			'N/A',
+			rtrim(in_NM_PFX
+			)
+		)
+	) AS NM_PFX,
 	EXP_Values.NM_SFX AS in_NM_SFX,
 	-- *INF*: iif(isnull(in_NM_SFX),'N/A',
 	--    iif(is_spaces(in_NM_SFX),'N/A',
 	--     rtrim(in_NM_SFX)))
-	IFF(in_NM_SFX IS NULL, 'N/A', IFF(is_spaces(in_NM_SFX), 'N/A', rtrim(in_NM_SFX))) AS NM_SFX,
+	IFF(in_NM_SFX IS NULL,
+		'N/A',
+		IFF(LENGTH(in_NM_SFX)>0 AND TRIM(in_NM_SFX)='',
+			'N/A',
+			rtrim(in_NM_SFX
+			)
+		)
+	) AS NM_SFX,
 	EXP_Values.CICL_LNG_NM AS in_CICL_LNG_NM,
 	-- *INF*: iif(isnull(in_CICL_LNG_NM),'N/A',
 	--    iif(is_spaces(in_CICL_LNG_NM),'N/A',
 	--     rtrim(in_CICL_LNG_NM)))
-	IFF(in_CICL_LNG_NM IS NULL, 'N/A', IFF(is_spaces(in_CICL_LNG_NM), 'N/A', rtrim(in_CICL_LNG_NM))) AS CICL_LNG_NM,
+	IFF(in_CICL_LNG_NM IS NULL,
+		'N/A',
+		IFF(LENGTH(in_CICL_LNG_NM)>0 AND TRIM(in_CICL_LNG_NM)='',
+			'N/A',
+			rtrim(in_CICL_LNG_NM
+			)
+		)
+	) AS CICL_LNG_NM,
 	EXP_Values.CICL_DOB_DT AS in_CICL_DOB_DT,
 	-- *INF*: iif(isnull(in_CICL_DOB_DT),
 	--    TO_DATE('12/31/2100','MM/DD/YYYY'),
 	--     in_CICL_DOB_DT)
-	IFF(in_CICL_DOB_DT IS NULL, TO_DATE('12/31/2100', 'MM/DD/YYYY'), in_CICL_DOB_DT) AS CICL_DOB_DT,
+	IFF(in_CICL_DOB_DT IS NULL,
+		TO_DATE('12/31/2100', 'MM/DD/YYYY'
+		),
+		in_CICL_DOB_DT
+	) AS CICL_DOB_DT,
 	EXP_Values.GENDER_CD AS in_GENDER_CD,
 	-- *INF*: iif(isnull(in_GENDER_CD),'N/A',
 	--    iif(is_spaces(in_GENDER_CD),'N/A',
 	--     in_GENDER_CD))
-	IFF(in_GENDER_CD IS NULL, 'N/A', IFF(is_spaces(in_GENDER_CD), 'N/A', in_GENDER_CD)) AS GENDER_CD,
+	IFF(in_GENDER_CD IS NULL,
+		'N/A',
+		IFF(LENGTH(in_GENDER_CD)>0 AND TRIM(in_GENDER_CD)='',
+			'N/A',
+			in_GENDER_CD
+		)
+	) AS GENDER_CD,
 	LKP_CLIENT_ADDRESS_STAGE_INHM.CICA_PST_CD AS CICA_PST_CD_INHM,
 	LKP_CLIENT_ADDRESS_STAGE_INHM.ST_CD AS ST_CD_INHM,
 	LKP_CLIENT_ADDRESS_STAGE_INHM.CICA_ADR_1 AS CICA_ADR_1_INHM,
@@ -1485,44 +1607,438 @@ EXP_Lkp_Values AS (
 	-- ,NOT (ISNULL(ltrim(rtrim(CICA_ADR_1_ALM ))) AND ISNULL(ltrim(rtrim(CICA_ADR_2_ALM) ))),'ALM '
 	-- ,'N/A')
 	-- )
-	IFF(ltrim(rtrim(CICA_ADR_1_INHM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_INHM)) IS NULL AND ltrim(rtrim(CICA_ADR_1_BSM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_BSM)) IS NULL AND ltrim(rtrim(CICA_ADR_1_ALM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_ALM)) IS NULL AND ltrim(rtrim(CICA_ADR_1_ALL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_ALL)) IS NULL AND ltrim(rtrim(CICA_ADR_1_BSL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_BSL)) IS NULL AND ltrim(rtrim(CICA_ADR_1_MAL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_MAL)) IS NULL AND ltrim(rtrim(CICA_ADR_1_CLM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_CLM)) IS NULL AND ltrim(rtrim(CICA_ADR_1_LOC)) IS NULL AND ltrim(rtrim(CICA_ADR_2_LOC)) IS NULL AND ltrim(rtrim(CICA_ADR_1_BLM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_BLM)) IS NULL AND ltrim(rtrim(CICA_ADR_1_PPL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_PPL)) IS NULL AND ltrim(rtrim(CICA_ADR_1_BLRT)) IS NULL AND ltrim(rtrim(CICA_ADR_2_BLRT)) IS NULL AND ltrim(rtrim(CICA_ADR_1_BSS)) IS NULL AND ltrim(rtrim(CICA_ADR_2_BSS)) IS NULL AND ltrim(rtrim(CICA_ADR_1_GL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_GL)) IS NULL AND ltrim(rtrim(CICA_ADR_1_CLL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_CLL)) IS NULL AND ltrim(rtrim(CICA_ADR_1_HHA)) IS NULL AND ltrim(rtrim(CICA_ADR_2_HHA)) IS NULL AND ltrim(rtrim(CICA_ADR_1_INHA)) IS NULL AND ltrim(rtrim(CICA_ADR_2_INHA)) IS NULL AND ltrim(rtrim(CICA_ADR_1_LPE)) IS NULL AND ltrim(rtrim(CICA_ADR_2_LPE)) IS NULL AND ltrim(rtrim(CICA_ADR_1_PMF)) IS NULL AND ltrim(rtrim(CICA_ADR_2_PMF)) IS NULL AND ltrim(rtrim(CICA_ADR_1_INHL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_INHL)) IS NULL AND ltrim(rtrim(CICA_ADR_1_PLG)) IS NULL AND ltrim(rtrim(CICA_ADR_2_PLG)) IS NULL AND ltrim(rtrim(CICA_ADR_1_TMPM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_TMPM)) IS NULL AND ltrim(rtrim(CICA_ADR_1_INWL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_INWL)) IS NULL AND ltrim(rtrim(CICA_ADR_1_INWM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_INWM)) IS NULL AND ltrim(rtrim(CICA_ADR_1_LPA)) IS NULL AND ltrim(rtrim(CICA_ADR_2_LPA)) IS NULL AND ltrim(rtrim(CICA_ADR_1_PLB)) IS NULL AND ltrim(rtrim(CICA_ADR_2_PLB)) IS NULL AND ltrim(rtrim(CICA_ADR_1_PLL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_PLL)) IS NULL AND ltrim(rtrim(CICA_ADR_1_PLM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_PLM)) IS NULL AND ltrim(rtrim(CICA_ADR_1_PRAD)) IS NULL AND ltrim(rtrim(CICA_ADR_2_PRAD)) IS NULL AND ltrim(rtrim(CICA_ADR_1_SPL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_SPL)) IS NULL AND ltrim(rtrim(CICA_ADR_1_VCL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_VCL)) IS NULL AND ltrim(rtrim(CICA_ADR_1_VCM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_VCM)) IS NULL AND ltrim(rtrim(CICA_ADR_1_COM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_COM)) IS NULL, 'N/A', DECODE(TRUE,
-		NOT ( ltrim(rtrim(CICA_ADR_1_INHM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_INHM)) IS NULL ), 'INHM',
-		NOT ( ltrim(rtrim(CICA_ADR_1_BSM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_BSM)) IS NULL ), 'BSM',
-		NOT ( ltrim(rtrim(CICA_ADR_1_ALL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_ALL)) IS NULL ), 'ALL',
-		NOT ( ltrim(rtrim(CICA_ADR_1_BSL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_BSL)) IS NULL ), 'BSL',
-		NOT ( ltrim(rtrim(CICA_ADR_1_MAL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_MAL)) IS NULL ), 'MAL',
-		NOT ( ltrim(rtrim(CICA_ADR_1_CLM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_CLM)) IS NULL ), 'CLM',
-		NOT ( ltrim(rtrim(CICA_ADR_1_LOC)) IS NULL AND ltrim(rtrim(CICA_ADR_2_LOC)) IS NULL ), 'LOC',
-		NOT ( ltrim(rtrim(CICA_ADR_1_BLM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_BLM)) IS NULL ), 'BLM',
-		NOT ( ltrim(rtrim(CICA_ADR_1_PPL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_PPL)) IS NULL ), 'PPL',
-		NOT ( ltrim(rtrim(CICA_ADR_1_BLRT)) IS NULL AND ltrim(rtrim(CICA_ADR_2_BLRT)) IS NULL ), 'BLRT',
-		NOT ( ltrim(rtrim(CICA_ADR_1_BSS)) IS NULL AND ltrim(rtrim(CICA_ADR_2_BSS)) IS NULL ), 'BSS',
-		NOT ( ltrim(rtrim(CICA_ADR_1_GL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_GL)) IS NULL ), 'GL',
-		NOT ( ltrim(rtrim(CICA_ADR_1_CLL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_CLL)) IS NULL ), 'CLL',
-		NOT ( ltrim(rtrim(CICA_ADR_1_HHA)) IS NULL AND ltrim(rtrim(CICA_ADR_2_HHA)) IS NULL ), 'HHA',
-		NOT ( ltrim(rtrim(CICA_ADR_1_INHA)) IS NULL AND ltrim(rtrim(CICA_ADR_2_INHA)) IS NULL ), 'INHA',
-		NOT ( ltrim(rtrim(CICA_ADR_1_LPE)) IS NULL AND ltrim(rtrim(CICA_ADR_2_LPE)) IS NULL ), 'LPE',
-		NOT ( ltrim(rtrim(CICA_ADR_1_PMF)) IS NULL AND ltrim(rtrim(CICA_ADR_2_PMF)) IS NULL ), 'PMF',
-		NOT ( ltrim(rtrim(CICA_ADR_1_INHL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_INHL)) IS NULL ), 'INHL',
-		NOT ( ltrim(rtrim(CICA_ADR_1_PLG)) IS NULL AND ltrim(rtrim(CICA_ADR_2_PLG)) IS NULL ), 'PLG',
-		NOT ( ltrim(rtrim(CICA_ADR_1_TMPM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_TMPM)) IS NULL ), 'TMPM',
-		NOT ( ltrim(rtrim(CICA_ADR_1_INWL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_INWL)) IS NULL ), 'INWL',
-		NOT ( ltrim(rtrim(CICA_ADR_1_INWM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_INWM)) IS NULL ), 'INWM',
-		NOT ( ltrim(rtrim(CICA_ADR_1_LPA)) IS NULL AND ltrim(rtrim(CICA_ADR_2_LPA)) IS NULL ), 'LPA',
-		NOT ( ltrim(rtrim(CICA_ADR_1_PLB)) IS NULL AND ltrim(rtrim(CICA_ADR_2_PLB)) IS NULL ), 'PLB',
-		NOT ( ltrim(rtrim(CICA_ADR_1_PLL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_PLL)) IS NULL ), 'PLL',
-		NOT ( ltrim(rtrim(CICA_ADR_1_PLM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_PLM)) IS NULL ), 'PLM',
-		NOT ( ltrim(rtrim(CICA_ADR_1_PRAD)) IS NULL AND ltrim(rtrim(CICA_ADR_2_PRAD)) IS NULL ), 'PRAD',
-		NOT ( ltrim(rtrim(CICA_ADR_1_SPL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_SPL)) IS NULL ), 'SPL',
-		NOT ( ltrim(rtrim(CICA_ADR_1_VCL)) IS NULL AND ltrim(rtrim(CICA_ADR_2_VCL)) IS NULL ), 'VCL',
-		NOT ( ltrim(rtrim(CICA_ADR_1_VCM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_VCM)) IS NULL ), 'VCM',
-		NOT ( ltrim(rtrim(CICA_ADR_1_COM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_COM)) IS NULL ), 'COM',
-		NOT ( ltrim(rtrim(CICA_ADR_1_ALM)) IS NULL AND ltrim(rtrim(CICA_ADR_2_ALM)) IS NULL ), 'ALM ',
-		'N/A')) AS v_ADR_TYP_CD,
+	IFF(ltrim(rtrim(CICA_ADR_1_INHM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_INHM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_BSM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_BSM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_ALM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_ALM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_ALL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_ALL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_BSL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_BSL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_MAL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_MAL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_CLM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_CLM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_LOC
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_LOC
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_BLM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_BLM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_PPL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_PPL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_BLRT
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_BLRT
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_BSS
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_BSS
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_GL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_GL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_CLL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_CLL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_HHA
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_HHA
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_INHA
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_INHA
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_LPE
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_LPE
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_PMF
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_PMF
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_INHL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_INHL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_PLG
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_PLG
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_TMPM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_TMPM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_INWL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_INWL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_INWM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_INWM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_LPA
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_LPA
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_PLB
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_PLB
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_PLL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_PLL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_PLM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_PLM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_PRAD
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_PRAD
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_SPL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_SPL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_VCL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_VCL
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_VCM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_VCM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_1_COM
+			)
+		) IS NULL 
+		AND ltrim(rtrim(CICA_ADR_2_COM
+			)
+		) IS NULL,
+		'N/A',
+		DECODE(TRUE,
+		NOT ( ltrim(rtrim(CICA_ADR_1_INHM
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_INHM
+					)
+				) IS NULL 
+			), 'INHM',
+		NOT ( ltrim(rtrim(CICA_ADR_1_BSM
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_BSM
+					)
+				) IS NULL 
+			), 'BSM',
+		NOT ( ltrim(rtrim(CICA_ADR_1_ALL
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_ALL
+					)
+				) IS NULL 
+			), 'ALL',
+		NOT ( ltrim(rtrim(CICA_ADR_1_BSL
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_BSL
+					)
+				) IS NULL 
+			), 'BSL',
+		NOT ( ltrim(rtrim(CICA_ADR_1_MAL
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_MAL
+					)
+				) IS NULL 
+			), 'MAL',
+		NOT ( ltrim(rtrim(CICA_ADR_1_CLM
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_CLM
+					)
+				) IS NULL 
+			), 'CLM',
+		NOT ( ltrim(rtrim(CICA_ADR_1_LOC
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_LOC
+					)
+				) IS NULL 
+			), 'LOC',
+		NOT ( ltrim(rtrim(CICA_ADR_1_BLM
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_BLM
+					)
+				) IS NULL 
+			), 'BLM',
+		NOT ( ltrim(rtrim(CICA_ADR_1_PPL
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_PPL
+					)
+				) IS NULL 
+			), 'PPL',
+		NOT ( ltrim(rtrim(CICA_ADR_1_BLRT
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_BLRT
+					)
+				) IS NULL 
+			), 'BLRT',
+		NOT ( ltrim(rtrim(CICA_ADR_1_BSS
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_BSS
+					)
+				) IS NULL 
+			), 'BSS',
+		NOT ( ltrim(rtrim(CICA_ADR_1_GL
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_GL
+					)
+				) IS NULL 
+			), 'GL',
+		NOT ( ltrim(rtrim(CICA_ADR_1_CLL
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_CLL
+					)
+				) IS NULL 
+			), 'CLL',
+		NOT ( ltrim(rtrim(CICA_ADR_1_HHA
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_HHA
+					)
+				) IS NULL 
+			), 'HHA',
+		NOT ( ltrim(rtrim(CICA_ADR_1_INHA
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_INHA
+					)
+				) IS NULL 
+			), 'INHA',
+		NOT ( ltrim(rtrim(CICA_ADR_1_LPE
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_LPE
+					)
+				) IS NULL 
+			), 'LPE',
+		NOT ( ltrim(rtrim(CICA_ADR_1_PMF
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_PMF
+					)
+				) IS NULL 
+			), 'PMF',
+		NOT ( ltrim(rtrim(CICA_ADR_1_INHL
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_INHL
+					)
+				) IS NULL 
+			), 'INHL',
+		NOT ( ltrim(rtrim(CICA_ADR_1_PLG
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_PLG
+					)
+				) IS NULL 
+			), 'PLG',
+		NOT ( ltrim(rtrim(CICA_ADR_1_TMPM
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_TMPM
+					)
+				) IS NULL 
+			), 'TMPM',
+		NOT ( ltrim(rtrim(CICA_ADR_1_INWL
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_INWL
+					)
+				) IS NULL 
+			), 'INWL',
+		NOT ( ltrim(rtrim(CICA_ADR_1_INWM
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_INWM
+					)
+				) IS NULL 
+			), 'INWM',
+		NOT ( ltrim(rtrim(CICA_ADR_1_LPA
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_LPA
+					)
+				) IS NULL 
+			), 'LPA',
+		NOT ( ltrim(rtrim(CICA_ADR_1_PLB
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_PLB
+					)
+				) IS NULL 
+			), 'PLB',
+		NOT ( ltrim(rtrim(CICA_ADR_1_PLL
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_PLL
+					)
+				) IS NULL 
+			), 'PLL',
+		NOT ( ltrim(rtrim(CICA_ADR_1_PLM
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_PLM
+					)
+				) IS NULL 
+			), 'PLM',
+		NOT ( ltrim(rtrim(CICA_ADR_1_PRAD
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_PRAD
+					)
+				) IS NULL 
+			), 'PRAD',
+		NOT ( ltrim(rtrim(CICA_ADR_1_SPL
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_SPL
+					)
+				) IS NULL 
+			), 'SPL',
+		NOT ( ltrim(rtrim(CICA_ADR_1_VCL
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_VCL
+					)
+				) IS NULL 
+			), 'VCL',
+		NOT ( ltrim(rtrim(CICA_ADR_1_VCM
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_VCM
+					)
+				) IS NULL 
+			), 'VCM',
+		NOT ( ltrim(rtrim(CICA_ADR_1_COM
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_COM
+					)
+				) IS NULL 
+			), 'COM',
+		NOT ( ltrim(rtrim(CICA_ADR_1_ALM
+					)
+				) IS NULL 
+				AND ltrim(rtrim(CICA_ADR_2_ALM
+					)
+				) IS NULL 
+			), 'ALM ',
+		'N/A'
+		)
+	) AS v_ADR_TYP_CD,
 	-- *INF*: iif(isnull(v_ADR_TYP_CD),'N/A',
 	--    iif(is_spaces(v_ADR_TYP_CD),'N/A',
 	--     rtrim(v_ADR_TYP_CD)))
-	IFF(v_ADR_TYP_CD IS NULL, 'N/A', IFF(is_spaces(v_ADR_TYP_CD), 'N/A', rtrim(v_ADR_TYP_CD))) AS ADR_TYP_CD,
+	IFF(v_ADR_TYP_CD IS NULL,
+		'N/A',
+		IFF(LENGTH(v_ADR_TYP_CD)>0 AND TRIM(v_ADR_TYP_CD)='',
+			'N/A',
+			rtrim(v_ADR_TYP_CD
+			)
+		)
+	) AS ADR_TYP_CD,
 	-- *INF*: DECODE( v_ADR_TYP_CD,
 	-- 'INHM',CICA_ADR_1_INHM || CICA_ADR_2_INHM,
 	-- 'BSM',CICA_ADR_1_BSM || CICA_ADR_2_BSM,
@@ -1588,11 +2104,19 @@ EXP_Lkp_Values AS (
 		'SPL', CICA_ADR_1_SPL || CICA_ADR_2_SPL,
 		'VCL', CICA_ADR_1_VCL || CICA_ADR_2_VCL,
 		'VCM', CICA_ADR_1_VCM || CICA_ADR_2_VCM,
-		'COM', CICA_ADR_1_COM || CICA_ADR_2_COM) AS v_CICA_ADR,
+		'COM', CICA_ADR_1_COM || CICA_ADR_2_COM
+	) AS v_CICA_ADR,
 	-- *INF*: iif(isnull(v_CICA_ADR),'N/A',
 	--    iif(is_spaces(v_CICA_ADR),'N/A',
 	--     rtrim(v_CICA_ADR)))
-	IFF(v_CICA_ADR IS NULL, 'N/A', IFF(is_spaces(v_CICA_ADR), 'N/A', rtrim(v_CICA_ADR))) AS CICA_ADR,
+	IFF(v_CICA_ADR IS NULL,
+		'N/A',
+		IFF(LENGTH(v_CICA_ADR)>0 AND TRIM(v_CICA_ADR)='',
+			'N/A',
+			rtrim(v_CICA_ADR
+			)
+		)
+	) AS CICA_ADR,
 	-- *INF*: DECODE( v_ADR_TYP_CD,
 	-- 'INHM',CICA_CIT_NM_INHM,
 	-- 'BSM',CICA_CIT_NM_BSM,
@@ -1658,11 +2182,19 @@ EXP_Lkp_Values AS (
 		'SPL', CICA_CIT_NM_SPL,
 		'VCL', CICA_CIT_NM_VCL,
 		'VCM', CICA_CIT_NM_VCM,
-		'COM', CICA_CIT_NM_COM) AS v_CICA_CIT_NM,
+		'COM', CICA_CIT_NM_COM
+	) AS v_CICA_CIT_NM,
 	-- *INF*: IIF(isnull(v_CICA_CIT_NM),'N/A', 
 	-- IIF(is_spaces(v_CICA_CIT_NM),'N/A', 
 	--  rtrim(v_CICA_CIT_NM)))
-	IFF(v_CICA_CIT_NM IS NULL, 'N/A', IFF(is_spaces(v_CICA_CIT_NM), 'N/A', rtrim(v_CICA_CIT_NM))) AS CICA_CIT_NM,
+	IFF(v_CICA_CIT_NM IS NULL,
+		'N/A',
+		IFF(LENGTH(v_CICA_CIT_NM)>0 AND TRIM(v_CICA_CIT_NM)='',
+			'N/A',
+			rtrim(v_CICA_CIT_NM
+			)
+		)
+	) AS CICA_CIT_NM,
 	-- *INF*: DECODE( v_ADR_TYP_CD,
 	-- 'INHM',CICA_CTY_INHM,
 	-- 'BSM',CICA_CTY_BSM,
@@ -1728,11 +2260,20 @@ EXP_Lkp_Values AS (
 		'SPL', CICA_CTY_SPL,
 		'VCL', CICA_CTY_VCL,
 		'VCM', CICA_CTY_VCM,
-		'COM', CICA_CTY_COM) AS v_CICA_CTY,
+		'COM', CICA_CTY_COM
+	) AS v_CICA_CTY,
 	-- *INF*: iif(isnull(rtrim(v_CICA_CTY)),'N/A',
 	--    iif(is_spaces(v_CICA_CTY),'N/A',
 	--     rtrim(v_CICA_CTY)))
-	IFF(rtrim(v_CICA_CTY) IS NULL, 'N/A', IFF(is_spaces(v_CICA_CTY), 'N/A', rtrim(v_CICA_CTY))) AS CICA_CTY,
+	IFF(rtrim(v_CICA_CTY
+		) IS NULL,
+		'N/A',
+		IFF(LENGTH(v_CICA_CTY)>0 AND TRIM(v_CICA_CTY)='',
+			'N/A',
+			rtrim(v_CICA_CTY
+			)
+		)
+	) AS CICA_CTY,
 	-- *INF*: DECODE( v_ADR_TYP_CD,
 	-- 'INHM',ST_CD_INHM,
 	-- 'BSM',ST_CD_BSM,
@@ -1798,11 +2339,19 @@ EXP_Lkp_Values AS (
 		'SPL', ST_CD_SPL,
 		'VCL', ST_CD_VCL,
 		'VCM', ST_CD_VCM,
-		'COM', ST_CD_COM) AS v_ST_CD,
+		'COM', ST_CD_COM
+	) AS v_ST_CD,
 	-- *INF*: iif(isnull(v_ST_CD),'N/A',
 	--    iif(is_spaces(v_ST_CD),'N/A',
 	--     rtrim(v_ST_CD)))
-	IFF(v_ST_CD IS NULL, 'N/A', IFF(is_spaces(v_ST_CD), 'N/A', rtrim(v_ST_CD))) AS ST_CD,
+	IFF(v_ST_CD IS NULL,
+		'N/A',
+		IFF(LENGTH(v_ST_CD)>0 AND TRIM(v_ST_CD)='',
+			'N/A',
+			rtrim(v_ST_CD
+			)
+		)
+	) AS ST_CD,
 	-- *INF*: DECODE( v_ADR_TYP_CD,
 	-- 'INHM',CICA_PST_CD_INHM,
 	-- 'BSM',CICA_PST_CD_BSM,
@@ -1868,20 +2417,36 @@ EXP_Lkp_Values AS (
 		'SPL', CICA_PST_CD_SPL,
 		'VCL', CICA_PST_CD_VCL,
 		'VCM', CICA_PST_CD_VCM,
-		'COM', CICA_PST_CD_COM) AS v_CICA_PST_CD,
+		'COM', CICA_PST_CD_COM
+	) AS v_CICA_PST_CD,
 	-- *INF*: iif(isnull(v_CICA_PST_CD),'N/A',
 	--    iif(is_spaces(v_CICA_PST_CD),'N/A',
 	--     rtrim(v_CICA_PST_CD)))
-	IFF(v_CICA_PST_CD IS NULL, 'N/A', IFF(is_spaces(v_CICA_PST_CD), 'N/A', rtrim(v_CICA_PST_CD))) AS CICA_PST_CD,
+	IFF(v_CICA_PST_CD IS NULL,
+		'N/A',
+		IFF(LENGTH(v_CICA_PST_CD)>0 AND TRIM(v_CICA_PST_CD)='',
+			'N/A',
+			rtrim(v_CICA_PST_CD
+			)
+		)
+	) AS CICA_PST_CD,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_CLIENT_TAX_STAGE(CLIENT_ID,'SSN')),
 	-- 'N/A',
 	-- ltrim(rtrim(:LKP.LKP_CLIENT_TAX_STAGE(CLIENT_ID,'SSN'))))
 	-- 
-	IFF(LKP_CLIENT_TAX_STAGE_CLIENT_ID_SSN.citx_tax_id IS NULL, 'N/A', ltrim(rtrim(LKP_CLIENT_TAX_STAGE_CLIENT_ID_SSN.citx_tax_id))) AS citx_tax_id_ssn,
+	IFF(LKP_CLIENT_TAX_STAGE_CLIENT_ID_SSN.citx_tax_id IS NULL,
+		'N/A',
+		ltrim(rtrim(LKP_CLIENT_TAX_STAGE_CLIENT_ID_SSN.citx_tax_id
+			)
+		)
+	) AS citx_tax_id_ssn,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_CLIENT_TAX_STAGE(CLIENT_ID,'FED')),
 	-- 'N/A',
 	-- :LKP.LKP_CLIENT_TAX_STAGE(CLIENT_ID,'FED'))
-	IFF(LKP_CLIENT_TAX_STAGE_CLIENT_ID_FED.citx_tax_id IS NULL, 'N/A', LKP_CLIENT_TAX_STAGE_CLIENT_ID_FED.citx_tax_id) AS citx_tax_id_fed,
+	IFF(LKP_CLIENT_TAX_STAGE_CLIENT_ID_FED.citx_tax_id IS NULL,
+		'N/A',
+		LKP_CLIENT_TAX_STAGE_CLIENT_ID_FED.citx_tax_id
+	) AS citx_tax_id_fed,
 	EXP_phone.Phone,
 	EXP_phone.Phone_Extn,
 	EXP_phone.Phone_Type,
@@ -1889,35 +2454,82 @@ EXP_Lkp_Values AS (
 	-- *INF*: iif(isnull(in_LEG_ENT_CD),'N/A',
 	--    iif(is_spaces(in_LEG_ENT_CD),'N/A',
 	--     rtrim(in_LEG_ENT_CD)))
-	IFF(in_LEG_ENT_CD IS NULL, 'N/A', IFF(is_spaces(in_LEG_ENT_CD), 'N/A', rtrim(in_LEG_ENT_CD))) AS LEG_ENT_CD,
+	IFF(in_LEG_ENT_CD IS NULL,
+		'N/A',
+		IFF(LENGTH(in_LEG_ENT_CD)>0 AND TRIM(in_LEG_ENT_CD)='',
+			'N/A',
+			rtrim(in_LEG_ENT_CD
+			)
+		)
+	) AS LEG_ENT_CD,
 	EXP_Values.CICL_EFF_ACY_TS,
 	-- *INF*: iif(isnull(CICL_EFF_ACY_TS),
 	--    TO_DATE('01/01/1800','MM/DD/YYYY'),
 	--     CICL_EFF_ACY_TS)
-	IFF(CICL_EFF_ACY_TS IS NULL, TO_DATE('01/01/1800', 'MM/DD/YYYY'), CICL_EFF_ACY_TS) AS claim_party_ref_eff_from_date,
+	IFF(CICL_EFF_ACY_TS IS NULL,
+		TO_DATE('01/01/1800', 'MM/DD/YYYY'
+		),
+		CICL_EFF_ACY_TS
+	) AS claim_party_ref_eff_from_date,
 	mplt_split_client_tab_long_name.prefix AS mplt_prefix,
 	-- *INF*: IIF(isnull(mplt_prefix) or length(mplt_prefix)=0,'N/A',mplt_prefix)
-	IFF(mplt_prefix IS NULL OR length(mplt_prefix) = 0, 'N/A', mplt_prefix) AS mplt_prefix_out,
+	IFF(mplt_prefix IS NULL 
+		OR length(mplt_prefix
+		) = 0,
+		'N/A',
+		mplt_prefix
+	) AS mplt_prefix_out,
 	mplt_split_client_tab_long_name.first_name AS mplt_first_name,
 	-- *INF*: IIF(isnull(mplt_first_name) or length(mplt_first_name)=0,'N/A',mplt_first_name)
-	IFF(mplt_first_name IS NULL OR length(mplt_first_name) = 0, 'N/A', mplt_first_name) AS mplt_first_name_out,
+	IFF(mplt_first_name IS NULL 
+		OR length(mplt_first_name
+		) = 0,
+		'N/A',
+		mplt_first_name
+	) AS mplt_first_name_out,
 	mplt_split_client_tab_long_name.middle_name AS mplt_middle_name,
 	-- *INF*: IIF(isnull(mplt_middle_name) or length(mplt_middle_name)=0,'N/A',mplt_middle_name)
-	IFF(mplt_middle_name IS NULL OR length(mplt_middle_name) = 0, 'N/A', mplt_middle_name) AS mplt_middle_name_out,
+	IFF(mplt_middle_name IS NULL 
+		OR length(mplt_middle_name
+		) = 0,
+		'N/A',
+		mplt_middle_name
+	) AS mplt_middle_name_out,
 	mplt_split_client_tab_long_name.last_name AS mplt_last_name,
 	-- *INF*: IIF(isnull(mplt_last_name) or length(mplt_last_name)=0,'N/A',mplt_last_name)
-	IFF(mplt_last_name IS NULL OR length(mplt_last_name) = 0, 'N/A', mplt_last_name) AS mplt_last_name_out,
+	IFF(mplt_last_name IS NULL 
+		OR length(mplt_last_name
+		) = 0,
+		'N/A',
+		mplt_last_name
+	) AS mplt_last_name_out,
 	mplt_split_client_tab_long_name.suffix AS mplt_suffix,
 	-- *INF*: IIF(isnull(mplt_suffix) or length(mplt_suffix)=0,'N/A',mplt_suffix)
-	IFF(mplt_suffix IS NULL OR length(mplt_suffix) = 0, 'N/A', mplt_suffix) AS mplt_suffix_out,
+	IFF(mplt_suffix IS NULL 
+		OR length(mplt_suffix
+		) = 0,
+		'N/A',
+		mplt_suffix
+	) AS mplt_suffix_out,
 	mplt_split_client_tab_long_name.full_name AS mplt_full_name,
 	-- *INF*: IIF(isnull(mplt_full_name) or length(mplt_full_name)=0,'N/A',mplt_full_name)
-	IFF(mplt_full_name IS NULL OR length(mplt_full_name) = 0, 'N/A', mplt_full_name) AS mplt_full_name_out,
+	IFF(mplt_full_name IS NULL 
+		OR length(mplt_full_name
+		) = 0,
+		'N/A',
+		mplt_full_name
+	) AS mplt_full_name_out,
 	LKP_IndividualClientStage.CIID_DTH_DT,
 	-- *INF*: IIF(ISNULL(CIID_DTH_DT) OR CIID_DTH_DT > TO_DATE('12/31/2999','MM/DD/YYYY'), 
 	-- 		TO_DATE('12/31/2999','MM/DD/YYYY'), 
 	-- 	CIID_DTH_DT)
-	IFF(CIID_DTH_DT IS NULL OR CIID_DTH_DT > TO_DATE('12/31/2999', 'MM/DD/YYYY'), TO_DATE('12/31/2999', 'MM/DD/YYYY'), CIID_DTH_DT) AS v_CIID_DTH_DT,
+	IFF(CIID_DTH_DT IS NULL 
+		OR CIID_DTH_DT > TO_DATE('12/31/2999', 'MM/DD/YYYY'
+		),
+		TO_DATE('12/31/2999', 'MM/DD/YYYY'
+		),
+		CIID_DTH_DT
+	) AS v_CIID_DTH_DT,
 	v_CIID_DTH_DT AS o_CIID_DTH_DT
 	FROM EXP_Values
 	 -- Manually join with EXP_phone
@@ -2136,14 +2748,136 @@ EXP_Detect_Changes AS (
 	-- 	CIID_DTH_DT <> lkp_claim_party_death_date, 
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(lkp_claim_party_id IS NULL, 'NEW', IFF(( ltrim(rtrim(CICL_FST_NM)) <> ltrim(rtrim(lkp_claim_party_first_name)) ) OR ( ltrim(rtrim(CICL_LST_NM)) <> ltrim(rtrim(lkp_claim_party_last_name)) ) OR ( ltrim(rtrim(CICL_MDL_NM)) <> ltrim(rtrim(lkp_claim_party_mid_name)) ) OR ( ltrim(rtrim(NM_PFX)) <> ltrim(rtrim(lkp_claim_party_name_prfx)) ) OR ( ltrim(rtrim(NM_SFX)) <> ltrim(rtrim(lkp_claim_party_name_sfx)) ) OR ( ltrim(rtrim(CICA_ADR)) <> ltrim(rtrim(lkp_claimant_addr)) ) OR ( ltrim(rtrim(CICA_CTY)) <> ltrim(rtrim(lkp_claimant_county)) ) OR ( ltrim(rtrim(CICA_CIT_NM)) <> ltrim(rtrim(lkp_claimant_city)) ) OR ( ltrim(rtrim(ST_CD)) <> ltrim(rtrim(lkp_claimant_state)) ) OR ( ltrim(rtrim(CICA_PST_CD)) <> ltrim(rtrim(lkp_claimant_zip)) ) OR ( ltrim(rtrim(citx_tax_id_ssn)) <> ltrim(rtrim(lkp_tax_ssn_id)) ) OR ( ltrim(rtrim(citx_tax_id_fed)) <> ltrim(rtrim(lkp_tax_fed_id)) ) OR ( CICL_DOB_DT <> lkp_claim_party_birthdate ) OR ( ltrim(rtrim(GENDER_CD)) <> ltrim(rtrim(lkp_claim_party_gndr)) ) OR ( ltrim(rtrim(Phone)) <> ltrim(rtrim(lkp_ph_num)) ) OR ( ltrim(rtrim(Phone_Extn)) <> ltrim(rtrim(lkp_ph_extension)) ) OR ( ltrim(rtrim(Phone_Type)) <> ltrim(rtrim(lkp_ph_type)) ) OR ( ltrim(rtrim(LEG_ENT_CD)) <> ltrim(rtrim(lkp_lgl_ent_code)) ) OR ( ltrim(rtrim(ADR_TYP_CD)) <> ltrim(rtrim(lkp_addr_type)) ) OR claim_party_ref_eff_from_date <> lkp_claim_party_ref_eff_from_date OR CIID_DTH_DT <> lkp_claim_party_death_date, 'UPDATE', 'NOCHANGE')) AS v_Changed_Flag,
+	IFF(lkp_claim_party_id IS NULL,
+		'NEW',
+		IFF(( ltrim(rtrim(CICL_FST_NM
+					)
+				) <> ltrim(rtrim(lkp_claim_party_first_name
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CICL_LST_NM
+					)
+				) <> ltrim(rtrim(lkp_claim_party_last_name
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CICL_MDL_NM
+					)
+				) <> ltrim(rtrim(lkp_claim_party_mid_name
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(NM_PFX
+					)
+				) <> ltrim(rtrim(lkp_claim_party_name_prfx
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(NM_SFX
+					)
+				) <> ltrim(rtrim(lkp_claim_party_name_sfx
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CICA_ADR
+					)
+				) <> ltrim(rtrim(lkp_claimant_addr
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CICA_CTY
+					)
+				) <> ltrim(rtrim(lkp_claimant_county
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CICA_CIT_NM
+					)
+				) <> ltrim(rtrim(lkp_claimant_city
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(ST_CD
+					)
+				) <> ltrim(rtrim(lkp_claimant_state
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(CICA_PST_CD
+					)
+				) <> ltrim(rtrim(lkp_claimant_zip
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(citx_tax_id_ssn
+					)
+				) <> ltrim(rtrim(lkp_tax_ssn_id
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(citx_tax_id_fed
+					)
+				) <> ltrim(rtrim(lkp_tax_fed_id
+					)
+				) 
+			) 
+			OR ( CICL_DOB_DT <> lkp_claim_party_birthdate 
+			) 
+			OR ( ltrim(rtrim(GENDER_CD
+					)
+				) <> ltrim(rtrim(lkp_claim_party_gndr
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(Phone
+					)
+				) <> ltrim(rtrim(lkp_ph_num
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(Phone_Extn
+					)
+				) <> ltrim(rtrim(lkp_ph_extension
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(Phone_Type
+					)
+				) <> ltrim(rtrim(lkp_ph_type
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(LEG_ENT_CD
+					)
+				) <> ltrim(rtrim(lkp_lgl_ent_code
+					)
+				) 
+			) 
+			OR ( ltrim(rtrim(ADR_TYP_CD
+					)
+				) <> ltrim(rtrim(lkp_addr_type
+					)
+				) 
+			) 
+			OR claim_party_ref_eff_from_date <> lkp_claim_party_ref_eff_from_date 
+			OR CIID_DTH_DT <> lkp_claim_party_death_date,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW', TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS Eff_From_Date,
+	IFF(v_Changed_Flag = 'NEW',
+		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
@@ -2201,7 +2935,10 @@ EXP_Determine_AK AS (
 	-- *INF*: IIF(Changed_Flag='NEW',
 	-- NEXTVAL,
 	-- lkp_claim_party_ak_id)
-	IFF(Changed_Flag = 'NEW', NEXTVAL, lkp_claim_party_ak_id) AS claim_party_ak_id,
+	IFF(Changed_Flag = 'NEW',
+		NEXTVAL,
+		lkp_claim_party_ak_id
+	) AS claim_party_ak_id,
 	CLIENT_ID,
 	CICL_FST_NM,
 	CICL_LST_NM,
@@ -2303,8 +3040,9 @@ EXP_Lag_eff_from_date AS (
 	-- 	claim_party_key = v_PREV_ROW_party_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		claim_party_key = v_PREV_ROW_party_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		claim_party_key = v_PREV_ROW_party_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	claim_party_key AS v_PREV_ROW_party_key,

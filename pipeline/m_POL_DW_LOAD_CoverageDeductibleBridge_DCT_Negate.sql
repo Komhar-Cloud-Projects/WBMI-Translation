@@ -72,7 +72,8 @@ EXP_DetectChanges AS (
 	-- )
 	DECODE(TRUE,
 		lkp_CoverageDeductibleBridgeId IS NULL, 'NEW',
-		'UPDATE') AS o_ChangeFlag
+		'UPDATE'
+	) AS o_ChangeFlag
 	FROM EXP_Metadata
 	LEFT JOIN LKP_CoverageDeductibleBridge
 	ON LKP_CoverageDeductibleBridge.PremiumTransactionAKId = EXP_Metadata.o_PremiumTransactionAKID AND LKP_CoverageDeductibleBridge.CoverageDeductibleId = EXP_Metadata.CoverageDeductibleId

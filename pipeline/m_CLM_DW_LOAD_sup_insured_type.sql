@@ -16,10 +16,16 @@ EXP_Default_Values AS (
 	SELECT
 	insured_type_code,
 	-- *INF*: iif(isnull(insured_type_code),'N/A',insured_type_code)
-	IFF(insured_type_code IS NULL, 'N/A', insured_type_code) AS insured_type_code_OUT,
+	IFF(insured_type_code IS NULL,
+		'N/A',
+		insured_type_code
+	) AS insured_type_code_OUT,
 	insured_type_desc,
 	-- *INF*: iif(isnull(insured_type_desc),'N/A',insured_type_desc)
-	IFF(insured_type_desc IS NULL, 'N/A', insured_type_desc) AS insured_type_desc_OUT
+	IFF(insured_type_desc IS NULL,
+		'N/A',
+		insured_type_desc
+	) AS insured_type_desc_OUT
 	FROM SQ_sup_insured_type_stage
 ),
 LKP_sup_insured_type AS (
@@ -45,15 +51,31 @@ EXP_Detect_Changes AS (
 	EXP_Default_Values.insured_type_code_OUT,
 	EXP_Default_Values.insured_type_desc_OUT AS employer_type_desc_OUT,
 	-- *INF*: IIF(ISNULL(OLD_sup_insd_type_id), 'NEW', IIF(LTRIM(RTRIM(OLD_insd_type_descript)) != (LTRIM(RTRIM(employer_type_desc_OUT))), 'UPDATE', 'NOCHANGE'))
-	IFF(OLD_sup_insd_type_id IS NULL, 'NEW', IFF(LTRIM(RTRIM(OLD_insd_type_descript)) != ( LTRIM(RTRIM(employer_type_desc_OUT)) ), 'UPDATE', 'NOCHANGE')) AS V_changed_flag,
+	IFF(OLD_sup_insd_type_id IS NULL,
+		'NEW',
+		IFF(LTRIM(RTRIM(OLD_insd_type_descript
+				)
+			) != ( LTRIM(RTRIM(employer_type_desc_OUT
+					)
+				) 
+			),
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS V_changed_flag,
 	V_changed_flag AS CHANGED_FLAG,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(V_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(V_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), sysdate) AS eff_from_date,
+	IFF(V_changed_flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		sysdate
+	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id
@@ -123,8 +145,9 @@ EXP_Lag_Eff_From_Date AS (
 	-- 	orig_eff_to_date)
 	-- 	
 	DECODE(TRUE,
-		insd_type_code = v_prev_row_insd_type_cod, ADD_TO_DATE(v_prev_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		insd_type_code = v_prev_row_insd_type_cod, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	insd_type_code AS v_prev_row_insd_type_cod,
 	eff_from_date AS v_prev_eff_from_date,

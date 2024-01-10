@@ -22,8 +22,11 @@ EXP_Default AS (
 	-- 'N/A'
 	-- )
 	DECODE(TRUE,
-		LTRIM(RTRIM(i_PartyAssociationType)) = 'Account', 'Prospect',
-		'N/A') AS o_PartyRoleInAgreementTypeCode
+		LTRIM(RTRIM(i_PartyAssociationType
+			)
+		) = 'Account', 'Prospect',
+		'N/A'
+	) AS o_PartyRoleInAgreementTypeCode
 	FROM SQ_PartyRoleInAgreement
 ),
 AGG_RemoveDuplicates AS (
@@ -40,9 +43,13 @@ EXP_GetValues AS (
 	CustomerNum AS i_CustomerNum,
 	PartyRoleInAgreementTypeCode AS i_PartyRoleInAgreementTypeCode,
 	-- *INF*: LTRIM(RTRIM(i_PolicyGUId))
-	LTRIM(RTRIM(i_PolicyGUId)) AS o_QuoteKey,
+	LTRIM(RTRIM(i_PolicyGUId
+		)
+	) AS o_QuoteKey,
 	-- *INF*: LTRIM(RTRIM(i_CustomerNum))
-	LTRIM(RTRIM(i_CustomerNum)) AS o_PartyNumber,
+	LTRIM(RTRIM(i_CustomerNum
+		)
+	) AS o_PartyNumber,
 	i_PartyRoleInAgreementTypeCode AS o_PartyRoleInAgreementTypeCode
 	FROM AGG_RemoveDuplicates
 ),
@@ -84,9 +91,15 @@ EXP_GetIds AS (
 	LKP_Party.PartyAKId AS i_PartyAKId,
 	EXP_GetValues.o_PartyRoleInAgreementTypeCode AS i_PartyRoleInAgreementTypeCode,
 	-- *INF*: IIF(ISNULL(i_QuoteAKId),-1,i_QuoteAKId)
-	IFF(i_QuoteAKId IS NULL, - 1, i_QuoteAKId) AS o_QuoteAKId,
+	IFF(i_QuoteAKId IS NULL,
+		- 1,
+		i_QuoteAKId
+	) AS o_QuoteAKId,
 	-- *INF*: IIF(ISNULL(i_PartyAKId),-1,i_PartyAKId)
-	IFF(i_PartyAKId IS NULL, - 1, i_PartyAKId) AS o_PartyAKId,
+	IFF(i_PartyAKId IS NULL,
+		- 1,
+		i_PartyAKId
+	) AS o_PartyAKId,
 	i_PartyRoleInAgreementTypeCode AS o_PartyRoleInAgreementTypeCode
 	FROM EXP_GetValues
 	LEFT JOIN LKP_Party
@@ -144,9 +157,11 @@ EXP_AssignMetadata AS (
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,
+	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_ExpirationDate,
+	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+	) AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,

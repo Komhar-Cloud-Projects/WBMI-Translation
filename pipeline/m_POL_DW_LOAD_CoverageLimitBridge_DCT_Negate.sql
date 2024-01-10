@@ -76,7 +76,8 @@ EXP_Detect_Changes AS (
 	-- )
 	DECODE(TRUE,
 		lkp_CoverageLimitBridgeID IS NULL, 'NEW',
-		'UPDATE') AS o_ChangeFlag
+		'UPDATE'
+	) AS o_ChangeFlag
 	FROM Exp_Metadata
 	LEFT JOIN LKP_CoverageLimitBridge
 	ON LKP_CoverageLimitBridge.PremiumTransactionAKId = Exp_Metadata.o_PremiumTransactionAKID AND LKP_CoverageLimitBridge.CoverageLimitId = Exp_Metadata.CoverageLimitId

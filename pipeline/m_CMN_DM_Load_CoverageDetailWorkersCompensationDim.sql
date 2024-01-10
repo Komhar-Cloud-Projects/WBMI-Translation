@@ -300,66 +300,119 @@ EXP_AddMetaData AS (
 	AGGTRANS.FederalEmployersLiabilityActFlag AS i_FederalEmployersLiabilityActFlag,
 	AGGTRANS.USLongShoreAndHarborWorkersCompensationActFlag AS i_USLongShoreAndHarborWorkersCompensationActFlag,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate), TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS'), i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL, TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), i_EffectiveDate) AS v_EffectiveDate,
+	IFF(i_EffectiveDate IS NULL,
+		TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		i_EffectiveDate
+	) AS v_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate), TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS'), i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL, TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'), i_ExpirationDate) AS v_ExpirationDate,
+	IFF(i_ExpirationDate IS NULL,
+		TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		i_ExpirationDate
+	) AS v_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_CoverageGuid), 'N/A', i_CoverageGuid)
-	IFF(i_CoverageGuid IS NULL, 'N/A', i_CoverageGuid) AS v_CoverageGuid,
+	IFF(i_CoverageGuid IS NULL,
+		'N/A',
+		i_CoverageGuid
+	) AS v_CoverageGuid,
 	-- *INF*: IIF(i_ClassCodeOrganizationCode='NCCI',i_ClassCode, 'N/A')
-	IFF(i_ClassCodeOrganizationCode = 'NCCI', i_ClassCode, 'N/A') AS v_NcciClassCode,
+	IFF(i_ClassCodeOrganizationCode = 'NCCI',
+		i_ClassCode,
+		'N/A'
+	) AS v_NcciClassCode,
 	-- *INF*: IIF(ISNULL(i_NcciClassDescription), 'N/A', i_NcciClassDescription)
-	IFF(i_NcciClassDescription IS NULL, 'N/A', i_NcciClassDescription) AS v_NcciClassDescription,
+	IFF(i_NcciClassDescription IS NULL,
+		'N/A',
+		i_NcciClassDescription
+	) AS v_NcciClassDescription,
 	-- *INF*: IIF(ISNULL(i_PolicyPerAccidentLimit), 'N/A', i_PolicyPerAccidentLimit)
-	IFF(i_PolicyPerAccidentLimit IS NULL, 'N/A', i_PolicyPerAccidentLimit) AS v_PolicyPerAccidentLimit,
+	IFF(i_PolicyPerAccidentLimit IS NULL,
+		'N/A',
+		i_PolicyPerAccidentLimit
+	) AS v_PolicyPerAccidentLimit,
 	-- *INF*: IIF(ISNULL(i_PolicyPerDiseaseLimit), 'N/A', i_PolicyPerDiseaseLimit)
-	IFF(i_PolicyPerDiseaseLimit IS NULL, 'N/A', i_PolicyPerDiseaseLimit) AS v_PolicyPerDiseaseLimit,
+	IFF(i_PolicyPerDiseaseLimit IS NULL,
+		'N/A',
+		i_PolicyPerDiseaseLimit
+	) AS v_PolicyPerDiseaseLimit,
 	-- *INF*: IIF(ISNULL(i_PolicyAggregateLimit), 'N/A', i_PolicyAggregateLimit)
-	IFF(i_PolicyAggregateLimit IS NULL, 'N/A', i_PolicyAggregateLimit) AS v_PolicyAggregateLimit,
+	IFF(i_PolicyAggregateLimit IS NULL,
+		'N/A',
+		i_PolicyAggregateLimit
+	) AS v_PolicyAggregateLimit,
 	-- *INF*: IIF(ISNULL(i_ExperienceModificationFactor), 0, i_ExperienceModificationFactor)
-	IFF(i_ExperienceModificationFactor IS NULL, 0, i_ExperienceModificationFactor) AS v_ExperienceModificationFactor,
+	IFF(i_ExperienceModificationFactor IS NULL,
+		0,
+		i_ExperienceModificationFactor
+	) AS v_ExperienceModificationFactor,
 	-- *INF*: IIF(ISNULL(i_ExperienceModificationEffectiveDate),TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS'),i_ExperienceModificationEffectiveDate)
-	IFF(i_ExperienceModificationEffectiveDate IS NULL, TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), i_ExperienceModificationEffectiveDate) AS v_ExperienceModificationEffectiveDate,
+	IFF(i_ExperienceModificationEffectiveDate IS NULL,
+		TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
+		),
+		i_ExperienceModificationEffectiveDate
+	) AS v_ExperienceModificationEffectiveDate,
 	-- *INF*: DECODE(i_ConsentToRateFlag,'T','1','F','0','0')
 	DECODE(i_ConsentToRateFlag,
 		'T', '1',
 		'F', '0',
-		'0') AS v_ConsentToRateFlag,
+		'0'
+	) AS v_ConsentToRateFlag,
 	-- *INF*: IIF(ISNULL(i_RateOverride), 0, i_RateOverride)
-	IFF(i_RateOverride IS NULL, 0, i_RateOverride) AS v_RateOverride,
+	IFF(i_RateOverride IS NULL,
+		0,
+		i_RateOverride
+	) AS v_RateOverride,
 	-- *INF*: SUBSTR(i_ClassCode,0,4)
-	SUBSTR(i_ClassCode, 0, 4) AS v_ClassCode,
+	SUBSTR(i_ClassCode, 0, 4
+	) AS v_ClassCode,
 	-- *INF*: IIF	(ISNULL(:LKP.LKP_SUPCLASSIFICATIONWORKERSCOMPENSATION(i_StateCode,v_ClassCode)),:LKP.LKP_SUPCLASSIFICATIONWORKERSCOMPENSATION('99',v_ClassCode),:LKP.LKP_SUPCLASSIFICATIONWORKERSCOMPENSATION(i_StateCode,v_ClassCode))
-	IFF(LKP_SUPCLASSIFICATIONWORKERSCOMPENSATION_i_StateCode_v_ClassCode.RatableClassIndicator IS NULL, LKP_SUPCLASSIFICATIONWORKERSCOMPENSATION__99_v_ClassCode.RatableClassIndicator, LKP_SUPCLASSIFICATIONWORKERSCOMPENSATION_i_StateCode_v_ClassCode.RatableClassIndicator) AS v_RatableSurchargeCombined,
+	IFF(LKP_SUPCLASSIFICATIONWORKERSCOMPENSATION_i_StateCode_v_ClassCode.RatableClassIndicator IS NULL,
+		LKP_SUPCLASSIFICATIONWORKERSCOMPENSATION__99_v_ClassCode.RatableClassIndicator,
+		LKP_SUPCLASSIFICATIONWORKERSCOMPENSATION_i_StateCode_v_ClassCode.RatableClassIndicator
+	) AS v_RatableSurchargeCombined,
 	-- *INF*: Decode(SUBSTR(v_RatableSurchargeCombined,1,1), 'X', 'N/A' , NULL , 'N/A',SUBSTR(v_RatableSurchargeCombined,1,1))
-	Decode(SUBSTR(v_RatableSurchargeCombined, 1, 1),
+	Decode(SUBSTR(v_RatableSurchargeCombined, 1, 1
+		),
 		'X', 'N/A',
 		NULL, 'N/A',
-		SUBSTR(v_RatableSurchargeCombined, 1, 1)) AS v_RatableClassIndicator,
+		SUBSTR(v_RatableSurchargeCombined, 1, 1
+		)
+	) AS v_RatableClassIndicator,
 	-- *INF*: Decode(SUBSTR(v_RatableSurchargeCombined,3,1),'X','N/A',NULL,'N/A',SUBSTR(v_RatableSurchargeCombined,3,1))
-	Decode(SUBSTR(v_RatableSurchargeCombined, 3, 1),
+	Decode(SUBSTR(v_RatableSurchargeCombined, 3, 1
+		),
 		'X', 'N/A',
 		NULL, 'N/A',
-		SUBSTR(v_RatableSurchargeCombined, 3, 1)) AS v_SurchargeClassIndicator,
+		SUBSTR(v_RatableSurchargeCombined, 3, 1
+		)
+	) AS v_SurchargeClassIndicator,
 	-- *INF*: Decode(SUBSTR(v_RatableSurchargeCombined,5,2),'X','N/A',NULL,'N/A',SUBSTR(v_RatableSurchargeCombined,5,2))
-	Decode(SUBSTR(v_RatableSurchargeCombined, 5, 2),
+	Decode(SUBSTR(v_RatableSurchargeCombined, 5, 2
+		),
 		'X', 'N/A',
 		NULL, 'N/A',
-		SUBSTR(v_RatableSurchargeCombined, 5, 2)) AS v_HazardGroupCode,
+		SUBSTR(v_RatableSurchargeCombined, 5, 2
+		)
+	) AS v_HazardGroupCode,
 	-- *INF*: DECODE(i_AdmiraltyActFlag,'T','1','F','0','0')
 	DECODE(i_AdmiraltyActFlag,
 		'T', '1',
 		'F', '0',
-		'0') AS v_AdmiraltyActFlag,
+		'0'
+	) AS v_AdmiraltyActFlag,
 	-- *INF*: DECODE(i_FederalEmployersLiabilityActFlag,'T','1','F','0','0')
 	DECODE(i_FederalEmployersLiabilityActFlag,
 		'T', '1',
 		'F', '0',
-		'0') AS v_FederalEmployersLiabilityActFlag,
+		'0'
+	) AS v_FederalEmployersLiabilityActFlag,
 	-- *INF*: DECODE(i_USLongShoreAndHarborWorkersCompensationActFlag,'T','1','F','0','0')
 	DECODE(i_USLongShoreAndHarborWorkersCompensationActFlag,
 		'T', '1',
 		'F', '0',
-		'0') AS v_USLongShoreAndHarborWorkersCompensationActFlag,
+		'0'
+	) AS v_USLongShoreAndHarborWorkersCompensationActFlag,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(lkp_CoverageDetailDimId), 'NEW',
 	-- lkp_EffectiveDate<>v_EffectiveDate
@@ -383,20 +436,44 @@ EXP_AddMetaData AS (
 	-- , 'UPDATE', 'NOCHANGE')
 	DECODE(TRUE,
 		lkp_CoverageDetailDimId IS NULL, 'NEW',
-		lkp_EffectiveDate <> v_EffectiveDate OR lkp_ExpirationDate <> v_ExpirationDate OR lkp_CoverageGuid <> v_CoverageGuid OR LTRIM(RTRIM(lkp_NcciClassCode)) <> v_NcciClassCode OR lkp_NcciClassDescription <> v_NcciClassDescription OR lkp_PolicyPerAccidentLimit <> v_PolicyPerAccidentLimit OR lkp_PolicyPerDiseaseLimit <> v_PolicyPerDiseaseLimit OR lkp_PolicyAggregateLimit <> v_PolicyAggregateLimit OR lkp_ExperienceModificationFactor <> v_ExperienceModificationFactor OR lkp_ExperienceModificationEffectiveDate <> v_ExperienceModificationEffectiveDate OR DECODE(lkp_ConsentToRateFlag,
+		lkp_EffectiveDate <> v_EffectiveDate 
+		OR lkp_ExpirationDate <> v_ExpirationDate 
+		OR lkp_CoverageGuid <> v_CoverageGuid 
+		OR LTRIM(RTRIM(lkp_NcciClassCode
+			)
+		) <> v_NcciClassCode 
+		OR lkp_NcciClassDescription <> v_NcciClassDescription 
+		OR lkp_PolicyPerAccidentLimit <> v_PolicyPerAccidentLimit 
+		OR lkp_PolicyPerDiseaseLimit <> v_PolicyPerDiseaseLimit 
+		OR lkp_PolicyAggregateLimit <> v_PolicyAggregateLimit 
+		OR lkp_ExperienceModificationFactor <> v_ExperienceModificationFactor 
+		OR lkp_ExperienceModificationEffectiveDate <> v_ExperienceModificationEffectiveDate 
+		OR DECODE(lkp_ConsentToRateFlag,
 		'T', '1',
 		'F', '0',
-		'0') <> v_ConsentToRateFlag OR lkp_RateOverride <> v_RateOverride OR lkp_RatableClassIndicator <> v_RatableClassIndicator OR lkp_SurchargeClassIndicator <> v_SurchargeClassIndicator OR lkp_HazardGroupCode <> v_HazardGroupCode OR DECODE(lkp_AdmiraltyActFlag,
+		'0'
+		) <> v_ConsentToRateFlag 
+		OR lkp_RateOverride <> v_RateOverride 
+		OR lkp_RatableClassIndicator <> v_RatableClassIndicator 
+		OR lkp_SurchargeClassIndicator <> v_SurchargeClassIndicator 
+		OR lkp_HazardGroupCode <> v_HazardGroupCode 
+		OR DECODE(lkp_AdmiraltyActFlag,
 		'T', '1',
 		'F', '0',
-		'0') <> v_AdmiraltyActFlag OR DECODE(lkp_FederalEmployersLiabilityActFlag,
+		'0'
+		) <> v_AdmiraltyActFlag 
+		OR DECODE(lkp_FederalEmployersLiabilityActFlag,
 		'T', '1',
 		'F', '0',
-		'0') <> v_FederalEmployersLiabilityActFlag OR DECODE(lkp_USLongShoreAndHarborWorkersCompensationActFlag,
+		'0'
+		) <> v_FederalEmployersLiabilityActFlag 
+		OR DECODE(lkp_USLongShoreAndHarborWorkersCompensationActFlag,
 		'T', '1',
 		'F', '0',
-		'0') <> v_USLongShoreAndHarborWorkersCompensationActFlag, 'UPDATE',
-		'NOCHANGE') AS o_ChangeFlag,
+		'0'
+		) <> v_USLongShoreAndHarborWorkersCompensationActFlag, 'UPDATE',
+		'NOCHANGE'
+	) AS o_ChangeFlag,
 	i_CoverageDetailDimId AS o_CoverageDetailDimId,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	v_EffectiveDate AS o_EffectiveDate,

@@ -52,9 +52,15 @@ EXP_Evaluate AS (
 	ARCH_pol_key,
 	ARCH_SUM_Trans_Amt,
 	-- *INF*: IIF(ARCH_SUM_Trans_Amt = EDW_SUM_Trans_Amt,'Y','N')
-	IFF(ARCH_SUM_Trans_Amt = EDW_SUM_Trans_Amt, 'Y', 'N') AS v_Balance_Amount,
+	IFF(ARCH_SUM_Trans_Amt = EDW_SUM_Trans_Amt,
+		'Y',
+		'N'
+	) AS v_Balance_Amount,
 	-- *INF*: IIF(v_Balance_Amount = 'Y', 1, -1)
-	IFF(v_Balance_Amount = 'Y', 1, - 1) AS err_flag_change,
+	IFF(v_Balance_Amount = 'Y',
+		1,
+		- 1
+	) AS err_flag_change,
 	err_flag_change AS out_err_flag
 	FROM JNR_EDW_ARCHIVE
 ),
@@ -144,9 +150,15 @@ EXP_Evaluate_Bal_Reins_Txn AS (
 	ARCH_pol_key,
 	ARCH_SUM_Trans_Amt,
 	-- *INF*: IIF(ARCH_SUM_Trans_Amt = EDW_SUM_Trans_Amt,'Y','N')
-	IFF(ARCH_SUM_Trans_Amt = EDW_SUM_Trans_Amt, 'Y', 'N') AS v_Balance_Amount,
+	IFF(ARCH_SUM_Trans_Amt = EDW_SUM_Trans_Amt,
+		'Y',
+		'N'
+	) AS v_Balance_Amount,
 	-- *INF*: IIF(v_Balance_Amount = 'Y', 1, -1)
-	IFF(v_Balance_Amount = 'Y', 1, - 1) AS err_flag_change,
+	IFF(v_Balance_Amount = 'Y',
+		1,
+		- 1
+	) AS err_flag_change,
 	err_flag_change AS out_err_flag_reins_txn
 	FROM JNR_EDW_ARCHIVE_Bal_Reins_Txn
 ),

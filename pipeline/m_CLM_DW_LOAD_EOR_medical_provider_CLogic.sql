@@ -25,7 +25,10 @@ EXP_PROVIDER_TYPE AS (
 	bus_name,
 	last_name,
 	-- *INF*: iif (bus_name = 'N/A','INDIV','GROUP')
-	IFF(bus_name = 'N/A', 'INDIV', 'GROUP') AS provider_type_code,
+	IFF(bus_name = 'N/A',
+		'INDIV',
+		'GROUP'
+	) AS provider_type_code,
 	first_name,
 	'N/A' AS mid_name,
 	prfx,
@@ -184,7 +187,26 @@ EXP_detect_changes AS (
 	-- lkp_tax_id <> tax_id 
 	-- , 'UPDATE','NOCHANGE'))
 	-- 
-	IFF(lkp_med_provider_ak_id IS NULL, 'NEW', IFF(lkp_provider_type_code <> provider_type_code OR lkp_bus_name <> bus_name OR lkp_last_name <> last_name OR lkp_first_name <> first_name OR lkp_mid_name <> mid_name OR lkp_prfx <> prfx OR lkp_sfx <> sfx OR lkp_title <> title OR lkp_specialty_code <> spty_code OR lkp_addr <> addr OR lkp_city <> city OR state <> lkp_state OR lkp_zip <> zip OR lkp_tax_id <> tax_id, 'UPDATE', 'NOCHANGE')) AS v_change_flag,
+	IFF(lkp_med_provider_ak_id IS NULL,
+		'NEW',
+		IFF(lkp_provider_type_code <> provider_type_code 
+			OR lkp_bus_name <> bus_name 
+			OR lkp_last_name <> last_name 
+			OR lkp_first_name <> first_name 
+			OR lkp_mid_name <> mid_name 
+			OR lkp_prfx <> prfx 
+			OR lkp_sfx <> sfx 
+			OR lkp_title <> title 
+			OR lkp_specialty_code <> spty_code 
+			OR lkp_addr <> addr 
+			OR lkp_city <> city 
+			OR state <> lkp_state 
+			OR lkp_zip <> zip 
+			OR lkp_tax_id <> tax_id,
+			'UPDATE',
+			'NOCHANGE'
+		)
+	) AS v_change_flag,
 	v_change_flag AS Change_Flag
 	FROM EXP_default_values
 	LEFT JOIN LKP_medical_provider
@@ -222,17 +244,24 @@ SEQ_medical_provider_ak_id AS (
 EXP_AUDIT_FIELDS_INSERT AS (
 	SELECT
 	-- *INF*: IIF(Change_Flag = 'NEW',NEXTVAL,lkp_med_provider_ak_id)
-	IFF(Change_Flag = 'NEW', NEXTVAL, lkp_med_provider_ak_id) AS med_provider_ak_id,
+	IFF(Change_Flag = 'NEW',
+		NEXTVAL,
+		lkp_med_provider_ak_id
+	) AS med_provider_ak_id,
 	med_bill_ak_id,
 	provider_type_code,
 	bus_name,
 	-- *INF*: iif (v_full_name ='','N/A',v_full_name)
-	IFF(v_full_name = '', 'N/A', v_full_name) AS full_name,
+	IFF(v_full_name = '',
+		'N/A',
+		v_full_name
+	) AS full_name,
 	last_name,
 	first_name,
 	mid_name,
 	-- *INF*: rtrim(REPLACESTR(TRUE,first_name  || ' ' ||  mid_name || ' ' || last_name,'N/A',''))
-	rtrim(REPLACESTR(TRUE, first_name || ' ' || mid_name || ' ' || last_name, 'N/A', '')) AS v_full_name,
+	rtrim(REGEXP_REPLACE(first_name || ' ' || mid_name || ' ' || last_name,'N/A','')
+	) AS v_full_name,
 	prfx,
 	sfx,
 	title,
@@ -246,9 +275,14 @@ EXP_AUDIT_FIELDS_INSERT AS (
 	audit_id,
 	-- *INF*: iif(Change_Flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(Change_Flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), SYSDATE) AS eff_from_date,
+	IFF(Change_Flag = 'NEW',
+		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
+		),
+		SYSDATE
+	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
+	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
+	) AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS CREATE_MOD_DATE,
 	SEQ_medical_provider_ak_id.NEXTVAL,
@@ -314,8 +348,9 @@ EXP_Lag_eff_from_date11 AS (
 	-- 	med_provider_ak_id = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	DECODE(TRUE,
-		med_provider_ak_id = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date, 'SS', - 1),
-		orig_eff_to_date) AS v_eff_to_date,
+		med_provider_ak_id = v_PREV_ROW_occurrence_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+		orig_eff_to_date
+	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
 	med_provider_ak_id AS v_PREV_ROW_occurrence_key,

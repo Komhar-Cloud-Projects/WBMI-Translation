@@ -194,7 +194,7 @@ EXP_wbmi_session_control AS (
 	-- 
 	-- 
 	-- 
-	ADD_TO_DATE(in_selection_end_ts, 'SS', 1) AS out_selection_start_ts,
+	DATEADD(SECOND,1,in_selection_end_ts) AS out_selection_start_ts,
 	CURRENT_TIMESTAMP AS out_selection_end_ts
 	FROM SQ_wbmi_session_control_INCREMENT_SEL_START_END_TS
 ),
@@ -356,7 +356,33 @@ EXP_out_Parm_file AS (
 	-- '@{pipeline().parameters.SOURCE_TABLE_OWNER}=' ||  RTRIM(source_table_owner) || CHR(10) ||
 	-- '@{pipeline().parameters.TARGET_TABLE_OWNER}=' ||  RTRIM(target_table_owner) || CHR(10) ||
 	-- IIF(ISNULL(additional_parameters), '', RTRIM(additional_parameters))  ||  CHR(10) 
-	'[' || RTRIM(folder_name) || '.' || RTRIM(session_name) || ']' || CHR(10) || '@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}=' || TO_CHAR(wbmi_audit_control_run_id) || CHR(10) || '@{pipeline().parameters.WBMI_BATCH_CONTROL_RUN_ID}=' || TO_CHAR(wbmi_batch_control_run_id) || CHR(10) || '@{pipeline().parameters.WBMI_SESSION_CONTROL_RUN_ID}=' || TO_CHAR(wbmi_session_control_run_id) || CHR(10) || '@{pipeline().parameters.SELECTION_START_TS}=' || TO_CHAR(selection_start_ts) || CHR(10) || '@{pipeline().parameters.SELECTION_END_TS}=' || TO_CHAR(selection_end_ts) || CHR(10) || '@{pipeline().parameters.DBCONNECTION_SOURCE}=' || RTRIM(source_database_connection) || CHR(10) || '@{pipeline().parameters.DBCONNECTION_TARGET}=' || RTRIM(target_database_connection) || CHR(10) || '@{pipeline().parameters.SOURCE_TABLE_OWNER}=' || RTRIM(source_table_owner) || CHR(10) || '@{pipeline().parameters.TARGET_TABLE_OWNER}=' || RTRIM(target_table_owner) || CHR(10) || IFF(additional_parameters IS NULL, '', RTRIM(additional_parameters)) || CHR(10) AS out_Param_Data
+	'[' || RTRIM(folder_name
+	) || '.' || RTRIM(session_name
+	) || ']' || CHR(10
+	) || '@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}=' || TO_CHAR(wbmi_audit_control_run_id
+	) || CHR(10
+	) || '@{pipeline().parameters.WBMI_BATCH_CONTROL_RUN_ID}=' || TO_CHAR(wbmi_batch_control_run_id
+	) || CHR(10
+	) || '@{pipeline().parameters.WBMI_SESSION_CONTROL_RUN_ID}=' || TO_CHAR(wbmi_session_control_run_id
+	) || CHR(10
+	) || '@{pipeline().parameters.SELECTION_START_TS}=' || TO_CHAR(selection_start_ts
+	) || CHR(10
+	) || '@{pipeline().parameters.SELECTION_END_TS}=' || TO_CHAR(selection_end_ts
+	) || CHR(10
+	) || '@{pipeline().parameters.DBCONNECTION_SOURCE}=' || RTRIM(source_database_connection
+	) || CHR(10
+	) || '@{pipeline().parameters.DBCONNECTION_TARGET}=' || RTRIM(target_database_connection
+	) || CHR(10
+	) || '@{pipeline().parameters.SOURCE_TABLE_OWNER}=' || RTRIM(source_table_owner
+	) || CHR(10
+	) || '@{pipeline().parameters.TARGET_TABLE_OWNER}=' || RTRIM(target_table_owner
+	) || CHR(10
+	) || IFF(additional_parameters IS NULL,
+		'',
+		RTRIM(additional_parameters
+		)
+	) || CHR(10
+	) AS out_Param_Data
 	FROM SQ_wbmi_session_control_run_PARM_FILE
 ),
 Batch_Name AS (

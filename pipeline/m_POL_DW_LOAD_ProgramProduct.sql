@@ -15,11 +15,23 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate) AS o_EffectiveDate,
+	IFF(i_EffectiveDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_EffectiveDate
+	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate,
+	IFF(i_ExpirationDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ExpirationDate
+	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate) AS o_ModifiedDate
+	IFF(i_ModifiedDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ModifiedDate
+	) AS o_ModifiedDate
 	FROM SQ_ProgramProduct
 ),
 EXP_NumericValues AS (
@@ -28,11 +40,20 @@ EXP_NumericValues AS (
 	ProgramId AS i_ProgramId,
 	ProductId AS i_ProductId,
 	-- *INF*: IIF(ISNULL(i_ProgramProductId),-1,i_ProgramProductId)
-	IFF(i_ProgramProductId IS NULL, - 1, i_ProgramProductId) AS o_ProgramProductId,
+	IFF(i_ProgramProductId IS NULL,
+		- 1,
+		i_ProgramProductId
+	) AS o_ProgramProductId,
 	-- *INF*: IIF(ISNULL(i_ProgramId),-1,i_ProgramId)
-	IFF(i_ProgramId IS NULL, - 1, i_ProgramId) AS o_ProgramId,
+	IFF(i_ProgramId IS NULL,
+		- 1,
+		i_ProgramId
+	) AS o_ProgramId,
 	-- *INF*: IIF(ISNULL(i_ProductId),-1,i_ProductId)
-	IFF(i_ProductId IS NULL, - 1, i_ProductId) AS o_ProductId
+	IFF(i_ProductId IS NULL,
+		- 1,
+		i_ProductId
+	) AS o_ProductId
 	FROM SQ_ProgramProduct
 ),
 EXP_StringValues AS (

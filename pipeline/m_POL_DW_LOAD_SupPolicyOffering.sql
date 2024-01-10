@@ -17,11 +17,23 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate) AS o_EffectiveDate,
+	IFF(i_EffectiveDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_EffectiveDate
+	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ExpirationDate) AS o_ExpirationDate,
+	IFF(i_ExpirationDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ExpirationDate
+	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL, TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate) AS o_ModifiedDate
+	IFF(i_ModifiedDate IS NULL,
+		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
+		),
+		i_ModifiedDate
+	) AS o_ModifiedDate
 	FROM SQ_SupPolicyOffering
 ),
 EXP_NumericValues AS (
@@ -29,9 +41,15 @@ EXP_NumericValues AS (
 	SupPolicyOfferingId AS i_SupPolicyOfferingId,
 	SupPolicyOfferingAKId AS i_SupPolicyOfferingAKId,
 	-- *INF*: IIF(ISNULL(i_SupPolicyOfferingId),-1,i_SupPolicyOfferingId)
-	IFF(i_SupPolicyOfferingId IS NULL, - 1, i_SupPolicyOfferingId) AS o_SupPolicyOfferingId,
+	IFF(i_SupPolicyOfferingId IS NULL,
+		- 1,
+		i_SupPolicyOfferingId
+	) AS o_SupPolicyOfferingId,
 	-- *INF*: IIF(ISNULL(i_SupPolicyOfferingAKId),-1,i_SupPolicyOfferingAKId)
-	IFF(i_SupPolicyOfferingAKId IS NULL, - 1, i_SupPolicyOfferingAKId) AS o_SupPolicyOfferingAKId
+	IFF(i_SupPolicyOfferingAKId IS NULL,
+		- 1,
+		i_SupPolicyOfferingAKId
+	) AS o_SupPolicyOfferingAKId
 	FROM SQ_SupPolicyOffering
 ),
 EXP_StringValues AS (
@@ -41,16 +59,44 @@ EXP_StringValues AS (
 	PolicyOfferingCode AS i_PolicyOfferingCode,
 	SourcePolicyOfferingCode AS i_SourcePolicyOfferingCode,
 	-- *INF*: IIF(i_ExpirationDate>=TO_DATE('21001231','YYYYMMDD'),1,0)
-	IFF(i_ExpirationDate >= TO_DATE('21001231', 'YYYYMMDD'), 1, 0) AS o_CurrentSnapshotFlag,
+	IFF(i_ExpirationDate >= TO_DATE('21001231', 'YYYYMMDD'
+		),
+		1,
+		0
+	) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_SourceCode) OR LENGTH(i_SourceCode)=0 OR IS_SPACES(i_SourceCode),'N/A',LTRIM(RTRIM(i_SourceCode)))
-	IFF(i_SourceCode IS NULL OR LENGTH(i_SourceCode) = 0 OR IS_SPACES(i_SourceCode), 'N/A', LTRIM(RTRIM(i_SourceCode))) AS o_SourceCode,
+	IFF(i_SourceCode IS NULL 
+		OR LENGTH(i_SourceCode
+		) = 0 
+		OR LENGTH(i_SourceCode)>0 AND TRIM(i_SourceCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_SourceCode
+			)
+		)
+	) AS o_SourceCode,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingCode) OR LENGTH(i_PolicyOfferingCode)=0 OR IS_SPACES(i_PolicyOfferingCode),'N/A',LTRIM(RTRIM(i_PolicyOfferingCode)))
-	IFF(i_PolicyOfferingCode IS NULL OR LENGTH(i_PolicyOfferingCode) = 0 OR IS_SPACES(i_PolicyOfferingCode), 'N/A', LTRIM(RTRIM(i_PolicyOfferingCode))) AS o_PolicyOfferingCode,
+	IFF(i_PolicyOfferingCode IS NULL 
+		OR LENGTH(i_PolicyOfferingCode
+		) = 0 
+		OR LENGTH(i_PolicyOfferingCode)>0 AND TRIM(i_PolicyOfferingCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_PolicyOfferingCode
+			)
+		)
+	) AS o_PolicyOfferingCode,
 	-- *INF*: IIF(ISNULL(i_SourcePolicyOfferingCode) OR LENGTH(i_SourcePolicyOfferingCode)=0 OR IS_SPACES(i_SourcePolicyOfferingCode),'N/A',LTRIM(RTRIM(i_SourcePolicyOfferingCode)))
-	IFF(i_SourcePolicyOfferingCode IS NULL OR LENGTH(i_SourcePolicyOfferingCode) = 0 OR IS_SPACES(i_SourcePolicyOfferingCode), 'N/A', LTRIM(RTRIM(i_SourcePolicyOfferingCode))) AS o_SourcePolicyOfferingCode
+	IFF(i_SourcePolicyOfferingCode IS NULL 
+		OR LENGTH(i_SourcePolicyOfferingCode
+		) = 0 
+		OR LENGTH(i_SourcePolicyOfferingCode)>0 AND TRIM(i_SourcePolicyOfferingCode)='',
+		'N/A',
+		LTRIM(RTRIM(i_SourcePolicyOfferingCode
+			)
+		)
+	) AS o_SourcePolicyOfferingCode
 	FROM SQ_SupPolicyOffering
 ),
 TGT_SupPolicyOffering_UpdateElseInsert AS (

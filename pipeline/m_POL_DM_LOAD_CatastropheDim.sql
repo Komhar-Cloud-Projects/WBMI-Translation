@@ -15,9 +15,11 @@ EXP_GetValues AS (
 	SYSDATE AS o_ModifiedDate,
 	i_claim_cat_code AS o_claim_cat_code,
 	-- *INF*: TO_CHAR(i_claim_cat_start_date,'YYYY-MM-DD')
-	TO_CHAR(i_claim_cat_start_date, 'YYYY-MM-DD') AS o_claim_cat_start_date,
+	TO_CHAR(i_claim_cat_start_date, 'YYYY-MM-DD'
+	) AS o_claim_cat_start_date,
 	-- *INF*: TO_CHAR(i_claim_cat_end_date,'YYYY-MM-DD')
-	TO_CHAR(i_claim_cat_end_date, 'YYYY-MM-DD') AS o_claim_cat_end_date
+	TO_CHAR(i_claim_cat_end_date, 'YYYY-MM-DD'
+	) AS o_claim_cat_end_date
 	FROM SQ_claim_occurrence
 ),
 LKP_CatastropheDim AS (

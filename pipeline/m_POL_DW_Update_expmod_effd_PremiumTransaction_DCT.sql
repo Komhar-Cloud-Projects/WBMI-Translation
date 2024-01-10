@@ -124,12 +124,25 @@ EXP_Evaluate_attributes AS (
 	LKP_SUPCLASSIFICATIONWORKERSCOMPENSATION_ClassCode_99.SupClassificationWorkersCompensationId AS ClassCode99Id,
 	-- *INF*: IIF((NOT ISNULL(ClassCodeStateId)) or (NOT ISNULL(ClassCode99Id)),ExperienceModificationFactor,0.0)
 	-- --- One of the two lookups must be successful in order to pass the EMF - else it is defaulted to zero
-	IFF(( NOT ClassCodeStateId IS NULL ) OR ( NOT ClassCode99Id IS NULL ), ExperienceModificationFactor, 0.0) AS v_ExperienceModificationFactor,
+	IFF(( ClassCodeStateId IS NOT NULL 
+		) 
+		OR ( ClassCode99Id IS NOT NULL 
+		),
+		ExperienceModificationFactor,
+		0.0
+	) AS v_ExperienceModificationFactor,
 	-- *INF*: IIF((NOT ISNULL(ClassCodeStateId)) or (NOT ISNULL(ClassCode99Id)),ExperienceModificationEffectiveDate,TO_DATE('12-31-2100','MM-DD-YYYY'))
 	-- --- One of the two lookups must be successful in order to pass the EMF - else it is defaulted to zero
 	-- 
 	-- 
-	IFF(( NOT ClassCodeStateId IS NULL ) OR ( NOT ClassCode99Id IS NULL ), ExperienceModificationEffectiveDate, TO_DATE('12-31-2100', 'MM-DD-YYYY')) AS v_ExperienceModificationEffectiveDate,
+	IFF(( ClassCodeStateId IS NOT NULL 
+		) 
+		OR ( ClassCode99Id IS NOT NULL 
+		),
+		ExperienceModificationEffectiveDate,
+		TO_DATE('12-31-2100', 'MM-DD-YYYY'
+		)
+	) AS v_ExperienceModificationEffectiveDate,
 	v_ExperienceModificationFactor AS o_ExperienceModificationFactor,
 	v_ExperienceModificationEffectiveDate AS o_ExperienceModificationEffectiveDate,
 	-- *INF*: DECODE(TRUE,
@@ -138,9 +151,14 @@ EXP_Evaluate_attributes AS (
 	-- 1)
 	-- -- If existing values are the same as determined values then no update is necessary
 	DECODE(TRUE,
-		ClassCodeStateId IS NULL AND ClassCode99Id IS NULL, 0,
-		( v_ExperienceModificationFactor = oldExperienceModificationFactor ) AND ( v_ExperienceModificationEffectiveDate = oldExperienceModificationEffectiveDate ), 0,
-		1) AS updateflag
+		ClassCodeStateId IS NULL 
+		AND ClassCode99Id IS NULL, 0,
+		( v_ExperienceModificationFactor = oldExperienceModificationFactor 
+		) 
+		AND ( v_ExperienceModificationEffectiveDate = oldExperienceModificationEffectiveDate 
+		), 0,
+		1
+	) AS updateflag
 	FROM SQ_Get_candidate_transactions
 	LEFT JOIN LKP_SUPCLASSIFICATIONWORKERSCOMPENSATION LKP_SUPCLASSIFICATIONWORKERSCOMPENSATION_ClassCode_StateProvinceCode
 	ON LKP_SUPCLASSIFICATIONWORKERSCOMPENSATION_ClassCode_StateProvinceCode.ClassCode = ClassCode

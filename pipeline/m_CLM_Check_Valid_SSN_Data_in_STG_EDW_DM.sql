@@ -197,7 +197,9 @@ mplt_SSN_Check AS (WITH
 		IN_id AS id,
 		IN_ssn_fein_id AS ssn_fein_taxid,
 		-- *INF*: LTRIM(RTRIM(ssn_fein_taxid))
-		LTRIM(RTRIM(ssn_fein_taxid)) AS V_ssn_fein_taxid,
+		LTRIM(RTRIM(ssn_fein_taxid
+			)
+		) AS V_ssn_fein_taxid,
 		-- *INF*: IIF( SUBSTR(V_ssn_fein_taxid,3,1)='-' OR  (SUBSTR(V_ssn_fein_taxid,1,3)='000' AND (LENGTH(V_ssn_fein_taxid)=9 ) ) OR SUBSTR(V_ssn_fein_taxid,2,1)='-'  OR   (TO_INTEGER(SUBSTR(V_ssn_fein_taxid,1,3))>=750 AND (LENGTH(V_ssn_fein_taxid)=9 ) )OR ISNULL(V_ssn_fein_taxid) OR (V_ssn_fein_taxid='N/A')   OR REG_MATCH(V_ssn_fein_taxid,'[*]*') OR(REG_MATCH(V_ssn_fein_taxid,'[\da-zA-Z]+') AND (LENGTH(V_ssn_fein_taxid)=11 OR LENGTH(V_ssn_fein_taxid)=10) )
 		--  OR ((SUBSTR(V_ssn_fein_taxid,4,1)='-')  AND  (LENGTH(V_ssn_fein_taxid) != 11 )) OR (LENGTH(V_ssn_fein_taxid)<=6 ) OR  (LENGTH(V_ssn_fein_taxid)>11 ) ,'FEIN','NONFEIN')
 		-- 
@@ -205,7 +207,51 @@ mplt_SSN_Check AS (WITH
 		-- 
 		-- 
 		-- 
-		IFF(SUBSTR(V_ssn_fein_taxid, 3, 1) = '-' OR ( SUBSTR(V_ssn_fein_taxid, 1, 3) = '000' AND ( LENGTH(V_ssn_fein_taxid) = 9 ) ) OR SUBSTR(V_ssn_fein_taxid, 2, 1) = '-' OR ( TO_INTEGER(SUBSTR(V_ssn_fein_taxid, 1, 3)) >= 750 AND ( LENGTH(V_ssn_fein_taxid) = 9 ) ) OR V_ssn_fein_taxid IS NULL OR ( V_ssn_fein_taxid = 'N/A' ) OR REG_MATCH(V_ssn_fein_taxid, '[*]*') OR ( REG_MATCH(V_ssn_fein_taxid, '[\da-zA-Z]+') AND ( LENGTH(V_ssn_fein_taxid) = 11 OR LENGTH(V_ssn_fein_taxid) = 10 ) ) OR ( ( SUBSTR(V_ssn_fein_taxid, 4, 1) = '-' ) AND ( LENGTH(V_ssn_fein_taxid) != 11 ) ) OR ( LENGTH(V_ssn_fein_taxid) <= 6 ) OR ( LENGTH(V_ssn_fein_taxid) > 11 ), 'FEIN', 'NONFEIN') AS V_flag,
+		IFF(SUBSTR(V_ssn_fein_taxid, 3, 1
+			) = '-' 
+			OR ( SUBSTR(V_ssn_fein_taxid, 1, 3
+				) = '000' 
+				AND ( LENGTH(V_ssn_fein_taxid
+					) = 9 
+				) 
+			) 
+			OR SUBSTR(V_ssn_fein_taxid, 2, 1
+			) = '-' 
+			OR ( CAST(SUBSTR(V_ssn_fein_taxid, 1, 3
+				) AS INTEGER) >= 750 
+				AND ( LENGTH(V_ssn_fein_taxid
+					) = 9 
+				) 
+			) 
+			OR V_ssn_fein_taxid IS NULL 
+			OR ( V_ssn_fein_taxid = 'N/A' 
+			) 
+			OR REGEXP_LIKE(V_ssn_fein_taxid, '[*]*'
+			) 
+			OR ( REGEXP_LIKE(V_ssn_fein_taxid, '[\da-zA-Z]+'
+				) 
+				AND ( LENGTH(V_ssn_fein_taxid
+					) = 11 
+					OR LENGTH(V_ssn_fein_taxid
+					) = 10 
+				) 
+			) 
+			OR ( ( SUBSTR(V_ssn_fein_taxid, 4, 1
+					) = '-' 
+				) 
+				AND ( LENGTH(V_ssn_fein_taxid
+					) != 11 
+				) 
+			) 
+			OR ( LENGTH(V_ssn_fein_taxid
+				) <= 6 
+			) 
+			OR ( LENGTH(V_ssn_fein_taxid
+				) > 11 
+			),
+			'FEIN',
+			'NONFEIN'
+		) AS V_flag,
 		V_flag AS flag,
 		-- *INF*: IIF(LENGTH(V_ssn_fein_taxid)>=7 AND LENGTH(V_ssn_fein_taxid)<=8,LPAD(V_ssn_fein_taxid,9,'0'),V_ssn_fein_taxid)
 		-- 
@@ -216,19 +262,41 @@ mplt_SSN_Check AS (WITH
 		-- 
 		-- 
 		-- 
-		IFF(LENGTH(V_ssn_fein_taxid) >= 7 AND LENGTH(V_ssn_fein_taxid) <= 8, LPAD(V_ssn_fein_taxid, 9, '0'), V_ssn_fein_taxid) AS V_taxid,
+		IFF(LENGTH(V_ssn_fein_taxid
+			) >= 7 
+			AND LENGTH(V_ssn_fein_taxid
+			) <= 8,
+			LPAD(V_ssn_fein_taxid, 9, '0'
+			),
+			V_ssn_fein_taxid
+		) AS V_taxid,
 		-- *INF*: IIF(REG_MATCH(V_taxid,'[0-9-]*') ,V_taxid,'X')
 		-- 
 		-- 
 		-- 
-		IFF(REG_MATCH(V_taxid, '[0-9-]*'), V_taxid, 'X') AS V_valid_taxid,
+		IFF(REGEXP_LIKE(V_taxid, '[0-9-]*'
+			),
+			V_taxid,
+			'X'
+		) AS V_valid_taxid,
 		V_valid_taxid AS flag_TaxId,
 		-- *INF*: IIF(LENGTH(V_valid_taxid)=9  AND (REG_MATCH(V_valid_taxid,'^[0-9]*$'))  ,(SUBSTR(V_valid_taxid, 1, 3) ||'-'||SUBSTR(V_valid_taxid, 4, 2)||'-'||SUBSTR(V_valid_taxid, 6, 4)) ,V_valid_taxid)
 		-- 
 		-- 
 		-- 
 		-- 
-		IFF(LENGTH(V_valid_taxid) = 9 AND ( REG_MATCH(V_valid_taxid, '^[0-9]*$') ), ( SUBSTR(V_valid_taxid, 1, 3) || '-' || SUBSTR(V_valid_taxid, 4, 2) || '-' || SUBSTR(V_valid_taxid, 6, 4) ), V_valid_taxid) AS OUT_taxid
+		IFF(LENGTH(V_valid_taxid
+			) = 9 
+			AND ( REGEXP_LIKE(V_valid_taxid, '^[0-9]*$'
+				) 
+			),
+			( SUBSTR(V_valid_taxid, 1, 3
+				) || '-' || SUBSTR(V_valid_taxid, 4, 2
+				) || '-' || SUBSTR(V_valid_taxid, 6, 4
+				) 
+			),
+			V_valid_taxid
+		) AS OUT_taxid
 		FROM INPUT
 	),
 	RTR_SSN_FEIN_TAXID AS (
@@ -453,7 +521,9 @@ EXP_SSN_FEIN_TAXID AS (
 	tax_id AS id,
 	tax_id AS ssn_fein_taxid,
 	-- *INF*: LTRIM(RTRIM(ssn_fein_taxid))
-	LTRIM(RTRIM(ssn_fein_taxid)) AS V_ssn_fein_taxid,
+	LTRIM(RTRIM(ssn_fein_taxid
+		)
+	) AS V_ssn_fein_taxid,
 	-- *INF*: IIF(SUBSTR(V_ssn_fein_taxid,3,1)='-'OR (SUBSTR(V_ssn_fein_taxid,1,3)='000' AND (LENGTH(V_ssn_fein_taxid)=9 ))OR SUBSTR(V_ssn_fein_taxid,2,1)='-'  OR ISNULL(V_ssn_fein_taxid) OR (V_ssn_fein_taxid='N/A')   OR REG_MATCH(V_ssn_fein_taxid,'[*]*') OR(REG_MATCH(V_ssn_fein_taxid,'[\da-zA-Z]+') AND (LENGTH(V_ssn_fein_taxid)=11 OR LENGTH(V_ssn_fein_taxid)=10) )
 	--  OR ((SUBSTR(V_ssn_fein_taxid,4,1)='-')  AND  (LENGTH(V_ssn_fein_taxid) != 11 )) OR (LENGTH(V_ssn_fein_taxid)<=6 ) OR  (LENGTH(V_ssn_fein_taxid)>11 ) ,'NOTVALID','VALID')
 	-- 
@@ -462,7 +532,45 @@ EXP_SSN_FEIN_TAXID AS (
 	-- 
 	-- 
 	-- 
-	IFF(SUBSTR(V_ssn_fein_taxid, 3, 1) = '-' OR ( SUBSTR(V_ssn_fein_taxid, 1, 3) = '000' AND ( LENGTH(V_ssn_fein_taxid) = 9 ) ) OR SUBSTR(V_ssn_fein_taxid, 2, 1) = '-' OR V_ssn_fein_taxid IS NULL OR ( V_ssn_fein_taxid = 'N/A' ) OR REG_MATCH(V_ssn_fein_taxid, '[*]*') OR ( REG_MATCH(V_ssn_fein_taxid, '[\da-zA-Z]+') AND ( LENGTH(V_ssn_fein_taxid) = 11 OR LENGTH(V_ssn_fein_taxid) = 10 ) ) OR ( ( SUBSTR(V_ssn_fein_taxid, 4, 1) = '-' ) AND ( LENGTH(V_ssn_fein_taxid) != 11 ) ) OR ( LENGTH(V_ssn_fein_taxid) <= 6 ) OR ( LENGTH(V_ssn_fein_taxid) > 11 ), 'NOTVALID', 'VALID') AS V_flag,
+	IFF(SUBSTR(V_ssn_fein_taxid, 3, 1
+		) = '-' 
+		OR ( SUBSTR(V_ssn_fein_taxid, 1, 3
+			) = '000' 
+			AND ( LENGTH(V_ssn_fein_taxid
+				) = 9 
+			) 
+		) 
+		OR SUBSTR(V_ssn_fein_taxid, 2, 1
+		) = '-' 
+		OR V_ssn_fein_taxid IS NULL 
+		OR ( V_ssn_fein_taxid = 'N/A' 
+		) 
+		OR REGEXP_LIKE(V_ssn_fein_taxid, '[*]*'
+		) 
+		OR ( REGEXP_LIKE(V_ssn_fein_taxid, '[\da-zA-Z]+'
+			) 
+			AND ( LENGTH(V_ssn_fein_taxid
+				) = 11 
+				OR LENGTH(V_ssn_fein_taxid
+				) = 10 
+			) 
+		) 
+		OR ( ( SUBSTR(V_ssn_fein_taxid, 4, 1
+				) = '-' 
+			) 
+			AND ( LENGTH(V_ssn_fein_taxid
+				) != 11 
+			) 
+		) 
+		OR ( LENGTH(V_ssn_fein_taxid
+			) <= 6 
+		) 
+		OR ( LENGTH(V_ssn_fein_taxid
+			) > 11 
+		),
+		'NOTVALID',
+		'VALID'
+	) AS V_flag,
 	V_flag AS flag,
 	-- *INF*: IIF(LENGTH(V_ssn_fein_taxid)>=7 AND LENGTH(V_ssn_fein_taxid)<=8,LPAD(V_ssn_fein_taxid,9,'0'),V_ssn_fein_taxid)
 	-- 
@@ -473,19 +581,41 @@ EXP_SSN_FEIN_TAXID AS (
 	-- 
 	-- 
 	-- 
-	IFF(LENGTH(V_ssn_fein_taxid) >= 7 AND LENGTH(V_ssn_fein_taxid) <= 8, LPAD(V_ssn_fein_taxid, 9, '0'), V_ssn_fein_taxid) AS V_taxid,
+	IFF(LENGTH(V_ssn_fein_taxid
+		) >= 7 
+		AND LENGTH(V_ssn_fein_taxid
+		) <= 8,
+		LPAD(V_ssn_fein_taxid, 9, '0'
+		),
+		V_ssn_fein_taxid
+	) AS V_taxid,
 	-- *INF*: IIF(REG_MATCH(V_taxid,'[0-9-]*') ,V_taxid,'X')
 	-- 
 	-- 
 	-- 
-	IFF(REG_MATCH(V_taxid, '[0-9-]*'), V_taxid, 'X') AS V_valid_taxid,
+	IFF(REGEXP_LIKE(V_taxid, '[0-9-]*'
+		),
+		V_taxid,
+		'X'
+	) AS V_valid_taxid,
 	V_valid_taxid AS flag_TaxId,
 	-- *INF*: IIF(LENGTH(V_valid_taxid)=9  AND (REG_MATCH(V_valid_taxid,'^[0-9]*$'))  ,(SUBSTR(V_valid_taxid, 1, 3) ||'-'||SUBSTR(V_valid_taxid, 4, 2)||'-'||SUBSTR(V_valid_taxid, 6, 4)) ,V_valid_taxid)
 	-- 
 	-- 
 	-- 
 	-- 
-	IFF(LENGTH(V_valid_taxid) = 9 AND ( REG_MATCH(V_valid_taxid, '^[0-9]*$') ), ( SUBSTR(V_valid_taxid, 1, 3) || '-' || SUBSTR(V_valid_taxid, 4, 2) || '-' || SUBSTR(V_valid_taxid, 6, 4) ), V_valid_taxid) AS OUT_taxid
+	IFF(LENGTH(V_valid_taxid
+		) = 9 
+		AND ( REGEXP_LIKE(V_valid_taxid, '^[0-9]*$'
+			) 
+		),
+		( SUBSTR(V_valid_taxid, 1, 3
+			) || '-' || SUBSTR(V_valid_taxid, 4, 2
+			) || '-' || SUBSTR(V_valid_taxid, 6, 4
+			) 
+		),
+		V_valid_taxid
+	) AS OUT_taxid
 	FROM Union_Input_Values_TaxIdTypes
 ),
 RTR_SSN_FEIN_TAXID AS (
@@ -518,7 +648,12 @@ EXP_Abort AS (
 	o_ID,
 	adnm_taxid_ssn,
 	-- *INF*: IIF((SUBSTR(adnm_taxid_ssn,4,1)='-'),Abort ('Found Valid SSN Data and Aborting the job. Please tokenize the valid SSN data'))
-	IFF(( SUBSTR(adnm_taxid_ssn, 4, 1) = '-' ), Abort('Found Valid SSN Data and Aborting the job. Please tokenize the valid SSN data')) AS Abort
+	IFF(( SUBSTR(adnm_taxid_ssn, 4, 1
+			) = '-' 
+		),
+		Abort('Found Valid SSN Data and Aborting the job. Please tokenize the valid SSN data'
+		)
+	) AS Abort
 	FROM Union_Inputs
 ),
 FIL_Abort AS (

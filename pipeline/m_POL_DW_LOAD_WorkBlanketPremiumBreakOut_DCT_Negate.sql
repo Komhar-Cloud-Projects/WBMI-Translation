@@ -86,7 +86,10 @@ EXP_DetectChanges AS (
 	EXP_MetaData.BreakOutPremium AS In_BreakOutPremium,
 	EXP_MetaData.o_PremiumTransactionAKId AS In_PremiumTransactionAKId,
 	-- *INF*: IIF(ISNULL(lkp_WorkBlanketPremiumBreakOutId),'NEW','UPDATE')
-	IFF(lkp_WorkBlanketPremiumBreakOutId IS NULL, 'NEW', 'UPDATE') AS o_ChangeFlag,
+	IFF(lkp_WorkBlanketPremiumBreakOutId IS NULL,
+		'NEW',
+		'UPDATE'
+	) AS o_ChangeFlag,
 	lkp_WorkBlanketPremiumBreakOutId AS o_WorkBlanketPremiumBreakOutId,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	SYSDATE AS o_CreatedDate,

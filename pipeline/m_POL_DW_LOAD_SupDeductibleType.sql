@@ -34,23 +34,167 @@ EXP_Default AS (
 	-- --IIF(ISNULL(LTRIM(RTRIM(ModifiedDate))) OR LENGTH(LTRIM(RTRIM(ModifiedDate)))=0, SYSDATE, TO_DATE(LTRIM(RTRIM(ModifiedDate)),'MM/DD/YYYY'))
 	SYSDATE AS o_ModifiedDate,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(ModifiedUserId))) OR LENGTH(LTRIM(RTRIM(ModifiedUserId)))=0 OR IS_SPACES(LTRIM(RTRIM(ModifiedUserId))), 'InformS', LTRIM(RTRIM(ModifiedUserId)))
-	IFF(LTRIM(RTRIM(ModifiedUserId)) IS NULL OR LENGTH(LTRIM(RTRIM(ModifiedUserId))) = 0 OR IS_SPACES(LTRIM(RTRIM(ModifiedUserId))), 'InformS', LTRIM(RTRIM(ModifiedUserId))) AS o_ModifiedUserId,
+	IFF(LTRIM(RTRIM(ModifiedUserId
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(ModifiedUserId
+				)
+			)
+		) = 0 
+		OR LENGTH(LTRIM(RTRIM(ModifiedUserId
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(ModifiedUserId
+			)
+		))='',
+		'InformS',
+		LTRIM(RTRIM(ModifiedUserId
+			)
+		)
+	) AS o_ModifiedUserId,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(SourceSystemId))) OR LENGTH(LTRIM(RTRIM(SourceSystemId)))=0 OR IS_SPACES(LTRIM(RTRIM(SourceSystemId))), 'N/A', LTRIM(RTRIM(SourceSystemId)))
-	IFF(LTRIM(RTRIM(SourceSystemId)) IS NULL OR LENGTH(LTRIM(RTRIM(SourceSystemId))) = 0 OR IS_SPACES(LTRIM(RTRIM(SourceSystemId))), 'N/A', LTRIM(RTRIM(SourceSystemId))) AS o_SourceSystemId,
+	IFF(LTRIM(RTRIM(SourceSystemId
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(SourceSystemId
+				)
+			)
+		) = 0 
+		OR LENGTH(LTRIM(RTRIM(SourceSystemId
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(SourceSystemId
+			)
+		))='',
+		'N/A',
+		LTRIM(RTRIM(SourceSystemId
+			)
+		)
+	) AS o_SourceSystemId,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(InsuranceLine))) OR LENGTH(LTRIM(RTRIM(InsuranceLine)))=0 OR IS_SPACES(LTRIM(RTRIM(InsuranceLine))), 'N/A', LTRIM(RTRIM(InsuranceLine)))
-	IFF(LTRIM(RTRIM(InsuranceLine)) IS NULL OR LENGTH(LTRIM(RTRIM(InsuranceLine))) = 0 OR IS_SPACES(LTRIM(RTRIM(InsuranceLine))), 'N/A', LTRIM(RTRIM(InsuranceLine))) AS o_InsuranceLine,
+	IFF(LTRIM(RTRIM(InsuranceLine
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(InsuranceLine
+				)
+			)
+		) = 0 
+		OR LENGTH(LTRIM(RTRIM(InsuranceLine
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(InsuranceLine
+			)
+		))='',
+		'N/A',
+		LTRIM(RTRIM(InsuranceLine
+			)
+		)
+	) AS o_InsuranceLine,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(CoverageType))) OR LENGTH(LTRIM(RTRIM(CoverageType)))=0 OR IS_SPACES(LTRIM(RTRIM(CoverageType))), 'N/A', LTRIM(RTRIM(CoverageType)))
-	IFF(LTRIM(RTRIM(CoverageType)) IS NULL OR LENGTH(LTRIM(RTRIM(CoverageType))) = 0 OR IS_SPACES(LTRIM(RTRIM(CoverageType))), 'N/A', LTRIM(RTRIM(CoverageType))) AS o_CoverageType,
+	IFF(LTRIM(RTRIM(CoverageType
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(CoverageType
+				)
+			)
+		) = 0 
+		OR LENGTH(LTRIM(RTRIM(CoverageType
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(CoverageType
+			)
+		))='',
+		'N/A',
+		LTRIM(RTRIM(CoverageType
+			)
+		)
+	) AS o_CoverageType,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(DeductibleType))) OR LENGTH(LTRIM(RTRIM(DeductibleType)))=0 OR IS_SPACES(LTRIM(RTRIM(DeductibleType))), 'N/A', LTRIM(RTRIM(DeductibleType)))
-	IFF(LTRIM(RTRIM(DeductibleType)) IS NULL OR LENGTH(LTRIM(RTRIM(DeductibleType))) = 0 OR IS_SPACES(LTRIM(RTRIM(DeductibleType))), 'N/A', LTRIM(RTRIM(DeductibleType))) AS o_DeductibleType,
+	IFF(LTRIM(RTRIM(DeductibleType
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(DeductibleType
+				)
+			)
+		) = 0 
+		OR LENGTH(LTRIM(RTRIM(DeductibleType
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(DeductibleType
+			)
+		))='',
+		'N/A',
+		LTRIM(RTRIM(DeductibleType
+			)
+		)
+	) AS o_DeductibleType,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(RiskUnitGroupCode))) OR LENGTH(LTRIM(RTRIM(RiskUnitGroupCode)))=0 OR IS_SPACES(LTRIM(RTRIM(RiskUnitGroupCode))), 'N/A', LTRIM(RTRIM(RiskUnitGroupCode)))
-	IFF(LTRIM(RTRIM(RiskUnitGroupCode)) IS NULL OR LENGTH(LTRIM(RTRIM(RiskUnitGroupCode))) = 0 OR IS_SPACES(LTRIM(RTRIM(RiskUnitGroupCode))), 'N/A', LTRIM(RTRIM(RiskUnitGroupCode))) AS o_RiskUnitGroupCode,
+	IFF(LTRIM(RTRIM(RiskUnitGroupCode
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(RiskUnitGroupCode
+				)
+			)
+		) = 0 
+		OR LENGTH(LTRIM(RTRIM(RiskUnitGroupCode
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(RiskUnitGroupCode
+			)
+		))='',
+		'N/A',
+		LTRIM(RTRIM(RiskUnitGroupCode
+			)
+		)
+	) AS o_RiskUnitGroupCode,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(RiskUnitGroupDescription))) OR LENGTH(LTRIM(RTRIM(RiskUnitGroupDescription)))=0 OR IS_SPACES(LTRIM(RTRIM(RiskUnitGroupDescription))), 'N/A', LTRIM(RTRIM(RiskUnitGroupDescription)))
-	IFF(LTRIM(RTRIM(RiskUnitGroupDescription)) IS NULL OR LENGTH(LTRIM(RTRIM(RiskUnitGroupDescription))) = 0 OR IS_SPACES(LTRIM(RTRIM(RiskUnitGroupDescription))), 'N/A', LTRIM(RTRIM(RiskUnitGroupDescription))) AS o_RiskUnitGroupDescription,
+	IFF(LTRIM(RTRIM(RiskUnitGroupDescription
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(RiskUnitGroupDescription
+				)
+			)
+		) = 0 
+		OR LENGTH(LTRIM(RTRIM(RiskUnitGroupDescription
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(RiskUnitGroupDescription
+			)
+		))='',
+		'N/A',
+		LTRIM(RTRIM(RiskUnitGroupDescription
+			)
+		)
+	) AS o_RiskUnitGroupDescription,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(StandardDeductibleType))) OR LENGTH(LTRIM(RTRIM(StandardDeductibleType)))=0 OR IS_SPACES(LTRIM(RTRIM(StandardDeductibleType))), 'N/A', LTRIM(RTRIM(StandardDeductibleType)))
-	IFF(LTRIM(RTRIM(StandardDeductibleType)) IS NULL OR LENGTH(LTRIM(RTRIM(StandardDeductibleType))) = 0 OR IS_SPACES(LTRIM(RTRIM(StandardDeductibleType))), 'N/A', LTRIM(RTRIM(StandardDeductibleType))) AS o_StandardDeductibleType,
+	IFF(LTRIM(RTRIM(StandardDeductibleType
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(StandardDeductibleType
+				)
+			)
+		) = 0 
+		OR LENGTH(LTRIM(RTRIM(StandardDeductibleType
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(StandardDeductibleType
+			)
+		))='',
+		'N/A',
+		LTRIM(RTRIM(StandardDeductibleType
+			)
+		)
+	) AS o_StandardDeductibleType,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(DeductibleLevel))) OR LENGTH(LTRIM(RTRIM(DeductibleLevel)))=0 OR IS_SPACES(LTRIM(RTRIM(DeductibleLevel))), 'N/A', LTRIM(RTRIM(DeductibleLevel)))
-	IFF(LTRIM(RTRIM(DeductibleLevel)) IS NULL OR LENGTH(LTRIM(RTRIM(DeductibleLevel))) = 0 OR IS_SPACES(LTRIM(RTRIM(DeductibleLevel))), 'N/A', LTRIM(RTRIM(DeductibleLevel))) AS o_DeductibleLevel
+	IFF(LTRIM(RTRIM(DeductibleLevel
+			)
+		) IS NULL 
+		OR LENGTH(LTRIM(RTRIM(DeductibleLevel
+				)
+			)
+		) = 0 
+		OR LENGTH(LTRIM(RTRIM(DeductibleLevel
+			)
+		))>0 AND TRIM(LTRIM(RTRIM(DeductibleLevel
+			)
+		))='',
+		'N/A',
+		LTRIM(RTRIM(DeductibleLevel
+			)
+		)
+	) AS o_DeductibleLevel
 	FROM SQ_SupDeductibleType_CSV
 ),
 AGG_SourceFileChecks AS (
@@ -67,7 +211,8 @@ AGG_SourceFileChecks AS (
 	o_StandardDeductibleType AS StandardDeductibleType,
 	o_DeductibleLevel AS DeductibleLevel,
 	-- *INF*: COUNT(1)
-	COUNT(1) AS o_Count
+	COUNT(1
+	) AS o_Count
 	FROM EXP_Default
 	GROUP BY SourceSystemId, InsuranceLine, CoverageType, DeductibleType, RiskUnitGroupCode, RiskUnitGroupDescription
 ),
@@ -118,7 +263,10 @@ EXP_DetectChange AS (
 	AGG_SourceFileChecks.o_Count AS Count,
 	'The source file is not good enough to be loaded into the target table. Please check and correct it. The source rows are - SourceSystemId: ' || SourceSystemId ||  ', InsuranceLine: ' || InsuranceLine || ', CoverageType: ' || CoverageType || ', DeductibleType: ' || DeductibleType  || ', RiskUnitGroupCode: ' || RiskUnitGroupCode || ', RiskUnitGroupDescription: ' || RiskUnitGroupDescription AS v_Message,
 	-- *INF*: IIF(Count > 1, ABORT(v_Message))
-	IFF(Count > 1, ABORT(v_Message)) AS v_ErrorOut,
+	IFF(Count > 1,
+		ABORT(v_Message
+		)
+	) AS v_ErrorOut,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(lkp_SupDeductibleTypeId), 'New',
 	-- lkp_ModifiedUserId!=ModifiedUserId OR
@@ -127,8 +275,11 @@ EXP_DetectChange AS (
 	-- 'NoChange')
 	DECODE(TRUE,
 		lkp_SupDeductibleTypeId IS NULL, 'New',
-		lkp_ModifiedUserId != ModifiedUserId OR lkp_StandardDeductibleType != StandardDeductibleType OR lkp_DeductibleLevel != DeductibleLevel, 'Update',
-		'NoChange') AS v_ChangeFlag,
+		lkp_ModifiedUserId != ModifiedUserId 
+		OR lkp_StandardDeductibleType != StandardDeductibleType 
+		OR lkp_DeductibleLevel != DeductibleLevel, 'Update',
+		'NoChange'
+	) AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag
 	FROM AGG_SourceFileChecks
 	LEFT JOIN LKP_SupDeductibleType
