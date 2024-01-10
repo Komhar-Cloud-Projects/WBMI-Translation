@@ -210,14 +210,8 @@
 	},
 	"location": "canadacentral",
 	"identity": {
-		"type": "SystemAssigned,UserAssigned",
-		"principalId": "cccf9913-c538-4774-82ad-a264e1ea268b",
-		"tenantId": "84ebb0ce-a355-4687-84fc-1b3dacb2de5c",
-		"userAssignedIdentities": {
-			"/subscriptions/2e9cc886-f843-4396-b827-3c67985d85e0/resourcegroups/WBMI-Resource-Group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/wbmi-managed-identity": {
-				"clientId": "d511170c-39d5-4521-b649-0a7d63f1f424",
-				"principalId": "ceee8f8c-e85f-41ac-8270-e5a44d04d80b"
-			}
-		}
+		"type": "SystemAssigned",
+		"principalId": "365a36ac-f07e-4eb8-87af-484f2e2b8877",
+		"tenantId": "84ebb0ce-a355-4687-84fc-1b3dacb2de5c"
 	}
 }
