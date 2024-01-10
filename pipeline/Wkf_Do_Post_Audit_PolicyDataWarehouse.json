@@ -1,46 +1,62 @@
 {
-    "name": "Wkf_Do_Post_Audit_PolicyDataWarehouse",
-    "properties": {
-        "activities": [
-            {
-                "name": "Start",
-                "type": "Script",
-                "dependsOn": [],
-                "typeProperties": {
-                    "scripts": [
-                        {
-                            "type": "Query"
-                        }
-                    ]
-                },
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded"
-            },
-            {
-                "name": "s_m_Do_PostAudit_PolicyCustDWH",
-                "type": "Script",
-                "dependsOn": [
-                    {
-                        "activity": "Start",
-                        "dependencyConditions": [
-                            "Succeeded"
-                        ]
-                    }
-                ],
-                "typeProperties": {
-                    "scripts": [
-                        {
-                            "type": "Query"
-                        }
-                    ]
-                },
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded"
-            }
-        ],
-        "folder": {
-            "name": "Policy DataWarehouse/"
-        },
-        "variables": {}
-    }
+	"name": "Wkf_Do_Post_Audit_PolicyDataWarehouse",
+	"properties": {
+		"activities": [
+			{
+				"name": "Start",
+				"type": "Script",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query"
+						}
+					]
+				}
+			},
+			{
+				"name": "s_m_Do_PostAudit_PolicyCustDWH",
+				"type": "Script",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query"
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "Policy DataWarehouse/"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-01-10T19:20:49Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }
