@@ -1,9 +1,201 @@
 {
-	"name": "wkf_Do_PostAudit_AgencyProfitSharing",
+	"name": "wkf_CLM_DW_LOAD_Claims_SUPPORT_sub02",
 	"properties": {
 		"activities": [
 			{
-				"name": "s_m_Do_PostAudit_AgencyProfitSharing",
+				"name": "sp-PostBatch_ClaimsDataWarehouse_Sup",
+				"type": "SqlServerStoredProcedure",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_claim_payee_phrase",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_workers_comp_occupation",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_workers_comp_employment_status",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_marital_status",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_workers_comp_exemption_type",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_workers_comp_wage_period",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_workers_comp_premises_type",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_workers_comp_body_part",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_workers_comp_nature_of_injury",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_workers_comp_cause_of_injury",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_workers_comp_return_to_work_type",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_coverage_category",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_workers_comp_sic_code",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_cms_relation_indicator",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_sup_underwriter_manager_region",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "s_m_CLM_DW_LOAD_SupCompensableClaimCode",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[Proc_PostBatch]",
+					"storedProcedureParameters": {
+						"BatchName": {
+							"value": {
+								"value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['batch_name']",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_SQL_SRVR_SQL06",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"ServerName": {
+							"value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+							"type": "Expression"
+						},
+						"DatabaseName": {
+							"value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+							"type": "Expression"
+						},
+						"UserName": {
+							"value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "sp-PostBatch_CheckForExceptions_ClaimsDataWarehouse_Sup",
+				"type": "SqlServerStoredProcedure",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "sp-ins_upd_rep_sess_log",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[Proc_PostBatch]",
+					"storedProcedureParameters": {
+						"BatchName": {
+							"value": {
+								"value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['batch_name']",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_SQL_SRVR_SQL06",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"ServerName": {
+							"value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+							"type": "Expression"
+						},
+						"DatabaseName": {
+							"value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+							"type": "Expression"
+						},
+						"UserName": {
+							"value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "s_m_Do_PostAudit_ClaimsDataWarehouse_Sup",
 				"type": "Script",
 				"state": "Inactive",
 				"onInactiveMarkAs": "Succeeded",
@@ -31,146 +223,226 @@
 				}
 			},
 			{
-				"name": "sp-PostBatch_CheckForExceptions_AgencyProfitSharing",
-				"type": "SqlServerStoredProcedure",
+				"name": "s_m_CLM_DW_LOAD_sup_workers_comp_occupation",
+				"type": "ExecutePipeline",
 				"state": "Inactive",
 				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
-				"policy": {
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[Proc_PostBatch]",
-					"storedProcedureParameters": {
-						"BatchName": {
-							"value": {
-								"value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['batch_name']",
-								"type": "Expression"
-							},
-							"type": "String"
-						}
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "ls_SQL_SRVR_SQL06",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"ServerName": {
-							"value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
-							"type": "Expression"
-						},
-						"DatabaseName": {
-							"value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
-							"type": "Expression"
-						},
-						"UserName": {
-							"value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
-							"type": "Expression"
-						}
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_sup_workers_comp_occupation",
+						"type": "PipelineReference"
 					}
 				}
 			},
 			{
-				"name": "Control",
-				"type": "Script",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "s_m_Do_PostAudit_AgencyProfitSharing",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"scripts": [
-						{
-							"type": "Query"
-						}
-					]
-				}
-			},
-			{
-				"name": "Start",
-				"type": "Script",
+				"name": "s_m_CLM_DW_LOAD_sup_workers_comp_employment_status",
+				"type": "ExecutePipeline",
 				"state": "Inactive",
 				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
-				"policy": {
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
 				"userProperties": [],
 				"typeProperties": {
-					"scripts": [
-						{
-							"type": "Query"
-						}
-					]
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_sup_workers_comp_employment_status",
+						"type": "PipelineReference"
+					}
 				}
 			},
 			{
-				"name": "sp-PostBatch_AgencyProfitSharing",
-				"type": "SqlServerStoredProcedure",
+				"name": "s_m_CLM_DW_LOAD_sup_marital_status",
+				"type": "ExecutePipeline",
 				"state": "Inactive",
 				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "Start",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
+				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[Proc_PostBatch]",
-					"storedProcedureParameters": {
-						"BatchName": {
-							"value": {
-								"value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['batch_name']",
-								"type": "Expression"
-							},
-							"type": "String"
-						}
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_sup_marital_status",
+						"type": "PipelineReference"
 					}
-				},
-				"linkedServiceName": {
-					"referenceName": "ls_SQL_SRVR_SQL06",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"ServerName": {
-							"value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
-							"type": "Expression"
-						},
-						"DatabaseName": {
-							"value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
-							"type": "Expression"
-						},
-						"UserName": {
-							"value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
-							"type": "Expression"
-						}
+				}
+			},
+			{
+				"name": "s_m_CLM_DW_LOAD_sup_workers_comp_exemption_type",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_sup_workers_comp_exemption_type",
+						"type": "PipelineReference"
+					}
+				}
+			},
+			{
+				"name": "s_m_CLM_DW_LOAD_sup_workers_comp_wage_period",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_sup_workers_comp_wage_period",
+						"type": "PipelineReference"
+					}
+				}
+			},
+			{
+				"name": "s_m_CLM_DW_LOAD_sup_workers_comp_premises_type",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_sup_workers_comp_premises_type",
+						"type": "PipelineReference"
+					}
+				}
+			},
+			{
+				"name": "s_m_CLM_DW_LOAD_sup_workers_comp_body_part",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_Sup_workers_comp_body_part",
+						"type": "PipelineReference"
+					}
+				}
+			},
+			{
+				"name": "s_m_CLM_DW_LOAD_sup_workers_comp_nature_of_injury",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_sup_workers_comp_nature_of_injury",
+						"type": "PipelineReference"
+					}
+				}
+			},
+			{
+				"name": "s_m_CLM_DW_LOAD_sup_workers_comp_cause_of_injury",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_sup_workers_comp_cause_of_injury",
+						"type": "PipelineReference"
+					}
+				}
+			},
+			{
+				"name": "s_m_CLM_DW_LOAD_sup_workers_comp_return_to_work_type",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_sup_workers_comp_return_to_work_type",
+						"type": "PipelineReference"
+					}
+				}
+			},
+			{
+				"name": "s_m_CLM_DW_LOAD_sup_workers_comp_sic_code",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_sup_workers_comp_sic_code",
+						"type": "PipelineReference"
+					}
+				}
+			},
+			{
+				"name": "s_m_CLM_DW_LOAD_sup_claim_payee_phrase",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_sup_claim_payee_phrase",
+						"type": "PipelineReference"
+					}
+				}
+			},
+			{
+				"name": "s_m_CLM_DW_LOAD_sup_cms_relation_indicator",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_sup_cms_relation_indicator",
+						"type": "PipelineReference"
+					}
+				}
+			},
+			{
+				"name": "s_m_CLM_DW_LOAD_sup_underwriter_manager_region",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_sup_underwriter_manager_region",
+						"type": "PipelineReference"
+					}
+				}
+			},
+			{
+				"name": "s_m_CLM_DW_LOAD_sup_coverage_category",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_sup_coverage_category",
+						"type": "PipelineReference"
+					}
+				}
+			},
+			{
+				"name": "s_m_CLM_DW_LOAD_SupCompensableClaimCode",
+				"type": "ExecutePipeline",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "s_m_CLM_DW_LOAD_SupCompensableClaimCode",
+						"type": "PipelineReference"
 					}
 				}
 			},
@@ -181,7 +453,7 @@
 				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
-						"activity": "sp-PostBatch_CheckForExceptions_AgencyProfitSharing",
+						"activity": "sp-PostBatch_ClaimsDataWarehouse_Sup",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -233,7 +505,7 @@
 				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
-						"activity": "sp-PostBatch_AgencyProfitSharing",
+						"activity": "sp-PostBatch_CheckForExceptions_ClaimsDataWarehouse_Sup",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -278,8 +550,13 @@
 				}
 			}
 		],
+		"variables": {
+			"Params": {
+				"type": "String"
+			}
+		},
 		"folder": {
-			"name": "Policy DataMart/"
+			"name": "Claims DataWarehouse/"
 		},
 		"annotations": []
 	}
