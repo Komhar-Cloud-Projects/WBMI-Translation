@@ -44,7 +44,7 @@
             }
         },
         "folder": {
-            "name": "Staging/AgencyStaging/"
+            "name": "AgencyStaging/"
         },
         "annotations": []
     }

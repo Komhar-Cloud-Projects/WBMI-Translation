@@ -170,7 +170,7 @@
             }
         ],
         "folder": {
-            "name": "RPT_EDM and EDW/Quote DataMart/"
+            "name": "QuoteDataMart/"
         },
         "variables": {}
     }

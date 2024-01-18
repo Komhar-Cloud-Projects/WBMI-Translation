@@ -372,7 +372,7 @@
             }
         ],
         "folder": {
-            "name": "RPT_EDM and EDW/Claims DataMart/"
+            "name": "ClaimsDataMart/"
         },
         "variables": {}
     }

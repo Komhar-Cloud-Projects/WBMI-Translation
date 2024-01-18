@@ -220,7 +220,7 @@
             }
         ],
         "folder": {
-            "name": "DataFeed -Informatica/ClaimDataServices/"
+            "name": "ClaimDataServices/"
         },
         "variables": {
             "Params": {

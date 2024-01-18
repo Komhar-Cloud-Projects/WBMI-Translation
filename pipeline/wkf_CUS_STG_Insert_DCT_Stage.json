@@ -568,7 +568,7 @@
             }
         ],
         "folder": {
-            "name": "Staging/CustomerStaging/"
+            "name": "CustomerStaging/"
         },
         "variables": {
             "Params": {

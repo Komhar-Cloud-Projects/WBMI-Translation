@@ -399,7 +399,7 @@
             }
         ],
         "folder": {
-            "name": "RPT_EDM and EDW/Agency DataMart/"
+            "name": "AgencyDataMart/"
         },
         "variables": {
             "Params": {

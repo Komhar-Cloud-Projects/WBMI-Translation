@@ -48,7 +48,7 @@
             }
         },
         "folder": {
-            "name": "Staging/ClaimsStaging/"
+            "name": "ClaimsStaging/"
         },
         "annotations": []
     }

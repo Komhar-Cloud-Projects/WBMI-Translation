@@ -144,7 +144,7 @@
             }
         ],
         "folder": {
-            "name": "RPT_EDM and EDW/Claims DataWarehouse/"
+            "name": "ClaimsDataWarehouse/"
         },
         "variables": {}
     }

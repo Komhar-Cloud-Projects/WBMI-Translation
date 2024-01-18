@@ -130,7 +130,7 @@
             }
         ],
         "folder": {
-            "name": "RPT_EDM and EDW/Common DataMart/"
+            "name": "CommonDataMart/"
         },
         "variables": {
             "Params": {

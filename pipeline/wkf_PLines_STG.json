@@ -834,7 +834,7 @@
             }
         ],
         "folder": {
-            "name": "Staging/CommonStaging/"
+            "name": "CommonStaging/"
         },
         "variables": {
             "Params": {

@@ -770,7 +770,7 @@
             }
         ],
         "folder": {
-            "name": "Staging/AgencyStaging/"
+            "name": "AgencyStaging/"
         },
         "variables": {
             "Params": {

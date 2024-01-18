@@ -151,7 +151,7 @@
             }
         ],
         "folder": {
-            "name": "Staging/PolicyStaging/"
+            "name": "PolicyStaging/"
         },
         "variables": {
             "Params": {

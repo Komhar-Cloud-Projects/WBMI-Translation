@@ -609,7 +609,7 @@
             }
         ],
         "folder": {
-            "name": "Staging/ClaimsStaging/"
+            "name": "ClaimsStaging/"
         },
         "variables": {
             "Params": {
