@@ -37,32 +37,23 @@ EXP_Default_Values AS (
 	cms_rre_id AS cms_rre_id1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(office_tin_num)
 	-- 
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(office_tin_num
-	) AS office_tin_num1,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(office_tin_num) AS office_tin_num1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(office_cd)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(office_cd
-	) AS office_cd1,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(office_cd) AS office_cd1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(office_name)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(office_name
-	) AS office_name1,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(office_name) AS office_name1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(office_mail_addr1)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(office_mail_addr1
-	) AS office_mail_addr11,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(office_mail_addr1) AS office_mail_addr11,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(office_mail_addr2)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(office_mail_addr2
-	) AS office_mail_addr21,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(office_mail_addr2) AS office_mail_addr21,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(office_mail_city)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(office_mail_city
-	) AS office_mail_city1,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(office_mail_city) AS office_mail_city1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(office_mail_state)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(office_mail_state
-	) AS office_mail_state1,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(office_mail_state) AS office_mail_state1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(office_mail_zip)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(office_mail_zip
-	) AS office_mail_zip1,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(office_mail_zip) AS office_mail_zip1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(office_mail_zip4)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(office_mail_zip4
-	) AS office_mail_zip41
+	UDF_DEFAULT_VALUE_FOR_STRINGS(office_mail_zip4) AS office_mail_zip41
 	FROM SQ_cms_tin_offices_stage
 ),
 LKP_Target AS (
@@ -120,35 +111,33 @@ EXP_detect_changes AS (
 	-- office_mail_zip4 != office_mail_zip41)
 	-- , 'UPDATE', 'NOCHANGE'))
 	-- 
-	IFF(sup_cms_tin_office_id IS NULL,
-		'NEW',
-		IFF(( office_tin_num != office_tin_num1 
-				OR office_cd != office_cd1 
-				OR office_name != office_name1 
-				OR office_mail_address1 != office_mail_addr11 
-				OR office_mail_address2 != office_mail_addr21 
-				OR office_mail_city != office_mail_city1 
-				OR office_mail_state != office_mail_state1 
-				OR office_mail_zip != office_mail_zip1 
-				OR office_mail_zip4 != office_mail_zip41 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    sup_cms_tin_office_id IS NULL, 'NEW',
+	    IFF(
+	        (office_tin_num != office_tin_num1
+	        or office_cd != office_cd1
+	        or office_name != office_name1
+	        or office_mail_address1 != office_mail_addr11
+	        or office_mail_address2 != office_mail_addr21
+	        or office_mail_city != office_mail_city1
+	        or office_mail_state != office_mail_state1
+	        or office_mail_zip != office_mail_zip1
+	        or office_mail_zip4 != office_mail_zip41),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_CHANGED_FLAG,
 	v_CHANGED_FLAG AS CHANGED_FLAG,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_CHANGED_FLAG='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_CHANGED_FLAG = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_CHANGED_FLAG = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id
@@ -228,9 +217,10 @@ EXP_lag_eff_from_date AS (
 	-- 	cms_rre_id = v_Prev_row_cms_rre_id, ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	-- 	
-	DECODE(TRUE,
-		cms_rre_id = v_Prev_row_cms_rre_id, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    cms_rre_id = v_Prev_row_cms_rre_id, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	cms_rre_id AS v_Prev_row_cms_rre_id,

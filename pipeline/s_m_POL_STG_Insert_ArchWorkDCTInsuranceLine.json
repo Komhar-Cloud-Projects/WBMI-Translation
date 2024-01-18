@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchWorkDCTInsuranceLine",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchWorkDCTInsuranceLine",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTInsuranceLine AS (\n\tSELECT\n\t\tWorkDCTInsuranceLineId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tSessionId,\n\t\tPolicyId,\n\t\tLineId,\n\t\tLineType,\n\t\tRiskGrade,\n\t\tIsAuditable,\n\t\tPriorCarrierName,\n\t\tPriorPolicyNumber,\n\t\tPriorLineOfBusiness,\n\t\tExperienceModifier,\n\t\tFinalCommission,\n\t\tCommissionCustomerCareAmount\n\tFROM WorkDCTInsuranceLine\n),\nEXp_Default AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\tWorkDCTInsuranceLineId,\n\tExtractDate,\n\tSourceSystemId,\n\tSessionId,\n\tPolicyId,\n\tLineId,\n\tLineType,\n\tRiskGrade,\n\tIsAuditable,\n\t-- *INF*: DECODE(IsAuditable, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    IsAuditable,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IsAuditable,\n\tPriorCarrierName,\n\tPriorPolicyNumber,\n\tPriorLineOfBusiness,\n\tExperienceModifier,\n\tFinalCommission,\n\tCommissionCustomerCareAmount\n\tFROM SQ_WorkDCTInsuranceLine\n),\nArchWorkDCTInsuranceLine AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWorkDCTInsuranceLine\n\t(ExtractDate, SourceSystemId, AuditId, WorkDCTInsuranceLineId, SessionId, PolicyId, LineId, LineType, RiskGrade, IsAuditable, PriorCarrierName, PriorPolicyNumber, PriorLineOfBusiness, ExperienceModifier, FinalCommission, CommissionCustomerCareAmount)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\taudit_id AS AUDITID, \n\tWORKDCTINSURANCELINEID, \n\tSESSIONID, \n\tPOLICYID, \n\tLINEID, \n\tLINETYPE, \n\tRISKGRADE, \n\to_IsAuditable AS ISAUDITABLE, \n\tPRIORCARRIERNAME, \n\tPRIORPOLICYNUMBER, \n\tPRIORLINEOFBUSINESS, \n\tEXPERIENCEMODIFIER, \n\tFINALCOMMISSION, \n\tCOMMISSIONCUSTOMERCAREAMOUNT\n\tFROM EXp_Default\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

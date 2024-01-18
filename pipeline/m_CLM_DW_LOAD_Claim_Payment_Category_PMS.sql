@@ -117,178 +117,97 @@ EXP_CLAIM_TRANSACTION_VALIDATE AS (
 	pif_module,
 	loss_insurance_line,
 	-- *INF*: IIF(ISNULL(loss_insurance_line) OR LENGTH(LTRIM(RTRIM(loss_insurance_line))) = 0, 'N/A', LTRIM(RTRIM(loss_insurance_line)))
-	IFF(loss_insurance_line IS NULL 
-		OR LENGTH(LTRIM(RTRIM(loss_insurance_line
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(loss_insurance_line
-			)
-		)
+	IFF(
+	    loss_insurance_line IS NULL OR LENGTH(LTRIM(RTRIM(loss_insurance_line))) = 0, 'N/A',
+	    LTRIM(RTRIM(loss_insurance_line))
 	) AS v_loss_insurance_line,
 	loss_location_number,
 	-- *INF*: IIF(ISNULL(loss_location_number), '0', to_char(loss_location_number))
-	IFF(loss_location_number IS NULL,
-		'0',
-		to_char(loss_location_number
-		)
-	) AS v_loss_location_number,
+	IFF(loss_location_number IS NULL, '0', to_char(loss_location_number)) AS v_loss_location_number,
 	loss_sub_location_number,
 	-- *INF*: IIF(ISNULL(loss_sub_location_number), '0', to_char(loss_sub_location_number))
-	IFF(loss_sub_location_number IS NULL,
-		'0',
-		to_char(loss_sub_location_number
-		)
-	) AS v_loss_sub_location_number,
+	IFF(loss_sub_location_number IS NULL, '0', to_char(loss_sub_location_number)) AS v_loss_sub_location_number,
 	loss_risk_unit_group,
 	-- *INF*: IIF(ISNULL(loss_risk_unit_group) OR LENGTH(LTRIM(RTRIM(loss_risk_unit_group))) = 0, 'N/A', LTRIM(RTRIM(loss_risk_unit_group)))
-	IFF(loss_risk_unit_group IS NULL 
-		OR LENGTH(LTRIM(RTRIM(loss_risk_unit_group
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(loss_risk_unit_group
-			)
-		)
+	IFF(
+	    loss_risk_unit_group IS NULL OR LENGTH(LTRIM(RTRIM(loss_risk_unit_group))) = 0, 'N/A',
+	    LTRIM(RTRIM(loss_risk_unit_group))
 	) AS v_loss_risk_unit_group,
 	loss_class_code_group,
 	loss_class_code_member,
 	loss_unit,
 	-- *INF*: IIF(ISNULL(loss_unit) OR LENGTH(LTRIM(RTRIM(loss_unit))) = 0, 'N/A', LTRIM(RTRIM(loss_unit)))
-	IFF(loss_unit IS NULL 
-		OR LENGTH(LTRIM(RTRIM(loss_unit
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(loss_unit
-			)
-		)
+	IFF(
+	    loss_unit IS NULL OR LENGTH(LTRIM(RTRIM(loss_unit))) = 0, 'N/A', LTRIM(RTRIM(loss_unit))
 	) AS v_loss_unit,
 	loss_sequence_risk_unit,
 	-- *INF*: IIF(TO_DECIMAL(loss_sequence_risk_unit) = 0 OR ISNULL(LTRIM(RTRIM(loss_sequence_risk_unit))), '0',
 	-- to_char(TO_DECIMAL(loss_sequence_risk_unit)) )
-	IFF(CAST(loss_sequence_risk_unit AS FLOAT) = 0 
-		OR LTRIM(RTRIM(loss_sequence_risk_unit
-			)
-		) IS NULL,
-		'0',
-		to_char(CAST(loss_sequence_risk_unit AS FLOAT)
-		)
+	IFF(
+	    CAST(loss_sequence_risk_unit AS FLOAT) = 0 OR LTRIM(RTRIM(loss_sequence_risk_unit)) IS NULL,
+	    '0',
+	    to_char(CAST(loss_sequence_risk_unit AS FLOAT))
 	) AS v_loss_sequence_risk_unit,
 	loss_type_exposure,
 	-- *INF*: IIF(ISNULL(loss_type_exposure) OR LENGTH(LTRIM(RTRIM(loss_type_exposure))) = 0, 'N/A', LTRIM(RTRIM(loss_type_exposure)))
-	IFF(loss_type_exposure IS NULL 
-		OR LENGTH(LTRIM(RTRIM(loss_type_exposure
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(loss_type_exposure
-			)
-		)
+	IFF(
+	    loss_type_exposure IS NULL OR LENGTH(LTRIM(RTRIM(loss_type_exposure))) = 0, 'N/A',
+	    LTRIM(RTRIM(loss_type_exposure))
 	) AS v_loss_type_exposure,
 	loss_major_peril,
 	-- *INF*: IIF(ISNULL(loss_major_peril) OR LENGTH(LTRIM(RTRIM(loss_major_peril))) = 0, 'N/A', LTRIM(RTRIM(loss_major_peril)))
-	IFF(loss_major_peril IS NULL 
-		OR LENGTH(LTRIM(RTRIM(loss_major_peril
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(loss_major_peril
-			)
-		)
+	IFF(
+	    loss_major_peril IS NULL OR LENGTH(LTRIM(RTRIM(loss_major_peril))) = 0, 'N/A',
+	    LTRIM(RTRIM(loss_major_peril))
 	) AS v_loss_major_peril,
 	loss_major_peril_seq,
 	-- *INF*: IIF(ISNULL(loss_major_peril_seq) OR LENGTH(LTRIM(RTRIM(loss_major_peril_seq))) = 0, 'N/A', LTRIM(RTRIM(loss_major_peril_seq)))
-	IFF(loss_major_peril_seq IS NULL 
-		OR LENGTH(LTRIM(RTRIM(loss_major_peril_seq
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(loss_major_peril_seq
-			)
-		)
+	IFF(
+	    loss_major_peril_seq IS NULL OR LENGTH(LTRIM(RTRIM(loss_major_peril_seq))) = 0, 'N/A',
+	    LTRIM(RTRIM(loss_major_peril_seq))
 	) AS v_loss_major_peril_seq,
 	-- *INF*: IIF(ISNULL(TO_CHAR(loss_class_code_group)||TO_CHAR(loss_class_code_member)) ,'N/A',TO_CHAR(loss_class_code_group)||TO_CHAR(loss_class_code_member))
-	IFF(TO_CHAR(loss_class_code_group
-		) || TO_CHAR(loss_class_code_member
-		) IS NULL,
-		'N/A',
-		TO_CHAR(loss_class_code_group
-		) || TO_CHAR(loss_class_code_member
-		)
+	IFF(
+	    TO_CHAR(loss_class_code_group) || TO_CHAR(loss_class_code_member) IS NULL, 'N/A',
+	    TO_CHAR(loss_class_code_group) || TO_CHAR(loss_class_code_member)
 	) AS V_risk_unit_grp_seq_num_1,
 	-- *INF*: LPAD(V_risk_unit_grp_seq_num_1,3,'0')
-	LPAD(V_risk_unit_grp_seq_num_1, 3, '0'
-	) AS V_risk_unit_grp_seq_num,
+	LPAD(V_risk_unit_grp_seq_num_1, 3, '0') AS V_risk_unit_grp_seq_num,
 	loss_year,
 	loss_month,
 	loss_day,
 	-- *INF*: TO_CHAR(loss_year)
-	TO_CHAR(loss_year
-	) AS V_loss_year,
+	TO_CHAR(loss_year) AS V_loss_year,
 	-- *INF*: to_char(loss_month)
-	to_char(loss_month
-	) AS V_loss_month,
+	to_char(loss_month) AS V_loss_month,
 	-- *INF*: to_char(loss_day)
-	to_char(loss_day
-	) AS V_loss_day,
+	to_char(loss_day) AS V_loss_day,
 	-- *INF*: IIF ( LENGTH(V_loss_month) = 1, '0' || V_loss_month, V_loss_month)
 	-- ||  
 	-- IIF ( LENGTH(V_loss_day ) = 1, '0' || V_loss_day, V_loss_day )
 	-- ||  
 	-- V_loss_year
-	IFF(LENGTH(V_loss_month
-		) = 1,
-		'0' || V_loss_month,
-		V_loss_month
-	) || IFF(LENGTH(V_loss_day
-		) = 1,
-		'0' || V_loss_day,
-		V_loss_day
-	) || V_loss_year AS v_loss_date,
+	IFF(LENGTH(V_loss_month) = 1, '0' || V_loss_month, V_loss_month) || IFF(LENGTH(V_loss_day) = 1, '0' || V_loss_day, V_loss_day) || V_loss_year AS v_loss_date,
 	loss_occurence,
 	pif_symbol || pif_policy_number || pif_module || v_loss_date || loss_occurence AS v_loss_occurence_key,
 	loss_claimant,
 	'CMT' AS v_party_role_code,
 	-- *INF*: v_loss_occurence_key||TO_CHAR(loss_claimant)||v_party_role_code
-	v_loss_occurence_key || TO_CHAR(loss_claimant
-	) || v_party_role_code AS v_loss_party_key,
+	v_loss_occurence_key || TO_CHAR(loss_claimant) || v_party_role_code AS v_loss_party_key,
 	v_loss_party_key AS loss_party_key_out,
 	loss_member,
 	-- *INF*: IIF(ISNULL(loss_member) OR LENGTH(LTRIM(RTRIM(loss_member))) = 0, 'N/A', loss_member)
-	IFF(loss_member IS NULL 
-		OR LENGTH(LTRIM(RTRIM(loss_member
-				)
-			)
-		) = 0,
-		'N/A',
-		loss_member
-	) AS v_loss_member,
+	IFF(loss_member IS NULL OR LENGTH(LTRIM(RTRIM(loss_member))) = 0, 'N/A', loss_member) AS v_loss_member,
 	loss_disability,
 	-- *INF*: IIF(ISNULL(loss_disability) OR LENGTH(LTRIM(RTRIM(loss_disability))) = 0, 'N/A', loss_disability)
-	IFF(loss_disability IS NULL 
-		OR LENGTH(LTRIM(RTRIM(loss_disability
-				)
-			)
-		) = 0,
-		'N/A',
-		loss_disability
+	IFF(
+	    loss_disability IS NULL OR LENGTH(LTRIM(RTRIM(loss_disability))) = 0, 'N/A', loss_disability
 	) AS v_loss_disability,
 	loss_reserve_category,
 	-- *INF*: IIF(ISNULL(loss_reserve_category) OR LENGTH(LTRIM(RTRIM(loss_reserve_category))) = 0, 'N/A', loss_reserve_category)
-	IFF(loss_reserve_category IS NULL 
-		OR LENGTH(LTRIM(RTRIM(loss_reserve_category
-				)
-			)
-		) = 0,
-		'N/A',
-		loss_reserve_category
+	IFF(
+	    loss_reserve_category IS NULL OR LENGTH(LTRIM(RTRIM(loss_reserve_category))) = 0, 'N/A',
+	    loss_reserve_category
 	) AS v_loss_reserve_category,
 	loss_transaction,
 	-- *INF*: decode(true,
@@ -299,37 +218,22 @@ EXP_CLAIM_TRANSACTION_VALIDATE AS (
 	-- 
 	-- 
 	-- --IIF(ISNULL(loss_cause) OR LENGTH(LTRIM(RTRIM(loss_cause))) = 0, 'N/A',loss_cause)
-	decode(true,
-		loss_cause IS NULL, 'N/A',
-		LENGTH(LTRIM(RTRIM(loss_cause
-				)
-			)
-		) = 0, 'N/A',
-		( v_loss_major_peril = '032' 
-			AND loss_cause = '07' 
-		), '06',
-		LTRIM(RTRIM(loss_cause
-			)
-		)
+	decode(
+	    true,
+	    loss_cause IS NULL, 'N/A',
+	    LENGTH(LTRIM(RTRIM(loss_cause))) = 0, 'N/A',
+	    (v_loss_major_peril = '032' AND loss_cause = '07'), '06',
+	    LTRIM(RTRIM(loss_cause))
 	) AS v_loss_cause,
 	loss_entry_operator,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(loss_entry_operator))) OR IS_SPACES(LTRIM(RTRIM(loss_entry_operator))) OR LENGTH(LTRIM(RTRIM(loss_entry_operator)))  = 0,'N/A',LTRIM(RTRIM(loss_entry_operator)))
-	IFF(LTRIM(RTRIM(loss_entry_operator
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(loss_entry_operator
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(loss_entry_operator
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(loss_entry_operator
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(loss_entry_operator
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(loss_entry_operator)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(loss_entry_operator)))>0
+	    and TRIM(LTRIM(RTRIM(loss_entry_operator)))=''
+	    or LENGTH(LTRIM(RTRIM(loss_entry_operator))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(loss_entry_operator))
 	) AS Out_loss_entry_operator,
 	loss_cause,
 	-- *INF*: :LKP.LKP_CLAIM_OCCURRENCE(v_loss_occurence_key)
@@ -346,79 +250,46 @@ EXP_CLAIM_TRANSACTION_VALIDATE AS (
 	loss_cost_containment,
 	loss_draft_amount,
 	-- *INF*: IIF(ISNULL(loss_draft_amount),0,loss_draft_amount)
-	IFF(loss_draft_amount IS NULL,
-		0,
-		loss_draft_amount
-	) AS Out_loss_draft_amount,
+	IFF(loss_draft_amount IS NULL, 0, loss_draft_amount) AS Out_loss_draft_amount,
 	loss_draft_no,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(loss_draft_no))) OR IS_SPACES(LTRIM(RTRIM(loss_draft_no))) OR LENGTH(LTRIM(RTRIM(loss_draft_no))) = 0, 'N/A', loss_draft_no)
-	IFF(LTRIM(RTRIM(loss_draft_no
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(loss_draft_no
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(loss_draft_no
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(loss_draft_no
-				)
-			)
-		) = 0,
-		'N/A',
-		loss_draft_no
+	IFF(
+	    LTRIM(RTRIM(loss_draft_no)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(loss_draft_no)))>0
+	    and TRIM(LTRIM(RTRIM(loss_draft_no)))=''
+	    or LENGTH(LTRIM(RTRIM(loss_draft_no))) = 0,
+	    'N/A',
+	    loss_draft_no
 	) AS Out_loss_draft_no,
 	loss_transaction_date,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(loss_transaction_date))),TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),to_date(LTRIM(RTRIM(loss_transaction_date)),'YYYYMMDD'))
-	IFF(LTRIM(RTRIM(loss_transaction_date
-			)
-		) IS NULL,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		to_date(LTRIM(RTRIM(loss_transaction_date
-				)
-			), 'YYYYMMDD'
-		)
+	IFF(
+	    LTRIM(RTRIM(loss_transaction_date)) IS NULL,
+	    TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    TO_TIMESTAMP(LTRIM(RTRIM(loss_transaction_date)), 'YYYYMMDD')
 	) AS Out_loss_transaction_date,
 	loss_draft_pay_to_1,
 	loss_draft_pay_to_2,
 	loss_draft_pay_to_3,
 	loss_draft_pay_to_1 || loss_draft_pay_to_2 || loss_draft_pay_to_3 AS V_pay_to_code,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(V_pay_to_code))) OR IS_SPACES(LTRIM(RTRIM(V_pay_to_code))) OR LENGTH(LTRIM(RTRIM(V_pay_to_code)))  = 0,'N/A',LTRIM(RTRIM(V_pay_to_code)))
-	IFF(LTRIM(RTRIM(V_pay_to_code
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(V_pay_to_code
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(V_pay_to_code
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(V_pay_to_code
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(V_pay_to_code
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(V_pay_to_code)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(V_pay_to_code)))>0
+	    and TRIM(LTRIM(RTRIM(V_pay_to_code)))=''
+	    or LENGTH(LTRIM(RTRIM(V_pay_to_code))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(V_pay_to_code))
 	) AS pay_to_code,
 	loss_draft_mail_to,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(loss_draft_mail_to))) OR IS_SPACES(LTRIM(RTRIM(loss_draft_mail_to))) OR LENGTH(LTRIM(RTRIM(loss_draft_mail_to)))  = 0,'N/A',LTRIM(RTRIM(loss_draft_mail_to)))
-	IFF(LTRIM(RTRIM(loss_draft_mail_to
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(loss_draft_mail_to
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(loss_draft_mail_to
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(loss_draft_mail_to
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(loss_draft_mail_to
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(loss_draft_mail_to)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(loss_draft_mail_to)))>0
+	    and TRIM(LTRIM(RTRIM(loss_draft_mail_to)))=''
+	    or LENGTH(LTRIM(RTRIM(loss_draft_mail_to))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(loss_draft_mail_to))
 	) AS Out_loss_draft_mail_to,
 	source_system_id AS SOURCE_SYSTEM_ID
 	FROM SQ_pifmstr_PIF_4578_stage
@@ -462,8 +333,7 @@ AGG_Cost_Containment_Amount AS (
 	Out_loss_draft_mail_to AS loss_draft_mail_to,
 	loss_cost_containment,
 	-- *INF*: SUM(loss_cost_containment)
-	SUM(loss_cost_containment
-	) AS Out_loss_cost_containment,
+	SUM(loss_cost_containment) AS Out_loss_cost_containment,
 	loss_transaction
 	FROM EXP_CLAIM_TRANSACTION_VALIDATE
 	GROUP BY claimant_coverage_detail_ak_id, Out_loss_draft_amount, Out_loss_draft_no, Out_loss_transaction_date
@@ -510,40 +380,27 @@ EXP_set_defaults_txn AS (
 	-1 AS claim_pay_ctgry_seq_num,
 	LKP_Financial_Type_Code.edw_financial_type_code,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(edw_financial_type_code))) OR LENGTH(LTRIM(RTRIM(edw_financial_type_code))) = 0, 'N/A', LTRIM(RTRIM(edw_financial_type_code)))
-	IFF(LTRIM(RTRIM(edw_financial_type_code
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(edw_financial_type_code
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(edw_financial_type_code
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(edw_financial_type_code)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(edw_financial_type_code))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(edw_financial_type_code))
 	) AS financial_type_code,
 	AGG_Cost_Containment_Amount.Out_loss_cost_containment AS loss_cost_containment,
 	-- *INF*: IIF(ISNULL(loss_cost_containment), 0, loss_cost_containment)
-	IFF(loss_cost_containment IS NULL,
-		0,
-		loss_cost_containment
-	) AS cost_containment_saving_amt,
+	IFF(loss_cost_containment IS NULL, 0, loss_cost_containment) AS cost_containment_saving_amt,
 	0 AS AMT_default,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS claim_pay_ctgry_start_date,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS claim_pay_ctgry_start_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS claim_pay_ctgry_end_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS claim_pay_ctgry_end_date,
 	'N/A' AS char_default,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,

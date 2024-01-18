@@ -1,0 +1,115 @@
+{
+    "name": "wkf_Do_PreAudit_Policy",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "spt-Get_Audit_Batch_values",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": {
+                                "value": "@concat('EXEC Proc_Get_Audit_Batch @workflow_name = ''', pipeline().Pipeline, '''')",
+                                "type": "Expression"
+                            }
+                        }
+                    ],
+                    "scriptBlockExecutionTimeout": "02:00:00"
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sp-PreAudit_PolicyCustStaging_DAILY",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "spt-Get_Audit_Batch_values",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_PreAudit]",
+                    "storedProcedureParameters": {
+                        "AuditName": {
+                            "value": {
+                                "value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['audit_name']",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "variables": {}
+    }
+}

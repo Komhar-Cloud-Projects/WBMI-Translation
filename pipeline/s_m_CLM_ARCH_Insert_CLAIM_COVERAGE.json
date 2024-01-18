@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLAIM_COVERAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLAIM_COVERAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLAIM_COVERAGE_STAGE AS (\n\tSELECT\n\t\tclaim_coverage_id AS CLAIM_COVERAGE_ID,\n\t\tcvr_claim_nbr AS CVR_CLAIM_NBR,\n\t\tcvr_cov_seq_nbr AS CVR_COV_SEQ_NBR,\n\t\tcvr_policy_key AS CVR_POLICY_KEY,\n\t\tcvr_policy_seq_nbr AS CVR_POLICY_SEQ_NBR,\n\t\tcvr_object_seq_nbr AS CVR_OBJECT_SEQ_NBR,\n\t\tcvr_object_type_cd AS CVR_OBJECT_TYPE_CD,\n\t\tcvr_policy_eff_dt AS CVR_POLICY_EFF_DT,\n\t\tcvr_polisy_exp_dt AS CVR_POLISY_EXP_DT,\n\t\tcvr_manual_ind AS CVR_MANUAL_IND,\n\t\tcvr_one_unit_ind AS CVR_ONE_UNIT_IND,\n\t\tcvr_create_ts AS CVR_CREATE_TS,\n\t\tcvr_entry_opr_id AS CVR_ENTRY_OPR_ID,\n\t\tcvr_pmsd_ts AS CVR_PMSD_TS,\n\t\tcvr_update_opr_id AS CVR_UPDATE_OPR_ID,\n\t\tcvr_upd_ts AS CVR_UPD_TS,\n\t\tcvr_pol_sys_cd AS CVR_POL_SYS_CD,\n\t\tcvr_pol_nbr AS CVR_POL_NBR,\n\t\tcvr_pol_branch_nbr AS CVR_POL_BRANCH_NBR,\n\t\tcvr_master_company AS CVR_MASTER_COMPANY,\n\t\tcvr_line_of_bus_cd AS CVR_LINE_OF_BUS_CD,\n\t\tcvr_bkr_ins_ref_cd AS CVR_BKR_INS_REF_CD,\n\t\tcvr_company_cd AS CVR_COMPANY_CD,\n\t\tcvr_permium_ind AS CVR_PERMIUM_IND,\n\t\tcvr_prm_ind_dt AS CVR_PRM_IND_DT,\n\t\tcvr_adjuster_nbr AS CVR_ADJUSTER_NBR,\n\t\tcvr_forms_ind AS CVR_FORMS_IND,\n\t\tcvr_prm_ind_adj_id AS CVR_PRM_IND_ADJ_ID,\n\t\tcvr_ins_line_cd AS CVR_INS_LINE_CD,\n\t\tcvr_rating_st_cd AS CVR_RATING_ST_CD,\n\t\tcvr_pri_rsk_st_cd AS CVR_PRI_RSK_ST_CD,\n\t\tcvr_pol_mod_nbr AS CVR_POL_MOD_NBR,\n\t\tcvr_insd_type_cd AS CVR_INSD_TYPE_CD,\n\t\textract_date AS EXTRACT_DATE,\n\t\tas_of_date AS AS_OF_DATE,\n\t\trecord_count AS RECORD_COUNT,\n\t\tsource_system_id AS SOURCE_SYSTEM_ID,\n\t\tcvr_policy_src_id,\n\t\tcvr_agreement_div,\n\t\tcvr_policy_id\n\tFROM CLAIM_COVERAGE_STAGE\n\tWHERE CLAIM_COVERAGE_STAGE.CVR_CREATE_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\r\n\tOR\r\n\tCLAIM_COVERAGE_STAGE.CVR_UPD_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_CLAIM_COVERAGE_STAGE AS (\n\tSELECT\n\tCLAIM_COVERAGE_ID,\n\tCVR_CLAIM_NBR,\n\tCVR_COV_SEQ_NBR,\n\tCVR_POLICY_KEY,\n\tCVR_POLICY_SEQ_NBR,\n\tCVR_OBJECT_SEQ_NBR,\n\tCVR_OBJECT_TYPE_CD,\n\tCVR_POLICY_EFF_DT,\n\tCVR_POLISY_EXP_DT,\n\tCVR_MANUAL_IND,\n\tCVR_ONE_UNIT_IND,\n\tCVR_CREATE_TS,\n\tCVR_ENTRY_OPR_ID,\n\tCVR_PMSD_TS,\n\tCVR_UPDATE_OPR_ID,\n\tCVR_UPD_TS,\n\tCVR_POL_SYS_CD,\n\tCVR_POL_NBR,\n\tCVR_POL_BRANCH_NBR,\n\tCVR_MASTER_COMPANY,\n\tCVR_LINE_OF_BUS_CD,\n\tCVR_BKR_INS_REF_CD,\n\tCVR_COMPANY_CD,\n\tCVR_PERMIUM_IND,\n\tCVR_PRM_IND_DT,\n\tCVR_ADJUSTER_NBR,\n\tCVR_FORMS_IND,\n\tCVR_PRM_IND_ADJ_ID,\n\tCVR_INS_LINE_CD,\n\tCVR_RATING_ST_CD,\n\tCVR_PRI_RSK_ST_CD,\n\tCVR_POL_MOD_NBR,\n\tCVR_INSD_TYPE_CD,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\tcvr_policy_src_id,\n\tcvr_agreement_div,\n\tcvr_policy_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_CLAIM_COVERAGE_STAGE\n),\nARCH_CLAIM_COVERAGE_STAGE AS (\n\tINSERT INTO ARCH_CLAIM_COVERAGE_STAGE\n\t(claim_coverage_id, cvr_claim_nbr, cvr_cov_seq_nbr, cvr_policy_key, cvr_policy_seq_nbr, cvr_object_seq_nbr, cvr_object_type_cd, cvr_policy_eff_dt, cvr_polisy_exp_dt, cvr_manual_ind, cvr_one_unit_ind, cvr_create_ts, cvr_entry_opr_id, cvr_pmsd_ts, cvr_update_opr_id, cvr_upd_ts, cvr_pol_sys_cd, cvr_pol_nbr, cvr_pol_branch_nbr, cvr_master_company, cvr_line_of_bus_cd, cvr_bkr_ins_ref_cd, cvr_company_cd, cvr_permium_ind, cvr_prm_ind_dt, cvr_adjuster_nbr, cvr_forms_ind, cvr_prm_ind_adj_id, cvr_ins_line_cd, cvr_rating_st_cd, cvr_pri_rsk_st_cd, cvr_pol_mod_nbr, cvr_insd_type_cd, extract_date, as_of_date, record_count, source_system_id, audit_id, cvr_policy_src_id, cvr_agreement_div, cvr_policy_id)\n\tSELECT \n\tCLAIM_COVERAGE_ID AS CLAIM_COVERAGE_ID, \n\tCVR_CLAIM_NBR AS CVR_CLAIM_NBR, \n\tCVR_COV_SEQ_NBR AS CVR_COV_SEQ_NBR, \n\tCVR_POLICY_KEY AS CVR_POLICY_KEY, \n\tCVR_POLICY_SEQ_NBR AS CVR_POLICY_SEQ_NBR, \n\tCVR_OBJECT_SEQ_NBR AS CVR_OBJECT_SEQ_NBR, \n\tCVR_OBJECT_TYPE_CD AS CVR_OBJECT_TYPE_CD, \n\tCVR_POLICY_EFF_DT AS CVR_POLICY_EFF_DT, \n\tCVR_POLISY_EXP_DT AS CVR_POLISY_EXP_DT, \n\tCVR_MANUAL_IND AS CVR_MANUAL_IND, \n\tCVR_ONE_UNIT_IND AS CVR_ONE_UNIT_IND, \n\tCVR_CREATE_TS AS CVR_CREATE_TS, \n\tCVR_ENTRY_OPR_ID AS CVR_ENTRY_OPR_ID, \n\tCVR_PMSD_TS AS CVR_PMSD_TS, \n\tCVR_UPDATE_OPR_ID AS CVR_UPDATE_OPR_ID, \n\tCVR_UPD_TS AS CVR_UPD_TS, \n\tCVR_POL_SYS_CD AS CVR_POL_SYS_CD, \n\tCVR_POL_NBR AS CVR_POL_NBR, \n\tCVR_POL_BRANCH_NBR AS CVR_POL_BRANCH_NBR, \n\tCVR_MASTER_COMPANY AS CVR_MASTER_COMPANY, \n\tCVR_LINE_OF_BUS_CD AS CVR_LINE_OF_BUS_CD, \n\tCVR_BKR_INS_REF_CD AS CVR_BKR_INS_REF_CD, \n\tCVR_COMPANY_CD AS CVR_COMPANY_CD, \n\tCVR_PERMIUM_IND AS CVR_PERMIUM_IND, \n\tCVR_PRM_IND_DT AS CVR_PRM_IND_DT, \n\tCVR_ADJUSTER_NBR AS CVR_ADJUSTER_NBR, \n\tCVR_FORMS_IND AS CVR_FORMS_IND, \n\tCVR_PRM_IND_ADJ_ID AS CVR_PRM_IND_ADJ_ID, \n\tCVR_INS_LINE_CD AS CVR_INS_LINE_CD, \n\tCVR_RATING_ST_CD AS CVR_RATING_ST_CD, \n\tCVR_PRI_RSK_ST_CD AS CVR_PRI_RSK_ST_CD, \n\tCVR_POL_MOD_NBR AS CVR_POL_MOD_NBR, \n\tCVR_INSD_TYPE_CD AS CVR_INSD_TYPE_CD, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID, \n\tCVR_POLICY_SRC_ID, \n\tCVR_AGREEMENT_DIV, \n\tCVR_POLICY_ID\n\tFROM EXP_CLAIM_COVERAGE_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

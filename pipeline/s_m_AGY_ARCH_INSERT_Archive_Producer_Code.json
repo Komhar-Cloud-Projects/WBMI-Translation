@@ -1,0 +1,47 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_Archive_Producer_Code",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_Archive_Producer_Code",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Arch_producer_code_stage AS (\n\tSELECT\n\t\tproducer_code_stage_id AS producer_code_id,\n\t\tSTATE_CODE,\n\t\tAGENCY_NUM,\n\t\tPRODUCER_CODE,\n\t\tEMP_ID,\n\t\tPRODUCER_DESCRIPT,\n\t\tAGENCY_CODE,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM Producer_code_stage\n),\nexp_ARCH_Insert_Prdcr_code AS (\n\tSELECT\n\tproducer_code_id,\n\tSTATE_CODE,\n\tAGENCY_NUM,\n\tPRODUCER_CODE,\n\tEMP_ID,\n\tPRODUCER_DESCRIPT,\n\tAGENCY_CODE,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID\n\tFROM SQ_Arch_producer_code_stage\n),\nTGT_Arch_producer_code_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_producer_code_stage\n\t(producer_code_stage_id, STATE_CODE, AGENCY_NUM, PRODUCER_CODE, EMP_ID, PRODUCER_DESCRIPT, AGENCY_CODE, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, audit_id)\n\tSELECT \n\tproducer_code_id AS PRODUCER_CODE_STAGE_ID, \n\tSTATE_CODE, \n\tAGENCY_NUM, \n\tPRODUCER_CODE, \n\tEMP_ID, \n\tPRODUCER_DESCRIPT, \n\tAGENCY_CODE, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tOUT_AUDIT_ID AS AUDIT_ID\n\tFROM exp_ARCH_Insert_Prdcr_code\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

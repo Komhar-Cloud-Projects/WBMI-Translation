@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_QUESTION_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_QUESTION_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_question_stage AS (\n\tSELECT \r\n\t\tq.question_stage_id, \r\n\t\tq.question_guid, \r\n\t\tq.parent_question_guid, \r\n\t\tq.optn_set_guid, \r\n\t\tq.applicability_filter_guid, \r\n\t\tq.app_context_guid, \r\n\t\tq.app_context_grp_guid, \r\n\t\tq.display_name, \r\n\t\tq.logical_name, \r\n\t\tq.published_to_prod_flag, \r\n\t\tq.enabled_flag, \r\n\t\tq.help_text, \r\n\t\tq.prompt, \r\n\t\tq.question_template_id, \r\n\t\tq.settings,\r\n\t\tq.traceability_id, \r\n\t\tq.triggers, \r\n\t\tq.sort_order, \r\n\t\tq.notes,\r\n\t\tq.surrogate_question_guid, \r\n\t\tq.created_user_id, \r\n\t\tq.created_date, \r\n\t\tq.modified_user_id, \r\n\t\tq.modified_date, \r\n\t\tq.eff_date,\r\n\t\tq.exp_date, \r\n\t\tq.extract_date, \r\n\t\tq.as_of_date,\r\n\t\tq.record_count, \r\n\t\tq.source_system_id\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.question_stage AS q WITH (NOLOCK)\n),\nEXP_SOURCE AS (\n\tSELECT\n\tquestion_stage_id,\n\tquestion_guid,\n\tparent_question_guid,\n\toptn_set_guid,\n\tapplicability_filter_guid,\n\tapp_context_guid,\n\tapp_context_grp_guid,\n\tdisplay_name,\n\tlogical_name,\n\tpublished_to_prod_flag,\n\tenabled_flag,\n\thelp_text,\n\tprompt,\n\tquestion_template_id,\n\tsettings,\n\ttraceability_id,\n\ttriggers,\n\tsort_order,\n\tnotes,\n\tsurrogate_question_guid,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tmodified_date,\n\teff_date,\n\texp_date,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id\n\tFROM SQ_question_stage\n),\narch_question_stage_INS AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_question_stage\n\t(question_stage_id, question_guid, parent_question_guid, optn_set_guid, applicability_filter_guid, app_context_guid, app_context_grp_guid, display_name, logical_name, published_to_prod_flag, enabled_flag, help_text, prompt, question_template_id, settings, traceability_id, triggers, sort_order, notes, surrogate_question_guid, created_user_id, created_date, modified_user_id, modified_date, eff_date, exp_date, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tQUESTION_STAGE_ID, \n\tQUESTION_GUID, \n\tPARENT_QUESTION_GUID, \n\tOPTN_SET_GUID, \n\tAPPLICABILITY_FILTER_GUID, \n\tAPP_CONTEXT_GUID, \n\tAPP_CONTEXT_GRP_GUID, \n\tDISPLAY_NAME, \n\tLOGICAL_NAME, \n\tPUBLISHED_TO_PROD_FLAG, \n\tENABLED_FLAG, \n\tHELP_TEXT, \n\tPROMPT, \n\tQUESTION_TEMPLATE_ID, \n\tSETTINGS, \n\tTRACEABILITY_ID, \n\tTRIGGERS, \n\tSORT_ORDER, \n\tNOTES, \n\tSURROGATE_QUESTION_GUID, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tEFF_DATE, \n\tEXP_DATE, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID\n\tFROM EXP_SOURCE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

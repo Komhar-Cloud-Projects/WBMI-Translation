@@ -1,0 +1,38 @@
+{
+    "name": "s_m_CLM_STG_Update_PIF_42GQ_ATY",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Update_PIF_42GQ_ATY",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_PIF_42GQ_ATY_stage AS (\n\tSELECT\n\t\tpif_42gq_aty_stage_id,\n\t\tpif_symbol,\n\t\tpif_policy_number,\n\t\tpif_module,\n\t\tipfcgq_rec_length,\n\t\tipfcgq_action_code,\n\t\tipfcgq_file_id,\n\t\tipfcgq_segment_id,\n\t\tipfcgq_segment_level_code,\n\t\tipfcgq_segment_part_code,\n\t\tipfcgq_sub_part_code,\n\t\tipfcgq_year_of_loss,\n\t\tipfcgq_month_of_loss,\n\t\tipfcgq_day_of_loss,\n\t\tipfcgq_loss_occurence,\n\t\tipfcgq_loss_claimant,\n\t\tipfcgq_claimant_use_code,\n\t\tipfcgq_claimant_use_seq,\n\t\tipfcgq_year_process,\n\t\tipfcgq_month_process,\n\t\tipfcgq_day_process,\n\t\tipfcgq_year_change_entry,\n\t\tipfcgq_month_change_entry,\n\t\tipfcgq_day_change_entry,\n\t\tipfcgq_sequence_change_entry,\n\t\tipfcgq_segment_status,\n\t\tipfcgq_entry_operator,\n\t\tipfcgq_plaintiff_1,\n\t\tipfcgq_plaintiff_2,\n\t\tipfcgq_defendant_1,\n\t\tipfcgq_defendant_2,\n\t\tipfcgq_attorney_name_1,\n\t\tipfcgq_attorney_type_1,\n\t\tipfcgq_attorney_seq_1,\n\t\tipfcgq_attorney_name_2,\n\t\tipfcgq_attorney_type_2,\n\t\tipfcgq_attorney_seq_2,\n\t\tipfcgq_attorney_name_3,\n\t\tipfcgq_attorney_type_3,\n\t\tipfcgq_attorney_seq_3,\n\t\tipfcgq_number_of_part78,\n\t\tipfcgq_offset_onset_ind,\n\t\tipfcgq_date_hire,\n\t\tipfcgq_pms_future_use_gq,\n\t\tipfcgq_direct_reporting,\n\t\tipfcgq_cust_spl_use_gq,\n\t\tipfcgq_yr2000_cust_use,\n\t\tinf_action,\n\t\tinf_timestamp,\n\t\tlogical_flag,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM PIF_42GQ_ATY_stage\n),\nEXP_get_vlaues AS (\n\tSELECT\n\tpif_42gq_aty_stage_id,\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module,\n\tipfcgq_year_of_loss,\n\tipfcgq_month_of_loss,\n\tipfcgq_day_of_loss,\n\tipfcgq_loss_occurence,\n\tipfcgq_loss_claimant\n\tFROM SQ_PIF_42GQ_ATY_stage\n),\nLKP_4578_stage AS (\n\tSELECT\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module,\n\tloss_year,\n\tloss_month,\n\tloss_day,\n\tloss_occurence,\n\tloss_claimant,\n\tlogical_flag\n\tFROM (\n\t\tSELECT MAX(pif_4578_stage.logical_flag) as logical_flag, pif_4578_stage.pif_symbol as pif_symbol, pif_4578_stage.pif_policy_number as pif_policy_number, pif_4578_stage.pif_module as pif_module, pif_4578_stage.loss_year as loss_year, pif_4578_stage.loss_month as loss_month, pif_4578_stage.loss_day as loss_day, pif_4578_stage.loss_occurence as loss_occurence, pif_4578_stage.loss_claimant as loss_claimant FROM pif_4578_stage\r\n\t\tGROUP BY pif_4578_stage.pif_symbol, pif_4578_stage.pif_policy_number, pif_4578_stage.pif_module, pif_4578_stage.loss_year, pif_4578_stage.loss_month, pif_4578_stage.loss_day, pif_4578_stage.loss_occurence, pif_4578_stage.loss_claimant\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY pif_symbol,pif_policy_number,pif_module,loss_year,loss_month,loss_day,loss_occurence,loss_claimant ORDER BY pif_symbol) = 1\n),\nFILTRANS AS (\n\tSELECT\n\tEXP_get_vlaues.pif_42gq_aty_stage_id, \n\tLKP_4578_stage.logical_flag\n\tFROM EXP_get_vlaues\n\tLEFT JOIN LKP_4578_stage\n\tON LKP_4578_stage.pif_symbol = EXP_get_vlaues.pif_symbol AND LKP_4578_stage.pif_policy_number = EXP_get_vlaues.pif_policy_number AND LKP_4578_stage.pif_module = EXP_get_vlaues.pif_module AND LKP_4578_stage.loss_year = EXP_get_vlaues.ipfcgq_year_of_loss AND LKP_4578_stage.loss_month = EXP_get_vlaues.ipfcgq_month_of_loss AND LKP_4578_stage.loss_day = EXP_get_vlaues.ipfcgq_day_of_loss AND LKP_4578_stage.loss_occurence = EXP_get_vlaues.ipfcgq_loss_occurence AND LKP_4578_stage.loss_claimant = EXP_get_vlaues.ipfcgq_loss_claimant\n\tWHERE NOT ISNULL(logical_flag)\n),\nUPD_42GQ_ATY AS (\n\tSELECT\n\tpif_42gq_aty_stage_id, \n\tlogical_flag\n\tFROM FILTRANS\n),\nPIF_42GQ_ATY_stage_update AS (\n\tMERGE INTO PIF_42GQ_ATY_stage AS T\n\tUSING UPD_42GQ_ATY AS S\n\tON T.pif_42gq_aty_stage_id = S.pif_42gq_aty_stage_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.logical_flag = S.logical_flag\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

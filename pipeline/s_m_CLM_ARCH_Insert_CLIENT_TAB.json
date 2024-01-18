@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLIENT_TAB",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLIENT_TAB",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLIENT_TAB_STAGE AS (\n\tSELECT\n\t\tCLIENT_TAB_ID,\n\t\tCLIENT_ID,\n\t\tHISTORY_VLD_NBR,\n\t\tCICL_EFF_DT,\n\t\tCICL_PRI_SUB_CD,\n\t\tCICL_FST_NM,\n\t\tCICL_LST_NM,\n\t\tCICL_MDL_NM,\n\t\tNM_PFX,\n\t\tNM_SFX,\n\t\tPRIMARY_PRO_DSN_CD,\n\t\tLEG_ENT_CD,\n\t\tCICL_SDX_CD,\n\t\tCICL_OGN_INCEPT_CD,\n\t\tCICL_ADD_NM_IND,\n\t\tCICL_DOB_DT,\n\t\tCICL_BIR_ST_CD,\n\t\tGENDER_CD,\n\t\tPRI_LGG_CD,\n\t\tUSER_ID,\n\t\tSTATUS_CD,\n\t\tTRMINAL_ID,\n\t\tCICL_EXP_DT,\n\t\tCICL_EFF_ACY_TS,\n\t\tCICL_EXP_ACY_TS,\n\t\tSTATUATORY_TLE_CD,\n\t\tCICL_LNG_NM,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM CLIENT_TAB_STAGE\n),\nEXP_CLIENT_TAB_STAGE AS (\n\tSELECT\n\tCLIENT_TAB_ID,\n\tCLIENT_ID,\n\tHISTORY_VLD_NBR,\n\tCICL_EFF_DT,\n\tCICL_PRI_SUB_CD,\n\tCICL_FST_NM,\n\tCICL_LST_NM,\n\tCICL_MDL_NM,\n\tNM_PFX,\n\tNM_SFX,\n\tPRIMARY_PRO_DSN_CD,\n\tLEG_ENT_CD,\n\tCICL_SDX_CD,\n\tCICL_OGN_INCEPT_CD,\n\tCICL_ADD_NM_IND,\n\tCICL_DOB_DT,\n\tCICL_BIR_ST_CD,\n\tGENDER_CD,\n\tPRI_LGG_CD,\n\tUSER_ID,\n\tSTATUS_CD,\n\tTRMINAL_ID,\n\tCICL_EXP_DT,\n\tCICL_EFF_ACY_TS,\n\tCICL_EXP_ACY_TS,\n\tSTATUATORY_TLE_CD,\n\tCICL_LNG_NM,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_CLIENT_TAB_STAGE\n),\nARCH_CLIENT_TAB_STAGE AS (\n\tINSERT INTO ARCH_CLIENT_TAB_STAGE\n\t(CLIENT_TAB_ID, CLIENT_ID, HISTORY_VLD_NBR, CICL_EFF_DT, CICL_PRI_SUB_CD, CICL_FST_NM, CICL_LST_NM, CICL_MDL_NM, NM_PFX, NM_SFX, PRIMARY_PRO_DSN_CD, LEG_ENT_CD, CICL_SDX_CD, CICL_OGN_INCEPT_CD, CICL_ADD_NM_IND, CICL_DOB_DT, CICL_BIR_ST_CD, GENDER_CD, PRI_LGG_CD, USER_ID, STATUS_CD, TRMINAL_ID, CICL_EXP_DT, CICL_EFF_ACY_TS, CICL_EXP_ACY_TS, STATUATORY_TLE_CD, CICL_LNG_NM, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, AUDIT_ID)\n\tSELECT \n\tCLIENT_TAB_ID, \n\tCLIENT_ID, \n\tHISTORY_VLD_NBR, \n\tCICL_EFF_DT, \n\tCICL_PRI_SUB_CD, \n\tCICL_FST_NM, \n\tCICL_LST_NM, \n\tCICL_MDL_NM, \n\tNM_PFX, \n\tNM_SFX, \n\tPRIMARY_PRO_DSN_CD, \n\tLEG_ENT_CD, \n\tCICL_SDX_CD, \n\tCICL_OGN_INCEPT_CD, \n\tCICL_ADD_NM_IND, \n\tCICL_DOB_DT, \n\tCICL_BIR_ST_CD, \n\tGENDER_CD, \n\tPRI_LGG_CD, \n\tUSER_ID, \n\tSTATUS_CD, \n\tTRMINAL_ID, \n\tCICL_EXP_DT, \n\tCICL_EFF_ACY_TS, \n\tCICL_EXP_ACY_TS, \n\tSTATUATORY_TLE_CD, \n\tCICL_LNG_NM, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_CLIENT_TAB_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

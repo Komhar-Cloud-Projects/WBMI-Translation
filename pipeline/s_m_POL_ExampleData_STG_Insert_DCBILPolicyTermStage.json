@@ -1,0 +1,51 @@
+{
+    "name": "s_m_POL_ExampleData_STG_Insert_DCBILPolicyTermStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleData_STG_Insert_DCBILPolicyTermStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_BIL_PolicyTerm AS (\n\tSet QUOTED_IDENTIFIER on\r\n\tSELECT DC_BIL_PolicyTerm.PolicyTermId,\r\n\t       DC_BIL_PolicyTerm.PolicyTermEffectiveDate,\r\n\t       DC_BIL_PolicyTerm.PolicyTermExpirationDate,\r\n\t       DC_BIL_PolicyTerm.PolicyReference,\r\n\t       DC_BIL_PolicyTerm.PolicyTermGroupReference,\r\n\t       DC_BIL_PolicyTerm.PrimaryAccountId,\r\n\t       DC_BIL_PolicyTerm.PolicyTermConfigTemplate,\r\n\t       NULL AS PolicyTermConfig,\r\n\t       DC_BIL_PolicyTerm.PolicyAggregationReference,\r\n\t       DC_BIL_PolicyTerm.SplitBillIndicator,\r\n\t       DC_BIL_PolicyTerm.PolicyTermStatusCode,\r\n\t       DC_BIL_PolicyTerm.AutoRescindEquityDate,\r\n\t       DC_BIL_PolicyTerm.PolicyIssueSystemCode,\r\n\t       DC_BIL_PolicyTerm.PolicyMasterCompanyCode,\r\n\t       DC_BIL_PolicyTerm.PolicyLineOfBusinessCode,\r\n\t       DC_BIL_PolicyTerm.PolicyProductCode,\r\n\t       DC_BIL_PolicyTerm.PolicyStateCode,\r\n\t       DC_BIL_PolicyTerm.PolicyCountryCode,\r\n\t       DC_BIL_PolicyTerm.IssueSystemPolicyId,\r\n\t       DC_BIL_PolicyTerm.RenewalConfigTemplate,\r\n\t       DC_BIL_PolicyTerm.RenewalConfig,\r\n\t       DC_BIL_PolicyTerm.RenewalAccountId,\r\n\t       DC_BIL_PolicyTerm.HoldTypeCode,\r\n\t       DC_BIL_PolicyTerm.HoldReasonCode,\r\n\t       DC_BIL_PolicyTerm.HoldStartDate,\r\n\t       DC_BIL_PolicyTerm.HoldEndDate,\r\n\t       DC_BIL_PolicyTerm.OutstandingBalance,\r\n\t       DC_BIL_PolicyTerm.ExpirationActivityDate,\r\n\t       DC_BIL_PolicyTerm.LastUpdatedTimestamp,\r\n\t       DC_BIL_PolicyTerm.LastUpdatedUserId,\r\n\t       DC_BIL_PolicyTerm.PolicyTermLockingTS,\r\n\t       NULL AS PolicyTermExtendedData,\r\n\t       DC_BIL_PolicyTerm.ProcessingOrgUnitCode,\r\n\t       DC_BIL_PolicyTerm.TransactionGUID,\r\n\t       ( PolicyTermConfig.value('(PolicyTermConfig/Commission/@Scheme)[1]', 'nvarchar(4)') ) AS PolicyTermConfigCommissionScheme\r\n\tFROM   DC_BIL_PolicyTerm\r\n\tWHERE  DC_BIL_PolicyTerm.LastUpdatedTimestamp >= Dateadd(DD, @{pipeline().parameters.NO_OF_DAYS}, '@{pipeline().parameters.SELECTION_START_TS}')\n),\nEXP_Metadata AS (\n\tSELECT\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tPolicyTermId,\n\tPolicyTermEffectiveDate,\n\tPolicyTermExpirationDate,\n\tPolicyReference,\n\tPolicyTermGroupReference,\n\tPrimaryAccountId,\n\tPolicyTermConfigTemplate,\n\tPolicyTermConfig,\n\tPolicyAggregationReference,\n\tSplitBillIndicator,\n\tPolicyTermStatusCode,\n\tAutoRescindEquityDate,\n\tPolicyIssueSystemCode,\n\tPolicyMasterCompanyCode,\n\tPolicyLineOfBusinessCode,\n\tPolicyProductCode,\n\tPolicyStateCode,\n\tPolicyCountryCode,\n\tIssueSystemPolicyId,\n\tRenewalConfigTemplate,\n\tRenewalConfig,\n\tRenewalAccountId,\n\tHoldTypeCode,\n\tHoldReasonCode,\n\tHoldStartDate,\n\tHoldEndDate,\n\tOutstandingBalance,\n\tExpirationActivityDate,\n\tLastUpdatedTimestamp,\n\tLastUpdatedUserId,\n\tPolicyTermLockingTS,\n\tPolicyTermExtendedData,\n\tProcessingOrgUnitCode,\n\tTransactionGUID,\n\tPolicyTermConfigCommissionScheme\n\tFROM SQ_DC_BIL_PolicyTerm\n),\nDCBILPolicyTermStage AS (\n\tTRUNCATE TABLE DCBILPolicyTermStage;\n\tINSERT INTO DCBILPolicyTermStage\n\t(ExtractDate, SourceSystemId, PolicyTermId, PolicyTermEffectiveDate, PolicyTermExpirationDate, PolicyReference, PolicyTermGroupReference, PrimaryAccountId, PolicyTermConfigTemplate, PolicyTermConfig, PolicyAggregationReference, SplitBillIndicator, PolicyTermStatusCode, AutoRescindEquityDate, PolicyIssueSystemCode, PolicyMasterCompanyCode, PolicyLineOfBusinessCode, PolicyProductCode, PolicyStateCode, PolicyCountryCode, IssueSystemPolicyId, RenewalConfigTemplate, RenewalConfig, RenewalAccountId, HoldTypeCode, HoldReasonCode, HoldStartDate, HoldEndDate, OutstandingBalance, ExpirationActivityDate, LastUpdatedTimestamp, LastUpdatedUserId, PolicyTermLockingTS, PolicyTermExtendedData, ProcessingOrgUnitCode, TransactionGUID, PolicyTermConfigCommissionScheme)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tPOLICYTERMID, \n\tPOLICYTERMEFFECTIVEDATE, \n\tPOLICYTERMEXPIRATIONDATE, \n\tPOLICYREFERENCE, \n\tPOLICYTERMGROUPREFERENCE, \n\tPRIMARYACCOUNTID, \n\tPOLICYTERMCONFIGTEMPLATE, \n\tPOLICYTERMCONFIG, \n\tPOLICYAGGREGATIONREFERENCE, \n\tSPLITBILLINDICATOR, \n\tPOLICYTERMSTATUSCODE, \n\tAUTORESCINDEQUITYDATE, \n\tPOLICYISSUESYSTEMCODE, \n\tPOLICYMASTERCOMPANYCODE, \n\tPOLICYLINEOFBUSINESSCODE, \n\tPOLICYPRODUCTCODE, \n\tPOLICYSTATECODE, \n\tPOLICYCOUNTRYCODE, \n\tISSUESYSTEMPOLICYID, \n\tRENEWALCONFIGTEMPLATE, \n\tRENEWALCONFIG, \n\tRENEWALACCOUNTID, \n\tHOLDTYPECODE, \n\tHOLDREASONCODE, \n\tHOLDSTARTDATE, \n\tHOLDENDDATE, \n\tOUTSTANDINGBALANCE, \n\tEXPIRATIONACTIVITYDATE, \n\tLASTUPDATEDTIMESTAMP, \n\tLASTUPDATEDUSERID, \n\tPOLICYTERMLOCKINGTS, \n\tPOLICYTERMEXTENDEDDATA, \n\tPROCESSINGORGUNITCODE, \n\tTRANSACTIONGUID, \n\tPOLICYTERMCONFIGCOMMISSIONSCHEME\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "NO_OF_DAYS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

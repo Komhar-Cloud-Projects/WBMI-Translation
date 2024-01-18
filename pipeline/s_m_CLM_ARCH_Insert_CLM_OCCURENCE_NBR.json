@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLM_OCCURENCE_NBR",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLM_OCCURENCE_NBR",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_clm_occurrence_nbr_stage AS (\n\tSELECT clm_occurrence_nbr_stage.clm_occurrence_nbr_stage_id, clm_occurrence_nbr_stage.con_claim_nbr, clm_occurrence_nbr_stage.con_policy_id, clm_occurrence_nbr_stage.con_occurrence_nbr, clm_occurrence_nbr_stage.con_entry_opr_id, clm_occurrence_nbr_stage.con_create_ts, clm_occurrence_nbr_stage.con_loss_dt, clm_occurrence_nbr_stage.extract_date, clm_occurrence_nbr_stage.as_of_date, clm_occurrence_nbr_stage.record_count, clm_occurrence_nbr_stage.source_system_id \r\n\tFROM\r\n\t clm_occurrence_nbr_stage\r\n\tWHERE\r\n\tclm_occurrence_nbr_stage.con_create_ts >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_clm_occurrence_nbr AS (\n\tSELECT\n\tclm_occurrence_nbr_stage_id,\n\tcon_claim_nbr,\n\tcon_policy_id,\n\tcon_occurrence_nbr,\n\tcon_entry_opr_id,\n\tcon_create_ts,\n\tcon_loss_dt,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_clm_occurrence_nbr_stage\n),\narch_clm_occurrence_nbr_stage AS (\n\tINSERT INTO arch_clm_occurrence_nbr_stage\n\t(clm_occurrence_nbr_stage_id, con_claim_nbr, con_policy_id, con_occurrence_nbr, con_entry_opr_id, con_create_ts, con_loss_dt, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCLM_OCCURRENCE_NBR_STAGE_ID, \n\tCON_CLAIM_NBR, \n\tCON_POLICY_ID, \n\tCON_OCCURRENCE_NBR, \n\tCON_ENTRY_OPR_ID, \n\tCON_CREATE_TS, \n\tCON_LOSS_DT, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_clm_occurrence_nbr\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

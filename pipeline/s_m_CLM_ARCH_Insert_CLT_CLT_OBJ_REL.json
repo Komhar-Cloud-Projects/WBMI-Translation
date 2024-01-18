@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLT_CLT_OBJ_REL",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLT_CLT_OBJ_REL",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_clt_clt_obj_rel_stage AS (\n\tSELECT clt_clt_obj_rel_stage.clt_clt_obj_rel_stage_id,\r\n\t       clt_clt_obj_rel_stage.tch_object_key          ,\r\n\t       clt_clt_obj_rel_stage.client_id               ,\r\n\t       clt_clt_obj_rel_stage.history_vld_nbr         ,\r\n\t       clt_clt_obj_rel_stage.ciro_eff_dt             ,\r\n\t       clt_clt_obj_rel_stage.ciro_obj_seq_nbr        ,\r\n\t       clt_clt_obj_rel_stage.rlt_typ_cd              ,\r\n\t       clt_clt_obj_rel_stage.ciro_xrf_id             ,\r\n\t       clt_clt_obj_rel_stage.xrf_typ_cd              ,\r\n\t       clt_clt_obj_rel_stage.user_id                 ,\r\n\t       clt_clt_obj_rel_stage.status_cd               ,\r\n\t       clt_clt_obj_rel_stage.terminal_id             ,\r\n\t       clt_clt_obj_rel_stage.ciro_exp_dt             ,\r\n\t  \tclt_clt_obj_rel_stage.ciro_eff_acy_ts      ,\r\n\t       clt_clt_obj_rel_stage.ciro_exp_acy_ts         ,\r\n\t       clt_clt_obj_rel_stage.extract_date            ,\r\n\t       clt_clt_obj_rel_stage.as_of_date              ,\r\n\t       clt_clt_obj_rel_stage.record_count            ,\r\n\t       clt_clt_obj_rel_stage.source_system_id\r\n\tFROM   clt_clt_obj_rel_stage\r\n\tWHERE clt_clt_obj_rel_stage.ciro_eff_acy_ts >='@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_clt_clt_obj_rel AS (\n\tSELECT\n\tclt_clt_obj_rel_stage_id,\n\ttch_object_key,\n\tclient_id,\n\thistory_vld_nbr,\n\tciro_eff_dt,\n\tciro_obj_seq_nbr,\n\trlt_typ_cd,\n\tciro_xrf_id,\n\txrf_typ_cd,\n\tuser_id,\n\tstatus_cd,\n\tterminal_id,\n\tciro_exp_dt,\n\tciro_eff_acy_ts,\n\tciro_exp_acy_ts,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_clt_clt_obj_rel_stage\n),\narch_clt_clt_obj_rel_stage AS (\n\tINSERT INTO arch_clt_clt_obj_rel_stage\n\t(clt_clt_obj_rel_stage_id, tch_object_key, client_id, history_vld_nbr, ciro_eff_dt, ciro_obj_seq_nbr, rlt_typ_cd, ciro_xrf_id, xrf_typ_cd, user_id, status_cd, terminal_id, ciro_exp_dt, ciro_eff_acy_ts, ciro_exp_acy_ts, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCLT_CLT_OBJ_REL_STAGE_ID, \n\tTCH_OBJECT_KEY, \n\tCLIENT_ID, \n\tHISTORY_VLD_NBR, \n\tCIRO_EFF_DT, \n\tCIRO_OBJ_SEQ_NBR, \n\tRLT_TYP_CD, \n\tCIRO_XRF_ID, \n\tXRF_TYP_CD, \n\tUSER_ID, \n\tSTATUS_CD, \n\tTERMINAL_ID, \n\tCIRO_EXP_DT, \n\tCIRO_EFF_ACY_TS, \n\tCIRO_EXP_ACY_TS, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_clt_clt_obj_rel\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

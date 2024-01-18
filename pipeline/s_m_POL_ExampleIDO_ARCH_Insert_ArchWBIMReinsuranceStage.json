@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBIMReinsuranceStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBIMReinsuranceStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBIMReinsuranceStage AS (\n\tSELECT\n\t\tWBIMReinsuranceStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tWBCLReinsuranceId,\n\t\tWBIMReinsuranceId,\n\t\tSessionId,\n\t\tBlanketReinsurance,\n\t\tApplyToEntireSchedule,\n\t\tScheduleDetails,\n\t\tGrossCedingLimit,\n\t\tCedingLimitWithDirectFacTreaty,\n\t\tWBNetReinsuranceLimit,\n\t\tDirectFacTreatyPremium,\n\t\tWBPremium,\n\t\tEarthquake,\n\t\tFlood,\n\t\tInlandMarineNetReinsurancePremium,\n\t\tAdditionalComments,\n\t\tUnderwriter,\n\t\tUWDate,\n\t\tUWManager,\n\t\tUWManagerDate,\n\t\tSpecialConditionsInclude,\n\t\tSpecialConditionsExclude\n\tFROM WBIMReinsuranceStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBIMReinsuranceStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tWBCLReinsuranceId,\n\tWBIMReinsuranceId,\n\tSessionId,\n\tBlanketReinsurance,\n\t-- *INF*: DECODE(BlanketReinsurance, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    BlanketReinsurance,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_BlanketReinsurance,\n\tApplyToEntireSchedule,\n\t-- *INF*: DECODE(ApplyToEntireSchedule, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    ApplyToEntireSchedule,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ApplyToEntireSchedule,\n\tScheduleDetails,\n\tGrossCedingLimit,\n\tCedingLimitWithDirectFacTreaty,\n\tWBNetReinsuranceLimit,\n\tDirectFacTreatyPremium,\n\tWBPremium,\n\tEarthquake,\n\t-- *INF*: DECODE(Earthquake, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    Earthquake,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Earthquake,\n\tFlood,\n\t-- *INF*: DECODE(Flood, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    Flood,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Flood,\n\tInlandMarineNetReinsurancePremium,\n\tAdditionalComments,\n\tUnderwriter,\n\tUWDate,\n\tUWManager,\n\tUWManagerDate,\n\tSpecialConditionsInclude,\n\tSpecialConditionsExclude,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_WBIMReinsuranceStage\n),\nArchWBIMReinsuranceStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBIMReinsuranceStage\n\t(ExtractDate, SourceSystemId, AuditId, WBCLReinsuranceId, WBIMReinsuranceId, SessionId, BlanketReinsurance, ApplyToEntireSchedule, ScheduleDetails, GrossCedingLimit, CedingLimitWithDirectFacTreaty, WBNetReinsuranceLimit, DirectFacTreatyPremium, WBPremium, Earthquake, Flood, InlandMarineNetReinsurancePremium, AdditionalComments, Underwriter, UWDate, UWManager, UWManagerDate, SpecialConditionsInclude, SpecialConditionsExclude)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tWBCLREINSURANCEID, \n\tWBIMREINSURANCEID, \n\tSESSIONID, \n\to_BlanketReinsurance AS BLANKETREINSURANCE, \n\to_ApplyToEntireSchedule AS APPLYTOENTIRESCHEDULE, \n\tSCHEDULEDETAILS, \n\tGROSSCEDINGLIMIT, \n\tCEDINGLIMITWITHDIRECTFACTREATY, \n\tWBNETREINSURANCELIMIT, \n\tDIRECTFACTREATYPREMIUM, \n\tWBPREMIUM, \n\to_Earthquake AS EARTHQUAKE, \n\to_Flood AS FLOOD, \n\tINLANDMARINENETREINSURANCEPREMIUM, \n\tADDITIONALCOMMENTS, \n\tUNDERWRITER, \n\tUWDATE, \n\tUWMANAGER, \n\tUWMANAGERDATE, \n\tSPECIALCONDITIONSINCLUDE, \n\tSPECIALCONDITIONSEXCLUDE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

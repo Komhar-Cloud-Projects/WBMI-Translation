@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLM_CLMT_DAMAGES",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLM_CLMT_DAMAGES",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLM_CLMT_DAMAGES_STAGE AS (\n\tSELECT\n\t\tclm_clmt_damage_stage_id,\n\t\ttch_claim_nbr,\n\t\ttch_client_id,\n\t\tdamage_seq,\n\t\tdamage_cd,\n\t\tdamage_amt,\n\t\tdamage_desc,\n\t\tcreate_ts,\n\t\tcreate_user_id,\n\t\tupdate_ts,\n\t\tupdate_user_id,\n\t\tdamage_high_amt,\n\t\tdamage_type,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM CLM_CLMT_DAMAGES_STAGE\n),\nEXP_CLM_CLMT_DAMAGES_STAGE AS (\n\tSELECT\n\tclm_clmt_damage_stage_id,\n\ttch_claim_nbr,\n\ttch_client_id,\n\tdamage_seq,\n\tdamage_cd,\n\tdamage_amt,\n\tdamage_desc,\n\tcreate_ts,\n\tcreate_user_id,\n\tupdate_ts,\n\tupdate_user_id,\n\tdamage_high_amt,\n\tdamage_type,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id_op\n\tFROM SQ_CLM_CLMT_DAMAGES_STAGE\n),\nARCH_CLM_CLMT_DAMAGES_STAGE AS (\n\tINSERT INTO arch_clm_clmt_damages_stage\n\t(clm_clmt_damage_stage_id, tch_claim_nbr, tch_client_id, damage_seq, damage_cd, damage_amt, damage_desc, create_ts, create_user_id, update_ts, update_user_id, damage_high_amt, damage_type, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCLM_CLMT_DAMAGE_STAGE_ID, \n\tTCH_CLAIM_NBR, \n\tTCH_CLIENT_ID, \n\tDAMAGE_SEQ, \n\tDAMAGE_CD, \n\tDAMAGE_AMT, \n\tDAMAGE_DESC, \n\tCREATE_TS, \n\tCREATE_USER_ID, \n\tUPDATE_TS, \n\tUPDATE_USER_ID, \n\tDAMAGE_HIGH_AMT, \n\tDAMAGE_TYPE, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\taudit_id_op AS AUDIT_ID\n\tFROM EXP_CLM_CLMT_DAMAGES_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

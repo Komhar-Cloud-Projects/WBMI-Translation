@@ -51,48 +51,37 @@ EXP_Format_Email_Message AS (
 	SESSION_NAME,
 	SUCCESSFUL_ROWS,
 	-- *INF*: TO_CHAR(SUCCESSFUL_ROWS)
-	TO_CHAR(SUCCESSFUL_ROWS
-	) AS v_SUCCESSFUL_ROWS_string,
+	TO_CHAR(SUCCESSFUL_ROWS) AS v_SUCCESSFUL_ROWS_string,
 	FAILED_ROWS,
 	-- *INF*: TO_CHAR(FAILED_ROWS)
-	TO_CHAR(FAILED_ROWS
-	) AS v_FAILED_ROWS_string,
+	TO_CHAR(FAILED_ROWS) AS v_FAILED_ROWS_string,
 	FIRST_ERROR_CODE,
 	-- *INF*: TO_CHAR(FIRST_ERROR_CODE)
-	TO_CHAR(FIRST_ERROR_CODE
-	) AS v_FIRST_ERROR_CODE_string,
+	TO_CHAR(FIRST_ERROR_CODE) AS v_FIRST_ERROR_CODE_string,
 	FIRST_ERROR_MSG,
 	SESSION_TIMESTAMP,
 	batch_name,
 	email_address,
 	-- *INF*: batch_name || ' Exceptions Occurred ' ||  TO_CHAR(SESSION_TIMESTAMP)
-	batch_name || ' Exceptions Occurred ' || TO_CHAR(SESSION_TIMESTAMP
-	) AS email_subject,
+	batch_name || ' Exceptions Occurred ' || TO_CHAR(SESSION_TIMESTAMP) AS email_subject,
 	v_row_count_temp + 1 AS v_row_count,
 	-- *INF*: '<table width="100%" style="border-collapse: collapse" bordercolor="#111111" cellpadding="3" cellspacing="0">' || CHR(10) ||
 	-- '	<tr><td width="176"><b><font face="Arial" size="2">Session Name</font></b></td>' || CHR(10) ||
 	-- '      <td width="57"><b><font face="Arial" size="2">Target Success Rows</font></b></td>' || CHR(10) ||
 	-- '      <td width="53"><b><font face="Arial" size="2">Target Failed Rows</font></b></td>' || CHR(10) ||
 	-- '      <td width="884"><b><font face="Arial" size="2">First Error</font></b></td></tr>' || CHR(10) 
-	'<table width="100%" style="border-collapse: collapse" bordercolor="#111111" cellpadding="3" cellspacing="0">' || CHR(10
-	) || '	<tr><td width="176"><b><font face="Arial" size="2">Session Name</font></b></td>' || CHR(10
-	) || '      <td width="57"><b><font face="Arial" size="2">Target Success Rows</font></b></td>' || CHR(10
-	) || '      <td width="53"><b><font face="Arial" size="2">Target Failed Rows</font></b></td>' || CHR(10
-	) || '      <td width="884"><b><font face="Arial" size="2">First Error</font></b></td></tr>' || CHR(10
-	) AS v_email_body_header,
+	'<table width="100%" style="border-collapse: collapse" bordercolor="#111111" cellpadding="3" cellspacing="0">' || CHR(10) || '	<tr><td width="176"><b><font face="Arial" size="2">Session Name</font></b></td>' || CHR(10) || '      <td width="57"><b><font face="Arial" size="2">Target Success Rows</font></b></td>' || CHR(10) || '      <td width="53"><b><font face="Arial" size="2">Target Failed Rows</font></b></td>' || CHR(10) || '      <td width="884"><b><font face="Arial" size="2">First Error</font></b></td></tr>' || CHR(10) AS v_email_body_header,
 	-- *INF*: '	<tr><td width="176"><font face="Arial" size="2">' || SESSION_NAME || '</font></td>' ||
 	-- '	<td width="57"><font face="Arial" size="2">' || v_SUCCESSFUL_ROWS_string || '</font></td>' ||
 	-- '	<td width="53"><font face="Arial" size="2">'  || v_FAILED_ROWS_string || '</font></td>' ||
 	-- '	<td width="884"><font face="Arial" size="1">'  || FIRST_ERROR_MSG || ' </font></td></tr>' || CHR(10)
-	'	<tr><td width="176"><font face="Arial" size="2">' || SESSION_NAME || '</font></td>' || '	<td width="57"><font face="Arial" size="2">' || v_SUCCESSFUL_ROWS_string || '</font></td>' || '	<td width="53"><font face="Arial" size="2">' || v_FAILED_ROWS_string || '</font></td>' || '	<td width="884"><font face="Arial" size="1">' || FIRST_ERROR_MSG || ' </font></td></tr>' || CHR(10
-	) AS v_email_body_content,
+	'	<tr><td width="176"><font face="Arial" size="2">' || SESSION_NAME || '</font></td>' || '	<td width="57"><font face="Arial" size="2">' || v_SUCCESSFUL_ROWS_string || '</font></td>' || '	<td width="53"><font face="Arial" size="2">' || v_FAILED_ROWS_string || '</font></td>' || '	<td width="884"><font face="Arial" size="1">' || FIRST_ERROR_MSG || ' </font></td></tr>' || CHR(10) AS v_email_body_content,
 	-- *INF*: IIF(v_row_count = 1,
 	-- 	v_email_body_header || CHR(10) || v_email_body_content,
 	-- 	v_email_body_content)
-	IFF(v_row_count = 1,
-		v_email_body_header || CHR(10
-		) || v_email_body_content,
-		v_email_body_content
+	IFF(
+	    v_row_count = 1, v_email_body_header || CHR(10) || v_email_body_content,
+	    v_email_body_content
 	) AS v_email_body,
 	v_email_body AS out_email_body
 	FROM JNR_Rep_Sess_Log_WBMI_Batch_ControlRun

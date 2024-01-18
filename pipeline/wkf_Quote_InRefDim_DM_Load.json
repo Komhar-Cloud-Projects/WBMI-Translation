@@ -262,7 +262,7 @@
             }
         ],
         "folder": {
-            "name": "Quote DataMart/"
+            "name": "RPT_EDM and EDW/Quote DataMart/"
         },
         "variables": {
             "Params": {

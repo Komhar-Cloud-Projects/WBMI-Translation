@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_CoverageSummary AS (\n\tSELECT\n\t\tCoverageSummaryId,\n\t\tCoverageSummaryCode,\n\t\tCoverageSummaryDescription\n\tFROM CoverageSummary\n\tWHERE CoverageSummaryCode IS NOT NULL\n),\nEXP_Values AS (\n\tSELECT\n\tCoverageSummaryId AS i_CoverageSummaryId,\n\tCoverageSummaryCode AS i_CoverageSummaryCode,\n\tCoverageSummaryDescription AS i_CoverageSummaryDescription,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\t-- *INF*: IIF(ISNULL(i_CoverageSummaryId) OR LENGTH(i_CoverageSummaryId)=0, Error('Coverage Summary is missing an ID'), i_CoverageSummaryId)\n\tIFF(i_CoverageSummaryId IS NULL \n\t\tOR LENGTH(i_CoverageSummaryId\n\t\t) = 0,\n\t\tError('Coverage Summary is missing an ID'\n\t\t),\n\t\ti_CoverageSummaryId\n\t) AS o_CoverageSummaryId,\n\t-- *INF*: IIF(ISNULL(i_CoverageSummaryCode) OR LENGTH(i_CoverageSummaryCode)=0 OR IS_SPACES(i_CoverageSummaryCode), 'N/A', LTRIM(RTRIM(i_CoverageSummaryCode)))\n\tIFF(i_CoverageSummaryCode IS NULL \n\t\tOR LENGTH(i_CoverageSummaryCode\n\t\t) = 0 \n\t\tOR LENGTH(i_CoverageSummaryCode)>0 AND TRIM(i_CoverageSummaryCode)='',\n\t\t'N/A',\n\t\tLTRIM(RTRIM(i_CoverageSummaryCode\n\t\t\t)\n\t\t)\n\t) AS o_CoverageSummaryCode,\n\t-- *INF*: IIF(ISNULL(i_CoverageSummaryDescription) OR LENGTH(i_CoverageSummaryDescription)=0 OR IS_SPACES(i_CoverageSummaryDescription), 'N/A', LTRIM(RTRIM(i_CoverageSummaryDescription)))\n\tIFF(i_CoverageSummaryDescription IS NULL \n\t\tOR LENGTH(i_CoverageSummaryDescription\n\t\t) = 0 \n\t\tOR LENGTH(i_CoverageSummaryDescription)>0 AND TRIM(i_CoverageSummaryDescription)='',\n\t\t'N/A',\n\t\tLTRIM(RTRIM(i_CoverageSummaryDescription\n\t\t\t)\n\t\t)\n\t) AS o_CoverageSummaryDescription\n\tFROM SQ_CoverageSummary\n),\nLKP_CoverageSummary AS (\n\tSELECT\n\tCoverageSummaryId,\n\tCoverageSummaryCode,\n\tCoverageSummaryDescription\n\tFROM (\n\t\tSELECT \n\t\t\tCoverageSummaryId,\n\t\t\tCoverageSummaryCode,\n\t\t\tCoverageSummaryDescription\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageSummary\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY CoverageSummaryId ORDER BY CoverageSummaryId) = 1\n),\nEXP_ChangeFlag AS (\n\tSELECT\n\tLKP_CoverageSummary.CoverageSummaryId AS lkp_CoverageSummaryId,\n\tLKP_CoverageSummary.CoverageSummaryCode AS lkp_CoverageSummaryCode,\n\tLKP_CoverageSummary.CoverageSummaryDescription AS lkp_CoverageSummaryDescription,\n\tEXP_Values.o_CoverageSummaryId AS CoverageSummaryId,\n\tEXP_Values.o_CoverageSummaryCode AS CoverageSummaryCode,\n\tEXP_Values.o_CoverageSummaryDescription AS CoverageSummaryDescription,\n\tEXP_Values.o_CreatedDate AS CreatedDate,\n\tEXP_Values.o_ModifiedDate AS ModifiedDate,\n\t-- *INF*: DECODE(TRUE, \r\n\t-- ISNULL(lkp_CoverageSummaryId), 1,\r\n\t-- lkp_CoverageSummaryDescription<>CoverageSummaryDescription, 2, \r\n\t-- lkp_CoverageSummaryCode <> CoverageSummaryCode, 2,\r\n\t-- 0)\n\tDECODE(TRUE,\n\t\tlkp_CoverageSummaryId IS NULL, 1,\n\t\tlkp_CoverageSummaryDescription <> CoverageSummaryDescription, 2,\n\t\tlkp_CoverageSummaryCode <> CoverageSummaryCode, 2,\n\t\t0\n\t) AS o_ChangeFlag\n\tFROM EXP_Values\n\tLEFT JOIN LKP_CoverageSummary\n\tON LKP_CoverageSummary.CoverageSummaryId = EXP_Values.o_CoverageSummaryId\n),\nRTR_Insert_Update_Groups AS (\n\tSELECT\n\tCoverageSummaryId,\n\tCreatedDate,\n\tModifiedDate,\n\tCoverageSummaryCode,\n\tCoverageSummaryDescription,\n\to_ChangeFlag AS ChangeFlag\n\tFROM EXP_ChangeFlag\n),\nRTR_Insert_Update_Groups_INSERT AS (SELECT * FROM RTR_Insert_Update_Groups WHERE ChangeFlag=1),\nRTR_Insert_Update_Groups_UPDATE AS (SELECT * FROM RTR_Insert_Update_Groups WHERE ChangeFlag=2),\nCoverageSummary_Insert AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageSummary\n\t(CoverageSummaryId, CreatedDate, ModifiedDate, CoverageSummaryCode, CoverageSummaryDescription)\n\tSELECT \n\tCOVERAGESUMMARYID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tCOVERAGESUMMARYCODE, \n\tCOVERAGESUMMARYDESCRIPTION\n\tFROM RTR_Insert_Update_Groups_INSERT\n),\nUPD_CoverageSummary AS (\n\tSELECT\n\tCoverageSummaryId, \n\tModifiedDate, \n\tCoverageSummaryCode, \n\tCoverageSummaryDescription\n\tFROM RTR_Insert_Update_Groups_UPDATE\n),\nCoverageSummary_Update AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageSummary AS T\n\tUSING UPD_CoverageSummary AS S\n\tON T.CoverageSummaryId = S.CoverageSummaryId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ModifiedDate = S.ModifiedDate, T.CoverageSummaryCode = S.CoverageSummaryCode, T.CoverageSummaryDescription = S.CoverageSummaryDescription\n),"
+                            "text": "WITH\nSQ_CoverageSummary AS (\n\tSELECT\n\t\tCoverageSummaryId,\n\t\tCoverageSummaryCode,\n\t\tCoverageSummaryDescription\n\tFROM CoverageSummary\n\tWHERE CoverageSummaryCode IS NOT NULL\n),\nEXP_Values AS (\n\tSELECT\n\tCoverageSummaryId AS i_CoverageSummaryId,\n\tCoverageSummaryCode AS i_CoverageSummaryCode,\n\tCoverageSummaryDescription AS i_CoverageSummaryDescription,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\t-- *INF*: IIF(ISNULL(i_CoverageSummaryId) OR LENGTH(i_CoverageSummaryId)=0, Error('Coverage Summary is missing an ID'), i_CoverageSummaryId)\n\tIFF(\n\t    i_CoverageSummaryId IS NULL OR LENGTH(i_CoverageSummaryId) = 0,\n\t    Error('Coverage Summary is missing an ID'),\n\t    i_CoverageSummaryId\n\t) AS o_CoverageSummaryId,\n\t-- *INF*: IIF(ISNULL(i_CoverageSummaryCode) OR LENGTH(i_CoverageSummaryCode)=0 OR IS_SPACES(i_CoverageSummaryCode), 'N/A', LTRIM(RTRIM(i_CoverageSummaryCode)))\n\tIFF(\n\t    i_CoverageSummaryCode IS NULL\n\t    or LENGTH(i_CoverageSummaryCode) = 0\n\t    or LENGTH(i_CoverageSummaryCode)>0\n\t    and TRIM(i_CoverageSummaryCode)='',\n\t    'N/A',\n\t    LTRIM(RTRIM(i_CoverageSummaryCode))\n\t) AS o_CoverageSummaryCode,\n\t-- *INF*: IIF(ISNULL(i_CoverageSummaryDescription) OR LENGTH(i_CoverageSummaryDescription)=0 OR IS_SPACES(i_CoverageSummaryDescription), 'N/A', LTRIM(RTRIM(i_CoverageSummaryDescription)))\n\tIFF(\n\t    i_CoverageSummaryDescription IS NULL\n\t    or LENGTH(i_CoverageSummaryDescription) = 0\n\t    or LENGTH(i_CoverageSummaryDescription)>0\n\t    and TRIM(i_CoverageSummaryDescription)='',\n\t    'N/A',\n\t    LTRIM(RTRIM(i_CoverageSummaryDescription))\n\t) AS o_CoverageSummaryDescription\n\tFROM SQ_CoverageSummary\n),\nLKP_CoverageSummary AS (\n\tSELECT\n\tCoverageSummaryId,\n\tCoverageSummaryCode,\n\tCoverageSummaryDescription\n\tFROM (\n\t\tSELECT \n\t\t\tCoverageSummaryId,\n\t\t\tCoverageSummaryCode,\n\t\t\tCoverageSummaryDescription\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageSummary\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY CoverageSummaryId ORDER BY CoverageSummaryId) = 1\n),\nEXP_ChangeFlag AS (\n\tSELECT\n\tLKP_CoverageSummary.CoverageSummaryId AS lkp_CoverageSummaryId,\n\tLKP_CoverageSummary.CoverageSummaryCode AS lkp_CoverageSummaryCode,\n\tLKP_CoverageSummary.CoverageSummaryDescription AS lkp_CoverageSummaryDescription,\n\tEXP_Values.o_CoverageSummaryId AS CoverageSummaryId,\n\tEXP_Values.o_CoverageSummaryCode AS CoverageSummaryCode,\n\tEXP_Values.o_CoverageSummaryDescription AS CoverageSummaryDescription,\n\tEXP_Values.o_CreatedDate AS CreatedDate,\n\tEXP_Values.o_ModifiedDate AS ModifiedDate,\n\t-- *INF*: DECODE(TRUE, \r\n\t-- ISNULL(lkp_CoverageSummaryId), 1,\r\n\t-- lkp_CoverageSummaryDescription<>CoverageSummaryDescription, 2, \r\n\t-- lkp_CoverageSummaryCode <> CoverageSummaryCode, 2,\r\n\t-- 0)\n\tDECODE(\n\t    TRUE,\n\t    lkp_CoverageSummaryId IS NULL, 1,\n\t    lkp_CoverageSummaryDescription <> CoverageSummaryDescription, 2,\n\t    lkp_CoverageSummaryCode <> CoverageSummaryCode, 2,\n\t    0\n\t) AS o_ChangeFlag\n\tFROM EXP_Values\n\tLEFT JOIN LKP_CoverageSummary\n\tON LKP_CoverageSummary.CoverageSummaryId = EXP_Values.o_CoverageSummaryId\n),\nRTR_Insert_Update_Groups AS (\n\tSELECT\n\tCoverageSummaryId,\n\tCreatedDate,\n\tModifiedDate,\n\tCoverageSummaryCode,\n\tCoverageSummaryDescription,\n\to_ChangeFlag AS ChangeFlag\n\tFROM EXP_ChangeFlag\n),\nRTR_Insert_Update_Groups_INSERT AS (SELECT * FROM RTR_Insert_Update_Groups WHERE ChangeFlag=1),\nRTR_Insert_Update_Groups_UPDATE AS (SELECT * FROM RTR_Insert_Update_Groups WHERE ChangeFlag=2),\nCoverageSummary_Insert AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageSummary\n\t(CoverageSummaryId, CreatedDate, ModifiedDate, CoverageSummaryCode, CoverageSummaryDescription)\n\tSELECT \n\tCOVERAGESUMMARYID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tCOVERAGESUMMARYCODE, \n\tCOVERAGESUMMARYDESCRIPTION\n\tFROM RTR_Insert_Update_Groups_INSERT\n),\nUPD_CoverageSummary AS (\n\tSELECT\n\tCoverageSummaryId, \n\tModifiedDate, \n\tCoverageSummaryCode, \n\tCoverageSummaryDescription\n\tFROM RTR_Insert_Update_Groups_UPDATE\n),\nCoverageSummary_Update AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageSummary AS T\n\tUSING UPD_CoverageSummary AS S\n\tON T.CoverageSummaryId = S.CoverageSummaryId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ModifiedDate = S.ModifiedDate, T.CoverageSummaryCode = S.CoverageSummaryCode, T.CoverageSummaryDescription = S.CoverageSummaryDescription\n),"
                         }
                     ]
                 },
@@ -30,49 +30,13 @@
             }
         ],
         "parameters": {
-            "WBMI_AUDIT_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "246535"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "905690"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7604836"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "08/30/2023 22:04:54"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/31/2023 11:42:10"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_InsuranceReference_Policy"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
             "TARGET_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": "DBO"
-            },
-            "SOURCE_SYSTEM_ID": {
-                "type": "string",
-                "defaultValue": "InsRef"
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Common DataWarehouse/"
+            "name": "RPT_EDM and EDW/Common DataWarehouse/"
         },
         "annotations": []
     }

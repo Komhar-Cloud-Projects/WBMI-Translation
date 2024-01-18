@@ -93,11 +93,9 @@ AGGTRANS AS (
 	Id,
 	CoverageId,
 	-- *INF*: count(pol_key)
-	count(pol_key
-	) AS count_pol_key,
+	count(pol_key) AS count_pol_key,
 	-- *INF*: count(RatingCoverageAKId)
-	count(RatingCoverageAKId
-	) AS count_RatingCoverageAKId
+	count(RatingCoverageAKId) AS count_RatingCoverageAKId
 	FROM JNR_IL_Stage
 	GROUP BY PremiumTransactionID
 ),

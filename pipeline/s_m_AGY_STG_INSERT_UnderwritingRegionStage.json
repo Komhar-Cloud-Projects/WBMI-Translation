@@ -1,0 +1,47 @@
+{
+    "name": "s_m_AGY_STG_INSERT_UnderwritingRegionStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_STG_INSERT_UnderwritingRegionStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_UnderwritingRegion_ODS AS (\n\tSELECT\n\t\tUnderwritingRegionID,\n\t\tSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tUnderwritingRegionCode,\n\t\tUnderwritingRegionCodeDescription\n\tFROM UnderwritingRegion_ODS\n),\nEXP_Add_MetaDataFields AS (\n\tSELECT\n\tUnderwritingRegionID,\n\tSourceSystemID,\n\tHashKey,\n\tModifiedUserID,\n\tModifiedDate,\n\tUnderwritingRegionCode,\n\tUnderwritingRegionCodeDescription,\n\tsysdate AS Extract_Date,\n\tSysdate AS As_of_Date,\n\t1 AS Record_Count,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS Source_System_ID\n\tFROM SQ_UnderwritingRegion_ODS\n),\nUnderwritingRegionStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwritingRegionStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwritingRegionStage\n\t(AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, UnderwritingRegionCode, UnderwritingRegionCodeDescription, ExtractDate, AsOfDate, RecordCount, SourceSystemID)\n\tSELECT \n\tSourceSystemID AS AGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tUNDERWRITINGREGIONCODE, \n\tUNDERWRITINGREGIONCODEDESCRIPTION, \n\tExtract_Date AS EXTRACTDATE, \n\tAs_of_Date AS ASOFDATE, \n\tRecord_Count AS RECORDCOUNT, \n\tSource_System_ID AS SOURCESYSTEMID\n\tFROM EXP_Add_MetaDataFields\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

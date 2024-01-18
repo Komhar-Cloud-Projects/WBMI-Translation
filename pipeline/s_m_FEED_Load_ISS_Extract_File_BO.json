@@ -1,0 +1,43 @@
+{
+    "name": "s_m_FEED_Load_ISS_Extract_File_BO",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_FEED_Load_ISS_Extract_File_BO",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_ISSBusinessOwnersExtract AS (\n\tSELECT\n\t\tISSBusinessOwnersExtractId,\n\t\tAuditId,\n\t\tCreatedDate,\n\t\tEDWPremiumMasterCalculationPKId,\n\t\tEDWLossMasterCalculationPKId,\n\t\tTypeBureauCode,\n\t\tBureauLineOfInsurance,\n\t\tBureauCompanyNumber,\n\t\tStateProvinceCode,\n\t\tPremiumMasterRunDate,\n\t\tLossMasterRunDate,\n\t\tPolicyKey,\n\t\tPremiumMasterClassCode,\n\t\tLossMasterClassCode,\n\t\tClaimNumber,\n\t\tClaimantNumber,\n\t\tRiskTerritoryCode,\n\t\tPolicyEffectiveDate,\n\t\tCauseOfLoss,\n\t\tCoverageCode,\n\t\tISOFireProtectionCode,\n\t\tTypeOfPolicyForm,\n\t\tPremiumMasterDirectWrittenPremiumAmount,\n\t\tPaidLossAmount,\n\t\tOutstandingLossAmount,\n\t\tPolicyExpirationDate,\n\t\tInceptionToDatePaidLossAmount,\n\t\tClaimantCoverageDetailId,\n\t\tAnnualStatementLineNumber,\n\t\tPolicyLimit,\n\t\tExposureBasis,\n\t\tConstructionCode,\n\t\tSprinklerFlag,\n\t\tLimitOfInsurance,\n\t\tWrittenExposure,\n\t\tPaidAllocatedLossAdjustmentExpenseAmount,\n\t\tOutstandingAllocatedLossAdjustmentExpenseAmount,\n\t\tClaimLossDate,\n\t\tZipPostalCode,\n\t\tTransactionEffectiveDate,\n\t\tBusinessClassificationCode\n\tFROM ISSBusinessOwnersExtract\n\tWHERE @{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Set_FileName AS (\n\tSELECT\n\t-- *INF*: TRUNC(SYSDATE,'DD')\n\tCAST(TRUNC(CURRENT_TIMESTAMP, 'DAY') AS TIMESTAMP_NTZ(0)) AS v_RunDate,\n\t-- *INF*: 'ISS_BO_CL_'||TO_CHAR(v_RunDate,'YYYYMMDD')||'.CSV'\n\t'ISS_BO_CL_' || TO_CHAR(v_RunDate, 'YYYYMMDD') || '.CSV' AS FileName,\n\tISSBusinessOwnersExtractId AS WorkISSExtractId,\n\tAuditId,\n\tCreatedDate,\n\tEDWPremiumMasterCalculationPKId,\n\tEDWLossMasterCalculationPKId,\n\tTypeBureauCode,\n\tBureauLineOfInsurance,\n\tBureauCompanyNumber,\n\tStateProvinceCode,\n\tPremiumMasterRunDate,\n\tLossMasterRunDate,\n\tPolicyKey,\n\tPremiumMasterClassCode,\n\tLossMasterClassCode,\n\tClaimNumber,\n\tClaimantNumber,\n\tRiskTerritoryCode,\n\tPolicyEffectiveDate,\n\tCauseOfLoss,\n\tCoverageCode,\n\tISOFireProtectionCode,\n\tTypeOfPolicyForm,\n\tPremiumMasterDirectWrittenPremiumAmount,\n\tPaidLossAmount,\n\tOutstandingLossAmount,\n\tPolicyExpirationDate,\n\tInceptionToDatePaidLossAmount,\n\tClaimantCoverageDetailId,\n\tAnnualStatementLineNumber,\n\tPolicyLimit,\n\tExposureBasis,\n\tConstructionCode,\n\tSprinklerFlag,\n\tLimitOfInsurance,\n\tWrittenExposure,\n\tPaidAllocatedLossAdjustmentExpenseAmount,\n\tOutstandingAllocatedLossAdjustmentExpenseAmount,\n\tClaimLossDate,\n\tZipPostalCode,\n\tTransactionEffectiveDate,\n\tBusinessClassificationCode\n\tFROM SQ_ISSBusinessOwnersExtract\n),\nSRT_ISS_FlatFile_BO AS (\n\tSELECT\n\tFileName, \n\tWorkISSExtractId, \n\tAuditId, \n\tCreatedDate, \n\tEDWPremiumMasterCalculationPKId, \n\tEDWLossMasterCalculationPKId, \n\tTypeBureauCode, \n\tBureauLineOfInsurance, \n\tBureauCompanyNumber, \n\tStateProvinceCode, \n\tPremiumMasterRunDate, \n\tLossMasterRunDate, \n\tPolicyKey, \n\tPremiumMasterClassCode, \n\tLossMasterClassCode, \n\tClaimNumber, \n\tClaimantNumber, \n\tRiskTerritoryCode, \n\tPolicyEffectiveDate, \n\tCauseOfLoss, \n\tCoverageCode, \n\tISOFireProtectionCode, \n\tTypeOfPolicyForm, \n\tPremiumMasterDirectWrittenPremiumAmount, \n\tPaidLossAmount, \n\tOutstandingLossAmount, \n\tPolicyExpirationDate, \n\tInceptionToDatePaidLossAmount, \n\tClaimantCoverageDetailId, \n\tAnnualStatementLineNumber, \n\tPolicyLimit, \n\tExposureBasis, \n\tConstructionCode, \n\tSprinklerFlag, \n\tLimitOfInsurance, \n\tWrittenExposure, \n\tPaidAllocatedLossAdjustmentExpenseAmount, \n\tOutstandingAllocatedLossAdjustmentExpenseAmount, \n\tClaimLossDate, \n\tZipPostalCode, \n\tTransactionEffectiveDate, \n\tBusinessClassificationCode\n\tFROM EXP_Set_FileName\n\tORDER BY PolicyKey ASC, PremiumMasterClassCode ASC, CoverageCode ASC, AnnualStatementLineNumber ASC, ZipPostalCode ASC\n),\nISSFlatFile_BO AS (\n\tINSERT INTO ISSFlatFile_BO\n\t(FileName, WorkISSExtractId, AuditId, CreatedDate, EDWPremiumMasterCalculationPKId, EDWLossMasterCalculationPKId, TypeBureauCode, BureauLineOfInsurance, BureauCompanyNumber, StateProvinceCode, PremiumMasterRunDate, LossMasterRunDate, PolicyKey, PremiumMasterClassCode, LossMasterClassCode, ClaimNumber, ClaimantNumber, RiskTerritoryCode, PolicyEffectiveDate, CauseOfLoss, CoverageCode, ISOFireProtectionCode, TypeOfPolicyForm, PremiumMasterDirectWrittenPremiumAmount, PaidLossAmount, OutstandingLossAmount, PolicyExpirationDate, InceptionToDatePaidLossAmount, ClaimantCoverageDetailId, AnnualStatementLineNumber, PolicyLimit, ExposureBasis, ConstructionCode, SprinklerFlag, LimitOfInsurance, WrittenExposure, PaidAllocatedLossAdjustmentExpenseAmount, OutstandingAllocatedLossAdjustmentExpenseAmount, ClaimLossDate, ZipPostalCode, TransactionEffectiveDate, BusinessClassificationCode)\n\tSELECT \n\tFILENAME, \n\tWORKISSEXTRACTID, \n\tAUDITID, \n\tCREATEDDATE, \n\tEDWPREMIUMMASTERCALCULATIONPKID, \n\tEDWLOSSMASTERCALCULATIONPKID, \n\tTYPEBUREAUCODE, \n\tBUREAULINEOFINSURANCE, \n\tBUREAUCOMPANYNUMBER, \n\tSTATEPROVINCECODE, \n\tPREMIUMMASTERRUNDATE, \n\tLOSSMASTERRUNDATE, \n\tPOLICYKEY, \n\tPREMIUMMASTERCLASSCODE, \n\tLOSSMASTERCLASSCODE, \n\tCLAIMNUMBER, \n\tCLAIMANTNUMBER, \n\tRISKTERRITORYCODE, \n\tPOLICYEFFECTIVEDATE, \n\tCAUSEOFLOSS, \n\tCOVERAGECODE, \n\tISOFIREPROTECTIONCODE, \n\tTYPEOFPOLICYFORM, \n\tPREMIUMMASTERDIRECTWRITTENPREMIUMAMOUNT, \n\tPAIDLOSSAMOUNT, \n\tOUTSTANDINGLOSSAMOUNT, \n\tPOLICYEXPIRATIONDATE, \n\tINCEPTIONTODATEPAIDLOSSAMOUNT, \n\tCLAIMANTCOVERAGEDETAILID, \n\tANNUALSTATEMENTLINENUMBER, \n\tPOLICYLIMIT, \n\tEXPOSUREBASIS, \n\tCONSTRUCTIONCODE, \n\tSPRINKLERFLAG, \n\tLIMITOFINSURANCE, \n\tWRITTENEXPOSURE, \n\tPAIDALLOCATEDLOSSADJUSTMENTEXPENSEAMOUNT, \n\tOUTSTANDINGALLOCATEDLOSSADJUSTMENTEXPENSEAMOUNT, \n\tCLAIMLOSSDATE, \n\tZIPPOSTALCODE, \n\tTRANSACTIONEFFECTIVEDATE, \n\tBUSINESSCLASSIFICATIONCODE\n\tFROM SRT_ISS_FlatFile_BO\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

@@ -40,10 +40,7 @@ EXP_CollectData AS (
 	SELECT
 	LKP_AgencyCode.AgencyCode AS i_lkp_AgencyCode,
 	-- *INF*: IIF(ISNULL(i_lkp_AgencyCode), 'N/A',i_lkp_AgencyCode)
-	IFF(i_lkp_AgencyCode IS NULL,
-		'N/A',
-		i_lkp_AgencyCode
-	) AS o_lkp_AgencyCode,
+	IFF(i_lkp_AgencyCode IS NULL, 'N/A', i_lkp_AgencyCode) AS o_lkp_AgencyCode,
 	SQ_AgencyEmployee.AgencyEmployeeID AS AgencyEmployeePKID,
 	SQ_AgencyEmployee.AgencyEmployeeAKID,
 	SQ_AgencyEmployee.AgencyAKID,
@@ -112,16 +109,14 @@ EXP_CheckForChange AS (
 	EXP_CollectData.TerminatedDate AS i_TerminatedDate,
 	EXP_CollectData.UserID AS i_UserID,
 	-- *INF*: MD5(i_AgencyCode || '&' || i_AgencyEmployeeCode || '&' || i_AgencyEmployeeRole || '&' || i_ProducerCode || '&' || i_StatusCode || '&' || TO_CHAR(i_ListedDate) || '&' || TO_CHAR(i_TerminatedDate))
-	MD5(i_AgencyCode || '&' || i_AgencyEmployeeCode || '&' || i_AgencyEmployeeRole || '&' || i_ProducerCode || '&' || i_StatusCode || '&' || TO_CHAR(i_ListedDate
-		) || '&' || TO_CHAR(i_TerminatedDate
-		)
-	) AS v_new_Type2HashKey,
+	MD5(i_AgencyCode || '&' || i_AgencyEmployeeCode || '&' || i_AgencyEmployeeRole || '&' || i_ProducerCode || '&' || i_StatusCode || '&' || TO_CHAR(i_ListedDate) || '&' || TO_CHAR(i_TerminatedDate)) AS v_new_Type2HashKey,
 	-- *INF*: DECODE(true,
 	-- i_AgencyEmployeePKID <> lkp_ExistingEDWAgencyEmployeePKID, 'Y',
 	-- 'N')
-	DECODE(true,
-		i_AgencyEmployeePKID <> lkp_ExistingEDWAgencyEmployeePKID, 'Y',
-		'N'
+	DECODE(
+	    true,
+	    i_AgencyEmployeePKID <> lkp_ExistingEDWAgencyEmployeePKID, 'Y',
+	    'N'
 	) AS v_ChangeToEDWRecord,
 	-- *INF*: DECODE(true,
 	-- ISNULL(lkp_ExistingAgencyEmployeeDimHashKey), 'Insert',
@@ -136,19 +131,13 @@ EXP_CheckForChange AS (
 	-- -- If one of the type 2 attributes changed, we expire the old record (also inserts a new record, see router)
 	-- -- If there was no change to the type 2 attributes AND there was a change to the PKID in the EDW then we update the record.  Important to have the logic comparing the hash keys, otherwise we might attempt to update records where we are already expiring and inserting a new record.
 	-- 	
-	DECODE(true,
-		lkp_ExistingAgencyEmployeeDimHashKey IS NULL, 'Insert',
-		( lkp_ExistingAgencyEmployeeDimHashKey = v_new_Type2HashKey 
-		) 
-		AND ( v_ChangeToEDWRecord = 'N' 
-		), 'Ignore',
-		( lkp_ExistingAgencyEmployeeDimHashKey <> v_new_Type2HashKey 
-		), 'Expire',
-		( lkp_ExistingAgencyEmployeeDimHashKey = v_new_Type2HashKey 
-		) 
-		AND ( v_ChangeToEDWRecord = 'Y' 
-		), 'Update',
-		'Ignore'
+	DECODE(
+	    true,
+	    lkp_ExistingAgencyEmployeeDimHashKey IS NULL, 'Insert',
+	    (lkp_ExistingAgencyEmployeeDimHashKey = v_new_Type2HashKey) and (v_ChangeToEDWRecord = 'N'), 'Ignore',
+	    (lkp_ExistingAgencyEmployeeDimHashKey <> v_new_Type2HashKey), 'Expire',
+	    (lkp_ExistingAgencyEmployeeDimHashKey = v_new_Type2HashKey) and (v_ChangeToEDWRecord = 'Y'), 'Update',
+	    'Ignore'
 	) AS v_InsertUpdateExpireOrIgnore,
 	lkp_ExistingAgencyEmployeeDimID AS o_lkp_ExistingAgencyEmployeeDimID,
 	1 AS o_CurrentSnapshotFlag,
@@ -157,17 +146,16 @@ EXP_CheckForChange AS (
 	-- *INF*: DECODE(v_InsertUpdateExpireOrIgnore,
 	-- 'Insert',   TO_DATE('1800-01-01 01:00:00.000', 'YYYY-MM-DD HH24:MI:SS.MS'),
 	-- SYSDATE)
-	DECODE(v_InsertUpdateExpireOrIgnore,
-		'Insert', TO_DATE('1800-01-01 01:00:00.000', 'YYYY-MM-DD HH24:MI:SS.MS'
-		),
-		SYSDATE
+	DECODE(
+	    v_InsertUpdateExpireOrIgnore,
+	    'Insert', TO_TIMESTAMP('1800-01-01 01:00:00.000', 'YYYY-MM-DD HH24:MI:SS.MS'),
+	    CURRENT_TIMESTAMP
 	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.MS')
-	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.MS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.MS') AS o_ExpirationDate,
 	-- *INF*: ADD_TO_DATE(SYSDATE, 'MS', -1)
 	-- 
-	DATEADD(MS,- 1,SYSDATE) AS o_ExpirationDate_ForExpire,
+	DATEADD(MS,- 1,CURRENT_TIMESTAMP) AS o_ExpirationDate_ForExpire,
 	SYSDATE AS o_CurrentDate,
 	v_new_Type2HashKey AS o_Type2HashKey,
 	v_InsertUpdateExpireOrIgnore AS o_InsertUpdateExpireOrIgnore

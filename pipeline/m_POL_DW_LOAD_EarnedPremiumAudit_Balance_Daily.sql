@@ -142,10 +142,7 @@ EXP_SetEarnedPremiumValues AS (
 	SELECT
 	LKP_GetFirstAudits.PremiumTransactionID AS PremiumMasterCalculationID,
 	-- *INF*: IIF(ISNULL(PremiumMasterCalculationID),'1','2')
-	IFF(PremiumMasterCalculationID IS NULL,
-		'1',
-		'2'
-	) AS Decision_Flag,
+	IFF(PremiumMasterCalculationID IS NULL, '1', '2') AS Decision_Flag,
 	EXP_Src_Data_Collect.CurrentSnapshotFlag,
 	999 AS AuditID,
 	EXP_Src_Data_Collect.EffectiveDate,
@@ -180,31 +177,19 @@ EXP_SetEarnedPremiumValues AS (
 	EXP_Src_Data_Collect.ReasonAmendedCode,
 	EXP_Src_Data_Collect.EarnedPremium,
 	-- *INF*: IIF(Decision_Flag='1',EarnedPremium,EarnedPremium+UnearnedPremium)
-	IFF(Decision_Flag = '1',
-		EarnedPremium,
-		EarnedPremium + UnearnedPremium
-	) AS v_EarnedPremium,
+	IFF(Decision_Flag = '1', EarnedPremium, EarnedPremium + UnearnedPremium) AS v_EarnedPremium,
 	v_EarnedPremium AS O_EarnedPremium,
 	EXP_Src_Data_Collect.ChangeInEarnedPremium,
 	-- *INF*: IIF(Decision_Flag='1',0.0,v_EarnedPremium-EarnedPremium)
-	IFF(Decision_Flag = '1',
-		0.0,
-		v_EarnedPremium - EarnedPremium
-	) AS v_ChangeInEarnedPremium,
+	IFF(Decision_Flag = '1', 0.0, v_EarnedPremium - EarnedPremium) AS v_ChangeInEarnedPremium,
 	v_ChangeInEarnedPremium AS O_ChangeInEarnedPremium,
 	EXP_Src_Data_Collect.UnearnedPremium,
 	-- *INF*: IIF(Decision_Flag='1',UnearnedPremium,0.0)
-	IFF(Decision_Flag = '1',
-		UnearnedPremium,
-		0.0
-	) AS v_UnearnedPremium,
+	IFF(Decision_Flag = '1', UnearnedPremium, 0.0) AS v_UnearnedPremium,
 	v_UnearnedPremium AS O_UnearnedPremium,
 	EXP_Src_Data_Collect.ChangeInUnearnedPremium,
 	-- *INF*: IIF(Decision_Flag='1',0.0,v_UnearnedPremium-UnearnedPremium)
-	IFF(Decision_Flag = '1',
-		0.0,
-		v_UnearnedPremium - UnearnedPremium
-	) AS v_ChangeInUnearnedPremium,
+	IFF(Decision_Flag = '1', 0.0, v_UnearnedPremium - UnearnedPremium) AS v_ChangeInUnearnedPremium,
 	v_ChangeInUnearnedPremium AS O_ChangeInUnearnedPremium,
 	EXP_Src_Data_Collect.ProductCode,
 	EXP_Src_Data_Collect.AnnualStatementLineCode,
@@ -223,23 +208,14 @@ EXP_SetEarnedPremiumValues AS (
 	'' AS v_TotalDays,
 	LKP_GetExposure.Exposure AS LKP_Exposure,
 	-- *INF*: IIF(ISNULL(LKP_Exposure),0.0,LKP_Exposure)
-	IFF(LKP_Exposure IS NULL,
-		0.0,
-		LKP_Exposure
-	) AS v_Exposure,
+	IFF(LKP_Exposure IS NULL, 0.0, LKP_Exposure) AS v_Exposure,
 	EXP_Src_Data_Collect.EarnedExposure,
 	-- *INF*: IIF(Decision_Flag='1',EarnedExposure,v_Exposure)
-	IFF(Decision_Flag = '1',
-		EarnedExposure,
-		v_Exposure
-	) AS v_EarnedExposure,
+	IFF(Decision_Flag = '1', EarnedExposure, v_Exposure) AS v_EarnedExposure,
 	v_EarnedExposure AS O_EarnedExposure,
 	EXP_Src_Data_Collect.ChangeInEarnedExposure,
 	-- *INF*: IIF(Decision_Flag='1',0.0,v_Exposure-EarnedExposure)
-	IFF(Decision_Flag = '1',
-		0.0,
-		v_Exposure - EarnedExposure
-	) AS v_ChangeInEarnedExposure,
+	IFF(Decision_Flag = '1', 0.0, v_Exposure - EarnedExposure) AS v_ChangeInEarnedExposure,
 	v_ChangeInEarnedExposure AS O_ChangeInEarnedExposure,
 	EXP_Src_Data_Collect.Exposure
 	FROM EXP_Src_Data_Collect

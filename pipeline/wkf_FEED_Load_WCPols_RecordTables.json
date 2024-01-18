@@ -1,0 +1,862 @@
+{
+    "name": "wkf_FEED_Load_WCPols_RecordTables",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_00_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_00_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_01_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_00_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_01_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_07_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_06_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_07_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_04_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_02_03_05_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_04_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sp-PreBatch_DataFeeds_WCPols_RecordTables",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_PreBatch]",
+                    "storedProcedureParameters": {
+                        "BatchName": {
+                            "value": {
+                                "value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['batch_name']",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sp-PostBatch_DataFeeds_WCPols_RecordTables",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_EI_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_PostBatch]",
+                    "storedProcedureParameters": {
+                        "BatchName": {
+                            "value": {
+                                "value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['batch_name']",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_43_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_42_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_43_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_42_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_40_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_42_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_08_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Update_WCPOLS_LinkData_BeforeFileGenera_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_08_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_09_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Update_WCPOLS_LinkData_BeforeFileGenera_01",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_09_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_21_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_19_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_21_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_02_03_05_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_01_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_02_03_05_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_44_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_43_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_44_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_19_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_18_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_19_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_40_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_38_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_40_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_23_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_21_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_23_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_24_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_23_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_24_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_25_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_24_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_25_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_29_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_25_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_29_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_36_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_30_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_36_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_ED_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_EC_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_ED_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_EC_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_44_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_EC_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_06_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_04_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_06_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_18_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_09_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_18_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_30_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_29_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_30_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_37_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_36_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_37_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_38_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_37_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_38_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_HA_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_ED_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_HA_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Update_WCPOLS_LinkData_BeforeFileGenera_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_07_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Update_WCPOLS_LinkData_BeforeFileGenerate"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_FEED_Update_WCPOLS_LinkData_BeforeFileGenerate_MN_WI_SET",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Update_WCPOLS_LinkData_BeforeFileGenera_01",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_08_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Update_WCPOLS_LinkData_BeforeFileGenerate"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_FEED_Update_WCPOLS_LinkData_BeforeFileGenerate_MN_WI_REVERT",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_HC_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_HA_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_HC_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Load_WCPOLS_EI_Record",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Load_WCPOLS_HC_Record",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Load_WCPOLS_EI_Record"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "spt-Get Pipeline Parameters",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "sp-PreBatch_DataFeeds_WCPols_RecordTables",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": {
+                                "value": "@concat('EXEC Proc_Pipeline_Parameters @workflow_name = ''', pipeline().Pipeline, '''')",
+                                "type": "Expression"
+                            }
+                        }
+                    ],
+                    "scriptBlockExecutionTimeout": "02:00:00"
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sv-Set Params",
+                "type": "SetVariable",
+                "dependsOn": [
+                    {
+                        "activity": "spt-Get Pipeline Parameters",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "Params",
+                    "value": {
+                        "value": "@activity('spt-Get Pipeline Parameters').output.resultSets[0].rows[0]['json_value']",
+                        "type": "Expression"
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sp-ins_upd_rep_sess_log",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "sp-PostBatch_DataFeeds_WCPols_RecordTables",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_Upsert_Rep_Session_Log]",
+                    "storedProcedureParameters": {
+                        "jsonInput": {
+                            "value": {
+                                "value": "[\n   {\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineReturnValue.end_time}\"\n}\n]",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "variables": {
+            "Params": {
+                "type": "String"
+            }
+        }
+    }
+}

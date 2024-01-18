@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLAIM_DRAFT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLAIM_DRAFT",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLAIM_DRAFT_STAGE1 AS (\n\tSELECT\n\t\tclaim_draft_id AS CLAIM_DRAFT_ID,\n\t\tdft_draft_nbr AS DFT_DRAFT_NBR,\n\t\tdft_bank_nm_id AS DFT_BANK_NM_ID,\n\t\tdft_bank_nbr AS DFT_BANK_NBR,\n\t\tdft_draft_ctl_seq AS DFT_DRAFT_CTL_SEQ,\n\t\tdft_mail_to_nm_id AS DFT_MAIL_TO_NM_ID,\n\t\tdft_memo_phr_des AS DFT_MEMO_PHR_DES,\n\t\tdft_mail_to_adr_1 AS DFT_MAIL_TO_ADR_1,\n\t\tdft_mail_to_adr_2 AS DFT_MAIL_TO_ADR_2,\n\t\tdft_payee_nm_id_1 AS DFT_PAYEE_NM_ID_1,\n\t\tdft_payee_nm_id_2 AS DFT_PAYEE_NM_ID_2,\n\t\tdft_payee_nm_id_3 AS DFT_PAYEE_NM_ID_3,\n\t\tdft_tax_id_nbr AS DFT_TAX_ID_NBR,\n\t\tdft_trs_amt AS DFT_TRS_AMT,\n\t\tdft_update_opr_id AS DFT_UPDATE_OPR_ID,\n\t\tdft_pmsd_ts AS DFT_PMSD_TS,\n\t\tdft_upd_ts AS DFT_UPD_TS,\n\t\tdft_mail_to_zip_cd AS DFT_MAIL_TO_ZIP_CD,\n\t\tdft_payee_phr_des AS DFT_PAYEE_PHR_DES,\n\t\tdft_ck_draft_ind AS DFT_CK_DRAFT_IND,\n\t\tdft_producer_nm_id AS DFT_PRODUCER_NM_ID,\n\t\tdft_dft_ck_typ_cd AS DFT_DFT_CK_TYP_CD,\n\t\tdft_sch_of_nbr AS DFT_SCH_OF_NBR,\n\t\tdft_sch_seq_nbr AS DFT_SCH_SEQ_NBR,\n\t\tdft_report_to_irs AS DFT_REPORT_TO_IRS,\n\t\tdft_tax_id_type_cd AS DFT_TAX_ID_TYPE_CD,\n\t\tdft_entry_opr_id AS DFT_ENTRY_OPR_ID,\n\t\tdft_create_ts AS DFT_CREATE_TS,\n\t\tck_dft_apv_ind AS CK_DFT_APV_IND,\n\t\tdft_aut_by_id AS DFT_AUT_BY_ID,\n\t\tdft_micrp_ecd_nbr AS DFT_MICRP_ECD_NBR,\n\t\tdft_mmo_phr_cmt_id AS DFT_MMO_PHR_CMT_ID,\n\t\tdft_clt_seq_nbr_1 AS DFT_CLT_SEQ_NBR_1,\n\t\tdft_clt_seq_nbr_2 AS DFT_CLT_SEQ_NBR_2,\n\t\tdft_clt_seq_nbr_3 AS DFT_CLT_SEQ_NBR_3,\n\t\tdft_adjuster_id AS DFT_ADJUSTER_ID,\n\t\tdft_city_nm AS DFT_CITY_NM,\n\t\tdft_mail_to_st_cd AS DFT_MAIL_TO_ST_CD,\n\t\tdft_mail_to_ctr_cd AS DFT_MAIL_TO_CTR_CD,\n\t\tdft_mail_to_cty_nm AS DFT_MAIL_TO_CTY_NM,\n\t\tdft_claim_nbr AS DFT_CLAIM_NBR,\n\t\tdft_dbs_status_cd AS DFT_DBS_STATUS_CD,\n\t\tdft_dbs_dt AS DFT_DBS_DT,\n\t\tdft_invoice_nbr AS DFT_INVOICE_NBR,\n\t\tdft_service_frm_dt AS DFT_SERVICE_FRM_DT,\n\t\tdft_service_to_dt AS DFT_SERVICE_TO_DT,\n\t\tdft_dsb_loc_cd AS DFT_DSB_LOC_CD,\n\t\tdft_pye_phr_cmt_id AS DFT_PYE_PHR_CMT_ID,\n\t\textract_date AS EXTRACT_DATE,\n\t\tas_of_date AS AS_OF_DATE,\n\t\trecord_count AS RECORD_COUNT,\n\t\tsource_system_id AS SOURCE_SYSTEM_ID,\n\t\tdft_pay_to_nm_cmt_id,\n\t\tdft_mail_to_nm_cmt_id,\n\t\tpayment_system\n\tFROM CLAIM_DRAFT_STAGE\n),\nEXP_CLAIM_DRAFT_STAGE AS (\n\tSELECT\n\tCLAIM_DRAFT_ID,\n\tDFT_DRAFT_NBR,\n\tDFT_BANK_NM_ID,\n\tDFT_BANK_NBR,\n\tDFT_DRAFT_CTL_SEQ,\n\tDFT_MAIL_TO_NM_ID,\n\tDFT_MEMO_PHR_DES,\n\tDFT_MAIL_TO_ADR_1,\n\tDFT_MAIL_TO_ADR_2,\n\tDFT_PAYEE_NM_ID_1,\n\tDFT_PAYEE_NM_ID_2,\n\tDFT_PAYEE_NM_ID_3,\n\tDFT_TAX_ID_NBR,\n\tDFT_TRS_AMT,\n\tDFT_UPDATE_OPR_ID,\n\tDFT_PMSD_TS,\n\tDFT_UPD_TS,\n\tDFT_MAIL_TO_ZIP_CD,\n\tDFT_PAYEE_PHR_DES,\n\tDFT_CK_DRAFT_IND,\n\tDFT_PRODUCER_NM_ID,\n\tDFT_DFT_CK_TYP_CD,\n\tDFT_SCH_OF_NBR,\n\tDFT_SCH_SEQ_NBR,\n\tDFT_REPORT_TO_IRS,\n\tDFT_TAX_ID_TYPE_CD,\n\tDFT_ENTRY_OPR_ID,\n\tDFT_CREATE_TS,\n\tCK_DFT_APV_IND,\n\tDFT_AUT_BY_ID,\n\tDFT_MICRP_ECD_NBR,\n\tDFT_MMO_PHR_CMT_ID,\n\tDFT_CLT_SEQ_NBR_1,\n\tDFT_CLT_SEQ_NBR_2,\n\tDFT_CLT_SEQ_NBR_3,\n\tDFT_ADJUSTER_ID,\n\tDFT_CITY_NM,\n\tDFT_MAIL_TO_ST_CD,\n\tDFT_MAIL_TO_CTR_CD,\n\tDFT_MAIL_TO_CTY_NM,\n\tDFT_CLAIM_NBR,\n\tDFT_DBS_STATUS_CD,\n\tDFT_DBS_DT,\n\tDFT_INVOICE_NBR,\n\tDFT_SERVICE_FRM_DT,\n\tDFT_SERVICE_TO_DT,\n\tDFT_DSB_LOC_CD,\n\tDFT_PYE_PHR_CMT_ID,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP,\n\tdft_pay_to_nm_cmt_id,\n\tdft_mail_to_nm_cmt_id,\n\tpayment_system\n\tFROM SQ_CLAIM_DRAFT_STAGE1\n),\nARCH_CLAIM_DRAFT_STAGE AS (\n\tINSERT INTO ARCH_CLAIM_DRAFT_STAGE\n\t(claim_draft_id, dft_draft_nbr, dft_bank_nm_id, dft_bank_nbr, dft_draft_ctl_seq, dft_mail_to_nm_id, dft_memo_phr_des, dft_mail_to_adr_1, dft_mail_to_adr_2, dft_payee_nm_id_1, dft_payee_nm_id_2, dft_payee_nm_id_3, dft_tax_id_nbr, dft_trs_amt, dft_update_opr_id, dft_pmsd_ts, dft_upd_ts, dft_mail_to_zip_cd, dft_payee_phr_des, dft_ck_draft_ind, dft_producer_nm_id, dft_dft_ck_typ_cd, dft_sch_of_nbr, dft_sch_seq_nbr, dft_report_to_irs, dft_tax_id_type_cd, dft_entry_opr_id, dft_create_ts, ck_dft_apv_ind, dft_aut_by_id, dft_micrp_ecd_nbr, dft_mmo_phr_cmt_id, dft_clt_seq_nbr_1, dft_clt_seq_nbr_2, dft_clt_seq_nbr_3, dft_adjuster_id, dft_city_nm, dft_mail_to_st_cd, dft_mail_to_ctr_cd, dft_mail_to_cty_nm, dft_claim_nbr, dft_dbs_status_cd, dft_dbs_dt, dft_invoice_nbr, dft_service_frm_dt, dft_service_to_dt, dft_dsb_loc_cd, dft_pye_phr_cmt_id, extract_date, as_of_date, record_count, source_system_id, audit_id, dft_pay_to_nm_cmt_id, dft_mail_to_nm_cmt_id, payment_system)\n\tSELECT \n\tCLAIM_DRAFT_ID AS CLAIM_DRAFT_ID, \n\tDFT_DRAFT_NBR AS DFT_DRAFT_NBR, \n\tDFT_BANK_NM_ID AS DFT_BANK_NM_ID, \n\tDFT_BANK_NBR AS DFT_BANK_NBR, \n\tDFT_DRAFT_CTL_SEQ AS DFT_DRAFT_CTL_SEQ, \n\tDFT_MAIL_TO_NM_ID AS DFT_MAIL_TO_NM_ID, \n\tDFT_MEMO_PHR_DES AS DFT_MEMO_PHR_DES, \n\tDFT_MAIL_TO_ADR_1 AS DFT_MAIL_TO_ADR_1, \n\tDFT_MAIL_TO_ADR_2 AS DFT_MAIL_TO_ADR_2, \n\tDFT_PAYEE_NM_ID_1 AS DFT_PAYEE_NM_ID_1, \n\tDFT_PAYEE_NM_ID_2 AS DFT_PAYEE_NM_ID_2, \n\tDFT_PAYEE_NM_ID_3 AS DFT_PAYEE_NM_ID_3, \n\tDFT_TAX_ID_NBR AS DFT_TAX_ID_NBR, \n\tDFT_TRS_AMT AS DFT_TRS_AMT, \n\tDFT_UPDATE_OPR_ID AS DFT_UPDATE_OPR_ID, \n\tDFT_PMSD_TS AS DFT_PMSD_TS, \n\tDFT_UPD_TS AS DFT_UPD_TS, \n\tDFT_MAIL_TO_ZIP_CD AS DFT_MAIL_TO_ZIP_CD, \n\tDFT_PAYEE_PHR_DES AS DFT_PAYEE_PHR_DES, \n\tDFT_CK_DRAFT_IND AS DFT_CK_DRAFT_IND, \n\tDFT_PRODUCER_NM_ID AS DFT_PRODUCER_NM_ID, \n\tDFT_DFT_CK_TYP_CD AS DFT_DFT_CK_TYP_CD, \n\tDFT_SCH_OF_NBR AS DFT_SCH_OF_NBR, \n\tDFT_SCH_SEQ_NBR AS DFT_SCH_SEQ_NBR, \n\tDFT_REPORT_TO_IRS AS DFT_REPORT_TO_IRS, \n\tDFT_TAX_ID_TYPE_CD AS DFT_TAX_ID_TYPE_CD, \n\tDFT_ENTRY_OPR_ID AS DFT_ENTRY_OPR_ID, \n\tDFT_CREATE_TS AS DFT_CREATE_TS, \n\tCK_DFT_APV_IND AS CK_DFT_APV_IND, \n\tDFT_AUT_BY_ID AS DFT_AUT_BY_ID, \n\tDFT_MICRP_ECD_NBR AS DFT_MICRP_ECD_NBR, \n\tDFT_MMO_PHR_CMT_ID AS DFT_MMO_PHR_CMT_ID, \n\tDFT_CLT_SEQ_NBR_1 AS DFT_CLT_SEQ_NBR_1, \n\tDFT_CLT_SEQ_NBR_2 AS DFT_CLT_SEQ_NBR_2, \n\tDFT_CLT_SEQ_NBR_3 AS DFT_CLT_SEQ_NBR_3, \n\tDFT_ADJUSTER_ID AS DFT_ADJUSTER_ID, \n\tDFT_CITY_NM AS DFT_CITY_NM, \n\tDFT_MAIL_TO_ST_CD AS DFT_MAIL_TO_ST_CD, \n\tDFT_MAIL_TO_CTR_CD AS DFT_MAIL_TO_CTR_CD, \n\tDFT_MAIL_TO_CTY_NM AS DFT_MAIL_TO_CTY_NM, \n\tDFT_CLAIM_NBR AS DFT_CLAIM_NBR, \n\tDFT_DBS_STATUS_CD AS DFT_DBS_STATUS_CD, \n\tDFT_DBS_DT AS DFT_DBS_DT, \n\tDFT_INVOICE_NBR AS DFT_INVOICE_NBR, \n\tDFT_SERVICE_FRM_DT AS DFT_SERVICE_FRM_DT, \n\tDFT_SERVICE_TO_DT AS DFT_SERVICE_TO_DT, \n\tDFT_DSB_LOC_CD AS DFT_DSB_LOC_CD, \n\tDFT_PYE_PHR_CMT_ID AS DFT_PYE_PHR_CMT_ID, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID, \n\tDFT_PAY_TO_NM_CMT_ID, \n\tDFT_MAIL_TO_NM_CMT_ID, \n\tPAYMENT_SYSTEM\n\tFROM EXP_CLAIM_DRAFT_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

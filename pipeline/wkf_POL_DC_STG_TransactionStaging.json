@@ -1,0 +1,1210 @@
+{
+    "name": "wkf_POL_DC_STG_TransactionStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCTransactionStaging",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCTransactionStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBCoverageStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBCoverageStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBTransactionStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageEmployeeDi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBTransactionStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBGOCStateStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageEmployeeDi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBGOCStateStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCAGarageStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageEmployeeDi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCAGarageStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBIMStateStaging",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBIMStateStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCFRatingGroupStaging",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageEmployeeDi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCFRatingGroupStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCFCoverageEarthquake_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageEmployeeDi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCFCoverageEarthquakeRiskStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_DCCFCoverageEarthquakeRiskStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoverageBuildingStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageEmployeeDi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoverageBuildingStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoverageEarthQuake_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageEmployeeDi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoverageEarthQuakeStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoverageEarthQuakeStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoveragePersonalPr_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCFRatingGroupStaging",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBCFCoverageUnmannedAi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCAGarageStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBGOCStateStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBTransactionStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCFCoverageEarthquake_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoverageBuildingStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoverageEarthQuake_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoveragePersonalPropertyStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoveragePersonalPropertyStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBPOLBatchRenewalPolic_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBPOLBatchRenewalPolicyStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_WBPOLBatchRenewalPolicyStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCTransactionReportEnt_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCTransactionReportEntryStaging"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_DCTransactionReportEntryStaging",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageEmployeeDi_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCAPublicStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBGLCoverageNS0432Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCABusinessInterrupti_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCABusinessInterrupti_01",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCABusinessInterrupti_02",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageEmployeeDishonestyStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageEmployeeDishonestyStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBCFCoverageUnmannedAi_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageEmployeeDi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBCFCoverageUnmannedAircraftStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_WBCFCoverageUnmannedAircraftStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAi_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCFBuilderStaging",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCUUmbrellaBusinessOw_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBCUUmbrellaCommercial_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCBPBuildingStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBPriorInsuranceStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBCFReinsuranceLocatio_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCWCRiskStaging",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCFLineStaging",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCACoverageUMBIStaging",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAircraftPropertyStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAircraftPropertyStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAi_01",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAircraftLimitedStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAircraftLimitedStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoverageEmployeeDi_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoverageEmployeeDishonestyStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoverageEmployeeDishonestyStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCAPublicStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCAPublicStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBGLCoverageNS0432Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBGLCoverageNS0432Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCABusinessInterrupti_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCABusinessInterruptionOptionStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_DCCABusinessInterruptionOptionStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCABusinessInterrupti_01",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCABusinessInterruptionOptionScheduleStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_DCCABusinessInterruptionOptionScheduleStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCABusinessInterrupti_02",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCABusinessInterruptionEndorsementStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_DCCABusinessInterruptionEndorsementStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCLineStaging",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBCFCoverageOrdinanceO_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCFCoveragePierOrWhar_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DcCrRiskCrimeStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCFPersonalPropertySt_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCRLineStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCIMRiskStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCCFLocationPropertySt_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBCFLineStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCLineStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCStatCodeStaging",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCStatCodeStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCLimitStaging",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCLimitStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCFLocationPropertySt_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoveragePersonalPr_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCFLocationPropertyStaging"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_DCCFLocationPropertyStaging",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBCFLineStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoveragePersonalPr_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBCFLineStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DcCrRiskStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DcCrRiskStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DcCrRiskCrimeStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoveragePersonalPr_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DcCrRiskCrimeStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCRLineStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoveragePersonalPr_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCRLineStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCIMRiskStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoveragePersonalPr_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCIMRiskStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCIMCoverageFormStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCIMCoverageFormStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCFCoveragePierOrWhar_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoveragePersonalPr_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCFCoveragePierOrWharfStaging"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_DCCFCoveragePierOrWharfStaging",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBCFCoverageOrdinanceO_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoveragePersonalPr_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBCFCoverageOrdinanceOrLawStaging"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_WBCFCoverageOrdinanceOrLawStaging",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCFPersonalPropertySt_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoveragePersonalPr_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCFPersonalPropertyStaging"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_DCCFPersonalPropertyStaging",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCFCoverageSpoilageSt_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_WBBPCoverageUnmannedAi_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCFCoverageSpoilageStaging"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_DCCFCoverageSpoilageStaging",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCFBuilderStaging",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCLineStaging",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCFBuilderStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCUUmbrellaBusinessOw_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCLineStaging",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCUUmbrellaBusinessOwnersStaging"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_DCCUUmbrellaBusinessOwnersStaging",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBCUUmbrellaCommercial_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCLineStaging",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBCUUmbrellaCommercialAutoStaging"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_WBCUUmbrellaCommercialAutoStaging",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCBPBuildingStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCLineStaging",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCBPBuildingStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBPriorInsuranceStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCLineStaging",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBPriorInsuranceStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBCFReinsuranceLocatio_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCLineStaging",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBCFReinsuranceLocationStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_STG_Insert_WBCFReinsuranceLocationStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCWCRiskStaging",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCLineStaging",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCWCRiskStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCFLineStaging",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCLineStaging",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCFLineStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_DCCACoverageUMBIStaging",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_ExampleIDO_STG_Insert_DCLineStaging",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_DCCACoverageUMBIStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_STG_Insert_WBGLCoverageNS0453Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_STG_Insert_WBGLCoverageNS0453Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleData_STG_Insert_HistoryStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleData_STG_Insert_HistoryStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "variables": {}
+    }
+}

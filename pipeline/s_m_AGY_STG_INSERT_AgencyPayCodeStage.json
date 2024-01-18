@@ -1,0 +1,47 @@
+{
+    "name": "s_m_AGY_STG_INSERT_AgencyPayCodeStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_STG_INSERT_AgencyPayCodeStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AgencyPayCode AS (\n\tSELECT\n\t\tAgencyPayCodeID,\n\t\tSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tAgencyCode,\n\t\tPayCode,\n\t\tCommissionScheduleCode,\n\t\tPayCodeEffectiveDate,\n\t\tPayCodeExpirationDate\n\tFROM AgencyPayCode\n),\nEXP_GetData AS (\n\tSELECT\n\tAgencyPayCodeID,\n\tSourceSystemID AS AgencyODSSourceSystemID,\n\tHashKey,\n\tModifiedUserID,\n\tModifiedDate,\n\tAgencyID,\n\tAgencyCode,\n\tPayCode,\n\tCommissionScheduleCode,\n\tPayCodeEffectiveDate,\n\tPayCodeExpirationDate,\n\tsysdate AS CurrentDate,\n\t1 AS RecordCount,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS SourceSystemID\n\tFROM SQ_AgencyPayCode\n),\nAgencyPayCodeStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyPayCodeStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyPayCodeStage\n\t(AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, PayCode, CommissionScheduleCode, PayCodeEffectiveDate, PayCodeExpirationDate, ExtractDate, AsOfDate, RecordCount, SourceSystemID)\n\tSELECT \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tAGENCYCODE, \n\tPAYCODE, \n\tCOMMISSIONSCHEDULECODE, \n\tPAYCODEEFFECTIVEDATE, \n\tPAYCODEEXPIRATIONDATE, \n\tCurrentDate AS EXTRACTDATE, \n\tCurrentDate AS ASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID\n\tFROM EXP_GetData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_gtam_wboccup_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_gtam_wboccup_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_wboccup_stage AS (\n\tSELECT\n\t\tgtam_wboccup_stage_id,\n\t\tbusiness_class_code,\n\t\tclassification_of_business,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_wboccup_stage\n),\nLKP_arch_gtam_wboccup_stage AS (\n\tSELECT\n\tarch_gtam_wboccup_stage_id,\n\tgtam_wboccup_stage_id,\n\tclassification_of_business,\n\tin_business_class_code,\n\tbusiness_class_code\n\tFROM (\n\t\tSELECT arch_gtam_wboccup_stage.arch_gtam_wboccup_stage_id as arch_gtam_wboccup_stage_id, arch_gtam_wboccup_stage.gtam_wboccup_stage_id as gtam_wboccup_stage_id, arch_gtam_wboccup_stage.classification_of_business as classification_of_business, arch_gtam_wboccup_stage.business_class_code as business_class_code FROM arch_gtam_wboccup_stage\r\n\t\twhere \tarch_gtam_wboccup_stage.arch_gtam_wboccup_stage_id In\r\n\t\t\t(Select max(arch_gtam_wboccup_stage_id) from arch_gtam_wboccup_stage b\r\n\t\t\tgroup by b.business_class_code)\r\n\t\torder by arch_gtam_wboccup_stage.business_class_code--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY business_class_code ORDER BY arch_gtam_wboccup_stage_id) = 1\n),\nEXP_arch_wboccup_stage AS (\n\tSELECT\n\tSQ_gtam_wboccup_stage.gtam_wboccup_stage_id,\n\tSQ_gtam_wboccup_stage.business_class_code,\n\tSQ_gtam_wboccup_stage.classification_of_business,\n\tSQ_gtam_wboccup_stage.extract_date AS EXTRACT_DATE,\n\tSQ_gtam_wboccup_stage.as_of_date AS AS_OF_DATE,\n\tSQ_gtam_wboccup_stage.record_count AS RECORD_COUNT,\n\tSQ_gtam_wboccup_stage.source_system_id AS SOURCE_SYSTEM_ID,\n\tLKP_arch_gtam_wboccup_stage.arch_gtam_wboccup_stage_id AS old_arch_gtam_wboccup_stage_id,\n\tLKP_arch_gtam_wboccup_stage.classification_of_business AS old_classification_of_business,\n\t-- *INF*: iif(isnull(old_arch_gtam_wboccup_stage_id), 'NEW',\r\n\t--      iif((old_classification_of_business<>classification_of_business),'UPDATE', 'NOCHANGE'))\n\tIFF(\n\t    old_arch_gtam_wboccup_stage_id IS NULL, 'NEW',\n\t    IFF(\n\t        (old_classification_of_business <> classification_of_business), 'UPDATE', 'NOCHANGE'\n\t    )\n\t) AS v_Changed_Flag,\n\tv_Changed_Flag AS Changed_Flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID\n\tFROM SQ_gtam_wboccup_stage\n\tLEFT JOIN LKP_arch_gtam_wboccup_stage\n\tON LKP_arch_gtam_wboccup_stage.business_class_code = SQ_gtam_wboccup_stage.business_class_code\n),\nFIL_Inserts AS (\n\tSELECT\n\tgtam_wboccup_stage_id, \n\tbusiness_class_code, \n\tclassification_of_business, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tChanged_Flag, \n\tAUDIT_ID\n\tFROM EXP_arch_wboccup_stage\n\tWHERE Changed_Flag = 'NEW' OR Changed_Flag = 'UPDATE'\n),\narch_gtam_wboccup_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_gtam_wboccup_stage\n\t(gtam_wboccup_stage_id, business_class_code, classification_of_business, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tGTAM_WBOCCUP_STAGE_ID, \n\tBUSINESS_CLASS_CODE, \n\tCLASSIFICATION_OF_BUSINESS, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID\n\tFROM FIL_Inserts\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

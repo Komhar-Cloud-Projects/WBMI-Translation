@@ -1,0 +1,88 @@
+{
+    "name": "wkf_CLM_HISTORICAL_UPDATE_SSN_Tokens",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_Insert_SSN_Tokens_OneTime",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "wklt_OneTime_Conversion",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_Insert_WorkTokenExResponse_SSN_Tokens"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_Generate_SSN_Tokens_OneTime",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_GENERATE_SSN_Tokens_OneTimeBatch"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "wklt_OneTime_Conversion",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_Generate_SSN_Tokens_OneTime",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "HistoricalDataUpdate/"
+        },
+        "variables": {}
+    }
+}

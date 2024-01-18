@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageUnmannedAircraftLimitedStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageUnmanne_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBBPCoverageUnmannedAircraftLimitedStage AS (\n\tSELECT\n\t\tWBBPCoverageUnmannedAircraftLimitedStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tCoverageId,\n\t\tWB_BP_CoverageUnmannedAircraftLimitedId,\n\t\tSessionId,\n\t\tBodilyInjuryAndPropertyDamageLimited,\n\t\tPersonalAndAdvertisingInjuryLimited\n\tFROM WBBPCoverageUnmannedAircraftLimitedStage\n),\nEXP_MetaData AS (\n\tSELECT\n\tWBBPCoverageUnmannedAircraftLimitedStageId,\n\tExtractDate,\n\tSourceSystemid,\n\tCoverageId,\n\tWB_BP_CoverageUnmannedAircraftLimitedId,\n\tSessionId,\n\tBodilyInjuryAndPropertyDamageLimited,\n\tPersonalAndAdvertisingInjuryLimited,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBBPCoverageUnmannedAircraftLimitedStage\n),\nArchWBBPCoverageUnmannedAircraftLimitedStage AS (\n\tINSERT INTO ArchWBBPCoverageUnmannedAircraftLimitedStage\n\t(ExtractDate, SourceSystemId, AuditId, WBBPCoverageUnmannedAircraftLimitedStageId, CoverageId, WB_BP_CoverageUnmannedAircraftLimitedId, SessionId, BodilyInjuryAndPropertyDamageLimited, PersonalAndAdvertisingInjuryLimited)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemid AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBBPCOVERAGEUNMANNEDAIRCRAFTLIMITEDSTAGEID, \n\tCOVERAGEID, \n\tWB_BP_COVERAGEUNMANNEDAIRCRAFTLIMITEDID, \n\tSESSIONID, \n\tBODILYINJURYANDPROPERTYDAMAGELIMITED, \n\tPERSONALANDADVERTISINGINJURYLIMITED\n\tFROM EXP_MetaData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

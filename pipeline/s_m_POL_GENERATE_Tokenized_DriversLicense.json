@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_GENERATE_Tokenized_DriversLicense",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_GENERATE_Tokenized_DriversLicense",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_EARS_IncidentFile_FF AS (\n\n-- TODO Manual --\n\n),\nEXP_EARS_Incident AS (\n\tSELECT\n\tEARSData,\n\t-- *INF*: LTRIM(RTRIM(SUBSTR(EARSData, 1, 2)))\n\tLTRIM(RTRIM(SUBSTR(EARSData, 1, 2))) AS Field\n\tFROM SQ_EARS_IncidentFile_FF\n),\nFIL_DL_Incident AS (\n\tSELECT\n\tEARSData, \n\tField\n\tFROM EXP_EARS_Incident\n\tWHERE IN(LTRIM(RTRIM(Field)), '01', '03')\n),\nEXP_Incident_DL AS (\n\tSELECT\n\tEARSData,\n\tField,\n\t-- *INF*: IIF(Field = '01', LTRIM(RTRIM(SUBSTR(EARSData, 5, 22))))\n\tIFF(Field = '01', LTRIM(RTRIM(SUBSTR(EARSData, 5, 22)))) AS v_LicenseNumber,\n\t-- *INF*: IIF(Field = '01', LTRIM(RTRIM(SUBSTR(EARSData, 72, 22))))\n\tIFF(Field = '01', LTRIM(RTRIM(SUBSTR(EARSData, 72, 22)))) AS v_Quoteback,\n\t-- *INF*: IIF(Field = '03', LTRIM(RTRIM(SUBSTR(EARSData, 80, 22))))\n\tIFF(Field = '03', LTRIM(RTRIM(SUBSTR(EARSData, 80, 22)))) AS v_PreviousLicense,\n\t-- *INF*: LTRIM(v_LicenseNumber,'0')\n\tLTRIM(v_LicenseNumber, '0') AS v_LicenseNumber_Remove0,\n\t-- *INF*: LTRIM(v_Quoteback,'0')\n\tLTRIM(v_Quoteback, '0') AS v_Quoteback_Remove0,\n\tv_LicenseNumber AS LicenseNumber,\n\tv_Quoteback AS Quoteback,\n\tv_PreviousLicense AS PreviousLicense\n\tFROM FIL_DL_Incident\n),\nSQ_EARS_RejectFile_FF AS (\n\n-- TODO Manual --\n\n),\nEXP_EARS_Reject AS (\n\tSELECT\n\tEARSData,\n\t-- *INF*: LTRIM(RTRIM(SUBSTR(EARSData, 1, 2)))\n\tLTRIM(RTRIM(SUBSTR(EARSData, 1, 2))) AS Field\n\tFROM SQ_EARS_RejectFile_FF\n),\nFIL_DL_Reject AS (\n\tSELECT\n\tEARSData, \n\tField\n\tFROM EXP_EARS_Reject\n\tWHERE NOT IN (LTRIM(RTRIM(Field)), 'FH', 'FT')\n),\nEXP_Reject_DL AS (\n\tSELECT\n\tEARSData,\n\t-- *INF*: LTRIM(RTRIM(SUBSTR(EARSData, 3, 22)))\n\tLTRIM(RTRIM(SUBSTR(EARSData, 3, 22))) AS v_LicenseNumber,\n\t-- *INF*: LTRIM(RTRIM(SUBSTR(EARSData, 213, 22)))\n\tLTRIM(RTRIM(SUBSTR(EARSData, 213, 22))) AS v_Quoteback,\n\t-- *INF*: LTRIM(v_LicenseNumber,'0')\n\tLTRIM(v_LicenseNumber, '0') AS v_LicenseNumber_Remove0,\n\t-- *INF*: LTRIM(v_Quoteback,'0')\n\tLTRIM(v_Quoteback, '0') AS v_Quoteback_Remove0,\n\tv_LicenseNumber AS LicenseNumber,\n\tv_Quoteback AS Quoteback\n\tFROM FIL_DL_Reject\n),\nUnion AS (\n\tSELECT LicenseNumber\n\tFROM EXP_Incident_DL\n\tUNION\n\tSELECT Quoteback AS LicenseNumber\n\tFROM EXP_Incident_DL\n\tUNION\n\tSELECT LicenseNumber\n\tFROM EXP_Reject_DL\n\tUNION\n\tSELECT Quoteback AS LicenseNumber\n\tFROM EXP_Reject_DL\n\tUNION\n\tSELECT PreviousLicense AS LicenseNumber\n\tFROM EXP_Incident_DL\n),\nSRTTRANS AS (\n\tSELECT\n\tLicenseNumber\n\tFROM Union\n\tORDER BY LicenseNumber ASC\n),\nEXP_Values AS (\n\tSELECT\n\tLicenseNumber AS i_LicenseNumber,\n\t-- *INF*: UPPER(LTRIM(RTRIM(i_LicenseNumber)))\n\tUPPER(LTRIM(RTRIM(i_LicenseNumber))) AS o_LicenseNumber,\n\t'Tokenize' AS Function,\n\t'DriversLicense' AS Scheme,\n\t'EARS' AS Requestedby,\n\t'EARS' AS Application,\n\t'EARS' AS Caller,\n\t'EARS_DL_Tokenized.csv' AS File_Name,\n\t-- *INF*: IIF(v_SeqNumber = 0, @{pipeline().parameters.BATCHSIZE} ,v_SeqNumber + 1)\n\tIFF(v_SeqNumber = 0, @{pipeline().parameters.BATCHSIZE}, v_SeqNumber + 1) AS v_SeqNumber,\n\t-- *INF*: TRUNC(v_SeqNumber / @{pipeline().parameters.BATCHSIZE},0)\n\tTRUNC(v_SeqNumber / @{pipeline().parameters.BATCHSIZE},0) AS v_BatchNumber,\n\tv_SeqNumber AS o_SeqNumber,\n\tv_BatchNumber AS o_BatchNumber\n\tFROM SRTTRANS\n),\nAGG_Values AS (\n\tSELECT\n\to_BatchNumber,\n\to_SeqNumber,\n\to_LicenseNumber,\n\tFunction,\n\tScheme,\n\tRequestedby,\n\tApplication,\n\tCaller,\n\tFile_Name\n\tFROM EXP_Values\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY o_BatchNumber ORDER BY NULL) = 1\n),\nTokenize_WebServiceCall AS (-- Tokenize_WebServiceCall\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nFILTRANS AS (\n\tSELECT\n\ttns_ResponseData0 AS TokenResponse\n\tFROM Tokenize_WebServiceCall\n\tWHERE FALSE\n),\nEARS_DummyFile_FF AS (\n\tINSERT INTO EARS_DummyFile_FF\n\t(EARS_DummyResponse)\n\tSELECT \n\tTokenResponse AS EARS_DUMMYRESPONSE\n\tFROM FILTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "BATCHSIZE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

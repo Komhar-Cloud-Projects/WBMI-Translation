@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_SUP_CHANGE_REASON",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_SUP_CHANGE_REASON",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SUP_CHANGE_REASON_STAGE AS (\n\tSELECT\n\t\tSUP_CHANGE_REASON_ID,\n\t\tREASON_CODE,\n\t\tREASON_DESC,\n\t\tMODIFIED_DATE,\n\t\tMODIFIED_USER_ID,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM SUP_CHANGE_REASON_STAGE\n),\nEXPTRANS AS (\n\tSELECT\n\tSUP_CHANGE_REASON_ID,\n\tREASON_CODE,\n\tREASON_DESC,\n\tMODIFIED_DATE,\n\tMODIFIED_USER_ID,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_SUP_CHANGE_REASON_STAGE\n),\nARCH_SUP_CHANGE_REASON_STAGE AS (\n\tINSERT INTO ARCH_SUP_CHANGE_REASON_STAGE\n\t(SUP_CHANGE_REASON_ID, REASON_CODE, REASON_DESC, MODIFIED_DATE, MODIFIED_USER_ID, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, AUDIT_ID)\n\tSELECT \n\tSUP_CHANGE_REASON_ID, \n\tREASON_CODE, \n\tREASON_DESC, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

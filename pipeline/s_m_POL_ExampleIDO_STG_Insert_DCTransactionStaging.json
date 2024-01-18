@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCTransactionStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCTransactionStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCTransactionStaging AS (\n\tWITH cte_DCTransaction(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.TransactionId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.Type, \r\n\tX.State, \r\n\tX.EffectiveDate, \r\n\tX.ScheduleDate, \r\n\tX.CreatedDate, \r\n\tX.CreatedUser, \r\n\tX.OriginalCharge, \r\n\tX.Charge, \r\n\tX.ProRateFactor,\r\n\tX.ShortRateFactor, \r\n\tX.TermPremium, \r\n\tX.PriorPremium, \r\n\tX.NewPremium, \r\n\tX.HistoryID, \r\n\tX.ConvertedTransactionType, \r\n\tX.CancellationDate, \r\n\tX.TransactionDate, \r\n\tX.ExpirationDate, \r\n\tX.Deposit, \r\n\tX.AuditCharge, \r\n\tX.AuditPremium, \r\n\tX.StatusUserContext, \r\n\tX.StatusUser, \r\n\tX.PolicyStatus, \r\n\tX.IssuedDate, \r\n\tX.IssuedUserName \r\n\tFROM\r\n\tDC_Transaction X\r\n\tinner join\r\n\tcte_DCTransaction Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tTransactionId,\n\tSessionId,\n\tId,\n\tType,\n\tState,\n\tEffectiveDate,\n\tScheduleDate,\n\tCreatedDate,\n\tCreatedUser,\n\tOriginalCharge,\n\tCharge,\n\tProRateFactor,\n\tShortRateFactor,\n\tTermPremium,\n\tPriorPremium,\n\tNewPremium,\n\tHistoryID,\n\tConvertedTransactionType,\n\tCancellationDate,\n\tTransactionDate,\n\tExpirationDate,\n\tDeposit,\n\tAuditCharge,\n\tAuditPremium,\n\tStatusUserContext,\n\tStatusUser,\n\tPolicyStatus,\n\tIssuedDate,\n\tIssuedUserName,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_DCTransactionStaging\n),\nDCTransactionStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCTransactionStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCTransactionStaging\n\t(TransactionId, SessionId, Id, Type, State, EffectiveDate, ScheduleDate, CreatedDate, CreatedUser, OriginalCharge, Charge, ProRateFactor, TermPremium, PriorPremium, NewPremium, HistoryID, ConvertedTransactionType, CancellationDate, TransactionDate, ExpirationDate, Deposit, AuditCharge, AuditPremium, StatusUserContext, StatusUser, PolicyStatus, IssuedDate, IssuedUserName, ExtractDate, SourceSystemId, ShortRateFactor)\n\tSELECT \n\tTRANSACTIONID, \n\tSESSIONID, \n\tID, \n\tTYPE, \n\tSTATE, \n\tEFFECTIVEDATE, \n\tSCHEDULEDATE, \n\tCREATEDDATE, \n\tCREATEDUSER, \n\tORIGINALCHARGE, \n\tCHARGE, \n\tPRORATEFACTOR, \n\tTERMPREMIUM, \n\tPRIORPREMIUM, \n\tNEWPREMIUM, \n\tHISTORYID, \n\tCONVERTEDTRANSACTIONTYPE, \n\tCANCELLATIONDATE, \n\tTRANSACTIONDATE, \n\tEXPIRATIONDATE, \n\tDEPOSIT, \n\tAUDITCHARGE, \n\tAUDITPREMIUM, \n\tSTATUSUSERCONTEXT, \n\tSTATUSUSER, \n\tPOLICYSTATUS, \n\tISSUEDDATE, \n\tISSUEDUSERNAME, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tSHORTRATEFACTOR\n\tFROM EXP_Metadata\n\n\t------------ POST SQL ----------\n\tdelete from DCTransactionStaging where SessionId in (select SessionId from DCTransactionStaging where ISNULL(HistoryID,0)=0)\n\t-------------------------------\n\n\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

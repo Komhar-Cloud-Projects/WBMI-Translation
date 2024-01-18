@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCANonOwnedStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCANonOwnedStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCANonOwnedStage AS (\n\tSELECT\n\t\tDCCANonOwnedStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tLineId,\n\t\tCA_NonOwnedId,\n\t\tSessionId,\n\t\tId,\n\t\tAuditable,\n\t\tExtendedEmployeeCov,\n\t\tExtendedVolunteerCov,\n\t\tGarageServiceOperations,\n\t\tMoreThan50PercentBusinessUse,\n\t\tMoreThan50PercentBusinessUseAudit,\n\t\tMoreThan50PercentBusinessUseEstimate,\n\t\tNumberOfEmployees,\n\t\tNumberOfEmployeesAudit,\n\t\tNumberOfEmployeesEstimate,\n\t\tNumberOfInstructors,\n\t\tNumberOfInstructorsAudit,\n\t\tNumberOfInstructorsEstimate,\n\t\tNumberOfPartners,\n\t\tNumberOfPartnersAudit,\n\t\tNumberOfPartnersEstimate,\n\t\tNumberOfVolunteers,\n\t\tNumberOfVolunteersAudit,\n\t\tNumberOfVolunteersEstimate,\n\t\tPartnersRateTerritory,\n\t\tSocialServiceAgency,\n\t\tSocialServiceAgencyRisks,\n\t\tSocialServiceAgencyRisksARate\n\tFROM DCCANonOwnedStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCCANonOwnedStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tLineId,\n\tCA_NonOwnedId,\n\tSessionId,\n\tId,\n\tAuditable,\n\tExtendedEmployeeCov AS i_ExtendedEmployeeCov,\n\tExtendedVolunteerCov AS i_ExtendedVolunteerCov,\n\tGarageServiceOperations AS i_GarageServiceOperations,\n\tMoreThan50PercentBusinessUse AS i_MoreThan50PercentBusinessUse,\n\tMoreThan50PercentBusinessUseAudit AS i_MoreThan50PercentBusinessUseAudit,\n\tMoreThan50PercentBusinessUseEstimate AS i_MoreThan50PercentBusinessUseEstimate,\n\t-- *INF*: DECODE(i_ExtendedEmployeeCov, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ExtendedEmployeeCov,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ExtendedEmployeeCov,\n\t-- *INF*: DECODE(i_ExtendedVolunteerCov, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ExtendedVolunteerCov,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ExtendedVolunteerCov,\n\t-- *INF*: DECODE(i_GarageServiceOperations, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_GarageServiceOperations,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_GarageServiceOperations,\n\t-- *INF*: DECODE(i_MoreThan50PercentBusinessUse, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_MoreThan50PercentBusinessUse,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_MoreThan50PercentBusinessUse,\n\t-- *INF*: DECODE(i_MoreThan50PercentBusinessUseAudit, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_MoreThan50PercentBusinessUseAudit,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_MoreThan50PercentBusinessUseAudit,\n\t-- *INF*: DECODE(i_MoreThan50PercentBusinessUseEstimate, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_MoreThan50PercentBusinessUseEstimate,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_MoreThan50PercentBusinessUseEstimate,\n\tNumberOfEmployees,\n\tNumberOfEmployeesAudit,\n\tNumberOfEmployeesEstimate,\n\tNumberOfInstructors,\n\tNumberOfInstructorsAudit,\n\tNumberOfInstructorsEstimate,\n\tNumberOfPartners,\n\tNumberOfPartnersAudit,\n\tNumberOfPartnersEstimate,\n\tNumberOfVolunteers,\n\tNumberOfVolunteersAudit,\n\tNumberOfVolunteersEstimate,\n\tPartnersRateTerritory,\n\tSocialServiceAgency AS i_SocialServiceAgency,\n\tSocialServiceAgencyRisks AS i_SocialServiceAgencyRisks,\n\t-- *INF*: DECODE(i_SocialServiceAgency, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_SocialServiceAgency,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_SocialServiceAgency,\n\t-- *INF*: DECODE(i_SocialServiceAgencyRisks, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_SocialServiceAgencyRisks,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_SocialServiceAgencyRisks,\n\tSocialServiceAgencyRisksARate,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCANonOwnedStage\n),\nArchDCCANonOwnedStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCANonOwnedStage\n\t(ExtractDate, SourceSystemId, AuditId, DCCANonOwnedStageId, LineId, CA_NonOwnedId, SessionId, Id, Auditable, ExtendedEmployeeCov, ExtendedVolunteerCov, GarageServiceOperations, MoreThan50PercentBusinessUse, MoreThan50PercentBusinessUseAudit, MoreThan50PercentBusinessUseEstimate, NumberOfEmployees, NumberOfEmployeesAudit, NumberOfEmployeesEstimate, NumberOfInstructors, NumberOfInstructorsAudit, NumberOfInstructorsEstimate, NumberOfPartners, NumberOfPartnersAudit, NumberOfPartnersEstimate, NumberOfVolunteers, NumberOfVolunteersAudit, NumberOfVolunteersEstimate, PartnersRateTerritory, SocialServiceAgency, SocialServiceAgencyRisks, SocialServiceAgencyRisksARate)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCCANONOWNEDSTAGEID, \n\tLINEID, \n\tCA_NONOWNEDID, \n\tSESSIONID, \n\tID, \n\tAUDITABLE, \n\to_ExtendedEmployeeCov AS EXTENDEDEMPLOYEECOV, \n\to_ExtendedVolunteerCov AS EXTENDEDVOLUNTEERCOV, \n\to_GarageServiceOperations AS GARAGESERVICEOPERATIONS, \n\to_MoreThan50PercentBusinessUse AS MORETHAN50PERCENTBUSINESSUSE, \n\to_MoreThan50PercentBusinessUseAudit AS MORETHAN50PERCENTBUSINESSUSEAUDIT, \n\to_MoreThan50PercentBusinessUseEstimate AS MORETHAN50PERCENTBUSINESSUSEESTIMATE, \n\tNUMBEROFEMPLOYEES, \n\tNUMBEROFEMPLOYEESAUDIT, \n\tNUMBEROFEMPLOYEESESTIMATE, \n\tNUMBEROFINSTRUCTORS, \n\tNUMBEROFINSTRUCTORSAUDIT, \n\tNUMBEROFINSTRUCTORSESTIMATE, \n\tNUMBEROFPARTNERS, \n\tNUMBEROFPARTNERSAUDIT, \n\tNUMBEROFPARTNERSESTIMATE, \n\tNUMBEROFVOLUNTEERS, \n\tNUMBEROFVOLUNTEERSAUDIT, \n\tNUMBEROFVOLUNTEERSESTIMATE, \n\tPARTNERSRATETERRITORY, \n\to_SocialServiceAgency AS SOCIALSERVICEAGENCY, \n\to_SocialServiceAgencyRisks AS SOCIALSERVICEAGENCYRISKS, \n\tSOCIALSERVICEAGENCYRISKSARATE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

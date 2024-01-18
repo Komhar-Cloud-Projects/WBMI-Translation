@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_gtam_wbsiccod_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_gtam_wbsiccod_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_wbsiccod_stage AS (\n\tSELECT\n\t\tgtam_wbsiccod_stage_id,\n\t\tsic_code_number,\n\t\tsic_code_description,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_wbsiccod_stage\n),\nLKP_arch_gtam_wbsiccod_stage AS (\n\tSELECT\n\tarch_gtam_wbsiccod_stage_id,\n\tgtam_wbsiccod_stage_id,\n\tsic_code_description,\n\tin_sic_code_number,\n\tsic_code_number\n\tFROM (\n\t\tSELECT arch_gtam_wbsiccod_stage.arch_gtam_wbsiccod_stage_id as arch_gtam_wbsiccod_stage_id, arch_gtam_wbsiccod_stage.gtam_wbsiccod_stage_id as gtam_wbsiccod_stage_id, arch_gtam_wbsiccod_stage.sic_code_description as sic_code_description, arch_gtam_wbsiccod_stage.sic_code_number as sic_code_number FROM arch_gtam_wbsiccod_stage\r\n\t\twhere \tarch_gtam_wbsiccod_stage.arch_gtam_wbsiccod_stage_id In\r\n\t\t\t(Select max(arch_gtam_wbsiccod_stage_id) from arch_gtam_wbsiccod_stage b\r\n\t\t\tgroup by b.sic_code_number)\r\n\t\torder by arch_gtam_wbsiccod_stage.sic_code_number--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY sic_code_number ORDER BY arch_gtam_wbsiccod_stage_id) = 1\n),\nEXP_arch_wbsiccod_stage AS (\n\tSELECT\n\tSQ_gtam_wbsiccod_stage.gtam_wbsiccod_stage_id,\n\tSQ_gtam_wbsiccod_stage.sic_code_number,\n\tSQ_gtam_wbsiccod_stage.sic_code_description,\n\tSQ_gtam_wbsiccod_stage.extract_date AS EXTRACT_DATE,\n\tSQ_gtam_wbsiccod_stage.as_of_date AS AS_OF_DATE,\n\tSQ_gtam_wbsiccod_stage.record_count AS RECORD_COUNT,\n\tSQ_gtam_wbsiccod_stage.source_system_id AS SOURCE_SYSTEM_ID,\n\tLKP_arch_gtam_wbsiccod_stage.arch_gtam_wbsiccod_stage_id AS old_arch_gtam_wbsiccod_stage_id,\n\tLKP_arch_gtam_wbsiccod_stage.sic_code_description AS old_sic_code_description,\n\t-- *INF*: iif(isnull(old_arch_gtam_wbsiccod_stage_id),'NEW',\r\n\t--     iif((old_sic_code_description<>sic_code_description),'UPDATE','NOCHANGE'))\n\tIFF(\n\t    old_arch_gtam_wbsiccod_stage_id IS NULL, 'NEW',\n\t    IFF(\n\t        (old_sic_code_description <> sic_code_description), 'UPDATE', 'NOCHANGE'\n\t    )\n\t) AS v_Changed_Flag,\n\tv_Changed_flag AS Changed_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID\n\tFROM SQ_gtam_wbsiccod_stage\n\tLEFT JOIN LKP_arch_gtam_wbsiccod_stage\n\tON LKP_arch_gtam_wbsiccod_stage.sic_code_number = SQ_gtam_wbsiccod_stage.sic_code_number\n),\nFIL_Inserts AS (\n\tSELECT\n\tgtam_wbsiccod_stage_id, \n\tsic_code_number, \n\tsic_code_description, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tChanged_flag, \n\tAUDIT_ID\n\tFROM EXP_arch_wbsiccod_stage\n\tWHERE Changed_flag = 'NEW' or Changed_flag = 'UPDATE'\n),\narch_gtam_wbsiccod_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_gtam_wbsiccod_stage\n\t(gtam_wbsiccod_stage_id, sic_code_number, sic_code_description, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tGTAM_WBSICCOD_STAGE_ID, \n\tSIC_CODE_NUMBER, \n\tSIC_CODE_DESCRIPTION, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID\n\tFROM FIL_Inserts\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

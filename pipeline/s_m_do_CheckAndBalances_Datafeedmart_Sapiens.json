@@ -1,0 +1,59 @@
+{
+    "name": "s_m_do_CheckAndBalances_Datafeedmart_Sapiens",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_do_CheckAndBalances_Datafeedmart_Sapiens",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SapiensReinsuranceHeaderExtract1 AS (\n\tSELECT COUNT(1) AS CNT , MIN(SOURCE_SEQ_NUM) AS MIN_SOURCE_SEQ_NUM ,MAX(SOURCE_SEQ_NUM) AS MAX_SOURCE_SEQ_NUM\r\n\t FROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.SapiensReinsuranceHeaderExtract --\n),\nEXP_PASSTHROUGH AS (\n\tSELECT\n\tCNT,\n\tMIN_SOURCE_SEQ_NUM,\n\tMAX_SOURCE_SEQ_NUM\n\tFROM SQ_SapiensReinsuranceHeaderExtract1\n),\nSQL_Header_COUNTS AS (-- SQL_Header_COUNTS\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nEXP_TGT_PREP AS (\n\tSELECT\n\t-1 AS o_wbmi_session_control_run_id,\n\t'SapiensReinsuranceHeaderExtract' AS o_source_name,\n\t'RISRCINTRF' AS o_target_name,\n\tCNT_output AS SRC_CNT,\n\tTGT_CNT,\n\t-- *INF*: IIF(ISNULL(TGT_CNT) OR TGT_CNT = 0 , 1,TGT_CNT)/\r\n\t-- IIF(ISNULL(SRC_CNT) OR SRC_CNT = 0 ,1 ,SRC_CNT)*100\n\tIFF(TGT_CNT IS NULL OR TGT_CNT = 0, 1, TGT_CNT) / IFF(SRC_CNT IS NULL OR SRC_CNT = 0, 1, SRC_CNT) * 100 AS v_SRC_VS_TGT_CNT,\n\tCURRENT_TIMESTAMP AS o_source_dt,\n\t-- *INF*: IIF(v_SRC_VS_TGT_CNT>=@{pipeline().parameters.RISRCINTRF_THRESHOLD},'I','W')\n\tIFF(v_SRC_VS_TGT_CNT >= @{pipeline().parameters.RISRCINTRF_THRESHOLD}, 'I', 'W') AS o_checkout_type_code,\n\t'Percentage of records processed into target layer Sapiens compared with Source Datafeed Mart Layer is ' || v_SRC_VS_TGT_CNT AS o_checkout_message,\n\tCURRENT_TIMESTAMP AS o_target_dt,\n\t'InformS' AS o_created_user_id,\n\tCURRENT_TIMESTAMP AS o_created_date,\n\t'InformS' AS o_modified_user_id,\n\tCURRENT_TIMESTAMP AS o_modified_date,\n\t-1 AS o_AuditID,\n\t@{pipeline().parameters.RULE_ID_RISRCINTRF} AS o_WBMIChecksAndBalancingRuleID\n\tFROM SQL_Header_COUNTS\n),\nwbmi_checkout AS (\n\tINSERT INTO wbmi_checkout\n\t(wbmi_session_control_run_id, checkout_type_code, checkout_message, source_name, target_name, source_count, target_count, source_dt, target_dt, created_user_id, created_date, modified_user_id, modified_date, AuditID, WBMIChecksAndBalancingRuleID)\n\tSELECT \n\to_wbmi_session_control_run_id AS WBMI_SESSION_CONTROL_RUN_ID, \n\to_checkout_type_code AS CHECKOUT_TYPE_CODE, \n\to_checkout_message AS CHECKOUT_MESSAGE, \n\to_source_name AS SOURCE_NAME, \n\to_target_name AS TARGET_NAME, \n\tSRC_CNT AS SOURCE_COUNT, \n\tTGT_CNT AS TARGET_COUNT, \n\to_source_dt AS SOURCE_DT, \n\to_target_dt AS TARGET_DT, \n\to_created_user_id AS CREATED_USER_ID, \n\to_created_date AS CREATED_DATE, \n\to_modified_user_id AS MODIFIED_USER_ID, \n\to_modified_date AS MODIFIED_DATE, \n\to_AuditID AS AUDITID, \n\to_WBMIChecksAndBalancingRuleID AS WBMICHECKSANDBALANCINGRULEID\n\tFROM EXP_TGT_PREP\n),\nSQ_SapiensReinsurancePaymentsExtract AS (\n\tSELECT COUNT(1) AS CNT , MIN(SOURCE_SEQ_NUM) AS MIN_SOURCE_SEQ_NUM ,MAX(SOURCE_SEQ_NUM) AS MAX_SOURCE_SEQ_NUM\r\n\t FROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.SapiensReinsurancePaymentsExtract --\n),\nEXP_PASSTHROUGH_RISAIPINT AS (\n\tSELECT\n\tCNT,\n\tMIN_SOURCE_SEQ_NUM,\n\tMAX_SOURCE_SEQ_NUM\n\tFROM SQ_SapiensReinsurancePaymentsExtract\n),\nSQL_RISAIPINT_COUNTS AS (-- SQL_RISAIPINT_COUNTS\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nEXP_TGT_PREP_RISAIPINT AS (\n\tSELECT\n\t-1 AS o_wbmi_session_control_run_id,\n\t'SapiensReinsurancePaymentsExtract' AS o_source_name,\n\t'RISAIPINT' AS o_target_name,\n\tCNT_output AS SRC_CNT,\n\tTGT_CNT,\n\t-- *INF*: IIF(ISNULL(TGT_CNT) OR TGT_CNT = 0 , 1,TGT_CNT)/\r\n\t-- IIF(ISNULL(SRC_CNT) OR SRC_CNT = 0 ,1 ,SRC_CNT)*100\n\tIFF(TGT_CNT IS NULL OR TGT_CNT = 0, 1, TGT_CNT) / IFF(SRC_CNT IS NULL OR SRC_CNT = 0, 1, SRC_CNT) * 100 AS v_SRC_VS_TGT_CNT,\n\t-- *INF*: 'Percentage of records processed into target layer Sapiens compared with Source Datafeed Mart Layer is ' || v_SRC_VS_TGT_CNT\r\n\t-- \r\n\t-- --'Count of Sapiens Payment table RISAIPINT  from datafeedmart SapiensReinsurancePaymentsExtract table'\n\t'Percentage of records processed into target layer Sapiens compared with Source Datafeed Mart Layer is ' || v_SRC_VS_TGT_CNT AS o_checkout_message,\n\t-- *INF*: iif(v_SRC_VS_TGT_CNT>=@{pipeline().parameters.RISAIPINT_THRESHOLD},'I','W')\n\tIFF(v_SRC_VS_TGT_CNT >= @{pipeline().parameters.RISAIPINT_THRESHOLD}, 'I', 'W') AS o_checkout_type_code,\n\tCURRENT_TIMESTAMP AS o_source_dt,\n\tCURRENT_TIMESTAMP AS o_target_dt,\n\t'InformS' AS o_created_user_id,\n\tCURRENT_TIMESTAMP AS o_created_date,\n\t'InformS' AS o_modified_user_id,\n\tCURRENT_TIMESTAMP AS o_modified_date,\n\t-1 AS o_AuditID,\n\t@{pipeline().parameters.RULE_ID_RISAIPINT} AS o_WBMIChecksAndBalancingRuleID\n\tFROM SQL_RISAIPINT_COUNTS\n),\nwbmi_checkout_RISAIPINT AS (\n\tINSERT INTO wbmi_checkout\n\t(wbmi_session_control_run_id, checkout_type_code, checkout_message, source_name, target_name, source_count, target_count, source_dt, target_dt, created_user_id, created_date, modified_user_id, modified_date, AuditID, WBMIChecksAndBalancingRuleID)\n\tSELECT \n\to_wbmi_session_control_run_id AS WBMI_SESSION_CONTROL_RUN_ID, \n\to_checkout_type_code AS CHECKOUT_TYPE_CODE, \n\to_checkout_message AS CHECKOUT_MESSAGE, \n\to_source_name AS SOURCE_NAME, \n\to_target_name AS TARGET_NAME, \n\tSRC_CNT AS SOURCE_COUNT, \n\tTGT_CNT AS TARGET_COUNT, \n\to_source_dt AS SOURCE_DT, \n\to_target_dt AS TARGET_DT, \n\to_created_user_id AS CREATED_USER_ID, \n\to_created_date AS CREATED_DATE, \n\to_modified_user_id AS MODIFIED_USER_ID, \n\to_modified_date AS MODIFIED_DATE, \n\to_AuditID AS AUDITID, \n\to_WBMIChecksAndBalancingRuleID AS WBMICHECKSANDBALANCINGRULEID\n\tFROM EXP_TGT_PREP_RISAIPINT\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "RISRCINTRF_THRESHOLD": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "RULE_ID_RISRCINTRF": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "RISAIPINT_THRESHOLD": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "RULE_ID_RISAIPINT": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

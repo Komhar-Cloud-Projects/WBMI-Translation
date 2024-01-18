@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLM_CLT_EOR",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLM_CLT_EOR",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLM_CLT_EOR_STAGE AS (\n\tSELECT clm_clt_eor_stage.clm_clt_eor_id, clm_clt_eor_stage.cce_tch_bill_nbr, clm_clt_eor_stage.cce_claim_nbr, clm_clt_eor_stage.cce_provider_cd, clm_clt_eor_stage.cce_create_ts, clm_clt_eor_stage.cce_paid_ts, clm_clt_eor_stage.cce_paid_user_id, clm_clt_eor_stage.cce_client_id, clm_clt_eor_stage.cce_client_fst_nm, clm_clt_eor_stage.cce_client_lst_nm, clm_clt_eor_stage.cce_eor_status, clm_clt_eor_stage.extract_date, clm_clt_eor_stage.as_of_date, clm_clt_eor_stage.record_count, clm_clt_eor_stage.source_system_id, clm_clt_eor_stage.denial_reason_cd, clm_clt_eor_stage.cce_draft_nbr, clm_clt_eor_stage.modified_ts \r\n\tFROM\r\n\tclm_clt_eor_stage\r\n\tWHERE\r\n\tclm_clt_eor_stage.cce_create_ts >= '@{pipeline().parameters.SELECTION_START_TS}'\r\n\tOR\r\n\tclm_clt_eor_stage.cce_paid_ts >= '@{pipeline().parameters.SELECTION_START_TS}'\r\n\tOR\r\n\tclm_clt_eor_stage.modified_ts >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXPTRANS AS (\n\tSELECT\n\tCLM_CLT_EOR_ID,\n\tCCE_TCH_BILL_NBR,\n\tCCE_CLAIM_NBR,\n\tCCE_PROVIDER_CD,\n\tCCE_CREATE_TS,\n\tCCE_PAID_TS,\n\tCCE_PAID_USER_ID,\n\tCCE_CLIENT_ID,\n\tCCE_CLIENT_FST_NM,\n\tCCE_CLIENT_LST_NM,\n\tCCE_EOR_STATUS,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP,\n\tdenial_reason_cd,\n\tcce_draft_nbr,\n\tmodified_ts\n\tFROM SQ_CLM_CLT_EOR_STAGE\n),\nARCH_CLM_CLT_EOR_STAGE AS (\n\tINSERT INTO ARCH_CLM_CLT_EOR_STAGE\n\t(clm_clt_eor_id, cce_tch_bill_nbr, cce_claim_nbr, cce_provider_cd, cce_create_ts, cce_paid_ts, cce_paid_user_id, cce_client_id, cce_client_fst_nm, cce_client_lst_nm, cce_eor_status, extract_date, as_of_date, record_count, source_system_id, audit_id, denial_reason_cd, cce_draft_nbr, modified_ts)\n\tSELECT \n\tCLM_CLT_EOR_ID AS CLM_CLT_EOR_ID, \n\tCCE_TCH_BILL_NBR AS CCE_TCH_BILL_NBR, \n\tCCE_CLAIM_NBR AS CCE_CLAIM_NBR, \n\tCCE_PROVIDER_CD AS CCE_PROVIDER_CD, \n\tCCE_CREATE_TS AS CCE_CREATE_TS, \n\tCCE_PAID_TS AS CCE_PAID_TS, \n\tCCE_PAID_USER_ID AS CCE_PAID_USER_ID, \n\tCCE_CLIENT_ID AS CCE_CLIENT_ID, \n\tCCE_CLIENT_FST_NM AS CCE_CLIENT_FST_NM, \n\tCCE_CLIENT_LST_NM AS CCE_CLIENT_LST_NM, \n\tCCE_EOR_STATUS AS CCE_EOR_STATUS, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID, \n\tDENIAL_REASON_CD, \n\tCCE_DRAFT_NBR, \n\tMODIFIED_TS\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

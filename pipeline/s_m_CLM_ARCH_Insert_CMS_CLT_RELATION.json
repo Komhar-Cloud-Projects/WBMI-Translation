@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CMS_CLT_RELATION",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CMS_CLT_RELATION",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_cms_clt_relation_stage AS (\n\tSELECT\n\t\tcms_clt_relation_stage_id,\n\t\tcre_claim_nbr,\n\t\tcre_seq_nbr,\n\t\tcre_client_id,\n\t\tcre_client_role_cd,\n\t\tcre_rel_to_clt_id,\n\t\tcms_party_type,\n\t\tcreated_ts,\n\t\tcreated_user_id,\n\t\tmodified_ts,\n\t\tmodified_user_id,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM cms_clt_relation_stage\n\tWHERE CREATED_TS >= '@{pipeline().parameters.SELECTION_START_TS}'  OR MODIFIED_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_CMS_CLT_RELATION_STAGE AS (\n\tSELECT\n\tcms_clt_relation_stage_id,\n\tcre_claim_nbr,\n\tcre_seq_nbr,\n\tcre_client_id,\n\tcre_client_role_cd,\n\tcre_rel_to_clt_id,\n\tcms_party_type,\n\tcreated_ts,\n\tcreated_user_id,\n\tmodified_ts,\n\tmodified_user_id,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_cms_clt_relation_stage\n),\narch_cms_clt_relation_stage AS (\n\tINSERT INTO arch_cms_clt_relation_stage\n\t(cms_clt_relation_stage_id, cre_claim_nbr, cre_seq_nbr, cre_client_id, cre_client_role_cd, cre_rel_to_clt_id, cms_party_type, created_ts, created_user_id, modified_ts, modified_user_id, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCMS_CLT_RELATION_STAGE_ID, \n\tCRE_CLAIM_NBR, \n\tCRE_SEQ_NBR, \n\tCRE_CLIENT_ID, \n\tCRE_CLIENT_ROLE_CD, \n\tCRE_REL_TO_CLT_ID, \n\tCMS_PARTY_TYPE, \n\tCREATED_TS, \n\tCREATED_USER_ID, \n\tMODIFIED_TS, \n\tMODIFIED_USER_ID, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_CMS_CLT_RELATION_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

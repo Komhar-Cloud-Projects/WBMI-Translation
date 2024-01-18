@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_STG_Update_pif_4514_stage_logical_flag",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Update_pif_4514_stage_logical_flag",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nLKP_arch_pif_4578_stage AS (\n\tSELECT\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module\n\tFROM (\n\t\tSELECT DISTINCT pif_symbol        AS pif_symbol,\r\n\t\t       pif_policy_number AS pif_policy_number,\r\n\t\t       pif_module        AS pif_module\r\n\t\tFROM   @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_pif_4578_stage \r\n\t\tWHERE logical_flag in ('0')\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY pif_symbol,pif_policy_number,pif_module ORDER BY pif_symbol DESC) = 1\n),\nLKP_Exceed_Claim_exists AS (\n\tSELECT\n\tcon_claim_nbr,\n\tcon_policy_id\n\tFROM (\n\t\tSELECT con_claim_nbr AS con_claim_nbr,\r\n\t\t       SUBSTRING(con_policy_id,1,12)  AS con_policy_id\r\n\t\tFROM   @{pipeline().parameters.TARGET_TABLE_OWNER}.clm_occurrence_nbr_stage\r\n\t\tWHERE LEN(LTRIM(con_claim_nbr)) > 15\r\n\t\t\r\n\t\t---- Pulling on the claims information as EXCEED Claim Key is a 20 character field.\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY con_policy_id ORDER BY con_claim_nbr DESC) = 1\n),\nLKP_Arch_PIF_02_Stage AS (\n\tSELECT\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module\n\tFROM (\n\t\tSELECT DISTINCT arch_pif_02_stage.pif_symbol as pif_symbol, arch_pif_02_stage.pif_policy_number as pif_policy_number, arch_pif_02_stage.pif_module as pif_module \r\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_pif_02_stage\r\n\t\tWHERE SUBSTRING(cast(pif_full_agency_number as varchar(7)),1,2) + SUBSTRING(cast(pif_full_agency_number as varchar(7)),5,3) ='99999'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY pif_symbol,pif_policy_number,pif_module ORDER BY pif_symbol DESC) = 1\n),\nLKP_pif_4514_stage AS (\n\tSELECT\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module\n\tFROM (\n\t\tSELECT DISTINCT pif_symbol        AS pif_symbol,\r\n\t\t       pif_policy_number AS pif_policy_number,\r\n\t\t       pif_module        AS pif_module\r\n\t\tFROM   @{pipeline().parameters.TARGET_TABLE_OWNER}.pif_4514_stage \r\n\t\tWHERE sar_entrd_date >= '19980101'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY pif_symbol,pif_policy_number,pif_module ORDER BY pif_symbol) = 1\n),\nSQ_pif_4514_stage AS (\n\tSELECT pif_4514_stage.pif_4514_stage_id, pif_4514_stage.pif_symbol, pif_4514_stage.pif_policy_number, pif_4514_stage.pif_module, pif_4514_stage.sar_entrd_date, pif_4514_stage.sar_acct_entrd_date \r\n\tFROM\r\n\t pif_4514_stage\r\n\tWHERE sar_entrd_date < '19980101'\n),\nEXP_Evaluate AS (\n\tSELECT\n\tpif_4514_stage_id,\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module,\n\tsar_entrd_date,\n\tsar_acct_entrd_date,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- sar_entrd_date >= '19980101','0',\r\n\t-- NOT ISNULL(:LKP.LKP_ARCH_PIF_02_STAGE(pif_symbol, pif_policy_number, pif_module)),'4',\r\n\t-- NOT ISNULL(:LKP.LKP_PIF_4514_STAGE(pif_symbol,pif_policy_number,pif_module)),'1',\r\n\t-- NOT ISNULL(:LKP.LKP_EXCEED_CLAIM_EXISTS(pif_symbol  || pif_policy_number || pif_module)),'2',\r\n\t-- NOT ISNULL(:LKP.LKP_ARCH_PIF_4578_STAGE(pif_symbol, pif_policy_number, pif_module)),'3',\r\n\t-- '-1')\r\n\t-- \r\n\t-- \r\n\t-- -- Logical Flag value of 0, transactions with sar_entrd_date >= '19980101'\r\n\t-- -- Logical Flag value of 1, transactions where sar_entrd_date < '19980101' but also has transactions with booked_date >= '19980101'\r\n\t-- -- Logical Flag value of 2, transactions with sar_entrd_date < '19980101' but has EXCEED Claim to the policy\r\n\t-- -- Logical Flag value of 3, transactions with sar_entrd_date < '19980101' but has PMS Only Claim on the policy\r\n\t-- -- Logical Flag value of 4, Policy transactions which has Agency Number of  99999\r\n\t-- -- Logical Flag value of -1, transactions with sar_entrd_date < '19980101'\n\tDECODE(\n\t    TRUE,\n\t    sar_entrd_date >= '19980101', '0',\n\t    LKP_ARCH_PIF_02_STAGE_pif_symbol_pif_policy_number_pif_module.pif_symbol IS NOT NULL, '4',\n\t    LKP_PIF_4514_STAGE_pif_symbol_pif_policy_number_pif_module.pif_symbol IS NOT NULL, '1',\n\t    LKP_EXCEED_CLAIM_EXISTS_pif_symbol_pif_policy_number_pif_module.con_claim_nbr IS NOT NULL, '2',\n\t    LKP_ARCH_PIF_4578_STAGE_pif_symbol_pif_policy_number_pif_module.pif_symbol IS NOT NULL, '3',\n\t    '-1'\n\t) AS v_logical_flag,\n\tv_logical_flag AS logical_flag\n\tFROM SQ_pif_4514_stage\n\tLEFT JOIN LKP_ARCH_PIF_02_STAGE LKP_ARCH_PIF_02_STAGE_pif_symbol_pif_policy_number_pif_module\n\tON LKP_ARCH_PIF_02_STAGE_pif_symbol_pif_policy_number_pif_module.pif_symbol = pif_symbol\n\tAND LKP_ARCH_PIF_02_STAGE_pif_symbol_pif_policy_number_pif_module.pif_policy_number = pif_policy_number\n\tAND LKP_ARCH_PIF_02_STAGE_pif_symbol_pif_policy_number_pif_module.pif_module = pif_module\n\n\tLEFT JOIN LKP_PIF_4514_STAGE LKP_PIF_4514_STAGE_pif_symbol_pif_policy_number_pif_module\n\tON LKP_PIF_4514_STAGE_pif_symbol_pif_policy_number_pif_module.pif_symbol = pif_symbol\n\tAND LKP_PIF_4514_STAGE_pif_symbol_pif_policy_number_pif_module.pif_policy_number = pif_policy_number\n\tAND LKP_PIF_4514_STAGE_pif_symbol_pif_policy_number_pif_module.pif_module = pif_module\n\n\tLEFT JOIN LKP_EXCEED_CLAIM_EXISTS LKP_EXCEED_CLAIM_EXISTS_pif_symbol_pif_policy_number_pif_module\n\tON LKP_EXCEED_CLAIM_EXISTS_pif_symbol_pif_policy_number_pif_module.con_policy_id = pif_symbol || pif_policy_number || pif_module\n\n\tLEFT JOIN LKP_ARCH_PIF_4578_STAGE LKP_ARCH_PIF_4578_STAGE_pif_symbol_pif_policy_number_pif_module\n\tON LKP_ARCH_PIF_4578_STAGE_pif_symbol_pif_policy_number_pif_module.pif_symbol = pif_symbol\n\tAND LKP_ARCH_PIF_4578_STAGE_pif_symbol_pif_policy_number_pif_module.pif_policy_number = pif_policy_number\n\tAND LKP_ARCH_PIF_4578_STAGE_pif_symbol_pif_policy_number_pif_module.pif_module = pif_module\n\n),\nUPD_Logical_flag AS (\n\tSELECT\n\tpif_4514_stage_id, \n\tlogical_flag\n\tFROM EXP_Evaluate\n),\npif_4514_stage_update AS (\n\tMERGE INTO pif_4514_stage AS T\n\tUSING UPD_Logical_flag AS S\n\tON T.pif_4514_stage_id = S.pif_4514_stage_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.logical_flag = S.logical_flag\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

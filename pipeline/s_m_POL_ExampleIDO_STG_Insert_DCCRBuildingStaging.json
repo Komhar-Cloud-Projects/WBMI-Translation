@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCCRBuildingStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCCRBuildingStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_CR_Building AS (\n\tWITH cte_DCCRBuilding(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.LineId, \r\n\tX.CR_LocationId, \r\n\tX.CR_BuildingId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.Deleted, \r\n\tX.AlarmCompanyHasKeys, \r\n\tX.AlarmType, \r\n\tX.BulletResistingEnclosure, \r\n\tX.BulletResistingEnclosureAndAlarm, \r\n\tX.BurglarAlarmSystem, \r\n\tX.CentralStation, \r\n\tX.CentralStationAtleastHourly, \r\n\tX.CertificateNumber, \r\n\tX.ConnectedWith, \r\n\tX.ConstructionCode, \r\n\tX.CoveredProperty, \r\n\tX.Description, \r\n\tX.DoorType, \r\n\tX.EffectiveDate, \r\n\tX.ExpirationDate, \r\n\tX.GradeExtentOfProtection, \r\n\tX.GuardsOnDuty, \r\n\tX.HoldupAlarm, \r\n\tX.Insured, \r\n\tX.LocalGong, \r\n\tX.LockedSafe, \r\n\tX.NameOfCompany, \r\n\tX.NumberOfGuards, \r\n\tX.NumberOfProtectiveDevices, \r\n\tX.NumberOfStories, \r\n\tX.NumberOfWatchpersons, \r\n\tX.OutsideCentralStation, \r\n\tX.OutsideGong, \r\n\tX.PoliceStation, \r\n\tX.PrivateWatchPerson, \r\n\tX.RegisterHourlyOnAClock, \r\n\tX.RoofCovering, \r\n\tX.RoofDeckAttachment, \r\n\tX.RoofGeometry, \r\n\tX.RoofWallConstruction, \r\n\tX.SignalACentralStation, \r\n\tX.Sprinkler, \r\n\tX.SquareFt, \r\n\tX.ULClassification, \r\n\tX.ULIProtectiveBag, \r\n\tX.UnexpiredCertificate, \r\n\tX.WindowProtection, \r\n\tX.WindstormLossMitigation, \r\n\tX.YearBuilt, \r\n\tX.CR_LocationXmlId \r\n\tFROM\r\n\tDC_CR_Building X\r\n\tinner join\r\n\tcte_DCCRBuilding Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tSYSDATE AS ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId,\n\tLineId,\n\tCR_LocationId,\n\tCR_BuildingId,\n\tSessionId,\n\tId,\n\tDeleted,\n\t-- *INF*: DECODE(Deleted, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    Deleted,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Deleted,\n\tAlarmCompanyHasKeys,\n\t-- *INF*: DECODE(AlarmCompanyHasKeys, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    AlarmCompanyHasKeys,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AlarmCompanyHasKeys,\n\tAlarmType,\n\tBulletResistingEnclosure,\n\t-- *INF*: DECODE(BulletResistingEnclosure, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    BulletResistingEnclosure,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_BulletResistingEnclosure,\n\tBulletResistingEnclosureAndAlarm,\n\t-- *INF*: DECODE(BulletResistingEnclosureAndAlarm, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    BulletResistingEnclosureAndAlarm,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_BulletResistingEnclosureAndAlarm,\n\tBurglarAlarmSystem,\n\t-- *INF*: DECODE(BurglarAlarmSystem, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    BurglarAlarmSystem,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_BurglarAlarmSystem,\n\tCentralStation,\n\t-- *INF*: DECODE(CentralStation, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    CentralStation,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_CentralStation,\n\tCentralStationAtleastHourly,\n\t-- *INF*: DECODE(CentralStationAtleastHourly, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    CentralStationAtleastHourly,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_CentralStationAtleastHourly,\n\tCertificateNumber,\n\tConnectedWith,\n\tConstructionCode,\n\tCoveredProperty,\n\t-- *INF*: DECODE(CoveredProperty, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    CoveredProperty,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_CoveredProperty,\n\tDescription,\n\tDoorType,\n\tEffectiveDate,\n\tExpirationDate,\n\tGradeExtentOfProtection,\n\t-- *INF*: DECODE(GradeExtentOfProtection, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    GradeExtentOfProtection,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_GradeExtentOfProtection,\n\tGuardsOnDuty,\n\t-- *INF*: DECODE(GuardsOnDuty, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    GuardsOnDuty,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_GuardsOnDuty,\n\tHoldupAlarm,\n\t-- *INF*: DECODE(HoldupAlarm, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    HoldupAlarm,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_HoldupAlarm,\n\tInsured,\n\t-- *INF*: DECODE(Insured, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    Insured,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Insured,\n\tLocalGong,\n\t-- *INF*: DECODE(LocalGong, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    LocalGong,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_LocalGong,\n\tLockedSafe,\n\t-- *INF*: DECODE(LockedSafe, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    LockedSafe,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_LockedSafe,\n\tNameOfCompany,\n\tNumberOfGuards,\n\tNumberOfProtectiveDevices,\n\tNumberOfStories,\n\tNumberOfWatchpersons,\n\tOutsideCentralStation,\n\t-- *INF*: DECODE(OutsideCentralStation, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    OutsideCentralStation,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_OutsideCentralStation,\n\tOutsideGong,\n\t-- *INF*: DECODE(OutsideGong, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    OutsideGong,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_OutsideGong,\n\tPoliceStation,\n\t-- *INF*: DECODE(PoliceStation, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    PoliceStation,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PoliceStation,\n\tPrivateWatchPerson,\n\t-- *INF*: DECODE(PrivateWatchPerson, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    PrivateWatchPerson,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PrivateWatchPerson,\n\tRegisterHourlyOnAClock,\n\t-- *INF*: DECODE(RegisterHourlyOnAClock, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    RegisterHourlyOnAClock,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_RegisterHourlyOnAClock,\n\tRoofCovering,\n\tRoofDeckAttachment,\n\tRoofGeometry,\n\tRoofWallConstruction,\n\tSignalACentralStation,\n\t-- *INF*: DECODE(SignalACentralStation, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    SignalACentralStation,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_SignalACentralStation,\n\tSprinkler,\n\t-- *INF*: DECODE(Sprinkler, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    Sprinkler,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Sprinkler,\n\tSquareFt,\n\tULClassification,\n\tULIProtectiveBag,\n\t-- *INF*: DECODE(ULIProtectiveBag, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    ULIProtectiveBag,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ULIProtectiveBag,\n\tUnexpiredCertificate,\n\t-- *INF*: DECODE(UnexpiredCertificate, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    UnexpiredCertificate,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_UnexpiredCertificate,\n\tWindowProtection,\n\tWindstormLossMitigation,\n\t-- *INF*: DECODE(WindstormLossMitigation, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    WindstormLossMitigation,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_WindstormLossMitigation,\n\tYearBuilt,\n\tCR_LocationXmlId\n\tFROM SQ_DC_CR_Building\n),\nDCCRBuildingStaging AS (\n\tTRUNCATE TABLE DCCRBuildingStaging;\n\tINSERT INTO DCCRBuildingStaging\n\t(ExtractDate, SourceSystemId, LineId, CR_LocationId, CR_BuildingId, SessionId, Id, Deleted, AlarmCompanyHasKeys, AlarmType, BulletResistingEnclosure, BulletResistingEnclosureAndAlarm, BurglarAlarmSystem, CentralStation, CentralStationAtleastHourly, CertificateNumber, ConnectedWith, ConstructionCode, CoveredProperty, Description, DoorType, EffectiveDate, ExpirationDate, GradeExtentOfProtection, GuardsOnDuty, HoldupAlarm, Insured, LocalGong, LockedSafe, NameOfCompany, NumberOfGuards, NumberOfProtectiveDevices, NumberOfStories, NumberOfWatchpersons, OutsideCentralStation, OutsideGong, PoliceStation, PrivateWatchPerson, RegisterHourlyOnAClock, RoofCovering, RoofDeckAttachment, RoofGeometry, RoofWallConstruction, SignalACentralStation, Sprinkler, SquareFt, ULClassification, ULIProtectiveBag, UnexpiredCertificate, WindowProtection, WindstormLossMitigation, YearBuilt, CR_LocationXmlId)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tLINEID, \n\tCR_LOCATIONID, \n\tCR_BUILDINGID, \n\tSESSIONID, \n\tID, \n\to_Deleted AS DELETED, \n\to_AlarmCompanyHasKeys AS ALARMCOMPANYHASKEYS, \n\tALARMTYPE, \n\to_BulletResistingEnclosure AS BULLETRESISTINGENCLOSURE, \n\to_BulletResistingEnclosureAndAlarm AS BULLETRESISTINGENCLOSUREANDALARM, \n\to_BurglarAlarmSystem AS BURGLARALARMSYSTEM, \n\to_CentralStation AS CENTRALSTATION, \n\to_CentralStationAtleastHourly AS CENTRALSTATIONATLEASTHOURLY, \n\tCERTIFICATENUMBER, \n\tCONNECTEDWITH, \n\tCONSTRUCTIONCODE, \n\to_CoveredProperty AS COVEREDPROPERTY, \n\tDESCRIPTION, \n\tDOORTYPE, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\to_GradeExtentOfProtection AS GRADEEXTENTOFPROTECTION, \n\to_GuardsOnDuty AS GUARDSONDUTY, \n\to_HoldupAlarm AS HOLDUPALARM, \n\to_Insured AS INSURED, \n\to_LocalGong AS LOCALGONG, \n\to_LockedSafe AS LOCKEDSAFE, \n\tNAMEOFCOMPANY, \n\tNUMBEROFGUARDS, \n\tNUMBEROFPROTECTIVEDEVICES, \n\tNUMBEROFSTORIES, \n\tNUMBEROFWATCHPERSONS, \n\to_OutsideCentralStation AS OUTSIDECENTRALSTATION, \n\to_OutsideGong AS OUTSIDEGONG, \n\to_PoliceStation AS POLICESTATION, \n\to_PrivateWatchPerson AS PRIVATEWATCHPERSON, \n\to_RegisterHourlyOnAClock AS REGISTERHOURLYONACLOCK, \n\tROOFCOVERING, \n\tROOFDECKATTACHMENT, \n\tROOFGEOMETRY, \n\tROOFWALLCONSTRUCTION, \n\to_SignalACentralStation AS SIGNALACENTRALSTATION, \n\to_Sprinkler AS SPRINKLER, \n\tSQUAREFT, \n\tULCLASSIFICATION, \n\to_ULIProtectiveBag AS ULIPROTECTIVEBAG, \n\to_UnexpiredCertificate AS UNEXPIREDCERTIFICATE, \n\tWINDOWPROTECTION, \n\to_WindstormLossMitigation AS WINDSTORMLOSSMITIGATION, \n\tYEARBUILT, \n\tCR_LOCATIONXMLID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

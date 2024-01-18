@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCATruckStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCCATruckStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCATruckStaging AS (\n\tSELECT\n\t\tDCCATruckStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCA_VehicleId,\n\t\tCA_TruckId,\n\t\tSessionId,\n\t\tId,\n\t\tGCW,\n\t\tGVW,\n\t\tHoldHarmlessAgreement,\n\t\tInsuredType,\n\t\tLongTermRentalContracts,\n\t\tMetropolitanZones,\n\t\tNumberOfDaysInsured,\n\t\tNumberOfTrailers,\n\t\tNumberOfTrailersAudit,\n\t\tNumberOfTrailersCalc,\n\t\tSecondaryClassCategory,\n\t\tTruckersSpecialProvisions,\n\t\tUsedInDumping\n\tFROM DCCATruckStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCCATruckStagingId,\n\tExtractDate,\n\tSourceSystemId,\n\tCA_VehicleId,\n\tCA_TruckId,\n\tSessionId,\n\tId,\n\tGCW,\n\tGVW,\n\tHoldHarmlessAgreement,\n\tInsuredType,\n\tLongTermRentalContracts,\n\tMetropolitanZones,\n\tNumberOfDaysInsured,\n\tNumberOfTrailers,\n\tNumberOfTrailersAudit,\n\tNumberOfTrailersCalc,\n\tSecondaryClassCategory,\n\tTruckersSpecialProvisions,\n\tUsedInDumping,\n\t-- *INF*: DECODE(HoldHarmlessAgreement, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    HoldHarmlessAgreement,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_HoldHarmlessAgreement,\n\t-- *INF*: DECODE(LongTermRentalContracts, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    LongTermRentalContracts,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_LongTermRentalContracts,\n\t-- *INF*: DECODE(MetropolitanZones, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    MetropolitanZones,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_MetropolitanZones,\n\t-- *INF*: DECODE(UsedInDumping, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    UsedInDumping,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_UsedInDumping,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCATruckStaging\n),\nArchDCCATruckStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCATruckStaging\n\t(ExtractDate, SourceSystemId, AuditId, CA_VehicleId, CA_TruckId, SessionId, Id, GCW, GVW, HoldHarmlessAgreement, InsuredType, LongTermRentalContracts, MetropolitanZones, NumberOfDaysInsured, NumberOfTrailers, NumberOfTrailersAudit, NumberOfTrailersCalc, SecondaryClassCategory, TruckersSpecialProvisions, UsedInDumping)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tCA_VEHICLEID, \n\tCA_TRUCKID, \n\tSESSIONID, \n\tID, \n\tGCW, \n\tGVW, \n\to_HoldHarmlessAgreement AS HOLDHARMLESSAGREEMENT, \n\tINSUREDTYPE, \n\to_LongTermRentalContracts AS LONGTERMRENTALCONTRACTS, \n\to_MetropolitanZones AS METROPOLITANZONES, \n\tNUMBEROFDAYSINSURED, \n\tNUMBEROFTRAILERS, \n\tNUMBEROFTRAILERSAUDIT, \n\tNUMBEROFTRAILERSCALC, \n\tSECONDARYCLASSCATEGORY, \n\tTRUCKERSSPECIALPROVISIONS, \n\to_UsedInDumping AS USEDINDUMPING\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

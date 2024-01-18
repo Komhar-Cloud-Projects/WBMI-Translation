@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCCFTimeElementStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCCFTimeElementStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_CF_TimeElement AS (\n\tWITH cte_DCCFTimeElement(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CF_RiskId, \r\n\tX.CF_TimeElementId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.CoverageForm, \r\n\tX.CoinsurancePercentage, \r\n\tX.RiskType, \r\n\tX.BuildingStatus, \r\n\tX.CivilAuthority, \r\n\tX.TimePeriodSelect, \r\n\tX.CombinedOperations, \r\n\tX.Combination, \r\n\tX.CoinsurancePercentageSuspended, \r\n\tX.OrdinanceOfLaw, \r\n\tX.LossAdjustment, \r\n\tX.RadioTelevisionAntennas, \r\n\tX.FieldActExclusion, \r\n\tX.CommunicationSupply, \r\n\tX.OverheadCommunicationLines, \r\n\tX.OverheadPowerTransmissionLines, \r\n\tX.PowerSupply, \r\n\tX.WaterSupplySelect, \r\n\tX.UtilServicesInfoPublicUtilitySelect, \r\n\tX.UtilServicesIndicator, \r\n\tX.ARate, \r\n\tX.LossPaymentLimitType, \r\n\tX.DependentPropertiesSelect, \r\n\tX.SquareFtForNonManufacturing, \r\n\tX.SquareFtForManufacturingOrMining, \r\n\tX.SquareFtForRental \r\n\tFROM\r\n\tDC_CF_TimeElement X\r\n\tinner join\r\n\tcte_DCCFTimeElement Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tCF_RiskId,\n\tCF_TimeElementId,\n\tSessionId,\n\tId,\n\tCoverageForm,\n\tCoinsurancePercentage,\n\tRiskType,\n\tBuildingStatus,\n\tCivilAuthority,\n\tTimePeriodSelect,\n\tCombinedOperations,\n\tCombination,\n\tCoinsurancePercentageSuspended,\n\tOrdinanceOfLaw,\n\tLossAdjustment,\n\tRadioTelevisionAntennas,\n\tFieldActExclusion,\n\tCommunicationSupply,\n\tOverheadCommunicationLines,\n\tOverheadPowerTransmissionLines,\n\tPowerSupply,\n\tWaterSupplySelect,\n\tUtilServicesInfoPublicUtilitySelect,\n\tUtilServicesIndicator,\n\t-- *INF*: DECODE(OrdinanceOfLaw, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    OrdinanceOfLaw,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_OrdinanceOfLaw,\n\t-- *INF*: DECODE(LossAdjustment, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    LossAdjustment,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_LossAdjustment,\n\t-- *INF*: DECODE(RadioTelevisionAntennas, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    RadioTelevisionAntennas,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_RadioTelevisionAntennas,\n\t-- *INF*: DECODE(FieldActExclusion, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    FieldActExclusion,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_FieldActExclusion,\n\t-- *INF*: DECODE(CommunicationSupply, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    CommunicationSupply,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_CommunicationSupply,\n\t-- *INF*: DECODE(OverheadCommunicationLines, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    OverheadCommunicationLines,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_OverheadCommunicationLines,\n\t-- *INF*: DECODE(OverheadPowerTransmissionLines, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    OverheadPowerTransmissionLines,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_OverheadPowerTransmissionLines,\n\t-- *INF*: DECODE(PowerSupply, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    PowerSupply,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PowerSupply,\n\t-- *INF*: DECODE(WaterSupplySelect, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    WaterSupplySelect,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_WaterSupplySelect,\n\t-- *INF*: DECODE(UtilServicesInfoPublicUtilitySelect, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    UtilServicesInfoPublicUtilitySelect,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_UtilServicesInfoPublicUtilitySelect,\n\t-- *INF*: DECODE(UtilServicesIndicator, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    UtilServicesIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_UtilServicesIndicator,\n\tARate,\n\tLossPaymentLimitType,\n\tDependentPropertiesSelect,\n\t-- *INF*: DECODE(DependentPropertiesSelect, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    DependentPropertiesSelect,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_DependentPropertiesSelect,\n\tSquareFtForNonManufacturing,\n\tSquareFtForManufacturingOrMining,\n\tSquareFtForRental,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_DC_CF_TimeElement\n),\nDCCFTimeElementStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCFTimeElementStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCFTimeElementStaging\n\t(CF_TimeElementId, SessionId, Id, CoverageForm, CoinsurancePercentage, RiskType, BuildingStatus, CivilAuthority, TimePeriodSelect, CombinedOperations, Combination, CoinsurancePercentageSuspended, OrdinanceOfLaw, LossAdjustment, RadioTelevisionAntennas, FieldActExclusion, CommunicationSupply, OverheadCommunicationLines, OverheadPowerTransmissionLines, PowerSupply, WaterSupplySelect, UtilServicesInfoPublicUtilitySelect, UtilServicesIndicator, ARate, LossPaymentLimitType, DependentPropertiesSelect, SquareFtForNonManufacturing, SquareFtForManufacturingOrMining, SquareFtForRental, ExtractDate, SourceSystemId, CF_RiskId)\n\tSELECT \n\tCF_TIMEELEMENTID, \n\tSESSIONID, \n\tID, \n\tCOVERAGEFORM, \n\tCOINSURANCEPERCENTAGE, \n\tRISKTYPE, \n\tBUILDINGSTATUS, \n\tCIVILAUTHORITY, \n\tTIMEPERIODSELECT, \n\tCOMBINEDOPERATIONS, \n\tCOMBINATION, \n\tCOINSURANCEPERCENTAGESUSPENDED, \n\to_OrdinanceOfLaw AS ORDINANCEOFLAW, \n\to_LossAdjustment AS LOSSADJUSTMENT, \n\to_RadioTelevisionAntennas AS RADIOTELEVISIONANTENNAS, \n\to_FieldActExclusion AS FIELDACTEXCLUSION, \n\to_CommunicationSupply AS COMMUNICATIONSUPPLY, \n\to_OverheadCommunicationLines AS OVERHEADCOMMUNICATIONLINES, \n\to_OverheadPowerTransmissionLines AS OVERHEADPOWERTRANSMISSIONLINES, \n\to_PowerSupply AS POWERSUPPLY, \n\to_WaterSupplySelect AS WATERSUPPLYSELECT, \n\to_UtilServicesInfoPublicUtilitySelect AS UTILSERVICESINFOPUBLICUTILITYSELECT, \n\to_UtilServicesIndicator AS UTILSERVICESINDICATOR, \n\tARATE, \n\tLOSSPAYMENTLIMITTYPE, \n\to_DependentPropertiesSelect AS DEPENDENTPROPERTIESSELECT, \n\tSQUAREFTFORNONMANUFACTURING, \n\tSQUAREFTFORMANUFACTURINGORMINING, \n\tSQUAREFTFORRENTAL, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCF_RISKID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Ecprod_STG_Insert_UserInfo",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Ecprod_STG_Insert_UserInfo",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_UserInfo AS (\n\tSELECT\n\t\tUserId,\n\t\tUserPassword,\n\t\tUserAgencyCode,\n\t\tUserNum,\n\t\tUserLName,\n\t\tUserFName,\n\t\tUserPermission,\n\t\tUserPosition,\n\t\tUserSubCode,\n\t\tUserEmail,\n\t\tUserLogonSwitch,\n\t\tUserUpdated,\n\t\tTimeStamp,\n\t\tVerifySwitch,\n\t\tUserAppsSwitch,\n\t\tUserCommercialSwitch,\n\t\tCommercialVisits,\n\t\tUserBillClaimSwitch,\n\t\tUserNSISwitch,\n\t\trough_notes_flag,\n\t\tclines_promoter,\n\t\tnsi_bond_flag,\n\t\tlog_notes_flag,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\tpassword_exp_date,\n\t\tfail_login_attempt,\n\t\tlocked_date_time,\n\t\tbond_appr_flag,\n\t\tlast_activity_date,\n\t\tDflt_Portal_View_Id\n\tFROM UserInfo\n),\nEXP_Values AS (\n\tSELECT\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t'' AS RECORD_COUNT,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,\n\tUserId,\n\tUserPassword,\n\tUserAgencyCode,\n\tUserNum,\n\tUserLName,\n\tUserFName,\n\tUserPermission,\n\tUserPosition,\n\tUserSubCode,\n\tUserEmail,\n\tUserLogonSwitch,\n\tUserUpdated,\n\tTimeStamp,\n\tVerifySwitch,\n\tUserAppsSwitch,\n\tUserCommercialSwitch,\n\tCommercialVisits,\n\tUserBillClaimSwitch,\n\tUserNSISwitch,\n\trough_notes_flag,\n\tclines_promoter,\n\tnsi_bond_flag,\n\tlog_notes_flag,\n\tmodified_date,\n\tmodified_user_id,\n\tpassword_exp_date,\n\tfail_login_attempt,\n\tlocked_date_time,\n\tbond_appr_flag,\n\tlast_activity_date,\n\tDflt_Portal_View_Id\n\tFROM SQ_UserInfo\n),\nUserInfo_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.UserInfo_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.UserInfo_stage\n\t(UserId, UserAgencyCode, UserNum, UserLName, UserFName, UserPermission, UserPosition, UserSubCode, UserEmail, UserLogonSwitch, UserUpdated, TimeStamp, VerifySwitch, UserAppsSwitch, UserCommercialSwitch, CommercialVisits, UserBillClaimSwitch, UserNSISwitch, rough_notes_flag, clines_promoter, nsi_bond_flag, log_notes_flag, modified_date, modified_user_id, password_exp_date, fail_login_attempt, locked_date_time, bond_appr_flag, last_activity_date, Dflt_Portal_View_Id, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tUSERID, \n\tUSERAGENCYCODE, \n\tUSERNUM, \n\tUSERLNAME, \n\tUSERFNAME, \n\tUSERPERMISSION, \n\tUSERPOSITION, \n\tUSERSUBCODE, \n\tUSEREMAIL, \n\tUSERLOGONSWITCH, \n\tUSERUPDATED, \n\tTIMESTAMP, \n\tVERIFYSWITCH, \n\tUSERAPPSSWITCH, \n\tUSERCOMMERCIALSWITCH, \n\tCOMMERCIALVISITS, \n\tUSERBILLCLAIMSWITCH, \n\tUSERNSISWITCH, \n\tROUGH_NOTES_FLAG, \n\tCLINES_PROMOTER, \n\tNSI_BOND_FLAG, \n\tLOG_NOTES_FLAG, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tPASSWORD_EXP_DATE, \n\tFAIL_LOGIN_ATTEMPT, \n\tLOCKED_DATE_TIME, \n\tBOND_APPR_FLAG, \n\tLAST_ACTIVITY_DATE, \n\tDFLT_PORTAL_VIEW_ID, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CommonStaging/"
+        },
+        "annotations": []
+    }
+}

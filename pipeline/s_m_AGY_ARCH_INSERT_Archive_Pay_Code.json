@@ -1,0 +1,43 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_Archive_Pay_Code",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_Archive_Pay_Code",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_pay_code_stage AS (\n\tSELECT\n\t\tpay_code_stage_id,\n\t\tstate_code,\n\t\tagency_num,\n\t\tpay_code,\n\t\tpay_code_exp_date,\n\t\tpay_code_eff_date,\n\t\tcomm_sched_code,\n\t\tbill_pay_plan,\n\t\tagency_code,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM pay_code_stage\n),\nEXP_pay_code_input AS (\n\tSELECT\n\tpay_code_stage_id,\n\tstate_code,\n\tagency_num,\n\tpay_code,\n\tpay_code_exp_date,\n\tpay_code_eff_date,\n\tcomm_sched_code,\n\tbill_pay_plan,\n\tagency_code,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id\n\tFROM SQ_pay_code_stage\n),\narch_pay_code_stage AS (\n\tINSERT INTO arch_pay_code_stage\n\t(pay_code_stage_id, state_code, agency_num, pay_code, pay_code_exp_date, pay_code_eff_date, comm_sched_code, bill_pay_plan, agency_code, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tPAY_CODE_STAGE_ID, \n\tSTATE_CODE, \n\tAGENCY_NUM, \n\tPAY_CODE, \n\tPAY_CODE_EXP_DATE, \n\tPAY_CODE_EFF_DATE, \n\tCOMM_SCHED_CODE, \n\tBILL_PAY_PLAN, \n\tAGENCY_CODE, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID\n\tFROM EXP_pay_code_input\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

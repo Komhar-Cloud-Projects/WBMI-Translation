@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCBPBuildingStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCBPBuildingStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_BP_Building AS (\n\tWITH cte_DCBPBuilding(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.BP_LocationId, \r\n\tX.BP_BuildingId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.AutomaticFireAlarm, \r\n\tX.BuildingGroup, \r\n\tX.BuildingType, \r\n\tX.ConstructionARate, \r\n\tX.ConstructionCode, \r\n\tX.CSP, \r\n\tX.Description, \r\n\tX.DesignCode, \r\n\tX.DesignExposure, \r\n\tX.DoorStrength, \r\n\tX.DoorType, \r\n\tX.InternalPressureDesign, \r\n\tX.MaximumSquareFeet, \r\n\tX.MixedConstruction, \r\n\tX.MixedConstructionSub, \r\n\tX.NumberOfStories, \r\n\tX.OpeningProtection, \r\n\tX.OpeningProtectionSC, \r\n\tX.PredominantBuildingEQ, \r\n\tX.PredominantBuildingEQSL, \r\n\tX.PredominantBuildingLiabClassGroup, \r\n\tX.PredominantBuildingLiabExpBase, \r\n\tX.PredominantBuildingOccupancyType, \r\n\tX.PredominantBuildingRateNumber, \r\n\tX.PredominantBuildingSICCode, \r\n\tX.PredominantLiabilityEQ, \r\n\tX.PredominantLiabilityEQSL, \r\n\tX.PredominantLiabilityLiabClassGroup, \r\n\tX.PredominantLiabilityLiabExpBase, \r\n\tX.PredominantLiabilityOccupancyType, \r\n\tX.PredominantLiabilityRateNumber, \r\n\tX.PredominantLiabilitySICCode, \r\n\tX.PredominantPersonalPropertyEQ, \r\n\tX.PredominantPersonalPropertyEQSL, \r\n\tX.PredominantPersonalPropertyLiabClassGroup, \r\n\tX.PredominantPersonalPropertyLiabExpBase, \r\n\tX.PredominantPersonalPropertyOccupancyType, \r\n\tX.PredominantPersonalPropertyRateNumber, \r\n\tX.PredominantPersonalPropertySICCode, \r\n\tX.ProtectiveDeviceP9, \r\n\tX.RoofCovering, \r\n\tX.RoofCoveringSC, \r\n\tX.RoofDeck, \r\n\tX.RoofDeckAttachment, \r\n\tX.RoofGeometry, \r\n\tX.RoofShape, \r\n\tX.RoofWallConnection, \r\n\tX.RoofWallConstruction, \r\n\tX.SCArea, \r\n\tX.SecondaryWaterResistance, \r\n\tX.SecurityService, \r\n\tX.ServiceContract, \r\n\tX.Sprinkler, \r\n\tX.SquareFt, \r\n\tX.Terrain, \r\n\tX.Vacant, \r\n\tX.WindBorneDebrisRegion, \r\n\tX.WindowProtection, \r\n\tX.WindSpeedDesignSpeed, \r\n\tX.WindSpeedGustWindSpeedOfDesign, \r\n\tX.WindSpeedGustWindSpeedOfLocation, \r\n\tX.WindstormHailRoofDamageACV, \r\n\tX.WindstormLossMitigation, \r\n\tX.WindstormProtectiveDevices, \r\n\tX.YearBuilt \r\n\tFROM\r\n\t DC_BP_Building X\r\n\tinner join\r\n\tcte_DCBPBuilding Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tBP_LocationId,\n\tBP_BuildingId,\n\tSessionId,\n\tId,\n\tAutomaticFireAlarm,\n\tBuildingGroup,\n\tBuildingType,\n\tConstructionARate,\n\tConstructionCode,\n\tCSP,\n\tDescription,\n\tDesignCode,\n\tDesignExposure,\n\tDoorStrength,\n\tDoorType,\n\tInternalPressureDesign,\n\tMaximumSquareFeet,\n\tMixedConstruction,\n\tMixedConstructionSub,\n\tNumberOfStories,\n\tOpeningProtection,\n\tOpeningProtectionSC,\n\tPredominantBuildingEQ,\n\tPredominantBuildingEQSL,\n\tPredominantBuildingLiabClassGroup,\n\tPredominantBuildingLiabExpBase,\n\tPredominantBuildingOccupancyType,\n\tPredominantBuildingRateNumber,\n\tPredominantBuildingSICCode,\n\tPredominantLiabilityEQ,\n\tPredominantLiabilityEQSL,\n\tPredominantLiabilityLiabClassGroup,\n\tPredominantLiabilityLiabExpBase,\n\tPredominantLiabilityOccupancyType,\n\tPredominantLiabilityRateNumber,\n\tPredominantLiabilitySICCode,\n\tPredominantPersonalPropertyEQ,\n\tPredominantPersonalPropertyEQSL,\n\tPredominantPersonalPropertyLiabClassGroup,\n\tPredominantPersonalPropertyLiabExpBase,\n\tPredominantPersonalPropertyOccupancyType,\n\tPredominantPersonalPropertyRateNumber,\n\tPredominantPersonalPropertySICCode,\n\tProtectiveDeviceP9,\n\tRoofCovering,\n\tRoofCoveringSC,\n\tRoofDeck,\n\tRoofDeckAttachment,\n\tRoofGeometry,\n\tRoofShape,\n\tRoofWallConnection,\n\tRoofWallConstruction,\n\tSCArea,\n\tSecondaryWaterResistance,\n\tSecurityService,\n\tServiceContract,\n\tSprinkler,\n\tSquareFt,\n\tTerrain,\n\tVacant,\n\tWindBorneDebrisRegion,\n\tWindowProtection,\n\tWindSpeedDesignSpeed,\n\tWindSpeedGustWindSpeedOfDesign,\n\tWindSpeedGustWindSpeedOfLocation,\n\tWindstormHailRoofDamageACV,\n\tWindstormLossMitigation,\n\tWindstormProtectiveDevices,\n\tYearBuilt,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_DC_BP_Building\n),\nDCBPBuildingStage1 AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCBPBuildingStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCBPBuildingStage\n\t(BPLocationId, BPBuildingId, SessionId, Id, AutomaticFireAlarm, BuildingGroup, BuildingType, ConstructionARate, ConstructionCode, CSP, Description, DesignCode, DesignExposure, DoorStrength, DoorType, InternalPressureDesign, MaximumSquareFeet, MixedConstruction, MixedConstructionSub, NumberOfStories, OpeningProtection, OpeningProtectionSC, PredominantBuildingEQ, PredominantBuildingEQSL, PredominantBuildingLiabClassGroup, PredominantBuildingLiabExpBase, PredominantBuildingOccupancyType, PredominantBuildingRateNumber, PredominantBuildingSICCode, PredominantLiabilityEQ, PredominantLiabilityEQSL, PredominantLiabilityLiabClassGroup, PredominantLiabilityLiabExpBase, PredominantLiabilityOccupancyType, PredominantLiabilityRateNumber, PredominantLiabilitySICCode, PredominantPersonalPropertyEQ, PredominantPersonalPropertyEQSL, PredominantPersonalPropertyLiabClassGroup, PredominantPersonalPropertyLiabExpBase, PredominantPersonalPropertyOccupancyType, PredominantPersonalPropertyRateNumber, PredominantPersonalPropertySICCode, ProtectiveDeviceP9, RoofCovering, RoofCoveringSC, RoofDeck, RoofDeckAttachment, RoofGeometry, RoofShape, RoofWallConnection, RoofWallConstruction, SCArea, SecondaryWaterResistance, SecurityService, ServiceContract, Sprinkler, SquareFt, Terrain, Vacant, WindBorneDebrisRegion, WindowProtection, WindSpeedDesignSpeed, WindSpeedGustWindSpeedOfDesign, WindSpeedGustWindSpeedOfLocation, WindstormHailRoofDamageACV, WindstormLossMitigation, WindstormProtectiveDevices, YearBuilt, ExtractDate, SourceSystemId)\n\tSELECT \n\tBP_LocationId AS BPLOCATIONID, \n\tBP_BuildingId AS BPBUILDINGID, \n\tSESSIONID, \n\tID, \n\tAUTOMATICFIREALARM, \n\tBUILDINGGROUP, \n\tBUILDINGTYPE, \n\tCONSTRUCTIONARATE, \n\tCONSTRUCTIONCODE, \n\tCSP, \n\tDESCRIPTION, \n\tDESIGNCODE, \n\tDESIGNEXPOSURE, \n\tDOORSTRENGTH, \n\tDOORTYPE, \n\tINTERNALPRESSUREDESIGN, \n\tMAXIMUMSQUAREFEET, \n\tMIXEDCONSTRUCTION, \n\tMIXEDCONSTRUCTIONSUB, \n\tNUMBEROFSTORIES, \n\tOPENINGPROTECTION, \n\tOPENINGPROTECTIONSC, \n\tPREDOMINANTBUILDINGEQ, \n\tPREDOMINANTBUILDINGEQSL, \n\tPREDOMINANTBUILDINGLIABCLASSGROUP, \n\tPREDOMINANTBUILDINGLIABEXPBASE, \n\tPREDOMINANTBUILDINGOCCUPANCYTYPE, \n\tPREDOMINANTBUILDINGRATENUMBER, \n\tPREDOMINANTBUILDINGSICCODE, \n\tPREDOMINANTLIABILITYEQ, \n\tPREDOMINANTLIABILITYEQSL, \n\tPREDOMINANTLIABILITYLIABCLASSGROUP, \n\tPREDOMINANTLIABILITYLIABEXPBASE, \n\tPREDOMINANTLIABILITYOCCUPANCYTYPE, \n\tPREDOMINANTLIABILITYRATENUMBER, \n\tPREDOMINANTLIABILITYSICCODE, \n\tPREDOMINANTPERSONALPROPERTYEQ, \n\tPREDOMINANTPERSONALPROPERTYEQSL, \n\tPREDOMINANTPERSONALPROPERTYLIABCLASSGROUP, \n\tPREDOMINANTPERSONALPROPERTYLIABEXPBASE, \n\tPREDOMINANTPERSONALPROPERTYOCCUPANCYTYPE, \n\tPREDOMINANTPERSONALPROPERTYRATENUMBER, \n\tPREDOMINANTPERSONALPROPERTYSICCODE, \n\tPROTECTIVEDEVICEP9, \n\tROOFCOVERING, \n\tROOFCOVERINGSC, \n\tROOFDECK, \n\tROOFDECKATTACHMENT, \n\tROOFGEOMETRY, \n\tROOFSHAPE, \n\tROOFWALLCONNECTION, \n\tROOFWALLCONSTRUCTION, \n\tSCAREA, \n\tSECONDARYWATERRESISTANCE, \n\tSECURITYSERVICE, \n\tSERVICECONTRACT, \n\tSPRINKLER, \n\tSQUAREFT, \n\tTERRAIN, \n\tVACANT, \n\tWINDBORNEDEBRISREGION, \n\tWINDOWPROTECTION, \n\tWINDSPEEDDESIGNSPEED, \n\tWINDSPEEDGUSTWINDSPEEDOFDESIGN, \n\tWINDSPEEDGUSTWINDSPEEDOFLOCATION, \n\tWINDSTORMHAILROOFDAMAGEACV, \n\tWINDSTORMLOSSMITIGATION, \n\tWINDSTORMPROTECTIVEDEVICES, \n\tYEARBUILT, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

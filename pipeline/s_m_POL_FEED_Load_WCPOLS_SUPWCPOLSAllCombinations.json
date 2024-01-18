@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_FEED_Load_WCPOLS_SUPWCPOLSAllCombinations",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Load_WCPOLS_SUPWCPOLSAllCombinations",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SupWCPOLS AS (\n\tSelect distinct SupWCPOLSFieldNeeded.TableName,\r\n\tSupWCPOLSFieldNeeded.FieldName,\r\n\tSupWCPOLSFieldNeeded.FieldDataType,\r\n\tSupWCPOLSTransactionTypeNeeded.WCPOLSTransactionType,\r\n\tSupWCPOLSTransactionTypeNeeded.SourceTransactionType,\r\n\tSupWCPOLS.WCPOLSCode,\r\n\tcase when SupWCPOLSTransactionTypeNeeded.FileName='NCCI' and SupWCPOLSFieldNeeded.FileName='NCCI' and (SupWCPOLS.FileName='NCCI' or SupWCPOLS.FileName is null) then 'NCCI' \r\n\t when SupWCPOLSTransactionTypeNeeded.FileName='WI' and SupWCPOLSFieldNeeded.FileName='WI' and (SupWCPOLS.FileName='WI' or SupWCPOLS.FileName is null) then 'WI'\r\n\t when SupWCPOLSTransactionTypeNeeded.FileName='MI' and SupWCPOLSFieldNeeded.FileName='MI' and (SupWCPOLS.FileName='MI' or SupWCPOLS.FileName is null) then 'MI'\r\n\t when SupWCPOLSTransactionTypeNeeded.FileName='MN' and SupWCPOLSFieldNeeded.FileName='MN' and (SupWCPOLS.FileName='MN' or SupWCPOLS.FileName is null) then 'MN'\r\n\t when SupWCPOLSTransactionTypeNeeded.FileName='NC' and SupWCPOLSFieldNeeded.FileName='NC' and (SupWCPOLS.FileName='NC' or SupWCPOLS.FileName is null) then 'NC'\r\n\tEND FinalFileName\r\n\t from (\r\n\tselect TableName,case when supWCPOLSFieldNeeded.FieldName like 'StateCode%' and supWCPOLSFieldNeeded.FieldName<>'StateCodeLink' then 'StateCode' else supWCPOLSFieldNeeded.FieldName end FieldName,FieldDataType,case when NCCIRequiredFlag=1 then 'NCCI' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLSFieldNeeded\r\n\twhere CurrentSnapshotFlag=1\r\n\tUNION ALL\r\n\tselect TableName,case when supWCPOLSFieldNeeded.FieldName like 'StateCode%' and supWCPOLSFieldNeeded.FieldName<>'StateCodeLink' then 'StateCode' else supWCPOLSFieldNeeded.FieldName end FieldName,FieldDataType,case when WIRequiredFlag=1 then 'WI' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLSFieldNeeded\r\n\twhere CurrentSnapshotFlag=1\r\n\tUNION ALL\r\n\tselect TableName,case when supWCPOLSFieldNeeded.FieldName like 'StateCode%' and supWCPOLSFieldNeeded.FieldName<>'StateCodeLink' then 'StateCode' else supWCPOLSFieldNeeded.FieldName end FieldName,FieldDataType,case when MIRequiredFlag=1 then 'MI' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLSFieldNeeded\r\n\twhere CurrentSnapshotFlag=1\r\n\tUNION ALL\r\n\tselect TableName,case when supWCPOLSFieldNeeded.FieldName like 'StateCode%' and supWCPOLSFieldNeeded.FieldName<>'StateCodeLink' then 'StateCode' else supWCPOLSFieldNeeded.FieldName end FieldName,FieldDataType,case when MNRequiredFlag=1 then 'MN' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLSFieldNeeded\r\n\twhere CurrentSnapshotFlag=1\r\n\tUNION ALL\r\n\tselect TableName,case when supWCPOLSFieldNeeded.FieldName like 'StateCode%' and supWCPOLSFieldNeeded.FieldName<>'StateCodeLink' then 'StateCode' else supWCPOLSFieldNeeded.FieldName end FieldName,FieldDataType,case when NCRequiredFlag=1 then 'NC' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLSFieldNeeded\r\n\twhere CurrentSnapshotFlag=1) SupWCPOLSFieldNeeded\r\n\t\r\n\t\r\n\tLeft Join \r\n\t\r\n\t(select TableName,WCPOLSTransactionType,SourceTransactionType,case when NCCIRequiredFlag=1 then 'NCCI' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLSTransactionTypeNeeded\r\n\twhere CurrentSnapshotFlag=1\r\n\tUNION\r\n\tselect TableName,WCPOLSTransactionType,SourceTransactionType,case when WIRequiredFlag=1 then 'WI' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLSTransactionTypeNeeded\r\n\twhere CurrentSnapshotFlag=1\r\n\tUNION\r\n\tselect TableName,WCPOLSTransactionType,SourceTransactionType,case when MIRequiredFlag=1 then 'MI' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLSTransactionTypeNeeded\r\n\twhere CurrentSnapshotFlag=1\r\n\tUNION\r\n\tselect TableName,WCPOLSTransactionType,SourceTransactionType,case when MNRequiredFlag=1 then 'MN' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLSTransactionTypeNeeded\r\n\twhere CurrentSnapshotFlag=1\r\n\tUNION\r\n\tselect TableName,WCPOLSTransactionType,SourceTransactionType,case when NCRequiredFlag=1 then 'NC' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLSTransactionTypeNeeded\r\n\twhere CurrentSnapshotFlag=1) SupWCPOLSTransactionTypeNeeded\r\n\ton SupWCPOLSFieldNeeded.TableName=SupWCPOLSTransactionTypeNeeded.TableName\r\n\t\r\n\tLeft Join \r\n\t\r\n\t(select TableName,case when SupWCPOLS.ProcessName like 'StateCode%' then 'StateCode' else SupWCPOLS.ProcessName end FieldName,WCPOLSCode,case when NCCIRequiredFlag=1 then 'NCCI' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLS\r\n\twhere CurrentSnapshotFlag=1\r\n\tUNION\r\n\tselect TableName,case when SupWCPOLS.ProcessName like 'StateCode%' then 'StateCode' else SupWCPOLS.ProcessName end FieldName,WCPOLSCode,case when WIRequiredFlag=1 then 'WI' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLS\r\n\twhere CurrentSnapshotFlag=1\r\n\tUNION\r\n\tselect TableName,case when SupWCPOLS.ProcessName like 'StateCode%' then 'StateCode' else SupWCPOLS.ProcessName end FieldName,WCPOLSCode,case when MIRequiredFlag=1 then 'MI' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLS\r\n\twhere CurrentSnapshotFlag=1\r\n\tUNION\r\n\tselect TableName,case when SupWCPOLS.ProcessName like 'StateCode%' then 'StateCode' else SupWCPOLS.ProcessName end FieldName,WCPOLSCode,case when MNRequiredFlag=1 then 'MN' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLS\r\n\twhere CurrentSnapshotFlag=1\r\n\tUNION\r\n\tselect TableName,case when SupWCPOLS.ProcessName like 'StateCode%' then 'StateCode' else SupWCPOLS.ProcessName end FieldName,WCPOLSCode,case when NCRequiredFlag=1 then 'NC' else '' end FileName from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLS\r\n\twhere CurrentSnapshotFlag=1) SupWCPOLS\r\n\ton SupWCPOLSFieldNeeded.TableName=SupWCPOLS.TableName\r\n\tand supWCPOLSFieldNeeded.FieldName=SupWCPOLS.FieldName\n),\nEXP_DataCollect AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Auditid,\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\tTableName,\n\tFieldName,\n\tFieldDataType,\n\tWCPOLSTransactionType,\n\tSourceTransactionType,\n\tWCPOLSCode,\n\tFinalFileName\n\tFROM SQ_SupWCPOLS\n),\nFIL_EmptyFile AS (\n\tSELECT\n\tAuditid, \n\tExtractDate, \n\tTableName, \n\tFieldName, \n\tFieldDataType, \n\tWCPOLSTransactionType, \n\tSourceTransactionType, \n\tWCPOLSCode, \n\tFinalFileName\n\tFROM EXP_DataCollect\n\tWHERE NOT ISNULL(FinalFileName)\n),\nSUPWCPOLSAllCombinations AS (\n\tTRUNCATE TABLE SUPWCPOLSAllCombinations;\n\tINSERT INTO SUPWCPOLSAllCombinations\n\t(Auditid, ExtractDate, TableName, FieldName, FieldDataType, WCPOLSTransactionType, SourceTransactionType, WCPOLSCode, FinalFileName)\n\tSELECT \n\tAUDITID, \n\tEXTRACTDATE, \n\tTABLENAME, \n\tFIELDNAME, \n\tFIELDDATATYPE, \n\tWCPOLSTRANSACTIONTYPE, \n\tSOURCETRANSACTIONTYPE, \n\tWCPOLSCODE, \n\tFINALFILENAME\n\tFROM FIL_EmptyFile\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

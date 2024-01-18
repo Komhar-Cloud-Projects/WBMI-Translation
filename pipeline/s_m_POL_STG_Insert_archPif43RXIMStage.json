@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_archPif43RXIMStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_archPif43RXIMStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif43RXIMStage AS (\n\tSELECT\n\t\tPif43RXIMStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tPifSymbol,\n\t\tPifPolicyNumber,\n\t\tPifModule,\n\t\tPMDRXI1SegmentId,\n\t\tPMDRXI1SegmentStatus,\n\t\tPMDRXI1YearTransaction,\n\t\tPMDRXI1MonthTransaction,\n\t\tPMDRXI1DayTransaction,\n\t\tPMDRXI1SegmentLevelCode,\n\t\tPMDRXI1SegmentPartCode,\n\t\tPMDRXI1SubPartCode,\n\t\tPMDRXI1InsuranceLine,\n\t\tPMDRXI1LocationNumber,\n\t\tPMDRXI1SubLocationNumber,\n\t\tPMDRXI1RiskUnitGroup,\n\t\tPMDRXI1SequenceNumber,\n\t\tPMDRXI1YearItemEffective,\n\t\tPMDRXI1MonthItemEffective,\n\t\tPMDRXI1DayItemEffective,\n\t\tPMDRXI1VariableKey,\n\t\tPMDRXI1YearProcess,\n\t\tPMDRXI1MonthProcess,\n\t\tPMDRXI1DayProcess,\n\t\tPMDRXI1RatingState,\n\t\tPMDRXI1CompanyNumber,\n\t\tPMDRXI1BasisOfCoverage,\n\t\tPMDRXI1BasisLoc0Ind,\n\t\tPMDRXI1FormType,\n\t\tPMDRXI1FormLoc0Ind,\n\t\tPMDRXI1LimitOfInsurance,\n\t\tPMDRXI1PmaCode,\n\t\tPMDRXI1FilingStatus,\n\t\tPMDRXI1ArVpReceptacleCr,\n\t\tPMDRXI1ArVpAfpLimit,\n\t\tPMDRXI1ArAverageLimit,\n\t\tPMDRXI1ArDupRecordsPct,\n\t\tPMDRXI1ArClassOfRisk,\n\t\tPMDRXI1DeductibleX,\n\t\tPMDRXI1DeductibleLoc0Ind,\n\t\tPMDRXI1Irpm,\n\t\tPMDRXI1IrpmLoc0Ind,\n\t\tPMDRXI1ScheduleMod,\n\t\tPMDRXI1SchedLoc0Ind,\n\t\tPMDRXI1ExpenseMod,\n\t\tPMDRXI1ExpenseLoc0Ind,\n\t\tPMDRXI1OtherMod,\n\t\tPMDRXI1OtherLoc0Ind,\n\t\tPMDRXI1CommRedMod,\n\t\tPMDRXI1CommRedLoc0Ind,\n\t\tPMDRXI1AgentsCommRate,\n\t\tPMDRXI1AgentsCommInd,\n\t\tPMDRXI1SignsPosition,\n\t\tPMDRXI1DecChangeFlag,\n\t\tPMDRXI1LossCostMult1,\n\t\tPMDRXI1LossCostMult2,\n\t\tPMDRXI1LossCostMult3,\n\t\tPMDRXI1RcAcv,\n\t\tPMDRXI1Coinsurance,\n\t\tPMDRXI1AutoIncrease,\n\t\tPMDRXI1BlanketInsuranceInd,\n\t\tPMDRXI1PlusPakInd,\n\t\tPMDRXI1ArInTransit,\n\t\tPMDRXI1Pma2Code,\n\t\tPMDRXI1PmscFutureUse,\n\t\tPMDRXI1CustomerFutureUse,\n\t\tPMDRXI1Yr2000CustUse\n\tFROM Pif43RXIMStage\n),\nEXP_Pif43RXIMStage AS (\n\tSELECT\n\tPif43RXIMStageId,\n\tExtractDate,\n\tSourceSystemid,\n\tPifSymbol,\n\tPifPolicyNumber,\n\tPifModule,\n\tPMDRXI1SegmentId,\n\tPMDRXI1SegmentStatus,\n\tPMDRXI1YearTransaction,\n\tPMDRXI1MonthTransaction,\n\tPMDRXI1DayTransaction,\n\tPMDRXI1SegmentLevelCode,\n\tPMDRXI1SegmentPartCode,\n\tPMDRXI1SubPartCode,\n\tPMDRXI1InsuranceLine,\n\tPMDRXI1LocationNumber,\n\tPMDRXI1SubLocationNumber,\n\tPMDRXI1RiskUnitGroup,\n\tPMDRXI1SequenceNumber,\n\tPMDRXI1YearItemEffective,\n\tPMDRXI1MonthItemEffective,\n\tPMDRXI1DayItemEffective,\n\tPMDRXI1VariableKey,\n\tPMDRXI1YearProcess,\n\tPMDRXI1MonthProcess,\n\tPMDRXI1DayProcess,\n\tPMDRXI1RatingState,\n\tPMDRXI1CompanyNumber,\n\tPMDRXI1BasisOfCoverage,\n\tPMDRXI1BasisLoc0Ind,\n\tPMDRXI1FormType,\n\tPMDRXI1FormLoc0Ind,\n\tPMDRXI1LimitOfInsurance,\n\tPMDRXI1PmaCode,\n\tPMDRXI1FilingStatus,\n\tPMDRXI1ArVpReceptacleCr,\n\tPMDRXI1ArVpAfpLimit,\n\tPMDRXI1ArAverageLimit,\n\tPMDRXI1ArDupRecordsPct,\n\tPMDRXI1ArClassOfRisk,\n\tPMDRXI1DeductibleX,\n\tPMDRXI1DeductibleLoc0Ind,\n\tPMDRXI1Irpm,\n\tPMDRXI1IrpmLoc0Ind,\n\tPMDRXI1ScheduleMod,\n\tPMDRXI1SchedLoc0Ind,\n\tPMDRXI1ExpenseMod,\n\tPMDRXI1ExpenseLoc0Ind,\n\tPMDRXI1OtherMod,\n\tPMDRXI1OtherLoc0Ind,\n\tPMDRXI1CommRedMod,\n\tPMDRXI1CommRedLoc0Ind,\n\tPMDRXI1AgentsCommRate,\n\tPMDRXI1AgentsCommInd,\n\tPMDRXI1SignsPosition,\n\tPMDRXI1DecChangeFlag,\n\tPMDRXI1LossCostMult1,\n\tPMDRXI1LossCostMult2,\n\tPMDRXI1LossCostMult3,\n\tPMDRXI1RcAcv,\n\tPMDRXI1Coinsurance,\n\tPMDRXI1AutoIncrease,\n\tPMDRXI1BlanketInsuranceInd,\n\tPMDRXI1PlusPakInd,\n\tPMDRXI1ArInTransit,\n\tPMDRXI1Pma2Code,\n\tPMDRXI1PmscFutureUse,\n\tPMDRXI1CustomerFutureUse,\n\tPMDRXI1Yr2000CustUse,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_audit_id\n\tFROM SQ_Pif43RXIMStage\n),\nArchPif43RXIMStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchPif43RXIMStage\n\t(ExtractDate, SourceSystemid, AuditId, PifSymbol, PifPolicyNumber, PifModule, PMDRXI1SegmentId, PMDRXI1SegmentStatus, PMDRXI1YearTransaction, PMDRXI1MonthTransaction, PMDRXI1DayTransaction, PMDRXI1SegmentLevelCode, PMDRXI1SegmentPartCode, PMDRXI1SubPartCode, PMDRXI1InsuranceLine, PMDRXI1LocationNumber, PMDRXI1SubLocationNumber, PMDRXI1RiskUnitGroup, PMDRXI1SequenceNumber, PMDRXI1YearItemEffective, PMDRXI1MonthItemEffective, PMDRXI1DayItemEffective, PMDRXI1VariableKey, PMDRXI1YearProcess, PMDRXI1MonthProcess, PMDRXI1DayProcess, PMDRXI1RatingState, PMDRXI1CompanyNumber, PMDRXI1BasisOfCoverage, PMDRXI1BasisLoc0Ind, PMDRXI1FormType, PMDRXI1FormLoc0Ind, PMDRXI1LimitOfInsurance, PMDRXI1PmaCode, PMDRXI1FilingStatus, PMDRXI1ArVpReceptacleCr, PMDRXI1ArVpAfpLimit, PMDRXI1ArAverageLimit, PMDRXI1ArDupRecordsPct, PMDRXI1ArClassOfRisk, PMDRXI1DeductibleX, PMDRXI1DeductibleLoc0Ind, PMDRXI1Irpm, PMDRXI1IrpmLoc0Ind, PMDRXI1ScheduleMod, PMDRXI1SchedLoc0Ind, PMDRXI1ExpenseMod, PMDRXI1ExpenseLoc0Ind, PMDRXI1OtherMod, PMDRXI1OtherLoc0Ind, PMDRXI1CommRedMod, PMDRXI1CommRedLoc0Ind, PMDRXI1AgentsCommRate, PMDRXI1AgentsCommInd, PMDRXI1SignsPosition, PMDRXI1DecChangeFlag, PMDRXI1LossCostMult1, PMDRXI1LossCostMult2, PMDRXI1LossCostMult3, PMDRXI1RcAcv, PMDRXI1Coinsurance, PMDRXI1AutoIncrease, PMDRXI1BlanketInsuranceInd, PMDRXI1PlusPakInd, PMDRXI1ArInTransit, PMDRXI1Pma2Code, PMDRXI1PmscFutureUse, PMDRXI1CustomerFutureUse, PMDRXI1Yr2000CustUse)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_audit_id AS AUDITID, \n\tPIFSYMBOL, \n\tPIFPOLICYNUMBER, \n\tPIFMODULE, \n\tPMDRXI1SEGMENTID, \n\tPMDRXI1SEGMENTSTATUS, \n\tPMDRXI1YEARTRANSACTION, \n\tPMDRXI1MONTHTRANSACTION, \n\tPMDRXI1DAYTRANSACTION, \n\tPMDRXI1SEGMENTLEVELCODE, \n\tPMDRXI1SEGMENTPARTCODE, \n\tPMDRXI1SUBPARTCODE, \n\tPMDRXI1INSURANCELINE, \n\tPMDRXI1LOCATIONNUMBER, \n\tPMDRXI1SUBLOCATIONNUMBER, \n\tPMDRXI1RISKUNITGROUP, \n\tPMDRXI1SEQUENCENUMBER, \n\tPMDRXI1YEARITEMEFFECTIVE, \n\tPMDRXI1MONTHITEMEFFECTIVE, \n\tPMDRXI1DAYITEMEFFECTIVE, \n\tPMDRXI1VARIABLEKEY, \n\tPMDRXI1YEARPROCESS, \n\tPMDRXI1MONTHPROCESS, \n\tPMDRXI1DAYPROCESS, \n\tPMDRXI1RATINGSTATE, \n\tPMDRXI1COMPANYNUMBER, \n\tPMDRXI1BASISOFCOVERAGE, \n\tPMDRXI1BASISLOC0IND, \n\tPMDRXI1FORMTYPE, \n\tPMDRXI1FORMLOC0IND, \n\tPMDRXI1LIMITOFINSURANCE, \n\tPMDRXI1PMACODE, \n\tPMDRXI1FILINGSTATUS, \n\tPMDRXI1ARVPRECEPTACLECR, \n\tPMDRXI1ARVPAFPLIMIT, \n\tPMDRXI1ARAVERAGELIMIT, \n\tPMDRXI1ARDUPRECORDSPCT, \n\tPMDRXI1ARCLASSOFRISK, \n\tPMDRXI1DEDUCTIBLEX, \n\tPMDRXI1DEDUCTIBLELOC0IND, \n\tPMDRXI1IRPM, \n\tPMDRXI1IRPMLOC0IND, \n\tPMDRXI1SCHEDULEMOD, \n\tPMDRXI1SCHEDLOC0IND, \n\tPMDRXI1EXPENSEMOD, \n\tPMDRXI1EXPENSELOC0IND, \n\tPMDRXI1OTHERMOD, \n\tPMDRXI1OTHERLOC0IND, \n\tPMDRXI1COMMREDMOD, \n\tPMDRXI1COMMREDLOC0IND, \n\tPMDRXI1AGENTSCOMMRATE, \n\tPMDRXI1AGENTSCOMMIND, \n\tPMDRXI1SIGNSPOSITION, \n\tPMDRXI1DECCHANGEFLAG, \n\tPMDRXI1LOSSCOSTMULT1, \n\tPMDRXI1LOSSCOSTMULT2, \n\tPMDRXI1LOSSCOSTMULT3, \n\tPMDRXI1RCACV, \n\tPMDRXI1COINSURANCE, \n\tPMDRXI1AUTOINCREASE, \n\tPMDRXI1BLANKETINSURANCEIND, \n\tPMDRXI1PLUSPAKIND, \n\tPMDRXI1ARINTRANSIT, \n\tPMDRXI1PMA2CODE, \n\tPMDRXI1PMSCFUTUREUSE, \n\tPMDRXI1CUSTOMERFUTUREUSE, \n\tPMDRXI1YR2000CUSTUSE\n\tFROM EXP_Pif43RXIMStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

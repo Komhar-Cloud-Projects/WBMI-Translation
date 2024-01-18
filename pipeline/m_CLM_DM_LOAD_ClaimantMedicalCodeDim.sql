@@ -95,14 +95,12 @@ EXP_Src_Value_CAUSE AS (
 	-- IS_SPACES(IN_patient_cause_code),'N/A',
 	-- LENGTH(IN_patient_cause_code)=0,'N/A',
 	-- LTRIM(RTRIM(IN_patient_cause_code)))
-	DECODE(TRUE,
-		IN_patient_cause_code IS NULL, 'N/A',
-		LENGTH(IN_patient_cause_code)>0 AND TRIM(IN_patient_cause_code)='', 'N/A',
-		LENGTH(IN_patient_cause_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(IN_patient_cause_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    IN_patient_cause_code IS NULL, 'N/A',
+	    LENGTH(IN_patient_cause_code)>0 AND TRIM(IN_patient_cause_code)='', 'N/A',
+	    LENGTH(IN_patient_cause_code) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_patient_cause_code))
 	) AS patient_cause_code
 	FROM SQ_claim_medical_Cause
 ),
@@ -129,35 +127,30 @@ EXP_Defualt_Values_CAUSE AS (
 	SELECT
 	EXP_Src_Value_CAUSE.claim_party_occurrence_ak_id AS IN_claim_party_occurrence_ak_id,
 	-- *INF*: iif(isnull(IN_claim_party_occurrence_ak_id),-1,IN_claim_party_occurrence_ak_id)
-	IFF(IN_claim_party_occurrence_ak_id IS NULL,
-		- 1,
-		IN_claim_party_occurrence_ak_id
-	) AS v_claim_party_occurrence_ak_id,
+	IFF(IN_claim_party_occurrence_ak_id IS NULL, - 1, IN_claim_party_occurrence_ak_id) AS v_claim_party_occurrence_ak_id,
 	v_claim_party_occurrence_ak_id AS EdwClaimPartyOccurrenceAkId,
 	-- *INF*: iif(isnull(:LKP.LKP_CLAIM_PARTY_OCCURRENCE(IN_claim_party_occurrence_ak_id)),
 	-- -1,
 	-- :LKP.LKP_CLAIM_PARTY_OCCURRENCE(IN_claim_party_occurrence_ak_id))
-	IFF(LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_id.claim_party_occurrence_id IS NULL,
-		- 1,
-		LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_id.claim_party_occurrence_id
+	IFF(
+	    LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_id.claim_party_occurrence_id IS NULL,
+	    - 1,
+	    LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_id.claim_party_occurrence_id
 	) AS v_claim_party_occurrence_id,
 	v_claim_party_occurrence_id AS EdwClaimPartyOccurrencePkId,
 	-- *INF*: iif(isnull(:LKP.LKP_CLAIMANT_DIM(IN_claim_party_occurrence_ak_id))
 	-- ,-1,
 	-- :LKP.LKP_CLAIMANT_DIM(IN_claim_party_occurrence_ak_id))
-	IFF(LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_id.claimant_dim_id IS NULL,
-		- 1,
-		LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_id.claimant_dim_id
+	IFF(
+	    LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_id.claimant_dim_id IS NULL, - 1,
+	    LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_id.claimant_dim_id
 	) AS v_claimant_dim_id,
 	v_claimant_dim_id AS claimant_dim_id,
 	-1 AS v_SupMedicalDiagnosisCodeId,
 	v_SupMedicalDiagnosisCodeId AS EdwSupMedicalDiagnosisCodePkId,
 	LKP_SupMedicalCauseCode_Src.SupMedicalCauseCodeId AS IN_SupMedicalCauseCodeId,
 	-- *INF*: iif(isnull(IN_SupMedicalCauseCodeId),-1,IN_SupMedicalCauseCodeId)
-	IFF(IN_SupMedicalCauseCodeId IS NULL,
-		- 1,
-		IN_SupMedicalCauseCodeId
-	) AS v_SupMedicalCauseCodeId,
+	IFF(IN_SupMedicalCauseCodeId IS NULL, - 1, IN_SupMedicalCauseCodeId) AS v_SupMedicalCauseCodeId,
 	v_SupMedicalCauseCodeId AS EdwSupMedicalCauseCodePkId,
 	-1 AS v_SupMedicalSurgeryCodeId,
 	v_SupMedicalSurgeryCodeId AS EdwSupSurgeryTypePkId,
@@ -165,22 +158,15 @@ EXP_Defualt_Values_CAUSE AS (
 	v_MedicalCauseType AS MedicalCodeType,
 	EXP_Src_Value_CAUSE.patient_cause_code AS IN_MedicalCauseCode,
 	-- *INF*: iif(isnull(IN_MedicalCauseCode),'N/A',IN_MedicalCauseCode)
-	IFF(IN_MedicalCauseCode IS NULL,
-		'N/A',
-		IN_MedicalCauseCode
-	) AS v_MedicalCauseCode,
+	IFF(IN_MedicalCauseCode IS NULL, 'N/A', IN_MedicalCauseCode) AS v_MedicalCauseCode,
 	v_MedicalCauseCode AS MedicalCode,
 	LKP_SupMedicalCauseCode_Src.ShortDescription AS IN_MedicalCauseDescription,
 	-- *INF*: iif(isnull(IN_MedicalCauseDescription),'N/A',IN_MedicalCauseDescription)
-	IFF(IN_MedicalCauseDescription IS NULL,
-		'N/A',
-		IN_MedicalCauseDescription
-	) AS v_MedicalCauseDescription,
+	IFF(IN_MedicalCauseDescription IS NULL, 'N/A', IN_MedicalCauseDescription) AS v_MedicalCauseDescription,
 	v_MedicalCauseDescription AS MedicalCodeDescription,
 	EXP_Src_Value_CAUSE.EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	sysdate AS CreatedDate,
@@ -328,14 +314,12 @@ EXP_Src_Value_DIAG AS (
 	-- IS_SPACES(IN_patient_diag_code),'N/A',
 	-- LENGTH(IN_patient_diag_code)=0,'N/A',
 	-- LTRIM(RTRIM(IN_patient_diag_code)))
-	DECODE(TRUE,
-		IN_patient_diag_code IS NULL, 'N/A',
-		LENGTH(IN_patient_diag_code)>0 AND TRIM(IN_patient_diag_code)='', 'N/A',
-		LENGTH(IN_patient_diag_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(IN_patient_diag_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    IN_patient_diag_code IS NULL, 'N/A',
+	    LENGTH(IN_patient_diag_code)>0 AND TRIM(IN_patient_diag_code)='', 'N/A',
+	    LENGTH(IN_patient_diag_code) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_patient_diag_code))
 	) AS patient_diag_code
 	FROM SQ_Claim_medical_DIAG
 ),
@@ -362,33 +346,28 @@ EXP_Defualt_Values_DIAG AS (
 	SELECT
 	EXP_Src_Value_DIAG.claim_party_occurrence_ak_id AS IN_claim_party_occurrence_ak_id,
 	-- *INF*: iif(isnull(IN_claim_party_occurrence_ak_id),-1,IN_claim_party_occurrence_ak_id)
-	IFF(IN_claim_party_occurrence_ak_id IS NULL,
-		- 1,
-		IN_claim_party_occurrence_ak_id
-	) AS v_claim_party_occurrence_ak_id,
+	IFF(IN_claim_party_occurrence_ak_id IS NULL, - 1, IN_claim_party_occurrence_ak_id) AS v_claim_party_occurrence_ak_id,
 	v_claim_party_occurrence_ak_id AS EdwClaimPartyOccurrenceAkId,
 	-- *INF*: iif(isnull(:LKP.LKP_CLAIM_PARTY_OCCURRENCE(IN_claim_party_occurrence_ak_id)),
 	-- -1,
 	-- :LKP.LKP_CLAIM_PARTY_OCCURRENCE(IN_claim_party_occurrence_ak_id))
-	IFF(LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_id.claim_party_occurrence_id IS NULL,
-		- 1,
-		LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_id.claim_party_occurrence_id
+	IFF(
+	    LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_id.claim_party_occurrence_id IS NULL,
+	    - 1,
+	    LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_id.claim_party_occurrence_id
 	) AS v_claim_party_occurrence_id,
 	v_claim_party_occurrence_id AS EdwClaimPartyOccurrencePkId,
 	-- *INF*: iif(isnull(:LKP.LKP_CLAIMANT_DIM(IN_claim_party_occurrence_ak_id))
 	-- ,-1,
 	-- :LKP.LKP_CLAIMANT_DIM(IN_claim_party_occurrence_ak_id))
-	IFF(LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_id.claimant_dim_id IS NULL,
-		- 1,
-		LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_id.claimant_dim_id
+	IFF(
+	    LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_id.claimant_dim_id IS NULL, - 1,
+	    LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_id.claimant_dim_id
 	) AS v_claimant_dim_id,
 	v_claimant_dim_id AS claimant_dim_id,
 	LKP_SupMedicalDiagnosisCode_Src.SupMedicalDiagnosisCodeId AS IN_SupMedicalDiagnosisCodeId,
 	-- *INF*: iif(isnull(IN_SupMedicalDiagnosisCodeId),-1,IN_SupMedicalDiagnosisCodeId)
-	IFF(IN_SupMedicalDiagnosisCodeId IS NULL,
-		- 1,
-		IN_SupMedicalDiagnosisCodeId
-	) AS v_SupMedicalDiagnosisCodeId,
+	IFF(IN_SupMedicalDiagnosisCodeId IS NULL, - 1, IN_SupMedicalDiagnosisCodeId) AS v_SupMedicalDiagnosisCodeId,
 	v_SupMedicalDiagnosisCodeId AS EdwSupMedicalDiagnosisCodePkId,
 	-1 AS v_SupMedicalCauseCodeId,
 	v_SupMedicalCauseCodeId AS EdwSupMedicalCauseCodePkId,
@@ -398,22 +377,15 @@ EXP_Defualt_Values_DIAG AS (
 	v_MedicalDiagnosisType AS MedicalCodeType,
 	EXP_Src_Value_DIAG.patient_diag_code AS IN_MedicalDiagnosisCode,
 	-- *INF*: iif(isnull(IN_MedicalDiagnosisCode),'N/A',IN_MedicalDiagnosisCode)
-	IFF(IN_MedicalDiagnosisCode IS NULL,
-		'N/A',
-		IN_MedicalDiagnosisCode
-	) AS v_MedicalDiagnosisCode,
+	IFF(IN_MedicalDiagnosisCode IS NULL, 'N/A', IN_MedicalDiagnosisCode) AS v_MedicalDiagnosisCode,
 	v_MedicalDiagnosisCode AS MedicalCode,
 	LKP_SupMedicalDiagnosisCode_Src.ShortDescription AS IN_MedicalDiagnosisDescription,
 	-- *INF*: iif(isnull(IN_MedicalDiagnosisDescription),'N/A',IN_MedicalDiagnosisDescription)
-	IFF(IN_MedicalDiagnosisDescription IS NULL,
-		'N/A',
-		IN_MedicalDiagnosisDescription
-	) AS v_MedicalDiagnosisDescription,
+	IFF(IN_MedicalDiagnosisDescription IS NULL, 'N/A', IN_MedicalDiagnosisDescription) AS v_MedicalDiagnosisDescription,
 	v_MedicalDiagnosisDescription AS MedicalCodeDescription,
 	EXP_Src_Value_DIAG.EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	sysdate AS CreatedDate,
@@ -554,10 +526,7 @@ EXP_Src_Values_DIAG_ADD AS (
 	patient_add_code,
 	patient_diag_code AS IN_patient_diag_code,
 	-- *INF*: iif(isnull(IN_patient_diag_code), 'N/A',IN_patient_diag_code)
-	IFF(IN_patient_diag_code IS NULL,
-		'N/A',
-		IN_patient_diag_code
-	) AS patient_diag_code
+	IFF(IN_patient_diag_code IS NULL, 'N/A', IN_patient_diag_code) AS patient_diag_code
 	FROM SQ_claim_medical_patient_diagnosis_additional
 ),
 LKP_SupMedicalDiagnosisCode_Add AS (
@@ -600,33 +569,28 @@ EXP_Defualt_Values_DIAG_ADD AS (
 	SELECT
 	LKP_claim_medical_ADD.claim_party_occurrence_ak_id AS IN_claim_party_occurrence_ak_id,
 	-- *INF*: iif(isnull(IN_claim_party_occurrence_ak_id),-1,IN_claim_party_occurrence_ak_id)
-	IFF(IN_claim_party_occurrence_ak_id IS NULL,
-		- 1,
-		IN_claim_party_occurrence_ak_id
-	) AS v_claim_party_occurrence_ak_id,
+	IFF(IN_claim_party_occurrence_ak_id IS NULL, - 1, IN_claim_party_occurrence_ak_id) AS v_claim_party_occurrence_ak_id,
 	v_claim_party_occurrence_ak_id AS EdwClaimPartyOccurrenceAkId,
 	-- *INF*: iif(isnull(:LKP.LKP_CLAIM_PARTY_OCCURRENCE(IN_claim_party_occurrence_ak_id)),
 	-- -1,
 	-- :LKP.LKP_CLAIM_PARTY_OCCURRENCE(IN_claim_party_occurrence_ak_id))
-	IFF(LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_id.claim_party_occurrence_id IS NULL,
-		- 1,
-		LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_id.claim_party_occurrence_id
+	IFF(
+	    LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_id.claim_party_occurrence_id IS NULL,
+	    - 1,
+	    LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_id.claim_party_occurrence_id
 	) AS v_claim_party_occurrence_id,
 	v_claim_party_occurrence_id AS EdwClaimPartyOccurrencePkId,
 	-- *INF*: iif(isnull(:LKP.LKP_CLAIMANT_DIM(IN_claim_party_occurrence_ak_id))
 	-- ,-1,
 	-- :LKP.LKP_CLAIMANT_DIM(IN_claim_party_occurrence_ak_id))
-	IFF(LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_id.claimant_dim_id IS NULL,
-		- 1,
-		LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_id.claimant_dim_id
+	IFF(
+	    LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_id.claimant_dim_id IS NULL, - 1,
+	    LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_id.claimant_dim_id
 	) AS v_claimant_dim_id,
 	v_claimant_dim_id AS claimant_dim_id,
 	LKP_SupMedicalDiagnosisCode_Add.SupMedicalDiagnosisCodeId AS IN_SupMedicalDiagnosisCodeId_ADD,
 	-- *INF*: iif(isnull(IN_SupMedicalDiagnosisCodeId_ADD),-1,IN_SupMedicalDiagnosisCodeId_ADD)
-	IFF(IN_SupMedicalDiagnosisCodeId_ADD IS NULL,
-		- 1,
-		IN_SupMedicalDiagnosisCodeId_ADD
-	) AS v_SupMedicalDiagnosisCodeId_ADD,
+	IFF(IN_SupMedicalDiagnosisCodeId_ADD IS NULL, - 1, IN_SupMedicalDiagnosisCodeId_ADD) AS v_SupMedicalDiagnosisCodeId_ADD,
 	v_SupMedicalDiagnosisCodeId_ADD AS EdwSupMedicalDiagnosisCodePkId,
 	-1 AS v_SupMedicalCauseCodeId,
 	v_SupMedicalCauseCodeId AS EdwSupMedicalCauseCodePkId,
@@ -636,22 +600,15 @@ EXP_Defualt_Values_DIAG_ADD AS (
 	v_MedicalDiagnosisType_ADD AS MedicalCodeType,
 	EXP_Src_Values_DIAG_ADD.patient_diag_code AS IN_MedicalDiagnosisCode_ADD,
 	-- *INF*: iif(isnull(IN_MedicalDiagnosisCode_ADD),'N/A',IN_MedicalDiagnosisCode_ADD)
-	IFF(IN_MedicalDiagnosisCode_ADD IS NULL,
-		'N/A',
-		IN_MedicalDiagnosisCode_ADD
-	) AS v_MedicalDiagnosisCode_ADD,
+	IFF(IN_MedicalDiagnosisCode_ADD IS NULL, 'N/A', IN_MedicalDiagnosisCode_ADD) AS v_MedicalDiagnosisCode_ADD,
 	v_MedicalDiagnosisCode_ADD AS MedicalCode,
 	LKP_SupMedicalDiagnosisCode_Add.ShortDescription AS IN_MedicalDiagnosisDescription_ADD,
 	-- *INF*: iif(isnull(IN_MedicalDiagnosisDescription_ADD),'N/A',IN_MedicalDiagnosisDescription_ADD)
-	IFF(IN_MedicalDiagnosisDescription_ADD IS NULL,
-		'N/A',
-		IN_MedicalDiagnosisDescription_ADD
-	) AS v_MedicalDiagnosisDescription_ADD,
+	IFF(IN_MedicalDiagnosisDescription_ADD IS NULL, 'N/A', IN_MedicalDiagnosisDescription_ADD) AS v_MedicalDiagnosisDescription_ADD,
 	v_MedicalDiagnosisDescription_ADD AS MedicalCodeDescription,
 	EXP_Src_Values_DIAG_ADD.EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	sysdate AS CreatedDate,
@@ -817,25 +774,23 @@ EXP_Lkp_Extract_SURGERY AS (
 	SELECT
 	EXP_Src_Values_SURGERY.claim_party_occurrence_ak_Id AS IN_claim_party_occurrence_ak_Id,
 	-- *INF*: iif(isnull(IN_claim_party_occurrence_ak_Id),-1,IN_claim_party_occurrence_ak_Id)
-	IFF(IN_claim_party_occurrence_ak_Id IS NULL,
-		- 1,
-		IN_claim_party_occurrence_ak_Id
-	) AS v_claim_party_occurrence_ak_Id,
+	IFF(IN_claim_party_occurrence_ak_Id IS NULL, - 1, IN_claim_party_occurrence_ak_Id) AS v_claim_party_occurrence_ak_Id,
 	v_claim_party_occurrence_ak_Id AS EdwClaimPartyOccurrenceAkId,
 	-- *INF*: iif(isnull(:LKP.LKP_CLAIM_PARTY_OCCURRENCE(IN_claim_party_occurrence_ak_Id)),
 	-- -1,
 	-- :LKP.LKP_CLAIM_PARTY_OCCURRENCE(IN_claim_party_occurrence_ak_Id))
-	IFF(LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_Id.claim_party_occurrence_id IS NULL,
-		- 1,
-		LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_Id.claim_party_occurrence_id
+	IFF(
+	    LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_Id.claim_party_occurrence_id IS NULL,
+	    - 1,
+	    LKP_CLAIM_PARTY_OCCURRENCE_IN_claim_party_occurrence_ak_Id.claim_party_occurrence_id
 	) AS v_claim_party_occurrence_id,
 	v_claim_party_occurrence_id AS EdwClaimPartyOccurrencePkId,
 	-- *INF*: iif(isnull(:LKP.LKP_CLAIMANT_DIM(IN_claim_party_occurrence_ak_Id))
 	-- ,-1,
 	-- :LKP.LKP_CLAIMANT_DIM(IN_claim_party_occurrence_ak_Id))
-	IFF(LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_Id.claimant_dim_id IS NULL,
-		- 1,
-		LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_Id.claimant_dim_id
+	IFF(
+	    LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_Id.claimant_dim_id IS NULL, - 1,
+	    LKP_CLAIMANT_DIM_IN_claim_party_occurrence_ak_Id.claimant_dim_id
 	) AS v_claimant_dim_id,
 	v_claimant_dim_id AS claimant_dim_id,
 	-1 AS v_SupMedicalDiagnosisCodeId,
@@ -844,35 +799,21 @@ EXP_Lkp_Extract_SURGERY AS (
 	v_SupMedicalCauseCodeId AS EdwSupMedicalCauseCodePkId,
 	LKP_SupSurgeryType.SupSurgeryTypeId AS IN_SupSurgeryTypeId,
 	-- *INF*: iif(isnull(IN_SupSurgeryTypeId), -1, IN_SupSurgeryTypeId)
-	IFF(IN_SupSurgeryTypeId IS NULL,
-		- 1,
-		IN_SupSurgeryTypeId
-	) AS v_SupSurgeryTypeId,
+	IFF(IN_SupSurgeryTypeId IS NULL, - 1, IN_SupSurgeryTypeId) AS v_SupSurgeryTypeId,
 	v_SupSurgeryTypeId AS EdwSupSurgeryTypePkId,
 	LKP_SupSurgeryType.SurgeryTypeCode AS IN_SurgeryTypeCode,
 	-- *INF*: iif(isnull(ltrim(rtrim(IN_SurgeryTypeCode))),'N/A',IN_SurgeryTypeCode)
-	IFF(ltrim(rtrim(IN_SurgeryTypeCode
-			)
-		) IS NULL,
-		'N/A',
-		IN_SurgeryTypeCode
-	) AS v_SurgeryTypeCode,
+	IFF(ltrim(rtrim(IN_SurgeryTypeCode)) IS NULL, 'N/A', IN_SurgeryTypeCode) AS v_SurgeryTypeCode,
 	v_SurgeryTypeCode AS MedicalCode,
 	LKP_SupSurgeryType.SurgeryTypeDescription AS IN_SurgeryTypeDescription,
 	-- *INF*: iif(isnull(Ltrim(Rtrim(IN_SurgeryTypeDescription))),'N/A',IN_SurgeryTypeDescription)
-	IFF(Ltrim(Rtrim(IN_SurgeryTypeDescription
-			)
-		) IS NULL,
-		'N/A',
-		IN_SurgeryTypeDescription
-	) AS v_SurgeryDescription,
+	IFF(Ltrim(Rtrim(IN_SurgeryTypeDescription)) IS NULL, 'N/A', IN_SurgeryTypeDescription) AS v_SurgeryDescription,
 	v_SurgeryDescription AS MedicalCodeDescription,
 	'SURGERY' AS v_SurgeryType,
 	v_SurgeryType AS MedicalCodeType,
 	EXP_Src_Values_SURGERY.EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	sysdate AS CreatedDate,
 	sysdate AS ModifiedDate,
 	1 AS CurrentSnapshotFlag,
@@ -1034,9 +975,10 @@ EXP_Lag_ExpirationDate AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	EdwClaimPartyOccurrenceAkId= v_PREV_ROW_EdwClaimPartyOccurrenceAkId, ADD_TO_DATE(v_PREV_ROW_EffectiveDate,'SS',-1),
 	-- 	Orig_ExpirationDate)
-	DECODE(TRUE,
-		EdwClaimPartyOccurrenceAkId = v_PREV_ROW_EdwClaimPartyOccurrenceAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
-		Orig_ExpirationDate
+	DECODE(
+	    TRUE,
+	    EdwClaimPartyOccurrenceAkId = v_PREV_ROW_EdwClaimPartyOccurrenceAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
+	    Orig_ExpirationDate
 	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	EdwClaimPartyOccurrenceAkId,

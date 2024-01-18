@@ -1,0 +1,47 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_Archive_Agency",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_Archive_Agency",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Agency_stage AS (\n\tSELECT\n\t\tAGENCY_STAGE_ID AS AGENCY_stage_ID,\n\t\tSTATE_CODE,\n\t\tAGENCY_NUM,\n\t\tAPPOINTED_DATE,\n\t\tAGENCY_STATUS,\n\t\tAGENCY_FULL_NAME,\n\t\tAGENCY_DBA_NAME,\n\t\tAGENCY_ABBREV_NAME,\n\t\tAGENCY_SORT_NAME,\n\t\tTERRITORY_CODE,\n\t\tTELEPHONE,\n\t\tFAX,\n\t\tEMAIL_ADDRESS,\n\t\tEMAIL_RETRIEVAL,\n\t\tWEB_ADDRESS,\n\t\tAUTHORITY_LEVEL,\n\t\tCOMPARATIVE_RATER,\n\t\tLINE_APPOINTED,\n\t\tTAX_ID,\n\t\tTAX_ID_TYPE,\n\t\tTAX_LOCATION,\n\t\tWEBSITE_TYPE,\n\t\tSUBAGENT,\n\t\tEMAIL_HTML_FLAG,\n\t\tSR22_AUTHORITY,\n\t\tKEY_AGENT_FLG,\n\t\tTAX_REPORTABLE_FLG,\n\t\tELECTRONIC_RPT_FLG,\n\t\tADVISORY_BOARD,\n\t\tWBC_STEER_COMM,\n\t\tCONTGNT_GUARANTEED,\n\t\tDIRCONN_PER_DATE,\n\t\tREINSTATEMENT_DATE,\n\t\tCOMMENT_ID,\n\t\tDIRCONN_COMM_DATE,\n\t\tAGENCY_CODE,\n\t\tMGMT_SYSTEM_ID,\n\t\tCHOICEPOINT_ACCT,\n\t\tINTERNET_CONN_ID,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM Agency_stage\n),\nexp_AGY_Insert_Arch_Agency AS (\n\tSELECT\n\tAGENCY_stage_ID AS AGENCY_STAGE_ID,\n\tSTATE_CODE,\n\tAGENCY_NUM,\n\tAPPOINTED_DATE,\n\tAGENCY_STATUS,\n\tAGENCY_FULL_NAME,\n\tAGENCY_DBA_NAME,\n\tAGENCY_ABBREV_NAME,\n\tAGENCY_SORT_NAME,\n\tTERRITORY_CODE,\n\tTELEPHONE,\n\tFAX,\n\tEMAIL_ADDRESS,\n\tEMAIL_RETRIEVAL,\n\tWEB_ADDRESS,\n\tAUTHORITY_LEVEL,\n\tCOMPARATIVE_RATER,\n\tLINE_APPOINTED,\n\tTAX_ID,\n\tTAX_ID_TYPE,\n\tTAX_LOCATION,\n\tWEBSITE_TYPE,\n\tSUBAGENT,\n\tEMAIL_HTML_FLAG,\n\tSR22_AUTHORITY,\n\tKEY_AGENT_FLG,\n\tTAX_REPORTABLE_FLG,\n\tELECTRONIC_RPT_FLG,\n\tADVISORY_BOARD,\n\tWBC_STEER_COMM,\n\tCONTGNT_GUARANTEED,\n\tDIRCONN_PER_DATE,\n\tREINSTATEMENT_DATE,\n\tCOMMENT_ID,\n\tDIRCONN_COMM_DATE,\n\tAGENCY_CODE,\n\tMGMT_SYSTEM_ID,\n\tCHOICEPOINT_ACCT,\n\tINTERNET_CONN_ID,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID\n\tFROM SQ_Agency_stage\n),\nTGT_Arch_agency_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_agency_stage\n\t(AGENCY_STAGE_ID, STATE_CODE, AGENCY_NUM, APPOINTED_DATE, AGENCY_STATUS, AGENCY_FULL_NAME, AGENCY_DBA_NAME, AGENCY_ABBREV_NAME, AGENCY_SORT_NAME, TERRITORY_CODE, TELEPHONE, FAX, EMAIL_ADDRESS, EMAIL_RETRIEVAL, WEB_ADDRESS, AUTHORITY_LEVEL, COMPARATIVE_RATER, LINE_APPOINTED, TAX_ID, TAX_ID_TYPE, TAX_LOCATION, WEBSITE_TYPE, SUBAGENT, EMAIL_HTML_FLAG, SR22_AUTHORITY, KEY_AGENT_FLG, TAX_REPORTABLE_FLG, ELECTRONIC_RPT_FLG, ADVISORY_BOARD, WBC_STEER_COMM, CONTGNT_GUARANTEED, DIRCONN_PER_DATE, REINSTATEMENT_DATE, COMMENT_ID, DIRCONN_COMM_DATE, AGENCY_CODE, MGMT_SYSTEM_ID, CHOICEPOINT_ACCT, INTERNET_CONN_ID, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, audit_id)\n\tSELECT \n\tAGENCY_STAGE_ID, \n\tSTATE_CODE, \n\tAGENCY_NUM, \n\tAPPOINTED_DATE, \n\tAGENCY_STATUS, \n\tAGENCY_FULL_NAME, \n\tAGENCY_DBA_NAME, \n\tAGENCY_ABBREV_NAME, \n\tAGENCY_SORT_NAME, \n\tTERRITORY_CODE, \n\tTELEPHONE, \n\tFAX, \n\tEMAIL_ADDRESS, \n\tEMAIL_RETRIEVAL, \n\tWEB_ADDRESS, \n\tAUTHORITY_LEVEL, \n\tCOMPARATIVE_RATER, \n\tLINE_APPOINTED, \n\tTAX_ID, \n\tTAX_ID_TYPE, \n\tTAX_LOCATION, \n\tWEBSITE_TYPE, \n\tSUBAGENT, \n\tEMAIL_HTML_FLAG, \n\tSR22_AUTHORITY, \n\tKEY_AGENT_FLG, \n\tTAX_REPORTABLE_FLG, \n\tELECTRONIC_RPT_FLG, \n\tADVISORY_BOARD, \n\tWBC_STEER_COMM, \n\tCONTGNT_GUARANTEED, \n\tDIRCONN_PER_DATE, \n\tREINSTATEMENT_DATE, \n\tCOMMENT_ID, \n\tDIRCONN_COMM_DATE, \n\tAGENCY_CODE, \n\tMGMT_SYSTEM_ID, \n\tCHOICEPOINT_ACCT, \n\tINTERNET_CONN_ID, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tOUT_AUDIT_ID AS AUDIT_ID\n\tFROM exp_AGY_Insert_Arch_Agency\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

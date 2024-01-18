@@ -30,57 +30,21 @@
             }
         ],
         "parameters": {
+            "TARGET_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
             "WBMI_AUDIT_CONTROL_RUN_ID": {
                 "type": "string",
-                "defaultValue": "246483"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "905491"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7603230"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "08/29/2023 22:44:58"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/30/2023 23:03:38"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Policy"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Policy"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
-            "TARGET_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
-            "SOURCE_SYSTEM_ID": {
-                "type": "string",
-                "defaultValue": "DCT"
+                "defaultValue": "Default Value"
             },
             "SOURCE_DATABASE_NAME": {
                 "type": "string",
-                "defaultValue": "WC_STAGE"
-            },
-            "TARGET_TABLE_OWNER_V2": {
-                "type": "string",
-                "defaultValue": "V2"
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Policy DataWarehouse/"
+            "name": "RPT_EDM and EDW/Policy DataWarehouse/"
         },
         "annotations": []
     }

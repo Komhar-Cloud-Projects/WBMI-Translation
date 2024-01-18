@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPBlanketGroupStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCBPBlanketGroupStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBPBlanketGroupStage AS (\n\tSELECT\n\t\tDCBPBlanketGroupStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tBP_RiskId,\n\t\tBP_BlanketGroupId,\n\t\tSessionId,\n\t\tId,\n\t\tARate,\n\t\tType\n\tFROM DCBPBlanketGroupStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCBPBlanketGroupStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tBP_RiskId,\n\tBP_BlanketGroupId,\n\tSessionId,\n\tId,\n\tARate,\n\tType,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCBPBlanketGroupStage\n),\nArchDCBPBlanketGroupStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCBPBlanketGroupStage\n\t(ExtractDate, SourceSystemId, AuditId, DCBPBlanketGroupStageId, BP_RiskId, BP_BlanketGroupId, SessionId, Id, ARate, Type)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCBPBLANKETGROUPSTAGEID, \n\tBP_RISKID, \n\tBP_BLANKETGROUPID, \n\tSESSIONID, \n\tID, \n\tARATE, \n\tTYPE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

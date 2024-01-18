@@ -1,0 +1,51 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_gtam_tl79_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_gtam_tl79_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_tl79_stage AS (\n\tSELECT\n\t\tgtam_tl79_stage_id,\n\t\tlocation,\n\t\tmaster_company_number,\n\t\tlineof_business,\n\t\tlegal_entity,\n\t\tlegal_entity_literal,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_tl79_stage\n),\nLKP_arch_gtam_tl79_stage AS (\n\tSELECT\n\tarch_gtam_tl79_stage_id,\n\tlegal_entity_literal,\n\tlocation,\n\tmaster_company_number,\n\tlineof_business,\n\tlegal_entity\n\tFROM (\n\t\tSELECT \r\n\t\tarch_gtam_tl79_stage.arch_gtam_tl79_stage_id as arch_gtam_tl79_stage_id,\r\n\t\t arch_gtam_tl79_stage.legal_entity_literal as legal_entity_literal, \r\n\t\tarch_gtam_tl79_stage.location as location, \r\n\t\tarch_gtam_tl79_stage.master_company_number as master_company_number, \r\n\t\tarch_gtam_tl79_stage.lineof_business as lineof_business, \r\n\t\tarch_gtam_tl79_stage.legal_entity as legal_entity \r\n\t\tFROM \r\n\t\t@{pipeline().parameters.TARGET_TABLE_OWNER}.arch_gtam_tl79_stage\r\n\t\twhere arch_gtam_tl79_stage.arch_gtam_tl79_stage_id in \r\n\t\t(select max(arch_gtam_tl79_stage_id)\r\n\t\tfrom arch_gtam_tl79_stage b\r\n\t\tgroup by \r\n\t\tb.location,\r\n\t\tb.master_company_number,\r\n\t\tb.lineof_business,\r\n\t\tb.legal_entity)\r\n\t\torder by \r\n\t\tarch_gtam_tl79_stage.location, \r\n\t\tarch_gtam_tl79_stage.master_company_number, \r\n\t\tarch_gtam_tl79_stage.lineof_business,\r\n\t\tarch_gtam_tl79_stage.legal_entity --\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY location,master_company_number,lineof_business,legal_entity ORDER BY arch_gtam_tl79_stage_id) = 1\n),\nEXP_arch_gtam_tl79_stage AS (\n\tSELECT\n\tLKP_arch_gtam_tl79_stage.arch_gtam_tl79_stage_id AS lkp_arch_gtam_tl79_stage_id,\n\tLKP_arch_gtam_tl79_stage.legal_entity_literal AS lkp_legal_entity_literal,\n\tSQ_gtam_tl79_stage.gtam_tl79_stage_id,\n\tSQ_gtam_tl79_stage.location,\n\tSQ_gtam_tl79_stage.master_company_number,\n\tSQ_gtam_tl79_stage.lineof_business,\n\tSQ_gtam_tl79_stage.legal_entity,\n\tSQ_gtam_tl79_stage.legal_entity_literal,\n\t-- *INF*: iif(isnull(lkp_arch_gtam_tl79_stage_id),'NEW',\r\n\t-- \tiif(ltrim(rtrim(lkp_legal_entity_literal)) <> ltrim(rtrim(legal_entity_literal)) ,\r\n\t-- \t'UPDATE',\r\n\t-- \t'NOCHANGE'))\n\tIFF(\n\t    lkp_arch_gtam_tl79_stage_id IS NULL, 'NEW',\n\t    IFF(\n\t        ltrim(rtrim(lkp_legal_entity_literal)) <> ltrim(rtrim(legal_entity_literal)),\n\t        'UPDATE',\n\t        'NOCHANGE'\n\t    )\n\t) AS v_changed_flag,\n\tv_changed_flag AS changed_flag,\n\tSYSDATE AS extract_date,\n\tSYSDATE AS as_of_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id\n\tFROM SQ_gtam_tl79_stage\n\tLEFT JOIN LKP_arch_gtam_tl79_stage\n\tON LKP_arch_gtam_tl79_stage.location = SQ_gtam_tl79_stage.location AND LKP_arch_gtam_tl79_stage.master_company_number = SQ_gtam_tl79_stage.master_company_number AND LKP_arch_gtam_tl79_stage.lineof_business = SQ_gtam_tl79_stage.lineof_business AND LKP_arch_gtam_tl79_stage.legal_entity = SQ_gtam_tl79_stage.legal_entity\n),\nFIL_arch_gtam_tl79_stage AS (\n\tSELECT\n\tgtam_tl79_stage_id, \n\tlocation, \n\tmaster_company_number, \n\tlineof_business, \n\tlegal_entity, \n\tlegal_entity_literal, \n\tchanged_flag, \n\textract_date, \n\tas_of_date, \n\tsource_system_id, \n\taudit_id\n\tFROM EXP_arch_gtam_tl79_stage\n\tWHERE changed_flag='NEW' or changed_flag='UPDATE'\n),\nTGT_arch_gtam_tl79_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_gtam_tl79_stage\n\t(gtam_tl79_stage_id, location, master_company_number, lineof_business, legal_entity, legal_entity_literal, extract_date, as_of_date, source_system_id, audit_id)\n\tSELECT \n\tGTAM_TL79_STAGE_ID, \n\tLOCATION, \n\tMASTER_COMPANY_NUMBER, \n\tLINEOF_BUSINESS, \n\tLEGAL_ENTITY, \n\tLEGAL_ENTITY_LITERAL, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID\n\tFROM FIL_arch_gtam_tl79_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

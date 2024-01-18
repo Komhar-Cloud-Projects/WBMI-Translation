@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_claimant_coverage_dim AS (\n\tselect dim.claimant_cov_dim_id,   ccd.TypeOfLoss , ccd.ClaimTypeCategory , ccd.ClaimTypeGroup, ccd.SubrogationEligibleIndicator\r\n\tfrom \r\n\t\tclaimant_coverage_dim dim inner join @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.claimant_coverage_detail ccd  on  ccd.claimant_cov_det_id = dim.edw_claimant_cov_det_pk_id\r\n\t\twhere @{pipeline().parameters.WHERE_CLAUSE}\r\n\t      --   and ( ccd.TypeOfLoss is null OR  ccd.TypeOfLoss='N/A')\n),\nEXP_Default AS (\n\tSELECT\n\tclaimant_cov_dim_id,\n\tTypeOfLoss AS i_TypeOfLoss,\n\tClaimTypeCategory AS i_ClaimTypeCategory,\n\tClaimTypeGroup AS i_ClaimTypeGroup,\n\tSubrogationEligibleIndicator AS i_SubrogationEligibleIndicator,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_TypeOfLoss)\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(i_TypeOfLoss\n\t) AS v_TypeOfLoss,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClaimTypeCategory)\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClaimTypeCategory\n\t) AS v_ClaimTypeCategory,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClaimTypeGroup)\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClaimTypeGroup\n\t) AS v_ClaimTypeGroup,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_SubrogationEligibleIndicator)\n\t:UDF.DEFAULT_VALUE_FOR_STRINGS(i_SubrogationEligibleIndicator\n\t) AS v_SubrogationEligibleIndicator,\n\t-- *INF*: IIF(ISNULL(v_TypeOfLoss)  ,'N/A',v_TypeOfLoss)\r\n\t-- \r\n\t-- --IIF(v_TypeOfLoss = 'Unassigned'   ,'N/A',v_TypeOfLoss)\n\tIFF(v_TypeOfLoss IS NULL,\n\t\t'N/A',\n\t\tv_TypeOfLoss\n\t) AS o_TypeOfLoss,\n\t-- *INF*: IIF(ISNULL(v_ClaimTypeCategory)  ,'N/A',v_ClaimTypeCategory)\r\n\t-- \r\n\t-- \n\tIFF(v_ClaimTypeCategory IS NULL,\n\t\t'N/A',\n\t\tv_ClaimTypeCategory\n\t) AS o_ClaimTypeCategory,\n\t-- *INF*: IIF(ISNULL(v_ClaimTypeGroup)  ,'N/A',v_ClaimTypeGroup)\r\n\t-- \r\n\t-- \n\tIFF(v_ClaimTypeGroup IS NULL,\n\t\t'N/A',\n\t\tv_ClaimTypeGroup\n\t) AS o_ClaimTypeGroup,\n\t-- *INF*: IIF(ISNULL(v_SubrogationEligibleIndicator)  ,'N/A',v_SubrogationEligibleIndicator)\r\n\t-- \r\n\t-- \n\tIFF(v_SubrogationEligibleIndicator IS NULL,\n\t\t'N/A',\n\t\tv_SubrogationEligibleIndicator\n\t) AS o_SubrogationEligibleIndicator\n\tFROM SQ_claimant_coverage_dim\n),\nUPD_claimant_coverage_dim_update AS (\n\tSELECT\n\tclaimant_cov_dim_id AS o_claimant_cov_dim_id, \n\to_TypeOfLoss, \n\to_ClaimTypeCategory, \n\to_ClaimTypeGroup, \n\to_SubrogationEligibleIndicator\n\tFROM EXP_Default\n),\nclaimant_coverage_dim AS (\n\tMERGE INTO claimant_coverage_dim AS T\n\tUSING UPD_claimant_coverage_dim_update AS S\n\tON T.claimant_cov_dim_id = S.o_claimant_cov_dim_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.TypeOfLoss = S.o_TypeOfLoss, T.ClaimTypeCategory = S.o_ClaimTypeCategory, T.ClaimTypeGroup = S.o_ClaimTypeGroup, T.SubrogationEligibleIndicator = S.o_SubrogationEligibleIndicator\n),"
+                            "text": "WITH\nSQ_claimant_coverage_dim AS (\n\tselect dim.claimant_cov_dim_id,   ccd.TypeOfLoss , ccd.ClaimTypeCategory , ccd.ClaimTypeGroup, ccd.SubrogationEligibleIndicator\r\n\tfrom \r\n\t\tclaimant_coverage_dim dim inner join @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.claimant_coverage_detail ccd  on  ccd.claimant_cov_det_id = dim.edw_claimant_cov_det_pk_id\r\n\t\twhere @{pipeline().parameters.WHERE_CLAUSE}\r\n\t      --   and ( ccd.TypeOfLoss is null OR  ccd.TypeOfLoss='N/A')\n),\nEXP_Default AS (\n\tSELECT\n\tclaimant_cov_dim_id,\n\tTypeOfLoss AS i_TypeOfLoss,\n\tClaimTypeCategory AS i_ClaimTypeCategory,\n\tClaimTypeGroup AS i_ClaimTypeGroup,\n\tSubrogationEligibleIndicator AS i_SubrogationEligibleIndicator,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_TypeOfLoss)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(i_TypeOfLoss) AS v_TypeOfLoss,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClaimTypeCategory)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(i_ClaimTypeCategory) AS v_ClaimTypeCategory,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClaimTypeGroup)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(i_ClaimTypeGroup) AS v_ClaimTypeGroup,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_SubrogationEligibleIndicator)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(i_SubrogationEligibleIndicator) AS v_SubrogationEligibleIndicator,\n\t-- *INF*: IIF(ISNULL(v_TypeOfLoss)  ,'N/A',v_TypeOfLoss)\r\n\t-- \r\n\t-- --IIF(v_TypeOfLoss = 'Unassigned'   ,'N/A',v_TypeOfLoss)\n\tIFF(v_TypeOfLoss IS NULL, 'N/A', v_TypeOfLoss) AS o_TypeOfLoss,\n\t-- *INF*: IIF(ISNULL(v_ClaimTypeCategory)  ,'N/A',v_ClaimTypeCategory)\r\n\t-- \r\n\t-- \n\tIFF(v_ClaimTypeCategory IS NULL, 'N/A', v_ClaimTypeCategory) AS o_ClaimTypeCategory,\n\t-- *INF*: IIF(ISNULL(v_ClaimTypeGroup)  ,'N/A',v_ClaimTypeGroup)\r\n\t-- \r\n\t-- \n\tIFF(v_ClaimTypeGroup IS NULL, 'N/A', v_ClaimTypeGroup) AS o_ClaimTypeGroup,\n\t-- *INF*: IIF(ISNULL(v_SubrogationEligibleIndicator)  ,'N/A',v_SubrogationEligibleIndicator)\r\n\t-- \r\n\t-- \n\tIFF(v_SubrogationEligibleIndicator IS NULL, 'N/A', v_SubrogationEligibleIndicator) AS o_SubrogationEligibleIndicator\n\tFROM SQ_claimant_coverage_dim\n),\nUPD_claimant_coverage_dim_update AS (\n\tSELECT\n\tclaimant_cov_dim_id AS o_claimant_cov_dim_id, \n\to_TypeOfLoss, \n\to_ClaimTypeCategory, \n\to_ClaimTypeGroup, \n\to_SubrogationEligibleIndicator\n\tFROM EXP_Default\n),\nclaimant_coverage_dim AS (\n\tMERGE INTO claimant_coverage_dim AS T\n\tUSING UPD_claimant_coverage_dim_update AS S\n\tON T.claimant_cov_dim_id = S.o_claimant_cov_dim_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.TypeOfLoss = S.o_TypeOfLoss, T.ClaimTypeCategory = S.o_ClaimTypeCategory, T.ClaimTypeGroup = S.o_ClaimTypeGroup, T.SubrogationEligibleIndicator = S.o_SubrogationEligibleIndicator\n),"
                         }
                     ]
                 },
@@ -30,57 +30,21 @@
             }
         ],
         "parameters": {
-            "WBMI_AUDIT_CONTROL_RUN_ID": {
+            "SOURCE_DATABASE_NAME": {
                 "type": "string",
-                "defaultValue": "246244"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "903271"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7594682"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "07/26/2023 05:02:27"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/26/2023 03:40:27"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_WC_Data_Mart_Claim"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_WC_Data_Mart_Claim"
+                "defaultValue": "Default Value"
             },
             "SOURCE_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": "DBO"
-            },
-            "TARGET_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
-            "SOURCE_SYSTEM_ID": {
-                "type": "string",
-                "defaultValue": "EXCEED"
-            },
-            "SOURCE_DATABASE_NAME": {
-                "type": "string",
-                "defaultValue": "RPT_EDM"
+                "defaultValue": "Default Value"
             },
             "WHERE_CLAUSE": {
                 "type": "string",
-                "defaultValue": "dim.TypeOfLoss = 'N/A' or dim.ClaimTypeCategory = 'N/A'or dim.ClaimTypeGroup = 'N/A'or dim.SubrogationEligibleIndicator = 'N/A'"
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Claims DataMart/"
+            "name": "RPT_EDM and EDW/Claims DataMart/"
         },
         "annotations": []
     }

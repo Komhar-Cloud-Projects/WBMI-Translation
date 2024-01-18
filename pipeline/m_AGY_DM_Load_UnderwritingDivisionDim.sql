@@ -95,23 +95,18 @@ EXP_CleanupUWDivisionDetails AS (
 	SQ_UnderwritingAssociate.EmailAddress AS i_UnderwriterEmailAddress,
 	i_UnderwritingAssociatePKID AS o_UnderwritingAssociatePKID,
 	-- *INF*: IIF(ISNULL(lkp_UnderwritingManagerPKID), -1,lkp_UnderwritingManagerPKID)
-	IFF(lkp_UnderwritingManagerPKID IS NULL,
-		- 1,
-		lkp_UnderwritingManagerPKID
-	) AS o_UnderwritingManagerPKID,
+	IFF(lkp_UnderwritingManagerPKID IS NULL, - 1, lkp_UnderwritingManagerPKID) AS o_UnderwritingManagerPKID,
 	-- *INF*: IIF(ISNULL(lkp_UnderwritingRegionPKID)  OR  i_UnderwritingManagerAKID = -1, -1, lkp_UnderwritingRegionPKID)
-	IFF(lkp_UnderwritingRegionPKID IS NULL 
-		OR i_UnderwritingManagerAKID = - 1,
-		- 1,
-		lkp_UnderwritingRegionPKID
+	IFF(
+	    lkp_UnderwritingRegionPKID IS NULL OR i_UnderwritingManagerAKID = - 1, - 1,
+	    lkp_UnderwritingRegionPKID
 	) AS o_UnderwritingRegionPKID,
 	i_UnderwritingAssociateAKID AS o_UnderwritingAssociateAKID,
 	i_UnderwritingManagerAKID AS o_UnderwritingManagerAKID,
 	-- *INF*: IIF(ISNULL( lkp_UnderwritingRegionAKID)  OR  i_UnderwritingManagerAKID = -1, -1, lkp_UnderwritingRegionAKID)
-	IFF(lkp_UnderwritingRegionAKID IS NULL 
-		OR i_UnderwritingManagerAKID = - 1,
-		- 1,
-		lkp_UnderwritingRegionAKID
+	IFF(
+	    lkp_UnderwritingRegionAKID IS NULL OR i_UnderwritingManagerAKID = - 1, - 1,
+	    lkp_UnderwritingRegionAKID
 	) AS o_UnderwritingRegionAKID,
 	i_UnderwriterWestBendAssociateID AS o_UnderwriterWestBendAssociateID,
 	i_UnderwriterCode AS o_UnderwriterCode,
@@ -123,56 +118,33 @@ EXP_CleanupUWDivisionDetails AS (
 	i_UnderwriterEmailAddress AS o_UnderwriterEmailAddress,
 	i_UnderwriterAssociateRole AS o_UnderwriterAssociateRole,
 	-- *INF*: IIF(ISNULL(lkp_UnderwriterManagerWestBendAssociateID  ), 'N/A', lkp_UnderwriterManagerWestBendAssociateID  )
-	IFF(lkp_UnderwriterManagerWestBendAssociateID IS NULL,
-		'N/A',
-		lkp_UnderwriterManagerWestBendAssociateID
+	IFF(
+	    lkp_UnderwriterManagerWestBendAssociateID IS NULL, 'N/A',
+	    lkp_UnderwriterManagerWestBendAssociateID
 	) AS o_UnderwriterManagerWestBendAssociateID,
 	-- *INF*: IIF(ISNULL(lkp_UnderwriterManagerCode  ), 'N/A', lkp_UnderwriterManagerCode  )
-	IFF(lkp_UnderwriterManagerCode IS NULL,
-		'N/A',
-		lkp_UnderwriterManagerCode
-	) AS o_UnderwriterManagerCode,
+	IFF(lkp_UnderwriterManagerCode IS NULL, 'N/A', lkp_UnderwriterManagerCode) AS o_UnderwriterManagerCode,
 	-- *INF*: IIF(ISNULL(lkp_UnderwriterManagerDisplayName ), 'N/A', lkp_UnderwriterManagerDisplayName )
-	IFF(lkp_UnderwriterManagerDisplayName IS NULL,
-		'N/A',
-		lkp_UnderwriterManagerDisplayName
-	) AS o_UnderwriterManagerDisplayName,
+	IFF(lkp_UnderwriterManagerDisplayName IS NULL, 'N/A', lkp_UnderwriterManagerDisplayName) AS o_UnderwriterManagerDisplayName,
 	-- *INF*: IIF(ISNULL(lkp_UnderwriterManagerLastName), 'N/A', lkp_UnderwriterManagerLastName)
-	IFF(lkp_UnderwriterManagerLastName IS NULL,
-		'N/A',
-		lkp_UnderwriterManagerLastName
-	) AS o_UnderwriterManagerLastName,
+	IFF(lkp_UnderwriterManagerLastName IS NULL, 'N/A', lkp_UnderwriterManagerLastName) AS o_UnderwriterManagerLastName,
 	-- *INF*: IIF(ISNULL(lkp_UnderwriterManagerFirstName), 'N/A', lkp_UnderwriterManagerFirstName)
-	IFF(lkp_UnderwriterManagerFirstName IS NULL,
-		'N/A',
-		lkp_UnderwriterManagerFirstName
-	) AS o_UnderwriterManagerFirstName,
+	IFF(lkp_UnderwriterManagerFirstName IS NULL, 'N/A', lkp_UnderwriterManagerFirstName) AS o_UnderwriterManagerFirstName,
 	-- *INF*: IIF(ISNULL(lkp_UnderwriterManagerMiddleName), 'N/A', lkp_UnderwriterManagerMiddleName)
-	IFF(lkp_UnderwriterManagerMiddleName IS NULL,
-		'N/A',
-		lkp_UnderwriterManagerMiddleName
-	) AS o_UnderwriterManagerMiddleName,
+	IFF(lkp_UnderwriterManagerMiddleName IS NULL, 'N/A', lkp_UnderwriterManagerMiddleName) AS o_UnderwriterManagerMiddleName,
 	-- *INF*: IIF(ISNULL(lkp_UnderwriterManagerSuffix), 'N/A', lkp_UnderwriterManagerSuffix)
-	IFF(lkp_UnderwriterManagerSuffix IS NULL,
-		'N/A',
-		lkp_UnderwriterManagerSuffix
-	) AS o_UnderwriterManagerSuffix,
+	IFF(lkp_UnderwriterManagerSuffix IS NULL, 'N/A', lkp_UnderwriterManagerSuffix) AS o_UnderwriterManagerSuffix,
 	-- *INF*: IIF(ISNULL(lkp_UnderwriterManagerEmailAddress), 'N/A', lkp_UnderwriterManagerEmailAddress )
-	IFF(lkp_UnderwriterManagerEmailAddress IS NULL,
-		'N/A',
-		lkp_UnderwriterManagerEmailAddress
-	) AS o_UnderwriterManagerEmailAddress,
+	IFF(lkp_UnderwriterManagerEmailAddress IS NULL, 'N/A', lkp_UnderwriterManagerEmailAddress) AS o_UnderwriterManagerEmailAddress,
 	-- *INF*: IIF(ISNULL(lkp_UnderwritingRegionCode)  OR  i_UnderwritingManagerAKID = -1, 'N/A', lkp_UnderwritingRegionCode)
-	IFF(lkp_UnderwritingRegionCode IS NULL 
-		OR i_UnderwritingManagerAKID = - 1,
-		'N/A',
-		lkp_UnderwritingRegionCode
+	IFF(
+	    lkp_UnderwritingRegionCode IS NULL OR i_UnderwritingManagerAKID = - 1, 'N/A',
+	    lkp_UnderwritingRegionCode
 	) AS o_UnderwritingRegionCode,
 	-- *INF*: IIF(ISNULL(lkp_UnderwritingRegionCodeDescription)  OR  i_UnderwritingManagerAKID = -1, 'N/A', lkp_UnderwritingRegionCodeDescription)
-	IFF(lkp_UnderwritingRegionCodeDescription IS NULL 
-		OR i_UnderwritingManagerAKID = - 1,
-		'N/A',
-		lkp_UnderwritingRegionCodeDescription
+	IFF(
+	    lkp_UnderwritingRegionCodeDescription IS NULL OR i_UnderwritingManagerAKID = - 1, 'N/A',
+	    lkp_UnderwritingRegionCodeDescription
 	) AS o_UnderwritingRegionCodeDescription
 	FROM SQ_UnderwritingAssociate
 	LEFT JOIN LKP_UWManager
@@ -233,20 +205,18 @@ EXP_CheckForChange AS (
 	EXP_CleanupUWDivisionDetails.o_UnderwritingRegionCode AS i_UnderwritingRegionCode,
 	EXP_CleanupUWDivisionDetails.o_UnderwritingRegionCodeDescription AS i_UnderwritingRegionCodeDescription,
 	-- *INF*: MD5(i_UnderwriterCode || '&' || TO_CHAR(i_UnderwriterWestBendAssociateID)|| '&' || i_UnderwriterAssociateRole|| '&' || TO_CHAR(  i_UnderwriterManagerWestBendAssociateID)|| '&' || i_UnderwriterManagerCode|| '&' || i_UnderwritingRegionCode)
-	MD5(i_UnderwriterCode || '&' || TO_CHAR(i_UnderwriterWestBendAssociateID
-		) || '&' || i_UnderwriterAssociateRole || '&' || TO_CHAR(i_UnderwriterManagerWestBendAssociateID
-		) || '&' || i_UnderwriterManagerCode || '&' || i_UnderwritingRegionCode
-	) AS v_New_HashKey,
+	MD5(i_UnderwriterCode || '&' || TO_CHAR(i_UnderwriterWestBendAssociateID) || '&' || i_UnderwriterAssociateRole || '&' || TO_CHAR(i_UnderwriterManagerWestBendAssociateID) || '&' || i_UnderwriterManagerCode || '&' || i_UnderwritingRegionCode) AS v_New_HashKey,
 	-- *INF*: DECODE(true,
 	-- lkp_EDWUnderwritingAssociatePKID <> i_UnderwritingAssociatePKID, 'Y',
 	-- lkp_EDWUnderwritingManagerPKID <> i_UnderwritingManagerPKID, 'Y',
 	-- lkp_EDWUnderwritingRegionPKID <> i_UnderwritingRegionPKID, 'Y',
 	-- 'N')
-	DECODE(true,
-		lkp_EDWUnderwritingAssociatePKID <> i_UnderwritingAssociatePKID, 'Y',
-		lkp_EDWUnderwritingManagerPKID <> i_UnderwritingManagerPKID, 'Y',
-		lkp_EDWUnderwritingRegionPKID <> i_UnderwritingRegionPKID, 'Y',
-		'N'
+	DECODE(
+	    true,
+	    lkp_EDWUnderwritingAssociatePKID <> i_UnderwritingAssociatePKID, 'Y',
+	    lkp_EDWUnderwritingManagerPKID <> i_UnderwritingManagerPKID, 'Y',
+	    lkp_EDWUnderwritingRegionPKID <> i_UnderwritingRegionPKID, 'Y',
+	    'N'
 	) AS v_ChangeToEDWRecord,
 	-- *INF*: DECODE(true,
 	-- ISNULL(lkp_ExistingHashKey), 'Insert',
@@ -259,29 +229,22 @@ EXP_CheckForChange AS (
 	-- -- If one of the type 2 attributes changed, we expire the old record (also inserts a new record, see router)
 	-- -- If there was no change to the type 2 attributes AND there was a change to the PKID in the EDW then we update the record.  Important to have the logic comparing the hash keys, otherwise we might attempt to update records where we are already expiring and inserting a new record.
 	-- 	
-	DECODE(true,
-		lkp_ExistingHashKey IS NULL, 'Insert',
-		( lkp_ExistingHashKey = v_New_HashKey 
-		) 
-		AND ( v_ChangeToEDWRecord = 'N' 
-		), 'Ignore',
-		( lkp_ExistingHashKey <> v_New_HashKey 
-		) 
-		OR ( v_ChangeToEDWRecord = 'Y' 
-		), 'Update',
-		'Ignore'
+	DECODE(
+	    true,
+	    lkp_ExistingHashKey IS NULL, 'Insert',
+	    (lkp_ExistingHashKey = v_New_HashKey) and (v_ChangeToEDWRecord = 'N'), 'Ignore',
+	    (lkp_ExistingHashKey <> v_New_HashKey) or (v_ChangeToEDWRecord = 'Y'), 'Update',
+	    'Ignore'
 	) AS v_InsertUpdateOrIgnore,
 	lkp_ExistingUnderwritingDivisionDimID AS o_ExistingUnderwritingDivisionDimID,
 	1 AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 01:00:00.000', 'YYYY-MM-DD HH24:MI:SS.MS')
 	-- 
-	TO_DATE('1800-01-01 01:00:00.000', 'YYYY-MM-DD HH24:MI:SS.MS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('1800-01-01 01:00:00.000', 'YYYY-MM-DD HH24:MI:SS.MS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.MS')
 	-- 
-	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.MS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.MS') AS o_ExpirationDate,
 	SYSDATE AS o_CurrentDate,
 	v_New_HashKey AS o_New_HashKey,
 	v_InsertUpdateOrIgnore AS o_InsertUpdateOrIgnore

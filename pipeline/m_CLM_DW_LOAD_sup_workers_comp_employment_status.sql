@@ -16,16 +16,10 @@ EXP_Default_Values AS (
 	SELECT
 	wc_code,
 	-- *INF*: IIF(ISNULL(wc_code), 'N/A', wc_code)
-	IFF(wc_code IS NULL,
-		'N/A',
-		wc_code
-	) AS wc_code_out,
+	IFF(wc_code IS NULL, 'N/A', wc_code) AS wc_code_out,
 	wc_description,
 	-- *INF*: IIF(ISNULL(wc_description), 'N/A', wc_description)
-	IFF(wc_description IS NULL,
-		'N/A',
-		wc_description
-	) AS wc_description_out
+	IFF(wc_description IS NULL, 'N/A', wc_description) AS wc_description_out
 	FROM SQ_sup_wc_emplymnt_st_stage
 ),
 LKP_sup_workers_comp_employment_status AS (
@@ -49,31 +43,24 @@ EXP_detect_changes AS (
 	EXP_Default_Values.wc_description_out AS wc_description,
 	-- *INF*: IIF(ISNULL(lkp_sup_wc_emplymnt_status_id), 'NEW', IIF(LTRIM(RTRIM(lkp_wc_emplymnt_descript)) != (LTRIM(RTRIM(wc_description))), 'UPDATE', 'NOCHANGE'))
 	-- 
-	IFF(lkp_sup_wc_emplymnt_status_id IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(lkp_wc_emplymnt_descript
-				)
-			) != ( LTRIM(RTRIM(wc_description
-					)
-				) 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    lkp_sup_wc_emplymnt_status_id IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(lkp_wc_emplymnt_descript)) != (LTRIM(RTRIM(wc_description))), 'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_CHANGED_FLAG,
 	v_CHANGED_FLAG AS CHANGED_FLAG,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_CHANGED_FLAG='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_CHANGED_FLAG = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_CHANGED_FLAG = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id
@@ -134,9 +121,10 @@ EXP_lag_eff_from_date AS (
 	-- 	wc_emplymnt_code= v_Prev_row_occuptn_code, ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	-- 	
-	DECODE(TRUE,
-		wc_emplymnt_code = v_Prev_row_occuptn_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    wc_emplymnt_code = v_Prev_row_occuptn_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	wc_emplymnt_code AS v_Prev_row_occuptn_code,

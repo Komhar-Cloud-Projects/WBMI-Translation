@@ -65,118 +65,46 @@ mplt_namebreak_double_metaphone AS (WITH
 		SELECT
 		One_out AS One_in,
 		-- *INF*: IIF(ISNULL(One_in),One_in,:SP.DOUBLEMETAPHONE(One_in))
-		IFF(One_in IS NULL,
-			One_in,
-			:SP.DOUBLEMETAPHONE(One_in
-			)
-		) AS One_var,
+		IFF(One_in IS NULL, One_in, :SP.DOUBLEMETAPHONE(One_in)) AS One_var,
 		-- *INF*: IIF(isnull(One_var),One_var,substr(One_var,1,5))
-		IFF(One_var IS NULL,
-			One_var,
-			substr(One_var, 1, 5
-			)
-		) AS One_primary,
+		IFF(One_var IS NULL, One_var, substr(One_var, 1, 5)) AS One_primary,
 		-- *INF*: IIF(isnull(One_var),One_var,substr(One_var,6,5))
-		IFF(One_var IS NULL,
-			One_var,
-			substr(One_var, 6, 5
-			)
-		) AS One_secondary,
+		IFF(One_var IS NULL, One_var, substr(One_var, 6, 5)) AS One_secondary,
 		Two_out AS Two_in,
 		-- *INF*: IIF(ISNULL(Two_in),Two_in,:SP.DOUBLEMETAPHONE(Two_in))
-		IFF(Two_in IS NULL,
-			Two_in,
-			:SP.DOUBLEMETAPHONE(Two_in
-			)
-		) AS Two_var,
+		IFF(Two_in IS NULL, Two_in, :SP.DOUBLEMETAPHONE(Two_in)) AS Two_var,
 		-- *INF*: IIF(isnull(Two_var),Two_var,substr(Two_var,1,5))
-		IFF(Two_var IS NULL,
-			Two_var,
-			substr(Two_var, 1, 5
-			)
-		) AS Two_primary,
+		IFF(Two_var IS NULL, Two_var, substr(Two_var, 1, 5)) AS Two_primary,
 		-- *INF*: IIF(isnull(Two_var),Two_var,substr(Two_var,6,5))
-		IFF(Two_var IS NULL,
-			Two_var,
-			substr(Two_var, 6, 5
-			)
-		) AS Two_secondary,
+		IFF(Two_var IS NULL, Two_var, substr(Two_var, 6, 5)) AS Two_secondary,
 		Three_out AS Three_in,
 		-- *INF*: IIF(ISNULL(Three_in),Three_in,:SP.DOUBLEMETAPHONE(Three_in))
-		IFF(Three_in IS NULL,
-			Three_in,
-			:SP.DOUBLEMETAPHONE(Three_in
-			)
-		) AS Three_var,
+		IFF(Three_in IS NULL, Three_in, :SP.DOUBLEMETAPHONE(Three_in)) AS Three_var,
 		-- *INF*: IIF(isnull(Three_var),Three_var,substr(Three_var,1,5))
-		IFF(Three_var IS NULL,
-			Three_var,
-			substr(Three_var, 1, 5
-			)
-		) AS Three_primary,
+		IFF(Three_var IS NULL, Three_var, substr(Three_var, 1, 5)) AS Three_primary,
 		-- *INF*: IIF(isnull(Three_var),Three_var,substr(Three_var,6,5))
-		IFF(Three_var IS NULL,
-			Three_var,
-			substr(Three_var, 6, 5
-			)
-		) AS Three_secondary,
+		IFF(Three_var IS NULL, Three_var, substr(Three_var, 6, 5)) AS Three_secondary,
 		Four_out AS Four_in,
 		-- *INF*: IIF(ISNULL(Four_in),Four_in,:SP.DOUBLEMETAPHONE(Four_in))
-		IFF(Four_in IS NULL,
-			Four_in,
-			:SP.DOUBLEMETAPHONE(Four_in
-			)
-		) AS Four_var,
+		IFF(Four_in IS NULL, Four_in, :SP.DOUBLEMETAPHONE(Four_in)) AS Four_var,
 		-- *INF*: IIF(isnull(Four_var),Four_var,substr(Four_var,1,5))
-		IFF(Four_var IS NULL,
-			Four_var,
-			substr(Four_var, 1, 5
-			)
-		) AS Four_primary,
+		IFF(Four_var IS NULL, Four_var, substr(Four_var, 1, 5)) AS Four_primary,
 		-- *INF*: IIF(isnull(Four_var),Four_var,substr(Four_var,6,5))
-		IFF(Four_var IS NULL,
-			Four_var,
-			substr(Four_var, 6, 5
-			)
-		) AS Four_secondary,
+		IFF(Four_var IS NULL, Four_var, substr(Four_var, 6, 5)) AS Four_secondary,
 		Five_out AS Five_in,
 		-- *INF*: IIF(ISNULL(Five_in),Five_in,:SP.DOUBLEMETAPHONE(Five_in))
-		IFF(Five_in IS NULL,
-			Five_in,
-			:SP.DOUBLEMETAPHONE(Five_in
-			)
-		) AS Five_var,
+		IFF(Five_in IS NULL, Five_in, :SP.DOUBLEMETAPHONE(Five_in)) AS Five_var,
 		-- *INF*: IIF(isnull(Five_var),Five_var,substr(Five_var,1,5))
-		IFF(Five_var IS NULL,
-			Five_var,
-			substr(Five_var, 1, 5
-			)
-		) AS Five_primary,
+		IFF(Five_var IS NULL, Five_var, substr(Five_var, 1, 5)) AS Five_primary,
 		-- *INF*: IIF(isnull(Five_var),Five_var,substr(Five_var,6,5))
-		IFF(Five_var IS NULL,
-			Five_var,
-			substr(Five_var, 6, 5
-			)
-		) AS Five_secondary,
+		IFF(Five_var IS NULL, Five_var, substr(Five_var, 6, 5)) AS Five_secondary,
 		Six_out AS Six_in,
 		-- *INF*: IIF(ISNULL(Six_in),Six_in,:SP.DOUBLEMETAPHONE(Six_in))
-		IFF(Six_in IS NULL,
-			Six_in,
-			:SP.DOUBLEMETAPHONE(Six_in
-			)
-		) AS Six_var,
+		IFF(Six_in IS NULL, Six_in, :SP.DOUBLEMETAPHONE(Six_in)) AS Six_var,
 		-- *INF*: IIF(isnull(Six_var),Six_var,substr(Six_var,1,5))
-		IFF(Six_var IS NULL,
-			Six_var,
-			substr(Six_var, 1, 5
-			)
-		) AS Six_primary,
+		IFF(Six_var IS NULL, Six_var, substr(Six_var, 1, 5)) AS Six_primary,
 		-- *INF*: IIF(isnull(Six_var),Six_var,substr(Six_var,6,5))
-		IFF(Six_var IS NULL,
-			Six_var,
-			substr(Six_var, 6, 5
-			)
-		) AS Six_secondary
+		IFF(Six_var IS NULL, Six_var, substr(Six_var, 6, 5)) AS Six_secondary
 		FROM NameBreakerSixParts
 	),
 	OUTPUT AS (

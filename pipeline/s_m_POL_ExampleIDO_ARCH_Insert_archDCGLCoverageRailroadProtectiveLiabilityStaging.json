@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCGLCoverageRailroadProtectiveLiabilityStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCGLCoverageRailroa_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCGLCoverageRailroadProtectiveLiabilityStaging AS (\n\tSELECT\n\t\tCoverageId,\n\t\tGL_CoverageRailroadProtectiveLiabilityId,\n\t\tSessionId,\n\t\tAuditable,\n\t\tConstructionOperations,\n\t\tExtendCoverage,\n\t\tNumberOfTrains,\n\t\tOperationType,\n\t\tPartlyNoHazard,\n\t\tPercentNoHazard,\n\t\tRailroadHazardRatio,\n\t\tSubClass,\n\t\tWorkTrainsAssigned,\n\t\tRailroadProtectiveLiability,\n\t\tExposure,\n\t\tExposureAudited,\n\t\tExposureEstimated,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCGLCoverageRailroadProtectiveLiabilityStaging\n),\nEXPTRANS AS (\n\tSELECT\n\tCoverageId,\n\tGL_CoverageRailroadProtectiveLiabilityId,\n\tSessionId,\n\tAuditable AS i_Auditable,\n\t-- *INF*: IIF(i_Auditable='T','1','0')\n\tIFF(i_Auditable = 'T', '1', '0') AS o_Auditable,\n\tConstructionOperations AS i_ConstructionOperations,\n\t-- *INF*: IIF(i_ConstructionOperations='T','1','0')\n\tIFF(i_ConstructionOperations = 'T', '1', '0') AS o_ConstructionOperations,\n\tExtendCoverage AS i_ExtendCoverage,\n\t-- *INF*: IIF(i_ExtendCoverage='T','1','0')\n\tIFF(i_ExtendCoverage = 'T', '1', '0') AS o_ExtendCoverage,\n\tNumberOfTrains,\n\tOperationType,\n\tPartlyNoHazard AS i_PartlyNoHazard,\n\t-- *INF*: IIF(i_PartlyNoHazard='T','1','0')\n\tIFF(i_PartlyNoHazard = 'T', '1', '0') AS o_PartlyNoHazard,\n\tPercentNoHazard,\n\tRailroadHazardRatio,\n\tSubClass,\n\tWorkTrainsAssigned AS i_WorkTrainsAssigned,\n\t-- *INF*: IIF(i_WorkTrainsAssigned='T','1','0')\n\tIFF(i_WorkTrainsAssigned = 'T', '1', '0') AS o_WorkTrainsAssigned,\n\tRailroadProtectiveLiability,\n\tExposure,\n\tExposureAudited,\n\tExposureEstimated,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_DCGLCoverageRailroadProtectiveLiabilityStaging\n),\narchDCGLCoverageRailroadProtectiveLiabilityStaging AS (\n\tINSERT INTO archDCGLCoverageRailroadProtectiveLiabilityStaging\n\t(CoverageId, GL_CoverageRailroadProtectiveLiabilityId, SessionId, Auditable, ConstructionOperations, ExtendCoverage, NumberOfTrains, OperationType, PartlyNoHazard, PercentNoHazard, RailroadHazardRatio, SubClass, WorkTrainsAssigned, RailroadProtectiveLiability, Exposure, ExposureAudited, ExposureEstimated, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tCOVERAGEID, \n\tGL_COVERAGERAILROADPROTECTIVELIABILITYID, \n\tSESSIONID, \n\to_Auditable AS AUDITABLE, \n\to_ConstructionOperations AS CONSTRUCTIONOPERATIONS, \n\to_ExtendCoverage AS EXTENDCOVERAGE, \n\tNUMBEROFTRAINS, \n\tOPERATIONTYPE, \n\to_PartlyNoHazard AS PARTLYNOHAZARD, \n\tPERCENTNOHAZARD, \n\tRAILROADHAZARDRATIO, \n\tSUBCLASS, \n\to_WorkTrainsAssigned AS WORKTRAINSASSIGNED, \n\tRAILROADPROTECTIVELIABILITY, \n\tEXPOSURE, \n\tEXPOSUREAUDITED, \n\tEXPOSUREESTIMATED, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

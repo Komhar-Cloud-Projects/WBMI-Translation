@@ -176,53 +176,34 @@ EXP_Default AS (
 	WorkComp,
 	MedicalExpenses,
 	-- *INF*: IIF(ISNULL(CoordinationOfBenefits),'N/A',CoordinationOfBenefits)
-	IFF(CoordinationOfBenefits IS NULL,
-		'N/A',
-		CoordinationOfBenefits
-	) AS o_CoordinationOfBenefits,
+	IFF(CoordinationOfBenefits IS NULL, 'N/A', CoordinationOfBenefits) AS o_CoordinationOfBenefits,
 	-- *INF*: IIF(ISNULL(MedicalExpenses),'N/A',MedicalExpenses)
-	IFF(MedicalExpenses IS NULL,
-		'N/A',
-		MedicalExpenses
-	) AS o_MedicalExpenses,
+	IFF(MedicalExpenses IS NULL, 'N/A', MedicalExpenses) AS o_MedicalExpenses,
 	-- *INF*: IIF(ISNULL(WorkComp),0,IIF(WorkComp = 'T',1,0))
-	IFF(WorkComp IS NULL,
-		0,
-		IFF(WorkComp = 'T',
-			1,
-			0
-		)
-	) AS o_WorkComp,
+	IFF(WorkComp IS NULL, 0, IFF(
+	        WorkComp = 'T', 1, 0
+	    )) AS o_WorkComp,
 	AdditionalLimitKS,
 	AdditionalLimitKY,
 	AdditionalLimitMN,
 	ZoneGaraging,
 	ReplacementCost,
 	-- *INF*: IIF(ISNULL(ReplacementCost),0,IIF(ReplacementCost = 'T',1,0))
-	IFF(ReplacementCost IS NULL,
-		0,
-		IFF(ReplacementCost = 'T',
-			1,
-			0
-		)
-	) AS o_ReplacementCost,
+	IFF(ReplacementCost IS NULL, 0, IFF(
+	        ReplacementCost = 'T', 1, 0
+	    )) AS o_ReplacementCost,
 	FullGlassIndicator,
 	-- *INF*: IIF(ISNULL(FullGlassIndicator),0,IIF(FullGlassIndicator = 'T',1,0))
-	IFF(FullGlassIndicator IS NULL,
-		0,
-		IFF(FullGlassIndicator = 'T',
-			1,
-			0
-		)
-	) AS o_FullGlassIndicator,
+	IFF(FullGlassIndicator IS NULL, 0, IFF(
+	        FullGlassIndicator = 'T', 1, 0
+	    )) AS o_FullGlassIndicator,
 	HistoricVehicleIndicator,
 	-- *INF*: IIF(ISNULL(HistoricVehicleIndicator),0,IIF(HistoricVehicleIndicator= 'T',1,0))
-	IFF(HistoricVehicleIndicator IS NULL,
-		0,
-		IFF(HistoricVehicleIndicator = 'T',
-			1,
-			0
-		)
+	IFF(
+	    HistoricVehicleIndicator IS NULL, 0,
+	    IFF(
+	        HistoricVehicleIndicator = 'T', 1, 0
+	    )
 	) AS o_HistoricVehicleIndicator
 	FROM SQ_DCT_StageTables
 ),
@@ -316,29 +297,30 @@ EXP_MetaData AS (
 	AdditionalLimitMN AS i_AdditionalLimitMN,
 	ZoneGaraging AS i_ZoneGaraging,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_RegistrationState)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RegistrationState
-	) AS v_RegistrationState,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_RegistrationState) AS v_RegistrationState,
 	-- *INF*: DECODE(i_SubjectToNoFault,'T','1','F','0',NULL)
-	DECODE(i_SubjectToNoFault,
-		'T', '1',
-		'F', '0',
-		NULL
+	DECODE(
+	    i_SubjectToNoFault,
+	    'T', '1',
+	    'F', '0',
+	    NULL
 	) AS v_SubjectToNoFault,
 	-- *INF*: DECODE(i_GuestPIP,'T','1','F','0',NULL)
-	DECODE(i_GuestPIP,
-		'T', '1',
-		'F', '0',
-		NULL
+	DECODE(
+	    i_GuestPIP,
+	    'T', '1',
+	    'F', '0',
+	    NULL
 	) AS v_GuestPIP,
 	-- *INF*: DECODE(i_PipWorkComp,'T','1','F','0',NULL)
-	DECODE(i_PipWorkComp,
-		'T', '1',
-		'F', '0',
-		NULL
+	DECODE(
+	    i_PipWorkComp,
+	    'T', '1',
+	    'F', '0',
+	    NULL
 	) AS v_PipWorkComp,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_CoordinationOfBenefits)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_CoordinationOfBenefits
-	) AS v_CoordinationOfBenefits,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_CoordinationOfBenefits) AS v_CoordinationOfBenefits,
 	-- *INF*: :LKP.LKP_COVERAGELIMIT(i_PremiumTransactionAKID)
 	LKP_COVERAGELIMIT_i_PremiumTransactionAKID.CoverageLimitType AS v_CoverageLimitType,
 	ClassCode AS i_ClassCode,
@@ -349,14 +331,13 @@ EXP_MetaData AS (
 	-- *INF*: IIF(ISNULL(i_ExclustionOfWorkLoss) OR i_ExclustionOfWorkLoss='-1' OR i_ExclustionOfWorkLoss='0' OR i_ExclustionOfWorkLoss='n/a','N/A', ltrim(rtrim(i_ExclustionOfWorkLoss)))
 	-- 
 	-- --IIF(ISNULL(i_ExclustionOfWorkLoss) OR i_ExclustionOfWorkLoss='-1','N/A', ltrim(rtrim(i_ExclustionOfWorkLoss)))
-	IFF(i_ExclustionOfWorkLoss IS NULL 
-		OR i_ExclustionOfWorkLoss = '-1' 
-		OR i_ExclustionOfWorkLoss = '0' 
-		OR i_ExclustionOfWorkLoss = 'n/a',
-		'N/A',
-		ltrim(rtrim(i_ExclustionOfWorkLoss
-			)
-		)
+	IFF(
+	    i_ExclustionOfWorkLoss IS NULL
+	    or i_ExclustionOfWorkLoss = '-1'
+	    or i_ExclustionOfWorkLoss = '0'
+	    or i_ExclustionOfWorkLoss = 'n/a',
+	    'N/A',
+	    ltrim(rtrim(i_ExclustionOfWorkLoss))
 	) AS v_ExclustionOfWorkLoss,
 	AdditionalLimit AS i_AdditionalLimit,
 	-- *INF*: DECODE(TRUE,
@@ -368,12 +349,13 @@ EXP_MetaData AS (
 	-- 
 	-- 
 	-- -- think of all the goofy ways Informatica handles bit types and try to translate them.
-	DECODE(TRUE,
-		i_AdditionalLimit IS NULL, '0',
-		i_AdditionalLimit = 'F', '0',
-		i_AdditionalLimit = 'N', '0',
-		i_AdditionalLimit = '0', '0',
-		'1'
+	DECODE(
+	    TRUE,
+	    i_AdditionalLimit IS NULL, '0',
+	    i_AdditionalLimit = 'F', '0',
+	    i_AdditionalLimit = 'N', '0',
+	    i_AdditionalLimit = '0', '0',
+	    '1'
 	) AS v_AdditionalLimit,
 	IncludeUIM AS i_IncludeUIM,
 	-- *INF*: DECODE(TRUE,
@@ -382,21 +364,23 @@ EXP_MetaData AS (
 	-- i_IncludeUIM='N','0',
 	-- i_IncludeUIM='0','0',
 	-- '1')
-	DECODE(TRUE,
-		i_IncludeUIM IS NULL, 'N/A',
-		i_IncludeUIM = 'F', '0',
-		i_IncludeUIM = 'N', '0',
-		i_IncludeUIM = '0', '0',
-		'1'
+	DECODE(
+	    TRUE,
+	    i_IncludeUIM IS NULL, 'N/A',
+	    i_IncludeUIM = 'F', '0',
+	    i_IncludeUIM = 'N', '0',
+	    i_IncludeUIM = '0', '0',
+	    '1'
 	) AS v_IncludeUIM,
 	-- *INF*: DECODE(true,
 	-- NOT ISNULL(:LKP.LKP_5NewColumns(i_ClassCode,i_RSC)),:LKP.LKP_5NewColumns(i_ClassCode,i_RSC),
 	-- NOT ISNULL(:LKP.LKP_5NewColumns(i_ClassCode,'99')),:LKP.LKP_5NewColumns(i_ClassCode,'99'),
 	-- 'N/A')
-	DECODE(true,
-		LKP_5NEWCOLUMNS_i_ClassCode_i_RSC.lkp_result IS NOT NULL, LKP_5NEWCOLUMNS_i_ClassCode_i_RSC.lkp_result,
-		LKP_5NEWCOLUMNS_i_ClassCode_99.lkp_result IS NOT NULL, LKP_5NEWCOLUMNS_i_ClassCode_99.lkp_result,
-		'N/A'
+	DECODE(
+	    true,
+	    LKP_5NEWCOLUMNS_i_ClassCode_i_RSC.lkp_result IS NOT NULL, LKP_5NEWCOLUMNS_i_ClassCode_i_RSC.lkp_result,
+	    LKP_5NEWCOLUMNS_i_ClassCode_99.lkp_result IS NOT NULL, LKP_5NEWCOLUMNS_i_ClassCode_99.lkp_result,
+	    'N/A'
 	) AS v_lkp_result,
 	-- *INF*: DECODE(TRUE,
 	-- in(v_CoverageLimitType,'PersonalInjuryProtectionBasicLimit','PersonalInjuryProtectionExcessLimit') and v_AdditionalLimit = '0','PersonalInjuryProtectionBasicLimit',
@@ -407,87 +391,54 @@ EXP_MetaData AS (
 	-- 
 	-- 
 	-- -- Because CoverageLimitType of basic and excess are almost always created even if they aren't actually selected use the AdditionalLimit indicator as the rule whether excess or basic was selected  and only for cases where Basic or Excess are returned
-	DECODE(TRUE,
-		v_CoverageLimitType IN ('PersonalInjuryProtectionBasicLimit','PersonalInjuryProtectionExcessLimit') 
-		AND v_AdditionalLimit = '0', 'PersonalInjuryProtectionBasicLimit',
-		v_CoverageLimitType IN ('PersonalInjuryProtectionBasicLimit','PersonalInjuryProtectionExcessLimit') 
-		AND v_AdditionalLimit = '1', 'PersonalInjuryProtectionExcessLimit',
-		v_CoverageLimitType
+	DECODE(
+	    TRUE,
+	    v_CoverageLimitType IN ('PersonalInjuryProtectionBasicLimit','PersonalInjuryProtectionExcessLimit') and v_AdditionalLimit = '0', 'PersonalInjuryProtectionBasicLimit',
+	    v_CoverageLimitType IN ('PersonalInjuryProtectionBasicLimit','PersonalInjuryProtectionExcessLimit') and v_AdditionalLimit = '1', 'PersonalInjuryProtectionExcessLimit',
+	    v_CoverageLimitType
 	) AS v_CoverageLimitType_Alt,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	-- *INF*: RTRIM(LTRIM(i_Type))
-	RTRIM(LTRIM(i_Type
-		)
-	) AS o_Type,
+	RTRIM(LTRIM(i_Type)) AS o_Type,
 	-- *INF*: IIF(ISNULL(i_GCW),0,i_GCW)
-	IFF(i_GCW IS NULL,
-		0,
-		i_GCW
-	) AS o_GCW,
+	IFF(i_GCW IS NULL, 0, i_GCW) AS o_GCW,
 	-- *INF*: IIF(ISNULL(i_GVW),0,i_GVW)
-	IFF(i_GVW IS NULL,
-		0,
-		i_GVW
-	) AS o_GVW,
+	IFF(i_GVW IS NULL, 0, i_GVW) AS o_GVW,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@5')+2,instr(v_lkp_result,'@6')-instr(v_lkp_result,'@5')-2)
-	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@5'
-		) + 2, REGEXP_INSTR(v_lkp_result, '@6'
-		) - REGEXP_INSTR(v_lkp_result, '@5'
-		) - 2
-	) AS o_RadiusOfOperation,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@5') + 2, REGEXP_INSTR(v_lkp_result, '@6') - REGEXP_INSTR(v_lkp_result, '@5') - 2) AS o_RadiusOfOperation,
 	-- *INF*: IIF(NOT ISNULL(i_SecondaryClassCategory), RTRIM(LTRIM(i_SecondaryClassCategory)), 'N/A')
-	IFF(i_SecondaryClassCategory IS NOT NULL,
-		RTRIM(LTRIM(i_SecondaryClassCategory
-			)
-		),
-		'N/A'
-	) AS o_SecondaryClassCategory,
+	IFF(i_SecondaryClassCategory IS NOT NULL, RTRIM(LTRIM(i_SecondaryClassCategory)), 'N/A') AS o_SecondaryClassCategory,
 	-- *INF*: DECODE(i_UsedInDumping,'T',1,0)
-	DECODE(i_UsedInDumping,
-		'T', 1,
-		0
+	DECODE(
+	    i_UsedInDumping,
+	    'T', 1,
+	    0
 	) AS o_UsedInDumping,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_Id)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_Id
-	) AS o_CoverageGuid,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_Id) AS o_CoverageGuid,
 	-- *INF*: IIF(ISNULL(i_VIN), 'N/A', i_VIN)
-	IFF(i_VIN IS NULL,
-		'N/A',
-		i_VIN
-	) AS o_VIN,
+	IFF(i_VIN IS NULL, 'N/A', i_VIN) AS o_VIN,
 	-- *INF*: IIF(ISNULL(i_Make), 'N/A', i_Make)
-	IFF(i_Make IS NULL,
-		'N/A',
-		i_Make
-	) AS o_Make,
+	IFF(i_Make IS NULL, 'N/A', i_Make) AS o_Make,
 	-- *INF*: IIF(ISNULL(i_Model), 'N/A', i_Model)
-	IFF(i_Model IS NULL,
-		'N/A',
-		i_Model
-	) AS o_Model,
+	IFF(i_Model IS NULL, 'N/A', i_Model) AS o_Model,
 	-- *INF*: IIF(ISNULL(i_VehicleNumber), 0, i_VehicleNumber)
-	IFF(i_VehicleNumber IS NULL,
-		0,
-		i_VehicleNumber
-	) AS o_VehicleNumber,
+	IFF(i_VehicleNumber IS NULL, 0, i_VehicleNumber) AS o_VehicleNumber,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_CompositeRating),0,
 	-- i_CompositeRating='T',1,
 	-- i_CompositeRating='F',0,
 	-- 0
 	-- )
-	DECODE(TRUE,
-		i_CompositeRating IS NULL, 0,
-		i_CompositeRating = 'T', 1,
-		i_CompositeRating = 'F', 0,
-		0
+	DECODE(
+	    TRUE,
+	    i_CompositeRating IS NULL, 0,
+	    i_CompositeRating = 'T', 1,
+	    i_CompositeRating = 'F', 0,
+	    0
 	) AS o_CompositeRating,
 	-- *INF*: IIF(ISNULL(i_ZoneTerminal),'N/A',TO_CHAR(i_ZoneTerminal))
-	IFF(i_ZoneTerminal IS NULL,
-		'N/A',
-		TO_CHAR(i_ZoneTerminal
-		)
-	) AS o_ZoneTerminal,
+	IFF(i_ZoneTerminal IS NULL, 'N/A', TO_CHAR(i_ZoneTerminal)) AS o_ZoneTerminal,
 	-- *INF*: DECODE(TRUE,
 	-- -- rules fields
 	--  -- v_RegistrationState v_SubjectToNoFault v_CoverageLimitType  v_CoordinationOfBenefits <>  v_ExclustionOfWorkLoss
@@ -534,108 +485,46 @@ EXP_MetaData AS (
 	-- AND v_ExclustionOfWorkLoss <> 'N/A', '685',
 	-- --AND IN(v_ExclustionOfWorkLoss,'NamedInsuredOnly','NamedInsuredAndRelative'),'685',
 	-- 'N/A')
-	DECODE(TRUE,
-		v_RegistrationState = 'KS' 
-		AND v_CoverageLimitType_Alt = 'PersonalInjuryProtectionBasicLimit', '681',
-		v_RegistrationState = 'KS' 
-		AND v_CoverageLimitType_Alt = 'PersonalInjuryProtectionExcessLimit', '682',
-		v_RegistrationState = 'KY' 
-		AND v_CoverageLimitType_Alt = 'PersonalInjuryProtectionBasicLimit' 
-		AND v_PipWorkComp = '1', '671',
-		v_RegistrationState = 'KY' 
-		AND v_CoverageLimitType_Alt = 'PersonalInjuryProtectionExcessLimit' 
-		AND v_PipWorkComp = '1', '672',
-		v_RegistrationState = 'KY' 
-		AND v_CoverageLimitType_Alt = 'PersonalInjuryProtectionBasicLimit' 
-		AND v_PipWorkComp = '0', '681',
-		v_RegistrationState = 'KY' 
-		AND v_CoverageLimitType_Alt = 'PersonalInjuryProtectionExcessLimit' 
-		AND v_PipWorkComp = '0', '682',
-		v_RegistrationState = 'KY' 
-		AND v_SubjectToNoFault = '0' 
-		AND v_GuestPIP = '1' 
-		AND v_PipWorkComp = '1', '675',
-		v_RegistrationState = 'KY' 
-		AND v_SubjectToNoFault = '0' 
-		AND v_GuestPIP = '1' 
-		AND ( v_PipWorkComp = '0' 
-			OR i_PipWorkComp IS NULL 
-		), '685',
-		v_RegistrationState = 'MI' 
-		AND v_PipWorkComp = '1', '671',
-		v_RegistrationState = 'MI' 
-		AND v_CoordinationOfBenefits IN ('None','N/A','0') 
-		AND v_PipWorkComp = '0', '681',
-		v_RegistrationState = 'MI' 
-		AND v_CoordinationOfBenefits IN ('MedicalExpenses') 
-		AND v_PipWorkComp = '0', '691',
-		v_RegistrationState = 'MI' 
-		AND v_CoordinationOfBenefits IN ('WorkLoss') 
-		AND v_PipWorkComp = '0', '692',
-		v_RegistrationState = 'MI' 
-		AND v_CoordinationOfBenefits IN ('MedicalWorkLoss') 
-		AND v_PipWorkComp = '0', '693',
-		v_RegistrationState = 'MN' 
-		AND v_CoverageLimitType_Alt IN ('PersonalInjuryProtectionBasicLimit','PersonalInjuryProtectionExcessLimit') 
-		AND v_PipWorkComp = '1' 
-		AND v_ExclustionOfWorkLoss = 'N/A', '671',
-		v_RegistrationState = 'MN' 
-		AND v_CoverageLimitType_Alt IN ('PersonalInjuryProtectionBasicLimit','PersonalInjuryProtectionExcessLimit') 
-		AND v_PipWorkComp = '1' 
-		AND v_ExclustionOfWorkLoss <> 'N/A', '675',
-		v_RegistrationState = 'MN' 
-		AND v_GuestPIP = '0' 
-		AND v_CoverageLimitType_Alt IN ('PersonalInjuryProtectionBasicLimit','PersonalInjuryProtectionExcessLimit') 
-		AND v_PipWorkComp = '0' 
-		AND v_ExclustionOfWorkLoss = 'N/A', '681',
-		v_RegistrationState = 'MN' 
-		AND v_GuestPIP = '0' 
-		AND v_CoverageLimitType_Alt IN ('PersonalInjuryProtectionBasicLimit','PersonalInjuryProtectionExcessLimit') 
-		AND v_PipWorkComp = '0' 
-		AND v_ExclustionOfWorkLoss <> 'N/A', '685',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    v_RegistrationState = 'KS' AND v_CoverageLimitType_Alt = 'PersonalInjuryProtectionBasicLimit', '681',
+	    v_RegistrationState = 'KS' AND v_CoverageLimitType_Alt = 'PersonalInjuryProtectionExcessLimit', '682',
+	    v_RegistrationState = 'KY' AND v_CoverageLimitType_Alt = 'PersonalInjuryProtectionBasicLimit' AND v_PipWorkComp = '1', '671',
+	    v_RegistrationState = 'KY' AND v_CoverageLimitType_Alt = 'PersonalInjuryProtectionExcessLimit' AND v_PipWorkComp = '1', '672',
+	    v_RegistrationState = 'KY' AND v_CoverageLimitType_Alt = 'PersonalInjuryProtectionBasicLimit' AND v_PipWorkComp = '0', '681',
+	    v_RegistrationState = 'KY' AND v_CoverageLimitType_Alt = 'PersonalInjuryProtectionExcessLimit' AND v_PipWorkComp = '0', '682',
+	    v_RegistrationState = 'KY' AND v_SubjectToNoFault = '0' AND v_GuestPIP = '1' AND v_PipWorkComp = '1', '675',
+	    v_RegistrationState = 'KY' AND v_SubjectToNoFault = '0' AND v_GuestPIP = '1' AND (v_PipWorkComp = '0' or i_PipWorkComp IS NULL), '685',
+	    v_RegistrationState = 'MI' AND v_PipWorkComp = '1', '671',
+	    v_RegistrationState = 'MI' AND v_CoordinationOfBenefits IN ('None','N/A','0') AND v_PipWorkComp = '0', '681',
+	    v_RegistrationState = 'MI' AND v_CoordinationOfBenefits IN ('MedicalExpenses') AND v_PipWorkComp = '0', '691',
+	    v_RegistrationState = 'MI' AND v_CoordinationOfBenefits IN ('WorkLoss') AND v_PipWorkComp = '0', '692',
+	    v_RegistrationState = 'MI' AND v_CoordinationOfBenefits IN ('MedicalWorkLoss') AND v_PipWorkComp = '0', '693',
+	    v_RegistrationState = 'MN' AND v_CoverageLimitType_Alt IN ('PersonalInjuryProtectionBasicLimit','PersonalInjuryProtectionExcessLimit') AND v_PipWorkComp = '1' AND v_ExclustionOfWorkLoss = 'N/A', '671',
+	    v_RegistrationState = 'MN' AND v_CoverageLimitType_Alt IN ('PersonalInjuryProtectionBasicLimit','PersonalInjuryProtectionExcessLimit') AND v_PipWorkComp = '1' AND v_ExclustionOfWorkLoss <> 'N/A', '675',
+	    v_RegistrationState = 'MN' AND v_GuestPIP = '0' AND v_CoverageLimitType_Alt IN ('PersonalInjuryProtectionBasicLimit','PersonalInjuryProtectionExcessLimit') AND v_PipWorkComp = '0' AND v_ExclustionOfWorkLoss = 'N/A', '681',
+	    v_RegistrationState = 'MN' AND v_GuestPIP = '0' AND v_CoverageLimitType_Alt IN ('PersonalInjuryProtectionBasicLimit','PersonalInjuryProtectionExcessLimit') AND v_PipWorkComp = '0' AND v_ExclustionOfWorkLoss <> 'N/A', '685',
+	    'N/A'
 	) AS o_PIPBureaucoverageCode,
 	-- *INF*: IIF(ISNULL(i_TotalVehicleCost),0, i_TotalVehicleCost)
-	IFF(i_TotalVehicleCost IS NULL,
-		0,
-		i_TotalVehicleCost
-	) AS o_TotalVehicleCost,
+	IFF(i_TotalVehicleCost IS NULL, 0, i_TotalVehicleCost) AS o_TotalVehicleCost,
 	-- *INF*: SUBSTR(v_lkp_result,1,instr(v_lkp_result,'@1')-1)
-	SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1'
-		) - 1
-	) AS o_CommercialAutoVehicleType,
+	SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1') - 1) AS o_CommercialAutoVehicleType,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@1')+2,instr(v_lkp_result,'@2')-instr(v_lkp_result,'@1')-2)
-	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@1'
-		) + 2, REGEXP_INSTR(v_lkp_result, '@2'
-		) - REGEXP_INSTR(v_lkp_result, '@1'
-		) - 2
-	) AS o_CommercialAutoBusinessUseClass,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@1') + 2, REGEXP_INSTR(v_lkp_result, '@2') - REGEXP_INSTR(v_lkp_result, '@1') - 2) AS o_CommercialAutoBusinessUseClass,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@2')+2,instr(v_lkp_result,'@3')-instr(v_lkp_result,'@2')-2)
-	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@2'
-		) + 2, REGEXP_INSTR(v_lkp_result, '@3'
-		) - REGEXP_INSTR(v_lkp_result, '@2'
-		) - 2
-	) AS o_SecondaryClass,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@2') + 2, REGEXP_INSTR(v_lkp_result, '@3') - REGEXP_INSTR(v_lkp_result, '@2') - 2) AS o_SecondaryClass,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@3')+2,instr(v_lkp_result,'@4')-instr(v_lkp_result,'@3')-2)
-	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@3'
-		) + 2, REGEXP_INSTR(v_lkp_result, '@4'
-		) - REGEXP_INSTR(v_lkp_result, '@3'
-		) - 2
-	) AS o_FleetType,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@3') + 2, REGEXP_INSTR(v_lkp_result, '@4') - REGEXP_INSTR(v_lkp_result, '@3') - 2) AS o_FleetType,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@4')+2,instr(v_lkp_result,'@5')-instr(v_lkp_result,'@4')-2)
-	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@4'
-		) + 2, REGEXP_INSTR(v_lkp_result, '@5'
-		) - REGEXP_INSTR(v_lkp_result, '@4'
-		) - 2
-	) AS o_SecondaryClassGroup,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@4') + 2, REGEXP_INSTR(v_lkp_result, '@5') - REGEXP_INSTR(v_lkp_result, '@4') - 2) AS o_SecondaryClassGroup,
 	-- *INF*: IIF(ISNULL(i_RetroactiveDate),
 	-- TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS'),
 	-- i_RetroactiveDate
 	-- )
-	IFF(i_RetroactiveDate IS NULL,
-		TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
-		),
-		i_RetroactiveDate
+	IFF(
+	    i_RetroactiveDate IS NULL, TO_TIMESTAMP('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'),
+	    i_RetroactiveDate
 	) AS o_RetroactiveDate,
 	v_IncludeUIM AS o_IncludeUIM,
 	i_CoordinationOfBenefits AS o_CoordinationOfBenefits,
@@ -644,32 +533,20 @@ EXP_MetaData AS (
 	-- *INF*: DECODE(TRUE,
 	-- i_SubjectToNoFault='T','Yes',
 	-- i_SubjectToNoFault='F','No', 'N/A')
-	DECODE(TRUE,
-		i_SubjectToNoFault = 'T', 'Yes',
-		i_SubjectToNoFault = 'F', 'No',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SubjectToNoFault = 'T', 'Yes',
+	    i_SubjectToNoFault = 'F', 'No',
+	    'N/A'
 	) AS o_SubjectToNoFault,
 	-- *INF*: IIF(ISNULL(i_AdditionalLimitKS), -1, i_AdditionalLimitKS)
-	IFF(i_AdditionalLimitKS IS NULL,
-		- 1,
-		i_AdditionalLimitKS
-	) AS o_AdditionalLimitKS,
+	IFF(i_AdditionalLimitKS IS NULL, - 1, i_AdditionalLimitKS) AS o_AdditionalLimitKS,
 	-- *INF*: IIF(ISNULL(i_AdditionalLimitKY), -1, i_AdditionalLimitKY)
-	IFF(i_AdditionalLimitKY IS NULL,
-		- 1,
-		i_AdditionalLimitKY
-	) AS o_AdditionalLimitKY,
+	IFF(i_AdditionalLimitKY IS NULL, - 1, i_AdditionalLimitKY) AS o_AdditionalLimitKY,
 	-- *INF*: IIF(ISNULL(i_AdditionalLimitMN), -1, i_AdditionalLimitMN)
-	IFF(i_AdditionalLimitMN IS NULL,
-		- 1,
-		i_AdditionalLimitMN
-	) AS o_AdditionalLimitMN,
+	IFF(i_AdditionalLimitMN IS NULL, - 1, i_AdditionalLimitMN) AS o_AdditionalLimitMN,
 	-- *INF*: IIF(ISNULL(i_ZoneGaraging),'N/A',TO_CHAR(i_ZoneGaraging))
-	IFF(i_ZoneGaraging IS NULL,
-		'N/A',
-		TO_CHAR(i_ZoneGaraging
-		)
-	) AS o_ZoneGaraging,
+	IFF(i_ZoneGaraging IS NULL, 'N/A', TO_CHAR(i_ZoneGaraging)) AS o_ZoneGaraging,
 	ReplacementCost,
 	FullGlassIndicator,
 	HistoricVehicleIndicator
@@ -711,10 +588,7 @@ EXP_CoverageDetailCommercialAuto AS (
 	o_PIPBureaucoverageCode AS PIPBureaucoverageCode,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	-- *INF*: IIF(ISNULL(i_CoverageGuid),'N/A',i_CoverageGuid)
-	IFF(i_CoverageGuid IS NULL,
-		'N/A',
-		i_CoverageGuid
-	) AS o_CoverageGUID,
+	IFF(i_CoverageGuid IS NULL, 'N/A', i_CoverageGuid) AS o_CoverageGUID,
 	-- *INF*: DECODE(TRUE,
 	-- i_Type='Truck' ,DECODE(TRUE,i_GVW <= 10000,'Light Trucks',i_GVW  >= 10001 AND i_GVW <= 20000,'Medium Trucks',i_GVW  >= 20001 AND i_GVW <=  45000,'Heavy Trucks',i_GVW > 45000,'Extra Heavy Trucks'),
 	-- i_Type='TruckTractor',DECODE(TRUE,i_GCW <= 45000,'Heavy Truck Tractors',i_GCW > 45000,'Extra Heavy Truck Tractors'),
@@ -726,103 +600,62 @@ EXP_CoverageDetailCommercialAuto AS (
 	-- i_Type='Garage','Garage',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_Type = 'Truck', DECODE(TRUE,
-		i_GVW <= 10000, 'Light Trucks',
-		i_GVW >= 10001 
-			AND i_GVW <= 20000, 'Medium Trucks',
-		i_GVW >= 20001 
-			AND i_GVW <= 45000, 'Heavy Trucks',
-		i_GVW > 45000, 'Extra Heavy Trucks'
-		),
-		i_Type = 'TruckTractor', DECODE(TRUE,
-		i_GCW <= 45000, 'Heavy Truck Tractors',
-		i_GCW > 45000, 'Extra Heavy Truck Tractors'
-		),
-		i_Type = 'Semitrailer', 'Semitrailers',
-		i_Type = 'Trailer', 'Trailers',
-		i_Type = 'ServiceUtilityTrailer', 'ServiceUtilityTrailers',
-		i_Type IN ('PrivatePassenger','FuneralDirectors'), 'PrivatePassenger',
-		i_Type IN ('Ambulance','RegistrationPlates','Motorcycle','PublicVehicle','RepossessedAutos','MobileHome','MobileHomeContents','GolfMobile','AntiqueAuto','SpecialOrMobileEquipment','Snowmobile','AllTerrainUtilityTaskVehicle'), 'Special Class',
-		i_Type = 'Garage', 'Garage',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_Type = 'Truck', DECODE(
+	        TRUE,
+	        i_GVW <= 10000, 'Light Trucks',
+	        i_GVW >= 10001 AND i_GVW <= 20000, 'Medium Trucks',
+	        i_GVW >= 20001 AND i_GVW <= 45000, 'Heavy Trucks',
+	        i_GVW > 45000, 'Extra Heavy Trucks'
+	    ),
+	    i_Type = 'TruckTractor', DECODE(
+	        TRUE,
+	        i_GCW <= 45000, 'Heavy Truck Tractors',
+	        i_GCW > 45000, 'Extra Heavy Truck Tractors'
+	    ),
+	    i_Type = 'Semitrailer', 'Semitrailers',
+	    i_Type = 'Trailer', 'Trailers',
+	    i_Type = 'ServiceUtilityTrailer', 'ServiceUtilityTrailers',
+	    i_Type IN ('PrivatePassenger','FuneralDirectors'), 'PrivatePassenger',
+	    i_Type IN ('Ambulance','RegistrationPlates','Motorcycle','PublicVehicle','RepossessedAutos','MobileHome','MobileHomeContents','GolfMobile','AntiqueAuto','SpecialOrMobileEquipment','Snowmobile','AllTerrainUtilityTaskVehicle'), 'Special Class',
+	    i_Type = 'Garage', 'Garage',
+	    'N/A'
 	) AS o_VehicleGroupCode,
 	-- *INF*: IIF(length(i_RadiusOfOperation)=0,'N/A',i_RadiusOfOperation)
 	-- 
-	IFF(length(i_RadiusOfOperation
-		) = 0,
-		'N/A',
-		i_RadiusOfOperation
-	) AS o_RadiusOfOperation,
+	IFF(length(i_RadiusOfOperation) = 0, 'N/A', i_RadiusOfOperation) AS o_RadiusOfOperation,
 	-- *INF*: IIF(NOT ISNULL(i_SecondaryClassCategory),i_SecondaryClassCategory,'N/A')
-	IFF(i_SecondaryClassCategory IS NOT NULL,
-		i_SecondaryClassCategory,
-		'N/A'
-	) AS o_SecondaryVehicleType,
+	IFF(i_SecondaryClassCategory IS NOT NULL, i_SecondaryClassCategory, 'N/A') AS o_SecondaryVehicleType,
 	i_UsedInDumping AS o_UsedInDumpingIndicator,
 	-- *INF*: IIF(NOT ISNULL(i_VIN),i_VIN,'N/A')
-	IFF(i_VIN IS NOT NULL,
-		i_VIN,
-		'N/A'
-	) AS o_VIN,
+	IFF(i_VIN IS NOT NULL, i_VIN, 'N/A') AS o_VIN,
 	-- *INF*: IIF(NOT ISNULL(i_Make),i_Make,'N/A')
-	IFF(i_Make IS NOT NULL,
-		i_Make,
-		'N/A'
-	) AS o_Make,
+	IFF(i_Make IS NOT NULL, i_Make, 'N/A') AS o_Make,
 	-- *INF*: IIF(NOT ISNULL(i_Model),i_Model,'N/A')
-	IFF(i_Model IS NOT NULL,
-		i_Model,
-		'N/A'
-	) AS o_Model,
+	IFF(i_Model IS NOT NULL, i_Model, 'N/A') AS o_Model,
 	o_VehicleNumber,
 	o_CompositeRating AS CompositeRating,
 	-- *INF*: IIF(NOT ISNULL(i_ZoneTerminal),i_ZoneTerminal,'N/A')
-	IFF(i_ZoneTerminal IS NOT NULL,
-		i_ZoneTerminal,
-		'N/A'
-	) AS o_ZoneTerminal,
+	IFF(i_ZoneTerminal IS NOT NULL, i_ZoneTerminal, 'N/A') AS o_ZoneTerminal,
 	-- *INF*: IIF(NOT ISNULL(i_Type),i_Type,'N/A')
-	IFF(i_Type IS NOT NULL,
-		i_Type,
-		'N/A'
-	) AS o_VehicleType,
+	IFF(i_Type IS NOT NULL, i_Type, 'N/A') AS o_VehicleType,
 	o_TotalVehicleCost,
 	-- *INF*: IIF(length(i_CommercialAutoVehicleType)=0,'N/A',i_CommercialAutoVehicleType)
-	IFF(length(i_CommercialAutoVehicleType
-		) = 0,
-		'N/A',
-		i_CommercialAutoVehicleType
-	) AS o_CommercialAutoVehicleType,
+	IFF(length(i_CommercialAutoVehicleType) = 0, 'N/A', i_CommercialAutoVehicleType) AS o_CommercialAutoVehicleType,
 	-- *INF*: IIF(length(i_CommercialAutoBusinessUseClass)=0,'N/A',i_CommercialAutoBusinessUseClass)
-	IFF(length(i_CommercialAutoBusinessUseClass
-		) = 0,
-		'N/A',
-		i_CommercialAutoBusinessUseClass
-	) AS o_CommercialAutoBusinessUseClass,
+	IFF(length(i_CommercialAutoBusinessUseClass) = 0, 'N/A', i_CommercialAutoBusinessUseClass) AS o_CommercialAutoBusinessUseClass,
 	-- *INF*: IIF(length(i_SecondaryClass)=0,'N/A',i_SecondaryClass)
 	-- 
 	-- 
-	IFF(length(i_SecondaryClass
-		) = 0,
-		'N/A',
-		i_SecondaryClass
-	) AS o_SecondaryClass,
+	IFF(length(i_SecondaryClass) = 0, 'N/A', i_SecondaryClass) AS o_SecondaryClass,
 	-- *INF*: IIF(length(i_FleetType)=0,'N/A',i_FleetType)
 	-- 
-	IFF(length(i_FleetType
-		) = 0,
-		'N/A',
-		i_FleetType
-	) AS o_FleetType,
+	IFF(length(i_FleetType) = 0, 'N/A', i_FleetType) AS o_FleetType,
 	-- *INF*: IIF(length(i_SecondaryClassGroup)=0,'N/A',i_SecondaryClassGroup)
 	-- 
 	-- 
-	IFF(length(i_SecondaryClassGroup
-		) = 0,
-		'N/A',
-		i_SecondaryClassGroup
-	) AS o_SecondaryClassGroup,
+	IFF(length(i_SecondaryClassGroup) = 0, 'N/A', i_SecondaryClassGroup) AS o_SecondaryClassGroup,
 	o_RetroactiveDate AS RetroactiveDate,
 	o_IncludeUIM AS IncludeUIM,
 	o_CoordinationOfBenefits,
@@ -913,10 +746,7 @@ EXP_DetectChanges AS (
 	LKP_CoverageDetailCommercialAuto.SecondaryVehicleType AS lkp_SecondaryVehicleType,
 	LKP_CoverageDetailCommercialAuto.UsedInDumpingIndicator AS lkp_UsedInDumpingIndicator,
 	-- *INF*: IIF(lkp_UsedInDumpingIndicator='T',1,0)
-	IFF(lkp_UsedInDumpingIndicator = 'T',
-		1,
-		0
-	) AS v_UsedInDumpingIndicator,
+	IFF(lkp_UsedInDumpingIndicator = 'T', 1, 0) AS v_UsedInDumpingIndicator,
 	LKP_CoverageDetailCommercialAuto.VehicleYear AS lkp_VehicleYear,
 	LKP_CoverageDetailCommercialAuto.StatedAmount AS lkp_StatedAmount,
 	LKP_CoverageDetailCommercialAuto.CostNew AS lkp_CostNew,
@@ -927,10 +757,7 @@ EXP_DetectChanges AS (
 	LKP_CoverageDetailCommercialAuto.VehicleNumber AS lkp_VehicleNumber,
 	LKP_CoverageDetailCommercialAuto.CompositeRatedFlag AS lkp_CompositeRatedFlag,
 	-- *INF*: IIF(lkp_CompositeRatedFlag='T',1,0)
-	IFF(lkp_CompositeRatedFlag = 'T',
-		1,
-		0
-	) AS v_CompositeRatedFlag,
+	IFF(lkp_CompositeRatedFlag = 'T', 1, 0) AS v_CompositeRatedFlag,
 	LKP_CoverageDetailCommercialAuto.TerminalZoneCode AS lkp_TerminalZoneCode,
 	LKP_CoverageDetailCommercialAuto.VehicleType AS lkp_VehicleType,
 	LKP_CoverageDetailCommercialAuto.PIPBureaucoverageCode AS lkp_PIPBureaucoverageCode,
@@ -955,18 +782,15 @@ EXP_DetectChanges AS (
 	EXP_CoverageDetailCommercialAuto.VehicleDeleteDate AS i_VehicleDeleteDate,
 	EXP_CoverageDetailCommercialAuto.PIPBureaucoverageCode AS i_PIPBureaucoverageCode,
 	-- *INF*: SUBSTR('0000' || IIF(ISNULL(i_Year), '0000', TO_CHAR(i_Year)), -4, 4)
-	SUBSTR('0000' || IFF(i_Year IS NULL,
-			'0000',
-			TO_CHAR(i_Year
-			)
-		), - 4, 4
-	) AS v_Year,
+	SUBSTR('0000' || 
+	    IFF(
+	        i_Year IS NULL, '0000', TO_CHAR(i_Year)
+	    ), - 4, 4) AS v_Year,
 	-- *INF*: TO_CHAR(IIF(ISNULL(i_StatedAmount), 0, i_StatedAmount))
-	TO_CHAR(IFF(i_StatedAmount IS NULL,
-			0,
-			i_StatedAmount
-		)
-	) AS v_StatedAmount,
+	TO_CHAR(
+	    IFF(
+	        i_StatedAmount IS NULL, 0, i_StatedAmount
+	    )) AS v_StatedAmount,
 	EXP_CoverageDetailCommercialAuto.o_VIN,
 	EXP_CoverageDetailCommercialAuto.o_Make,
 	EXP_CoverageDetailCommercialAuto.o_Model,
@@ -980,11 +804,9 @@ EXP_DetectChanges AS (
 	i_TotalVehicleCost AS v_CostNew,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -1023,35 +845,11 @@ EXP_DetectChanges AS (
 	-- AND lkp_HistoricVehicleIndicator=HistoricVehicleIndicator,
 	-- 'NOCHANGE',
 	-- 'UPDATE')
-	DECODE(TRUE,
-		lkp_PremiumTransactionID IS NULL, 'NEW',
-		lkp_VehicleGroupCode = i_VehicleGroupCode 
-		AND lkp_RadiusOfOperation = i_RadiusOfOperation 
-		AND lkp_SecondaryVehicleType = i_SecondaryVehicleType 
-		AND v_UsedInDumpingIndicator = i_UsedInDumpingIndicator 
-		AND v_Year = lkp_VehicleYear 
-		AND v_StatedAmount = lkp_StatedAmount 
-		AND lkp_CostNew = v_CostNew 
-		AND lkp_VehicleDeleteDate = i_VehicleDeleteDate 
-		AND lkp_VIN = o_VIN 
-		AND lkp_VehicleMake = o_Make 
-		AND lkp_VehicleModel = o_Model 
-		AND lkp_VehicleNumber = o_VehicleNumber 
-		AND v_CompositeRatedFlag = CompositeRating 
-		AND lkp_TerminalZoneCode = o_TerminalZoneCode 
-		AND lkp_VehicleType = VehicleType 
-		AND lkp_VehicleTypeSize = o_CommercialAutoVehicleType 
-		AND lkp_BusinessUseClass = o_CommercialAutoBusinessUseClass 
-		AND lkp_SecondaryClass = o_SecondaryClass 
-		AND lkp_FleetType = o_FleetType 
-		AND lkp_SecondaryClassGroup = o_SecondaryClassGroup 
-		AND lkp_PIPBureaucoverageCode = i_PIPBureaucoverageCode 
-		AND lkp_IncludeUIM = IncludeUIM 
-		AND lkp_RatingZoneCode = RatingZoneCode 
-		AND lkp_ReplacementCost = ReplacementCost 
-		AND lkp_FullGlassIndicator = FullGlassIndicator 
-		AND lkp_HistoricVehicleIndicator = HistoricVehicleIndicator, 'NOCHANGE',
-		'UPDATE'
+	DECODE(
+	    TRUE,
+	    lkp_PremiumTransactionID IS NULL, 'NEW',
+	    lkp_VehicleGroupCode = i_VehicleGroupCode AND lkp_RadiusOfOperation = i_RadiusOfOperation AND lkp_SecondaryVehicleType = i_SecondaryVehicleType AND v_UsedInDumpingIndicator = i_UsedInDumpingIndicator AND v_Year = lkp_VehicleYear AND v_StatedAmount = lkp_StatedAmount AND lkp_CostNew = v_CostNew AND lkp_VehicleDeleteDate = i_VehicleDeleteDate AND lkp_VIN = o_VIN AND lkp_VehicleMake = o_Make AND lkp_VehicleModel = o_Model AND lkp_VehicleNumber = o_VehicleNumber AND v_CompositeRatedFlag = CompositeRating AND lkp_TerminalZoneCode = o_TerminalZoneCode AND lkp_VehicleType = VehicleType AND lkp_VehicleTypeSize = o_CommercialAutoVehicleType AND lkp_BusinessUseClass = o_CommercialAutoBusinessUseClass AND lkp_SecondaryClass = o_SecondaryClass AND lkp_FleetType = o_FleetType AND lkp_SecondaryClassGroup = o_SecondaryClassGroup AND lkp_PIPBureaucoverageCode = i_PIPBureaucoverageCode AND lkp_IncludeUIM = IncludeUIM AND lkp_RatingZoneCode = RatingZoneCode AND lkp_ReplacementCost = ReplacementCost AND lkp_FullGlassIndicator = FullGlassIndicator AND lkp_HistoricVehicleIndicator = HistoricVehicleIndicator, 'NOCHANGE',
+	    'UPDATE'
 	) AS o_ChangeFlag,
 	i_PIPBureaucoverageCode AS o_PIPBureaucoverageCode,
 	EXP_CoverageDetailCommercialAuto.o_CommercialAutoVehicleType,
@@ -1289,60 +1087,37 @@ EXP_Coveragedetailauto AS (
 	MedicalExpensesOption,
 	CoveredByWorkersCompensationFlag AS CoveredByWorkComp,
 	-- *INF*: IIF(ISNULL(CoordinationOfBenefits),'N/A',CoordinationOfBenefits)
-	IFF(CoordinationOfBenefits IS NULL,
-		'N/A',
-		CoordinationOfBenefits
-	) AS o_CoordinationOfBenefits,
+	IFF(CoordinationOfBenefits IS NULL, 'N/A', CoordinationOfBenefits) AS o_CoordinationOfBenefits,
 	-- *INF*: IIF(ISNULL(MedicalExpensesOption),'N/A',MedicalExpensesOption)
-	IFF(MedicalExpensesOption IS NULL,
-		'N/A',
-		MedicalExpensesOption
-	) AS o_MedicalExpensesOption,
+	IFF(MedicalExpensesOption IS NULL, 'N/A', MedicalExpensesOption) AS o_MedicalExpensesOption,
 	-- *INF*: IIF(ISNULL(CoveredByWorkComp),0,IIF(CoveredByWorkComp='T',1,0))
-	IFF(CoveredByWorkComp IS NULL,
-		0,
-		IFF(CoveredByWorkComp = 'T',
-			1,
-			0
-		)
-	) AS o_CoveredByWorkComp,
+	IFF(CoveredByWorkComp IS NULL, 0, IFF(
+	        CoveredByWorkComp = 'T', 1, 0
+	    )) AS o_CoveredByWorkComp,
 	SubjectToNoFault,
 	AdditionalLimitKS,
 	AdditionalLimitKY,
 	AdditionalLimitMN,
 	RatingZoneCode,
 	-- *INF*: IIF(ISNULL(RatingZoneCode),'N/A',TO_CHAR(RatingZoneCode))
-	IFF(RatingZoneCode IS NULL,
-		'N/A',
-		TO_CHAR(RatingZoneCode
-		)
-	) AS o_RatingZoneCode,
+	IFF(RatingZoneCode IS NULL, 'N/A', TO_CHAR(RatingZoneCode)) AS o_RatingZoneCode,
 	ReplacementCost,
 	-- *INF*: IIF(ISNULL(ReplacementCost),0,IIF(ReplacementCost = 'T',1,0))
-	IFF(ReplacementCost IS NULL,
-		0,
-		IFF(ReplacementCost = 'T',
-			1,
-			0
-		)
-	) AS o_ReplacementCost,
+	IFF(ReplacementCost IS NULL, 0, IFF(
+	        ReplacementCost = 'T', 1, 0
+	    )) AS o_ReplacementCost,
 	FullGlassIndicator,
 	-- *INF*: IIF(ISNULL(FullGlassIndicator),0,IIF(FullGlassIndicator = 'T',1,0))
-	IFF(FullGlassIndicator IS NULL,
-		0,
-		IFF(FullGlassIndicator = 'T',
-			1,
-			0
-		)
-	) AS o_FullGlassIndicator,
+	IFF(FullGlassIndicator IS NULL, 0, IFF(
+	        FullGlassIndicator = 'T', 1, 0
+	    )) AS o_FullGlassIndicator,
 	HistoricVehicleIndicator,
 	-- *INF*: IIF(ISNULL(HistoricVehicleIndicator),0,IIF(HistoricVehicleIndicator= 'T',1,0))
-	IFF(HistoricVehicleIndicator IS NULL,
-		0,
-		IFF(HistoricVehicleIndicator = 'T',
-			1,
-			0
-		)
+	IFF(
+	    HistoricVehicleIndicator IS NULL, 0,
+	    IFF(
+	        HistoricVehicleIndicator = 'T', 1, 0
+	    )
 	) AS o_HistoricVehicleIndicator
 	FROM SQ_CoverageDetailCommercialAuto
 ),
@@ -1508,22 +1283,15 @@ EXP_Coveragedetailauto_Deprecated AS (
 	MedicalExpensesOption,
 	CoveredByWorkersCompensationFlag,
 	-- *INF*: IIF(ISNULL(CoordinationOfBenefits),'N/A',CoordinationOfBenefits)
-	IFF(CoordinationOfBenefits IS NULL,
-		'N/A',
-		CoordinationOfBenefits
-	) AS o_CoordinationOfBenefits,
+	IFF(CoordinationOfBenefits IS NULL, 'N/A', CoordinationOfBenefits) AS o_CoordinationOfBenefits,
 	-- *INF*: IIF(ISNULL(MedicalExpensesOption),'N/A',MedicalExpensesOption)
-	IFF(MedicalExpensesOption IS NULL,
-		'N/A',
-		MedicalExpensesOption
-	) AS o_MedicalExpensesOption,
+	IFF(MedicalExpensesOption IS NULL, 'N/A', MedicalExpensesOption) AS o_MedicalExpensesOption,
 	-- *INF*: IIF(ISNULL(CoveredByWorkersCompensationFlag),0,IIF(CoveredByWorkersCompensationFlag='T',1,0))
-	IFF(CoveredByWorkersCompensationFlag IS NULL,
-		0,
-		IFF(CoveredByWorkersCompensationFlag = 'T',
-			1,
-			0
-		)
+	IFF(
+	    CoveredByWorkersCompensationFlag IS NULL, 0,
+	    IFF(
+	        CoveredByWorkersCompensationFlag = 'T', 1, 0
+	    )
 	) AS o_CoveredByWorkersCompensationFlag,
 	SubjectToNoFault,
 	AdditionalLimitKS,
@@ -1531,37 +1299,24 @@ EXP_Coveragedetailauto_Deprecated AS (
 	AdditionalLimitMN,
 	RatingZoneCode,
 	-- *INF*: IIF(ISNULL(RatingZoneCode),'N/A',TO_CHAR(RatingZoneCode))
-	IFF(RatingZoneCode IS NULL,
-		'N/A',
-		TO_CHAR(RatingZoneCode
-		)
-	) AS o_RatingZoneCode,
+	IFF(RatingZoneCode IS NULL, 'N/A', TO_CHAR(RatingZoneCode)) AS o_RatingZoneCode,
 	ReplacementCost,
 	-- *INF*: IIF(ISNULL(ReplacementCost),0,IIF(ReplacementCost = 'T',1,0))
-	IFF(ReplacementCost IS NULL,
-		0,
-		IFF(ReplacementCost = 'T',
-			1,
-			0
-		)
-	) AS o_ReplacementCost,
+	IFF(ReplacementCost IS NULL, 0, IFF(
+	        ReplacementCost = 'T', 1, 0
+	    )) AS o_ReplacementCost,
 	FullGlassIndicator,
 	-- *INF*: IIF(ISNULL(FullGlassIndicator),0,IIF(FullGlassIndicator = 'T',1,0))
-	IFF(FullGlassIndicator IS NULL,
-		0,
-		IFF(FullGlassIndicator = 'T',
-			1,
-			0
-		)
-	) AS o_FullGlassIndicator,
+	IFF(FullGlassIndicator IS NULL, 0, IFF(
+	        FullGlassIndicator = 'T', 1, 0
+	    )) AS o_FullGlassIndicator,
 	HistoricVehicleIndicator,
 	-- *INF*: IIF(ISNULL(HistoricVehicleIndicator),0,IIF(HistoricVehicleIndicator= 'T',1,0))
-	IFF(HistoricVehicleIndicator IS NULL,
-		0,
-		IFF(HistoricVehicleIndicator = 'T',
-			1,
-			0
-		)
+	IFF(
+	    HistoricVehicleIndicator IS NULL, 0,
+	    IFF(
+	        HistoricVehicleIndicator = 'T', 1, 0
+	    )
 	) AS o_HistoricVehicleIndicator
 	FROM SQ_CoverageDetailCommercialAuto_Deprecated
 ),

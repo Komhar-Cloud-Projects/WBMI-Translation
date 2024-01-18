@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_CoverageDetailCrime AS (\n\tSELECT CDCR.PremiumTransactionID,\r\n\t       CDCR.CoverageGuid,\r\n\t       CDCR.IndustryGroup,    \r\n\tPT.PremiumTransactionID \r\n\tFROM  \r\n\tdbo.CoverageDetailCrime CDCR\r\n\tINNER JOIN dbo.WorkPremiumTransactionDataRepairNegate WPTDRN\r\n\tON CDCR.PremiumTransactionID = WPTDRN.OriginalPremiumTransactionID\r\n\tINNER JOIN dbo.PremiumTransaction PT\r\n\t               ON PT.PremiumTransactionAKID = WPTDRN.NewNegatePremiumTransactionAKID\r\n\tAND PT.SourceSystemId= '@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n),\nEXP_Default AS (\n\tSELECT\n\tPremiumTransactionID,\n\tCoverageGuid,\n\tIndustryGroup,\n\tNewNegatePremiumTransactionID\n\tFROM SQ_CoverageDetailCrime\n),\nLKP_CoverageDetailCrime AS (\n\tSELECT\n\tPremiumTransactionID,\n\tIndustryGroup,\n\tNewNegatePremiumTransactionID\n\tFROM (\n\t\tSELECT \n\t\t\tPremiumTransactionID,\n\t\t\tIndustryGroup,\n\t\t\tNewNegatePremiumTransactionID\n\t\tFROM CoverageDetailCrime\n\t\tWHERE SourceSystemID='DCT'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PremiumTransactionID ORDER BY PremiumTransactionID) = 1\n),\nEXP_DetectChanges AS (\n\tSELECT\n\tLKP_CoverageDetailCrime.PremiumTransactionID AS lkp_PremiumTransactionID,\n\tLKP_CoverageDetailCrime.IndustryGroup AS lkp_IndustryGroup,\n\tEXP_Default.NewNegatePremiumTransactionID,\n\tEXP_Default.CoverageGuid AS i_CoverageGUID,\n\tEXP_Default.IndustryGroup,\n\t1 AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\t-- *INF*: TO_DATE('1800/01/01 00:00:00','YYYY/MM/DD HH24:MI:SS')\n\tTO_DATE('1800/01/01 00:00:00', 'YYYY/MM/DD HH24:MI:SS'\n\t) AS o_EffectiveDate,\n\t-- *INF*: TO_DATE('2100/12/31 23:59:59','YYYY/MM/DD HH24:MI:SS')\n\tTO_DATE('2100/12/31 23:59:59', 'YYYY/MM/DD HH24:MI:SS'\n\t) AS o_ExpirationDate,\n\t'DCT' AS o_SourceSystemID,\n\tsysdate AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(lkp_PremiumTransactionID),\r\n\t-- 'INSERT',\r\n\t-- 'UPDATE')\n\tDECODE(TRUE,\n\t\tlkp_PremiumTransactionID IS NULL, 'INSERT',\n\t\t'UPDATE'\n\t) AS o_changeflag\n\tFROM EXP_Default\n\tLEFT JOIN LKP_CoverageDetailCrime\n\tON LKP_CoverageDetailCrime.PremiumTransactionID = EXP_Default.NewNegatePremiumTransactionID\n),\nRTR_Insert_Update AS (\n\tSELECT\n\tNewNegatePremiumTransactionID,\n\ti_CoverageGUID AS o_CoverageGUID,\n\tIndustryGroup AS o_IndustryGroup,\n\to_CurrentSnapshotFlag,\n\to_AuditID,\n\to_EffectiveDate,\n\to_ExpirationDate,\n\to_SourceSystemID,\n\to_CreatedDate,\n\to_ModifiedDate,\n\to_changeflag\n\tFROM EXP_DetectChanges\n),\nRTR_Insert_Update_INSERT AS (SELECT * FROM RTR_Insert_Update WHERE o_changeflag='INSERT'),\nRTR_Insert_Update_UPDATE AS (SELECT * FROM RTR_Insert_Update WHERE o_changeflag='UPDATE'),\nCoverageDetailCrime_INSERT AS (\n\tINSERT INTO CoverageDetailCrime\n\t(PremiumTransactionID, CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, SourceSystemID, CreatedDate, ModifiedDate, CoverageGuid, IndustryGroup)\n\tSELECT \n\tNewNegatePremiumTransactionID AS PREMIUMTRANSACTIONID, \n\to_CurrentSnapshotFlag AS CURRENTSNAPSHOTFLAG, \n\to_AuditID AS AUDITID, \n\to_EffectiveDate AS EFFECTIVEDATE, \n\to_ExpirationDate AS EXPIRATIONDATE, \n\to_SourceSystemID AS SOURCESYSTEMID, \n\to_CreatedDate AS CREATEDDATE, \n\to_ModifiedDate AS MODIFIEDDATE, \n\to_CoverageGUID AS COVERAGEGUID, \n\to_IndustryGroup AS INDUSTRYGROUP\n\tFROM RTR_Insert_Update_INSERT\n),"
+                            "text": "WITH\nSQ_CoverageDetailCrime AS (\n\tSELECT CDCR.PremiumTransactionID,\r\n\t       CDCR.CoverageGuid,\r\n\t       CDCR.IndustryGroup,    \r\n\tPT.PremiumTransactionID \r\n\tFROM  \r\n\tdbo.CoverageDetailCrime CDCR\r\n\tINNER JOIN dbo.WorkPremiumTransactionDataRepairNegate WPTDRN\r\n\tON CDCR.PremiumTransactionID = WPTDRN.OriginalPremiumTransactionID\r\n\tINNER JOIN dbo.PremiumTransaction PT\r\n\t               ON PT.PremiumTransactionAKID = WPTDRN.NewNegatePremiumTransactionAKID\r\n\tAND PT.SourceSystemId= '@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n),\nEXP_Default AS (\n\tSELECT\n\tPremiumTransactionID,\n\tCoverageGuid,\n\tIndustryGroup,\n\tNewNegatePremiumTransactionID\n\tFROM SQ_CoverageDetailCrime\n),\nLKP_CoverageDetailCrime AS (\n\tSELECT\n\tPremiumTransactionID,\n\tIndustryGroup,\n\tNewNegatePremiumTransactionID\n\tFROM (\n\t\tSELECT \n\t\t\tPremiumTransactionID,\n\t\t\tIndustryGroup,\n\t\t\tNewNegatePremiumTransactionID\n\t\tFROM CoverageDetailCrime\n\t\tWHERE SourceSystemID='DCT'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PremiumTransactionID ORDER BY PremiumTransactionID) = 1\n),\nEXP_DetectChanges AS (\n\tSELECT\n\tLKP_CoverageDetailCrime.PremiumTransactionID AS lkp_PremiumTransactionID,\n\tLKP_CoverageDetailCrime.IndustryGroup AS lkp_IndustryGroup,\n\tEXP_Default.NewNegatePremiumTransactionID,\n\tEXP_Default.CoverageGuid AS i_CoverageGUID,\n\tEXP_Default.IndustryGroup,\n\t1 AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\t-- *INF*: TO_DATE('1800/01/01 00:00:00','YYYY/MM/DD HH24:MI:SS')\n\tTO_TIMESTAMP('1800/01/01 00:00:00', 'YYYY/MM/DD HH24:MI:SS') AS o_EffectiveDate,\n\t-- *INF*: TO_DATE('2100/12/31 23:59:59','YYYY/MM/DD HH24:MI:SS')\n\tTO_TIMESTAMP('2100/12/31 23:59:59', 'YYYY/MM/DD HH24:MI:SS') AS o_ExpirationDate,\n\t'DCT' AS o_SourceSystemID,\n\tsysdate AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(lkp_PremiumTransactionID),\r\n\t-- 'INSERT',\r\n\t-- 'UPDATE')\n\tDECODE(\n\t    TRUE,\n\t    lkp_PremiumTransactionID IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS o_changeflag\n\tFROM EXP_Default\n\tLEFT JOIN LKP_CoverageDetailCrime\n\tON LKP_CoverageDetailCrime.PremiumTransactionID = EXP_Default.NewNegatePremiumTransactionID\n),\nRTR_Insert_Update AS (\n\tSELECT\n\tNewNegatePremiumTransactionID,\n\ti_CoverageGUID AS o_CoverageGUID,\n\tIndustryGroup AS o_IndustryGroup,\n\to_CurrentSnapshotFlag,\n\to_AuditID,\n\to_EffectiveDate,\n\to_ExpirationDate,\n\to_SourceSystemID,\n\to_CreatedDate,\n\to_ModifiedDate,\n\to_changeflag\n\tFROM EXP_DetectChanges\n),\nRTR_Insert_Update_INSERT AS (SELECT * FROM RTR_Insert_Update WHERE o_changeflag='INSERT'),\nRTR_Insert_Update_UPDATE AS (SELECT * FROM RTR_Insert_Update WHERE o_changeflag='UPDATE'),\nCoverageDetailCrime_INSERT AS (\n\tINSERT INTO CoverageDetailCrime\n\t(PremiumTransactionID, CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, SourceSystemID, CreatedDate, ModifiedDate, CoverageGuid, IndustryGroup)\n\tSELECT \n\tNewNegatePremiumTransactionID AS PREMIUMTRANSACTIONID, \n\to_CurrentSnapshotFlag AS CURRENTSNAPSHOTFLAG, \n\to_AuditID AS AUDITID, \n\to_EffectiveDate AS EFFECTIVEDATE, \n\to_ExpirationDate AS EXPIRATIONDATE, \n\to_SourceSystemID AS SOURCESYSTEMID, \n\to_CreatedDate AS CREATEDDATE, \n\to_ModifiedDate AS MODIFIEDDATE, \n\to_CoverageGUID AS COVERAGEGUID, \n\to_IndustryGroup AS INDUSTRYGROUP\n\tFROM RTR_Insert_Update_INSERT\n),"
                         }
                     ]
                 },
@@ -30,57 +30,17 @@
             }
         ],
         "parameters": {
-            "WBMI_AUDIT_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "216690"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "881000"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7484961"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "06/27/2023 12:02:14"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "07/04/2023 10:58:56"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
-            "TARGET_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
             "SOURCE_SYSTEM_ID": {
                 "type": "string",
-                "defaultValue": "DCT"
+                "defaultValue": "Default Value"
             },
-            "SOURCE_DATABASE_NAME": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
                 "type": "string",
-                "defaultValue": "WC_Stage"
-            },
-            "TARGET_TABLE_OWNER_V2": {
-                "type": "string",
-                "defaultValue": "V2"
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Policy DataWarehouse/"
+            "name": "RPT_EDM and EDW/Policy DataWarehouse/"
         },
         "annotations": []
     }

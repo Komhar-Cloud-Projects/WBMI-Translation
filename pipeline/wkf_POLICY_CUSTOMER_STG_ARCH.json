@@ -1,0 +1,1691 @@
+{
+    "name": "wkf_POLICY_CUSTOMER_STG_ARCH",
+    "properties": {
+        "activities": [
+            {
+                "name": "sp-PreBatch_PolicyCustStaging_ARCH",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_PreBatch]",
+                    "storedProcedureParameters": {
+                        "BatchName": {
+                            "value": {
+                                "value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['batch_name']",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sp-PostBatch_PolicyCustStaging_ARCH",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_4514_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_02_pol_cus_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43jj_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43rxcp_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43uxgl_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43ix_unmod_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_12_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_ISOFireProtectStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43lxzwc_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43uygl_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43nxcp_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43lxgl_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43rxgl_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43nxcr_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43ixzwc_mod_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43gj_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_03_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif43UYCRStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPifPUHM17Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPIF_04Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43uxwc_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif43GTLTITStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43ixzwc_unmod_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif350Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif43UXGAStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_archPif351Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif43UXIMStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif43LXGAStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif43NXIMStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPifDept1553Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif43RXGAStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif43RXIMStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPifReins53Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_archPif11Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_40_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_Pif25Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif43UZWCStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif43NXBPStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif08Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_4514_master_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_arch_pif_43ld_stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPIF045Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif08HapStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif08HaqStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPIF30Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPif14Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPIF041Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPIF042Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPIF20Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPIF08UStage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    },
+                    {
+                        "activity": "s_m_POL_STG_Insert_ArchPIF046Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_PostBatch]",
+                    "storedProcedureParameters": {
+                        "BatchName": {
+                            "value": {
+                                "value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['batch_name']",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sp-PostBatch_CheckForExceptions_PolicyCustStaging_ARCH",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "sp-ins_upd_rep_sess_log",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_PostBatch]",
+                    "storedProcedureParameters": {
+                        "BatchName": {
+                            "value": {
+                                "value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['batch_name']",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_02_pol_cus_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_CUST_STG_Insert_arch_pif_02_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_4514_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_4514_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43jj_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43jj_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43uxgl_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43uxgl_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43rxcp_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43rxcp_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43ix_unmod_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43ix_unmod_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_12_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_12_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43uygl_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43uygl_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43lxgl_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43lxgl_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43nxcp_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43nxcp_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43rxgl_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43rxgl_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43nxcr_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43nxcr_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43ixzwc_mod_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43ixzwc_mod_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43lxzwc_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43lxzwc_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_ISOFireProtectStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_ISOFireProtectStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_03_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_03_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43gj_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43gj_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif43UYCRStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPif43UYCRStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPifPUHM17Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPifPUHM17Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPIF_04Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPIF_04Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43uxwc_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43uxwc_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif43GTLTITStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPif43GTLTITStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43ixzwc_unmod_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43ixzwc_unmod_stage_arch"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_archPif11Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_archPif11Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_40_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_40_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif43UZWCStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPif43UZWCStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif43UXGAStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_archPif43UXGAStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPifReins53Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPifReins53Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif350Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_archPif350Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_archPif351Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_archPif351Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPifDept1553Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPifDept1553Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif43RXIMStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_archPif43RXIMStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif43RXGAStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_archPif43RXGAStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif43LXGAStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPif43LXGAStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif43UXIMStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPif43UXIMStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif43NXIMStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPif43NXIMStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_Pif25Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_Pif25Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_4514_master_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_4514_master_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif43NXBPStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPif43NXBPStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif08Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPif08Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_arch_pif_43ld_stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_arch_pif_43ld_stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPIF045Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPIF045Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif08HapStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPif08HapStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif08HaqStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPif08HaqStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPif14Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPif14Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPIF30Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPIF30Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPIF041Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPIF041Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPIF042Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPIF042Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPIF046Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPIF046Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPIF08UStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPIF08UStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_STG_Insert_ArchPIF20Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_STG_Insert_ArchPIF20Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "spt-Get Pipeline Parameters",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "sp-PreBatch_PolicyCustStaging_ARCH",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": {
+                                "value": "@concat('EXEC Proc_Pipeline_Parameters @workflow_name = ''', pipeline().Pipeline, '''')",
+                                "type": "Expression"
+                            }
+                        }
+                    ],
+                    "scriptBlockExecutionTimeout": "02:00:00"
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sv-Set Params",
+                "type": "SetVariable",
+                "dependsOn": [
+                    {
+                        "activity": "spt-Get Pipeline Parameters",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "Params",
+                    "value": {
+                        "value": "@activity('spt-Get Pipeline Parameters').output.resultSets[0].rows[0]['json_value']",
+                        "type": "Expression"
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sp-ins_upd_rep_sess_log",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "sp-PostBatch_PolicyCustStaging_ARCH",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_Upsert_Rep_Session_Log]",
+                    "storedProcedureParameters": {
+                        "jsonInput": {
+                            "value": {
+                                "value": "[\n   {\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineReturnValue.end_time}\"\n}\n]",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sp-ins_upd_rep_sess_log_0",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "sp-PostBatch_CheckForExceptions_PolicyCustStaging_ARCH",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_Upsert_Rep_Session_Log]",
+                    "storedProcedureParameters": {
+                        "jsonInput": {
+                            "value": {
+                                "value": "[\n   {\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyAddressStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyEmployeeStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyODSStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyPayCodeStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencyRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AssociateStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStg').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesReportingRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_SalesTerritoryStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterAgencyRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingRegionStage').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStg').output.pipelineReturnValue.end_time}\"\n},\n{\n   \"wkf_name\":\"@{pipeline().Pipeline}\",\n   \"session_name\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineName}\",\n   \"wf_run_id\":\"@{pipeline().RunId}\",\n   \"session_run_id\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineRunId}\",\n   \"process_start_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineReturnValue.start_time}\",\n   \"process_end_time\":\"@{activity('s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging').output.pipelineReturnValue.end_time}\"\n}\n]",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "description": "sp-ins_upd_rep_sess_log",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "variables": {
+            "Params": {
+                "type": "String"
+            }
+        }
+    }
+}

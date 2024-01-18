@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLM_LOG_NOTES",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLM_LOG_NOTES",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLM_LOG_NOTES_STAGE AS (\n\tSELECT CLM_LOG_NOTES_STAGE.CLM_LOG_NOTES_ID, CLM_LOG_NOTES_STAGE.CLAIM_NBR, CLM_LOG_NOTES_STAGE.NOTE_ID, CLM_LOG_NOTES_STAGE.CLIENT_ID, CLM_LOG_NOTES_STAGE.AUTHOR_USER_ID, CLM_LOG_NOTES_STAGE.AUTHOR_NAME, CLM_LOG_NOTES_STAGE.DELETED_USER_NAME, CLM_LOG_NOTES_STAGE.NOTE_TEXT, CLM_LOG_NOTES_STAGE.CREATE_DATE, CLM_LOG_NOTES_STAGE.DELETED_DATE, CLM_LOG_NOTES_STAGE.DELETED_USER_ID, CLM_LOG_NOTES_STAGE.VIEWABLE_FLAG, CLM_LOG_NOTES_STAGE.NOTIFY_UW, CLM_LOG_NOTES_STAGE.NOTE_TYPE, CLM_LOG_NOTES_STAGE.NOTIFY_SIU, CLM_LOG_NOTES_STAGE.NOTIFY_COLLECTION, CLM_LOG_NOTES_STAGE.EXTRACT_DATE, CLM_LOG_NOTES_STAGE.AS_OF_DATE, CLM_LOG_NOTES_STAGE.RECORD_COUNT, CLM_LOG_NOTES_STAGE.SOURCE_SYSTEM_ID \r\n\tFROM\r\n\t CLM_LOG_NOTES_STAGE\r\n\tWHERE\r\n\tCLM_LOG_NOTES_STAGE.CREATE_DATE >= '@{pipeline().parameters.SELECTION_START_TS}'\r\n\tOR\r\n\tCLM_LOG_NOTES_STAGE.DELETED_DATE >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_CLM_LOG_NOTES_STAGE AS (\n\tSELECT\n\tCLM_LOG_NOTES_ID,\n\tCLAIM_NBR,\n\tNOTE_ID,\n\tCLIENT_ID,\n\tAUTHOR_USER_ID,\n\tAUTHOR_NAME,\n\tDELETED_USER_NAME,\n\tNOTE_TEXT,\n\tCREATE_DATE,\n\tDELETED_DATE,\n\tDELETED_USER_ID,\n\tVIEWABLE_FLAG,\n\tNOTIFY_UW,\n\tNOTE_TYPE,\n\tNOTIFY_SIU,\n\tNOTIFY_COLLECTION,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_CLM_LOG_NOTES_STAGE\n),\nARCH_CLM_LOG_NOTES_STAGE AS (\n\tINSERT INTO ARCH_CLM_LOG_NOTES_STAGE\n\t(clm_log_notes_id, claim_nbr, note_id, client_id, author_user_id, author_name, deleted_user_name, note_text, create_date, deleted_date, deleted_user_id, viewable_flag, notify_uw, note_type, notify_siu, notify_collection, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCLM_LOG_NOTES_ID AS CLM_LOG_NOTES_ID, \n\tCLAIM_NBR AS CLAIM_NBR, \n\tNOTE_ID AS NOTE_ID, \n\tCLIENT_ID AS CLIENT_ID, \n\tAUTHOR_USER_ID AS AUTHOR_USER_ID, \n\tAUTHOR_NAME AS AUTHOR_NAME, \n\tDELETED_USER_NAME AS DELETED_USER_NAME, \n\tNOTE_TEXT AS NOTE_TEXT, \n\tCREATE_DATE AS CREATE_DATE, \n\tDELETED_DATE AS DELETED_DATE, \n\tDELETED_USER_ID AS DELETED_USER_ID, \n\tVIEWABLE_FLAG AS VIEWABLE_FLAG, \n\tNOTIFY_UW AS NOTIFY_UW, \n\tNOTE_TYPE AS NOTE_TYPE, \n\tNOTIFY_SIU AS NOTIFY_SIU, \n\tNOTIFY_COLLECTION AS NOTIFY_COLLECTION, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_CLM_LOG_NOTES_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

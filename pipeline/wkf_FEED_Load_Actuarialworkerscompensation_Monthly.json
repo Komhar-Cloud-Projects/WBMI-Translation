@@ -1,0 +1,133 @@
+{
+    "name": "wkf_FEED_Load_Actuarialworkerscompensation_Monthly",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_FEED_Load_ActuarialworkerscompensationDividend",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_FEED_Load_ActuarialworkerscompensationDividend"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_FEED_Load_ActuarialWorkersCompensationPremium_Pr_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_FEED_Load_ActuarialworkerscompensationDividend",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_FEED_Load_ActuarialWorkersCompensationPremium_Premium"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_FEED_Load_ActuarialWorkersCompensationPremium_Premium",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_FEED_Load_ActuarialWorkersCompensationPremium_Ea_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_FEED_Load_ActuarialWorkersCompensationPremium_Pr_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_FEED_Load_ActuarialWorkersCompensationPremium_EarnedPremium"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_FEED_Load_ActuarialWorkersCompensationPremium_EarnedPremium",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_FEED_Load_ActuarialWorkersCompensationPremium_Pa_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_FEED_Load_ActuarialWorkersCompensationPremium_Ea_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_FEED_Load_ActuarialWorkersCompensationPremium_PassThrough"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_FEED_Load_ActuarialWorkersCompensationPremium_PassThrough",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_FEED_Load_ActuarialworkerscompensationLoss",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_FEED_Load_ActuarialWorkersCompensationPremium_Pa_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_FEED_Load_ActuarialworkerscompensationLoss"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "variables": {}
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCAStateStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCCAStateStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCAStateStaging AS (\n\tSELECT\n\t\tDCCAStateStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tLineId,\n\t\tCA_StateId,\n\t\tSessionId,\n\t\tId,\n\t\tDescription,\n\t\tDriveOtherCarCoverage,\n\t\tEquipmentExcessiveCoverage,\n\t\tFleetReductionSelection,\n\t\tHiredLiability,\n\t\tHiredLiabilityTrickingMotorCarrier,\n\t\tHiredPhysicalDamage,\n\t\tHiredPhysicalDamageWithDriver,\n\t\tLineCoverageState,\n\t\tMotorJunkLicenseCoverage,\n\t\tNumberFamilyMembers,\n\t\tOfficialInspectionStation,\n\t\tRentalVehicleLiabilityCoverage,\n\t\tSubjectToNoFault,\n\t\tTXPremiumDiscount,\n\t\tVehiclesMovedUnderWritOfAttachmentCoverage,\n\t\tDeleted,\n\t\tNumberOfEmployees\n\tFROM DCCAStateStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCCAStateStagingId,\n\tExtractDate,\n\tSourceSystemId,\n\tLineId,\n\tCA_StateId,\n\tSessionId,\n\tId,\n\tDescription,\n\tDriveOtherCarCoverage,\n\tEquipmentExcessiveCoverage,\n\tFleetReductionSelection,\n\tHiredLiability,\n\tHiredLiabilityTrickingMotorCarrier,\n\tHiredPhysicalDamage,\n\tHiredPhysicalDamageWithDriver,\n\tLineCoverageState,\n\tMotorJunkLicenseCoverage,\n\tNumberFamilyMembers,\n\tOfficialInspectionStation,\n\tRentalVehicleLiabilityCoverage,\n\tSubjectToNoFault,\n\tTXPremiumDiscount,\n\tVehiclesMovedUnderWritOfAttachmentCoverage,\n\tDeleted,\n\t-- *INF*: DECODE(Deleted, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    Deleted,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Deleted,\n\t-- *INF*: DECODE(DriveOtherCarCoverage, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    DriveOtherCarCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_DriveOtherCarCoverage,\n\t-- *INF*: DECODE(EquipmentExcessiveCoverage, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    EquipmentExcessiveCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_EquipmentExcessiveCoverage,\n\t-- *INF*: DECODE(FleetReductionSelection, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    FleetReductionSelection,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_FleetReductionSelection,\n\t-- *INF*: DECODE(HiredLiability, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    HiredLiability,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_HiredLiability,\n\t-- *INF*: DECODE(HiredLiabilityTrickingMotorCarrier, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    HiredLiabilityTrickingMotorCarrier,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_HiredLiabilityTrickingMotorCarrier,\n\t-- *INF*: DECODE(HiredPhysicalDamage, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    HiredPhysicalDamage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_HiredPhysicalDamage,\n\t-- *INF*: DECODE(HiredPhysicalDamageWithDriver, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    HiredPhysicalDamageWithDriver,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_HiredPhysicalDamageWithDriver,\n\t-- *INF*: DECODE(MotorJunkLicenseCoverage, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    MotorJunkLicenseCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_MotorJunkLicenseCoverage,\n\t-- *INF*: DECODE(OfficialInspectionStation, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    OfficialInspectionStation,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_OfficialInspectionStation,\n\t-- *INF*: DECODE(RentalVehicleLiabilityCoverage, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    RentalVehicleLiabilityCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_RentalVehicleLiabilityCoverage,\n\t-- *INF*: DECODE(SubjectToNoFault, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    SubjectToNoFault,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_SubjectToNoFault,\n\t-- *INF*: DECODE(TXPremiumDiscount, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    TXPremiumDiscount,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TXPremiumDiscount,\n\t-- *INF*: DECODE(VehiclesMovedUnderWritOfAttachmentCoverage, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    VehiclesMovedUnderWritOfAttachmentCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_VehiclesMovedUnderWritOfAttachmentCoverage,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tNumberOfEmployees\n\tFROM SQ_DCCAStateStaging\n),\nArchDCCAStateStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCAStateStaging\n\t(ExtractDate, SourceSystemId, AuditId, LineId, CA_StateId, SessionId, Id, Description, DriveOtherCarCoverage, EquipmentExcessiveCoverage, FleetReductionSelection, HiredLiability, HiredLiabilityTrickingMotorCarrier, HiredPhysicalDamage, HiredPhysicalDamageWithDriver, LineCoverageState, MotorJunkLicenseCoverage, NumberFamilyMembers, OfficialInspectionStation, RentalVehicleLiabilityCoverage, SubjectToNoFault, TXPremiumDiscount, VehiclesMovedUnderWritOfAttachmentCoverage, Deleted, NumberOfEmployees)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tLINEID, \n\tCA_STATEID, \n\tSESSIONID, \n\tID, \n\tDESCRIPTION, \n\to_DriveOtherCarCoverage AS DRIVEOTHERCARCOVERAGE, \n\to_EquipmentExcessiveCoverage AS EQUIPMENTEXCESSIVECOVERAGE, \n\to_FleetReductionSelection AS FLEETREDUCTIONSELECTION, \n\to_HiredLiability AS HIREDLIABILITY, \n\to_HiredLiabilityTrickingMotorCarrier AS HIREDLIABILITYTRICKINGMOTORCARRIER, \n\to_HiredPhysicalDamage AS HIREDPHYSICALDAMAGE, \n\to_HiredPhysicalDamageWithDriver AS HIREDPHYSICALDAMAGEWITHDRIVER, \n\tLINECOVERAGESTATE, \n\to_MotorJunkLicenseCoverage AS MOTORJUNKLICENSECOVERAGE, \n\tNUMBERFAMILYMEMBERS, \n\to_OfficialInspectionStation AS OFFICIALINSPECTIONSTATION, \n\to_RentalVehicleLiabilityCoverage AS RENTALVEHICLELIABILITYCOVERAGE, \n\to_SubjectToNoFault AS SUBJECTTONOFAULT, \n\to_TXPremiumDiscount AS TXPREMIUMDISCOUNT, \n\to_VehiclesMovedUnderWritOfAttachmentCoverage AS VEHICLESMOVEDUNDERWRITOFATTACHMENTCOVERAGE, \n\to_Deleted AS DELETED, \n\tNUMBEROFEMPLOYEES\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

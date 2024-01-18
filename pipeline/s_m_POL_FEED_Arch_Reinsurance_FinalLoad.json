@@ -1,0 +1,38 @@
+{
+    "name": "s_m_POL_FEED_Arch_Reinsurance_FinalLoad",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Arch_Reinsurance_FinalLoad",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SapiensReinsuranceDatesExtract AS (\n\tSELECT\n\t\tSOURCE_SEQ_NUM,\n\t\tDATE_CODE,\n\t\tDATE_VALUE,\n\t\tAuditId,\n\t\tCreatedDate,\n\t\tModifiedDate\n\tFROM SapiensReinsuranceDatesExtract\n),\nEXP_Dates AS (\n\tSELECT\n\tSOURCE_SEQ_NUM,\n\tDATE_CODE,\n\tDATE_VALUE,\n\tAuditId,\n\tCreatedDate,\n\tModifiedDate\n\tFROM SQ_SapiensReinsuranceDatesExtract\n),\nArchSapiensReinsuranceDatesExtract AS (\n\tINSERT INTO ArchSapiensReinsuranceDatesExtract\n\t(SOURCE_SEQ_NUM, DATE_CODE, DATE_VALUE, AuditId, CreatedDate, ModifiedDate)\n\tSELECT \n\tSOURCE_SEQ_NUM, \n\tDATE_CODE, \n\tDATE_VALUE, \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE\n\tFROM EXP_Dates\n),\nSQ_SapiensReinsurancePaymentsExtract AS (\n\tSELECT\n\t\tSOURCE_SEQ_NUM,\n\t\tACCOUNTING_ITEM,\n\t\tACP_SEQ_NUM,\n\t\tACP_TYPE,\n\t\tACP_FROM_DT,\n\t\tACP_TO_DT,\n\t\tACP_AMOUNT,\n\t\tQUEUE_NO,\n\t\tACP_TOTAL_AMOUNT,\n\t\tACP_YEAR_AMOUNT,\n\t\tAuditId,\n\t\tCreatedDate,\n\t\tModifiedDate,\n\t\tPAYMENT_ATTR\n\tFROM SapiensReinsurancePaymentsExtract\n),\nEXP_Payments AS (\n\tSELECT\n\tSOURCE_SEQ_NUM,\n\tACCOUNTING_ITEM,\n\tACP_SEQ_NUM,\n\tACP_TYPE,\n\tACP_FROM_DT,\n\tACP_TO_DT,\n\tACP_AMOUNT,\n\tQUEUE_NO,\n\tACP_TOTAL_AMOUNT,\n\tACP_YEAR_AMOUNT,\n\tAuditId,\n\tCreatedDate,\n\tModifiedDate,\n\tPAYMENT_ATTR\n\tFROM SQ_SapiensReinsurancePaymentsExtract\n),\nArchSapiensReinsurancePaymentsExtract AS (\n\tINSERT INTO ArchSapiensReinsurancePaymentsExtract\n\t(SOURCE_SEQ_NUM, ACCOUNTING_ITEM, ACP_SEQ_NUM, ACP_TYPE, ACP_FROM_DT, ACP_TO_DT, ACP_AMOUNT, QUEUE_NO, ACP_TOTAL_AMOUNT, ACP_YEAR_AMOUNT, AuditId, CreatedDate, ModifiedDate, PAYMENT_ATTR)\n\tSELECT \n\tSOURCE_SEQ_NUM, \n\tACCOUNTING_ITEM, \n\tACP_SEQ_NUM, \n\tACP_TYPE, \n\tACP_FROM_DT, \n\tACP_TO_DT, \n\tACP_AMOUNT, \n\tQUEUE_NO, \n\tACP_TOTAL_AMOUNT, \n\tACP_YEAR_AMOUNT, \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tPAYMENT_ATTR\n\tFROM EXP_Payments\n),\nSQ_SapiensReinsuranceHeaderExtract AS (\n\tSELECT\n\t\tSOURCE_SEQ_NUM,\n\t\tDATA_SOURCE,\n\t\tCOMPANY_CODE,\n\t\tPOLICY_NO,\n\t\tOBJECT_ID,\n\t\tENDORSEMENT_NO,\n\t\tTRAN_NO,\n\t\tDOCUMENT_TYPE,\n\t\tCLAIM_ID,\n\t\tSUB_CLAIM_ID,\n\t\tIS_BORDERAEU,\n\t\tBUSINESS_IND,\n\t\tEXCEPTION_IND,\n\t\tQUEUE_NO,\n\t\tBUSINESS_DEPRTMT,\n\t\tXOL_ALLOCATION,\n\t\tASSUMED_COMPANY,\n\t\tACCOUNTING_MONTH,\n\t\tSUBSYSTEM_ID,\n\t\tAuditId,\n\t\tCreatedDate,\n\t\tModifiedDate\n\tFROM SapiensReinsuranceHeaderExtract\n),\nEXP_Header AS (\n\tSELECT\n\tSOURCE_SEQ_NUM,\n\tDATA_SOURCE,\n\tCOMPANY_CODE,\n\tPOLICY_NO,\n\tOBJECT_ID,\n\tENDORSEMENT_NO,\n\tTRAN_NO,\n\tDOCUMENT_TYPE,\n\tCLAIM_ID,\n\tSUB_CLAIM_ID,\n\tIS_BORDERAEU,\n\tBUSINESS_IND,\n\tEXCEPTION_IND,\n\tQUEUE_NO,\n\tBUSINESS_DEPRTMT,\n\tXOL_ALLOCATION,\n\tASSUMED_COMPANY,\n\tACCOUNTING_MONTH,\n\tSUBSYSTEM_ID,\n\tAuditId,\n\tCreatedDate,\n\tModifiedDate\n\tFROM SQ_SapiensReinsuranceHeaderExtract\n),\nArchSapiensReinsuranceHeaderExtract AS (\n\tINSERT INTO ArchSapiensReinsuranceHeaderExtract\n\t(SOURCE_SEQ_NUM, DATA_SOURCE, COMPANY_CODE, POLICY_NO, OBJECT_ID, ENDORSEMENT_NO, TRAN_NO, DOCUMENT_TYPE, CLAIM_ID, SUB_CLAIM_ID, IS_BORDERAEU, BUSINESS_IND, EXCEPTION_IND, QUEUE_NO, BUSINESS_DEPRTMT, XOL_ALLOCATION, ASSUMED_COMPANY, ACCOUNTING_MONTH, SUBSYSTEM_ID, AuditId, CreatedDate, ModifiedDate)\n\tSELECT \n\tSOURCE_SEQ_NUM, \n\tDATA_SOURCE, \n\tCOMPANY_CODE, \n\tPOLICY_NO, \n\tOBJECT_ID, \n\tENDORSEMENT_NO, \n\tTRAN_NO, \n\tDOCUMENT_TYPE, \n\tCLAIM_ID, \n\tSUB_CLAIM_ID, \n\tIS_BORDERAEU, \n\tBUSINESS_IND, \n\tEXCEPTION_IND, \n\tQUEUE_NO, \n\tBUSINESS_DEPRTMT, \n\tXOL_ALLOCATION, \n\tASSUMED_COMPANY, \n\tACCOUNTING_MONTH, \n\tSUBSYSTEM_ID, \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE\n\tFROM EXP_Header\n),\nSQ_SapiensReinsuranceAttributesExtract AS (\n\tSELECT\n\t\tSOURCE_SEQ_NUM,\n\t\tATTR_CODE,\n\t\tATTR_VAL,\n\t\tOBJ_VAL_SEQ_NO,\n\t\tAuditId,\n\t\tCreatedDate,\n\t\tModifiedDate\n\tFROM SapiensReinsuranceAttributesExtract\n),\nEXP_Attributes AS (\n\tSELECT\n\tSOURCE_SEQ_NUM,\n\tATTR_CODE,\n\tATTR_VAL,\n\tOBJ_VAL_SEQ_NO,\n\tAuditId,\n\tCreatedDate,\n\tModifiedDate\n\tFROM SQ_SapiensReinsuranceAttributesExtract\n),\nArchSapiensReinsuranceAttributesExtract AS (\n\tINSERT INTO ArchSapiensReinsuranceAttributesExtract\n\t(SOURCE_SEQ_NUM, ATTR_CODE, ATTR_VAL, OBJ_VAL_SEQ_NO, AuditId, CreatedDate, ModifiedDate)\n\tSELECT \n\tSOURCE_SEQ_NUM, \n\tATTR_CODE, \n\tATTR_VAL, \n\tOBJ_VAL_SEQ_NO, \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE\n\tFROM EXP_Attributes\n),\nSQ_SapiensReinsuranceAccountingItemsExtract AS (\n\tSELECT\n\t\tSOURCE_SEQ_NUM,\n\t\tACCOUNTING_ITEM,\n\t\tACOUNTING_AMOUNT,\n\t\tCURRENCY_CODE,\n\t\tAuditId,\n\t\tCreatedDate,\n\t\tModifiedDate\n\tFROM SapiensReinsuranceAccountingItemsExtract\n),\nEXP_AccountingItem AS (\n\tSELECT\n\tSOURCE_SEQ_NUM,\n\tACCOUNTING_ITEM,\n\tACOUNTING_AMOUNT,\n\tCURRENCY_CODE,\n\tAuditId,\n\tCreatedDate,\n\tModifiedDate\n\tFROM SQ_SapiensReinsuranceAccountingItemsExtract\n),\nArchSapiensReinsuranceAccountingItemsExtract AS (\n\tINSERT INTO ArchSapiensReinsuranceAccountingItemsExtract\n\t(SOURCE_SEQ_NUM, ACCOUNTING_ITEM, ACOUNTING_AMOUNT, CURRENCY_CODE, AuditId, CreatedDate, ModifiedDate)\n\tSELECT \n\tSOURCE_SEQ_NUM, \n\tACCOUNTING_ITEM, \n\tACOUNTING_AMOUNT, \n\tCURRENCY_CODE, \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE\n\tFROM EXP_AccountingItem\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

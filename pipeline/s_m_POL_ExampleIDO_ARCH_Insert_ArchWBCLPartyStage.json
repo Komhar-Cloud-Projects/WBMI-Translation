@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCLPartyStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCLPartyStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCLPartyStaging AS (\n\tSELECT\n\t\tWBCLPartyStageId AS WBCLPartyStageID,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tWB_PartyId,\n\t\tWB_CL_PartyId,\n\t\tSessionId,\n\t\tCounty,\n\t\tAttentionLine,\n\t\tAttentionLineInput,\n\t\tClassDescriptionVersion,\n\t\tLastVerified,\n\t\tConfidence,\n\t\tAddressInVerifyState,\n\t\tGeocodeMatchCode,\n\t\tGeocodeStatus,\n\t\tGeocodeStatusDisplay,\n\t\tIsVerified,\n\t\tLatitude,\n\t\tLongitude,\n\t\tBusinessOrIndividual\n\tFROM WBCLPartyStaging\n),\nEXPTRANS AS (\n\tSELECT\n\tWBCLPartyStageID,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\tWB_PartyId,\n\tWB_CL_PartyId,\n\tSessionId,\n\tCounty,\n\tAttentionLine,\n\tAttentionLineInput,\n\tClassDescriptionVersion,\n\tLastVerified,\n\tConfidence,\n\tAddressInVerifyState,\n\t-- *INF*: DECODE(AddressInVerifyState, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    AddressInVerifyState,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_AddressInVerifyState,\n\tGeocodeMatchCode,\n\tGeocodeStatus,\n\tGeocodeStatusDisplay,\n\tIsVerified,\n\t-- *INF*: DECODE(IsVerified, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    IsVerified,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_IsVerified,\n\tLatitude,\n\tLongitude,\n\tBusinessOrIndividual,\n\t-- *INF*: DECODE(BusinessOrIndividual, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    BusinessOrIndividual,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_BusinessOrIndividual\n\tFROM SQ_WBCLPartyStaging\n),\nArchWBCLPartyStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCLPartyStage\n\t(ExtractDate, SourceSystemId, AuditId, WBCLPartyStageId, WB_PartyId, WB_CL_PartyId, SessionId, County, AttentionLine, AttentionLineInput, BusinessOrIndividual, ClassDescriptionVersion, LastVerified, Confidence, AddressInVerifyState, GeocodeMatchCode, GeocodeStatus, GeocodeStatusDisplay, IsVerified, Latitude, Longitude)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditID AS AUDITID, \n\tWBCLPartyStageID AS WBCLPARTYSTAGEID, \n\tWB_PARTYID, \n\tWB_CL_PARTYID, \n\tSESSIONID, \n\tCOUNTY, \n\tATTENTIONLINE, \n\tATTENTIONLINEINPUT, \n\to_BusinessOrIndividual AS BUSINESSORINDIVIDUAL, \n\tCLASSDESCRIPTIONVERSION, \n\tLASTVERIFIED, \n\tCONFIDENCE, \n\to_AddressInVerifyState AS ADDRESSINVERIFYSTATE, \n\tGEOCODEMATCHCODE, \n\tGEOCODESTATUS, \n\tGEOCODESTATUSDISPLAY, \n\to_IsVerified AS ISVERIFIED, \n\tLATITUDE, \n\tLONGITUDE\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

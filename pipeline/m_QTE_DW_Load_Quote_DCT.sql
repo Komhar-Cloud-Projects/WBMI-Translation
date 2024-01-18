@@ -138,26 +138,16 @@ EXP_GetValues AS (
 	EstimatedQuotePremium AS i_EstimatedQuotePremium,
 	PolicyIssueCodeDesc AS i_PolicyIssueCodeDesc,
 	-- *INF*: IIF (ISNULL(i_PolicyIssueCodeDesc),'N',SUBSTR(i_PolicyIssueCodeDesc,1,1))
-	IFF(i_PolicyIssueCodeDesc IS NULL,
-		'N',
-		SUBSTR(i_PolicyIssueCodeDesc, 1, 1
-		)
-	) AS o_QuoteIssueCode,
+	IFF(i_PolicyIssueCodeDesc IS NULL, 'N', SUBSTR(i_PolicyIssueCodeDesc, 1, 1)) AS o_QuoteIssueCode,
 	PolicyIssueCodeOverride,
 	-- *INF*: IIF(NOT ISNULL(i_AgencyCode),LTRIM(RTRIM(i_AgencyCode)),'N/A')
-	IFF(i_AgencyCode IS NOT NULL,
-		LTRIM(RTRIM(i_AgencyCode
-			)
-		),
-		'N/A'
-	) AS v_AgencyCode,
+	IFF(i_AgencyCode IS NOT NULL, LTRIM(RTRIM(i_AgencyCode)), 'N/A') AS v_AgencyCode,
 	-- *INF*: :LKP.LKP_V2_AGENCY(v_AgencyCode)
 	LKP_V2_AGENCY_v_AgencyCode.AgencyAKID AS v_AgencyAKId,
 	-- *INF*: substr(in_ProducerName,11)
 	-- 
 	-- --REPLACESTR(0,UPPER(LTRIM(RTRIM(i_QuoteActionUserName))),'WBMI\','WBCONNECT\','WBENP\','')
-	substr(in_ProducerName, 11
-	) AS v_ProducerName,
+	substr(in_ProducerName, 11) AS v_ProducerName,
 	-- *INF*: :LKP.LKP_AGENCYEMPLOYEE(v_ProducerName, v_AgencyAKId)
 	LKP_AGENCYEMPLOYEE_v_ProducerName_v_AgencyAKId.AgencyEmployeeAKID AS v_AgencyEmployeeAKId,
 	-- *INF*: :LKP.LKP_V2_AGENCY('99999')
@@ -172,201 +162,140 @@ EXP_GetValues AS (
 	--  NOT ISNULL(v_AgencyEmployeeAKId_99999),
 	-- v_AgencyEmployeeAKId_99999,
 	-- -1)
-	DECODE(TRUE,
-		v_AgencyEmployeeAKId IS NOT NULL, v_AgencyEmployeeAKId,
-		v_AgencyEmployeeAKId_99999 IS NOT NULL, v_AgencyEmployeeAKId_99999,
-		- 1
+	DECODE(
+	    TRUE,
+	    v_AgencyEmployeeAKId IS NOT NULL, v_AgencyEmployeeAKId,
+	    v_AgencyEmployeeAKId_99999 IS NOT NULL, v_AgencyEmployeeAKId_99999,
+	    - 1
 	) AS AgencyEmployeeAKId,
 	i_QuoteActionTimeStamp AS StatusDate,
 	-- *INF*: IIF(ISNULL(i_RejectedReason) OR IS_SPACES(i_RejectedReason) OR LENGTH(i_RejectedReason)=0,'-1',LTRIM(RTRIM(i_RejectedReason)))
-	IFF(i_RejectedReason IS NULL 
-		OR LENGTH(i_RejectedReason)>0 AND TRIM(i_RejectedReason)='' 
-		OR LENGTH(i_RejectedReason
-		) = 0,
-		'-1',
-		LTRIM(RTRIM(i_RejectedReason
-			)
-		)
+	IFF(
+	    i_RejectedReason IS NULL
+	    or LENGTH(i_RejectedReason)>0
+	    and TRIM(i_RejectedReason)=''
+	    or LENGTH(i_RejectedReason) = 0,
+	    '-1',
+	    LTRIM(RTRIM(i_RejectedReason))
 	) AS ReasonCode,
 	-- *INF*: IIF(ISNULL(i_RejectedReasonDetails) OR IS_SPACES(i_RejectedReasonDetails) OR LENGTH(i_RejectedReasonDetails)=0,'N/A',LTRIM(RTRIM(i_RejectedReasonDetails)))
-	IFF(i_RejectedReasonDetails IS NULL 
-		OR LENGTH(i_RejectedReasonDetails)>0 AND TRIM(i_RejectedReasonDetails)='' 
-		OR LENGTH(i_RejectedReasonDetails
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_RejectedReasonDetails
-			)
-		)
+	IFF(
+	    i_RejectedReasonDetails IS NULL
+	    or LENGTH(i_RejectedReasonDetails)>0
+	    and TRIM(i_RejectedReasonDetails)=''
+	    or LENGTH(i_RejectedReasonDetails) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_RejectedReasonDetails))
 	) AS o_OtherReasonComment,
 	-- *INF*: IIF(NOT ISNULL(i_PolicyEffectiveDate),i_PolicyEffectiveDate,TO_DATE('18000101','YYYYMMDD'))
-	IFF(i_PolicyEffectiveDate IS NOT NULL,
-		i_PolicyEffectiveDate,
-		TO_DATE('18000101', 'YYYYMMDD'
-		)
+	IFF(
+	    i_PolicyEffectiveDate IS NOT NULL, i_PolicyEffectiveDate,
+	    TO_TIMESTAMP('18000101', 'YYYYMMDD')
 	) AS QuoteEffectiveDate,
 	-- *INF*: IIF(NOT ISNULL(i_PolicyExpirationDate),i_PolicyExpirationDate,TO_DATE('18000101','YYYYMMDD'))
-	IFF(i_PolicyExpirationDate IS NOT NULL,
-		i_PolicyExpirationDate,
-		TO_DATE('18000101', 'YYYYMMDD'
-		)
+	IFF(
+	    i_PolicyExpirationDate IS NOT NULL, i_PolicyExpirationDate,
+	    TO_TIMESTAMP('18000101', 'YYYYMMDD')
 	) AS QuoteExpirationDate,
 	-- *INF*: IIF(ISNULL(i_QuoteKey) OR IS_SPACES(i_QuoteKey) OR LENGTH(i_QuoteKey)=0,'N/A',LTRIM(RTRIM(i_QuoteKey)))
-	IFF(i_QuoteKey IS NULL 
-		OR LENGTH(i_QuoteKey)>0 AND TRIM(i_QuoteKey)='' 
-		OR LENGTH(i_QuoteKey
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_QuoteKey
-			)
-		)
+	IFF(
+	    i_QuoteKey IS NULL OR LENGTH(i_QuoteKey)>0 AND TRIM(i_QuoteKey)='' OR LENGTH(i_QuoteKey) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_QuoteKey))
 	) AS QuoteKey,
 	-- *INF*: IIF(ISNULL(i_PolicyNumber) OR IS_SPACES(i_PolicyNumber) OR LENGTH(i_PolicyNumber)=0,'N/A',LTRIM(RTRIM(i_PolicyNumber)))
-	IFF(i_PolicyNumber IS NULL 
-		OR LENGTH(i_PolicyNumber)>0 AND TRIM(i_PolicyNumber)='' 
-		OR LENGTH(i_PolicyNumber
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_PolicyNumber
-			)
-		)
+	IFF(
+	    i_PolicyNumber IS NULL
+	    or LENGTH(i_PolicyNumber)>0
+	    and TRIM(i_PolicyNumber)=''
+	    or LENGTH(i_PolicyNumber) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_PolicyNumber))
 	) AS QuoteNumber,
 	-- *INF*: IIF(ISNULL(i_PolicyVersion),'00',LPAD(TO_CHAR(i_PolicyVersion),2,'0'))
-	IFF(i_PolicyVersion IS NULL,
-		'00',
-		LPAD(TO_CHAR(i_PolicyVersion
-			), 2, '0'
-		)
-	) AS QuoteVersion,
+	IFF(i_PolicyVersion IS NULL, '00', LPAD(TO_CHAR(i_PolicyVersion), 2, '0')) AS QuoteVersion,
 	-- *INF*: IIF(ISNULL(i_PolicyProgram) OR IS_SPACES(i_PolicyProgram) OR LENGTH(i_PolicyProgram)=0,'N/A',LTRIM(RTRIM(i_PolicyProgram)))
-	IFF(i_PolicyProgram IS NULL 
-		OR LENGTH(i_PolicyProgram)>0 AND TRIM(i_PolicyProgram)='' 
-		OR LENGTH(i_PolicyProgram
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_PolicyProgram
-			)
-		)
+	IFF(
+	    i_PolicyProgram IS NULL
+	    or LENGTH(i_PolicyProgram)>0
+	    and TRIM(i_PolicyProgram)=''
+	    or LENGTH(i_PolicyProgram) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_PolicyProgram))
 	) AS o_ProgramCode,
 	-- *INF*: IIF(ISNULL(i_BCCCode) OR IS_SPACES(i_BCCCode) OR LENGTH(i_BCCCode)=0,'N/A',IIF(LENGTH(i_BCCCode)<5,LPAD(LTRIM(RTRIM(i_BCCCode)),5,'0'),LTRIM(RTRIM(i_BCCCode))))
-	IFF(i_BCCCode IS NULL 
-		OR LENGTH(i_BCCCode)>0 AND TRIM(i_BCCCode)='' 
-		OR LENGTH(i_BCCCode
-		) = 0,
-		'N/A',
-		IFF(LENGTH(i_BCCCode
-			) < 5,
-			LPAD(LTRIM(RTRIM(i_BCCCode
-					)
-				), 5, '0'
-			),
-			LTRIM(RTRIM(i_BCCCode
-				)
-			)
-		)
+	IFF(
+	    i_BCCCode IS NULL OR LENGTH(i_BCCCode)>0 AND TRIM(i_BCCCode)='' OR LENGTH(i_BCCCode) = 0,
+	    'N/A',
+	    IFF(
+	        LENGTH(i_BCCCode) < 5, LPAD(LTRIM(RTRIM(i_BCCCode)), 5, '0'),
+	        LTRIM(RTRIM(i_BCCCode))
+	    )
 	) AS BusinessClassCode,
 	-- *INF*: IIF(NOT ISNULL(i_QuoteActionUserClassification),i_QuoteActionUserClassification,'N/A')
-	IFF(i_QuoteActionUserClassification IS NOT NULL,
-		i_QuoteActionUserClassification,
-		'N/A'
-	) AS InternalExternalIndicator,
+	IFF(i_QuoteActionUserClassification IS NOT NULL, i_QuoteActionUserClassification, 'N/A') AS InternalExternalIndicator,
 	-- *INF*: IIF(ISNULL(i_PrimaryRatingState) OR IS_SPACES(i_PrimaryRatingState) OR LENGTH(i_PrimaryRatingState)=0,'N/A',LTRIM(RTRIM(i_PrimaryRatingState)))
-	IFF(i_PrimaryRatingState IS NULL 
-		OR LENGTH(i_PrimaryRatingState)>0 AND TRIM(i_PrimaryRatingState)='' 
-		OR LENGTH(i_PrimaryRatingState
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_PrimaryRatingState
-			)
-		)
+	IFF(
+	    i_PrimaryRatingState IS NULL
+	    or LENGTH(i_PrimaryRatingState)>0
+	    and TRIM(i_PrimaryRatingState)=''
+	    or LENGTH(i_PrimaryRatingState) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_PrimaryRatingState))
 	) AS RiskState,
 	-- *INF*: IIF(ISNULL(i_Division) OR IS_SPACES(i_Division) OR LENGTH(i_Division)=0, 'N/A', LTRIM(RTRIM(i_Division)))
-	IFF(i_Division IS NULL 
-		OR LENGTH(i_Division)>0 AND TRIM(i_Division)='' 
-		OR LENGTH(i_Division
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_Division
-			)
-		)
+	IFF(
+	    i_Division IS NULL OR LENGTH(i_Division)>0 AND TRIM(i_Division)='' OR LENGTH(i_Division) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_Division))
 	) AS o_Division,
 	-- *INF*: IIF(ISNULL(i_WBProduct) OR IS_SPACES(i_WBProduct) OR LENGTH(i_WBProduct)=0, 'N/A', LTRIM(RTRIM(i_WBProduct)))
-	IFF(i_WBProduct IS NULL 
-		OR LENGTH(i_WBProduct)>0 AND TRIM(i_WBProduct)='' 
-		OR LENGTH(i_WBProduct
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_WBProduct
-			)
-		)
+	IFF(
+	    i_WBProduct IS NULL
+	    or LENGTH(i_WBProduct)>0
+	    and TRIM(i_WBProduct)=''
+	    or LENGTH(i_WBProduct) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_WBProduct))
 	) AS o_WBProduct,
 	-- *INF*: IIF(ISNULL(i_WBProductType) OR IS_SPACES(i_WBProductType) OR LENGTH(i_WBProductType)=0, 'N/A', LTRIM(RTRIM(i_WBProductType)))
-	IFF(i_WBProductType IS NULL 
-		OR LENGTH(i_WBProductType)>0 AND TRIM(i_WBProductType)='' 
-		OR LENGTH(i_WBProductType
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_WBProductType
-			)
-		)
+	IFF(
+	    i_WBProductType IS NULL
+	    or LENGTH(i_WBProductType)>0
+	    and TRIM(i_WBProductType)=''
+	    or LENGTH(i_WBProductType) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_WBProductType))
 	) AS o_WBProductType,
 	-- *INF*: IIF(ISNULL(i_LineType) OR IS_SPACES(i_LineType) OR LENGTH(i_LineType)=0, 'N/A', LTRIM(RTRIM(i_LineType)))
-	IFF(i_LineType IS NULL 
-		OR LENGTH(i_LineType)>0 AND TRIM(i_LineType)='' 
-		OR LENGTH(i_LineType
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_LineType
-			)
-		)
+	IFF(
+	    i_LineType IS NULL OR LENGTH(i_LineType)>0 AND TRIM(i_LineType)='' OR LENGTH(i_LineType) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_LineType))
 	) AS o_LineType,
 	-- *INF*: IIF(NOT ISNULL(v_AgencyAKId),v_AgencyAKId,v_AgencyAKID_99999)
-	IFF(v_AgencyAKId IS NOT NULL,
-		v_AgencyAKId,
-		v_AgencyAKID_99999
-	) AS AgencyAKId,
+	IFF(v_AgencyAKId IS NOT NULL, v_AgencyAKId, v_AgencyAKID_99999) AS AgencyAKId,
 	-- *INF*: IIF (ISNULL(i_EstimatedQuotePremium),0,i_EstimatedQuotePremium)
-	IFF(i_EstimatedQuotePremium IS NULL,
-		0,
-		i_EstimatedQuotePremium
-	) AS EstimatedQuotePremium,
+	IFF(i_EstimatedQuotePremium IS NULL, 0, i_EstimatedQuotePremium) AS EstimatedQuotePremium,
 	TransactionDate,
 	-- *INF*: IIF (ISNULL(TransactionDate),i_QuoteActionTimeStamp,TransactionDate)
-	IFF(TransactionDate IS NULL,
-		i_QuoteActionTimeStamp,
-		TransactionDate
-	) AS v_TransactionDate,
+	IFF(TransactionDate IS NULL, i_QuoteActionTimeStamp, TransactionDate) AS v_TransactionDate,
 	-- *INF*: IIF (ISNULL(i_PolicyIssueCodeDesc),NULL,v_TransactionDate)
-	IFF(i_PolicyIssueCodeDesc IS NULL,
-		NULL,
-		v_TransactionDate
-	) AS o_TransactionDate,
+	IFF(i_PolicyIssueCodeDesc IS NULL, NULL, v_TransactionDate) AS o_TransactionDate,
 	ProducerName AS in_ProducerName,
 	IssuedUWID,
 	-- *INF*: IIF(ISNULL(IssuedUWID) OR IssuedUWID= '0','N/A',IssuedUWID)
-	IFF(IssuedUWID IS NULL 
-		OR IssuedUWID = '0',
-		'N/A',
-		IssuedUWID
-	) AS o_IssuedUWID,
+	IFF(IssuedUWID IS NULL OR IssuedUWID = '0', 'N/A', IssuedUWID) AS o_IssuedUWID,
 	IssuedUnderwriter,
 	-- *INF*: IIF(ISNULL(IssuedUnderwriter),'N/A',IssuedUnderwriter)
-	IFF(IssuedUnderwriter IS NULL,
-		'N/A',
-		IssuedUnderwriter
-	) AS o_IssuedUnderwriter,
+	IFF(IssuedUnderwriter IS NULL, 'N/A', IssuedUnderwriter) AS o_IssuedUnderwriter,
 	ExternalQuoteSource AS i_ExternalQuoteSource,
 	TurnstileGenerated AS i_TurnstileGenerated,
 	PenguinTechGenerated AS i_PenguinTechGenerated,
 	-- *INF*: IIF(ISNULL(i_TurnstileGenerated),'F',i_TurnstileGenerated)
-	IFF(i_TurnstileGenerated IS NULL,
-		'F',
-		i_TurnstileGenerated
-	) AS v_TurnstileGenerated,
+	IFF(i_TurnstileGenerated IS NULL, 'F', i_TurnstileGenerated) AS v_TurnstileGenerated,
 	-- *INF*: IIF(ISNULL(i_PenguinTechGenerated),'F',i_PenguinTechGenerated)
-	IFF(i_PenguinTechGenerated IS NULL,
-		'F',
-		i_PenguinTechGenerated
-	) AS v_PenguinTechGenerated,
+	IFF(i_PenguinTechGenerated IS NULL, 'F', i_PenguinTechGenerated) AS v_PenguinTechGenerated,
 	-- *INF*: DECODE(TRUE, 
 	-- ISNULL(i_ExternalQuoteSource) AND v_TurnstileGenerated='F' AND v_PenguinTechGenerated='F', 'DCT',
 	-- ISNULL(i_ExternalQuoteSource) AND v_TurnstileGenerated='T' AND v_PenguinTechGenerated='F', 'Turnstile',
@@ -374,17 +303,12 @@ EXP_GetValues AS (
 	-- i_ExternalQuoteSource)
 	-- 
 	-- --REG_REPLACE( i_ExternalQuoteSource, '\s+', ''))
-	DECODE(TRUE,
-		i_ExternalQuoteSource IS NULL 
-		AND v_TurnstileGenerated = 'F' 
-		AND v_PenguinTechGenerated = 'F', 'DCT',
-		i_ExternalQuoteSource IS NULL 
-		AND v_TurnstileGenerated = 'T' 
-		AND v_PenguinTechGenerated = 'F', 'Turnstile',
-		i_ExternalQuoteSource IS NULL 
-		AND v_TurnstileGenerated = 'F' 
-		AND v_PenguinTechGenerated = 'T', 'AgentPortal',
-		i_ExternalQuoteSource
+	DECODE(
+	    TRUE,
+	    i_ExternalQuoteSource IS NULL AND v_TurnstileGenerated = 'F' AND v_PenguinTechGenerated = 'F', 'DCT',
+	    i_ExternalQuoteSource IS NULL AND v_TurnstileGenerated = 'T' AND v_PenguinTechGenerated = 'F', 'Turnstile',
+	    i_ExternalQuoteSource IS NULL AND v_TurnstileGenerated = 'F' AND v_PenguinTechGenerated = 'T', 'AgentPortal',
+	    i_ExternalQuoteSource
 	) AS v_QuoteChannel,
 	v_QuoteChannel AS o_QuoteChannel,
 	LCSurveyOrderedIndicator,
@@ -403,44 +327,37 @@ EXP_GetValues AS (
 	-- 
 	-- 
 	-- 
-	Decode(true,
-		v_QuoteChannel = 'DCT', 'Internal',
-		v_QuoteChannel = 'Turnstile', 'Internal',
-		v_QuoteChannel = 'UploadAgentPortal', 'Internal',
-		v_QuoteChannel = 'UploadUWPortal', 'Internal',
-		v_QuoteChannel = 'DAIS', 'External',
-		SUBSTR(REGEXP_REPLACE(v_QuoteChannel,chr(32
-			),chr(45
-			),''), 0, 11
-		) = 'AgentPortal', 'External',
-		SUBSTR(REGEXP_REPLACE(v_QuoteChannel,chr(32
-			),chr(45
-			),''), 0, 13
-		) = '3rdPartyRater', 'External',
-		'N/A'
+	Decode(
+	    true,
+	    v_QuoteChannel = 'DCT', 'Internal',
+	    v_QuoteChannel = 'Turnstile', 'Internal',
+	    v_QuoteChannel = 'UploadAgentPortal', 'Internal',
+	    v_QuoteChannel = 'UploadUWPortal', 'Internal',
+	    v_QuoteChannel = 'DAIS', 'External',
+	    SUBSTR(REGEXP_REPLACE(v_QuoteChannel,chr(32),chr(45),''), 0, 11) = 'AgentPortal', 'External',
+	    SUBSTR(REGEXP_REPLACE(v_QuoteChannel,chr(32),chr(45),''), 0, 13) = '3rdPartyRater', 'External',
+	    'N/A'
 	) AS v_QuoteChannelOrigin,
 	v_QuoteChannelOrigin AS o_QuoteChannelOrigin,
 	ExpiredReason AS i_ExpiredReason,
 	-- *INF*: IIF(ISNULL(i_ExpiredReason) OR IS_SPACES(i_ExpiredReason) OR LENGTH(i_ExpiredReason)=0,'-1',LTRIM(RTRIM(i_ExpiredReason)))
-	IFF(i_ExpiredReason IS NULL 
-		OR LENGTH(i_ExpiredReason)>0 AND TRIM(i_ExpiredReason)='' 
-		OR LENGTH(i_ExpiredReason
-		) = 0,
-		'-1',
-		LTRIM(RTRIM(i_ExpiredReason
-			)
-		)
+	IFF(
+	    i_ExpiredReason IS NULL
+	    or LENGTH(i_ExpiredReason)>0
+	    and TRIM(i_ExpiredReason)=''
+	    or LENGTH(i_ExpiredReason) = 0,
+	    '-1',
+	    LTRIM(RTRIM(i_ExpiredReason))
 	) AS QuoteReasonClosedCode,
 	ExpiredReasonDetails AS i_ExpiredReasonDetails,
 	-- *INF*: IIF(ISNULL(i_ExpiredReasonDetails) OR IS_SPACES(i_ExpiredReasonDetails) OR LENGTH(i_ExpiredReasonDetails)=0,'N/A',LTRIM(RTRIM(i_ExpiredReasonDetails)))
-	IFF(i_ExpiredReasonDetails IS NULL 
-		OR LENGTH(i_ExpiredReasonDetails)>0 AND TRIM(i_ExpiredReasonDetails)='' 
-		OR LENGTH(i_ExpiredReasonDetails
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_ExpiredReasonDetails
-			)
-		)
+	IFF(
+	    i_ExpiredReasonDetails IS NULL
+	    or LENGTH(i_ExpiredReasonDetails)>0
+	    and TRIM(i_ExpiredReasonDetails)=''
+	    or LENGTH(i_ExpiredReasonDetails) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_ExpiredReasonDetails))
 	) AS QuoteReasonClosedComments,
 	ServCenterSupportCode AS i_ServCenterSupportCode,
 	RolloverPolicyIndicator AS i_RolloverPolicyIndicator,
@@ -451,45 +368,35 @@ EXP_GetValues AS (
 	--    In(ltrim(rtrim(i_ServCenterSupportCode)),'1'),'Y',
 	--       'N/A')
 	-- 
-	Decode(True,
-		ltrim(rtrim(i_ServCenterSupportCode
-			)
-		) IN ('0'), 'N',
-		ltrim(rtrim(i_ServCenterSupportCode
-			)
-		) IN ('1'), 'Y',
-		'N/A'
+	Decode(
+	    True,
+	    ltrim(rtrim(i_ServCenterSupportCode)) IN ('0'), 'N',
+	    ltrim(rtrim(i_ServCenterSupportCode)) IN ('1'), 'Y',
+	    'N/A'
 	) AS o_ServCenterSupportCode,
 	-- *INF*: IIF(ISNULL(i_RolloverPriorCarrier),'N/A', SUBSTR(LTRIM(RTRIM(i_RolloverPriorCarrier)),1,50))
-	IFF(i_RolloverPriorCarrier IS NULL,
-		'N/A',
-		SUBSTR(LTRIM(RTRIM(i_RolloverPriorCarrier
-				)
-			), 1, 50
-		)
+	IFF(
+	    i_RolloverPriorCarrier IS NULL, 'N/A', SUBSTR(LTRIM(RTRIM(i_RolloverPriorCarrier)), 1, 50)
 	) AS v_RolloverPriorCarrier,
 	-- *INF*: IIF(ISNULL(i_PriorCarrierNameOther),'N/A',SUBSTR(LTRIM(RTRIM(i_PriorCarrierNameOther)),1,50))
-	IFF(i_PriorCarrierNameOther IS NULL,
-		'N/A',
-		SUBSTR(LTRIM(RTRIM(i_PriorCarrierNameOther
-				)
-			), 1, 50
-		)
+	IFF(
+	    i_PriorCarrierNameOther IS NULL, 'N/A', SUBSTR(LTRIM(RTRIM(i_PriorCarrierNameOther)), 1, 50)
 	) AS v_PriorCarrierNameOther,
 	-- *INF*: DECODE(i_RolloverPolicyIndicator, 'T',1,'F',0,0)
-	DECODE(i_RolloverPolicyIndicator,
-		'T', 1,
-		'F', 0,
-		0
+	DECODE(
+	    i_RolloverPolicyIndicator,
+	    'T', 1,
+	    'F', 0,
+	    0
 	) AS o_RolloverPolicyIndicator,
 	-- *INF*: IIF(i_RolloverPolicyIndicator ='T',
 	-- IIF(v_RolloverPriorCarrier='Other', v_PriorCarrierNameOther,v_RolloverPriorCarrier),'N/A')
-	IFF(i_RolloverPolicyIndicator = 'T',
-		IFF(v_RolloverPriorCarrier = 'Other',
-			v_PriorCarrierNameOther,
-			v_RolloverPriorCarrier
-		),
-		'N/A'
+	IFF(
+	    i_RolloverPolicyIndicator = 'T',
+	    IFF(
+	        v_RolloverPriorCarrier = 'Other', v_PriorCarrierNameOther, v_RolloverPriorCarrier
+	    ),
+	    'N/A'
 	) AS o_RolloverPriorCarrier
 	FROM AGG_RemoveDuplicates
 	LEFT JOIN LKP_V2_AGENCY LKP_V2_AGENCY_v_AgencyCode
@@ -630,25 +537,13 @@ EXP_InsertFlag AS (
 	EXP_GetValues.RiskState,
 	EXP_GetValues.AgencyAKId AS AgencyAKID,
 	-- *INF*: IIF(ISNULL(i_StrategicProfitCenterAKId),-1,i_StrategicProfitCenterAKId)
-	IFF(i_StrategicProfitCenterAKId IS NULL,
-		- 1,
-		i_StrategicProfitCenterAKId
-	) AS StrategicProfitCenterAKId,
+	IFF(i_StrategicProfitCenterAKId IS NULL, - 1, i_StrategicProfitCenterAKId) AS StrategicProfitCenterAKId,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentAKId),-1,i_InsuranceSegmentAKId)
-	IFF(i_InsuranceSegmentAKId IS NULL,
-		- 1,
-		i_InsuranceSegmentAKId
-	) AS InsuranceSegmentAKId,
+	IFF(i_InsuranceSegmentAKId IS NULL, - 1, i_InsuranceSegmentAKId) AS InsuranceSegmentAKId,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingAKId), -1, i_PolicyOfferingAKId)
-	IFF(i_PolicyOfferingAKId IS NULL,
-		- 1,
-		i_PolicyOfferingAKId
-	) AS PolicyOfferingAKId,
+	IFF(i_PolicyOfferingAKId IS NULL, - 1, i_PolicyOfferingAKId) AS PolicyOfferingAKId,
 	-- *INF*: IIF(ISNULL(i_ProgramAKId),-1,i_ProgramAKId)
-	IFF(i_ProgramAKId IS NULL,
-		- 1,
-		i_ProgramAKId
-	) AS ProgramAKId,
+	IFF(i_ProgramAKId IS NULL, - 1, i_ProgramAKId) AS ProgramAKId,
 	EXP_GetValues.EstimatedQuotePremium,
 	EXP_GetValues.o_QuoteIssueCode AS QuoteIssueCode,
 	EXP_GetValues.PolicyIssueCodeOverride,
@@ -790,10 +685,7 @@ EXP_GetSupportIds AS (
 	LKP_WBPolicyStaging.PenguinTechGenerated,
 	FIL_UnchangedRecords.InternalExternalIndicator AS i_InternalExternalIndicator,
 	-- *INF*: IIF(PenguinTechGenerated='T', 'External', i_InternalExternalIndicator)
-	IFF(PenguinTechGenerated = 'T',
-		'External',
-		i_InternalExternalIndicator
-	) AS v_InternalExternalIndicator,
+	IFF(PenguinTechGenerated = 'T', 'External', i_InternalExternalIndicator) AS v_InternalExternalIndicator,
 	v_InternalExternalIndicator AS o_InternalExternalIndicator,
 	FIL_UnchangedRecords.RiskState,
 	FIL_UnchangedRecords.AgencyAKID,
@@ -802,17 +694,15 @@ EXP_GetSupportIds AS (
 	FIL_UnchangedRecords.PolicyOfferingAKId,
 	FIL_UnchangedRecords.ProgramAKId,
 	-- *INF*: IIF(QuoteKey=v_prev_QuoteKey,v_NEXTVAL, i_NEXTVAL)
-	IFF(QuoteKey = v_prev_QuoteKey,
-		v_NEXTVAL,
-		i_NEXTVAL
-	) AS v_NEXTVAL,
+	IFF(QuoteKey = v_prev_QuoteKey, v_NEXTVAL, i_NEXTVAL) AS v_NEXTVAL,
 	-- *INF*: DECODE(TRUE,
 	-- --QuoteKey=v_prev_QuoteKey,v_QuoteCreatedDate,
 	-- ISNULL(i_QuoteCreatedDate),StatusDate,
 	-- i_QuoteCreatedDate)
-	DECODE(TRUE,
-		i_QuoteCreatedDate IS NULL, StatusDate,
-		i_QuoteCreatedDate
+	DECODE(
+	    TRUE,
+	    i_QuoteCreatedDate IS NULL, StatusDate,
+	    i_QuoteCreatedDate
 	) AS v_QuoteCreatedDate,
 	QuoteKey AS v_prev_QuoteKey,
 	1 AS CurrentSnapshotFlag,
@@ -821,20 +711,18 @@ EXP_GetSupportIds AS (
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	-- *INF*: IIF(ISNULL(i_QuoteAKId),v_NEXTVAL,i_QuoteAKId)
-	IFF(i_QuoteAKId IS NULL,
-		v_NEXTVAL,
-		i_QuoteAKId
-	) AS QuoteAKId,
+	IFF(i_QuoteAKId IS NULL, v_NEXTVAL, i_QuoteAKId) AS QuoteAKId,
 	-1 AS PolicyAKId,
 	i_OtherReasonComment AS OtherReasonComment,
 	v_QuoteCreatedDate AS QuoteCreatedDate,
 	FIL_UnchangedRecords.EstimatedQuotePremium,
 	FIL_UnchangedRecords.PolicyIssueCodeOverride AS i_PolicyIssueCodeOverride,
 	-- *INF*: DECODE(i_PolicyIssueCodeOverride, 'T', 1, 'F', 0, NULL)  
-	DECODE(i_PolicyIssueCodeOverride,
-		'T', 1,
-		'F', 0,
-		NULL
+	DECODE(
+	    i_PolicyIssueCodeOverride,
+	    'T', 1,
+	    'F', 0,
+	    NULL
 	) AS o_PolicyIssueCodeOverride,
 	FIL_UnchangedRecords.QuoteIssueCode,
 	FIL_UnchangedRecords.TransactionDate,
@@ -845,21 +733,23 @@ EXP_GetSupportIds AS (
 	-- ISNULL(LkpQuoteIssueCode),TransactionDate,
 	-- QuoteIssueCode = LkpQuoteIssueCode, LkpQuoteIssueCodeChangeDate,
 	-- TransactionDate)
-	DECODE(TRUE,
-		LkpQuoteIssueCodeChangeDate IS NULL, TransactionDate,
-		LkpQuoteIssueCode IS NULL, TransactionDate,
-		QuoteIssueCode = LkpQuoteIssueCode, LkpQuoteIssueCodeChangeDate,
-		TransactionDate
+	DECODE(
+	    TRUE,
+	    LkpQuoteIssueCodeChangeDate IS NULL, TransactionDate,
+	    LkpQuoteIssueCode IS NULL, TransactionDate,
+	    QuoteIssueCode = LkpQuoteIssueCode, LkpQuoteIssueCodeChangeDate,
+	    TransactionDate
 	) AS o_QuoteIssueCodeChangeDate,
 	FIL_UnchangedRecords.IssuedUWID,
 	FIL_UnchangedRecords.IssuedUnderwriter,
 	FIL_UnchangedRecords.QuoteChannel,
 	FIL_UnchangedRecords.LCSurveyOrderedIndicator,
 	-- *INF*: DECODE(LCSurveyOrderedIndicator, 'T', '1', 'F','0', NULL)  
-	DECODE(LCSurveyOrderedIndicator,
-		'T', '1',
-		'F', '0',
-		NULL
+	DECODE(
+	    LCSurveyOrderedIndicator,
+	    'T', '1',
+	    'F', '0',
+	    NULL
 	) AS o_LCSurveyOrderedIndicator,
 	FIL_UnchangedRecords.LCSurveyOrderedDate,
 	FIL_UnchangedRecords.QuoteChannelOrigin,

@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCBPLocationStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCBPLocationStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBPLocationStage AS (\n\tSELECT\n\t\tDCBPLocationStageId,\n\t\tBPLocationId,\n\t\tSessionId,\n\t\tId,\n\t\tBuildingAutomaticIncrease,\n\t\tBuildingCodeEffectivenessGrading,\n\t\tComputerFraudApplicable,\n\t\tDescription,\n\t\tDesignatedLimitApplicable,\n\t\tElectronicCommerceApplicable,\n\t\tEmployeeDishonestyApplicable,\n\t\tFLCatastrophicGroundCoverCollapseCounty,\n\t\tTerritory,\n\t\tTerrorismTerr,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tNumber\n\tFROM DCBPLocationStage\n),\nEXPTRANS AS (\n\tSELECT\n\tDCBPLocationStageId,\n\tBPLocationId,\n\tSessionId,\n\tId,\n\tBuildingAutomaticIncrease,\n\tBuildingCodeEffectivenessGrading,\n\tComputerFraudApplicable AS i_ComputerFraudApplicable,\n\t-- *INF*: IIF(i_ComputerFraudApplicable='T','1','0')\n\tIFF(i_ComputerFraudApplicable = 'T', '1', '0') AS o_ComputerFraudApplicable,\n\tDescription,\n\tDesignatedLimitApplicable AS i_DesignatedLimitApplicable,\n\t-- *INF*: IIF(i_DesignatedLimitApplicable='T','1','0')\n\tIFF(i_DesignatedLimitApplicable = 'T', '1', '0') AS o_DesignatedLimitApplicable,\n\tElectronicCommerceApplicable AS i_ElectronicCommerceApplicable,\n\t-- *INF*: IIF(i_ElectronicCommerceApplicable='T','1','0')\n\tIFF(i_ElectronicCommerceApplicable = 'T', '1', '0') AS o_ElectronicCommerceApplicable,\n\tEmployeeDishonestyApplicable AS i_EmployeeDishonestyApplicable,\n\t-- *INF*: IIF(i_EmployeeDishonestyApplicable='T','1','0')\n\tIFF(i_EmployeeDishonestyApplicable = 'T', '1', '0') AS o_EmployeeDishonestyApplicable,\n\tFLCatastrophicGroundCoverCollapseCounty,\n\tTerritory,\n\tTerrorismTerr,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tNumber\n\tFROM SQ_DCBPLocationStage\n),\nArchDCBPLocationStage AS (\n\tINSERT INTO ArchDCBPLocationStage\n\t(ExtractDate, SourceSystemId, AuditId, DCBPLocationStageId, BPLocationId, SessionId, Id, BuildingAutomaticIncrease, BuildingCodeEffectivenessGrading, ComputerFraudApplicable, Description, DesignatedLimitApplicable, ElectronicCommerceApplicable, EmployeeDishonestyApplicable, FLCatastrophicGroundCoverCollapseCounty, Territory, TerrorismTerr, Number)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCBPLOCATIONSTAGEID, \n\tBPLOCATIONID, \n\tSESSIONID, \n\tID, \n\tBUILDINGAUTOMATICINCREASE, \n\tBUILDINGCODEEFFECTIVENESSGRADING, \n\to_ComputerFraudApplicable AS COMPUTERFRAUDAPPLICABLE, \n\tDESCRIPTION, \n\to_DesignatedLimitApplicable AS DESIGNATEDLIMITAPPLICABLE, \n\to_ElectronicCommerceApplicable AS ELECTRONICCOMMERCEAPPLICABLE, \n\to_EmployeeDishonestyApplicable AS EMPLOYEEDISHONESTYAPPLICABLE, \n\tFLCATASTROPHICGROUNDCOVERCOLLAPSECOUNTY, \n\tTERRITORY, \n\tTERRORISMTERR, \n\tNUMBER\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

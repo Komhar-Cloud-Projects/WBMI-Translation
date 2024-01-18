@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_PC_BNFT_FLTR_TYPS",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_PC_BNFT_FLTR_TYPS",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_pc_bnft_fltr_typs_stage AS (\n\tSELECT p.pc_bnft_fltr_typs_stage_id, \r\n\tp.filter_type, \r\n\tp.description, \r\n\tp.cov_category_code, \r\n\tp.fin_type_cd, \r\n\tp.modified_date, \r\n\tp.modified_user_id, \r\n\tp.extract_date, \r\n\tp.source_sys_id \r\n\tFROM\r\n\t @{pipeline().parameters.SOURCE_TABLE_OWNER}.pc_bnft_fltr_typs_stage p\r\n\tWHERE NOT EXISTS(\r\n\tSELECT 'X'\r\n\tFROM  @{pipeline().parameters.TARGET_TABLE_OWNER}.pc_bnft_fltr_typs_stage  pp\r\n\tWHERE pp.filter_type = p.filter_type\r\n\tAND pp.description = p.description \r\n\tAND pp.cov_category_code =  p.cov_category_code\r\n\tAND pp.fin_type_cd =  p.fin_type_cd)\n),\nEXP_PC_BNFT_FLTR_TYPS AS (\n\tSELECT\n\tpc_bnft_fltr_typs_stage_id,\n\tfilter_type,\n\tdescription,\n\tcov_category_code,\n\tfin_type_cd,\n\tmodified_date,\n\tmodified_user_id,\n\textract_date AS EXTRACT_DATE,\n\tsource_sys_id AS SOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_pc_bnft_fltr_typs_stage\n),\narch_pc_bnft_fltr_typs_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_pc_bnft_fltr_typs_stage\n\t(pc_bnft_fltr_typs_stage_id, filter_type, description, cov_category_code, fin_type_cd, modified_date, modified_user_id, extract_date, source_sys_id, audit_id)\n\tSELECT \n\tPC_BNFT_FLTR_TYPS_STAGE_ID, \n\tFILTER_TYPE, \n\tDESCRIPTION, \n\tCOV_CATEGORY_CODE, \n\tFIN_TYPE_CD, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYS_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_PC_BNFT_FLTR_TYPS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

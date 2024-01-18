@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_SUP_EOR_VENDOR_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_SUP_EOR_VENDOR_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_sup_eor_vendor_stage AS (\n\tSELECT\n\t\tsup_eor_vendor_stage_id,\n\t\tsup_vendor_id,\n\t\tvendor_code,\n\t\tcreated_date,\n\t\tcreated_user_id,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\tvendor_name,\n\t\tvendor_addr,\n\t\tvendor_city,\n\t\tvendor_state,\n\t\tvendor_zip,\n\t\tvendor_ph,\n\t\tvendor_fax,\n\t\tvendor_disclaimer,\n\t\textract_date,\n\t\tas_of_date,\n\t\trcrd_count,\n\t\tsource_sys_id\n\tFROM sup_eor_vendor_stage\n),\nEXP_arch_sup_eor_vendor_stage AS (\n\tSELECT\n\tsup_eor_vendor_stage_id,\n\tsup_vendor_id,\n\tvendor_code,\n\tcreated_date,\n\tcreated_user_id,\n\tmodified_date,\n\tmodified_user_id,\n\tvendor_name,\n\tvendor_addr,\n\tvendor_city,\n\tvendor_state,\n\tvendor_zip,\n\tvendor_ph,\n\tvendor_fax,\n\tvendor_disclaimer,\n\textract_date,\n\tas_of_date,\n\trcrd_count,\n\tsource_sys_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id\n\tFROM SQ_sup_eor_vendor_stage\n),\narch_sup_eor_vendor_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_sup_eor_vendor_stage\n\t(sup_eor_vendor_stage_id, sup_vendor_id, vendor_code, created_date, created_user_id, modified_date, modified_user_id, vendor_name, vendor_addr, vendor_city, vendor_state, vendor_zip, vendor_ph, vendor_fax, vendor_disclaimer, extract_date, as_of_date, rcrd_count, source_sys_id, audit_id)\n\tSELECT \n\tSUP_EOR_VENDOR_STAGE_ID, \n\tSUP_VENDOR_ID, \n\tVENDOR_CODE, \n\tCREATED_DATE, \n\tCREATED_USER_ID, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tVENDOR_NAME, \n\tVENDOR_ADDR, \n\tVENDOR_CITY, \n\tVENDOR_STATE, \n\tVENDOR_ZIP, \n\tVENDOR_PH, \n\tVENDOR_FAX, \n\tVENDOR_DISCLAIMER, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRCRD_COUNT, \n\tSOURCE_SYS_ID, \n\tAUDIT_ID\n\tFROM EXP_arch_sup_eor_vendor_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

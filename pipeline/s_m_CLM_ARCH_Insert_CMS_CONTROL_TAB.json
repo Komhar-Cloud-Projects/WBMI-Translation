@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CMS_CONTROL_TAB",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CMS_CONTROL_TAB",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_cms_control_tab_stage AS (\n\tSELECT cms_control_tab_stage.cms_control_tab_stage_id, cms_control_tab_stage.cms_doc_cntl_num, cms_control_tab_stage.cms_report_status, cms_control_tab_stage.cms_report_date, cms_control_tab_stage.cms_action_type, cms_control_tab_stage.created_ts, cms_control_tab_stage.created_user_id, cms_control_tab_stage.modified_ts, cms_control_tab_stage.modified_user_id, cms_control_tab_stage.extract_date, cms_control_tab_stage.as_of_date, cms_control_tab_stage.record_count, cms_control_tab_stage.source_system_id \r\n\tFROM\r\n\t cms_control_tab_stage\r\n\tWHERE\r\n\tcms_control_tab_stage.created_ts >= '@{pipeline().parameters.SELECTION_START_TS}'\r\n\tOR\r\n\tcms_control_tab_stage.modified_ts >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXPTRANS AS (\n\tSELECT\n\tcms_control_tab_stage_id,\n\tcms_doc_cntl_num,\n\tcms_report_status,\n\tcms_report_date,\n\tcms_action_type,\n\tcreated_ts,\n\tcreated_user_id,\n\tmodified_ts,\n\tmodified_user_id,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_cms_control_tab_stage\n),\narch_cms_control_tab_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_cms_control_tab_stage\n\t(cms_control_tab_stage_id, cms_doc_cntl_num, cms_report_status, cms_report_date, cms_action_type, created_ts, created_user_id, modified_ts, modified_user_id, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCMS_CONTROL_TAB_STAGE_ID, \n\tCMS_DOC_CNTL_NUM, \n\tCMS_REPORT_STATUS, \n\tCMS_REPORT_DATE, \n\tCMS_ACTION_TYPE, \n\tCREATED_TS, \n\tCREATED_USER_ID, \n\tMODIFIED_TS, \n\tMODIFIED_USER_ID, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

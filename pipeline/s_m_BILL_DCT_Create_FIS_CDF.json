@@ -1,0 +1,38 @@
+{
+    "name": "s_m_BILL_DCT_Create_FIS_CDF",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_BILL_DCT_Create_FIS_CDF",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_BIL_AccountActivity AS (\n\tSELECT\n\t\tAccountActivityId,\n\t\tModifiedUserId,\n\t\tModifiedDate,\n\t\tAccountId,\n\t\tActivitySource,\n\t\tProcessedStatusCode,\n\t\tErrorDescription,\n\t\tBankingSystemCode\n\tFROM WB_BIL_AccountActivity\n\tWHERE 1=2\n),\nWB_BIL_AccountActivity1 AS (\n\tINSERT INTO WB_BIL_AccountActivity\n\t(ProcessedStatusCode)\n\tSELECT \n\tPROCESSEDSTATUSCODE\n\tFROM SQ_WB_BIL_AccountActivity\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "DataFeed -Informatica/BillingDataServices/"
+        },
+        "annotations": []
+    }
+}

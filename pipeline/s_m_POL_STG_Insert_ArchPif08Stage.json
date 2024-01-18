@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchPif08Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchPif08Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif08Stage AS (\n\tSELECT\n\t\tPif08StageId,\n\t\tExtractDate,\n\t\tSourceSystemid AS SourceSystemId,\n\t\tPifSymbol,\n\t\tPifPolicyNumber,\n\t\tPifModule,\n\t\tWBMSBNDRecordId,\n\t\tWBMSBNDPartCode,\n\t\tWBMSBNDChangeDate,\n\t\tWBMSBNDEstimatedCompletionDate,\n\t\tWBMSBNDFormOfRenewal,\n\t\tWBMSBNDTypeBond,\n\t\tWBMSBNDClassCode,\n\t\tWBMSBNDRatePlan,\n\t\tWBMSBNDRateClass,\n\t\tWBMSBNDMonthSurchargePercent,\n\t\tWBMSBNDNumberOfMonthsSurchargeApplied,\n\t\tWBMSBNDBondPenalty,\n\t\tWBMSBNDPaymentBondPenalty,\n\t\tWBMSBNDContractPrice,\n\t\tWBMSBNDFinalContractPrice,\n\t\tWBMSBNDContractNumber,\n\t\tWBMSBNDApprovedBy,\n\t\tWBMSBNDMultiPrinciples,\n\t\tWBMSBNDMultiObligees,\n\t\tWBMSBNDLetterOfCredit,\n\t\tWBMSBNDSetAsideLetter,\n\t\tWBMSBNDIndemnity,\n\t\tWBMSBNDCollateral,\n\t\tWBMSBNDCancellable,\n\t\tWBMSBNDJointVenture,\n\t\tWBMSBNDPeriodOfJointVenture,\n\t\tWBMSBNDConsentToRatePremium,\n\t\tWBMSBNDIndividualRiskModificationFactor,\n\t\tWBMSBNDCommission,\n\t\tWBMSBNDDescription1,\n\t\tWBMSBNDDescription2,\n\t\tWBMSBNDDescription3,\n\t\tWBMSBNDExecutiveOrdersAmount,\n\t\tWBMSBNDFutureUse\n\tFROM Pif08Stage\n),\nEXP_MetaData AS (\n\tSELECT\n\tPif08StageId,\n\tExtractDate,\n\tSourceSystemId,\n\tPifSymbol,\n\tPifPolicyNumber,\n\tPifModule,\n\tWBMSBNDRecordId,\n\tWBMSBNDPartCode,\n\tWBMSBNDChangeDate,\n\tWBMSBNDEstimatedCompletionDate,\n\tWBMSBNDFormOfRenewal,\n\tWBMSBNDTypeBond,\n\tWBMSBNDClassCode,\n\tWBMSBNDRatePlan,\n\tWBMSBNDRateClass,\n\tWBMSBNDMonthSurchargePercent,\n\tWBMSBNDNumberOfMonthsSurchargeApplied,\n\tWBMSBNDBondPenalty,\n\tWBMSBNDPaymentBondPenalty,\n\tWBMSBNDContractPrice,\n\tWBMSBNDFinalContractPrice,\n\tWBMSBNDContractNumber,\n\tWBMSBNDApprovedBy,\n\tWBMSBNDMultiPrinciples,\n\tWBMSBNDMultiObligees,\n\tWBMSBNDLetterOfCredit,\n\tWBMSBNDSetAsideLetter,\n\tWBMSBNDIndemnity,\n\tWBMSBNDCollateral,\n\tWBMSBNDCancellable,\n\tWBMSBNDJointVenture,\n\tWBMSBNDPeriodOfJointVenture,\n\tWBMSBNDConsentToRatePremium,\n\tWBMSBNDIndividualRiskModificationFactor,\n\tWBMSBNDCommission,\n\tWBMSBNDDescription1,\n\tWBMSBNDDescription2,\n\tWBMSBNDDescription3,\n\tWBMSBNDExecutiveOrdersAmount,\n\tWBMSBNDFutureUse,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_Pif08Stage\n),\nArchPif08Stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchPif08Stage\n\t(ExtractDate, SourceSystemId, AuditId, Pif08StageId, PifSymbol, PifPolicyNumber, PifModule, WBMSBNDRecordId, WBMSBNDPartCode, WBMSBNDChangeDate, WBMSBNDEstimatedCompletionDate, WBMSBNDFormOfRenewal, WBMSBNDTypeBond, WBMSBNDClassCode, WBMSBNDRatePlan, WBMSBNDRateClass, WBMSBNDMonthSurchargePercent, WBMSBNDNumberOfMonthsSurchargeApplied, WBMSBNDBondPenalty, WBMSBNDPaymentBondPenalty, WBMSBNDContractPrice, WBMSBNDFinalContractPrice, WBMSBNDContractNumber, WBMSBNDApprovedBy, WBMSBNDMultiPrinciples, WBMSBNDMultiObligees, WBMSBNDLetterOfCredit, WBMSBNDSetAsideLetter, WBMSBNDIndemnity, WBMSBNDCollateral, WBMSBNDCancellable, WBMSBNDJointVenture, WBMSBNDPeriodOfJointVenture, WBMSBNDConsentToRatePremium, WBMSBNDIndividualRiskModificationFactor, WBMSBNDCommission, WBMSBNDDescription1, WBMSBNDDescription2, WBMSBNDDescription3, WBMSBNDExecutiveOrdersAmount, WBMSBNDFutureUse)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tPIF08STAGEID, \n\tPIFSYMBOL, \n\tPIFPOLICYNUMBER, \n\tPIFMODULE, \n\tWBMSBNDRECORDID, \n\tWBMSBNDPARTCODE, \n\tWBMSBNDCHANGEDATE, \n\tWBMSBNDESTIMATEDCOMPLETIONDATE, \n\tWBMSBNDFORMOFRENEWAL, \n\tWBMSBNDTYPEBOND, \n\tWBMSBNDCLASSCODE, \n\tWBMSBNDRATEPLAN, \n\tWBMSBNDRATECLASS, \n\tWBMSBNDMONTHSURCHARGEPERCENT, \n\tWBMSBNDNUMBEROFMONTHSSURCHARGEAPPLIED, \n\tWBMSBNDBONDPENALTY, \n\tWBMSBNDPAYMENTBONDPENALTY, \n\tWBMSBNDCONTRACTPRICE, \n\tWBMSBNDFINALCONTRACTPRICE, \n\tWBMSBNDCONTRACTNUMBER, \n\tWBMSBNDAPPROVEDBY, \n\tWBMSBNDMULTIPRINCIPLES, \n\tWBMSBNDMULTIOBLIGEES, \n\tWBMSBNDLETTEROFCREDIT, \n\tWBMSBNDSETASIDELETTER, \n\tWBMSBNDINDEMNITY, \n\tWBMSBNDCOLLATERAL, \n\tWBMSBNDCANCELLABLE, \n\tWBMSBNDJOINTVENTURE, \n\tWBMSBNDPERIODOFJOINTVENTURE, \n\tWBMSBNDCONSENTTORATEPREMIUM, \n\tWBMSBNDINDIVIDUALRISKMODIFICATIONFACTOR, \n\tWBMSBNDCOMMISSION, \n\tWBMSBNDDESCRIPTION1, \n\tWBMSBNDDESCRIPTION2, \n\tWBMSBNDDESCRIPTION3, \n\tWBMSBNDEXECUTIVEORDERSAMOUNT, \n\tWBMSBNDFUTUREUSE\n\tFROM EXP_MetaData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBCULineStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBCULineStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_CU_Line AS (\n\tWITH cte_WBCULine(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CU_LineId, \r\n\tX.WB_CU_LineId, \r\n\tX.SessionId, \r\n\tX.TreatyOrFacultative, \r\n\tX.Terrorism, \r\n\tX.AnnualPayroll, \r\n\tX.AnnualGrossSales, \r\n\tX.NumberOfEmployees, \r\n\tX.Over4Vehicles, \r\n\tX.Over5MillionSales, \r\n\tX.Over2MillionSales, \r\n\tX.ResidentialCondosApartmentsOver150Units, \r\n\tX.MotelOver100Units, \r\n\tX.LiquorLiabilityCoveredUnderWBM, \r\n\tX.LineOfBusiness, \r\n\tX.HigherLimitRequired, \r\n\tX.HigherLimit, \r\n\tX.PersonalAndAdvertisingInjuryCoverage, \r\n\tX.PremiumDetailTotalBalanceToMeetMinimum, \r\n\tX.PremiumDetailTotalBuiltUpPremium, \r\n\tX.PremiumDetailTotalEndorsementPremium, \r\n\tX.PremiumDetailTotalFinalPremium, \r\n\tX.PremiumDetailTotalFinalPremiumWritten, \r\n\tX.PremiumDetailTotalFinalPremiumChange \r\n\tFROM\r\n\tWB_CU_Line X\r\n\tinner join\r\n\tcte_WBCULine Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tCU_LineId,\n\tWB_CU_LineId,\n\tSessionId,\n\tTreatyOrFacultative,\n\tTerrorism,\n\tAnnualPayroll,\n\tAnnualGrossSales,\n\tNumberOfEmployees,\n\tOver4Vehicles,\n\t-- *INF*: DECODE(Over4Vehicles,'T',1,'F',0,NULL)\n\tDECODE(\n\t    Over4Vehicles,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS Over4Vehicles_out,\n\tOver5MillionSales,\n\t-- *INF*: DECODE(Over5MillionSales,'T',1,'F',0,NULL)\n\tDECODE(\n\t    Over5MillionSales,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS Over5MillionSales_out,\n\tOver2MillionSales,\n\t-- *INF*: DECODE(Over2MillionSales,'T',1,'F',0,NULL)\n\tDECODE(\n\t    Over2MillionSales,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS Over2MillionSales_out,\n\tResidentialCondosApartmentsOver150Units,\n\t-- *INF*: DECODE(ResidentialCondosApartmentsOver150Units,'T',1,'F',0,NULL)\n\tDECODE(\n\t    ResidentialCondosApartmentsOver150Units,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS ResidentialCondosApartmentsOver150Units_out,\n\tMotelOver100Units,\n\t-- *INF*: DECODE(MotelOver100Units,'T',1,'F',0,NULL)\n\tDECODE(\n\t    MotelOver100Units,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS MotelOver100Units_out,\n\tLiquorLiabilityCoveredUnderWBM,\n\t-- *INF*: DECODE(LiquorLiabilityCoveredUnderWBM,'T',1,'F',0,NULL)\n\tDECODE(\n\t    LiquorLiabilityCoveredUnderWBM,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS LiquorLiabilityCoveredUnderWBM_out,\n\tLineOfBusiness,\n\tHigherLimitRequired,\n\t-- *INF*: DECODE(HigherLimitRequired,'T',1,'F',0,NULL)\n\tDECODE(\n\t    HigherLimitRequired,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS HigherLimitRequired_out,\n\tHigherLimit,\n\tPersonalAndAdvertisingInjuryCoverage,\n\tPremiumDetailTotalBalanceToMeetMinimum,\n\tPremiumDetailTotalBuiltUpPremium,\n\tPremiumDetailTotalEndorsementPremium,\n\tPremiumDetailTotalFinalPremium,\n\tPremiumDetailTotalFinalPremiumWritten,\n\tPremiumDetailTotalFinalPremiumChange\n\tFROM SQ_WB_CU_Line\n),\nWBCULineStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCULineStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCULineStaging\n\t(ExtractDate, SourceSystemId, CU_LineId, WB_CU_LineId, SessionId, TreatyOrFacultative, Terrorism, AnnualPayroll, AnnualGrossSales, NumberOfEmployees, Over4Vehicles, Over5MillionSales, Over2MillionSales, ResidentialCondosApartmentsOver150Units, MotelOver100Units, LiquorLiabilityCoveredUnderWBM, LineOfBusiness, HigherLimitRequired, HigherLimit, PersonalAndAdvertisingInjuryCoverage, PremiumDetailTotalBalanceToMeetMinimum, PremiumDetailTotalBuiltUpPremium, PremiumDetailTotalEndorsementPremium, PremiumDetailTotalFinalPremium, PremiumDetailTotalFinalPremiumWritten, PremiumDetailTotalFinalPremiumChange)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCU_LINEID, \n\tWB_CU_LINEID, \n\tSESSIONID, \n\tTREATYORFACULTATIVE, \n\tTERRORISM, \n\tANNUALPAYROLL, \n\tANNUALGROSSSALES, \n\tNUMBEROFEMPLOYEES, \n\tOver4Vehicles_out AS OVER4VEHICLES, \n\tOver5MillionSales_out AS OVER5MILLIONSALES, \n\tOver2MillionSales_out AS OVER2MILLIONSALES, \n\tResidentialCondosApartmentsOver150Units_out AS RESIDENTIALCONDOSAPARTMENTSOVER150UNITS, \n\tMotelOver100Units_out AS MOTELOVER100UNITS, \n\tLiquorLiabilityCoveredUnderWBM_out AS LIQUORLIABILITYCOVEREDUNDERWBM, \n\tLINEOFBUSINESS, \n\tHigherLimitRequired_out AS HIGHERLIMITREQUIRED, \n\tHIGHERLIMIT, \n\tPERSONALANDADVERTISINGINJURYCOVERAGE, \n\tPREMIUMDETAILTOTALBALANCETOMEETMINIMUM, \n\tPREMIUMDETAILTOTALBUILTUPPREMIUM, \n\tPREMIUMDETAILTOTALENDORSEMENTPREMIUM, \n\tPREMIUMDETAILTOTALFINALPREMIUM, \n\tPREMIUMDETAILTOTALFINALPREMIUMWRITTEN, \n\tPREMIUMDETAILTOTALFINALPREMIUMCHANGE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

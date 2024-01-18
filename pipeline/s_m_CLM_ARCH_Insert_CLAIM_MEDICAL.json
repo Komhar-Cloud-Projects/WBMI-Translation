@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLAIM_MEDICAL",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLAIM_MEDICAL",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_claim_medical_stage AS (\n\tSELECT\n\t\tclaim_medical_stage_id,\n\t\tinjured_party_id,\n\t\tmedicare_hicn,\n\t\tmedicare_elig,\n\t\tcms_date_of_incid,\n\t\tcause_code,\n\t\tdiag_code1,\n\t\tdiag_code2,\n\t\tdiag_code3,\n\t\tdiag_code4,\n\t\tdiag_code5,\n\t\tdiag_code6,\n\t\tdiag_code7,\n\t\tdiag_code8,\n\t\tdiag_code9,\n\t\tdiag_code10,\n\t\tdiag_code11,\n\t\tdiag_code12,\n\t\tdiag_code13,\n\t\tdiag_code14,\n\t\tdiag_code15,\n\t\tdiag_code16,\n\t\tdiag_code17,\n\t\tdiag_code18,\n\t\tdiag_code19,\n\t\tself_insd_ind,\n\t\tself_insd_type,\n\t\tself_insd_fst_nm,\n\t\tself_insd_last_nm,\n\t\tself_insd_dba_nm,\n\t\tself_insd_lgl_nm,\n\t\tproduct_liab_ind,\n\t\tprod_generic_nm,\n\t\tprod_brand_nm,\n\t\tprod_manufacturer,\n\t\tprod_allege_harm,\n\t\tinj_par_rep_firm,\n\t\texceed_claim_key,\n\t\texceed_claimnt_key,\n\t\tpms_policy_sym,\n\t\tpms_policy_num,\n\t\tpms_policy_mod,\n\t\tpms_date_of_loss,\n\t\tpms_loss_occurence,\n\t\tpms_loss_claimant,\n\t\tcms_source_system_id,\n\t\tclmt1_rep_firm,\n\t\tclmt2_rep_firm,\n\t\tclmt3_rep_firm,\n\t\tclmt4_rep_firm,\n\t\tcreated_ts,\n\t\tcreated_user_id,\n\t\tmodified_ts,\n\t\tmodified_user_id,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id,\n\t\tquery_requested,\n\t\tquery_request_date,\n\t\tlast_cms_hicn,\n\t\ticd_code_version\n\tFROM claim_medical_stage\n\tWHERE CREATED_TS >= '@{pipeline().parameters.SELECTION_START_TS}'  OR MODIFIED_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_values AS (\n\tSELECT\n\tclaim_medical_stage_id,\n\tinjured_party_id,\n\tmedicare_hicn,\n\tmedicare_elig,\n\tcms_date_of_incid,\n\tcause_code,\n\tdiag_code1,\n\tdiag_code2,\n\tdiag_code3,\n\tdiag_code4,\n\tdiag_code5,\n\tdiag_code6,\n\tdiag_code7,\n\tdiag_code8,\n\tdiag_code9,\n\tdiag_code10,\n\tdiag_code11,\n\tdiag_code12,\n\tdiag_code13,\n\tdiag_code14,\n\tdiag_code15,\n\tdiag_code16,\n\tdiag_code17,\n\tdiag_code18,\n\tdiag_code19,\n\tself_insd_ind,\n\tself_insd_type,\n\tself_insd_fst_nm,\n\tself_insd_last_nm,\n\tself_insd_dba_nm,\n\tself_insd_lgl_nm,\n\tproduct_liab_ind,\n\tprod_generic_nm,\n\tprod_brand_nm,\n\tprod_manufacturer,\n\tprod_allege_harm,\n\tinj_par_rep_firm,\n\texceed_claim_key,\n\texceed_claimnt_key,\n\tpms_policy_sym,\n\tpms_policy_num,\n\tpms_policy_mod,\n\tpms_date_of_loss,\n\tpms_loss_occurence,\n\tpms_loss_claimant,\n\tcms_source_system_id,\n\tclmt1_rep_firm,\n\tclmt2_rep_firm,\n\tclmt3_rep_firm,\n\tclmt4_rep_firm,\n\tcreated_ts,\n\tcreated_user_id,\n\tmodified_ts,\n\tmodified_user_id,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID,\n\tquery_requested,\n\tquery_request_date,\n\tlast_cms_hicn,\n\ticd_code_version\n\tFROM SQ_claim_medical_stage\n),\narch_claim_medical_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_claim_medical_stage\n\t(claim_medical_stage_id, injured_party_id, medicare_hicn, medicare_elig, cms_date_of_incid, cause_code, diag_code1, diag_code2, diag_code3, diag_code4, diag_code5, diag_code6, diag_code7, diag_code8, diag_code9, diag_code10, diag_code11, diag_code12, diag_code13, diag_code14, diag_code15, diag_code16, diag_code17, diag_code18, diag_code19, self_insd_ind, self_insd_type, self_insd_fst_nm, self_insd_last_nm, self_insd_dba_nm, self_insd_lgl_nm, product_liab_ind, prod_generic_nm, prod_brand_nm, prod_manufacturer, prod_allege_harm, inj_par_rep_firm, exceed_claim_key, exceed_claimnt_key, pms_policy_sym, pms_policy_num, pms_policy_mod, pms_date_of_loss, pms_loss_occurence, pms_loss_claimant, cms_source_system_id, clmt1_rep_firm, clmt2_rep_firm, clmt3_rep_firm, clmt4_rep_firm, created_ts, created_user_id, modified_ts, modified_user_id, extract_date, as_of_date, record_count, source_system_id, audit_id, query_requested, query_request_date, last_cms_hicn, icd_code_version)\n\tSELECT \n\tCLAIM_MEDICAL_STAGE_ID, \n\tINJURED_PARTY_ID, \n\tMEDICARE_HICN, \n\tMEDICARE_ELIG, \n\tCMS_DATE_OF_INCID, \n\tCAUSE_CODE, \n\tDIAG_CODE1, \n\tDIAG_CODE2, \n\tDIAG_CODE3, \n\tDIAG_CODE4, \n\tDIAG_CODE5, \n\tDIAG_CODE6, \n\tDIAG_CODE7, \n\tDIAG_CODE8, \n\tDIAG_CODE9, \n\tDIAG_CODE10, \n\tDIAG_CODE11, \n\tDIAG_CODE12, \n\tDIAG_CODE13, \n\tDIAG_CODE14, \n\tDIAG_CODE15, \n\tDIAG_CODE16, \n\tDIAG_CODE17, \n\tDIAG_CODE18, \n\tDIAG_CODE19, \n\tSELF_INSD_IND, \n\tSELF_INSD_TYPE, \n\tSELF_INSD_FST_NM, \n\tSELF_INSD_LAST_NM, \n\tSELF_INSD_DBA_NM, \n\tSELF_INSD_LGL_NM, \n\tPRODUCT_LIAB_IND, \n\tPROD_GENERIC_NM, \n\tPROD_BRAND_NM, \n\tPROD_MANUFACTURER, \n\tPROD_ALLEGE_HARM, \n\tINJ_PAR_REP_FIRM, \n\tEXCEED_CLAIM_KEY, \n\tEXCEED_CLAIMNT_KEY, \n\tPMS_POLICY_SYM, \n\tPMS_POLICY_NUM, \n\tPMS_POLICY_MOD, \n\tPMS_DATE_OF_LOSS, \n\tPMS_LOSS_OCCURENCE, \n\tPMS_LOSS_CLAIMANT, \n\tCMS_SOURCE_SYSTEM_ID, \n\tCLMT1_REP_FIRM, \n\tCLMT2_REP_FIRM, \n\tCLMT3_REP_FIRM, \n\tCLMT4_REP_FIRM, \n\tCREATED_TS, \n\tCREATED_USER_ID, \n\tMODIFIED_TS, \n\tMODIFIED_USER_ID, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID, \n\tQUERY_REQUESTED, \n\tQUERY_REQUEST_DATE, \n\tLAST_CMS_HICN, \n\tICD_CODE_VERSION\n\tFROM EXP_values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_SUP_MEDICAL_CLASS_CODE_TYPE_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_SUP_MEDICAL_CLASS_CODE_TYPE_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SupMedicalClassCodeTypeStage AS (\n\tSELECT \r\n\tS.SupMedicalClassCodeTypeStageId, \r\n\tS.med_class_code_type_id, \r\n\tS.code_type, \r\n\tS.descript, \r\n\tS.created_user_id, \r\n\tS.created_date, \r\n\tS.modified_user_id, \r\n\tS.modified_date, \r\n\tS.ExtractDate, \r\n\tS.SourceSystemId\r\n\t \r\n\tFROM\r\n\t SupMedicalClassCodeTypeStage S\n),\nEXP_Src_Value AS (\n\tSELECT\n\tSupMedicalClassCodeTypeStageId,\n\tmed_class_code_type_id,\n\tcode_type,\n\t-- *INF*: iif(isnull(ltrim(rtrim(code_type))),-1,code_type )\n\tIFF(ltrim(rtrim(code_type)) IS NULL, - 1, code_type) AS o_code_type,\n\tdescript,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(descript),'N/A',\r\n\t-- IS_SPACES(descript),'N/A',\r\n\t-- LENGTH(descript)=0,'N/A',\r\n\t-- LTRIM(RTRIM(descript)))\n\tDECODE(\n\t    TRUE,\n\t    descript IS NULL, 'N/A',\n\t    LENGTH(descript)>0 AND TRIM(descript)='', 'N/A',\n\t    LENGTH(descript) = 0, 'N/A',\n\t    LTRIM(RTRIM(descript))\n\t) AS o_descript,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tmodified_date,\n\tExtractDate,\n\tSourceSystemId\n\tFROM SQ_SupMedicalClassCodeTypeStage\n),\nLKP_ArchSupMedicalClassCodeType_Target AS (\n\tSELECT\n\tArchSupMedicalClassCodeTypeStageId,\n\tSupMedicalClassCodeTypeStageId,\n\tmed_class_code_type_id,\n\tcode_type,\n\tdescript\n\tFROM (\n\t\tSELECT \n\t\t\tArchSupMedicalClassCodeTypeStageId,\n\t\t\tSupMedicalClassCodeTypeStageId,\n\t\t\tmed_class_code_type_id,\n\t\t\tcode_type,\n\t\t\tdescript\n\t\tFROM ArchSupMedicalClassCodeTypeStage\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY SupMedicalClassCodeTypeStageId ORDER BY ArchSupMedicalClassCodeTypeStageId) = 1\n),\nEXP_ArchSupMedicalClassCodeStage AS (\n\tSELECT\n\tLKP_ArchSupMedicalClassCodeType_Target.ArchSupMedicalClassCodeTypeStageId AS Lkp_ArchSupMedicalClassCodeTypeStageId,\n\tLKP_ArchSupMedicalClassCodeType_Target.SupMedicalClassCodeTypeStageId AS Lkp_SupMedicalClassCodeTypeStageId1,\n\tLKP_ArchSupMedicalClassCodeType_Target.med_class_code_type_id AS Lkp_med_class_code_type_id,\n\tLKP_ArchSupMedicalClassCodeType_Target.code_type AS Lkp_code_type,\n\tLKP_ArchSupMedicalClassCodeType_Target.descript AS Lkp_descript,\n\t-- *INF*: iif(isnull(Lkp_ArchSupMedicalClassCodeTypeStageId),'NEW',\r\n\t-- \r\n\t-- iif(\r\n\t-- \r\n\t-- Lkp_SupMedicalClassCodeTypeStageId1 != SupMedicalClassCodeTypeStageId\r\n\t-- \r\n\t-- or \r\n\t-- \r\n\t-- Lkp_med_class_code_type_id != med_class_code_type_id\r\n\t-- \r\n\t-- or\r\n\t-- \r\n\t-- Lkp_code_type != code_type\r\n\t-- \r\n\t-- or\r\n\t-- \r\n\t-- ltrim(rtrim(Lkp_descript)) != ltrim(rtrim(descript)),\r\n\t-- \r\n\t--       'UPDATE','NOCHANGE' )\r\n\t-- )\n\tIFF(\n\t    Lkp_ArchSupMedicalClassCodeTypeStageId IS NULL, 'NEW',\n\t    IFF(\n\t        Lkp_SupMedicalClassCodeTypeStageId1 != SupMedicalClassCodeTypeStageId\n\t        or Lkp_med_class_code_type_id != med_class_code_type_id\n\t        or Lkp_code_type != code_type\n\t        or ltrim(rtrim(Lkp_descript)) != ltrim(rtrim(descript)),\n\t        'UPDATE',\n\t        'NOCHANGE'\n\t    )\n\t) AS v_ChangedFlag,\n\tv_ChangedFlag AS ChangedFlag,\n\tEXP_Src_Value.SupMedicalClassCodeTypeStageId,\n\tEXP_Src_Value.med_class_code_type_id,\n\tEXP_Src_Value.o_code_type AS code_type,\n\tEXP_Src_Value.o_descript AS descript,\n\t-- *INF*: ltrim(rtrim(descript))\n\tltrim(rtrim(descript)) AS o_descript,\n\tEXP_Src_Value.created_user_id,\n\tEXP_Src_Value.created_date,\n\tEXP_Src_Value.modified_user_id,\n\tEXP_Src_Value.modified_date,\n\tEXP_Src_Value.ExtractDate,\n\tEXP_Src_Value.SourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM EXP_Src_Value\n\tLEFT JOIN LKP_ArchSupMedicalClassCodeType_Target\n\tON LKP_ArchSupMedicalClassCodeType_Target.SupMedicalClassCodeTypeStageId = EXP_Src_Value.SupMedicalClassCodeTypeStageId\n),\nFIL_ArchSupMedicalClassCodeTypeStage AS (\n\tSELECT\n\tChangedFlag, \n\tSupMedicalClassCodeTypeStageId, \n\tmed_class_code_type_id, \n\tcode_type, \n\to_descript, \n\tcreated_user_id, \n\tcreated_date, \n\tmodified_user_id, \n\tmodified_date, \n\tExtractDate, \n\tSourceSystemId, \n\to_AuditId\n\tFROM EXP_ArchSupMedicalClassCodeStage\n\tWHERE ChangedFlag = 'NEW' or ChangedFlag = 'UPDATE'\n),\nArchSupMedicalClassCodeTypeStage AS (\n\tINSERT INTO ArchSupMedicalClassCodeTypeStage\n\t(SupMedicalClassCodeTypeStageId, med_class_code_type_id, code_type, descript, created_user_id, created_date, modified_user_id, modified_date, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tSUPMEDICALCLASSCODETYPESTAGEID, \n\tMED_CLASS_CODE_TYPE_ID, \n\tCODE_TYPE, \n\to_descript AS DESCRIPT, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM FIL_ArchSupMedicalClassCodeTypeStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

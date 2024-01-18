@@ -20,34 +20,31 @@ EXP_Values AS (
 	i_QuoteId AS o_QuoteId,
 	i_QuoteAKId AS o_QuoteAKId,
 	-- *INF*: IIF(ISNULL(i_QuoteNumber) or IS_SPACES(i_QuoteNumber)  or LENGTH(i_QuoteNumber)=0,'N/A',LTRIM(RTRIM(i_QuoteNumber)))
-	IFF(i_QuoteNumber IS NULL 
-		OR LENGTH(i_QuoteNumber)>0 AND TRIM(i_QuoteNumber)='' 
-		OR LENGTH(i_QuoteNumber
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_QuoteNumber
-			)
-		)
+	IFF(
+	    i_QuoteNumber IS NULL
+	    or LENGTH(i_QuoteNumber)>0
+	    and TRIM(i_QuoteNumber)=''
+	    or LENGTH(i_QuoteNumber) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_QuoteNumber))
 	) AS o_QuoteNumber,
 	-- *INF*: IIF(ISNULL(i_QuoteReasonClosedCode) or IS_SPACES(i_QuoteReasonClosedCode)   or LENGTH(i_QuoteReasonClosedCode) =0,'-1',LTRIM(RTRIM(i_QuoteReasonClosedCode)))
-	IFF(i_QuoteReasonClosedCode IS NULL 
-		OR LENGTH(i_QuoteReasonClosedCode)>0 AND TRIM(i_QuoteReasonClosedCode)='' 
-		OR LENGTH(i_QuoteReasonClosedCode
-		) = 0,
-		'-1',
-		LTRIM(RTRIM(i_QuoteReasonClosedCode
-			)
-		)
+	IFF(
+	    i_QuoteReasonClosedCode IS NULL
+	    or LENGTH(i_QuoteReasonClosedCode)>0
+	    and TRIM(i_QuoteReasonClosedCode)=''
+	    or LENGTH(i_QuoteReasonClosedCode) = 0,
+	    '-1',
+	    LTRIM(RTRIM(i_QuoteReasonClosedCode))
 	) AS o_QuoteReasonClosedCode,
 	-- *INF*: IIF(ISNULL(i_QuoteReasonClosedComments) or IS_SPACES(i_QuoteReasonClosedComments)   or LENGTH(i_QuoteReasonClosedComments) =0,'N/A',LTRIM(RTRIM(i_QuoteReasonClosedComments)))
-	IFF(i_QuoteReasonClosedComments IS NULL 
-		OR LENGTH(i_QuoteReasonClosedComments)>0 AND TRIM(i_QuoteReasonClosedComments)='' 
-		OR LENGTH(i_QuoteReasonClosedComments
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_QuoteReasonClosedComments
-			)
-		)
+	IFF(
+	    i_QuoteReasonClosedComments IS NULL
+	    or LENGTH(i_QuoteReasonClosedComments)>0
+	    and TRIM(i_QuoteReasonClosedComments)=''
+	    or LENGTH(i_QuoteReasonClosedComments) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_QuoteReasonClosedComments))
 	) AS o_QuoteReasonClosedComments
 	FROM SQ_Quote
 ),
@@ -93,19 +90,18 @@ EXP_ExistingChecking AS (
 	-- ISNULL(lkp_ClosedQuoteDimId), 'Insert',
 	-- 'Update'
 	-- )
-	DECODE(TRUE,
-		lkp_ClosedQuoteDimId IS NULL, 'Insert',
-		'Update'
+	DECODE(
+	    TRUE,
+	    lkp_ClosedQuoteDimId IS NULL, 'Insert',
+	    'Update'
 	) AS v_ChangeFlag,
 	v_ChangeFlag AS ChangeFlag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
-	) AS EffectiveDate,
+	TO_TIMESTAMP('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS ExpirationDate,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	i_QuoteNumber AS QuoteNumber,
@@ -113,10 +109,7 @@ EXP_ExistingChecking AS (
 	-- *INF*: IIF(NOT ISNULL(i_QuoteReasonClosedDescription),i_QuoteReasonClosedDescription,'N/A')
 	-- 
 	-- 
-	IFF(i_QuoteReasonClosedDescription IS NOT NULL,
-		i_QuoteReasonClosedDescription,
-		'N/A'
-	) AS QuoteReasonClosedDescription,
+	IFF(i_QuoteReasonClosedDescription IS NOT NULL, i_QuoteReasonClosedDescription, 'N/A') AS QuoteReasonClosedDescription,
 	i_QuoteReasonClosedComments AS QuoteReasonClosedComments,
 	i_QuoteAKId AS EDWQuoteAKID,
 	i_QuoteId AS EDWQuotePKID

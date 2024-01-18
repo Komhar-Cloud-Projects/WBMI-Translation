@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_GTAM_WBSICCOD_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_GTAM_WBSICCOD_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_wbsiccod_stage AS (\n\tSELECT\n\t\tgtam_wbsiccod_stage_id,\n\t\tsic_code_number,\n\t\tsic_code_description,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_wbsiccod_stage\n),\nEXP_arch_GTAM_wbcomsch_stage AS (\n\tSELECT\n\tgtam_wbsiccod_stage_id,\n\tsic_code_number,\n\tsic_code_description,\n\textract_date AS EXTRACT_DATE,\n\tas_of_date AS AS_OF_DATE,\n\trecord_count AS RECORD_COUNT,\n\tsource_system_id AS SOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_gtam_wbsiccod_stage\n),\narch_gtam_wbsiccod_stage AS (\n\tINSERT INTO arch_gtam_wbsiccod_stage\n\t(gtam_wbsiccod_stage_id, sic_code_number, sic_code_description, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tGTAM_WBSICCOD_STAGE_ID, \n\tSIC_CODE_NUMBER, \n\tSIC_CODE_DESCRIPTION, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_arch_GTAM_wbcomsch_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

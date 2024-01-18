@@ -46,11 +46,9 @@ EXP_Audit AS (
 	SQ_medical_bill_code.med_bill_date,
 	1 AS crrnt_snpsht_flag,
 	-- *INF*: to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	sysdate AS created_date,
 	sysdate AS modified_date,
 	SQ_medical_bill_code.med_bill_code_id,

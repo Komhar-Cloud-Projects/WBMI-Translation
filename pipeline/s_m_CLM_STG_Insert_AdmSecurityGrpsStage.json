@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_STG_Insert_AdmSecurityGrpsStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Insert_AdmSecurityGrpsStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_adm_security_grps AS (\n\tSELECT\n\t\tgroup_security_id,\n\t\tgroup_type,\n\t\tcreated_date,\n\t\tgroup_name,\n\t\tmodified_date,\n\t\tmodified_user_id\n\tFROM adm_security_grps\n),\nEXPTRANS AS (\n\tSELECT\n\tgroup_security_id,\n\tgroup_type,\n\tcreated_date,\n\tgroup_name,\n\tmodified_date,\n\tmodified_user_id,\n\tSYSDATE AS ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId\n\tFROM SQ_adm_security_grps\n),\nAdmSecurityGrpsStage AS (\n\tTRUNCATE TABLE AdmSecurityGrpsStage;\n\tINSERT INTO AdmSecurityGrpsStage\n\t(GroupSecurityId, GroupType, CreatedDate, GroupName, ModifiedDate, ModifiedUserId, ExtractDate, SourceSystemId)\n\tSELECT \n\tgroup_security_id AS GROUPSECURITYID, \n\tgroup_type AS GROUPTYPE, \n\tcreated_date AS CREATEDDATE, \n\tgroup_name AS GROUPNAME, \n\tmodified_date AS MODIFIEDDATE, \n\tmodified_user_id AS MODIFIEDUSERID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -14,21 +14,11 @@ EXP_Default_Values AS (
 	-- *INF*: IIF(ISNULL(in_CS01_CODE), 
 	-- 'N/A',
 	-- ltrim(rtrim(in_CS01_CODE)))
-	IFF(in_CS01_CODE IS NULL,
-		'N/A',
-		ltrim(rtrim(in_CS01_CODE
-			)
-		)
-	) AS out_CS01_CODE,
+	IFF(in_CS01_CODE IS NULL, 'N/A', ltrim(rtrim(in_CS01_CODE))) AS out_CS01_CODE,
 	-- *INF*: IIF(ISNULL(in_CS01_CODE_DES), 
 	-- 'N/A',
 	-- ltrim(rtrim(in_CS01_CODE_DES)))
-	IFF(in_CS01_CODE_DES IS NULL,
-		'N/A',
-		ltrim(rtrim(in_CS01_CODE_DES
-			)
-		)
-	) AS out_CS01_CODE_DES
+	IFF(in_CS01_CODE_DES IS NULL, 'N/A', ltrim(rtrim(in_CS01_CODE_DES))) AS out_CS01_CODE_DES
 	FROM SQ_CLAIM_SUPPORT_01_STAGE
 ),
 LKP_Financial_type_code AS (
@@ -65,27 +55,23 @@ EXP_Lkp_Values AS (
 	-- 	iif((out_CS01_CODE_DES<> old_financial_descript),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(old_sup_claim_financial_code_id IS NULL,
-		'NEW',
-		IFF(( out_CS01_CODE_DES <> old_financial_descript 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    old_sup_claim_financial_code_id IS NULL, 'NEW',
+	    IFF(
+	        (out_CS01_CODE_DES <> old_financial_descript), 'UPDATE', 'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	sysdate AS created_date,
 	sysdate AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_Sys_id
@@ -157,9 +143,10 @@ EXP_Lag_Eff_From_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	financial_code =v_PREV_ROW_Financial_code, ADD_TO_DATE(v_PREV_ROW_Eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		financial_code = v_PREV_ROW_Financial_code, DATEADD(SECOND,- 1,v_PREV_ROW_Eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    financial_code = v_PREV_ROW_Financial_code, DATEADD(SECOND,- 1,v_PREV_ROW_Eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_Eff_from_date,

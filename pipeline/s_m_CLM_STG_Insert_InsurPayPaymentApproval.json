@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_STG_Insert_InsurPayPaymentApproval",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Insert_InsurPayPaymentApproval",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_InsurPayPaymentApproval AS (\n\tselect InsurPayBatchId,\r\n\t\tApprovalStatus,\r\n\t\tApprovalByUserId,\r\n\t\tApprovalDate,\r\n\t\tDenialReason,\r\n\t\tCreatedUserId,\r\n\t\tCreatedDate,\r\n\t\tModifiedUserId,\r\n\t\tModifiedDate\r\n\tfrom dbo.InsurPayPaymentApproval\r\n\twhere (CreatedDate  >= '@{pipeline().parameters.SELECTION_START_TS}'\r\n\t    or ModifiedDate  >= '@{pipeline().parameters.SELECTION_START_TS}')\n),\nEXP_Source AS (\n\tSELECT\n\tInsurPayBatchId,\n\tApprovalStatus,\n\tApprovalByUserId,\n\tApprovalDate,\n\tDenialReason,\n\tCreatedUserId,\n\tCreatedDate,\n\tModifiedUserId,\n\tModifiedDate,\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\t'InsurPay' AS SourceSystemId\n\tFROM SQ_InsurPayPaymentApproval\n),\nInsurPayPaymentApprovalStage AS (\n\tTRUNCATE TABLE InsurPayPaymentApprovalStage;\n\tINSERT INTO InsurPayPaymentApprovalStage\n\t(ExtractDate, SourceSystemId, InsurPayBatchId, ApprovalStatus, ApprovalByUserId, ApprovalDate, DenialReason, CreatedUserId, CreatedDate, ModifiedUserId, ModifiedDate)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tINSURPAYBATCHID, \n\tAPPROVALSTATUS, \n\tAPPROVALBYUSERID, \n\tAPPROVALDATE, \n\tDENIALREASON, \n\tCREATEDUSERID, \n\tCREATEDDATE, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE\n\tFROM EXP_Source\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

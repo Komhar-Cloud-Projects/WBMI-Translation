@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCFCoverageSpoilageStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCCFCoverageSpoilag_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCFCoverageSpoilageStaging AS (\n\tSELECT\n\t\tCoverageId,\n\t\tCF_CoverageSpoilageId,\n\t\tSessionId,\n\t\tARate,\n\t\tBreakdownContamination,\n\t\tPowerOutage,\n\t\tClass,\n\t\tRefrigerationMaintenanceAgreement,\n\t\tCatastropheArea,\n\t\tSellingPrice,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCCFCoverageSpoilageStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tCoverageId,\n\tCF_CoverageSpoilageId,\n\tSessionId,\n\tARate,\n\tBreakdownContamination AS i_BreakdownContamination,\n\t-- *INF*: DECODE(i_BreakdownContamination, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_BreakdownContamination,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_BreakdownContamination,\n\tPowerOutage AS i_PowerOutage,\n\t-- *INF*: DECODE(i_PowerOutage, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_PowerOutage,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_PowerOutage,\n\tClass,\n\tRefrigerationMaintenanceAgreement AS i_RefrigerationMaintenanceAgreement,\n\t-- *INF*: DECODE(i_RefrigerationMaintenanceAgreement, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_RefrigerationMaintenanceAgreement,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_RefrigerationMaintenanceAgreement,\n\tCatastropheArea AS i_CatastropheArea,\n\t-- *INF*: DECODE(i_CatastropheArea, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_CatastropheArea,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_CatastropheArea,\n\tSellingPrice AS i_SellingPrice,\n\t-- *INF*: DECODE(i_SellingPrice, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_SellingPrice,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_SellingPrice,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCFCoverageSpoilageStaging\n),\narchDCCFCoverageSpoilageStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCCFCoverageSpoilageStaging\n\t(CoverageId, CF_CoverageSpoilageId, SessionId, ARate, BreakdownContamination, PowerOutage, Class, RefrigerationMaintenanceAgreement, CatastropheArea, SellingPrice, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tCOVERAGEID, \n\tCF_COVERAGESPOILAGEID, \n\tSESSIONID, \n\tARATE, \n\to_BreakdownContamination AS BREAKDOWNCONTAMINATION, \n\to_PowerOutage AS POWEROUTAGE, \n\tCLASS, \n\to_RefrigerationMaintenanceAgreement AS REFRIGERATIONMAINTENANCEAGREEMENT, \n\to_CatastropheArea AS CATASTROPHEAREA, \n\to_SellingPrice AS SELLINGPRICE, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

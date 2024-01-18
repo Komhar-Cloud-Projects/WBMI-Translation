@@ -361,131 +361,110 @@ EXP_PolicyOfferingAKId AS (
 	LKP_pif_03_stage.comments_area AS in_comments_area,
 	LKP_PIF_04Stage.UNDND_UNDERWRITER_ID AS in_UNDND_UNDERWRITER_ID,
 	-- *INF*: LTRIM(RTRIM(in_UNDND_UNDERWRITER_ID))
-	LTRIM(RTRIM(in_UNDND_UNDERWRITER_ID
-		)
-	) AS v_UNDND_UNDERWRITER_ID,
+	LTRIM(RTRIM(in_UNDND_UNDERWRITER_ID)) AS v_UNDND_UNDERWRITER_ID,
 	-- *INF*: SUBSTR(ltrim(rtrim(pif_symbol)), 1, 1)
-	SUBSTR(ltrim(rtrim(pif_symbol
-			)
-		), 1, 1
-	) AS v_pif_symbol_02_F1,
+	SUBSTR(ltrim(rtrim(pif_symbol)), 1, 1) AS v_pif_symbol_02_F1,
 	-- *INF*: SUBSTR(ltrim(rtrim(pif_symbol)), 1, 2)
-	SUBSTR(ltrim(rtrim(pif_symbol
-			)
-		), 1, 2
-	) AS v_pif_symbol_02_F2,
+	SUBSTR(ltrim(rtrim(pif_symbol)), 1, 2) AS v_pif_symbol_02_F2,
 	-- *INF*: ltrim(rtrim(in_sar_insurance_line_4514))
-	ltrim(rtrim(in_sar_insurance_line_4514
-		)
-	) AS v_sar_insurance_line_4514,
+	ltrim(rtrim(in_sar_insurance_line_4514)) AS v_sar_insurance_line_4514,
 	-- *INF*: ltrim(rtrim(in_sar_risk_unit_group_4514))
-	ltrim(rtrim(in_sar_risk_unit_group_4514
-		)
-	) AS v_sar_risk_unit_group_4514,
+	ltrim(rtrim(in_sar_risk_unit_group_4514)) AS v_sar_risk_unit_group_4514,
 	-- *INF*: ltrim(rtrim(in_sar_major_peril_4514))
-	ltrim(rtrim(in_sar_major_peril_4514
-		)
-	) AS v_sar_major_peril_4514,
+	ltrim(rtrim(in_sar_major_peril_4514)) AS v_sar_major_peril_4514,
 	-- *INF*: ltrim(rtrim(in_sar_class_1_4_4514))
-	ltrim(rtrim(in_sar_class_1_4_4514
-		)
-	) AS v_sar_class_1_4_4514,
+	ltrim(rtrim(in_sar_class_1_4_4514)) AS v_sar_class_1_4_4514,
 	-- *INF*: ltrim(rtrim(in_sar_class_5_6_4514))
-	ltrim(rtrim(in_sar_class_5_6_4514
-		)
-	) AS v_sar_class_5_6_4514,
+	ltrim(rtrim(in_sar_class_5_6_4514)) AS v_sar_class_5_6_4514,
 	-- *INF*: ltrim(rtrim(in_sar_sub_line_4514))
-	ltrim(rtrim(in_sar_sub_line_4514
-		)
-	) AS v_sar_sub_line_4514,
+	ltrim(rtrim(in_sar_sub_line_4514)) AS v_sar_sub_line_4514,
 	-- *INF*: substr(in_sar_class_1_4_4514 || in_sar_class_5_6_4514,1,5)
-	substr(in_sar_class_1_4_4514 || in_sar_class_5_6_4514, 1, 5
-	) AS v_ClassCode,
+	substr(in_sar_class_1_4_4514 || in_sar_class_5_6_4514, 1, 5) AS v_ClassCode,
 	-- *INF*: IIF(pif_symbol = v_prev_pif_symbol  AND  pif_policy_number = v_prev_pif_policy_number  AND pif_module = v_prev_pif_module AND v_prev_PolicyOfferingCode!='000', v_prev_PolicyOfferingCode, :LKP.LKP_PolicyOfferingCode(1, v_pif_symbol_02_F2))
-	IFF(pif_symbol = v_prev_pif_symbol 
-		AND pif_policy_number = v_prev_pif_policy_number 
-		AND pif_module = v_prev_pif_module 
-		AND v_prev_PolicyOfferingCode != '000',
-		v_prev_PolicyOfferingCode,
-		LKP_POLICYOFFERINGCODE_1_v_pif_symbol_02_F2.PolicyOfferingCode
+	IFF(
+	    pif_symbol = v_prev_pif_symbol
+	    and pif_policy_number = v_prev_pif_policy_number
+	    and pif_module = v_prev_pif_module
+	    and v_prev_PolicyOfferingCode != '000',
+	    v_prev_PolicyOfferingCode,
+	    LKP_POLICYOFFERINGCODE_1_v_pif_symbol_02_F2.PolicyOfferingCode
 	) AS v_PolicyOfferingCode_SN1,
 	-- *INF*: IIF( NOT ISNULL(v_PolicyOfferingCode_SN1), v_PolicyOfferingCode_SN1, :LKP.LKP_PolicyOfferingCode(2, v_pif_symbol_02_F1))
-	IFF(v_PolicyOfferingCode_SN1 IS NOT NULL,
-		v_PolicyOfferingCode_SN1,
-		LKP_POLICYOFFERINGCODE_2_v_pif_symbol_02_F1.PolicyOfferingCode
+	IFF(
+	    v_PolicyOfferingCode_SN1 IS NOT NULL, v_PolicyOfferingCode_SN1,
+	    LKP_POLICYOFFERINGCODE_2_v_pif_symbol_02_F1.PolicyOfferingCode
 	) AS v_PolicyOfferingCode_SN2,
 	-- *INF*: IIF( NOT ISNULL(v_PolicyOfferingCode_SN2), v_PolicyOfferingCode_SN2, :LKP.LKP_PolicyOfferingCode(3, v_pif_symbol_02_F2 || '&' || in_sar_risk_unit_group_4514))
-	IFF(v_PolicyOfferingCode_SN2 IS NOT NULL,
-		v_PolicyOfferingCode_SN2,
-		LKP_POLICYOFFERINGCODE_3_v_pif_symbol_02_F2_in_sar_risk_unit_group_4514.PolicyOfferingCode
+	IFF(
+	    v_PolicyOfferingCode_SN2 IS NOT NULL, v_PolicyOfferingCode_SN2,
+	    LKP_POLICYOFFERINGCODE_3_v_pif_symbol_02_F2_in_sar_risk_unit_group_4514.PolicyOfferingCode
 	) AS v_PolicyOfferingCode_SN3,
 	-- *INF*: IIF( NOT ISNULL(v_PolicyOfferingCode_SN3), v_PolicyOfferingCode_SN3, :LKP.LKP_PolicyOfferingCode(4, v_pif_symbol_02_F2 || '&' || in_sar_risk_unit_group_4514 ||'&' ||  in_sar_insurance_line_4514))
-	IFF(v_PolicyOfferingCode_SN3 IS NOT NULL,
-		v_PolicyOfferingCode_SN3,
-		LKP_POLICYOFFERINGCODE_4_v_pif_symbol_02_F2_in_sar_risk_unit_group_4514_in_sar_insurance_line_4514.PolicyOfferingCode
+	IFF(
+	    v_PolicyOfferingCode_SN3 IS NOT NULL, v_PolicyOfferingCode_SN3,
+	    LKP_POLICYOFFERINGCODE_4_v_pif_symbol_02_F2_in_sar_risk_unit_group_4514_in_sar_insurance_line_4514.PolicyOfferingCode
 	) AS v_PolicyOfferingCode_SN4,
 	-- *INF*: IIF( NOT ISNULL(v_PolicyOfferingCode_SN4), v_PolicyOfferingCode_SN4, :LKP.LKP_PolicyOfferingCode(5, v_pif_symbol_02_F2 ||'&' ||  in_sar_sub_line_4514 ||'&' ||  in_sar_insurance_line_4514 || '&' || v_ClassCode))
-	IFF(v_PolicyOfferingCode_SN4 IS NOT NULL,
-		v_PolicyOfferingCode_SN4,
-		LKP_POLICYOFFERINGCODE_5_v_pif_symbol_02_F2_in_sar_sub_line_4514_in_sar_insurance_line_4514_v_ClassCode.PolicyOfferingCode
+	IFF(
+	    v_PolicyOfferingCode_SN4 IS NOT NULL, v_PolicyOfferingCode_SN4,
+	    LKP_POLICYOFFERINGCODE_5_v_pif_symbol_02_F2_in_sar_sub_line_4514_in_sar_insurance_line_4514_v_ClassCode.PolicyOfferingCode
 	) AS v_PolicyOfferingCode_SN5,
 	-- *INF*: IIF( NOT ISNULL(v_PolicyOfferingCode_SN5), v_PolicyOfferingCode_SN5, :LKP.LKP_PolicyOfferingCode(6, v_pif_symbol_02_F2 || '&' ||  in_sar_insurance_line_4514 ||'&' ||  in_sar_major_peril_4514))
-	IFF(v_PolicyOfferingCode_SN5 IS NOT NULL,
-		v_PolicyOfferingCode_SN5,
-		LKP_POLICYOFFERINGCODE_6_v_pif_symbol_02_F2_in_sar_insurance_line_4514_in_sar_major_peril_4514.PolicyOfferingCode
+	IFF(
+	    v_PolicyOfferingCode_SN5 IS NOT NULL, v_PolicyOfferingCode_SN5,
+	    LKP_POLICYOFFERINGCODE_6_v_pif_symbol_02_F2_in_sar_insurance_line_4514_in_sar_major_peril_4514.PolicyOfferingCode
 	) AS v_PolicyOfferingCode_SN6,
 	-- *INF*: DECODE(TRUE,
 	--  NOT ISNULL(v_PolicyOfferingCode_SN6), v_PolicyOfferingCode_SN6, 
 	-- in_sar_major_peril_4514<>'517' AND in_sar_sub_line_4514<>'365'  AND NOT IN(in_sar_risk_unit_group_4514, '345', '346', '355') , 
 	-- :LKP.LKP_PolicyOfferingCode(7, v_pif_symbol_02_F2), NULL)
-	DECODE(TRUE,
-		v_PolicyOfferingCode_SN6 IS NOT NULL, v_PolicyOfferingCode_SN6,
-		in_sar_major_peril_4514 <> '517' 
-		AND in_sar_sub_line_4514 <> '365' 
-		AND NOT in_sar_risk_unit_group_4514 IN ('345','346','355'), LKP_POLICYOFFERINGCODE_7_v_pif_symbol_02_F2.PolicyOfferingCode,
-		NULL
+	DECODE(
+	    TRUE,
+	    v_PolicyOfferingCode_SN6 IS NOT NULL, v_PolicyOfferingCode_SN6,
+	    in_sar_major_peril_4514 <> '517' AND in_sar_sub_line_4514 <> '365' AND NOT in_sar_risk_unit_group_4514 IN ('345','346','355'), LKP_POLICYOFFERINGCODE_7_v_pif_symbol_02_F2.PolicyOfferingCode,
+	    NULL
 	) AS v_PolicyOfferingCode_SN7,
 	-- *INF*: DECODE(TRUE,
 	--  NOT ISNULL(v_PolicyOfferingCode_SN7), 
 	-- v_PolicyOfferingCode_SN7, 
 	-- NOT IN(in_sar_risk_unit_group_4514, '345', '355'), :LKP.LKP_PolicyOfferingCode(8, v_pif_symbol_02_F2), NULL)
-	DECODE(TRUE,
-		v_PolicyOfferingCode_SN7 IS NOT NULL, v_PolicyOfferingCode_SN7,
-		NOT in_sar_risk_unit_group_4514 IN ('345','355'), LKP_POLICYOFFERINGCODE_8_v_pif_symbol_02_F2.PolicyOfferingCode,
-		NULL
+	DECODE(
+	    TRUE,
+	    v_PolicyOfferingCode_SN7 IS NOT NULL, v_PolicyOfferingCode_SN7,
+	    NOT in_sar_risk_unit_group_4514 IN ('345','355'), LKP_POLICYOFFERINGCODE_8_v_pif_symbol_02_F2.PolicyOfferingCode,
+	    NULL
 	) AS v_PolicyOfferingCode_SN8,
 	-- *INF*: IIF( NOT ISNULL(v_PolicyOfferingCode_SN8), v_PolicyOfferingCode_SN8, :LKP.LKP_PolicyOfferingCode(9, v_pif_symbol_02_F2 || '&' || in_sar_sub_line_4514 ||'&' ||  in_sar_insurance_line_4514))
-	IFF(v_PolicyOfferingCode_SN8 IS NOT NULL,
-		v_PolicyOfferingCode_SN8,
-		LKP_POLICYOFFERINGCODE_9_v_pif_symbol_02_F2_in_sar_sub_line_4514_in_sar_insurance_line_4514.PolicyOfferingCode
+	IFF(
+	    v_PolicyOfferingCode_SN8 IS NOT NULL, v_PolicyOfferingCode_SN8,
+	    LKP_POLICYOFFERINGCODE_9_v_pif_symbol_02_F2_in_sar_sub_line_4514_in_sar_insurance_line_4514.PolicyOfferingCode
 	) AS v_PolicyOfferingCode_SN9,
 	-- *INF*: IIF( NOT ISNULL(v_PolicyOfferingCode_SN9), v_PolicyOfferingCode_SN9,:LKP.LKP_PolicyOfferingCode(10, v_pif_symbol_02_F2 || '&' ||  in_sar_insurance_line_4514 || '&' || in_sar_risk_unit_group_4514))
-	IFF(v_PolicyOfferingCode_SN9 IS NOT NULL,
-		v_PolicyOfferingCode_SN9,
-		LKP_POLICYOFFERINGCODE_10_v_pif_symbol_02_F2_in_sar_insurance_line_4514_in_sar_risk_unit_group_4514.PolicyOfferingCode
+	IFF(
+	    v_PolicyOfferingCode_SN9 IS NOT NULL, v_PolicyOfferingCode_SN9,
+	    LKP_POLICYOFFERINGCODE_10_v_pif_symbol_02_F2_in_sar_insurance_line_4514_in_sar_risk_unit_group_4514.PolicyOfferingCode
 	) AS v_PolicyOfferingCode_SN10,
 	-- *INF*: IIF( NOT ISNULL(v_PolicyOfferingCode_SN10), v_PolicyOfferingCode_SN10,:LKP.LKP_PolicyOfferingCode(11, v_pif_symbol_02_F2 || '&' ||  in_sar_insurance_line_4514 || '&' || in_sar_risk_unit_group_4514))
-	IFF(v_PolicyOfferingCode_SN10 IS NOT NULL,
-		v_PolicyOfferingCode_SN10,
-		LKP_POLICYOFFERINGCODE_11_v_pif_symbol_02_F2_in_sar_insurance_line_4514_in_sar_risk_unit_group_4514.PolicyOfferingCode
+	IFF(
+	    v_PolicyOfferingCode_SN10 IS NOT NULL, v_PolicyOfferingCode_SN10,
+	    LKP_POLICYOFFERINGCODE_11_v_pif_symbol_02_F2_in_sar_insurance_line_4514_in_sar_risk_unit_group_4514.PolicyOfferingCode
 	) AS v_PolicyOfferingCode_SN11,
 	-- *INF*: IIF(NOT ISNULL(v_PolicyOfferingCode_SN11)
 	-- 	, v_PolicyOfferingCode_SN11
 	-- 	, :LKP.LKP_PolicyOfferingCode(12, ltrim(rtrim(pif_symbol))))
-	IFF(v_PolicyOfferingCode_SN11 IS NOT NULL,
-		v_PolicyOfferingCode_SN11,
-		LKP_POLICYOFFERINGCODE_12_ltrim_rtrim_pif_symbol.PolicyOfferingCode
+	IFF(
+	    v_PolicyOfferingCode_SN11 IS NOT NULL, v_PolicyOfferingCode_SN11,
+	    LKP_POLICYOFFERINGCODE_12_ltrim_rtrim_pif_symbol.PolicyOfferingCode
 	) AS v_PolicyOfferingCode_SN12,
 	-- *INF*: IIF(NOT ISNULL(v_PolicyOfferingCode_SN12)
 	-- 	, v_PolicyOfferingCode_SN12
 	-- 	, IIF(v_pif_symbol_02_F1 = 'S' AND pif_line_business = 'WCP',
 	-- 		'100'))
-	IFF(v_PolicyOfferingCode_SN12 IS NOT NULL,
-		v_PolicyOfferingCode_SN12,
-		IFF(v_pif_symbol_02_F1 = 'S' 
-			AND pif_line_business = 'WCP',
-			'100'
-		)
+	IFF(
+	    v_PolicyOfferingCode_SN12 IS NOT NULL, v_PolicyOfferingCode_SN12,
+	    IFF(
+	        v_pif_symbol_02_F1 = 'S' AND pif_line_business = 'WCP', '100'
+	    )
 	) AS v_PolicyOfferingCode_SN13,
 	-- *INF*: IIF(NOT ISNULL(v_PolicyOfferingCode_SN13)
 	-- 	, v_PolicyOfferingCode_SN13
@@ -504,78 +483,64 @@ EXP_PolicyOfferingAKId AS (
 	-- 		, (v_pif_symbol_02_F2 = 'XX' AND pif_line_business = 'WC'), '100'
 	-- 		)
 	-- 	)
-	IFF(v_PolicyOfferingCode_SN13 IS NOT NULL,
-		v_PolicyOfferingCode_SN13,
-		DECODE(TRUE,
-		( v_pif_symbol_02_F2 = 'XA' 
-				AND pif_line_business = 'APV' 
-			), '810',
-		( v_pif_symbol_02_F2 = 'XA' 
-				AND pif_line_business = 'HAP' 
-			), '800',
-		( v_pif_symbol_02_F2 = 'XA' 
-				AND pif_line_business = 'BO' 
-			), '400',
-		( v_pif_symbol_02_F2 = 'XA' 
-				AND pif_line_business = 'SMP' 
-			), '440',
-		( v_pif_symbol_02_F2 = 'XA' 
-				AND pif_line_business IN ('ACV','AFV','GL') 
-			), '500',
-		( v_pif_symbol_02_F2 = 'XA' 
-				AND pif_line_business = 'WC' 
-			), '100',
-		( v_pif_symbol_02_F2 = 'XX' 
-				AND pif_line_business = 'APV' 
-			), '810',
-		( v_pif_symbol_02_F2 = 'XX' 
-				AND pif_line_business = 'HAP' 
-			), '800',
-		( v_pif_symbol_02_F2 = 'XX' 
-				AND pif_line_business = 'BO' 
-			), '400',
-		( v_pif_symbol_02_F2 = 'XX' 
-				AND pif_line_business = 'SMP' 
-			), '440',
-		( v_pif_symbol_02_F2 = 'XX' 
-				AND pif_line_business IN ('ACV','AFV','GL') 
-			), '500',
-		( v_pif_symbol_02_F2 = 'XX' 
-				AND pif_line_business = 'WC' 
-			), '100'
-		)
+	IFF(
+	    v_PolicyOfferingCode_SN13 IS NOT NULL, v_PolicyOfferingCode_SN13,
+	    DECODE(
+	        TRUE,
+	        (v_pif_symbol_02_F2 = 'XA'
+	    and pif_line_business = 'APV'), '810',
+	        (v_pif_symbol_02_F2 = 'XA'
+	    and pif_line_business = 'HAP'), '800',
+	        (v_pif_symbol_02_F2 = 'XA'
+	    and pif_line_business = 'BO'), '400',
+	        (v_pif_symbol_02_F2 = 'XA'
+	    and pif_line_business = 'SMP'), '440',
+	        (v_pif_symbol_02_F2 = 'XA'
+	    and pif_line_business IN ('ACV','AFV','GL')), '500',
+	        (v_pif_symbol_02_F2 = 'XA'
+	    and pif_line_business = 'WC'), '100',
+	        (v_pif_symbol_02_F2 = 'XX'
+	    and pif_line_business = 'APV'), '810',
+	        (v_pif_symbol_02_F2 = 'XX'
+	    and pif_line_business = 'HAP'), '800',
+	        (v_pif_symbol_02_F2 = 'XX'
+	    and pif_line_business = 'BO'), '400',
+	        (v_pif_symbol_02_F2 = 'XX'
+	    and pif_line_business = 'SMP'), '440',
+	        (v_pif_symbol_02_F2 = 'XX'
+	    and pif_line_business IN ('ACV','AFV','GL')), '500',
+	        (v_pif_symbol_02_F2 = 'XX'
+	    and pif_line_business = 'WC'), '100'
+	    )
 	) AS v_PolicyOfferingCode_SN14,
 	-- *INF*: DECODE(TRUE,
 	-- 	NOT ISNULL(v_PolicyOfferingCode_SN14)
 	-- 	, v_PolicyOfferingCode_SN14
 	-- 	, '000')
-	DECODE(TRUE,
-		v_PolicyOfferingCode_SN14 IS NOT NULL, v_PolicyOfferingCode_SN14,
-		'000'
+	DECODE(
+	    TRUE,
+	    v_PolicyOfferingCode_SN14 IS NOT NULL, v_PolicyOfferingCode_SN14,
+	    '000'
 	) AS v_PolicyOfferingCode,
 	-- *INF*: DECODE(TRUE, pif_symbol != v_prev_pif_symbol  OR  pif_policy_number != v_prev_pif_policy_number  OR pif_module != v_prev_pif_module, null,
 	-- ISNULL(v_prev_PolicyOfferingCode_First) AND v_prev_PolicyOfferingCode != '000',v_prev_PolicyOfferingCode,
 	-- v_prev_PolicyOfferingCode_First
 	--  )
-	DECODE(TRUE,
-		pif_symbol != v_prev_pif_symbol 
-		OR pif_policy_number != v_prev_pif_policy_number 
-		OR pif_module != v_prev_pif_module, null,
-		v_prev_PolicyOfferingCode_First IS NULL 
-		AND v_prev_PolicyOfferingCode != '000', v_prev_PolicyOfferingCode,
-		v_prev_PolicyOfferingCode_First
+	DECODE(
+	    TRUE,
+	    pif_symbol != v_prev_pif_symbol OR pif_policy_number != v_prev_pif_policy_number OR pif_module != v_prev_pif_module, null,
+	    v_prev_PolicyOfferingCode_First IS NULL AND v_prev_PolicyOfferingCode != '000', v_prev_PolicyOfferingCode,
+	    v_prev_PolicyOfferingCode_First
 	) AS v_prev_PolicyOfferingCode_First,
 	-- *INF*: DECODE(TRUE, ISNULL(v_prev_PolicyOfferingCode_First) AND v_PolicyOfferingCode != '000', 
 	-- '1',
 	-- ISNULL(v_prev_PolicyOfferingCode_First) AND v_PolicyOfferingCode='000' AND in_RN_sar_acct_entrd_date_MaxToMin=1,'1',
 	-- '0')
-	DECODE(TRUE,
-		v_prev_PolicyOfferingCode_First IS NULL 
-		AND v_PolicyOfferingCode != '000', '1',
-		v_prev_PolicyOfferingCode_First IS NULL 
-		AND v_PolicyOfferingCode = '000' 
-		AND in_RN_sar_acct_entrd_date_MaxToMin = 1, '1',
-		'0'
+	DECODE(
+	    TRUE,
+	    v_prev_PolicyOfferingCode_First IS NULL AND v_PolicyOfferingCode != '000', '1',
+	    v_prev_PolicyOfferingCode_First IS NULL AND v_PolicyOfferingCode = '000' AND in_RN_sar_acct_entrd_date_MaxToMin = 1, '1',
+	    '0'
 	) AS v_PolicyOfferingCode_Flag,
 	pif_symbol AS v_prev_pif_symbol,
 	pif_policy_number AS v_prev_pif_policy_number,
@@ -584,79 +549,60 @@ EXP_PolicyOfferingAKId AS (
 	-- *INF*: :LKP.LKP_POLICYOFFERINGAKID(v_PolicyOfferingCode)
 	LKP_POLICYOFFERINGAKID_v_PolicyOfferingCode.PolicyOfferingAKId AS v_PolicyOfferingAKId,
 	-- *INF*: UPPER(LTRIM(RTRIM(in_pmd4j_use_code)))
-	UPPER(LTRIM(RTRIM(in_pmd4j_use_code
-			)
-		)
-	) AS v_pmd4j_use_code,
+	UPPER(LTRIM(RTRIM(in_pmd4j_use_code))) AS v_pmd4j_use_code,
 	-- *INF*: IIF(ISNULL(in_pmd4j_address_line_1) OR IS_SPACES(in_pmd4j_address_line_1) OR LENGTH(in_pmd4j_address_line_1)=0, '', LTRIM(RTRIM(in_pmd4j_address_line_1)))
-	IFF(in_pmd4j_address_line_1 IS NULL 
-		OR LENGTH(in_pmd4j_address_line_1)>0 AND TRIM(in_pmd4j_address_line_1)='' 
-		OR LENGTH(in_pmd4j_address_line_1
-		) = 0,
-		'',
-		LTRIM(RTRIM(in_pmd4j_address_line_1
-			)
-		)
+	IFF(
+	    in_pmd4j_address_line_1 IS NULL
+	    or LENGTH(in_pmd4j_address_line_1)>0
+	    and TRIM(in_pmd4j_address_line_1)=''
+	    or LENGTH(in_pmd4j_address_line_1) = 0,
+	    '',
+	    LTRIM(RTRIM(in_pmd4j_address_line_1))
 	) AS v_pmd4j_address_line_1,
 	-- *INF*: IIF(ISNULL(in_pmd4j_addr_lin_2_pos_1) OR IS_SPACES(in_pmd4j_addr_lin_2_pos_1) OR LENGTH(in_pmd4j_addr_lin_2_pos_1)=0, '', LTRIM(RTRIM(in_pmd4j_addr_lin_2_pos_1)))
-	IFF(in_pmd4j_addr_lin_2_pos_1 IS NULL 
-		OR LENGTH(in_pmd4j_addr_lin_2_pos_1)>0 AND TRIM(in_pmd4j_addr_lin_2_pos_1)='' 
-		OR LENGTH(in_pmd4j_addr_lin_2_pos_1
-		) = 0,
-		'',
-		LTRIM(RTRIM(in_pmd4j_addr_lin_2_pos_1
-			)
-		)
+	IFF(
+	    in_pmd4j_addr_lin_2_pos_1 IS NULL
+	    or LENGTH(in_pmd4j_addr_lin_2_pos_1)>0
+	    and TRIM(in_pmd4j_addr_lin_2_pos_1)=''
+	    or LENGTH(in_pmd4j_addr_lin_2_pos_1) = 0,
+	    '',
+	    LTRIM(RTRIM(in_pmd4j_addr_lin_2_pos_1))
 	) AS v_pmd4j_addr_lin_2_pos_1,
 	-- *INF*: IIF(ISNULL(in_pmd4j_addr_lin_2_pos_2_30) OR IS_SPACES(in_pmd4j_addr_lin_2_pos_2_30) OR LENGTH(in_pmd4j_addr_lin_2_pos_2_30)=0, '', LTRIM(RTRIM(in_pmd4j_addr_lin_2_pos_2_30)))
-	IFF(in_pmd4j_addr_lin_2_pos_2_30 IS NULL 
-		OR LENGTH(in_pmd4j_addr_lin_2_pos_2_30)>0 AND TRIM(in_pmd4j_addr_lin_2_pos_2_30)='' 
-		OR LENGTH(in_pmd4j_addr_lin_2_pos_2_30
-		) = 0,
-		'',
-		LTRIM(RTRIM(in_pmd4j_addr_lin_2_pos_2_30
-			)
-		)
+	IFF(
+	    in_pmd4j_addr_lin_2_pos_2_30 IS NULL
+	    or LENGTH(in_pmd4j_addr_lin_2_pos_2_30)>0
+	    and TRIM(in_pmd4j_addr_lin_2_pos_2_30)=''
+	    or LENGTH(in_pmd4j_addr_lin_2_pos_2_30) = 0,
+	    '',
+	    LTRIM(RTRIM(in_pmd4j_addr_lin_2_pos_2_30))
 	) AS v_pmd4j_addr_lin_2_pos_2_30,
 	-- *INF*: IIF(v_pmd4j_use_code='OB', v_pmd4j_address_line_1 ||' ' ||  v_pmd4j_addr_lin_2_pos_1 || v_pmd4j_addr_lin_2_pos_2_30, 'N/A')
-	IFF(v_pmd4j_use_code = 'OB',
-		v_pmd4j_address_line_1 || ' ' || v_pmd4j_addr_lin_2_pos_1 || v_pmd4j_addr_lin_2_pos_2_30,
-		'N/A'
+	IFF(
+	    v_pmd4j_use_code = 'OB',
+	    v_pmd4j_address_line_1 || ' ' || v_pmd4j_addr_lin_2_pos_1 || v_pmd4j_addr_lin_2_pos_2_30,
+	    'N/A'
 	) AS v_ObligeeName,
 	-- *INF*: UPPER(LTRIM(RTRIM(in_comments_reason_suspended)))
-	UPPER(LTRIM(RTRIM(in_comments_reason_suspended
-			)
-		)
-	) AS v_comments_reason_suspended,
+	UPPER(LTRIM(RTRIM(in_comments_reason_suspended))) AS v_comments_reason_suspended,
 	-- *INF*: UPPER(LTRIM(RTRIM(in_comments_area)))
-	UPPER(LTRIM(RTRIM(in_comments_area
-			)
-		)
-	) AS v_comments_area,
+	UPPER(LTRIM(RTRIM(in_comments_area))) AS v_comments_area,
 	v_PolicyOfferingCode_Flag AS o_PolicyOfferingCode_Flag,
 	v_PolicyOfferingCode AS o_PolicyOfferingCode,
 	-- *INF*: IIF(ISNULL(v_PolicyOfferingAKId), 26, v_PolicyOfferingAKId)
-	IFF(v_PolicyOfferingAKId IS NULL,
-		26,
-		v_PolicyOfferingAKId
-	) AS o_PolicyOfferingAKId,
+	IFF(v_PolicyOfferingAKId IS NULL, 26, v_PolicyOfferingAKId) AS o_PolicyOfferingAKId,
 	-- *INF*: IIF(v_ObligeeName=' ', 'N/A', v_ObligeeName)
-	IFF(v_ObligeeName = ' ',
-		'N/A',
-		v_ObligeeName
-	) AS o_ObligeeName,
+	IFF(v_ObligeeName = ' ', 'N/A', v_ObligeeName) AS o_ObligeeName,
 	-- *INF*: IIF(v_UNDND_UNDERWRITER_ID='9999','Y','N')
-	IFF(v_UNDND_UNDERWRITER_ID = '9999',
-		'Y',
-		'N'
-	) AS o_AutomatedUnderwritingServicesIndicator,
+	IFF(v_UNDND_UNDERWRITER_ID = '9999', 'Y', 'N') AS o_AutomatedUnderwritingServicesIndicator,
 	-- *INF*: IIF(v_comments_reason_suspended='ZZ' AND IN(v_comments_area, 'SBOP AUTOMATIC') AND pif_risk_state_prov != '16' AND IN(pif_renewal_code, '1', '2'), '1', '0')
-	IFF(v_comments_reason_suspended = 'ZZ' 
-		AND v_comments_area IN ('SBOP AUTOMATIC') 
-		AND pif_risk_state_prov != '16' 
-		AND pif_renewal_code IN ('1','2'),
-		'1',
-		'0'
+	IFF(
+	    v_comments_reason_suspended = 'ZZ'
+	    and v_comments_area IN ('SBOP AUTOMATIC')
+	    and pif_risk_state_prov != '16'
+	    and pif_renewal_code IN ('1','2'),
+	    '1',
+	    '0'
 	) AS o_AutomaticRenewalIndicator,
 	SQ_pif_02_stage.pif_service_center
 	FROM SQ_pif_02_stage
@@ -712,9 +658,7 @@ EXP_PolicyOfferingAKId AS (
 
 	LEFT JOIN LKP_POLICYOFFERINGCODE LKP_POLICYOFFERINGCODE_12_ltrim_rtrim_pif_symbol
 	ON LKP_POLICYOFFERINGCODE_12_ltrim_rtrim_pif_symbol.SequenceNumber = 12
-	AND LKP_POLICYOFFERINGCODE_12_ltrim_rtrim_pif_symbol.Identifiers = ltrim(rtrim(pif_symbol
-		)
-	)
+	AND LKP_POLICYOFFERINGCODE_12_ltrim_rtrim_pif_symbol.Identifiers = ltrim(rtrim(pif_symbol))
 
 	LEFT JOIN LKP_POLICYOFFERINGAKID LKP_POLICYOFFERINGAKID_v_PolicyOfferingCode
 	ON LKP_POLICYOFFERINGAKID_v_PolicyOfferingCode.PolicyOfferingCode = v_PolicyOfferingCode
@@ -796,166 +740,121 @@ EXP_values AS (
 	-- --ltrim(rtrim(in_pif_symbol))
 	in_pif_symbol AS pif_symbol,
 	-- *INF*: SUBSTR(in_pif_symbol,1,1)
-	SUBSTR(in_pif_symbol, 1, 1
-	) AS pif_symbol_1,
+	SUBSTR(in_pif_symbol, 1, 1) AS pif_symbol_1,
 	pif_policy_number AS in_pif_policy_number,
 	-- *INF*: ltrim(rtrim(in_pif_policy_number))
-	ltrim(rtrim(in_pif_policy_number
-		)
-	) AS v_pif_pol_number,
+	ltrim(rtrim(in_pif_policy_number)) AS v_pif_pol_number,
 	v_pif_pol_number AS pif_pol_number,
 	-- *INF*: SUBSTR(v_pif_pol_number,1,1)
-	SUBSTR(v_pif_pol_number, 1, 1
-	) AS pif_pol_number_1,
+	SUBSTR(v_pif_pol_number, 1, 1) AS pif_pol_number_1,
 	pif_module AS in_pif_module,
 	-- *INF*: ltrim(rtrim(in_pif_module))
-	ltrim(rtrim(in_pif_module
-		)
-	) AS pif_module,
+	ltrim(rtrim(in_pif_module)) AS pif_module,
 	-- *INF*: ltrim(rtrim(in_pif_symbol)) || ltrim(rtrim(in_pif_policy_number)) || ltrim(rtrim(in_pif_module))
-	ltrim(rtrim(in_pif_symbol
-		)
-	) || ltrim(rtrim(in_pif_policy_number
-		)
-	) || ltrim(rtrim(in_pif_module
-		)
-	) AS v_policy_key,
+	ltrim(rtrim(in_pif_symbol)) || ltrim(rtrim(in_pif_policy_number)) || ltrim(rtrim(in_pif_module)) AS v_policy_key,
 	-- *INF*: ltrim(rtrim(v_policy_key))
-	ltrim(rtrim(v_policy_key
-		)
-	) AS policy_key,
+	ltrim(rtrim(v_policy_key)) AS policy_key,
 	pif_master_co_number_a,
 	-- *INF*: iif(isnull(pif_master_co_number_a) or is_spaces(pif_master_co_number_a) or LENGTH(pif_master_co_number_a)=0,'N/A',LTRIM(RTRIM(pif_master_co_number_a)))
-	IFF(pif_master_co_number_a IS NULL 
-		OR LENGTH(pif_master_co_number_a)>0 AND TRIM(pif_master_co_number_a)='' 
-		OR LENGTH(pif_master_co_number_a
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(pif_master_co_number_a
-			)
-		)
+	IFF(
+	    pif_master_co_number_a IS NULL
+	    or LENGTH(pif_master_co_number_a)>0
+	    and TRIM(pif_master_co_number_a)=''
+	    or LENGTH(pif_master_co_number_a) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(pif_master_co_number_a))
 	) AS mco,
 	pif_eff_yr_a,
 	-- *INF*: IIF(pif_eff_yr_a = '9999', '1800', pif_eff_yr_a)
-	IFF(pif_eff_yr_a = '9999',
-		'1800',
-		pif_eff_yr_a
-	) AS v_pif_eff_yr_a,
+	IFF(pif_eff_yr_a = '9999', '1800', pif_eff_yr_a) AS v_pif_eff_yr_a,
 	pif_eff_mo_a,
 	-- *INF*: IIF(pif_eff_mo_a > '12', '01', pif_eff_mo_a)
 	-- --IIF(TO_INTEGER(pif_eff_mo_a) > 12, '01', pif_eff_mo_a)
-	IFF(pif_eff_mo_a > '12',
-		'01',
-		pif_eff_mo_a
-	) AS v_pif_eff_mo_a,
+	IFF(pif_eff_mo_a > '12', '01', pif_eff_mo_a) AS v_pif_eff_mo_a,
 	pif_eff_da_a,
 	-- *INF*: IIF(pif_eff_da_a > '31', '01', pif_eff_da_a)
 	-- --IIF(TO_INTEGER(pif_eff_da_a) > 31, '01', pif_eff_da_a)
-	IFF(pif_eff_da_a > '31',
-		'01',
-		pif_eff_da_a
-	) AS v_pif_eff_da_a,
+	IFF(pif_eff_da_a > '31', '01', pif_eff_da_a) AS v_pif_eff_da_a,
 	-- *INF*: TO_DATE(v_pif_eff_yr_a ||'-' || v_pif_eff_mo_a || '-' || v_pif_eff_da_a,'YYYY-MM-DD')
-	TO_DATE(v_pif_eff_yr_a || '-' || v_pif_eff_mo_a || '-' || v_pif_eff_da_a, 'YYYY-MM-DD'
-	) AS v_pol_eff_date,
+	TO_TIMESTAMP(v_pif_eff_yr_a || '-' || v_pif_eff_mo_a || '-' || v_pif_eff_da_a, 'YYYY-MM-DD') AS v_pol_eff_date,
 	v_pol_eff_date AS pol_eff_date,
 	pif_exp_yr_a,
 	-- *INF*: IIF(pif_exp_yr_a = '9999', '2100', pif_exp_yr_a)
-	IFF(pif_exp_yr_a = '9999',
-		'2100',
-		pif_exp_yr_a
-	) AS v_pif_exp_yr_a,
+	IFF(pif_exp_yr_a = '9999', '2100', pif_exp_yr_a) AS v_pif_exp_yr_a,
 	pif_exp_mo_a,
 	-- *INF*: IIF(TO_INTEGER(pif_exp_mo_a) > 12, '12', pif_exp_mo_a)
-	IFF(CAST(pif_exp_mo_a AS INTEGER) > 12,
-		'12',
-		pif_exp_mo_a
-	) AS v_pif_exp_mo_a,
+	IFF(CAST(pif_exp_mo_a AS INTEGER) > 12, '12', pif_exp_mo_a) AS v_pif_exp_mo_a,
 	pif_exp_da_a,
 	-- *INF*: IIF(TO_INTEGER(pif_exp_da_a) > 31, '31', pif_exp_da_a)
-	IFF(CAST(pif_exp_da_a AS INTEGER) > 31,
-		'31',
-		pif_exp_da_a
-	) AS v_pif_exp_da_a,
+	IFF(CAST(pif_exp_da_a AS INTEGER) > 31, '31', pif_exp_da_a) AS v_pif_exp_da_a,
 	-- *INF*: TO_DATE(v_pif_exp_yr_a ||'-' || v_pif_exp_mo_a || '-' || v_pif_exp_da_a,'YYYY-MM-DD')
-	TO_DATE(v_pif_exp_yr_a || '-' || v_pif_exp_mo_a || '-' || v_pif_exp_da_a, 'YYYY-MM-DD'
-	) AS v_pol_exp_date,
+	TO_TIMESTAMP(v_pif_exp_yr_a || '-' || v_pif_exp_mo_a || '-' || v_pif_exp_da_a, 'YYYY-MM-DD') AS v_pol_exp_date,
 	-- *INF*: TO_DATE( v_pif_exp_yr_a ||'-' || v_pif_exp_mo_a || '-' ||  v_pif_exp_da_a,'YYYY-MM-DD')
-	TO_DATE(v_pif_exp_yr_a || '-' || v_pif_exp_mo_a || '-' || v_pif_exp_da_a, 'YYYY-MM-DD'
-	) AS pol_exp_date,
+	TO_TIMESTAMP(v_pif_exp_yr_a || '-' || v_pif_exp_mo_a || '-' || v_pif_exp_da_a, 'YYYY-MM-DD') AS pol_exp_date,
 	pif_installment_term_a AS in_pif_installment_term_a,
 	-- *INF*: iif(isnull(in_pif_installment_term_a) or is_spaces(in_pif_installment_term_a) or LENGTH(in_pif_installment_term_a)=0,'N/A',LTRIM(RTRIM(in_pif_installment_term_a)))
-	IFF(in_pif_installment_term_a IS NULL 
-		OR LENGTH(in_pif_installment_term_a)>0 AND TRIM(in_pif_installment_term_a)='' 
-		OR LENGTH(in_pif_installment_term_a
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_installment_term_a
-			)
-		)
+	IFF(
+	    in_pif_installment_term_a IS NULL
+	    or LENGTH(in_pif_installment_term_a)>0
+	    and TRIM(in_pif_installment_term_a)=''
+	    or LENGTH(in_pif_installment_term_a) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_installment_term_a))
 	) AS pol_term,
 	pif_risk_state_prov AS in_pif_risk_state_prov,
 	-- *INF*: iif(isnull(in_pif_risk_state_prov) or is_spaces(in_pif_risk_state_prov) or LENGTH(in_pif_risk_state_prov)=0,'N/A' ,LTRIM(RTRIM(in_pif_risk_state_prov)))
-	IFF(in_pif_risk_state_prov IS NULL 
-		OR LENGTH(in_pif_risk_state_prov)>0 AND TRIM(in_pif_risk_state_prov)='' 
-		OR LENGTH(in_pif_risk_state_prov
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_risk_state_prov
-			)
-		)
+	IFF(
+	    in_pif_risk_state_prov IS NULL
+	    or LENGTH(in_pif_risk_state_prov)>0
+	    and TRIM(in_pif_risk_state_prov)=''
+	    or LENGTH(in_pif_risk_state_prov) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_risk_state_prov))
 	) AS state_of_domicile_code,
 	-- *INF*: iif(isnull(in_pif_risk_state_prov) or is_spaces(in_pif_risk_state_prov) or LENGTH(in_pif_risk_state_prov)=0,'N/A',IIF(LTRIM(RTRIM(in_pif_risk_state_prov))='00', '0', LTRIM(LTRIM(RTRIM(in_pif_risk_state_prov)), '0')))
-	IFF(in_pif_risk_state_prov IS NULL 
-		OR LENGTH(in_pif_risk_state_prov)>0 AND TRIM(in_pif_risk_state_prov)='' 
-		OR LENGTH(in_pif_risk_state_prov
-		) = 0,
-		'N/A',
-		IFF(LTRIM(RTRIM(in_pif_risk_state_prov
-				)
-			) = '00',
-			'0',
-			LTRIM(LTRIM(RTRIM(in_pif_risk_state_prov
-					)
-				), '0'
-			)
-		)
+	IFF(
+	    in_pif_risk_state_prov IS NULL
+	    or LENGTH(in_pif_risk_state_prov)>0
+	    and TRIM(in_pif_risk_state_prov)=''
+	    or LENGTH(in_pif_risk_state_prov) = 0,
+	    'N/A',
+	    IFF(
+	        LTRIM(RTRIM(in_pif_risk_state_prov)) = '00', '0',
+	        LTRIM(LTRIM(RTRIM(in_pif_risk_state_prov)), '0')
+	    )
 	) AS state_of_domicile_code_without0,
 	pif_company_number AS in_pif_company_number,
 	-- *INF*: iif(isnull(in_pif_company_number) or is_spaces(in_pif_company_number) or LENGTH(in_pif_company_number)=0,'N/A',LTRIM(RTRIM(in_pif_company_number)))
-	IFF(in_pif_company_number IS NULL 
-		OR LENGTH(in_pif_company_number)>0 AND TRIM(in_pif_company_number)='' 
-		OR LENGTH(in_pif_company_number
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_company_number
-			)
-		)
+	IFF(
+	    in_pif_company_number IS NULL
+	    or LENGTH(in_pif_company_number)>0
+	    and TRIM(in_pif_company_number)=''
+	    or LENGTH(in_pif_company_number) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_company_number))
 	) AS pol_co_num,
 	pif_ent_yr_a,
 	pif_ent_mo_a,
 	pif_ent_da_a,
 	pif_line_business AS in_pif_line_business,
 	-- *INF*: iif(isnull(in_pif_line_business) or is_spaces(in_pif_line_business) or LENGTH(in_pif_line_business)=0,'N/A',LTRIM(RTRIM(in_pif_line_business)))
-	IFF(in_pif_line_business IS NULL 
-		OR LENGTH(in_pif_line_business)>0 AND TRIM(in_pif_line_business)='' 
-		OR LENGTH(in_pif_line_business
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_line_business
-			)
-		)
+	IFF(
+	    in_pif_line_business IS NULL
+	    or LENGTH(in_pif_line_business)>0
+	    and TRIM(in_pif_line_business)=''
+	    or LENGTH(in_pif_line_business) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_line_business))
 	) AS pif_lob_code,
 	pif_company_line,
 	-- *INF*: iif(isnull(pif_company_line) or is_spaces(pif_company_line) or LENGTH(pif_company_line)=0,'N/A',LTRIM(RTRIM(pif_company_line)))
-	IFF(pif_company_line IS NULL 
-		OR LENGTH(pif_company_line)>0 AND TRIM(pif_company_line)='' 
-		OR LENGTH(pif_company_line
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(pif_company_line
-			)
-		)
+	IFF(
+	    pif_company_line IS NULL
+	    or LENGTH(pif_company_line)>0
+	    and TRIM(pif_company_line)=''
+	    or LENGTH(pif_company_line) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(pif_company_line))
 	) AS pol_co_line_code,
 	pif_pay_service_code AS in_pif_pay_service_code,
 	-- *INF*:  DECODE(:UDF.DEFAULT_VALUE_FOR_STRINGS(in_pif_pay_service_code),
@@ -967,50 +866,36 @@ EXP_values AS (
 	--                      'N/A ')
 	--  
 	--  
-	DECODE(:UDF.DEFAULT_VALUE_FOR_STRINGS(in_pif_pay_service_code
-		),
-		'R', 'BCMS billing',
-		'A', 'Agency Billing ',
-		'D', 'PMS Direct Bill',
-		'E', 'Mortgage Bill',
-		'P', 'Premium Pay',
-		'N/A '
+	DECODE(
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(in_pif_pay_service_code),
+	    'R', 'BCMS billing',
+	    'A', 'Agency Billing ',
+	    'D', 'PMS Direct Bill',
+	    'E', 'Mortgage Bill',
+	    'P', 'Premium Pay',
+	    'N/A '
 	) AS BillingType,
 	pif_renewal_code AS in_pif_renewal_code,
 	pif_reason_amended AS in_pif_reason_amended,
 	-- *INF*: iif(in_pif_renewal_code='9','Y','N')
-	IFF(in_pif_renewal_code = '9',
-		'Y',
-		'N'
-	) AS pol_cancellation_ind,
+	IFF(in_pif_renewal_code = '9', 'Y', 'N') AS pol_cancellation_ind,
 	-- *INF*: iif(isnull(in_pif_renewal_code) or is_spaces(in_pif_renewal_code) or LENGTH(in_pif_renewal_code)=0,'N/A',LTRIM(RTRIM(in_pif_renewal_code)))
-	IFF(in_pif_renewal_code IS NULL 
-		OR LENGTH(in_pif_renewal_code)>0 AND TRIM(in_pif_renewal_code)='' 
-		OR LENGTH(in_pif_renewal_code
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_renewal_code
-			)
-		)
+	IFF(
+	    in_pif_renewal_code IS NULL
+	    or LENGTH(in_pif_renewal_code)>0
+	    and TRIM(in_pif_renewal_code)=''
+	    or LENGTH(in_pif_renewal_code) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_renewal_code))
 	) AS renl_code,
 	pif_original_incept AS in_pif_original_incept,
 	-- *INF*: iif(length(ltrim(rtrim(substr(in_pif_original_incept,1,4))))<>4,'1800',substr(in_pif_original_incept,1,4))
-	IFF(length(ltrim(rtrim(substr(in_pif_original_incept, 1, 4
-					)
-				)
-			)
-		) <> 4,
-		'1800',
-		substr(in_pif_original_incept, 1, 4
-		)
+	IFF(
+	    length(ltrim(rtrim(substr(in_pif_original_incept, 1, 4)))) <> 4, '1800',
+	    substr(in_pif_original_incept, 1, 4)
 	) AS v_orig_incep_date_year,
 	-- *INF*: iif(substr(in_pif_original_incept,5,2)>'12','12',substr(in_pif_original_incept,5,2))
-	IFF(substr(in_pif_original_incept, 5, 2
-		) > '12',
-		'12',
-		substr(in_pif_original_incept, 5, 2
-		)
-	) AS v_orig_incep_date_month,
+	IFF(substr(in_pif_original_incept, 5, 2) > '12', '12', substr(in_pif_original_incept, 5, 2)) AS v_orig_incep_date_month,
 	-- *INF*: iif(IS_DATE(v_orig_incep_date_year ||'-' || v_orig_incep_date_month || '-' || '01','YYYY-MM-DD'),TO_DATE(v_orig_incep_date_year ||'-' || v_orig_incep_date_month || '-' || '01','YYYY-MM-DD'),to_date('01/01/1800','MM/DD/YYYY'))
 	-- 
 	-- 
@@ -1021,76 +906,63 @@ EXP_values AS (
 	-- 
 	-- 
 	-- --TO_DATE(v_orig_incep_date_year ||'-' || v_orig_incep_date_month || '-' || '01','YYYY-MM-DD')
-	IFF(IS_DATE(v_orig_incep_date_year || '-' || v_orig_incep_date_month || '-' || '01', 'YYYY-MM-DD'
-		),
-		TO_DATE(v_orig_incep_date_year || '-' || v_orig_incep_date_month || '-' || '01', 'YYYY-MM-DD'
-		),
-		to_date('01/01/1800', 'MM/DD/YYYY'
-		)
+	IFF(
+	    IS_DATE(v_orig_incep_date_year || '-' || v_orig_incep_date_month || '-' || '01', 'YYYY-MM-DD'),
+	    TO_TIMESTAMP(v_orig_incep_date_year || '-' || v_orig_incep_date_month || '-' || '01', 'YYYY-MM-DD'),
+	    TO_TIMESTAMP('01/01/1800', 'MM/DD/YYYY')
 	) AS v_orig_incep_date,
 	v_orig_incep_date AS orig_incep_date,
 	wb_inview_indicator AS in_wb_inview_indicator,
 	-- *INF*: iif(isnull(in_wb_inview_indicator) or is_spaces(in_wb_inview_indicator) or LENGTH(in_wb_inview_indicator)=0,'N/A',LTRIM(RTRIM(in_wb_inview_indicator)))
-	IFF(in_wb_inview_indicator IS NULL 
-		OR LENGTH(in_wb_inview_indicator)>0 AND TRIM(in_wb_inview_indicator)='' 
-		OR LENGTH(in_wb_inview_indicator
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_wb_inview_indicator
-			)
-		)
+	IFF(
+	    in_wb_inview_indicator IS NULL
+	    or LENGTH(in_wb_inview_indicator)>0
+	    and TRIM(in_wb_inview_indicator)=''
+	    or LENGTH(in_wb_inview_indicator) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_wb_inview_indicator))
 	) AS wbconnect_upload_code,
 	pif_occupation AS in_pif_occupation,
 	-- *INF*: to_char(TO_INTEGER(in_pif_occupation))
-	to_char(CAST(in_pif_occupation AS INTEGER)
-	) AS v_pif_occupation,
+	to_char(CAST(in_pif_occupation AS INTEGER)) AS v_pif_occupation,
 	-- *INF*: iif(isnull(v_pif_occupation) or is_spaces(v_pif_occupation) or LENGTH(v_pif_occupation)=0,'N/A',LTRIM(RTRIM(LPAD(v_pif_occupation,5,'0'))))
-	IFF(v_pif_occupation IS NULL 
-		OR LENGTH(v_pif_occupation)>0 AND TRIM(v_pif_occupation)='' 
-		OR LENGTH(v_pif_occupation
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(LPAD(v_pif_occupation, 5, '0'
-				)
-			)
-		)
+	IFF(
+	    v_pif_occupation IS NULL
+	    or LENGTH(v_pif_occupation)>0
+	    and TRIM(v_pif_occupation)=''
+	    or LENGTH(v_pif_occupation) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(LPAD(v_pif_occupation, 5, '0')))
 	) AS prim_bus_class_code,
 	pif_terrorism_risk AS in_pif_terrorism_risk,
 	-- *INF*: iif(isnull(in_pif_terrorism_risk) or is_spaces(in_pif_terrorism_risk) or LENGTH(in_pif_terrorism_risk)=0,'N/A',LTRIM(RTRIM(in_pif_terrorism_risk)))
-	IFF(in_pif_terrorism_risk IS NULL 
-		OR LENGTH(in_pif_terrorism_risk)>0 AND TRIM(in_pif_terrorism_risk)='' 
-		OR LENGTH(in_pif_terrorism_risk
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_terrorism_risk
-			)
-		)
+	IFF(
+	    in_pif_terrorism_risk IS NULL
+	    or LENGTH(in_pif_terrorism_risk)>0
+	    and TRIM(in_pif_terrorism_risk)=''
+	    or LENGTH(in_pif_terrorism_risk) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_terrorism_risk))
 	) AS terrorism_risk_ind,
 	pif_renew_policy_symbol AS in_pif_renew_policy_symbol,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_pif_renew_policy_symbol)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_pif_renew_policy_symbol
-	) AS out_pif_renew_policy_symbol,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_pif_renew_policy_symbol) AS out_pif_renew_policy_symbol,
 	pif_renew_policy_number AS in_pif_renew_policy_number,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_pif_renew_policy_number)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_pif_renew_policy_number
-	) AS out_pif_renew_policy_number,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_pif_renew_policy_number) AS out_pif_renew_policy_number,
 	pif_uk_postal_code AS in_pif_uk_postal_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(substr(in_pif_uk_postal_code,1,2))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(substr(in_pif_uk_postal_code, 1, 2
-		)
-	) AS RenewalPolicyMod,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(substr(in_pif_uk_postal_code, 1, 2)) AS RenewalPolicyMod,
 	-- *INF*: in_pif_renew_policy_symbol||in_pif_renew_policy_number||substr(in_pif_uk_postal_code,1,2)
-	in_pif_renew_policy_symbol || in_pif_renew_policy_number || substr(in_pif_uk_postal_code, 1, 2
-	) AS v_prior_pol_key,
+	in_pif_renew_policy_symbol || in_pif_renew_policy_number || substr(in_pif_uk_postal_code, 1, 2) AS v_prior_pol_key,
 	-- *INF*: iif(isnull(v_prior_pol_key) or is_spaces(v_prior_pol_key) or LENGTH(v_prior_pol_key)=0,'N/A',LTRIM(RTRIM(v_prior_pol_key)))
-	IFF(v_prior_pol_key IS NULL 
-		OR LENGTH(v_prior_pol_key)>0 AND TRIM(v_prior_pol_key)='' 
-		OR LENGTH(v_prior_pol_key
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(v_prior_pol_key
-			)
-		)
+	IFF(
+	    v_prior_pol_key IS NULL
+	    or LENGTH(v_prior_pol_key)>0
+	    and TRIM(v_prior_pol_key)=''
+	    or LENGTH(v_prior_pol_key) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(v_prior_pol_key))
 	) AS prior_pol_key,
 	pif_issue_code AS in_pif_issue_code,
 	-- *INF*: IIF(
@@ -1098,216 +970,189 @@ EXP_values AS (
 	--   '1'
 	-- )
 	-- --iif(in_pif_issue_code='M','1',IIF(in_pif_issue_code='N','1'))
-	IFF(in_pif_issue_code = 'M' 
-		OR in_pif_issue_code = 'N',
-		'1'
-	) AS v_pif_issue_code,
+	IFF(in_pif_issue_code = 'M' OR in_pif_issue_code = 'N', '1') AS v_pif_issue_code,
 	-- *INF*: iif((in_pif_original_incept=(pif_eff_yr_a || pif_eff_mo_a)) and v_pif_issue_code='1','N','R')
-	IFF(( in_pif_original_incept = ( pif_eff_yr_a || pif_eff_mo_a 
-			) 
-		) 
-		AND v_pif_issue_code = '1',
-		'N',
-		'R'
+	IFF(
+	    (in_pif_original_incept = (pif_eff_yr_a || pif_eff_mo_a)) and v_pif_issue_code = '1', 'N',
+	    'R'
 	) AS pol_issue_code,
 	-- *INF*: iif(GET_DATE_PART(v_orig_incep_date,'YYYY')=1800,-1,DATE_DIFF(trunc(v_pol_eff_date,'YYYY'),trunc(v_orig_incep_date,'YYYY'),'YYYY'))
 	-- 
 	-- 
 	-- 
 	-- --DATE_DIFF(trunc(v_pol_eff_date,'YYYY'),trunc(v_orig_incep_date,'YYYY'),'YYYY')
-	IFF(DATE_PART(v_orig_incep_date, 'YYYY'
-		) = 1800,
-		- 1,
-		DATEDIFF(YEAR,CAST(TRUNC(v_pol_eff_date, 'YEAR') AS TIMESTAMP_NTZ(0)),CAST(TRUNC(v_orig_incep_date, 'YEAR') AS TIMESTAMP_NTZ(0)))
+	IFF(
+	    DATE_PART(v_orig_incep_date, 'YYYY') = 1800, - 1,
+	    DATEDIFF(YEAR,CAST(TRUNC(v_pol_eff_date, 'YEAR') AS TIMESTAMP_NTZ(0)),CAST(TRUNC(v_orig_incep_date, 'YEAR') AS TIMESTAMP_NTZ(0)))
 	) AS v_pol_age,
 	v_pol_age AS v_v_pol_age,
 	-- *INF*: abs(v_pol_age)
-	abs(v_pol_age
-	) AS pol_age,
+	abs(v_pol_age) AS pol_age,
 	pif_risk_grade_guide AS in_pif_risk_grade_guide,
 	-- *INF*: iif(isnull(in_pif_risk_grade_guide) or is_spaces(in_pif_risk_grade_guide) or LENGTH(in_pif_risk_grade_guide)=0,'N/A',LTRIM(RTRIM(in_pif_risk_grade_guide)))
-	IFF(in_pif_risk_grade_guide IS NULL 
-		OR LENGTH(in_pif_risk_grade_guide)>0 AND TRIM(in_pif_risk_grade_guide)='' 
-		OR LENGTH(in_pif_risk_grade_guide
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_risk_grade_guide
-			)
-		)
+	IFF(
+	    in_pif_risk_grade_guide IS NULL
+	    or LENGTH(in_pif_risk_grade_guide)>0
+	    and TRIM(in_pif_risk_grade_guide)=''
+	    or LENGTH(in_pif_risk_grade_guide) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_risk_grade_guide))
 	) AS industry_risk_grade_code,
 	pif_amend_number AS in_pif_amend_number,
 	-- *INF*: iif(isnull(in_pif_amend_number) or is_spaces(in_pif_amend_number) or LENGTH(in_pif_amend_number)=0,'N/A',LTRIM(RTRIM(in_pif_amend_number)))
-	IFF(in_pif_amend_number IS NULL 
-		OR LENGTH(in_pif_amend_number)>0 AND TRIM(in_pif_amend_number)='' 
-		OR LENGTH(in_pif_amend_number
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_amend_number
-			)
-		)
+	IFF(
+	    in_pif_amend_number IS NULL
+	    or LENGTH(in_pif_amend_number)>0
+	    and TRIM(in_pif_amend_number)=''
+	    or LENGTH(in_pif_amend_number) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_amend_number))
 	) AS amend_num,
 	pif_anniversary_rerate AS in_pif_anniversary_rerate,
 	-- *INF*: iif(isnull(in_pif_anniversary_rerate) or is_spaces(in_pif_anniversary_rerate) or LENGTH(in_pif_anniversary_rerate)=0,'N/A',LTRIM(RTRIM(in_pif_anniversary_rerate)))
-	IFF(in_pif_anniversary_rerate IS NULL 
-		OR LENGTH(in_pif_anniversary_rerate)>0 AND TRIM(in_pif_anniversary_rerate)='' 
-		OR LENGTH(in_pif_anniversary_rerate
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_anniversary_rerate
-			)
-		)
+	IFF(
+	    in_pif_anniversary_rerate IS NULL
+	    or LENGTH(in_pif_anniversary_rerate)>0
+	    and TRIM(in_pif_anniversary_rerate)=''
+	    or LENGTH(in_pif_anniversary_rerate) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_anniversary_rerate))
 	) AS anniversary_rerate_code,
 	pif_audit_code AS in_pif_audit_code,
 	-- *INF*: iif(isnull(in_pif_audit_code) or is_spaces(in_pif_audit_code) or LENGTH(in_pif_audit_code)=0,'N/A',LTRIM(RTRIM(in_pif_audit_code)))
-	IFF(in_pif_audit_code IS NULL 
-		OR LENGTH(in_pif_audit_code)>0 AND TRIM(in_pif_audit_code)='' 
-		OR LENGTH(in_pif_audit_code
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_audit_code
-			)
-		)
+	IFF(
+	    in_pif_audit_code IS NULL
+	    or LENGTH(in_pif_audit_code)>0
+	    and TRIM(in_pif_audit_code)=''
+	    or LENGTH(in_pif_audit_code) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_audit_code))
 	) AS pol_audit_frqncy,
 	pif_final_audit_ind AS in_pif_final_audit_ind,
 	-- *INF*: iif(isnull(in_pif_final_audit_ind) or is_spaces(in_pif_final_audit_ind) or LENGTH(in_pif_final_audit_ind)=0,'N/A',LTRIM(RTRIM(in_pif_final_audit_ind)))
-	IFF(in_pif_final_audit_ind IS NULL 
-		OR LENGTH(in_pif_final_audit_ind)>0 AND TRIM(in_pif_final_audit_ind)='' 
-		OR LENGTH(in_pif_final_audit_ind
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_final_audit_ind
-			)
-		)
+	IFF(
+	    in_pif_final_audit_ind IS NULL
+	    or LENGTH(in_pif_final_audit_ind)>0
+	    and TRIM(in_pif_final_audit_ind)=''
+	    or LENGTH(in_pif_final_audit_ind) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_final_audit_ind))
 	) AS final_audit_code,
 	pif_zip_ind AS in_pif_zip_ind,
 	-- *INF*: iif(isnull(in_pif_zip_ind) or is_spaces(in_pif_zip_ind) or LENGTH(in_pif_zip_ind)=0,'N/A',LTRIM(RTRIM(in_pif_zip_ind)))
-	IFF(in_pif_zip_ind IS NULL 
-		OR LENGTH(in_pif_zip_ind)>0 AND TRIM(in_pif_zip_ind)='' 
-		OR LENGTH(in_pif_zip_ind
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_zip_ind
-			)
-		)
+	IFF(
+	    in_pif_zip_ind IS NULL
+	    or LENGTH(in_pif_zip_ind)>0
+	    and TRIM(in_pif_zip_ind)=''
+	    or LENGTH(in_pif_zip_ind) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_zip_ind))
 	) AS zip_ind,
 	pif_prgm_id AS in_pif_prgm_id,
 	-- *INF*: iif(isnull(in_pif_prgm_id) or is_spaces(in_pif_prgm_id) or LENGTH(in_pif_prgm_id)=0,'N/A',LTRIM(RTRIM(in_pif_prgm_id)))
-	IFF(in_pif_prgm_id IS NULL 
-		OR LENGTH(in_pif_prgm_id)>0 AND TRIM(in_pif_prgm_id)='' 
-		OR LENGTH(in_pif_prgm_id
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_prgm_id
-			)
-		)
+	IFF(
+	    in_pif_prgm_id IS NULL
+	    or LENGTH(in_pif_prgm_id)>0
+	    and TRIM(in_pif_prgm_id)=''
+	    or LENGTH(in_pif_prgm_id) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_prgm_id))
 	) AS v_pif_prgm_id,
 	pif_guarantee_ind AS in_pif_guarantee_ind,
 	-- *INF*: iif(isnull(in_pif_guarantee_ind) or is_spaces(in_pif_guarantee_ind) or LENGTH(in_pif_guarantee_ind)=0,'N/A',LTRIM(RTRIM(in_pif_guarantee_ind)))
-	IFF(in_pif_guarantee_ind IS NULL 
-		OR LENGTH(in_pif_guarantee_ind)>0 AND TRIM(in_pif_guarantee_ind)='' 
-		OR LENGTH(in_pif_guarantee_ind
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_guarantee_ind
-			)
-		)
+	IFF(
+	    in_pif_guarantee_ind IS NULL
+	    or LENGTH(in_pif_guarantee_ind)>0
+	    and TRIM(in_pif_guarantee_ind)=''
+	    or LENGTH(in_pif_guarantee_ind) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_guarantee_ind))
 	) AS gutantee_ind,
 	pif_variation_code AS in_pif_variation_code,
 	-- *INF*: iif(isnull(in_pif_variation_code) or is_spaces(in_pif_variation_code) or LENGTH(in_pif_variation_code)=0,'N/A',LTRIM(RTRIM(in_pif_variation_code)))
-	IFF(in_pif_variation_code IS NULL 
-		OR LENGTH(in_pif_variation_code)>0 AND TRIM(in_pif_variation_code)='' 
-		OR LENGTH(in_pif_variation_code
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_variation_code
-			)
-		)
+	IFF(
+	    in_pif_variation_code IS NULL
+	    or LENGTH(in_pif_variation_code)>0
+	    and TRIM(in_pif_variation_code)=''
+	    or LENGTH(in_pif_variation_code) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_variation_code))
 	) AS variation_code,
 	pif_wbc_county AS in_pif_wbc_county,
 	-- *INF*: iif(isnull(in_pif_wbc_county) or is_spaces(in_pif_wbc_county) or LENGTH(in_pif_wbc_county)=0,'N/A',LTRIM(RTRIM(in_pif_wbc_county)))
-	IFF(in_pif_wbc_county IS NULL 
-		OR LENGTH(in_pif_wbc_county)>0 AND TRIM(in_pif_wbc_county)='' 
-		OR LENGTH(in_pif_wbc_county
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_wbc_county
-			)
-		)
+	IFF(
+	    in_pif_wbc_county IS NULL
+	    or LENGTH(in_pif_wbc_county)>0
+	    and TRIM(in_pif_wbc_county)=''
+	    or LENGTH(in_pif_wbc_county) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_wbc_county))
 	) AS county,
 	pif_nonsmoker_discount AS in_pif_nonsmoker_discount,
 	-- *INF*: iif(isnull(in_pif_nonsmoker_discount) or is_spaces(in_pif_nonsmoker_discount) or LENGTH(in_pif_nonsmoker_discount)=0,'N/A',LTRIM(RTRIM(in_pif_nonsmoker_discount)))
-	IFF(in_pif_nonsmoker_discount IS NULL 
-		OR LENGTH(in_pif_nonsmoker_discount)>0 AND TRIM(in_pif_nonsmoker_discount)='' 
-		OR LENGTH(in_pif_nonsmoker_discount
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_nonsmoker_discount
-			)
-		)
+	IFF(
+	    in_pif_nonsmoker_discount IS NULL
+	    or LENGTH(in_pif_nonsmoker_discount)>0
+	    and TRIM(in_pif_nonsmoker_discount)=''
+	    or LENGTH(in_pif_nonsmoker_discount) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_nonsmoker_discount))
 	) AS non_smoker_disc_code,
 	wb_renewal_discount AS in_wb_renewal_discount,
 	-- *INF*: iif(isnull(in_wb_renewal_discount),0,in_wb_renewal_discount)
-	IFF(in_wb_renewal_discount IS NULL,
-		0,
-		in_wb_renewal_discount
-	) AS renl_disc,
+	IFF(in_wb_renewal_discount IS NULL, 0, in_wb_renewal_discount) AS renl_disc,
 	pif_upload_audit AS in_pif_upload_audit,
 	-- *INF*: iif(isnull(in_pif_upload_audit) or is_spaces(in_pif_upload_audit) or LENGTH(in_pif_upload_audit)=0,'N/A',in_pif_upload_audit)
-	IFF(in_pif_upload_audit IS NULL 
-		OR LENGTH(in_pif_upload_audit)>0 AND TRIM(in_pif_upload_audit)='' 
-		OR LENGTH(in_pif_upload_audit
-		) = 0,
-		'N/A',
-		in_pif_upload_audit
+	IFF(
+	    in_pif_upload_audit IS NULL
+	    or LENGTH(in_pif_upload_audit)>0
+	    and TRIM(in_pif_upload_audit)=''
+	    or LENGTH(in_pif_upload_audit) = 0,
+	    'N/A',
+	    in_pif_upload_audit
 	) AS pif_upload_audit,
 	pif_seg_id AS in_pif_seg_id,
 	-- *INF*: iif(isnull(in_pif_seg_id) or is_spaces(in_pif_seg_id) or LENGTH(in_pif_seg_id)=0,'N/A',in_pif_seg_id)
-	IFF(in_pif_seg_id IS NULL 
-		OR LENGTH(in_pif_seg_id)>0 AND TRIM(in_pif_seg_id)='' 
-		OR LENGTH(in_pif_seg_id
-		) = 0,
-		'N/A',
-		in_pif_seg_id
+	IFF(
+	    in_pif_seg_id IS NULL
+	    or LENGTH(in_pif_seg_id)>0
+	    and TRIM(in_pif_seg_id)=''
+	    or LENGTH(in_pif_seg_id) = 0,
+	    'N/A',
+	    in_pif_seg_id
 	) AS pif_seg_id,
 	pif_renewal_safe_record_ctr AS in_pif_renewal_safe_record_ctr,
 	-- *INF*: iif(isnull(in_pif_renewal_safe_record_ctr) ,-1,TO_INTEGER(in_pif_renewal_safe_record_ctr))
-	IFF(in_pif_renewal_safe_record_ctr IS NULL,
-		- 1,
-		CAST(in_pif_renewal_safe_record_ctr AS INTEGER)
+	IFF(
+	    in_pif_renewal_safe_record_ctr IS NULL, - 1, CAST(in_pif_renewal_safe_record_ctr AS INTEGER)
 	) AS renl_safe_driver_disc_count,
 	pif_fn_date AS in_pif_fn_date,
 	-- *INF*: iif(isnull(in_pif_fn_date) or is_spaces(in_pif_fn_date) or LENGTH(in_pif_fn_date)=0,'21001231',in_pif_fn_date)
-	IFF(in_pif_fn_date IS NULL 
-		OR LENGTH(in_pif_fn_date)>0 AND TRIM(in_pif_fn_date)='' 
-		OR LENGTH(in_pif_fn_date
-		) = 0,
-		'21001231',
-		in_pif_fn_date
+	IFF(
+	    in_pif_fn_date IS NULL
+	    or LENGTH(in_pif_fn_date)>0
+	    and TRIM(in_pif_fn_date)=''
+	    or LENGTH(in_pif_fn_date) = 0,
+	    '21001231',
+	    in_pif_fn_date
 	) AS v_pif_fn_date,
 	-- *INF*: to_date(substr(v_pif_fn_date,1,4) || '-' || substr(v_pif_fn_date,5,2) || '-' || substr(v_pif_fn_date,7,2),'YYYY-MM-DD')
 	-- 
 	-- 
 	-- 
-	to_date(substr(v_pif_fn_date, 1, 4
-		) || '-' || substr(v_pif_fn_date, 5, 2
-		) || '-' || substr(v_pif_fn_date, 7, 2
-		), 'YYYY-MM-DD'
-	) AS fn_date,
+	TO_TIMESTAMP(substr(v_pif_fn_date, 1, 4) || '-' || substr(v_pif_fn_date, 5, 2) || '-' || substr(v_pif_fn_date, 7, 2), 'YYYY-MM-DD') AS fn_date,
 	pif_completed_audit_date AS in_pif_completed_audit_date,
 	-- *INF*: iif(isnull(in_pif_completed_audit_date) or is_spaces(in_pif_completed_audit_date) or LENGTH(in_pif_completed_audit_date)=0,'21001231',in_pif_completed_audit_date)
-	IFF(in_pif_completed_audit_date IS NULL 
-		OR LENGTH(in_pif_completed_audit_date)>0 AND TRIM(in_pif_completed_audit_date)='' 
-		OR LENGTH(in_pif_completed_audit_date
-		) = 0,
-		'21001231',
-		in_pif_completed_audit_date
+	IFF(
+	    in_pif_completed_audit_date IS NULL
+	    or LENGTH(in_pif_completed_audit_date)>0
+	    and TRIM(in_pif_completed_audit_date)=''
+	    or LENGTH(in_pif_completed_audit_date) = 0,
+	    '21001231',
+	    in_pif_completed_audit_date
 	) AS v_in_pif_completed_audit_date,
 	-- *INF*: to_date(substr(v_in_pif_completed_audit_date,1,4) || '-' || substr(v_in_pif_completed_audit_date,5,2) || '-' || substr(v_in_pif_completed_audit_date,7,2),'YYYY-MM-DD')
-	to_date(substr(v_in_pif_completed_audit_date, 1, 4
-		) || '-' || substr(v_in_pif_completed_audit_date, 5, 2
-		) || '-' || substr(v_in_pif_completed_audit_date, 7, 2
-		), 'YYYY-MM-DD'
-	) AS audit_complt_date,
+	TO_TIMESTAMP(substr(v_in_pif_completed_audit_date, 1, 4) || '-' || substr(v_in_pif_completed_audit_date, 5, 2) || '-' || substr(v_in_pif_completed_audit_date, 7, 2), 'YYYY-MM-DD') AS audit_complt_date,
 	pif_orig_act_date AS in_pif_orig_act_date,
 	-- *INF*: iif(isnull(in_pif_orig_act_date) or is_spaces(in_pif_orig_act_date) or LENGTH(in_pif_orig_act_date)=0
 	--         ,'21001231'
@@ -1318,103 +1163,85 @@ EXP_values AS (
 	--                   )
 	--              ,in_pif_orig_act_date)
 	-- )
-	IFF(in_pif_orig_act_date IS NULL 
-		OR LENGTH(in_pif_orig_act_date)>0 AND TRIM(in_pif_orig_act_date)='' 
-		OR LENGTH(in_pif_orig_act_date
-		) = 0,
-		'21001231',
-		IFF(LENGTH(ltrim(rtrim(in_pif_orig_act_date
-					)
-				)
-			) = 7,
-			IFF(is_date(ltrim(rtrim(in_pif_orig_act_date
-						)
-					) || '0', 'yyyymmdd'
-				),
-				ltrim(rtrim(in_pif_orig_act_date
-					)
-				) || '0',
-				ltrim(rtrim(in_pif_orig_act_date
-					)
-				) || '1'
-			),
-			in_pif_orig_act_date
-		)
+	IFF(
+	    in_pif_orig_act_date IS NULL
+	    or LENGTH(in_pif_orig_act_date)>0
+	    and TRIM(in_pif_orig_act_date)=''
+	    or LENGTH(in_pif_orig_act_date) = 0,
+	    '21001231',
+	    IFF(
+	        LENGTH(ltrim(rtrim(in_pif_orig_act_date))) = 7,
+	        IFF(
+	            is_date(ltrim(rtrim(in_pif_orig_act_date)) || '0', 'yyyymmdd'),
+	            ltrim(rtrim(in_pif_orig_act_date)) || '0',
+	            ltrim(rtrim(in_pif_orig_act_date)) || '1'
+	        ),
+	        in_pif_orig_act_date
+	    )
 	) AS v_pif_orig_act_date,
 	-- *INF*: to_date(substr(v_pif_orig_act_date,1,4) || '-' || substr(v_pif_orig_act_date,5,2) || '-' || substr(v_pif_orig_act_date,7,2),'YYYY-MM-DD')
-	to_date(substr(v_pif_orig_act_date, 1, 4
-		) || '-' || substr(v_pif_orig_act_date, 5, 2
-		) || '-' || substr(v_pif_orig_act_date, 7, 2
-		), 'YYYY-MM-DD'
-	) AS original_account_date,
+	TO_TIMESTAMP(substr(v_pif_orig_act_date, 1, 4) || '-' || substr(v_pif_orig_act_date, 5, 2) || '-' || substr(v_pif_orig_act_date, 7, 2), 'YYYY-MM-DD') AS original_account_date,
 	pif_ent_yr_a AS in_pif_ent_yr_a1,
 	pif_ent_mo_a AS in_pif_ent_mo_a1,
 	pif_ent_da_a AS in_pif_ent_da_a1,
 	-- *INF*: iif(isnull(in_pif_ent_yr_a1) or is_spaces(in_pif_ent_yr_a1) or LENGTH(in_pif_ent_yr_a1)=0,'1800',LTRIM(RTRIM(in_pif_ent_yr_a1)))
-	IFF(in_pif_ent_yr_a1 IS NULL 
-		OR LENGTH(in_pif_ent_yr_a1)>0 AND TRIM(in_pif_ent_yr_a1)='' 
-		OR LENGTH(in_pif_ent_yr_a1
-		) = 0,
-		'1800',
-		LTRIM(RTRIM(in_pif_ent_yr_a1
-			)
-		)
+	IFF(
+	    in_pif_ent_yr_a1 IS NULL
+	    or LENGTH(in_pif_ent_yr_a1)>0
+	    and TRIM(in_pif_ent_yr_a1)=''
+	    or LENGTH(in_pif_ent_yr_a1) = 0,
+	    '1800',
+	    LTRIM(RTRIM(in_pif_ent_yr_a1))
 	) AS v_pif_ent_yr,
 	-- *INF*: iif(isnull(in_pif_ent_mo_a1) or is_spaces(in_pif_ent_mo_a1) or LENGTH(in_pif_ent_mo_a1)=0,'01',LTRIM(RTRIM(in_pif_ent_mo_a1)))
-	IFF(in_pif_ent_mo_a1 IS NULL 
-		OR LENGTH(in_pif_ent_mo_a1)>0 AND TRIM(in_pif_ent_mo_a1)='' 
-		OR LENGTH(in_pif_ent_mo_a1
-		) = 0,
-		'01',
-		LTRIM(RTRIM(in_pif_ent_mo_a1
-			)
-		)
+	IFF(
+	    in_pif_ent_mo_a1 IS NULL
+	    or LENGTH(in_pif_ent_mo_a1)>0
+	    and TRIM(in_pif_ent_mo_a1)=''
+	    or LENGTH(in_pif_ent_mo_a1) = 0,
+	    '01',
+	    LTRIM(RTRIM(in_pif_ent_mo_a1))
 	) AS v_pif_ent_mo,
 	-- *INF*: iif(isnull(in_pif_ent_da_a1) or is_spaces(in_pif_ent_da_a1) or LENGTH(in_pif_ent_da_a1)=0,'01',LTRIM(RTRIM(in_pif_ent_da_a1)))
-	IFF(in_pif_ent_da_a1 IS NULL 
-		OR LENGTH(in_pif_ent_da_a1)>0 AND TRIM(in_pif_ent_da_a1)='' 
-		OR LENGTH(in_pif_ent_da_a1
-		) = 0,
-		'01',
-		LTRIM(RTRIM(in_pif_ent_da_a1
-			)
-		)
+	IFF(
+	    in_pif_ent_da_a1 IS NULL
+	    or LENGTH(in_pif_ent_da_a1)>0
+	    and TRIM(in_pif_ent_da_a1)=''
+	    or LENGTH(in_pif_ent_da_a1) = 0,
+	    '01',
+	    LTRIM(RTRIM(in_pif_ent_da_a1))
 	) AS v_pif_ent_da,
 	-- *INF*: TO_DATE(v_pif_ent_yr ||'-' || v_pif_ent_mo || '-' || v_pif_ent_da,'YYYY-MM-DD')
-	TO_DATE(v_pif_ent_yr || '-' || v_pif_ent_mo || '-' || v_pif_ent_da, 'YYYY-MM-DD'
-	) AS pol_enter_date,
+	TO_TIMESTAMP(v_pif_ent_yr || '-' || v_pif_ent_mo || '-' || v_pif_ent_da, 'YYYY-MM-DD') AS pol_enter_date,
 	pif_location_a AS in_pif_location_a,
 	-- *INF*: iif(isnull(in_pif_location_a) or is_spaces(in_pif_location_a) or LENGTH(in_pif_location_a)=0,'N/A',LTRIM(RTRIM(in_pif_location_a)))
-	IFF(in_pif_location_a IS NULL 
-		OR LENGTH(in_pif_location_a)>0 AND TRIM(in_pif_location_a)='' 
-		OR LENGTH(in_pif_location_a
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_location_a
-			)
-		)
+	IFF(
+	    in_pif_location_a IS NULL
+	    or LENGTH(in_pif_location_a)>0
+	    and TRIM(in_pif_location_a)=''
+	    or LENGTH(in_pif_location_a) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_location_a))
 	) AS loc,
 	pif_excess_claim_ind AS in_pif_excess_claim_ind,
 	-- *INF*: iif(isnull(in_pif_excess_claim_ind) or is_spaces(in_pif_excess_claim_ind) or LENGTH(in_pif_excess_claim_ind)=0,'N/A',LTRIM(RTRIM(in_pif_excess_claim_ind)))
-	IFF(in_pif_excess_claim_ind IS NULL 
-		OR LENGTH(in_pif_excess_claim_ind)>0 AND TRIM(in_pif_excess_claim_ind)='' 
-		OR LENGTH(in_pif_excess_claim_ind
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_excess_claim_ind
-			)
-		)
+	IFF(
+	    in_pif_excess_claim_ind IS NULL
+	    or LENGTH(in_pif_excess_claim_ind)>0
+	    and TRIM(in_pif_excess_claim_ind)=''
+	    or LENGTH(in_pif_excess_claim_ind) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_excess_claim_ind))
 	) AS excess_claim_code,
 	pif_policy_status_on_pif AS in_pif_policy_status_on_pif,
 	-- *INF*: iif(isnull(in_pif_policy_status_on_pif) or is_spaces(in_pif_policy_status_on_pif) or LENGTH(in_pif_policy_status_on_pif)=0,'N/A',LTRIM(RTRIM(in_pif_policy_status_on_pif)))
-	IFF(in_pif_policy_status_on_pif IS NULL 
-		OR LENGTH(in_pif_policy_status_on_pif)>0 AND TRIM(in_pif_policy_status_on_pif)='' 
-		OR LENGTH(in_pif_policy_status_on_pif
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_policy_status_on_pif
-			)
-		)
+	IFF(
+	    in_pif_policy_status_on_pif IS NULL
+	    or LENGTH(in_pif_policy_status_on_pif)>0
+	    and TRIM(in_pif_policy_status_on_pif)=''
+	    or LENGTH(in_pif_policy_status_on_pif) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_policy_status_on_pif))
 	) AS pif_policy_status_on,
 	pif_service_center,
 	'N/A' AS reins_code,
@@ -1422,89 +1249,75 @@ EXP_values AS (
 	-- --TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS'))
 	'' AS v_pol_cancellation_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS pol_cancellation_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS pol_cancellation_date,
 	'N/A' AS pol_cancellation_rsn_code,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(pif_service_center) OR IS_SPACES(pif_service_center) OR LENGTH(pif_service_center) = 0 OR LTRIM(RTRIM(pif_service_center)) = '','N/A',
 	-- pif_service_center )
 	-- 
 	-- --IIF(ISNULL(pif_service_center),'N/A',pif_service_center)
-	DECODE(TRUE,
-		pif_service_center IS NULL 
-		OR LENGTH(pif_service_center)>0 AND TRIM(pif_service_center)='' 
-		OR LENGTH(pif_service_center
-		) = 0 
-		OR LTRIM(RTRIM(pif_service_center
-			)
-		) = '', 'N/A',
-		pif_service_center
+	DECODE(
+	    TRUE,
+	    pif_service_center IS NULL OR LENGTH(pif_service_center)>0 AND TRIM(pif_service_center)='' OR LENGTH(pif_service_center) = 0 OR LTRIM(RTRIM(pif_service_center)) = '', 'N/A',
+	    pif_service_center
 	) AS serv_center_support_code,
 	pif_review_code AS in_pif_review_code,
 	-- *INF*: iif(isnull(in_pif_review_code) or IS_SPACES(in_pif_review_code) or LENGTH(in_pif_review_code)=0,'N/A',LTRIM(RTRIM(in_pif_review_code)))
-	IFF(in_pif_review_code IS NULL 
-		OR LENGTH(in_pif_review_code)>0 AND TRIM(in_pif_review_code)='' 
-		OR LENGTH(in_pif_review_code
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_review_code
-			)
-		)
+	IFF(
+	    in_pif_review_code IS NULL
+	    or LENGTH(in_pif_review_code)>0
+	    and TRIM(in_pif_review_code)=''
+	    or LENGTH(in_pif_review_code) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_review_code))
 	) AS uw_review_yr,
 	pif_mvr_report_year AS in_pif_mvr_report_year,
 	-- *INF*: iif(isnull(in_pif_mvr_report_year) or IS_SPACES(in_pif_mvr_report_year) or LENGTH(in_pif_mvr_report_year)=0,'N/A',LTRIM(RTRIM(in_pif_mvr_report_year)))
-	IFF(in_pif_mvr_report_year IS NULL 
-		OR LENGTH(in_pif_mvr_report_year)>0 AND TRIM(in_pif_mvr_report_year)='' 
-		OR LENGTH(in_pif_mvr_report_year
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_mvr_report_year
-			)
-		)
+	IFF(
+	    in_pif_mvr_report_year IS NULL
+	    or LENGTH(in_pif_mvr_report_year)>0
+	    and TRIM(in_pif_mvr_report_year)=''
+	    or LENGTH(in_pif_mvr_report_year) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_mvr_report_year))
 	) AS mvr_request_code,
 	pif_full_agency_number AS in_pif_full_agency_number,
 	-- *INF*: SUBSTR(in_pif_full_agency_number,1,2) || SUBSTR(in_pif_full_agency_number,5,3)
-	SUBSTR(in_pif_full_agency_number, 1, 2
-	) || SUBSTR(in_pif_full_agency_number, 5, 3
-	) AS v_agency_key,
+	SUBSTR(in_pif_full_agency_number, 1, 2) || SUBSTR(in_pif_full_agency_number, 5, 3) AS v_agency_key,
 	v_agency_key AS agency_key,
 	pif_producer_code AS in_pif_producer_code,
 	-- *INF*: iif(isnull(in_pif_producer_code) or IS_SPACES(in_pif_producer_code) or LENGTH(in_pif_producer_code)=0,'N/A',LTRIM(RTRIM(in_pif_producer_code)))
-	IFF(in_pif_producer_code IS NULL 
-		OR LENGTH(in_pif_producer_code)>0 AND TRIM(in_pif_producer_code)='' 
-		OR LENGTH(in_pif_producer_code
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_producer_code
-			)
-		)
+	IFF(
+	    in_pif_producer_code IS NULL
+	    or LENGTH(in_pif_producer_code)>0
+	    and TRIM(in_pif_producer_code)=''
+	    or LENGTH(in_pif_producer_code) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_producer_code))
 	) AS producer_code,
 	-- *INF*: substr(in_pif_symbol,1,2)
-	substr(in_pif_symbol, 1, 2
-	) AS pkg_code,
+	substr(in_pif_symbol, 1, 2) AS pkg_code,
 	wb_class_of_business AS in_wb_class_of_business,
 	-- *INF*: LTRIM(RTRIM(in_wb_class_of_business))
-	LTRIM(RTRIM(in_wb_class_of_business
-		)
-	) AS v_wb_class_of_business1,
+	LTRIM(RTRIM(in_wb_class_of_business)) AS v_wb_class_of_business1,
 	-- *INF*: iif(isnull(v_wb_class_of_business1) or IS_SPACES(v_wb_class_of_business1) or LENGTH(v_wb_class_of_business1)=0,'N/A',v_wb_class_of_business1)
-	IFF(v_wb_class_of_business1 IS NULL 
-		OR LENGTH(v_wb_class_of_business1)>0 AND TRIM(v_wb_class_of_business1)='' 
-		OR LENGTH(v_wb_class_of_business1
-		) = 0,
-		'N/A',
-		v_wb_class_of_business1
+	IFF(
+	    v_wb_class_of_business1 IS NULL
+	    or LENGTH(v_wb_class_of_business1)>0
+	    and TRIM(v_wb_class_of_business1)=''
+	    or LENGTH(v_wb_class_of_business1) = 0,
+	    'N/A',
+	    v_wb_class_of_business1
 	) AS v_wb_class_of_business2,
 	pif_target_market_code AS in_pif_target_market_code,
 	-- *INF*: iif(isnull(in_pif_target_market_code) or IS_SPACES(in_pif_target_market_code) or LENGTH(in_pif_target_market_code)=0,'N/A',LTRIM(RTRIM(in_pif_target_market_code)))
-	IFF(in_pif_target_market_code IS NULL 
-		OR LENGTH(in_pif_target_market_code)>0 AND TRIM(in_pif_target_market_code)='' 
-		OR LENGTH(in_pif_target_market_code
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_target_market_code
-			)
-		)
+	IFF(
+	    in_pif_target_market_code IS NULL
+	    or LENGTH(in_pif_target_market_code)>0
+	    and TRIM(in_pif_target_market_code)=''
+	    or LENGTH(in_pif_target_market_code) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_target_market_code))
 	) AS pif_target_market_code,
 	-- *INF*: --:LKP.LKP_MARKETING_AK_ID(pif_target_market_code,pkg_code,prog_code)
 	'' AS v_marketing_ak_id,
@@ -1512,23 +1325,14 @@ EXP_values AS (
 	-- *INF*: --:LKP.LKP_PRODUCER_CODE_AK_ID(v_producer_code,v_agency_key,emp_id)
 	'' AS v_producer_code_ak_id,
 	-- *INF*: iif(isnull(v_marketing_ak_id),-1,v_marketing_ak_id)
-	IFF(v_marketing_ak_id IS NULL,
-		- 1,
-		v_marketing_ak_id
-	) AS mrktng_ak_id,
+	IFF(v_marketing_ak_id IS NULL, - 1, v_marketing_ak_id) AS mrktng_ak_id,
 	-- *INF*: iif(isnull(v_producer_code_ak_id),-1,v_producer_code_ak_id)
-	IFF(v_producer_code_ak_id IS NULL,
-		- 1,
-		v_producer_code_ak_id
-	) AS producer_code_ak_id,
+	IFF(v_producer_code_ak_id IS NULL, - 1, v_producer_code_ak_id) AS producer_code_ak_id,
 	-- *INF*: --:LKP.LKP_SUB_ASSOCIATION_PROGRAM_CODE(v_wb_class_of_business)
 	'' AS v_sub_association_program_type,
 	v_wb_class_of_business2 AS ClassOfBusiness,
 	-- *INF*: IIF(v_pif_prgm_id='N/A',v_wb_class_of_business2,v_pif_prgm_id)
-	IFF(v_pif_prgm_id = 'N/A',
-		v_wb_class_of_business2,
-		v_pif_prgm_id
-	) AS ProgramCode,
+	IFF(v_pif_prgm_id = 'N/A', v_wb_class_of_business2, v_pif_prgm_id) AS ProgramCode,
 	-- *INF*:   IIF(  SIGN(DATE_DIFF(v_pol_eff_date ,sysdate , 'DD')) <= 0 AND (
 	--      SIGN(DATE_DIFF(sysdate,v_pol_exp_date , 'DD'))  <= 0 OR    SIGN(DATE_DIFF(sysdate,v_pol_cancellation_date , 'DD'))  <= 0 ), 'I',
 	-- IIF(
@@ -1544,25 +1348,20 @@ EXP_values AS (
 	-- ---  Set to ""Cancelled""  when Policy Cancellation Date < Current Date 
 	-- --- Set to ""Expired"" when Policy Expiration Date <= Current Date AND  PIF-RENEWAL-CODE < 9
 	-- --- Set to ""Other"" for all policies that don't meet the criteria listed above.
-	IFF(SIGN(DATEDIFF(DAY,v_pol_eff_date,sysdate)
-		) <= 0 
-		AND ( SIGN(DATEDIFF(DAY,sysdate,v_pol_exp_date)
-			) <= 0 
-			OR SIGN(DATEDIFF(DAY,sysdate,v_pol_cancellation_date)
-			) <= 0 
-		),
-		'I',
-		IFF(SIGN(DATEDIFF(DAY,v_pol_cancellation_date,sysdate)
-			) < 0,
-			'C',
-			IFF(SIGN(DATEDIFF(DAY,v_pol_exp_date,sysdate)
-				) <= 0 
-				AND ( CAST(in_pif_renewal_code AS INTEGER) < 9 
-				),
-				'E',
-				'O'
-			)
-		)
+	IFF(
+	    SIGN(DATEDIFF(DAY,v_pol_eff_date,CURRENT_TIMESTAMP)) <= 0
+	    and (SIGN(DATEDIFF(DAY,CURRENT_TIMESTAMP,v_pol_exp_date)) <= 0
+	    or SIGN(DATEDIFF(DAY,CURRENT_TIMESTAMP,v_pol_cancellation_date)) <= 0),
+	    'I',
+	    IFF(
+	        SIGN(DATEDIFF(DAY,v_pol_cancellation_date,CURRENT_TIMESTAMP)) < 0, 'C',
+	        IFF(
+	            SIGN(DATEDIFF(DAY,v_pol_exp_date,CURRENT_TIMESTAMP)) <= 0
+	            and (CAST(in_pif_renewal_code AS INTEGER) < 9),
+	            'E',
+	            'O'
+	        )
+	    )
 	) AS v_policy_status_code1,
 	'N/A' AS v_policy_status_code2,
 	v_policy_status_code2 AS policy_status_code,
@@ -1838,10 +1637,7 @@ exp_user_code AS (
 	SELECT
 	use_code AS in_use_code,
 	-- *INF*: IIF(IN(in_use_code,'EA','EP'),in_use_code,'N/A')
-	IFF(in_use_code IN ('EA','EP'),
-		in_use_code,
-		'N/A'
-	) AS out_use_code
+	IFF(in_use_code IN ('EA','EP'), in_use_code, 'N/A') AS out_use_code
 	FROM LKP_PIF_12_stage
 ),
 LKP_SupSurchargeExempt AS (
@@ -2007,23 +1803,16 @@ mplt_PMS_StrategicProfitCenterInsuranceSegment AS (WITH
 		-- 	'2',
 		-- 	'N/A'
 		-- )
-		DECODE(TRUE,
-			in_pif_symbol IN ('HXX','HXY') 
-			AND in_pif_lob_code IN ('HAP','HP'), '1',
-			in_pif_symbol IN ('PXX','PXY') 
-			AND in_pif_lob_code IN ('APV','HAP','HP'), '1',
-			in_pif_symbol IN ('PXX','PXY') 
-			AND in_pif_lob_code IN ('ACV','AFV','BO','CF','SMP'), '2',
-			SUBSTR(in_pif_symbol, 1, 2
-			) IN ('SM') 
-			AND in_pif_lob_code IN ('SMP'), '2',
-			in_pif_symbol IN ('WMM','WMY','WXX','WXY') 
-			AND in_pif_lob_code IN ('WC'), '2',
-			in_pif_symbol IN ('XAA','XAY','XXX','XXY') 
-			AND in_pif_lob_code IN ('APV','HAP'), '1',
-			in_pif_symbol IN ('XAA','XAY','XXX','XXY') 
-			AND in_pif_lob_code IN ('ACV','AFV','BO','GL','SMP','WC'), '2',
-			'N/A'
+		DECODE(
+		    TRUE,
+		    in_pif_symbol IN ('HXX','HXY') AND in_pif_lob_code IN ('HAP','HP'), '1',
+		    in_pif_symbol IN ('PXX','PXY') AND in_pif_lob_code IN ('APV','HAP','HP'), '1',
+		    in_pif_symbol IN ('PXX','PXY') AND in_pif_lob_code IN ('ACV','AFV','BO','CF','SMP'), '2',
+		    SUBSTR(in_pif_symbol, 1, 2) IN ('SM') AND in_pif_lob_code IN ('SMP'), '2',
+		    in_pif_symbol IN ('WMM','WMY','WXX','WXY') AND in_pif_lob_code IN ('WC'), '2',
+		    in_pif_symbol IN ('XAA','XAY','XXX','XXY') AND in_pif_lob_code IN ('APV','HAP'), '1',
+		    in_pif_symbol IN ('XAA','XAY','XXX','XXY') AND in_pif_lob_code IN ('ACV','AFV','BO','GL','SMP','WC'), '2',
+		    'N/A'
 		) AS v_AS400_StrategicProfitCenterCode,
 		-- *INF*: DECODE(TRUE,
 		-- 	IN(in_pif_symbol,'HXX','HXY') AND IN (in_pif_lob_code,'HAP','HP'),
@@ -2043,23 +1832,16 @@ mplt_PMS_StrategicProfitCenterInsuranceSegment AS (WITH
 		-- 	'2',
 		-- 	'N/A'
 		-- )
-		DECODE(TRUE,
-			in_pif_symbol IN ('HXX','HXY') 
-			AND in_pif_lob_code IN ('HAP','HP'), '1',
-			in_pif_symbol IN ('PXX','PXY') 
-			AND in_pif_lob_code IN ('APV','HAP','HP'), '1',
-			in_pif_symbol IN ('PXX','PXY') 
-			AND in_pif_lob_code IN ('ACV','AFV','BO','CF','SMP'), '2',
-			SUBSTR(in_pif_symbol, 1, 2
-			) IN ('SM') 
-			AND in_pif_lob_code IN ('SMP'), '2',
-			in_pif_symbol IN ('WMM','WMY','WXX','WXY') 
-			AND in_pif_lob_code IN ('WC'), '2',
-			in_pif_symbol IN ('XAA','XAY','XXX','XXY') 
-			AND in_pif_lob_code IN ('APV','HAP'), '1',
-			in_pif_symbol IN ('XAA','XAY','XXX','XXY') 
-			AND in_pif_lob_code IN ('ACV','AFV','BO','GL','SMP','WC'), '2',
-			'N/A'
+		DECODE(
+		    TRUE,
+		    in_pif_symbol IN ('HXX','HXY') AND in_pif_lob_code IN ('HAP','HP'), '1',
+		    in_pif_symbol IN ('PXX','PXY') AND in_pif_lob_code IN ('APV','HAP','HP'), '1',
+		    in_pif_symbol IN ('PXX','PXY') AND in_pif_lob_code IN ('ACV','AFV','BO','CF','SMP'), '2',
+		    SUBSTR(in_pif_symbol, 1, 2) IN ('SM') AND in_pif_lob_code IN ('SMP'), '2',
+		    in_pif_symbol IN ('WMM','WMY','WXX','WXY') AND in_pif_lob_code IN ('WC'), '2',
+		    in_pif_symbol IN ('XAA','XAY','XXX','XXY') AND in_pif_lob_code IN ('APV','HAP'), '1',
+		    in_pif_symbol IN ('XAA','XAY','XXX','XXY') AND in_pif_lob_code IN ('ACV','AFV','BO','GL','SMP','WC'), '2',
+		    'N/A'
 		) AS v_AS400_InsuranceSegmentCode,
 		v_AS400_StrategicProfitCenterCode AS out_AS400_StrategicProfitCenterCode1,
 		v_AS400_InsuranceSegmentCode AS out_AS400_InsuranceSegmentCode1,
@@ -2068,19 +1850,11 @@ mplt_PMS_StrategicProfitCenterInsuranceSegment AS (WITH
 		-- '')
 		-- 
 		-- 
-		IFF(v_AS400_StrategicProfitCenterCode = 'N/A',
-			SUBSTR(in_pif_symbol, 1, 1
-			),
-			''
-		) AS out_PMS_pol_sym_1,
+		IFF(v_AS400_StrategicProfitCenterCode = 'N/A', SUBSTR(in_pif_symbol, 1, 1), '') AS out_PMS_pol_sym_1,
 		-- *INF*: IIF(v_AS400_StrategicProfitCenterCode= 'N/A',
 		-- SUBSTR(in_pif_pol_number,1,1),
 		-- '')
-		IFF(v_AS400_StrategicProfitCenterCode = 'N/A',
-			SUBSTR(in_pif_pol_number, 1, 1
-			),
-			''
-		) AS out_PMS_pol_num_1
+		IFF(v_AS400_StrategicProfitCenterCode = 'N/A', SUBSTR(in_pif_pol_number, 1, 1), '') AS out_PMS_pol_num_1
 		FROM INPUT
 	),
 	LKP_SupStrategicProfitCenterInsuranceSegment AS (
@@ -2110,17 +1884,17 @@ mplt_PMS_StrategicProfitCenterInsuranceSegment AS (WITH
 		-- in_PMS_StrategicProfitCenterCode,
 		-- in_AS400_StrategicProfitCenterCode
 		-- )
-		IFF(in_AS400_StrategicProfitCenterCode = 'N/A',
-			in_PMS_StrategicProfitCenterCode,
-			in_AS400_StrategicProfitCenterCode
+		IFF(
+		    in_AS400_StrategicProfitCenterCode = 'N/A', in_PMS_StrategicProfitCenterCode,
+		    in_AS400_StrategicProfitCenterCode
 		) AS v_StrategicProfitCenterCode,
 		-- *INF*: IIF(in_AS400_InsuranceSegmentCode='N/A',
 		-- in_PMS_InsuranceSegmentCode,
 		-- in_AS400_InsuranceSegmentCode
 		-- )
-		IFF(in_AS400_InsuranceSegmentCode = 'N/A',
-			in_PMS_InsuranceSegmentCode,
-			in_AS400_InsuranceSegmentCode
+		IFF(
+		    in_AS400_InsuranceSegmentCode = 'N/A', in_PMS_InsuranceSegmentCode,
+		    in_AS400_InsuranceSegmentCode
 		) AS v_InsuranceSegmentCode,
 		v_StrategicProfitCenterCode AS out_StrategicProfitCenterCode,
 		v_InsuranceSegmentCode AS out_InsuranceSegmentCode
@@ -2161,17 +1935,11 @@ mplt_PMS_StrategicProfitCenterInsuranceSegment AS (WITH
 		-- *INF*: IIF(ISNULL(in_StrategicProfitCenterAKId),
 		-- -1,
 		-- in_StrategicProfitCenterAKId)
-		IFF(in_StrategicProfitCenterAKId IS NULL,
-			- 1,
-			in_StrategicProfitCenterAKId
-		) AS v_StrategicProfitCenterAKId,
+		IFF(in_StrategicProfitCenterAKId IS NULL, - 1, in_StrategicProfitCenterAKId) AS v_StrategicProfitCenterAKId,
 		-- *INF*: IIF(ISNULL(in_InsuranceSegmentAKId),
 		-- -1,
 		-- in_InsuranceSegmentAKId)
-		IFF(in_InsuranceSegmentAKId IS NULL,
-			- 1,
-			in_InsuranceSegmentAKId
-		) AS v_InsuranceSegmentAKId,
+		IFF(in_InsuranceSegmentAKId IS NULL, - 1, in_InsuranceSegmentAKId) AS v_InsuranceSegmentAKId,
 		v_StrategicProfitCenterAKId AS out_StrategicProfitCenterAKId,
 		v_InsuranceSegmentAKId AS out_InsuranceSegmentAKId
 		FROM 
@@ -2197,28 +1965,17 @@ mplt_Strategic_Business_Division AS (WITH
 		policy_number,
 		policy_eff_date AS policy_eff_date_in,
 		-- *INF*: IIF(:UDF.DEFAULT_VALUE_FOR_STRINGS(policy_symbol) = 'N/A','N/A',substr(ltrim(rtrim(policy_symbol)),1,1))
-		IFF(:UDF.DEFAULT_VALUE_FOR_STRINGS(policy_symbol
-			) = 'N/A',
-			'N/A',
-			substr(ltrim(rtrim(policy_symbol
-					)
-				), 1, 1
-			)
+		IFF(
+		    UDF_DEFAULT_VALUE_FOR_STRINGS(policy_symbol) = 'N/A', 'N/A',
+		    substr(ltrim(rtrim(policy_symbol)), 1, 1)
 		) AS policy_symbol_position_1,
 		-- *INF*: IIF(:UDF.DEFAULT_VALUE_FOR_STRINGS(policy_number)='N/A','N/A',substr(ltrim(rtrim(policy_number)),1,1))
-		IFF(:UDF.DEFAULT_VALUE_FOR_STRINGS(policy_number
-			) = 'N/A',
-			'N/A',
-			substr(ltrim(rtrim(policy_number
-					)
-				), 1, 1
-			)
+		IFF(
+		    UDF_DEFAULT_VALUE_FOR_STRINGS(policy_number) = 'N/A', 'N/A',
+		    substr(ltrim(rtrim(policy_number)), 1, 1)
 		) AS policy_number_position_1,
 		-- *INF*: IIF(isnull(policy_eff_date_in),SYSDATE,policy_eff_date_in)
-		IFF(policy_eff_date_in IS NULL,
-			SYSDATE,
-			policy_eff_date_in
-		) AS policy_eff_date
+		IFF(policy_eff_date_in IS NULL, CURRENT_TIMESTAMP, policy_eff_date_in) AS policy_eff_date
 		FROM INPUT_Strategic_Business_Division
 	),
 	LKP_Strategic_Business_Division AS (
@@ -2253,25 +2010,13 @@ mplt_Strategic_Business_Division AS (WITH
 		strtgc_bus_dvsn_code,
 		strtgc_bus_dvsn_code_descript,
 		-- *INF*: IIF(isnull(strtgc_bus_dvsn_id),-1,strtgc_bus_dvsn_id)
-		IFF(strtgc_bus_dvsn_id IS NULL,
-			- 1,
-			strtgc_bus_dvsn_id
-		) AS strtgc_bus_dvsn_id_out,
+		IFF(strtgc_bus_dvsn_id IS NULL, - 1, strtgc_bus_dvsn_id) AS strtgc_bus_dvsn_id_out,
 		-- *INF*: IIF(isnull(strtgc_bus_dvsn_ak_id),-1,strtgc_bus_dvsn_ak_id)
-		IFF(strtgc_bus_dvsn_ak_id IS NULL,
-			- 1,
-			strtgc_bus_dvsn_ak_id
-		) AS strtgc_bus_dvsn_ak_id_out,
+		IFF(strtgc_bus_dvsn_ak_id IS NULL, - 1, strtgc_bus_dvsn_ak_id) AS strtgc_bus_dvsn_ak_id_out,
 		-- *INF*: IIF(isnull(strtgc_bus_dvsn_code),'N/A',strtgc_bus_dvsn_code)
-		IFF(strtgc_bus_dvsn_code IS NULL,
-			'N/A',
-			strtgc_bus_dvsn_code
-		) AS strtgc_bus_dvsn_code_out,
+		IFF(strtgc_bus_dvsn_code IS NULL, 'N/A', strtgc_bus_dvsn_code) AS strtgc_bus_dvsn_code_out,
 		-- *INF*: IIF(isnull(strtgc_bus_dvsn_code_descript),'N/A',strtgc_bus_dvsn_code_descript)
-		IFF(strtgc_bus_dvsn_code_descript IS NULL,
-			'N/A',
-			strtgc_bus_dvsn_code_descript
-		) AS strtgc_bus_dvsn_code_descript_out
+		IFF(strtgc_bus_dvsn_code_descript IS NULL, 'N/A', strtgc_bus_dvsn_code_descript) AS strtgc_bus_dvsn_code_descript_out
 		FROM LKP_Strategic_Business_Division
 	),
 	OUTPUT_return_Strategic_Business_Division AS (
@@ -2448,180 +2193,131 @@ EXP_Detect_Changes AS (
 	--   -1,
 	--   in_cust_ak_id
 	-- )
-	IFF(in_cust_ak_id IS NULL,
-		- 1,
-		in_cust_ak_id
-	) AS v_cust_ak_id,
+	IFF(in_cust_ak_id IS NULL, - 1, in_cust_ak_id) AS v_cust_ak_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_agency_ak_id),
 	--   -1,
 	-- in_agency_ak_id
 	-- )
-	IFF(in_agency_ak_id IS NULL,
-		- 1,
-		in_agency_ak_id
-	) AS v_agency_ak_id,
+	IFF(in_agency_ak_id IS NULL, - 1, in_agency_ak_id) AS v_agency_ak_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_AgencyAKID ),
 	--   -1,
 	--  in_AgencyAKID
 	-- )
-	IFF(in_AgencyAKID IS NULL,
-		- 1,
-		in_AgencyAKID
-	) AS v_AgencyAKId,
+	IFF(in_AgencyAKID IS NULL, - 1, in_AgencyAKID) AS v_AgencyAKId,
 	-- *INF*: IIF(
 	--   ISNULL( in_producer_code_id ),
 	--   -1,
 	--   in_producer_code_id
 	-- )
-	IFF(in_producer_code_id IS NULL,
-		- 1,
-		in_producer_code_id
-	) AS v_producer_code_id,
+	IFF(in_producer_code_id IS NULL, - 1, in_producer_code_id) AS v_producer_code_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_producer_code_ak_id ),
 	--   -1,
 	--   in_producer_code_ak_id
 	-- )
-	IFF(in_producer_code_ak_id IS NULL,
-		- 1,
-		in_producer_code_ak_id
-	) AS v_producer_code_ak_id,
+	IFF(in_producer_code_ak_id IS NULL, - 1, in_producer_code_ak_id) AS v_producer_code_ak_id,
 	-- *INF*: IIF(
 	--   ISNULL( in_strtgc_bus_dvsn_ak_id ),
 	--   -1,
 	--   in_strtgc_bus_dvsn_ak_id
 	-- )
-	IFF(in_strtgc_bus_dvsn_ak_id IS NULL,
-		- 1,
-		in_strtgc_bus_dvsn_ak_id
-	) AS v_strtgc_bus_dvsn_ak_id,
+	IFF(in_strtgc_bus_dvsn_ak_id IS NULL, - 1, in_strtgc_bus_dvsn_ak_id) AS v_strtgc_bus_dvsn_ak_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_sup_bus_class_code_id),
 	--   -1,
 	--   in_sup_bus_class_code_id
 	-- )
-	IFF(in_sup_bus_class_code_id IS NULL,
-		- 1,
-		in_sup_bus_class_code_id
-	) AS v_sup_bus_class_code_id,
+	IFF(in_sup_bus_class_code_id IS NULL, - 1, in_sup_bus_class_code_id) AS v_sup_bus_class_code_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_sup_pol_term_id),
 	--   -1,
 	--   in_sup_pol_term_id
 	-- )
-	IFF(in_sup_pol_term_id IS NULL,
-		- 1,
-		in_sup_pol_term_id
-	) AS v_sup_pol_term_id,
+	IFF(in_sup_pol_term_id IS NULL, - 1, in_sup_pol_term_id) AS v_sup_pol_term_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_sup_pol_status_code_id),
 	--   -1,
 	--   in_sup_pol_status_code_id
 	-- )
-	IFF(in_sup_pol_status_code_id IS NULL,
-		- 1,
-		in_sup_pol_status_code_id
-	) AS v_sup_pol_status_code_id,
+	IFF(in_sup_pol_status_code_id IS NULL, - 1, in_sup_pol_status_code_id) AS v_sup_pol_status_code_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_sup_pol_audit_frqncy_id),
 	--   -1,
 	--   in_sup_pol_audit_frqncy_id
 	-- )
-	IFF(in_sup_pol_audit_frqncy_id IS NULL,
-		- 1,
-		in_sup_pol_audit_frqncy_id
-	) AS v_sup_pol_audit_frqncy_id,
+	IFF(in_sup_pol_audit_frqncy_id IS NULL, - 1, in_sup_pol_audit_frqncy_id) AS v_sup_pol_audit_frqncy_id,
 	-- *INF*: IIF(
 	--   ISNULL(in_sup_industry_risk_grade_code_id),
 	--   -1,
 	--   in_sup_industry_risk_grade_code_id
 	-- )
-	IFF(in_sup_industry_risk_grade_code_id IS NULL,
-		- 1,
-		in_sup_industry_risk_grade_code_id
-	) AS v_sup_industry_risk_grade_code_id,
+	IFF(in_sup_industry_risk_grade_code_id IS NULL, - 1, in_sup_industry_risk_grade_code_id) AS v_sup_industry_risk_grade_code_id,
 	-- *INF*: IIF(ISNULL(in_sup_state_id), -1, in_sup_state_id)
-	IFF(in_sup_state_id IS NULL,
-		- 1,
-		in_sup_state_id
-	) AS v_sup_state_id,
+	IFF(in_sup_state_id IS NULL, - 1, in_sup_state_id) AS v_sup_state_id,
 	-- *INF*: IIF(ISNULL(in_StrategicProfitCenterAKId), -1, in_StrategicProfitCenterAKId)
-	IFF(in_StrategicProfitCenterAKId IS NULL,
-		- 1,
-		in_StrategicProfitCenterAKId
-	) AS v_StrategicProfitCenterAKId,
+	IFF(in_StrategicProfitCenterAKId IS NULL, - 1, in_StrategicProfitCenterAKId) AS v_StrategicProfitCenterAKId,
 	-- *INF*: substr(pif_symbol,1,2)
-	substr(pif_symbol, 1, 2
-	) AS v_pif_symbol_02_F2,
+	substr(pif_symbol, 1, 2) AS v_pif_symbol_02_F2,
 	-- *INF*: substr(pif_symbol,1,1)
-	substr(pif_symbol, 1, 1
-	) AS v_pif_symbol_02_F1,
+	substr(pif_symbol, 1, 1) AS v_pif_symbol_02_F1,
 	-- *INF*: IIF(ISNULL(in_InsuranceSegmentAKId), -1, in_InsuranceSegmentAKId)
-	IFF(in_InsuranceSegmentAKId IS NULL,
-		- 1,
-		in_InsuranceSegmentAKId
-	) AS v_InsuranceSegmentAKId,
+	IFF(in_InsuranceSegmentAKId IS NULL, - 1, in_InsuranceSegmentAKId) AS v_InsuranceSegmentAKId,
 	-- *INF*: IIF(
 	--   ISNULL(in_ProgramAKId),
 	--   -1,
 	--   in_ProgramAKId
 	-- )
-	IFF(in_ProgramAKId IS NULL,
-		- 1,
-		in_ProgramAKId
-	) AS v_ProgramAKId,
+	IFF(in_ProgramAKId IS NULL, - 1, in_ProgramAKId) AS v_ProgramAKId,
 	in_PolicyOfferingAKId AS v_PolicyOfferingAKId,
 	-- *INF*: :LKP.LKP_POLICYOFFERINGAKID('000')
 	LKP_POLICYOFFERINGAKID__000.PolicyOfferingAKId AS v_PolicyOfferingAKId_default,
 	-- *INF*: DECODE(lkp_AutomaticRenewalIndicator, 'T', '1', 'F', '0', NULL)
-	DECODE(lkp_AutomaticRenewalIndicator,
-		'T', '1',
-		'F', '0',
-		NULL
+	DECODE(
+	    lkp_AutomaticRenewalIndicator,
+	    'T', '1',
+	    'F', '0',
+	    NULL
 	) AS v_lkp_AutomaticRenewalIndicator,
 	-- *INF*: iif(isnull(in_AssociationCode ) or IS_SPACES(in_AssociationCode ) or LENGTH(in_AssociationCode )=0,'N/A',in_AssociationCode )
-	IFF(in_AssociationCode IS NULL 
-		OR LENGTH(in_AssociationCode)>0 AND TRIM(in_AssociationCode)='' 
-		OR LENGTH(in_AssociationCode
-		) = 0,
-		'N/A',
-		in_AssociationCode
+	IFF(
+	    in_AssociationCode IS NULL
+	    or LENGTH(in_AssociationCode)>0
+	    and TRIM(in_AssociationCode)=''
+	    or LENGTH(in_AssociationCode) = 0,
+	    'N/A',
+	    in_AssociationCode
 	) AS v_AssociationCode,
 	-- *INF*: IIF(ISNULL(in_AgencyEmployeeAKID), -1, in_AgencyEmployeeAKID)
-	IFF(in_AgencyEmployeeAKID IS NULL,
-		- 1,
-		in_AgencyEmployeeAKID
-	) AS v_AgencyEmployeeAKId,
+	IFF(in_AgencyEmployeeAKID IS NULL, - 1, in_AgencyEmployeeAKID) AS v_AgencyEmployeeAKId,
 	LKP_ProgramAKId.in_ProgramCode,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_StrategicProfitCenter(v_StrategicProfitCenterAKId)), 'N/A', :LKP.LKP_StrategicProfitCenter(v_StrategicProfitCenterAKId))
-	IFF(LKP_STRATEGICPROFITCENTER_v_StrategicProfitCenterAKId.StrategicProfitCenterAbbreviation IS NULL,
-		'N/A',
-		LKP_STRATEGICPROFITCENTER_v_StrategicProfitCenterAKId.StrategicProfitCenterAbbreviation
+	IFF(
+	    LKP_STRATEGICPROFITCENTER_v_StrategicProfitCenterAKId.StrategicProfitCenterAbbreviation IS NULL,
+	    'N/A',
+	    LKP_STRATEGICPROFITCENTER_v_StrategicProfitCenterAKId.StrategicProfitCenterAbbreviation
 	) AS v_StrategicProfitCenterAbbrev,
 	-- *INF*: DECODE(TRUE, 
 	-- SUBSTR(pif_symbol, 1, 2) = 'NC', 'N',
 	-- in_ProgramCode = 'XD', 'N',
 	-- v_StrategicProfitCenterAbbrev = 'WB - PL' AND in_pol_issue_code = 'R' AND pif_module = '00', 'N',
 	-- in_pol_issue_code)
-	DECODE(TRUE,
-		SUBSTR(pif_symbol, 1, 2
-		) = 'NC', 'N',
-		in_ProgramCode = 'XD', 'N',
-		v_StrategicProfitCenterAbbrev = 'WB - PL' 
-		AND in_pol_issue_code = 'R' 
-		AND pif_module = '00', 'N',
-		in_pol_issue_code
+	DECODE(
+	    TRUE,
+	    SUBSTR(pif_symbol, 1, 2) = 'NC', 'N',
+	    in_ProgramCode = 'XD', 'N',
+	    v_StrategicProfitCenterAbbrev = 'WB - PL' AND in_pol_issue_code = 'R' AND pif_module = '00', 'N',
+	    in_pol_issue_code
 	) AS v_pol_issue_code,
 	-- *INF*: IIF(
 	--   ISNULL(:LKP.LKP_sup_policy_issue_code(v_pol_issue_code)),
 	--   -1,
 	--   :LKP.LKP_sup_policy_issue_code(v_pol_issue_code)
 	-- )
-	IFF(LKP_SUP_POLICY_ISSUE_CODE_v_pol_issue_code.sup_pol_issue_code_id IS NULL,
-		- 1,
-		LKP_SUP_POLICY_ISSUE_CODE_v_pol_issue_code.sup_pol_issue_code_id
+	IFF(
+	    LKP_SUP_POLICY_ISSUE_CODE_v_pol_issue_code.sup_pol_issue_code_id IS NULL, - 1,
+	    LKP_SUP_POLICY_ISSUE_CODE_v_pol_issue_code.sup_pol_issue_code_id
 	) AS v_sup_pol_issue_code_id,
 	-- *INF*: IIF(ISNULL(lkp_pol_ak_id), 'NEW', 
 	-- IIF(lkp_contract_cust_ak_id != v_cust_ak_id OR 
@@ -2707,257 +2403,90 @@ EXP_Detect_Changes AS (
 	-- 'UPDATE', 'NOCHANGE'))
 	-- 
 	-- --OR  LTRIM(RTRIM(lkp_InsuranceSegmentCode)) != LTRIM(RTRIM(v_InsuranceSegmentCode))
-	IFF(lkp_pol_ak_id IS NULL,
-		'NEW',
-		IFF(lkp_contract_cust_ak_id != v_cust_ak_id 
-			OR lkp_agency_ak_id <> in_agency_ak_id 
-			OR lkp_AgencyAKId != v_AgencyAKId 
-			OR LTRIM(RTRIM(lkp_mco
-				)
-			) != LTRIM(RTRIM(mco
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_pol_co_num
-				)
-			) != LTRIM(RTRIM(pol_co_num
-				)
-			) 
-			OR lkp_pol_eff_date != pol_eff_date 
-			OR lkp_pol_exp_date != pol_exp_date 
-			OR lkp_orig_incptn_date != orig_incep_date 
-			OR LTRIM(RTRIM(lkp_prim_bus_class_code
-				)
-			) != LTRIM(RTRIM(prim_bus_class_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_reins_code
-				)
-			) != LTRIM(RTRIM(reins_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_pms_pol_lob_code
-				)
-			) != LTRIM(RTRIM(pif_pol_lob_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_pol_co_line_code
-				)
-			) != LTRIM(RTRIM(pol_co_line_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_pol_cancellation_ind
-				)
-			) != LTRIM(RTRIM(pol_cancellation_ind
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_pol_cancellation_rsn_code
-				)
-			) != LTRIM(RTRIM(pol_cancellation_rsn_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_state_of_domicile_code
-				)
-			) != LTRIM(RTRIM(state_of_domicile_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_wbconnect_upload_code
-				)
-			) != LTRIM(RTRIM(wbconnect_upload_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_serv_center_support_code
-				)
-			) != LTRIM(RTRIM(serv_center_support_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_pol_term
-				)
-			) != LTRIM(RTRIM(pol_term
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_terrorism_risk_ind
-				)
-			) != LTRIM(RTRIM(terrorism_risk_ind
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_prior_pol_key
-				)
-			) != LTRIM(RTRIM(prior_pol_key
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_pol_issue_code
-				)
-			) != LTRIM(RTRIM(v_pol_issue_code
-				)
-			) 
-			OR lkp_pol_age != pol_age 
-			OR LTRIM(RTRIM(lkp_industry_risk_grade_code
-				)
-			) != LTRIM(RTRIM(industry_risk_grade_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_uw_review_yr
-				)
-			) != LTRIM(RTRIM(uw_review_yr
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_mvr_request_code
-				)
-			) != LTRIM(RTRIM(mvr_request_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_renl_code
-				)
-			) != LTRIM(RTRIM(renl_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_amend_num
-				)
-			) != LTRIM(RTRIM(amend_num
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_anniversary_rerate_code
-				)
-			) != LTRIM(RTRIM(anniversary_rerate_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_pol_audit_frqncy
-				)
-			) != LTRIM(RTRIM(pol_audit_frqncy
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_final_audit_code
-				)
-			) != LTRIM(RTRIM(final_audit_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_zip_ind
-				)
-			) != LTRIM(RTRIM(zip_ind
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_guarantee_ind
-				)
-			) != LTRIM(RTRIM(gutantee_ind
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_variation_code
-				)
-			) != LTRIM(RTRIM(variation_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_county
-				)
-			) != LTRIM(RTRIM(county
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_non_smoker_disc_code
-				)
-			) != LTRIM(RTRIM(non_smoker_disc_code
-				)
-			) 
-			OR lkp_renl_disc != renl_disc 
-			OR lkp_renl_safe_driver_disc_count != renl_safe_driver_disc_count 
-			OR lkp_nonrenewal_flag_date != non_renewal_flag_date 
-			OR lkp_audit_complt_date != audit_complt_date 
-			OR lkp_orig_acct_date != original_account_date 
-			OR lkp_pol_enter_date != pol_enter_date 
-			OR LTRIM(RTRIM(lkp_excess_claim_code
-				)
-			) != LTRIM(RTRIM(excess_claim_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_pol_status_on_pif
-				)
-			) != LTRIM(RTRIM(pif_policy_status_on
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_target_mrkt_code
-				)
-			) != LTRIM(RTRIM(pif_target_market_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_pkg_code
-				)
-			) != LTRIM(RTRIM(pkg_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_bus_seg_code
-				)
-			) != LTRIM(RTRIM(pif_seg_id
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_pif_upload_audit_ind
-				)
-			) != LTRIM(RTRIM(pif_upload_audit
-				)
-			) 
-			OR lkp_producer_code_ak_id != v_producer_code_ak_id 
-			OR LTRIM(RTRIM(lkp_prdcr_code
-				)
-			) != LTRIM(RTRIM(producer_code
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_ClassOfBusiness
-				)
-			) != LTRIM(RTRIM(ClassOfBusiness
-				)
-			) 
-			OR lkp_strtgc_bus_dvsn_ak_id != v_strtgc_bus_dvsn_ak_id 
-			OR LTRIM(RTRIM(lkp_RenewalPolicyNumber
-				)
-			) != LTRIM(RTRIM(renewalpolicynumber
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_RenewalPolicySymbol
-				)
-			) != LTRIM(RTRIM(renewalpolicysymbol
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_RenewalPolicyMod
-				)
-			) != LTRIM(RTRIM(RenewalPolicyMod
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_BillingType
-				)
-			) != LTRIM(RTRIM(BillingType
-				)
-			) 
-			OR lkp_producer_code_id != v_producer_code_id 
-			OR lkp_sup_bus_class_code_id != v_sup_bus_class_code_id 
-			OR lkp_sup_pol_term_id != v_sup_pol_term_id 
-			OR lkp_sup_pol_issue_code_id != v_sup_pol_issue_code_id 
-			OR lkp_sup_pol_audit_frqncy_id != v_sup_pol_audit_frqncy_id 
-			OR lkp_sup_industry_risk_grade_code_id != v_sup_industry_risk_grade_code_id 
-			OR lkp_sup_state_id != v_sup_state_id 
-			OR LTRIM(RTRIM(lkp_SurchargeExemptCode
-				)
-			) != LTRIM(RTRIM(SurchargeExemptCode
-				)
-			) 
-			OR lkp_SupSurchargeExemptID != SupSurchargeExemptID 
-			OR lkp_StrategicProfitCenterAKId != v_StrategicProfitCenterAKId 
-			OR lkp_InsuranceSegmentAKId != v_InsuranceSegmentAKId 
-			OR LTRIM(RTRIM(lkp_AssociationCode
-				)
-			) != LTRIM(RTRIM(v_AssociationCode
-				)
-			) 
-			OR lkp_ProgramAKId != v_ProgramAKId 
-			OR ( lkp_PolicyOfferingAKId != v_PolicyOfferingAKId 
-				AND ( lkp_PolicyOfferingAKId = - 1 
-					OR lkp_PolicyOfferingAKId = v_PolicyOfferingAKId_default 
-				) 
-			) 
-			OR lkp_ObligeeName != ObligeeName 
-			OR lkp_AutomatedUnderwritingServicesIndicator != AutomatedUnderwritingServicesIndicator 
-			OR v_lkp_AutomaticRenewalIndicator != AutomaticRenewalIndicator 
-			OR lkp_AgencyEmployeeAKId != in_AgencyEmployeeAKID 
-			OR 1 != 1,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    lkp_pol_ak_id IS NULL, 'NEW',
+	    IFF(
+	        lkp_contract_cust_ak_id != v_cust_ak_id
+	        or lkp_agency_ak_id <> in_agency_ak_id
+	        or lkp_AgencyAKId != v_AgencyAKId
+	        or LTRIM(RTRIM(lkp_mco)) != LTRIM(RTRIM(mco))
+	        or LTRIM(RTRIM(lkp_pol_co_num)) != LTRIM(RTRIM(pol_co_num))
+	        or lkp_pol_eff_date != pol_eff_date
+	        or lkp_pol_exp_date != pol_exp_date
+	        or lkp_orig_incptn_date !=
+	        orig_incep_date
+	        or LTRIM(RTRIM(lkp_prim_bus_class_code)) != LTRIM(RTRIM(prim_bus_class_code))
+	        or LTRIM(RTRIM(lkp_reins_code)) != LTRIM(RTRIM(reins_code))
+	        or LTRIM(RTRIM(lkp_pms_pol_lob_code)) != LTRIM(RTRIM(pif_pol_lob_code))
+	        or LTRIM(RTRIM(lkp_pol_co_line_code)) != LTRIM(RTRIM(pol_co_line_code))
+	        or LTRIM(RTRIM(lkp_pol_cancellation_ind)) != LTRIM(RTRIM(pol_cancellation_ind))
+	        or LTRIM(RTRIM(lkp_pol_cancellation_rsn_code)) != LTRIM(RTRIM(pol_cancellation_rsn_code))
+	        or LTRIM(RTRIM(lkp_state_of_domicile_code)) != LTRIM(RTRIM(state_of_domicile_code))
+	        or LTRIM(RTRIM(lkp_wbconnect_upload_code)) != LTRIM(RTRIM(wbconnect_upload_code))
+	        or LTRIM(RTRIM(lkp_serv_center_support_code)) != LTRIM(RTRIM(serv_center_support_code))
+	        or LTRIM(RTRIM(lkp_pol_term)) != LTRIM(RTRIM(pol_term))
+	        or LTRIM(RTRIM(lkp_terrorism_risk_ind)) != LTRIM(RTRIM(terrorism_risk_ind))
+	        or LTRIM(RTRIM(lkp_prior_pol_key)) != LTRIM(RTRIM(prior_pol_key))
+	        or LTRIM(RTRIM(lkp_pol_issue_code)) != LTRIM(RTRIM(v_pol_issue_code))
+	        or lkp_pol_age != pol_age
+	        or LTRIM(RTRIM(lkp_industry_risk_grade_code)) != LTRIM(RTRIM(industry_risk_grade_code))
+	        or LTRIM(RTRIM(lkp_uw_review_yr)) != LTRIM(RTRIM(uw_review_yr))
+	        or LTRIM(RTRIM(lkp_mvr_request_code)) != LTRIM(RTRIM(mvr_request_code))
+	        or LTRIM(RTRIM(lkp_renl_code)) != LTRIM(RTRIM(renl_code))
+	        or LTRIM(RTRIM(lkp_amend_num)) != LTRIM(RTRIM(amend_num))
+	        or LTRIM(RTRIM(lkp_anniversary_rerate_code)) != LTRIM(RTRIM(anniversary_rerate_code))
+	        or LTRIM(RTRIM(lkp_pol_audit_frqncy)) != LTRIM(RTRIM(pol_audit_frqncy))
+	        or LTRIM(RTRIM(lkp_final_audit_code)) != LTRIM(RTRIM(final_audit_code))
+	        or LTRIM(RTRIM(lkp_zip_ind)) != LTRIM(RTRIM(zip_ind))
+	        or LTRIM(RTRIM(lkp_guarantee_ind)) != LTRIM(RTRIM(gutantee_ind))
+	        or LTRIM(RTRIM(lkp_variation_code)) != LTRIM(RTRIM(variation_code))
+	        or LTRIM(RTRIM(lkp_county)) != LTRIM(RTRIM(county))
+	        or LTRIM(RTRIM(lkp_non_smoker_disc_code)) != LTRIM(RTRIM(non_smoker_disc_code))
+	        or lkp_renl_disc != renl_disc
+	        or lkp_renl_safe_driver_disc_count != renl_safe_driver_disc_count
+	        or lkp_nonrenewal_flag_date != non_renewal_flag_date
+	        or lkp_audit_complt_date != audit_complt_date
+	        or lkp_orig_acct_date !=
+	        original_account_date
+	        or lkp_pol_enter_date != pol_enter_date
+	        or LTRIM(RTRIM(lkp_excess_claim_code)) != LTRIM(RTRIM(excess_claim_code))
+	        or LTRIM(RTRIM(lkp_pol_status_on_pif)) != LTRIM(RTRIM(pif_policy_status_on))
+	        or LTRIM(RTRIM(lkp_target_mrkt_code)) != LTRIM(RTRIM(pif_target_market_code))
+	        or LTRIM(RTRIM(lkp_pkg_code)) != LTRIM(RTRIM(pkg_code))
+	        or LTRIM(RTRIM(lkp_bus_seg_code)) != LTRIM(RTRIM(pif_seg_id))
+	        or LTRIM(RTRIM(lkp_pif_upload_audit_ind)) != LTRIM(RTRIM(pif_upload_audit))
+	        or lkp_producer_code_ak_id != v_producer_code_ak_id
+	        or LTRIM(RTRIM(lkp_prdcr_code)) != LTRIM(RTRIM(producer_code))
+	        or LTRIM(RTRIM(lkp_ClassOfBusiness)) != LTRIM(RTRIM(ClassOfBusiness))
+	        or lkp_strtgc_bus_dvsn_ak_id != v_strtgc_bus_dvsn_ak_id
+	        or LTRIM(RTRIM(lkp_RenewalPolicyNumber)) != LTRIM(RTRIM(renewalpolicynumber))
+	        or LTRIM(RTRIM(lkp_RenewalPolicySymbol)) != LTRIM(RTRIM(renewalpolicysymbol))
+	        or LTRIM(RTRIM(lkp_RenewalPolicyMod)) != LTRIM(RTRIM(RenewalPolicyMod))
+	        or LTRIM(RTRIM(lkp_BillingType)) != LTRIM(RTRIM(BillingType))
+	        or lkp_producer_code_id != v_producer_code_id
+	        or lkp_sup_bus_class_code_id != v_sup_bus_class_code_id
+	        or lkp_sup_pol_term_id != v_sup_pol_term_id
+	        or lkp_sup_pol_issue_code_id != v_sup_pol_issue_code_id
+	        or lkp_sup_pol_audit_frqncy_id != v_sup_pol_audit_frqncy_id
+	        or lkp_sup_industry_risk_grade_code_id != v_sup_industry_risk_grade_code_id
+	        or lkp_sup_state_id != v_sup_state_id
+	        or LTRIM(RTRIM(lkp_SurchargeExemptCode)) != LTRIM(RTRIM(SurchargeExemptCode))
+	        or lkp_SupSurchargeExemptID != SupSurchargeExemptID
+	        or lkp_StrategicProfitCenterAKId != v_StrategicProfitCenterAKId
+	        or lkp_InsuranceSegmentAKId != v_InsuranceSegmentAKId
+	        or LTRIM(RTRIM(lkp_AssociationCode)) != LTRIM(RTRIM(v_AssociationCode))
+	        or lkp_ProgramAKId != v_ProgramAKId
+	        or (lkp_PolicyOfferingAKId != v_PolicyOfferingAKId
+	        and (lkp_PolicyOfferingAKId = - 1
+	        or lkp_PolicyOfferingAKId = v_PolicyOfferingAKId_default))
+	        or lkp_ObligeeName != ObligeeName
+	        or lkp_AutomatedUnderwritingServicesIndicator != AutomatedUnderwritingServicesIndicator
+	        or v_lkp_AutomaticRenewalIndicator != AutomaticRenewalIndicator
+	        or lkp_AgencyEmployeeAKId != in_AgencyEmployeeAKID
+	        or 1 != 1,
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	-- *INF*: :LKP.LKP_PIF02_MAXDATE(1)
 	LKP_PIF02_MAXDATE_1.pif_date_time_stamp AS lkp_pif_date_time_stamp,
@@ -2967,16 +2496,13 @@ EXP_Detect_Changes AS (
 	-- *INF*: DECODE(TRUE,
 	-- v_changed_flag='NEW',	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- IS_DATE(lkp_pif_date_time_stamp,'YYYYMMDD'),TO_DATE(lkp_pif_date_time_stamp||' 23:59:59','YYYYMMDD HH24:MI:SS'))
-	DECODE(TRUE,
-		v_changed_flag = 'NEW', to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		IS_DATE(lkp_pif_date_time_stamp, 'YYYYMMDD'
-		), TO_DATE(lkp_pif_date_time_stamp || ' 23:59:59', 'YYYYMMDD HH24:MI:SS'
-		)
+	DECODE(
+	    TRUE,
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    IS_DATE(lkp_pif_date_time_stamp, 'YYYYMMDD'), TO_TIMESTAMP(lkp_pif_date_time_stamp || ' 23:59:59', 'YYYYMMDD HH24:MI:SS')
 	) AS out_eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS out_eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS out_eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS out_source_sys_id,
 	SYSDATE AS out_created_date,
 	SYSDATE AS out_modified_date,
@@ -2996,11 +2522,12 @@ EXP_Detect_Changes AS (
 	v_StrategicProfitCenterAKId AS out_StrategicProfitCenterAKId,
 	v_InsuranceSegmentAKId AS out_InsuranceSegmentAKId,
 	-- *INF*: IIF(ISNULL(lkp_PolicyOfferingAKId) OR lkp_PolicyOfferingAKId=v_PolicyOfferingAKId_default OR lkp_PolicyOfferingAKId=-1, in_PolicyOfferingAKId, lkp_PolicyOfferingAKId)
-	IFF(lkp_PolicyOfferingAKId IS NULL 
-		OR lkp_PolicyOfferingAKId = v_PolicyOfferingAKId_default 
-		OR lkp_PolicyOfferingAKId = - 1,
-		in_PolicyOfferingAKId,
-		lkp_PolicyOfferingAKId
+	IFF(
+	    lkp_PolicyOfferingAKId IS NULL
+	    or lkp_PolicyOfferingAKId = v_PolicyOfferingAKId_default
+	    or lkp_PolicyOfferingAKId = - 1,
+	    in_PolicyOfferingAKId,
+	    lkp_PolicyOfferingAKId
 	) AS out_PolicyOfferingAKId,
 	v_ProgramAKId AS out_ProgramAKId,
 	v_AssociationCode AS out_AssociationCode,
@@ -3227,10 +2754,7 @@ EXP_policy_ak_id AS (
 	RenewalPolicyMod,
 	BillingType,
 	-- *INF*: iif(isnull(lkp_pol_ak_id),NEXTVAL,lkp_pol_ak_id)
-	IFF(lkp_pol_ak_id IS NULL,
-		NEXTVAL,
-		lkp_pol_ak_id
-	) AS pol_ak_id,
+	IFF(lkp_pol_ak_id IS NULL, NEXTVAL, lkp_pol_ak_id) AS pol_ak_id,
 	'D' AS pol_kind_code,
 	0 AS Default_Int,
 	producer_code_id,
@@ -3261,9 +2785,10 @@ EXP_policy_ak_id AS (
 	-- *INF*: DECODE( TRUE,
 	-- pif_dc_bill_ind = 'Y',1,
 	-- 0)
-	DECODE(TRUE,
-		pif_dc_bill_ind = 'Y', 1,
-		0
+	DECODE(
+	    TRUE,
+	    pif_dc_bill_ind = 'Y', 1,
+	    0
 	) AS DCBillFlag,
 	'N/A' AS IssuedUWID,
 	'N/A' AS IssuedUnderwriter
@@ -3412,9 +2937,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- pol_ak_id = v_prev_pol_ak_id ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),eff_to_date1)
-	DECODE(TRUE,
-		pol_ak_id = v_prev_pol_ak_id, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		eff_to_date1
+	DECODE(
+	    TRUE,
+	    pol_ak_id = v_prev_pol_ak_id, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    eff_to_date1
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	pol_ak_id AS v_prev_pol_ak_id,

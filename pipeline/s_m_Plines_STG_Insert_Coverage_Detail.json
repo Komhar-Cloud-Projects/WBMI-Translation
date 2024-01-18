@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Plines_STG_Insert_Coverage_Detail",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Plines_STG_Insert_Coverage_Detail",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_coverage_detail AS (\n\tSELECT\n\t\tcov_detail_seq,\n\t\tcov_master_seq,\n\t\tnum_of_item,\n\t\tstreet,\n\t\tcity,\n\t\tstate_type_code,\n\t\tzip_type_code,\n\t\tlimit_type_code,\n\t\tdescript,\n\t\tcorporal_punish_flag,\n\t\tpremium,\n\t\tamt,\n\t\tmax_amt,\n\t\tcomputer_type_code,\n\t\tcrop_farm_flag,\n\t\tlive_stock_flag,\n\t\tnum_acre,\n\t\tbus_loc_descript,\n\t\tloc_type_code,\n\t\tsched_sent_by_type_code,\n\t\tcollapse_eff_date,\n\t\ttheft_eff_date,\n\t\tveneer_flag,\n\t\tdamage_flag,\n\t\ttank_capacity,\n\t\ttank_age,\n\t\ttank_loc_type_code,\n\t\tded_type_code,\n\t\tloan_carry_over_flag,\n\t\tappraisal_date,\n\t\tpers_inj_protect_type_code,\n\t\tfarmed_by,\n\t\tother_const_type,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\tcov_detail_num,\n\t\teq_struct_code,\n\t\teq_zone,\n\t\teq_ded_prcnt,\n\t\teq_struct_descript,\n\t\teq_limit_amt,\n\t\tveh_loan_flag,\n\t\ttime_share_flag,\n\t\tincidental_occupancy_code,\n\t\tgross_receipts,\n\t\temployee_assistant_premises_flag,\n\t\tassisted_living_facility_code,\n\t\tbusiness_ownership_type_flag,\n\t\tname_of_living_facility,\n\t\tname_of_insd_person_in_living_facility,\n\t\trelationship_living_facility_insd_code,\n\t\tyear,\n\t\tmake,\n\t\tmodel,\n\t\tserial_nbr,\n\t\tveh_category_type_code,\n\t\tloss_settlement_type_code,\n\t\thome_day_care_loc_type_code,\n\t\tloan_lease_purchase_lease_date,\n\t\tloan_lease_previously_insured_flag,\n\t\tloan_lease_cov_provided_by_prior_carrier_flag,\n\t\tendorsement_view_code,\n\t\tpif_amt,\n\t\tpif_ded_type_code\n\tFROM coverage_detail\n\tWHERE coverage_detail.cov_detail_seq%3=0\n),\nEXP_COVERAGE_DETAIL AS (\n\tSELECT\n\tcov_detail_seq,\n\tcov_master_seq,\n\tnum_of_item,\n\tstreet,\n\tcity,\n\tstate_type_code,\n\tzip_type_code,\n\tlimit_type_code,\n\tdescript,\n\tcorporal_punish_flag,\n\tpremium,\n\tamt,\n\tmax_amt,\n\tcomputer_type_code,\n\tcrop_farm_flag,\n\tlive_stock_flag,\n\tnum_acre,\n\tbus_loc_descript,\n\tloc_type_code,\n\tsched_sent_by_type_code,\n\tcollapse_eff_date,\n\ttheft_eff_date,\n\tveneer_flag,\n\tdamage_flag,\n\ttank_capacity,\n\ttank_age,\n\ttank_loc_type_code,\n\tded_type_code,\n\tloan_carry_over_flag,\n\tappraisal_date,\n\tpers_inj_protect_type_code,\n\tfarmed_by,\n\tother_const_type,\n\tmodified_date,\n\tmodified_user_id,\n\tcov_detail_num,\n\teq_struct_code,\n\teq_zone,\n\teq_ded_prcnt,\n\teq_struct_descript,\n\teq_limit_amt,\n\tveh_loan_flag,\n\ttime_share_flag,\n\tincidental_occupancy_code,\n\tgross_receipts,\n\temployee_assistant_premises_flag,\n\tassisted_living_facility_code,\n\tbusiness_ownership_type_flag,\n\tname_of_living_facility,\n\tname_of_insd_person_in_living_facility,\n\trelationship_living_facility_insd_code,\n\tyear,\n\tmake,\n\tmodel,\n\tserial_nbr,\n\tveh_category_type_code,\n\tloss_settlement_type_code,\n\thome_day_care_loc_type_code,\n\tloan_lease_purchase_lease_date,\n\tloan_lease_previously_insured_flag,\n\tloan_lease_cov_provided_by_prior_carrier_flag,\n\tendorsement_view_code,\n\tpif_amt,\n\tpif_ded_type_code,\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t0 AS RECORD_COUNT,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID\n\tFROM SQ_coverage_detail\n),\ncoverage_detail_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.coverage_detail_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.coverage_detail_stage\n\t(cov_detail_seq, cov_master_seq, num_of_item, street, city, state_type_code, zip_type_code, limit_type_code, descript, corporal_punish_flag, premium, amt, max_amt, computer_type_code, crop_farm_flag, live_stock_flag, num_acre, bus_loc_descript, loc_type_code, sched_sent_by_type_code, collapse_eff_date, theft_eff_date, veneer_flag, damage_flag, tank_capacity, tank_age, tank_loc_type_code, ded_type_code, loan_carry_over_flag, appraisal_date, pers_inj_protect_type_code, farmed_by, other_const_type, modified_date, modified_user_id, cov_detail_num, eq_struct_code, eq_zone, eq_ded_prcnt, eq_struct_descript, eq_limit_amt, veh_loan_flag, time_share_flag, incidental_occupancy_code, gross_receipts, employee_assistant_premises_flag, assisted_living_facility_code, business_ownership_type_flag, name_of_living_facility, name_of_insd_person_in_living_facility, relationship_living_facility_insd_code, year, make, model, serial_nbr, veh_category_type_code, loss_settlement_type_code, home_day_care_loc_type_code, loan_lease_purchase_lease_date, loan_lease_previously_insured_flag, loan_lease_cov_provided_by_prior_carrier_flag, endorsement_view_code, pif_amt, pif_ded_type_code, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tCOV_DETAIL_SEQ, \n\tCOV_MASTER_SEQ, \n\tNUM_OF_ITEM, \n\tSTREET, \n\tCITY, \n\tSTATE_TYPE_CODE, \n\tZIP_TYPE_CODE, \n\tLIMIT_TYPE_CODE, \n\tDESCRIPT, \n\tCORPORAL_PUNISH_FLAG, \n\tPREMIUM, \n\tAMT, \n\tMAX_AMT, \n\tCOMPUTER_TYPE_CODE, \n\tCROP_FARM_FLAG, \n\tLIVE_STOCK_FLAG, \n\tNUM_ACRE, \n\tBUS_LOC_DESCRIPT, \n\tLOC_TYPE_CODE, \n\tSCHED_SENT_BY_TYPE_CODE, \n\tCOLLAPSE_EFF_DATE, \n\tTHEFT_EFF_DATE, \n\tVENEER_FLAG, \n\tDAMAGE_FLAG, \n\tTANK_CAPACITY, \n\tTANK_AGE, \n\tTANK_LOC_TYPE_CODE, \n\tDED_TYPE_CODE, \n\tLOAN_CARRY_OVER_FLAG, \n\tAPPRAISAL_DATE, \n\tPERS_INJ_PROTECT_TYPE_CODE, \n\tFARMED_BY, \n\tOTHER_CONST_TYPE, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tCOV_DETAIL_NUM, \n\tEQ_STRUCT_CODE, \n\tEQ_ZONE, \n\tEQ_DED_PRCNT, \n\tEQ_STRUCT_DESCRIPT, \n\tEQ_LIMIT_AMT, \n\tVEH_LOAN_FLAG, \n\tTIME_SHARE_FLAG, \n\tINCIDENTAL_OCCUPANCY_CODE, \n\tGROSS_RECEIPTS, \n\tEMPLOYEE_ASSISTANT_PREMISES_FLAG, \n\tASSISTED_LIVING_FACILITY_CODE, \n\tBUSINESS_OWNERSHIP_TYPE_FLAG, \n\tNAME_OF_LIVING_FACILITY, \n\tNAME_OF_INSD_PERSON_IN_LIVING_FACILITY, \n\tRELATIONSHIP_LIVING_FACILITY_INSD_CODE, \n\tYEAR, \n\tMAKE, \n\tMODEL, \n\tSERIAL_NBR, \n\tVEH_CATEGORY_TYPE_CODE, \n\tLOSS_SETTLEMENT_TYPE_CODE, \n\tHOME_DAY_CARE_LOC_TYPE_CODE, \n\tLOAN_LEASE_PURCHASE_LEASE_DATE, \n\tLOAN_LEASE_PREVIOUSLY_INSURED_FLAG, \n\tLOAN_LEASE_COV_PROVIDED_BY_PRIOR_CARRIER_FLAG, \n\tENDORSEMENT_VIEW_CODE, \n\tPIF_AMT, \n\tPIF_DED_TYPE_CODE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_COVERAGE_DETAIL\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CommonStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -57,45 +57,35 @@ EXP_Values AS (
 	-- 'S' , IPFC4J_ADDR_LIN_2_POS_1  || ' '  || RTRIM(IPFC4J_ADDR_LIN_2_POS_2_30),
 	-- IPFC4J_ADDR_LIN_2_POS_1  || RTRIM(IPFC4J_ADDR_LIN_2_POS_2_30))
 	-- 
-	DECODE(IPFC4J_ADDR_LIN_2_POS_1,
-		'E', IPFC4J_ADDR_LIN_2_POS_1 || ' ' || RTRIM(IPFC4J_ADDR_LIN_2_POS_2_30
-		),
-		'W', IPFC4J_ADDR_LIN_2_POS_1 || ' ' || RTRIM(IPFC4J_ADDR_LIN_2_POS_2_30
-		),
-		'N', IPFC4J_ADDR_LIN_2_POS_1 || ' ' || RTRIM(IPFC4J_ADDR_LIN_2_POS_2_30
-		),
-		'S', IPFC4J_ADDR_LIN_2_POS_1 || ' ' || RTRIM(IPFC4J_ADDR_LIN_2_POS_2_30
-		),
-		IPFC4J_ADDR_LIN_2_POS_1 || RTRIM(IPFC4J_ADDR_LIN_2_POS_2_30
-		)
+	DECODE(
+	    IPFC4J_ADDR_LIN_2_POS_1,
+	    'E', IPFC4J_ADDR_LIN_2_POS_1 || ' ' || RTRIM(IPFC4J_ADDR_LIN_2_POS_2_30),
+	    'W', IPFC4J_ADDR_LIN_2_POS_1 || ' ' || RTRIM(IPFC4J_ADDR_LIN_2_POS_2_30),
+	    'N', IPFC4J_ADDR_LIN_2_POS_1 || ' ' || RTRIM(IPFC4J_ADDR_LIN_2_POS_2_30),
+	    'S', IPFC4J_ADDR_LIN_2_POS_1 || ' ' || RTRIM(IPFC4J_ADDR_LIN_2_POS_2_30),
+	    IPFC4J_ADDR_LIN_2_POS_1 || RTRIM(IPFC4J_ADDR_LIN_2_POS_2_30)
 	) AS v_IPFC4J_ADDR_LIN_2,
 	-- *INF*: IIF(ISNULL(in_IPFC4J_ADDRESS_LINE_3), 
 	-- v_IPFC4J_ADDR_LIN_2, 
 	-- v_IPFC4J_ADDR_LIN_2  || ' '
 	-- )
-	IFF(in_IPFC4J_ADDRESS_LINE_3 IS NULL,
-		v_IPFC4J_ADDR_LIN_2,
-		v_IPFC4J_ADDR_LIN_2 || ' '
-	) AS v_ADDR_LIN_2,
+	IFF(in_IPFC4J_ADDRESS_LINE_3 IS NULL, v_IPFC4J_ADDR_LIN_2, v_IPFC4J_ADDR_LIN_2 || ' ') AS v_ADDR_LIN_2,
 	IPFC4J_ADDRESS_LINE_3 AS in_IPFC4J_ADDRESS_LINE_3,
 	-- *INF*: IIF(ISNULL(IPFC4J_ADDRESS_LINE_4), 
 	-- RTRIM(in_IPFC4J_ADDRESS_LINE_3), 
 	-- RTRIM(in_IPFC4J_ADDRESS_LINE_3)  || ' '
 	-- )
-	IFF(IPFC4J_ADDRESS_LINE_4 IS NULL,
-		RTRIM(in_IPFC4J_ADDRESS_LINE_3
-		),
-		RTRIM(in_IPFC4J_ADDRESS_LINE_3
-		) || ' '
+	IFF(
+	    IPFC4J_ADDRESS_LINE_4 IS NULL, RTRIM(in_IPFC4J_ADDRESS_LINE_3),
+	    RTRIM(in_IPFC4J_ADDRESS_LINE_3) || ' '
 	) AS v_ADDRESS_LINE_3,
 	IPFC4J_ADDRESS_LINE_4,
 	-- *INF*: IIF(
 	-- ISNULL(IPFC4J_ADDRESS_LINE_1), 'N/A',
 	-- v_ADDR_LIN_2 || v_ADDRESS_LINE_3 || RTRIM(IPFC4J_ADDRESS_LINE_4))
-	IFF(IPFC4J_ADDRESS_LINE_1 IS NULL,
-		'N/A',
-		v_ADDR_LIN_2 || v_ADDRESS_LINE_3 || RTRIM(IPFC4J_ADDRESS_LINE_4
-		)
+	IFF(
+	    IPFC4J_ADDRESS_LINE_1 IS NULL, 'N/A',
+	    v_ADDR_LIN_2 || v_ADDRESS_LINE_3 || RTRIM(IPFC4J_ADDRESS_LINE_4)
 	) AS IPFC4J_ADDRESS,
 	IPFC4J_ZIP_BASIC,
 	IPFC4J_ZIP_EXPANDED,
@@ -103,14 +93,9 @@ EXP_Values AS (
 	-- (ISNULL(IPFC4J_ZIP_BASIC) OR LENGTH(RTRIM(IPFC4J_ZIP_BASIC)) = 0),
 	-- 'N/A',
 	-- IPFC4J_ZIP_BASIC || '-'  || to_char(IPFC4J_ZIP_EXPANDED))
-	IFF(( IPFC4J_ZIP_BASIC IS NULL 
-			OR LENGTH(RTRIM(IPFC4J_ZIP_BASIC
-				)
-			) = 0 
-		),
-		'N/A',
-		IPFC4J_ZIP_BASIC || '-' || to_char(IPFC4J_ZIP_EXPANDED
-		)
+	IFF(
+	    (IPFC4J_ZIP_BASIC IS NULL OR LENGTH(RTRIM(IPFC4J_ZIP_BASIC)) = 0), 'N/A',
+	    IPFC4J_ZIP_BASIC || '-' || to_char(IPFC4J_ZIP_EXPANDED)
 	) AS ZIP_CODE,
 	PIF_SYMBOL,
 	PIF_POLICY_NUMBER,
@@ -189,13 +174,13 @@ EXP_Lkp_Values AS (
 	-- *INF*: iif(isnull(in_CICL_FULL_NM),'N/A',
 	--    iif(is_spaces(in_CICL_FULL_NM),'N/A',
 	--     rtrim(in_CICL_FULL_NM)))
-	IFF(in_CICL_FULL_NM IS NULL,
-		'N/A',
-		IFF(LENGTH(in_CICL_FULL_NM)>0 AND TRIM(in_CICL_FULL_NM)='',
-			'N/A',
-			rtrim(in_CICL_FULL_NM
-			)
-		)
+	IFF(
+	    in_CICL_FULL_NM IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(in_CICL_FULL_NM)>0
+	    and TRIM(in_CICL_FULL_NM)='', 'N/A',
+	        rtrim(in_CICL_FULL_NM)
+	    )
 	) AS CICL_FULL_NM,
 	'N/A' AS CICL_FST_NM,
 	'N/A' AS CICL_LST_NM,
@@ -206,14 +191,11 @@ EXP_Lkp_Values AS (
 	-- *INF*: iif(isnull(rtrim(in_CICA_ADR)),'N/A',
 	--    iif(is_spaces(in_CICA_ADR),'N/A',
 	--     rtrim(in_CICA_ADR)))
-	IFF(rtrim(in_CICA_ADR
-		) IS NULL,
-		'N/A',
-		IFF(LENGTH(in_CICA_ADR)>0 AND TRIM(in_CICA_ADR)='',
-			'N/A',
-			rtrim(in_CICA_ADR
-			)
-		)
+	IFF(
+	    rtrim(in_CICA_ADR) IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(in_CICA_ADR)>0 AND TRIM(in_CICA_ADR)='', 'N/A', rtrim(in_CICA_ADR)
+	    )
 	) AS CICA_ADR,
 	'N/A' AS CICA_CIT_NM,
 	'N/A' AS CICA_CTY,
@@ -221,37 +203,28 @@ EXP_Lkp_Values AS (
 	--    IIF(IS_SPACES(in_CICA_ADR),'N/A',
 	-- ltrim(SUBSTR( RTRIM(in_CICA_ADR), LENGTH(in_CICA_ADR) - 2))
 	-- ))
-	IFF(RTRIM(in_CICA_ADR
-		) IS NULL,
-		'N/A',
-		IFF(LENGTH(in_CICA_ADR)>0 AND TRIM(in_CICA_ADR)='',
-			'N/A',
-			ltrim(SUBSTR(RTRIM(in_CICA_ADR
-					), LENGTH(in_CICA_ADR
-					) - 2
-				)
-			)
-		)
+	IFF(
+	    RTRIM(in_CICA_ADR) IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(in_CICA_ADR)>0
+	    and TRIM(in_CICA_ADR)='', 'N/A',
+	        ltrim(SUBSTR(RTRIM(in_CICA_ADR), LENGTH(in_CICA_ADR) - 2))
+	    )
 	) AS v_ST_CD,
 	-- *INF*: IIF(ISNULL(:LKP.lkp_sup_state (v_ST_CD)),
 	-- 'N/A',
 	-- v_ST_CD)
-	IFF(LKP_SUP_STATE_v_ST_CD.sup_state_id IS NULL,
-		'N/A',
-		v_ST_CD
-	) AS ST_CD,
+	IFF(LKP_SUP_STATE_v_ST_CD.sup_state_id IS NULL, 'N/A', v_ST_CD) AS ST_CD,
 	EXP_Values.ZIP_CODE AS in_CICA_PST_CD,
 	-- *INF*: iif(isnull(rtrim(in_CICA_PST_CD)),'N/A',
 	--    iif(is_spaces(in_CICA_PST_CD),'N/A',
 	--     rtrim(in_CICA_PST_CD)))
-	IFF(rtrim(in_CICA_PST_CD
-		) IS NULL,
-		'N/A',
-		IFF(LENGTH(in_CICA_PST_CD)>0 AND TRIM(in_CICA_PST_CD)='',
-			'N/A',
-			rtrim(in_CICA_PST_CD
-			)
-		)
+	IFF(
+	    rtrim(in_CICA_PST_CD) IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(in_CICA_PST_CD)>0
+	    and TRIM(in_CICA_PST_CD)='', 'N/A', rtrim(in_CICA_PST_CD)
+	    )
 	) AS CICA_PST_CD,
 	'N/A' AS ADR_TYP_CD,
 	LKP_PIF_4578_STAGE.LOSS_1099_NUMBER AS in_CICL_TAX_ID,
@@ -265,58 +238,40 @@ EXP_Lkp_Values AS (
 	-- (ISNULL(in_IPFCGQ_LOSS_SEX) OR IS_SPACES(in_IPFCGQ_LOSS_SEX) OR LENGTH(in_IPFCGQ_LOSS_SEX) = 0),
 	--    'N/A',
 	--    in_IPFCGQ_LOSS_SEX)
-	IFF(( in_IPFCGQ_LOSS_SEX IS NULL 
-			OR LENGTH(in_IPFCGQ_LOSS_SEX)>0 AND TRIM(in_IPFCGQ_LOSS_SEX)='' 
-			OR LENGTH(in_IPFCGQ_LOSS_SEX
-			) = 0 
-		),
-		'N/A',
-		in_IPFCGQ_LOSS_SEX
+	IFF(
+	    (in_IPFCGQ_LOSS_SEX IS NULL
+	    or LENGTH(in_IPFCGQ_LOSS_SEX)>0
+	    and TRIM(in_IPFCGQ_LOSS_SEX)=''
+	    or LENGTH(in_IPFCGQ_LOSS_SEX) = 0),
+	    'N/A',
+	    in_IPFCGQ_LOSS_SEX
 	) AS IPFCGQ_LOSS_SEX,
 	EXP_Values.logical_flag,
 	LKP_PIF_42GQ_CMT_stage.ipfcgq_claimant_birth_month AS claimant_birth_month,
 	-- *INF*: IIF(ISNULL(claimant_birth_month) OR LENGTH(to_char(claimant_birth_month)) =0, '00', 
 	-- IIF(LENGTH(to_char(claimant_birth_month)) =1, '0'  || TO_CHAR(claimant_birth_month),TO_CHAR(claimant_birth_month)))
-	IFF(claimant_birth_month IS NULL 
-		OR LENGTH(to_char(claimant_birth_month
-			)
-		) = 0,
-		'00',
-		IFF(LENGTH(to_char(claimant_birth_month
-				)
-			) = 1,
-			'0' || TO_CHAR(claimant_birth_month
-			),
-			TO_CHAR(claimant_birth_month
-			)
-		)
+	IFF(
+	    claimant_birth_month IS NULL OR LENGTH(to_char(claimant_birth_month)) = 0, '00',
+	    IFF(
+	        LENGTH(to_char(claimant_birth_month)) = 1, '0' || TO_CHAR(claimant_birth_month),
+	        TO_CHAR(claimant_birth_month)
+	    )
 	) AS var_claimant_birth_month,
 	LKP_PIF_42GQ_CMT_stage.ipfcgq_claimant_birth_day AS claimant_birth_day,
 	-- *INF*: IIF(ISNULL(claimant_birth_day) OR LENGTH(to_char(claimant_birth_day)) =0, '00', 
 	-- IIF(LENGTH(to_char(claimant_birth_day)) =1, '0'  || TO_CHAR(claimant_birth_day),TO_CHAR(claimant_birth_day)))
-	IFF(claimant_birth_day IS NULL 
-		OR LENGTH(to_char(claimant_birth_day
-			)
-		) = 0,
-		'00',
-		IFF(LENGTH(to_char(claimant_birth_day
-				)
-			) = 1,
-			'0' || TO_CHAR(claimant_birth_day
-			),
-			TO_CHAR(claimant_birth_day
-			)
-		)
+	IFF(
+	    claimant_birth_day IS NULL OR LENGTH(to_char(claimant_birth_day)) = 0, '00',
+	    IFF(
+	        LENGTH(to_char(claimant_birth_day)) = 1, '0' || TO_CHAR(claimant_birth_day),
+	        TO_CHAR(claimant_birth_day)
+	    )
 	) AS var_claimant_birth_day,
 	LKP_PIF_42GQ_CMT_stage.ipfcgq_claimant_birth_year AS claimant_birth_year,
 	-- *INF*: IIF(ISNULL(claimant_birth_year) OR LENGTH(to_char(claimant_birth_year)) <4, '0000', TO_CHAR(claimant_birth_year))
-	IFF(claimant_birth_year IS NULL 
-		OR LENGTH(to_char(claimant_birth_year
-			)
-		) < 4,
-		'0000',
-		TO_CHAR(claimant_birth_year
-		)
+	IFF(
+	    claimant_birth_year IS NULL OR LENGTH(to_char(claimant_birth_year)) < 4, '0000',
+	    TO_CHAR(claimant_birth_year)
 	) AS var_claimant_birth_year,
 	-- *INF*: IIF(LENGTH(var_claimant_birth_month) =1 , '0' || var_claimant_birth_month, var_claimant_birth_month)
 	-- || '/' ||
@@ -328,14 +283,11 @@ EXP_Lkp_Values AS (
 	-- 
 	-- ---var_claimant_birth_month || '/' ||   var_claimant_birth_day || '/' ||  var_claimant_birth_year
 	-- 
-	IFF(LENGTH(var_claimant_birth_month
-		) = 1,
-		'0' || var_claimant_birth_month,
-		var_claimant_birth_month
-	) || '/' || IFF(LENGTH(var_claimant_birth_day
-		) = 1,
-		'0' || var_claimant_birth_day,
-		var_claimant_birth_day
+	IFF(
+	    LENGTH(var_claimant_birth_month) = 1, '0' || var_claimant_birth_month,
+	    var_claimant_birth_month
+	) || '/' || IFF(
+	    LENGTH(var_claimant_birth_day) = 1, '0' || var_claimant_birth_day, var_claimant_birth_day
 	) || '/' || var_claimant_birth_year AS var_CLAIMANT_BIRTH_DATE,
 	-- *INF*: IIF(LENGTH(var_CLAIMANT_BIRTH_DATE) < 10 OR claimant_birth_year < 1800 OR 
 	-- var_claimant_birth_month='00' OR var_claimant_birth_day = '00' OR var_claimant_birth_year = '0000' or NOT IS_DATE(var_CLAIMANT_BIRTH_DATE,'MM/DD/YYYY') ,
@@ -346,31 +298,28 @@ EXP_Lkp_Values AS (
 	-- 
 	-- 
 	-- 
-	IFF(LENGTH(var_CLAIMANT_BIRTH_DATE
-		) < 10 
-		OR claimant_birth_year < 1800 
-		OR var_claimant_birth_month = '00' 
-		OR var_claimant_birth_day = '00' 
-		OR var_claimant_birth_year = '0000' 
-		OR NOT IS_DATE(var_CLAIMANT_BIRTH_DATE, 'MM/DD/YYYY'
-		),
-		TO_DATE('12/31/2100', 'MM/DD/YYYY'
-		),
-		TO_DATE(var_claimant_birth_month || '/' || var_claimant_birth_day || '/' || var_claimant_birth_year, 'MM/DD/YYYY'
-		)
+	IFF(
+	    LENGTH(var_CLAIMANT_BIRTH_DATE) < 10
+	    or claimant_birth_year < 1800
+	    or var_claimant_birth_month = '00'
+	    or var_claimant_birth_day = '00'
+	    or var_claimant_birth_year = '0000'
+	    or NOT IS_DATE(var_CLAIMANT_BIRTH_DATE, 'MM/DD/YYYY'),
+	    TO_TIMESTAMP('12/31/2100', 'MM/DD/YYYY'),
+	    TO_TIMESTAMP(var_claimant_birth_month || '/' || var_claimant_birth_day || '/' || var_claimant_birth_year, 'MM/DD/YYYY')
 	) AS v_CLAIMANT_BIRTH_DATE,
 	v_CLAIMANT_BIRTH_DATE AS CLAIMANT_BIRTH_DATE,
 	EXP_Values.IPFC4J_ID_NUMBER,
 	-- *INF*: IIF(ISNULL(IPFC4J_ID_NUMBER) OR IS_SPACES(IPFC4J_ID_NUMBER) OR LENGTH(IPFC4J_ID_NUMBER)=0  
 	-- OR LENGTH(IPFC4J_ID_NUMBER)<11 ,'N/A',IPFC4J_ID_NUMBER)
-	IFF(IPFC4J_ID_NUMBER IS NULL 
-		OR LENGTH(IPFC4J_ID_NUMBER)>0 AND TRIM(IPFC4J_ID_NUMBER)='' 
-		OR LENGTH(IPFC4J_ID_NUMBER
-		) = 0 
-		OR LENGTH(IPFC4J_ID_NUMBER
-		) < 11,
-		'N/A',
-		IPFC4J_ID_NUMBER
+	IFF(
+	    IPFC4J_ID_NUMBER IS NULL
+	    or LENGTH(IPFC4J_ID_NUMBER)>0
+	    and TRIM(IPFC4J_ID_NUMBER)=''
+	    or LENGTH(IPFC4J_ID_NUMBER) = 0
+	    or LENGTH(IPFC4J_ID_NUMBER) < 11,
+	    'N/A',
+	    IPFC4J_ID_NUMBER
 	) AS IPFC4J_ID_NUMBER_OUT
 	FROM EXP_Values
 	LEFT JOIN LKP_PIF_42GQ_CMT_stage
@@ -489,124 +438,46 @@ EXP_Detect_Changes AS (
 	-- 	(ltrim(rtrim(ADR_TYP_CD)) <> ltrim(rtrim(addr_type))) ,
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(claim_party_id IS NULL,
-		'NEW',
-		IFF(( ltrim(rtrim(CICL_FULL_NM
-					)
-				) <> ltrim(rtrim(claim_party_full_name
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICL_FST_NM
-					)
-				) <> ltrim(rtrim(claim_party_first_name
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICL_LST_NM
-					)
-				) <> ltrim(rtrim(claim_party_last_name
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICL_MDL_NM
-					)
-				) <> ltrim(rtrim(claim_party_mid_name
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(NM_PFX
-					)
-				) <> ltrim(rtrim(claim_party_name_prfx
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(NM_SFX
-					)
-				) <> ltrim(rtrim(claim_party_name_sfx
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICA_ADR
-					)
-				) <> ltrim(rtrim(claimant_addr
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICA_CTY
-					)
-				) <> ltrim(rtrim(claimant_city
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICA_CIT_NM
-					)
-				) <> ltrim(rtrim(claimant_county
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(ST_CD
-					)
-				) <> ltrim(rtrim(claimant_state
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICA_PST_CD
-					)
-				) <> ltrim(rtrim(claimant_zip
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICL_TAX_FED_ID
-					)
-				) <> ltrim(rtrim(tax_fed_id
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(IPFC4J_ID_NUMBER
-					)
-				) <> ltrim(rtrim(tax_ssn_id
-					)
-				) 
-			) 
-			OR ( CLAIMANT_BIRTH_DATE <> claim_party_birthdate 
-			) 
-			OR ( ltrim(rtrim(IPFCGQ_LOSS_SEX
-					)
-				) <> ltrim(rtrim(claim_party_gndr
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(ADR_TYP_CD
-					)
-				) <> ltrim(rtrim(addr_type
-					)
-				) 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    claim_party_id IS NULL, 'NEW',
+	    IFF(
+	        (ltrim(rtrim(CICL_FULL_NM)) <> ltrim(rtrim(claim_party_full_name)))
+	        or (ltrim(rtrim(CICL_FST_NM)) <> ltrim(rtrim(claim_party_first_name)))
+	        or (ltrim(rtrim(CICL_LST_NM)) <> ltrim(rtrim(claim_party_last_name)))
+	        or (ltrim(rtrim(CICL_MDL_NM)) <> ltrim(rtrim(claim_party_mid_name)))
+	        or (ltrim(rtrim(NM_PFX)) <> ltrim(rtrim(claim_party_name_prfx)))
+	        or (ltrim(rtrim(NM_SFX)) <> ltrim(rtrim(claim_party_name_sfx)))
+	        or (ltrim(rtrim(CICA_ADR)) <> ltrim(rtrim(claimant_addr)))
+	        or (ltrim(rtrim(CICA_CTY)) <> ltrim(rtrim(claimant_city)))
+	        or (ltrim(rtrim(CICA_CIT_NM)) <> ltrim(rtrim(claimant_county)))
+	        or (ltrim(rtrim(ST_CD)) <> ltrim(rtrim(claimant_state)))
+	        or (ltrim(rtrim(CICA_PST_CD)) <> ltrim(rtrim(claimant_zip)))
+	        or (ltrim(rtrim(CICL_TAX_FED_ID)) <> ltrim(rtrim(tax_fed_id)))
+	        or (ltrim(rtrim(IPFC4J_ID_NUMBER)) <> ltrim(rtrim(tax_ssn_id)))
+	        or (CLAIMANT_BIRTH_DATE <> claim_party_birthdate)
+	        or (ltrim(rtrim(IPFCGQ_LOSS_SEX)) <> ltrim(rtrim(claim_party_gndr)))
+	        or (ltrim(rtrim(ADR_TYP_CD)) <> ltrim(rtrim(addr_type))),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    v_Changed_Flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS Eff_To_Date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
 	SYSDATE AS Modified_Date,
 	'N/A' AS Out_Default_String,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS claim_party_ref_eff_from_date
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS claim_party_ref_eff_from_date
 	FROM EXP_Lkp_Values
 	LEFT JOIN LKP_Claim_Party
 	ON LKP_Claim_Party.claim_party_key = EXP_Lkp_Values.CLIENT_ID
@@ -655,10 +526,7 @@ EXP_Determine_AK AS (
 	SEQ_claim_party.NEXTVAL,
 	lkp_claim_party_ak_id,
 	-- *INF*: IIF(Changed_Flag='NEW', NEXTVAL, lkp_claim_party_ak_id)
-	IFF(Changed_Flag = 'NEW',
-		NEXTVAL,
-		lkp_claim_party_ak_id
-	) AS claim_party_ak_id,
+	IFF(Changed_Flag = 'NEW', NEXTVAL, lkp_claim_party_ak_id) AS claim_party_ak_id,
 	CLIENT_ID,
 	CICL_FULL_NM,
 	CICL_FST_NM,
@@ -688,8 +556,7 @@ EXP_Determine_AK AS (
 	Out_Default_String,
 	claim_party_ref_eff_from_date,
 	-- *INF*: TO_DATE('12/31/2999','MM/DD/YYYY')
-	TO_DATE('12/31/2999', 'MM/DD/YYYY'
-	) AS out_default_high_date
+	TO_TIMESTAMP('12/31/2999', 'MM/DD/YYYY') AS out_default_high_date
 	FROM FIL_Insert
 ),
 claim_party_Insert AS (
@@ -756,9 +623,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	claim_party_key = v_PREV_ROW_party_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		claim_party_key = v_PREV_ROW_party_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    claim_party_key = v_PREV_ROW_party_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

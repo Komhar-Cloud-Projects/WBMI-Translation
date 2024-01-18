@@ -52,123 +52,58 @@ EXP_source_anchor AS (
 	clm_subrogation_stage_id,
 	tch_claim_nbr,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(tch_claim_nbr))) OR LENGTH(LTRIM(RTRIM(tch_claim_nbr))) = 0, 'N/A', LTRIM(RTRIM(tch_claim_nbr)))
-	IFF(LTRIM(RTRIM(tch_claim_nbr
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(tch_claim_nbr
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(tch_claim_nbr
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(tch_claim_nbr)) IS NULL OR LENGTH(LTRIM(RTRIM(tch_claim_nbr))) = 0, 'N/A',
+	    LTRIM(RTRIM(tch_claim_nbr))
 	) AS tch_claim_nbr_out,
 	tch_claimant_id,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(tch_claimant_id))) OR LENGTH(LTRIM(RTRIM(tch_claimant_id))) = 0, 'N/A', LTRIM(RTRIM(tch_claimant_id)))
-	IFF(LTRIM(RTRIM(tch_claimant_id
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(tch_claimant_id
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(tch_claimant_id
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(tch_claimant_id)) IS NULL OR LENGTH(LTRIM(RTRIM(tch_claimant_id))) = 0, 'N/A',
+	    LTRIM(RTRIM(tch_claimant_id))
 	) AS tch_claimant_id_out,
 	object_type_cd,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(object_type_cd))) OR LENGTH(LTRIM(RTRIM(object_type_cd))) = 0, 'N/A', LTRIM(RTRIM(object_type_cd)))
-	IFF(LTRIM(RTRIM(object_type_cd
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(object_type_cd
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(object_type_cd
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(object_type_cd)) IS NULL OR LENGTH(LTRIM(RTRIM(object_type_cd))) = 0, 'N/A',
+	    LTRIM(RTRIM(object_type_cd))
 	) AS object_type_cd_out,
 	object_seq_nbr,
 	cov_type_cd,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(cov_type_cd))) OR LENGTH(LTRIM(RTRIM(cov_type_cd))) = 0, 'N/A', LTRIM(RTRIM(cov_type_cd)))
-	IFF(LTRIM(RTRIM(cov_type_cd
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(cov_type_cd
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(cov_type_cd
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(cov_type_cd)) IS NULL OR LENGTH(LTRIM(RTRIM(cov_type_cd))) = 0, 'N/A',
+	    LTRIM(RTRIM(cov_type_cd))
 	) AS cov_type_cd_out,
 	cov_seq_nbr,
 	bur_cause_loss,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(bur_cause_loss))) OR LENGTH(LTRIM(RTRIM(bur_cause_loss))) = 0, 'N/A',  SUBSTR(bur_cause_loss, 1,2))
-	IFF(LTRIM(RTRIM(bur_cause_loss
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(bur_cause_loss
-				)
-			)
-		) = 0,
-		'N/A',
-		SUBSTR(bur_cause_loss, 1, 2
-		)
+	IFF(
+	    LTRIM(RTRIM(bur_cause_loss)) IS NULL OR LENGTH(LTRIM(RTRIM(bur_cause_loss))) = 0, 'N/A',
+	    SUBSTR(bur_cause_loss, 1, 2)
 	) AS bur_cause_loss_out,
 	-- *INF*: IIF(ISNULL(bur_cause_loss) OR IS_SPACES(bur_cause_loss), 'N/A', SUBSTR(bur_cause_loss, 3,1))
-	IFF(bur_cause_loss IS NULL 
-		OR LENGTH(bur_cause_loss)>0 AND TRIM(bur_cause_loss)='',
-		'N/A',
-		SUBSTR(bur_cause_loss, 3, 1
-		)
+	IFF(
+	    bur_cause_loss IS NULL OR LENGTH(bur_cause_loss)>0 AND TRIM(bur_cause_loss)='', 'N/A',
+	    SUBSTR(bur_cause_loss, 3, 1)
 	) AS reserve_category_out,
 	subro_rep_clt_id,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(subro_rep_clt_id))) OR LENGTH(LTRIM(RTRIM(subro_rep_clt_id))) = 0, 'N/A', LTRIM(RTRIM(subro_rep_clt_id)))
-	IFF(LTRIM(RTRIM(subro_rep_clt_id
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(subro_rep_clt_id
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(subro_rep_clt_id
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(subro_rep_clt_id)) IS NULL OR LENGTH(LTRIM(RTRIM(subro_rep_clt_id))) = 0, 'N/A',
+	    LTRIM(RTRIM(subro_rep_clt_id))
 	) AS subro_rep_clt_id_out,
 	subro_mgr_clt_id,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(subro_mgr_clt_id))) OR LENGTH(LTRIM(RTRIM(subro_mgr_clt_id)))  = 0 , 'N/A', LTRIM(RTRIM(subro_mgr_clt_id)))
-	IFF(LTRIM(RTRIM(subro_mgr_clt_id
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(subro_mgr_clt_id
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(subro_mgr_clt_id
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(subro_mgr_clt_id)) IS NULL OR LENGTH(LTRIM(RTRIM(subro_mgr_clt_id))) = 0, 'N/A',
+	    LTRIM(RTRIM(subro_mgr_clt_id))
 	) AS subro_mgr_clt_id_out,
 	referring_adj_id,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(referring_adj_id))) OR LENGTH(LTRIM(RTRIM(referring_adj_id))) = 0, 'N/A', LTRIM(RTRIM(referring_adj_id)))
-	IFF(LTRIM(RTRIM(referring_adj_id
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(referring_adj_id
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(referring_adj_id
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(referring_adj_id)) IS NULL OR LENGTH(LTRIM(RTRIM(referring_adj_id))) = 0, 'N/A',
+	    LTRIM(RTRIM(referring_adj_id))
 	) AS referring_adj_id_out
 	FROM SQ_clm_subrogation_stage
 ),
@@ -307,26 +242,17 @@ EXP_gather_values AS (
 	-- *INF*: :LKP.LKP_CLAIM_REP_AK_ID(subro_rep_clt_id_out)
 	LKP_CLAIM_REP_AK_ID_subro_rep_clt_id_out.claim_rep_ak_id AS v_subro_rep_ak_id,
 	-- *INF*: IIF(ISNULL(v_subro_rep_ak_id), '-2', v_subro_rep_ak_id)
-	IFF(v_subro_rep_ak_id IS NULL,
-		'-2',
-		v_subro_rep_ak_id
-	) AS subro_rep_ak_id_out,
+	IFF(v_subro_rep_ak_id IS NULL, '-2', v_subro_rep_ak_id) AS subro_rep_ak_id_out,
 	'S' AS subro_rep_role_code,
 	-- *INF*: :LKP.LKP_CLAIM_REP_AK_ID(referring_adj_id_out)
 	LKP_CLAIM_REP_AK_ID_referring_adj_id_out.claim_rep_ak_id AS v_referring_rep_ak_id,
 	-- *INF*: IIF(ISNULL(v_referring_rep_ak_id), '-2', v_referring_rep_ak_id)
-	IFF(v_referring_rep_ak_id IS NULL,
-		'-2',
-		v_referring_rep_ak_id
-	) AS referring_rep_ak_id_out,
+	IFF(v_referring_rep_ak_id IS NULL, '-2', v_referring_rep_ak_id) AS referring_rep_ak_id_out,
 	'R' AS referring_rep_role_code,
 	-- *INF*: :LKP.LKP_CLAIM_REP_AK_ID(subro_mgr_clt_id_out)
 	LKP_CLAIM_REP_AK_ID_subro_mgr_clt_id_out.claim_rep_ak_id AS v_subro_mgr_ak_id,
 	-- *INF*: IIF(ISNULL(v_subro_mgr_ak_id), '-2', v_subro_mgr_ak_id)
-	IFF(v_subro_mgr_ak_id IS NULL,
-		'-2',
-		v_subro_mgr_ak_id
-	) AS subro_mgr_ak_id_out,
+	IFF(v_subro_mgr_ak_id IS NULL, '-2', v_subro_mgr_ak_id) AS subro_mgr_ak_id_out,
 	'M' AS manager_role_code
 	FROM EXP_source_anchor
 	LEFT JOIN LKP_claim_subrogation
@@ -390,12 +316,11 @@ EXP_detect_changes AS (
 	EXPTRANS.rep_role_code,
 	-- *INF*: IIF(ISNULL(claim_rep_subrogation_ak_id), 'NEW',
 	-- IIF(rep_ak_id != old_claim_rep_ak_id, 'UPDATE', 'NOCHANGE'))
-	IFF(claim_rep_subrogation_ak_id IS NULL,
-		'NEW',
-		IFF(rep_ak_id != old_claim_rep_ak_id,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    claim_rep_subrogation_ak_id IS NULL, 'NEW',
+	    IFF(
+	        rep_ak_id != old_claim_rep_ak_id, 'UPDATE', 'NOCHANGE'
+	    )
 	) AS changed_flag
 	FROM EXPTRANS
 	LEFT JOIN LKP_claim_representative_subrogation
@@ -428,21 +353,16 @@ EXP_set_vlaues AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	sysdate AS created_modified_Date,
 	-- *INF*: IIF(ISNULL(claim_rep_subrogation_ak_id), NEXTVAL, claim_rep_subrogation_ak_id)
-	IFF(claim_rep_subrogation_ak_id IS NULL,
-		NEXTVAL,
-		claim_rep_subrogation_ak_id
-	) AS claim_rep_subrogation_ak_id1
+	IFF(claim_rep_subrogation_ak_id IS NULL, NEXTVAL, claim_rep_subrogation_ak_id) AS claim_rep_subrogation_ak_id1
 	FROM FIL_inserts
 ),
 claim_representative_subrogation_insert AS (
@@ -496,10 +416,10 @@ EXPTRANS1 AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	claim_rep_subrogation_ak_id = v_prev_row_claim_rep_subrogation_ak_id AND claim_rep_role_code = v_prev_row_claim_rep_role_code, ADD_TO_DATE(v_prev_row_eff_from_date,'SS',-1),
 	-- 	eff_to_date)
-	DECODE(TRUE,
-		claim_rep_subrogation_ak_id = v_prev_row_claim_rep_subrogation_ak_id 
-		AND claim_rep_role_code = v_prev_row_claim_rep_role_code, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
-		eff_to_date
+	DECODE(
+	    TRUE,
+	    claim_rep_subrogation_ak_id = v_prev_row_claim_rep_subrogation_ak_id AND claim_rep_role_code = v_prev_row_claim_rep_role_code, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
+	    eff_to_date
 	) AS v_new_eff_to_date,
 	v_new_eff_to_date AS new_eff_to_date,
 	0 AS new_crrnt_snpsht_flag,

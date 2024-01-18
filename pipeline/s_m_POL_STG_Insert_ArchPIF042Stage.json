@@ -1,0 +1,38 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchPIF042Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchPIF042Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif042Stage AS (\n\tSELECT\n\t\tPif042StageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tAuditId,\n\t\tUndvcPifsymbol,\n\t\tUndvcPifPolicyNumber,\n\t\tUndvcPifModule,\n\t\tUndvcRecordId,\n\t\tUndvcSegmentNumber,\n\t\tUndvcUnitnumber,\n\t\tUndvcChangedate,\n\t\tUndvcINHMBusiDeldate,\n\t\tUndvcNumEmployees,\n\t\tUndvcClassofbusiness,\n\t\tUndvcTerritzone,\n\t\tUndvcPropertypackage,\n\t\tUndvcAnnualGrosRecptsa,\n\t\tUndvcLosses,\n\t\tUndvcFireExits,\n\t\tUndvcFireBurglrDet,\n\t\tUndvcPreviousCancel,\n\t\tUndvcCrftType,\n\t\tUndvcPriceRange,\n\t\tUndvcConsignment,\n\t\tUndvcClassOnpremise,\n\t\tUndvcNumStudents,\n\t\tUndvcShwslsOffPrem,\n\t\tUndvcServprovded,\n\t\tUndvcRepairOffPrem,\n\t\tUndvcTanBodyPiercng,\n\t\tUndvcPetboard,\n\t\tUndvcOfslstype,\n\t\tUndvcProfesLiab,\n\t\tUndvcEquipRental,\n\t\tUndvcAdultMatlsold,\n\t\tUndvcJewelPricerange,\n\t\tUndvcRacingStunts,\n\t\tUndvcAnyModified,\n\t\tUndvcAtFaultaccidents,\n\t\tUndvcComments,\n\t\tUndvcFiller,\n\t\tUndvcPmsFutureuse,\n\t\tUndvcCustFutureuse,\n\t\tUndvcYr2000Custuse\n\tFROM Pif042Stage\n),\nEXPTRANS AS (\n\tSELECT\n\tPif042StageId,\n\tExtractDate,\n\tSourceSystemId,\n\tAuditId,\n\tUndvcPifsymbol,\n\tUndvcPifPolicyNumber,\n\tUndvcPifModule,\n\tUndvcRecordId,\n\tUndvcSegmentNumber,\n\tUndvcUnitnumber,\n\tUndvcChangedate,\n\tUndvcINHMBusiDeldate,\n\tUndvcNumEmployees,\n\tUndvcClassofbusiness,\n\tUndvcTerritzone,\n\tUndvcPropertypackage,\n\tUndvcAnnualGrosRecptsa,\n\tUndvcLosses,\n\tUndvcFireExits,\n\tUndvcFireBurglrDet,\n\tUndvcPreviousCancel,\n\tUndvcCrftType,\n\tUndvcPriceRange,\n\tUndvcConsignment,\n\tUndvcClassOnpremise,\n\tUndvcNumStudents,\n\tUndvcShwslsOffPrem,\n\tUndvcServprovded,\n\tUndvcRepairOffPrem,\n\tUndvcTanBodyPiercng,\n\tUndvcPetboard,\n\tUndvcOfslstype,\n\tUndvcProfesLiab,\n\tUndvcEquipRental,\n\tUndvcAdultMatlsold,\n\tUndvcJewelPricerange,\n\tUndvcRacingStunts,\n\tUndvcAnyModified,\n\tUndvcAtFaultaccidents,\n\tUndvcComments,\n\tUndvcFiller,\n\tUndvcPmsFutureuse,\n\tUndvcCustFutureuse,\n\tUndvcYr2000Custuse\n\tFROM SQ_Pif042Stage\n),\nArchPif042Stage AS (\n\tINSERT INTO ArchPif042Stage\n\t(Pif042StageId, ExtractDate, SourceSystemId, AuditId, UndvcPifsymbol, UndvcPifPolicyNumber, UndvcPifModule, UndvcRecordId, UndvcSegmentNumber, UndvcUnitnumber, UndvcChangedate, UndvcINHMBusiDeldate, UndvcNumEmployees, UndvcClassofbusiness, UndvcTerritzone, UndvcPropertypackage, UndvcAnnualGrosRecptsa, UndvcLosses, UndvcFireExits, UndvcFireBurglrDet, UndvcPreviousCancel, UndvcCrftType, UndvcPriceRange, UndvcConsignment, UndvcClassOnpremise, UndvcNumStudents, UndvcShwslsOffPrem, UndvcServprovded, UndvcRepairOffPrem, UndvcTanBodyPiercng, UndvcPetboard, UndvcOfslstype, UndvcProfesLiab, UndvcEquipRental, UndvcAdultMatlsold, UndvcJewelPricerange, UndvcRacingStunts, UndvcAnyModified, UndvcAtFaultaccidents, UndvcComments, UndvcFiller, UndvcPmsFutureuse, UndvcCustFutureuse, UndvcYr2000Custuse)\n\tSELECT \n\tPIF042STAGEID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tUNDVCPIFSYMBOL, \n\tUNDVCPIFPOLICYNUMBER, \n\tUNDVCPIFMODULE, \n\tUNDVCRECORDID, \n\tUNDVCSEGMENTNUMBER, \n\tUNDVCUNITNUMBER, \n\tUNDVCCHANGEDATE, \n\tUNDVCINHMBUSIDELDATE, \n\tUNDVCNUMEMPLOYEES, \n\tUNDVCCLASSOFBUSINESS, \n\tUNDVCTERRITZONE, \n\tUNDVCPROPERTYPACKAGE, \n\tUNDVCANNUALGROSRECPTSA, \n\tUNDVCLOSSES, \n\tUNDVCFIREEXITS, \n\tUNDVCFIREBURGLRDET, \n\tUNDVCPREVIOUSCANCEL, \n\tUNDVCCRFTTYPE, \n\tUNDVCPRICERANGE, \n\tUNDVCCONSIGNMENT, \n\tUNDVCCLASSONPREMISE, \n\tUNDVCNUMSTUDENTS, \n\tUNDVCSHWSLSOFFPREM, \n\tUNDVCSERVPROVDED, \n\tUNDVCREPAIROFFPREM, \n\tUNDVCTANBODYPIERCNG, \n\tUNDVCPETBOARD, \n\tUNDVCOFSLSTYPE, \n\tUNDVCPROFESLIAB, \n\tUNDVCEQUIPRENTAL, \n\tUNDVCADULTMATLSOLD, \n\tUNDVCJEWELPRICERANGE, \n\tUNDVCRACINGSTUNTS, \n\tUNDVCANYMODIFIED, \n\tUNDVCATFAULTACCIDENTS, \n\tUNDVCCOMMENTS, \n\tUNDVCFILLER, \n\tUNDVCPMSFUTUREUSE, \n\tUNDVCCUSTFUTUREUSE, \n\tUNDVCYR2000CUSTUSE\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

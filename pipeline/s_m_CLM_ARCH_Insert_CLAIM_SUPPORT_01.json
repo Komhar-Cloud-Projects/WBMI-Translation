@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLAIM_SUPPORT_01",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLAIM_SUPPORT_01",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLAIM_SUPPORT_01_STAGE AS (\n\tSELECT\n\t\tCLAIM_SUPPORT_01_ID,\n\t\tCS01_TABLE_ID,\n\t\tCS01_TABLE_SEQ_NBR,\n\t\tCS01_CODE,\n\t\tCS01_CODE_DES,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM CLAIM_SUPPORT_01_STAGE\n),\nEXP_CLAIM_SUPPORT_01_STAGE AS (\n\tSELECT\n\tCLAIM_SUPPORT_01_ID,\n\tCS01_TABLE_ID,\n\tCS01_TABLE_SEQ_NBR,\n\tCS01_CODE,\n\tCS01_CODE_DES,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_CLAIM_SUPPORT_01_STAGE\n),\nARCH_CLAIM_SUPPORT_01_STAGE AS (\n\tINSERT INTO ARCH_CLAIM_SUPPORT_01_STAGE\n\t(CLAIM_SUPPORT_01_ID, CS01_TABLE_ID, CS01_TABLE_SEQ_NBR, CS01_CODE, CS01_CODE_DES, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, AUDIT_ID)\n\tSELECT \n\tCLAIM_SUPPORT_01_ID, \n\tCS01_TABLE_ID, \n\tCS01_TABLE_SEQ_NBR, \n\tCS01_CODE, \n\tCS01_CODE_DES, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_CLAIM_SUPPORT_01_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

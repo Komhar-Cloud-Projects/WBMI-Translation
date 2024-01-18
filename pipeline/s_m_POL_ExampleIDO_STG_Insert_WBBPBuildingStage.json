@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBBPBuildingStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBBPBuildingStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_BP_Building AS (\n\tWITH cte_WBBPBuilding(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.BP_BuildingId, \r\n\tX.WB_BP_BuildingId, \r\n\tX.SessionId, \r\n\tX.AlarmLocal, \r\n\tX.AlarmCentralStation, \r\n\tX.SafeClassBOrBetter, \r\n\tX.SafeOther, \r\n\tX.LocksDeadbolt, \r\n\tX.LocksOther, \r\n\tX.ClosedCircuitTV, \r\n\tX.NoCrimeControls, \r\n\tX.PredominantBuildingEquipmentBreakdownGroup, \r\n\tX.PredominantBuildingPropertyCOBFactor, \r\n\tX.PredominantLiabilityCOBFactor, \r\n\tX.LocationBuildingNumberShadow,\r\n\tX.PredominantBuildingBCCCode,\r\n\tX.PredominantBuildingClassCodeDescription\r\n\tFROM\r\n\tWB_BP_Building X\r\n\tinner join\r\n\tcte_WBBPBuilding Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tBP_BuildingId,\n\tWB_BP_BuildingId,\n\tSessionId,\n\tAlarmLocal AS i_AlarmLocal,\n\tAlarmCentralStation AS i_AlarmCentralStation,\n\tSafeClassBOrBetter AS i_SafeClassBOrBetter,\n\tSafeOther AS i_SafeOther,\n\tLocksDeadbolt AS i_LocksDeadbolt,\n\tLocksOther AS i_LocksOther,\n\tClosedCircuitTV AS i_ClosedCircuitTV,\n\tNoCrimeControls AS i_NoCrimeControls,\n\t-- *INF*: DECODE(i_AlarmLocal,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_AlarmLocal,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS AlarmLocal,\n\t-- *INF*: DECODE(i_AlarmCentralStation,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_AlarmCentralStation,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS AlarmCentralStation,\n\t-- *INF*: DECODE(i_SafeClassBOrBetter,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_SafeClassBOrBetter,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS SafeClassBOrBetter,\n\t-- *INF*: DECODE(i_SafeOther,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_SafeOther,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS SafeOther,\n\t-- *INF*: DECODE(i_LocksDeadbolt,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_LocksDeadbolt,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS LocksDeadbolt,\n\t-- *INF*: DECODE(i_LocksOther,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_LocksOther,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS LocksOther,\n\t-- *INF*: DECODE(i_ClosedCircuitTV,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_ClosedCircuitTV,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS ClosedCircuitTV,\n\t-- *INF*: DECODE(i_NoCrimeControls,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_NoCrimeControls,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS NoCrimeControls,\n\tPredominantBuildingEquipmentBreakdownGroup,\n\tPredominantBuildingPropertyCOBFactor,\n\tPredominantLiabilityCOBFactor,\n\tLocationBuildingNumberShadow,\n\tPredominantBuildingBCCCode,\n\tPredominantBuildingClassCodeDescription,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_WB_BP_Building\n),\nWBBPBuildingStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBBPBuildingStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBBPBuildingStage\n\t(ExtractDate, SourceSystemid, BP_BuildingId, WB_BP_BuildingId, SessionId, AlarmLocal, AlarmCentralStation, SafeClassBOrBetter, SafeOther, LocksDeadbolt, LocksOther, ClosedCircuitTV, NoCrimeControls, PredominantBuildingEquipmentBreakdownGroup, PredominantBuildingPropertyCOBFactor, PredominantLiabilityCOBFactor, LocationBuildingNumberShadow, PredominantBuildingBCCCode, PredominantBuildingClassCodeDescription)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tBP_BUILDINGID, \n\tWB_BP_BUILDINGID, \n\tSESSIONID, \n\tALARMLOCAL, \n\tALARMCENTRALSTATION, \n\tSAFECLASSBORBETTER, \n\tSAFEOTHER, \n\tLOCKSDEADBOLT, \n\tLOCKSOTHER, \n\tCLOSEDCIRCUITTV, \n\tNOCRIMECONTROLS, \n\tPREDOMINANTBUILDINGEQUIPMENTBREAKDOWNGROUP, \n\tPREDOMINANTBUILDINGPROPERTYCOBFACTOR, \n\tPREDOMINANTLIABILITYCOBFACTOR, \n\tLOCATIONBUILDINGNUMBERSHADOW, \n\tPREDOMINANTBUILDINGBCCCODE, \n\tPREDOMINANTBUILDINGCLASSCODEDESCRIPTION\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

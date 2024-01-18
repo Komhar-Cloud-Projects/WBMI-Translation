@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLIENT_ADDRESS",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLIENT_ADDRESS",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLIENT_ADDRESS_STAGE AS (\n\tSELECT CLIENT_ADDRESS_STAGE.CLIENT_ADDRESS_stage_ID, CLIENT_ADDRESS_STAGE.ADR_ID, CLIENT_ADDRESS_STAGE.ST_CD, CLIENT_ADDRESS_STAGE.CICA_PST_CD, CLIENT_ADDRESS_STAGE.CTR_CD, CLIENT_ADDRESS_STAGE.CICA_ADD_ADR_IND, CLIENT_ADDRESS_STAGE.USER_ID, CLIENT_ADDRESS_STAGE.STATUS_CD, CLIENT_ADDRESS_STAGE.TERMINAL_ID, CLIENT_ADDRESS_STAGE.CICA_EFF_ACY_TS, CLIENT_ADDRESS_STAGE.CICA_ADR_1, CLIENT_ADDRESS_STAGE.CICA_ADR_2, CLIENT_ADDRESS_STAGE.CICA_CIT_NM, CLIENT_ADDRESS_STAGE.CICA_CTY, CLIENT_ADDRESS_STAGE.EXTRACT_DATE, CLIENT_ADDRESS_STAGE.AS_OF_DATE, CLIENT_ADDRESS_STAGE.RECORD_COUNT, CLIENT_ADDRESS_STAGE.SOURCE_SYSTEM_ID \r\n\tFROM\r\n\t CLIENT_ADDRESS_STAGE\r\n\tWHERE\r\n\tCLIENT_ADDRESS_STAGE.CICA_EFF_ACY_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_CLIENT_ADDRESS AS (\n\tSELECT\n\tCLIENT_ADDRESS_stage_ID,\n\tADR_ID,\n\tST_CD,\n\tCICA_PST_CD,\n\tCTR_CD,\n\tCICA_ADD_ADR_IND,\n\tUSER_ID,\n\tSTATUS_CD,\n\tTERMINAL_ID,\n\tCICA_EFF_ACY_TS,\n\tCICA_ADR_1,\n\tCICA_ADR_2,\n\tCICA_CIT_NM,\n\tCICA_CTY,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_CLIENT_ADDRESS_STAGE\n),\narch_CLIENT_ADDRESS_STAGE AS (\n\tINSERT INTO arch_CLIENT_ADDRESS_STAGE\n\t(CLIENT_ADDRESS_stage_ID, ADR_ID, ST_CD, CICA_PST_CD, CTR_CD, CICA_ADD_ADR_IND, USER_ID, STATUS_CD, TERMINAL_ID, CICA_EFF_ACY_TS, CICA_ADR_1, CICA_ADR_2, CICA_CIT_NM, CICA_CTY, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, audit_id)\n\tSELECT \n\tCLIENT_ADDRESS_STAGE_ID, \n\tADR_ID, \n\tST_CD, \n\tCICA_PST_CD, \n\tCTR_CD, \n\tCICA_ADD_ADR_IND, \n\tUSER_ID, \n\tSTATUS_CD, \n\tTERMINAL_ID, \n\tCICA_EFF_ACY_TS, \n\tCICA_ADR_1, \n\tCICA_ADR_2, \n\tCICA_CIT_NM, \n\tCICA_CTY, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_CLIENT_ADDRESS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -14,21 +14,11 @@ Exp_Default_Values AS (
 	-- *INF*: IIF(ISNULL(in_CS01_CODE), 
 	-- 'N/A',
 	-- (rpad(in_CS01_CODE,4)))
-	IFF(in_CS01_CODE IS NULL,
-		'N/A',
-		( rpad(in_CS01_CODE, 4
-			) 
-		)
-	) AS out_CS01_CODE,
+	IFF(in_CS01_CODE IS NULL, 'N/A', (rpad(in_CS01_CODE, 4))) AS out_CS01_CODE,
 	-- *INF*: IIF(ISNULL(in_CS01_CODE_DES),
 	-- 'N/A', 
 	-- ltrim(rtrim(in_CS01_CODE_DES)))
-	IFF(in_CS01_CODE_DES IS NULL,
-		'N/A',
-		ltrim(rtrim(in_CS01_CODE_DES
-			)
-		)
-	) AS out_CS01_CODE_DES
+	IFF(in_CS01_CODE_DES IS NULL, 'N/A', ltrim(rtrim(in_CS01_CODE_DES))) AS out_CS01_CODE_DES
 	FROM SQ_CLAIM_SUPPORT_01_STAGE
 ),
 LKP_sup_claim_party_role_code AS (
@@ -63,13 +53,11 @@ EXP_Detect_changes AS (
 	-- 	iif((out_CS01_CODE_DES <> old_claim_party_role_descript),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(old_sup_claim_party_role_code_id IS NULL,
-		'NEW',
-		IFF(( out_CS01_CODE_DES <> old_claim_party_role_descript 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    old_sup_claim_party_role_code_id IS NULL, 'NEW',
+	    IFF(
+	        (out_CS01_CODE_DES <> old_claim_party_role_descript), 'UPDATE', 'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	Exp_Default_Values.out_CS01_CODE,
 	v_changed_flag AS changed_flag,
@@ -79,14 +67,12 @@ EXP_Detect_changes AS (
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
 	-- 
 	-- --sysdate normally has a time value.  We don't want the time value as our effectivity runs from day to day starting at midnight
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	sysdate AS created_date,
 	sysdate AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id
@@ -159,9 +145,10 @@ EXP_Lag_eff_from_date AS (
 	-- 	claim_party_role_code = v_PREV_ROW_claim_party_role_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	-- 	
-	DECODE(TRUE,
-		claim_party_role_code = v_PREV_ROW_claim_party_role_code, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    claim_party_role_code = v_PREV_ROW_claim_party_role_code, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

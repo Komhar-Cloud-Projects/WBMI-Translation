@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WbCfLocationAccountStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WbCfLocationAccountStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_CF_LocationAccount AS (\n\tWITH cte_WBCFLocationAccount(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.WB_CL_LocationAccountId, \r\n\tX.WB_CF_LocationAccountId, \r\n\tX.SessionId, \r\n\tX.PreferredPropertyCredit, \r\n\tX.LargeValueRelativityCredit, \r\n\tX.Width, \r\n\tX.FoodContaminationAdvertisingExpenseLimitStoredValue, \r\n\tX.FoodContaminationIndicatorStoredValue, \r\n\tX.FoodContaminationLimitStoredValue, \r\n\tX.FirstTimeOnBuildingScreen, \r\n\tX.PreferredPropertyCreditFactor \r\n\tFROM \r\n\tDBO.WB_CF_LocationAccount x\r\n\tinner join cte_WBCFLocationAccount Y\r\n\ton X.SessionId = Y.SessionId\n),\nEXP_Metadata AS (\n\tSELECT\n\tWB_CL_LocationAccountId,\n\tWB_CF_LocationAccountId,\n\tSessionId,\n\tPreferredPropertyCredit AS i_PreferredPropertyCredit,\n\t-- *INF*: DECODE(i_PreferredPropertyCredit,\r\n\t-- 'T',\r\n\t-- '1',\r\n\t-- 'F',\r\n\t-- '0',\r\n\t-- NULL\r\n\t-- )\n\tDECODE(\n\t    i_PreferredPropertyCredit,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_PreferredPropertyCredit,\n\tLargeValueRelativityCredit AS i_LargeValueRelativityCredit,\n\t-- *INF*: DECODE(i_LargeValueRelativityCredit,\r\n\t-- 'T',\r\n\t-- '1',\r\n\t-- 'F',\r\n\t-- '0',\r\n\t-- NULL\r\n\t-- )\n\tDECODE(\n\t    i_LargeValueRelativityCredit,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_LargeValueRelativityCredit,\n\tWidth,\n\tFoodContaminationAdvertisingExpenseLimitStoredValue,\n\tFoodContaminationIndicatorStoredValue,\n\tFoodContaminationLimitStoredValue,\n\tFirstTimeOnBuildingScreen AS i_FirstTimeOnBuildingScreen,\n\t-- *INF*: DECODE(i_FirstTimeOnBuildingScreen,\r\n\t-- 'T',\r\n\t-- '1',\r\n\t-- 'F',\r\n\t-- '0',\r\n\t-- NULL\r\n\t-- )\n\tDECODE(\n\t    i_FirstTimeOnBuildingScreen,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_FirstTimeOnBuildingScreen,\n\tPreferredPropertyCreditFactor,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_WB_CF_LocationAccount\n),\nWBCFLocationAccountStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.Shortcut_to_WBCFLocationAccountStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.Shortcut_to_WBCFLocationAccountStage\n\t(ExtractDate, SourceSystemId, WBCLLocationAccountId, WBCFLocationAccountId, SessionId, PreferredPropertyCredit, LargeValueRelativityCredit, Width, FirstTimeOnBuildingScreen, PreferredPropertyCreditFactor, FoodContaminationAdvertisingExpenseLimitStoredValue, FoodContaminationIndicatorStoredValue, FoodContaminationLimitStoredValue)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tWB_CL_LocationAccountId AS WBCLLOCATIONACCOUNTID, \n\tWB_CF_LocationAccountId AS WBCFLOCATIONACCOUNTID, \n\tSESSIONID, \n\to_PreferredPropertyCredit AS PREFERREDPROPERTYCREDIT, \n\to_LargeValueRelativityCredit AS LARGEVALUERELATIVITYCREDIT, \n\tWIDTH, \n\to_FirstTimeOnBuildingScreen AS FIRSTTIMEONBUILDINGSCREEN, \n\tPREFERREDPROPERTYCREDITFACTOR, \n\tFOODCONTAMINATIONADVERTISINGEXPENSELIMITSTOREDVALUE, \n\tFOODCONTAMINATIONINDICATORSTOREDVALUE, \n\tFOODCONTAMINATIONLIMITSTOREDVALUE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

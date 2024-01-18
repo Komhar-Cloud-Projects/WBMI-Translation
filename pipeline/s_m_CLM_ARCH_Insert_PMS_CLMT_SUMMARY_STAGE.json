@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_PMS_CLMT_SUMMARY_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_PMS_CLMT_SUMMARY_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_pms_clmt_summary_stage AS (\n\tSELECT \r\n\tP.PmsClmtSummaryStageId, \r\n\tP.pms_policy_sym, \r\n\tP.pms_policy_num, \r\n\tP.pms_policy_mod, \r\n\tP.pms_date_of_loss, \r\n\tP.pms_loss_occurence, \r\n\tP.pms_loss_claimant, \r\n\tP.ttd_rate, \r\n\tP.daily_ttd_rate, \r\n\tP.created_ts, \r\n\tP.created_user_id, \r\n\tP.modified_ts, \r\n\tP.modified_user_id, \r\n\tP.ExtractDate, \r\n\tP.SourceSystemId \r\n\t\r\n\tFROM\r\n\t pms_clmt_summary_stage P\r\n\t\r\n\t--Where\r\n\t--pms_clmt_summary_stage.created_ts >= --'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t--OR\r\n\t--pms_clmt_summary_stage.modified_ts >= --'@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_arch_pms_clmt_summary_stage AS (\n\tSELECT\n\tPmsClmtSummaryStageId,\n\tpms_policy_sym,\n\tpms_policy_num,\n\tpms_policy_mod,\n\tpms_date_of_loss,\n\tpms_loss_occurence,\n\tpms_loss_claimant,\n\tttd_rate,\n\tdaily_ttd_rate,\n\tcreated_ts,\n\tcreated_user_id,\n\tmodified_ts,\n\tmodified_user_id,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_pms_clmt_summary_stage\n),\narch_pms_clmt_summary_stage AS (\n\tINSERT INTO arch_pms_clmt_summary_stage\n\t(PmsClmtSummaryStageId, pms_policy_sym, pms_policy_num, pms_policy_mod, pms_date_of_loss, pms_loss_occurence, pms_loss_claimant, ttd_rate, daily_ttd_rate, created_ts, created_user_id, modified_ts, modified_user_id, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tPMSCLMTSUMMARYSTAGEID, \n\tPMS_POLICY_SYM, \n\tPMS_POLICY_NUM, \n\tPMS_POLICY_MOD, \n\tPMS_DATE_OF_LOSS, \n\tPMS_LOSS_OCCURENCE, \n\tPMS_LOSS_CLAIMANT, \n\tTTD_RATE, \n\tDAILY_TTD_RATE, \n\tCREATED_TS, \n\tCREATED_USER_ID, \n\tMODIFIED_TS, \n\tMODIFIED_USER_ID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_arch_pms_clmt_summary_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

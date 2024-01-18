@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchUnderwritingRegionRelationshipStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchUnderwritingRegionRelationship_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_UnderwritingRegionRelationshipStage AS (\n\tSELECT\n\t\tUnderwritingRegionRelationshipStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAssociateID,\n\t\tWestBendAssociateID,\n\t\tUnderwritingRegionID,\n\t\tUnderwritingRegionCode,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID\n\tFROM UnderwritingRegionRelationshipStage\n),\nLKP_ExistingArchive AS (\n\tSELECT\n\tHashKey,\n\tAssociateID,\n\tUnderwritingRegionID\n\tFROM (\n\t\tselect\ta.HashKey as HashKey,\r\n\t\t\t\ta.ModifiedDate as ModifiedDate,\r\n\t\t\t\ta.AssociateID as AssociateID,\r\n\t\t\t\ta.UnderwritingRegionID as UnderwritingRegionID\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchUnderwritingRegionRelationshipStage a\r\n\t\tinner join (\r\n\t\t\t\t\tselect AssociateID, UnderwritingRegionID, max(ModifiedDate) as ModifiedDate\r\n\t\t\t\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchUnderwritingRegionRelationshipStage\r\n\t\t\t\t\tgroup by AssociateID, UnderwritingRegionID) b\r\n\t\ton  a.AssociateID = b.AssociateID\r\n\t\tand a.UnderwritingRegionID = b.UnderwritingRegionID\r\n\t\tand a.ModifiedDate = b.ModifiedDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AssociateID,UnderwritingRegionID ORDER BY HashKey) = 1\n),\nEXP_AddAuditID AS (\n\tSELECT\n\tSQ_UnderwritingRegionRelationshipStage.UnderwritingRegionRelationshipStageID,\n\tSQ_UnderwritingRegionRelationshipStage.AgencyODSSourceSystemID,\n\tSQ_UnderwritingRegionRelationshipStage.HashKey,\n\tSQ_UnderwritingRegionRelationshipStage.ModifiedUserID,\n\tSQ_UnderwritingRegionRelationshipStage.ModifiedDate,\n\tSQ_UnderwritingRegionRelationshipStage.AssociateID,\n\tSQ_UnderwritingRegionRelationshipStage.WestBendAssociateID,\n\tSQ_UnderwritingRegionRelationshipStage.UnderwritingRegionID,\n\tSQ_UnderwritingRegionRelationshipStage.UnderwritingRegionCode,\n\tSQ_UnderwritingRegionRelationshipStage.ExtractDate,\n\tSQ_UnderwritingRegionRelationshipStage.AsOfDate,\n\tSQ_UnderwritingRegionRelationshipStage.RecordCount,\n\tSQ_UnderwritingRegionRelationshipStage.SourceSystemID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID,\n\tLKP_ExistingArchive.HashKey AS lkp_HashKey,\n\t-- *INF*: Decode(true,\r\n\t-- HashKey = lkp_HashKey, 'IGNORE',\r\n\t-- IsNull(lkp_HashKey), 'INSERT',\r\n\t-- 'UPDATE')\n\tDecode(\n\t    true,\n\t    HashKey = lkp_HashKey, 'IGNORE',\n\t    lkp_HashKey IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag\n\tFROM SQ_UnderwritingRegionRelationshipStage\n\tLEFT JOIN LKP_ExistingArchive\n\tON LKP_ExistingArchive.AssociateID = SQ_UnderwritingRegionRelationshipStage.AssociateID AND LKP_ExistingArchive.UnderwritingRegionID = SQ_UnderwritingRegionRelationshipStage.UnderwritingRegionID\n),\nFIL_ChangesOnly AS (\n\tSELECT\n\tUnderwritingRegionRelationshipStageID, \n\tAgencyODSSourceSystemID, \n\tHashKey, \n\tModifiedUserID, \n\tModifiedDate, \n\tAssociateID, \n\tWestBendAssociateID, \n\tUnderwritingRegionID, \n\tUnderwritingRegionCode, \n\tExtractDate, \n\tAsOfDate, \n\tRecordCount, \n\tSourceSystemID, \n\tOUT_AUDIT_ID, \n\to_ChangeFlag\n\tFROM EXP_AddAuditID\n\tWHERE o_ChangeFlag = 'INSERT' OR o_ChangeFlag = 'UPDATE'\n),\nArchUnderwritingRegionRelationshipStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchUnderwritingRegionRelationshipStage\n\t(UnderwritingRegionRelationshipStageID, AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AssociateID, WestBendAssociateID, UnderwritingRegionID, UnderwritingRegionCode, ExtractDate, AsOfDate, RecordCount, SourceSystemID, AuditID)\n\tSELECT \n\tUNDERWRITINGREGIONRELATIONSHIPSTAGEID, \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tASSOCIATEID, \n\tWESTBENDASSOCIATEID, \n\tUNDERWRITINGREGIONID, \n\tUNDERWRITINGREGIONCODE, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\tOUT_AUDIT_ID AS AUDITID\n\tFROM FIL_ChangesOnly\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

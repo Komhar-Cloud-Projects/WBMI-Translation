@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_EXTRACT_WorkAgencyContingencyYearly",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_EXTRACT_WorkAgencyContingencyYearly",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AgencyProfitSharingYTDFact AS (\n\tDeclare @Date1 date\r\n\t\r\n\tset @date1=CAST(CAST(YEAR(GETDATE())+@{pipeline().parameters.NUM_OF_YEAR} as varchar)+'/12/31 00:00:00' as date)\r\n\t\r\n\tselect SUBSTRING((CASE   WHEN ard.legalprimaryagencycode   is null THEN a.agencycode ELSE ard.legalprimaryagencycode END),1,2) as StateCode,\r\n\tSUBSTRING((CASE   WHEN ard.legalprimaryagencycode   is null THEN a.agencycode ELSE ard.legalprimaryagencycode END),3,3) as AgencyNumber,\r\n\tC.clndr_yr as ContingencyYear,\r\n\tcase when AG.ProfitSharingGuaranteeFlag=1 then 'Y' else 'N' end as ContingencyFlag,\r\n\t(CASE   WHEN ard.legalprimaryagencycode   is null THEN a.agencycode        ELSE ard.legalprimaryagencycode END) as AgencyCode,\r\n\tsum(APS.ProfitSharingPaymentAmount) as ContingencyAmount, \r\n\tsum(APS.ProfitSharingEligibleDirectWrittenPremium) as YTDDirectWrittenPremium,\r\n\tsum(APS.NetDirectEarnedPremium) as YTDNetEarnedPremium,\r\n\tsum(APS.NetDirectIncurredLoss) as YTDNetLossIncurred,\r\n\t@date1 CreatedDate\r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.AgencyProfitSharingYTDFact APS\r\n\t\r\n\tJOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.calendar_dim C\r\n\ton APS.RunDateId=C.clndr_id\r\n\t\r\n\tJOIN @{pipeline().parameters.SOURCE_TABLE_OWNER_V3}.AgencyDim A\r\n\ton APS.AgencyDimId=A.AgencyDimID\r\n\t\r\n\tleft join \r\n\t (select * from @{pipeline().parameters.SOURCE_TABLE_OWNER}.Agencyrelationshipdim where currentsnapshotflag = 1) ard\r\n\ton (A.edwagencyakid=ard.edwagencyakid \r\n\t and c.clndr_date between ard.agencyrelationshipeffectivedate and ard.agencyrelationshipexpirationdate\r\n\t )\r\n\t\r\n\t\r\n\t\r\n\tJOIN @{pipeline().parameters.SOURCE_TABLE_OWNER_V3}.AgencyDim LA\r\n\ton (case when ard.LegalPrimaryAgencyCode is null then a.agencycode else ard.LegalPrimaryAgencyCode end)=LA.AgencyCode\r\n\t\r\n\tand LA.CurrentSnapshotFlag=1\r\n\tJOIN @{pipeline().parameters.DATABASE_NAME_IL}.@{pipeline().parameters.SOURCE_TABLE_OWNER_V2}.Agency AG\r\n\ton LA.EDWAgencyAKID=AG.AgencyAKID\r\n\tand AG.CurrentSnapshotFlag=1\r\n\t\r\n\t\r\n\t\r\n\twhere GroupExperienceIndicator='GROUP'\r\n\tand C.clndr_date=@date1 and  SUBSTRING(case when ard.LegalPrimaryAgencyCode is null then a.agencycode else ard.LegalPrimaryAgencyCode end ,1,1) <> '7'\r\n\tand C.clndr_date=@date1\r\n\tgroup by \r\n\tC.clndr_yr,\r\n\tAG.ProfitSharingGuaranteeFlag,\r\n\tcase when ard.LegalPrimaryAgencyCode is null then a.agencycode else ard.LegalPrimaryAgencyCode end\r\n\t\r\n\t/*Left join with \"agencyrelationshipdim\" in order to get legalprimaryagencycode values from \"AgencyRelationshipDim\" table*/\n),\nEXP_SrcDataCollect AS (\n\tSELECT\n\tStateCode,\n\tAgencyNumber,\n\tContingencyYear,\n\tGuaranteedFlag,\n\tAgencyCode,\n\tContingencyAmount,\n\tYTDDirectWrittenPremium,\n\tYTDNetEarnedPremium,\n\tYTDNetLossIncurred,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,\n\tCreatedDate\n\tFROM SQ_AgencyProfitSharingYTDFact\n),\nSQ_AgencyProfitSharingYTDFact1 AS (\n\tDeclare @Date1 date\r\n\t\r\n\tset @date1=CAST(CAST(YEAR(GETDATE())+@{pipeline().parameters.NUM_OF_YEAR} as varchar)+'/09/30 00:00:00' as date)\r\n\t\r\n\tselect  (CASE \r\n\t\t\t\tWHEN ard.LegalPrimaryAgencyCode IS NULL\r\n\t\t\t\t\tTHEN a.agencycode\r\n\t\t\t\tELSE ard.LegalPrimaryAgencyCode\r\n\t\t\t\tEND\r\n\t\t\t) as AgencyCode,\r\n\tsum(APS.ProfitSharingPaymentAmount) as ProfitSharingPaymentAmount\r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.AgencyProfitSharingYTDFact APS\r\n\tJOIN @{pipeline().parameters.SOURCE_TABLE_OWNER_V3}.AgencyDim A\r\n\ton APS.AgencyDimId=A.AgencyDimID\r\n\tJOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.calendar_dim C\r\n\ton APS.RunDateId=C.clndr_id\r\n\t\r\n\t\t\tleft join (select * from @{pipeline().parameters.SOURCE_TABLE_OWNER}.Agencyrelationshipdim where currentsnapshotflag = 1) ard\r\n\ton (a.edwagencyakid=ard.edwagencyakid and C.clndr_date between ard.agencyrelationshipeffectivedate and ard.agencyrelationshipexpirationdate)\r\n\t\r\n\twhere GroupExperienceIndicator='GROUP'\r\n\tand C.clndr_date=@date1 and SUBSTRING(case when ard.LegalPrimaryAgencyCode is null then a.agencycode else ard.LegalPrimaryAgencyCode end,1,1) <> '7'\r\n\t group by \r\n\t(CASE \r\n\t\t\t\tWHEN ard.LegalPrimaryAgencyCode IS NULL\r\n\t\t\t\t\tTHEN a.agencycode\r\n\t\t\t\tELSE ard.LegalPrimaryAgencyCode\r\n\t\t\t\tEND\r\n\t\t\t)\n),\nJNR_GuaranteedAmount AS (SELECT\n\tEXP_SrcDataCollect.StateCode, \n\tEXP_SrcDataCollect.AgencyNumber, \n\tEXP_SrcDataCollect.ContingencyYear, \n\tEXP_SrcDataCollect.GuaranteedFlag, \n\tEXP_SrcDataCollect.AgencyCode, \n\tEXP_SrcDataCollect.ContingencyAmount, \n\tEXP_SrcDataCollect.YTDDirectWrittenPremium, \n\tEXP_SrcDataCollect.YTDNetEarnedPremium, \n\tEXP_SrcDataCollect.YTDNetLossIncurred, \n\tEXP_SrcDataCollect.AuditID, \n\tEXP_SrcDataCollect.CreatedDate, \n\tSQ_AgencyProfitSharingYTDFact1.AgencyCode AS AgencyCode1, \n\tSQ_AgencyProfitSharingYTDFact1.ProfitSharingPaymentAmount\n\tFROM SQ_AgencyProfitSharingYTDFact1\n\tRIGHT OUTER JOIN EXP_SrcDataCollect\n\tON EXP_SrcDataCollect.AgencyCode = SQ_AgencyProfitSharingYTDFact1.AgencyCode\n),\nEXP_TgtDataCollect AS (\n\tSELECT\n\tAuditID,\n\tCreatedDate,\n\tStateCode,\n\tAgencyNumber,\n\tContingencyYear,\n\tGuaranteedFlag,\n\tAgencyCode,\n\tProfitSharingPaymentAmount AS GuaranteedContingencyAmount,\n\t-- *INF*: iif(ISNULL(GuaranteedContingencyAmount),0,GuaranteedContingencyAmount)\n\tIFF(GuaranteedContingencyAmount IS NULL, 0, GuaranteedContingencyAmount) AS o_GuaranteedContingencyAmount,\n\tContingencyAmount,\n\tYTDDirectWrittenPremium,\n\tYTDNetEarnedPremium,\n\tYTDNetLossIncurred\n\tFROM JNR_GuaranteedAmount\n),\nWorkAgencyContingencyYearly AS (\n\tINSERT INTO WorkAgencyContingencyYearly\n\t(AuditId, CreatedDate, StateCode, AgencyNumber, ContingencyYear, GuaranteedFlag, AgencyCode, GuaranteedContingencyAmount, ContingencyAmount, YTDDirectWrittenPremium, YTDNetEarnedPremium, YTDNetIncurredLoss)\n\tSELECT \n\tAuditID AS AUDITID, \n\tCREATEDDATE, \n\tSTATECODE, \n\tAGENCYNUMBER, \n\tCONTINGENCYYEAR, \n\tGUARANTEEDFLAG, \n\tAGENCYCODE, \n\to_GuaranteedContingencyAmount AS GUARANTEEDCONTINGENCYAMOUNT, \n\tCONTINGENCYAMOUNT, \n\tYTDDIRECTWRITTENPREMIUM, \n\tYTDNETEARNEDPREMIUM, \n\tYTDNetLossIncurred AS YTDNETINCURREDLOSS\n\tFROM EXP_TgtDataCollect\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "NUM_OF_YEAR": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER_V3": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "DATABASE_NAME_IL": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

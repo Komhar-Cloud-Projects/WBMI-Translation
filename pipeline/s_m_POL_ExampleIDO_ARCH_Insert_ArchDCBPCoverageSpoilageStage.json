@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageSpoilageStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageSpoilag_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBPCoverageSpoilageStage AS (\n\tSELECT\n\t\tDCBPCoverageSpoilageStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCoverageId,\n\t\tBP_CoverageSpoilageId,\n\t\tSessionId,\n\t\tAgreement,\n\t\tARate,\n\t\tClassGroup,\n\t\tType\n\tFROM DCBPCoverageSpoilageStage\n),\nEXP_DCBPCoverageSpoilageStage AS (\n\tSELECT\n\tSYSDATE AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tDCBPCoverageSpoilageStageId,\n\tCoverageId,\n\tBP_CoverageSpoilageId,\n\tSessionId,\n\tAgreement AS i_Agreement,\n\t-- *INF*: IIF(i_Agreement='T',1,0)\n\tIFF(i_Agreement = 'T', 1, 0) AS o_Agreement,\n\tARate,\n\tClassGroup,\n\tType\n\tFROM SQ_DCBPCoverageSpoilageStage\n),\nArchDCBPCoverageSpoilageStage AS (\n\tINSERT INTO ArchDCBPCoverageSpoilageStage\n\t(ExtractDate, SourceSystemId, AuditId, DCBPCoverageSpoilageStageId, CoverageId, BP_CoverageSpoilageId, SessionId, Agreement, ARate, ClassGroup, Type)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCBPCOVERAGESPOILAGESTAGEID, \n\tCOVERAGEID, \n\tBP_COVERAGESPOILAGEID, \n\tSESSIONID, \n\to_Agreement AS AGREEMENT, \n\tARATE, \n\tCLASSGROUP, \n\tTYPE\n\tFROM EXP_DCBPCoverageSpoilageStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

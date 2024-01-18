@@ -1,0 +1,50 @@
+WITH
+SQ_Arch_producer_code_stage AS (
+	SELECT
+		producer_code_stage_id AS producer_code_id,
+		STATE_CODE,
+		AGENCY_NUM,
+		PRODUCER_CODE,
+		EMP_ID,
+		PRODUCER_DESCRIPT,
+		AGENCY_CODE,
+		EXTRACT_DATE,
+		AS_OF_DATE,
+		RECORD_COUNT,
+		SOURCE_SYSTEM_ID
+	FROM Producer_code_stage
+),
+exp_ARCH_Insert_Prdcr_code AS (
+	SELECT
+	producer_code_id,
+	STATE_CODE,
+	AGENCY_NUM,
+	PRODUCER_CODE,
+	EMP_ID,
+	PRODUCER_DESCRIPT,
+	AGENCY_CODE,
+	EXTRACT_DATE,
+	AS_OF_DATE,
+	RECORD_COUNT,
+	SOURCE_SYSTEM_ID,
+	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID
+	FROM SQ_Arch_producer_code_stage
+),
+TGT_Arch_producer_code_stage AS (
+	INSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_producer_code_stage
+	(producer_code_stage_id, STATE_CODE, AGENCY_NUM, PRODUCER_CODE, EMP_ID, PRODUCER_DESCRIPT, AGENCY_CODE, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, audit_id)
+	SELECT 
+	producer_code_id AS PRODUCER_CODE_STAGE_ID, 
+	STATE_CODE, 
+	AGENCY_NUM, 
+	PRODUCER_CODE, 
+	EMP_ID, 
+	PRODUCER_DESCRIPT, 
+	AGENCY_CODE, 
+	EXTRACT_DATE, 
+	AS_OF_DATE, 
+	RECORD_COUNT, 
+	SOURCE_SYSTEM_ID, 
+	OUT_AUDIT_ID AS AUDIT_ID
+	FROM exp_ARCH_Insert_Prdcr_code
+),

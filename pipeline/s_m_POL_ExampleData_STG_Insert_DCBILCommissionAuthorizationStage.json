@@ -1,0 +1,55 @@
+{
+    "name": "s_m_POL_ExampleData_STG_Insert_DCBILCommissionAuthorizationStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleData_STG_Insert_DCBILCommissionAuthoriz_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_BIL_CommissionAuthorization AS (\n\tSELECT CA.CommissionAuthorizationId, CA.AgentReference, CA.AccountId, CA.PolicyTermId, CA.BillItemId, CA.AuthorizedAmount, CA.CommissionSchemeReference, CA.AuthorizationDate, CA.CommissionType, \r\n\tCA.CommissionPercent, CA.CurrencyCulture, CA.LastUpdatedTimestamp, CA.LastUpdatedUserId, null as CommissionAuthorizationLockingTS, CA.AgencyRollupReference, CA.AuthorizationDateTime, CA.AuthorizationReason, \r\n\tCA.AuthorizationTypeCode, CA.TierAmount, CA.Activity, CA.TransactionTypeCode, CA.PlanId, null as TransactionGUID \r\n\tFROM\r\n\t DC_BIL_CommissionAuthorization CA with(nolock)\r\n\tWHERE\r\n\tCA.AuthorizationDate >= DATEADD(DD,@{pipeline().parameters.NO_OF_DAYS},'@{pipeline().parameters.SELECTION_START_TS}')\r\n\tAND\r\n\tCA.CommissionAuthorizationId % @{pipeline().parameters.NUM_OF_PARTITIONS}=1\n\t\n\tUNION ALL\n\tSELECT CA.CommissionAuthorizationId, CA.AgentReference, CA.AccountId, CA.PolicyTermId, CA.BillItemId, CA.AuthorizedAmount, CA.CommissionSchemeReference, CA.AuthorizationDate, CA.CommissionType, \r\n\tCA.CommissionPercent, CA.CurrencyCulture, CA.LastUpdatedTimestamp, CA.LastUpdatedUserId, null as CommissionAuthorizationLockingTS, CA.AgencyRollupReference, CA.AuthorizationDateTime, CA.AuthorizationReason, \r\n\tCA.AuthorizationTypeCode, CA.TierAmount, CA.Activity, CA.TransactionTypeCode, CA.PlanId, null as TransactionGUID \r\n\tFROM\r\n\t DC_BIL_CommissionAuthorization CA with(nolock)\r\n\tWHERE\r\n\tCA.AuthorizationDate >= DATEADD(DD,@{pipeline().parameters.NO_OF_DAYS},'@{pipeline().parameters.SELECTION_START_TS}')\r\n\tAND\r\n\tCA.CommissionAuthorizationId % @{pipeline().parameters.NUM_OF_PARTITIONS}=2\n\t\n\tUNION ALL\n\tSELECT CA.CommissionAuthorizationId, CA.AgentReference, CA.AccountId, CA.PolicyTermId, CA.BillItemId, CA.AuthorizedAmount, CA.CommissionSchemeReference, CA.AuthorizationDate, CA.CommissionType, \r\n\tCA.CommissionPercent, CA.CurrencyCulture, CA.LastUpdatedTimestamp, CA.LastUpdatedUserId, null as CommissionAuthorizationLockingTS, CA.AgencyRollupReference, CA.AuthorizationDateTime, CA.AuthorizationReason, \r\n\tCA.AuthorizationTypeCode, CA.TierAmount, CA.Activity, CA.TransactionTypeCode, CA.PlanId, null as TransactionGUID \r\n\tFROM\r\n\t DC_BIL_CommissionAuthorization CA with(nolock)\r\n\tWHERE\r\n\tCA.AuthorizationDate >= DATEADD(DD,@{pipeline().parameters.NO_OF_DAYS},'@{pipeline().parameters.SELECTION_START_TS}')\r\n\tAND\r\n\tCA.CommissionAuthorizationId % @{pipeline().parameters.NUM_OF_PARTITIONS}=3\n\t\n\tUNION ALL\n\tSELECT CA.CommissionAuthorizationId, CA.AgentReference, CA.AccountId, CA.PolicyTermId, CA.BillItemId, CA.AuthorizedAmount, CA.CommissionSchemeReference, CA.AuthorizationDate, CA.CommissionType, \r\n\tCA.CommissionPercent, CA.CurrencyCulture, CA.LastUpdatedTimestamp, CA.LastUpdatedUserId, null as CommissionAuthorizationLockingTS, CA.AgencyRollupReference, CA.AuthorizationDateTime, CA.AuthorizationReason, \r\n\tCA.AuthorizationTypeCode, CA.TierAmount, CA.Activity, CA.TransactionTypeCode, CA.PlanId, null as TransactionGUID \r\n\tFROM\r\n\t DC_BIL_CommissionAuthorization CA with(nolock)\r\n\tWHERE\r\n\tCA.AuthorizationDate >= DATEADD(DD,@{pipeline().parameters.NO_OF_DAYS},'@{pipeline().parameters.SELECTION_START_TS}')\r\n\tAND\r\n\tCA.CommissionAuthorizationId % @{pipeline().parameters.NUM_OF_PARTITIONS}=4\n),\nEXP_Metadata AS (\n\tSELECT\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tCommissionAuthorizationId,\n\tAgentReference,\n\tAccountId,\n\tPolicyTermId,\n\tBillItemId,\n\tAuthorizedAmount,\n\tCommissionSchemeReference,\n\tAuthorizationDate,\n\tCommissionType,\n\tCommissionPercent,\n\tCurrencyCulture,\n\tLastUpdatedTimestamp,\n\tLastUpdatedUserId,\n\tCommissionAuthorizationLockingTS,\n\tAgencyRollupReference,\n\tAuthorizationDateTime,\n\tAuthorizationReason,\n\tAuthorizationTypeCode,\n\tTierAmount,\n\tActivity,\n\tTransactionTypeCode,\n\tPlanId,\n\tTransactionGUID\n\tFROM SQ_DC_BIL_CommissionAuthorization\n),\nDCBILCommissionAuthorizationStage AS (\n\tTRUNCATE TABLE DCBILCommissionAuthorizationStage;\n\tINSERT INTO DCBILCommissionAuthorizationStage\n\t(ExtractDate, SourceSystemId, CommissionAuthorizationId, AgentReference, AccountId, PolicyTermId, BillItemId, AuthorizedAmount, CommissionSchemeReference, AuthorizationDate, CommissionType, CommissionPercent, CurrencyCulture, LastUpdatedTimestamp, LastUpdatedUserId, CommissionAuthorizationLockingTS, AgencyRollupReference, AuthorizationDateTime, AuthorizationReason, AuthorizationTypeCode, TierAmount, Activity, TransactionTypeCode, PlanId, TransactionGUID)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCOMMISSIONAUTHORIZATIONID, \n\tAGENTREFERENCE, \n\tACCOUNTID, \n\tPOLICYTERMID, \n\tBILLITEMID, \n\tAUTHORIZEDAMOUNT, \n\tCOMMISSIONSCHEMEREFERENCE, \n\tAUTHORIZATIONDATE, \n\tCOMMISSIONTYPE, \n\tCOMMISSIONPERCENT, \n\tCURRENCYCULTURE, \n\tLASTUPDATEDTIMESTAMP, \n\tLASTUPDATEDUSERID, \n\tCOMMISSIONAUTHORIZATIONLOCKINGTS, \n\tAGENCYROLLUPREFERENCE, \n\tAUTHORIZATIONDATETIME, \n\tAUTHORIZATIONREASON, \n\tAUTHORIZATIONTYPECODE, \n\tTIERAMOUNT, \n\tACTIVITY, \n\tTRANSACTIONTYPECODE, \n\tPLANID, \n\tTRANSACTIONGUID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "NO_OF_DAYS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "NUM_OF_PARTITIONS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

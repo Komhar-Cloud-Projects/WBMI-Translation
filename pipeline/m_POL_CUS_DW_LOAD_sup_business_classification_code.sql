@@ -25,13 +25,10 @@ Exp_BCCBusinessSegmentSBG AS (
 	EffectiveDate,
 	ExpirationDate,
 	-- *INF*: to_date(to_char(ExpirationDate, 'YYYY-MM-DD HH:MI:SS'), 'YYYY-MM-DD HH:MI:SS')
-	to_date(to_char(ExpirationDate, 'YYYY-MM-DD HH:MI:SS'
-		), 'YYYY-MM-DD HH:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP(to_char(ExpirationDate, 'YYYY-MM-DD HH:MI:SS'), 'YYYY-MM-DD HH:MI:SS') AS o_ExpirationDate,
 	BusinessClassificationCode,
 	-- *INF*: LPAD(BusinessClassificationCode,5,'0')
-	LPAD(BusinessClassificationCode, 5, '0'
-	) AS o_BusinessClassificationCode,
+	LPAD(BusinessClassificationCode, 5, '0') AS o_BusinessClassificationCode,
 	BusinessClassificationDescription,
 	BusinessSegmentCode,
 	BusinessSegmentDescription,
@@ -115,42 +112,32 @@ Exp_GetValue AS (
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_sys_id,
 	LKP_Target.created_date AS i_created_date,
 	-- *INF*: IIF(ISNULL(i_created_date), SYSDATE, i_created_date)
-	IFF(i_created_date IS NULL,
-		SYSDATE,
-		i_created_date
-	) AS CreatedDate,
+	IFF(i_created_date IS NULL, CURRENT_TIMESTAMP, i_created_date) AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	AGG_RemoveDuplicate.EffectiveDate,
 	AGG_RemoveDuplicate.ExpirationDate,
 	AGG_RemoveDuplicate.BusinessClassificationCode,
 	AGG_RemoveDuplicate.BusinessClassificationDescription AS i_BusinessClassificationDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_BusinessClassificationDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_BusinessClassificationDescription
-	) AS o_BusinessClassificationDescription,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_BusinessClassificationDescription) AS o_BusinessClassificationDescription,
 	AGG_RemoveDuplicate.BusinessSegmentCode AS i_BusinessSegmentCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_BusinessSegmentCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_BusinessSegmentCode
-	) AS o_BusinessSegmentCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_BusinessSegmentCode) AS o_BusinessSegmentCode,
 	AGG_RemoveDuplicate.BusinessSegmentDescription AS i_BusinessSegmentDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_BusinessSegmentDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_BusinessSegmentDescription
-	) AS o_BusinessSegmentDescription,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_BusinessSegmentDescription) AS o_BusinessSegmentDescription,
 	AGG_RemoveDuplicate.StrategicBusinessGroupCode AS i_StrategicBusinessGroupCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_StrategicBusinessGroupCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_StrategicBusinessGroupCode
-	) AS o_StrategicBusinessGroupCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_StrategicBusinessGroupCode) AS o_StrategicBusinessGroupCode,
 	AGG_RemoveDuplicate.StrategicBusinessGroupDescription AS i_StrategicBusinessGroupDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_StrategicBusinessGroupDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_StrategicBusinessGroupDescription
-	) AS o_StrategicBusinessGroupDescription,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_StrategicBusinessGroupDescription) AS o_StrategicBusinessGroupDescription,
 	AGG_RemoveDuplicate.ArgentBusinessSegmentCode AS i_ArgentBusinessSegmentCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ArgentBusinessSegmentCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ArgentBusinessSegmentCode
-	) AS o_ArgentBusinessSegmentCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_ArgentBusinessSegmentCode) AS o_ArgentBusinessSegmentCode,
 	AGG_RemoveDuplicate.ArgentBusinessSegmentDescription AS i_ArgentBusinessSegmentDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ArgentBusinessSegmentDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ArgentBusinessSegmentDescription
-	) AS o_ArgentBusinessSegmentDescription,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_ArgentBusinessSegmentDescription) AS o_ArgentBusinessSegmentDescription,
 	LKP_Target.eff_to_date AS lkp_eff_to_date,
 	LKP_Target.bus_class_code_descript AS lkp_bus_class_code_descript,
 	LKP_Target.BusinessSegmentCode AS lkp_BusinessSegmentCode,
@@ -164,23 +151,17 @@ Exp_GetValue AS (
 	-- i_ArgentBusinessSegmentCode != lkp_ArgentBusinessSegmentCode OR
 	-- i_ArgentBusinessSegmentDescription != lkp_ArgentBusinessSegmentDescription
 	-- ,'1','0')
-	DECODE(TRUE,
-		ExpirationDate != lkp_eff_to_date 
-		OR i_BusinessClassificationDescription != lkp_bus_class_code_descript 
-		OR i_BusinessSegmentCode != lkp_BusinessSegmentCode 
-		OR i_BusinessSegmentDescription != lkp_BusinessSegmentDescription 
-		OR i_StrategicBusinessGroupCode != lkp_StrategicBusinessGroupCode 
-		OR i_StrategicBusinessGroupDescription != lkp_StrategicBusinessGroupDescription 
-		OR i_ArgentBusinessSegmentCode != lkp_ArgentBusinessSegmentCode 
-		OR i_ArgentBusinessSegmentDescription != lkp_ArgentBusinessSegmentDescription, '1',
-		'0'
+	DECODE(
+	    TRUE,
+	    ExpirationDate != lkp_eff_to_date OR i_BusinessClassificationDescription != lkp_bus_class_code_descript OR i_BusinessSegmentCode != lkp_BusinessSegmentCode OR i_BusinessSegmentDescription != lkp_BusinessSegmentDescription OR i_StrategicBusinessGroupCode != lkp_StrategicBusinessGroupCode OR i_StrategicBusinessGroupDescription != lkp_StrategicBusinessGroupDescription OR i_ArgentBusinessSegmentCode != lkp_ArgentBusinessSegmentCode OR i_ArgentBusinessSegmentDescription != lkp_ArgentBusinessSegmentDescription, '1',
+	    '0'
 	) AS v_ChangeForUpdate,
 	-- *INF*: IIF(ISNULL(sup_bus_class_code_id),'NEW',IIF(v_ChangeForUpdate='1','UPDATE'))
-	IFF(sup_bus_class_code_id IS NULL,
-		'NEW',
-		IFF(v_ChangeForUpdate = '1',
-			'UPDATE'
-		)
+	IFF(
+	    sup_bus_class_code_id IS NULL, 'NEW',
+	    IFF(
+	        v_ChangeForUpdate = '1', 'UPDATE'
+	    )
 	) AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag
 	FROM AGG_RemoveDuplicate
@@ -299,9 +280,10 @@ Exp_SetValue AS (
 	in_eff_from_date AS v_eff_from_date,
 	in_bus_class_code AS v_bus_class_code,
 	-- *INF*: DECODE(TRUE,in_bus_class_code = v_bus_class_code ,'0',in_crrnt_snpsht_flag)
-	DECODE(TRUE,
-		in_bus_class_code = v_bus_class_code, '0',
-		in_crrnt_snpsht_flag
+	DECODE(
+	    TRUE,
+	    in_bus_class_code = v_bus_class_code, '0',
+	    in_crrnt_snpsht_flag
 	) AS CurrentSnapShotFlag,
 	SYSDATE AS Modified_Date,
 	sup_bus_class_code_id

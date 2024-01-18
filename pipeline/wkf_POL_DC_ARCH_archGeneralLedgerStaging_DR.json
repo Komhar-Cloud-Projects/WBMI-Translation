@@ -1,0 +1,408 @@
+{
+    "name": "wkf_POL_DC_ARCH_archGeneralLedgerStaging_DR",
+    "properties": {
+        "activities": [
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_archDCGLLocationStaging_DR",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_archDCGLLineStaging_DR",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_archDCGLLocationStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_ArchWBCLPriorInsuranceStage_DR",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_ArchWBGlRiskStage_DR",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCLPriorInsuranceStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_ArchDCBPCoverageSpoilageStag_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_ArchWBCLPriorInsuranceStage_DR",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageSpoilageStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_IDO_ARCH_Insert_ArchDCBPCoverageSpoilageStage_DR",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_ArchWBGLLocationAccountStage_DR",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_ArchWBIMLineStage_DR",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBGLLocationAccountStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_archDCGLRiskStaging_DR",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_archDCGLLocationStaging_DR",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_archDCGLRiskStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_ArchWBCAEndorsementWB516Stag_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_archDCGLCoverageRailroadProt_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCAEndorsementWB516Stage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_IDO_ARCH_Insert_ArchWBCAEndorsementWB516Stage_DR",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_archDCGLLineStaging_DR",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_archDCGLLineStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_archDCGLCoverageRailroadProt_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_archDCGLCoverageOwnersContra_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_archDCGLCoverageRailroadProtectiveLiabilityStaging"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_IDO_ARCH_Insert_archDCGLCoverageRailroadProtectiveLiabilityStage_DR",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_ArchDCBPLineStage_DR",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_ArchWBGLLocationAccountStage_DR",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPLineStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_ArchWBIMLineStage_DR",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_ArchWBBPLineStage_DR",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBIMLineStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_archDCGLCoverageLiquorLiabil_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_ArchWBBPBuildingStage_DR",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_archDCGLCoverageLiquorLiabilityStaging"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_IDO_ARCH_Insert_archDCGLCoverageLiquorLiabilityStaging_DR",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_ArchWBWCCoverageTermStage_DR",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_ArchDCBPCoverageSpoilageStag_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBWCCoverageTermStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_ArchWBBPBuildingStage_DR",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_ArchDCIMLineStage_DR",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPBuildingStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_ArchDCIMLineStage_DR",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_ArchDCBPLineStage_DR",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCIMLineStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_archDCGLCoverageOwnersContra_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_archDCGLCoverageLiquorLiabil_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_archDCGLCoverageOwnersContractorsOrPrincipalsStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_IDO_ARCH_Insert_archDCGLCoverageOwnersContractorsOrPrincipalsStg_DR",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_ArchWBGLLineStage_DR",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_ArchWBCAEndorsementWB516Stag_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBGLLineStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_ArchWBBPLineStage_DR",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_ArchWBWCCoverageTermStage_DR",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPLineStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_IDO_ARCH_Insert_ArchWBGlRiskStage_DR",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_IDO_ARCH_Insert_archDCGLRiskStaging_DR",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBGlRiskStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "variables": {}
+    }
+}

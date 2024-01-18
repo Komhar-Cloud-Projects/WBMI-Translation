@@ -89,28 +89,25 @@ EXP_Claim_Adjuster_Stage AS (
 	-- *INF*: IIF(IS_SPACES(CAI_CLAIM_NBR) OR ISNULL(CAI_CLAIM_NBR)
 	-- ,'N/A'
 	-- ,CAI_CLAIM_NBR)
-	IFF(LENGTH(CAI_CLAIM_NBR)>0 AND TRIM(CAI_CLAIM_NBR)='' 
-		OR CAI_CLAIM_NBR IS NULL,
-		'N/A',
-		CAI_CLAIM_NBR
+	IFF(
+	    LENGTH(CAI_CLAIM_NBR)>0 AND TRIM(CAI_CLAIM_NBR)='' OR CAI_CLAIM_NBR IS NULL, 'N/A',
+	    CAI_CLAIM_NBR
 	) AS out_CAI_CLAIM_NBR,
 	CAI_CLM_HDL_ID,
 	-- *INF*: IIF(IS_SPACES(CAI_CLM_HDL_ID) OR ISNULL(CAI_CLM_HDL_ID)
 	-- ,'N/A'
 	-- ,CAI_CLM_HDL_ID)
-	IFF(LENGTH(CAI_CLM_HDL_ID)>0 AND TRIM(CAI_CLM_HDL_ID)='' 
-		OR CAI_CLM_HDL_ID IS NULL,
-		'N/A',
-		CAI_CLM_HDL_ID
+	IFF(
+	    LENGTH(CAI_CLM_HDL_ID)>0 AND TRIM(CAI_CLM_HDL_ID)='' OR CAI_CLM_HDL_ID IS NULL, 'N/A',
+	    CAI_CLM_HDL_ID
 	) AS out_CAI_CLM_HDL_ID,
 	CAI_ADJ_ROLE_CD,
 	-- *INF*: IIF(IS_SPACES(CAI_ADJ_ROLE_CD) OR ISNULL(CAI_ADJ_ROLE_CD)
 	-- ,'N/A'
 	-- ,CAI_ADJ_ROLE_CD)
-	IFF(LENGTH(CAI_ADJ_ROLE_CD)>0 AND TRIM(CAI_ADJ_ROLE_CD)='' 
-		OR CAI_ADJ_ROLE_CD IS NULL,
-		'N/A',
-		CAI_ADJ_ROLE_CD
+	IFF(
+	    LENGTH(CAI_ADJ_ROLE_CD)>0 AND TRIM(CAI_ADJ_ROLE_CD)='' OR CAI_ADJ_ROLE_CD IS NULL, 'N/A',
+	    CAI_ADJ_ROLE_CD
 	) AS out_CAI_ADJ_ROLE_CD,
 	CAI_DATE_ASSIGNED
 	FROM SQ_CLAIM_ADJUSTER_STAGE
@@ -220,13 +217,14 @@ EXP_Detect_Changes AS (
 	-- ,  IIF(old_claim_assigned_date != CAI_DATE_ASSIGNED or new_claim_rep_ak_id != old_claim_rep_ak_id
 	-- , 'UPDATE'
 	-- , 'NOCHANGE'))
-	IFF(claim_rep_occurrence_ak_id IS NULL,
-		'NEW',
-		IFF(old_claim_assigned_date != CAI_DATE_ASSIGNED 
-			OR new_claim_rep_ak_id != old_claim_rep_ak_id,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    claim_rep_occurrence_ak_id IS NULL, 'NEW',
+	    IFF(
+	        old_claim_assigned_date != CAI_DATE_ASSIGNED
+	    or new_claim_rep_ak_id != old_claim_rep_ak_id,
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	-- *INF*: iif(isnull(claim_rep_occurrence_ak_id)
 	--    ,0
@@ -235,13 +233,11 @@ EXP_Detect_Changes AS (
 	--        ,0
 	--        )
 	--    )
-	IFF(claim_rep_occurrence_ak_id IS NULL,
-		0,
-		IFF(( new_claim_rep_ak_id != old_claim_rep_ak_id 
-			),
-			2,
-			0
-		)
+	IFF(
+	    claim_rep_occurrence_ak_id IS NULL, 0,
+	    IFF(
+	        (new_claim_rep_ak_id != old_claim_rep_ak_id), 2, 0
+	    )
 	) AS transferred_claim_adjuster_lvl_ind,
 	-- *INF*: iif(isnull(claim_rep_occurrence_ak_id)
 	--    ,0
@@ -250,15 +246,14 @@ EXP_Detect_Changes AS (
 	--        ,0
 	--        )
 	--    )
-	IFF(claim_rep_occurrence_ak_id IS NULL,
-		0,
-		IFF(( new_claim_rep_ak_id != old_claim_rep_ak_id 
-			) 
-			AND ( new_handling_office_code != old_handling_office_code 
-			),
-			2,
-			0
-		)
+	IFF(
+	    claim_rep_occurrence_ak_id IS NULL, 0,
+	    IFF(
+	        (new_claim_rep_ak_id != old_claim_rep_ak_id)
+	        and (new_handling_office_code != old_handling_office_code),
+	        2,
+	        0
+	    )
 	) AS transferred_claim_handling_office_lvl_ind,
 	-- *INF*: iif(isnull(claim_rep_occurrence_ak_id)
 	--    ,0
@@ -267,15 +262,13 @@ EXP_Detect_Changes AS (
 	--        ,0
 	--        )
 	--    ) 
-	IFF(claim_rep_occurrence_ak_id IS NULL,
-		0,
-		IFF(( new_claim_rep_ak_id != old_claim_rep_ak_id 
-			) 
-			AND ( new_dept_name != old_dept_name 
-			),
-			2,
-			0
-		)
+	IFF(
+	    claim_rep_occurrence_ak_id IS NULL, 0,
+	    IFF(
+	        (new_claim_rep_ak_id != old_claim_rep_ak_id)
+	    and (new_dept_name != old_dept_name), 2,
+	        0
+	    )
 	) AS transferred_claim_dept_lvl_ind,
 	-- *INF*: iif(isnull(claim_rep_occurrence_ak_id)
 	--    ,0
@@ -284,15 +277,13 @@ EXP_Detect_Changes AS (
 	--        ,0
 	--        )
 	--    )
-	IFF(claim_rep_occurrence_ak_id IS NULL,
-		0,
-		IFF(( new_claim_rep_ak_id != old_claim_rep_ak_id 
-			) 
-			AND ( new_dvsn_code != old_dvsn_code 
-			),
-			2,
-			0
-		)
+	IFF(
+	    claim_rep_occurrence_ak_id IS NULL, 0,
+	    IFF(
+	        (new_claim_rep_ak_id != old_claim_rep_ak_id)
+	    and (new_dvsn_code != old_dvsn_code), 2,
+	        0
+	    )
 	) AS transferred_claim_dvsn_lvl_ind,
 	EXP_Claim_Adjuster_Stage.CAI_DATE_ASSIGNED,
 	EXP_Claim_Adjuster_Stage.out_CAI_ADJ_ROLE_CD AS CAI_ADJ_ROLE_CD,
@@ -302,14 +293,12 @@ EXP_Detect_Changes AS (
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	v_changed_flag AS changed_flag,
 	sysdate AS created_date,
 	sysdate AS modified_date
@@ -356,10 +345,7 @@ EXP_TRANS_Determine_AK AS (
 	-- *INF*: iif(isnull(claim_rep_occurrence_ak_id)
 	-- ,NEXTVAL
 	-- ,claim_rep_occurrence_ak_id)
-	IFF(claim_rep_occurrence_ak_id IS NULL,
-		NEXTVAL,
-		claim_rep_occurrence_ak_id
-	) AS out_claim_rep_occurrence_ak_id,
+	IFF(claim_rep_occurrence_ak_id IS NULL, NEXTVAL, claim_rep_occurrence_ak_id) AS out_claim_rep_occurrence_ak_id,
 	new_claim_rep_ak_id,
 	claim_occurrence_ak_id,
 	transferred_claim_adjuster_lvl_ind,
@@ -418,8 +404,7 @@ EXP_default AS (
 	LKP_CLAIM_REP_AK_ID_prim_lit_handler.claim_rep_ak_id AS v_claim_rep_ak_id,
 	v_claim_rep_ak_id AS claim_rep_ak_id,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS claim_assigned_date,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS claim_assigned_date,
 	'PLH' AS claim_rep_role_code,
 	0 AS transferred_claim_adjuster_lvl_ind,
 	0 AS transferred_claim_handling_office_lvl_ind,
@@ -429,11 +414,9 @@ EXP_default AS (
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -580,11 +563,10 @@ EXP_Claim_Rep_Occurrence_Expire_Row AS (
 	-- and 
 	-- source_sys_id = v_PREV_ROW_source_sys_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		claim_occurrence_ak_id = v_PREV_ROW_claim_occurrence_id 
-		AND claim_rep_role_code = v_PREV_ROW_claim_rep_role_code 
-		AND source_sys_id = v_PREV_ROW_source_sys_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    claim_occurrence_ak_id = v_PREV_ROW_claim_occurrence_id and claim_rep_role_code = v_PREV_ROW_claim_rep_role_code and source_sys_id = v_PREV_ROW_source_sys_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,
@@ -598,14 +580,16 @@ EXP_Claim_Rep_Occurrence_Expire_Row AS (
 	--        ,'3'
 	--        ,transferred_claim_adjuster_lvl_ind)
 	--    )
-	IFF(v_PREV_ROW_transferred_claim_adjuster_lvl_ind = '2' 
-		AND transferred_claim_adjuster_lvl_ind = '0',
-		'1',
-		IFF(v_PREV_ROW_transferred_claim_adjuster_lvl_ind = '2' 
-			AND transferred_claim_adjuster_lvl_ind = '2',
-			'3',
-			transferred_claim_adjuster_lvl_ind
-		)
+	IFF(
+	    v_PREV_ROW_transferred_claim_adjuster_lvl_ind = '2'
+	    and transferred_claim_adjuster_lvl_ind = '0',
+	    '1',
+	    IFF(
+	        v_PREV_ROW_transferred_claim_adjuster_lvl_ind = '2'
+	        and transferred_claim_adjuster_lvl_ind = '2',
+	        '3',
+	        transferred_claim_adjuster_lvl_ind
+	    )
 	) AS v_transferred_claim_adjuster_lvl_ind,
 	v_transferred_claim_adjuster_lvl_ind AS out_transferred_claim_adjuster_lvl_ind,
 	-- *INF*: iif(v_PREV_ROW_transferred_claim_handling_office_lvl_ind='2' and transferred_claim_handling_office_lvl_ind='0'
@@ -614,14 +598,16 @@ EXP_Claim_Rep_Occurrence_Expire_Row AS (
 	--        ,'3'
 	--        ,transferred_claim_handling_office_lvl_ind)
 	--    )
-	IFF(v_PREV_ROW_transferred_claim_handling_office_lvl_ind = '2' 
-		AND transferred_claim_handling_office_lvl_ind = '0',
-		'1',
-		IFF(v_PREV_ROW_transferred_claim_handling_office_lvl_ind = '2' 
-			AND transferred_claim_handling_office_lvl_ind = '2',
-			'3',
-			transferred_claim_handling_office_lvl_ind
-		)
+	IFF(
+	    v_PREV_ROW_transferred_claim_handling_office_lvl_ind = '2'
+	    and transferred_claim_handling_office_lvl_ind = '0',
+	    '1',
+	    IFF(
+	        v_PREV_ROW_transferred_claim_handling_office_lvl_ind = '2'
+	        and transferred_claim_handling_office_lvl_ind = '2',
+	        '3',
+	        transferred_claim_handling_office_lvl_ind
+	    )
 	) AS v_transferred_claim_handling_office_lvl_ind,
 	v_transferred_claim_handling_office_lvl_ind AS out_transferred_claim_handling_office_lvl_ind,
 	-- *INF*: iif(v_PREV_ROW_transferred_claim_dept_lvl_ind='2' and transferred_claim_dept_lvl_ind='0'
@@ -630,14 +616,15 @@ EXP_Claim_Rep_Occurrence_Expire_Row AS (
 	--        ,'3'
 	--        ,transferred_claim_dept_lvl_ind)
 	--    )
-	IFF(v_PREV_ROW_transferred_claim_dept_lvl_ind = '2' 
-		AND transferred_claim_dept_lvl_ind = '0',
-		'1',
-		IFF(v_PREV_ROW_transferred_claim_dept_lvl_ind = '2' 
-			AND transferred_claim_dept_lvl_ind = '2',
-			'3',
-			transferred_claim_dept_lvl_ind
-		)
+	IFF(
+	    v_PREV_ROW_transferred_claim_dept_lvl_ind = '2' and transferred_claim_dept_lvl_ind = '0',
+	    '1',
+	    IFF(
+	        v_PREV_ROW_transferred_claim_dept_lvl_ind = '2'
+	    and transferred_claim_dept_lvl_ind = '2',
+	        '3',
+	        transferred_claim_dept_lvl_ind
+	    )
 	) AS v_transferred_claim_dept_lvl_ind,
 	v_transferred_claim_dept_lvl_ind AS out_transferred_claim_dept_lvl_ind,
 	-- *INF*: iif(v_PREV_ROW_transferred_claim_dvsn_lvl_ind='2' and transferred_claim_dvsn_lvl_ind='0'
@@ -646,14 +633,15 @@ EXP_Claim_Rep_Occurrence_Expire_Row AS (
 	--        ,'3'
 	--        ,transferred_claim_dvsn_lvl_ind)
 	--    )
-	IFF(v_PREV_ROW_transferred_claim_dvsn_lvl_ind = '2' 
-		AND transferred_claim_dvsn_lvl_ind = '0',
-		'1',
-		IFF(v_PREV_ROW_transferred_claim_dvsn_lvl_ind = '2' 
-			AND transferred_claim_dvsn_lvl_ind = '2',
-			'3',
-			transferred_claim_dvsn_lvl_ind
-		)
+	IFF(
+	    v_PREV_ROW_transferred_claim_dvsn_lvl_ind = '2' and transferred_claim_dvsn_lvl_ind = '0',
+	    '1',
+	    IFF(
+	        v_PREV_ROW_transferred_claim_dvsn_lvl_ind = '2'
+	    and transferred_claim_dvsn_lvl_ind = '2',
+	        '3',
+	        transferred_claim_dvsn_lvl_ind
+	    )
 	) AS v_transferred_claim_dvsn_lvl_ind,
 	v_transferred_claim_dvsn_lvl_ind AS out_transferred_claim_dvsn_lvl_ind,
 	transferred_claim_adjuster_lvl_ind AS v_PREV_ROW_transferred_claim_adjuster_lvl_ind,

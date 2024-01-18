@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCPriorInsuranceStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCPriorInsuranceSta_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCPriorInsuranceStaging AS (\n\tSELECT\n\t\tDCPriorInsuranceStagingId,\n\t\tPolicyId,\n\t\tPriorInsuranceId,\n\t\tSessionId,\n\t\tId,\n\t\tCarrierName,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tPolicyNumber,\n\t\tPolicyType,\n\t\tModificationFactor,\n\t\tTotalPremium,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCPriorInsuranceStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCPriorInsuranceStagingId,\n\tPolicyId,\n\tPriorInsuranceId,\n\tSessionId,\n\tId,\n\tCarrierName,\n\tEffectiveDate,\n\tExpirationDate,\n\tPolicyNumber,\n\tPolicyType,\n\tModificationFactor,\n\tTotalPremium,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCPriorInsuranceStaging\n),\narchDCPriorInsuranceStaging AS (\n\tINSERT INTO archDCPriorInsuranceStaging\n\t(PolicyId, PriorInsuranceId, SessionId, Id, CarrierName, EffectiveDate, ExpirationDate, PolicyNumber, PolicyType, ModificationFactor, TotalPremium, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tPOLICYID, \n\tPRIORINSURANCEID, \n\tSESSIONID, \n\tID, \n\tCARRIERNAME, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tPOLICYNUMBER, \n\tPOLICYTYPE, \n\tMODIFICATIONFACTOR, \n\tTOTALPREMIUM, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

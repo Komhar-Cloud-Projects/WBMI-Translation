@@ -1,0 +1,59 @@
+{
+    "name": "s_m_CLM_STG_Insert_APPLICATION_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Insert_APPLICATION_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_application AS (\n\tSELECT \r\n\t\tapp.app_guid, \r\n\t\tapp.app_template_id, \r\n\t\tapp.display_name, \r\n\t\tapp.published_to_prod_flag, \r\n\t\tapp.enabled_flag, \r\n\t\tapp.version_num, \r\n\t\tapp.created_user_id, \r\n\t\tapp.created_date, \r\n\t\tapp.modified_user_id, \r\n\t\tapp.modified_date, \r\n\t\tapp.eff_date, \r\n\t\tapp.exp_date\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.application AS app WITH (NOLOCK)\r\n\tWHERE app.created_date >= '@{pipeline().parameters.SELECTION_START_TS}'\r\n\t          OR app.modified_date >= '@{pipeline().parameters.SELECTION_END_TS}'\n),\nEXP_SOURCE AS (\n\tSELECT\n\tapp_guid,\n\tapp_template_id,\n\tdisplay_name,\n\tpublished_to_prod_flag,\n\tenabled_flag,\n\tversion_num,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tmodified_date,\n\teff_date,\n\texp_date,\n\tsysdate AS extract_date,\n\tsysdate AS as_of_date,\n\t'' AS record_count,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID\n\tFROM SQ_application\n),\napplication_stage_INS AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.application_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.application_stage\n\t(app_guid, app_template_id, display_name, published_to_prod_flag, enabled_flag, version_num, created_user_id, created_date, modified_user_id, modified_date, eff_date, exp_date, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tAPP_GUID, \n\tAPP_TEMPLATE_ID, \n\tDISPLAY_NAME, \n\tPUBLISHED_TO_PROD_FLAG, \n\tENABLED_FLAG, \n\tVERSION_NUM, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tEFF_DATE, \n\tEXP_DATE, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_SOURCE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_MED_BILL_CODE_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_MED_BILL_CODE_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_med_bill_code_stage AS (\n\tSELECT\n\t\tmed_code_bill_code_stage_id,\n\t\tmed_bill_code_id,\n\t\tmed_bill_id,\n\t\tmed_bill_serv_id,\n\t\tcode_type,\n\t\tcode,\n\t\tdescript,\n\t\tcode_date,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM med_bill_code_stage\n),\nEXP_arch_med_bill_code_stage AS (\n\tSELECT\n\tmed_code_bill_code_stage_id,\n\tmed_bill_code_id,\n\tmed_bill_id,\n\tmed_bill_serv_id,\n\tcode_type,\n\tcode,\n\tdescript,\n\tcode_date,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_med_bill_code_stage\n),\narch_med_bill_code_stage AS (\n\tINSERT INTO arch_med_bill_code_stage\n\t(med_code_bill_code_stage_id, med_bill_code_id, med_bill_id, med_bill_serv_id, code_type, code, descript, code_date, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tMED_CODE_BILL_CODE_STAGE_ID, \n\tMED_BILL_CODE_ID, \n\tMED_BILL_ID, \n\tMED_BILL_SERV_ID, \n\tCODE_TYPE, \n\tCODE, \n\tDESCRIPT, \n\tCODE_DATE, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_arch_med_bill_code_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

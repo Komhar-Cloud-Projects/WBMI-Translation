@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_MED_PROVIDER_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_MED_PROVIDER_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_med_provider_stage AS (\n\tSELECT\n\t\tmed_provider_stage_id,\n\t\tmedical_provider_id,\n\t\tmed_bill_id,\n\t\tbus_name,\n\t\tlast_name,\n\t\tfirst_name,\n\t\tmid_name,\n\t\tprfx,\n\t\tsfx,\n\t\ttitle,\n\t\tspty_code,\n\t\taddr,\n\t\tcity,\n\t\tstate,\n\t\tzip,\n\t\ttax_id,\n\t\tprovider_type_code,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM med_provider_stage\n),\nEXP_arch_med_provider_stage AS (\n\tSELECT\n\tmed_provider_stage_id,\n\tmedical_provider_id,\n\tmed_bill_id,\n\tbus_name,\n\tlast_name,\n\tfirst_name,\n\tmid_name,\n\tprfx,\n\tsfx,\n\ttitle,\n\tspty_code,\n\taddr,\n\tcity,\n\tstate,\n\tzip,\n\ttax_id,\n\tprovider_type_code,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_med_provider_stage\n),\narch_med_provider_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_med_provider_stage\n\t(med_provider_stage_id, medical_provider_id, med_bill_id, bus_name, last_name, first_name, mid_name, prfx, sfx, title, spty_code, addr, city, state, zip, tax_id, provider_type_code, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tMED_PROVIDER_STAGE_ID, \n\tMEDICAL_PROVIDER_ID, \n\tMED_BILL_ID, \n\tBUS_NAME, \n\tLAST_NAME, \n\tFIRST_NAME, \n\tMID_NAME, \n\tPRFX, \n\tSFX, \n\tTITLE, \n\tSPTY_CODE, \n\tADDR, \n\tCITY, \n\tSTATE, \n\tZIP, \n\tTAX_ID, \n\tPROVIDER_TYPE_CODE, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_arch_med_provider_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

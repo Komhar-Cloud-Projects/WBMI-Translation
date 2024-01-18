@@ -1,0 +1,38 @@
+{
+    "name": "s_m_POL_STG_SORT_DriverIncident",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_SORT_DriverIncident",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DriverIncidentFile AS (\n\n-- TODO Manual --\n\n),\nSRTTRANS AS (\n\tSELECT\n\tPolNumber, \n\tDriverState, \n\tDriverLicense, \n\tLastName, \n\tFirstName, \n\tMiddleName, \n\tIncidentStart, \n\tIncidentEnd AS IncicentEnd, \n\tIncidentDesc, \n\tIncidentPoints, \n\tIncidentCode, \n\tUnderwriterLastName, \n\tUnderwriterFirstName\n\tFROM SQ_DriverIncidentFile\n\tORDER BY UnderwriterLastName ASC, UnderwriterFirstName ASC\n),\nDriverIncidentFile1 AS (\n\tINSERT INTO DriverIncidentFile\n\t(PolNumber, DriverState, DriverLicense, LastName, FirstName, MiddleName, IncidentStart, IncicentEnd, IncidentDesc, IncidentPoints, IncidentCode, UnderwriterFirstName, UnderwriterLastName)\n\tSELECT \n\tPOLNUMBER, \n\tDRIVERSTATE, \n\tDRIVERLICENSE, \n\tLASTNAME, \n\tFIRSTNAME, \n\tMIDDLENAME, \n\tINCIDENTSTART, \n\tINCICENTEND, \n\tINCIDENTDESC, \n\tINCIDENTPOINTS, \n\tINCIDENTCODE, \n\tUNDERWRITERFIRSTNAME, \n\tUNDERWRITERLASTNAME\n\tFROM SRTTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

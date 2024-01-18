@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_PremiumTransaction AS (\n\tSELECT d.pol_key AS PolicyKey,\r\n\td.pol_ak_id AS PolicyAKID,\r\n\td.pol_eff_date as PolicyEffectiveDate,\r\n\td.pol_exp_date as PolicyExpirationDate,\r\n\tcast(floor(cast(CASE WHEN a.PremiumTransactionEnteredDate>=a.PremiumTransactionEffectiveDate\r\n\tTHEN a.PremiumTransactionEnteredDate ELSE a.PremiumTransactionEffectiveDate END as float)) as datetime) AS RunDate,\r\n\tSUM(a.FullTermPremium) as FullTermPremium,\r\n\tSUM(case when a.FullTermPremium<0 then a.FullTermPremium else 0 end) as NegativeFullTerm,\r\n\tMAX(a.PremiumTransactionEffectiveDate) as MaxTransactionEffectiveDate,\r\n\tMAX(CASE WHEN b.MajorPerilCode='517' and b.MajorPerilSequenceNumber='01' and a.ReasonAmendedCode in ('PAA', 'PAL', 'PAO', 'PAP', 'PBC', 'PCA', 'PCD', 'PCL', 'PCM', 'PCO', 'PCP', 'PCV', 'PCW', 'PIF', 'PIL', 'PIO', 'PIR', 'PNB', 'PNE', 'PNP', 'PPC', 'PPF', 'PRW', 'PSD', 'PTA', 'PUN', 'PUW', 'PZZ', 'SIF', 'SIL', 'SIO') THEN a.ReasonAmendedCode\r\n\tWHEN a.PremiumTransactionCode IN ('20','21','23','25', '28', '29') THEN a.ReasonAmendedCode \r\n\tWHEN a.PremiumTransactionCode IN ('12', '22') and a.ReasonAmendedCode in ('PAA', 'PAL', 'PAO', 'PAP', 'PBC', 'PCA', 'PCD', 'PCL', 'PCM', 'PCO', 'PCP', 'PCV', 'PCW', 'PIF', 'PIL', 'PIO', 'PIR', 'PNB', 'PNE', 'PNP', 'PPC', 'PPF', 'PRW', 'PSD', 'PTA', 'PUN', 'PUW', 'PZZ', 'SIF', 'SIL', 'SIO') THEN a.ReasonAmendedCode \r\n\tELSE NULL END) AS ReasonAmendedCode,\r\n\t--2 for Cancel Umbrella Policy, 1 for Other Umbrella Policy, 0 for Non-Umbrella Policy\r\n\tMAX(CASE WHEN b.MajorPerilCode='517' and b.MajorPerilSequenceNumber='01' and a.ReasonAmendedCode in ('PAA', 'PAL', 'PAO', 'PAP', 'PBC', 'PCA', 'PCD', 'PCL', 'PCM', 'PCO', 'PCP', 'PCV', 'PCW', 'PIF', 'PIL', 'PIO', 'PIR', 'PNB', 'PNE', 'PNP', 'PPC', 'PPF', 'PRW', 'PSD', 'PTA', 'PUN', 'PUW', 'PZZ', 'SIF', 'SIL', 'SIO') THEN 2\r\n\tWHEN b.MajorPerilCode='517'  THEN 1 ELSE 0 END) as IsUmbrella, \r\n\tMAX(a.PremiumTransactionEnteredDate) as MaxTransactionEnteredDate\r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction a\r\n\tjoin\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.StatisticalCoverage b\r\n\ton a.StatisticalCoverageAKID=b.StatisticalCoverageAKID\r\n\tjoin\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyCoverage c\r\n\ton b.PolicyCoverageAKID=c.PolicyCoverageAKID\r\n\tjoin\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER_V2}.policy d\r\n\ton c.PolicyAKID=d.pol_ak_id\r\n\tand d.crrnt_snpsht_flag=1\r\n\tand d.pol_eff_date>='2001-1-1'\r\n\tWHERE a.SourceSystemId='PMS'\r\n\tAND a.CurrentSnapshotFlag=1\r\n\tGROUP BY d.pol_key,d.pol_ak_id,d.pol_eff_date,d.pol_exp_date,\r\n\tcast(floor(cast(CASE WHEN a.PremiumTransactionEnteredDate>=a.PremiumTransactionEffectiveDate\r\n\tTHEN a.PremiumTransactionEnteredDate ELSE a.PremiumTransactionEffectiveDate END as float)) as datetime)\n),\nLKP_sup_reason_amended_code AS (\n\tSELECT\n\tStandardReasonAmendedCode,\n\trsn_amended_code\n\tFROM (\n\t\tSELECT \n\t\t\tStandardReasonAmendedCode,\n\t\t\trsn_amended_code\n\t\tFROM sup_reason_amended_code\n\t\tWHERE crrnt_snpsht_flag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY rsn_amended_code ORDER BY StandardReasonAmendedCode) = 1\n),\nEXP_DefaultValue AS (\n\tSELECT\n\tSQ_PremiumTransaction.PolicyKey AS i_PolicyKey,\n\tSQ_PremiumTransaction.PolicyAKID AS i_PolicyAKID,\n\tSQ_PremiumTransaction.PolicyEffectiveDate AS i_PolicyEffectiveDate,\n\tSQ_PremiumTransaction.PolicyExpirationDate AS i_PolicyExpirationDate,\n\tSQ_PremiumTransaction.RunDate AS i_RunDate,\n\tSQ_PremiumTransaction.FullTermPremium AS i_FullTermPremium,\n\tSQ_PremiumTransaction.NegativeFullTermPremium AS i_NegativeFullTermPremium,\n\tSQ_PremiumTransaction.MaxTransactionEffectiveDate AS i_MaxTransactionEffectiveDate,\n\tLKP_sup_reason_amended_code.StandardReasonAmendedCode AS i_StandardReasonAmendedCode,\n\tSQ_PremiumTransaction.MaxTransactionEnteredDate AS i_MaxTransactionEnteredDate,\n\tSQ_PremiumTransaction.IsUmbrella AS i_IsUmbrella,\n\t-- *INF*: IIF(ISNULL(i_StandardReasonAmendedCode),'N/A',i_StandardReasonAmendedCode)\n\tIFF(i_StandardReasonAmendedCode IS NULL,\n\t\t'N/A',\n\t\ti_StandardReasonAmendedCode\n\t) AS v_StandardReasonAmendedCode,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\ti_PolicyKey AS o_PolicyKey,\n\ti_PolicyAKID AS o_PolicyAKID,\n\ti_PolicyEffectiveDate AS o_PolicyEffectiveDate,\n\ti_PolicyExpirationDate AS o_PolicyExpirationDate,\n\ti_RunDate AS o_RunDate,\n\ti_FullTermPremium AS o_FullTermPremium,\n\ti_NegativeFullTermPremium AS o_NegativeFullTermPremium,\n\ti_MaxTransactionEffectiveDate AS o_MaxTransactionEffectiveDate,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- i_IsUmbrella=2, CONCAT(v_StandardReasonAmendedCode,'_UmbrellaCancel'),\r\n\t-- i_IsUmbrella=1, CONCAT(v_StandardReasonAmendedCode,'_Umbrella'),\r\n\t-- v_StandardReasonAmendedCode)\n\tDECODE(TRUE,\n\t\ti_IsUmbrella = 2, CONCAT(v_StandardReasonAmendedCode, '_UmbrellaCancel'\n\t\t),\n\t\ti_IsUmbrella = 1, CONCAT(v_StandardReasonAmendedCode, '_Umbrella'\n\t\t),\n\t\tv_StandardReasonAmendedCode\n\t) AS o_StandardReasonAmendedCode,\n\ti_MaxTransactionEnteredDate AS o_MaxTransactionEnteredDate\n\tFROM SQ_PremiumTransaction\n\tLEFT JOIN LKP_sup_reason_amended_code\n\tON LKP_sup_reason_amended_code.rsn_amended_code = SQ_PremiumTransaction.ReasonAmendedCode\n),\nWorkPolicyCurrentStatus AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.Shortcut_to_WorkPolicyCurrentStatus;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.Shortcut_to_WorkPolicyCurrentStatus\n\t(AuditId, CreatedDate, ModifiedDate, PolicyKey, PolicyAKId, PolicyEffectiveDate, PolicyExpirationDate, RunDate, FullTermPremium, NegativeFullTermPremium, MaxTransactionEffectiveDate, ReasonAmendedCode)\n\tSELECT \n\to_AuditId AS AUDITID, \n\to_CreatedDate AS CREATEDDATE, \n\to_ModifiedDate AS MODIFIEDDATE, \n\to_PolicyKey AS POLICYKEY, \n\to_PolicyAKID AS POLICYAKID, \n\to_PolicyEffectiveDate AS POLICYEFFECTIVEDATE, \n\to_PolicyExpirationDate AS POLICYEXPIRATIONDATE, \n\to_RunDate AS RUNDATE, \n\to_FullTermPremium AS FULLTERMPREMIUM, \n\to_NegativeFullTermPremium AS NEGATIVEFULLTERMPREMIUM, \n\to_MaxTransactionEffectiveDate AS MAXTRANSACTIONEFFECTIVEDATE, \n\to_StandardReasonAmendedCode AS REASONAMENDEDCODE\n\tFROM EXP_DefaultValue\n),"
+                            "text": "WITH\nSQ_PremiumTransaction AS (\n\tSELECT d.pol_key AS PolicyKey,\r\n\td.pol_ak_id AS PolicyAKID,\r\n\td.pol_eff_date as PolicyEffectiveDate,\r\n\td.pol_exp_date as PolicyExpirationDate,\r\n\tcast(floor(cast(CASE WHEN a.PremiumTransactionEnteredDate>=a.PremiumTransactionEffectiveDate\r\n\tTHEN a.PremiumTransactionEnteredDate ELSE a.PremiumTransactionEffectiveDate END as float)) as datetime) AS RunDate,\r\n\tSUM(a.FullTermPremium) as FullTermPremium,\r\n\tSUM(case when a.FullTermPremium<0 then a.FullTermPremium else 0 end) as NegativeFullTerm,\r\n\tMAX(a.PremiumTransactionEffectiveDate) as MaxTransactionEffectiveDate,\r\n\tMAX(CASE WHEN b.MajorPerilCode='517' and b.MajorPerilSequenceNumber='01' and a.ReasonAmendedCode in ('PAA', 'PAL', 'PAO', 'PAP', 'PBC', 'PCA', 'PCD', 'PCL', 'PCM', 'PCO', 'PCP', 'PCV', 'PCW', 'PIF', 'PIL', 'PIO', 'PIR', 'PNB', 'PNE', 'PNP', 'PPC', 'PPF', 'PRW', 'PSD', 'PTA', 'PUN', 'PUW', 'PZZ', 'SIF', 'SIL', 'SIO') THEN a.ReasonAmendedCode\r\n\tWHEN a.PremiumTransactionCode IN ('20','21','23','25', '28', '29') THEN a.ReasonAmendedCode \r\n\tWHEN a.PremiumTransactionCode IN ('12', '22') and a.ReasonAmendedCode in ('PAA', 'PAL', 'PAO', 'PAP', 'PBC', 'PCA', 'PCD', 'PCL', 'PCM', 'PCO', 'PCP', 'PCV', 'PCW', 'PIF', 'PIL', 'PIO', 'PIR', 'PNB', 'PNE', 'PNP', 'PPC', 'PPF', 'PRW', 'PSD', 'PTA', 'PUN', 'PUW', 'PZZ', 'SIF', 'SIL', 'SIO') THEN a.ReasonAmendedCode \r\n\tELSE NULL END) AS ReasonAmendedCode,\r\n\t--2 for Cancel Umbrella Policy, 1 for Other Umbrella Policy, 0 for Non-Umbrella Policy\r\n\tMAX(CASE WHEN b.MajorPerilCode='517' and b.MajorPerilSequenceNumber='01' and a.ReasonAmendedCode in ('PAA', 'PAL', 'PAO', 'PAP', 'PBC', 'PCA', 'PCD', 'PCL', 'PCM', 'PCO', 'PCP', 'PCV', 'PCW', 'PIF', 'PIL', 'PIO', 'PIR', 'PNB', 'PNE', 'PNP', 'PPC', 'PPF', 'PRW', 'PSD', 'PTA', 'PUN', 'PUW', 'PZZ', 'SIF', 'SIL', 'SIO') THEN 2\r\n\tWHEN b.MajorPerilCode='517'  THEN 1 ELSE 0 END) as IsUmbrella, \r\n\tMAX(a.PremiumTransactionEnteredDate) as MaxTransactionEnteredDate\r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction a\r\n\tjoin\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.StatisticalCoverage b\r\n\ton a.StatisticalCoverageAKID=b.StatisticalCoverageAKID\r\n\tjoin\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyCoverage c\r\n\ton b.PolicyCoverageAKID=c.PolicyCoverageAKID\r\n\tjoin\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER_V2}.policy d\r\n\ton c.PolicyAKID=d.pol_ak_id\r\n\tand d.crrnt_snpsht_flag=1\r\n\tand d.pol_eff_date>='2001-1-1'\r\n\tWHERE a.SourceSystemId='PMS'\r\n\tAND a.CurrentSnapshotFlag=1\r\n\tGROUP BY d.pol_key,d.pol_ak_id,d.pol_eff_date,d.pol_exp_date,\r\n\tcast(floor(cast(CASE WHEN a.PremiumTransactionEnteredDate>=a.PremiumTransactionEffectiveDate\r\n\tTHEN a.PremiumTransactionEnteredDate ELSE a.PremiumTransactionEffectiveDate END as float)) as datetime)\n),\nLKP_sup_reason_amended_code AS (\n\tSELECT\n\tStandardReasonAmendedCode,\n\trsn_amended_code\n\tFROM (\n\t\tSELECT \n\t\t\tStandardReasonAmendedCode,\n\t\t\trsn_amended_code\n\t\tFROM sup_reason_amended_code\n\t\tWHERE crrnt_snpsht_flag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY rsn_amended_code ORDER BY StandardReasonAmendedCode) = 1\n),\nEXP_DefaultValue AS (\n\tSELECT\n\tSQ_PremiumTransaction.PolicyKey AS i_PolicyKey,\n\tSQ_PremiumTransaction.PolicyAKID AS i_PolicyAKID,\n\tSQ_PremiumTransaction.PolicyEffectiveDate AS i_PolicyEffectiveDate,\n\tSQ_PremiumTransaction.PolicyExpirationDate AS i_PolicyExpirationDate,\n\tSQ_PremiumTransaction.RunDate AS i_RunDate,\n\tSQ_PremiumTransaction.FullTermPremium AS i_FullTermPremium,\n\tSQ_PremiumTransaction.NegativeFullTermPremium AS i_NegativeFullTermPremium,\n\tSQ_PremiumTransaction.MaxTransactionEffectiveDate AS i_MaxTransactionEffectiveDate,\n\tLKP_sup_reason_amended_code.StandardReasonAmendedCode AS i_StandardReasonAmendedCode,\n\tSQ_PremiumTransaction.MaxTransactionEnteredDate AS i_MaxTransactionEnteredDate,\n\tSQ_PremiumTransaction.IsUmbrella AS i_IsUmbrella,\n\t-- *INF*: IIF(ISNULL(i_StandardReasonAmendedCode),'N/A',i_StandardReasonAmendedCode)\n\tIFF(i_StandardReasonAmendedCode IS NULL, 'N/A', i_StandardReasonAmendedCode) AS v_StandardReasonAmendedCode,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\ti_PolicyKey AS o_PolicyKey,\n\ti_PolicyAKID AS o_PolicyAKID,\n\ti_PolicyEffectiveDate AS o_PolicyEffectiveDate,\n\ti_PolicyExpirationDate AS o_PolicyExpirationDate,\n\ti_RunDate AS o_RunDate,\n\ti_FullTermPremium AS o_FullTermPremium,\n\ti_NegativeFullTermPremium AS o_NegativeFullTermPremium,\n\ti_MaxTransactionEffectiveDate AS o_MaxTransactionEffectiveDate,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- i_IsUmbrella=2, CONCAT(v_StandardReasonAmendedCode,'_UmbrellaCancel'),\r\n\t-- i_IsUmbrella=1, CONCAT(v_StandardReasonAmendedCode,'_Umbrella'),\r\n\t-- v_StandardReasonAmendedCode)\n\tDECODE(\n\t    TRUE,\n\t    i_IsUmbrella = 2, CONCAT(v_StandardReasonAmendedCode, '_UmbrellaCancel'),\n\t    i_IsUmbrella = 1, CONCAT(v_StandardReasonAmendedCode, '_Umbrella'),\n\t    v_StandardReasonAmendedCode\n\t) AS o_StandardReasonAmendedCode,\n\ti_MaxTransactionEnteredDate AS o_MaxTransactionEnteredDate\n\tFROM SQ_PremiumTransaction\n\tLEFT JOIN LKP_sup_reason_amended_code\n\tON LKP_sup_reason_amended_code.rsn_amended_code = SQ_PremiumTransaction.ReasonAmendedCode\n),\nWorkPolicyCurrentStatus AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.Shortcut_to_WorkPolicyCurrentStatus;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.Shortcut_to_WorkPolicyCurrentStatus\n\t(AuditId, CreatedDate, ModifiedDate, PolicyKey, PolicyAKId, PolicyEffectiveDate, PolicyExpirationDate, RunDate, FullTermPremium, NegativeFullTermPremium, MaxTransactionEffectiveDate, ReasonAmendedCode)\n\tSELECT \n\to_AuditId AS AUDITID, \n\to_CreatedDate AS CREATEDDATE, \n\to_ModifiedDate AS MODIFIEDDATE, \n\to_PolicyKey AS POLICYKEY, \n\to_PolicyAKID AS POLICYAKID, \n\to_PolicyEffectiveDate AS POLICYEFFECTIVEDATE, \n\to_PolicyExpirationDate AS POLICYEXPIRATIONDATE, \n\to_RunDate AS RUNDATE, \n\to_FullTermPremium AS FULLTERMPREMIUM, \n\to_NegativeFullTermPremium AS NEGATIVEFULLTERMPREMIUM, \n\to_MaxTransactionEffectiveDate AS MAXTRANSACTIONEFFECTIVEDATE, \n\to_StandardReasonAmendedCode AS REASONAMENDEDCODE\n\tFROM EXP_DefaultValue\n),"
                         }
                     ]
                 },
@@ -30,61 +30,29 @@
             }
         ],
         "parameters": {
-            "WBMI_AUDIT_CONTROL_RUN_ID": {
+            "SOURCE_DATABASE_NAME": {
                 "type": "string",
-                "defaultValue": "246511"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "905531"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7604518"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "08/30/2023 02:57:01"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/31/2023 03:31:13"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
+                "defaultValue": "Default Value"
             },
             "SOURCE_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": "DBO"
-            },
-            "TARGET_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
-            "SOURCE_SYSTEM_ID": {
-                "type": "string",
-                "defaultValue": "PMS"
+                "defaultValue": "Default Value"
             },
             "SOURCE_TABLE_OWNER_V2": {
                 "type": "string",
-                "defaultValue": "V2"
+                "defaultValue": "Default Value"
             },
-            "SOURCE_DATABASE_NAME": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
                 "type": "string",
-                "defaultValue": "RPT_EDM"
+                "defaultValue": "Default Value"
             },
-            "WHERE_CLAUSE": {
+            "TARGET_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": ""
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Policy DataMart/"
+            "name": "RPT_EDM and EDW/Policy DataMart/"
         },
         "annotations": []
     }

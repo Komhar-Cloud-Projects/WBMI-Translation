@@ -1,0 +1,47 @@
+{
+    "name": "s_m_FEED_Load_HSBCyberSuite_Policy_PreExtract_Tables",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_FEED_Load_HSBCyberSuite_Policy_PreExtract_Tables",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkHSBCyberSuite AS (\n\tSELECT AuditId, RunDate, PolicyKey, Company, ProductCode, ContractNumber, InsuredName, MailingAddressStreetName, MailingAddressCityName, MailingAddressStateAbbreviation, MailingAddressZipCode, TotalPackageGrossPremium, TotalPropertyGrossPremium, Limit, Deductible, OccupancyCode, PreviousPolicyNumber, AgencyCode, BranchCode, CoverageEffectiveDate, CoverageExpirationDate, CyberSuiteCoverageGrossPremium, CyberSuiteCoverageNetPremium, LimitType,\r\n\tPremiumTransactionEnteredDate,\r\n\tPricingTier\r\n\tFROM \r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkHSBCyberSuite\r\n\tWHERE  \r\n\tconvert(date,WorkHSBCyberSuite.CoverageEffectiveDate)<=@{pipeline().parameters.RUNDATE} \r\n\tAND  \r\n\tconvert(date,WorkHSBCyberSuite.CoverageExpirationDate)>=@{pipeline().parameters.RUNDATE} \r\n\tAND \r\n\tconvert(date,WorkHSBCyberSuite.PolicyCancellationdate)>@{pipeline().parameters.RUNDATE}\n),\nEXP_WorkHSBCyber AS (\n\tSELECT\n\tAuditID,\n\tRunDate,\n\tPolicyKey,\n\tCompany,\n\tProductCode,\n\tContractNumber,\n\tNameOfInsured,\n\tMailingAddressStreetName,\n\tMailingAddressCity,\n\tMailingAddressState,\n\tMailingAddressZipCode,\n\tTotalPackageGrossPremium,\n\tTotalPropertyGrossPremium,\n\tLimit,\n\tDeductible,\n\tOccupancyCode,\n\tPreviousPolicyNumber,\n\tAgencyCode,\n\tBranchCode,\n\tCoverageEffectiveDate,\n\tCoverageExpirationDate,\n\tCoverageGrossPremium,\n\tCoverageNetPremium,\n\tLimitType,\n\tPricingTier,\n\tpremiumtransactionentereddate,\n\t-- *INF*: substr(PolicyKey,1.10)\n\tsubstr(PolicyKey, 1.10) AS o_PolicyNumber\n\tFROM SQ_WorkHSBCyberSuite\n),\nSRT_PTEnteredDate AS (\n\tSELECT\n\tAuditID, \n\tRunDate, \n\to_PolicyNumber AS policyNumber, \n\tCompany, \n\tProductCode, \n\tContractNumber, \n\tNameOfInsured, \n\tMailingAddressStreetName, \n\tMailingAddressCity, \n\tMailingAddressState, \n\tMailingAddressZipCode, \n\tTotalPackageGrossPremium, \n\tTotalPropertyGrossPremium, \n\tLimit, \n\tDeductible, \n\tOccupancyCode, \n\tPreviousPolicyNumber, \n\tAgencyCode, \n\tBranchCode, \n\tCoverageEffectiveDate, \n\tCoverageExpirationDate, \n\tCoverageGrossPremium, \n\tCoverageNetPremium, \n\tLimitType, \n\tPricingTier AS CBSPricingTier, \n\tpremiumtransactionentereddate\n\tFROM EXP_WorkHSBCyber\n\tORDER BY premiumtransactionentereddate ASC\n),\nAGG_PolicyRecord AS (\n\tSELECT\n\tAuditID,\n\tRunDate,\n\tpolicyNumber AS PolKey,\n\tCompany,\n\tProductCode,\n\tContractNumber,\n\tNameOfInsured,\n\tMailingAddressStreetName,\n\tMailingAddressCity,\n\tMailingAddressState,\n\tMailingAddressZipCode,\n\tTotalPackageGrossPremium,\n\tTotalPropertyGrossPremium,\n\tLimit,\n\t-- *INF*: LAST(Limit)\n\tLAST(Limit) AS out_Limit,\n\tDeductible,\n\t-- *INF*: LAST(Deductible)\n\tLAST(Deductible) AS out_Deductible,\n\tOccupancyCode,\n\tPreviousPolicyNumber,\n\tAgencyCode,\n\tBranchCode,\n\tCoverageEffectiveDate AS PolicyEffectiveDate,\n\tCoverageExpirationDate AS PolicyExpirationDate,\n\tCoverageGrossPremium,\n\tCoverageNetPremium,\n\t-- *INF*: SUM(CoverageNetPremium)\r\n\t-- --incase of cancellation the premium reported should be net premium\r\n\t-- \n\tSUM(CoverageNetPremium) AS GrossPremium,\n\t-- *INF*: Round(0.7* Sum(CoverageGrossPremium),2)\r\n\t-- \n\tRound(0.7 * Sum(CoverageGrossPremium), 2) AS NetPremium,\n\tLimitType,\n\tCBSPricingTier,\n\t-- *INF*: LAST(CBSPricingTier)\n\tLAST(CBSPricingTier) AS o_CBSPricingTier,\n\tpremiumtransactionentereddate\n\tFROM SRT_PTEnteredDate\n\tGROUP BY PolKey\n),\nEXP_PolicyRecord AS (\n\tSELECT\n\tAuditID,\n\tSysdate AS CreatedDate,\n\tSysdate AS ModifiedDate,\n\tRunDate,\n\tCompany,\n\tProductCode,\n\tContractNumber,\n\tPolKey AS PolicyNumber,\n\tPolicyEffectiveDate,\n\tPolicyExpirationDate,\n\tNameOfInsured,\n\tMailingAddressStreetName,\n\tMailingAddressCity,\n\tMailingAddressState,\n\tMailingAddressZipCode,\n\tTotalPackageGrossPremium,\n\tTotalPropertyGrossPremium,\n\tGrossPremium,\n\tNetPremium,\n\tout_Limit AS in_Limit,\n\t-- *INF*: IIF(ISNULL(in_Limit),'',in_Limit)\n\tIFF(in_Limit IS NULL, '', in_Limit) AS v_Limit,\n\t-- *INF*: TO_INTEGER(v_Limit)\n\tCAST(v_Limit AS INTEGER) AS out_Limit,\n\tout_Deductible AS in_Deductible,\n\t-- *INF*: IIF(ISNULL(in_Deductible),'',in_Deductible)\n\tIFF(in_Deductible IS NULL, '', in_Deductible) AS v_Deductible,\n\t-- *INF*: TO_INTEGER(v_Deductible)\n\tCAST(v_Deductible AS INTEGER) AS out_Deductible,\n\tOccupancyCode,\n\t0 AS PolicyTotalInsuredValue,\n\tPreviousPolicyNumber,\n\tAgencyCode,\n\tBranchCode,\n\tLimitType,\n\t'' AS WebSite,\n\t'' AS EmailAddress,\n\to_CBSPricingTier AS CBSPricingTier,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(CBSPricingTier),'NA',\r\n\t-- CBSPricingTier)\n\tDECODE(\n\t    TRUE,\n\t    CBSPricingTier IS NULL, 'NA',\n\t    CBSPricingTier\n\t) AS o_CBSPricingTier\n\tFROM AGG_PolicyRecord\n),\nFLT_GrossPremium AS (\n\tSELECT\n\tAuditID, \n\tCreatedDate, \n\tModifiedDate, \n\tRunDate, \n\tCompany, \n\tProductCode, \n\tContractNumber, \n\tPolicyNumber, \n\tPolicyEffectiveDate, \n\tPolicyExpirationDate, \n\tNameOfInsured, \n\tMailingAddressStreetName, \n\tMailingAddressCity, \n\tMailingAddressState, \n\tMailingAddressZipCode, \n\tTotalPackageGrossPremium, \n\tTotalPropertyGrossPremium, \n\tGrossPremium, \n\tNetPremium, \n\tout_Limit AS Limit, \n\tout_Deductible AS Deductible, \n\tOccupancyCode, \n\tPolicyTotalInsuredValue, \n\tPreviousPolicyNumber, \n\tAgencyCode, \n\tBranchCode, \n\tLimitType, \n\tWebSite, \n\tEmailAddress, \n\to_CBSPricingTier AS CBSPricingTier\n\tFROM EXP_PolicyRecord\n\tWHERE GrossPremium>0  AND  CBSPricingTier != ''\n),\nHSBCyberSuitePolicyExtract AS (\n\tTRUNCATE TABLE HSBCyberSuitePolicyExtract;\n\tINSERT INTO HSBCyberSuitePolicyExtract\n\t(AuditId, CreatedDate, ModifiedDate, RunDate, Company, ProductCode, ContractNumber, PolicyNumber, CBSCoverageEffectiveDate, CBSCoverageExpirationDate, NameOfInsured, MailingAddressStreetName, MailingAddressCity, MailingAddressState, MailingAddressZipCode, TotalPackageGrossPremium, TotalPropertyGrossPremium, CBSGrossPremium, CBSNetPremium, LimitAmount, LimitType, DeductibleAmount, OccupancyCode, PolicyTotalInsuredValue, PreviousPolicyNumber, AgentCode, BranchCode, WebSite, EmailAddress, CBSPricingTier)\n\tSELECT \n\tAuditID AS AUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tRUNDATE, \n\tCOMPANY, \n\tPRODUCTCODE, \n\tCONTRACTNUMBER, \n\tPOLICYNUMBER, \n\tPolicyEffectiveDate AS CBSCOVERAGEEFFECTIVEDATE, \n\tPolicyExpirationDate AS CBSCOVERAGEEXPIRATIONDATE, \n\tNAMEOFINSURED, \n\tMAILINGADDRESSSTREETNAME, \n\tMAILINGADDRESSCITY, \n\tMAILINGADDRESSSTATE, \n\tMAILINGADDRESSZIPCODE, \n\tTOTALPACKAGEGROSSPREMIUM, \n\tTOTALPROPERTYGROSSPREMIUM, \n\tGrossPremium AS CBSGROSSPREMIUM, \n\tNetPremium AS CBSNETPREMIUM, \n\tLimit AS LIMITAMOUNT, \n\tLIMITTYPE, \n\tDeductible AS DEDUCTIBLEAMOUNT, \n\tOCCUPANCYCODE, \n\tPOLICYTOTALINSUREDVALUE, \n\tPREVIOUSPOLICYNUMBER, \n\tAgencyCode AS AGENTCODE, \n\tBRANCHCODE, \n\tWEBSITE, \n\tEMAILADDRESS, \n\tCBSPRICINGTIER\n\tFROM FLT_GrossPremium\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "RUNDATE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

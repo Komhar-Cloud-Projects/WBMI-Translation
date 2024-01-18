@@ -1,0 +1,47 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_Archive_Related_Agency",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_Archive_Related_Agency",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_related_agency_Stage AS (\n\tSELECT\n\t\trelated_agency_stage_id AS related_agency_id,\n\t\tSTATE_CODE,\n\t\tAGENCY_NUM,\n\t\tREL_STATE_CODE,\n\t\tREL_AGENCY_NUM,\n\t\tREL_EXP_DATE,\n\t\tREL_RSN_CODE,\n\t\tREL_EFF_DATE,\n\t\tAGENCY_CODE,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM Related_agency_Stage\n),\nexp_AGY_insert_Related_Agy AS (\n\tSELECT\n\trelated_agency_id,\n\tSTATE_CODE,\n\tAGENCY_NUM,\n\tREL_STATE_CODE,\n\tREL_AGENCY_NUM,\n\tREL_EXP_DATE,\n\tREL_RSN_CODE,\n\tREL_EFF_DATE,\n\tAGENCY_CODE,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID\n\tFROM SQ_related_agency_Stage\n),\nTGT_Arch_related_agency_Stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_related_agency_Stage\n\t(related_agency_stage_id, STATE_CODE, AGENCY_NUM, REL_STATE_CODE, REL_AGENCY_NUM, REL_EXP_DATE, REL_RSN_CODE, REL_EFF_DATE, AGENCY_CODE, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, audit_id)\n\tSELECT \n\trelated_agency_id AS RELATED_AGENCY_STAGE_ID, \n\tSTATE_CODE, \n\tAGENCY_NUM, \n\tREL_STATE_CODE, \n\tREL_AGENCY_NUM, \n\tREL_EXP_DATE, \n\tREL_RSN_CODE, \n\tREL_EFF_DATE, \n\tAGENCY_CODE, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tOUT_AUDIT_ID AS AUDIT_ID\n\tFROM exp_AGY_insert_Related_Agy\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

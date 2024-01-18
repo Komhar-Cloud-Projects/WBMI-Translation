@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleData_STG_Insert_DCBILGeneralJournalStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleData_STG_Insert_DCBILGeneralJournalStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_BIL_GeneralJournal AS (\n\tSELECT\n\t\tJournalId,\n\t\tAccountId,\n\t\tPolicyTermId,\n\t\tActivityTypeCode,\n\t\tAccountTypeCode,\n\t\tBookingClassificationCode,\n\t\tCurrencyCulture,\n\t\tMasterCompanyCode,\n\t\tProcessingOrgUnitCode,\n\t\tJournalTypeCode,\n\t\tJournalSubTypeCode,\n\t\tTransactionTypeCode,\n\t\tActivityEffectiveDate,\n\t\tTransactionDate,\n\t\tAccountingClassCode,\n\t\tTransactionGrossAmount,\n\t\tTransactionNetAmount,\n\t\tPolicyIssueSystemCode,\n\t\tPolicyLineOfBusinessCode,\n\t\tPolicyStateCode,\n\t\tPolicyCountryCode,\n\t\tLastUpdatedTimestamp,\n\t\tLastUpdatedUserId,\n\t\tTargetMasterCompanyCode,\n\t\tTransactionGUID\n\tFROM DC_BIL_GeneralJournal\n\tWHERE ActivityTypeCode in ('WO', 'RCWR') and AccountingClassCode in ('AR0','AR1')\n),\nEXP_Metadata AS (\n\tSELECT\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tJournalId,\n\tAccountId,\n\tPolicyTermId,\n\tActivityTypeCode,\n\tAccountTypeCode,\n\tBookingClassificationCode,\n\tCurrencyCulture,\n\tMasterCompanyCode,\n\tProcessingOrgUnitCode,\n\tJournalTypeCode,\n\tJournalSubTypeCode,\n\tTransactionTypeCode,\n\tActivityEffectiveDate,\n\tTransactionDate,\n\tAccountingClassCode,\n\tTransactionGrossAmount,\n\tTransactionNetAmount,\n\tPolicyIssueSystemCode,\n\tPolicyLineOfBusinessCode,\n\tPolicyStateCode,\n\tPolicyCountryCode,\n\tLastUpdatedTimestamp,\n\tLastUpdatedUserId,\n\tTargetMasterCompanyCode,\n\tTransactionGUID\n\tFROM SQ_DC_BIL_GeneralJournal\n),\nDCBILGeneralJounalStage AS (\n\tTRUNCATE TABLE DCBILGeneralJounalStage;\n\tINSERT INTO DCBILGeneralJounalStage\n\t(ExtractDate, SourceSystemId, JournalId, AccountId, PolicyTermId, ActivityTypeCode, AccountTypeCode, BookingClassificationCode, CurrencyCulture, MasterCompanyCode, ProcessingOrgUnitCode, JournalTypeCode, JournalSubTypeCode, TransactionTypeCode, ActivityEffectiveDate, TransactionDate, AccountingClassCode, TransactionGrossAmount, TransactionNetAmount, PolicyIssueSystemCode, PolicyLineOfBusinessCode, PolicyStateCode, PolicyCountryCode, LastUpdatedTimestamp, LastUpdatedUserId, TransactionGUID, TargetMasterCompanyCode)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tJOURNALID, \n\tACCOUNTID, \n\tPOLICYTERMID, \n\tACTIVITYTYPECODE, \n\tACCOUNTTYPECODE, \n\tBOOKINGCLASSIFICATIONCODE, \n\tCURRENCYCULTURE, \n\tMASTERCOMPANYCODE, \n\tPROCESSINGORGUNITCODE, \n\tJOURNALTYPECODE, \n\tJOURNALSUBTYPECODE, \n\tTRANSACTIONTYPECODE, \n\tACTIVITYEFFECTIVEDATE, \n\tTRANSACTIONDATE, \n\tACCOUNTINGCLASSCODE, \n\tTRANSACTIONGROSSAMOUNT, \n\tTRANSACTIONNETAMOUNT, \n\tPOLICYISSUESYSTEMCODE, \n\tPOLICYLINEOFBUSINESSCODE, \n\tPOLICYSTATECODE, \n\tPOLICYCOUNTRYCODE, \n\tLASTUPDATEDTIMESTAMP, \n\tLASTUPDATEDUSERID, \n\tTRANSACTIONGUID, \n\tTARGETMASTERCOMPANYCODE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

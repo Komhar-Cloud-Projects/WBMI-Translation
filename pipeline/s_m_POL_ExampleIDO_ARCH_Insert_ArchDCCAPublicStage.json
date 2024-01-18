@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCAPublicStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCAPublicStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCAPublicStage AS (\n\tSELECT\n\t\tDCCAPublicStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tCA_RiskId,\n\t\tCA_PublicId,\n\t\tSessionId,\n\t\tId,\n\t\tAuditable,\n\t\tCharterRegPlates,\n\t\tIndividuallyOwnedLimousine,\n\t\tJitneys,\n\t\tMigrantFarmWorkersTransportation,\n\t\tMileageAudit,\n\t\tMileageEstimate,\n\t\tMileageTotal,\n\t\tMileageTotalAudit,\n\t\tMileageTotalEstimate,\n\t\tPublicGroupType,\n\t\tPublicType,\n\t\tRideSharing,\n\t\tRiskPublicInputNYBlackCar,\n\t\tSeatingCapacity,\n\t\tMechanicalLift\n\tFROM DCCAPublicStage\n),\nEXP_TRANS AS (\n\tSELECT\n\tDCCAPublicStageId,\n\tExtractDate,\n\tSourceSystemid,\n\tCA_RiskId,\n\tCA_PublicId,\n\tSessionId,\n\tId,\n\tAuditable,\n\tCharterRegPlates,\n\tIndividuallyOwnedLimousine,\n\tJitneys,\n\tMigrantFarmWorkersTransportation,\n\tMileageAudit,\n\tMileageEstimate,\n\tMileageTotal,\n\tMileageTotalAudit,\n\tMileageTotalEstimate,\n\tPublicGroupType,\n\tPublicType,\n\tRideSharing,\n\tRiskPublicInputNYBlackCar,\n\tSeatingCapacity,\n\tMechanicalLift,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCAPublicStage\n),\nArchDCCAPublicStage AS (\n\tINSERT INTO ArchDCCAPublicStage\n\t(ExtractDate, SourceSystemId, AuditId, DCCAPublicStageId, CA_RiskId, CA_PublicId, SessionId, Id, Auditable, CharterRegPlates, IndividuallyOwnedLimousine, Jitneys, MigrantFarmWorkersTransportation, MileageAudit, MileageEstimate, MileageTotal, MileageTotalAudit, MileageTotalEstimate, PublicGroupType, PublicType, RideSharing, RiskPublicInputNYBlackCar, SeatingCapacity, MechanicalLift)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemid AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCCAPUBLICSTAGEID, \n\tCA_RISKID, \n\tCA_PUBLICID, \n\tSESSIONID, \n\tID, \n\tAUDITABLE, \n\tCHARTERREGPLATES, \n\tINDIVIDUALLYOWNEDLIMOUSINE, \n\tJITNEYS, \n\tMIGRANTFARMWORKERSTRANSPORTATION, \n\tMILEAGEAUDIT, \n\tMILEAGEESTIMATE, \n\tMILEAGETOTAL, \n\tMILEAGETOTALAUDIT, \n\tMILEAGETOTALESTIMATE, \n\tPUBLICGROUPTYPE, \n\tPUBLICTYPE, \n\tRIDESHARING, \n\tRISKPUBLICINPUTNYBLACKCAR, \n\tSEATINGCAPACITY, \n\tMECHANICALLIFT\n\tFROM EXP_TRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

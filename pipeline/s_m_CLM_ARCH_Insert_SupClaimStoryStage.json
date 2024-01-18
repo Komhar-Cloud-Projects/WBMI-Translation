@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_SupClaimStoryStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_SupClaimStoryStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SupClaimStoryStage AS (\n\tSELECT\n\t\tSupClaimStoryStageId,\n\t\tID,\n\t\tLIST_TYPE,\n\t\tDESCRIPTION,\n\t\tSHOW_FOR_PROPERTY,\n\t\tSHOW_FOR_CASUALTY,\n\t\tSHOW_FOR_WC,\n\t\tACTIVE_FLAG,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM SupClaimStoryStage\n),\nEXPTRANS AS (\n\tSELECT\n\tSupClaimStoryStageId,\n\tID,\n\tLIST_TYPE,\n\tDESCRIPTION,\n\tSHOW_FOR_PROPERTY,\n\tSHOW_FOR_CASUALTY,\n\tSHOW_FOR_WC,\n\tACTIVE_FLAG,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_SupClaimStoryStage\n),\nLKP_ArchSupClaimStoryStage AS (\n\tSELECT\n\tArchSupClaimStoryStageId,\n\tSupClaimStoryStageId,\n\tID,\n\tLIST_TYPE,\n\tDESCRIPTION,\n\tSHOW_FOR_PROPERTY,\n\tSHOW_FOR_CASUALTY,\n\tSHOW_FOR_WC,\n\tACTIVE_FLAG,\n\tExtractDate,\n\tSourceSystemId,\n\tAuditId,\n\ti_ID\n\tFROM (\n\t\tSELECT \n\t\t\tArchSupClaimStoryStageId,\n\t\t\tSupClaimStoryStageId,\n\t\t\tID,\n\t\t\tLIST_TYPE,\n\t\t\tDESCRIPTION,\n\t\t\tSHOW_FOR_PROPERTY,\n\t\t\tSHOW_FOR_CASUALTY,\n\t\t\tSHOW_FOR_WC,\n\t\t\tACTIVE_FLAG,\n\t\t\tExtractDate,\n\t\t\tSourceSystemId,\n\t\t\tAuditId,\n\t\t\ti_ID\n\t\tFROM ArchSupClaimStoryStage\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ID ORDER BY ArchSupClaimStoryStageId) = 1\n),\nFIL_RemoveExistingEntries AS (\n\tSELECT\n\tLKP_ArchSupClaimStoryStage.ID AS lkp_ID, \n\tLKP_ArchSupClaimStoryStage.LIST_TYPE AS lkp_LIST_TYPE, \n\tLKP_ArchSupClaimStoryStage.DESCRIPTION AS lkp_DESCRIPTION, \n\tLKP_ArchSupClaimStoryStage.SHOW_FOR_PROPERTY AS lkp_SHOW_FOR_PROPERTY, \n\tLKP_ArchSupClaimStoryStage.SHOW_FOR_CASUALTY AS lkp_SHOW_FOR_CASUALTY, \n\tLKP_ArchSupClaimStoryStage.SHOW_FOR_WC AS lkp_SHOW_FOR_WC, \n\tLKP_ArchSupClaimStoryStage.ACTIVE_FLAG AS lkp_ACTIVE_FLAG, \n\tEXPTRANS.SupClaimStoryStageId, \n\tEXPTRANS.ID, \n\tEXPTRANS.LIST_TYPE, \n\tEXPTRANS.DESCRIPTION, \n\tEXPTRANS.SHOW_FOR_PROPERTY, \n\tEXPTRANS.SHOW_FOR_CASUALTY, \n\tEXPTRANS.SHOW_FOR_WC, \n\tEXPTRANS.ACTIVE_FLAG, \n\tEXPTRANS.ExtractDate, \n\tEXPTRANS.SourceSystemId, \n\tEXPTRANS.AuditId\n\tFROM EXPTRANS\n\tLEFT JOIN LKP_ArchSupClaimStoryStage\n\tON LKP_ArchSupClaimStoryStage.ID = EXPTRANS.ID\n\tWHERE ISNULL(lkp_ID) OR \r\n(\r\n  lkp_ID=ID AND\r\n    (\r\n      lkp_LIST_TYPE != LIST_TYPE OR\r\n      lkp_DESCRIPTION != DESCRIPTION OR\r\n      lkp_SHOW_FOR_PROPERTY != SHOW_FOR_PROPERTY OR\r\n      lkp_SHOW_FOR_CASUALTY != SHOW_FOR_CASUALTY OR\r\n      lkp_SHOW_FOR_WC != SHOW_FOR_WC OR\r\n      lkp_ACTIVE_FLAG != ACTIVE_FLAG\r\n    )\r\n)\n),\nArchSupClaimStoryStage AS (\n\tINSERT INTO ArchSupClaimStoryStage\n\t(SupClaimStoryStageId, ID, LIST_TYPE, DESCRIPTION, SHOW_FOR_PROPERTY, SHOW_FOR_CASUALTY, SHOW_FOR_WC, ACTIVE_FLAG, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tSUPCLAIMSTORYSTAGEID, \n\tID, \n\tLIST_TYPE, \n\tDESCRIPTION, \n\tSHOW_FOR_PROPERTY, \n\tSHOW_FOR_CASUALTY, \n\tSHOW_FOR_WC, \n\tACTIVE_FLAG, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID\n\tFROM FIL_RemoveExistingEntries\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchAgencyRelationshipStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchAgencyRelationshipStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AgencyRelationshipStage AS (\n\tSELECT\n\t\tAgencyRelationshipStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tAgencyCode,\n\t\tRelatedAgencyID,\n\t\tRelatedToAgencyCode,\n\t\tRelationshipType,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID\n\tFROM AgencyRelationshipStage\n),\nLKP_ExistingArchive AS (\n\tSELECT\n\tHashKey,\n\tin_AgencyID,\n\tin_RelatedAgencyID,\n\tin_RelationshipType,\n\tModifiedDate,\n\tAgencyID,\n\tRelatedAgencyID,\n\tRelationshipType\n\tFROM (\n\t\tselect\ta.HashKey as HashKey,\r\n\t\t\t\ta.ModifiedDate as ModifiedDate,\r\n\t\t\t\ta.AgencyID as AgencyID, \r\n\t\t\t\ta.RelatedAgencyID as RelatedAgencyID,\r\n\t\t\t\ta.RelationshipType as RelationshipType\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchAgencyRelationshipStage a\r\n\t\tinner join (\r\n\t\t\t\t\tselect AgencyID, RelatedAgencyID, RelationshipType, max(ModifiedDate) as ModifiedDate\r\n\t\t\t\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchAgencyRelationshipStage \r\n\t\t\t\t\tgroup by AgencyID, RelatedAgencyID, RelationshipType) b\r\n\t\ton  a.AgencyID = b.AgencyID\r\n\t\tand a.RelatedAgencyID = b.RelatedAgencyID\r\n\t\tand a.RelationshipType = b.RelationshipType\r\n\t\tand a.ModifiedDate = b.ModifiedDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyID,RelatedAgencyID,RelationshipType ORDER BY HashKey) = 1\n),\nEXP_AddAuditID AS (\n\tSELECT\n\tSQ_AgencyRelationshipStage.AgencyRelationshipStageID,\n\tSQ_AgencyRelationshipStage.AgencyODSSourceSystemID,\n\tSQ_AgencyRelationshipStage.HashKey,\n\tSQ_AgencyRelationshipStage.ModifiedUserID,\n\tSQ_AgencyRelationshipStage.ModifiedDate,\n\tSQ_AgencyRelationshipStage.AgencyID,\n\tSQ_AgencyRelationshipStage.AgencyCode,\n\tSQ_AgencyRelationshipStage.RelatedAgencyID,\n\tSQ_AgencyRelationshipStage.RelatedToAgencyCode,\n\tSQ_AgencyRelationshipStage.RelationshipType,\n\tSQ_AgencyRelationshipStage.EffectiveDate,\n\tSQ_AgencyRelationshipStage.ExpirationDate,\n\tSQ_AgencyRelationshipStage.ExtractDate,\n\tSQ_AgencyRelationshipStage.AsOfDate,\n\tSQ_AgencyRelationshipStage.RecordCount,\n\tSQ_AgencyRelationshipStage.SourceSystemID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID,\n\tLKP_ExistingArchive.HashKey AS lkp_HashKey,\n\t-- *INF*: Decode(true,\r\n\t-- HashKey = lkp_HashKey, 'IGNORE',\r\n\t-- IsNull(lkp_HashKey), 'INSERT',\r\n\t-- 'UPDATE')\n\tDecode(\n\t    true,\n\t    HashKey = lkp_HashKey, 'IGNORE',\n\t    lkp_HashKey IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag\n\tFROM SQ_AgencyRelationshipStage\n\tLEFT JOIN LKP_ExistingArchive\n\tON LKP_ExistingArchive.AgencyID = SQ_AgencyRelationshipStage.AgencyID AND LKP_ExistingArchive.RelatedAgencyID = SQ_AgencyRelationshipStage.RelatedAgencyID AND LKP_ExistingArchive.RelationshipType = SQ_AgencyRelationshipStage.RelationshipType\n),\nFIL_ChangesOnly AS (\n\tSELECT\n\tAgencyRelationshipStageID, \n\tAgencyODSSourceSystemID, \n\tHashKey, \n\tModifiedUserID, \n\tModifiedDate, \n\tAgencyID, \n\tAgencyCode, \n\tRelatedAgencyID, \n\tRelatedToAgencyCode, \n\tRelationshipType, \n\tEffectiveDate, \n\tExpirationDate, \n\tExtractDate, \n\tAsOfDate, \n\tRecordCount, \n\tSourceSystemID, \n\tOUT_AUDIT_ID, \n\to_ChangeFlag\n\tFROM EXP_AddAuditID\n\tWHERE o_ChangeFlag = 'INSERT' OR o_ChangeFlag = 'UPDATE'\n),\nArchAgencyRelationshipStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchAgencyRelationshipStage\n\t(AgencyRelationshipStageID, AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, RelatedAgencyID, RelatedToAgencyCode, RelationshipType, EffectiveDate, ExpirationDate, ExtractDate, AsOfDate, RecordCount, SourceSystemID, AuditID)\n\tSELECT \n\tAGENCYRELATIONSHIPSTAGEID, \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tAGENCYCODE, \n\tRELATEDAGENCYID, \n\tRELATEDTOAGENCYCODE, \n\tRELATIONSHIPTYPE, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\tOUT_AUDIT_ID AS AUDITID\n\tFROM FIL_ChangesOnly\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

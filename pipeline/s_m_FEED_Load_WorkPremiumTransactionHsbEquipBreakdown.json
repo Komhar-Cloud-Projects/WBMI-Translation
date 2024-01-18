@@ -1,0 +1,38 @@
+{
+    "name": "s_m_FEED_Load_WorkPremiumTransactionHsbEquipBreakdown",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_FEED_Load_WorkPremiumTransactionHsbEquipBreakdown",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_ArchWorkPremiumTransaction AS (\n\tSELECT distinct a.PremiumTransactionAKId, b.CoverageId\r\n\tFROM ArchWorkPremiumTransaction a\r\n\tINNER JOIN WC_Stage..ArchDCCoverageStaging b\r\n\tON a.PremiumTransactionStageId=b.CoverageId\r\n\tand a.SourceSystemID='DCT' and b.ObjectName<>'DC_Line'\n),\nWorkPremiumTransactionHsbEquipBreakdown AS (\n\tTRUNCATE TABLE WorkPremiumTransactionHsbEquipBreakdown;\n\tINSERT INTO WorkPremiumTransactionHsbEquipBreakdown\n\t(PremiumTransactionAKId, CoverageId)\n\tSELECT \n\tPREMIUMTRANSACTIONAKID, \n\tCOVERAGEID\n\tFROM SQ_ArchWorkPremiumTransaction\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

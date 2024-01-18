@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCIMRiskStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCIMRiskStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCIMRiskStage AS (\n\tSELECT\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tLineId,\n\t\tIM_RiskId,\n\t\tSessionId,\n\t\tId,\n\t\tDescription,\n\t\tIM_CoverageFormXmlId,\n\t\tDeleted\n\tFROM DCIMRiskStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tExtractDate,\n\tSourceSystemid,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tLineId,\n\tIM_RiskId,\n\tSessionId,\n\tId,\n\tDescription,\n\tIM_CoverageFormXmlId,\n\tDeleted\n\tFROM SQ_DCIMRiskStage\n),\nArchDCIMRiskStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCIMRiskStage\n\t(ExtractDate, SourceSystemid, AuditId, LineId, IM_RiskId, SessionId, Id, Deleted, Description, IM_CoverageFormXmlId)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tLINEID, \n\tIM_RISKID, \n\tSESSIONID, \n\tID, \n\tDELETED, \n\tDESCRIPTION, \n\tIM_COVERAGEFORMXMLID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

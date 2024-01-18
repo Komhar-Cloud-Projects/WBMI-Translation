@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_InsurPayPaymentApproval",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_InsurPayPaymentApproval",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_InsurPayPaymentApprovalStage AS (\n\tSELECT\n\t\tInsurPayPaymentApprovalStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tInsurPayBatchId,\n\t\tApprovalStatus,\n\t\tApprovalByUserId,\n\t\tApprovalDate,\n\t\tDenialReason,\n\t\tCreatedUserId,\n\t\tCreatedDate,\n\t\tModifiedUserId,\n\t\tModifiedDate\n\tFROM InsurPayPaymentApprovalStage\n),\nEXPTRANS AS (\n\tSELECT\n\tInsurPayPaymentApprovalStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tInsurPayBatchId,\n\tApprovalStatus,\n\tApprovalByUserId,\n\tApprovalDate,\n\tDenialReason,\n\tCreatedUserId,\n\tCreatedDate,\n\tModifiedUserId,\n\tModifiedDate,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_InsurPayPaymentApprovalStage\n),\nArchInsurPayPaymentApprovalStage AS (\n\tINSERT INTO ArchInsurPayPaymentApprovalStage\n\t(AuditId, InsurPayPaymentApprovalStageId, ExtractDate, SourceSystemId, InsurPayBatchId, ApprovalStatus, ApprovalByUserId, ApprovalDate, DenialReason, CreatedUserId, CreatedDate, ModifiedUserId, ModifiedDate)\n\tSELECT \n\tAUDITID, \n\tINSURPAYPAYMENTAPPROVALSTAGEID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tINSURPAYBATCHID, \n\tAPPROVALSTATUS, \n\tAPPROVALBYUSERID, \n\tAPPROVALDATE, \n\tDENIALREASON, \n\tCREATEDUSERID, \n\tCREATEDDATE, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

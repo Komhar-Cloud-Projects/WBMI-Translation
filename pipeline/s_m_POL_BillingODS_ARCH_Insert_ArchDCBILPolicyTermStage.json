@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILPolicyTermStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_BillingODS_ARCH_Insert_ArchDCBILPolicyTermStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBILPolicyTermStage AS (\n\tSELECT\n\t\tDCBILPolicyTermStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tPolicyTermId,\n\t\tPolicyTermEffectiveDate,\n\t\tPolicyTermExpirationDate,\n\t\tPolicyReference,\n\t\tPolicyTermGroupReference,\n\t\tPrimaryAccountId,\n\t\tPolicyTermConfigTemplate,\n\t\tPolicyTermConfig,\n\t\tPolicyAggregationReference,\n\t\tSplitBillIndicator,\n\t\tPolicyTermStatusCode,\n\t\tAutoRescindEquityDate,\n\t\tPolicyIssueSystemCode,\n\t\tPolicyMasterCompanyCode,\n\t\tPolicyLineOfBusinessCode,\n\t\tPolicyProductCode,\n\t\tPolicyStateCode,\n\t\tPolicyCountryCode,\n\t\tIssueSystemPolicyId,\n\t\tRenewalConfigTemplate,\n\t\tRenewalConfig,\n\t\tRenewalAccountId,\n\t\tHoldTypeCode,\n\t\tHoldReasonCode,\n\t\tHoldStartDate,\n\t\tHoldEndDate,\n\t\tOutstandingBalance,\n\t\tExpirationActivityDate,\n\t\tLastUpdatedTimestamp,\n\t\tLastUpdatedUserId,\n\t\tPolicyTermLockingTS,\n\t\tPolicyTermExtendedData,\n\t\tProcessingOrgUnitCode,\n\t\tTransactionGUID,\n\t\tPolicyTermConfigCommissionScheme\n\tFROM DCBILPolicyTermStage\n),\nEXP_Metadata AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tDCBILPolicyTermStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tPolicyTermId,\n\tPolicyTermEffectiveDate,\n\tPolicyTermExpirationDate,\n\tPolicyReference,\n\tPolicyTermGroupReference,\n\tPrimaryAccountId,\n\tPolicyTermConfigTemplate,\n\tPolicyTermConfig,\n\tPolicyAggregationReference,\n\tSplitBillIndicator,\n\tPolicyTermStatusCode,\n\tAutoRescindEquityDate,\n\tPolicyIssueSystemCode,\n\tPolicyMasterCompanyCode,\n\tPolicyLineOfBusinessCode,\n\tPolicyProductCode,\n\tPolicyStateCode,\n\tPolicyCountryCode,\n\tIssueSystemPolicyId,\n\tRenewalConfigTemplate,\n\tRenewalConfig,\n\tRenewalAccountId,\n\tHoldTypeCode,\n\tHoldReasonCode,\n\tHoldStartDate,\n\tHoldEndDate,\n\tOutstandingBalance,\n\tExpirationActivityDate,\n\tLastUpdatedTimestamp,\n\tLastUpdatedUserId,\n\tPolicyTermLockingTS,\n\tPolicyTermExtendedData,\n\tProcessingOrgUnitCode,\n\tTransactionGUID,\n\tPolicyTermConfigCommissionScheme\n\tFROM SQ_DCBILPolicyTermStage\n),\nLKP_ArchExist AS (\n\tSELECT\n\tArchDCBILPolicyTermStageId,\n\tPolicyTermId\n\tFROM (\n\t\tSELECT \n\t\t\tArchDCBILPolicyTermStageId,\n\t\t\tPolicyTermId\n\t\tFROM ArchDCBILPolicyTermStage\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyTermId ORDER BY ArchDCBILPolicyTermStageId) = 1\n),\nFIL_Exist AS (\n\tSELECT\n\tLKP_ArchExist.ArchDCBILPolicyTermStageId AS lkp_ArchDCBILPolicyTermStageId, \n\tEXP_Metadata.o_AuditId AS AuditId, \n\tEXP_Metadata.DCBILPolicyTermStageId, \n\tEXP_Metadata.ExtractDate, \n\tEXP_Metadata.SourceSystemId, \n\tEXP_Metadata.PolicyTermId, \n\tEXP_Metadata.PolicyTermEffectiveDate, \n\tEXP_Metadata.PolicyTermExpirationDate, \n\tEXP_Metadata.PolicyReference, \n\tEXP_Metadata.PolicyTermGroupReference, \n\tEXP_Metadata.PrimaryAccountId, \n\tEXP_Metadata.PolicyTermConfigTemplate, \n\tEXP_Metadata.PolicyTermConfig, \n\tEXP_Metadata.PolicyAggregationReference, \n\tEXP_Metadata.SplitBillIndicator, \n\tEXP_Metadata.PolicyTermStatusCode, \n\tEXP_Metadata.AutoRescindEquityDate, \n\tEXP_Metadata.PolicyIssueSystemCode, \n\tEXP_Metadata.PolicyMasterCompanyCode, \n\tEXP_Metadata.PolicyLineOfBusinessCode, \n\tEXP_Metadata.PolicyProductCode, \n\tEXP_Metadata.PolicyStateCode, \n\tEXP_Metadata.PolicyCountryCode, \n\tEXP_Metadata.IssueSystemPolicyId, \n\tEXP_Metadata.RenewalConfigTemplate, \n\tEXP_Metadata.RenewalConfig, \n\tEXP_Metadata.RenewalAccountId, \n\tEXP_Metadata.HoldTypeCode, \n\tEXP_Metadata.HoldReasonCode, \n\tEXP_Metadata.HoldStartDate, \n\tEXP_Metadata.HoldEndDate, \n\tEXP_Metadata.OutstandingBalance, \n\tEXP_Metadata.ExpirationActivityDate, \n\tEXP_Metadata.LastUpdatedTimestamp, \n\tEXP_Metadata.LastUpdatedUserId, \n\tEXP_Metadata.PolicyTermLockingTS, \n\tEXP_Metadata.PolicyTermExtendedData, \n\tEXP_Metadata.ProcessingOrgUnitCode, \n\tEXP_Metadata.TransactionGUID, \n\tEXP_Metadata.PolicyTermConfigCommissionScheme\n\tFROM EXP_Metadata\n\tLEFT JOIN LKP_ArchExist\n\tON LKP_ArchExist.PolicyTermId = EXP_Metadata.PolicyTermId\n\tWHERE ISNULL(lkp_ArchDCBILPolicyTermStageId)\n),\nArchDCBILPolicyTermStage AS (\n\tINSERT INTO ArchDCBILPolicyTermStage\n\t(ExtractDate, SourceSystemId, AuditId, DCBILPolicyTermStageId, PolicyTermId, PolicyTermEffectiveDate, PolicyTermExpirationDate, PolicyReference, PolicyTermGroupReference, PrimaryAccountId, PolicyTermConfigTemplate, PolicyTermConfig, PolicyAggregationReference, SplitBillIndicator, PolicyTermStatusCode, AutoRescindEquityDate, PolicyIssueSystemCode, PolicyMasterCompanyCode, PolicyLineOfBusinessCode, PolicyProductCode, PolicyStateCode, PolicyCountryCode, IssueSystemPolicyId, RenewalConfigTemplate, RenewalConfig, RenewalAccountId, HoldTypeCode, HoldReasonCode, HoldStartDate, HoldEndDate, OutstandingBalance, ExpirationActivityDate, LastUpdatedTimestamp, LastUpdatedUserId, PolicyTermLockingTS, PolicyTermExtendedData, ProcessingOrgUnitCode, TransactionGUID, PolicyTermConfigCommissionScheme)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tDCBILPOLICYTERMSTAGEID, \n\tPOLICYTERMID, \n\tPOLICYTERMEFFECTIVEDATE, \n\tPOLICYTERMEXPIRATIONDATE, \n\tPOLICYREFERENCE, \n\tPOLICYTERMGROUPREFERENCE, \n\tPRIMARYACCOUNTID, \n\tPOLICYTERMCONFIGTEMPLATE, \n\tPOLICYTERMCONFIG, \n\tPOLICYAGGREGATIONREFERENCE, \n\tSPLITBILLINDICATOR, \n\tPOLICYTERMSTATUSCODE, \n\tAUTORESCINDEQUITYDATE, \n\tPOLICYISSUESYSTEMCODE, \n\tPOLICYMASTERCOMPANYCODE, \n\tPOLICYLINEOFBUSINESSCODE, \n\tPOLICYPRODUCTCODE, \n\tPOLICYSTATECODE, \n\tPOLICYCOUNTRYCODE, \n\tISSUESYSTEMPOLICYID, \n\tRENEWALCONFIGTEMPLATE, \n\tRENEWALCONFIG, \n\tRENEWALACCOUNTID, \n\tHOLDTYPECODE, \n\tHOLDREASONCODE, \n\tHOLDSTARTDATE, \n\tHOLDENDDATE, \n\tOUTSTANDINGBALANCE, \n\tEXPIRATIONACTIVITYDATE, \n\tLASTUPDATEDTIMESTAMP, \n\tLASTUPDATEDUSERID, \n\tPOLICYTERMLOCKINGTS, \n\tPOLICYTERMEXTENDEDDATA, \n\tPROCESSINGORGUNITCODE, \n\tTRANSACTIONGUID, \n\tPOLICYTERMCONFIGCOMMISSIONSCHEME\n\tFROM FIL_Exist\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

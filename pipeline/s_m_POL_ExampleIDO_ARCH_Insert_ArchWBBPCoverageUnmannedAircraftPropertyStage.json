@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageUnmannedAircraftPropertyStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageUnmanne_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBBPCoverageUnmannedAircraftPropertyStage AS (\n\tSELECT\n\t\tWBBPCoverageUnmannedAircraftPropertyStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tCoverageId,\n\t\tWB_BP_CoverageUnmannedAircraftPropertyId,\n\t\tSessionId,\n\t\tBusinessInterruption,\n\t\tNewlyAcquiredProperty\n\tFROM WBBPCoverageUnmannedAircraftPropertyStage\n),\nEXP_MetaData AS (\n\tSELECT\n\tWBBPCoverageUnmannedAircraftPropertyStageId,\n\tExtractDate,\n\tSourceSystemid,\n\tCoverageId,\n\tWB_BP_CoverageUnmannedAircraftPropertyId,\n\tSessionId,\n\tBusinessInterruption,\n\tNewlyAcquiredProperty,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBBPCoverageUnmannedAircraftPropertyStage\n),\nArchWBBPCoverageUnmannedAircraftPropertyStage AS (\n\tINSERT INTO ArchWBBPCoverageUnmannedAircraftPropertyStage\n\t(ExtractDate, SourceSystemId, WBBPCoverageUnmannedAircraftPropertyStageId, CoverageId, WB_BP_CoverageUnmannedAircraftPropertyId, SessionId, BusinessInterruption, NewlyAcquiredProperty)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemid AS SOURCESYSTEMID, \n\tWBBPCOVERAGEUNMANNEDAIRCRAFTPROPERTYSTAGEID, \n\tCOVERAGEID, \n\tWB_BP_COVERAGEUNMANNEDAIRCRAFTPROPERTYID, \n\tSESSIONID, \n\tBUSINESSINTERRUPTION, \n\tNEWLYACQUIREDPROPERTY\n\tFROM EXP_MetaData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

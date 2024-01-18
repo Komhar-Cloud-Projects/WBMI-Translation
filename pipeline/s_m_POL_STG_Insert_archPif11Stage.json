@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_archPif11Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_archPif11Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nPif11Stage AS (\n\tSELECT\n\t\tPif11StageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tPifSymbol,\n\t\tPifPolicyNumber,\n\t\tPifModule,\n\t\tDocumentId,\n\t\tDocumentType,\n\t\tDocumentName,\n\t\tDocumentEdition,\n\t\tDocumentSequence,\n\t\tDocumentIssueDate,\n\t\tDocumentSegmentSeq,\n\t\tDocumentStatus,\n\t\tDocumentReplType,\n\t\tDocumentReplName,\n\t\tDocumentReplEdit,\n\t\tDocumentNextType,\n\t\tDocumentNextName,\n\t\tDocumentNextEdit,\n\t\tDocumentNextSeg,\n\t\tDocumentNextIssDate,\n\t\tDocumentNextIndicator,\n\t\tDocumentNxOnPifSrf,\n\t\tDocumentPifIndicator,\n\t\tDocumentOwnerPassword,\n\t\tDocumentModNumber,\n\t\tDocumentModDate,\n\t\tDocumentPrintTime,\n\t\tDocumentPrtLinePerPage,\n\t\tDocumentNumberOfCopies,\n\t\tDocumentIndention,\n\t\tDocumentTotal11Records,\n\t\tDocumentTimeHour,\n\t\tDocumentTimeMinutesP,\n\t\tDocumentTimeSecond,\n\t\tDocumentTime100thSec,\n\t\tDocumentText\n\tFROM Pif11Stage\n\tINNER JOIN Pif11Stage\n),\nEXP_arh_stg_pif_11 AS (\n\tSELECT\n\tPif11StageId,\n\tExtractDate,\n\tSourceSystemid,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tPifSymbol,\n\tPifPolicyNumber,\n\tPifModule,\n\tDocumentId,\n\tDocumentType,\n\tDocumentName,\n\tDocumentEdition,\n\tDocumentSequence,\n\tDocumentIssueDate,\n\tDocumentSegmentSeq,\n\tDocumentStatus,\n\tDocumentReplType,\n\tDocumentReplName,\n\tDocumentReplEdit,\n\tDocumentNextType,\n\tDocumentNextName,\n\tDocumentNextEdit,\n\tDocumentNextSeg,\n\tDocumentNextIssDate,\n\tDocumentNextIndicator,\n\tDocumentNxOnPifSrf,\n\tDocumentPifIndicator,\n\tDocumentOwnerPassword,\n\tDocumentModNumber,\n\tDocumentModDate,\n\tDocumentPrintTime,\n\tDocumentPrtLinePerPage,\n\tDocumentNumberOfCopies,\n\tDocumentIndention,\n\tDocumentTotal11Records,\n\tDocumentTimeHour,\n\tDocumentTimeMinutesP,\n\tDocumentTimeSecond,\n\tDocumentTime100thSec,\n\tDocumentText\n\tFROM Pif11Stage\n),\narchPif11Stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archPif11Stage\n\t(ExtractDate, SourceSystemid, AuditId, PifSymbol, PifPolicyNumber, PifModule, DocumentId, DocumentType, DocumentName, DocumentEdition, DocumentSequence, DocumentIssueDate, DocumentSegmentSeq, DocumentStatus, DocumentReplType, DocumentReplName, DocumentReplEdit, DocumentNextType, DocumentNextName, DocumentNextEdit, DocumentNextSeg, DocumentNextIssDate, DocumentNextIndicator, DocumentNxOnPifSrf, DocumentPifIndicator, DocumentOwnerPassword, DocumentModNumber, DocumentModDate, DocumentPrintTime, DocumentPrtLinePerPage, DocumentNumberOfCopies, DocumentIndention, DocumentTotal11Records, DocumentTimeHour, DocumentTimeMinutesP, DocumentTimeSecond, DocumentTime100thSec, DocumentText)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tPIFSYMBOL, \n\tPIFPOLICYNUMBER, \n\tPIFMODULE, \n\tDOCUMENTID, \n\tDOCUMENTTYPE, \n\tDOCUMENTNAME, \n\tDOCUMENTEDITION, \n\tDOCUMENTSEQUENCE, \n\tDOCUMENTISSUEDATE, \n\tDOCUMENTSEGMENTSEQ, \n\tDOCUMENTSTATUS, \n\tDOCUMENTREPLTYPE, \n\tDOCUMENTREPLNAME, \n\tDOCUMENTREPLEDIT, \n\tDOCUMENTNEXTTYPE, \n\tDOCUMENTNEXTNAME, \n\tDOCUMENTNEXTEDIT, \n\tDOCUMENTNEXTSEG, \n\tDOCUMENTNEXTISSDATE, \n\tDOCUMENTNEXTINDICATOR, \n\tDOCUMENTNXONPIFSRF, \n\tDOCUMENTPIFINDICATOR, \n\tDOCUMENTOWNERPASSWORD, \n\tDOCUMENTMODNUMBER, \n\tDOCUMENTMODDATE, \n\tDOCUMENTPRINTTIME, \n\tDOCUMENTPRTLINEPERPAGE, \n\tDOCUMENTNUMBEROFCOPIES, \n\tDOCUMENTINDENTION, \n\tDOCUMENTTOTAL11RECORDS, \n\tDOCUMENTTIMEHOUR, \n\tDOCUMENTTIMEMINUTESP, \n\tDOCUMENTTIMESECOND, \n\tDOCUMENTTIME100THSEC, \n\tDOCUMENTTEXT\n\tFROM EXP_arh_stg_pif_11\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

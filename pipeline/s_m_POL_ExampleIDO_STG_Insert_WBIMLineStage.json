@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBIMLineStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBIMLineStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_IM_Line AS (\n\tWITH cte_WBIMLine(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.IM_LineId, \r\n\tX.WB_IM_LineId, \r\n\tX.SessionId, \r\n\tX.CurrentEquipementNumber, \r\n\tX.ReportingTotalPremiumAdjustment, \r\n\tX.ReportingPremiumResult, \r\n\tX.ReportingReporterMinimumPremiumApplies, \r\n\tX.QuotedScheduleMod, \r\n\tX.ScheduleModCaption, \r\n\tX.TotalContractorsEquipmentCatastropheLimit, \r\n\tX.TotalContractorsEquipmentMiscEquipmentLimit, \r\n\tX.TotalContractorsEquipmentEmployeeToolsLimit, \r\n\tX.TotalContractorsEquipmentCatastropheLimitValue, \r\n\tX.AssociationFactor \r\n\tFROM\r\n\tWB_IM_Line X\r\n\tinner join\r\n\tcte_WBIMLine Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tSYSDATE AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tIM_LineId,\n\tWB_IM_LineId,\n\tSessionId,\n\tCurrentEquipementNumber,\n\tReportingTotalPremiumAdjustment,\n\tReportingPremiumResult,\n\tReportingReporterMinimumPremiumApplies AS i_ReportingReporterMinimumPremiumApplies,\n\t-- *INF*: IIF(i_ReportingReporterMinimumPremiumApplies='T','1','0')\n\tIFF(i_ReportingReporterMinimumPremiumApplies = 'T', '1', '0') AS o_ReportingReporterMinimumPremiumApplies,\n\tQuotedScheduleMod,\n\tScheduleModCaption,\n\tTotalContractorsEquipmentCatastropheLimit,\n\tTotalContractorsEquipmentMiscEquipmentLimit,\n\tTotalContractorsEquipmentEmployeeToolsLimit,\n\tTotalContractorsEquipmentCatastropheLimitValue,\n\tAssociationFactor\n\tFROM SQ_WB_IM_Line\n),\nWBIMLineStage AS (\n\tTRUNCATE TABLE WBIMLineStage;\n\tINSERT INTO WBIMLineStage\n\t(ExtractDate, SourceSystemId, IM_LineId, WB_IM_LineId, SessionId, CurrentEquipementNumber, ReportingTotalPremiumAdjustment, ReportingPremiumResult, ReportingReporterMinimumPremiumApplies, QuotedScheduleMod, ScheduleModCaption, TotalContractorsEquipmentCatastropheLimit, TotalContractorsEquipmentMiscEquipmentLimit, TotalContractorsEquipmentEmployeeToolsLimit, TotalContractorsEquipmentCatastropheLimitValue, AssociationFactor)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tIM_LINEID, \n\tWB_IM_LINEID, \n\tSESSIONID, \n\tCURRENTEQUIPEMENTNUMBER, \n\tREPORTINGTOTALPREMIUMADJUSTMENT, \n\tREPORTINGPREMIUMRESULT, \n\to_ReportingReporterMinimumPremiumApplies AS REPORTINGREPORTERMINIMUMPREMIUMAPPLIES, \n\tQUOTEDSCHEDULEMOD, \n\tSCHEDULEMODCAPTION, \n\tTOTALCONTRACTORSEQUIPMENTCATASTROPHELIMIT, \n\tTOTALCONTRACTORSEQUIPMENTMISCEQUIPMENTLIMIT, \n\tTOTALCONTRACTORSEQUIPMENTEMPLOYEETOOLSLIMIT, \n\tTOTALCONTRACTORSEQUIPMENTCATASTROPHELIMITVALUE, \n\tASSOCIATIONFACTOR\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

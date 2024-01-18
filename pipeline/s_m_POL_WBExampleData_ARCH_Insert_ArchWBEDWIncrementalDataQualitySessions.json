@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_WBExampleData_ARCH_Insert_ArchWBEDWIncrementalDataQualitySessions",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_WBExampleData_ARCH_Insert_ArchWBEDWIncremental_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBEDWIncrementalDataQualitySessions AS (\n\tSELECT\n\t\tWBEDWIncrementalDataQualitySessionsId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tPolicyNumber,\n\t\tPolicyVersion,\n\t\tHistoryID,\n\t\tPurpose,\n\t\tSessionID,\n\t\tSourceAccountingDate,\n\t\tSourceModifiedDate,\n\t\tIndicator,\n\t\tAutoshred\n\tFROM WBEDWIncrementalDataQualitySessions\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBEDWIncrementalDataQualitySessionsId,\n\tExtractDate,\n\tSourceSystemid,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,\n\tPolicyNumber,\n\tPolicyVersion,\n\tHistoryID,\n\tPurpose,\n\tSessionID,\n\tSourceAccountingDate,\n\tSourceModifiedDate,\n\tIndicator,\n\tAutoshred\n\tFROM SQ_WBEDWIncrementalDataQualitySessions\n),\nArchWBEDWIncrementalDataQualitySessions AS (\n\tINSERT INTO ArchWBEDWIncrementalDataQualitySessions\n\t(ExtractDate, SourceSystemId, AuditId, WBEDWIncrementalDataQualitySessionsId, PolicyNumber, PolicyVersion, HistoryID, Purpose, SessionID, SourceAccountingDate, SourceModifiedDate, Indicator, Autoshred)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemid AS SOURCESYSTEMID, \n\tAuditID AS AUDITID, \n\tWBEDWINCREMENTALDATAQUALITYSESSIONSID, \n\tPOLICYNUMBER, \n\tPOLICYVERSION, \n\tHISTORYID, \n\tPURPOSE, \n\tSESSIONID, \n\tSOURCEACCOUNTINGDATE, \n\tSOURCEMODIFIEDDATE, \n\tINDICATOR, \n\tAUTOSHRED\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_AGY_STG_INSERT_AssociateStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_STG_INSERT_AssociateStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Associate AS (\n\tSELECT\n\t\tAssociateID,\n\t\tSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tWestBendAssociateID,\n\t\tAssociateRole,\n\t\tRoleSpecificUserCode,\n\t\tDisplayName,\n\t\tLastName,\n\t\tFirstName,\n\t\tMiddleName,\n\t\tSuffix,\n\t\tEmailAddress,\n\t\tUserId,\n\t\tStrategicProfitCenterCode,\n\t\tStrategicProfitCenterDescription\n\tFROM Associate\n),\nEXP_Add_MetaDataFields AS (\n\tSELECT\n\tAssociateID,\n\tSourceSystemID,\n\tHashKey,\n\tModifiedUserID,\n\tModifiedDate,\n\tWestBendAssociateID,\n\tAssociateRole,\n\tRoleSpecificUserCode,\n\tDisplayName,\n\tLastName,\n\tFirstName,\n\tMiddleName,\n\tSuffix,\n\tEmailAddress,\n\tUserId,\n\tStrategicProfitCenterCode,\n\tStrategicProfitCenterDescription,\n\tsysdate AS Extract_Date,\n\tsysdate AS As_of_Date,\n\t1 AS Record_Count,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS Source_System_ID\n\tFROM SQ_Associate\n),\nAssociateStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.AssociateStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.AssociateStage\n\t(AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, WestBendAssociateID, AssociateRole, RoleSpecificUserCode, DisplayName, LastName, FirstName, MiddleName, Suffix, EmailAddress, ExtractDate, AsOfDate, RecordCount, SourceSystemID, UserId, StrategicProfitCenterCode, StrategicProfitCenterDescription)\n\tSELECT \n\tSourceSystemID AS AGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tWESTBENDASSOCIATEID, \n\tASSOCIATEROLE, \n\tROLESPECIFICUSERCODE, \n\tDISPLAYNAME, \n\tLASTNAME, \n\tFIRSTNAME, \n\tMIDDLENAME, \n\tSUFFIX, \n\tEMAILADDRESS, \n\tExtract_Date AS EXTRACTDATE, \n\tAs_of_Date AS ASOFDATE, \n\tRecord_Count AS RECORDCOUNT, \n\tSource_System_ID AS SOURCESYSTEMID, \n\tUSERID, \n\tSTRATEGICPROFITCENTERCODE, \n\tSTRATEGICPROFITCENTERDESCRIPTION\n\tFROM EXP_Add_MetaDataFields\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

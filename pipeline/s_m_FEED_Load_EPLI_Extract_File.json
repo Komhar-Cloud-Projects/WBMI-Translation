@@ -1,0 +1,55 @@
+{
+    "name": "s_m_FEED_Load_EPLI_Extract_File",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_FEED_Load_EPLI_Extract_File",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkIn2vateEPLI AS (\n\tSELECT\n\t\tWorkIn2vateEPLIId,\n\t\tClassCode,\n\t\tInsuranceLineCode,\n\t\tPolStatusCode,\n\t\tPolStatusDescription,\n\t\tCustomerNumber,\n\t\tPolicyKey,\n\t\tName,\n\t\tDoingBusinessAs,\n\t\tPremiumTransactionEffectiveDate,\n\t\tPremiumTransactionExpirationDate,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tAuditID\n\tFROM WorkIn2vateEPLI\n\tWHERE @{pipeline().parameters.WHERECLAUSE}\n),\nLKP_WorkIn2vateEPLI AS (\n\tSELECT\n\tCustomerNumber\n\tFROM (\n\t\tSELECT \n\t\t\tCustomerNumber\n\t\tFROM WorkIn2vateEPLI\n\t\tWHERE (PolStatusDescription = 'Inforce' ) and AuditId=@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY CustomerNumber ORDER BY CustomerNumber) = 1\n),\nEXP_GetValues AS (\n\tSELECT\n\tSQ_WorkIn2vateEPLI.PolStatusDescription,\n\tSQ_WorkIn2vateEPLI.CustomerNumber AS i_CustomerNumber,\n\tSQ_WorkIn2vateEPLI.PolicyKey AS i_PolicyKey,\n\tSQ_WorkIn2vateEPLI.Name AS i_Name,\n\tSQ_WorkIn2vateEPLI.PremiumTransactionExpirationDate AS i_PremiumTransactionExpirationDate,\n\tSQ_WorkIn2vateEPLI.ExtractDate AS i_ExtractDate,\n\tLKP_WorkIn2vateEPLI.CustomerNumber AS LKP_CustomerNumber,\n\t-- *INF*: IIF(ISNULL(LKP_CustomerNumber),0,1)\n\tIFF(LKP_CustomerNumber IS NULL, 0, 1) AS FLAG,\n\t-- *INF*: RPAD(SUBSTR(LTRIM(RTRIM(i_CustomerNumber)),1,10),10,' ')\n\tRPAD(SUBSTR(LTRIM(RTRIM(i_CustomerNumber)), 1, 10), 10, ' ') AS v_CustomerNumber,\n\t-- *INF*: RPAD(SUBSTR(LTRIM(RTRIM(i_PolicyKey)),1,12),12,' ')\n\tRPAD(SUBSTR(LTRIM(RTRIM(i_PolicyKey)), 1, 12), 12, ' ') AS v_PolicyKey,\n\t-- *INF*: RPAD(SUBSTR(LTRIM(RTRIM(i_Name)),1,30),30,' ')\n\tRPAD(SUBSTR(LTRIM(RTRIM(i_Name)), 1, 30), 30, ' ') AS v_Name,\n\t-- *INF*: TO_CHAR(i_PremiumTransactionExpirationDate,'MM/DD/YYYY')\n\tTO_CHAR(i_PremiumTransactionExpirationDate, 'MM/DD/YYYY') AS v_PremiumTransactionExpirationDate,\n\t-- *INF*: TO_CHAR(i_ExtractDate,'YYYYMMDD')\n\tTO_CHAR(i_ExtractDate, 'YYYYMMDD') AS o_ExtractDate,\n\tv_CustomerNumber || '~'\r\n || v_PolicyKey || '~'\r\n || v_Name || '~'\r\n || v_PremiumTransactionExpirationDate AS o_Record\n\tFROM SQ_WorkIn2vateEPLI\n\tLEFT JOIN LKP_WorkIn2vateEPLI\n\tON LKP_WorkIn2vateEPLI.CustomerNumber = SQ_WorkIn2vateEPLI.CustomerNumber\n),\nRTR_EPLI AS (\n\tSELECT\n\tPolStatusDescription,\n\to_ExtractDate,\n\to_Record,\n\tFLAG\n\tFROM EXP_GetValues\n),\nRTR_EPLI_Inforce AS (SELECT * FROM RTR_EPLI WHERE LTRIM(RTRIM(PolStatusDescription))='Inforce'  AND FLAG = '1'),\nRTR_EPLI_CancelledAndNotInforce AS (SELECT * FROM RTR_EPLI WHERE IN(LTRIM(RTRIM(PolStatusDescription)),'Cancelled','Not Inforce')  AND FLAG = '0'),\nEXP_EPLI_Inforce AS (\n\tSELECT\n\to_ExtractDate AS i_ExtractDate,\n\to_Record AS Record,\n\t@{pipeline().parameters.FILENAME_INFORCE} || '_' || i_ExtractDate AS o_FileName\n\tFROM RTR_EPLI_Inforce\n),\nTGT_EPLIFlatFile_Inforce AS (\n\tINSERT INTO EPLIFlatFile\n\t(Record, FileName)\n\tSELECT \n\tRECORD, \n\to_FileName AS FILENAME\n\tFROM EXP_EPLI_Inforce\n),\nEXP_EPLI_CancelledAndNotInforce AS (\n\tSELECT\n\to_ExtractDate AS i_ExtractDate,\n\to_Record AS Record,\n\t@{pipeline().parameters.FILENAME_CANCELLEDANDNOTINFORCE} || '_' || i_ExtractDate AS o_FileName\n\tFROM RTR_EPLI_CancelledAndNotInforce\n),\nTGT_EPLIFlatFile_CancelledAndNotInforce AS (\n\tINSERT INTO EPLIFlatFile\n\t(Record, FileName)\n\tSELECT \n\tRECORD, \n\to_FileName AS FILENAME\n\tFROM EXP_EPLI_CancelledAndNotInforce\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WHERECLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "FILENAME_INFORCE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "FILENAME_CANCELLEDANDNOTINFORCE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,55 @@
+{
+    "name": "s_m_POL_ExampleData_STG_Insert_DCBILBillItemStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleData_STG_Insert_DCBILBillItemStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_BIL_BillItem AS (\n\tSELECT BI.ItemId, BI.AccountId, BI.PolicyTermId, BI.TransactionDate, null as TransactionReference, BI.ItemEffectiveDate, BI.ItemExpirationDate, BI.ReceivableTypeCode, BI.ReceivableSubTypeCode, \r\n\tBI.TransactionTypeCode, BI.CoverageReference, BI.UnitReference, BI.AggregationReference, BI.CommissionGroupReference, BI.StateCode, BI.Description, BI.BillInFullIndicator, BI.CurrencyCulture, \r\n\tBI.OriginalTransactionAmount, BI.ItemAmount, BI.TransferredAmount, BI.ItemCommissionType, BI.ItemCommissionAmount, BI.ItemCommissionPercent, BI.CommissionAuthorizedAmount, BI.CommissionPlanId, \r\n\tBI.ScheduledIndicator, BI.PostedTimestamp, BI.LastUpdatedTimestamp, BI.LastUpdatedUserId, null as BillItemLockingTS, null as BillItemExtendedData, BI.EquityBearingIndicator, BI.TriggerTransactionIndicator,\r\n\tnull as FinancialReportingGroupReference, null as TransactionGUID \r\n\tFROM\r\n\t DC_BIL_BillItem BI with(nolock)\r\n\tWHERE\r\n\tBI.LastUpdatedTimestamp > DATEADD(DD, @{pipeline().parameters.NO_OF_DAYS} ,'@{pipeline().parameters.SELECTION_START_TS}')\r\n\tAND\r\n\tBI.ItemId % @{pipeline().parameters.NUM_OF_PARTITIONS}=1\n\t\n\tUNION ALL\n\tSELECT BI.ItemId, BI.AccountId, BI.PolicyTermId, BI.TransactionDate, null as TransactionReference, BI.ItemEffectiveDate, BI.ItemExpirationDate, BI.ReceivableTypeCode, BI.ReceivableSubTypeCode, \r\n\tBI.TransactionTypeCode, BI.CoverageReference, BI.UnitReference, BI.AggregationReference, BI.CommissionGroupReference, BI.StateCode, BI.Description, BI.BillInFullIndicator, BI.CurrencyCulture, \r\n\tBI.OriginalTransactionAmount, BI.ItemAmount, BI.TransferredAmount, BI.ItemCommissionType, BI.ItemCommissionAmount, BI.ItemCommissionPercent, BI.CommissionAuthorizedAmount, BI.CommissionPlanId, \r\n\tBI.ScheduledIndicator, BI.PostedTimestamp, BI.LastUpdatedTimestamp, BI.LastUpdatedUserId, null as BillItemLockingTS, null as BillItemExtendedData, BI.EquityBearingIndicator, BI.TriggerTransactionIndicator,\r\n\tnull as FinancialReportingGroupReference, null as TransactionGUID \r\n\tFROM\r\n\t DC_BIL_BillItem BI with(nolock)\r\n\tWHERE\r\n\tBI.LastUpdatedTimestamp > DATEADD(DD, @{pipeline().parameters.NO_OF_DAYS} ,'@{pipeline().parameters.SELECTION_START_TS}')\r\n\tAND\r\n\tBI.ItemId % @{pipeline().parameters.NUM_OF_PARTITIONS}=2\n\t\n\tUNION ALL\n\tSELECT BI.ItemId, BI.AccountId, BI.PolicyTermId, BI.TransactionDate, null as TransactionReference, BI.ItemEffectiveDate, BI.ItemExpirationDate, BI.ReceivableTypeCode, BI.ReceivableSubTypeCode, \r\n\tBI.TransactionTypeCode, BI.CoverageReference, BI.UnitReference, BI.AggregationReference, BI.CommissionGroupReference, BI.StateCode, BI.Description, BI.BillInFullIndicator, BI.CurrencyCulture, \r\n\tBI.OriginalTransactionAmount, BI.ItemAmount, BI.TransferredAmount, BI.ItemCommissionType, BI.ItemCommissionAmount, BI.ItemCommissionPercent, BI.CommissionAuthorizedAmount, BI.CommissionPlanId, \r\n\tBI.ScheduledIndicator, BI.PostedTimestamp, BI.LastUpdatedTimestamp, BI.LastUpdatedUserId, null as BillItemLockingTS, null as BillItemExtendedData, BI.EquityBearingIndicator, BI.TriggerTransactionIndicator,\r\n\tnull as FinancialReportingGroupReference, null as TransactionGUID \r\n\tFROM\r\n\t DC_BIL_BillItem BI with(nolock)\r\n\tWHERE\r\n\tBI.LastUpdatedTimestamp > DATEADD(DD, @{pipeline().parameters.NO_OF_DAYS} ,'@{pipeline().parameters.SELECTION_START_TS}')\r\n\tAND\r\n\tBI.ItemId % @{pipeline().parameters.NUM_OF_PARTITIONS}=3\n\t\n\tUNION ALL\n\tSELECT BI.ItemId, BI.AccountId, BI.PolicyTermId, BI.TransactionDate, null as TransactionReference, BI.ItemEffectiveDate, BI.ItemExpirationDate, BI.ReceivableTypeCode, BI.ReceivableSubTypeCode, \r\n\tBI.TransactionTypeCode, BI.CoverageReference, BI.UnitReference, BI.AggregationReference, BI.CommissionGroupReference, BI.StateCode, BI.Description, BI.BillInFullIndicator, BI.CurrencyCulture, \r\n\tBI.OriginalTransactionAmount, BI.ItemAmount, BI.TransferredAmount, BI.ItemCommissionType, BI.ItemCommissionAmount, BI.ItemCommissionPercent, BI.CommissionAuthorizedAmount, BI.CommissionPlanId, \r\n\tBI.ScheduledIndicator, BI.PostedTimestamp, BI.LastUpdatedTimestamp, BI.LastUpdatedUserId, null as BillItemLockingTS, null as BillItemExtendedData, BI.EquityBearingIndicator, BI.TriggerTransactionIndicator,\r\n\tnull as FinancialReportingGroupReference, null as TransactionGUID \r\n\tFROM\r\n\t DC_BIL_BillItem BI with(nolock)\r\n\tWHERE\r\n\tBI.LastUpdatedTimestamp > DATEADD(DD, @{pipeline().parameters.NO_OF_DAYS} ,'@{pipeline().parameters.SELECTION_START_TS}')\r\n\tAND\r\n\tBI.ItemId % @{pipeline().parameters.NUM_OF_PARTITIONS}=4\n),\nEXP_Metadata AS (\n\tSELECT\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tItemId,\n\tAccountId,\n\tPolicyTermId,\n\tTransactionDate,\n\tTransactionReference,\n\tItemEffectiveDate,\n\tItemExpirationDate,\n\tReceivableTypeCode,\n\tReceivableSubTypeCode,\n\tTransactionTypeCode,\n\tCoverageReference,\n\tUnitReference,\n\tAggregationReference,\n\tCommissionGroupReference,\n\tStateCode,\n\tDescription,\n\tBillInFullIndicator,\n\tCurrencyCulture,\n\tOriginalTransactionAmount,\n\tItemAmount,\n\tTransferredAmount,\n\tItemCommissionType,\n\tItemCommissionAmount,\n\tItemCommissionPercent,\n\tCommissionAuthorizedAmount,\n\tCommissionPlanId,\n\tScheduledIndicator,\n\tPostedTimestamp,\n\tLastUpdatedTimestamp,\n\tLastUpdatedUserId,\n\tBillItemLockingTS,\n\tBillItemExtendedData,\n\tEquityBearingIndicator,\n\tTriggerTransactionIndicator,\n\tFinancialReportingGroupReference,\n\tTransactionGUID\n\tFROM SQ_DC_BIL_BillItem\n),\nDCBILBillItemStage AS (\n\tTRUNCATE TABLE DCBILBillItemStage;\n\tINSERT INTO DCBILBillItemStage\n\t(ExtractDate, SourceSystemId, ItemId, AccountId, PolicyTermId, TransactionDate, TransactionReference, ItemEffectiveDate, ItemExpirationDate, ReceivableTypeCode, ReceivableSubTypeCode, TransactionTypeCode, CoverageReference, UnitReference, AggregationReference, CommissionGroupReference, StateCode, Description, BillInFullIndicator, CurrencyCulture, OriginalTransactionAmount, ItemAmount, TransferredAmount, ItemCommissionType, ItemCommissionAmount, ItemCommissionPercent, CommissionAuthorizedAmount, CommissionPlanId, ScheduledIndicator, PostedTimestamp, LastUpdatedTimestamp, LastUpdatedUserId, BillItemLockingTS, BillItemExtendedData, EquityBearingIndicator, TriggerTransactionIndicator, FinancialReportingGroupReference, TransactionGUID)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tITEMID, \n\tACCOUNTID, \n\tPOLICYTERMID, \n\tTRANSACTIONDATE, \n\tTRANSACTIONREFERENCE, \n\tITEMEFFECTIVEDATE, \n\tITEMEXPIRATIONDATE, \n\tRECEIVABLETYPECODE, \n\tRECEIVABLESUBTYPECODE, \n\tTRANSACTIONTYPECODE, \n\tCOVERAGEREFERENCE, \n\tUNITREFERENCE, \n\tAGGREGATIONREFERENCE, \n\tCOMMISSIONGROUPREFERENCE, \n\tSTATECODE, \n\tDESCRIPTION, \n\tBILLINFULLINDICATOR, \n\tCURRENCYCULTURE, \n\tORIGINALTRANSACTIONAMOUNT, \n\tITEMAMOUNT, \n\tTRANSFERREDAMOUNT, \n\tITEMCOMMISSIONTYPE, \n\tITEMCOMMISSIONAMOUNT, \n\tITEMCOMMISSIONPERCENT, \n\tCOMMISSIONAUTHORIZEDAMOUNT, \n\tCOMMISSIONPLANID, \n\tSCHEDULEDINDICATOR, \n\tPOSTEDTIMESTAMP, \n\tLASTUPDATEDTIMESTAMP, \n\tLASTUPDATEDUSERID, \n\tBILLITEMLOCKINGTS, \n\tBILLITEMEXTENDEDDATA, \n\tEQUITYBEARINGINDICATOR, \n\tTRIGGERTRANSACTIONINDICATOR, \n\tFINANCIALREPORTINGGROUPREFERENCE, \n\tTRANSACTIONGUID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "NO_OF_DAYS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "NUM_OF_PARTITIONS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

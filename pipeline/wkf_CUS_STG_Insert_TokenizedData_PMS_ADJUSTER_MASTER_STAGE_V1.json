@@ -1,0 +1,90 @@
+{
+    "name": "wkf_CUS_STG_Insert_TokenizedData_PMS_ADJUSTER_MASTER_STAGE_V1",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "wklt_CUS_FileWatcher_TokensFile",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "s_CUS_STG_Generate_SSN_Tokens_PMS_ADJUSTER_MASTER_ST_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_CUS_STG_Generate_SSN_Tokens_PMS_ADJUSTER_MASTER_ST_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CUS_STG_Generate_SSN_Tokens_PMS_ADJUSTER_MASTER_STAGE_V1"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_CUS_STG_Generate_SSN_Tokens_PMS_ADJUSTER_MASTER_STAGE_V1",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_CUS_STG_Insert_TokenizedData_PMS_ADJUSTER_MASTER_S_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "wklt_CUS_FileWatcher_TokensFile",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CUS_STG_Insert_TokenizedData_PMS_ADJUSTER_MASTER_STAGE_V1"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_CUS_STG_Insert_TokenizedData_PMS_ADJUSTER_MASTER_STAGE_V1",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "Staging/CustomerStaging/"
+        },
+        "variables": {}
+    }
+}

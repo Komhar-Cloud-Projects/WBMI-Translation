@@ -70,14 +70,13 @@ EXP_DataCollectSRC AS (
 	CoverageType,
 	CoverageGuid AS CoverageGuId,
 	-- *INF*: IIF(ISNULL(CoverageGuId) OR IS_SPACES(CoverageGuId) OR LENGTH(CoverageGuId)=0, 'N/A', LTRIM(RTRIM(CoverageGuId)))
-	IFF(CoverageGuId IS NULL 
-		OR LENGTH(CoverageGuId)>0 AND TRIM(CoverageGuId)='' 
-		OR LENGTH(CoverageGuId
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(CoverageGuId
-			)
-		)
+	IFF(
+	    CoverageGuId IS NULL
+	    or LENGTH(CoverageGuId)>0
+	    and TRIM(CoverageGuId)=''
+	    or LENGTH(CoverageGuId) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(CoverageGuId))
 	) AS O_CoverageGUID,
 	CoverageId,
 	Type AS DeductibleType,
@@ -202,11 +201,9 @@ mplt_Load_Deductibles_IL_Layer_DCT AS (WITH
 		Value AS i_Value,
 		PremiumTransactionAKId,
 		-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_Type)
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(i_Type
-		) AS o_CoverageLimitType,
+		UDF_DEFAULT_VALUE_FOR_STRINGS(i_Type) AS o_CoverageLimitType,
 		-- *INF*: TO_CHAR(TO_DECIMAL(i_Value))
-		TO_CHAR(CAST(i_Value AS FLOAT)
-		) AS o_CoverageLimitValue,
+		TO_CHAR(CAST(i_Value AS FLOAT)) AS o_CoverageLimitValue,
 		AuditId
 		FROM FIL_UnnecessaryDeductibles
 	),
@@ -252,10 +249,7 @@ mplt_Load_Deductibles_IL_Layer_DCT AS (WITH
 		AGG_VLAUE_TYPE.CoverageDeductibleType,
 		AGG_VLAUE_TYPE.CoverageDeductibleValue,
 		-- *INF*: IIF(ISNULL(lkp_CoverageDeductibleId),i_NEXTVAL,lkp_CoverageDeductibleId)
-		IFF(lkp_CoverageDeductibleId IS NULL,
-			i_NEXTVAL,
-			lkp_CoverageDeductibleId
-		) AS CoverageDeductibleId,
+		IFF(lkp_CoverageDeductibleId IS NULL, i_NEXTVAL, lkp_CoverageDeductibleId) AS CoverageDeductibleId,
 		AGG_VLAUE_TYPE.AuditId
 		FROM AGG_VLAUE_TYPE
 		LEFT JOIN LKP_COVERAGEDEDUCTIBLEID
@@ -291,10 +285,7 @@ mplt_Load_Deductibles_IL_Layer_DCT AS (WITH
 		sysdate AS o_date,
 		i_CoverageDeductibleType AS o_CoverageDeductibleType,
 		-- *INF*: IIF(NOT ISNULL(i_CoverageDeductibleValue),i_CoverageDeductibleValue,'0')
-		IFF(i_CoverageDeductibleValue IS NOT NULL,
-			i_CoverageDeductibleValue,
-			'0'
-		) AS o_CoverageDeductibleVlaue
+		IFF(i_CoverageDeductibleValue IS NOT NULL, i_CoverageDeductibleValue, '0') AS o_CoverageDeductibleVlaue
 		FROM FIL_Insert_CoverageDeductible
 	),
 	JNR_type_value AS (SELECT
@@ -351,8 +342,7 @@ mplt_Load_Deductibles_IL_Layer_DCT AS (WITH
 		CoverageDeductibleId AS i_CoverageDeductibleId,
 		PremiumTransactionAKId,
 		-- *INF*: count(1)
-		count(1
-		) AS o_CoverageDeductibleIdCount,
+		count(1) AS o_CoverageDeductibleIdCount,
 		AuditId
 		FROM FIL_Insert_CoverageDeductibleBridge
 		GROUP BY i_CoverageDeductibleId, PremiumTransactionAKId

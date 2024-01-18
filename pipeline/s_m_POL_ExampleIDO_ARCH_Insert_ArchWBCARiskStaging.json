@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCARiskStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCARiskStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCARiskStaging AS (\n\tSELECT\n\t\tWBCARiskStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCA_RiskId,\n\t\tWB_CA_RiskId,\n\t\tSessionId,\n\t\tPurePremium,\n\t\tApplyChargeTransportClients,\n\t\tExtendedEmployeeCovMessage,\n\t\tSecondLevelCoverage,\n\t\tHaulingOperations,\n\t\tCustomEquipment,\n\t\tCustomEquipmentCost,\n\t\tTotalVehicleCost,\n\t\tCoverageType,\n\t\tRentalReimbursementSoftMessage,\n\t\tLoanLeaseSotMsg,\n\t\tSubjectToNoFaultMessage,\n\t\tGVWUC,\n\t\tDriverTrainingIndicator,\n\t\tLayUpCredit,\n\t\tLayUpCreditDays,\n\t\tNewVehicleIndicator,\n\t\tVINHasChangedIndicator\n\tFROM WBCARiskStaging\n),\nEXP_handle AS (\n\tSELECT\n\tWBCARiskStagingId,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tCA_RiskId,\n\tWB_CA_RiskId,\n\tSessionId,\n\tPurePremium,\n\t-- *INF*: DECODE(LimitedLiability,'T',1,'F',0,NULL)\n\tDECODE(\n\t    LimitedLiability,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS LimitedLiability_out,\n\t-- *INF*: DECODE(LossPayee,'T',1,'F',0,NULL)\n\tDECODE(\n\t    LossPayee,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS LossPayee_out,\n\t-- *INF*: DECODE(ActualLossSustained,'T',1,'F',0,NULL)\n\tDECODE(\n\t    ActualLossSustained,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS ActualLossSustained_out,\n\tApplyChargeTransportClients,\n\t-- *INF*: DECODE(ApplyChargeTransportClients,'T',1,'F',0,NULL)\n\tDECODE(\n\t    ApplyChargeTransportClients,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS ApplyChargeTransportClients_out,\n\tExtendedEmployeeCovMessage,\n\tSecondLevelCoverage,\n\t-- *INF*: DECODE(SecondLevelCoverage,'T',1,'F',0,NULL)\n\tDECODE(\n\t    SecondLevelCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS SecondLevelCoverage_out,\n\tHaulingOperations,\n\tCustomEquipment,\n\tCustomEquipmentCost,\n\tTotalVehicleCost,\n\tCoverageType,\n\tRentalReimbursementSoftMessage,\n\tLoanLeaseSotMsg,\n\tSubjectToNoFaultMessage,\n\tGVWUC,\n\tDriverTrainingIndicator,\n\t-- *INF*: DECODE(DriverTrainingIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    DriverTrainingIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS DriverTrainingIndicator_out,\n\tLayUpCredit,\n\t-- *INF*: DECODE(LayUpCredit,'T',1,'F',0,NULL)\n\tDECODE(\n\t    LayUpCredit,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS LayUpCredit_out,\n\tLayUpCreditDays,\n\tNewVehicleIndicator,\n\t-- *INF*: DECODE(NewVehicleIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    NewVehicleIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS NewVehicleIndicator_out,\n\tVINHasChangedIndicator,\n\t-- *INF*: DECODE(VINHasChangedIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    VINHasChangedIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS VINHasChangedIndicator_out\n\tFROM SQ_WBCARiskStaging\n),\narchWBCARiskStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.archWBCARiskStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archWBCARiskStaging\n\t(ExtractDate, SourceSystemId, AuditId, WBCARiskStagingId, CA_RiskId, WB_CA_RiskId, SessionId, PurePremium, ApplyChargeTransportClients, ExtendedEmployeeCovMessage, SecondLevelCoverage, HaulingOperations, CustomEquipment, CustomEquipmentCost, TotalVehicleCost, CoverageType, RentalReimbursementSoftMessage, LoanLeaseSotMsg, SubjectToNoFaultMessage, GVWUC, DriverTrainingIndicator, LayUpCredit, LayUpCreditDays, NewVehicleIndicator, VINHasChangedIndicator)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tWBCARISKSTAGINGID, \n\tCA_RISKID, \n\tWB_CA_RISKID, \n\tSESSIONID, \n\tPUREPREMIUM, \n\tApplyChargeTransportClients_out AS APPLYCHARGETRANSPORTCLIENTS, \n\tEXTENDEDEMPLOYEECOVMESSAGE, \n\tSecondLevelCoverage_out AS SECONDLEVELCOVERAGE, \n\tHAULINGOPERATIONS, \n\tCUSTOMEQUIPMENT, \n\tCUSTOMEQUIPMENTCOST, \n\tTOTALVEHICLECOST, \n\tCOVERAGETYPE, \n\tRENTALREIMBURSEMENTSOFTMESSAGE, \n\tLOANLEASESOTMSG, \n\tSUBJECTTONOFAULTMESSAGE, \n\tGVWUC, \n\tDriverTrainingIndicator_out AS DRIVERTRAININGINDICATOR, \n\tLayUpCredit_out AS LAYUPCREDIT, \n\tLAYUPCREDITDAYS, \n\tNewVehicleIndicator_out AS NEWVEHICLEINDICATOR, \n\tVINHasChangedIndicator_out AS VINHASCHANGEDINDICATOR\n\tFROM EXP_handle\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

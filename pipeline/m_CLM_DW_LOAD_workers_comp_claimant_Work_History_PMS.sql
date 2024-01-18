@@ -41,109 +41,71 @@ EXP_Lkp_Values_workers_comp_claimant_work_history_PMS AS (
 	IPFCGQ_LOSS_OCCURENCE AS IN_IPFCGQ_LOSS_OCCURENCE,
 	IPFCGQ_LOSS_CLAIMANT AS IN_IPFCGQ_LOSS_CLAIMANT,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_PIF_SYMBOL))),'N/A',IIF(IS_SPACES(IN_PIF_SYMBOL),'N/A',LTRIM(RTRIM(IN_PIF_SYMBOL))))
-	IFF(LTRIM(RTRIM(IN_PIF_SYMBOL
-			)
-		) IS NULL,
-		'N/A',
-		IFF(LENGTH(IN_PIF_SYMBOL)>0 AND TRIM(IN_PIF_SYMBOL)='',
-			'N/A',
-			LTRIM(RTRIM(IN_PIF_SYMBOL
-				)
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(IN_PIF_SYMBOL)) IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(IN_PIF_SYMBOL)>0
+	    and TRIM(IN_PIF_SYMBOL)='', 'N/A',
+	        LTRIM(RTRIM(IN_PIF_SYMBOL))
+	    )
 	) AS V_PIF_SYMBOL,
 	V_PIF_SYMBOL AS PIF_SYMBOL,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_PIF_POLICY_NUMBER))),'N/A',IIF(IS_SPACES(IN_PIF_POLICY_NUMBER),'N/A',LTRIM(RTRIM(IN_PIF_POLICY_NUMBER))))
-	IFF(LTRIM(RTRIM(IN_PIF_POLICY_NUMBER
-			)
-		) IS NULL,
-		'N/A',
-		IFF(LENGTH(IN_PIF_POLICY_NUMBER)>0 AND TRIM(IN_PIF_POLICY_NUMBER)='',
-			'N/A',
-			LTRIM(RTRIM(IN_PIF_POLICY_NUMBER
-				)
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(IN_PIF_POLICY_NUMBER)) IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(IN_PIF_POLICY_NUMBER)>0
+	    and TRIM(IN_PIF_POLICY_NUMBER)='', 'N/A',
+	        LTRIM(RTRIM(IN_PIF_POLICY_NUMBER))
+	    )
 	) AS V_PIF_POLICY_NUMBER,
 	V_PIF_POLICY_NUMBER AS PIF_POLICY_NUMBER,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_PIF_MODULE))),'N/A',IIF(IS_SPACES(IN_PIF_MODULE),'N/A',LTRIM(RTRIM(IN_PIF_MODULE))))
-	IFF(LTRIM(RTRIM(IN_PIF_MODULE
-			)
-		) IS NULL,
-		'N/A',
-		IFF(LENGTH(IN_PIF_MODULE)>0 AND TRIM(IN_PIF_MODULE)='',
-			'N/A',
-			LTRIM(RTRIM(IN_PIF_MODULE
-				)
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(IN_PIF_MODULE)) IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(IN_PIF_MODULE)>0
+	    and TRIM(IN_PIF_MODULE)='', 'N/A',
+	        LTRIM(RTRIM(IN_PIF_MODULE))
+	    )
 	) AS V_PIF_MODULE,
 	V_PIF_MODULE AS PIF_MODULE,
 	-- *INF*: IIF(ISNULL(IN_IPFCGQ_YEAR_OF_LOSS),1800,IN_IPFCGQ_YEAR_OF_LOSS)
-	IFF(IN_IPFCGQ_YEAR_OF_LOSS IS NULL,
-		1800,
-		IN_IPFCGQ_YEAR_OF_LOSS
-	) AS V_IPFCGQ_YEAR_OF_LOSS,
+	IFF(IN_IPFCGQ_YEAR_OF_LOSS IS NULL, 1800, IN_IPFCGQ_YEAR_OF_LOSS) AS V_IPFCGQ_YEAR_OF_LOSS,
 	V_IPFCGQ_YEAR_OF_LOSS AS IPFCGQ_YEAR_OF_LOSS,
 	-- *INF*: IIF(ISNULL(IN_IPFCGQ_MONTH_OF_LOSS),01,IN_IPFCGQ_MONTH_OF_LOSS)
-	IFF(IN_IPFCGQ_MONTH_OF_LOSS IS NULL,
-		01,
-		IN_IPFCGQ_MONTH_OF_LOSS
-	) AS V_IPFCGQ_MONTH_OF_LOSS,
+	IFF(IN_IPFCGQ_MONTH_OF_LOSS IS NULL, 01, IN_IPFCGQ_MONTH_OF_LOSS) AS V_IPFCGQ_MONTH_OF_LOSS,
 	V_IPFCGQ_MONTH_OF_LOSS AS IPFCGQ_MONTH_OF_LOSS,
 	-- *INF*: IIF(ISNULL(IN_IPFCGQ_DAY_OF_LOSS),01,IN_IPFCGQ_DAY_OF_LOSS)
-	IFF(IN_IPFCGQ_DAY_OF_LOSS IS NULL,
-		01,
-		IN_IPFCGQ_DAY_OF_LOSS
-	) AS V_IPFCGQ_DAY_OF_LOSS,
+	IFF(IN_IPFCGQ_DAY_OF_LOSS IS NULL, 01, IN_IPFCGQ_DAY_OF_LOSS) AS V_IPFCGQ_DAY_OF_LOSS,
 	V_IPFCGQ_DAY_OF_LOSS AS IPFCGQ_DAY_OF_LOSS,
 	-- *INF*: IIF(ISNULL(IN_IPFCGQ_LOSS_OCCURENCE),'000',IN_IPFCGQ_LOSS_OCCURENCE)
-	IFF(IN_IPFCGQ_LOSS_OCCURENCE IS NULL,
-		'000',
-		IN_IPFCGQ_LOSS_OCCURENCE
-	) AS V_IPFCGQ_LOSS_OCCURENCE,
+	IFF(IN_IPFCGQ_LOSS_OCCURENCE IS NULL, '000', IN_IPFCGQ_LOSS_OCCURENCE) AS V_IPFCGQ_LOSS_OCCURENCE,
 	V_IPFCGQ_LOSS_OCCURENCE AS IPFCGQ_LOSS_OCCURENCE,
 	-- *INF*: IIF(ISNULL(IN_IPFCGQ_LOSS_CLAIMANT),'000',IN_IPFCGQ_LOSS_CLAIMANT)
-	IFF(IN_IPFCGQ_LOSS_CLAIMANT IS NULL,
-		'000',
-		IN_IPFCGQ_LOSS_CLAIMANT
-	) AS V_IPFCGQ_LOSS_CLAIMANT,
+	IFF(IN_IPFCGQ_LOSS_CLAIMANT IS NULL, '000', IN_IPFCGQ_LOSS_CLAIMANT) AS V_IPFCGQ_LOSS_CLAIMANT,
 	V_IPFCGQ_LOSS_CLAIMANT AS IPFCGQ_LOSS_CLAIMANT,
 	-- *INF*: TO_CHAR(V_IPFCGQ_YEAR_OF_LOSS)
-	TO_CHAR(V_IPFCGQ_YEAR_OF_LOSS
-	) AS V_LOSS_YEAR,
+	TO_CHAR(V_IPFCGQ_YEAR_OF_LOSS) AS V_LOSS_YEAR,
 	-- *INF*: TO_CHAR(V_IPFCGQ_MONTH_OF_LOSS)
-	TO_CHAR(V_IPFCGQ_MONTH_OF_LOSS
-	) AS V_LOSS_MONTH,
+	TO_CHAR(V_IPFCGQ_MONTH_OF_LOSS) AS V_LOSS_MONTH,
 	-- *INF*: TO_CHAR(V_IPFCGQ_DAY_OF_LOSS)
-	TO_CHAR(V_IPFCGQ_DAY_OF_LOSS
-	) AS V_LOSS_DAY,
+	TO_CHAR(V_IPFCGQ_DAY_OF_LOSS) AS V_LOSS_DAY,
 	-- *INF*: IIF ( LENGTH(V_LOSS_MONTH) = 1, '0' || V_LOSS_MONTH, V_LOSS_MONTH)
 	-- ||  
 	-- IIF ( LENGTH(V_LOSS_DAY ) = 1, '0' || V_LOSS_DAY, V_LOSS_DAY )
 	-- ||  
 	-- V_LOSS_YEAR
-	IFF(LENGTH(V_LOSS_MONTH
-		) = 1,
-		'0' || V_LOSS_MONTH,
-		V_LOSS_MONTH
-	) || IFF(LENGTH(V_LOSS_DAY
-		) = 1,
-		'0' || V_LOSS_DAY,
-		V_LOSS_DAY
-	) || V_LOSS_YEAR AS V_LOSS_DATE,
+	IFF(LENGTH(V_LOSS_MONTH) = 1, '0' || V_LOSS_MONTH, V_LOSS_MONTH) || IFF(LENGTH(V_LOSS_DAY) = 1, '0' || V_LOSS_DAY, V_LOSS_DAY) || V_LOSS_YEAR AS V_LOSS_DATE,
 	-- *INF*: V_PIF_SYMBOL || V_PIF_POLICY_NUMBER || V_PIF_MODULE || V_LOSS_DATE || TO_CHAR(V_IPFCGQ_LOSS_OCCURENCE)
-	V_PIF_SYMBOL || V_PIF_POLICY_NUMBER || V_PIF_MODULE || V_LOSS_DATE || TO_CHAR(V_IPFCGQ_LOSS_OCCURENCE
-	) AS V_OCCURRENCE_KEY,
+	V_PIF_SYMBOL || V_PIF_POLICY_NUMBER || V_PIF_MODULE || V_LOSS_DATE || TO_CHAR(V_IPFCGQ_LOSS_OCCURENCE) AS V_OCCURRENCE_KEY,
 	V_OCCURRENCE_KEY AS CLAIM_OCCURRENCE_KEY,
 	'CMT' AS V_PARTY_ROLE_CODE,
 	-- *INF*: V_OCCURRENCE_KEY||TO_CHAR(V_IPFCGQ_LOSS_CLAIMANT)||V_PARTY_ROLE_CODE
-	V_OCCURRENCE_KEY || TO_CHAR(V_IPFCGQ_LOSS_CLAIMANT
-	) || V_PARTY_ROLE_CODE AS V_LOSS_PARTY_KEY,
+	V_OCCURRENCE_KEY || TO_CHAR(V_IPFCGQ_LOSS_CLAIMANT) || V_PARTY_ROLE_CODE AS V_LOSS_PARTY_KEY,
 	V_LOSS_PARTY_KEY AS CLAIM_PARTY_KEY,
 	-- *INF*: TO_DATE('1/1/1800','MM/DD/YYYY')
-	TO_DATE('1/1/1800', 'MM/DD/YYYY'
-	) AS o_work_hist_created_date
+	TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY') AS o_work_hist_created_date
 	FROM EXP_VALIDATE_workers_comp_claimant_work_history_PMS
 ),
 LKP_42GQ_WC1 AS (
@@ -265,12 +227,11 @@ EXP_DETECT_CHANGES_workers_comp_claimant_work_history AS (
 	LKP_WORK_HISTORY.return_to_work_date AS LKP_RETURN_TO_WORK_DATE,
 	LKP_42GQ_WC1.ipfcgq_last_day_worked AS IN_EMP_LAST_DAY_WORKED,
 	-- *INF*:   IIF( ISNULL(IN_EMP_LAST_DAY_WORKED) OR  IN_EMP_LAST_DAY_WORKED =TO_DATE('1/1/1900','MM/DD/YYYY')  ,TO_DATE('1/1/1800','MM/DD/YYYY'), IN_EMP_LAST_DAY_WORKED)
-	IFF(IN_EMP_LAST_DAY_WORKED IS NULL 
-		OR IN_EMP_LAST_DAY_WORKED = TO_DATE('1/1/1900', 'MM/DD/YYYY'
-		),
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		IN_EMP_LAST_DAY_WORKED
+	IFF(
+	    IN_EMP_LAST_DAY_WORKED IS NULL
+	    or IN_EMP_LAST_DAY_WORKED = TO_TIMESTAMP('1/1/1900', 'MM/DD/YYYY'),
+	    TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'),
+	    IN_EMP_LAST_DAY_WORKED
 	) AS V_EMP_LAST_DAY_WORKED_STR,
 	LKP_WORK_HISTORY.return_to_work_type AS LKP_return_to_work_type,
 	LKP_WORK_HISTORY.emplyr_paid_amt AS LKP_emplyr_paid_amt,
@@ -283,12 +244,11 @@ EXP_DETECT_CHANGES_workers_comp_claimant_work_history AS (
 	-- *INF*:  IIF( ISNULL(IN_RETURN_TO_WORK_DATE)  OR  IN_RETURN_TO_WORK_DATE =TO_DATE('1/1/1900','MM/DD/YYYY')    ,TO_DATE('1/1/1800','MM/DD/YYYY'), IN_RETURN_TO_WORK_DATE)
 	--  
 	-- 
-	IFF(IN_RETURN_TO_WORK_DATE IS NULL 
-		OR IN_RETURN_TO_WORK_DATE = TO_DATE('1/1/1900', 'MM/DD/YYYY'
-		),
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		IN_RETURN_TO_WORK_DATE
+	IFF(
+	    IN_RETURN_TO_WORK_DATE IS NULL
+	    or IN_RETURN_TO_WORK_DATE = TO_TIMESTAMP('1/1/1900', 'MM/DD/YYYY'),
+	    TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'),
+	    IN_RETURN_TO_WORK_DATE
 	) AS V_RETURN_TO_WORK_DATE_STR,
 	V_RETURN_TO_WORK_DATE_STR AS o_return_to_work_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
@@ -309,20 +269,20 @@ EXP_DETECT_CHANGES_workers_comp_claimant_work_history AS (
 	-- LKP_EMP_LAST_DAY_WORKED <> V_EMP_LAST_DAY_WORKED_STR OR 
 	-- LKP_RETURN_TO_WORK_DATE <> V_RETURN_TO_WORK_DATE_STR  or LKP_return_to_work_type <> v_return_to_work_type or LKP_return_to_work_with_same_emplyr_ind <> v_return_to_work_with_same_emplyr_ind or LKP_return_to_work_with_restriction_ind <> v_return_to_work_with_restriction_ind or v_emplyr_paid_litigated_ind <> LKP_emplyr_paid_litigated_ind or LKP_emplyr_paid_amt <> v_emplyr_paid_amt  or LKP_source_sys_id <>  v_source_sys_id),
 	-- 'UPDATE','NOCHANGE'))
-	IFF(LKP_WC_CLAIMANT_WORK_HIST_AK_ID IS NULL,
-		'NEW',
-		IFF(( LKP_EMP_LAST_DAY_WORKED <> V_EMP_LAST_DAY_WORKED_STR 
-				OR LKP_RETURN_TO_WORK_DATE <> V_RETURN_TO_WORK_DATE_STR 
-				OR LKP_return_to_work_type <> v_return_to_work_type 
-				OR LKP_return_to_work_with_same_emplyr_ind <> v_return_to_work_with_same_emplyr_ind 
-				OR LKP_return_to_work_with_restriction_ind <> v_return_to_work_with_restriction_ind 
-				OR v_emplyr_paid_litigated_ind <> LKP_emplyr_paid_litigated_ind 
-				OR LKP_emplyr_paid_amt <> v_emplyr_paid_amt 
-				OR LKP_source_sys_id <> v_source_sys_id 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    LKP_WC_CLAIMANT_WORK_HIST_AK_ID IS NULL, 'NEW',
+	    IFF(
+	        (LKP_EMP_LAST_DAY_WORKED <> V_EMP_LAST_DAY_WORKED_STR
+	        or LKP_RETURN_TO_WORK_DATE <> V_RETURN_TO_WORK_DATE_STR
+	        or LKP_return_to_work_type <> v_return_to_work_type
+	        or LKP_return_to_work_with_same_emplyr_ind <> v_return_to_work_with_same_emplyr_ind
+	        or LKP_return_to_work_with_restriction_ind <> v_return_to_work_with_restriction_ind
+	        or v_emplyr_paid_litigated_ind <> LKP_emplyr_paid_litigated_ind
+	        or LKP_emplyr_paid_amt <> v_emplyr_paid_amt
+	        or LKP_source_sys_id <> v_source_sys_id),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS V_CHANGE_FLAG,
 	V_CHANGE_FLAG AS CHANGE_FLAG_OP,
 	1 AS crrnt_snpsht_flag,
@@ -330,16 +290,12 @@ EXP_DETECT_CHANGES_workers_comp_claimant_work_history AS (
 	-- *INF*: IIF(V_CHANGE_FLAG='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	TO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))
-	IFF(V_CHANGE_FLAG = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
-			), 'MM/DD/YYYY HH24:MI:SS'
-		)
+	IFF(
+	    V_CHANGE_FLAG = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    TO_TIMESTAMP(TO_CHAR(CURRENT_TIMESTAMP, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	v_sysdate AS created_date,
 	v_sysdate AS modified_date,
 	LKP_workers_comp_claimant_detail.wc_claimant_det_ak_id
@@ -386,10 +342,7 @@ EXP_INSERT AS (
 	CHANGE_FLAG_OP,
 	SEQ_Workers_Comp_Claiment_Work_History.NEXTVAL,
 	-- *INF*: IIF(CHANGE_FLAG_OP='NEW', NEXTVAL, WC_CLAIMANT_WORK_HIST_AK_ID)
-	IFF(CHANGE_FLAG_OP = 'NEW',
-		NEXTVAL,
-		WC_CLAIMANT_WORK_HIST_AK_ID
-	) AS o_wc_claimant_work_hist_ak_id,
+	IFF(CHANGE_FLAG_OP = 'NEW', NEXTVAL, WC_CLAIMANT_WORK_HIST_AK_ID) AS o_wc_claimant_work_hist_ak_id,
 	crrnt_snpsht_flag,
 	audit_id,
 	eff_from_date,
@@ -399,8 +352,7 @@ EXP_INSERT AS (
 	modified_date,
 	WC_CLAIMANT_WORK_HIST_AK_ID,
 	-- *INF*: TO_DATE('1/1/1800','MM/DD/YYYY')
-	TO_DATE('1/1/1800', 'MM/DD/YYYY'
-	) AS o_work_hist_created_date,
+	TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY') AS o_work_hist_created_date,
 	o_return_to_work_date,
 	o_emp_last_day_worked,
 	o_return_to_work_type,
@@ -452,9 +404,10 @@ EXP_Lag_eff_from_date AS (
 	eff_from_date,
 	eff_to_date AS orig_eff_to_date,
 	-- *INF*: IIF(wc_claimant_work_hist_ak_id = v_PREV_ROW_wc_claimant_det_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),orig_eff_to_date)
-	IFF(wc_claimant_work_hist_ak_id = v_PREV_ROW_wc_claimant_det_ak_id,
-		DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	IFF(
+	    wc_claimant_work_hist_ak_id = v_PREV_ROW_wc_claimant_det_ak_id,
+	    DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

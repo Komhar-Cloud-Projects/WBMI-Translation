@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLM_TRANS_BENEFIT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLM_TRANS_BENEFIT",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLM_TRANS_BENEFIT_STAGE AS (\n\tSELECT\n\t\tclm_trans_benefit_id AS CLM_TRANS_BENEFIT_ID,\n\t\tctb_claim_nbr AS CTB_CLAIM_NBR,\n\t\tctb_draft_nbr AS CTB_DRAFT_NBR,\n\t\tctb_benefit_type AS CTB_BENEFIT_TYPE,\n\t\tctb_bene_seq_num AS CTB_BENE_SEQ_NUM,\n\t\tctb_object_type_cd AS CTB_OBJECT_TYPE_CD,\n\t\tctb_object_seq_nbr AS CTB_OBJECT_SEQ_NBR,\n\t\tctb_cov_type_cd AS CTB_COV_TYPE_CD,\n\t\tctb_cov_seq_nbr AS CTB_COV_SEQ_NBR,\n\t\tctb_bur_cause_loss AS CTB_BUR_CAUSE_LOSS,\n\t\tctb_fin_type_cd AS CTB_FIN_TYPE_CD,\n\t\tctb_entry_opr_id AS CTB_ENTRY_OPR_ID,\n\t\tctb_create_ts AS CTB_CREATE_TS,\n\t\tctb_update_ts AS CTB_UPDATE_TS,\n\t\tctb_update_opr_id AS CTB_UPDATE_OPR_ID,\n\t\tctb_benefit_start AS CTB_BENEFIT_START,\n\t\tctb_benefit_end AS CTB_BENEFIT_END,\n\t\tctb_benefit_amt AS CTB_BENEFIT_AMT,\n\t\tctb_num_weeks AS CTB_NUM_WEEKS,\n\t\tctb_num_days AS CTB_NUM_DAYS,\n\t\tctb_num_holiday AS CTB_NUM_HOLIDAY,\n\t\tctb_hours_worked AS CTB_HOURS_WORKED,\n\t\tctb_hourly_rate AS CTB_HOURLY_RATE,\n\t\tctb_tpd_wkly_wage AS CTB_TPD_WKLY_WAGE,\n\t\tctb_tpd_wage_loss AS CTB_TPD_WAGE_LOSS,\n\t\tctb_tpd_rate_fctr AS CTB_TPD_RATE_FCTR,\n\t\tctb_tpd_rate AS CTB_TPD_RATE,\n\t\tctb_invoice_nbr AS CTB_INVOICE_NBR,\n\t\tctb_cost_cont_sav AS CTB_COST_CONT_SAV,\n\t\tctb_billed_amt AS CTB_BILLED_AMT,\n\t\tctb_cost_cont_ppo AS CTB_COST_CONT_PPO,\n\t\tctb_cost_cont_red AS CTB_COST_CONT_RED,\n\t\tctb_aty_file_num AS CTB_ATY_FILE_NUM,\n\t\tctb_aty_fee_amt AS CTB_ATY_FEE_AMT,\n\t\tctb_aty_costs_amt AS CTB_ATY_COSTS_AMT,\n\t\tctb_event_date AS CTB_EVENT_DATE,\n\t\tctb_amt_earned AS CTB_AMT_EARNED,\n\t\tctb_bene_mis_cmt AS CTB_BENE_MIS_CMT,\n\t\textract_date AS EXTRACT_DATE,\n\t\tas_of_date AS AS_OF_DATE,\n\t\trecord_count AS RECORD_COUNT,\n\t\tsource_system_id AS SOURCE_SYSTEM_ID,\n\t\tctb_bene_litigated,\n\t\tctb_lump_sum_ind,\n\t\tctb_benefit_offset_cd,\n\t\tctb_benefit_offset_amt\n\tFROM CLM_TRANS_BENEFIT_STAGE\n),\nEXP_CLM_TRANS_BENEFIT_STAGE AS (\n\tSELECT\n\tCLM_TRANS_BENEFIT_ID,\n\tCTB_CLAIM_NBR,\n\tCTB_DRAFT_NBR,\n\tCTB_BENEFIT_TYPE,\n\tCTB_BENE_SEQ_NUM,\n\tCTB_OBJECT_TYPE_CD,\n\tCTB_OBJECT_SEQ_NBR,\n\tCTB_COV_TYPE_CD,\n\tCTB_COV_SEQ_NBR,\n\tCTB_BUR_CAUSE_LOSS,\n\tCTB_FIN_TYPE_CD,\n\tCTB_ENTRY_OPR_ID,\n\tCTB_CREATE_TS,\n\tCTB_UPDATE_TS,\n\tCTB_UPDATE_OPR_ID,\n\tCTB_BENEFIT_START,\n\tCTB_BENEFIT_END,\n\tCTB_BENEFIT_AMT,\n\tCTB_NUM_WEEKS,\n\tCTB_NUM_DAYS,\n\tCTB_NUM_HOLIDAY,\n\tCTB_HOURS_WORKED,\n\tCTB_HOURLY_RATE,\n\tCTB_TPD_WKLY_WAGE,\n\tCTB_TPD_WAGE_LOSS,\n\tCTB_TPD_RATE_FCTR,\n\tCTB_TPD_RATE,\n\tCTB_INVOICE_NBR,\n\tCTB_COST_CONT_SAV,\n\tCTB_BILLED_AMT,\n\tCTB_COST_CONT_PPO,\n\tCTB_COST_CONT_RED,\n\tCTB_ATY_FILE_NUM,\n\tCTB_ATY_FEE_AMT,\n\tCTB_ATY_COSTS_AMT,\n\tCTB_EVENT_DATE,\n\tCTB_AMT_EARNED,\n\tCTB_BENE_MIS_CMT,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP,\n\tctb_bene_litigated,\n\tctb_lump_sum_ind,\n\tctb_benefit_offset_cd,\n\tctb_benefit_offset_amt\n\tFROM SQ_CLM_TRANS_BENEFIT_STAGE\n),\nARCH_CLM_TRANS_BENEFIT_STAGE AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ARCH_CLM_TRANS_BENEFIT_STAGE\n\t(clm_trans_benefit_id, ctb_claim_nbr, ctb_draft_nbr, ctb_benefit_type, ctb_bene_seq_num, ctb_object_type_cd, ctb_object_seq_nbr, ctb_cov_type_cd, ctb_cov_seq_nbr, ctb_bur_cause_loss, ctb_fin_type_cd, ctb_entry_opr_id, ctb_create_ts, ctb_update_ts, ctb_update_opr_id, ctb_benefit_start, ctb_benefit_end, ctb_benefit_amt, ctb_num_weeks, ctb_num_days, ctb_num_holiday, ctb_hours_worked, ctb_hourly_rate, ctb_tpd_wkly_wage, ctb_tpd_wage_loss, ctb_tpd_rate_fctr, ctb_tpd_rate, ctb_invoice_nbr, ctb_cost_cont_sav, ctb_billed_amt, ctb_cost_cont_ppo, ctb_cost_cont_red, ctb_aty_file_num, ctb_aty_fee_amt, ctb_aty_costs_amt, ctb_event_date, ctb_amt_earned, ctb_bene_mis_cmt, extract_date, as_of_date, record_count, source_system_id, audit_id, ctb_bene_litigated, ctb_lump_sum_ind, CTB_BENEFIT_OFFSET_CD, CTB_BENEFIT_OFFSET_AMT)\n\tSELECT \n\tCLM_TRANS_BENEFIT_ID AS CLM_TRANS_BENEFIT_ID, \n\tCTB_CLAIM_NBR AS CTB_CLAIM_NBR, \n\tCTB_DRAFT_NBR AS CTB_DRAFT_NBR, \n\tCTB_BENEFIT_TYPE AS CTB_BENEFIT_TYPE, \n\tCTB_BENE_SEQ_NUM AS CTB_BENE_SEQ_NUM, \n\tCTB_OBJECT_TYPE_CD AS CTB_OBJECT_TYPE_CD, \n\tCTB_OBJECT_SEQ_NBR AS CTB_OBJECT_SEQ_NBR, \n\tCTB_COV_TYPE_CD AS CTB_COV_TYPE_CD, \n\tCTB_COV_SEQ_NBR AS CTB_COV_SEQ_NBR, \n\tCTB_BUR_CAUSE_LOSS AS CTB_BUR_CAUSE_LOSS, \n\tCTB_FIN_TYPE_CD AS CTB_FIN_TYPE_CD, \n\tCTB_ENTRY_OPR_ID AS CTB_ENTRY_OPR_ID, \n\tCTB_CREATE_TS AS CTB_CREATE_TS, \n\tCTB_UPDATE_TS AS CTB_UPDATE_TS, \n\tCTB_UPDATE_OPR_ID AS CTB_UPDATE_OPR_ID, \n\tCTB_BENEFIT_START AS CTB_BENEFIT_START, \n\tCTB_BENEFIT_END AS CTB_BENEFIT_END, \n\tCTB_BENEFIT_AMT AS CTB_BENEFIT_AMT, \n\tCTB_NUM_WEEKS AS CTB_NUM_WEEKS, \n\tCTB_NUM_DAYS AS CTB_NUM_DAYS, \n\tCTB_NUM_HOLIDAY AS CTB_NUM_HOLIDAY, \n\tCTB_HOURS_WORKED AS CTB_HOURS_WORKED, \n\tCTB_HOURLY_RATE AS CTB_HOURLY_RATE, \n\tCTB_TPD_WKLY_WAGE AS CTB_TPD_WKLY_WAGE, \n\tCTB_TPD_WAGE_LOSS AS CTB_TPD_WAGE_LOSS, \n\tCTB_TPD_RATE_FCTR AS CTB_TPD_RATE_FCTR, \n\tCTB_TPD_RATE AS CTB_TPD_RATE, \n\tCTB_INVOICE_NBR AS CTB_INVOICE_NBR, \n\tCTB_COST_CONT_SAV AS CTB_COST_CONT_SAV, \n\tCTB_BILLED_AMT AS CTB_BILLED_AMT, \n\tCTB_COST_CONT_PPO AS CTB_COST_CONT_PPO, \n\tCTB_COST_CONT_RED AS CTB_COST_CONT_RED, \n\tCTB_ATY_FILE_NUM AS CTB_ATY_FILE_NUM, \n\tCTB_ATY_FEE_AMT AS CTB_ATY_FEE_AMT, \n\tCTB_ATY_COSTS_AMT AS CTB_ATY_COSTS_AMT, \n\tCTB_EVENT_DATE AS CTB_EVENT_DATE, \n\tCTB_AMT_EARNED AS CTB_AMT_EARNED, \n\tCTB_BENE_MIS_CMT AS CTB_BENE_MIS_CMT, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID, \n\tCTB_BENE_LITIGATED, \n\tCTB_LUMP_SUM_IND, \n\tctb_benefit_offset_cd AS CTB_BENEFIT_OFFSET_CD, \n\tctb_benefit_offset_amt AS CTB_BENEFIT_OFFSET_AMT\n\tFROM EXP_CLM_TRANS_BENEFIT_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

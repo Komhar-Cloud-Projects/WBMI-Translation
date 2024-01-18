@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchUnderwriterAgencyRelationshipStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchUnderwriterAgencyRelationshipS_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_UnderwriterAgencyRelationshipStage AS (\n\tSELECT\n\t\tUnderwriterAgencyRelationshipStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tAgencyCode,\n\t\tAssociateID,\n\t\tWestBendAssociateID,\n\t\tStrategicProfitCenterCode,\n\t\tStrategicProfitCenterDescription AS StrategicProfitCenterDescriptiong,\n\t\tAgencyODSRelationshipId,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID\n\tFROM UnderwriterAgencyRelationshipStage\n),\nLKP_ExistingArchive AS (\n\tSELECT\n\tHashKey,\n\tAgencyODSRelationshipId\n\tFROM (\n\t\tselect\ta.ModifiedDate as ModifiedDate,\r\n\t\t\t\ta.HashKey as HashKey,\r\n\t\t\t\ta.AgencyODSRelationshipId as AgencyODSRelationshipId\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchUnderwriterAgencyRelationshipStage a\r\n\t\tinner join (\r\n\t\t\t\t\tselect AgencyODSRelationshipId, max(ModifiedDate) as ModifiedDate\r\n\t\t\t\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchUnderwriterAgencyRelationshipStage\r\n\t\t\t\t\tgroup by AgencyODSRelationshipId) b\r\n\t\ton  a.AgencyODSRelationshipId = b.AgencyODSRelationshipId\r\n\t\tand a.ModifiedDate = b.ModifiedDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyODSRelationshipId ORDER BY HashKey) = 1\n),\nEXP_AddAuditID AS (\n\tSELECT\n\tSQ_UnderwriterAgencyRelationshipStage.UnderwriterAgencyRelationshipStageID,\n\tSQ_UnderwriterAgencyRelationshipStage.AgencyODSSourceSystemID,\n\tSQ_UnderwriterAgencyRelationshipStage.HashKey,\n\tSQ_UnderwriterAgencyRelationshipStage.ModifiedUserID,\n\tSQ_UnderwriterAgencyRelationshipStage.ModifiedDate,\n\tSQ_UnderwriterAgencyRelationshipStage.AgencyID,\n\tSQ_UnderwriterAgencyRelationshipStage.AgencyCode,\n\tSQ_UnderwriterAgencyRelationshipStage.AssociateID,\n\tSQ_UnderwriterAgencyRelationshipStage.WestBendAssociateID,\n\tSQ_UnderwriterAgencyRelationshipStage.StrategicProfitCenterCode,\n\tSQ_UnderwriterAgencyRelationshipStage.StrategicProfitCenterDescriptiong,\n\tSQ_UnderwriterAgencyRelationshipStage.AgencyODSRelationshipId,\n\tSQ_UnderwriterAgencyRelationshipStage.ExtractDate,\n\tSQ_UnderwriterAgencyRelationshipStage.AsOfDate,\n\tSQ_UnderwriterAgencyRelationshipStage.RecordCount,\n\tSQ_UnderwriterAgencyRelationshipStage.SourceSystemID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID,\n\tLKP_ExistingArchive.HashKey AS lkp_HashKey,\n\t-- *INF*: Decode(true,\r\n\t-- HashKey = lkp_HashKey, 'IGNORE',\r\n\t-- IsNull(lkp_HashKey), 'INSERT',\r\n\t-- 'UPDATE')\n\tDecode(\n\t    true,\n\t    HashKey = lkp_HashKey, 'IGNORE',\n\t    lkp_HashKey IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag\n\tFROM SQ_UnderwriterAgencyRelationshipStage\n\tLEFT JOIN LKP_ExistingArchive\n\tON LKP_ExistingArchive.AgencyODSRelationshipId = SQ_UnderwriterAgencyRelationshipStage.AgencyODSRelationshipId\n),\nFIL_ChangesOnly AS (\n\tSELECT\n\tUnderwriterAgencyRelationshipStageID, \n\tAgencyODSSourceSystemID, \n\tHashKey, \n\tModifiedUserID, \n\tModifiedDate, \n\tAgencyID, \n\tAgencyCode, \n\tAssociateID, \n\tWestBendAssociateID, \n\tStrategicProfitCenterCode, \n\tStrategicProfitCenterDescriptiong, \n\tAgencyODSRelationshipId, \n\tExtractDate, \n\tAsOfDate, \n\tRecordCount, \n\tSourceSystemID, \n\tOUT_AUDIT_ID, \n\to_ChangeFlag\n\tFROM EXP_AddAuditID\n\tWHERE o_ChangeFlag = 'INSERT' OR o_ChangeFlag = 'UPDATE'\n),\nArchUnderwriterAgencyRelationshipStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchUnderwriterAgencyRelationshipStage\n\t(UnderwriterAgencyRelationshipStageID, AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, AssociateID, WestBendAssociateID, StrategicProfitCenterCode, StrategicProfitCenterDescription, AgencyODSRelationshipId, ExtractDate, AsOfDate, RecordCount, SourceSystemID, AuditID)\n\tSELECT \n\tUNDERWRITERAGENCYRELATIONSHIPSTAGEID, \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tAGENCYCODE, \n\tASSOCIATEID, \n\tWESTBENDASSOCIATEID, \n\tSTRATEGICPROFITCENTERCODE, \n\tStrategicProfitCenterDescriptiong AS STRATEGICPROFITCENTERDESCRIPTION, \n\tAGENCYODSRELATIONSHIPID, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\tOUT_AUDIT_ID AS AUDITID\n\tFROM FIL_ChangesOnly\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

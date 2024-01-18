@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_FEED_Reinsurance_Negate_FinalLoad",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_FEED_Reinsurance_Negate_FinalLoad",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SapiensReinsuranceClaimNegate AS (\n\tSELECT\n\t\tSapiensReinsuranceClaimRestateId,\n\t\tClaimNumber,\n\t\tPreviousLossDate,\n\t\tCurrentLossDate,\n\t\tPreviousCatastropheCode,\n\t\tCurrentCatastropheCode,\n\t\tNegateDate,\n\t\tSourceSequenceNumber,\n\t\tTransactionNumber,\n\t\tPreviousClaimRelationshipId,\n\t\tCurrentClaimRelationshipId,\n\t\tPreviousPolicyKey,\n\t\tCurrentPolicyKey,\n\t\tNegateFlag\n\tFROM SapiensReinsuranceClaimRestate\n\tWHERE NegateFlag = '1'\n),\nEXP_Collect AS (\n\tSELECT\n\t'SRL' AS Data_Source,\n\t'WBMI' AS Company_Code,\n\tPreviousPolicyKey AS pol_key,\n\t'' AS Object_ID,\n\t'' AS Header_Endorsement_No,\n\t'G' AS Header_Document_Type,\n\tClaimNumber AS Claim_Id,\n\t'' AS Sub_Claim_Id,\n\t'' AS Is_Borderaeu,\n\t'CED' AS Business_Ind,\n\t'' AS Exception_Ind,\n\t'1' AS Queue_No,\n\t'P&C' AS Business_Deprtmt,\n\t'' AS XOL_Allocation,\n\t'' AS Assumed_Company,\n\tNegateDate AS Accounting_Date,\n\t-- *INF*: TO_INTEGER(TO_CHAR(Accounting_Date,'YYYYMM'))\n\tCAST(TO_CHAR(Accounting_Date, 'YYYYMM') AS INTEGER) AS o_Accounting_Month,\n\t'1' AS Subsystem_Id,\n\t'PRC' AS Date_Date_Code,\n\tSourceSequenceNumber,\n\tTransactionNumber,\n\t'HIS' AS HistoricalLoad_Code,\n\t'NOACC' AS HistoricalLoad_Value,\n\t0 AS OBJ_VAL_SEQ_NO,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tSYSDATE AS CurrentDateTime\n\tFROM SQ_SapiensReinsuranceClaimNegate\n),\nSapiensReinsuranceHeaderExtract AS (\n\tINSERT INTO SapiensReinsuranceHeaderExtract\n\t(SOURCE_SEQ_NUM, DATA_SOURCE, COMPANY_CODE, POLICY_NO, OBJECT_ID, ENDORSEMENT_NO, TRAN_NO, DOCUMENT_TYPE, CLAIM_ID, SUB_CLAIM_ID, IS_BORDERAEU, BUSINESS_IND, EXCEPTION_IND, QUEUE_NO, BUSINESS_DEPRTMT, XOL_ALLOCATION, ASSUMED_COMPANY, ACCOUNTING_MONTH, SUBSYSTEM_ID, AuditId, CreatedDate, ModifiedDate)\n\tSELECT \n\tSourceSequenceNumber AS SOURCE_SEQ_NUM, \n\tData_Source AS DATA_SOURCE, \n\tCompany_Code AS COMPANY_CODE, \n\tpol_key AS POLICY_NO, \n\tObject_ID AS OBJECT_ID, \n\tHeader_Endorsement_No AS ENDORSEMENT_NO, \n\tTransactionNumber AS TRAN_NO, \n\tHeader_Document_Type AS DOCUMENT_TYPE, \n\tClaim_Id AS CLAIM_ID, \n\tSub_Claim_Id AS SUB_CLAIM_ID, \n\tIs_Borderaeu AS IS_BORDERAEU, \n\tBusiness_Ind AS BUSINESS_IND, \n\tException_Ind AS EXCEPTION_IND, \n\tQueue_No AS QUEUE_NO, \n\tBusiness_Deprtmt AS BUSINESS_DEPRTMT, \n\tXOL_Allocation AS XOL_ALLOCATION, \n\tAssumed_Company AS ASSUMED_COMPANY, \n\to_Accounting_Month AS ACCOUNTING_MONTH, \n\tSubsystem_Id AS SUBSYSTEM_ID, \n\tAUDITID, \n\tCurrentDateTime AS CREATEDDATE, \n\tCurrentDateTime AS MODIFIEDDATE\n\tFROM EXP_Collect\n),\nSapiensReinsuranceAttributesExtract AS (\n\tINSERT INTO SapiensReinsuranceAttributesExtract\n\t(SOURCE_SEQ_NUM, ATTR_CODE, ATTR_VAL, OBJ_VAL_SEQ_NO, AuditId, CreatedDate, ModifiedDate)\n\tSELECT \n\tSourceSequenceNumber AS SOURCE_SEQ_NUM, \n\tHistoricalLoad_Code AS ATTR_CODE, \n\tHistoricalLoad_Value AS ATTR_VAL, \n\tOBJ_VAL_SEQ_NO, \n\tAUDITID, \n\tCurrentDateTime AS CREATEDDATE, \n\tCurrentDateTime AS MODIFIEDDATE\n\tFROM EXP_Collect\n),\nSapiensReinsuranceDatesExtract AS (\n\tINSERT INTO SapiensReinsuranceDatesExtract\n\t(SOURCE_SEQ_NUM, DATE_CODE, DATE_VALUE, AuditId, CreatedDate, ModifiedDate)\n\tSELECT \n\tSourceSequenceNumber AS SOURCE_SEQ_NUM, \n\tDate_Date_Code AS DATE_CODE, \n\tAccounting_Date AS DATE_VALUE, \n\tAUDITID, \n\tCurrentDateTime AS CREATEDDATE, \n\tCurrentDateTime AS MODIFIEDDATE\n\tFROM EXP_Collect\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

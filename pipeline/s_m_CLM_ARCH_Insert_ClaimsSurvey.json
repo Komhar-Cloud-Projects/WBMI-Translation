@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_ClaimsSurvey",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_ClaimsSurvey",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_claims_survey_result_stage AS (\n\tSELECT\n\t\tclaims_survey_result_stage_id,\n\t\tform_num,\n\t\tclaim_rep_code,\n\t\tques1_resp_val,\n\t\tques2_resp_val,\n\t\tques3_resp_val,\n\t\tques4_resp_val,\n\t\tques5_resp_val,\n\t\tques6_resp_val,\n\t\tques7_resp_val,\n\t\tques8_resp_val,\n\t\tques9_resp_val,\n\t\tques10_resp_val,\n\t\tques11_resp_val,\n\t\tques12_resp_val,\n\t\tques13_resp_val,\n\t\tques14_resp_val,\n\t\tques15_resp_val,\n\t\tques16_resp_val,\n\t\tques17_resp_val,\n\t\tques18_resp_val,\n\t\tentry_date,\n\t\tclaim_num,\n\t\textract_date,\n\t\tsource_system_id\n\tFROM claims_survey_result_stage\n),\nEXP_AUDIT_FIELDS AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP,\n\tclaims_survey_result_stage_id,\n\tform_num,\n\tclaim_rep_code,\n\tques1_resp_val,\n\tques2_resp_val,\n\tques3_resp_val,\n\tques4_resp_val,\n\tques5_resp_val,\n\tques6_resp_val,\n\tques7_resp_val,\n\tques8_resp_val,\n\tques9_resp_val,\n\tques10_resp_val,\n\tques11_resp_val,\n\tques12_resp_val,\n\tques13_resp_val,\n\tques14_resp_val,\n\tques15_resp_val,\n\tques16_resp_val,\n\tques17_resp_val,\n\tques18_resp_val,\n\tentry_date,\n\tclaim_num,\n\textract_date,\n\tsource_system_id\n\tFROM SQ_claims_survey_result_stage\n),\narch_claims_survey_result_stage AS (\n\tINSERT INTO arch_claims_survey_result_stage\n\t(claims_survey_result_stage_id, form_num, claim_rep_code, ques1_resp_val, ques2_resp_val, ques3_resp_val, ques4_resp_val, ques5_resp_val, ques6_resp_val, ques7_resp_val, ques8_resp_val, ques9_resp_val, ques10_resp_val, ques11_resp_val, ques12_resp_val, ques13_resp_val, ques14_resp_val, ques15_resp_val, ques16_resp_val, ques17_resp_val, ques18_resp_val, entry_date, claim_num, extract_date, source_system_id)\n\tSELECT \n\tCLAIMS_SURVEY_RESULT_STAGE_ID, \n\tFORM_NUM, \n\tCLAIM_REP_CODE, \n\tQUES1_RESP_VAL, \n\tQUES2_RESP_VAL, \n\tQUES3_RESP_VAL, \n\tQUES4_RESP_VAL, \n\tQUES5_RESP_VAL, \n\tQUES6_RESP_VAL, \n\tQUES7_RESP_VAL, \n\tQUES8_RESP_VAL, \n\tQUES9_RESP_VAL, \n\tQUES10_RESP_VAL, \n\tQUES11_RESP_VAL, \n\tQUES12_RESP_VAL, \n\tQUES13_RESP_VAL, \n\tQUES14_RESP_VAL, \n\tQUES15_RESP_VAL, \n\tQUES16_RESP_VAL, \n\tQUES17_RESP_VAL, \n\tQUES18_RESP_VAL, \n\tENTRY_DATE, \n\tCLAIM_NUM, \n\tEXTRACT_DATE, \n\tSOURCE_SYSTEM_ID\n\tFROM EXP_AUDIT_FIELDS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

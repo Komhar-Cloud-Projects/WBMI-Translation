@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_gtam_wbrsnca_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_gtam_wbrsnca_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_wbrsnca_stage1 AS (\n\tSELECT\n\t\tgtam_wbrsnca_stage_id,\n\t\ttable_fld,\n\t\tkey_len,\n\t\tcancellation_reason_code,\n\t\tdata_len,\n\t\tcancellation_reason_descript,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_wbrsnca_stage1\n),\nLKP_ARCH_GTAM_WBRSNCA_STAGE AS (\n\tSELECT\n\tarch_gtam_wbrsnca_stage_id,\n\tcancellation_reason_descript,\n\tcancellation_reason_code\n\tFROM (\n\t\tSELECT  tl.arch_gtam_wbrsnca_stage_id   as arch_gtam_wbrsnca_stage_id      \r\n\t\t            , tl.cancellation_reason_code     as cancellation_reason_code\r\n\t\t            , tl.cancellation_reason_descript as cancellation_reason_descript    \r\n\t\t  FROM arch_gtam_wbrsnca_stage tl\r\n\t\t  where tl.arch_gtam_wbrsnca_stage_id  IN\r\n\t\t  (Select max(arch_gtam_wbrsnca_stage_id ) from arch_gtam_wbrsnca_stage b\r\n\t\t\tgroup by b.cancellation_reason_code )\r\n\t\t\torder by tl.cancellation_reason_code--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY cancellation_reason_code ORDER BY arch_gtam_wbrsnca_stage_id DESC) = 1\n),\nEXP_arch_wbrsnca_stage AS (\n\tSELECT\n\tSQ_gtam_wbrsnca_stage1.gtam_wbrsnca_stage_id,\n\tSQ_gtam_wbrsnca_stage1.table_fld AS Table_fld,\n\tSQ_gtam_wbrsnca_stage1.key_len AS Key_len,\n\tSQ_gtam_wbrsnca_stage1.cancellation_reason_code,\n\tSQ_gtam_wbrsnca_stage1.data_len,\n\tSQ_gtam_wbrsnca_stage1.cancellation_reason_descript,\n\tSQ_gtam_wbrsnca_stage1.extract_date AS EXTRACT_DATE,\n\tSQ_gtam_wbrsnca_stage1.as_of_date AS AS_OF_DATE,\n\tSQ_gtam_wbrsnca_stage1.record_count AS RECORD_COUNT,\n\tSQ_gtam_wbrsnca_stage1.source_system_id AS SOURCE_SYSTEM_ID,\n\tLKP_ARCH_GTAM_WBRSNCA_STAGE.arch_gtam_wbrsnca_stage_id AS LKP_arch_gtam_wbrsnca_stage_id,\n\tLKP_ARCH_GTAM_WBRSNCA_STAGE.cancellation_reason_descript AS LKP_cancellation_reason_descript,\n\t-- *INF*: iif(isnull(LKP_arch_gtam_wbrsnca_stage_id),'NEW',\r\n\t--     iif((  ltrim(rtrim(LKP_cancellation_reason_descript))<>  ltrim(rtrim(cancellation_reason_descript))\r\n\t-- ), 'UPDATE', 'NOCHANGE'))\n\tIFF(\n\t    LKP_arch_gtam_wbrsnca_stage_id IS NULL, 'NEW',\n\t    IFF(\n\t        (ltrim(rtrim(LKP_cancellation_reason_descript)) <> ltrim(rtrim(cancellation_reason_descript))),\n\t        'UPDATE',\n\t        'NOCHANGE'\n\t    )\n\t) AS v_Changed_Flag,\n\tv_Changed_Flag AS Changed_Flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID\n\tFROM SQ_gtam_wbrsnca_stage1\n\tLEFT JOIN LKP_ARCH_GTAM_WBRSNCA_STAGE\n\tON LKP_ARCH_GTAM_WBRSNCA_STAGE.cancellation_reason_code = SQ_gtam_wbrsnca_stage1.cancellation_reason_code\n),\nFIL_Inserts AS (\n\tSELECT\n\tgtam_wbrsnca_stage_id, \n\tTable_fld, \n\tKey_len, \n\tcancellation_reason_code, \n\tdata_len, \n\tcancellation_reason_descript, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tChanged_Flag, \n\tAUDIT_ID\n\tFROM EXP_arch_wbrsnca_stage\n\tWHERE Changed_Flag = 'NEW' or Changed_Flag = 'UPDATE'\n),\narch_gtam_wbrsnca_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_gtam_wbrsnca_stage\n\t(gtam_wbrsnca_stage_id, table_fld, key_len, cancellation_reason_code, data_len, cancellation_reason_descript, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tGTAM_WBRSNCA_STAGE_ID, \n\tTable_fld AS TABLE_FLD, \n\tKey_len AS KEY_LEN, \n\tCANCELLATION_REASON_CODE, \n\tDATA_LEN, \n\tCANCELLATION_REASON_DESCRIPT, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID\n\tFROM FIL_Inserts\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

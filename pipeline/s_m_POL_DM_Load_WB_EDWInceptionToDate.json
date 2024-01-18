@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_WB_EDWInceptionToDate1 AS (\n\tSELECT\n\t\tPolicyNumber,\n\t\tPolicyVersion,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tIDOWrittenChange,\n\t\tIDOTaxesChange,\n\t\tDCTWrittenChange,\n\t\tDCTTaxesChange,\n\t\tDCTIDOWrittenChangeOOBAmount,\n\t\tDCTIDOTaxesChangeOOBAmount,\n\t\tModifiedDate,\n\t\tWBEDWInceptionToDateId\n\tFROM WB_EDWInceptionToDate\n),\nEXP_Default_Value AS (\n\tSELECT\n\t@{pipeline().parameters.AUDITID} AS o_AuditId,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS o_SourceSystemId,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\tPolicyNumber AS i_PolicyNumber,\n\tPolicyVersion AS i_PolicyVersion,\n\tEffectiveDate,\n\tExpirationDate,\n\tIDOWrittenChange AS i_IDOWrittenChange,\n\tIDOTaxesChange AS i_IDOTaxesChange,\n\tDCTWrittenChange AS i_DCTWrittenChange,\n\tDCTTaxesChange AS i_DCTTaxesChange,\n\tDCTIDOWrittenChangeOOBAmount AS i_DCTIDOWrittenChangeOOBAmount,\n\tDCTIDOTaxesChangeOOBAmount AS i_DCTIDOTaxesChangeOOBAmount,\n\tModifiedDate,\n\tWBEDWInceptionToDateId AS i_WBEDWInceptionToDateId,\n\t-- *INF*: IIF(NOT ISNULL(i_PolicyNumber), i_PolicyNumber, '0')\n\tIFF(i_PolicyNumber IS NOT NULL,\n\t\ti_PolicyNumber,\n\t\t'0'\n\t) AS o_PolicyNumber,\n\t-- *INF*: IIF(NOT ISNULL(i_PolicyVersion), i_PolicyVersion, '0')\n\tIFF(i_PolicyVersion IS NOT NULL,\n\t\ti_PolicyVersion,\n\t\t'0'\n\t) AS o_PolicyVersion,\n\t-- *INF*: IIF(NOT ISNULL(i_IDOWrittenChange), i_IDOWrittenChange, 0)\n\tIFF(i_IDOWrittenChange IS NOT NULL,\n\t\ti_IDOWrittenChange,\n\t\t0\n\t) AS o_IDOWrittenChange,\n\t-- *INF*: IIF(NOT ISNULL(i_IDOTaxesChange), i_IDOTaxesChange, 0)\n\tIFF(i_IDOTaxesChange IS NOT NULL,\n\t\ti_IDOTaxesChange,\n\t\t0\n\t) AS o_IDOTaxesChange,\n\t-- *INF*: IIF(NOT ISNULL(i_DCTWrittenChange), i_DCTWrittenChange, 0)\n\tIFF(i_DCTWrittenChange IS NOT NULL,\n\t\ti_DCTWrittenChange,\n\t\t0\n\t) AS o_DCTWrittenChange,\n\t-- *INF*: IIF(NOT ISNULL(i_DCTTaxesChange), i_DCTTaxesChange, 0)\n\tIFF(i_DCTTaxesChange IS NOT NULL,\n\t\ti_DCTTaxesChange,\n\t\t0\n\t) AS o_DCTTaxesChange,\n\t-- *INF*: IIF(NOT ISNULL(i_DCTIDOWrittenChangeOOBAmount), i_DCTIDOWrittenChangeOOBAmount, 0)\n\tIFF(i_DCTIDOWrittenChangeOOBAmount IS NOT NULL,\n\t\ti_DCTIDOWrittenChangeOOBAmount,\n\t\t0\n\t) AS o_DCTIDOWrittenChangeOOBAmount,\n\t-- *INF*: IIF(NOT ISNULL(i_DCTIDOTaxesChangeOOBAmount), i_DCTIDOTaxesChangeOOBAmount, 0)\n\tIFF(i_DCTIDOTaxesChangeOOBAmount IS NOT NULL,\n\t\ti_DCTIDOTaxesChangeOOBAmount,\n\t\t0\n\t) AS o_DCTIDOTaxesChangeOOBAmount,\n\t-- *INF*: IIF(NOT ISNULL(i_WBEDWInceptionToDateId), i_WBEDWInceptionToDateId, 0)\n\tIFF(i_WBEDWInceptionToDateId IS NOT NULL,\n\t\ti_WBEDWInceptionToDateId,\n\t\t0\n\t) AS o_WBEDWInceptionToDateId\n\tFROM SQ_WB_EDWInceptionToDate1\n),\nWBEDWInceptionToDate AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBEDWInceptionToDate;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBEDWInceptionToDate\n\t(AuditId, SourceSystemId, CreatedDate, ModifiedDate, PolicyNumber, PolicyVersion, EffectiveDate, ExpirationDate, IDOWrittenChange, IDOTaxesChange, DCTWrittenChange, DCTTaxesChange, DCTIDOWrittenChangeOOBAmount, DCTIDOTaxesChangeOOBAmount, SourceModifiedDate, SourceWBEDWInceptionToDateId)\n\tSELECT \n\to_AuditId AS AUDITID, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\to_CreatedDate AS CREATEDDATE, \n\to_ModifiedDate AS MODIFIEDDATE, \n\to_PolicyNumber AS POLICYNUMBER, \n\to_PolicyVersion AS POLICYVERSION, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\to_IDOWrittenChange AS IDOWRITTENCHANGE, \n\to_IDOTaxesChange AS IDOTAXESCHANGE, \n\to_DCTWrittenChange AS DCTWRITTENCHANGE, \n\to_DCTTaxesChange AS DCTTAXESCHANGE, \n\to_DCTIDOWrittenChangeOOBAmount AS DCTIDOWRITTENCHANGEOOBAMOUNT, \n\to_DCTIDOTaxesChangeOOBAmount AS DCTIDOTAXESCHANGEOOBAMOUNT, \n\tModifiedDate AS SOURCEMODIFIEDDATE, \n\to_WBEDWInceptionToDateId AS SOURCEWBEDWINCEPTIONTODATEID\n\tFROM EXP_Default_Value\n),"
+                            "text": "WITH\nSQ_WB_EDWInceptionToDate1 AS (\n\tSELECT\n\t\tPolicyNumber,\n\t\tPolicyVersion,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tIDOWrittenChange,\n\t\tIDOTaxesChange,\n\t\tDCTWrittenChange,\n\t\tDCTTaxesChange,\n\t\tDCTIDOWrittenChangeOOBAmount,\n\t\tDCTIDOTaxesChangeOOBAmount,\n\t\tModifiedDate,\n\t\tWBEDWInceptionToDateId\n\tFROM WB_EDWInceptionToDate\n),\nEXP_Default_Value AS (\n\tSELECT\n\t@{pipeline().parameters.AUDITID} AS o_AuditId,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS o_SourceSystemId,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\tPolicyNumber AS i_PolicyNumber,\n\tPolicyVersion AS i_PolicyVersion,\n\tEffectiveDate,\n\tExpirationDate,\n\tIDOWrittenChange AS i_IDOWrittenChange,\n\tIDOTaxesChange AS i_IDOTaxesChange,\n\tDCTWrittenChange AS i_DCTWrittenChange,\n\tDCTTaxesChange AS i_DCTTaxesChange,\n\tDCTIDOWrittenChangeOOBAmount AS i_DCTIDOWrittenChangeOOBAmount,\n\tDCTIDOTaxesChangeOOBAmount AS i_DCTIDOTaxesChangeOOBAmount,\n\tModifiedDate,\n\tWBEDWInceptionToDateId AS i_WBEDWInceptionToDateId,\n\t-- *INF*: IIF(NOT ISNULL(i_PolicyNumber), i_PolicyNumber, '0')\n\tIFF(i_PolicyNumber IS NOT NULL, i_PolicyNumber, '0') AS o_PolicyNumber,\n\t-- *INF*: IIF(NOT ISNULL(i_PolicyVersion), i_PolicyVersion, '0')\n\tIFF(i_PolicyVersion IS NOT NULL, i_PolicyVersion, '0') AS o_PolicyVersion,\n\t-- *INF*: IIF(NOT ISNULL(i_IDOWrittenChange), i_IDOWrittenChange, 0)\n\tIFF(i_IDOWrittenChange IS NOT NULL, i_IDOWrittenChange, 0) AS o_IDOWrittenChange,\n\t-- *INF*: IIF(NOT ISNULL(i_IDOTaxesChange), i_IDOTaxesChange, 0)\n\tIFF(i_IDOTaxesChange IS NOT NULL, i_IDOTaxesChange, 0) AS o_IDOTaxesChange,\n\t-- *INF*: IIF(NOT ISNULL(i_DCTWrittenChange), i_DCTWrittenChange, 0)\n\tIFF(i_DCTWrittenChange IS NOT NULL, i_DCTWrittenChange, 0) AS o_DCTWrittenChange,\n\t-- *INF*: IIF(NOT ISNULL(i_DCTTaxesChange), i_DCTTaxesChange, 0)\n\tIFF(i_DCTTaxesChange IS NOT NULL, i_DCTTaxesChange, 0) AS o_DCTTaxesChange,\n\t-- *INF*: IIF(NOT ISNULL(i_DCTIDOWrittenChangeOOBAmount), i_DCTIDOWrittenChangeOOBAmount, 0)\n\tIFF(i_DCTIDOWrittenChangeOOBAmount IS NOT NULL, i_DCTIDOWrittenChangeOOBAmount, 0) AS o_DCTIDOWrittenChangeOOBAmount,\n\t-- *INF*: IIF(NOT ISNULL(i_DCTIDOTaxesChangeOOBAmount), i_DCTIDOTaxesChangeOOBAmount, 0)\n\tIFF(i_DCTIDOTaxesChangeOOBAmount IS NOT NULL, i_DCTIDOTaxesChangeOOBAmount, 0) AS o_DCTIDOTaxesChangeOOBAmount,\n\t-- *INF*: IIF(NOT ISNULL(i_WBEDWInceptionToDateId), i_WBEDWInceptionToDateId, 0)\n\tIFF(i_WBEDWInceptionToDateId IS NOT NULL, i_WBEDWInceptionToDateId, 0) AS o_WBEDWInceptionToDateId\n\tFROM SQ_WB_EDWInceptionToDate1\n),\nWBEDWInceptionToDate AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBEDWInceptionToDate;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBEDWInceptionToDate\n\t(AuditId, SourceSystemId, CreatedDate, ModifiedDate, PolicyNumber, PolicyVersion, EffectiveDate, ExpirationDate, IDOWrittenChange, IDOTaxesChange, DCTWrittenChange, DCTTaxesChange, DCTIDOWrittenChangeOOBAmount, DCTIDOTaxesChangeOOBAmount, SourceModifiedDate, SourceWBEDWInceptionToDateId)\n\tSELECT \n\to_AuditId AS AUDITID, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\to_CreatedDate AS CREATEDDATE, \n\to_ModifiedDate AS MODIFIEDDATE, \n\to_PolicyNumber AS POLICYNUMBER, \n\to_PolicyVersion AS POLICYVERSION, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\to_IDOWrittenChange AS IDOWRITTENCHANGE, \n\to_IDOTaxesChange AS IDOTAXESCHANGE, \n\to_DCTWrittenChange AS DCTWRITTENCHANGE, \n\to_DCTTaxesChange AS DCTTAXESCHANGE, \n\to_DCTIDOWrittenChangeOOBAmount AS DCTIDOWRITTENCHANGEOOBAMOUNT, \n\to_DCTIDOTaxesChangeOOBAmount AS DCTIDOTAXESCHANGEOOBAMOUNT, \n\tModifiedDate AS SOURCEMODIFIEDDATE, \n\to_WBEDWInceptionToDateId AS SOURCEWBEDWINCEPTIONTODATEID\n\tFROM EXP_Default_Value\n),"
                         }
                     ]
                 },
@@ -30,33 +30,21 @@
             }
         ],
         "parameters": {
-            "DBCONNECTION_SOURCE": {
+            "AUDITID": {
                 "type": "string",
-                "defaultValue": "SQLServer_WBExampleData_BIL"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_WC_Data_Mart_Policy"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DCT"
-            },
-            "TARGET_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
+                "defaultValue": "Default Value"
             },
             "SOURCESYSTEMID": {
                 "type": "string",
-                "defaultValue": "DCT"
+                "defaultValue": "Default Value"
             },
-            "AUDITID": {
+            "TARGET_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": "9999"
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Policy DataMart/"
+            "name": "RPT_EDM and EDW/Policy DataMart/"
         },
         "annotations": []
     }

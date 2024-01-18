@@ -30,26 +30,20 @@ EXP_PolicyKey AS (
 	PolicyNumber AS i_PolicyNumber,
 	PolicyVersion AS i_PolicyVersion,
 	-- *INF*: rtrim(ltrim(IIF(ISNULL(i_PolicyNumber) or IS_SPACES(i_PolicyNumber) or LENGTH(i_PolicyNumber)=0, 'N/A', LTRIM(RTRIM(i_PolicyNumber)))))
-	rtrim(ltrim(IFF(i_PolicyNumber IS NULL 
-				OR LENGTH(i_PolicyNumber)>0 AND TRIM(i_PolicyNumber)='' 
-				OR LENGTH(i_PolicyNumber
-				) = 0,
-				'N/A',
-				LTRIM(RTRIM(i_PolicyNumber
-					)
-				)
-			)
-		)
-	) AS v_PolicyNumber,
+	rtrim(ltrim(
+	        IFF(
+	            i_PolicyNumber IS NULL
+	            or LENGTH(i_PolicyNumber)>0
+	            and TRIM(i_PolicyNumber)=''
+	            or LENGTH(i_PolicyNumber) = 0,
+	            'N/A',
+	            LTRIM(RTRIM(i_PolicyNumber))
+	        ))) AS v_PolicyNumber,
 	-- *INF*: rtrim(ltrim(IIF(ISNULL(i_PolicyVersion), '00', LPAD(TO_CHAR(i_PolicyVersion),2,'0'))))
-	rtrim(ltrim(IFF(i_PolicyVersion IS NULL,
-				'00',
-				LPAD(TO_CHAR(i_PolicyVersion
-					), 2, '0'
-				)
-			)
-		)
-	) AS v_PolicyVersion,
+	rtrim(ltrim(
+	        IFF(
+	            i_PolicyVersion IS NULL, '00', LPAD(TO_CHAR(i_PolicyVersion), 2, '0')
+	        ))) AS v_PolicyVersion,
 	v_PolicyNumber||v_PolicyVersion AS o_PolicyKey,
 	AnyARDIndicator,
 	ExperienceRated,
@@ -120,11 +114,9 @@ EXP_DefaultValue AS (
 	i_CurrentSnapshotFlag AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -283,35 +275,17 @@ EXP_DetectChange AS (
 	LKP_DCWCCoverageManualPremiumStage.FELAProgramType AS i_FELAProgramType,
 	LKP_DCWCCoverageManualPremiumStage.USLandHAct AS i_USLandHAct,
 	-- *INF*: IIF(lkp_AdmiraltyActFlag='T','1','0')
-	IFF(lkp_AdmiraltyActFlag = 'T',
-		'1',
-		'0'
-	) AS v_lkp_AdmiraltyActFlag,
+	IFF(lkp_AdmiraltyActFlag = 'T', '1', '0') AS v_lkp_AdmiraltyActFlag,
 	-- *INF*: IIF(lkp_FederalEmployersLiabilityActFlag='T','1','0')
-	IFF(lkp_FederalEmployersLiabilityActFlag = 'T',
-		'1',
-		'0'
-	) AS v_lkp_FederalEmployersLiabilityActFlag,
+	IFF(lkp_FederalEmployersLiabilityActFlag = 'T', '1', '0') AS v_lkp_FederalEmployersLiabilityActFlag,
 	-- *INF*: IIF(lkp_USLongShoreAndHarborWorkersCompensationActFlag='T','1','0')
-	IFF(lkp_USLongShoreAndHarborWorkersCompensationActFlag = 'T',
-		'1',
-		'0'
-	) AS v_lkp_USLongShoreAndHarborWorkersCompensationActFlag,
+	IFF(lkp_USLongShoreAndHarborWorkersCompensationActFlag = 'T', '1', '0') AS v_lkp_USLongShoreAndHarborWorkersCompensationActFlag,
 	-- *INF*: IIF(ISNULL(i_AdmiraltyProgramType),'0','1')
-	IFF(i_AdmiraltyProgramType IS NULL,
-		'0',
-		'1'
-	) AS v_AdmiraltyActFlag,
+	IFF(i_AdmiraltyProgramType IS NULL, '0', '1') AS v_AdmiraltyActFlag,
 	-- *INF*: IIF(ISNULL(i_FELAProgramType),'0','1')
-	IFF(i_FELAProgramType IS NULL,
-		'0',
-		'1'
-	) AS v_FederalEmployersLiabilityActFlag,
+	IFF(i_FELAProgramType IS NULL, '0', '1') AS v_FederalEmployersLiabilityActFlag,
 	-- *INF*: IIF(i_USLandHAct='T','1','0')
-	IFF(i_USLandHAct = 'T',
-		'1',
-		'0'
-	) AS v_USLongShoreAndHarborWorkersCompensationActFlag,
+	IFF(i_USLandHAct = 'T', '1', '0') AS v_USLongShoreAndHarborWorkersCompensationActFlag,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(lkp_PremiumTransactionID), 'New', 
 	-- (lkp_CoverageGuid<>CoverageGuid
@@ -320,28 +294,19 @@ EXP_DetectChange AS (
 	--  OR v_lkp_USLongShoreAndHarborWorkersCompensationActFlag<>v_USLongShoreAndHarborWorkersCompensationActFlag), 'Update',
 	-- 'No Change'
 	-- ) 
-	DECODE(TRUE,
-		lkp_PremiumTransactionID IS NULL, 'New',
-		( lkp_CoverageGuid <> CoverageGuid 
-			OR v_lkp_AdmiraltyActFlag <> v_AdmiraltyActFlag 
-			OR v_lkp_FederalEmployersLiabilityActFlag <> v_FederalEmployersLiabilityActFlag 
-			OR v_lkp_USLongShoreAndHarborWorkersCompensationActFlag <> v_USLongShoreAndHarborWorkersCompensationActFlag 
-		), 'Update',
-		'No Change'
+	DECODE(
+	    TRUE,
+	    lkp_PremiumTransactionID IS NULL, 'New',
+	    (lkp_CoverageGuid <> CoverageGuid OR v_lkp_AdmiraltyActFlag <> v_AdmiraltyActFlag OR v_lkp_FederalEmployersLiabilityActFlag <> v_FederalEmployersLiabilityActFlag OR v_lkp_USLongShoreAndHarborWorkersCompensationActFlag <> v_USLongShoreAndHarborWorkersCompensationActFlag), 'Update',
+	    'No Change'
 	) AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag,
 	LKP_WBWCCoverageManualPremiumStage.ConsentToRate,
 	LKP_WBWCCoverageManualPremiumStage.RateOverride,
 	-- *INF*: IIF(ISNULL(ConsentToRate),'0',ConsentToRate)
-	IFF(ConsentToRate IS NULL,
-		'0',
-		ConsentToRate
-	) AS o_ConsentToRate,
+	IFF(ConsentToRate IS NULL, '0', ConsentToRate) AS o_ConsentToRate,
 	-- *INF*: IIF(ISNULL(RateOverride),0.00,RateOverride)
-	IFF(RateOverride IS NULL,
-		0.00,
-		RateOverride
-	) AS o_RateOverride,
+	IFF(RateOverride IS NULL, 0.00, RateOverride) AS o_RateOverride,
 	v_AdmiraltyActFlag AS o_AdmiraltyActFlag,
 	v_FederalEmployersLiabilityActFlag AS o_FederalEmployersLiabilityActFlag,
 	v_USLongShoreAndHarborWorkersCompensationActFlag AS o_USLongshoreandHarborWorkersCompensationActFlag,
@@ -355,39 +320,36 @@ EXP_DetectChange AS (
 	LKP_DCStatCodeStaging.DeductibleBasis AS lkp_DeductibleBasis,
 	-- *INF*: DECODE(TRUE, NOT ISNULL(lkp_st_PeriodStartDate),lkp_st_PeriodStartDate,
 	-- NOT ISNULL(lkp_PeriodStartDate), lkp_PeriodStartDate,PolicyEffectiveDate)
-	DECODE(TRUE,
-		lkp_st_PeriodStartDate IS NOT NULL, lkp_st_PeriodStartDate,
-		lkp_PeriodStartDate IS NOT NULL, lkp_PeriodStartDate,
-		PolicyEffectiveDate
+	DECODE(
+	    TRUE,
+	    lkp_st_PeriodStartDate IS NOT NULL, lkp_st_PeriodStartDate,
+	    lkp_PeriodStartDate IS NOT NULL, lkp_PeriodStartDate,
+	    PolicyEffectiveDate
 	) AS o_PeriodStartDate,
 	-- *INF*: DECODE(TRUE, NOT ISNULL(lkp_st_PeriodEndDate),lkp_st_PeriodEndDate,
 	-- NOT ISNULL(lkp_PeriodEndDate), lkp_PeriodEndDate,PolicyExpirationDate)
-	DECODE(TRUE,
-		lkp_st_PeriodEndDate IS NOT NULL, lkp_st_PeriodEndDate,
-		lkp_PeriodEndDate IS NOT NULL, lkp_PeriodEndDate,
-		PolicyExpirationDate
+	DECODE(
+	    TRUE,
+	    lkp_st_PeriodEndDate IS NOT NULL, lkp_st_PeriodEndDate,
+	    lkp_PeriodEndDate IS NOT NULL, lkp_PeriodEndDate,
+	    PolicyExpirationDate
 	) AS o_PeriodEndDate,
 	-- *INF*: DECODE(TRUE, NOT ISNULL(lkp_st_TermType),lkp_st_TermType,
 	-- NOT ISNULL(lkp_TermType), lkp_TermType,'ORG')
-	DECODE(TRUE,
-		lkp_st_TermType IS NOT NULL, lkp_st_TermType,
-		lkp_TermType IS NOT NULL, lkp_TermType,
-		'ORG'
+	DECODE(
+	    TRUE,
+	    lkp_st_TermType IS NOT NULL, lkp_st_TermType,
+	    lkp_TermType IS NOT NULL, lkp_TermType,
+	    'ORG'
 	) AS o_TermType,
 	EXP_DefaultValue.AnyARDIndicator,
 	EXP_DefaultValue.ExperienceRated,
 	EXP_DefaultValue.PolicyEffectiveDate,
 	EXP_DefaultValue.PolicyExpirationDate,
 	-- *INF*: IIF(ISNULL(lkp_DeductibleType),'00',lkp_DeductibleType)
-	IFF(lkp_DeductibleType IS NULL,
-		'00',
-		lkp_DeductibleType
-	) AS o_DeductibleType,
+	IFF(lkp_DeductibleType IS NULL, '00', lkp_DeductibleType) AS o_DeductibleType,
 	-- *INF*: IIF(ISNULL(lkp_DeductibleBasis),'00',lkp_DeductibleBasis)
-	IFF(lkp_DeductibleBasis IS NULL,
-		'00',
-		lkp_DeductibleBasis
-	) AS o_DeductibleBasis
+	IFF(lkp_DeductibleBasis IS NULL, '00', lkp_DeductibleBasis) AS o_DeductibleBasis
 	FROM EXP_DefaultValue
 	LEFT JOIN LKP_CoverageDetailWorkersCompensation
 	ON LKP_CoverageDetailWorkersCompensation.PremiumTransactionID = EXP_DefaultValue.o_PremiumTransactionID

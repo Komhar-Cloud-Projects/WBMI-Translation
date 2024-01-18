@@ -312,8 +312,7 @@ EXP_Audit AS (
 	OffsetOnsetCode,
 	'SQ1' AS o_SourceQualifier,
 	-- *INF*: SYSTIMESTAMP()
-	CURRENT_TIMESTAMP(
-	) AS o_Date,
+	CURRENT_TIMESTAMP() AS o_Date,
 	'1' AS o_AuditID
 	FROM SQ_PremiumTransaction_Tables
 ),
@@ -560,8 +559,7 @@ EXP_Audit1 AS (
 	OffsetOnsetCode,
 	'SQ2' AS o_SourceQualifier,
 	-- *INF*: SYSTIMESTAMP()
-	CURRENT_TIMESTAMP(
-	) AS o_Date,
+	CURRENT_TIMESTAMP() AS o_Date,
 	'1' AS o_AuditID
 	FROM SQ_PremiumTransaction_Tables_1
 ),
@@ -732,8 +730,7 @@ EXP_Audit2 AS (
 	OffsetOnsetCode,
 	'SQ3' AS o_SourceQualifier,
 	-- *INF*: SYSTIMESTAMP()
-	CURRENT_TIMESTAMP(
-	) AS o_Date,
+	CURRENT_TIMESTAMP() AS o_Date,
 	'1' AS o_AuditID
 	FROM SQ_PremiumTransaction_Tables_2
 ),
@@ -906,8 +903,7 @@ EXP_Audit3 AS (
 	OffsetOnsetCode,
 	'SQ4' AS o_SourceQualifier,
 	-- *INF*: SYSTIMESTAMP()
-	CURRENT_TIMESTAMP(
-	) AS o_Date,
+	CURRENT_TIMESTAMP() AS o_Date,
 	'1' AS o_AuditID
 	FROM SQ_PremiumTransaction_Tables_3
 ),
@@ -1270,81 +1266,58 @@ EXP_CalculateValue AS (
 	-- *INF*: :LKP.LKP_CALENDER_DIM(TO_DATE('21001231','YYYYMMDD'))
 	LKP_CALENDER_DIM_TO_DATE_21001231_YYYYMMDD.clndr_id AS v_clndr_id,
 	-- *INF*: IIF(NOT ISNULL(v_clndr_id),v_clndr_id,-1)
-	IFF(v_clndr_id IS NOT NULL,
-		v_clndr_id,
-		- 1
-	) AS v_default_clndr_id,
+	IFF(v_clndr_id IS NOT NULL, v_clndr_id, - 1) AS v_default_clndr_id,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode
-	) AS v_MajorPerilCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode) AS v_MajorPerilCode,
 	-- *INF*: IIF(LTRIM(v_MajorPerilCode,'0')='' OR REG_MATCH(v_MajorPerilCode,'[^0-9a-zA-Z]'),'N/A',v_MajorPerilCode)
-	IFF(LTRIM(v_MajorPerilCode, '0'
-		) = '' 
-		OR REGEXP_LIKE(v_MajorPerilCode, '[^0-9a-zA-Z]'
-		),
-		'N/A',
-		v_MajorPerilCode
+	IFF(
+	    LTRIM(v_MajorPerilCode, '0') = '' OR REGEXP_LIKE(v_MajorPerilCode, '[^0-9a-zA-Z]'), 'N/A',
+	    v_MajorPerilCode
 	) AS v_Reg_MajorPerilCode,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(TRUNC(i_PremiumTransactionBookedDate,'D'))
 	LKP_CALENDER_DIM_TRUNC_i_PremiumTransactionBookedDate_D.clndr_id AS v_PremiumTransactionBookedDateID,
 	-- *INF*: IIF(REG_MATCH(i_StandardInsuranceLineCode,'[^0-9a-zA-Z]'),'N/A',i_StandardInsuranceLineCode)
-	IFF(REGEXP_LIKE(i_StandardInsuranceLineCode, '[^0-9a-zA-Z]'
-		),
-		'N/A',
-		i_StandardInsuranceLineCode
+	IFF(
+	    REGEXP_LIKE(i_StandardInsuranceLineCode, '[^0-9a-zA-Z]'), 'N/A', i_StandardInsuranceLineCode
 	) AS v_Reg_StandardInsuranceLineCode,
 	-- *INF*: IIF(v_Reg_StandardInsuranceLineCode='N/A' AND (IN(i_TypeBureauCode,'AL','AN','AP') OR IN(v_Reg_MajorPerilCode,'930','931')),'CA',v_Reg_StandardInsuranceLineCode)
-	IFF(v_Reg_StandardInsuranceLineCode = 'N/A' 
-		AND ( i_TypeBureauCode IN ('AL','AN','AP') 
-			OR v_Reg_MajorPerilCode IN ('930','931') 
-		),
-		'CA',
-		v_Reg_StandardInsuranceLineCode
+	IFF(
+	    v_Reg_StandardInsuranceLineCode = 'N/A'
+	    and (i_TypeBureauCode IN ('AL','AN','AP')
+	    or v_Reg_MajorPerilCode IN ('930','931')),
+	    'CA',
+	    v_Reg_StandardInsuranceLineCode
 	) AS v_StandardInsuranceLineCode,
 	-- *INF*: IIF(v_StandardInsuranceLineCode='N/A' AND IN(i_TypeBureauCode,'CF','B2','BB','BE','BF','BM','BT','FT','GL','GS','IM','MS','PF','PH','PI','PL','PQ','WC','WP','NB','RL','RN','RP','BC','N/A'),1,0)
-	IFF(v_StandardInsuranceLineCode = 'N/A' 
-		AND i_TypeBureauCode IN ('CF','B2','BB','BE','BF','BM','BT','FT','GL','GS','IM','MS','PF','PH','PI','PL','PQ','WC','WP','NB','RL','RN','RP','BC','N/A'),
-		1,
-		0
+	IFF(
+	    v_StandardInsuranceLineCode = 'N/A'
+	    and i_TypeBureauCode IN ('CF','B2','BB','BE','BF','BM','BT','FT','GL','GS','IM','MS','PF','PH','PI','PL','PQ','WC','WP','NB','RL','RN','RP','BC','N/A'),
+	    1,
+	    0
 	) AS v_flag,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassCode
-	) AS v_ClassCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_ClassCode) AS v_ClassCode,
 	-- *INF*: IIF(IN(v_StandardInsuranceLineCode,'CR') OR v_flag=1,'N/A',:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnitGroup))
-	IFF(v_StandardInsuranceLineCode IN ('CR') 
-		OR v_flag = 1,
-		'N/A',
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnitGroup
-		)
+	IFF(
+	    v_StandardInsuranceLineCode IN ('CR') OR v_flag = 1, 'N/A',
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(i_RiskUnitGroup)
 	) AS v_Risk_Unit_Group,
 	-- *INF*: IIF(LTRIM(v_Risk_Unit_Group,'0')='','N/A',v_Risk_Unit_Group)
-	IFF(LTRIM(v_Risk_Unit_Group, '0'
-		) = '',
-		'N/A',
-		v_Risk_Unit_Group
-	) AS v_Zero_Risk_Unit_Group,
+	IFF(LTRIM(v_Risk_Unit_Group, '0') = '', 'N/A', v_Risk_Unit_Group) AS v_Zero_Risk_Unit_Group,
 	-- *INF*: IIF(   v_flag=1 OR   (v_StandardInsuranceLineCode='GL' AND (v_MajorPerilCode<>'540'    OR NOT IN(v_ClassCode,'11111','22222','22250','92100','17000','17001','17002','80051','80052','80053','80054','80055','80056','80057','80058')))   OR IN(v_StandardInsuranceLineCode,'WC','IM','CG','CA')=1,  'N/A',:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnit) )
-	IFF(v_flag = 1 
-		OR ( v_StandardInsuranceLineCode = 'GL' 
-			AND ( v_MajorPerilCode <> '540' 
-				OR NOT v_ClassCode IN ('11111','22222','22250','92100','17000','17001','17002','80051','80052','80053','80054','80055','80056','80057','80058') 
-			) 
-		) 
-		OR v_StandardInsuranceLineCode IN ('WC','IM','CG','CA') = 1,
-		'N/A',
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnit
-		)
+	IFF(
+	    v_flag = 1
+	    or (v_StandardInsuranceLineCode = 'GL'
+	    and (v_MajorPerilCode <> '540'
+	    or NOT v_ClassCode IN ('11111','22222','22250','92100','17000','17001','17002','80051','80052','80053','80054','80055','80056','80057','80058')))
+	    or v_StandardInsuranceLineCode IN ('WC','IM','CG','CA') = 1,
+	    'N/A',
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(i_RiskUnit)
 	) AS v_RiskUnit,
 	-- *INF*: IIF(LTRIM(v_RiskUnit,'0')='','N/A',v_RiskUnit)
-	IFF(LTRIM(v_RiskUnit, '0'
-		) = '',
-		'N/A',
-		v_RiskUnit
-	) AS v_Zero_RiskUnit,
+	IFF(LTRIM(v_RiskUnit, '0') = '', 'N/A', v_RiskUnit) AS v_Zero_RiskUnit,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_RiskUnitSequenceNumber,2,1))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_RiskUnitSequenceNumber, 2, 1
-		)
-	) AS v_ProductTypeCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_RiskUnitSequenceNumber, 2, 1)) AS v_ProductTypeCode,
 	-- *INF*: :LKP.LKP_STRATEGICPROFITCENTER(i_StrategicProfitCenterAKId)
 	LKP_STRATEGICPROFITCENTER_i_StrategicProfitCenterAKId.StrategicProfitCenterCode AS v_StrategicProfitCenterCode,
 	-- *INF*: :LKP.LKP_ENTERPRISEGROUP(i_StrategicProfitCenterAKId)
@@ -1362,97 +1335,57 @@ EXP_CalculateValue AS (
 	-- *INF*: :LKP.LKP_RATINGPLAN(i_RatingPlanAKId)
 	LKP_RATINGPLAN_i_RatingPlanAKId.RatingPlanCode AS v_RatingPlanCode,
 	-- *INF*: IIF(ISNULL(v_PremiumTransactionBookedDateID),v_default_clndr_id,v_PremiumTransactionBookedDateID)
-	IFF(v_PremiumTransactionBookedDateID IS NULL,
-		v_default_clndr_id,
-		v_PremiumTransactionBookedDateID
+	IFF(
+	    v_PremiumTransactionBookedDateID IS NULL, v_default_clndr_id,
+	    v_PremiumTransactionBookedDateID
 	) AS o_RunDateID,
 	-- *INF*: IIF(REG_MATCH(v_Zero_Risk_Unit_Group,'[^0-9a-zA-Z]'),'N/A',v_Zero_Risk_Unit_Group)
-	IFF(REGEXP_LIKE(v_Zero_Risk_Unit_Group, '[^0-9a-zA-Z]'
-		),
-		'N/A',
-		v_Zero_Risk_Unit_Group
-	) AS o_RiskUnitGroup,
+	IFF(REGEXP_LIKE(v_Zero_Risk_Unit_Group, '[^0-9a-zA-Z]'), 'N/A', v_Zero_Risk_Unit_Group) AS o_RiskUnitGroup,
 	-- *INF*: IIF(REG_MATCH(v_Zero_RiskUnit,'[^0-9a-zA-Z]'),'N/A',v_Zero_RiskUnit)
-	IFF(REGEXP_LIKE(v_Zero_RiskUnit, '[^0-9a-zA-Z]'
-		),
-		'N/A',
-		v_Zero_RiskUnit
-	) AS o_RiskUnit,
+	IFF(REGEXP_LIKE(v_Zero_RiskUnit, '[^0-9a-zA-Z]'), 'N/A', v_Zero_RiskUnit) AS o_RiskUnit,
 	v_Reg_MajorPerilCode AS o_MajorPerilCode,
 	-- *INF*: IIF(SourceSystemID='PMS',v_StandardInsuranceLineCode,v_Reg_StandardInsuranceLineCode)
-	IFF(SourceSystemID = 'PMS',
-		v_StandardInsuranceLineCode,
-		v_Reg_StandardInsuranceLineCode
-	) AS o_StandardInsuranceLineCode,
+	IFF(SourceSystemID = 'PMS', v_StandardInsuranceLineCode, v_Reg_StandardInsuranceLineCode) AS o_StandardInsuranceLineCode,
 	-- *INF*: IIF(   REG_MATCH(v_ProductTypeCode,'[^0-9a-zA-Z]') OR v_Reg_StandardInsuranceLineCode<>'GL' OR v_ProductTypeCode='0',   'N/A',v_ProductTypeCode )
-	IFF(REGEXP_LIKE(v_ProductTypeCode, '[^0-9a-zA-Z]'
-		) 
-		OR v_Reg_StandardInsuranceLineCode <> 'GL' 
-		OR v_ProductTypeCode = '0',
-		'N/A',
-		v_ProductTypeCode
+	IFF(
+	    REGEXP_LIKE(v_ProductTypeCode, '[^0-9a-zA-Z]')
+	    or v_Reg_StandardInsuranceLineCode <> 'GL'
+	    or v_ProductTypeCode = '0',
+	    'N/A',
+	    v_ProductTypeCode
 	) AS o_ProductTypeCode,
 	-- *INF*: IIF(NOT ISNULL(v_ProductCode), v_ProductCode, '000')
-	IFF(v_ProductCode IS NOT NULL,
-		v_ProductCode,
-		'000'
-	) AS o_ProductCode,
+	IFF(v_ProductCode IS NOT NULL, v_ProductCode, '000') AS o_ProductCode,
 	-- *INF*: IIF(NOT ISNULL(v_PolicyOfferingCode), v_PolicyOfferingCode, '000')
-	IFF(v_PolicyOfferingCode IS NOT NULL,
-		v_PolicyOfferingCode,
-		'000'
-	) AS o_PolicyOfferingCode,
+	IFF(v_PolicyOfferingCode IS NOT NULL, v_PolicyOfferingCode, '000') AS o_PolicyOfferingCode,
 	-- *INF*: IIF(NOT ISNULL(v_InsuranceReferenceLineOfBusinessCode), v_InsuranceReferenceLineOfBusinessCode, '000')
-	IFF(v_InsuranceReferenceLineOfBusinessCode IS NOT NULL,
-		v_InsuranceReferenceLineOfBusinessCode,
-		'000'
+	IFF(
+	    v_InsuranceReferenceLineOfBusinessCode IS NOT NULL, v_InsuranceReferenceLineOfBusinessCode,
+	    '000'
 	) AS o_InsuranceReferenceLineOfBusinessCode,
 	-- *INF*: IIF(NOT ISNULL(v_EnterpriseGroupCode), v_EnterpriseGroupCode, '1')
-	IFF(v_EnterpriseGroupCode IS NOT NULL,
-		v_EnterpriseGroupCode,
-		'1'
-	) AS o_EnterpriseGroupCode,
+	IFF(v_EnterpriseGroupCode IS NOT NULL, v_EnterpriseGroupCode, '1') AS o_EnterpriseGroupCode,
 	-- *INF*: IIF(NOT ISNULL(v_InsuranceReferenceLegalEntityCode), v_InsuranceReferenceLegalEntityCode, '1')
-	IFF(v_InsuranceReferenceLegalEntityCode IS NOT NULL,
-		v_InsuranceReferenceLegalEntityCode,
-		'1'
+	IFF(
+	    v_InsuranceReferenceLegalEntityCode IS NOT NULL, v_InsuranceReferenceLegalEntityCode, '1'
 	) AS o_InsuranceReferenceLegalEntityCode,
 	-- *INF*: IIF(NOT ISNULL(v_StrategicProfitCenterCode), v_StrategicProfitCenterCode, '6')
-	IFF(v_StrategicProfitCenterCode IS NOT NULL,
-		v_StrategicProfitCenterCode,
-		'6'
-	) AS o_StrategicProfitCenterCode,
+	IFF(v_StrategicProfitCenterCode IS NOT NULL, v_StrategicProfitCenterCode, '6') AS o_StrategicProfitCenterCode,
 	-- *INF*: IIF(NOT ISNULL(v_InsuranceSegmentCode), v_InsuranceSegmentCode, 'N/A')
-	IFF(v_InsuranceSegmentCode IS NOT NULL,
-		v_InsuranceSegmentCode,
-		'N/A'
-	) AS o_InsuranceSegmentCode,
+	IFF(v_InsuranceSegmentCode IS NOT NULL, v_InsuranceSegmentCode, 'N/A') AS o_InsuranceSegmentCode,
 	-- *INF*: IIF(ISNULL(lkp_contract_cust_dim_id),-1,lkp_contract_cust_dim_id)
-	IFF(lkp_contract_cust_dim_id IS NULL,
-		- 1,
-		lkp_contract_cust_dim_id
-	) AS o_contract_cust_dim_id,
+	IFF(lkp_contract_cust_dim_id IS NULL, - 1, lkp_contract_cust_dim_id) AS o_contract_cust_dim_id,
 	-- *INF*: IIF(ISNULL(lkp_pol_dim_id),-1,lkp_pol_dim_id)
-	IFF(lkp_pol_dim_id IS NULL,
-		- 1,
-		lkp_pol_dim_id
-	) AS o_pol_dim_id,
+	IFF(lkp_pol_dim_id IS NULL, - 1, lkp_pol_dim_id) AS o_pol_dim_id,
 	-- *INF*: IIF(ISNULL(lkp_AgencyDimID),-1,lkp_AgencyDimID)
-	IFF(lkp_AgencyDimID IS NULL,
-		- 1,
-		lkp_AgencyDimID
-	) AS o_AgencyDimID,
+	IFF(lkp_AgencyDimID IS NULL, - 1, lkp_AgencyDimID) AS o_AgencyDimID,
 	-- *INF*: IIF(ISNULL(v_RatingPlanCode), '1', v_RatingPlanCode)
-	IFF(v_RatingPlanCode IS NULL,
-		'1',
-		v_RatingPlanCode
-	) AS o_RatingPlanCode,
+	IFF(v_RatingPlanCode IS NULL, '1', v_RatingPlanCode) AS o_RatingPlanCode,
 	FIL_Invalid.pol_ak_id
 	FROM FIL_Invalid
 	 -- Manually join with mplt_PolicyDimID_PremiumMaster_Coverage
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TO_DATE_21001231_YYYYMMDD
-	ON LKP_CALENDER_DIM_TO_DATE_21001231_YYYYMMDD.clndr_date = TO_DATE('21001231', 'YYYYMMDD'
-)
+	ON LKP_CALENDER_DIM_TO_DATE_21001231_YYYYMMDD.clndr_date = TO_TIMESTAMP('21001231', 'YYYYMMDD')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TRUNC_i_PremiumTransactionBookedDate_D
 	ON LKP_CALENDER_DIM_TRUNC_i_PremiumTransactionBookedDate_D.clndr_date = CAST(TRUNC(i_PremiumTransactionBookedDate, 'DAY') AS TIMESTAMP_NTZ(0))
@@ -1556,20 +1489,15 @@ EXP_Calculate AS (
 	EXP_CalculateValue.o_RunDateID AS RunDateID,
 	EXP_CalculateValue.CoverageLimitValue,
 	-- *INF*: DECODE(i_SourceSystemID,'PMS',:LKP.LKP_InsuranceReferenceCoverageDim_PMS(i_RiskUnitGroup,i_RiskUnit,i_MajorPerilCode,i_StandardInsuranceLineCode,i_ProductTypeCode),'DCT',:LKP.LKP_InsuranceReferenceCoverageDim_DCT(i_RiskType,i_CoverageType,i_StandardInsuranceLineCode,i_PerilGroup,i_SubCoverageTypeCode,i_CoverageVersion))
-	DECODE(i_SourceSystemID,
-		'PMS', LKP_INSURANCEREFERENCECOVERAGEDIM_PMS_i_RiskUnitGroup_i_RiskUnit_i_MajorPerilCode_i_StandardInsuranceLineCode_i_ProductTypeCode.InsuranceReferenceCoverageDimId,
-		'DCT', LKP_INSURANCEREFERENCECOVERAGEDIM_DCT_i_RiskType_i_CoverageType_i_StandardInsuranceLineCode_i_PerilGroup_i_SubCoverageTypeCode_i_CoverageVersion.InsuranceReferenceCoverageDimId
+	DECODE(
+	    i_SourceSystemID,
+	    'PMS', LKP_INSURANCEREFERENCECOVERAGEDIM_PMS_i_RiskUnitGroup_i_RiskUnit_i_MajorPerilCode_i_StandardInsuranceLineCode_i_ProductTypeCode.InsuranceReferenceCoverageDimId,
+	    'DCT', LKP_INSURANCEREFERENCECOVERAGEDIM_DCT_i_RiskType_i_CoverageType_i_StandardInsuranceLineCode_i_PerilGroup_i_SubCoverageTypeCode_i_CoverageVersion.InsuranceReferenceCoverageDimId
 	) AS v_InsuranceReferenceCoverageDimId,
 	-- *INF*: IIF(ISNULL(lkp_CoverageDetailDimId),-1,lkp_CoverageDetailDimId)
-	IFF(lkp_CoverageDetailDimId IS NULL,
-		- 1,
-		lkp_CoverageDetailDimId
-	) AS o_CoverageDetailDimId,
+	IFF(lkp_CoverageDetailDimId IS NULL, - 1, lkp_CoverageDetailDimId) AS o_CoverageDetailDimId,
 	-- *INF*: IIF(ISNULL(v_InsuranceReferenceCoverageDimId),-1,v_InsuranceReferenceCoverageDimId)
-	IFF(v_InsuranceReferenceCoverageDimId IS NULL,
-		- 1,
-		v_InsuranceReferenceCoverageDimId
-	) AS o_InsuranceReferenceCoverageDimId,
+	IFF(v_InsuranceReferenceCoverageDimId IS NULL, - 1, v_InsuranceReferenceCoverageDimId) AS o_InsuranceReferenceCoverageDimId,
 	EXP_CalculateValue.pol_ak_id
 	FROM EXP_CalculateValue
 	LEFT JOIN LKP_CoverageDetailDim
@@ -1632,11 +1560,10 @@ EXP_DetectChange AS (
 	-- ,TO_DECIMAL(i_CoverageLimitValue)-v_Prev_CoverageLimitValue,
 	-- TO_DECIMAL(i_CoverageLimitValue)
 	-- )
-	DECODE(TRUE,
-		i_pol_ak_id = v_Prev_Pol_AK_ID 
-		AND i_CoverageGUID = v_Prev_CoverageGUID 
-		AND i_CoverageLimitType = v_Prev_CoverageLimitType, CAST(i_CoverageLimitValue AS FLOAT) - v_Prev_CoverageLimitValue,
-		CAST(i_CoverageLimitValue AS FLOAT)
+	DECODE(
+	    TRUE,
+	    i_pol_ak_id = v_Prev_Pol_AK_ID and i_CoverageGUID = v_Prev_CoverageGUID AND i_CoverageLimitType = v_Prev_CoverageLimitType, CAST(i_CoverageLimitValue AS FLOAT) - v_Prev_CoverageLimitValue,
+	    CAST(i_CoverageLimitValue AS FLOAT)
 	) AS v_CoverageLimitValue,
 	i_CoverageLimitValue AS v_Prev_CoverageLimitValue,
 	i_CoverageGUID AS v_Prev_CoverageGUID,
@@ -2021,160 +1948,103 @@ EXP_DefaultValue AS (
 	-- *INF*: :LKP.LKP_INSURANCEREFERENCELINEOFBUSINESS(i_InsuranceReferenceLineOfBusinessAKId)
 	LKP_INSURANCEREFERENCELINEOFBUSINESS_i_InsuranceReferenceLineOfBusinessAKId.InsuranceReferenceLineOfBusinessCode AS v_InsuranceReferenceLineOfBusinessCode,
 	-- *INF*: SUBSTR(i_pol_sym,1,2)
-	SUBSTR(i_pol_sym, 1, 2
-	) AS v_pol_sym_1_2,
+	SUBSTR(i_pol_sym, 1, 2) AS v_pol_sym_1_2,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(TO_DATE('21001231','YYYYMMDD'))
 	LKP_CALENDER_DIM_TO_DATE_21001231_YYYYMMDD.clndr_id AS v_clndr_id,
 	-- *INF*: IIF(NOT ISNULL(v_clndr_id),v_clndr_id,-1)
-	IFF(v_clndr_id IS NOT NULL,
-		v_clndr_id,
-		- 1
-	) AS v_default_clndr_id,
+	IFF(v_clndr_id IS NOT NULL, v_clndr_id, - 1) AS v_default_clndr_id,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode
-	) AS v_MajorPerilCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode) AS v_MajorPerilCode,
 	-- *INF*: IIF(LTRIM(v_MajorPerilCode,'0')='' OR REG_MATCH(v_MajorPerilCode,'[^0-9a-zA-Z]'),'N/A',v_MajorPerilCode)
-	IFF(LTRIM(v_MajorPerilCode, '0'
-		) = '' 
-		OR REGEXP_LIKE(v_MajorPerilCode, '[^0-9a-zA-Z]'
-		),
-		'N/A',
-		v_MajorPerilCode
+	IFF(
+	    LTRIM(v_MajorPerilCode, '0') = '' OR REGEXP_LIKE(v_MajorPerilCode, '[^0-9a-zA-Z]'), 'N/A',
+	    v_MajorPerilCode
 	) AS v_Reg_MajorPerilCode,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(TRUNC(PremiumTransactionBookedDate,'D'))
 	LKP_CALENDER_DIM_TRUNC_PremiumTransactionBookedDate_D.clndr_id AS v_RunDateID,
 	-- *INF*: IIF(REG_MATCH(i_StandardInsuranceLineCode,'[^0-9a-zA-Z]'),'N/A',i_StandardInsuranceLineCode)
-	IFF(REGEXP_LIKE(i_StandardInsuranceLineCode, '[^0-9a-zA-Z]'
-		),
-		'N/A',
-		i_StandardInsuranceLineCode
+	IFF(
+	    REGEXP_LIKE(i_StandardInsuranceLineCode, '[^0-9a-zA-Z]'), 'N/A', i_StandardInsuranceLineCode
 	) AS v_Reg_StandardInsuranceLineCode,
 	-- *INF*: IIF(v_Reg_StandardInsuranceLineCode='N/A' AND (IN(i_TypeBureauCode,'AL','AN','AP') OR IN(v_Reg_MajorPerilCode,'930','931')),'CA',v_Reg_StandardInsuranceLineCode)
-	IFF(v_Reg_StandardInsuranceLineCode = 'N/A' 
-		AND ( i_TypeBureauCode IN ('AL','AN','AP') 
-			OR v_Reg_MajorPerilCode IN ('930','931') 
-		),
-		'CA',
-		v_Reg_StandardInsuranceLineCode
+	IFF(
+	    v_Reg_StandardInsuranceLineCode = 'N/A'
+	    and (i_TypeBureauCode IN ('AL','AN','AP')
+	    or v_Reg_MajorPerilCode IN ('930','931')),
+	    'CA',
+	    v_Reg_StandardInsuranceLineCode
 	) AS v_StandardInsuranceLineCode,
 	-- *INF*: IIF(v_StandardInsuranceLineCode='N/A' AND IN(i_TypeBureauCode,'CF','B2','BB','BE','BF','BM','BT','FT','GL','GS','IM','MS','PF','PH','PI','PL','PQ','WC','WP','NB','RL','RN','RP','BC','N/A'),1,0)
-	IFF(v_StandardInsuranceLineCode = 'N/A' 
-		AND i_TypeBureauCode IN ('CF','B2','BB','BE','BF','BM','BT','FT','GL','GS','IM','MS','PF','PH','PI','PL','PQ','WC','WP','NB','RL','RN','RP','BC','N/A'),
-		1,
-		0
+	IFF(
+	    v_StandardInsuranceLineCode = 'N/A'
+	    and i_TypeBureauCode IN ('CF','B2','BB','BE','BF','BM','BT','FT','GL','GS','IM','MS','PF','PH','PI','PL','PQ','WC','WP','NB','RL','RN','RP','BC','N/A'),
+	    1,
+	    0
 	) AS v_flag,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassCode
-	) AS v_ClassCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_ClassCode) AS v_ClassCode,
 	-- *INF*: IIF(IN(v_StandardInsuranceLineCode,'CR') OR v_flag=1,'N/A',:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnitGroup))
-	IFF(v_StandardInsuranceLineCode IN ('CR') 
-		OR v_flag = 1,
-		'N/A',
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnitGroup
-		)
+	IFF(
+	    v_StandardInsuranceLineCode IN ('CR') OR v_flag = 1, 'N/A',
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(i_RiskUnitGroup)
 	) AS v_Risk_Unit_Group,
 	-- *INF*: IIF(LTRIM(v_Risk_Unit_Group,'0')='','N/A',v_Risk_Unit_Group)
-	IFF(LTRIM(v_Risk_Unit_Group, '0'
-		) = '',
-		'N/A',
-		v_Risk_Unit_Group
-	) AS v_Zero_Risk_Unit_Group,
+	IFF(LTRIM(v_Risk_Unit_Group, '0') = '', 'N/A', v_Risk_Unit_Group) AS v_Zero_Risk_Unit_Group,
 	-- *INF*: IIF(   v_flag=1 OR   (v_StandardInsuranceLineCode='GL' AND (v_MajorPerilCode<>'540'    OR NOT IN(v_ClassCode,'11111','22222','22250','92100','17000','17001','17002','80051','80052','80053','80054','80055','80056','80057','80058')))   OR IN(v_StandardInsuranceLineCode,'WC','IM','CG','CA')=1,  'N/A',:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnit) )
-	IFF(v_flag = 1 
-		OR ( v_StandardInsuranceLineCode = 'GL' 
-			AND ( v_MajorPerilCode <> '540' 
-				OR NOT v_ClassCode IN ('11111','22222','22250','92100','17000','17001','17002','80051','80052','80053','80054','80055','80056','80057','80058') 
-			) 
-		) 
-		OR v_StandardInsuranceLineCode IN ('WC','IM','CG','CA') = 1,
-		'N/A',
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnit
-		)
+	IFF(
+	    v_flag = 1
+	    or (v_StandardInsuranceLineCode = 'GL'
+	    and (v_MajorPerilCode <> '540'
+	    or NOT v_ClassCode IN ('11111','22222','22250','92100','17000','17001','17002','80051','80052','80053','80054','80055','80056','80057','80058')))
+	    or v_StandardInsuranceLineCode IN ('WC','IM','CG','CA') = 1,
+	    'N/A',
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(i_RiskUnit)
 	) AS v_RiskUnit,
 	-- *INF*: IIF(LTRIM(v_RiskUnit,'0')='','N/A',v_RiskUnit)
-	IFF(LTRIM(v_RiskUnit, '0'
-		) = '',
-		'N/A',
-		v_RiskUnit
-	) AS v_Zero_RiskUnit,
+	IFF(LTRIM(v_RiskUnit, '0') = '', 'N/A', v_RiskUnit) AS v_Zero_RiskUnit,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_RiskUnitSequenceNumber,2,1))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_RiskUnitSequenceNumber, 2, 1
-		)
-	) AS v_ProductTypeCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_RiskUnitSequenceNumber, 2, 1)) AS v_ProductTypeCode,
 	-- *INF*: :LKP.LKP_RATINGPLAN(i_RatingPlanAKId)
 	LKP_RATINGPLAN_i_RatingPlanAKId.RatingPlanCode AS v_RatingPlanCode,
 	-- *INF*: IIF(NOT ISNULL(v_EnterpriseGroupCode), v_EnterpriseGroupCode, '1')
-	IFF(v_EnterpriseGroupCode IS NOT NULL,
-		v_EnterpriseGroupCode,
-		'1'
-	) AS o_EnterpriseGroupCode,
+	IFF(v_EnterpriseGroupCode IS NOT NULL, v_EnterpriseGroupCode, '1') AS o_EnterpriseGroupCode,
 	-- *INF*: IIF(NOT ISNULL(v_InsuranceReferenceLegalEntityCode), v_InsuranceReferenceLegalEntityCode, '1')
-	IFF(v_InsuranceReferenceLegalEntityCode IS NOT NULL,
-		v_InsuranceReferenceLegalEntityCode,
-		'1'
+	IFF(
+	    v_InsuranceReferenceLegalEntityCode IS NOT NULL, v_InsuranceReferenceLegalEntityCode, '1'
 	) AS o_InsuranceReferenceLegalEntityCode,
 	-- *INF*: IIF(NOT ISNULL(v_StrategicProfitCenterCode), v_StrategicProfitCenterCode, '6')
-	IFF(v_StrategicProfitCenterCode IS NOT NULL,
-		v_StrategicProfitCenterCode,
-		'6'
-	) AS o_StrategicProfitCenterCode,
+	IFF(v_StrategicProfitCenterCode IS NOT NULL, v_StrategicProfitCenterCode, '6') AS o_StrategicProfitCenterCode,
 	-- *INF*: IIF(NOT ISNULL(v_InsuranceSegmentCode), v_InsuranceSegmentCode, 'N/A')
-	IFF(v_InsuranceSegmentCode IS NOT NULL,
-		v_InsuranceSegmentCode,
-		'N/A'
-	) AS o_InsuranceSegmentCode,
+	IFF(v_InsuranceSegmentCode IS NOT NULL, v_InsuranceSegmentCode, 'N/A') AS o_InsuranceSegmentCode,
 	-- *INF*: IIF(NOT ISNULL(v_PolicyOfferingCode), v_PolicyOfferingCode, '000')
-	IFF(v_PolicyOfferingCode IS NOT NULL,
-		v_PolicyOfferingCode,
-		'000'
-	) AS o_PolicyOfferingCode,
+	IFF(v_PolicyOfferingCode IS NOT NULL, v_PolicyOfferingCode, '000') AS o_PolicyOfferingCode,
 	-- *INF*: IIF(NOT ISNULL(v_ProductCode), v_ProductCode, '000')
-	IFF(v_ProductCode IS NOT NULL,
-		v_ProductCode,
-		'000'
-	) AS o_ProductCode,
+	IFF(v_ProductCode IS NOT NULL, v_ProductCode, '000') AS o_ProductCode,
 	-- *INF*: IIF(NOT ISNULL(v_InsuranceReferenceLineOfBusinessCode), v_InsuranceReferenceLineOfBusinessCode, '000')
-	IFF(v_InsuranceReferenceLineOfBusinessCode IS NOT NULL,
-		v_InsuranceReferenceLineOfBusinessCode,
-		'000'
+	IFF(
+	    v_InsuranceReferenceLineOfBusinessCode IS NOT NULL, v_InsuranceReferenceLineOfBusinessCode,
+	    '000'
 	) AS o_InsuranceReferenceLineOfBusinessCode,
 	-- *INF*: IIF(ISNULL(v_RunDateID),v_default_clndr_id,v_RunDateID)
-	IFF(v_RunDateID IS NULL,
-		v_default_clndr_id,
-		v_RunDateID
-	) AS o_RunDateID,
+	IFF(v_RunDateID IS NULL, v_default_clndr_id, v_RunDateID) AS o_RunDateID,
 	-- *INF*: IIF(REG_MATCH(v_Zero_Risk_Unit_Group,'[^0-9a-zA-Z]'),'N/A',v_Zero_Risk_Unit_Group)
-	IFF(REGEXP_LIKE(v_Zero_Risk_Unit_Group, '[^0-9a-zA-Z]'
-		),
-		'N/A',
-		v_Zero_Risk_Unit_Group
-	) AS o_RiskUnitGroup,
+	IFF(REGEXP_LIKE(v_Zero_Risk_Unit_Group, '[^0-9a-zA-Z]'), 'N/A', v_Zero_Risk_Unit_Group) AS o_RiskUnitGroup,
 	-- *INF*: IIF(REG_MATCH(v_Zero_RiskUnit,'[^0-9a-zA-Z]'),'N/A',v_Zero_RiskUnit)
-	IFF(REGEXP_LIKE(v_Zero_RiskUnit, '[^0-9a-zA-Z]'
-		),
-		'N/A',
-		v_Zero_RiskUnit
-	) AS o_RiskUnit,
+	IFF(REGEXP_LIKE(v_Zero_RiskUnit, '[^0-9a-zA-Z]'), 'N/A', v_Zero_RiskUnit) AS o_RiskUnit,
 	v_Reg_MajorPerilCode AS o_MajorPerilCode,
 	-- *INF*: IIF(SourceSystemID='PMS',v_StandardInsuranceLineCode,v_Reg_StandardInsuranceLineCode)
-	IFF(SourceSystemID = 'PMS',
-		v_StandardInsuranceLineCode,
-		v_Reg_StandardInsuranceLineCode
-	) AS o_StandardInsuranceLineCode,
+	IFF(SourceSystemID = 'PMS', v_StandardInsuranceLineCode, v_Reg_StandardInsuranceLineCode) AS o_StandardInsuranceLineCode,
 	-- *INF*: IIF(   REG_MATCH(v_ProductTypeCode,'[^0-9a-zA-Z]') OR v_Reg_StandardInsuranceLineCode<>'GL' OR v_ProductTypeCode='0',   'N/A',v_ProductTypeCode )
-	IFF(REGEXP_LIKE(v_ProductTypeCode, '[^0-9a-zA-Z]'
-		) 
-		OR v_Reg_StandardInsuranceLineCode <> 'GL' 
-		OR v_ProductTypeCode = '0',
-		'N/A',
-		v_ProductTypeCode
+	IFF(
+	    REGEXP_LIKE(v_ProductTypeCode, '[^0-9a-zA-Z]')
+	    or v_Reg_StandardInsuranceLineCode <> 'GL'
+	    or v_ProductTypeCode = '0',
+	    'N/A',
+	    v_ProductTypeCode
 	) AS o_ProductTypeCode,
 	v_pol_sym_1_2 AS o_PolicySymbol,
 	-- *INF*: IIF(ISNULL(v_RatingPlanCode), '1', v_RatingPlanCode)
-	IFF(v_RatingPlanCode IS NULL,
-		'1',
-		v_RatingPlanCode
-	) AS o_RatingPlanCode
+	IFF(v_RatingPlanCode IS NULL, '1', v_RatingPlanCode) AS o_RatingPlanCode
 	FROM FIL_Invalid_Policy
 	LEFT JOIN LKP_ENTERPRISEGROUP LKP_ENTERPRISEGROUP_i_StrategicProfitCenterAKId
 	ON LKP_ENTERPRISEGROUP_i_StrategicProfitCenterAKId.StrategicProfitCenterAKId = i_StrategicProfitCenterAKId
@@ -2198,8 +2068,7 @@ EXP_DefaultValue AS (
 	ON LKP_INSURANCEREFERENCELINEOFBUSINESS_i_InsuranceReferenceLineOfBusinessAKId.InsuranceReferenceLineOfBusinessAKId = i_InsuranceReferenceLineOfBusinessAKId
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TO_DATE_21001231_YYYYMMDD
-	ON LKP_CALENDER_DIM_TO_DATE_21001231_YYYYMMDD.clndr_date = TO_DATE('21001231', 'YYYYMMDD'
-)
+	ON LKP_CALENDER_DIM_TO_DATE_21001231_YYYYMMDD.clndr_date = TO_TIMESTAMP('21001231', 'YYYYMMDD')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TRUNC_PremiumTransactionBookedDate_D
 	ON LKP_CALENDER_DIM_TRUNC_PremiumTransactionBookedDate_D.clndr_date = CAST(TRUNC(PremiumTransactionBookedDate, 'DAY') AS TIMESTAMP_NTZ(0))
@@ -2290,227 +2159,33 @@ EXP_DetectMainCoverage AS (
 	-- IN(PolicySymbol,'CP', 'NS') AND StandardInsuranceLineCode='GL' AND PolicyOfferingCode='500' AND ProductCode='370' AND InsuranceReferenceLineOfBusinessCode='300' AND RiskUnitGroup='355' AND MajorPerilCode='530' AND ProductTypeCode='N/A' AND RiskUnit='N/A', 
 	-- 77,
 	-- 0)
-	DECODE(SourceSystemID = 'PMS',
-		PolicySymbol IN ('CP','NS') 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '500' 
-		AND ProductCode = '300' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskUnitGroup = '340' 
-		AND MajorPerilCode = '530' 
-		AND ProductTypeCode = 'O' 
-		AND RiskUnit = 'N/A', 100,
-		PolicySymbol IN ('CP','NS') 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '500' 
-		AND ProductCode = '300' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskUnitGroup = '340' 
-		AND MajorPerilCode = '540' 
-		AND ProductTypeCode = 'O' 
-		AND RiskUnit = 'N/A', 99,
-		PolicySymbol IN ('CP','NS') 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '500' 
-		AND ProductCode = '300' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskUnitGroup = '340' 
-		AND MajorPerilCode = '530' 
-		AND ProductTypeCode = 'P' 
-		AND RiskUnit = 'N/A', 98,
-		PolicySymbol IN ('CP','NS') 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '370' 
-		AND ProductCode = '370' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskUnitGroup = '355' 
-		AND MajorPerilCode = '530' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit = 'N/A', 97,
-		PolicySymbol IN ('CP','NS') 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '365' 
-		AND ProductCode = '365' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskUnitGroup = '345' 
-		AND MajorPerilCode = '530' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit = 'N/A', 96,
-		PolicySymbol = 'CP' 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '321' 
-		AND ProductCode = '321' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskUnitGroup = '346' 
-		AND MajorPerilCode = '530' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit = 'N/A', 95,
-		PolicySymbol = 'CP' 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '380' 
-		AND ProductCode = '380' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskUnitGroup = '365' 
-		AND MajorPerilCode = '550' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit = 'N/A', 94,
-		PolicySymbol = 'CD' 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '310' 
-		AND ProductCode = '310' 
-		AND InsuranceReferenceLineOfBusinessCode = '310' 
-		AND RiskUnitGroup = '367' 
-		AND MajorPerilCode = '540' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit IN ('80054','80055','80056','80058'), 93,
-		PolicySymbol = 'CD' 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '310' 
-		AND ProductCode = '310' 
-		AND InsuranceReferenceLineOfBusinessCode = '310' 
-		AND RiskUnitGroup = '367' 
-		AND MajorPerilCode = '540' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit IN ('80051','80052','80053','80057'), 92,
-		PolicySymbol IN ('CU','NU') 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '900' 
-		AND ProductCode = '900' 
-		AND InsuranceReferenceLineOfBusinessCode = '900' 
-		AND RiskUnitGroup = '370' 
-		AND MajorPerilCode = '517' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit = 'N/A', 91,
-		PolicySymbol = 'NN' 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '312' 
-		AND ProductCode = '312' 
-		AND InsuranceReferenceLineOfBusinessCode = '312' 
-		AND RiskUnitGroup = '286' 
-		AND MajorPerilCode = '540' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit = 'N/A', 90,
-		PolicySymbol IN ('NE','ER') 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '330' 
-		AND ProductCode = '330' 
-		AND InsuranceReferenceLineOfBusinessCode = '330' 
-		AND RiskUnitGroup = '366' 
-		AND MajorPerilCode = '540' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit = 'N/A', 89,
-		PolicyOfferingCode = '100' 
-		AND StandardInsuranceLineCode = 'WC' 
-		AND ( PolicySymbol IN ('VA','VB','VC','VD','VE','VF','VG','VH','VI','VJ','VK','VL','VM','VN','VO','VP','VQ','VR','VS','VT','VU','VV','VW','WA','WB','WC','WD','WG','WH','WI','WK','WJ','WN','WO','WP','WR','WS','WT','WU','WV','WW','WY','YA','YB','YC','YD','YE','YF','YG','YH','YI','YJ','YK','YL','YM','YN','YO','YP','YQ','YR','YS','YT','YU','YV','YW','YX','ZZ') 
-			OR PolicySymbol IN ('A0','A1','A2','A3','A4','A5','A6','A7','A8','LA','LB','LC','LE','LF','LG','LH','LI','LJ','LK','LL','LM','LN','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AT','AU','AV','AW','AX','AY','AZ','JA','JB','JC','JD','JE','JF','JG','JH','JI','JJ','JK','JL','JM','JN','JO','JP','JQ','JR','JS','JT','JU','JV','JW','JX','JY','JZ','J1','J2','J3','J4','J5','J6') 
-			OR PolicySymbol IN ('RA','RB','RC','RD','RE','RF','RG','RH','RI','RJ','RK','RL','RM','RN','RO','RP','RQ','RR','RS','RT','RU','RV','RW','RX','RW','RX','SA','SB','SC','SD','SE','SF','SG','SH','SI','SJ','SK','SL','SM','SN','SO','SP','SR','SS','ST','SU','SV','SW','SX','SY','TH','TI','TJ','TK','TL','TM','TN','TO','TP','TQ','TR','TS','TT','TV','TW') 
-		) 
-		AND ProductCode = '100' 
-		AND InsuranceReferenceLineOfBusinessCode = '100' 
-		AND RiskUnitGroup = '010' 
-		AND MajorPerilCode = '032' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit = 'N/A', 88,
-		PolicySymbol IN ('NA','NB') 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '430' 
-		AND ProductCode = '430' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskUnitGroup = '340' 
-		AND MajorPerilCode = '530' 
-		AND ProductTypeCode = 'O' 
-		AND RiskUnit = 'N/A', 87,
-		PolicySymbol IN ('BC','BD') 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '410' 
-		AND ProductCode = '410' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskUnitGroup = '340' 
-		AND MajorPerilCode = '530' 
-		AND ProductTypeCode = 'O' 
-		AND RiskUnit = 'N/A', 86,
-		PolicySymbol = 'BO' 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '450' 
-		AND ProductCode = '450' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskUnitGroup = '340' 
-		AND MajorPerilCode = '530' 
-		AND ProductTypeCode = 'O' 
-		AND RiskUnit = 'N/A', 85,
-		PolicySymbol = 'CM' 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '360' 
-		AND ProductCode = '360' 
-		AND InsuranceReferenceLineOfBusinessCode = '360' 
-		AND RiskUnitGroup = '901' 
-		AND MajorPerilCode = '540' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit = 'N/A', 84,
-		PolicySymbol = 'NK' 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '311' 
-		AND ProductCode = '311' 
-		AND InsuranceReferenceLineOfBusinessCode = '330' 
-		AND RiskUnitGroup = '287' 
-		AND MajorPerilCode = '540' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit = 'N/A', 83,
-		PolicySymbol = 'BG' 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '420' 
-		AND ProductCode = '420' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskUnitGroup = '340' 
-		AND MajorPerilCode = '530' 
-		AND ProductTypeCode = 'O' 
-		AND RiskUnit = 'N/A', 82,
-		PolicySymbol IN ('WE','WF','WL','WZ') 
-		AND StandardInsuranceLineCode = 'WC' 
-		AND PolicyOfferingCode = '100' 
-		AND ProductCode = '100' 
-		AND InsuranceReferenceLineOfBusinessCode = '100' 
-		AND RiskUnitGroup = 'N/A' 
-		AND MajorPerilCode = '032' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit = 'N/A', 81,
-		PolicySymbol IN ('CP','NS') 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '320' 
-		AND ProductCode = '320' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskUnitGroup = '340' 
-		AND MajorPerilCode = '530' 
-		AND ProductTypeCode = 'P' 
-		AND RiskUnit = 'N/A', 80,
-		PolicySymbol IN ('CP','NS') 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '500' 
-		AND ProductCode = '320' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskUnitGroup = '340' 
-		AND MajorPerilCode = '530' 
-		AND ProductTypeCode = 'P' 
-		AND RiskUnit = 'N/A', 79,
-		PolicySymbol IN ('NN') 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '312' 
-		AND ProductCode = '312' 
-		AND InsuranceReferenceLineOfBusinessCode = '312' 
-		AND RiskUnitGroup = '287' 
-		AND MajorPerilCode = '540' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit = 'N/A', 78,
-		PolicySymbol IN ('CP','NS') 
-		AND StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '500' 
-		AND ProductCode = '370' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskUnitGroup = '355' 
-		AND MajorPerilCode = '530' 
-		AND ProductTypeCode = 'N/A' 
-		AND RiskUnit = 'N/A', 77,
-		0
+	DECODE(
+	    SourceSystemID = 'PMS',
+	    PolicySymbol IN ('CP','NS') AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '500' AND ProductCode = '300' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskUnitGroup = '340' AND MajorPerilCode = '530' AND ProductTypeCode = 'O' AND RiskUnit = 'N/A', 100,
+	    PolicySymbol IN ('CP','NS') AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '500' AND ProductCode = '300' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskUnitGroup = '340' AND MajorPerilCode = '540' AND ProductTypeCode = 'O' AND RiskUnit = 'N/A', 99,
+	    PolicySymbol IN ('CP','NS') AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '500' AND ProductCode = '300' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskUnitGroup = '340' AND MajorPerilCode = '530' AND ProductTypeCode = 'P' AND RiskUnit = 'N/A', 98,
+	    PolicySymbol IN ('CP','NS') AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '370' AND ProductCode = '370' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskUnitGroup = '355' AND MajorPerilCode = '530' AND ProductTypeCode = 'N/A' AND RiskUnit = 'N/A', 97,
+	    PolicySymbol IN ('CP','NS') AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '365' AND ProductCode = '365' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskUnitGroup = '345' AND MajorPerilCode = '530' AND ProductTypeCode = 'N/A' AND RiskUnit = 'N/A', 96,
+	    PolicySymbol = 'CP' AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '321' AND ProductCode = '321' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskUnitGroup = '346' AND MajorPerilCode = '530' AND ProductTypeCode = 'N/A' AND RiskUnit = 'N/A', 95,
+	    PolicySymbol = 'CP' AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '380' AND ProductCode = '380' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskUnitGroup = '365' AND MajorPerilCode = '550' AND ProductTypeCode = 'N/A' AND RiskUnit = 'N/A', 94,
+	    PolicySymbol = 'CD' AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '310' AND ProductCode = '310' AND InsuranceReferenceLineOfBusinessCode = '310' AND RiskUnitGroup = '367' AND MajorPerilCode = '540' AND ProductTypeCode = 'N/A' AND RiskUnit IN ('80054','80055','80056','80058'), 93,
+	    PolicySymbol = 'CD' AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '310' AND ProductCode = '310' AND InsuranceReferenceLineOfBusinessCode = '310' AND RiskUnitGroup = '367' AND MajorPerilCode = '540' AND ProductTypeCode = 'N/A' AND RiskUnit IN ('80051','80052','80053','80057'), 92,
+	    PolicySymbol IN ('CU','NU') AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '900' AND ProductCode = '900' AND InsuranceReferenceLineOfBusinessCode = '900' AND RiskUnitGroup = '370' AND MajorPerilCode = '517' AND ProductTypeCode = 'N/A' AND RiskUnit = 'N/A', 91,
+	    PolicySymbol = 'NN' AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '312' AND ProductCode = '312' AND InsuranceReferenceLineOfBusinessCode = '312' AND RiskUnitGroup = '286' AND MajorPerilCode = '540' AND ProductTypeCode = 'N/A' AND RiskUnit = 'N/A', 90,
+	    PolicySymbol IN ('NE','ER') AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '330' AND ProductCode = '330' AND InsuranceReferenceLineOfBusinessCode = '330' AND RiskUnitGroup = '366' AND MajorPerilCode = '540' AND ProductTypeCode = 'N/A' AND RiskUnit = 'N/A', 89,
+	    PolicyOfferingCode = '100' AND StandardInsuranceLineCode = 'WC' AND (PolicySymbol IN ('VA','VB','VC','VD','VE','VF','VG','VH','VI','VJ','VK','VL','VM','VN','VO','VP','VQ','VR','VS','VT','VU','VV','VW','WA','WB','WC','WD','WG','WH','WI','WK','WJ','WN','WO','WP','WR','WS','WT','WU','WV','WW','WY','YA','YB','YC','YD','YE','YF','YG','YH','YI','YJ','YK','YL','YM','YN','YO','YP','YQ','YR','YS','YT','YU','YV','YW','YX','ZZ') OR PolicySymbol IN ('A0','A1','A2','A3','A4','A5','A6','A7','A8','LA','LB','LC','LE','LF','LG','LH','LI','LJ','LK','LL','LM','LN','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AT','AU','AV','AW','AX','AY','AZ','JA','JB','JC','JD','JE','JF','JG','JH','JI','JJ','JK','JL','JM','JN','JO','JP','JQ','JR','JS','JT','JU','JV','JW','JX','JY','JZ','J1','J2','J3','J4','J5','J6') OR PolicySymbol IN ('RA','RB','RC','RD','RE','RF','RG','RH','RI','RJ','RK','RL','RM','RN','RO','RP','RQ','RR','RS','RT','RU','RV','RW','RX','RW','RX','SA','SB','SC','SD','SE','SF','SG','SH','SI','SJ','SK','SL','SM','SN','SO','SP','SR','SS','ST','SU','SV','SW','SX','SY','TH','TI','TJ','TK','TL','TM','TN','TO','TP','TQ','TR','TS','TT','TV','TW')) AND ProductCode = '100' AND InsuranceReferenceLineOfBusinessCode = '100' AND RiskUnitGroup = '010' AND MajorPerilCode = '032' AND ProductTypeCode = 'N/A' AND RiskUnit = 'N/A', 88,
+	    PolicySymbol IN ('NA','NB') AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '430' AND ProductCode = '430' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskUnitGroup = '340' AND MajorPerilCode = '530' AND ProductTypeCode = 'O' AND RiskUnit = 'N/A', 87,
+	    PolicySymbol IN ('BC','BD') AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '410' AND ProductCode = '410' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskUnitGroup = '340' AND MajorPerilCode = '530' AND ProductTypeCode = 'O' AND RiskUnit = 'N/A', 86,
+	    PolicySymbol = 'BO' AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '450' AND ProductCode = '450' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskUnitGroup = '340' AND MajorPerilCode = '530' AND ProductTypeCode = 'O' AND RiskUnit = 'N/A', 85,
+	    PolicySymbol = 'CM' AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '360' AND ProductCode = '360' AND InsuranceReferenceLineOfBusinessCode = '360' AND RiskUnitGroup = '901' AND MajorPerilCode = '540' AND ProductTypeCode = 'N/A' AND RiskUnit = 'N/A', 84,
+	    PolicySymbol = 'NK' AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '311' AND ProductCode = '311' AND InsuranceReferenceLineOfBusinessCode = '330' AND RiskUnitGroup = '287' AND MajorPerilCode = '540' AND ProductTypeCode = 'N/A' AND RiskUnit = 'N/A', 83,
+	    PolicySymbol = 'BG' AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '420' AND ProductCode = '420' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskUnitGroup = '340' AND MajorPerilCode = '530' AND ProductTypeCode = 'O' AND RiskUnit = 'N/A', 82,
+	    PolicySymbol IN ('WE','WF','WL','WZ') AND StandardInsuranceLineCode = 'WC' AND PolicyOfferingCode = '100' AND ProductCode = '100' AND InsuranceReferenceLineOfBusinessCode = '100' AND RiskUnitGroup = 'N/A' AND MajorPerilCode = '032' AND ProductTypeCode = 'N/A' AND RiskUnit = 'N/A', 81,
+	    PolicySymbol IN ('CP','NS') AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '320' AND ProductCode = '320' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskUnitGroup = '340' AND MajorPerilCode = '530' AND ProductTypeCode = 'P' AND RiskUnit = 'N/A', 80,
+	    PolicySymbol IN ('CP','NS') AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '500' AND ProductCode = '320' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskUnitGroup = '340' AND MajorPerilCode = '530' AND ProductTypeCode = 'P' AND RiskUnit = 'N/A', 79,
+	    PolicySymbol IN ('NN') AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '312' AND ProductCode = '312' AND InsuranceReferenceLineOfBusinessCode = '312' AND RiskUnitGroup = '287' AND MajorPerilCode = '540' AND ProductTypeCode = 'N/A' AND RiskUnit = 'N/A', 78,
+	    PolicySymbol IN ('CP','NS') AND StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '500' AND ProductCode = '370' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskUnitGroup = '355' AND MajorPerilCode = '530' AND ProductTypeCode = 'N/A' AND RiskUnit = 'N/A', 77,
+	    0
 	) AS v_DetectFlag_PMS,
 	-- *INF*: DECODE(SourceSystemID='DCT',
 	-- StandardInsuranceLineCode='GL' AND PolicyOfferingCode='500' AND ProductCode='300' AND InsuranceReferenceLineOfBusinessCode='300' AND RiskType='PremOps' AND CoverageType='PremisesOperations' AND CoverageVersion='OCCURRENCE' AND PerilGroup='N/A' AND SubCoverageTypeCode='N/A', 
@@ -2562,221 +2237,35 @@ EXP_DetectMainCoverage AS (
 	-- StandardInsuranceLineCode='WC' AND PolicyOfferingCode='100' AND ProductCode='100' AND InsuranceReferenceLineOfBusinessCode='100' AND RiskType='N/A' AND CoverageType='EmployersLiabilityIncreasedLimitsBalanceToMinimum' AND CoverageVersion='N/A' AND PerilGroup='N/A' AND SubCoverageTypeCode='N/A', 
 	-- 78,
 	-- 0)
-	DECODE(SourceSystemID = 'DCT',
-		StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '500' 
-		AND ProductCode = '300' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskType = 'PremOps' 
-		AND CoverageType = 'PremisesOperations' 
-		AND CoverageVersion = 'OCCURRENCE' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 100,
-		StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '500' 
-		AND ProductCode = '300' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskType = 'PremOpsProducts' 
-		AND CoverageType = 'PremisesOperations' 
-		AND CoverageVersion = 'CLAIMSMADE' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 99,
-		StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '500' 
-		AND ProductCode = '300' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskType = 'PremOpsProducts' 
-		AND CoverageType = 'PremisesOperations' 
-		AND CoverageVersion = 'OCCURRENCE' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 98,
-		StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '500' 
-		AND ProductCode = '300' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskType = 'ProductsCompletedOps' 
-		AND CoverageType = 'ProductsCompletedOps' 
-		AND CoverageVersion = 'OCCURRENCE' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 97,
-		StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '370' 
-		AND ProductCode = '370' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'LiquorLiability' 
-		AND CoverageVersion = 'OCCURRENCE' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 96,
-		StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '365' 
-		AND ProductCode = '365' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'OwnersContractorsOrPrincipals' 
-		AND CoverageVersion = 'OCCURRENCE' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 95,
-		StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '321' 
-		AND ProductCode = '321' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'RailroadProtectiveLiability' 
-		AND CoverageVersion = 'OCCURRENCE' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 94,
-		StandardInsuranceLineCode = 'GL' 
-		AND PolicyOfferingCode = '380' 
-		AND ProductCode = '380' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'ProductWithdrawal' 
-		AND CoverageVersion = 'N/A' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 93,
-		StandardInsuranceLineCode = 'CDO' 
-		AND PolicyOfferingCode = '310' 
-		AND ProductCode = '310' 
-		AND InsuranceReferenceLineOfBusinessCode = '310' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'DirectorsAndOfficersCondosCommercial' 
-		AND CoverageVersion = 'N/A' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 92,
-		StandardInsuranceLineCode = 'CDO' 
-		AND PolicyOfferingCode = '310' 
-		AND ProductCode = '310' 
-		AND InsuranceReferenceLineOfBusinessCode = '310' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'DirectorsAndOfficersCondosResidential' 
-		AND CoverageVersion = 'N/A' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 91,
-		StandardInsuranceLineCode = 'CU' 
-		AND PolicyOfferingCode = '900' 
-		AND ProductCode = '900' 
-		AND InsuranceReferenceLineOfBusinessCode = '900' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'BuiltUp' 
-		AND CoverageVersion = 'N/A' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 90,
-		StandardInsuranceLineCode = 'CU' 
-		AND PolicyOfferingCode = '500' 
-		AND ProductCode = '900' 
-		AND InsuranceReferenceLineOfBusinessCode = '900' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'BuiltUp' 
-		AND CoverageVersion = 'N/A' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 89,
-		StandardInsuranceLineCode = 'CU' 
-		AND PolicyOfferingCode = '450' 
-		AND ProductCode = '900' 
-		AND InsuranceReferenceLineOfBusinessCode = '900' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'BuiltUp' 
-		AND CoverageVersion = 'N/A' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 88,
-		StandardInsuranceLineCode = 'CU' 
-		AND PolicyOfferingCode = '430' 
-		AND ProductCode = '900' 
-		AND InsuranceReferenceLineOfBusinessCode = '900' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'BuiltUp' 
-		AND CoverageVersion = 'N/A' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 87,
-		StandardInsuranceLineCode = 'NDO' 
-		AND PolicyOfferingCode = '312' 
-		AND ProductCode = '312' 
-		AND InsuranceReferenceLineOfBusinessCode = '312' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'DirectorsAndOfficersNFP' 
-		AND CoverageVersion = 'N/A' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 86,
-		StandardInsuranceLineCode = 'EPL' 
-		AND PolicyOfferingCode = '330' 
-		AND ProductCode = '330' 
-		AND InsuranceReferenceLineOfBusinessCode = '330' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'EmploymentPracticesLiability' 
-		AND CoverageVersion = 'N/A' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 85,
-		StandardInsuranceLineCode = 'BP' 
-		AND PolicyOfferingCode = '450' 
-		AND ProductCode = '450' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'RiskLiability' 
-		AND CoverageVersion = 'N/A' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 84,
-		StandardInsuranceLineCode = 'SBOPGL' 
-		AND PolicyOfferingCode = '430' 
-		AND ProductCode = '430' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskType = 'PremOps' 
-		AND CoverageType = 'PremisesOperations' 
-		AND CoverageVersion = 'OCCURRENCE' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 83,
-		StandardInsuranceLineCode = 'WC' 
-		AND PolicyOfferingCode = '100' 
-		AND ProductCode = '100' 
-		AND InsuranceReferenceLineOfBusinessCode = '100' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'EmployersLiability' 
-		AND CoverageVersion = 'N/A' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 82,
-		StandardInsuranceLineCode = 'SBOPGL' 
-		AND PolicyOfferingCode = '430' 
-		AND ProductCode = '430' 
-		AND InsuranceReferenceLineOfBusinessCode = '300' 
-		AND RiskType = 'PremOpsProducts' 
-		AND CoverageType = 'PremisesOperations' 
-		AND CoverageVersion = 'OCCURRENCE' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 81,
-		StandardInsuranceLineCode = 'CU' 
-		AND PolicyOfferingCode = '500' 
-		AND ProductCode = '900' 
-		AND InsuranceReferenceLineOfBusinessCode = '900' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'Revised' 
-		AND CoverageVersion = 'N/A' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 80,
-		StandardInsuranceLineCode = 'WC' 
-		AND PolicyOfferingCode = '100' 
-		AND ProductCode = '100' 
-		AND InsuranceReferenceLineOfBusinessCode = '100' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'EmpIoyersLiabilityIncreasedLimits' 
-		AND CoverageVersion = 'N/A' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 79,
-		StandardInsuranceLineCode = 'WC' 
-		AND PolicyOfferingCode = '100' 
-		AND ProductCode = '100' 
-		AND InsuranceReferenceLineOfBusinessCode = '100' 
-		AND RiskType = 'N/A' 
-		AND CoverageType = 'EmployersLiabilityIncreasedLimitsBalanceToMinimum' 
-		AND CoverageVersion = 'N/A' 
-		AND PerilGroup = 'N/A' 
-		AND SubCoverageTypeCode = 'N/A', 78,
-		0
+	DECODE(
+	    SourceSystemID = 'DCT',
+	    StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '500' AND ProductCode = '300' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskType = 'PremOps' AND CoverageType = 'PremisesOperations' AND CoverageVersion = 'OCCURRENCE' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 100,
+	    StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '500' AND ProductCode = '300' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskType = 'PremOpsProducts' AND CoverageType = 'PremisesOperations' AND CoverageVersion = 'CLAIMSMADE' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 99,
+	    StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '500' AND ProductCode = '300' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskType = 'PremOpsProducts' AND CoverageType = 'PremisesOperations' AND CoverageVersion = 'OCCURRENCE' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 98,
+	    StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '500' AND ProductCode = '300' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskType = 'ProductsCompletedOps' AND CoverageType = 'ProductsCompletedOps' AND CoverageVersion = 'OCCURRENCE' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 97,
+	    StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '370' AND ProductCode = '370' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskType = 'N/A' AND CoverageType = 'LiquorLiability' AND CoverageVersion = 'OCCURRENCE' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 96,
+	    StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '365' AND ProductCode = '365' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskType = 'N/A' AND CoverageType = 'OwnersContractorsOrPrincipals' AND CoverageVersion = 'OCCURRENCE' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 95,
+	    StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '321' AND ProductCode = '321' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskType = 'N/A' AND CoverageType = 'RailroadProtectiveLiability' AND CoverageVersion = 'OCCURRENCE' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 94,
+	    StandardInsuranceLineCode = 'GL' AND PolicyOfferingCode = '380' AND ProductCode = '380' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskType = 'N/A' AND CoverageType = 'ProductWithdrawal' AND CoverageVersion = 'N/A' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 93,
+	    StandardInsuranceLineCode = 'CDO' AND PolicyOfferingCode = '310' AND ProductCode = '310' AND InsuranceReferenceLineOfBusinessCode = '310' AND RiskType = 'N/A' AND CoverageType = 'DirectorsAndOfficersCondosCommercial' AND CoverageVersion = 'N/A' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 92,
+	    StandardInsuranceLineCode = 'CDO' AND PolicyOfferingCode = '310' AND ProductCode = '310' AND InsuranceReferenceLineOfBusinessCode = '310' AND RiskType = 'N/A' AND CoverageType = 'DirectorsAndOfficersCondosResidential' AND CoverageVersion = 'N/A' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 91,
+	    StandardInsuranceLineCode = 'CU' AND PolicyOfferingCode = '900' AND ProductCode = '900' AND InsuranceReferenceLineOfBusinessCode = '900' AND RiskType = 'N/A' AND CoverageType = 'BuiltUp' AND CoverageVersion = 'N/A' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 90,
+	    StandardInsuranceLineCode = 'CU' AND PolicyOfferingCode = '500' AND ProductCode = '900' AND InsuranceReferenceLineOfBusinessCode = '900' AND RiskType = 'N/A' AND CoverageType = 'BuiltUp' AND CoverageVersion = 'N/A' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 89,
+	    StandardInsuranceLineCode = 'CU' AND PolicyOfferingCode = '450' AND ProductCode = '900' AND InsuranceReferenceLineOfBusinessCode = '900' AND RiskType = 'N/A' AND CoverageType = 'BuiltUp' AND CoverageVersion = 'N/A' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 88,
+	    StandardInsuranceLineCode = 'CU' AND PolicyOfferingCode = '430' AND ProductCode = '900' AND InsuranceReferenceLineOfBusinessCode = '900' AND RiskType = 'N/A' AND CoverageType = 'BuiltUp' AND CoverageVersion = 'N/A' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 87,
+	    StandardInsuranceLineCode = 'NDO' AND PolicyOfferingCode = '312' AND ProductCode = '312' AND InsuranceReferenceLineOfBusinessCode = '312' AND RiskType = 'N/A' AND CoverageType = 'DirectorsAndOfficersNFP' AND CoverageVersion = 'N/A' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 86,
+	    StandardInsuranceLineCode = 'EPL' AND PolicyOfferingCode = '330' AND ProductCode = '330' AND InsuranceReferenceLineOfBusinessCode = '330' AND RiskType = 'N/A' AND CoverageType = 'EmploymentPracticesLiability' AND CoverageVersion = 'N/A' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 85,
+	    StandardInsuranceLineCode = 'BP' AND PolicyOfferingCode = '450' AND ProductCode = '450' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskType = 'N/A' AND CoverageType = 'RiskLiability' AND CoverageVersion = 'N/A' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 84,
+	    StandardInsuranceLineCode = 'SBOPGL' AND PolicyOfferingCode = '430' AND ProductCode = '430' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskType = 'PremOps' AND CoverageType = 'PremisesOperations' AND CoverageVersion = 'OCCURRENCE' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 83,
+	    StandardInsuranceLineCode = 'WC' AND PolicyOfferingCode = '100' AND ProductCode = '100' AND InsuranceReferenceLineOfBusinessCode = '100' AND RiskType = 'N/A' AND CoverageType = 'EmployersLiability' AND CoverageVersion = 'N/A' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 82,
+	    StandardInsuranceLineCode = 'SBOPGL' AND PolicyOfferingCode = '430' AND ProductCode = '430' AND InsuranceReferenceLineOfBusinessCode = '300' AND RiskType = 'PremOpsProducts' AND CoverageType = 'PremisesOperations' AND CoverageVersion = 'OCCURRENCE' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 81,
+	    StandardInsuranceLineCode = 'CU' AND PolicyOfferingCode = '500' AND ProductCode = '900' AND InsuranceReferenceLineOfBusinessCode = '900' AND RiskType = 'N/A' AND CoverageType = 'Revised' AND CoverageVersion = 'N/A' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 80,
+	    StandardInsuranceLineCode = 'WC' AND PolicyOfferingCode = '100' AND ProductCode = '100' AND InsuranceReferenceLineOfBusinessCode = '100' AND RiskType = 'N/A' AND CoverageType = 'EmpIoyersLiabilityIncreasedLimits' AND CoverageVersion = 'N/A' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 79,
+	    StandardInsuranceLineCode = 'WC' AND PolicyOfferingCode = '100' AND ProductCode = '100' AND InsuranceReferenceLineOfBusinessCode = '100' AND RiskType = 'N/A' AND CoverageType = 'EmployersLiabilityIncreasedLimitsBalanceToMinimum' AND CoverageVersion = 'N/A' AND PerilGroup = 'N/A' AND SubCoverageTypeCode = 'N/A', 78,
+	    0
 	) AS v_DetectFlag_DCT,
 	-- *INF*: IIF(SourceSystemID='PMS', v_DetectFlag_PMS, v_DetectFlag_DCT)
-	IFF(SourceSystemID = 'PMS',
-		v_DetectFlag_PMS,
-		v_DetectFlag_DCT
-	) AS o_DetectFlag
+	IFF(SourceSystemID = 'PMS', v_DetectFlag_PMS, v_DetectFlag_DCT) AS o_DetectFlag
 	FROM EXP_DefaultValue
 ),
 FIL_MainCoverage AS (
@@ -2995,31 +2484,20 @@ EXP_Calculate_DimID AS (
 	FIL_MainCoverage.DetectFlag,
 	FIL_MainCoverage.PolicyLimitId,
 	-- *INF*: DECODE(i_SourceSystemID,'PMS',:LKP.LKP_InsuranceReferenceCoverageDim_PMS(i_RiskUnitGroup,i_RiskUnit,i_MajorPerilCode,StandardInsuranceLineCode,i_ProductTypeCode),'DCT',:LKP.LKP_InsuranceReferenceCoverageDim_DCT(i_RiskType,i_CoverageType,StandardInsuranceLineCode,i_PerilGroup,i_SubCoverageTypeCode,i_CoverageVersion))
-	DECODE(i_SourceSystemID,
-		'PMS', LKP_INSURANCEREFERENCECOVERAGEDIM_PMS_i_RiskUnitGroup_i_RiskUnit_i_MajorPerilCode_StandardInsuranceLineCode_i_ProductTypeCode.InsuranceReferenceCoverageDimId,
-		'DCT', LKP_INSURANCEREFERENCECOVERAGEDIM_DCT_i_RiskType_i_CoverageType_StandardInsuranceLineCode_i_PerilGroup_i_SubCoverageTypeCode_i_CoverageVersion.InsuranceReferenceCoverageDimId
+	DECODE(
+	    i_SourceSystemID,
+	    'PMS', LKP_INSURANCEREFERENCECOVERAGEDIM_PMS_i_RiskUnitGroup_i_RiskUnit_i_MajorPerilCode_StandardInsuranceLineCode_i_ProductTypeCode.InsuranceReferenceCoverageDimId,
+	    'DCT', LKP_INSURANCEREFERENCECOVERAGEDIM_DCT_i_RiskType_i_CoverageType_StandardInsuranceLineCode_i_PerilGroup_i_SubCoverageTypeCode_i_CoverageVersion.InsuranceReferenceCoverageDimId
 	) AS v_InsuranceReferenceCoverageDimId,
 	-- *INF*: IIF(ISNULL(lkp_contract_cust_dim_id),-1,lkp_contract_cust_dim_id)
-	IFF(lkp_contract_cust_dim_id IS NULL,
-		- 1,
-		lkp_contract_cust_dim_id
-	) AS o_contract_cust_dim_id,
+	IFF(lkp_contract_cust_dim_id IS NULL, - 1, lkp_contract_cust_dim_id) AS o_contract_cust_dim_id,
 	-- *INF*: IIF(ISNULL(lkp_pol_dim_id),-1,lkp_pol_dim_id)
-	IFF(lkp_pol_dim_id IS NULL,
-		- 1,
-		lkp_pol_dim_id
-	) AS o_pol_dim_id,
+	IFF(lkp_pol_dim_id IS NULL, - 1, lkp_pol_dim_id) AS o_pol_dim_id,
 	-- *INF*: IIF(ISNULL(lkp_AgencyDimId),-1,lkp_AgencyDimId)
-	IFF(lkp_AgencyDimId IS NULL,
-		- 1,
-		lkp_AgencyDimId
-	) AS o_AgencyDimId,
+	IFF(lkp_AgencyDimId IS NULL, - 1, lkp_AgencyDimId) AS o_AgencyDimId,
 	-1 AS o_CoverageDetailDimId,
 	-- *INF*: IIF(ISNULL(v_InsuranceReferenceCoverageDimId),-1,v_InsuranceReferenceCoverageDimId)
-	IFF(v_InsuranceReferenceCoverageDimId IS NULL,
-		- 1,
-		v_InsuranceReferenceCoverageDimId
-	) AS o_InsuranceReferenceCoverageDimId
+	IFF(v_InsuranceReferenceCoverageDimId IS NULL, - 1, v_InsuranceReferenceCoverageDimId) AS o_InsuranceReferenceCoverageDimId
 	FROM FIL_MainCoverage
 	 -- Manually join with mplt_PolicyDimID_PremiumMaster_Policy
 	LEFT JOIN LKP_InsuranceReferenceDim_Policy
@@ -3071,8 +2549,7 @@ AGG_RemoveDuplicates AS (
 	LimitValue,
 	RunDateID AS i_RunDateID,
 	-- *INF*: MIN(i_RunDateID)
-	MIN(i_RunDateID
-	) AS o_RunDateID,
+	MIN(i_RunDateID) AS o_RunDateID,
 	contract_cust_dim_id,
 	pol_dim_id,
 	AgencyDimId,
@@ -3113,11 +2590,10 @@ EXP_DetectChange_Policy AS (
 	-- --AND ----i_StandardInsuranceLineCode=v_Prev_StandardInsuranceLin----eCode,
 	-- --TO_DECIMAL(i_LimitValue)-v_Prev_LimitValue,
 	-- ---TO_DECIMAL(i_LimitValue))
-	DECODE(TRUE,
-		PolicyAKId = v_Prev_PolicyAKId 
-		AND i_LimitTypeDimID = v_Prev_LimitTypeDimId 
-		AND StandardInsuranceLineCode = v_Prev_StandardInsuranceLineCode, CAST(i_LimitValue AS FLOAT) - v_Prev_LimitValue,
-		CAST(i_LimitValue AS FLOAT)
+	DECODE(
+	    TRUE,
+	    PolicyAKId = v_Prev_PolicyAKId AND i_LimitTypeDimID = v_Prev_LimitTypeDimId AND StandardInsuranceLineCode = v_Prev_StandardInsuranceLineCode, CAST(i_LimitValue AS FLOAT) - v_Prev_LimitValue,
+	    CAST(i_LimitValue AS FLOAT)
 	) AS v_LimitValue,
 	-- *INF*: DECODE(TRUE,
 	-- PolicyAKId=v_Prev_PolicyAKId AND i_LimitTypeDimID = v_Prev_LimitTypeDimId AND StandardInsuranceLineCode = v_Prev_StandardInsuranceLineCode AND v_LimitValue != 0,
@@ -3126,16 +2602,11 @@ EXP_DetectChange_Policy AS (
 	-- v_Count,
 	-- 1
 	-- )
-	DECODE(TRUE,
-		PolicyAKId = v_Prev_PolicyAKId 
-		AND i_LimitTypeDimID = v_Prev_LimitTypeDimId 
-		AND StandardInsuranceLineCode = v_Prev_StandardInsuranceLineCode 
-		AND v_LimitValue != 0, v_Count + 1,
-		PolicyAKId = v_Prev_PolicyAKId 
-		AND i_LimitTypeDimID = v_Prev_LimitTypeDimId 
-		AND StandardInsuranceLineCode = v_Prev_StandardInsuranceLineCode 
-		AND v_LimitValue = 0, v_Count,
-		1
+	DECODE(
+	    TRUE,
+	    PolicyAKId = v_Prev_PolicyAKId AND i_LimitTypeDimID = v_Prev_LimitTypeDimId AND StandardInsuranceLineCode = v_Prev_StandardInsuranceLineCode AND v_LimitValue != 0, v_Count + 1,
+	    PolicyAKId = v_Prev_PolicyAKId AND i_LimitTypeDimID = v_Prev_LimitTypeDimId AND StandardInsuranceLineCode = v_Prev_StandardInsuranceLineCode AND v_LimitValue = 0, v_Count,
+	    1
 	) AS v_Count,
 	-- *INF*: TO_DECIMAL(i_LimitValue)
 	-- ---DECODE(TRUE,

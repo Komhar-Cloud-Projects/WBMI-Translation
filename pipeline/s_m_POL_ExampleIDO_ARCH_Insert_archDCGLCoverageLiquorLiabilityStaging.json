@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCGLCoverageLiquorLiabilityStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCGLCoverageLiquorL_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCGLCoverageLiquorLiabilityStaging AS (\n\tSELECT\n\t\tCoverageId,\n\t\tGL_LocationId,\n\t\tGL_CoverageLiquorLiabilityId,\n\t\tSessionId,\n\t\tId,\n\t\tGL_LocationXmlId,\n\t\tAuditable,\n\t\tExtendedReportingPeriod,\n\t\tExtendedReportingPeriodPremium,\n\t\tLiquorExcludeDeductible,\n\t\tExposure,\n\t\tExposureAudited,\n\t\tExposureEstimated,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCGLCoverageLiquorLiabilityStaging\n),\nEXPTRANS AS (\n\tSELECT\n\tCoverageId,\n\tGL_LocationId,\n\tGL_CoverageLiquorLiabilityId,\n\tSessionId,\n\tId,\n\tGL_LocationXmlId,\n\tAuditable AS i_Auditable,\n\t-- *INF*: IIF(i_Auditable='T','1','0')\n\tIFF(i_Auditable = 'T', '1', '0') AS o_Auditable,\n\tExtendedReportingPeriod AS i_ExtendedReportingPeriod,\n\t-- *INF*: IIF(i_ExtendedReportingPeriod='T','1','0')\n\tIFF(i_ExtendedReportingPeriod = 'T', '1', '0') AS o_ExtendedReportingPeriod,\n\tExtendedReportingPeriodPremium,\n\tLiquorExcludeDeductible AS i_LiquorExcludeDeductible,\n\t-- *INF*: IIF(i_LiquorExcludeDeductible='T','1','0')\n\tIFF(i_LiquorExcludeDeductible = 'T', '1', '0') AS o_LiquorExcludeDeductible,\n\tExposure,\n\tExposureAudited,\n\tExposureEstimated,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_DCGLCoverageLiquorLiabilityStaging\n),\narchDCGLCoverageLiquorLiabilityStaging AS (\n\tINSERT INTO archDCGLCoverageLiquorLiabilityStaging\n\t(CoverageId, GL_LocationId, GL_CoverageLiquorLiabilityId, SessionId, Id, GL_LocationXmlId, Auditable, ExtendedReportingPeriod, ExtendedReportingPeriodPremium, LiquorExcludeDeductible, Exposure, ExposureAudited, ExposureEstimated, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tCOVERAGEID, \n\tGL_LOCATIONID, \n\tGL_COVERAGELIQUORLIABILITYID, \n\tSESSIONID, \n\tID, \n\tGL_LOCATIONXMLID, \n\to_Auditable AS AUDITABLE, \n\to_ExtendedReportingPeriod AS EXTENDEDREPORTINGPERIOD, \n\tEXTENDEDREPORTINGPERIODPREMIUM, \n\to_LiquorExcludeDeductible AS LIQUOREXCLUDEDEDUCTIBLE, \n\tEXPOSURE, \n\tEXPOSUREAUDITED, \n\tEXPOSUREESTIMATED, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -17,22 +17,17 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_EffectiveDate
+	IFF(
+	    i_EffectiveDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate
 	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ExpirationDate
+	IFF(
+	    i_ExpirationDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'),
+	    i_ExpirationDate
 	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ModifiedDate
+	IFF(
+	    i_ModifiedDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate
 	) AS o_ModifiedDate
 	FROM SQ_Product
 ),
@@ -41,15 +36,9 @@ EXP_NumericValues AS (
 	ProductId AS i_ProductId,
 	ProductAKId AS i_ProductAKId,
 	-- *INF*: IIF(ISNULL(i_ProductId),-1,i_ProductId)
-	IFF(i_ProductId IS NULL,
-		- 1,
-		i_ProductId
-	) AS o_ProductId,
+	IFF(i_ProductId IS NULL, - 1, i_ProductId) AS o_ProductId,
 	-- *INF*: IIF(ISNULL(i_ProductAKId),-1,i_ProductAKId)
-	IFF(i_ProductAKId IS NULL,
-		- 1,
-		i_ProductAKId
-	) AS o_ProductAKId
+	IFF(i_ProductAKId IS NULL, - 1, i_ProductAKId) AS o_ProductAKId
 	FROM SQ_Product
 ),
 EXP_StringValues AS (
@@ -59,43 +48,36 @@ EXP_StringValues AS (
 	ProductAbbreviation AS i_ProductAbbreviation,
 	ProductDescription AS i_ProductDescription,
 	-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)
-	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'
-		),
-		1,
-		0
-	) AS o_CurrentSnapshotFlag,
+	IFF(TRUNC(i_ExpirationDate) = TO_TIMESTAMP('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_ProductCode) OR LENGTH(i_ProductCode)=0 OR IS_SPACES(i_ProductCode),'N/A',LTRIM(RTRIM(i_ProductCode)))
-	IFF(i_ProductCode IS NULL 
-		OR LENGTH(i_ProductCode
-		) = 0 
-		OR LENGTH(i_ProductCode)>0 AND TRIM(i_ProductCode)='',
-		'N/A',
-		LTRIM(RTRIM(i_ProductCode
-			)
-		)
+	IFF(
+	    i_ProductCode IS NULL
+	    or LENGTH(i_ProductCode) = 0
+	    or LENGTH(i_ProductCode)>0
+	    and TRIM(i_ProductCode)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_ProductCode))
 	) AS o_ProductCode,
 	-- *INF*: IIF(ISNULL(i_ProductAbbreviation) OR LENGTH(i_ProductAbbreviation)=0 OR IS_SPACES(i_ProductAbbreviation),'N/A',LTRIM(RTRIM(i_ProductAbbreviation)))
-	IFF(i_ProductAbbreviation IS NULL 
-		OR LENGTH(i_ProductAbbreviation
-		) = 0 
-		OR LENGTH(i_ProductAbbreviation)>0 AND TRIM(i_ProductAbbreviation)='',
-		'N/A',
-		LTRIM(RTRIM(i_ProductAbbreviation
-			)
-		)
+	IFF(
+	    i_ProductAbbreviation IS NULL
+	    or LENGTH(i_ProductAbbreviation) = 0
+	    or LENGTH(i_ProductAbbreviation)>0
+	    and TRIM(i_ProductAbbreviation)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_ProductAbbreviation))
 	) AS o_ProductAbbreviation,
 	-- *INF*: IIF(ISNULL(i_ProductDescription) OR LENGTH(i_ProductDescription)=0 OR IS_SPACES(i_ProductDescription),'N/A',LTRIM(RTRIM(i_ProductDescription)))
-	IFF(i_ProductDescription IS NULL 
-		OR LENGTH(i_ProductDescription
-		) = 0 
-		OR LENGTH(i_ProductDescription)>0 AND TRIM(i_ProductDescription)='',
-		'N/A',
-		LTRIM(RTRIM(i_ProductDescription
-			)
-		)
+	IFF(
+	    i_ProductDescription IS NULL
+	    or LENGTH(i_ProductDescription) = 0
+	    or LENGTH(i_ProductDescription)>0
+	    and TRIM(i_ProductDescription)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_ProductDescription))
 	) AS o_ProductDescription
 	FROM SQ_Product
 ),

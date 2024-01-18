@@ -69,8 +69,7 @@ EXP_Default AS (
 	pif_policy_number,
 	pif_module,
 	-- *INF*: (pif_symbol  || pif_policy_number || pif_module)
-	( pif_symbol || pif_policy_number || pif_module 
-	) AS Pol_Key,
+	(pif_symbol || pif_policy_number || pif_module) AS Pol_Key,
 	sar_id,
 	sar_insurance_line,
 	sar_location_x,
@@ -129,177 +128,136 @@ EXP_Values AS (
 	sar_id,
 	sar_insurance_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line
-	) AS sar_insurance_line_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line) AS sar_insurance_line_Out,
 	sar_location_x,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_location_x)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_location_x
-	) AS sar_location_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_location_x) AS sar_location_Out,
 	sar_sub_location_x,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x
-	) AS sar_sub_location_x1,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x) AS sar_sub_location_x1,
 	sar_risk_unit_group,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group
-	) AS sar_risk_unit_group_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group) AS sar_risk_unit_group_Out,
 	sar_class_code_grp_x,
 	sar_class_code_mem_x,
 	-- *INF*:  ( sar_class_code_grp_x || sar_class_code_mem_x)
-	( sar_class_code_grp_x || sar_class_code_mem_x 
-	) AS v_risk_unit_group_seq,
+	(sar_class_code_grp_x || sar_class_code_mem_x) AS v_risk_unit_group_seq,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_risk_unit_group_seq)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_risk_unit_group_seq
-	) AS risk_unit_group_seq_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(v_risk_unit_group_seq) AS risk_unit_group_seq_Out,
 	sar_unit,
 	-- *INF*: IIF(LENGTH(LTRIM(RTRIM(sar_unit)))= 0 OR IS_SPACES(LTRIM(RTRIM(sar_unit))), '000000',sar_unit)
-	IFF(LENGTH(LTRIM(RTRIM(sar_unit
-				)
-			)
-		) = 0 
-		OR LENGTH(LTRIM(RTRIM(sar_unit
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(sar_unit
-			)
-		))='',
-		'000000',
-		sar_unit
+	IFF(
+	    LENGTH(LTRIM(RTRIM(sar_unit))) = 0
+	    or LENGTH(LTRIM(RTRIM(sar_unit)))>0
+	    and TRIM(LTRIM(RTRIM(sar_unit)))='',
+	    '000000',
+	    sar_unit
 	) AS v_sar_unit,
 	v_sar_unit AS sar_risk_unit,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit
-	) AS sar_risk_unit_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit) AS sar_risk_unit_Out,
 	sar_seq_rsk_unt_a,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a
-	) AS sar_rsk_unit_seq_out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a) AS sar_rsk_unit_seq_out,
 	sar_type_exposure,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure
-	) AS sar_type_exposure_out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure) AS sar_type_exposure_out,
 	sar_major_peril,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_major_peril)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_major_peril
-	) AS sar_major_peril_out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_major_peril) AS sar_major_peril_out,
 	sar_seq_no,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_no)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_no
-	) AS sar_major_peril_seq_no,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_seq_no) AS sar_major_peril_seq_no,
 	sar_cov_eff_year,
 	-- *INF*: TO_CHAR(sar_cov_eff_year)
-	TO_CHAR(sar_cov_eff_year
-	) AS v_sar_cov_eff_year,
+	TO_CHAR(sar_cov_eff_year) AS v_sar_cov_eff_year,
 	sar_cov_eff_month,
 	-- *INF*: LPAD(TO_CHAR(sar_cov_eff_month),2,'0')
-	LPAD(TO_CHAR(sar_cov_eff_month
-		), 2, '0'
-	) AS v_sar_cov_eff_month,
+	LPAD(TO_CHAR(sar_cov_eff_month), 2, '0') AS v_sar_cov_eff_month,
 	sar_cov_eff_day,
 	-- *INF*: LPAD(TO_CHAR(sar_cov_eff_day),2,'0')
-	LPAD(TO_CHAR(sar_cov_eff_day
-		), 2, '0'
-	) AS v_sar_cov_eff_day,
+	LPAD(TO_CHAR(sar_cov_eff_day), 2, '0') AS v_sar_cov_eff_day,
 	-- *INF*: LPAD(TO_CHAR(sar_cov_eff_month),2,'0') || '/' || LPAD(TO_CHAR(sar_cov_eff_day),2,'0')	||	'/'	||
 	-- TO_CHAR(sar_cov_eff_year)
-	LPAD(TO_CHAR(sar_cov_eff_month
-		), 2, '0'
-	) || '/' || LPAD(TO_CHAR(sar_cov_eff_day
-		), 2, '0'
-	) || '/' || TO_CHAR(sar_cov_eff_year
-	) AS v_sar_cov_eff_date,
+	LPAD(TO_CHAR(sar_cov_eff_month), 2, '0') || '/' || LPAD(TO_CHAR(sar_cov_eff_day), 2, '0') || '/' || TO_CHAR(sar_cov_eff_year) AS v_sar_cov_eff_date,
 	-- *INF*: TO_DATE(v_sar_cov_eff_month  || '/'  || v_sar_cov_eff_day  || '/'  || v_sar_cov_eff_year, 'MM/DD/YYYY')
-	TO_DATE(v_sar_cov_eff_month || '/' || v_sar_cov_eff_day || '/' || v_sar_cov_eff_year, 'MM/DD/YYYY'
-	) AS sar_cov_eff_date,
+	TO_TIMESTAMP(v_sar_cov_eff_month || '/' || v_sar_cov_eff_day || '/' || v_sar_cov_eff_year, 'MM/DD/YYYY') AS sar_cov_eff_date,
 	sar_part_code,
 	sar_state,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_state)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_state
-	) AS sar_state_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_state) AS sar_state_Out,
 	sar_loc_prov_territory,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory
-	) AS sar_loc_prov_territory_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory) AS sar_loc_prov_territory_Out,
 	sar_special_use,
 	-- *INF*: IIF(IS_SPACES(sar_special_use) OR ISNULL(sar_special_use) OR LENGTH(sar_special_use)= 0,'N/A',sar_special_use)
 	-- 
 	-- --- User Defined Function is triming the spaces on statistical code which we dont want to do since this field is used for Loss Master Bureau Reporting 
 	-- 
 	-- --:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_special_use)
-	IFF(LENGTH(sar_special_use)>0 AND TRIM(sar_special_use)='' 
-		OR sar_special_use IS NULL 
-		OR LENGTH(sar_special_use
-		) = 0,
-		'N/A',
-		sar_special_use
+	IFF(
+	    LENGTH(sar_special_use)>0
+	    and TRIM(sar_special_use)=''
+	    or sar_special_use IS NULL
+	    or LENGTH(sar_special_use) = 0,
+	    'N/A',
+	    sar_special_use
 	) AS sar_special_use_out,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_special_use)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_special_use
-	) AS sar_special_use_lkp,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_special_use) AS sar_special_use_lkp,
 	sar_class_1_4,
 	sar_class_5_6,
 	-- *INF*: (sar_class_1_4  || sar_class_5_6)
-	( sar_class_1_4 || sar_class_5_6 
-	) AS v_sar_class_code,
+	(sar_class_1_4 || sar_class_5_6) AS v_sar_class_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_sar_class_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_sar_class_code
-	) AS sar_class_code_out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(v_sar_class_code) AS sar_class_code_out,
 	sar_exposure,
 	sar_sub_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_line)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_line
-	) AS sar_sub_line_out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_sub_line) AS sar_sub_line_out,
 	sar_zip_postal_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_zip_postal_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_zip_postal_code
-	) AS sar_zip_postal_code_out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_zip_postal_code) AS sar_zip_postal_code_out,
 	sar_annual_state_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_annual_state_line)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_annual_state_line
-	) AS sar_annual_state_line_out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_annual_state_line) AS sar_annual_state_line_out,
 	sar_county_first_two,
 	sar_county_last_one,
 	sar_city,
 	-- *INF*: (sar_county_first_two  || sar_county_last_one || sar_city)
-	( sar_county_first_two || sar_county_last_one || sar_city 
-	) AS v_sar_tax_location,
+	(sar_county_first_two || sar_county_last_one || sar_city) AS v_sar_tax_location,
 	-- *INF*: IIF(IS_SPACES(v_sar_tax_location) OR ISNULL(v_sar_tax_location) OR LENGTH(v_sar_tax_location)= 0,'N/A',v_sar_tax_location)
 	-- 
 	-- --- User Defined Function is triming the spaces on statistical code which we dont want to do since this field is used for Loss Master Bureau Reporting 
 	-- 
 	-- --:UDF.DEFAULT_VALUE_FOR_STRINGS(v_sar_tax_location)
-	IFF(LENGTH(v_sar_tax_location)>0 AND TRIM(v_sar_tax_location)='' 
-		OR v_sar_tax_location IS NULL 
-		OR LENGTH(v_sar_tax_location
-		) = 0,
-		'N/A',
-		v_sar_tax_location
+	IFF(
+	    LENGTH(v_sar_tax_location)>0
+	    and TRIM(v_sar_tax_location)=''
+	    or v_sar_tax_location IS NULL
+	    or LENGTH(v_sar_tax_location) = 0,
+	    'N/A',
+	    v_sar_tax_location
 	) AS sar_tax_location_out,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_sar_tax_location)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_sar_tax_location
-	) AS sar_tax_location_lkp,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(v_sar_tax_location) AS sar_tax_location_lkp,
 	sar_stat_breakdown_line,
 	sar_user_line,
 	-- *INF*: (sar_stat_breakdown_line  ||  sar_user_line)
-	( sar_stat_breakdown_line || sar_user_line 
-	) AS v_sar_product_line,
+	(sar_stat_breakdown_line || sar_user_line) AS v_sar_product_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_sar_product_line)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_sar_product_line
-	) AS sar_product_line,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(v_sar_product_line) AS sar_product_line,
 	sar_section,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_section)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_section
-	) AS sar_section_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_section) AS sar_section_Out,
 	sar_rating_date_ind,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_rating_date_ind)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_rating_date_ind
-	) AS sar_rating_date_ind_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_rating_date_ind) AS sar_rating_date_ind_Out,
 	'N/A' AS default_NA,
 	-- *INF*: TO_DATE('1/1/1800 00:00:00' , 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('1/1/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59' , 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
@@ -308,11 +266,9 @@ EXP_Values AS (
 	sar_rsn_amend_two,
 	sar_rsn_amend_three,
 	-- *INF*: (sar_rsn_amend_one  ||  sar_rsn_amend_two  || sar_rsn_amend_three)
-	( sar_rsn_amend_one || sar_rsn_amend_two || sar_rsn_amend_three 
-	) AS V_sar_rsn_amend_Code,
+	(sar_rsn_amend_one || sar_rsn_amend_two || sar_rsn_amend_three) AS V_sar_rsn_amend_Code,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(V_sar_rsn_amend_Code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(V_sar_rsn_amend_Code
-	) AS sar_rsn_amend_code,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(V_sar_rsn_amend_Code) AS sar_rsn_amend_code,
 	sar_code_1,
 	sar_code_2,
 	sar_code_3,
@@ -329,23 +285,22 @@ EXP_Values AS (
 	sar_code_14,
 	sar_code_15,
 	-- *INF*: (sar_code_1  ||  sar_code_2  ||  sar_code_3  || sar_code_4  ||  sar_code_5 ||  sar_code_6  || sar_code_7  || sar_code_8  || sar_code_9  || sar_code_10  || sar_code_11  || sar_code_12  || sar_code_13 || sar_code_14  || sar_code_15)
-	( sar_code_1 || sar_code_2 || sar_code_3 || sar_code_4 || sar_code_5 || sar_code_6 || sar_code_7 || sar_code_8 || sar_code_9 || sar_code_10 || sar_code_11 || sar_code_12 || sar_code_13 || sar_code_14 || sar_code_15 
-	) AS v_sar_statistical_code,
+	(sar_code_1 || sar_code_2 || sar_code_3 || sar_code_4 || sar_code_5 || sar_code_6 || sar_code_7 || sar_code_8 || sar_code_9 || sar_code_10 || sar_code_11 || sar_code_12 || sar_code_13 || sar_code_14 || sar_code_15) AS v_sar_statistical_code,
 	-- *INF*: IIF(IS_SPACES(v_sar_statistical_code) OR ISNULL(v_sar_statistical_code) OR LENGTH(v_sar_statistical_code)= 0,'N/A',v_sar_statistical_code)
 	-- 
 	-- --- User Defined Function is triming the spaces on statistical code which we dont want to do since this field is used for Loss Master Bureau Reporting 
 	-- 
 	-- --:UDF.DEFAULT_VALUE_FOR_STRINGS(v_sar_statistical_code)
-	IFF(LENGTH(v_sar_statistical_code)>0 AND TRIM(v_sar_statistical_code)='' 
-		OR v_sar_statistical_code IS NULL 
-		OR LENGTH(v_sar_statistical_code
-		) = 0,
-		'N/A',
-		v_sar_statistical_code
+	IFF(
+	    LENGTH(v_sar_statistical_code)>0
+	    and TRIM(v_sar_statistical_code)=''
+	    or v_sar_statistical_code IS NULL
+	    or LENGTH(v_sar_statistical_code) = 0,
+	    'N/A',
+	    v_sar_statistical_code
 	) AS sar_statistical_code_out,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_sar_statistical_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_sar_statistical_code
-	) AS sar_statistical_code_lkp
+	UDF_DEFAULT_VALUE_FOR_STRINGS(v_sar_statistical_code) AS sar_statistical_code_lkp
 	FROM EXP_Default
 ),
 LKP_V2_Coverage AS (

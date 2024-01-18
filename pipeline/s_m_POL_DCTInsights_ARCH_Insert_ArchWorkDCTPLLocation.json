@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_DCTInsights_ARCH_Insert_ArchWorkDCTPLLocation",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DCTInsights_ARCH_Insert_ArchWorkDCTPLLocation",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTPLLocation AS (\n\tSELECT\n\t\tWorkDCTPLLocationId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tPolicyId,\n\t\tPolicyKey,\n\t\tAddressId,\n\t\tAddressKey,\n\t\tPolicyNumber,\n\t\tPolicySymbol,\n\t\tPolicyVersion,\n\t\tInsuredObjectNumber,\n\t\tStreetAddressLine1,\n\t\tStateUspsCode,\n\t\tCityName,\n\t\tCountyName,\n\t\tTerritoryCode,\n\t\tPostalCode,\n\t\tStartDate\n\tFROM WorkDCTPLLocation\n),\nEXP_SRC_DataCollect AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_Auditid,\n\tWorkDCTPLLocationId,\n\tExtractDate,\n\tSourceSystemId,\n\tPolicyId,\n\tPolicyKey,\n\tAddressId,\n\tAddressKey,\n\tPolicyNumber,\n\tPolicySymbol,\n\tPolicyVersion,\n\tInsuredObjectNumber,\n\tStreetAddressLine1,\n\tStateUspsCode,\n\tCityName,\n\tCountyName,\n\tTerritoryCode,\n\tPostalCode,\n\tStartDate\n\tFROM SQ_WorkDCTPLLocation\n),\nArchWorkDCTPLLocation AS (\n\tINSERT INTO ArchWorkDCTPLLocation\n\t(Auditid, ExtractDate, SourceSystemId, WorkDCTPLLocationId, PolicyId, PolicyKey, AddressId, AddressKey, PolicyNumber, PolicySymbol, PolicyVersion, InsuredObjectNumber, StreetAddressLine1, StateUspsCode, CityName, CountyName, TerritoryCode, PostalCode, StartDate)\n\tSELECT \n\to_Auditid AS AUDITID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tWORKDCTPLLOCATIONID, \n\tPOLICYID, \n\tPOLICYKEY, \n\tADDRESSID, \n\tADDRESSKEY, \n\tPOLICYNUMBER, \n\tPOLICYSYMBOL, \n\tPOLICYVERSION, \n\tINSUREDOBJECTNUMBER, \n\tSTREETADDRESSLINE1, \n\tSTATEUSPSCODE, \n\tCITYNAME, \n\tCOUNTYNAME, \n\tTERRITORYCODE, \n\tPOSTALCODE, \n\tSTARTDATE\n\tFROM EXP_SRC_DataCollect\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

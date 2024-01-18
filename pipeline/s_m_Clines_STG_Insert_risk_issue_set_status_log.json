@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Clines_STG_Insert_risk_issue_set_status_log",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Clines_STG_Insert_risk_issue_set_status_log",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_risk_issue_set_status_log AS (\n\tSELECT\n\t\trisk_issue_set_status_log_id,\n\t\trisk_issue_set_id,\n\t\trisk_issue_set_status_id,\n\t\tnote,\n\t\tcreated_user_urn,\n\t\tcreated_user_id,\n\t\tcreated_date,\n\t\tmodified_user_id,\n\t\tmodified_date\n\tFROM risk_issue_set_status_log\n),\nEXP_Values AS (\n\tSELECT\n\trisk_issue_set_status_log_id,\n\trisk_issue_set_id,\n\trisk_issue_set_status_id,\n\tnote,\n\tcreated_user_urn,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tmodified_date,\n\tSYSDATE AS extract_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id\n\tFROM SQ_risk_issue_set_status_log\n),\nrisk_issue_set_status_log_cl_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.risk_issue_set_status_log_cl_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.risk_issue_set_status_log_cl_stage\n\t(risk_issue_set_status_log_id, risk_issue_set_id, risk_issue_set_status_id, note, created_user_urn, created_user_id, created_date, modified_user_id, modified_date, extract_date, source_system_id)\n\tSELECT \n\tRISK_ISSUE_SET_STATUS_LOG_ID, \n\tRISK_ISSUE_SET_ID, \n\tRISK_ISSUE_SET_STATUS_ID, \n\tNOTE, \n\tCREATED_USER_URN, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tEXTRACT_DATE, \n\tSOURCE_SYSTEM_ID\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CommonStaging/"
+        },
+        "annotations": []
+    }
+}

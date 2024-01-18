@@ -1,0 +1,55 @@
+{
+    "name": "s_m_FEED_Load_HSBCyberSuite_Questionnaire_PreExtract_Table",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_FEED_Load_HSBCyberSuite_Questionnaire_PreExtract_T_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Select_EligiblePolicies AS (\n\tSELECT distinct\r\n\tPolicyKey, \r\n\tCyberSuiteEligibilityQuestionOne, \r\n\tCyberSuiteEligibilityQuestionTwo, \r\n\tCyberSuiteEligibilityQuestionThree, \r\n\tCyberSuiteEligibilityQuestionFour, \r\n\tCyberSuiteEligibilityQuestionFive, \r\n\tCyberSuiteEligibilityQuestionSix, \r\n\tPremiumTransactionEnteredDate \r\n\tFROM\r\n\tWorkHSBCyberSuite\r\n\twhere CoverageType = 'CyberSuite' AND\r\n\tOffsetOnsetCode in ('N/A','Onset') AND\r\n\tAuditId=@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tORDER BY PolicyKey\n),\nFIL_EligiblePolicies AS (\n\tSELECT\n\tPolicyKey, \n\tCyberSuiteEligibilityQuestionOne, \n\tCyberSuiteEligibilityQuestionTwo, \n\tCyberSuiteEligibilityQuestionThree, \n\tCyberSuiteEligibilityQuestionFour, \n\tCyberSuiteEligibilityQuestionFive, \n\tCyberSuiteEligibilityQuestionSix, \n\tPremiumTransactionEnteredDate\n\tFROM SQ_Select_EligiblePolicies\n\tWHERE CyberSuiteEligibilityQuestionOne  !=  '' AND CyberSuiteEligibilityQuestionTwo  !=  '' AND CyberSuiteEligibilityQuestionThree  !=  '' AND CyberSuiteEligibilityQuestionFour  !=  '' AND CyberSuiteEligibilityQuestionFive  !=  '' AND CyberSuiteEligibilityQuestionSix  !=  ''\n),\nAGG_EligiblePolicies AS (\n\tSELECT\n\tPolicyKey\n\tFROM FIL_EligiblePolicies\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyKey ORDER BY NULL) = 1\n),\nSQ_WorkHSBCyberSuite AS (\n\tSELECT \r\n\tAuditId, \r\n\tCreatedDate, \r\n\tModifiedDate, \r\n\tContractCustomerId, \r\n\tAgencyId, \r\n\tPolicyKey, \r\n\tRunDate, \r\n\tPolicyEffectiveDate, \r\n\tInsuredName, \r\n\tLimit, \r\n\tOccupancyCode, \r\n\tAgencyCode, \r\n\tCyberSuiteEligibilityQuestionOne, \r\n\tCyberSuiteEligibilityQuestionTwo, \r\n\tCyberSuiteEligibilityQuestionThree, \r\n\tCyberSuiteEligibilityQuestionFour, \r\n\tCyberSuiteEligibilityQuestionFive, \r\n\tCyberSuiteEligibilityQuestionSix, \r\n\tPremiumTransactionEnteredDate \r\n\tFROM\r\n\tWorkHSBCyberSuite\r\n\twhere CoverageType = 'CyberSuite' AND\r\n\tOffsetOnsetCode in ('N/A','Onset') AND\r\n\tAuditId=@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tORDER BY PolicyKey, PremiumTransactionEnteredDate\n),\nEXP_Passthrough AS (\n\tSELECT\n\tAuditId,\n\tCreatedDate,\n\tModifiedDate,\n\tContractCustomerId,\n\tAgencyId,\n\tPolicyKey,\n\tRunDate,\n\tPolicyEffectiveDate,\n\tInsuredName,\n\tLimit,\n\tOccupancyCode,\n\tAgencyCode,\n\tCyberSuiteEligibilityQuestionOne,\n\tCyberSuiteEligibilityQuestionTwo,\n\tCyberSuiteEligibilityQuestionThree,\n\tCyberSuiteEligibilityQuestionFour,\n\tCyberSuiteEligibilityQuestionFive,\n\tCyberSuiteEligibilityQuestionSix,\n\tPremiumTransactionEnteredDate\n\tFROM SQ_WorkHSBCyberSuite\n),\nLKP_Agency_Name AS (\n\tSELECT\n\tDoingBusinessAsName,\n\tAgencyID\n\tFROM (\n\t\tSELECT \n\t\t\tDoingBusinessAsName,\n\t\t\tAgencyID\n\t\tFROM @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER_V2}.Agency\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyID ORDER BY DoingBusinessAsName DESC) = 1\n),\nLKP_cust_number AS (\n\tSELECT\n\tcust_num,\n\tcontract_cust_id\n\tFROM (\n\t\tSELECT \n\t\t\tcust_num,\n\t\t\tcontract_cust_id\n\t\tFROM @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.contract_customer\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY contract_cust_id ORDER BY cust_num DESC) = 1\n),\nEXP_PreTarget AS (\n\tSELECT\n\tEXP_Passthrough.AuditId,\n\tEXP_Passthrough.CreatedDate,\n\tEXP_Passthrough.ModifiedDate,\n\tEXP_Passthrough.RunDate,\n\tEXP_Passthrough.RunDate AS CreationDate,\n\tEXP_Passthrough.PremiumTransactionEnteredDate AS PolicyRequestDate,\n\t-- *INF*: SET_DATE_PART(\r\n\t--          SET_DATE_PART(\r\n\t--                      SET_DATE_PART((add_to_date(PolicyRequestDate,'MM',0)), 'HH', 23) \r\n\t--                                           ,'MI',59)\r\n\t--                                ,'SS',59)\n\tDATEADD(SECOND,59-DATE_PART(SECOND,DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,(DATEADD(MONTH,0,PolicyRequestDate))),(DATEADD(MONTH,0,PolicyRequestDate)))),DATEADD(HOUR,23-DATE_PART(HOUR,(DATEADD(MONTH,0,PolicyRequestDate))),(DATEADD(MONTH,0,PolicyRequestDate))))),DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,(DATEADD(MONTH,0,PolicyRequestDate))),(DATEADD(MONTH,0,PolicyRequestDate)))),DATEADD(HOUR,23-DATE_PART(HOUR,(DATEADD(MONTH,0,PolicyRequestDate))),(DATEADD(MONTH,0,PolicyRequestDate))))) AS o_PolicyRequestDate,\n\tEXP_Passthrough.InsuredName AS NameOfInsured,\n\tLKP_cust_number.cust_num AS CustomerNumber,\n\tEXP_Passthrough.PolicyKey AS PolicyNumber,\n\tLKP_Agency_Name.DoingBusinessAsName,\n\t-- *INF*: LTRIM(RTRIM(DoingBusinessAsName))\n\tLTRIM(RTRIM(DoingBusinessAsName)) AS AgencyName,\n\tEXP_Passthrough.AgencyCode AS AgentCode,\n\tEXP_Passthrough.Limit AS LimitAmount,\n\tEXP_Passthrough.OccupancyCode,\n\tEXP_Passthrough.CyberSuiteEligibilityQuestionOne AS Question1,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- Question1 = '','N/A',\r\n\t-- Question1)\n\tDECODE(\n\t    TRUE,\n\t    Question1 = '', 'N/A',\n\t    Question1\n\t) AS o_Question1,\n\tEXP_Passthrough.CyberSuiteEligibilityQuestionTwo AS Question2,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- Question2 = '','N/A',\r\n\t-- Question2)\n\tDECODE(\n\t    TRUE,\n\t    Question2 = '', 'N/A',\n\t    Question2\n\t) AS o_Question2,\n\tEXP_Passthrough.CyberSuiteEligibilityQuestionThree AS Question3,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- Question3 = '','N/A',\r\n\t-- Question3)\n\tDECODE(\n\t    TRUE,\n\t    Question3 = '', 'N/A',\n\t    Question3\n\t) AS o_Question3,\n\tEXP_Passthrough.CyberSuiteEligibilityQuestionFour AS Question4,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- Question4 = '','N/A',\r\n\t-- Question4)\n\tDECODE(\n\t    TRUE,\n\t    Question4 = '', 'N/A',\n\t    Question4\n\t) AS o_Question4,\n\tEXP_Passthrough.CyberSuiteEligibilityQuestionFive AS Question5,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- Question5 = '','N/A',\r\n\t-- Question5)\n\tDECODE(\n\t    TRUE,\n\t    Question5 = '', 'N/A',\n\t    Question5\n\t) AS o_Question5,\n\tEXP_Passthrough.CyberSuiteEligibilityQuestionSix AS Question6,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- Question6 = '','N/A',\r\n\t-- Question6)\n\tDECODE(\n\t    TRUE,\n\t    Question6 = '', 'N/A',\n\t    Question6\n\t) AS o_Question6\n\tFROM EXP_Passthrough\n\tLEFT JOIN LKP_Agency_Name\n\tON LKP_Agency_Name.AgencyID = EXP_Passthrough.AgencyId\n\tLEFT JOIN LKP_cust_number\n\tON LKP_cust_number.contract_cust_id = EXP_Passthrough.ContractCustomerId\n),\nJNR_CandidatePolicies AS (SELECT\n\tEXP_PreTarget.AuditId, \n\tEXP_PreTarget.CreatedDate, \n\tEXP_PreTarget.ModifiedDate, \n\tEXP_PreTarget.RunDate, \n\tEXP_PreTarget.NameOfInsured, \n\tEXP_PreTarget.CustomerNumber, \n\tEXP_PreTarget.PolicyNumber, \n\tEXP_PreTarget.AgencyName, \n\tEXP_PreTarget.AgentCode, \n\tEXP_PreTarget.LimitAmount, \n\tEXP_PreTarget.OccupancyCode, \n\tEXP_PreTarget.o_Question1 AS Question1, \n\tEXP_PreTarget.o_Question2 AS Question2, \n\tEXP_PreTarget.o_Question3 AS Question3, \n\tEXP_PreTarget.o_Question4 AS Question4, \n\tEXP_PreTarget.o_Question5 AS Question5, \n\tEXP_PreTarget.o_Question6 AS Question6, \n\tEXP_PreTarget.o_PolicyRequestDate AS PolicyRequestDate, \n\tAGG_EligiblePolicies.PolicyKey\n\tFROM EXP_PreTarget\n\tINNER JOIN AGG_EligiblePolicies\n\tON AGG_EligiblePolicies.PolicyKey = EXP_PreTarget.PolicyNumber\n),\nSRT_PTEnteredDate AS (\n\tSELECT\n\tAuditId, \n\tCreatedDate, \n\tModifiedDate, \n\tRunDate, \n\tRunDate AS CreationDate, \n\tNameOfInsured, \n\tCustomerNumber, \n\tPolicyKey AS PolicyNumber, \n\tAgencyName, \n\tAgentCode, \n\tLimitAmount, \n\tOccupancyCode, \n\tQuestion1, \n\tQuestion2, \n\tQuestion3, \n\tQuestion4, \n\tQuestion5, \n\tQuestion6, \n\tPolicyRequestDate\n\tFROM JNR_CandidatePolicies\n\tORDER BY PolicyRequestDate ASC\n),\nAGG_PolicyRecord AS (\n\tSELECT\n\tAuditId,\n\tCreatedDate,\n\tModifiedDate,\n\tRunDate,\n\tCreationDate,\n\tPolicyRequestDate,\n\tNameOfInsured,\n\tCustomerNumber,\n\tPolicyNumber,\n\tAgencyName,\n\tAgentCode,\n\tLimitAmount,\n\t-- *INF*: LAST(LimitAmount)\n\tLAST(LimitAmount) AS out_LimitAmount,\n\tOccupancyCode,\n\tQuestion1,\n\tQuestion2,\n\tQuestion3,\n\tQuestion4,\n\tQuestion5,\n\tQuestion6\n\tFROM SRT_PTEnteredDate\n\tGROUP BY PolicyRequestDate, PolicyNumber, Question1, Question2, Question3, Question4, Question5, Question6\n),\nHSBCyberSuiteReferralExtract AS (\n\tTRUNCATE TABLE HSBCyberSuiteReferralExtract;\n\tINSERT INTO HSBCyberSuiteReferralExtract\n\t(AuditId, CreatedDate, ModifiedDate, RunDate, CreationDate, PolicyRequestDate, NameOfInsured, CustomerNumber, PolicyNumber, AgencyName, AgentCode, LimitAmount, OccupancyCode, Question1, Question2, Question3, Question4, Question5, Question6)\n\tSELECT \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tRUNDATE, \n\tCREATIONDATE, \n\tPOLICYREQUESTDATE, \n\tNAMEOFINSURED, \n\tCUSTOMERNUMBER, \n\tPOLICYNUMBER, \n\tAGENCYNAME, \n\tAGENTCODE, \n\tout_LimitAmount AS LIMITAMOUNT, \n\tOCCUPANCYCODE, \n\tQUESTION1, \n\tQUESTION2, \n\tQUESTION3, \n\tQUESTION4, \n\tQUESTION5, \n\tQUESTION6\n\tFROM AGG_PolicyRecord\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

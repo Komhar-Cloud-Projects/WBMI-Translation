@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_OFFSET_ONSET_UNIT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_OFFSET_ONSET_UNIT",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_offset_onset_unit_stage AS (\n\tSELECT\n\t\toffset_onset_unit_stage_id,\n\t\ttch_claim_nbr,\n\t\toff_onset_ts,\n\t\tunit_seq_nbr,\n\t\toff_sar_id,\n\t\toff_ins_line,\n\t\toff_loc_unit_num,\n\t\toff_risk_unit_grp,\n\t\toff_rsk_unt_gr_seq,\n\t\toff_risk_unit,\n\t\toff_risk_type_ind,\n\t\toff_sub_loc_num,\n\t\toff_seq_risk_unit,\n\t\toff_class_code,\n\t\toff_sr_seq,\n\t\toff_unit_desc,\n\t\toff_class_desc,\n\t\toff_unit_type_cd,\n\t\toff_spp_use_cd,\n\t\ton_sar_id,\n\t\ton_ins_line,\n\t\ton_loc_unit_num,\n\t\ton_risk_unit_grp,\n\t\ton_rsk_unt_gr_seq,\n\t\ton_risk_unit,\n\t\ton_risk_type_ind,\n\t\ton_sub_loc_num,\n\t\ton_seq_risk_unit,\n\t\ton_class_code,\n\t\ton_sr_seq,\n\t\ton_unit_desc,\n\t\ton_class_desc,\n\t\ton_unit_type_cd,\n\t\ton_spp_use_cd,\n\t\tobject_type_cd,\n\t\tobject_seq_nbr,\n\t\tlogical_flag,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id,\n\t\toff_coverage_form,\n\t\toff_coverage_type,\n\t\toff_risk_type,\n\t\ton_coverage_form,\n\t\ton_coverage_type,\n\t\ton_risk_type\n\tFROM offset_onset_unit_stage\n\tWHERE offset_onset_unit_stage.off_onset_ts >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_arch_med_provider_stage AS (\n\tSELECT\n\toffset_onset_unit_stage_id,\n\ttch_claim_nbr,\n\toff_onset_ts,\n\tunit_seq_nbr,\n\toff_sar_id,\n\toff_ins_line,\n\toff_loc_unit_num,\n\toff_risk_unit_grp,\n\toff_rsk_unt_gr_seq,\n\toff_risk_unit,\n\toff_risk_type_ind,\n\toff_sub_loc_num,\n\toff_seq_risk_unit,\n\toff_class_code,\n\toff_sr_seq,\n\toff_unit_desc,\n\toff_class_desc,\n\toff_unit_type_cd,\n\toff_spp_use_cd,\n\ton_sar_id,\n\ton_ins_line,\n\ton_loc_unit_num,\n\ton_risk_unit_grp,\n\ton_rsk_unt_gr_seq,\n\ton_risk_unit,\n\ton_risk_type_ind,\n\ton_sub_loc_num,\n\ton_seq_risk_unit,\n\ton_class_code,\n\ton_sr_seq,\n\ton_unit_desc,\n\ton_class_desc,\n\ton_unit_type_cd,\n\ton_spp_use_cd,\n\tobject_type_cd,\n\tobject_seq_nbr,\n\tlogical_flag,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\toff_coverage_form,\n\toff_coverage_type,\n\toff_risk_type,\n\ton_coverage_form,\n\ton_coverage_type,\n\ton_risk_type,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_offset_onset_unit_stage\n),\narch_offset_onset_unit_stage AS (\n\tINSERT INTO arch_offset_onset_unit_stage\n\t(offset_onset_unit_stage_id, tch_claim_nbr, off_onset_ts, unit_seq_nbr, off_sar_id, off_ins_line, off_loc_unit_num, off_risk_unit_grp, off_rsk_unt_gr_seq, off_risk_unit, off_risk_type_ind, off_sub_loc_num, off_seq_risk_unit, off_class_code, off_sr_seq, off_unit_desc, off_class_desc, off_unit_type_cd, off_spp_use_cd, on_sar_id, on_ins_line, on_loc_unit_num, on_risk_unit_grp, on_rsk_unt_gr_seq, on_risk_unit, on_risk_type_ind, on_sub_loc_num, on_seq_risk_unit, on_class_code, on_sr_seq, on_unit_desc, on_class_desc, on_unit_type_cd, on_spp_use_cd, object_type_cd, object_seq_nbr, logical_flag, extract_date, as_of_date, record_count, source_system_id, audit_id, off_coverage_form, off_coverage_type, off_risk_type, on_coverage_form, on_coverage_type, on_risk_type)\n\tSELECT \n\tOFFSET_ONSET_UNIT_STAGE_ID, \n\tTCH_CLAIM_NBR, \n\tOFF_ONSET_TS, \n\tUNIT_SEQ_NBR, \n\tOFF_SAR_ID, \n\tOFF_INS_LINE, \n\tOFF_LOC_UNIT_NUM, \n\tOFF_RISK_UNIT_GRP, \n\tOFF_RSK_UNT_GR_SEQ, \n\tOFF_RISK_UNIT, \n\tOFF_RISK_TYPE_IND, \n\tOFF_SUB_LOC_NUM, \n\tOFF_SEQ_RISK_UNIT, \n\tOFF_CLASS_CODE, \n\tOFF_SR_SEQ, \n\tOFF_UNIT_DESC, \n\tOFF_CLASS_DESC, \n\tOFF_UNIT_TYPE_CD, \n\tOFF_SPP_USE_CD, \n\tON_SAR_ID, \n\tON_INS_LINE, \n\tON_LOC_UNIT_NUM, \n\tON_RISK_UNIT_GRP, \n\tON_RSK_UNT_GR_SEQ, \n\tON_RISK_UNIT, \n\tON_RISK_TYPE_IND, \n\tON_SUB_LOC_NUM, \n\tON_SEQ_RISK_UNIT, \n\tON_CLASS_CODE, \n\tON_SR_SEQ, \n\tON_UNIT_DESC, \n\tON_CLASS_DESC, \n\tON_UNIT_TYPE_CD, \n\tON_SPP_USE_CD, \n\tOBJECT_TYPE_CD, \n\tOBJECT_SEQ_NBR, \n\tLOGICAL_FLAG, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID, \n\tOFF_COVERAGE_FORM, \n\tOFF_COVERAGE_TYPE, \n\tOFF_RISK_TYPE, \n\tON_COVERAGE_FORM, \n\tON_COVERAGE_TYPE, \n\tON_RISK_TYPE\n\tFROM EXP_arch_med_provider_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

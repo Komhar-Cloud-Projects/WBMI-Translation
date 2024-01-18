@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_LOG_NOTE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_LOG_NOTE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_log_note_stage AS (\n\tSELECT log_note_stage.log_note_stage_id, log_note_stage.note_id, log_note_stage.claim_id, log_note_stage.author_user_id, log_note_stage.author_name, log_note_stage.deleted_user_name, log_note_stage.note_text, log_note_stage.create_date, log_note_stage.deleted_date, log_note_stage.deleted_user_id, log_note_stage.viewable_flag, log_note_stage.notify_uw, log_note_stage.note_type, log_note_stage.notify_siu, log_note_stage.notify_collection, log_note_stage.extract_date, log_note_stage.as_of_date, log_note_stage.record_count, log_note_stage.source_system_id \r\n\tFROM\r\n\t log_note_stage\r\n\tWHERE \r\n\tlog_note_stage.create_date >= '@{pipeline().parameters.SELECTION_START_TS}'\r\n\tOR\r\n\tlog_note_stage.deleted_date >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_LOG_NOTE AS (\n\tSELECT\n\tlog_note_stage_id,\n\tnote_id,\n\tclaim_id,\n\tauthor_user_id,\n\tauthor_name,\n\tdeleted_user_name,\n\tnote_text,\n\tcreate_date,\n\tdeleted_date,\n\tdeleted_user_id,\n\tviewable_flag,\n\tnotify_uw,\n\tnote_type,\n\tnotify_siu,\n\tnotify_collection,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_log_note_stage\n),\narch_log_note_stage AS (\n\tINSERT INTO arch_log_note_stage\n\t(log_note_stage_id, note_id, claim_id, author_user_id, author_name, deleted_user_name, note_text, create_date, deleted_date, deleted_user_id, viewable_flag, notify_uw, note_type, notify_siu, notify_collection, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tLOG_NOTE_STAGE_ID, \n\tNOTE_ID, \n\tCLAIM_ID, \n\tAUTHOR_USER_ID, \n\tAUTHOR_NAME, \n\tDELETED_USER_NAME, \n\tNOTE_TEXT, \n\tCREATE_DATE, \n\tDELETED_DATE, \n\tDELETED_USER_ID, \n\tVIEWABLE_FLAG, \n\tNOTIFY_UW, \n\tNOTE_TYPE, \n\tNOTIFY_SIU, \n\tNOTIFY_COLLECTION, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_LOG_NOTE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

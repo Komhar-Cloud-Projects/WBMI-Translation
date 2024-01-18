@@ -11,58 +11,36 @@ EXP_Default_Values AS (
 	SELECT
 	agency_code,
 	-- *INF*: SUBSTR(agency_code,1,2)
-	SUBSTR(agency_code, 1, 2
-	) AS v_agency_state,
+	SUBSTR(agency_code, 1, 2) AS v_agency_state,
 	-- *INF*: iif(isnull(v_agency_state),' ',v_agency_state)
 	-- 
 	-- 
 	-- 
-	IFF(v_agency_state IS NULL,
-		' ',
-		v_agency_state
-	) AS agency_state_out,
+	IFF(v_agency_state IS NULL, ' ', v_agency_state) AS agency_state_out,
 	-- *INF*: SUBSTR(agency_code,3,3)
-	SUBSTR(agency_code, 3, 3
-	) AS v_agency_num,
+	SUBSTR(agency_code, 3, 3) AS v_agency_num,
 	-- *INF*: iif(isnull(v_agency_num),'N/A ',v_agency_num)
 	-- 
 	--  
-	IFF(v_agency_num IS NULL,
-		'N/A ',
-		v_agency_num
-	) AS agency_num_out,
+	IFF(v_agency_num IS NULL, 'N/A ', v_agency_num) AS agency_num_out,
 	bus_unit_ind,
 	-- *INF*: iif(isnull(bus_unit_ind),' ',bus_unit_ind)
 	-- 
-	IFF(bus_unit_ind IS NULL,
-		' ',
-		bus_unit_ind
-	) AS bus_unit_ind_out,
+	IFF(bus_unit_ind IS NULL, ' ', bus_unit_ind) AS bus_unit_ind_out,
 	uw_mgr_name_routing_station,
 	-- *INF*: SUBSTR(uw_mgr_name_routing_station,28,3)
-	SUBSTR(uw_mgr_name_routing_station, 28, 3
-	) AS v_routing_station,
+	SUBSTR(uw_mgr_name_routing_station, 28, 3) AS v_routing_station,
 	-- *INF*: iif(isnull(v_routing_station),'N/A ',v_routing_station)
-	IFF(v_routing_station IS NULL,
-		'N/A ',
-		v_routing_station
-	) AS routing_station_out,
+	IFF(v_routing_station IS NULL, 'N/A ', v_routing_station) AS routing_station_out,
 	-- *INF*: SUBSTR(uw_mgr_name_routing_station,1,27)
-	SUBSTR(uw_mgr_name_routing_station, 1, 27
-	) AS v_uw_mgr,
+	SUBSTR(uw_mgr_name_routing_station, 1, 27) AS v_uw_mgr,
 	-- *INF*: iif(isnull(v_uw_mgr),'N/A ',v_uw_mgr)
-	IFF(v_uw_mgr IS NULL,
-		'N/A ',
-		v_uw_mgr
-	) AS uw_mgr_out,
+	IFF(v_uw_mgr IS NULL, 'N/A ', v_uw_mgr) AS uw_mgr_out,
 	uw_mgr_region,
 	-- *INF*: iif(isnull(uw_mgr_region),'N/A',uw_mgr_region)
 	-- 
 	-- 
-	IFF(uw_mgr_region IS NULL,
-		'N/A',
-		uw_mgr_region
-	) AS uw_mgr_region_out
+	IFF(uw_mgr_region IS NULL, 'N/A', uw_mgr_region) AS uw_mgr_region_out
 	FROM SQ_gtam_wb_region_stage
 ),
 LKP_underwriter_manager_region AS (
@@ -108,43 +86,27 @@ EXP_Detect_Changes AS (
 	-- LTRIM(RTRIM(LKP_uw_mgr)) != (LTRIM(RTRIM(uw_mgr_out)  )  ) 
 	-- 
 	--  , 'UPDATE', 'NOCHANGE'))
-	IFF(LKP_sup_uw_mgr_region_id IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(LKP_rounting_station
-				)
-			) != ( LTRIM(RTRIM(routing_station_out
-					)
-				) 
-			) 
-			OR LTRIM(RTRIM(LKP_uw_mgr_region
-				)
-			) != ( LTRIM(RTRIM(uw_mgr_region_out
-					)
-				) 
-			) 
-			OR LTRIM(RTRIM(LKP_uw_mgr
-				)
-			) != ( LTRIM(RTRIM(uw_mgr_out
-					)
-				) 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    LKP_sup_uw_mgr_region_id IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(LKP_rounting_station)) != (LTRIM(RTRIM(routing_station_out)))
+	        or LTRIM(RTRIM(LKP_uw_mgr_region)) != (LTRIM(RTRIM(uw_mgr_region_out)))
+	        or LTRIM(RTRIM(LKP_uw_mgr)) != (LTRIM(RTRIM(uw_mgr_out))),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS V_changed_flag,
 	V_changed_flag AS CHANGED_FLAG,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(V_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(V_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    V_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id
@@ -224,11 +186,10 @@ EXP_Lag_Eff_From_Date1 AS (
 	-- , ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	-- 	
-	DECODE(TRUE,
-		agency_state = v_prev_row_agency_state 
-		AND agency_num = v_prev_row_agency_num 
-		AND bus_unit_ind = v_prev_row_bus_unit_ind, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    agency_state = v_prev_row_agency_state AND agency_num = v_prev_row_agency_num AND bus_unit_ind = v_prev_row_bus_unit_ind, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	agency_state AS v_prev_row_agency_state,

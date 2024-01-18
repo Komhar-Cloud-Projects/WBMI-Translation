@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCULineStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCULineStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCULineStaging AS (\n\tSELECT\n\t\tWBCULineStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCU_LineId,\n\t\tWB_CU_LineId,\n\t\tSessionId,\n\t\tTreatyOrFacultative,\n\t\tTerrorism,\n\t\tAnnualPayroll,\n\t\tAnnualGrossSales,\n\t\tNumberOfEmployees,\n\t\tOver4Vehicles,\n\t\tOver5MillionSales,\n\t\tOver2MillionSales,\n\t\tResidentialCondosApartmentsOver150Units,\n\t\tMotelOver100Units,\n\t\tLiquorLiabilityCoveredUnderWBM,\n\t\tLineOfBusiness,\n\t\tHigherLimitRequired,\n\t\tHigherLimit,\n\t\tPersonalAndAdvertisingInjuryCoverage,\n\t\tPremiumDetailTotalBalanceToMeetMinimum,\n\t\tPremiumDetailTotalBuiltUpPremium,\n\t\tPremiumDetailTotalEndorsementPremium,\n\t\tPremiumDetailTotalFinalPremium,\n\t\tPremiumDetailTotalFinalPremiumWritten,\n\t\tPremiumDetailTotalFinalPremiumChange\n\tFROM WBCULineStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tCU_LineId,\n\tWB_CU_LineId,\n\tSessionId,\n\tTreatyOrFacultative,\n\tTerrorism,\n\tAnnualPayroll,\n\tAnnualGrossSales,\n\tNumberOfEmployees,\n\tOver4Vehicles,\n\t-- *INF*: DECODE(Over4Vehicles,'T',1,'F',0,NULL)\n\tDECODE(\n\t    Over4Vehicles,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS Over4Vehicles_out,\n\tOver5MillionSales,\n\t-- *INF*: DECODE(Over5MillionSales,'T',1,'F',0,NULL)\n\tDECODE(\n\t    Over5MillionSales,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS Over5MillionSales_out,\n\tOver2MillionSales,\n\t-- *INF*: DECODE(Over2MillionSales,'T',1,'F',0,NULL)\n\tDECODE(\n\t    Over2MillionSales,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS Over2MillionSales_out,\n\tResidentialCondosApartmentsOver150Units,\n\t-- *INF*: DECODE(ResidentialCondosApartmentsOver150Units,'T',1,'F',0,NULL)\n\tDECODE(\n\t    ResidentialCondosApartmentsOver150Units,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS ResidentialCondosApartmentsOver150Units_out,\n\tMotelOver100Units,\n\t-- *INF*: DECODE(MotelOver100Units,'T',1,'F',0,NULL)\n\tDECODE(\n\t    MotelOver100Units,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS MotelOver100Units_out,\n\tLiquorLiabilityCoveredUnderWBM,\n\t-- *INF*: DECODE(LiquorLiabilityCoveredUnderWBM,'T',1,'F',0,NULL)\n\tDECODE(\n\t    LiquorLiabilityCoveredUnderWBM,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS LiquorLiabilityCoveredUnderWBM_out,\n\tLineOfBusiness,\n\tHigherLimitRequired,\n\t-- *INF*: DECODE(HigherLimitRequired,'T',1,'F',0,NULL)\n\tDECODE(\n\t    HigherLimitRequired,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS HigherLimitRequired_out,\n\tHigherLimit,\n\tPersonalAndAdvertisingInjuryCoverage,\n\tPremiumDetailTotalBalanceToMeetMinimum,\n\tPremiumDetailTotalBuiltUpPremium,\n\tPremiumDetailTotalEndorsementPremium,\n\tPremiumDetailTotalFinalPremium,\n\tPremiumDetailTotalFinalPremiumWritten,\n\tPremiumDetailTotalFinalPremiumChange\n\tFROM SQ_WBCULineStaging\n),\narchWBCULineStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archWBCULineStaging\n\t(ExtractDate, SourceSystemId, AuditId, CU_LineId, WB_CU_LineId, SessionId, TreatyOrFacultative, Terrorism, AnnualPayroll, AnnualGrossSales, NumberOfEmployees, Over4Vehicles, Over5MillionSales, Over2MillionSales, ResidentialCondosApartmentsOver150Units, MotelOver100Units, LiquorLiabilityCoveredUnderWBM, LineOfBusiness, HigherLimitRequired, HigherLimit, PersonalAndAdvertisingInjuryCoverage, PremiumDetailTotalBalanceToMeetMinimum, PremiumDetailTotalBuiltUpPremium, PremiumDetailTotalEndorsementPremium, PremiumDetailTotalFinalPremium, PremiumDetailTotalFinalPremiumWritten, PremiumDetailTotalFinalPremiumChange)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tCU_LINEID, \n\tWB_CU_LINEID, \n\tSESSIONID, \n\tTREATYORFACULTATIVE, \n\tTERRORISM, \n\tANNUALPAYROLL, \n\tANNUALGROSSSALES, \n\tNUMBEROFEMPLOYEES, \n\tOver4Vehicles_out AS OVER4VEHICLES, \n\tOver5MillionSales_out AS OVER5MILLIONSALES, \n\tOver2MillionSales_out AS OVER2MILLIONSALES, \n\tResidentialCondosApartmentsOver150Units_out AS RESIDENTIALCONDOSAPARTMENTSOVER150UNITS, \n\tMotelOver100Units_out AS MOTELOVER100UNITS, \n\tLiquorLiabilityCoveredUnderWBM_out AS LIQUORLIABILITYCOVEREDUNDERWBM, \n\tLINEOFBUSINESS, \n\tHigherLimitRequired_out AS HIGHERLIMITREQUIRED, \n\tHIGHERLIMIT, \n\tPERSONALANDADVERTISINGINJURYCOVERAGE, \n\tPREMIUMDETAILTOTALBALANCETOMEETMINIMUM, \n\tPREMIUMDETAILTOTALBUILTUPPREMIUM, \n\tPREMIUMDETAILTOTALENDORSEMENTPREMIUM, \n\tPREMIUMDETAILTOTALFINALPREMIUM, \n\tPREMIUMDETAILTOTALFINALPREMIUMWRITTEN, \n\tPREMIUMDETAILTOTALFINALPREMIUMCHANGE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

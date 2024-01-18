@@ -819,7 +819,7 @@ EXP_Email_Subject AS (
 	email_address,
 	checkout_message,
 	-- *INF*: 'There are errors in the Claims EDW data. Execution aborted (' || sysdate || ')'
-	'There are errors in the Claims EDW data. Execution aborted (' || sysdate || ')' AS email_subject
+	'There are errors in the Claims EDW data. Execution aborted (' || CURRENT_TIMESTAMP || ')' AS email_subject
 	FROM SQ_wbmi_checkout
 ),
 email_body AS (
@@ -871,8 +871,7 @@ EXP_Email_Subject1 AS (
 	email_address,
 	checkout_message,
 	-- *INF*: Abort('There are issues with the EDW data')
-	Abort('There are issues with the EDW data'
-	) AS error
+	Abort('There are issues with the EDW data') AS error
 	FROM SQ_wbmi_checkout1
 ),
 FIL_STOP_PROCESSING AS (

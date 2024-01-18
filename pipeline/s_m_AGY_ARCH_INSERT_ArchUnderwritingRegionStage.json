@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchUnderwritingRegionStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchUnderwritingRegionStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_UnderwritingRegionStage AS (\n\tSELECT\n\t\tUnderwritingRegionStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tUnderwritingRegionCode,\n\t\tUnderwritingRegionCodeDescription,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID\n\tFROM UnderwritingRegionStage\n),\nLKP_ExistingArchive AS (\n\tSELECT\n\tHashKey,\n\tUnderwritingRegionCode\n\tFROM (\n\t\tselect\ta.HashKey as HashKey,\r\n\t\t\t\ta.ModifiedDate as ModifiedDate,\r\n\t\t\t\ta.UnderwritingRegionCode as UnderwritingRegionCode\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchUnderwritingRegionStage a\r\n\t\tinner join (\r\n\t\t\t\t\tselect UnderwritingRegionCode, max(ModifiedDate) as ModifiedDate\r\n\t\t\t\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchUnderwritingRegionStage\r\n\t\t\t\t\tgroup by UnderwritingRegionCode) b\r\n\t\ton  a.UnderwritingRegionCode = b.UnderwritingRegionCode\r\n\t\tand a.ModifiedDate = b.ModifiedDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY UnderwritingRegionCode ORDER BY HashKey) = 1\n),\nEXP_AddAuditID AS (\n\tSELECT\n\tSQ_UnderwritingRegionStage.UnderwritingRegionStageID,\n\tSQ_UnderwritingRegionStage.AgencyODSSourceSystemID,\n\tSQ_UnderwritingRegionStage.HashKey,\n\tSQ_UnderwritingRegionStage.ModifiedUserID,\n\tSQ_UnderwritingRegionStage.ModifiedDate,\n\tSQ_UnderwritingRegionStage.UnderwritingRegionCode,\n\tSQ_UnderwritingRegionStage.UnderwritingRegionCodeDescription,\n\tSQ_UnderwritingRegionStage.ExtractDate,\n\tSQ_UnderwritingRegionStage.AsOfDate,\n\tSQ_UnderwritingRegionStage.RecordCount,\n\tSQ_UnderwritingRegionStage.SourceSystemID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID,\n\tLKP_ExistingArchive.HashKey AS lkp_HashKey,\n\t-- *INF*: Decode(true,\r\n\t-- HashKey = lkp_HashKey, 'IGNORE',\r\n\t-- IsNull(lkp_HashKey), 'INSERT',\r\n\t-- 'UPDATE')\n\tDecode(\n\t    true,\n\t    HashKey = lkp_HashKey, 'IGNORE',\n\t    lkp_HashKey IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag\n\tFROM SQ_UnderwritingRegionStage\n\tLEFT JOIN LKP_ExistingArchive\n\tON LKP_ExistingArchive.UnderwritingRegionCode = SQ_UnderwritingRegionStage.UnderwritingRegionCode\n),\nFIL_ChangesOnly AS (\n\tSELECT\n\tUnderwritingRegionStageID, \n\tAgencyODSSourceSystemID, \n\tHashKey, \n\tModifiedUserID, \n\tModifiedDate, \n\tUnderwritingRegionCode, \n\tUnderwritingRegionCodeDescription, \n\tExtractDate, \n\tAsOfDate, \n\tRecordCount, \n\tSourceSystemID, \n\tOUT_AUDIT_ID, \n\to_ChangeFlag\n\tFROM EXP_AddAuditID\n\tWHERE o_ChangeFlag = 'INSERT' OR o_ChangeFlag = 'UPDATE'\n),\nArchUnderwritingRegionStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchUnderwritingRegionStage\n\t(UnderwritingRegionStageID, AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, UnderwritingRegionCode, UnderwritingRegionCodeDescription, ExtractDate, AsOfDate, RecordCount, SourceSystemID, AuditID)\n\tSELECT \n\tUNDERWRITINGREGIONSTAGEID, \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tUNDERWRITINGREGIONCODE, \n\tUNDERWRITINGREGIONCODEDESCRIPTION, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\tOUT_AUDIT_ID AS AUDITID\n\tFROM FIL_ChangesOnly\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

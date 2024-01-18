@@ -1,0 +1,63 @@
+{
+    "name": "s_m_CLM_1099_Reporting_Extract_EXD_Detail",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_1099_Reporting_Extract_EXD_Detail",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_1099_Reporting_EXD AS (\n\tSELECT clmdtl.search_tax_id,\r\n\t\tsum(clmdtl.ctx_trs_amt) AS Paid_Amt,\r\n\t\tclmdtl.ctx_claim_nbr,\r\n\t\tclmdtl.ctx_draft_nbr,\r\n\t\tclmdtl.ctx_trs_dt\r\n\tFROM (\r\n\t\tSELECT CML.search_tax_id,\r\n\t\t\tCT.ctx_trs_amt AS ctx_trs_amt,\r\n\t\t\tCT.ctx_claim_nbr,\r\n\t\t\tCT.ctx_draft_nbr,\r\n\t\t\tCT.ctx_trs_dt\r\n\t\tFROM claim_transaction_full_extract_stage CT WITH (NOLOCK)\r\n\t\tINNER JOIN ClaimDraftMonthlyStage CDM WITH (NOLOCK) ON CT.ctx_draft_nbr = CDM.dft_draft_nbr\r\n\t\t\tAND CT.ctx_claim_nbr = CDM.dft_claim_nbr\r\n\t\tINNER JOIN Master1099ListMonthlyStage CML WITH (NOLOCK) ON CDM.dft_tax_id_nbr = CML.search_tax_id\r\n\t\t\tAND CDM.dft_tax_id_type_cd = CML.tax_id_type\r\n\t\tWHERE\r\n\t\t\t-- CT.ctx_trs_dt between '2013-01-01' and '2013-05-31' -- make year begin, year end (current or prior?)\r\n\t         --  use (-1) for @{pipeline().parameters.NO_OF_MONTHS} to include current month, otherwise 0 will provide previous month\r\n\t\t\t(CT.ctx_trs_dt >= (SELECT DATEADD(YEAR, DATEDIFF(YEAR, 0, DATEADD(m, -1, getdate())), 0) 'First Day of Year using previous month date')\r\n\t\t\t\tAND CT.ctx_trs_dt <= (SELECT DATEADD(s, -1, DATEADD(mm, DATEDIFF(m, 0, GETDATE()) -@{pipeline().parameters.NO_OF_MONTHS}, 0)) LastDay_PreviousMonth))\r\n\t \t\tAND CT.source_system_id = 'EXCEED'\r\n\t\t\tAND CML.reportable_ind = 'Y'\r\n\t\t\tAND CML.is_valid = 'Y'\r\n\t\t\tAND CDM.dft_dbs_status_cd IN ('P', 'D', 'U')\r\n\t\t\tAND NOT EXISTS (SELECT 1\r\n\t\t\t\tFROM @{pipeline().parameters.SOURCE_DATABASE_NAME2}.dbo.claim_payment cpa\r\n\t\t\t\tJOIN @{pipeline().parameters.SOURCE_DATABASE_NAME2}.dbo.sup_payment_method pm on pm.sup_payment_method_id = cpa.sup_payment_method_id\r\n\t                   and pm.payment_method IN ('Virtual Payment','Debit Card','Digital Prepaid','CAT Card','PayPal','Venmo','Electronic to Lienholder')\r\n\t\t\t\tWHERE cpa.claim_pay_num = CT.ctx_draft_nbr)\t\r\n\t\t) clmdtl\r\n\t @{pipeline().parameters.WHERE_CLAUSE}\r\n\tGROUP BY clmdtl.search_tax_id,\r\n\t\tclmdtl.ctx_claim_nbr,\r\n\t\tclmdtl.ctx_draft_nbr,\r\n\t\tclmdtl.ctx_trs_dt\n),\nEXP_cleanse_input AS (\n\tSELECT\n\tsearch_tax_id,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(search_tax_id)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(search_tax_id) AS search_tax_id_out,\n\tctx_trs_amt,\n\t-- *INF*: IIF(ISNULL(ctx_trs_amt),0,ctx_trs_amt)\n\tIFF(ctx_trs_amt IS NULL, 0, ctx_trs_amt) AS ctx_trs_amt_out,\n\tctx_claim_nbr AS ClaimNumber_out,\n\tctx_draft_nbr AS CheckNumber_out,\n\tctx_trs_dt AS PaymentIssueDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId\n\tFROM SQ_1099_Reporting_EXD\n),\nLKP_Work1099Reporting AS (\n\tSELECT\n\tWork1099ReportingId,\n\tSearchTaxId,\n\tSourceSystemID\n\tFROM (\n\t\tSELECT Work1099ReportingId as Work1099ReportingId, SearchTaxId as SearchTaxId, Work1099Reporting.SourceSystemID as SourceSystemID FROM @{pipeline().parameters.SOURCE_DATABASE_NAME2}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.Work1099Reporting\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY SearchTaxId,SourceSystemID ORDER BY Work1099ReportingId DESC) = 1\n),\nLKP_check_num AS (\n\tSELECT\n\tmicro_ecd_draft_num,\n\tpay_issued_date,\n\tclaim_pay_num\n\tFROM (\n\t\tSELECT \n\t\t\tmicro_ecd_draft_num,\n\t\t\tpay_issued_date,\n\t\t\tclaim_pay_num\n\t\tFROM @{pipeline().parameters.SOURCE_DATABASE_NAME2}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_payment\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY claim_pay_num ORDER BY micro_ecd_draft_num DESC) = 1\n),\nLKP_claim_num_loss_desc AS (\n\tSELECT\n\tclaim_loss_date,\n\ts3p_claim_num,\n\tclaim_loss_descript,\n\tclaim_occurrence_key\n\tFROM (\n\t\tSELECT \n\t\t\tclaim_loss_date,\n\t\t\ts3p_claim_num,\n\t\t\tclaim_loss_descript,\n\t\t\tclaim_occurrence_key\n\t\tFROM @{pipeline().parameters.SOURCE_DATABASE_NAME2}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_occurrence\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY claim_occurrence_key ORDER BY claim_loss_date DESC) = 1\n),\nEXP_output AS (\n\tSELECT\n\t1 AS default_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\tSYSDATE AS default_date,\n\tLKP_Work1099Reporting.Work1099ReportingId,\n\tEXP_cleanse_input.ctx_trs_amt_out AS ctx_trs_amt,\n\tLKP_claim_num_loss_desc.s3p_claim_num AS ClaimNumber,\n\tLKP_check_num.micro_ecd_draft_num AS CheckNumber,\n\tEXP_cleanse_input.PaymentIssueDate,\n\tLKP_claim_num_loss_desc.claim_loss_date AS LossDate,\n\tLKP_claim_num_loss_desc.claim_loss_descript AS LossDescription\n\tFROM EXP_cleanse_input\n\tLEFT JOIN LKP_Work1099Reporting\n\tON LKP_Work1099Reporting.SearchTaxId = EXP_cleanse_input.search_tax_id_out AND LKP_Work1099Reporting.SourceSystemID = EXP_cleanse_input.SourceSystemId\n\tLEFT JOIN LKP_check_num\n\tON LKP_check_num.claim_pay_num = EXP_cleanse_input.CheckNumber_out\n\tLEFT JOIN LKP_claim_num_loss_desc\n\tON LKP_claim_num_loss_desc.claim_occurrence_key = EXP_cleanse_input.ClaimNumber_out\n),\nWork1099ReportingDetail AS (\n\tINSERT INTO Work1099ReportingDetail\n\t(Work1099ReportingId, PaidAmount, ClaimNumber, CheckNumber, PaymentIssueDate, LossDate, LossDescription)\n\tSELECT \n\tWORK1099REPORTINGID, \n\tctx_trs_amt AS PAIDAMOUNT, \n\tCLAIMNUMBER, \n\tCHECKNUMBER, \n\tPAYMENTISSUEDATE, \n\tLOSSDATE, \n\tLOSSDESCRIPTION\n\tFROM EXP_output\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "NO_OF_MONTHS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_DATABASE_NAME2": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/ClaimDataServices/"
+        },
+        "annotations": []
+    }
+}

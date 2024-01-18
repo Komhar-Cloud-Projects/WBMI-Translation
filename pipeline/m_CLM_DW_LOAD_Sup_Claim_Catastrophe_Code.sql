@@ -36,30 +36,17 @@ EXP_Lkp_Values AS (
 	-- *INF*: IIF(ISNULL(in_COC_CATASTROPHE_CD), 
 	-- 'N/A',
 	-- LPAD(rtrim(in_COC_CATASTROPHE_CD),3,'0'))
-	IFF(in_COC_CATASTROPHE_CD IS NULL,
-		'N/A',
-		LPAD(rtrim(in_COC_CATASTROPHE_CD
-			), 3, '0'
-		)
-	) AS COC_CATASTROPHE_CODE,
+	IFF(in_COC_CATASTROPHE_CD IS NULL, 'N/A', LPAD(rtrim(in_COC_CATASTROPHE_CD), 3, '0')) AS COC_CATASTROPHE_CODE,
 	COC_START_DT AS in_COC_START_DT,
 	-- *INF*: IIF(ISNULL(in_COC_START_DT), 
 	-- TO_DATE('1/1/1800','MM/DD/YYYY'),
 	-- in_COC_START_DT)
-	IFF(in_COC_START_DT IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_COC_START_DT
-	) AS COC_START_DT,
+	IFF(in_COC_START_DT IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), in_COC_START_DT) AS COC_START_DT,
 	COC_END_DT AS in_COC_END_DT,
 	-- *INF*: IIF(ISNULL(in_COC_END_DT),
 	-- TO_DATE('12/31/2100','MM/DD/YYYY'), 
 	-- in_COC_END_DT)
-	IFF(in_COC_END_DT IS NULL,
-		TO_DATE('12/31/2100', 'MM/DD/YYYY'
-		),
-		in_COC_END_DT
-	) AS COC_END_DT
+	IFF(in_COC_END_DT IS NULL, TO_TIMESTAMP('12/31/2100', 'MM/DD/YYYY'), in_COC_END_DT) AS COC_END_DT
 	FROM EXP_Values
 ),
 LKP_sup_Claim_catastrophe_code AS (
@@ -97,27 +84,24 @@ EXP_Detect_Changes AS (
 	-- 	COC_END_DT <> lkp_cat_end_date),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(lkp_sup_claim_cat_code_id IS NULL,
-		'NEW',
-		IFF(( COC_START_DT <> lkp_cat_start_date 
-				OR COC_END_DT <> lkp_cat_end_date 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    lkp_sup_claim_cat_code_id IS NULL, 'NEW',
+	    IFF(
+	        (COC_START_DT <> lkp_cat_start_date
+	    or COC_END_DT <> lkp_cat_end_date), 'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    v_Changed_Flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS Eff_To_Date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
@@ -192,9 +176,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	cat_code = v_PREV_ROW_cat_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		cat_code = v_PREV_ROW_cat_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    cat_code = v_PREV_ROW_cat_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

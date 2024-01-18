@@ -19,98 +19,53 @@ EXP_default AS (
 	SELECT
 	code,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(code)))OR IS_SPACES(LTRIM(RTRIM(code))) OR LENGTH(LTRIM(RTRIM(code))) =0, 'N/A',LTRIM(RTRIM(code)))
-	IFF(LTRIM(RTRIM(code
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(code
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(code
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(code
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(code
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(code)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(code)))>0
+	    and TRIM(LTRIM(RTRIM(code)))=''
+	    or LENGTH(LTRIM(RTRIM(code))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(code))
 	) AS benefit_code_out,
 	descript,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(descript))) OR IS_SPACES(LTRIM(RTRIM(descript))) OR LENGTH(LTRIM(RTRIM(descript))) = 0 ,'N/A' , LTRIM(RTRIM(descript)))
-	IFF(LTRIM(RTRIM(descript
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(descript
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(descript
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(descript
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(descript
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(descript)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(descript)))>0
+	    and TRIM(LTRIM(RTRIM(descript)))=''
+	    or LENGTH(LTRIM(RTRIM(descript))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(descript))
 	) AS benefit_code_descript_out,
 	fin_type_cd,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(fin_type_cd))) OR IS_SPACES(LTRIM(RTRIM(fin_type_cd))) OR LENGTH(LTRIM(RTRIM(fin_type_cd))) = 0 ,'N/A' , LTRIM(RTRIM(fin_type_cd)))
-	IFF(LTRIM(RTRIM(fin_type_cd
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(fin_type_cd
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(fin_type_cd
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(fin_type_cd
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(fin_type_cd
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(fin_type_cd)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(fin_type_cd)))>0
+	    and TRIM(LTRIM(RTRIM(fin_type_cd)))=''
+	    or LENGTH(LTRIM(RTRIM(fin_type_cd))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(fin_type_cd))
 	) AS fin_type_cd_out,
 	cause_of_loss,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(cause_of_loss))) OR IS_SPACES(LTRIM(RTRIM(cause_of_loss))) OR LENGTH(LTRIM(RTRIM(cause_of_loss))) = 0 ,'N/A' , LTRIM(RTRIM(cause_of_loss)))
-	IFF(LTRIM(RTRIM(cause_of_loss
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(cause_of_loss
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(cause_of_loss
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(cause_of_loss
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(cause_of_loss
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(cause_of_loss)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(cause_of_loss)))>0
+	    and TRIM(LTRIM(RTRIM(cause_of_loss)))=''
+	    or LENGTH(LTRIM(RTRIM(cause_of_loss))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(cause_of_loss))
 	) AS cause_of_loss_out,
 	filter_type,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(filter_type))) OR IS_SPACES(LTRIM(RTRIM(filter_type))) OR LENGTH(LTRIM(RTRIM(filter_type))) = 0 ,'N/A' , LTRIM(RTRIM(filter_type)))
-	IFF(LTRIM(RTRIM(filter_type
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(filter_type
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(filter_type
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(filter_type
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(filter_type
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(filter_type)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(filter_type)))>0
+	    and TRIM(LTRIM(RTRIM(filter_type)))=''
+	    or LENGTH(LTRIM(RTRIM(filter_type))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(filter_type))
 	) AS filter_type_out
 	FROM SQ_sup_benefit_type_stage
 ),
@@ -146,48 +101,27 @@ EXP_detect_changes AS (
 	--        LTRIM(RTRIM(old_cause_of_loss)) != (LTRIM(RTRIM(cause_of_loss))) or
 	--        LTRIM(RTRIM(old_filter_type_code)) != (LTRIM(RTRIM(filter_type)))
 	-- , 'UPDATE', 'NOCHANGE'))
-	IFF(sup_claim_benefit_type_id IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(old_benefit_type_code_description
-				)
-			) != ( LTRIM(RTRIM(benefit_code_descript
-					)
-				) 
-			) 
-			OR LTRIM(RTRIM(old_fin_type_code
-				)
-			) != ( LTRIM(RTRIM(fin_type_cd
-					)
-				) 
-			) 
-			OR LTRIM(RTRIM(old_cause_of_loss
-				)
-			) != ( LTRIM(RTRIM(cause_of_loss
-					)
-				) 
-			) 
-			OR LTRIM(RTRIM(old_filter_type_code
-				)
-			) != ( LTRIM(RTRIM(filter_type
-					)
-				) 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    sup_claim_benefit_type_id IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(old_benefit_type_code_description)) != (LTRIM(RTRIM(benefit_code_descript)))
+	        or LTRIM(RTRIM(old_fin_type_code)) != (LTRIM(RTRIM(fin_type_cd)))
+	        or LTRIM(RTRIM(old_cause_of_loss)) != (LTRIM(RTRIM(cause_of_loss)))
+	        or LTRIM(RTRIM(old_filter_type_code)) != (LTRIM(RTRIM(filter_type))),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	v_changed_flag AS Changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: IIF(v_changed_flag = 'NEW', TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_changed_flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*:  TO_DATE('12/31/2100 11:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 11:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 11:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -269,12 +203,10 @@ EXP_lag_eff_from_date AS (
 	-- TRUE,benefit_type_code= v_Prev_row_benefit_type_code AND financial_type_code=v_Prev_row_fin_type_code AND cause_of_loss = v_Prev_row_cause_of_loss  AND filter_type_code=v_Prev_row_filter_type_code
 	-- , ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
 	-- 	
-	DECODE(TRUE,
-		benefit_type_code = v_Prev_row_benefit_type_code 
-		AND financial_type_code = v_Prev_row_fin_type_code 
-		AND cause_of_loss = v_Prev_row_cause_of_loss 
-		AND filter_type_code = v_Prev_row_filter_type_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    benefit_type_code = v_Prev_row_benefit_type_code AND financial_type_code = v_Prev_row_fin_type_code AND cause_of_loss = v_Prev_row_cause_of_loss AND filter_type_code = v_Prev_row_filter_type_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	benefit_type_code AS v_Prev_row_benefit_type_code,

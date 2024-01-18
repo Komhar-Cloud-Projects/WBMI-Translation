@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_PC_BENEFIT_FILTER",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_PC_BENEFIT_FILTER",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_pc_benefit_filter_stage AS (\n\tSELECT \r\n\tpc_stage.pc_bnft_filter_stage_id, \r\n\tpc_stage.filter_type, \r\n\tpc_stage.benefit_code, \r\n\tpc_stage.sort_order, \r\n\tpc_stage.extract_date, \r\n\tpc_stage.source_sys_id \r\n\tFROM\r\n\t   @{pipeline().parameters.SOURCE_TABLE_OWNER}.pc_benefit_filter_stage   pc_stage\r\n\tWHERE NOT EXISTS\r\n\t(SELECT 'X' \r\n\tFROM   @{pipeline().parameters.TARGET_TABLE_OWNER}.ARCH_PC_BENEFIT_FILTER_STAGE  pc_arch \r\n\tWHERE  pc_stage.filter_type          = pc_arch.filter_type\r\n\t   AND      pc_stage.benefit_code   = pc_arch.benefit_code\r\n\t   AND     pc_stage.sort_order         = pc_arch.sort_order )\n),\nEXP_ARCH_PC_BENEFIT_FILTER AS (\n\tSELECT\n\tpc_bnft_filter_stage_id,\n\tfilter_type,\n\tbenefit_code,\n\tsort_order,\n\textract_date AS EXTRACT_DATE,\n\tsource_sys_id AS SOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_pc_benefit_filter_stage\n),\narch_pc_benefit_filter_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_pc_benefit_filter_stage\n\t(pc_bnft_filter_stage_id, filter_type, benefit_code, sort_order, extract_date, source_sys_id, audit_id)\n\tSELECT \n\tPC_BNFT_FILTER_STAGE_ID, \n\tFILTER_TYPE, \n\tBENEFIT_CODE, \n\tSORT_ORDER, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYS_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_ARCH_PC_BENEFIT_FILTER\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

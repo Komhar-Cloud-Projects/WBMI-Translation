@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_GTAM_tm08_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_GTAM_tm08_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_tm08_stage AS (\n\tSELECT\n\t\tgtam_tm08_stage_id,\n\t\ttable_fld,\n\t\tkey_len,\n\t\tlocation,\n\t\tmaster_company_number,\n\t\tmajor_peril,\n\t\tdata_len,\n\t\tcoverage_code,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_tm08_stage\n),\nEXP_arch_GTAM_tm08_stage AS (\n\tSELECT\n\tgtam_tm08_stage_id AS tm08_stage_ID,\n\ttable_fld AS TABLE_FLD,\n\tkey_len AS KEY_LEN,\n\tlocation AS LOCATION,\n\tmaster_company_number,\n\tmajor_peril,\n\tdata_len AS DATA_LEN,\n\tcoverage_code,\n\textract_date AS EXTRACT_DATE,\n\tas_of_date AS AS_OF_DATE,\n\trecord_count AS RECORD_COUNT,\n\tsource_system_id AS SOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_gtam_tm08_stage\n),\narch_gtam_tm08_stage AS (\n\tINSERT INTO arch_gtam_tm08_stage\n\t(gtam_tm08_stage_id, table_fld, key_len, location, master_company_number, major_peril, data_len, coverage_code, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\ttm08_stage_ID AS GTAM_TM08_STAGE_ID, \n\tTABLE_FLD AS TABLE_FLD, \n\tKEY_LEN AS KEY_LEN, \n\tLOCATION AS LOCATION, \n\tMASTER_COMPANY_NUMBER, \n\tMAJOR_PERIL, \n\tDATA_LEN AS DATA_LEN, \n\tCOVERAGE_CODE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_arch_GTAM_tm08_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

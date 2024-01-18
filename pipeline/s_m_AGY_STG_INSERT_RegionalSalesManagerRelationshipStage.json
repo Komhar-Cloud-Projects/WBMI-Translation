@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_STG_INSERT_RegionalSalesManagerRelationshipStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_RegionalSalesManagerRelationship_ODS AS (\n\tSELECT\n\t\tRegionalSalesManagerRelationshipID,\n\t\tSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tAssociateID\n\tFROM RegionalSalesManagerRelationship_ODS\n),\nLKP_AgencyCode AS (\n\tSELECT\n\tAgencyCode,\n\tAgencyID\n\tFROM (\n\t\tSELECT \n\t\t\tAgencyCode,\n\t\t\tAgencyID\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.Agency\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyID ORDER BY AgencyCode) = 1\n),\nLKP_WestBendAssociateID AS (\n\tSELECT\n\tWestBendAssociateID,\n\tAssociateID\n\tFROM (\n\t\tSELECT \n\t\t\tWestBendAssociateID,\n\t\t\tAssociateID\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.Associate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AssociateID ORDER BY WestBendAssociateID) = 1\n),\nEXP_Add_MetaDataFields AS (\n\tSELECT\n\tSQ_RegionalSalesManagerRelationship_ODS.RegionalSalesManagerRelationshipID,\n\tSQ_RegionalSalesManagerRelationship_ODS.SourceSystemID,\n\tSQ_RegionalSalesManagerRelationship_ODS.HashKey,\n\tSQ_RegionalSalesManagerRelationship_ODS.ModifiedUserID,\n\tSQ_RegionalSalesManagerRelationship_ODS.ModifiedDate,\n\tSQ_RegionalSalesManagerRelationship_ODS.AgencyID,\n\tSQ_RegionalSalesManagerRelationship_ODS.AssociateID,\n\tLKP_AgencyCode.AgencyCode AS lkp_AgencyCode,\n\tLKP_WestBendAssociateID.WestBendAssociateID AS lkp_WestBendAssociateID,\n\tsysdate AS Extract_Date,\n\tSysdate AS As_of_Date,\n\t1 AS Record_Count,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS Source_System_ID\n\tFROM SQ_RegionalSalesManagerRelationship_ODS\n\tLEFT JOIN LKP_AgencyCode\n\tON LKP_AgencyCode.AgencyID = SQ_RegionalSalesManagerRelationship_ODS.AgencyID\n\tLEFT JOIN LKP_WestBendAssociateID\n\tON LKP_WestBendAssociateID.AssociateID = SQ_RegionalSalesManagerRelationship_ODS.AssociateID\n),\nRegionalSalesManagerRelationshipStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.RegionalSalesManagerRelationshipStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.RegionalSalesManagerRelationshipStage\n\t(AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, AssociateID, WestBendAssociateID, ExtractDate, AsOfDate, RecordCount, SourceSystemID)\n\tSELECT \n\tSourceSystemID AS AGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tlkp_AgencyCode AS AGENCYCODE, \n\tASSOCIATEID, \n\tlkp_WestBendAssociateID AS WESTBENDASSOCIATEID, \n\tExtract_Date AS EXTRACTDATE, \n\tAs_of_Date AS ASOFDATE, \n\tRecord_Count AS RECORDCOUNT, \n\tSource_System_ID AS SOURCESYSTEMID\n\tFROM EXP_Add_MetaDataFields\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

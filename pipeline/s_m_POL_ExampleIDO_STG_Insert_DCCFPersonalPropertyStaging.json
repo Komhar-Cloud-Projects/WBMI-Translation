@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCCFPersonalPropertyStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCCFPersonalPropertyStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_CF_PersonalProperty AS (\n\tWITH cte_DCCFPersonalProperty(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CF_RiskId, \r\n\tX.CF_PersonalPropertyId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.PropertyType, \r\n\tX.PropertyTypeDesc, \r\n\tX.AgreedValue, \r\n\tX.ControlledAtmosphereWarehouse, \r\n\tX.DCGovernmentBuildingContents, \r\n\tX.VaultsOrSafeSelect, \r\n\tX.WholesaleOrStorage, \r\n\tX.BaseLossCostSpecific \r\n\tFROM\r\n\tDC_CF_PersonalProperty X\r\n\tinner join\r\n\tcte_DCCFPersonalProperty Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tCF_RiskId,\n\tCF_PersonalPropertyId,\n\tSessionId,\n\tId,\n\tPropertyType,\n\tPropertyTypeDesc,\n\tAgreedValue AS i_AgreedValue,\n\tControlledAtmosphereWarehouse AS i_ControlledAtmosphereWarehouse,\n\tDCGovernmentBuildingContents AS i_DCGovernmentBuildingContents,\n\tVaultsOrSafeSelect AS i_VaultsOrSafeSelect,\n\tWholesaleOrStorage AS i_WholesaleOrStorage,\n\t-- *INF*: DECODE(i_AgreedValue,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_AgreedValue,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AgreedValue,\n\t-- *INF*: DECODE(i_ControlledAtmosphereWarehouse,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ControlledAtmosphereWarehouse,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ControlledAtmosphereWarehouse,\n\t-- *INF*: DECODE(i_DCGovernmentBuildingContents,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_DCGovernmentBuildingContents,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_DCGovernmentBuildingContents,\n\t-- *INF*: DECODE(i_VaultsOrSafeSelect,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_VaultsOrSafeSelect,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_VaultsOrSafeSelect,\n\t-- *INF*: DECODE(i_WholesaleOrStorage,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_WholesaleOrStorage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_WholesaleOrStorage,\n\tBaseLossCostSpecific,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_DC_CF_PersonalProperty\n),\nDCCFPersonalPropertyStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCFPersonalPropertyStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCFPersonalPropertyStaging\n\t(CF_PersonalPropertyId, SessionId, Id, PropertyType, PropertyTypeDesc, AgreedValue, ControlledAtmosphereWarehouse, DCGovernmentBuildingContents, VaultsOrSafeSelect, WholesaleOrStorage, BaseLossCostSpecific, ExtractDate, SourceSystemId, CF_RiskId)\n\tSELECT \n\tCF_PERSONALPROPERTYID, \n\tSESSIONID, \n\tID, \n\tPROPERTYTYPE, \n\tPROPERTYTYPEDESC, \n\to_AgreedValue AS AGREEDVALUE, \n\to_ControlledAtmosphereWarehouse AS CONTROLLEDATMOSPHEREWAREHOUSE, \n\to_DCGovernmentBuildingContents AS DCGOVERNMENTBUILDINGCONTENTS, \n\to_VaultsOrSafeSelect AS VAULTSORSAFESELECT, \n\to_WholesaleOrStorage AS WHOLESALEORSTORAGE, \n\tBASELOSSCOSTSPECIFIC, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCF_RISKID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCGLRiskStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCGLRiskStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_GL_Risk AS (\n\tWITH cte_DCGLRisk(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.LineId, \r\n\tX.GL_LocationId, \r\n\tX.GL_RiskId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.Auditable, \r\n\tX.CompositeRating, \r\n\tX.CompositeType, \r\n\tX.IfAnyExposure, \r\n\tX.RiskExcludeDeductible, \r\n\tX.SpecialCombinedMinimum, \r\n\tX.Type, \r\n\tX.UnderwriterOverride, \r\n\tX.UnitsDivider, \r\n\tX.WithdrawalType, \r\n\tX.Exposure, \r\n\tX.ExposureEstimated, \r\n\tX.ExposureAudited,\r\n\tX.CompositeRatingID, \r\n\tX.GL_LocationXmlId \r\n\tFROM\r\n\tDC_GL_Risk X\r\n\tinner join\r\n\tcte_DCGLRisk Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tLineId AS i_LineId,\n\tGL_LocationId AS i_GL_LocationId,\n\tGL_RiskId AS i_GL_RiskId,\n\tSessionId AS i_SessionId,\n\tId AS i_Id,\n\tAuditable AS i_Auditable,\n\tCompositeRating AS i_CompositeRating,\n\tCompositeType AS i_CompositeType,\n\tIfAnyExposure AS i_IfAnyExposure,\n\tRiskExcludeDeductible AS i_RiskExcludeDeductible,\n\tSpecialCombinedMinimum AS i_SpecialCombinedMinimum,\n\tType AS i_Type,\n\tUnderwriterOverride AS i_UnderwriterOverride,\n\tUnitsDivider AS i_UnitsDivider,\n\tWithdrawalType AS i_WithdrawalType,\n\tExposure AS i_Exposure,\n\tExposureEstimated AS i_ExposureEstimated,\n\tExposureAudited AS i_ExposureAudited,\n\tCompositeRatingID,\n\tGL_LocationXmlId AS i_GL_LocationXmlId,\n\ti_LineId AS o_LineId,\n\ti_GL_LocationId AS o_GL_LocationId,\n\ti_GL_RiskId AS o_GL_RiskId,\n\ti_SessionId AS o_SessionId,\n\ti_Id AS o_Id,\n\t-- *INF*: DECODE(i_Auditable,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_Auditable,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Auditable,\n\t-- *INF*: DECODE(i_CompositeRating,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_CompositeRating,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_CompositeRating,\n\ti_CompositeType AS o_CompositeType,\n\t-- *INF*: DECODE(i_IfAnyExposure,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_IfAnyExposure,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IfAnyExposure,\n\t-- *INF*: DECODE(i_RiskExcludeDeductible,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_RiskExcludeDeductible,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_RiskExcludeDeductible,\n\t-- *INF*: DECODE(i_SpecialCombinedMinimum,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_SpecialCombinedMinimum,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_SpecialCombinedMinimum,\n\ti_Type AS o_Type,\n\t-- *INF*: DECODE(i_UnderwriterOverride,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_UnderwriterOverride,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_UnderwriterOverride,\n\ti_UnitsDivider AS o_UnitsDivider,\n\ti_WithdrawalType AS o_WithdrawalType,\n\ti_Exposure AS o_Exposure,\n\ti_ExposureEstimated AS o_ExposureEstimated,\n\ti_ExposureAudited AS o_ExposureAudited,\n\ti_GL_LocationXmlId AS o_GL_LocationXmlId,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_DC_GL_Risk\n),\nDCGLRiskStaging AS (\n\tTRUNCATE TABLE DCGLRiskStaging;\n\tINSERT INTO DCGLRiskStaging\n\t(LineId, GL_LocationId, GL_RiskId, SessionId, Id, Auditable, CompositeRating, CompositeType, IfAnyExposure, RiskExcludeDeductible, SpecialCombinedMinimum, Type, UnderwriterOverride, UnitsDivider, WithdrawalType, Exposure, ExposureEstimated, ExposureAudited, GL_LocationXmlId, ExtractDate, SourceSystemId, CompositeRatingID)\n\tSELECT \n\to_LineId AS LINEID, \n\to_GL_LocationId AS GL_LOCATIONID, \n\to_GL_RiskId AS GL_RISKID, \n\to_SessionId AS SESSIONID, \n\to_Id AS ID, \n\to_Auditable AS AUDITABLE, \n\to_CompositeRating AS COMPOSITERATING, \n\to_CompositeType AS COMPOSITETYPE, \n\to_IfAnyExposure AS IFANYEXPOSURE, \n\to_RiskExcludeDeductible AS RISKEXCLUDEDEDUCTIBLE, \n\to_SpecialCombinedMinimum AS SPECIALCOMBINEDMINIMUM, \n\to_Type AS TYPE, \n\to_UnderwriterOverride AS UNDERWRITEROVERRIDE, \n\to_UnitsDivider AS UNITSDIVIDER, \n\to_WithdrawalType AS WITHDRAWALTYPE, \n\to_Exposure AS EXPOSURE, \n\to_ExposureEstimated AS EXPOSUREESTIMATED, \n\to_ExposureAudited AS EXPOSUREAUDITED, \n\to_GL_LocationXmlId AS GL_LOCATIONXMLID, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCOMPOSITERATINGID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

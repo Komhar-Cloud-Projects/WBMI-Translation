@@ -79,29 +79,30 @@ AGG_UnderlyingPolicy AS (
 	-- 'CPPEmployeeBenefitsLiability','Underlying-CPPEmployeeBenefitsLiabilityEachEmployee',
 	-- 'N/A'
 	-- )
-	DECODE(UnderlyingPolicyType,
-		'GeneralLiability', 'Underlying-GeneralLiability EACH OCCURRENCE LIMIT',
-		'EmployersLiability', 'Underlying-EmployersLiability BODILY INJURY BY ACCIDENT:  EACH ACCIDENT',
-		'CommercialAutoLiability', 'Underlying-CommercialAutoLiability PROPERTY DAMAGE - EACH ACCIDENT',
-		'GarageLiability', 'Underlying-GarageLiability EACH ACCIDENT - GARAGE OPERATIONS AUTO ONLY',
-		'BusinessownersLiability', 'Underlying-BusinessownersLiability EACH OCCURRENCE LIMIT',
-		'LiquorLiability', 'Underlying-LiquorLiability EACH OCCURRENCE LIMIT',
-		'SMARTbusinessLiability', 'Underlying-SMARTbusinessLiability EACH OCCURRENCE LIMIT',
-		'SBOPGeneralLiability', 'Underlying-SBOPGeneralLiability EACH OCCURRENCE LIMIT',
-		'CBOPGeneralLiability', 'Underlying-CBOPGeneralLiability EACH OCCURRENCE LIMIT',
-		'CPPProfessionalLiability', 'Underlying-CPPProfessionalLiability EACH OCCURRENCE LIMIT',
-		'SBOPProfessionalLiability', 'Underlying-SBOPProfessionalLiability EACH OCCURRENCE LIMIT',
-		'SMARTProfessionalLiability', 'Underlying-SMARTProfessionalLiability EACH OCCURRENCE LIMIT',
-		'GLOhioStopGapEmployersLiability', 'Underlying-GLOhioStopGapEmployersLiability-BodilyInjuryByAccident-EachAccident',
-		'AutoOhioStopGapEmployersLiability', 'Underlying-AutoOhioStopGapEmployersLiability-BodilyInjuryByAccident-EachAccident',
-		'SMARTOhioStopGapEmployersLiability', 'Underlying-SMARTOhioStopGapEmployersLiability-BodilyInjuryByAccident-EachAccident',
-		'SBOPOhioStopGapEmployersLiability', 'Underlying-SBOPOhioStopGapEmployersLiability BODILY INJURY BY ACCIDENT:  EACH ACCIDENT',
-		'SMARTEmployeeBenefitsLiability', 'Underlying-SMARTEmployeeBenefitsLiabilityEachEmployee',
-		'CommercialAutoEmployeeBenefitsLiability', 'Underlying-CommAutoEmployeeBenefitsLiabilityEachEmployee',
-		'BOPEmployeeBenefitsLiability', 'Underlying-BOPEmployeeBenefitsLiabilityEachEmployee',
-		'SBOPEmployeeBenefitsLiability', 'Underlying-SBOPEmployeeBenefitsLiabilityEachEmployee',
-		'CPPEmployeeBenefitsLiability', 'Underlying-CPPEmployeeBenefitsLiabilityEachEmployee',
-		'N/A'
+	DECODE(
+	    UnderlyingPolicyType,
+	    'GeneralLiability', 'Underlying-GeneralLiability EACH OCCURRENCE LIMIT',
+	    'EmployersLiability', 'Underlying-EmployersLiability BODILY INJURY BY ACCIDENT:  EACH ACCIDENT',
+	    'CommercialAutoLiability', 'Underlying-CommercialAutoLiability PROPERTY DAMAGE - EACH ACCIDENT',
+	    'GarageLiability', 'Underlying-GarageLiability EACH ACCIDENT - GARAGE OPERATIONS AUTO ONLY',
+	    'BusinessownersLiability', 'Underlying-BusinessownersLiability EACH OCCURRENCE LIMIT',
+	    'LiquorLiability', 'Underlying-LiquorLiability EACH OCCURRENCE LIMIT',
+	    'SMARTbusinessLiability', 'Underlying-SMARTbusinessLiability EACH OCCURRENCE LIMIT',
+	    'SBOPGeneralLiability', 'Underlying-SBOPGeneralLiability EACH OCCURRENCE LIMIT',
+	    'CBOPGeneralLiability', 'Underlying-CBOPGeneralLiability EACH OCCURRENCE LIMIT',
+	    'CPPProfessionalLiability', 'Underlying-CPPProfessionalLiability EACH OCCURRENCE LIMIT',
+	    'SBOPProfessionalLiability', 'Underlying-SBOPProfessionalLiability EACH OCCURRENCE LIMIT',
+	    'SMARTProfessionalLiability', 'Underlying-SMARTProfessionalLiability EACH OCCURRENCE LIMIT',
+	    'GLOhioStopGapEmployersLiability', 'Underlying-GLOhioStopGapEmployersLiability-BodilyInjuryByAccident-EachAccident',
+	    'AutoOhioStopGapEmployersLiability', 'Underlying-AutoOhioStopGapEmployersLiability-BodilyInjuryByAccident-EachAccident',
+	    'SMARTOhioStopGapEmployersLiability', 'Underlying-SMARTOhioStopGapEmployersLiability-BodilyInjuryByAccident-EachAccident',
+	    'SBOPOhioStopGapEmployersLiability', 'Underlying-SBOPOhioStopGapEmployersLiability BODILY INJURY BY ACCIDENT:  EACH ACCIDENT',
+	    'SMARTEmployeeBenefitsLiability', 'Underlying-SMARTEmployeeBenefitsLiabilityEachEmployee',
+	    'CommercialAutoEmployeeBenefitsLiability', 'Underlying-CommAutoEmployeeBenefitsLiabilityEachEmployee',
+	    'BOPEmployeeBenefitsLiability', 'Underlying-BOPEmployeeBenefitsLiabilityEachEmployee',
+	    'SBOPEmployeeBenefitsLiability', 'Underlying-SBOPEmployeeBenefitsLiabilityEachEmployee',
+	    'CPPEmployeeBenefitsLiability', 'Underlying-CPPEmployeeBenefitsLiabilityEachEmployee',
+	    'N/A'
 	) AS v_UnderlyingPolicyLimitType1,
 	-- *INF*: DECODE(UnderlyingPolicyType,
 	-- 'GeneralLiability',
@@ -141,28 +142,29 @@ AGG_UnderlyingPolicy AS (
 	-- 'CPPEmployeeBenefitsLiability','Underlying-CPPEmployeeBenefitsLiabilityAggregrate',
 	-- 'N/A'
 	-- )
-	DECODE(UnderlyingPolicyType,
-		'GeneralLiability', 'Underlying-GeneralLiability AGGREGATE LIMIT',
-		'EmployersLiability', 'Underlying-EmployersLiability BODILY INJURY BY DISEASE:   EACH EMPLOYEE',
-		'GarageLiability', 'Underlying-GarageLiability EACH ACCIDENT - GARAGE OPERATIONS OTHER THAN AUTO ONLY',
-		'BusinessownersLiability', 'Underlying-BusinessownersLiability AGGREGATE LIMIT',
-		'LiquorLiability', 'Underlying-LiquorLiability AGGREGATE LIMIT',
-		'SMARTbusinessLiability', 'Underlying-SMARTbusinessLiability AGGREGATE LIMIT',
-		'SBOPGeneralLiability', 'Underlying-SBOPGeneralLiability AGGREGATE LIMIT',
-		'CBOPGeneralLiability', 'Underlying-CBOPGeneralLiability AGGREGATE LIMIT',
-		'CPPProfessionalLiability', 'Underlying-CPPProfessionalLiability AGGREGATE LIMIT',
-		'SBOPProfessionalLiability', 'Underlying-SBOPProfessionalLiability AGGREGATE LIMIT',
-		'SMARTProfessionalLiability', 'Underlying-SMARTProfessionalLiability AGGREGATE LIMIT',
-		'GLOhioStopGapEmployersLiability', 'Underlying-GLOhioStopGapEmployersLiability-BodilyInjuryByDisease-EachEmployee',
-		'AutoOhioStopGapEmployersLiability', 'Underlying-AutoOhioStopGapEmployersLiability-BodilyInjuryByDisease-EachEmployee',
-		'SMARTOhioStopGapEmployersLiability', 'Underlying-SMARTOhioStopGapEmployersLiability-BodilyInjuryByDisease-EachEmployee',
-		'SBOPOhioStopGapEmployersLiability', 'Underlying-SBOPOhioStopGapEmployersLiability BODILY INJURY BY DISEASE:   EACH EMPLOYEE',
-		'SMARTEmployeeBenefitsLiability', 'Underlying-SMARTEmployeeBenefitsLiabilityAggregate',
-		'CommercialAutoEmployeeBenefitsLiability', 'Underlying-CommAutoEmployeeBenefitsLiabilityAggregate',
-		'BOPEmployeeBenefitsLiability', 'Underlying-BOPEmployeeBenefitsLiabilityAggregrate',
-		'SBOPEmployeeBenefitsLiability', 'Underlying-SBOPEmployeeBenefitsLiabilityAggregrate',
-		'CPPEmployeeBenefitsLiability', 'Underlying-CPPEmployeeBenefitsLiabilityAggregrate',
-		'N/A'
+	DECODE(
+	    UnderlyingPolicyType,
+	    'GeneralLiability', 'Underlying-GeneralLiability AGGREGATE LIMIT',
+	    'EmployersLiability', 'Underlying-EmployersLiability BODILY INJURY BY DISEASE:   EACH EMPLOYEE',
+	    'GarageLiability', 'Underlying-GarageLiability EACH ACCIDENT - GARAGE OPERATIONS OTHER THAN AUTO ONLY',
+	    'BusinessownersLiability', 'Underlying-BusinessownersLiability AGGREGATE LIMIT',
+	    'LiquorLiability', 'Underlying-LiquorLiability AGGREGATE LIMIT',
+	    'SMARTbusinessLiability', 'Underlying-SMARTbusinessLiability AGGREGATE LIMIT',
+	    'SBOPGeneralLiability', 'Underlying-SBOPGeneralLiability AGGREGATE LIMIT',
+	    'CBOPGeneralLiability', 'Underlying-CBOPGeneralLiability AGGREGATE LIMIT',
+	    'CPPProfessionalLiability', 'Underlying-CPPProfessionalLiability AGGREGATE LIMIT',
+	    'SBOPProfessionalLiability', 'Underlying-SBOPProfessionalLiability AGGREGATE LIMIT',
+	    'SMARTProfessionalLiability', 'Underlying-SMARTProfessionalLiability AGGREGATE LIMIT',
+	    'GLOhioStopGapEmployersLiability', 'Underlying-GLOhioStopGapEmployersLiability-BodilyInjuryByDisease-EachEmployee',
+	    'AutoOhioStopGapEmployersLiability', 'Underlying-AutoOhioStopGapEmployersLiability-BodilyInjuryByDisease-EachEmployee',
+	    'SMARTOhioStopGapEmployersLiability', 'Underlying-SMARTOhioStopGapEmployersLiability-BodilyInjuryByDisease-EachEmployee',
+	    'SBOPOhioStopGapEmployersLiability', 'Underlying-SBOPOhioStopGapEmployersLiability BODILY INJURY BY DISEASE:   EACH EMPLOYEE',
+	    'SMARTEmployeeBenefitsLiability', 'Underlying-SMARTEmployeeBenefitsLiabilityAggregate',
+	    'CommercialAutoEmployeeBenefitsLiability', 'Underlying-CommAutoEmployeeBenefitsLiabilityAggregate',
+	    'BOPEmployeeBenefitsLiability', 'Underlying-BOPEmployeeBenefitsLiabilityAggregrate',
+	    'SBOPEmployeeBenefitsLiability', 'Underlying-SBOPEmployeeBenefitsLiabilityAggregrate',
+	    'CPPEmployeeBenefitsLiability', 'Underlying-CPPEmployeeBenefitsLiabilityAggregrate',
+	    'N/A'
 	) AS v_UnderlyingPolicyLimitType2,
 	-- *INF*: DECODE(UnderlyingPolicyType,
 	-- 'GeneralLiability',
@@ -191,20 +193,21 @@ AGG_UnderlyingPolicy AS (
 	-- 'Underlying-SBOPOhioStopGapEmployersLiability BODILY INJURY BY DISEASE:   POLICY LIMIT',
 	-- 'N/A'
 	-- )
-	DECODE(UnderlyingPolicyType,
-		'GeneralLiability', 'Underlying-GeneralLiability PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT',
-		'EmployersLiability', 'Underlying-EmployersLiability BODILY INJURY BY DISEASE:   POLICY LIMIT',
-		'GarageLiability', 'Underlying-GarageLiability AGGREGATE - GARAGE OPERATIONS OTHER THAN AUTO ONLY',
-		'BusinessownersLiability', 'Underlying-BusinessownersLiability PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT',
-		'LiquorLiability', 'Underlying-LiquorLiability PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT',
-		'SMARTbusinessLiability', 'Underlying-SMARTbusinessLiability PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT',
-		'SBOPGeneralLiability', 'Underlying-SBOPGeneralLiability PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT',
-		'CBOPGeneralLiability', 'Underlying-CBOPGeneralLiability PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT',
-		'GLOhioStopGapEmployersLiability', 'Underlying-GLOhioStopGapEmployersLiability-BodilyInjuryByDisease-Aggregate',
-		'AutoOhioStopGapEmployersLiability', 'Underlying-AutoOhioStopGapEmployersLiability-BodilyInjuryByDisease-Aggregate',
-		'SMARTOhioStopGapEmployersLiability', 'Underlying-SMARTOhioStopGapEmployersLiability-BodilyInjuryByDisease-Aggregate',
-		'SBOPOhioStopGapEmployersLiability', 'Underlying-SBOPOhioStopGapEmployersLiability BODILY INJURY BY DISEASE:   POLICY LIMIT',
-		'N/A'
+	DECODE(
+	    UnderlyingPolicyType,
+	    'GeneralLiability', 'Underlying-GeneralLiability PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT',
+	    'EmployersLiability', 'Underlying-EmployersLiability BODILY INJURY BY DISEASE:   POLICY LIMIT',
+	    'GarageLiability', 'Underlying-GarageLiability AGGREGATE - GARAGE OPERATIONS OTHER THAN AUTO ONLY',
+	    'BusinessownersLiability', 'Underlying-BusinessownersLiability PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT',
+	    'LiquorLiability', 'Underlying-LiquorLiability PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT',
+	    'SMARTbusinessLiability', 'Underlying-SMARTbusinessLiability PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT',
+	    'SBOPGeneralLiability', 'Underlying-SBOPGeneralLiability PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT',
+	    'CBOPGeneralLiability', 'Underlying-CBOPGeneralLiability PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT',
+	    'GLOhioStopGapEmployersLiability', 'Underlying-GLOhioStopGapEmployersLiability-BodilyInjuryByDisease-Aggregate',
+	    'AutoOhioStopGapEmployersLiability', 'Underlying-AutoOhioStopGapEmployersLiability-BodilyInjuryByDisease-Aggregate',
+	    'SMARTOhioStopGapEmployersLiability', 'Underlying-SMARTOhioStopGapEmployersLiability-BodilyInjuryByDisease-Aggregate',
+	    'SBOPOhioStopGapEmployersLiability', 'Underlying-SBOPOhioStopGapEmployersLiability BODILY INJURY BY DISEASE:   POLICY LIMIT',
+	    'N/A'
 	) AS v_UnderlyingPolicyLimitType3,
 	-- *INF*: DECODE(UnderlyingPolicyType,
 	-- 'GeneralLiability',
@@ -221,31 +224,28 @@ AGG_UnderlyingPolicy AS (
 	-- 'Underlying-CBOPGeneralLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
 	-- 'N/A'
 	-- )
-	DECODE(UnderlyingPolicyType,
-		'GeneralLiability', 'Underlying-GeneralLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
-		'BusinessownersLiability', 'Underlying-BusinessownersLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
-		'LiquorLiability', 'Underlying-LiquorLiability EACH COMMON CAUSE LIMIT',
-		'SMARTbusinessLiability', 'Underlying-SMARTbusinessLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
-		'SBOPGeneralLiability', 'Underlying-SBOPGeneralLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
-		'CBOPGeneralLiability', 'Underlying-CBOPGeneralLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
-		'N/A'
+	DECODE(
+	    UnderlyingPolicyType,
+	    'GeneralLiability', 'Underlying-GeneralLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
+	    'BusinessownersLiability', 'Underlying-BusinessownersLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
+	    'LiquorLiability', 'Underlying-LiquorLiability EACH COMMON CAUSE LIMIT',
+	    'SMARTbusinessLiability', 'Underlying-SMARTbusinessLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
+	    'SBOPGeneralLiability', 'Underlying-SBOPGeneralLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
+	    'CBOPGeneralLiability', 'Underlying-CBOPGeneralLiability PERSONAL INJURY AND ADVERTISING INJURY LIMIT',
+	    'N/A'
 	) AS v_UnderlyingPolicyLimitType4,
 	v_UnderlyingPolicyLimitType1 AS o_UnderlyingPolicyLimitType1,
 	v_UnderlyingPolicyLimitType2 AS o_UnderlyingPolicyLimitType2,
 	v_UnderlyingPolicyLimitType3 AS o_UnderlyingPolicyLimitType3,
 	v_UnderlyingPolicyLimitType4 AS o_UnderlyingPolicyLimitType4,
 	-- *INF*: FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType1)
-	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType1
-	) AS o_UnderlyingPolicyLimit1,
+	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType1) AS o_UnderlyingPolicyLimit1,
 	-- *INF*: FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType2)
-	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType2
-	) AS o_UnderlyingPolicyLimit2,
+	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType2) AS o_UnderlyingPolicyLimit2,
 	-- *INF*: FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType3)
-	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType3
-	) AS o_UnderlyingPolicyLimit3,
+	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType3) AS o_UnderlyingPolicyLimit3,
 	-- *INF*: FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType4)
-	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType4
-	) AS o_UnderlyingPolicyLimit4
+	FIRST(i_UnderlyingPolicyLimit, i_UnderlyingPolicyLimitType = v_UnderlyingPolicyLimitType4) AS o_UnderlyingPolicyLimit4
 	FROM EXP_GetValues
 	GROUP BY CoverageDetailDimId, UnderlyingInsuranceCompanyName, UnderlyingPolicyKey, UnderlyingPolicyType
 ),
@@ -267,25 +267,13 @@ EXP_Metadata AS (
 	o_UnderlyingPolicyLimitType3 AS UnderlyingPolicyLimitType3,
 	o_UnderlyingPolicyLimitType4 AS UnderlyingPolicyLimitType4,
 	-- *INF*: IIF(ISNULL(i_UnderlyingPolicyLimit1), 'N/A', i_UnderlyingPolicyLimit1)
-	IFF(i_UnderlyingPolicyLimit1 IS NULL,
-		'N/A',
-		i_UnderlyingPolicyLimit1
-	) AS o_UnderlyingPolicyLimit1,
+	IFF(i_UnderlyingPolicyLimit1 IS NULL, 'N/A', i_UnderlyingPolicyLimit1) AS o_UnderlyingPolicyLimit1,
 	-- *INF*: IIF(ISNULL(i_UnderlyingPolicyLimit2), 'N/A', i_UnderlyingPolicyLimit2)
-	IFF(i_UnderlyingPolicyLimit2 IS NULL,
-		'N/A',
-		i_UnderlyingPolicyLimit2
-	) AS o_UnderlyingPolicyLimit2,
+	IFF(i_UnderlyingPolicyLimit2 IS NULL, 'N/A', i_UnderlyingPolicyLimit2) AS o_UnderlyingPolicyLimit2,
 	-- *INF*: IIF(ISNULL(i_UnderlyingPolicyLimit3), 'N/A', i_UnderlyingPolicyLimit3)
-	IFF(i_UnderlyingPolicyLimit3 IS NULL,
-		'N/A',
-		i_UnderlyingPolicyLimit3
-	) AS o_UnderlyingPolicyLimit3,
+	IFF(i_UnderlyingPolicyLimit3 IS NULL, 'N/A', i_UnderlyingPolicyLimit3) AS o_UnderlyingPolicyLimit3,
 	-- *INF*: IIF(ISNULL(i_UnderlyingPolicyLimit4), 'N/A', i_UnderlyingPolicyLimit4)
-	IFF(i_UnderlyingPolicyLimit4 IS NULL,
-		'N/A',
-		i_UnderlyingPolicyLimit4
-	) AS o_UnderlyingPolicyLimit4,
+	IFF(i_UnderlyingPolicyLimit4 IS NULL, 'N/A', i_UnderlyingPolicyLimit4) AS o_UnderlyingPolicyLimit4,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	CURRENT_TIMESTAMP AS o_CreateDate,
 	CURRENT_TIMESTAMP AS o_ModifiedDate
@@ -377,19 +365,11 @@ EXP_Update AS (
 	-- lkp_UnderlyingPolicyLimit4 != UnderlyingPolicyLimit4,
 	-- 'UPDATE',
 	-- 'NOCHANGE')
-	DECODE(TRUE,
-		lkp_CoverageDetailUnderlyingPolicyDimId IS NULL, 'NEW',
-		lkp_EffectiveDate != EffectiveDate 
-		OR lkp_ExpirationDate != ExpirationDate 
-		OR lkp_UnderlyingPolicyLimitType1 != UnderlyingPolicyLimitType1 
-		OR lkp_UnderlyingPolicyLimit1 != UnderlyingPolicyLimit1 
-		OR lkp_UnderlyingPolicyLimitType2 != UnderlyingPolicyLimitType2 
-		OR lkp_UnderlyingPolicyLimit2 != UnderlyingPolicyLimit2 
-		OR lkp_UnderlyingPolicyLimitType3 != UnderlyingPolicyLimitType3 
-		OR lkp_UnderlyingPolicyLimit3 != UnderlyingPolicyLimit3 
-		OR lkp_UnderlyingPolicyLimitType4 != UnderlyingPolicyLimitType4 
-		OR lkp_UnderlyingPolicyLimit4 != UnderlyingPolicyLimit4, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    lkp_CoverageDetailUnderlyingPolicyDimId IS NULL, 'NEW',
+	    lkp_EffectiveDate != EffectiveDate OR lkp_ExpirationDate != ExpirationDate OR lkp_UnderlyingPolicyLimitType1 != UnderlyingPolicyLimitType1 OR lkp_UnderlyingPolicyLimit1 != UnderlyingPolicyLimit1 OR lkp_UnderlyingPolicyLimitType2 != UnderlyingPolicyLimitType2 OR lkp_UnderlyingPolicyLimit2 != UnderlyingPolicyLimit2 OR lkp_UnderlyingPolicyLimitType3 != UnderlyingPolicyLimitType3 OR lkp_UnderlyingPolicyLimit3 != UnderlyingPolicyLimit3 OR lkp_UnderlyingPolicyLimitType4 != UnderlyingPolicyLimitType4 OR lkp_UnderlyingPolicyLimit4 != UnderlyingPolicyLimit4, 'UPDATE',
+	    'NOCHANGE'
 	) AS o_ChangeFlag
 	FROM EXP_Metadata
 	LEFT JOIN LKP_CoverageDetailUnderlyingPolicyDim

@@ -34,9 +34,7 @@ EXP_claim_master_1099_list_dim AS (
 	claim_master_1099_list_ak_id,
 	tax_id AS in_tax_id,
 	-- *INF*: LTRIM(RTRIM(in_tax_id))
-	LTRIM(RTRIM(in_tax_id
-		)
-	) AS v_tax_id,
+	LTRIM(RTRIM(in_tax_id)) AS v_tax_id,
 	v_tax_id AS out_tax_id,
 	irs_tax_id,
 	tax_id_type,
@@ -53,9 +51,7 @@ EXP_claim_master_1099_list_dim AS (
 	irs_1099_type,
 	vendor_type_code AS in_vendor_type_code,
 	-- *INF*: ltrim(rtrim(in_vendor_type_code))
-	ltrim(rtrim(in_vendor_type_code
-		)
-	) AS v_vendor_code_type,
+	ltrim(rtrim(in_vendor_type_code)) AS v_vendor_code_type,
 	v_vendor_code_type AS vendor_code_type,
 	err_flag,
 	crrnt_snpsht_flag,
@@ -65,12 +61,13 @@ EXP_claim_master_1099_list_dim AS (
 	-- '1',1,
 	-- '0',0,
 	-- 0)
-	DECODE(crrnt_snpsht_flag,
-		'T', 1,
-		'F', 0,
-		'1', 1,
-		'0', 0,
-		0
+	DECODE(
+	    crrnt_snpsht_flag,
+	    'T', 1,
+	    'F', 0,
+	    '1', 1,
+	    '0', 0,
+	    0
 	) AS crrnt_snpsht_flag_out,
 	eff_from_date,
 	eff_to_date,
@@ -126,31 +123,27 @@ EXP_tocheck_source AS (
 	EXP_claim_master_1099_list_dim.vendor_code_type,
 	LKP_sup_claim_vendor_1099_type.vendor_type_code_descript AS in_vendor_type_code_descript,
 	-- *INF*: iif(isnull(in_vendor_type_code_descript) or IS_SPACES(in_vendor_type_code_descript) or LENGTH(in_vendor_type_code_descript)=0,'N/A',in_vendor_type_code_descript)
-	IFF(in_vendor_type_code_descript IS NULL 
-		OR LENGTH(in_vendor_type_code_descript)>0 AND TRIM(in_vendor_type_code_descript)='' 
-		OR LENGTH(in_vendor_type_code_descript
-		) = 0,
-		'N/A',
-		in_vendor_type_code_descript
+	IFF(
+	    in_vendor_type_code_descript IS NULL
+	    or LENGTH(in_vendor_type_code_descript)>0
+	    and TRIM(in_vendor_type_code_descript)=''
+	    or LENGTH(in_vendor_type_code_descript) = 0,
+	    'N/A',
+	    in_vendor_type_code_descript
 	) AS v_vendor_type_code_descript,
 	v_vendor_type_code_descript AS vendor_type_code_descript,
 	EXP_claim_master_1099_list_dim.err_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	-- *INF*: IIF(ISNULL(LKP_claim_master_1099_list_dim_id),1,0)
-	IFF(LKP_claim_master_1099_list_dim_id IS NULL,
-		1,
-		0
-	) AS V_LKP_claim_master_1099_list_dim_id,
+	IFF(LKP_claim_master_1099_list_dim_id IS NULL, 1, 0) AS V_LKP_claim_master_1099_list_dim_id,
 	V_LKP_claim_master_1099_list_dim_id AS OUT_LKP_claim_master_1099_list_dim_id,
 	EXP_claim_master_1099_list_dim.irs_tax_id,
 	EXP_claim_master_1099_list_dim.crrnt_snpsht_flag_out AS edw_crrnt_snpsht_flag,

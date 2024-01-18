@@ -97,16 +97,9 @@ EXP_IsPolicyLevel AS (
 	LKP_CWOCLAW_PolicyLevel.CWOAmount AS lkp_CWOAmount_Policy,
 	LKP_CWOCLAW_PolicyLevel.AuthorizedAmount AS lkp_AuthorizedAmount_Policy,
 	-- *INF*: IIF(ISNULL(lkp_pol_num_IsPolicy),0,1)
-	IFF(lkp_pol_num_IsPolicy IS NULL,
-		0,
-		1
-	) AS IsPolicy,
+	IFF(lkp_pol_num_IsPolicy IS NULL, 0, 1) AS IsPolicy,
 	-- *INF*: IIF(ISNULL(lkp_CWOAmount) AND ISNULL(lkp_CWOAmount_Policy), 1, 0)
-	IFF(lkp_CWOAmount IS NULL 
-		AND lkp_CWOAmount_Policy IS NULL,
-		1,
-		0
-	) AS NoCWO
+	IFF(lkp_CWOAmount IS NULL AND lkp_CWOAmount_Policy IS NULL, 1, 0) AS NoCWO
 	FROM SQ_PremiumTransaction
 	LEFT JOIN LKP_CWOCLAW
 	ON LKP_CWOCLAW.PolicyReference = SQ_PremiumTransaction.pol_num AND LKP_CWOCLAW.CommissionPercent = SQ_PremiumTransaction.AgencyActualCommissionRate AND LKP_CWOCLAW.AuthorizationDate = SQ_PremiumTransaction.PremiumTransactionEffectiveDate AND LKP_CWOCLAW.PolicyTermEffectiveDate = SQ_PremiumTransaction.pol_eff_date AND LKP_CWOCLAW.PolicyTermExpirationDate = SQ_PremiumTransaction.pol_exp_date
@@ -159,20 +152,19 @@ EXP_CWOAmountCal AS (
 	lkp_AuthorizedAmount_Policy AS i_AuthorizedAmount_Policy,
 	IsPolicy AS i_IsPolicy,
 	-- *INF*: IIF(i_IsPolicy=1, i_CWOAmount_Policy-i_TotalCWOPTPolicyLevel,i_CWOAmount-i_TotalCWOPT)
-	IFF(i_IsPolicy = 1,
-		i_CWOAmount_Policy - i_TotalCWOPTPolicyLevel,
-		i_CWOAmount - i_TotalCWOPT
+	IFF(
+	    i_IsPolicy = 1, i_CWOAmount_Policy - i_TotalCWOPTPolicyLevel, i_CWOAmount - i_TotalCWOPT
 	) AS v_CWOAmountGap,
 	-- *INF*: IIF(i_IsPolicy=1,i_AuthorizedAmount_Policy-i_TotalClawBackPTPolicyLevel,i_AuthorizedAmount-i_TotalClawBackPT)
-	IFF(i_IsPolicy = 1,
-		i_AuthorizedAmount_Policy - i_TotalClawBackPTPolicyLevel,
-		i_AuthorizedAmount - i_TotalClawBackPT
+	IFF(
+	    i_IsPolicy = 1, i_AuthorizedAmount_Policy - i_TotalClawBackPTPolicyLevel,
+	    i_AuthorizedAmount - i_TotalClawBackPT
 	) AS v_ClawBackAmountGap,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	-- *INF*: IIF(i_ReasonAmendedCode='CWO',i_PremiumTransactionAmount+v_CWOAmountGap,i_PremiumTransactionAmount+v_ClawBackAmountGap)
-	IFF(i_ReasonAmendedCode = 'CWO',
-		i_PremiumTransactionAmount + v_CWOAmountGap,
-		i_PremiumTransactionAmount + v_ClawBackAmountGap
+	IFF(
+	    i_ReasonAmendedCode = 'CWO', i_PremiumTransactionAmount + v_CWOAmountGap,
+	    i_PremiumTransactionAmount + v_ClawBackAmountGap
 	) AS o_PremiumTransactionAmount
 	FROM FIL_MaxPremiumTransactionAmount
 ),

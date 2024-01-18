@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Plines_STG_Insert_Violation",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Plines_STG_Insert_Violation",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_violation AS (\n\tSELECT\n\t\tviolation_seq,\n\t\tperson_seq,\n\t\tcov_part_type_code,\n\t\tpolicy_num,\n\t\tpolicy_sym,\n\t\tpolicy_mod,\n\t\tpolicy_mco,\n\t\tviolation_num,\n\t\tdate,\n\t\tacc_violation_type_code,\n\t\tdescript,\n\t\tamt,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\tclaim_status,\n\t\trpt_type_code,\n\t\tendorsement_view_code,\n\t\tupdater_acc_violation_type_code,\n\t\tcomp_claim_type_code\n\tFROM violation\n),\nEXP_VIOLATION AS (\n\tSELECT\n\tviolation_seq,\n\tperson_seq,\n\tcov_part_type_code,\n\tpolicy_num,\n\tpolicy_sym,\n\tpolicy_mod,\n\tpolicy_mco,\n\tviolation_num,\n\tdate,\n\tacc_violation_type_code,\n\tdescript,\n\tamt,\n\tmodified_date,\n\tmodified_user_id,\n\tclaim_status,\n\trpt_type_code,\n\tendorsement_view_code,\n\tupdater_acc_violation_type_code,\n\tcomp_claim_type_code,\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t'' AS RECORD_COUNT,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID\n\tFROM SQ_violation\n),\nviolation_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.violation_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.violation_stage\n\t(violation_seq, person_seq, cov_part_type_code, policy_num, policy_sym, policy_mod, policy_mco, violation_num, date, acc_violation_type_code, descript, amt, modified_date, modified_user_id, claim_status, rpt_type_code, endorsement_view_code, updater_acc_violation_type_code, comp_claim_type_code, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tVIOLATION_SEQ, \n\tPERSON_SEQ, \n\tCOV_PART_TYPE_CODE, \n\tPOLICY_NUM, \n\tPOLICY_SYM, \n\tPOLICY_MOD, \n\tPOLICY_MCO, \n\tVIOLATION_NUM, \n\tDATE, \n\tACC_VIOLATION_TYPE_CODE, \n\tDESCRIPT, \n\tAMT, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tCLAIM_STATUS, \n\tRPT_TYPE_CODE, \n\tENDORSEMENT_VIEW_CODE, \n\tUPDATER_ACC_VIOLATION_TYPE_CODE, \n\tCOMP_CLAIM_TYPE_CODE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_VIOLATION\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CommonStaging/"
+        },
+        "annotations": []
+    }
+}

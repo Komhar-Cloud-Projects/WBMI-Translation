@@ -1,0 +1,80 @@
+WITH
+SQ_med_provider_stage AS (
+	SELECT
+		med_provider_stage_id,
+		medical_provider_id,
+		med_bill_id,
+		bus_name,
+		last_name,
+		first_name,
+		mid_name,
+		prfx,
+		sfx,
+		title,
+		spty_code,
+		addr,
+		city,
+		state,
+		zip,
+		tax_id,
+		provider_type_code,
+		extract_date,
+		as_of_date,
+		record_count,
+		source_system_id
+	FROM med_provider_stage
+),
+EXP_arch_med_provider_stage AS (
+	SELECT
+	med_provider_stage_id,
+	medical_provider_id,
+	med_bill_id,
+	bus_name,
+	last_name,
+	first_name,
+	mid_name,
+	prfx,
+	sfx,
+	title,
+	spty_code,
+	addr,
+	city,
+	state,
+	zip,
+	tax_id,
+	provider_type_code,
+	extract_date,
+	as_of_date,
+	record_count,
+	source_system_id,
+	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP
+	FROM SQ_med_provider_stage
+),
+arch_med_provider_stage AS (
+	INSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_med_provider_stage
+	(med_provider_stage_id, medical_provider_id, med_bill_id, bus_name, last_name, first_name, mid_name, prfx, sfx, title, spty_code, addr, city, state, zip, tax_id, provider_type_code, extract_date, as_of_date, record_count, source_system_id, audit_id)
+	SELECT 
+	MED_PROVIDER_STAGE_ID, 
+	MEDICAL_PROVIDER_ID, 
+	MED_BILL_ID, 
+	BUS_NAME, 
+	LAST_NAME, 
+	FIRST_NAME, 
+	MID_NAME, 
+	PRFX, 
+	SFX, 
+	TITLE, 
+	SPTY_CODE, 
+	ADDR, 
+	CITY, 
+	STATE, 
+	ZIP, 
+	TAX_ID, 
+	PROVIDER_TYPE_CODE, 
+	EXTRACT_DATE, 
+	AS_OF_DATE, 
+	RECORD_COUNT, 
+	SOURCE_SYSTEM_ID, 
+	AUDIT_ID_OP AS AUDIT_ID
+	FROM EXP_arch_med_provider_stage
+),

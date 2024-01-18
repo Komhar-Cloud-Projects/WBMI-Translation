@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_FEED_Load_WCPOLS_ED_Record",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Load_WCPOLS_ED_Record",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WCPols00Record AS (\n\tSELECT\r\n\t\tWCTrackHistoryID,\r\n\t\tLinkData,\r\n\t      AuditId\r\n\tFROM dbo.WCPols00Record\r\n\tWHERE \r\n\t AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tORDER BY WCTrackHistoryID\n),\nSQ_WorkWCTrackHistory AS (\n\tSELECT \r\n\tTrack.WCTrackHistoryID as WCTrackHistoryID, \r\n\t'WC480316' as ParsedFormName,\r\n\tForms.FormName as FormName, \r\n\t\r\n\tDetails.value as EmployeeLeasingCompanyNameWC480316,\r\n\tDetails1.value as ClientNameWC480316,\r\n\tDetails2.value as TerminatedEffectiveDateWC480316,\r\n\tDetails3.value as EntitiesWC480316,\r\n\tDetails4.value as DateSentWC480316,\r\n\t\r\n\tParty.Name as Name,\r\n\tPolicy.TransactionEffectiveDate as TransactionEffectiveDate  \r\n\tFROM\r\n\tWorkWCForms Forms\r\n\tinner join WorkWCTrackHistory Track \ton \r\n\t\tForms.WCTrackHistoryID=Track.WCTrackHistoryID and \r\n\t\tForms.FormName like 'WC480316%' and \r\n\t\t((Forms.OnPolicy=1 OR Forms.[Add] = 1) AND (Forms.Remove is null OR Forms.Remove = 0))\r\n\tinner join WorkWCParty Party on \r\n\t\tParty.WCTrackHistoryID=Track.WCTrackHistoryID AND \r\n\t\tParty.PartyAssociationType='Account'\r\n\tinner join WorkWCPolicy Policy on \r\n\t\tPolicy.WCTrackHistoryID=Track.WCTrackHistoryID\r\n\t\r\n\tinner join WorkWCPolicyDetails Details on \r\n\t      Policy.PolicyID=Details.PolicyID and Details.Attribute = 'EmployeeLeasingCompanyNameWC480316' AND\r\n\t\tDetails.WCTrackHistoryID=Track.WCTrackHistoryID\r\n\t\r\n\tinner join WorkWCPolicyDetails Details1 on \r\n\t      Policy.PolicyID=Details1.PolicyID and Details1.Attribute = 'ClientNameWC480316' AND\r\n\t\tDetails1.WCTrackHistoryID=Track.WCTrackHistoryID\r\n\t\r\n\tinner join WorkWCPolicyDetails Details2 on \r\n\t      Policy.PolicyID=Details2.PolicyID and Details2.Attribute = 'TerminatedEffectiveDateWC480316' AND\r\n\t\tDetails2.WCTrackHistoryID=Track.WCTrackHistoryID\r\n\t\r\n\tinner join WorkWCPolicyDetails Details3 on \r\n\t      Policy.PolicyID=Details3.PolicyID and Details3.Attribute ='EntitiesWC480316' AND\r\n\t\tDetails3.WCTrackHistoryID=Track.WCTrackHistoryID\r\n\t\r\n\tinner join WorkWCPolicyDetails Details4 on \r\n\t      Policy.PolicyID=Details4.PolicyID and Details4.Attribute ='DateSentWC480316' AND\r\n\t\tDetails4.WCTrackHistoryID=Track.WCTrackHistoryID\r\n\t\r\n\tWHERE\r\n\tForms.Auditid = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t@{pipeline().parameters.WHERE_CLAUSE_ED}\r\n\torder by 1\n),\nJNR_DataCollect AS (SELECT\n\tSQ_WCPols00Record.WCTrackHistoryID, \n\tSQ_WCPols00Record.LinkData, \n\tSQ_WCPols00Record.AuditId, \n\tSQ_WorkWCTrackHistory.WCTrackHistoryID AS WCTrackHistoryID1, \n\tSQ_WorkWCTrackHistory.ParsedFormName, \n\tSQ_WorkWCTrackHistory.FormName, \n\tSQ_WorkWCTrackHistory.EmployeeLeasingCompanyNameWC480316, \n\tSQ_WorkWCTrackHistory.ClientNameWC480316, \n\tSQ_WorkWCTrackHistory.TerminatedEffectiveDateWC480316, \n\tSQ_WorkWCTrackHistory.EntitiesWC480316, \n\tSQ_WorkWCTrackHistory.DateSentWC480316, \n\tSQ_WorkWCTrackHistory.Name, \n\tSQ_WorkWCTrackHistory.TransactionEffectiveDate\n\tFROM SQ_WCPols00Record\n\tINNER JOIN SQ_WorkWCTrackHistory\n\tON SQ_WorkWCTrackHistory.WCTrackHistoryID = SQ_WCPols00Record.WCTrackHistoryID\n),\nmplt_Parse_FormNameField AS (WITH\n\tINPUT_FormName AS (\n\t\t\n\t),\n\tEXPTRANS AS (\n\t\tSELECT\n\t\tParsedNameOfForm,\n\t\tFormNameFromSource,\n\t\t-- *INF*: REVERSE(FormNameFromSource)\n\t\tREVERSE(FormNameFromSource) AS vReversedFromNameFromSource,\n\t\t-- *INF*: REVERSE(substr(vReversedFromNameFromSource,1,4))\n\t\tREVERSE(substr(vReversedFromNameFromSource, 1, 4)) AS vFormEdition,\n\t\t-- *INF*: DECODE(TRUE,\r\n\t\t-- substr(vReversedFromNameFromSource,5,1) >='A' and substr(vReversedFromNameFromSource,5,1) <='Z', substr(vReversedFromNameFromSource,5,1),\r\n\t\t-- ' '\r\n\t\t-- )\r\n\t\t-- \r\n\t\t-- -- check if within A and Z, if not then space\n\t\tDECODE(\n\t\t    TRUE,\n\t\t    substr(vReversedFromNameFromSource, 5, 1) >= 'A' and substr(vReversedFromNameFromSource, 5, 1) <= 'Z', substr(vReversedFromNameFromSource, 5, 1),\n\t\t    ' '\n\t\t) AS vBureauCode,\n\t\tvFormEdition AS oFormEdition,\n\t\tvBureauCode AS oBureauCode\n\t\tFROM INPUT_FormName\n\t),\n\tOUTPUT_FormName AS (\n\t\tSELECT\n\t\tParsedNameOfForm, \n\t\tFormNameFromSource, \n\t\toFormEdition AS FormEdition, \n\t\toBureauCode AS BureauCode\n\t\tFROM EXPTRANS\n\t),\n),\nEXP_PrepareOutput AS (\n\tSELECT\n\tJNR_DataCollect.WCTrackHistoryID,\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\t'ED' AS RecordTypeCode,\n\tmplt_Parse_FormNameField.ParsedNameOfForm1,\n\tmplt_Parse_FormNameField.FormEdition,\n\tmplt_Parse_FormNameField.BureauCode,\n\tJNR_DataCollect.LinkData,\n\tJNR_DataCollect.AuditId,\n\tJNR_DataCollect.EmployeeLeasingCompanyNameWC480316,\n\tJNR_DataCollect.ClientNameWC480316,\n\tJNR_DataCollect.TerminatedEffectiveDateWC480316 AS i_TerminatedEffectiveDateWC480316,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(i_TerminatedEffectiveDateWC480316),'',\r\n\t-- TO_CHAR((TO_DATE(i_TerminatedEffectiveDateWC480316,'YYYYMMDD')),'YYMMDD')\r\n\t-- )\n\tDECODE(\n\t    TRUE,\n\t    i_TerminatedEffectiveDateWC480316 IS NULL, '',\n\t    TO_CHAR((TO_TIMESTAMP(i_TerminatedEffectiveDateWC480316, 'YYYYMMDD')), 'YYMMDD')\n\t) AS o_TerminatedEffectiveDateWC480316,\n\tJNR_DataCollect.EntitiesWC480316,\n\tJNR_DataCollect.DateSentWC480316 AS i_DateSentWC480316,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(i_DateSentWC480316),'',\r\n\t-- TO_CHAR((TO_DATE(i_DateSentWC480316,'YYYYMMDD')),'YYMMDD')\r\n\t-- )\r\n\t-- \r\n\t-- \n\tDECODE(\n\t    TRUE,\n\t    i_DateSentWC480316 IS NULL, '',\n\t    TO_CHAR((TO_TIMESTAMP(i_DateSentWC480316, 'YYYYMMDD')), 'YYMMDD')\n\t) AS o_DateSentWC480316,\n\tJNR_DataCollect.Name,\n\tJNR_DataCollect.TransactionEffectiveDate AS i_TransactionEffectiveDate,\n\t-- *INF*: TO_CHAR(i_TransactionEffectiveDate,'YYMMDD')\n\tTO_CHAR(i_TransactionEffectiveDate, 'YYMMDD') AS o_TransactionEffectiveDate,\n\t'48' AS StateCode\n\tFROM JNR_DataCollect\n\t -- Manually join with mplt_Parse_FormNameField\n),\nWCPolsEDRecord AS (\n\n\t------------ PRE SQL ----------\n\tDELETE\r\n\t  FROM dbo.WCPolsEDRecord\r\n\t  WHERE 1=1\r\n\t  AND AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\n\t-------------------------------\n\n\n\tINSERT INTO WCPolsEDRecord\n\t(ExtractDate, AuditId, WCTrackHistoryID, LinkData, StateCode, RecordTypeCode, EndorsementNumber, BureauVersionIdentifierEditionIdentifier, CarrierVersionIdentifier, NameOfEmployeeLeasingCompany, NameOfClient, TerminationEffectiveDate, EntitiesReceivingThisForm, DateSent, NameOfInsured, EndorsementEffectiveDate)\n\tSELECT \n\tEXTRACTDATE, \n\tAUDITID, \n\tWCTRACKHISTORYID, \n\tLINKDATA, \n\tSTATECODE, \n\tRECORDTYPECODE, \n\tParsedNameOfForm1 AS ENDORSEMENTNUMBER, \n\tBureauCode AS BUREAUVERSIONIDENTIFIEREDITIONIDENTIFIER, \n\tFormEdition AS CARRIERVERSIONIDENTIFIER, \n\tEmployeeLeasingCompanyNameWC480316 AS NAMEOFEMPLOYEELEASINGCOMPANY, \n\tClientNameWC480316 AS NAMEOFCLIENT, \n\to_TerminatedEffectiveDateWC480316 AS TERMINATIONEFFECTIVEDATE, \n\tEntitiesWC480316 AS ENTITIESRECEIVINGTHISFORM, \n\to_DateSentWC480316 AS DATESENT, \n\tName AS NAMEOFINSURED, \n\to_TransactionEffectiveDate AS ENDORSEMENTEFFECTIVEDATE\n\tFROM EXP_PrepareOutput\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE_ED": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

@@ -477,7 +477,7 @@
             }
         ],
         "folder": {
-            "name": "Claims DataMart/"
+            "name": "RPT_EDM and EDW/Claims DataMart/"
         },
         "variables": {
             "Params": {

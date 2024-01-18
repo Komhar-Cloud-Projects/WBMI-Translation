@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archWBLocationStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archWBLocationStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBLocationStaging AS (\n\tSELECT\n\t\tWBLocationStagingId,\n\t\tLocationId,\n\t\tWB_LocationId,\n\t\tSessionId,\n\t\tLocationNumber,\n\t\tLocationName,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tPrimaryEmail,\n\t\tSecondaryEmail\n\tFROM WBLocationStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBLocationStagingId,\n\tLocationId,\n\tWB_LocationId,\n\tSessionId,\n\tLocationNumber,\n\tLocationName,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tPrimaryEmail,\n\tSecondaryEmail\n\tFROM SQ_WBLocationStaging\n),\narchWBLocationStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archWBLocationStaging\n\t(ExtractDate, SourceSystemId, AuditId, WBLocationStagingId, LocationId, WB_LocationId, SessionId, LocationNumber, LocationName, PrimaryEmail, SecondaryEmail)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBLOCATIONSTAGINGID, \n\tLOCATIONID, \n\tWB_LOCATIONID, \n\tSESSIONID, \n\tLOCATIONNUMBER, \n\tLOCATIONNAME, \n\tPRIMARYEMAIL, \n\tSECONDARYEMAIL\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCBPLineStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCBPLineStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_BP_Line AS (\n\tWITH cte_DCBPLine(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.LineId, \r\n\tX.BP_LineId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.BusinessIncomeAndExtraExpense, \r\n\tX.CommissionPercentage, \r\n\tX.Description, \r\n\tX.DescriptionOverride, \r\n\tX.DesignatedLocation, \r\n\tX.Earthquake, \r\n\tX.EarthquakeAggregateLimit, \r\n\tX.FloodCoverage, \r\n\tX.FungiCoverage, \r\n\tX.FungiLiability, \r\n\tX.IsFinalReport, \r\n\tX.IsReportable, \r\n\tX.PropertyDamageDeductibleEndorsement \r\n\tFROM\r\n\tDC_BP_Line X\r\n\tinner join\r\n\tcte_DCBPLine Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_DCBPLineStage AS (\n\tSELECT\n\tSYSDATE AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tLineId,\n\tBP_LineId,\n\tSessionId,\n\tId,\n\tBusinessIncomeAndExtraExpense AS i_BusinessIncomeAndExtraExpense,\n\t-- *INF*: IIF(i_BusinessIncomeAndExtraExpense='T','1','0')\n\tIFF(i_BusinessIncomeAndExtraExpense = 'T', '1', '0') AS o_BusinessIncomeAndExtraExpense,\n\tCommissionPercentage,\n\tDescription,\n\tDescriptionOverride,\n\tDesignatedLocation AS i_DesignatedLocation,\n\t-- *INF*: IIF(i_DesignatedLocation='T','1','0')\n\tIFF(i_DesignatedLocation = 'T', '1', '0') AS o_DesignatedLocation,\n\tEarthquake AS i_Earthquake,\n\t-- *INF*: IIF(i_Earthquake='T','1','0')\n\tIFF(i_Earthquake = 'T', '1', '0') AS o_Earthquake,\n\tEarthquakeAggregateLimit AS i_EarthquakeAggregateLimit,\n\t-- *INF*: IIF(i_EarthquakeAggregateLimit='T','1','0')\n\tIFF(i_EarthquakeAggregateLimit = 'T', '1', '0') AS o_EarthquakeAggregateLimit,\n\tFloodCoverage AS i_FloodCoverage,\n\t-- *INF*: IIF(i_FloodCoverage='T','1','0')\n\tIFF(i_FloodCoverage = 'T', '1', '0') AS o_FloodCoverage,\n\tFungiCoverage AS i_FungiCoverage,\n\t-- *INF*: IIF(i_FungiCoverage='T','1','0')\n\tIFF(i_FungiCoverage = 'T', '1', '0') AS o_FungiCoverage,\n\tFungiLiability,\n\tIsFinalReport AS i_IsFinalReport,\n\t-- *INF*: IIF(i_IsFinalReport='T','1','0')\n\tIFF(i_IsFinalReport = 'T', '1', '0') AS o_IsFinalReport,\n\tIsReportable AS i_IsReportable,\n\t-- *INF*: IIF(i_IsReportable='T','1','0')\n\tIFF(i_IsReportable = 'T', '1', '0') AS o_IsReportable,\n\tPropertyDamageDeductibleEndorsement\n\tFROM SQ_DC_BP_Line\n),\nDCBPLineStage AS (\n\tTRUNCATE TABLE DCBPLineStage;\n\tINSERT INTO DCBPLineStage\n\t(ExtractDate, SourceSystemId, LineId, BP_LineId, SessionId, Id, BusinessIncomeAndExtraExpense, CommissionPercentage, Description, DescriptionOverride, DesignatedLocation, Earthquake, EarthquakeAggregateLimit, FloodCoverage, FungiCoverage, FungiLiability, IsFinalReport, IsReportable, PropertyDamageDeductibleEndorsement)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tLINEID, \n\tBP_LINEID, \n\tSESSIONID, \n\tID, \n\to_BusinessIncomeAndExtraExpense AS BUSINESSINCOMEANDEXTRAEXPENSE, \n\tCOMMISSIONPERCENTAGE, \n\tDESCRIPTION, \n\tDESCRIPTIONOVERRIDE, \n\to_DesignatedLocation AS DESIGNATEDLOCATION, \n\to_Earthquake AS EARTHQUAKE, \n\to_EarthquakeAggregateLimit AS EARTHQUAKEAGGREGATELIMIT, \n\to_FloodCoverage AS FLOODCOVERAGE, \n\to_FungiCoverage AS FUNGICOVERAGE, \n\tFUNGILIABILITY, \n\to_IsFinalReport AS ISFINALREPORT, \n\to_IsReportable AS ISREPORTABLE, \n\tPROPERTYDAMAGEDEDUCTIBLEENDORSEMENT\n\tFROM EXP_DCBPLineStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

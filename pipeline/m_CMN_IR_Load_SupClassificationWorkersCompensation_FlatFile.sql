@@ -26,11 +26,9 @@ EXP_Detect_Changes AS (
 	LineOfBusinessAbbreviation AS i_LineOfBusinessAbbreviation,
 	RatingStateCode AS i_RatingStateCode,
 	-- *INF*: TO_DATE(ClassEffectiveDate,'YYYY-MM-DD HH24:MI:SS.MS')
-	TO_DATE(ClassEffectiveDate, 'YYYY-MM-DD HH24:MI:SS.MS'
-	) AS i_ClassEffectiveDate,
+	TO_TIMESTAMP(ClassEffectiveDate, 'YYYY-MM-DD HH24:MI:SS.MS') AS i_ClassEffectiveDate,
 	-- *INF*: TO_DATE(ClassExpirationDate,'YYYY-MM-DD HH24:MI:SS.MS')
-	TO_DATE(ClassExpirationDate, 'YYYY-MM-DD HH24:MI:SS.MS'
-	) AS i_ClassExpirationDate,
+	TO_TIMESTAMP(ClassExpirationDate, 'YYYY-MM-DD HH24:MI:SS.MS') AS i_ClassExpirationDate,
 	ClassCode AS i_ClassCode,
 	ClassDescription AS i_ClassDescription,
 	ClassCodeOriginatingOrganization AS i_ClassCodeOriginatingOrganization,

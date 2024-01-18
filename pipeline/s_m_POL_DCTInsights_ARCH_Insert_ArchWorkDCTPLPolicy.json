@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_DCTInsights_ARCH_Insert_ArchWorkDCTPLPolicy",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DCTInsights_ARCH_Insert_ArchWorkDCTPLPolicy",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTPLPolicy AS (\n\tSELECT\n\t\tWorkDCTPLPolicyId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tPolicyId,\n\t\tPolicyLevelsCompoundId,\n\t\tPolicyTransactionId,\n\t\tTransactionTypeId,\n\t\tPolicyStatusId,\n\t\tAgencyPolicyId,\n\t\tPolicyKey,\n\t\tPolicyTransactionKey,\n\t\tPolicyNumber,\n\t\tPolicyVersion,\n\t\tPolicySymbol,\n\t\tTransactionTypeKey,\n\t\tTransactionTypeCode,\n\t\tPolicyStatusKey,\n\t\tPolicyStatusCode,\n\t\tTransactionCreatedDate,\n\t\tPolicyEffectiveDate,\n\t\tPolicyExpirationDate,\n\t\tAgencyCode,\n\t\tInceptionDate,\n\t\tBCCode,\n\t\tPolicyCancellationInd,\n\t\tPolicyCancellationDate,\n\t\tPolicyCancellationReasonCode,\n\t\tPolicyState,\n\t\tServiceCenterSupportCode,\n\t\tPolicyTerm,\n\t\tTerrorismRiskInd,\n\t\tPriorPolicyNumber,\n\t\tPolicyIssueCode,\n\t\tPolicyAge,\n\t\tIndustryRiskGradeCode,\n\t\tBusinessSegmentCode,\n\t\tUserid,\n\t\tClassOfBusiness,\n\t\tRenewalPolicySymbol,\n\t\tSupBusinessClassCode,\n\t\tAutomaticRenewalIndicator,\n\t\tAssociationCode,\n\t\tPolicyIssueCodeOverride,\n\t\tPolicyOfferingCode,\n\t\tStrategicProfitCenterCode,\n\t\tAutomatedUnderwritingIndicator,\n\t\tCustomerServicingCd,\n\t\tProducerCode,\n\t\tLineageId,\n\t\tStartDate,\n\t\tTransactionNumber,\n\t\tDataFix,\n\t\tDataFixDate,\n\t\tDataFixUser,\n\t\tDataFixType\n\tFROM WorkDCTPLPolicy\n),\nEXP_SRC_DataCollect AS (\n\tSELECT\n\tWorkDCTPLPolicyId,\n\tExtractDate,\n\tSourceSystemId,\n\tPolicyId,\n\tPolicyLevelsCompoundId,\n\tPolicyTransactionId,\n\tTransactionTypeId,\n\tPolicyStatusId,\n\tAgencyPolicyId,\n\tPolicyKey,\n\tPolicyTransactionKey,\n\tPolicyNumber,\n\tPolicyVersion,\n\tPolicySymbol,\n\tTransactionTypeKey,\n\tTransactionTypeCode,\n\tPolicyStatusKey,\n\tPolicyStatusCode,\n\tTransactionCreatedDate,\n\tPolicyEffectiveDate,\n\tPolicyExpirationDate,\n\tAgencyCode,\n\tInceptionDate,\n\tBCCode,\n\tPolicyCancellationInd,\n\tPolicyCancellationDate,\n\tPolicyCancellationReasonCode,\n\tPolicyState,\n\tServiceCenterSupportCode,\n\tPolicyTerm,\n\tTerrorismRiskInd,\n\tPriorPolicyNumber,\n\tPolicyIssueCode,\n\tPolicyAge,\n\tIndustryRiskGradeCode,\n\tBusinessSegmentCode,\n\tUserid,\n\tClassOfBusiness,\n\tRenewalPolicySymbol,\n\tSupBusinessClassCode,\n\tAutomaticRenewalIndicator,\n\tAssociationCode,\n\tPolicyIssueCodeOverride,\n\tPolicyOfferingCode,\n\tStrategicProfitCenterCode,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_Auditid,\n\tAutomatedUnderwritingIndicator,\n\tCustomerServicingCd,\n\tProducerCode,\n\tLineageId,\n\tStartDate,\n\tTransactionNumber,\n\tDataFix,\n\tDataFixDate,\n\tDataFixUser,\n\tDataFixType\n\tFROM SQ_WorkDCTPLPolicy\n),\nArchWorkDCTPLPolicy AS (\n\tINSERT INTO ArchWorkDCTPLPolicy\n\t(Auditid, ExtractDate, SourceSystemId, WorkDCTPLPolicyId, PolicyId, LineageId, PolicyLevelsCompoundId, PolicyTransactionId, TransactionTypeId, PolicyStatusId, AgencyPolicyId, PolicyKey, PolicyTransactionKey, PolicyNumber, PolicyVersion, PolicySymbol, TransactionTypeKey, TransactionTypeCode, PolicyStatusKey, PolicyStatusCode, TransactionCreatedDate, PolicyEffectiveDate, PolicyExpirationDate, AgencyCode, InceptionDate, BCCode, PolicyCancellationInd, PolicyCancellationDate, PolicyCancellationReasonCode, PolicyState, ServiceCenterSupportCode, PolicyTerm, TerrorismRiskInd, PriorPolicyNumber, PolicyIssueCode, PolicyAge, IndustryRiskGradeCode, BusinessSegmentCode, Userid, ClassOfBusiness, RenewalPolicySymbol, SupBusinessClassCode, AutomaticRenewalIndicator, AssociationCode, PolicyIssueCodeOverride, PolicyOfferingCode, StrategicProfitCenterCode, AutomatedUnderwritingIndicator, CustomerServicingCd, ProducerCode, TransactionNumber, StartDate, DataFix, DataFixDate, DataFixUser, DataFixType)\n\tSELECT \n\to_Auditid AS AUDITID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tWORKDCTPLPOLICYID, \n\tPOLICYID, \n\tLINEAGEID, \n\tPOLICYLEVELSCOMPOUNDID, \n\tPOLICYTRANSACTIONID, \n\tTRANSACTIONTYPEID, \n\tPOLICYSTATUSID, \n\tAGENCYPOLICYID, \n\tPOLICYKEY, \n\tPOLICYTRANSACTIONKEY, \n\tPOLICYNUMBER, \n\tPOLICYVERSION, \n\tPOLICYSYMBOL, \n\tTRANSACTIONTYPEKEY, \n\tTRANSACTIONTYPECODE, \n\tPOLICYSTATUSKEY, \n\tPOLICYSTATUSCODE, \n\tTRANSACTIONCREATEDDATE, \n\tPOLICYEFFECTIVEDATE, \n\tPOLICYEXPIRATIONDATE, \n\tAGENCYCODE, \n\tINCEPTIONDATE, \n\tBCCODE, \n\tPOLICYCANCELLATIONIND, \n\tPOLICYCANCELLATIONDATE, \n\tPOLICYCANCELLATIONREASONCODE, \n\tPOLICYSTATE, \n\tSERVICECENTERSUPPORTCODE, \n\tPOLICYTERM, \n\tTERRORISMRISKIND, \n\tPRIORPOLICYNUMBER, \n\tPOLICYISSUECODE, \n\tPOLICYAGE, \n\tINDUSTRYRISKGRADECODE, \n\tBUSINESSSEGMENTCODE, \n\tUSERID, \n\tCLASSOFBUSINESS, \n\tRENEWALPOLICYSYMBOL, \n\tSUPBUSINESSCLASSCODE, \n\tAUTOMATICRENEWALINDICATOR, \n\tASSOCIATIONCODE, \n\tPOLICYISSUECODEOVERRIDE, \n\tPOLICYOFFERINGCODE, \n\tSTRATEGICPROFITCENTERCODE, \n\tAUTOMATEDUNDERWRITINGINDICATOR, \n\tCUSTOMERSERVICINGCD, \n\tPRODUCERCODE, \n\tTRANSACTIONNUMBER, \n\tSTARTDATE, \n\tDATAFIX, \n\tDATAFIXDATE, \n\tDATAFIXUSER, \n\tDATAFIXTYPE\n\tFROM EXP_SRC_DataCollect\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

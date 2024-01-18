@@ -1,0 +1,38 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchPIF041Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchPIF041Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif041Stage AS (\n\tSELECT\n\t\tPif041StageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tAuditId,\n\t\tUndvuPifSymbol,\n\t\tUndvuPifPolicyNumber,\n\t\tUndvuPifModule,\n\t\tUndvuRecordId,\n\t\tUndvuSegmentNumber,\n\t\tUndvuUnitNumber,\n\t\tUndvuChangeDate,\n\t\tUndvuVehicleDamage,\n\t\tUndvuStreetParked,\n\t\tUndvuAlteredCustomized,\n\t\tUndvuVehicleCondition,\n\t\tUndvuUnitScore,\n\t\tUndvuSpecialUse1,\n\t\tUndvuFiller1,\n\t\tUndvuFiller2,\n\t\tUndvuSpecialuse3,\n\t\tUndvuFiller3,\n\t\tUndvuComments,\n\t\tUndvuPmsFutureUse,\n\t\tUndvuGaraged,\n\t\tUndvuAlteredAmount,\n\t\tUndvuCustFutureUse,\n\t\tUndvuYr2000CustUse\n\tFROM Pif041Stage\n),\nEXPTRANS AS (\n\tSELECT\n\tPif041StageId,\n\tExtractDate,\n\tSourceSystemId,\n\tAuditId,\n\tUndvuPifSymbol,\n\tUndvuPifPolicyNumber,\n\tUndvuPifModule,\n\tUndvuRecordId,\n\tUndvuSegmentNumber,\n\tUndvuUnitNumber,\n\tUndvuChangeDate,\n\tUndvuVehicleDamage,\n\tUndvuStreetParked,\n\tUndvuAlteredCustomized,\n\tUndvuVehicleCondition,\n\tUndvuUnitScore,\n\tUndvuSpecialUse1,\n\tUndvuFiller1,\n\tUndvuFiller2,\n\tUndvuSpecialuse3,\n\tUndvuFiller3,\n\tUndvuComments,\n\tUndvuPmsFutureUse,\n\tUndvuGaraged,\n\tUndvuAlteredAmount,\n\tUndvuCustFutureUse,\n\tUndvuYr2000CustUse\n\tFROM SQ_Pif041Stage\n),\nArchPif041Stage AS (\n\tINSERT INTO ArchPif041Stage\n\t(Pif041StageId, ExtractDate, SourceSystemId, AuditId, UndvuPifSymbol, UndvuPifPolicyNumber, UndvuPifModule, UndvuRecordId, UndvuSegmentNumber, UndvuUnitNumber, UndvuChangeDate, UndvuVehicleDamage, UndvuStreetParked, UndvuAlteredCustomized, UndvuVehicleCondition, UndvuUnitScore, UndvuSpecialUse1, UndvuFiller1, UndvuFiller2, UndvuSpecialuse3, UndvuFiller3, UndvuComments, UndvuPmsFutureUse, UndvuGaraged, UndvuAlteredAmount, UndvuCustFutureUse, UndvuYr2000CustUse)\n\tSELECT \n\tPIF041STAGEID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tUNDVUPIFSYMBOL, \n\tUNDVUPIFPOLICYNUMBER, \n\tUNDVUPIFMODULE, \n\tUNDVURECORDID, \n\tUNDVUSEGMENTNUMBER, \n\tUNDVUUNITNUMBER, \n\tUNDVUCHANGEDATE, \n\tUNDVUVEHICLEDAMAGE, \n\tUNDVUSTREETPARKED, \n\tUNDVUALTEREDCUSTOMIZED, \n\tUNDVUVEHICLECONDITION, \n\tUNDVUUNITSCORE, \n\tUNDVUSPECIALUSE1, \n\tUNDVUFILLER1, \n\tUNDVUFILLER2, \n\tUNDVUSPECIALUSE3, \n\tUNDVUFILLER3, \n\tUNDVUCOMMENTS, \n\tUNDVUPMSFUTUREUSE, \n\tUNDVUGARAGED, \n\tUNDVUALTEREDAMOUNT, \n\tUNDVUCUSTFUTUREUSE, \n\tUNDVUYR2000CUSTUSE\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

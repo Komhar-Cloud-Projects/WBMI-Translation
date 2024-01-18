@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CUS_STG_Insert_TokenizedData_PMS_ADJUSTER_MASTER_STAGE_V1",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CUS_STG_Insert_TokenizedData_PMS_ADJUSTER_MASTER_S_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_ADJUSTER_MASTER AS (\n\n-- TODO Manual --\n\n),\nEXP_Input AS (\n\tSELECT\n\tADNM_TAXID_SSN AS IN_ADNM_TAXID_SSN,\n\t-- *INF*: (LTRIM(RTRIM(IN_ADNM_TAXID_SSN)))\n\t(LTRIM(RTRIM(IN_ADNM_TAXID_SSN))) AS OUT_ADNM_TAXID_SSN\n\tFROM SQ_ADJUSTER_MASTER\n),\nLKP_cus_stg_insert_pms_adjuster_master_stage_tokens_file AS (\n),\nEXP_ADJSTR_MSTR AS (\n\tSELECT\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t'' AS RECORD_COUNT_OP,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,\n\tSQ_ADJUSTER_MASTER.ADNM_ADJUSTOR_NBR,\n\tSQ_ADJUSTER_MASTER.ADNM_TAXID_SSN,\n\tSQ_ADJUSTER_MASTER.ADNM_NAME,\n\tSQ_ADJUSTER_MASTER.ADNM_COMMNT1,\n\tSQ_ADJUSTER_MASTER.ADNM_ADDRESS,\n\tSQ_ADJUSTER_MASTER.ADNM_COMMNT2,\n\tSQ_ADJUSTER_MASTER.ADNM_CITY_STATE,\n\tSQ_ADJUSTER_MASTER.ADNM_COMMNT3,\n\tSQ_ADJUSTER_MASTER.ADNM_POLICE_CHARGE,\n\tSQ_ADJUSTER_MASTER.ADNM_TAX_INDICATOR,\n\tSQ_ADJUSTER_MASTER.ADNM_ZIP_CODE,\n\tSQ_ADJUSTER_MASTER.ADNM_AREA_CODE,\n\tSQ_ADJUSTER_MASTER.ADNM_PREFIX,\n\tSQ_ADJUSTER_MASTER.ADNM_LAST_FOUR,\n\tSQ_ADJUSTER_MASTER.ADNM_TYPE_ADJUSTOR,\n\tSQ_ADJUSTER_MASTER.ADNM_ADJUSTOR_BRANCH_NUMBER,\n\tSQ_ADJUSTER_MASTER.ADNM_ADJUSTOR_KIND,\n\tSQ_ADJUSTER_MASTER.ADNM_FX_AREA_CODE,\n\tSQ_ADJUSTER_MASTER.ADNM_FX_PREFIX,\n\tSQ_ADJUSTER_MASTER.ADNM_FX_LAST_FOUR,\n\tLKP_cus_stg_insert_pms_adjuster_master_stage_tokens_file.lkp_ADNM_TAXID_SSN_ID AS ADNM_TAXID_SSN_ID,\n\tLKP_cus_stg_insert_pms_adjuster_master_stage_tokens_file.ADNM_TAXID_SSN_Token AS ADNM_TAXID_SSN_Tokens,\n\t-- *INF*: IIF(ISNULL(LTRIM(RTRIM(ADNM_TAXID_SSN_ID))),ADNM_TAXID_SSN,ADNM_TAXID_SSN_Tokens)\n\tIFF(LTRIM(RTRIM(ADNM_TAXID_SSN_ID)) IS NULL, ADNM_TAXID_SSN, ADNM_TAXID_SSN_Tokens) AS V_ADNM_TAXID_SSN,\n\tV_ADNM_TAXID_SSN AS OUT_ADNM_TAXID_SSN\n\tFROM SQ_ADJUSTER_MASTER\n\tLEFT JOIN LKP_cus_stg_insert_pms_adjuster_master_stage_tokens_file\n\tON LKP_cus_stg_insert_pms_adjuster_master_stage_tokens_file.lkp_ADNM_TAXID_SSN_ID = EXP_Input.OUT_ADNM_TAXID_SSN\n),\nPMS_ADJUSTER_MASTER_STAGE AS (\n\tTRUNCATE TABLE PMS_ADJUSTER_MASTER_STAGE;\n\tINSERT INTO PMS_ADJUSTER_MASTER_STAGE\n\t(ADNM_ADJUSTOR_NBR, ADNM_TAXID_SSN, ADNM_NAME, ADNM_COMMNT1, ADNM_ADDRESS, ADNM_COMMNT2, ADNM_CITY_STATE, ADNM_COMMNT3, ADNM_POLICE_CHARGE, ADNM_TAX_INDICATOR, ADNM_ZIP_CODE, ADNM_AREA_CODE, ADNM_PREFIX, ADNM_LAST_FOUR, ADNM_TYPE_ADJUSTOR, ADNM_ADJUSTOR_BRANCH_NUMBER, ADNM_ADJUSTOR_KIND, ADNM_FX_AREA_CODE, ADNM_FX_PREFIX, ADNM_FX_LAST_FOUR, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID)\n\tSELECT \n\tADNM_ADJUSTOR_NBR, \n\tOUT_ADNM_TAXID_SSN AS ADNM_TAXID_SSN, \n\tADNM_NAME, \n\tADNM_COMMNT1, \n\tADNM_ADDRESS, \n\tADNM_COMMNT2, \n\tADNM_CITY_STATE, \n\tADNM_COMMNT3, \n\tADNM_POLICE_CHARGE, \n\tADNM_TAX_INDICATOR, \n\tADNM_ZIP_CODE, \n\tADNM_AREA_CODE, \n\tADNM_PREFIX, \n\tADNM_LAST_FOUR, \n\tADNM_TYPE_ADJUSTOR, \n\tADNM_ADJUSTOR_BRANCH_NUMBER, \n\tADNM_ADJUSTOR_KIND, \n\tADNM_FX_AREA_CODE, \n\tADNM_FX_PREFIX, \n\tADNM_FX_LAST_FOUR, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT_OP AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID\n\tFROM EXP_ADJSTR_MSTR\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CustomerStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCAEndorsementWB516Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCAEndorsementWB51_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCAEndorsementWB516Stage AS (\n\tSELECT\n\t\tWBCAEndorsementWB516StageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tWB_CoverageId,\n\t\tWB_CA_EndorsementWB516Id,\n\t\tSessionId,\n\t\tRetroactiveDate,\n\t\tNumberEmployees\n\tFROM WBCAEndorsementWB516Stage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBCAEndorsementWB516StageId,\n\tExtractDate,\n\tSourceSystemid,\n\tWB_CoverageId,\n\tWB_CA_EndorsementWB516Id,\n\tSessionId,\n\tRetroactiveDate,\n\tNumberEmployees,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBCAEndorsementWB516Stage\n),\nArchWBCAEndorsementWB516Stage AS (\n\tINSERT INTO ArchWBCAEndorsementWB516Stage\n\t(ExtractDate, SourceSystemId, AuditId, WBCAEndorsementWB516StageId, WB_CoverageId, WB_CA_EndorsementWB516Id, SessionId, RetroactiveDate, NumberEmployees)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemid AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBCAENDORSEMENTWB516STAGEID, \n\tWB_COVERAGEID, \n\tWB_CA_ENDORSEMENTWB516ID, \n\tSESSIONID, \n\tRETROACTIVEDATE, \n\tNUMBEREMPLOYEES\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

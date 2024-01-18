@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCUUmbrellaBusinessOwnersStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCUUmbrellaBusines_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCUUmbrellaBusinessOwnersStaging AS (\n\tSELECT\n\t\tWBCUUmbrellaBusinessOwnersStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCU_UmbrellaBusinessOwnersId,\n\t\tWB_CU_UmbrellaBusinessOwnersId,\n\t\tSessionId,\n\t\tOtherDescription,\n\t\tFirstMillionBasePremium,\n\t\tFirstMillionModifiedPremium,\n\t\tScheduledModification,\n\t\tUmbrellaBusinessOwnersScheduledModificationLocationInComment,\n\t\tUmbrellaBusinessOwnersScheduledModificationLocationInModification,\n\t\tUmbrellaBusinessOwnersScheduledModificationLocationOutComment,\n\t\tUmbrellaBusinessOwnersScheduledModificationLocationOutModification,\n\t\tUmbrellaBusinessOwnersScheduledModificationPremisesComment,\n\t\tUmbrellaBusinessOwnersScheduledModificationPremisesModification,\n\t\tUmbrellaBusinessOwnersScheduledModificationEquipmentComment,\n\t\tUmbrellaBusinessOwnersScheduledModificationEquipmentModification,\n\t\tUmbrellaBusinessOwnersScheduledModificationManagementComment,\n\t\tUmbrellaBusinessOwnersScheduledModificationManagementModification,\n\t\tUmbrellaBusinessOwnersScheduledModificationEmployeesComment,\n\t\tUmbrellaBusinessOwnersScheduledModificationEmployeesModification,\n\t\tUmbrellaBusinessOwnersScheduledModificationCooperationMedicalComment,\n\t\tUmbrellaBusinessOwnersScheduledModificationCooperationMedicalModification,\n\t\tUmbrellaBusinessOwnersScheduledModificationCooperationSafetyComment,\n\t\tUmbrellaBusinessOwnersScheduledModificationCooperationSafetyModification,\n\t\tModificationTotal,\n\t\tModificationTotalForBusinessOwnersDetailPage,\n\t\tIDField\n\tFROM WBCUUmbrellaBusinessOwnersStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tCU_UmbrellaBusinessOwnersId,\n\tWB_CU_UmbrellaBusinessOwnersId,\n\tSessionId,\n\tOtherDescription,\n\tFirstMillionBasePremium,\n\tFirstMillionModifiedPremium,\n\tScheduledModification,\n\tUmbrellaBusinessOwnersScheduledModificationLocationInComment,\n\tUmbrellaBusinessOwnersScheduledModificationLocationInModification,\n\tUmbrellaBusinessOwnersScheduledModificationLocationOutComment,\n\tUmbrellaBusinessOwnersScheduledModificationLocationOutModification,\n\tUmbrellaBusinessOwnersScheduledModificationPremisesComment,\n\tUmbrellaBusinessOwnersScheduledModificationPremisesModification,\n\tUmbrellaBusinessOwnersScheduledModificationEquipmentComment,\n\tUmbrellaBusinessOwnersScheduledModificationEquipmentModification,\n\tUmbrellaBusinessOwnersScheduledModificationManagementComment,\n\tUmbrellaBusinessOwnersScheduledModificationManagementModification,\n\tUmbrellaBusinessOwnersScheduledModificationEmployeesComment,\n\tUmbrellaBusinessOwnersScheduledModificationEmployeesModification,\n\tUmbrellaBusinessOwnersScheduledModificationCooperationMedicalComment,\n\tUmbrellaBusinessOwnersScheduledModificationCooperationMedicalModification,\n\tUmbrellaBusinessOwnersScheduledModificationCooperationSafetyComment,\n\tUmbrellaBusinessOwnersScheduledModificationCooperationSafetyModification,\n\tModificationTotal,\n\tModificationTotalForBusinessOwnersDetailPage,\n\tIDField\n\tFROM SQ_WBCUUmbrellaBusinessOwnersStaging\n),\narchWBCUUmbrellaBusinessOwnersStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archWBCUUmbrellaBusinessOwnersStaging\n\t(ExtractDate, SourceSystemId, AuditId, CU_UmbrellaBusinessOwnersId, WB_CU_UmbrellaBusinessOwnersId, SessionId, OtherDescription, FirstMillionBasePremium, FirstMillionModifiedPremium, ScheduledModification, UmbrellaBusinessOwnersScheduledModificationLocationInComment, UmbrellaBusinessOwnersScheduledModificationLocationInModification, UmbrellaBusinessOwnersScheduledModificationLocationOutComment, UmbrellaBusinessOwnersScheduledModificationLocationOutModification, UmbrellaBusinessOwnersScheduledModificationPremisesComment, UmbrellaBusinessOwnersScheduledModificationPremisesModification, UmbrellaBusinessOwnersScheduledModificationEquipmentComment, UmbrellaBusinessOwnersScheduledModificationEquipmentModification, UmbrellaBusinessOwnersScheduledModificationManagementComment, UmbrellaBusinessOwnersScheduledModificationManagementModification, UmbrellaBusinessOwnersScheduledModificationEmployeesComment, UmbrellaBusinessOwnersScheduledModificationEmployeesModification, UmbrellaBusinessOwnersScheduledModificationCooperationMedicalComment, UmbrellaBusinessOwnersScheduledModificationCooperationMedicalModification, UmbrellaBusinessOwnersScheduledModificationCooperationSafetyComment, UmbrellaBusinessOwnersScheduledModificationCooperationSafetyModification, ModificationTotal, ModificationTotalForBusinessOwnersDetailPage, IDField)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tCU_UMBRELLABUSINESSOWNERSID, \n\tWB_CU_UMBRELLABUSINESSOWNERSID, \n\tSESSIONID, \n\tOTHERDESCRIPTION, \n\tFIRSTMILLIONBASEPREMIUM, \n\tFIRSTMILLIONMODIFIEDPREMIUM, \n\tSCHEDULEDMODIFICATION, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONLOCATIONINCOMMENT, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONLOCATIONINMODIFICATION, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONLOCATIONOUTCOMMENT, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONLOCATIONOUTMODIFICATION, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONPREMISESCOMMENT, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONPREMISESMODIFICATION, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONEQUIPMENTCOMMENT, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONEQUIPMENTMODIFICATION, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONMANAGEMENTCOMMENT, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONMANAGEMENTMODIFICATION, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONEMPLOYEESCOMMENT, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONEMPLOYEESMODIFICATION, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONCOOPERATIONMEDICALCOMMENT, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONCOOPERATIONMEDICALMODIFICATION, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONCOOPERATIONSAFETYCOMMENT, \n\tUMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONCOOPERATIONSAFETYMODIFICATION, \n\tMODIFICATIONTOTAL, \n\tMODIFICATIONTOTALFORBUSINESSOWNERSDETAILPAGE, \n\tIDFIELD\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_FEED_Load_WCPOLS_29_Record",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Load_WCPOLS_29_Record",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WCPols00Record AS (\n\tSELECT\r\n\t\tWCTrackHistoryID,\r\n\t\tLinkData,\r\n\t     AuditId\r\n\t\tFROM dbo.WCPols00Record\r\n\tWHERE 1=1\r\n\tAND AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tORDER BY WCTrackHistoryID\n),\nSQ_Work_29_Record AS (\n\tSELECT distinct\r\n\t\tST.WCTrackHistoryID\r\n\t\t,F.FormName\r\n\t\t,PT.Name\r\n\t\t,Pol.TransactionEffectiveDate\r\n\t\t,PDName.Value as NameOfEmployeeGroup\r\n\t      ,PDEmp.Value as EmployeeGroupStateList\r\n\t\t,PDLaw.Value as EmployeeDesgWCLaw\r\n\t\r\n\tFROM dbo.WorkWCStateTerm ST\r\n\t\r\n\tINNER JOIN dbo.WorkWCForms F\r\n\t\tON ST.WCTrackHistoryID = F.WCTrackHistoryID\r\n\tAND F.FormName like 'WC000311%'AND (F.OnPolicy=1 or F.[Add]=1) AND (F.Remove is NULL or F.Remove=0)\r\n\t\r\n\tINNER JOIN dbo.WorkWCParty PT\r\n\t\tON PT.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\t\tAND PT.PartyAssociationType = 'Account'\r\n\t\r\n\tINNER JOIN dbo.WorkWCLine L\r\n\t\tON L.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\r\n\tINNER JOIN dbo.WorkWCTrackHistory TH\r\n\t\tON TH.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicy Pol\r\n\t\tON Pol.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails PDName\r\n\t\tON PDName.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND PDName.Attribute='NameOfEmployeeGroup'\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails PDEmp\r\n\t\tON PDEmp.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND PDEmp.Attribute='EmployeeGroupStateList'\r\n\t\tAND PDEmp.ProcessID=PDName.ProcessID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails PDLaw\r\n\t\tON PDLaw.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND PDLaw.Attribute='EmployeeDesgWCLaw'\r\n\t\tAND PDLaw.ProcessID=PDName.ProcessID\r\n\t\r\n\tWHERE 1 = 1\r\n\tAND ST.AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t@{pipeline().parameters.WHERE_CLAUSE_29}\r\n\t\r\n\tORDER BY ST.WCTrackHistoryID\n),\nJNR_29_Record AS (SELECT\n\tSQ_WCPols00Record.WCTrackHistoryID, \n\tSQ_WCPols00Record.AuditId, \n\tSQ_WCPols00Record.LinkData, \n\tSQ_Work_29_Record.WCTrackHistoryID AS WCTrackHistoryID1, \n\tSQ_Work_29_Record.FormName, \n\tSQ_Work_29_Record.Name, \n\tSQ_Work_29_Record.TransactionEffectiveDate, \n\tSQ_Work_29_Record.NameOfEmployeeGroup, \n\tSQ_Work_29_Record.EmployeeGroupStateList, \n\tSQ_Work_29_Record.EmployeeDesgWCLaw\n\tFROM SQ_WCPols00Record\n\tINNER JOIN SQ_Work_29_Record\n\tON SQ_Work_29_Record.WCTrackHistoryID = SQ_WCPols00Record.WCTrackHistoryID\n),\nmplt_Parse_FormNameField AS (WITH\n\tINPUT_FormName AS (\n\t\t\n\t),\n\tEXPTRANS AS (\n\t\tSELECT\n\t\tParsedNameOfForm,\n\t\tFormNameFromSource,\n\t\t-- *INF*: REVERSE(FormNameFromSource)\n\t\tREVERSE(FormNameFromSource) AS vReversedFromNameFromSource,\n\t\t-- *INF*: REVERSE(substr(vReversedFromNameFromSource,1,4))\n\t\tREVERSE(substr(vReversedFromNameFromSource, 1, 4)) AS vFormEdition,\n\t\t-- *INF*: DECODE(TRUE,\r\n\t\t-- substr(vReversedFromNameFromSource,5,1) >='A' and substr(vReversedFromNameFromSource,5,1) <='Z', substr(vReversedFromNameFromSource,5,1),\r\n\t\t-- ' '\r\n\t\t-- )\r\n\t\t-- \r\n\t\t-- -- check if within A and Z, if not then space\n\t\tDECODE(\n\t\t    TRUE,\n\t\t    substr(vReversedFromNameFromSource, 5, 1) >= 'A' and substr(vReversedFromNameFromSource, 5, 1) <= 'Z', substr(vReversedFromNameFromSource, 5, 1),\n\t\t    ' '\n\t\t) AS vBureauCode,\n\t\tvFormEdition AS oFormEdition,\n\t\tvBureauCode AS oBureauCode\n\t\tFROM INPUT_FormName\n\t),\n\tOUTPUT_FormName AS (\n\t\tSELECT\n\t\tParsedNameOfForm, \n\t\tFormNameFromSource, \n\t\toFormEdition AS FormEdition, \n\t\toBureauCode AS BureauCode\n\t\tFROM EXPTRANS\n\t),\n),\nEXP_29_Record AS (\n\tSELECT\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\tJNR_29_Record.WCTrackHistoryID,\n\tJNR_29_Record.AuditId,\n\tJNR_29_Record.LinkData,\n\t'29' AS o_RecordTypeCode,\n\t'WC000311' AS o_EndorsementNumber,\n\tJNR_29_Record.FormName,\n\tmplt_Parse_FormNameField.BureauCode,\n\tmplt_Parse_FormNameField.FormEdition,\n\tJNR_29_Record.Name,\n\tJNR_29_Record.TransactionEffectiveDate,\n\t-- *INF*: TO_CHAR(TransactionEffectiveDate,'YYMMDD')\n\tTO_CHAR(TransactionEffectiveDate, 'YYMMDD') AS o_TransactionEffectiveDate,\n\tJNR_29_Record.NameOfEmployeeGroup,\n\tJNR_29_Record.EmployeeGroupStateList,\n\tJNR_29_Record.EmployeeDesgWCLaw,\n\tWCTrackHistoryID AS v_CurrentRecord,\n\t-- *INF*: IIF(v_CurrentRecord=v_PrevRecord,v_RecordCount+1,1)\n\tIFF(v_CurrentRecord = v_PrevRecord, v_RecordCount + 1, 1) AS v_RecordCount,\n\tWCTrackHistoryID AS v_PrevRecord,\n\t-- *INF*: TO_CHAR(v_RecordCount)\n\tTO_CHAR(v_RecordCount) AS o_EndorsementSequenceNumber\n\tFROM JNR_29_Record\n\t -- Manually join with mplt_Parse_FormNameField\n),\nWCPols29Record AS (\n\tINSERT INTO WCPols29Record\n\t(ExtractDate, AuditId, WCTrackHistoryID, LinkData, RecordTypeCode, EndorsementNumber, BureauVersionIdentifierEditionIdentifier, CarrierVersionIdentifier, IdentifyEmployees, StateOfEmployment, DesignatedWorkersCompensationLawOrDescription, EndorsementSequenceNumber, NameOfInsured, EndorsementEffectiveDate)\n\tSELECT \n\tEXTRACTDATE, \n\tAUDITID, \n\tWCTRACKHISTORYID, \n\tLINKDATA, \n\to_RecordTypeCode AS RECORDTYPECODE, \n\to_EndorsementNumber AS ENDORSEMENTNUMBER, \n\tBureauCode AS BUREAUVERSIONIDENTIFIEREDITIONIDENTIFIER, \n\tFormEdition AS CARRIERVERSIONIDENTIFIER, \n\tNameOfEmployeeGroup AS IDENTIFYEMPLOYEES, \n\tEmployeeGroupStateList AS STATEOFEMPLOYMENT, \n\tEmployeeDesgWCLaw AS DESIGNATEDWORKERSCOMPENSATIONLAWORDESCRIPTION, \n\to_EndorsementSequenceNumber AS ENDORSEMENTSEQUENCENUMBER, \n\tName AS NAMEOFINSURED, \n\to_TransactionEffectiveDate AS ENDORSEMENTEFFECTIVEDATE\n\tFROM EXP_29_Record\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE_29": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

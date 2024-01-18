@@ -240,13 +240,13 @@ EXP_Data AS (
 	-- IN(:LKP.LKP_BONDPRODUCTS(i_pol_id),'620','630','640','650','660'),'NonContract',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_wbconnect_upload_code = 'B', 'Rapid',
-		LKP_BONDPRODUCTS_i_pol_id.ProductCode IN ('610','620','630','640','650','660') 
-		AND LKP_SBAREINSURANCE_i_pol_id_0125.ReturnIndicator = 'Y', 'SBA',
-		LKP_BONDPRODUCTS_i_pol_id.ProductCode = '610', 'Contract',
-		LKP_BONDPRODUCTS_i_pol_id.ProductCode IN ('620','630','640','650','660'), 'NonContract',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_wbconnect_upload_code = 'B', 'Rapid',
+	    LKP_BONDPRODUCTS_i_pol_id.ProductCode IN ('610','620','630','640','650','660') and LKP_SBAREINSURANCE_i_pol_id_0125.ReturnIndicator = 'Y', 'SBA',
+	    LKP_BONDPRODUCTS_i_pol_id.ProductCode = '610', 'Contract',
+	    LKP_BONDPRODUCTS_i_pol_id.ProductCode IN ('620','630','640','650','660'), 'NonContract',
+	    'N/A'
 	) AS o_BondCategory
 	FROM EXP_Default
 	LEFT JOIN LKP_Agency_V2
@@ -529,8 +529,7 @@ AGG_Level AS (
 	BondCategory,
 	Level AS i_Level,
 	-- *INF*: MIN(i_Level)
-	MIN(i_Level
-	) AS Level
+	MIN(i_Level) AS Level
 	FROM Union
 	GROUP BY pol_key, StrategicProfitCenterCode, AgencyCode, PolicyOfferingCode, ProgramCode, DisplayName
 ),
@@ -566,15 +565,10 @@ EXP_MetaData AS (
 	BondCategory,
 	Level,
 	-- *INF*: IIF(pol_key=v_pol_key,i_DisplayName || ', ' || v_AssociateName,i_DisplayName)
-	IFF(pol_key = v_pol_key,
-		i_DisplayName || ', ' || v_AssociateName,
-		i_DisplayName
-	) AS v_AssociateName,
+	IFF(pol_key = v_pol_key, i_DisplayName || ', ' || v_AssociateName, i_DisplayName) AS v_AssociateName,
 	pol_key AS v_pol_key,
 	-- *INF*: LTRIM(RTRIM(v_AssociateName))
-	LTRIM(RTRIM(v_AssociateName
-		)
-	) AS o_AssociateId_List
+	LTRIM(RTRIM(v_AssociateName)) AS o_AssociateId_List
 	FROM SRT_Policy
 ),
 AGG_Underwriter AS (
@@ -592,11 +586,9 @@ AGG_Underwriter AS (
 	Level,
 	o_AssociateId_List AS AssociateId_List,
 	-- *INF*: LAST(AssociateId_List)
-	LAST(AssociateId_List
-	) AS o_AssociateId_List,
+	LAST(AssociateId_List) AS o_AssociateId_List,
 	-- *INF*: COUNT(1)
-	COUNT(1
-	) AS o_Count
+	COUNT(1) AS o_Count
 	FROM EXP_MetaData
 	GROUP BY pol_key, StrategicProfitCenterCode, AgencyCode, PolicyOfferingCode, ProgramCode, Level
 ),
@@ -681,20 +673,24 @@ EXP_Result AS (
 	--  || ',  ' || ProgramDescription
 	--  || ',  Bond Category: ' || BondCategory
 	--  || ' does not exist in AgencyODS'))
-	DECODE(TRUE,
-		Level = 1, 'Policy: ' || pol_key || ';  StrategicProfitCenter: ' || StrategicProfitCenterCode || ',  ' || StrategicProfitCenterDescription || ';  AgencyCode: ' || AgencyCode || ',  ' || LegalName || ' does not exist in AgencyODS',
-		Level = 2, IFF(AssociateId_List IS NOT NULL,
-			'Policy: ' || pol_key || ';  StrategicProfitCenter: ' || StrategicProfitCenterCode || ',  ' || StrategicProfitCenterDescription || ';  AgencyCode: ' || AgencyCode || ',  ' || LegalName || ';  PolicyOffering:  ' || PolicyOfferingCode || ',  ' || PolicyOfferingDescription || ' has underwriter: ' || AssociateId_List,
-			'Policy: ' || pol_key || ';  StrategicProfitCenter: ' || StrategicProfitCenterCode || ',  ' || StrategicProfitCenterDescription || ';  AgencyCode: ' || AgencyCode || ',  ' || LegalName || ';  PolicyOffering: ' || PolicyOfferingCode || ',  ' || PolicyOfferingDescription || ' does not exist in AgencyODS'
-		),
-		Level = 3, IFF(AssociateId_List IS NOT NULL,
-			'Policy: ' || pol_key || ';  StrategicProfitCenter: ' || StrategicProfitCenterCode || ',  ' || StrategicProfitCenterDescription || ';  AgencyCode: ' || AgencyCode || ',  ' || LegalName || ';  PolicyOffering: ' || PolicyOfferingCode || ',  ' || PolicyOfferingDescription || ';  Program: ' || ProgramCode || ',  ' || ProgramDescription || ' has underwriter: ' || AssociateId_List,
-			'Policy: ' || pol_key || ';  StrategicProfitCenter: ' || StrategicProfitCenterCode || ',  ' || StrategicProfitCenterDescription || ';  AgencyCode: ' || AgencyCode || ',  ' || LegalName || ';  PolicyOffering: ' || PolicyOfferingCode || ',  ' || PolicyOfferingDescription || ';  Program: ' || ProgramCode || ',  ' || ProgramDescription || ' does not exist in AgencyODS'
-		),
-		Level = 4, IFF(AssociateId_List IS NOT NULL,
-			'Policy: ' || pol_key || ';  StrategicProfitCenter: ' || StrategicProfitCenterCode || ',  ' || StrategicProfitCenterDescription || ';  AgencyCode: ' || AgencyCode || ',  ' || LegalName || ';  PolicyOffering: ' || PolicyOfferingCode || ',  ' || PolicyOfferingDescription || ';  Program: ' || ProgramCode || ',  ' || ProgramDescription || ',  Bond Category: ' || BondCategory || ' has underwriter: ' || AssociateId_List,
-			'Policy: ' || pol_key || ';  StrategicProfitCenter: ' || StrategicProfitCenterCode || ',  ' || StrategicProfitCenterDescription || ';  AgencyCode: ' || AgencyCode || ',  ' || LegalName || ';  PolicyOffering: ' || PolicyOfferingCode || ',  ' || PolicyOfferingDescription || ';  Program: ' || ProgramCode || ',  ' || ProgramDescription || ',  Bond Category: ' || BondCategory || ' does not exist in AgencyODS'
-		)
+	DECODE(
+	    TRUE,
+	    Level = 1, 'Policy: ' || pol_key || ';  StrategicProfitCenter: ' || StrategicProfitCenterCode || ',  ' || StrategicProfitCenterDescription || ';  AgencyCode: ' || AgencyCode || ',  ' || LegalName || ' does not exist in AgencyODS',
+	    Level = 2, IFF(
+	        AssociateId_List IS NOT NULL,
+	        'Policy: ' || pol_key || ';  StrategicProfitCenter: ' || StrategicProfitCenterCode || ',  ' || StrategicProfitCenterDescription || ';  AgencyCode: ' || AgencyCode || ',  ' || LegalName || ';  PolicyOffering:  ' || PolicyOfferingCode || ',  ' || PolicyOfferingDescription || ' has underwriter: ' || AssociateId_List,
+	        'Policy: ' || pol_key || ';  StrategicProfitCenter: ' || StrategicProfitCenterCode || ',  ' || StrategicProfitCenterDescription || ';  AgencyCode: ' || AgencyCode || ',  ' || LegalName || ';  PolicyOffering: ' || PolicyOfferingCode || ',  ' || PolicyOfferingDescription || ' does not exist in AgencyODS'
+	    ),
+	    Level = 3, IFF(
+	        AssociateId_List IS NOT NULL,
+	        'Policy: ' || pol_key || ';  StrategicProfitCenter: ' || StrategicProfitCenterCode || ',  ' || StrategicProfitCenterDescription || ';  AgencyCode: ' || AgencyCode || ',  ' || LegalName || ';  PolicyOffering: ' || PolicyOfferingCode || ',  ' || PolicyOfferingDescription || ';  Program: ' || ProgramCode || ',  ' || ProgramDescription || ' has underwriter: ' || AssociateId_List,
+	        'Policy: ' || pol_key || ';  StrategicProfitCenter: ' || StrategicProfitCenterCode || ',  ' || StrategicProfitCenterDescription || ';  AgencyCode: ' || AgencyCode || ',  ' || LegalName || ';  PolicyOffering: ' || PolicyOfferingCode || ',  ' || PolicyOfferingDescription || ';  Program: ' || ProgramCode || ',  ' || ProgramDescription || ' does not exist in AgencyODS'
+	    ),
+	    Level = 4, IFF(
+	        AssociateId_List IS NOT NULL,
+	        'Policy: ' || pol_key || ';  StrategicProfitCenter: ' || StrategicProfitCenterCode || ',  ' || StrategicProfitCenterDescription || ';  AgencyCode: ' || AgencyCode || ',  ' || LegalName || ';  PolicyOffering: ' || PolicyOfferingCode || ',  ' || PolicyOfferingDescription || ';  Program: ' || ProgramCode || ',  ' || ProgramDescription || ',  Bond Category: ' || BondCategory || ' has underwriter: ' || AssociateId_List,
+	        'Policy: ' || pol_key || ';  StrategicProfitCenter: ' || StrategicProfitCenterCode || ',  ' || StrategicProfitCenterDescription || ';  AgencyCode: ' || AgencyCode || ',  ' || LegalName || ';  PolicyOffering: ' || PolicyOfferingCode || ',  ' || PolicyOfferingDescription || ';  Program: ' || ProgramCode || ',  ' || ProgramDescription || ',  Bond Category: ' || BondCategory || ' does not exist in AgencyODS'
+	    )
 	) AS o_Msg,
 	'V2.policy' AS o_name,
 	o_Count AS Count,

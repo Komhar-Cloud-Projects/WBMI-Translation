@@ -1,0 +1,47 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_Archive_Underwriter_Mgr",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_Archive_Underwriter_Mgr",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Underwriter_mgr_stage AS (\n\tSELECT\n\t\tuw_mgr_stage_id,\n\t\tuw_mgr_id,\n\t\tuw_mgr_first_name,\n\t\tuw_mgr_middle_name,\n\t\tuw_mgr_last_name,\n\t\tuw_mgr_suffix,\n\t\trouting_station,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM Underwriter_mgr_stage\n),\nexp_ARHC_Insert_UW_Mgr AS (\n\tSELECT\n\tuw_mgr_stage_id,\n\tuw_mgr_id,\n\tuw_mgr_first_name,\n\tuw_mgr_middle_name,\n\tuw_mgr_last_name,\n\tuw_mgr_suffix,\n\trouting_station,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID\n\tFROM SQ_Underwriter_mgr_stage\n),\nTGT_Arch_underwriter_mgr_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_underwriter_mgr_stage\n\t(uw_mgr_stage_id, uw_mgr_id, uw_mgr_first_name, uw_mgr_middle_name, uw_mgr_last_name, uw_mgr_suffix, routing_station, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, audit_id)\n\tSELECT \n\tUW_MGR_STAGE_ID, \n\tUW_MGR_ID, \n\tUW_MGR_FIRST_NAME, \n\tUW_MGR_MIDDLE_NAME, \n\tUW_MGR_LAST_NAME, \n\tUW_MGR_SUFFIX, \n\tROUTING_STATION, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tOUT_AUDIT_ID AS AUDIT_ID\n\tFROM exp_ARHC_Insert_UW_Mgr\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

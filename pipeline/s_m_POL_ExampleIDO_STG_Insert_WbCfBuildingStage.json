@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WbCfBuildingStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WbCfBuildingStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_CF_Building AS (\n\tWITH cte_WBCFBuilding(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CF_BuildingId, \r\n\tX.WB_CF_BuildingId, \r\n\tX.SessionId, \r\n\tX.BuildingNumber, \r\n\tX.FirstTimeOnBuildingScreen, \r\n\tX.SprinkleredBuildingStoredValue, \r\n\tX.UtilityServicesARateStoredValue, \r\n\tX.UtilityServicesCommunicationSupplyStoredValue, \r\n\tX.UtilityServicesDirectDamageIndicatorStoredValue, \r\n\tX.UtilityServicesDirectDamagePropertyDescriptionStoredValue, \r\n\tX.UtilityServicesIndicatorStoredValue, \r\n\tX.UtilityServicesLimitStoredValue, \r\n\tX.GolfCourseCoverageStoredValue, \r\n\tX.GolfCourseDeductibleStoredValue, \r\n\tX.GolfCourseLimitStoredValue, \r\n\tX.SpecificRatedBG1RateStoredValue, \r\n\tX.SpecificRatedBG2RateStoredValue, \r\n\tX.SpecificRatedEffectiveDateStoredValue, \r\n\tX.UtilityServicesPowerSupplyStoredValue, \r\n\tX.UtilityServicesProviderTypeStoredValue, \r\n\tX.UtilityServicesWaterSupplyStoredValue, \r\n\tX.SpecificRatedStoredValue, \r\n\tX.SprinklerPercentageStoredValue, \r\n\tX.SprinklerProtectionDeviceStoredValue, \r\n\tX.SpecificRatedRCPStoredValue, \r\n\tX.SpecificRatedRateStatusStoredValue, \r\n\tX.SpecificRatedRiskIDStoredValue, \r\n\tX.OtherSprinklerProtectionDeviceStoredValue \r\n\tFROM\r\n\tWB_CF_Building X\r\n\tinner join\r\n\tcte_WBCFBuilding Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tCF_BuildingId,\n\tWB_CF_BuildingId,\n\tSessionId,\n\tBuildingNumber,\n\tFirstTimeOnBuildingScreen,\n\t-- *INF*: DECODE(FirstTimeOnBuildingScreen,'T',1,'F',0,NULL)\n\tDECODE(\n\t    FirstTimeOnBuildingScreen,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_FirstTimeOnBuildingScreen,\n\tSprinkleredBuildingStoredValue,\n\tUtilityServicesARateStoredValue,\n\tUtilityServicesCommunicationSupplyStoredValue,\n\tUtilityServicesDirectDamageIndicatorStoredValue,\n\tUtilityServicesDirectDamagePropertyDescriptionStoredValue,\n\tUtilityServicesIndicatorStoredValue,\n\tUtilityServicesLimitStoredValue,\n\tGolfCourseCoverageStoredValue,\n\tGolfCourseDeductibleStoredValue,\n\tGolfCourseLimitStoredValue,\n\tSpecificRatedBG1RateStoredValue,\n\tSpecificRatedBG2RateStoredValue,\n\tSpecificRatedEffectiveDateStoredValue,\n\tUtilityServicesPowerSupplyStoredValue,\n\tUtilityServicesProviderTypeStoredValue,\n\tUtilityServicesWaterSupplyStoredValue,\n\tSpecificRatedStoredValue,\n\tSprinklerPercentageStoredValue,\n\tSprinklerProtectionDeviceStoredValue,\n\tSpecificRatedRCPStoredValue,\n\tSpecificRatedRateStatusStoredValue,\n\tSpecificRatedRiskIDStoredValue,\n\tOtherSprinklerProtectionDeviceStoredValue,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_WB_CF_Building\n),\nWbCfBuildingStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WbCfBuildingStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WbCfBuildingStage\n\t(ExtractDate, SourceSystemId, CFBuildingId, WBCFBuildingId, SessionId, BuildingNumber, FirstTimeOnBuildingScreen, SprinkleredBuildingStoredValue, UtilityServicesARateStoredValue, UtilityServicesCommunicationSupplyStoredValue, UtilityServicesDirectDamageIndicatorStoredValue, UtilityServicesDirectDamagePropertyDescriptionStoredValue, UtilityServicesIndicatorStoredValue, UtilityServicesLimitStoredValue, GolfCourseCoverageStoredValue, GolfCourseDeductibleStoredValue, GolfCourseLimitStoredValue, SpecificRatedBG1RateStoredValue, SpecificRatedBG2RateStoredValue, SpecificRatedEffectiveDateStoredValue, UtilityServicesPowerSupplyStoredValue, UtilityServicesProviderTypeStoredValue, UtilityServicesWaterSupplyStoredValue, SpecificRatedStoredValue, SprinklerPercentageStoredValue, SprinklerProtectionDeviceStoredValue, SpecificRatedRCPStoredValue, SpecificRatedRateStatusStoredValue, SpecificRatedRiskIDStoredValue, OtherSprinklerProtectionDeviceStoredValue)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCF_BuildingId AS CFBUILDINGID, \n\tWB_CF_BuildingId AS WBCFBUILDINGID, \n\tSESSIONID, \n\tBUILDINGNUMBER, \n\to_FirstTimeOnBuildingScreen AS FIRSTTIMEONBUILDINGSCREEN, \n\tSPRINKLEREDBUILDINGSTOREDVALUE, \n\tUTILITYSERVICESARATESTOREDVALUE, \n\tUTILITYSERVICESCOMMUNICATIONSUPPLYSTOREDVALUE, \n\tUTILITYSERVICESDIRECTDAMAGEINDICATORSTOREDVALUE, \n\tUTILITYSERVICESDIRECTDAMAGEPROPERTYDESCRIPTIONSTOREDVALUE, \n\tUTILITYSERVICESINDICATORSTOREDVALUE, \n\tUTILITYSERVICESLIMITSTOREDVALUE, \n\tGOLFCOURSECOVERAGESTOREDVALUE, \n\tGOLFCOURSEDEDUCTIBLESTOREDVALUE, \n\tGOLFCOURSELIMITSTOREDVALUE, \n\tSPECIFICRATEDBG1RATESTOREDVALUE, \n\tSPECIFICRATEDBG2RATESTOREDVALUE, \n\tSPECIFICRATEDEFFECTIVEDATESTOREDVALUE, \n\tUTILITYSERVICESPOWERSUPPLYSTOREDVALUE, \n\tUTILITYSERVICESPROVIDERTYPESTOREDVALUE, \n\tUTILITYSERVICESWATERSUPPLYSTOREDVALUE, \n\tSPECIFICRATEDSTOREDVALUE, \n\tSPRINKLERPERCENTAGESTOREDVALUE, \n\tSPRINKLERPROTECTIONDEVICESTOREDVALUE, \n\tSPECIFICRATEDRCPSTOREDVALUE, \n\tSPECIFICRATEDRATESTATUSSTOREDVALUE, \n\tSPECIFICRATEDRISKIDSTOREDVALUE, \n\tOTHERSPRINKLERPROTECTIONDEVICESTOREDVALUE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

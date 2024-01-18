@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_UnderwriterAgencyRelationshipStage AS (\n\tSELECT\n\t\tUnderwriterAgencyRelationshipStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tAgencyCode,\n\t\tAssociateID,\n\t\tWestBendAssociateID,\n\t\tStrategicProfitCenterCode,\n\t\tStrategicProfitCenterDescription AS StrategicProfitCenterDescriptiong,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID,\n\t\tAgencyODSRelationshipId\n\tFROM UnderwriterAgencyRelationshipStage\n\tWHERE UnderwriterAgencyRelationshipStage.StrategicProfitCenterCode = 'X'\n),\nLKP_Agency AS (\n\tSELECT\n\tin_AgencyCode,\n\tAgencyAKID,\n\tAgencyCode\n\tFROM (\n\t\tSELECT \n\t\t\tin_AgencyCode,\n\t\t\tAgencyAKID,\n\t\t\tAgencyCode\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER_V2}.Agency\n\t\tWHERE CurrentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyCode ORDER BY in_AgencyCode DESC) = 1\n),\nlkp_UnderwritingAssociate AS (\n\tSELECT\n\tUnderwritingAssociateAKID,\n\tWestBendAssociateID\n\tFROM (\n\t\tSELECT \n\t\t\tUnderwritingAssociateAKID,\n\t\t\tWestBendAssociateID\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwritingAssociate\n\t\tWHERE CurrentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY WestBendAssociateID ORDER BY UnderwritingAssociateAKID DESC) = 1\n),\nEXP_GetAKIDs AS (\n\tSELECT\n\tlkp_UnderwritingAssociate.UnderwritingAssociateAKID AS lkp_UnderwritingAssociateAKID,\n\tLKP_Agency.AgencyAKID AS lkp_AgencyAKID,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,\n\tSQ_UnderwriterAgencyRelationshipStage.ModifiedDate,\n\tSQ_UnderwriterAgencyRelationshipStage.AgencyID,\n\tSQ_UnderwriterAgencyRelationshipStage.AgencyCode,\n\tSQ_UnderwriterAgencyRelationshipStage.AssociateID,\n\tSQ_UnderwriterAgencyRelationshipStage.WestBendAssociateID,\n\tSQ_UnderwriterAgencyRelationshipStage.StrategicProfitCenterCode,\n\tSQ_UnderwriterAgencyRelationshipStage.StrategicProfitCenterDescriptiong,\n\tSQ_UnderwriterAgencyRelationshipStage.AgencyODSRelationshipId AS AgencyODSRelationshipID\n\tFROM SQ_UnderwriterAgencyRelationshipStage\n\tLEFT JOIN LKP_Agency\n\tON LKP_Agency.AgencyCode = SQ_UnderwriterAgencyRelationshipStage.AgencyCode\n\tLEFT JOIN lkp_UnderwritingAssociate\n\tON lkp_UnderwritingAssociate.WestBendAssociateID = SQ_UnderwriterAgencyRelationshipStage.WestBendAssociateID\n),\nLKP_ExistingRelationship AS (\n\tSELECT\n\tAgencyODSRelationshipID,\n\tUnderwriterAgencyRelationshipID\n\tFROM (\n\t\tSELECT \n\t\t\tAgencyODSRelationshipID,\n\t\t\tUnderwriterAgencyRelationshipID\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwriterAgencyRelationship\n\t\tWHERE CurrentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY UnderwriterAgencyRelationshipID ORDER BY AgencyODSRelationshipID DESC) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tLKP_ExistingRelationship.UnderwriterAgencyRelationshipID AS lkp_UnderwriterAgencyRelationshipID,\n\tEXP_GetAKIDs.lkp_AgencyAKID,\n\tEXP_GetAKIDs.lkp_UnderwritingAssociateAKID,\n\tEXP_GetAKIDs.SourceSystemID,\n\t-- *INF*: IIF(ISNULL(lkp_UnderwriterAgencyRelationshipID), 'IGNORE', 'UPDATE')\r\n\t-- \n\tIFF(lkp_UnderwriterAgencyRelationshipID IS NULL,\n\t\t'IGNORE',\n\t\t'UPDATE'\n\t) AS v_changed_flag,\n\tv_changed_flag AS changed_flag,\n\t0 AS CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,\n\tsysdate AS ExpirationDate,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate,\n\tEXP_GetAKIDs.ModifiedDate AS SourceModifiedDate\n\tFROM EXP_GetAKIDs\n\tLEFT JOIN LKP_ExistingRelationship\n\tON LKP_ExistingRelationship.UnderwriterAgencyRelationshipID = EXP_GetAKIDs.AgencyODSRelationshipID\n),\nFIL_insert AS (\n\tSELECT\n\tlkp_UnderwriterAgencyRelationshipID AS UnderwriterAgencyRelationshipID, \n\tchanged_flag, \n\tCurrentSnapshotFlag, \n\tExpirationDate, \n\tSourceSystemID, \n\tModifiedDate, \n\tlkp_AgencyAKID AS AgencyAKID, \n\tlkp_UnderwritingAssociateAKID AS UnderwritingAssociateAKID, \n\tSourceModifiedDate, \n\tAuditID\n\tFROM EXP_Detect_Changes\n\tWHERE changed_flag='UPDATE'\n),\nUPD_DeletedRelationship AS (\n\tSELECT\n\tUnderwriterAgencyRelationshipID, \n\tSourceModifiedDate AS ExpirationDate, \n\tCurrentSnapshotFlag, \n\tModifiedDate, \n\tAuditID\n\tFROM FIL_insert\n),\nUnderwriterAgencyRelationship_Expire AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwriterAgencyRelationship AS T\n\tUSING UPD_DeletedRelationship AS S\n\tON T.UnderwriterAgencyRelationshipId = S.UnderwriterAgencyRelationshipID\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.CurrentSnapshotFlag, T.ExpirationDate = S.ExpirationDate, T.ModifiedDate = S.ModifiedDate\n),"
+                            "text": "WITH\nSQ_UnderwriterAgencyRelationshipStage AS (\n\tSELECT\n\t\tUnderwriterAgencyRelationshipStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tAgencyCode,\n\t\tAssociateID,\n\t\tWestBendAssociateID,\n\t\tStrategicProfitCenterCode,\n\t\tStrategicProfitCenterDescription AS StrategicProfitCenterDescriptiong,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID,\n\t\tAgencyODSRelationshipId\n\tFROM UnderwriterAgencyRelationshipStage\n\tWHERE UnderwriterAgencyRelationshipStage.StrategicProfitCenterCode = 'X'\n),\nLKP_Agency AS (\n\tSELECT\n\tin_AgencyCode,\n\tAgencyAKID,\n\tAgencyCode\n\tFROM (\n\t\tSELECT \n\t\t\tin_AgencyCode,\n\t\t\tAgencyAKID,\n\t\t\tAgencyCode\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER_V2}.Agency\n\t\tWHERE CurrentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyCode ORDER BY in_AgencyCode DESC) = 1\n),\nlkp_UnderwritingAssociate AS (\n\tSELECT\n\tUnderwritingAssociateAKID,\n\tWestBendAssociateID\n\tFROM (\n\t\tSELECT \n\t\t\tUnderwritingAssociateAKID,\n\t\t\tWestBendAssociateID\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwritingAssociate\n\t\tWHERE CurrentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY WestBendAssociateID ORDER BY UnderwritingAssociateAKID DESC) = 1\n),\nEXP_GetAKIDs AS (\n\tSELECT\n\tlkp_UnderwritingAssociate.UnderwritingAssociateAKID AS lkp_UnderwritingAssociateAKID,\n\tLKP_Agency.AgencyAKID AS lkp_AgencyAKID,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,\n\tSQ_UnderwriterAgencyRelationshipStage.ModifiedDate,\n\tSQ_UnderwriterAgencyRelationshipStage.AgencyID,\n\tSQ_UnderwriterAgencyRelationshipStage.AgencyCode,\n\tSQ_UnderwriterAgencyRelationshipStage.AssociateID,\n\tSQ_UnderwriterAgencyRelationshipStage.WestBendAssociateID,\n\tSQ_UnderwriterAgencyRelationshipStage.StrategicProfitCenterCode,\n\tSQ_UnderwriterAgencyRelationshipStage.StrategicProfitCenterDescriptiong,\n\tSQ_UnderwriterAgencyRelationshipStage.AgencyODSRelationshipId AS AgencyODSRelationshipID\n\tFROM SQ_UnderwriterAgencyRelationshipStage\n\tLEFT JOIN LKP_Agency\n\tON LKP_Agency.AgencyCode = SQ_UnderwriterAgencyRelationshipStage.AgencyCode\n\tLEFT JOIN lkp_UnderwritingAssociate\n\tON lkp_UnderwritingAssociate.WestBendAssociateID = SQ_UnderwriterAgencyRelationshipStage.WestBendAssociateID\n),\nLKP_ExistingRelationship AS (\n\tSELECT\n\tAgencyODSRelationshipID,\n\tUnderwriterAgencyRelationshipID\n\tFROM (\n\t\tSELECT \n\t\t\tAgencyODSRelationshipID,\n\t\t\tUnderwriterAgencyRelationshipID\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwriterAgencyRelationship\n\t\tWHERE CurrentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY UnderwriterAgencyRelationshipID ORDER BY AgencyODSRelationshipID DESC) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tLKP_ExistingRelationship.UnderwriterAgencyRelationshipID AS lkp_UnderwriterAgencyRelationshipID,\n\tEXP_GetAKIDs.lkp_AgencyAKID,\n\tEXP_GetAKIDs.lkp_UnderwritingAssociateAKID,\n\tEXP_GetAKIDs.SourceSystemID,\n\t-- *INF*: IIF(ISNULL(lkp_UnderwriterAgencyRelationshipID), 'IGNORE', 'UPDATE')\r\n\t-- \n\tIFF(lkp_UnderwriterAgencyRelationshipID IS NULL, 'IGNORE', 'UPDATE') AS v_changed_flag,\n\tv_changed_flag AS changed_flag,\n\t0 AS CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,\n\tsysdate AS ExpirationDate,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate,\n\tEXP_GetAKIDs.ModifiedDate AS SourceModifiedDate\n\tFROM EXP_GetAKIDs\n\tLEFT JOIN LKP_ExistingRelationship\n\tON LKP_ExistingRelationship.UnderwriterAgencyRelationshipID = EXP_GetAKIDs.AgencyODSRelationshipID\n),\nFIL_insert AS (\n\tSELECT\n\tlkp_UnderwriterAgencyRelationshipID AS UnderwriterAgencyRelationshipID, \n\tchanged_flag, \n\tCurrentSnapshotFlag, \n\tExpirationDate, \n\tSourceSystemID, \n\tModifiedDate, \n\tlkp_AgencyAKID AS AgencyAKID, \n\tlkp_UnderwritingAssociateAKID AS UnderwritingAssociateAKID, \n\tSourceModifiedDate, \n\tAuditID\n\tFROM EXP_Detect_Changes\n\tWHERE changed_flag='UPDATE'\n),\nUPD_DeletedRelationship AS (\n\tSELECT\n\tUnderwriterAgencyRelationshipID, \n\tSourceModifiedDate AS ExpirationDate, \n\tCurrentSnapshotFlag, \n\tModifiedDate, \n\tAuditID\n\tFROM FIL_insert\n),\nUnderwriterAgencyRelationship_Expire AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwriterAgencyRelationship AS T\n\tUSING UPD_DeletedRelationship AS S\n\tON T.UnderwriterAgencyRelationshipId = S.UnderwriterAgencyRelationshipID\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.CurrentSnapshotFlag, T.ExpirationDate = S.ExpirationDate, T.ModifiedDate = S.ModifiedDate\n),"
                         }
                     ]
                 },
@@ -30,57 +30,25 @@
             }
         ],
         "parameters": {
-            "WBMI_AUDIT_CONTROL_RUN_ID": {
+            "TARGET_TABLE_OWNER_V2": {
                 "type": "string",
-                "defaultValue": "246490"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "905469"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7603194"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "08/29/2023 22:19:20"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/30/2023 22:18:59"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_WC_Stage_Claim"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
+                "defaultValue": "Default Value"
             },
             "TARGET_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": "DBO"
-            },
-            "SOURCESYSTEMID": {
-                "type": "string",
-                "defaultValue": "AgencyODS"
-            },
-            "TARGET_TABLE_OWNER_V2": {
-                "type": "string",
-                "defaultValue": "V2"
+                "defaultValue": "Default Value"
             },
             "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
                 "type": "string",
                 "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Agency DataWarehouse/"
+            "name": "RPT_EDM and EDW/Agency DataWarehouse/"
         },
         "annotations": []
     }

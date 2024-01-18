@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_Program AS (\n\tSELECT\n\t\tSourceSystemId,\n\t\tProgramCode,\n\t\tProgramDescription\n\tFROM Program\n\tWHERE CurrentSnapshotFlag=1\n),\nLKP_ProgramDim AS (\n\tSELECT\n\tProgramDimId,\n\tProgramCode\n\tFROM (\n\t\tSELECT \n\t\t\tProgramDimId,\n\t\t\tProgramCode\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.ProgramDim\n\t\tWHERE CurrentSnapshotFlag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ProgramCode ORDER BY ProgramDimId) = 1\n),\nEXP_Value AS (\n\tSELECT\n\tLKP_ProgramDim.ProgramDimId AS lkp_ProgramDimId,\n\t-- *INF*: IIF(ISNULL(lkp_ProgramDimId), 'INSERT', 'UPDATE')\n\tIFF(lkp_ProgramDimId IS NULL,\n\t\t'INSERT',\n\t\t'UPDATE'\n\t) AS Flag,\n\t1 AS CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\t-- *INF*: TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')\n\tTO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'\n\t) AS EffectiveDate,\n\t-- *INF*: TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS')\n\tTO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'\n\t) AS ExpirationDate,\n\tSQ_Program.SourceSystemId,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate,\n\tSQ_Program.ProgramCode,\n\tSQ_Program.ProgramDescription\n\tFROM SQ_Program\n\tLEFT JOIN LKP_ProgramDim\n\tON LKP_ProgramDim.ProgramCode = SQ_Program.ProgramCode\n),\nRTR_ProgramDim AS (\n\tSELECT\n\tlkp_ProgramDimId AS ProgramDimId,\n\tFlag,\n\tCurrentSnapshotFlag,\n\tAuditId,\n\tEffectiveDate,\n\tExpirationDate,\n\tSourceSystemId,\n\tCreatedDate,\n\tModifiedDate,\n\tProgramCode,\n\tProgramDescription\n\tFROM EXP_Value\n),\nRTR_ProgramDim_UPDATE AS (SELECT * FROM RTR_ProgramDim WHERE Flag = 'UPDATE'),\nRTR_ProgramDim_DEFAULT1 AS (SELECT * FROM RTR_ProgramDim WHERE NOT ( (Flag = 'UPDATE') )),\nUPD_ProgramDim_Update AS (\n\tSELECT\n\tProgramDimId, \n\tCurrentSnapshotFlag, \n\tAuditId, \n\tEffectiveDate, \n\tExpirationDate, \n\tSourceSystemId, \n\tCreatedDate, \n\tModifiedDate, \n\tProgramCode, \n\tProgramDescription\n\tFROM RTR_ProgramDim_UPDATE\n),\nTGT_ProgramDim_UPDATE AS (\n\tMERGE INTO ProgramDim AS T\n\tUSING UPD_ProgramDim_Update AS S\n\tON T.ProgramDimId = S.ProgramDimId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ModifiedDate = S.ModifiedDate, T.ProgramCode = S.ProgramCode, T.ProgramDescription = S.ProgramDescription\n),\nUPD_ProgramDim_Insert AS (\n\tSELECT\n\tCurrentSnapshotFlag, \n\tAuditId, \n\tEffectiveDate, \n\tExpirationDate, \n\tSourceSystemId, \n\tCreatedDate, \n\tModifiedDate, \n\tProgramCode, \n\tProgramDescription\n\tFROM RTR_ProgramDim_DEFAULT1\n),\nTGT_ProgramDim_INSERT AS (\n\tINSERT INTO ProgramDim\n\t(CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, ProgramCode, ProgramDescription)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tPROGRAMCODE, \n\tPROGRAMDESCRIPTION\n\tFROM UPD_ProgramDim_Insert\n),"
+                            "text": "WITH\nSQ_Program AS (\n\tSELECT\n\t\tSourceSystemId,\n\t\tProgramCode,\n\t\tProgramDescription\n\tFROM Program\n\tWHERE CurrentSnapshotFlag=1\n),\nLKP_ProgramDim AS (\n\tSELECT\n\tProgramDimId,\n\tProgramCode\n\tFROM (\n\t\tSELECT \n\t\t\tProgramDimId,\n\t\t\tProgramCode\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.ProgramDim\n\t\tWHERE CurrentSnapshotFlag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ProgramCode ORDER BY ProgramDimId) = 1\n),\nEXP_Value AS (\n\tSELECT\n\tLKP_ProgramDim.ProgramDimId AS lkp_ProgramDimId,\n\t-- *INF*: IIF(ISNULL(lkp_ProgramDimId), 'INSERT', 'UPDATE')\n\tIFF(lkp_ProgramDimId IS NULL, 'INSERT', 'UPDATE') AS Flag,\n\t1 AS CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\t-- *INF*: TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')\n\tTO_TIMESTAMP('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS EffectiveDate,\n\t-- *INF*: TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS')\n\tTO_TIMESTAMP('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS ExpirationDate,\n\tSQ_Program.SourceSystemId,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate,\n\tSQ_Program.ProgramCode,\n\tSQ_Program.ProgramDescription\n\tFROM SQ_Program\n\tLEFT JOIN LKP_ProgramDim\n\tON LKP_ProgramDim.ProgramCode = SQ_Program.ProgramCode\n),\nRTR_ProgramDim AS (\n\tSELECT\n\tlkp_ProgramDimId AS ProgramDimId,\n\tFlag,\n\tCurrentSnapshotFlag,\n\tAuditId,\n\tEffectiveDate,\n\tExpirationDate,\n\tSourceSystemId,\n\tCreatedDate,\n\tModifiedDate,\n\tProgramCode,\n\tProgramDescription\n\tFROM EXP_Value\n),\nRTR_ProgramDim_UPDATE AS (SELECT * FROM RTR_ProgramDim WHERE Flag = 'UPDATE'),\nRTR_ProgramDim_DEFAULT1 AS (SELECT * FROM RTR_ProgramDim WHERE NOT ( (Flag = 'UPDATE') )),\nUPD_ProgramDim_Update AS (\n\tSELECT\n\tProgramDimId, \n\tCurrentSnapshotFlag, \n\tAuditId, \n\tEffectiveDate, \n\tExpirationDate, \n\tSourceSystemId, \n\tCreatedDate, \n\tModifiedDate, \n\tProgramCode, \n\tProgramDescription\n\tFROM RTR_ProgramDim_UPDATE\n),\nTGT_ProgramDim_UPDATE AS (\n\tMERGE INTO ProgramDim AS T\n\tUSING UPD_ProgramDim_Update AS S\n\tON T.ProgramDimId = S.ProgramDimId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ModifiedDate = S.ModifiedDate, T.ProgramCode = S.ProgramCode, T.ProgramDescription = S.ProgramDescription\n),\nUPD_ProgramDim_Insert AS (\n\tSELECT\n\tCurrentSnapshotFlag, \n\tAuditId, \n\tEffectiveDate, \n\tExpirationDate, \n\tSourceSystemId, \n\tCreatedDate, \n\tModifiedDate, \n\tProgramCode, \n\tProgramDescription\n\tFROM RTR_ProgramDim_DEFAULT1\n),\nTGT_ProgramDim_INSERT AS (\n\tINSERT INTO ProgramDim\n\t(CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, ProgramCode, ProgramDescription)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tPROGRAMCODE, \n\tPROGRAMDESCRIPTION\n\tFROM UPD_ProgramDim_Insert\n),"
                         }
                     ]
                 },
@@ -30,45 +30,17 @@
             }
         ],
         "parameters": {
-            "WBMI_AUDIT_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "246496"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "905496"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7603414"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "08/29/2023 22:46:53"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/30/2023 23:06:25"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_WC_Data_Mart_Claim"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
             "TARGET_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": "DBO"
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Quote DataMart/"
+            "name": "RPT_EDM and EDW/Quote DataMart/"
         },
         "annotations": []
     }

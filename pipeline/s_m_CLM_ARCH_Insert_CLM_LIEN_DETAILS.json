@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLM_LIEN_DETAILS",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLM_LIEN_DETAILS",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_clm_lien_details_stage AS (\n\tSELECT\n\t\tclm_lien_details_stage_id,\n\t\ttch_claim_nbr,\n\t\ttch_client_id,\n\t\tlien_client_id,\n\t\tlien_role,\n\t\tlien_amt,\n\t\tcreate_ts,\n\t\tcreate_user_id,\n\t\tupdate_ts,\n\t\tupdate_user_id,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM clm_lien_details_stage\n),\nEXP_CLM_LIEN_DETAILS AS (\n\tSELECT\n\tclm_lien_details_stage_id,\n\ttch_claim_nbr,\n\ttch_client_id,\n\tlien_client_id,\n\tlien_role,\n\tlien_amt,\n\tcreate_ts,\n\tcreate_user_id,\n\tupdate_ts,\n\tupdate_user_id,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_clm_lien_details_stage\n),\nShortcut_to_arch_clm_lien_details_stage AS (\n\tINSERT INTO arch_clm_lien_details_stage\n\t(clm_lien_details_stage_id, tch_claim_nbr, tch_client_id, lien_client_id, lien_role, lien_amt, create_ts, create_user_id, update_ts, update_user_id, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCLM_LIEN_DETAILS_STAGE_ID, \n\tTCH_CLAIM_NBR, \n\tTCH_CLIENT_ID, \n\tLIEN_CLIENT_ID, \n\tLIEN_ROLE, \n\tLIEN_AMT, \n\tCREATE_TS, \n\tCREATE_USER_ID, \n\tUPDATE_TS, \n\tUPDATE_USER_ID, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_CLM_LIEN_DETAILS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

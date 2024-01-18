@@ -12,15 +12,9 @@ EXP_Default_Values AS (
 	CS01_CODE AS in_CS01_CODE,
 	CS01_CODE_DES AS in_CS01_CODE_DES,
 	-- *INF*: iif(isnull(in_CS01_CODE),'N/A',in_CS01_CODE)
-	IFF(in_CS01_CODE IS NULL,
-		'N/A',
-		in_CS01_CODE
-	) AS out_CS01_CODE,
+	IFF(in_CS01_CODE IS NULL, 'N/A', in_CS01_CODE) AS out_CS01_CODE,
 	-- *INF*: iif(isnull(in_CS01_CODE_DES),'N/A',in_CS01_CODE_DES)
-	IFF(in_CS01_CODE_DES IS NULL,
-		'N/A',
-		in_CS01_CODE_DES
-	) AS out_CS01_CODE_DES
+	IFF(in_CS01_CODE_DES IS NULL, 'N/A', in_CS01_CODE_DES) AS out_CS01_CODE_DES
 	FROM SQ_CLAIM_SUPPORT_01_STAGE
 ),
 LKP_sup_claim_subrogation_deductible_status_code AS (
@@ -45,27 +39,23 @@ EXP_lkpvalues AS (
 	-- 	iif((out_CS01_CODE_DES <>old_ded_status_code_descript),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(old_sup_claim_subrogation_ded_tatus_code_id IS NULL,
-		'NEW',
-		IFF(( out_CS01_CODE_DES <> old_ded_status_code_descript 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    old_sup_claim_subrogation_ded_tatus_code_id IS NULL, 'NEW',
+	    IFF(
+	        (out_CS01_CODE_DES <> old_ded_status_code_descript), 'UPDATE', 'NOCHANGE'
+	    )
 	) AS V_CHANGED_FLAG,
 	V_CHANGED_FLAG AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS auidt_id,
 	-- *INF*: iif(V_CHANGED_FLAG='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(V_CHANGED_FLAG = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    V_CHANGED_FLAG = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	sysdate AS created_date,
 	sysdate AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_sys_id
@@ -136,9 +126,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	ded_status_code = V_PREV_ROW_ded_status_code, ADD_TO_DATE(V_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		ded_status_code = V_PREV_ROW_ded_status_code, DATEADD(SECOND,- 1,V_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    ded_status_code = V_PREV_ROW_ded_status_code, DATEADD(SECOND,- 1,V_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS V_PREV_ROW_eff_from_date,

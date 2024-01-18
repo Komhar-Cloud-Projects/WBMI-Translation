@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCWCStateTermStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCWCStateTermStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_WC_StateTerm AS (\n\tWITH cte_DCWCStateTerm(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.WC_StateId, \r\n\tX.WC_StateTermId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.AlternatePreferredPlanClaimsInfo, \r\n\tX.AlternatePreferredPlanEmployerType, \r\n\tX.AtomicRadiationUnitsOfExposure, \r\n\tX.BuildGroup, \r\n\tX.CoinsuranceSelection, \r\n\tX.DeductibleSelection, \r\n\tX.DeductibleType, \r\n\tX.EmployingPreviouslyInjuredEmployeesFactorDisplay, \r\n\tX.ExperienceModEffectiveDate, \r\n\tX.ExperienceModType, \r\n\tX.ExperienceRatingOptions, \r\n\tX.ManagedCareFactorDisplay, \r\n\tX.NumberOfStrikeDutyDays, \r\n\tX.NumberOfStrikeDutyEmployeeDays, \r\n\tX.NumberOfStrikeDutyEmployees, \r\n\tX.PeriodEndDate, \r\n\tX.PeriodStartDate, \r\n\tX.PeriodTerm, \r\n\tX.PolicyType, \r\n\tX.RateEffectiveDate, \r\n\tX.SafetyCertificationFactorDisplay, \r\n\tX.ScheduleRatingChoice, \r\n\tX.SmallDeductibleSelection, \r\n\tX.TermType, \r\n\tX.Type, \r\n\tX.TypeOfEmployer, \r\n\tX.WaiverOfSubrogationFactorDisplay, \r\n\tX.WorkplaceSafetyProgramFactorDisplay,\r\n\tX.CombinedPolicyPremium,\r\n\tX.ManualPremium,\r\n\tX.MinimumPremium,\r\n\tX.ModifiedPremium,\r\n\tX.SubjectPremium,\r\n\tX.TotalStandardPremium   \r\n\tFROM\r\n\tDC_WC_StateTerm X\r\n\tinner join\r\n\tcte_DCWCStateTerm Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tWC_StateId AS i_WC_StateId,\n\tWC_StateTermId AS i_WC_StateTermId,\n\tSessionId AS i_SessionId,\n\tId AS i_Id,\n\tAlternatePreferredPlanClaimsInfo AS i_AlternatePreferredPlanClaimsInfo,\n\tAlternatePreferredPlanEmployerType AS i_AlternatePreferredPlanEmployerType,\n\tAtomicRadiationUnitsOfExposure AS i_AtomicRadiationUnitsOfExposure,\n\tBuildGroup AS i_BuildGroup,\n\tCoinsuranceSelection AS i_CoinsuranceSelection,\n\tDeductibleSelection AS i_DeductibleSelection,\n\tDeductibleType AS i_DeductibleType,\n\tEmployingPreviouslyInjuredEmployeesFactorDisplay AS i_EmployingPreviouslyInjuredEmployeesFactorDisplay,\n\tExperienceModEffectiveDate AS i_ExperienceModEffectiveDate,\n\tExperienceModType AS i_ExperienceModType,\n\tExperienceRatingOptions AS i_ExperienceRatingOptions,\n\tManagedCareFactorDisplay AS i_ManagedCareFactorDisplay,\n\tNumberOfStrikeDutyDays AS i_NumberOfStrikeDutyDays,\n\tNumberOfStrikeDutyEmployeeDays AS i_NumberOfStrikeDutyEmployeeDays,\n\tNumberOfStrikeDutyEmployees AS i_NumberOfStrikeDutyEmployees,\n\tPeriodEndDate AS i_PeriodEndDate,\n\tPeriodStartDate AS i_PeriodStartDate,\n\tPeriodTerm AS i_PeriodTerm,\n\tPolicyType AS i_PolicyType,\n\tRateEffectiveDate AS i_RateEffectiveDate,\n\tSafetyCertificationFactorDisplay AS i_SafetyCertificationFactorDisplay,\n\tScheduleRatingChoice AS i_ScheduleRatingChoice,\n\tSmallDeductibleSelection AS i_SmallDeductibleSelection,\n\tTermType AS i_TermType,\n\tType AS i_Type,\n\tTypeOfEmployer AS i_TypeOfEmployer,\n\tWaiverOfSubrogationFactorDisplay AS i_WaiverOfSubrogationFactorDisplay,\n\tWorkplaceSafetyProgramFactorDisplay AS i_WorkplaceSafetyProgramFactorDisplay,\n\ti_WC_StateTermId AS o_WC_StateTermId,\n\ti_SessionId AS o_SessionId,\n\ti_WC_StateId AS o_WC_StateId,\n\ti_Id AS o_Id,\n\ti_AlternatePreferredPlanClaimsInfo AS o_AlternatePreferredPlanClaimsInfo,\n\ti_AlternatePreferredPlanEmployerType AS o_AlternatePreferredPlanEmployerType,\n\ti_AtomicRadiationUnitsOfExposure AS o_AtomicRadiationUnitsOfExposure,\n\ti_BuildGroup AS o_BuildGroup,\n\ti_CoinsuranceSelection AS o_CoinsuranceSelection,\n\ti_DeductibleSelection AS o_DeductibleSelection,\n\ti_DeductibleType AS o_DeductibleType,\n\ti_EmployingPreviouslyInjuredEmployeesFactorDisplay AS o_EmployingPreviouslyInjuredEmployeesFactorDisplay,\n\ti_ExperienceModEffectiveDate AS o_ExperienceModEffectiveDate,\n\ti_ExperienceModType AS o_ExperienceModType,\n\ti_ExperienceRatingOptions AS o_ExperienceRatingOptions,\n\ti_ManagedCareFactorDisplay AS o_ManagedCareFactorDisplay,\n\ti_NumberOfStrikeDutyDays AS o_NumberOfStrikeDutyDays,\n\ti_NumberOfStrikeDutyEmployeeDays AS o_NumberOfStrikeDutyEmployeeDays,\n\ti_NumberOfStrikeDutyEmployees AS o_NumberOfStrikeDutyEmployees,\n\ti_PeriodEndDate AS o_PeriodEndDate,\n\ti_PeriodStartDate AS o_PeriodStartDate,\n\ti_PeriodTerm AS o_PeriodTerm,\n\ti_PolicyType AS o_PolicyType,\n\ti_RateEffectiveDate AS o_RateEffectiveDate,\n\ti_SafetyCertificationFactorDisplay AS o_SafetyCertificationFactorDisplay,\n\ti_ScheduleRatingChoice AS o_ScheduleRatingChoice,\n\ti_SmallDeductibleSelection AS o_SmallDeductibleSelection,\n\ti_TermType AS o_TermType,\n\ti_Type AS o_Type,\n\ti_TypeOfEmployer AS o_TypeOfEmployer,\n\ti_WaiverOfSubrogationFactorDisplay AS o_WaiverOfSubrogationFactorDisplay,\n\ti_WorkplaceSafetyProgramFactorDisplay AS o_WorkplaceSafetyProgramFactorDisplay,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tCombinedPolicyPremium,\n\tManualPremium,\n\tMinimumPremium,\n\tModifiedPremium,\n\tSubjectPremium,\n\tTotalStandardPremium\n\tFROM SQ_DC_WC_StateTerm\n),\nDCWCStateTermStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCWCStateTermStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCWCStateTermStaging\n\t(WC_StateTermId, SessionId, WC_StateId, Id, AlternatePreferredPlanClaimsInfo, AlternatePreferredPlanEmployerType, AtomicRadiationUnitsOfExposure, BuildGroup, CoinsuranceSelection, DeductibleSelection, DeductibleType, EmployingPreviouslyInjuredEmployeesFactorDisplay, ExperienceModEffectiveDate, ExperienceModType, ExperienceRatingOptions, ManagedCareFactorDisplay, NumberOfStrikeDutyDays, NumberOfStrikeDutyEmployeeDays, NumberOfStrikeDutyEmployees, PeriodEndDate, PeriodStartDate, PeriodTerm, PolicyType, RateEffectiveDate, SafetyCertificationFactorDisplay, ScheduleRatingChoice, SmallDeductibleSelection, TermType, Type, TypeOfEmployer, WaiverOfSubrogationFactorDisplay, WorkplaceSafetyProgramFactorDisplay, ExtractDate, SourceSystemId, CombinedPolicyPremium, ManualPremium, MinimumPremium, ModifiedPremium, SubjectPremium, TotalStandardPremium)\n\tSELECT \n\to_WC_StateTermId AS WC_STATETERMID, \n\to_SessionId AS SESSIONID, \n\to_WC_StateId AS WC_STATEID, \n\to_Id AS ID, \n\to_AlternatePreferredPlanClaimsInfo AS ALTERNATEPREFERREDPLANCLAIMSINFO, \n\to_AlternatePreferredPlanEmployerType AS ALTERNATEPREFERREDPLANEMPLOYERTYPE, \n\to_AtomicRadiationUnitsOfExposure AS ATOMICRADIATIONUNITSOFEXPOSURE, \n\to_BuildGroup AS BUILDGROUP, \n\to_CoinsuranceSelection AS COINSURANCESELECTION, \n\to_DeductibleSelection AS DEDUCTIBLESELECTION, \n\to_DeductibleType AS DEDUCTIBLETYPE, \n\to_EmployingPreviouslyInjuredEmployeesFactorDisplay AS EMPLOYINGPREVIOUSLYINJUREDEMPLOYEESFACTORDISPLAY, \n\to_ExperienceModEffectiveDate AS EXPERIENCEMODEFFECTIVEDATE, \n\to_ExperienceModType AS EXPERIENCEMODTYPE, \n\to_ExperienceRatingOptions AS EXPERIENCERATINGOPTIONS, \n\to_ManagedCareFactorDisplay AS MANAGEDCAREFACTORDISPLAY, \n\to_NumberOfStrikeDutyDays AS NUMBEROFSTRIKEDUTYDAYS, \n\to_NumberOfStrikeDutyEmployeeDays AS NUMBEROFSTRIKEDUTYEMPLOYEEDAYS, \n\to_NumberOfStrikeDutyEmployees AS NUMBEROFSTRIKEDUTYEMPLOYEES, \n\to_PeriodEndDate AS PERIODENDDATE, \n\to_PeriodStartDate AS PERIODSTARTDATE, \n\to_PeriodTerm AS PERIODTERM, \n\to_PolicyType AS POLICYTYPE, \n\to_RateEffectiveDate AS RATEEFFECTIVEDATE, \n\to_SafetyCertificationFactorDisplay AS SAFETYCERTIFICATIONFACTORDISPLAY, \n\to_ScheduleRatingChoice AS SCHEDULERATINGCHOICE, \n\to_SmallDeductibleSelection AS SMALLDEDUCTIBLESELECTION, \n\to_TermType AS TERMTYPE, \n\to_Type AS TYPE, \n\to_TypeOfEmployer AS TYPEOFEMPLOYER, \n\to_WaiverOfSubrogationFactorDisplay AS WAIVEROFSUBROGATIONFACTORDISPLAY, \n\to_WorkplaceSafetyProgramFactorDisplay AS WORKPLACESAFETYPROGRAMFACTORDISPLAY, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCOMBINEDPOLICYPREMIUM, \n\tMANUALPREMIUM, \n\tMINIMUMPREMIUM, \n\tMODIFIEDPREMIUM, \n\tSUBJECTPREMIUM, \n\tTOTALSTANDARDPREMIUM\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

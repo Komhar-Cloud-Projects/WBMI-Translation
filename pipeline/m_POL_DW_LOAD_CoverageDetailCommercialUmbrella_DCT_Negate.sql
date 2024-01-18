@@ -34,20 +34,17 @@ EXP_DefaultValue AS (
 	1 AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	i_CoverageGuid AS o_CoverageGuid,
 	-- *INF*: IIF(ISNULL(i_RetroActiveDate), TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS'), i_RetroActiveDate)
-	IFF(i_RetroActiveDate IS NULL,
-		TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		i_RetroActiveDate
+	IFF(
+	    i_RetroActiveDate IS NULL, TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'),
+	    i_RetroActiveDate
 	) AS o_RetroActiveDate
 	FROM Exp_CoverageDetailCommercialUmbrella
 ),
@@ -91,10 +88,7 @@ EXP_DetectChange AS (
 	EXP_DefaultValue.UmbrellaLayer,
 	-- *INF*: IIF(ISNULL(lkp_PremiumTransactionID), 'NEW',  'UPDATE') 
 	-- 
-	IFF(lkp_PremiumTransactionID IS NULL,
-		'NEW',
-		'UPDATE'
-	) AS v_ChangeFlag,
+	IFF(lkp_PremiumTransactionID IS NULL, 'NEW', 'UPDATE') AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag
 	FROM EXP_DefaultValue
 	LEFT JOIN LKP_CoverageDetailCommercialUmbrella

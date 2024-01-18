@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_ClaimClientStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_ClaimClientStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_ClaimClientStage AS (\n\tSELECT\n\t\tClaimClientStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCCI_CLAIM_NBR,\n\t\tCCI_CLIENT_ID,\n\t\tCCI_BIL_PEM_DT,\n\t\tCCI_BIL_PEM_IND,\n\t\tCCI_CLT_LOC_CD,\n\t\tCCI_CTC_WHEN_ID,\n\t\tCCI_CTC_WHERE_CD,\n\t\tCCI_CREATE_TS,\n\t\tCCI_UNPAID_PRM_AMT,\n\t\tCCI_DRIVER_LIC_NBR,\n\t\tCCI_ENTRY_OPR_ID,\n\t\tCCI_PMSD_TS,\n\t\tCCI_RLT_TO_CLN,\n\t\tCCI_RLT_TO_ISU_CD,\n\t\tCCI_RLT_TO_PHD,\n\t\tCCI_REPORTED_DT,\n\t\tCCI_DED_RDU_AMT,\n\t\tCCI_CLIENT_DES_ID,\n\t\tCCI_EPR_CLT_ID,\n\t\tCCI_BIL_AUT_ID,\n\t\tCCI_ADR_ID,\n\t\tCCI_UPDATE_OPR_ID,\n\t\tCCI_UPD_TS,\n\t\tCCI_EMP_ADR_ID,\n\t\tCCI_ADR_SEQ_NBR,\n\t\tCCI_EPR_ADR_NBR,\n\t\tCCI_IL50_DIARY_IND,\n\t\tMED_DIARY_CREATED,\n\t\tCCI_PC_MEDBILL_LMT,\n\t\tIL_TOT_LOSS_BROCHURE_SENT,\n\t\tCCI_DEDUC_RESV_REQ,\n\t\tCCI_AGREEMENT_ID,\n\t\tFROI_DIARY_CREATED,\n\t\tPREFERRED_CONTACT_METHOD\n\tFROM ClaimClientStage\n),\nEXPTRANS AS (\n\tSELECT\n\tClaimClientStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCCI_CLAIM_NBR,\n\tCCI_CLIENT_ID,\n\tCCI_BIL_PEM_DT,\n\tCCI_BIL_PEM_IND,\n\tCCI_CLT_LOC_CD,\n\tCCI_CTC_WHEN_ID,\n\tCCI_CTC_WHERE_CD,\n\tCCI_CREATE_TS,\n\tCCI_UNPAID_PRM_AMT,\n\tCCI_DRIVER_LIC_NBR,\n\tCCI_ENTRY_OPR_ID,\n\tCCI_PMSD_TS,\n\tCCI_RLT_TO_CLN,\n\tCCI_RLT_TO_ISU_CD,\n\tCCI_RLT_TO_PHD,\n\tCCI_REPORTED_DT,\n\tCCI_DED_RDU_AMT,\n\tCCI_CLIENT_DES_ID,\n\tCCI_EPR_CLT_ID,\n\tCCI_BIL_AUT_ID,\n\tCCI_ADR_ID,\n\tCCI_UPDATE_OPR_ID,\n\tCCI_UPD_TS,\n\tCCI_EMP_ADR_ID,\n\tCCI_ADR_SEQ_NBR,\n\tCCI_EPR_ADR_NBR,\n\tCCI_IL50_DIARY_IND,\n\tMED_DIARY_CREATED,\n\tCCI_PC_MEDBILL_LMT,\n\tIL_TOT_LOSS_BROCHURE_SENT,\n\tCCI_DEDUC_RESV_REQ,\n\tCCI_AGREEMENT_ID,\n\tFROI_DIARY_CREATED,\n\tPREFERRED_CONTACT_METHOD,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_ClaimClientStage\n),\nArchClaimClientStage AS (\n\tINSERT INTO ArchClaimClientStage\n\t(AuditId, ClaimClientStageId, ExtractDate, SourceSystemId, CCI_CLAIM_NBR, CCI_CLIENT_ID, CCI_BIL_PEM_DT, CCI_BIL_PEM_IND, CCI_CLT_LOC_CD, CCI_CTC_WHEN_ID, CCI_CTC_WHERE_CD, CCI_CREATE_TS, CCI_UNPAID_PRM_AMT, CCI_DRIVER_LIC_NBR, CCI_ENTRY_OPR_ID, CCI_PMSD_TS, CCI_RLT_TO_CLN, CCI_RLT_TO_ISU_CD, CCI_RLT_TO_PHD, CCI_REPORTED_DT, CCI_DED_RDU_AMT, CCI_CLIENT_DES_ID, CCI_EPR_CLT_ID, CCI_BIL_AUT_ID, CCI_ADR_ID, CCI_UPDATE_OPR_ID, CCI_UPD_TS, CCI_EMP_ADR_ID, CCI_ADR_SEQ_NBR, CCI_EPR_ADR_NBR, CCI_IL50_DIARY_IND, MED_DIARY_CREATED, CCI_PC_MEDBILL_LMT, IL_TOT_LOSS_BROCHURE_SENT, CCI_DEDUC_RESV_REQ, CCI_AGREEMENT_ID, FROI_DIARY_CREATED, PREFERRED_CONTACT_METHOD)\n\tSELECT \n\to_AuditId AS AUDITID, \n\tCLAIMCLIENTSTAGEID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tCCI_CLAIM_NBR, \n\tCCI_CLIENT_ID, \n\tCCI_BIL_PEM_DT, \n\tCCI_BIL_PEM_IND, \n\tCCI_CLT_LOC_CD, \n\tCCI_CTC_WHEN_ID, \n\tCCI_CTC_WHERE_CD, \n\tCCI_CREATE_TS, \n\tCCI_UNPAID_PRM_AMT, \n\tCCI_DRIVER_LIC_NBR, \n\tCCI_ENTRY_OPR_ID, \n\tCCI_PMSD_TS, \n\tCCI_RLT_TO_CLN, \n\tCCI_RLT_TO_ISU_CD, \n\tCCI_RLT_TO_PHD, \n\tCCI_REPORTED_DT, \n\tCCI_DED_RDU_AMT, \n\tCCI_CLIENT_DES_ID, \n\tCCI_EPR_CLT_ID, \n\tCCI_BIL_AUT_ID, \n\tCCI_ADR_ID, \n\tCCI_UPDATE_OPR_ID, \n\tCCI_UPD_TS, \n\tCCI_EMP_ADR_ID, \n\tCCI_ADR_SEQ_NBR, \n\tCCI_EPR_ADR_NBR, \n\tCCI_IL50_DIARY_IND, \n\tMED_DIARY_CREATED, \n\tCCI_PC_MEDBILL_LMT, \n\tIL_TOT_LOSS_BROCHURE_SENT, \n\tCCI_DEDUC_RESV_REQ, \n\tCCI_AGREEMENT_ID, \n\tFROI_DIARY_CREATED, \n\tPREFERRED_CONTACT_METHOD\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

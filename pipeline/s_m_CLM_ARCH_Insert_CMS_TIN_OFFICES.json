@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CMS_TIN_OFFICES",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CMS_TIN_OFFICES",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_source AS (\n\tSELECT\n\t\tcms_tin_offices_stage_id,\n\t\tcms_rre_id,\n\t\toffice_tin_num,\n\t\toffice_cd,\n\t\toffice_name,\n\t\toffice_mail_addr1,\n\t\toffice_mail_addr2,\n\t\toffice_mail_city,\n\t\toffice_mail_state,\n\t\toffice_mail_zip,\n\t\toffice_mail_zip4,\n\t\tcreated_ts,\n\t\tcreated_user_id,\n\t\tmodified_ts,\n\t\tmodified_user_id,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM cms_tin_offices_stage\n\tWHERE CREATED_TS >= '@{pipeline().parameters.SELECTION_START_TS}'  OR MODIFIED_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_values AS (\n\tSELECT\n\tcms_tin_offices_stage_id,\n\tcms_rre_id,\n\toffice_tin_num,\n\toffice_cd,\n\toffice_name,\n\toffice_mail_addr1,\n\toffice_mail_addr2,\n\toffice_mail_city,\n\toffice_mail_state,\n\toffice_mail_zip,\n\toffice_mail_zip4,\n\tcreated_ts,\n\tcreated_user_id,\n\tmodified_ts,\n\tmodified_user_id,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID\n\tFROM SQ_source\n),\narch_cms_tin_offices_stage AS (\n\tINSERT INTO arch_cms_tin_offices_stage\n\t(cms_tin_offices_stage_id, cms_rre_id, office_tin_num, office_cd, office_name, office_mail_addr1, office_mail_addr2, office_mail_city, office_mail_state, office_mail_zip, office_mail_zip4, created_ts, created_user_id, modified_ts, modified_user_id, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCMS_TIN_OFFICES_STAGE_ID, \n\tCMS_RRE_ID, \n\tOFFICE_TIN_NUM, \n\tOFFICE_CD, \n\tOFFICE_NAME, \n\tOFFICE_MAIL_ADDR1, \n\tOFFICE_MAIL_ADDR2, \n\tOFFICE_MAIL_CITY, \n\tOFFICE_MAIL_STATE, \n\tOFFICE_MAIL_ZIP, \n\tOFFICE_MAIL_ZIP4, \n\tCREATED_TS, \n\tCREATED_USER_ID, \n\tMODIFIED_TS, \n\tMODIFIED_USER_ID, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID\n\tFROM EXP_values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

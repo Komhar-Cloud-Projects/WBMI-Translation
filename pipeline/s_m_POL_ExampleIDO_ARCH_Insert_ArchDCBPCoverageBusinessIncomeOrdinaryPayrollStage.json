@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageBusinessIncomeOrdinaryPayrollStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageBusines_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBPCoverageBusinessIncomeOrdinaryPayrollStage AS (\n\tSELECT\n\t\tDCBPCoverageBusinessIncomeOrdinaryPayrollStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCoverageId,\n\t\tBP_CoverageBusinessIncomeOrdinaryPayrollId,\n\t\tSessionId,\n\t\tDays\n\tFROM DCBPCoverageBusinessIncomeOrdinaryPayrollStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCBPCoverageBusinessIncomeOrdinaryPayrollStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCoverageId,\n\tBP_CoverageBusinessIncomeOrdinaryPayrollId,\n\tSessionId,\n\tDays,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCBPCoverageBusinessIncomeOrdinaryPayrollStage\n),\nArchDCBPCoverageBusinessIncomeOrdinaryPayrollStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCBPCoverageBusinessIncomeOrdinaryPayrollStage\n\t(ExtractDate, SourceSystemId, AuditId, DCBPCoverageBusinessIncomeOrdinaryPayrollStageId, CoverageId, BP_CoverageBusinessIncomeOrdinaryPayrollId, SessionId, Days)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCBPCOVERAGEBUSINESSINCOMEORDINARYPAYROLLSTAGEID, \n\tCOVERAGEID, \n\tBP_COVERAGEBUSINESSINCOMEORDINARYPAYROLLID, \n\tSESSIONID, \n\tDAYS\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

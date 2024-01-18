@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CAUSE_OF_LOSS",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CAUSE_OF_LOSS",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CAUSE_OF_LOSS_STAGE1 AS (\n\tSELECT CAUSE_OF_LOSS_STAGE.CAUSE_OF_LOSS_ID, CAUSE_OF_LOSS_STAGE.LINE_OF_BUSINESS, CAUSE_OF_LOSS_STAGE.MAJOR_PERIL, CAUSE_OF_LOSS_STAGE.CAUSE_OF_LOSS, CAUSE_OF_LOSS_STAGE.NUM_CAUSE_OF_LOSS, CAUSE_OF_LOSS_STAGE.ALPH_CAUSE_OF_LOSS, CAUSE_OF_LOSS_STAGE.ABBR_CAUSE_OF_LOSS, CAUSE_OF_LOSS_STAGE.CAUSE_OF_LOSS_NM, CAUSE_OF_LOSS_STAGE.BUREAU_NAME1, CAUSE_OF_LOSS_STAGE.BUR_CAUSE_OF_LOSS1, CAUSE_OF_LOSS_STAGE.BUR_TYPE_OF_LOSS1, CAUSE_OF_LOSS_STAGE.BUREAU_NAME2, CAUSE_OF_LOSS_STAGE.BUR_CAUSE_OF_LOSS2, CAUSE_OF_LOSS_STAGE.BUR_TYPE_OF_LOSS2, CAUSE_OF_LOSS_STAGE.BUREAU_NAME3, CAUSE_OF_LOSS_STAGE.BUR_CAUSE_OF_LOSS3, CAUSE_OF_LOSS_STAGE.BUR_TYPE_OF_LOSS3, CAUSE_OF_LOSS_STAGE.BUREAU_NAME4, CAUSE_OF_LOSS_STAGE.BUR_CAUSE_OF_LOSS4, CAUSE_OF_LOSS_STAGE.BUR_TYPE_OF_LOSS4, CAUSE_OF_LOSS_STAGE.BUREAU_NAME5, CAUSE_OF_LOSS_STAGE.BUR_CAUSE_OF_LOSS5, CAUSE_OF_LOSS_STAGE.BUR_TYPE_OF_LOSS5, CAUSE_OF_LOSS_STAGE.EXTRACT_DATE, CAUSE_OF_LOSS_STAGE.AS_OF_DATE, CAUSE_OF_LOSS_STAGE.RECORD_COUNT, CAUSE_OF_LOSS_STAGE.SOURCE_SYSTEM_ID ,\r\n\tCAUSE_OF_LOSS_STAGE.COV_CATEGORY_CODE \r\n\tFROM\r\n\t CAUSE_OF_LOSS_STAGE\n),\nEXP_CAUSE_OF_LOSS_STAGE AS (\n\tSELECT\n\tCAUSE_OF_LOSS_ID,\n\tLINE_OF_BUSINESS,\n\tMAJOR_PERIL,\n\tCAUSE_OF_LOSS,\n\tNUM_CAUSE_OF_LOSS,\n\tALPH_CAUSE_OF_LOSS,\n\tABBR_CAUSE_OF_LOSS,\n\tCAUSE_OF_LOSS_NM,\n\tBUREAU_NAME1,\n\tBUR_CAUSE_OF_LOSS1,\n\tBUR_TYPE_OF_LOSS1,\n\tBUREAU_NAME2,\n\tBUR_CAUSE_OF_LOSS2,\n\tBUR_TYPE_OF_LOSS2,\n\tBUREAU_NAME3,\n\tBUR_CAUSE_OF_LOSS3,\n\tBUR_TYPE_OF_LOSS3,\n\tBUREAU_NAME4,\n\tBUR_CAUSE_OF_LOSS4,\n\tBUR_TYPE_OF_LOSS4,\n\tBUREAU_NAME5,\n\tBUR_CAUSE_OF_LOSS5,\n\tBUR_TYPE_OF_LOSS5,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP,\n\tcov_category_code\n\tFROM SQ_CAUSE_OF_LOSS_STAGE1\n),\nARCH_CAUSE_OF_LOSS_STAGE AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ARCH_CAUSE_OF_LOSS_STAGE\n\t(cause_of_loss_id, line_of_business, major_peril, cause_of_loss, num_cause_of_loss, alph_cause_of_loss, abbr_cause_of_loss, cause_of_loss_nm, bureau_name1, bur_cause_of_loss1, bur_type_of_loss1, bureau_name2, bur_cause_of_loss2, bur_type_of_loss2, bureau_name3, bur_cause_of_loss3, bur_type_of_loss3, bureau_name4, bur_cause_of_loss4, bur_type_of_loss4, bureau_name5, bur_cause_of_loss5, bur_type_of_loss5, extract_date, as_of_date, record_count, source_system_id, audit_id, cov_category_code)\n\tSELECT \n\tCAUSE_OF_LOSS_ID AS CAUSE_OF_LOSS_ID, \n\tLINE_OF_BUSINESS AS LINE_OF_BUSINESS, \n\tMAJOR_PERIL AS MAJOR_PERIL, \n\tCAUSE_OF_LOSS AS CAUSE_OF_LOSS, \n\tNUM_CAUSE_OF_LOSS AS NUM_CAUSE_OF_LOSS, \n\tALPH_CAUSE_OF_LOSS AS ALPH_CAUSE_OF_LOSS, \n\tABBR_CAUSE_OF_LOSS AS ABBR_CAUSE_OF_LOSS, \n\tCAUSE_OF_LOSS_NM AS CAUSE_OF_LOSS_NM, \n\tBUREAU_NAME1 AS BUREAU_NAME1, \n\tBUR_CAUSE_OF_LOSS1 AS BUR_CAUSE_OF_LOSS1, \n\tBUR_TYPE_OF_LOSS1 AS BUR_TYPE_OF_LOSS1, \n\tBUREAU_NAME2 AS BUREAU_NAME2, \n\tBUR_CAUSE_OF_LOSS2 AS BUR_CAUSE_OF_LOSS2, \n\tBUR_TYPE_OF_LOSS2 AS BUR_TYPE_OF_LOSS2, \n\tBUREAU_NAME3 AS BUREAU_NAME3, \n\tBUR_CAUSE_OF_LOSS3 AS BUR_CAUSE_OF_LOSS3, \n\tBUR_TYPE_OF_LOSS3 AS BUR_TYPE_OF_LOSS3, \n\tBUREAU_NAME4 AS BUREAU_NAME4, \n\tBUR_CAUSE_OF_LOSS4 AS BUR_CAUSE_OF_LOSS4, \n\tBUR_TYPE_OF_LOSS4 AS BUR_TYPE_OF_LOSS4, \n\tBUREAU_NAME5 AS BUREAU_NAME5, \n\tBUR_CAUSE_OF_LOSS5 AS BUR_CAUSE_OF_LOSS5, \n\tBUR_TYPE_OF_LOSS5 AS BUR_TYPE_OF_LOSS5, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID, \n\tCOV_CATEGORY_CODE\n\tFROM EXP_CAUSE_OF_LOSS_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

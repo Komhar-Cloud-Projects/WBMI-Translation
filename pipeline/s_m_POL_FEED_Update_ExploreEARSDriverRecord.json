@@ -1,0 +1,38 @@
+{
+    "name": "s_m_POL_FEED_Update_ExploreEARSDriverRecord",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Update_ExploreEARSDriverRecord",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_ExploreEARSDriverRecord AS (\n\tSELECT\n\t\tExploreEARSDriverRecordId,\n\t\tAuditId,\n\t\tCreatedDate,\n\t\tLicenseState,\n\t\tLicenseNumber,\n\t\tLastName,\n\t\tFirstName,\n\t\tMiddleName,\n\t\tBirthdate,\n\t\tZipCode,\n\t\tStreetAddress,\n\t\tGender,\n\t\tPolicyNumber,\n\t\tPolicyExpirationDate,\n\t\tQuotebackPolicyNumber,\n\t\tQuotebackAgencyNumber,\n\t\tQuotebackDriverLicense,\n\t\tQuotebackState,\n\t\tInsuranceIndicator,\n\t\tProductFlags,\n\t\tAccountNumber\n\tFROM ExploreEARSDriverRecord\n),\nEXP_Values AS (\n\tSELECT\n\tExploreEARSDriverRecordId,\n\tAuditId,\n\tCreatedDate,\n\tLicenseState,\n\tLicenseNumber,\n\tLastName,\n\tFirstName,\n\tMiddleName,\n\tBirthdate,\n\tZipCode,\n\tStreetAddress,\n\tGender,\n\tPolicyNumber,\n\tPolicyExpirationDate,\n\tQuotebackPolicyNumber,\n\tQuotebackAgencyNumber,\n\tQuotebackDriverLicense,\n\tQuotebackState,\n\tInsuranceIndicator,\n\tProductFlags,\n\tAccountNumber,\n\t-- *INF*: LTRIM(RTRIM(LicenseNumber))\n\tLTRIM(RTRIM(LicenseNumber)) AS v_LicenseNumber,\n\t-- *INF*: LTRIM(RTRIM(QuotebackDriverLicense))\n\tLTRIM(RTRIM(QuotebackDriverLicense)) AS v_QuotebackDriverLicense,\n\t-- *INF*: IIF(LENGTH(v_LicenseNumber) < 8, UPPER(LPAD(v_LicenseNumber, 8, '@')), UPPER(v_LicenseNumber))\n\tIFF(\n\t    LENGTH(v_LicenseNumber) < 8, UPPER(LPAD(v_LicenseNumber, 8, '@')), UPPER(v_LicenseNumber)\n\t) AS lkp_LicenseNumber,\n\t-- *INF*: IIF(LENGTH(v_QuotebackDriverLicense) < 8, UPPER(LPAD(v_QuotebackDriverLicense, 8, '@')), UPPER(v_QuotebackDriverLicense))\n\tIFF(\n\t    LENGTH(v_QuotebackDriverLicense) < 8, UPPER(LPAD(v_QuotebackDriverLicense, 8, '@')),\n\t    UPPER(v_QuotebackDriverLicense)\n\t) AS lkp_QuotebackDriverLicense\n\tFROM SQ_ExploreEARSDriverRecord\n),\nLKP_LicenseNumber AS (\n),\nLKP_QuotebackDriverLicense AS (\n),\nEXP_UpdatedLicenseNumbers AS (\n\tSELECT\n\tEXP_Values.ExploreEARSDriverRecordId,\n\tLKP_LicenseNumber.o_LicenseNumber AS i_LicenseNumber,\n\tLKP_QuotebackDriverLicense.o_QuotebackDriverLicense AS i_QuotebackDriverLicense,\n\t-- *INF*: LTRIM(LTRIM(RTRIM(i_LicenseNumber)), '@')\n\tLTRIM(LTRIM(RTRIM(i_LicenseNumber)), '@') AS o_LicenseNumber,\n\t-- *INF*: LTRIM(LTRIM(RTRIM(i_QuotebackDriverLicense)), '@')\n\tLTRIM(LTRIM(RTRIM(i_QuotebackDriverLicense)), '@') AS o_QuotebackDriverLicense\n\tFROM EXP_Values\n\tLEFT JOIN LKP_LicenseNumber\n\tON LKP_LicenseNumber.lkp_LicenseNumber = EXP_Values.lkp_LicenseNumber\n\tLEFT JOIN LKP_QuotebackDriverLicense\n\tON LKP_QuotebackDriverLicense.lkp_QuotebackDriverLicense = EXP_Values.lkp_QuotebackDriverLicense\n),\nUPDTRANS AS (\n\tSELECT\n\tExploreEARSDriverRecordId, \n\to_LicenseNumber AS LicenseNumber, \n\to_QuotebackDriverLicense AS QuotebackDriverLicense\n\tFROM EXP_UpdatedLicenseNumbers\n),\nExploreEARSDriverRecord1 AS (\n\tMERGE INTO ExploreEARSDriverRecord AS T\n\tUSING UPDTRANS AS S\n\tON T.ExploreEARSDriverRecordId = S.ExploreEARSDriverRecordId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.LicenseNumber = S.LicenseNumber, T.QuotebackDriverLicense = S.QuotebackDriverLicense\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

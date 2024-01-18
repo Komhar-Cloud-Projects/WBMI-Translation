@@ -235,19 +235,10 @@ EXP_Values AS (
 	LKP_POLICY_POLICYAKID_Policy_Key.pol_ak_id AS v_policyAKID,
 	sar_location_x,
 	-- *INF*: LTRIM(RTRIM(sar_location_x))
-	LTRIM(RTRIM(sar_location_x
-		)
-	) AS v_RiskLocation_Unit,
+	LTRIM(RTRIM(sar_location_x)) AS v_RiskLocation_Unit,
 	sar_state,
 	-- *INF*: IIF(LTRIM(RTRIM(sar_state))='00', '0', LTRIM(RTRIM(sar_state)))
-	IFF(LTRIM(RTRIM(sar_state
-			)
-		) = '00',
-		'0',
-		LTRIM(RTRIM(sar_state
-			)
-		)
-	) AS v_sar_state,
+	IFF(LTRIM(RTRIM(sar_state)) = '00', '0', LTRIM(RTRIM(sar_state))) AS v_sar_state,
 	sar_loc_prov_territory,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory)
 	-- 
@@ -256,17 +247,14 @@ EXP_Values AS (
 	-- 
 	-- 
 	-- 
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory
-	) AS v_sar_loc_prov_territory,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory) AS v_sar_loc_prov_territory,
 	sar_city,
 	-- *INF*: LTRIM(RTRIM(sar_city))
 	-- 
 	-- --IIF(IS_SPACES(LTRIM(RTRIM(sar_city)))  OR ISNULL(LTRIM(RTRIM(sar_city))) OR LENGTH(LTRIM(RTRIM(sar_city))) < 3, '000', LTRIM(RTRIM(sar_city)))
 	-- 
 	-- 
-	LTRIM(RTRIM(sar_city
-		)
-	) AS v_sar_city,
+	LTRIM(RTRIM(sar_city)) AS v_sar_city,
 	-- *INF*: IIF(REG_MATCH(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city) ,'(\d{6})')
 	-- ,:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city)
 	-- ,'000000')
@@ -276,39 +264,33 @@ EXP_Values AS (
 	-- --v_sar_county_first_two  ||  v_sar_county_last_one  ||  v_sar_city
 	-- 
 	-- --IIF(ISNULL(Tax_Location)  OR IS_SPACES(Tax_Location)  OR LENGTH(Tax_Location) = 0 , '000000', Tax_Location)
-	IFF(REGEXP_LIKE(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city
-			), '(\d{6})'
-		),
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city
-		),
-		'000000'
+	IFF(
+	    REGEXP_LIKE(UDF_DEFAULT_VALUE_FOR_STRINGS(sar_city), '(\d{6})'),
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(sar_city),
+	    '000000'
 	) AS v_Tax_Location,
 	sar_zip_postal_code,
 	-- *INF*: IIF(ISNULL(sar_zip_postal_code)  OR IS_SPACES(sar_zip_postal_code)  OR LENGTH(sar_zip_postal_code) = 0 , 'N/A', LTRIM(RTRIM(sar_zip_postal_code)))
-	IFF(sar_zip_postal_code IS NULL 
-		OR LENGTH(sar_zip_postal_code)>0 AND TRIM(sar_zip_postal_code)='' 
-		OR LENGTH(sar_zip_postal_code
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(sar_zip_postal_code
-			)
-		)
+	IFF(
+	    sar_zip_postal_code IS NULL
+	    or LENGTH(sar_zip_postal_code)>0
+	    and TRIM(sar_zip_postal_code)=''
+	    or LENGTH(sar_zip_postal_code) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(sar_zip_postal_code))
 	) AS v_sar_zip_postal_code,
 	-- *INF*: :LKP.LKP_RISKLOCATION_RISKLOCATIONAKID(v_policyAKID, v_RiskLocation_Unit, v_sar_loc_prov_territory, v_sar_state, v_sar_zip_postal_code, v_Tax_Location)
 	-- 
 	LKP_RISKLOCATION_RISKLOCATIONAKID_v_policyAKID_v_RiskLocation_Unit_v_sar_loc_prov_territory_v_sar_state_v_sar_zip_postal_code_v_Tax_Location.RiskLocationAKID AS v_RiskLocationAKID,
 	sar_insurance_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line
-	) AS v_sar_insurance_line,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line) AS v_sar_insurance_line,
 	sar_type_bureau,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_bureau)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_bureau
-	) AS v_sar_type_bureau,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_type_bureau) AS v_sar_type_bureau,
 	sar_sub_location_x,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x
-	) AS v_sar_sub_location_x,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x) AS v_sar_sub_location_x,
 	v_sar_sub_location_x AS SubLocationUnitNumber,
 	sar_risk_unit_group,
 	-- *INF*: IIF(REG_MATCH(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group) ,'(\d{3})')
@@ -318,90 +300,75 @@ EXP_Values AS (
 	-- ---- Checking the length of the field to 3 and all the positions of the field are any one of 0-9, if it is not then we are defaulting it to 'N/A', by this way we are cleansing junk values from the source.
 	-- 
 	-- ---:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group)
-	IFF(REGEXP_LIKE(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group
-			), '(\d{3})'
-		),
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group
-		),
-		'N/A'
+	IFF(
+	    REGEXP_LIKE(UDF_DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group), '(\d{3})'),
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group),
+	    'N/A'
 	) AS v_sar_risk_unit_group,
 	v_sar_risk_unit_group AS RiskUnitGroup,
 	sar_class_code_grp_x,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code_grp_x)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code_grp_x
-	) AS v_sar_class_code_grp_x,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_class_code_grp_x) AS v_sar_class_code_grp_x,
 	v_sar_class_code_grp_x AS RiskUnitGroupSequenceNumber,
 	sar_unit,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_unit)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_unit
-	) AS v_sar_unit,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_unit) AS v_sar_unit,
 	v_sar_unit AS RiskUnit,
 	sar_seq_rsk_unt_a,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a
-	) AS v_sar_seq_rsk_unt_a,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a) AS v_sar_seq_rsk_unt_a,
 	v_sar_seq_rsk_unt_a AS RiskUnitSequenceNumber,
 	-- *INF*: DECODE(v_sar_risk_unit_group, '340', SUBSTR(v_sar_seq_rsk_unt_a,2,1), NULL)
-	DECODE(v_sar_risk_unit_group,
-		'340', SUBSTR(v_sar_seq_rsk_unt_a, 2, 1
-		),
-		NULL
+	DECODE(
+	    v_sar_risk_unit_group,
+	    '340', SUBSTR(v_sar_seq_rsk_unt_a, 2, 1),
+	    NULL
 	) AS prdct_type_code_OUT,
 	sar_type_exposure,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure
-	) AS v_sar_type_exposure,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure) AS v_sar_type_exposure,
 	v_sar_type_exposure AS PMSTypeExposure,
 	sar_major_peril,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_major_peril)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_major_peril
-	) AS v_sar_major_peril,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_major_peril) AS v_sar_major_peril,
 	v_sar_major_peril AS MajorPerilCode,
 	sar_seq_no,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_no)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_no
-	) AS v_sar_seq_no,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_seq_no) AS v_sar_seq_no,
 	v_sar_seq_no AS MajorPerilSequenceNumber,
 	sar_cov_eff_year,
 	-- *INF*: TO_CHAR(sar_cov_eff_year)
-	TO_CHAR(sar_cov_eff_year
-	) AS v_sar_cov_eff_year,
+	TO_CHAR(sar_cov_eff_year) AS v_sar_cov_eff_year,
 	sar_cov_eff_month,
 	-- *INF*: TO_CHAR(sar_cov_eff_month)
-	TO_CHAR(sar_cov_eff_month
-	) AS v_sar_cov_eff_month,
+	TO_CHAR(sar_cov_eff_month) AS v_sar_cov_eff_month,
 	sar_cov_eff_day,
 	-- *INF*: TO_CHAR(sar_cov_eff_day)
-	TO_CHAR(sar_cov_eff_day
-	) AS v_sar_cov_eff_day,
+	TO_CHAR(sar_cov_eff_day) AS v_sar_cov_eff_day,
 	-- *INF*: TO_DATE(v_sar_cov_eff_month || '/' || v_sar_cov_eff_day || '/'|| v_sar_cov_eff_year ,'MM/DD/YYYY')
-	TO_DATE(v_sar_cov_eff_month || '/' || v_sar_cov_eff_day || '/' || v_sar_cov_eff_year, 'MM/DD/YYYY'
-	) AS v_sar_cov_eff_date,
+	TO_TIMESTAMP(v_sar_cov_eff_month || '/' || v_sar_cov_eff_day || '/' || v_sar_cov_eff_year, 'MM/DD/YYYY') AS v_sar_cov_eff_date,
 	v_sar_cov_eff_date AS StatisticalCoverageEffectiveDate,
 	-- *INF*: MD5(TO_CHAR(v_policyAKID)  || 
 	-- TO_CHAR(v_RiskLocationAKID)  || 
 	--  v_sar_insurance_line  || 
 	--  v_sar_type_bureau
 	-- )
-	MD5(TO_CHAR(v_policyAKID
-		) || TO_CHAR(v_RiskLocationAKID
-		) || v_sar_insurance_line || v_sar_type_bureau
-	) AS v_PolicyCoverageHashKey,
+	MD5(TO_CHAR(v_policyAKID) || TO_CHAR(v_RiskLocationAKID) || v_sar_insurance_line || v_sar_type_bureau) AS v_PolicyCoverageHashKey,
 	-- *INF*: :LKP.LKP_POLICYCOVERAGE_POLICYCOVERAGEAKID(v_PolicyCoverageHashKey)
 	-- 
 	-- 
 	LKP_POLICYCOVERAGE_POLICYCOVERAGEAKID_v_PolicyCoverageHashKey.PolicyCoverageAKID AS v_PolicyCoverageAKID,
 	-- *INF*: DECODE(v_PolicyCoverageAKID, NULL, -1, v_PolicyCoverageAKID)
-	DECODE(v_PolicyCoverageAKID,
-		NULL, - 1,
-		v_PolicyCoverageAKID
+	DECODE(
+	    v_PolicyCoverageAKID,
+	    NULL, - 1,
+	    v_PolicyCoverageAKID
 	) AS PolicyCoverageAKID_OUT,
 	-- *INF*: :LKP.LKP_POLICYCOVERAGE_INSURANCELINE(v_PolicyCoverageAKID)
 	LKP_POLICYCOVERAGE_INSURANCELINE_v_PolicyCoverageAKID.InsuranceLine AS ins_line_OUT,
 	sar_section,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_section)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_section
-	) AS v_sar_section,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_section) AS v_sar_section,
 	v_sar_section AS ReinsuranceSectionCode,
 	sar_class_code,
 	PMDUYC1ClassOfInsured,
@@ -412,17 +379,13 @@ EXP_Values AS (
 	pif_line_business,
 	wb_class_of_business,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(wb_class_of_business)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(wb_class_of_business
-	) AS v_wb_class_of_business,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(wb_class_of_business) AS v_wb_class_of_business,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(PMDUYC1ClassOfInsured)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(PMDUYC1ClassOfInsured
-	) AS v_PMDUYC1ClassOfInsured,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(PMDUYC1ClassOfInsured) AS v_PMDUYC1ClassOfInsured,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_code
-	) AS v_sar_class_code,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_class_code) AS v_sar_class_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_line)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_line
-	) AS v_sar_sub_line,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_sub_line) AS v_sar_sub_line,
 	-- *INF*: MD5(
 	-- TO_CHAR(v_PolicyCoverageAKID)   || 
 	-- v_sar_sub_location_x   || 
@@ -437,24 +400,17 @@ EXP_Values AS (
 	-- v_sar_class_code   || 
 	-- v_sar_section
 	-- )
-	MD5(TO_CHAR(v_PolicyCoverageAKID
-		) || v_sar_sub_location_x || v_sar_risk_unit_group || v_sar_class_code_grp_x || v_sar_unit || v_sar_seq_rsk_unt_a || v_sar_major_peril || v_sar_seq_no || v_sar_sub_line || v_sar_type_exposure || v_sar_class_code || v_sar_section
-	) AS v_StatisticalCoverageHashKey,
+	MD5(TO_CHAR(v_PolicyCoverageAKID) || v_sar_sub_location_x || v_sar_risk_unit_group || v_sar_class_code_grp_x || v_sar_unit || v_sar_seq_rsk_unt_a || v_sar_major_peril || v_sar_seq_no || v_sar_sub_line || v_sar_type_exposure || v_sar_class_code || v_sar_section) AS v_StatisticalCoverageHashKey,
 	-- *INF*: SUBSTR(pif_symbol,1,2)
-	SUBSTR(pif_symbol, 1, 2
-	) AS v_pif_symbol_first2,
+	SUBSTR(pif_symbol, 1, 2) AS v_pif_symbol_first2,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_1_4)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_class_1_4
-	) AS v_sar_class_1_4,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_class_1_4) AS v_sar_class_1_4,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_code_2)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_code_2
-	) AS v_sar_code_2,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_code_2) AS v_sar_code_2,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_special_use)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_special_use
-	) AS v_sar_special_use,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_special_use) AS v_sar_special_use,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(pif_line_business)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(pif_line_business
-	) AS v_pif_line_business,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(pif_line_business) AS v_pif_line_business,
 	-- *INF*: ---IIF(UPPER(v_pif_symbol_first2)='NF' AND IN(v_wb_class_of_business, 'XN', 'XO', 'XP', 'XQ'), v_PMDUYC1ClassOfInsured, v_sar_class_code)
 	-- 
 	-- v_sar_class_code
@@ -462,8 +418,7 @@ EXP_Values AS (
 	v_sar_sub_line AS o_SublineCode,
 	v_StatisticalCoverageHashKey AS o_StatisticalCoverageHashKey,
 	-- *INF*: Policy_Key  ||  TO_CHAR(v_PolicyCoverageAKID)
-	Policy_Key || TO_CHAR(v_PolicyCoverageAKID
-	) AS o_StatisticalCoverageKey,
+	Policy_Key || TO_CHAR(v_PolicyCoverageAKID) AS o_StatisticalCoverageKey,
 	-- *INF*: ---:LKP.LKP_COVERAGEDETAIL_COVERAGEDETAILAKID(v_CoverageDetailHashKey)
 	'' AS o_CoverageDetailAKID,
 	-- *INF*: DECODE(TRUE,
@@ -585,301 +540,208 @@ EXP_Values AS (
 	-- 
 	-- '000'
 	-- )
-	DECODE(TRUE,
-		v_sar_major_peril = '032', '100',
-		( v_pif_symbol_first2 IN ('BD','NA','NS','BC','CP','BG','BH','NB','CA','XX') 
-			AND v_sar_insurance_line IN ('N/A','CA') 
-			AND v_sar_type_bureau IN ('AL','AP','AN') 
-		) 
-		OR ( v_pif_symbol_first2 IN ('BA','BB') 
-			AND v_sar_insurance_line = 'GL' 
-			AND v_sar_risk_unit_group IN ('110','111') 
-		), '200',
-		( v_pif_symbol_first2 IN ('CP','NS') 
-			AND v_sar_insurance_line = 'GL' 
-			AND v_sar_major_peril IN ('599','919') 
-			AND v_sar_risk_unit_group IN ('345','367') 
-		) 
-		OR ( v_pif_symbol_first2 IN ('CP','NS') 
-			AND v_sar_insurance_line = 'GL' 
-			AND v_sar_major_peril IN ('530','540','919','599') 
-			AND v_sar_class_code != '99999' 
-			AND NOT v_sar_risk_unit_group IN ('345','346','355','900','901','286','365','367','000') 
-		) 
-		OR ( v_pif_symbol_first2 IN ('GL','XX') 
-			AND v_pif_line_business != 'SMP' 
-			AND v_sar_major_peril IN ('084','085') 
-		) 
-		OR ( pif_symbol = 'DUM' 
-		), '300',
-		v_pif_symbol_first2 = 'NN', '312',
-		v_pif_symbol_first2 = 'NK', '311',
-		( v_pif_symbol_first2 IN ('CP','NS') 
-			AND v_sar_insurance_line = 'GL' 
-			AND v_sar_major_peril IN ('530') 
-			AND v_sar_class_code = '99999' 
-			AND v_sar_sub_line IN ('334','336') 
-		), '320',
-		( v_pif_symbol_first2 IN ('CP','NS') 
-			AND v_sar_insurance_line = 'GL' 
-			AND v_sar_major_peril IN ('599') 
-			AND v_sar_sub_line IN ('334','336','345','346','347') 
-		), '320',
-		( v_pif_symbol_first2 = 'CP' 
-			AND v_sar_insurance_line = 'GL' 
-			AND v_sar_risk_unit_group = '346' 
-		), '321',
-		v_pif_symbol_first2 = 'NE', '330',
-		( v_pif_symbol_first2 IN ('CP','NS','GA') 
-			AND v_sar_insurance_line = 'GA' 
-		), '340',
-		( v_pif_symbol_first2 IN ('CD','CM') 
-			AND v_sar_risk_unit_group IN ('367','900') 
-		), '310',
-		( v_pif_symbol_first2 = 'CM' 
-			AND v_sar_insurance_line = 'GL' 
-			AND v_sar_risk_unit_group IN ('901','902','903') 
-		), '360',
-		( v_pif_symbol_first2 IN ('CP','NS') 
-			AND v_sar_insurance_line = 'GL' 
-			AND v_sar_risk_unit_group = '345' 
-		), '365',
-		( v_pif_symbol_first2 IN ('CP','NS') 
-			AND v_sar_insurance_line = 'GL' 
-			AND ( v_sar_risk_unit_group = '355' 
-				OR v_sar_sub_line = '332' 
-			) 
-		), '370',
-		( v_pif_symbol_first2 = 'CP' 
-			AND v_sar_insurance_line = 'GL' 
-			AND v_sar_sub_line = '365' 
-		), '380',
-		( v_pif_symbol_first2 IN ('BA','BB','XX','XA') 
-			AND v_pif_line_business IN ('BOP','BO') 
-			AND v_sar_insurance_line != 'CA' 
-		), '400',
-		( v_pif_symbol_first2 IN ('BC','BD') 
-			AND v_sar_insurance_line IN ('CF','GL','CR','IM','CG','N/A') 
-		), '410',
-		( v_pif_symbol_first2 IN ('BG','BH','GG') 
-			AND v_sar_insurance_line IN ('CF','GL','CR','IM','GA','CG','N/A') 
-		), '420',
-		( v_pif_symbol_first2 IN ('NA','NB') 
-			AND v_sar_insurance_line IN ('CF','GL','CR','IM','CG') 
-		), '430',
-		( v_pif_symbol_first2 IN ('SM','XX') 
-			AND ( v_pif_line_business = 'SMP' 
-			) 
-			AND v_sar_type_bureau IN ('AP','BM','BT','CF','FT','GL','GS','IM') 
-		), '440',
-		v_pif_symbol_first2 = 'BO', '450',
-		v_pif_symbol_first2 IN ('CP','NS') 
-		AND v_pif_line_business = 'CPP' 
-		AND v_sar_type_bureau = 'CR', '520',
-		( v_pif_symbol_first2 IN ('CP','NS','CF','PX') 
-			AND v_sar_insurance_line IN ('CF','CR','GS','BM','N/A','CG') 
-			AND NOT v_sar_type_bureau IN ('AL','AP','AN','GL','IM') 
-		), '500',
-		v_pif_symbol_first2 = 'FF', '510',
-		( v_pif_symbol_first2 IN ('CP','NS') 
-			AND v_sar_type_bureau = 'IM' 
-		), '550',
-		v_pif_symbol_first2 = 'NC', '610',
-		( v_pif_symbol_first2 = 'NF' 
-			AND v_wb_class_of_business IN ('XN','XO','XP','XQ','9') 
-		), '620',
-		v_pif_symbol_first2 = 'NJ', '630',
-		v_pif_symbol_first2 = 'NL', '640',
-		v_pif_symbol_first2 = 'NM', '650',
-		v_pif_symbol_first2 = 'NO', '660',
-		( v_pif_symbol_first2 IN ('HA','HB','HH','HX','IB','IP','PA','PX','XX') 
-			AND v_sar_type_bureau IN ('PH','PI','PL','PQ','MS') 
-		), '800',
-		( v_pif_symbol_first2 IN ('FL','FP') 
-			AND v_sar_type_bureau IN ('PF','PQ','MS') 
-		) 
-		OR ( v_pif_symbol_first2 = 'HH' 
-			AND v_sar_type_bureau = 'PF' 
-		), '820',
-		( v_pif_symbol_first2 IN ('HH','PA','PM','PP','PS','PT','HA','XX','XA') 
-			AND v_sar_type_bureau IN ('RL','RP','RN') 
-		), '850',
-		( v_pif_symbol_first2 IN ('HH','UP','HX','XX') 
-			AND v_sar_type_bureau = 'GL' 
-			AND v_sar_major_peril = '017' 
-		), '890',
-		( v_pif_symbol_first2 IN ('NU','CU','CP','UC') 
-			AND v_sar_type_bureau = 'GL' 
-			AND v_sar_major_peril = '517' 
-		), '900',
-		'000'
+	DECODE(
+	    TRUE,
+	    v_sar_major_peril = '032', '100',
+	    (v_pif_symbol_first2 IN ('BD','NA','NS','BC','CP','BG','BH','NB','CA','XX') AND v_sar_insurance_line IN ('N/A','CA') AND v_sar_type_bureau IN ('AL','AP','AN')) OR (v_pif_symbol_first2 IN ('BA','BB') AND v_sar_insurance_line = 'GL' AND v_sar_risk_unit_group IN ('110','111')), '200',
+	    (v_pif_symbol_first2 IN ('CP','NS') AND v_sar_insurance_line = 'GL' AND v_sar_major_peril IN ('599','919') AND v_sar_risk_unit_group IN ('345','367')) OR (v_pif_symbol_first2 IN ('CP','NS') AND v_sar_insurance_line = 'GL' AND v_sar_major_peril IN ('530','540','919','599') AND v_sar_class_code != '99999' AND NOT v_sar_risk_unit_group IN ('345','346','355','900','901','286','365','367','000')) OR (v_pif_symbol_first2 IN ('GL','XX') AND v_pif_line_business != 'SMP' AND v_sar_major_peril IN ('084','085')) OR (pif_symbol = 'DUM'), '300',
+	    v_pif_symbol_first2 = 'NN', '312',
+	    v_pif_symbol_first2 = 'NK', '311',
+	    (v_pif_symbol_first2 IN ('CP','NS') AND v_sar_insurance_line = 'GL' AND v_sar_major_peril IN ('530') AND v_sar_class_code = '99999' AND v_sar_sub_line IN ('334','336')), '320',
+	    (v_pif_symbol_first2 IN ('CP','NS') AND v_sar_insurance_line = 'GL' AND v_sar_major_peril IN ('599') AND v_sar_sub_line IN ('334','336','345','346','347')), '320',
+	    (v_pif_symbol_first2 = 'CP' AND v_sar_insurance_line = 'GL' AND v_sar_risk_unit_group = '346'), '321',
+	    v_pif_symbol_first2 = 'NE', '330',
+	    (v_pif_symbol_first2 IN ('CP','NS','GA') AND v_sar_insurance_line = 'GA'), '340',
+	    (v_pif_symbol_first2 IN ('CD','CM') AND v_sar_risk_unit_group IN ('367','900')), '310',
+	    (v_pif_symbol_first2 = 'CM' AND v_sar_insurance_line = 'GL' AND v_sar_risk_unit_group IN ('901','902','903')), '360',
+	    (v_pif_symbol_first2 IN ('CP','NS') AND v_sar_insurance_line = 'GL' AND v_sar_risk_unit_group = '345'), '365',
+	    (v_pif_symbol_first2 IN ('CP','NS') AND v_sar_insurance_line = 'GL' AND (v_sar_risk_unit_group = '355' or v_sar_sub_line = '332')), '370',
+	    (v_pif_symbol_first2 = 'CP' AND v_sar_insurance_line = 'GL' AND v_sar_sub_line = '365'), '380',
+	    (v_pif_symbol_first2 IN ('BA','BB','XX','XA') AND v_pif_line_business IN ('BOP','BO') AND v_sar_insurance_line != 'CA'), '400',
+	    (v_pif_symbol_first2 IN ('BC','BD') AND v_sar_insurance_line IN ('CF','GL','CR','IM','CG','N/A')), '410',
+	    (v_pif_symbol_first2 IN ('BG','BH','GG') AND v_sar_insurance_line IN ('CF','GL','CR','IM','GA','CG','N/A')), '420',
+	    (v_pif_symbol_first2 IN ('NA','NB') AND v_sar_insurance_line IN ('CF','GL','CR','IM','CG')), '430',
+	    (v_pif_symbol_first2 IN ('SM','XX') AND (v_pif_line_business = 'SMP') AND v_sar_type_bureau IN ('AP','BM','BT','CF','FT','GL','GS','IM')), '440',
+	    v_pif_symbol_first2 = 'BO', '450',
+	    v_pif_symbol_first2 IN ('CP','NS') AND v_pif_line_business = 'CPP' AND v_sar_type_bureau = 'CR', '520',
+	    (v_pif_symbol_first2 IN ('CP','NS','CF','PX') AND v_sar_insurance_line IN ('CF','CR','GS','BM','N/A','CG') AND NOT v_sar_type_bureau IN ('AL','AP','AN','GL','IM')), '500',
+	    v_pif_symbol_first2 = 'FF', '510',
+	    (v_pif_symbol_first2 IN ('CP','NS') AND v_sar_type_bureau = 'IM'), '550',
+	    v_pif_symbol_first2 = 'NC', '610',
+	    (v_pif_symbol_first2 = 'NF' AND v_wb_class_of_business IN ('XN','XO','XP','XQ','9')), '620',
+	    v_pif_symbol_first2 = 'NJ', '630',
+	    v_pif_symbol_first2 = 'NL', '640',
+	    v_pif_symbol_first2 = 'NM', '650',
+	    v_pif_symbol_first2 = 'NO', '660',
+	    (v_pif_symbol_first2 IN ('HA','HB','HH','HX','IB','IP','PA','PX','XX') AND v_sar_type_bureau IN ('PH','PI','PL','PQ','MS')), '800',
+	    (v_pif_symbol_first2 IN ('FL','FP') AND v_sar_type_bureau IN ('PF','PQ','MS')) OR (v_pif_symbol_first2 = 'HH' AND v_sar_type_bureau = 'PF'), '820',
+	    (v_pif_symbol_first2 IN ('HH','PA','PM','PP','PS','PT','HA','XX','XA') AND v_sar_type_bureau IN ('RL','RP','RN')), '850',
+	    (v_pif_symbol_first2 IN ('HH','UP','HX','XX') AND v_sar_type_bureau = 'GL' AND v_sar_major_peril = '017'), '890',
+	    (v_pif_symbol_first2 IN ('NU','CU','CP','UC') AND v_sar_type_bureau = 'GL' AND v_sar_major_peril = '517'), '900',
+	    '000'
 	) AS o_SourceProductCode,
 	SYSDATE AS o_CurrentDate,
 	-- *INF*: :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(1,v_pif_symbol_first2)
 	LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_1_v_pif_symbol_first2.InsuranceReferenceLineOfBusinessCode AS v_Rule1,
 	-- *INF*: IIF( NOT ISNULL(v_Rule1), v_Rule1, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(2,v_pif_symbol_first2 || '&' || v_wb_class_of_business))
-	IFF(v_Rule1 IS NOT NULL,
-		v_Rule1,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_2_v_pif_symbol_first2_v_wb_class_of_business.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule1 IS NOT NULL, v_Rule1,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_2_v_pif_symbol_first2_v_wb_class_of_business.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule2,
 	-- *INF*: IIF( NOT ISNULL(v_Rule2), v_Rule2, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(28,v_pif_symbol_first2 || '&' || v_sar_insurance_line || '&' || v_sar_type_bureau || '&' || v_sar_risk_unit_group))
-	IFF(v_Rule2 IS NOT NULL,
-		v_Rule2,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_28_v_pif_symbol_first2_v_sar_insurance_line_v_sar_type_bureau_v_sar_risk_unit_group.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule2 IS NOT NULL, v_Rule2,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_28_v_pif_symbol_first2_v_sar_insurance_line_v_sar_type_bureau_v_sar_risk_unit_group.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule28,
 	-- *INF*: IIF( NOT ISNULL(v_Rule28), v_Rule28, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(3,v_pif_symbol_first2 || '&' || v_sar_insurance_line || '&' || v_sar_type_bureau))
-	IFF(v_Rule28 IS NOT NULL,
-		v_Rule28,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_3_v_pif_symbol_first2_v_sar_insurance_line_v_sar_type_bureau.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule28 IS NOT NULL, v_Rule28,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_3_v_pif_symbol_first2_v_sar_insurance_line_v_sar_type_bureau.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule3,
 	-- *INF*: IIF( NOT ISNULL(v_Rule3), v_Rule3, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(4,v_pif_symbol_first2 || '&' || v_sar_insurance_line || '&' || v_sar_risk_unit_group))
-	IFF(v_Rule3 IS NOT NULL,
-		v_Rule3,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_4_v_pif_symbol_first2_v_sar_insurance_line_v_sar_risk_unit_group.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule3 IS NOT NULL, v_Rule3,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_4_v_pif_symbol_first2_v_sar_insurance_line_v_sar_risk_unit_group.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule4,
 	-- *INF*: IIF( NOT ISNULL(v_Rule4), v_Rule4, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(5,v_sar_type_bureau || '&' || v_sar_major_peril))
-	IFF(v_Rule4 IS NOT NULL,
-		v_Rule4,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_5_v_sar_type_bureau_v_sar_major_peril.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule4 IS NOT NULL, v_Rule4,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_5_v_sar_type_bureau_v_sar_major_peril.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule5,
 	-- *INF*: IIF( NOT ISNULL(v_Rule5), v_Rule5, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(6,v_sar_type_bureau))
-	IFF(v_Rule5 IS NOT NULL,
-		v_Rule5,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_6_v_sar_type_bureau.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule5 IS NOT NULL, v_Rule5,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_6_v_sar_type_bureau.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule6,
 	-- *INF*: IIF( NOT ISNULL(v_Rule6), v_Rule6, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(7,v_pif_symbol_first2 || '&' || v_sar_type_bureau || '&' || v_sar_major_peril))
-	IFF(v_Rule6 IS NOT NULL,
-		v_Rule6,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_7_v_pif_symbol_first2_v_sar_type_bureau_v_sar_major_peril.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule6 IS NOT NULL, v_Rule6,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_7_v_pif_symbol_first2_v_sar_type_bureau_v_sar_major_peril.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule7,
 	-- *INF*: IIF( NOT ISNULL(v_Rule7), v_Rule7, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(8,v_pif_symbol_first2 || '&' || v_sar_major_peril))
-	IFF(v_Rule7 IS NOT NULL,
-		v_Rule7,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_8_v_pif_symbol_first2_v_sar_major_peril.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule7 IS NOT NULL, v_Rule7,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_8_v_pif_symbol_first2_v_sar_major_peril.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule8,
 	-- *INF*: IIF( NOT ISNULL(v_Rule8), v_Rule8, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(9,v_pif_symbol_first2 || '&' || v_sar_type_bureau))
-	IFF(v_Rule8 IS NOT NULL,
-		v_Rule8,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_9_v_pif_symbol_first2_v_sar_type_bureau.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule8 IS NOT NULL, v_Rule8,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_9_v_pif_symbol_first2_v_sar_type_bureau.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule9,
 	-- *INF*: IIF( NOT ISNULL(v_Rule9), v_Rule9, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(10,v_pif_symbol_first2 || '&' || v_sar_type_bureau || '&' || v_sar_risk_unit_group))
-	IFF(v_Rule9 IS NOT NULL,
-		v_Rule9,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_10_v_pif_symbol_first2_v_sar_type_bureau_v_sar_risk_unit_group.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule9 IS NOT NULL, v_Rule9,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_10_v_pif_symbol_first2_v_sar_type_bureau_v_sar_risk_unit_group.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule10,
 	-- *INF*: IIF( NOT ISNULL(v_Rule10), v_Rule10, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(11,v_pif_symbol_first2 || '&' || v_sar_type_bureau || '&'  || v_sar_class_code))
-	IFF(v_Rule10 IS NOT NULL,
-		v_Rule10,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_11_v_pif_symbol_first2_v_sar_type_bureau_v_sar_class_code.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule10 IS NOT NULL, v_Rule10,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_11_v_pif_symbol_first2_v_sar_type_bureau_v_sar_class_code.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule11,
 	-- *INF*: IIF( NOT ISNULL(v_Rule11), v_Rule11, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(12,v_pif_symbol_first2 || '&' || v_sar_type_bureau || '&' || v_sar_major_peril || '&' || v_sar_risk_unit_group))
-	IFF(v_Rule11 IS NOT NULL,
-		v_Rule11,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_12_v_pif_symbol_first2_v_sar_type_bureau_v_sar_major_peril_v_sar_risk_unit_group.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule11 IS NOT NULL, v_Rule11,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_12_v_pif_symbol_first2_v_sar_type_bureau_v_sar_major_peril_v_sar_risk_unit_group.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule12,
 	-- *INF*: IIF( NOT ISNULL(v_Rule12), v_Rule12, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(13,v_pif_symbol_first2 || '&' || v_sar_insurance_line))
-	IFF(v_Rule12 IS NOT NULL,
-		v_Rule12,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_13_v_pif_symbol_first2_v_sar_insurance_line.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule12 IS NOT NULL, v_Rule12,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_13_v_pif_symbol_first2_v_sar_insurance_line.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule13,
 	-- *INF*: DECODE(TRUE,
 	--  NOT ISNULL(v_Rule13), 
 	-- v_Rule13, 
 	-- v_sar_major_peril != '517' AND  NOT IN(SUBSTR(v_sar_class_code,1,5),'22222','22250'), :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(14,v_pif_symbol_first2 || '&' || v_sar_type_bureau), 
 	-- NULL)
-	DECODE(TRUE,
-		v_Rule13 IS NOT NULL, v_Rule13,
-		v_sar_major_peril != '517' 
-		AND NOT SUBSTR(v_sar_class_code, 1, 5
-		) IN ('22222','22250'), LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_14_v_pif_symbol_first2_v_sar_type_bureau.InsuranceReferenceLineOfBusinessCode,
-		NULL
+	DECODE(
+	    TRUE,
+	    v_Rule13 IS NOT NULL, v_Rule13,
+	    v_sar_major_peril != '517' AND NOT SUBSTR(v_sar_class_code, 1, 5) IN ('22222','22250'), LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_14_v_pif_symbol_first2_v_sar_type_bureau.InsuranceReferenceLineOfBusinessCode,
+	    NULL
 	) AS v_Rule14,
 	-- *INF*: IIF( NOT ISNULL(v_Rule14), v_Rule14, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(15,v_sar_major_peril))
-	IFF(v_Rule14 IS NOT NULL,
-		v_Rule14,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_15_v_sar_major_peril.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule14 IS NOT NULL, v_Rule14,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_15_v_sar_major_peril.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule15,
 	-- *INF*: IIF( NOT ISNULL(v_Rule15), v_Rule15, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(16,v_pif_symbol_first2 || '&' || SUBSTR(v_sar_unit,1,1) || '&' || v_sar_code_2))
-	IFF(v_Rule15 IS NOT NULL,
-		v_Rule15,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_16_v_pif_symbol_first2_SUBSTR_v_sar_unit_1_1_v_sar_code_2.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule15 IS NOT NULL, v_Rule15,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_16_v_pif_symbol_first2_SUBSTR_v_sar_unit_1_1_v_sar_code_2.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule16,
 	-- *INF*: IIF( NOT ISNULL(v_Rule16), v_Rule16, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(17,v_pif_symbol_first2 || '&' || SUBSTR(v_sar_special_use,1,4)))
-	IFF(v_Rule16 IS NOT NULL,
-		v_Rule16,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_17_v_pif_symbol_first2_SUBSTR_v_sar_special_use_1_4.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule16 IS NOT NULL, v_Rule16,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_17_v_pif_symbol_first2_SUBSTR_v_sar_special_use_1_4.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule17,
 	-- *INF*: IIF( NOT ISNULL(v_Rule17), v_Rule17, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(18,v_pif_symbol_first2 || '&' || v_sar_type_bureau))
-	IFF(v_Rule17 IS NOT NULL,
-		v_Rule17,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_18_v_pif_symbol_first2_v_sar_type_bureau.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule17 IS NOT NULL, v_Rule17,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_18_v_pif_symbol_first2_v_sar_type_bureau.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule18,
 	-- *INF*: IIF( NOT ISNULL(v_Rule18), v_Rule18, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(19,v_pif_symbol_first2 || '&' || v_sar_type_bureau || '&' || SUBSTR(v_sar_class_code,1,1)))
-	IFF(v_Rule18 IS NOT NULL,
-		v_Rule18,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_19_v_pif_symbol_first2_v_sar_type_bureau_SUBSTR_v_sar_class_code_1_1.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule18 IS NOT NULL, v_Rule18,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_19_v_pif_symbol_first2_v_sar_type_bureau_SUBSTR_v_sar_class_code_1_1.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule19,
 	-- *INF*: IIF( NOT ISNULL(v_Rule19), v_Rule19, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(20,v_pif_symbol_first2 || '&' || v_sar_class_1_4))
-	IFF(v_Rule19 IS NOT NULL,
-		v_Rule19,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_20_v_pif_symbol_first2_v_sar_class_1_4.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule19 IS NOT NULL, v_Rule19,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_20_v_pif_symbol_first2_v_sar_class_1_4.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule20,
 	-- *INF*: IIF( NOT ISNULL(v_Rule20), v_Rule20, :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(22, v_pif_symbol_first2 || '&' || v_sar_type_bureau || '&' || v_sar_major_peril ))
-	IFF(v_Rule20 IS NOT NULL,
-		v_Rule20,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_22_v_pif_symbol_first2_v_sar_type_bureau_v_sar_major_peril.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule20 IS NOT NULL, v_Rule20,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_22_v_pif_symbol_first2_v_sar_type_bureau_v_sar_major_peril.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule22,
 	-- *INF*: IIF( NOT ISNULL(v_Rule22), v_Rule22,  :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(23,v_pif_symbol_first2 || '&' ||  v_sar_type_bureau || '&' || v_sar_major_peril))
-	IFF(v_Rule22 IS NOT NULL,
-		v_Rule22,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_23_v_pif_symbol_first2_v_sar_type_bureau_v_sar_major_peril.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule22 IS NOT NULL, v_Rule22,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_23_v_pif_symbol_first2_v_sar_type_bureau_v_sar_major_peril.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule23,
 	-- *INF*: IIF( NOT ISNULL(v_Rule23), v_Rule23,  :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(24,v_pif_symbol_first2 || '&' ||  v_sar_type_bureau || '&' || v_sar_major_peril || '&' || v_sar_code_2))
-	IFF(v_Rule23 IS NOT NULL,
-		v_Rule23,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_24_v_pif_symbol_first2_v_sar_type_bureau_v_sar_major_peril_v_sar_code_2.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule23 IS NOT NULL, v_Rule23,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_24_v_pif_symbol_first2_v_sar_type_bureau_v_sar_major_peril_v_sar_code_2.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule24,
 	-- *INF*: IIF( NOT ISNULL(v_Rule24), v_Rule24,  :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(25,v_sar_type_bureau || '&' ||  v_sar_major_peril || '&' || v_sar_code_2))
-	IFF(v_Rule24 IS NOT NULL,
-		v_Rule24,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_25_v_sar_type_bureau_v_sar_major_peril_v_sar_code_2.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule24 IS NOT NULL, v_Rule24,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_25_v_sar_type_bureau_v_sar_major_peril_v_sar_code_2.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule25,
 	-- *INF*: IIF( NOT ISNULL(v_Rule25), v_Rule25,  :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(26,v_pif_symbol_first2  ||  '&'  ||  v_sar_class_code))
-	IFF(v_Rule25 IS NOT NULL,
-		v_Rule25,
-		LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_26_v_pif_symbol_first2_v_sar_class_code.InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    v_Rule25 IS NOT NULL, v_Rule25,
+	    LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_26_v_pif_symbol_first2_v_sar_class_code.InsuranceReferenceLineOfBusinessCode
 	) AS v_Rule26,
 	-- *INF*: DECODE(TRUE, NOT ISNULL(v_Rule26), v_Rule26, 
 	-- NOT IN(v_sar_class_code,'923500' , '962000','990000', '943700','944200'),
 	--  :LKP.LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES(27,v_pif_symbol_first2 || '&' ||  v_sar_type_bureau || '&' || v_sar_major_peril), 
 	-- NULL)
-	DECODE(TRUE,
-		v_Rule26 IS NOT NULL, v_Rule26,
-		NOT v_sar_class_code IN ('923500','962000','990000','943700','944200'), LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_27_v_pif_symbol_first2_v_sar_type_bureau_v_sar_major_peril.InsuranceReferenceLineOfBusinessCode,
-		NULL
+	DECODE(
+	    TRUE,
+	    v_Rule26 IS NOT NULL, v_Rule26,
+	    NOT v_sar_class_code IN ('923500','962000','990000','943700','944200'), LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_27_v_pif_symbol_first2_v_sar_type_bureau_v_sar_major_peril.InsuranceReferenceLineOfBusinessCode,
+	    NULL
 	) AS v_Rule27,
 	-- *INF*: DECODE(TRUE,
 	--  NOT ISNULL(v_Rule27),v_Rule27,
 	-- '000'
 	-- )
-	DECODE(TRUE,
-		v_Rule27 IS NOT NULL, v_Rule27,
-		'000'
+	DECODE(
+	    TRUE,
+	    v_Rule27 IS NOT NULL, v_Rule27,
+	    '000'
 	) AS o_InsuranceReferenceLineOfBusinessCode,
 	-- *INF*: IIF(v_sar_insurance_line='CF' AND v_sar_class_1_4 != 'N/A' AND SUBSTR(v_sar_class_1_4,1,2)<'35' AND (REG_MATCH(SUBSTR(v_sar_class_1_4,3,1),'[a-zA-Z]')=1 OR LENGTH(v_sar_class_1_4)=2), SUBSTR(v_sar_class_1_4,1,2), 'N/A')
-	IFF(v_sar_insurance_line = 'CF' 
-		AND v_sar_class_1_4 != 'N/A' 
-		AND SUBSTR(v_sar_class_1_4, 1, 2
-		) < '35' 
-		AND ( REGEXP_LIKE(SUBSTR(v_sar_class_1_4, 3, 1
-				), '[a-zA-Z]'
-			) = 1 
-			OR LENGTH(v_sar_class_1_4
-			) = 2 
-		),
-		SUBSTR(v_sar_class_1_4, 1, 2
-		),
-		'N/A'
+	IFF(
+	    v_sar_insurance_line = 'CF'
+	    and v_sar_class_1_4 != 'N/A'
+	    and SUBSTR(v_sar_class_1_4, 1, 2) < '35'
+	    and (REGEXP_LIKE(SUBSTR(v_sar_class_1_4, 3, 1), '[a-zA-Z]') = 1
+	    or LENGTH(v_sar_class_1_4) = 2),
+	    SUBSTR(v_sar_class_1_4, 1, 2),
+	    'N/A'
 	) AS o_SpecialClassLevel1,
 	v_StatisticalCoverageHashKey AS o_CoverageGuid,
 	-- *INF*: DECODE(TRUE,
@@ -890,16 +752,12 @@ EXP_Values AS (
 	-- UPPER( v_pif_symbol_first2)= 'NF' AND IN (UPPER(v_wb_class_of_business), 'XN', 'XO', 'XP', 'XQ'),
 	-- 'SFAA',
 	-- 'ISO')
-	DECODE(TRUE,
-		UPPER(v_sar_insurance_line
-		) = 'WC', 'NCCI',
-		UPPER(v_pif_symbol_first2
-		) IN ('NC','NJ','NL','NM','NO'), 'SFAA',
-		UPPER(v_pif_symbol_first2
-		) = 'NF' 
-		AND UPPER(v_wb_class_of_business
-		) IN ('XN','XO','XP','XQ'), 'SFAA',
-		'ISO'
+	DECODE(
+	    TRUE,
+	    UPPER(v_sar_insurance_line) = 'WC', 'NCCI',
+	    UPPER(v_pif_symbol_first2) IN ('NC','NJ','NL','NM','NO'), 'SFAA',
+	    UPPER(v_pif_symbol_first2) = 'NF' AND UPPER(v_wb_class_of_business) IN ('XN','XO','XP','XQ'), 'SFAA',
+	    'ISO'
 	) AS o_ClassCodeOrganizationCode
 	FROM EXP_Default
 	LEFT JOIN LKP_POLICY_POLICYAKID LKP_POLICY_POLICYAKID_Policy_Key
@@ -985,13 +843,11 @@ EXP_Values AS (
 
 	LEFT JOIN LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_16_v_pif_symbol_first2_SUBSTR_v_sar_unit_1_1_v_sar_code_2
 	ON LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_16_v_pif_symbol_first2_SUBSTR_v_sar_unit_1_1_v_sar_code_2.SequenceNumber = 16
-	AND LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_16_v_pif_symbol_first2_SUBSTR_v_sar_unit_1_1_v_sar_code_2.Identifiers = v_pif_symbol_first2 || '&' || SUBSTR(v_sar_unit, 1, 1
-	) || '&' || v_sar_code_2
+	AND LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_16_v_pif_symbol_first2_SUBSTR_v_sar_unit_1_1_v_sar_code_2.Identifiers = v_pif_symbol_first2 || '&' || SUBSTR(v_sar_unit, 1, 1) || '&' || v_sar_code_2
 
 	LEFT JOIN LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_17_v_pif_symbol_first2_SUBSTR_v_sar_special_use_1_4
 	ON LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_17_v_pif_symbol_first2_SUBSTR_v_sar_special_use_1_4.SequenceNumber = 17
-	AND LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_17_v_pif_symbol_first2_SUBSTR_v_sar_special_use_1_4.Identifiers = v_pif_symbol_first2 || '&' || SUBSTR(v_sar_special_use, 1, 4
-	)
+	AND LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_17_v_pif_symbol_first2_SUBSTR_v_sar_special_use_1_4.Identifiers = v_pif_symbol_first2 || '&' || SUBSTR(v_sar_special_use, 1, 4)
 
 	LEFT JOIN LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_18_v_pif_symbol_first2_v_sar_type_bureau
 	ON LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_18_v_pif_symbol_first2_v_sar_type_bureau.SequenceNumber = 18
@@ -999,8 +855,7 @@ EXP_Values AS (
 
 	LEFT JOIN LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_19_v_pif_symbol_first2_v_sar_type_bureau_SUBSTR_v_sar_class_code_1_1
 	ON LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_19_v_pif_symbol_first2_v_sar_type_bureau_SUBSTR_v_sar_class_code_1_1.SequenceNumber = 19
-	AND LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_19_v_pif_symbol_first2_v_sar_type_bureau_SUBSTR_v_sar_class_code_1_1.Identifiers = v_pif_symbol_first2 || '&' || v_sar_type_bureau || '&' || SUBSTR(v_sar_class_code, 1, 1
-	)
+	AND LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_19_v_pif_symbol_first2_v_sar_type_bureau_SUBSTR_v_sar_class_code_1_1.Identifiers = v_pif_symbol_first2 || '&' || v_sar_type_bureau || '&' || SUBSTR(v_sar_class_code, 1, 1)
 
 	LEFT JOIN LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_20_v_pif_symbol_first2_v_sar_class_1_4
 	ON LKP_SUPINSURANCEREFERENCELINEOFBUSINESSRULES_20_v_pif_symbol_first2_v_sar_class_1_4.SequenceNumber = 20
@@ -1128,10 +983,11 @@ EXP_Detect_Changes AS (
 	SELECT
 	LKP_StatisticalCoverage.CurrentSnapshotFlag AS LKP_CurrentSnapshotFlag,
 	-- *INF*: Decode(LKP_CurrentSnapshotFlag,'T','1','F','0',LKP_CurrentSnapshotFlag)
-	Decode(LKP_CurrentSnapshotFlag,
-		'T', '1',
-		'F', '0',
-		LKP_CurrentSnapshotFlag
+	Decode(
+	    LKP_CurrentSnapshotFlag,
+	    'T', '1',
+	    'F', '0',
+	    LKP_CurrentSnapshotFlag
 	) AS v_LKP_CurrentSnapshotFlag,
 	LKP_StatisticalCoverage.StatisticalCoverageAKID AS LKP_StatisticalCoverageAKID,
 	LKP_StatisticalCoverage.StatisticalCoverageID AS i_StatisticalCoverageID,
@@ -1165,27 +1021,20 @@ EXP_Detect_Changes AS (
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	0 AS o_logicalIndicator,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_StatisticalCoverageExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_StatisticalCoverageExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ProductAKId),-1,i_ProductAKId)
-	IFF(i_ProductAKId IS NULL,
-		- 1,
-		i_ProductAKId
-	) AS o_ProductAKId,
+	IFF(i_ProductAKId IS NULL, - 1, i_ProductAKId) AS o_ProductAKId,
 	-- *INF*: IIF(ISNULL(i_InsuranceReferenceLineOfBusinessAKId),-1,i_InsuranceReferenceLineOfBusinessAKId)
-	IFF(i_InsuranceReferenceLineOfBusinessAKId IS NULL,
-		- 1,
-		i_InsuranceReferenceLineOfBusinessAKId
+	IFF(
+	    i_InsuranceReferenceLineOfBusinessAKId IS NULL, - 1, i_InsuranceReferenceLineOfBusinessAKId
 	) AS o_InsuranceReferenceLineOfBusinessAKId,
 	v_AnnualStatementLineId AS o_AnnualStatementLineId,
 	-- *INF*: DECODE(TRUE,
@@ -1195,14 +1044,11 @@ EXP_Detect_Changes AS (
 	-- i_ClassCodeOrganizationCode != ClassCodeOrganizationCode OR i_ClassCode != ClassCode,
 	-- 'UPDATE',
 	-- 'NOCHANGE')
-	DECODE(TRUE,
-		i_StatisticalCoverageID IS NULL, 'NEW',
-		v_LKP_CurrentSnapshotFlag = '0' 
-		OR i_SpecialClassGroupCode != SpecialClassGroupCode 
-		OR i_AnnualStatementLineId != v_AnnualStatementLineId 
-		OR i_ClassCodeOrganizationCode != ClassCodeOrganizationCode 
-		OR i_ClassCode != ClassCode, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    i_StatisticalCoverageID IS NULL, 'NEW',
+	    v_LKP_CurrentSnapshotFlag = '0' or i_SpecialClassGroupCode != SpecialClassGroupCode OR i_AnnualStatementLineId != v_AnnualStatementLineId OR i_ClassCodeOrganizationCode != ClassCodeOrganizationCode OR i_ClassCode != ClassCode, 'UPDATE',
+	    'NOCHANGE'
 	) AS o_ChangeFlag
 	FROM EXP_Values
 	LEFT JOIN LKP_ClassificationReference
@@ -1301,8 +1147,7 @@ EXP_Update_DataCollect AS (
 	ClassCodeOrganizationCode,
 	'1' AS CurrentSnapshotFlag,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate
 	FROM RTR_StatisticalCoverage_Update
 ),
 UPD_StatisticalCoverage AS (
@@ -1348,10 +1193,7 @@ EXP_TGT_DataCollect AS (
 	logicalIndicator,
 	StatisticalCoverageHashKey,
 	-- *INF*: IIF(ISNULL(LKP_StatisticalCoverageAKID),NEXTVAL,LKP_StatisticalCoverageAKID)
-	IFF(LKP_StatisticalCoverageAKID IS NULL,
-		NEXTVAL,
-		LKP_StatisticalCoverageAKID
-	) AS StatisticalCoverageAKID,
+	IFF(LKP_StatisticalCoverageAKID IS NULL, NEXTVAL, LKP_StatisticalCoverageAKID) AS StatisticalCoverageAKID,
 	PolicyCoverageAKID,
 	StatisticalCoverageKey,
 	SubLocationUnitNumber,

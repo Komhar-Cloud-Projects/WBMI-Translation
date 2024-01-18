@@ -1,0 +1,75 @@
+{
+    "name": "s_m_FEED_Load_WCPOLS_DCTData",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_FEED_Load_WCPOLS_DCTData",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_History AS (\n\tSelect A.HistoryID,A.PolicyNumber+B.PolicyVersionFormatted POLKEY,A.Type,A.ChangeDate, 'Rewrite_Transaction' RecordType \r\n\tFrom History  (nolock) A\r\n\tinner join @{pipeline().parameters.DBCONNECTION_WBEXAMPLEDATA}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_History B\r\n\ton A.HistoryID=B.HistoryId\r\n\tWHERE\r\n\tA.Change='Open' and A.Comment='New'\r\n\tand A.ManuScriptID like '%Carrier_Work%' \r\n\tand A.TransactionStatus = 'Committed'  and A.Type = 'Rewrite' \r\n\tand A.ChangeDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tand A.Type not in (@{pipeline().parameters.EXCLUDE_TRANSACTIONTYPES})\r\n\t@{pipeline().parameters.WHERE_CLAUSE_REWRITE}\r\n\t\r\n\tunion\r\n\t\r\n\tSelect A.HistoryID,A.PolicyNumber+B.PolicyVersionFormatted POLKEY,A.Type,A.ChangeDate, 'Non_Rewrite_Endorse_Transactions' RecordType\r\n\tFrom \r\n\tDBO.History A (nolock)\r\n\tinner join @{pipeline().parameters.DBCONNECTION_WBEXAMPLEDATA}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_History B\r\n\ton A.HistoryID=B.HistoryId\r\n\tWHERE Comment <> 'Rewrite-Committed' and \r\n\tManuScriptID like '%Carrier_Work%' \r\n\tand A.TransactionStatus = 'Committed' \r\n\tand A.change in ('Committed','Rescind')\r\n\tand A.ChangeDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tand A.Type not in (@{pipeline().parameters.EXCLUDE_TRANSACTIONTYPES})\r\n\tand A.Type not in ('Endorse')\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\r\n\t\r\n\tunion\r\n\t\r\n\tSELECT HistoryID,POLKEY,TYPE,CHANGEDATE, 'Endorse_Transaction' RecordType FROM \r\n\t(\r\n\tSelect A.HistoryID,A.PolicyNumber+B.PolicyVersionFormatted POLKEY,A.Type,A.ChangeDate,A.Change,RANK() OVER (PARTITION BY A.PolicyNumber+B.PolicyVersionFormatted ORDER BY A.HistoryID DESC) ENDORSE_RANK\r\n\tFrom \r\n\tDBO.History A (nolock)\r\n\tinner join @{pipeline().parameters.DBCONNECTION_WBEXAMPLEDATA}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_History B\r\n\ton A.HistoryID=B.HistoryId\r\n\tWHERE Type='Endorse' and \r\n\tManuScriptID like '%Carrier_Work%' \r\n\tand A.TransactionStatus = 'Committed' \r\n\tand A.change in ('Committed','Rescind')\r\n\tand A.ChangeDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tand A.Type not in (@{pipeline().parameters.EXCLUDE_TRANSACTIONTYPES})\r\n\t@{pipeline().parameters.WHERE_CLAUSE_ENDORSE}\r\n\t) A\r\n\tWHERE A.ENDORSE_RANK=1\r\n\tORDER BY Type\n),\nEXP_History AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,\n\tHistoryID,\n\tPolicyKey,\n\tType,\n\tChangeDate,\n\tRecordType\n\tFROM SQ_History\n),\nSQ_SupWCPOLSTransactionTypeNeeded1 AS (\n\tSelect distinct case when SourceTransactionType in ('EndorseAddDeleteState','EndorseNonPremiumBearing','EndorsePremiumBearing') then 'Endorse' else SourceTransactionType end as SourceTransactionType,\r\n\tNCCIRequiredFlag,WIRequiredFlag,MIRequiredFlag,MNRequiredFlag\r\n\tfrom \r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLSTransactionTypeNeeded\r\n\tWHERE (NCCIRequiredFlag=1 OR MIRequiredFlag=1 OR WIRequiredFlag=1 OR MNRequiredFlag=1)\r\n\tAND CurrentSnapshotFlag=1\r\n\tORDER BY SourceTransactionType\n),\nJNR_DCTData AS (SELECT\n\tSQ_SupWCPOLSTransactionTypeNeeded1.SourceTransactionType, \n\tSQ_SupWCPOLSTransactionTypeNeeded1.NCCIRequiredFlag, \n\tSQ_SupWCPOLSTransactionTypeNeeded1.WIRequiredFlag, \n\tSQ_SupWCPOLSTransactionTypeNeeded1.MIRequiredFlag, \n\tSQ_SupWCPOLSTransactionTypeNeeded1.MNRequiredFlag, \n\tEXP_History.AuditID, \n\tEXP_History.HistoryID, \n\tEXP_History.PolicyKey, \n\tEXP_History.Type, \n\tEXP_History.ChangeDate, \n\tEXP_History.RecordType\n\tFROM EXP_History\n\tLEFT OUTER JOIN SQ_SupWCPOLSTransactionTypeNeeded1\n\tON SQ_SupWCPOLSTransactionTypeNeeded1.SourceTransactionType = EXP_History.Type\n),\nEXP_BureauRequired AS (\n\tSELECT\n\tSourceTransactionType,\n\tNCCIRequiredFlag,\n\tWIRequiredFlag,\n\tMIRequiredFlag,\n\tMNRequiredFlag,\n\tv_counter+1 AS v_counter,\n\tv_counter AS WCPOLS_DCT_Data_ID,\n\tAuditID,\n\tHistoryID,\n\tPolicyKey,\n\tType,\n\tChangeDate,\n\t-- *INF*: TO_CHAR(ChangeDate,'YYYYMMDD')\n\tTO_CHAR(ChangeDate, 'YYYYMMDD') AS o_ChangeDate,\n\tRecordType,\n\t-- *INF*: IIF(NCCIRequiredFlag='T','','NCCI')\n\tIFF(NCCIRequiredFlag = 'T', '', 'NCCI') AS v_NCCI,\n\t-- *INF*: IIF(WIRequiredFlag='T','','WI')\n\tIFF(WIRequiredFlag = 'T', '', 'WI') AS v_WI,\n\t-- *INF*: IIF(MIRequiredFlag='T','','MI')\n\tIFF(MIRequiredFlag = 'T', '', 'MI') AS v_MI,\n\t-- *INF*: IIF(MNRequiredFlag='T','','MN')\n\tIFF(MNRequiredFlag = 'T', '', 'MN') AS v_MN,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- v_NCCI<>'' OR v_WI<>'' OR v_MI<>'' OR v_MN<>'','Transaction Type will not be reported to these bureaus'||'('||v_NCCI||'-'||v_WI||'-'||v_MI||'-'||v_MN||')',\r\n\t-- '')\n\tDECODE(\n\t    TRUE,\n\t    v_NCCI <> '' OR v_WI <> '' OR v_MI <> '' OR v_MN <> '', 'Transaction Type will not be reported to these bureaus' || '(' || v_NCCI || '-' || v_WI || '-' || v_MI || '-' || v_MN || ')',\n\t    ''\n\t) AS Comments\n\tFROM JNR_DCTData\n),\nWCPOLS_DCT_Data AS (\n\tINSERT INTO WCPOLS_DCT_Data\n\t(WCPOLS_DCT_Data_ID, AuditID, HistoryID, PolicyKey, Type, ChangeDate, RecordType, Comments)\n\tSELECT \n\tWCPOLS_DCT_DATA_ID, \n\tAUDITID, \n\tHISTORYID, \n\tPOLICYKEY, \n\tTYPE, \n\to_ChangeDate AS CHANGEDATE, \n\tRECORDTYPE, \n\tCOMMENTS\n\tFROM EXP_BureauRequired\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "DBCONNECTION_WBEXAMPLEDATA": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "EXCLUDE_TRANSACTIONTYPES": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE_REWRITE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE_ENDORSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

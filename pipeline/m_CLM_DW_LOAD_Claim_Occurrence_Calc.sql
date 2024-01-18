@@ -29,68 +29,60 @@ EXP_get_values AS (
 	reserve_date,
 	reserve_date_type,
 	-- *INF*: IIF(claim_occurrence_ak_id = v_prev_row_claim_occurrence_ak_id, 'OLD', 'NEW')
-	IFF(claim_occurrence_ak_id = v_prev_row_claim_occurrence_ak_id,
-		'OLD',
-		'NEW'
-	) AS v_claim_occurrence,
+	IFF(claim_occurrence_ak_id = v_prev_row_claim_occurrence_ak_id, 'OLD', 'NEW') AS v_claim_occurrence,
 	-- *INF*: IIF(v_claim_occurrence = 'NEW', IIF(financial_type_code = 'D', reserve_date_type,'NA'), IIF(financial_type_code = 'D', reserve_date_type, v_claim_occurrence_date_type_D_old))
-	IFF(v_claim_occurrence = 'NEW',
-		IFF(financial_type_code = 'D',
-			reserve_date_type,
-			'NA'
-		),
-		IFF(financial_type_code = 'D',
-			reserve_date_type,
-			v_claim_occurrence_date_type_D_old
-		)
+	IFF(
+	    v_claim_occurrence = 'NEW',
+	    IFF(
+	        financial_type_code = 'D', reserve_date_type, 'NA'
+	    ),
+	    IFF(
+	        financial_type_code = 'D', reserve_date_type, v_claim_occurrence_date_type_D_old
+	    )
 	) AS v_claim_occurrence_date_type_D,
 	v_claim_occurrence_date_type_D AS v_claim_occurrence_date_type_D_old,
 	-- *INF*: IIF(v_claim_occurrence = 'NEW', IIF(financial_type_code = 'E', reserve_date_type,'NA'), IIF(financial_type_code = 'E', reserve_date_type, v_claim_occurrence_date_type_E_old))
-	IFF(v_claim_occurrence = 'NEW',
-		IFF(financial_type_code = 'E',
-			reserve_date_type,
-			'NA'
-		),
-		IFF(financial_type_code = 'E',
-			reserve_date_type,
-			v_claim_occurrence_date_type_E_old
-		)
+	IFF(
+	    v_claim_occurrence = 'NEW',
+	    IFF(
+	        financial_type_code = 'E', reserve_date_type, 'NA'
+	    ),
+	    IFF(
+	        financial_type_code = 'E', reserve_date_type, v_claim_occurrence_date_type_E_old
+	    )
 	) AS v_claim_occurrence_date_type_E,
 	v_claim_occurrence_date_type_E AS v_claim_occurrence_date_type_E_old,
 	-- *INF*: IIF(v_claim_occurrence = 'NEW', IIF(financial_type_code = 'S', reserve_date_type,'NA'), IIF(financial_type_code = 'S', reserve_date_type, v_claim_occurrence_date_type_S_old))
-	IFF(v_claim_occurrence = 'NEW',
-		IFF(financial_type_code = 'S',
-			reserve_date_type,
-			'NA'
-		),
-		IFF(financial_type_code = 'S',
-			reserve_date_type,
-			v_claim_occurrence_date_type_S_old
-		)
+	IFF(
+	    v_claim_occurrence = 'NEW',
+	    IFF(
+	        financial_type_code = 'S', reserve_date_type, 'NA'
+	    ),
+	    IFF(
+	        financial_type_code = 'S', reserve_date_type, v_claim_occurrence_date_type_S_old
+	    )
 	) AS v_claim_occurrence_date_type_S,
 	v_claim_occurrence_date_type_S AS v_claim_occurrence_date_type_S_old,
 	-- *INF*: IIF(v_claim_occurrence = 'NEW', IIF(financial_type_code = 'B', reserve_date_type,'NA'), IIF(financial_type_code = 'B', reserve_date_type, v_claim_occurrence_date_type_B_old))
-	IFF(v_claim_occurrence = 'NEW',
-		IFF(financial_type_code = 'B',
-			reserve_date_type,
-			'NA'
-		),
-		IFF(financial_type_code = 'B',
-			reserve_date_type,
-			v_claim_occurrence_date_type_B_old
-		)
+	IFF(
+	    v_claim_occurrence = 'NEW',
+	    IFF(
+	        financial_type_code = 'B', reserve_date_type, 'NA'
+	    ),
+	    IFF(
+	        financial_type_code = 'B', reserve_date_type, v_claim_occurrence_date_type_B_old
+	    )
 	) AS v_claim_occurrence_date_type_B,
 	v_claim_occurrence_date_type_B AS v_claim_occurrence_date_type_B_old,
 	-- *INF*: IIF(v_claim_occurrence = 'NEW', IIF(financial_type_code = 'R', reserve_date_type,'NA'), IIF(financial_type_code = 'R', reserve_date_type, v_claim_occurrence_date_type_R_old))
-	IFF(v_claim_occurrence = 'NEW',
-		IFF(financial_type_code = 'R',
-			reserve_date_type,
-			'NA'
-		),
-		IFF(financial_type_code = 'R',
-			reserve_date_type,
-			v_claim_occurrence_date_type_R_old
-		)
+	IFF(
+	    v_claim_occurrence = 'NEW',
+	    IFF(
+	        financial_type_code = 'R', reserve_date_type, 'NA'
+	    ),
+	    IFF(
+	        financial_type_code = 'R', reserve_date_type, v_claim_occurrence_date_type_R_old
+	    )
 	) AS v_claim_occurrence_date_type_R,
 	v_claim_occurrence_date_type_R AS v_claim_occurrence_date_type_R_old,
 	-- *INF*: IIF(
@@ -103,65 +95,66 @@ EXP_get_values AS (
 	-- IIF(v_claim_occurrence_date_type_D = '2OPEN' OR v_claim_occurrence_date_type_D = '4REOPEN' OR v_claim_occurrence_date_type_E = '2OPEN' OR v_claim_occurrence_date_type_E = '4REOPEN' OR v_claim_occurrence_date_type_S = '2OPEN' OR v_claim_occurrence_date_type_S = '4REOPEN' OR v_claim_occurrence_date_type_B = '2OPEN' OR v_claim_occurrence_date_type_B = '4REOPEN' OR v_claim_occurrence_date_type_R = '2OPEN' OR v_claim_occurrence_date_type_R = '4REOPEN', '2OPEN',
 	-- 
 	-- '3CLOSED'))
-	IFF(( v_claim_occurrence_date_type_D IS NULL 
-			OR v_claim_occurrence_date_type_D = 'NA' 
-			OR v_claim_occurrence_date_type_D = '1NOTICEONLY' 
-		) 
-		AND ( v_claim_occurrence_date_type_E IS NULL 
-			OR v_claim_occurrence_date_type_E = 'NA' 
-			OR v_claim_occurrence_date_type_E = '1NOTICEONLY' 
-		) 
-		AND ( v_claim_occurrence_date_type_S IS NULL 
-			OR v_claim_occurrence_date_type_S = 'NA' 
-			OR v_claim_occurrence_date_type_S = '1NOTICEONLY' 
-		) 
-		AND ( v_claim_occurrence_date_type_B IS NULL 
-			OR v_claim_occurrence_date_type_B = 'NA' 
-			OR v_claim_occurrence_date_type_B = '1NOTICEONLY' 
-		) 
-		AND ( v_claim_occurrence_date_type_R IS NULL 
-			OR v_claim_occurrence_date_type_R = 'NA' 
-			OR v_claim_occurrence_date_type_R = '1NOTICEONLY' 
-		),
-		'1NOTICEONLY',
-		IFF(v_claim_occurrence_date_type_D = '2OPEN' 
-			OR v_claim_occurrence_date_type_D = '4REOPEN' 
-			OR v_claim_occurrence_date_type_E = '2OPEN' 
-			OR v_claim_occurrence_date_type_E = '4REOPEN' 
-			OR v_claim_occurrence_date_type_S = '2OPEN' 
-			OR v_claim_occurrence_date_type_S = '4REOPEN' 
-			OR v_claim_occurrence_date_type_B = '2OPEN' 
-			OR v_claim_occurrence_date_type_B = '4REOPEN' 
-			OR v_claim_occurrence_date_type_R = '2OPEN' 
-			OR v_claim_occurrence_date_type_R = '4REOPEN',
-			'2OPEN',
-			'3CLOSED'
-		)
+	IFF(
+	    (v_claim_occurrence_date_type_D IS NULL
+	    or v_claim_occurrence_date_type_D = 'NA'
+	    or v_claim_occurrence_date_type_D = '1NOTICEONLY')
+	    and (v_claim_occurrence_date_type_E IS NULL
+	    or v_claim_occurrence_date_type_E = 'NA'
+	    or v_claim_occurrence_date_type_E = '1NOTICEONLY')
+	    and (v_claim_occurrence_date_type_S IS NULL
+	    or v_claim_occurrence_date_type_S = 'NA'
+	    or v_claim_occurrence_date_type_S = '1NOTICEONLY')
+	    and (v_claim_occurrence_date_type_B IS NULL
+	    or v_claim_occurrence_date_type_B = 'NA'
+	    or v_claim_occurrence_date_type_B = '1NOTICEONLY')
+	    and (v_claim_occurrence_date_type_R IS NULL
+	    or v_claim_occurrence_date_type_R = 'NA'
+	    or v_claim_occurrence_date_type_R = '1NOTICEONLY'),
+	    '1NOTICEONLY',
+	    IFF(
+	        v_claim_occurrence_date_type_D = '2OPEN'
+	        or v_claim_occurrence_date_type_D = '4REOPEN'
+	        or v_claim_occurrence_date_type_E = '2OPEN'
+	        or v_claim_occurrence_date_type_E = '4REOPEN'
+	        or v_claim_occurrence_date_type_S = '2OPEN'
+	        or v_claim_occurrence_date_type_S = '4REOPEN'
+	        or v_claim_occurrence_date_type_B = '2OPEN'
+	        or v_claim_occurrence_date_type_B = '4REOPEN'
+	        or v_claim_occurrence_date_type_R = '2OPEN'
+	        or v_claim_occurrence_date_type_R = '4REOPEN',
+	        '2OPEN',
+	        '3CLOSED'
+	    )
 	) AS v_overall_claim_occurrence_date_type_crrnt,
 	-- *INF*: IIF(v_overall_claim_occurrence_date_type_crrnt = '1NOTICEONLY', '1NOTICEONLY', IIF(v_overall_claim_occurrence_date_type_crrnt = '2OPEN', IIF(IN(v_claim_occurrence_date_type_out_old , '3CLOSED', '5CLOSEDAFTERREOPEN', '4REOPEN') AND v_claim_occurrence = 'OLD', '4REOPEN', '2OPEN'), IIF(v_overall_claim_occurrence_date_type_crrnt = '3CLOSED', IIF(IN(v_claim_occurrence_date_type_out_old, '4REOPEN', '5CLOSEDAFTERREOPEN'), '5CLOSEDAFTERREOPEN', '3CLOSED'))))
-	IFF(v_overall_claim_occurrence_date_type_crrnt = '1NOTICEONLY',
-		'1NOTICEONLY',
-		IFF(v_overall_claim_occurrence_date_type_crrnt = '2OPEN',
-			IFF(v_claim_occurrence_date_type_out_old IN ('3CLOSED','5CLOSEDAFTERREOPEN','4REOPEN') 
-				AND v_claim_occurrence = 'OLD',
-				'4REOPEN',
-				'2OPEN'
-			),
-			IFF(v_overall_claim_occurrence_date_type_crrnt = '3CLOSED',
-				IFF(v_claim_occurrence_date_type_out_old IN ('4REOPEN','5CLOSEDAFTERREOPEN'),
-					'5CLOSEDAFTERREOPEN',
-					'3CLOSED'
-				)
-			)
-		)
+	IFF(
+	    v_overall_claim_occurrence_date_type_crrnt = '1NOTICEONLY', '1NOTICEONLY',
+	    IFF(
+	        v_overall_claim_occurrence_date_type_crrnt = '2OPEN',
+	        IFF(
+	            v_claim_occurrence_date_type_out_old IN ('3CLOSED','5CLOSEDAFTERREOPEN','4REOPEN')
+	            and v_claim_occurrence = 'OLD',
+	            '4REOPEN',
+	            '2OPEN'
+	        ),
+	        IFF(
+	            v_overall_claim_occurrence_date_type_crrnt = '3CLOSED',
+	            IFF(
+	                v_claim_occurrence_date_type_out_old IN ('4REOPEN','5CLOSEDAFTERREOPEN'),
+	                '5CLOSEDAFTERREOPEN',
+	                '3CLOSED'
+	            )
+	        )
+	    )
 	) AS v_claim_occurrence_date_type_out,
 	-- *INF*: IIF(v_claim_occurrence = 'NEW', 'INSERT', IIF(v_claim_occurrence_date_type_out = v_claim_occurrence_date_type_out_old, 'NOCHANGE', 'INSERT'))
-	IFF(v_claim_occurrence = 'NEW',
-		'INSERT',
-		IFF(v_claim_occurrence_date_type_out = v_claim_occurrence_date_type_out_old,
-			'NOCHANGE',
-			'INSERT'
-		)
+	IFF(
+	    v_claim_occurrence = 'NEW', 'INSERT',
+	    IFF(
+	        v_claim_occurrence_date_type_out = v_claim_occurrence_date_type_out_old, 'NOCHANGE',
+	        'INSERT'
+	    )
 	) AS v_insert_flag,
 	v_insert_flag AS insert_flag_out,
 	v_claim_occurrence_date_type_out AS v_claim_occurrence_date_type_out_old,
@@ -319,52 +312,40 @@ EXP_calculate_values AS (
 	FIL_existing_records.reserve_date_type,
 	FIL_existing_records.claim_occurrence_date_type_out,
 	-- *INF*: DECODE(claim_occurrence_date_type_out, '1NOTICEONLY', 'N', '2OPEN', 'O', '3CLOSED', 'C', '4REOPEN', 'O', '5CLOSEDAFTERREOPEN', 'C')
-	DECODE(claim_occurrence_date_type_out,
-		'1NOTICEONLY', 'N',
-		'2OPEN', 'O',
-		'3CLOSED', 'C',
-		'4REOPEN', 'O',
-		'5CLOSEDAFTERREOPEN', 'C'
+	DECODE(
+	    claim_occurrence_date_type_out,
+	    '1NOTICEONLY', 'N',
+	    '2OPEN', 'O',
+	    '3CLOSED', 'C',
+	    '4REOPEN', 'O',
+	    '5CLOSEDAFTERREOPEN', 'C'
 	) AS claim_occurrence_status_code_out,
 	-- *INF*: :LKP.LKP_CLAIMAT_CALC_RPTD_DATE(claim_occurrence_ak_id)
 	LKP_CLAIMAT_CALC_RPTD_DATE_claim_occurrence_ak_id.claimant_date AS v_claim_occurrence_rpted_date_pms,
 	v_claim_occurrence_rpted_date_pms AS claim_occurrence_rpted_date_pms,
 	LKP_claim_occurrence.s3p_claim_created_date AS claim_occurrence_rpted_date_exceed,
 	-- *INF*: IIF(source_sys_id = 'EXCEED', claim_occurrence_rpted_date_exceed, v_claim_occurrence_rpted_date_pms)
-	IFF(source_sys_id = 'EXCEED',
-		claim_occurrence_rpted_date_exceed,
-		v_claim_occurrence_rpted_date_pms
+	IFF(
+	    source_sys_id = 'EXCEED', claim_occurrence_rpted_date_exceed,
+	    v_claim_occurrence_rpted_date_pms
 	) AS claim_occurrence_rpted_date_out,
 	LKP_claimant_calc_notice_only.claimant_notice_only_ind AS lkp_claimant_notice_only_ind,
 	-- *INF*: IIF(ISNULL(lkp_claimant_notice_only_ind), 'Y', 'N')
-	IFF(lkp_claimant_notice_only_ind IS NULL,
-		'Y',
-		'N'
-	) AS claim_occurrence_notice_only_indicator,
+	IFF(lkp_claimant_notice_only_ind IS NULL, 'Y', 'N') AS claim_occurrence_notice_only_indicator,
 	LKP_claimant_calc_recovery_ind.claimant_recovery_ind AS lkp_claimant_recovery_ind,
 	-- *INF*: IIF(ISNULL(lkp_claimant_recovery_ind), 'N', 'Y')
-	IFF(lkp_claimant_recovery_ind IS NULL,
-		'N',
-		'Y'
-	) AS claim_occurrence_recovery_ind_out,
+	IFF(lkp_claimant_recovery_ind IS NULL, 'N', 'Y') AS claim_occurrence_recovery_ind_out,
 	LKP_Claimant_calc_supplemental_ind.claimant_supplemental_ind AS lkp_claimant_supplemental_ind,
 	-- *INF*: IIF(ISNULL(lkp_claimant_supplemental_ind), 'N', 'Y')
-	IFF(lkp_claimant_supplemental_ind IS NULL,
-		'N',
-		'Y'
-	) AS claim_occurrence_supplemental_ind_out,
+	IFF(lkp_claimant_supplemental_ind IS NULL, 'N', 'Y') AS claim_occurrence_supplemental_ind_out,
 	LKP_Claimant_calc_financial_ind.claimant_financial_ind AS lkp_claimant_financial_ind,
 	-- *INF*: IIF(ISNULL(lkp_claimant_financial_ind), 'N', 'Y')
-	IFF(lkp_claimant_financial_ind IS NULL,
-		'N',
-		'Y'
-	) AS claim_occurrence_financial_indicator,
+	IFF(lkp_claimant_financial_ind IS NULL, 'N', 'Y') AS claim_occurrence_financial_indicator,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	reserve_date AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS') 
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	FIL_existing_records.source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -425,46 +406,35 @@ EXP_set_values_insert_missing_claims AS (
 	notice_claim_ind AS S3P_not_claim_ind,
 	source_claim_occurrence_status_code AS s3p_claim_occurrence_status_code,
 	-- *INF*: IIF(S3P_not_claim_ind = 'N', S3P_not_claim_ind, IIF(s3p_claim_occurrence_status_code = 'C', 'O',s3p_claim_occurrence_status_code) )
-	IFF(S3P_not_claim_ind = 'N',
-		S3P_not_claim_ind,
-		IFF(s3p_claim_occurrence_status_code = 'C',
-			'O',
-			s3p_claim_occurrence_status_code
-		)
+	IFF(
+	    S3P_not_claim_ind = 'N', S3P_not_claim_ind,
+	    IFF(
+	        s3p_claim_occurrence_status_code = 'C', 'O', s3p_claim_occurrence_status_code
+	    )
 	) AS claim_occurrence_status_code_out,
 	-- *INF*: IIF(S3P_not_claim_ind = 'N', S3P_not_claim_ind, s3p_claim_occurrence_status_code)
-	IFF(S3P_not_claim_ind = 'N',
-		S3P_not_claim_ind,
-		s3p_claim_occurrence_status_code
-	) AS claim_occurrence_status_code_out_closed,
+	IFF(S3P_not_claim_ind = 'N', S3P_not_claim_ind, s3p_claim_occurrence_status_code) AS claim_occurrence_status_code_out_closed,
 	-- *INF*: IIF(S3P_not_claim_ind = 'N', '1NOTICEONLY', IIF(s3p_claim_occurrence_status_code = 'E', '6OPENEDINERROR', '7OPEN\NOFINANCIAL'))
-	IFF(S3P_not_claim_ind = 'N',
-		'1NOTICEONLY',
-		IFF(s3p_claim_occurrence_status_code = 'E',
-			'6OPENEDINERROR',
-			'7OPEN\NOFINANCIAL'
-		)
+	IFF(
+	    S3P_not_claim_ind = 'N', '1NOTICEONLY',
+	    IFF(
+	        s3p_claim_occurrence_status_code = 'E', '6OPENEDINERROR', '7OPEN\NOFINANCIAL'
+	    )
 	) AS claim_occurrence_date_type_out,
 	-- *INF*: IIF(S3P_not_claim_ind = 'C', '8CLOSED\NOFINANCIAL')
-	IFF(S3P_not_claim_ind = 'C',
-		'8CLOSED\NOFINANCIAL'
-	) AS claim_occurrence_date_type_out_closed,
+	IFF(S3P_not_claim_ind = 'C', '8CLOSED\NOFINANCIAL') AS claim_occurrence_date_type_out_closed,
 	s3p_claim_created_date,
 	s3p_claim_updated_date,
 	'N' AS claim_supplemental_ind,
 	'N' AS claim_financial_ind,
 	'N' AS claim_recovery_ind,
 	-- *INF*: IIF(S3P_not_claim_ind = 'N', 'Y', 'N')
-	IFF(S3P_not_claim_ind = 'N',
-		'Y',
-		'N'
-	) AS claim_notice_only_ind,
+	IFF(S3P_not_claim_ind = 'N', 'Y', 'N') AS claim_notice_only_ind,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	s3p_claim_created_date AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS') 
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -562,46 +532,35 @@ EXP_set_values AS (
 	notice_claim_ind AS S3P_not_claim_ind,
 	source_claim_occurrence_status_code AS s3p_claim_occurrence_status_code,
 	-- *INF*: IIF(S3P_not_claim_ind = 'N', S3P_not_claim_ind, IIF(s3p_claim_occurrence_status_code = 'C', 'O',s3p_claim_occurrence_status_code) )
-	IFF(S3P_not_claim_ind = 'N',
-		S3P_not_claim_ind,
-		IFF(s3p_claim_occurrence_status_code = 'C',
-			'O',
-			s3p_claim_occurrence_status_code
-		)
+	IFF(
+	    S3P_not_claim_ind = 'N', S3P_not_claim_ind,
+	    IFF(
+	        s3p_claim_occurrence_status_code = 'C', 'O', s3p_claim_occurrence_status_code
+	    )
 	) AS claim_occurrence_status_code_out,
 	-- *INF*: IIF(S3P_not_claim_ind = 'N', S3P_not_claim_ind, s3p_claim_occurrence_status_code)
-	IFF(S3P_not_claim_ind = 'N',
-		S3P_not_claim_ind,
-		s3p_claim_occurrence_status_code
-	) AS claim_occurrence_status_code_out_closed,
+	IFF(S3P_not_claim_ind = 'N', S3P_not_claim_ind, s3p_claim_occurrence_status_code) AS claim_occurrence_status_code_out_closed,
 	-- *INF*: IIF(S3P_not_claim_ind = 'N', '1NOTICEONLY', IIF(s3p_claim_occurrence_status_code = 'E', '6OPENEDINERROR', '7OPEN\NOFINANCIAL'))
-	IFF(S3P_not_claim_ind = 'N',
-		'1NOTICEONLY',
-		IFF(s3p_claim_occurrence_status_code = 'E',
-			'6OPENEDINERROR',
-			'7OPEN\NOFINANCIAL'
-		)
+	IFF(
+	    S3P_not_claim_ind = 'N', '1NOTICEONLY',
+	    IFF(
+	        s3p_claim_occurrence_status_code = 'E', '6OPENEDINERROR', '7OPEN\NOFINANCIAL'
+	    )
 	) AS claim_occurrence_date_type_out,
 	-- *INF*: IIF(S3P_not_claim_ind = 'C', '8CLOSED\NOFINANCIAL')
-	IFF(S3P_not_claim_ind = 'C',
-		'8CLOSED\NOFINANCIAL'
-	) AS claim_occurrence_date_type_out_closed,
+	IFF(S3P_not_claim_ind = 'C', '8CLOSED\NOFINANCIAL') AS claim_occurrence_date_type_out_closed,
 	s3p_claim_created_date,
 	s3p_claim_updated_date,
 	'N' AS claim_supplemental_ind,
 	'N' AS claim_financial_ind,
 	'N' AS claim_recovery_ind,
 	-- *INF*: IIF(S3P_not_claim_ind = 'N', 'Y', 'N')
-	IFF(S3P_not_claim_ind = 'N',
-		'Y',
-		'N'
-	) AS claim_notice_only_ind,
+	IFF(S3P_not_claim_ind = 'N', 'Y', 'N') AS claim_notice_only_ind,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	s3p_claim_created_date AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS') 
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -691,17 +650,18 @@ EXP_determine_insert_for_open AS (
 	-- OR lkp_claim_financial_ind != claim_financial_ind1
 	-- OR lkp_claim_recovery_ind != claim_recovery_ind1
 	-- OR lkp_claim_notice_only_ind != claim_notice_only_ind1, 'U', 'N'))
-	IFF(lkp_claim_occurrence_Calc_id IS NULL,
-		'I',
-		IFF(lkp_claim_occurrence_status_code != claim_occurrence_status_code_out1 
-			OR lkp_claim_occurrence_reported_date != s3p_claim_created_date1 
-			OR lkp_claim_supplemental_ind != claim_supplemental_ind1 
-			OR lkp_claim_financial_ind != claim_financial_ind1 
-			OR lkp_claim_recovery_ind != claim_recovery_ind1 
-			OR lkp_claim_notice_only_ind != claim_notice_only_ind1,
-			'U',
-			'N'
-		)
+	IFF(
+	    lkp_claim_occurrence_Calc_id IS NULL, 'I',
+	    IFF(
+	        lkp_claim_occurrence_status_code != claim_occurrence_status_code_out1
+	        or lkp_claim_occurrence_reported_date != s3p_claim_created_date1
+	        or lkp_claim_supplemental_ind != claim_supplemental_ind1
+	        or lkp_claim_financial_ind != claim_financial_ind1
+	        or lkp_claim_recovery_ind != claim_recovery_ind1
+	        or lkp_claim_notice_only_ind != claim_notice_only_ind1,
+	        'U',
+	        'N'
+	    )
 	) AS insert_update_flag
 	FROM RTR_OPEN_CLOSED_INSERT_OPEN
 	LEFT JOIN LKP_Claim_occurrence_Calc_Open_No_fin
@@ -860,17 +820,18 @@ EXP_determine_insert_for_closed AS (
 	-- OR lkp_claim_financial_ind != claim_financial_ind3
 	-- OR lkp_claim_recovery_ind != claim_recovery_ind3
 	-- OR lkp_claim_notice_only_ind != claim_notice_only_ind3, 'U', 'N'))
-	IFF(lkp_claim_occurrence_Calc_id IS NULL,
-		'I',
-		IFF(lkp_claim_occurrence_status_code != claim_occurrence_status_code_out_closed3 
-			OR lkp_claim_occurrence_reported_date != s3p_claim_created_date3 
-			OR lkp_claim_supplemental_ind != claim_supplemental_ind3 
-			OR lkp_claim_financial_ind != claim_financial_ind3 
-			OR lkp_claim_recovery_ind != claim_recovery_ind3 
-			OR lkp_claim_notice_only_ind != claim_notice_only_ind3,
-			'U',
-			'N'
-		)
+	IFF(
+	    lkp_claim_occurrence_Calc_id IS NULL, 'I',
+	    IFF(
+	        lkp_claim_occurrence_status_code != claim_occurrence_status_code_out_closed3
+	        or lkp_claim_occurrence_reported_date != s3p_claim_created_date3
+	        or lkp_claim_supplemental_ind != claim_supplemental_ind3
+	        or lkp_claim_financial_ind != claim_financial_ind3
+	        or lkp_claim_recovery_ind != claim_recovery_ind3
+	        or lkp_claim_notice_only_ind != claim_notice_only_ind3,
+	        'U',
+	        'N'
+	    )
 	) AS insert_update_flag
 	FROM RTR_OPEN_CLOSED_INSERT_CLOSED
 	LEFT JOIN LKP_Claim_occurrence_Calc_Closed_No_fin
@@ -994,8 +955,7 @@ EXP_Values AS (
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS') 
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	'8CLOSED\NOFINANCIAL' AS claim_occurrence_date_type_out_closed,
@@ -1054,10 +1014,10 @@ EXP_Expire_Rows AS (
 	source_sys_id,
 	-- *INF*: DECODE (TRUE, claim_occurrence_ak_id = v_PREV_ROW_claim_party_occurrence_ak_id and source_sys_id = v_PREV_ROW_source_sys_id , ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		claim_occurrence_ak_id = v_PREV_ROW_claim_party_occurrence_ak_id 
-		AND source_sys_id = v_PREV_ROW_source_sys_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    claim_occurrence_ak_id = v_PREV_ROW_claim_party_occurrence_ak_id and source_sys_id = v_PREV_ROW_source_sys_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	claim_occurrence_ak_id AS v_PREV_ROW_claim_party_occurrence_ak_id,

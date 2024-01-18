@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_FEED_WorkCatastropheExposureDeductible_Derived_DCT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_WorkCatastropheExposureDeductible_Derived_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkCatastropheExposureTransaction AS (\n\tselect T.PolicyKey,\r\n\tT.LocationNumber,\r\n\tD.DeductibleValue from WorkCatastropheExposureTransaction T inner join WorkCatastropheExposureDeductible D\r\n\ton \r\n\tD.PolicyKey = T.PolicyKey and D.BusinessType='SBOP' \r\n\tand D.DeductibleType in ('BusinessPersonalPropertyStandard','BuildingStandard')\r\n\twhere \r\n\tT.BusinessType = 'Commercial Inland Marine'\r\n\tand T.ProductDescription = 'SBOP' \r\n\tand T.CoverageDescription='Excess Personal Computer Coverage/EDP'\n),\nAgg_DeductibleValue AS (\n\tSELECT\n\tPolicyKey,\n\tLocationNumber,\n\tDeductibleValue,\n\t-- *INF*: MIN(DeductibleValue)\n\tMIN(DeductibleValue) AS o_DeductibleValue\n\tFROM SQ_WorkCatastropheExposureTransaction\n\tGROUP BY PolicyKey, LocationNumber\n),\nExp_PassThrough AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tSysdate AS CreatedDate,\n\tSysdate AS ModifiedDate,\n\t'DCT' AS SourceSystemId,\n\tPolicyKey,\n\tLocationNumber,\n\t'Commercial Inland Marine' AS o_BusinessType,\n\t'Excess Personal Computer Coverage/EDP' AS o_DeductibleType,\n\to_DeductibleValue AS DeductibleValue\n\tFROM Agg_DeductibleValue\n),\nWorkCatastropheExposureDeductible1 AS (\n\tINSERT INTO WorkCatastropheExposureDeductible\n\t(AuditId, CreatedDate, ModifiedDate, SourceSystemId, PolicyKey, LocationNumber, BusinessType, DeductibleType, DeductibleValue)\n\tSELECT \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tSOURCESYSTEMID, \n\tPOLICYKEY, \n\tLOCATIONNUMBER, \n\to_BusinessType AS BUSINESSTYPE, \n\to_DeductibleType AS DEDUCTIBLETYPE, \n\tDEDUCTIBLEVALUE\n\tFROM Exp_PassThrough\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

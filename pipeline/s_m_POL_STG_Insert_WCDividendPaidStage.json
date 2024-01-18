@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_WCDividendPaidStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_WCDividendPaidStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_VWDividendPaid AS (\n\tSELECT \r\n\tVWDividendPaid.AgencyCode,\r\n\tVWDividendPaid.PolicyKey,\r\n\tVWDividendPaid.DividendPaidAmount,\r\n\tVWDividendPaid.DividendPaidDate\r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.VWDividendPaid\r\n\tWHERE VWDividendPaid.PolicyKey<>' ' AND VWDividendPaid.DividendPaidAmount<>0.0\r\n\tAND CONVERT(datetime,VWDividendPaid.DividendPaidDate,101)>'@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_DataCollect AS (\n\tSELECT\n\tAgencyCode,\n\tDividendPaidAmount,\n\tDividendPaidDate,\n\tPolicyKey,\n\t-- *INF*: IIF(IS_DATE(DividendPaidDate,'YYYY-MM-DD'),TO_DATE(DividendPaidDate,'YYYY-MM-DD'))\n\tIFF(IS_DATE(DividendPaidDate, 'YYYY-MM-DD'), TO_TIMESTAMP(DividendPaidDate, 'YYYY-MM-DD')) AS O_DividendPaidDate,\n\t-- *INF*: SUBSTR(PolicyKey,1,3)\n\tSUBSTR(PolicyKey, 1, 3) AS PolicySymbol,\n\t-- *INF*: SUBSTR(PolicyKey,4,7)\n\tSUBSTR(PolicyKey, 4, 7) AS PolicyNumber,\n\t-- *INF*: SUBSTR(PolicyKey,11,2)\n\tSUBSTR(PolicyKey, 11, 2) AS PolicyModule,\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\t'EAS' AS SourceSystemId\n\tFROM SQ_VWDividendPaid\n),\nSEQ_GenerateKey AS (\n\tCREATE SEQUENCE SEQ_GenerateKey\n\tSTART = 1\n\tINCREMENT = 1;\n),\nWCDividendPaidStage AS (\n\tTRUNCATE TABLE WCDividendPaidStage;\n\tINSERT INTO WCDividendPaidStage\n\t(WCDividendStageRecID, DividendPaidDate, DividendPaidAmt, AgencyCode, PolicySymbol, PolicyNumber, PolicyModule, ExtractDate, SourceSystemId)\n\tSELECT \n\tSEQ_GenerateKey.NEXTVAL AS WCDIVIDENDSTAGERECID, \n\tO_DividendPaidDate AS DIVIDENDPAIDDATE, \n\tDividendPaidAmount AS DIVIDENDPAIDAMT, \n\tAGENCYCODE, \n\tPOLICYSYMBOL, \n\tPOLICYNUMBER, \n\tPOLICYMODULE, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID\n\tFROM EXP_DataCollect\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

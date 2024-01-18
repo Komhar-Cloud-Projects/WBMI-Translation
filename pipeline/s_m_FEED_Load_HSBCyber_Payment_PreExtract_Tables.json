@@ -1,0 +1,47 @@
+{
+    "name": "s_m_FEED_Load_HSBCyber_Payment_PreExtract_Tables",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_FEED_Load_HSBCyber_Payment_PreExtract_Tables",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_PaymentRecordTable AS (\n\tSELECT   b.AuditId, b.PolicyKey,  b.RunDate,b.Company,  b.ProductCode,b.ContractNumber,b.InsuredName, b.PreviousPolicyNumber, b.coveragetype,b.PremiumTransactionCode, b.PremiumTransactionEffectiveDate,\r\n\tb.CoverageEffectiveDate, b.CoverageExpirationDate, b.CyberCoverageGrossPremium, b.CyberCoverageNetPremium, b.ProgramCode,b.premiumtransactionentereddate,\r\n\tb.FirstPartyLimit , b.ThirdPartyLimit\r\n\tfrom\r\n\t(select distinct policykey\r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.WORKHSBCYBER \r\n\twhere AuditId=@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t) w\r\n\tinner join (select AuditId, PremiumMasterCalculationId, RunDate, ProductCode, PolicyKey, Company, PremiumTransactionCode, PremiumTransactionEffectiveDate,\r\n\tCoverageEffectiveDate, CoverageExpirationDate, CyberCoverageGrossPremium, CyberCoverageNetPremium, PreviousPolicyNumber, ProgramCode,\r\n\tInsuredName, ContractNumber,coveragetype,premiumtransactionentereddate ,\r\n\tWorkHSBCyber.FirstPartyLimit , WorkHSBCyber.ThirdPartyLimit\r\n\t from @{pipeline().parameters.SOURCE_TABLE_OWNER}.WORKHSBCYBER ) b\r\n\ton b.policykey=w.policykey\n),\nEXP_PaymentRecord AS (\n\tSELECT\n\tAuditID,\n\tSysdate AS CreatedDate,\n\tSysdate AS ModifiedDate,\n\tRunDate,\n\tProductCode,\n\tPolKey,\n\tCompany,\n\t-- *INF*: SUBSTR(PolKey,1,10)\n\tSUBSTR(PolKey, 1, 10) AS PolicyNumber,\n\tTransactionCode,\n\tTransactionEffectiveDate,\n\tCoverageEffectiveDate,\n\tCoverageExpirationDate,\n\tCoverageGrossPremium,\n\tCoverageNetPremium,\n\tCoverageNetPremium AS v_CoverageGrossPremium,\n\tv_CoverageGrossPremium AS out_CoverageGrossPremium,\n\t-- *INF*: ROUND(0.7*v_CoverageGrossPremium,2)\r\n\t-- \n\tROUND(0.7 * v_CoverageGrossPremium, 2) AS out_CoverageNetPremium,\n\tPreviousPolicyNumber,\n\tProgramID,\n\tNameOfInsured,\n\tCoverageType,\n\tContractNumber,\n\tPremiumTransactionEnteredDate,\n\tFirstPartyLimit,\n\tThirdPartyLimit\n\tFROM SQ_PaymentRecordTable\n),\nSRT_PolicyKey AS (\n\tSELECT\n\tPolicyNumber, \n\tAuditID, \n\tCreatedDate, \n\tModifiedDate, \n\tRunDate, \n\tProductCode, \n\tCompany, \n\tTransactionCode, \n\tTransactionEffectiveDate, \n\tCoverageEffectiveDate, \n\tCoverageExpirationDate, \n\tout_CoverageGrossPremium, \n\tout_CoverageNetPremium, \n\tPreviousPolicyNumber, \n\tProgramID, \n\tNameOfInsured, \n\tCoverageType, \n\tContractNumber, \n\tPremiumTransactionEnteredDate, \n\tFirstPartyLimit, \n\tThirdPartyLimit\n\tFROM EXP_PaymentRecord\n\tORDER BY PolicyNumber ASC, RunDate ASC, PremiumTransactionEnteredDate ASC\n),\nAGG_PolicyCoverageCount AS (\n\tSELECT\n\tPolicyNumber,\n\tCoverageType,\n\tFirstPartyLimit,\n\tThirdPartyLimit\n\tFROM SRT_PolicyKey\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyNumber, CoverageType ORDER BY NULL) = 1\n),\nAGG_CoverageCount AS (\n\tSELECT\n\tPolicyNumber,\n\tCoverageType,\n\t-- *INF*: COUNT(1,\r\n\t-- (IN(CoverageType,'CyberComputerAttack') \r\n\t-- AND NOT ISNULL(FirstPartyLimit))\r\n\t-- OR\r\n\t-- (IN(CoverageType,'CyberNetworkSecurity') \r\n\t-- AND NOT ISNULL(ThirdPartyLimit))\r\n\t-- )\r\n\t-- \r\n\t-- --count(1,IN(CoverageType,'CyberComputerAttack','CyberNetworkSecurity'))\n\tCOUNT(1, (CoverageType IN ('CyberComputerAttack') AND FirstPartyLimit IS NOT NULL) OR (CoverageType IN ('CyberNetworkSecurity') AND ThirdPartyLimit IS NOT NULL)) AS count,\n\tFirstPartyLimit,\n\tThirdPartyLimit\n\tFROM AGG_PolicyCoverageCount\n\tGROUP BY PolicyNumber\n),\nJNR_CountToRecords AS (SELECT\n\tSRT_PolicyKey.AuditID, \n\tSRT_PolicyKey.CreatedDate, \n\tSRT_PolicyKey.ModifiedDate, \n\tSRT_PolicyKey.RunDate, \n\tSRT_PolicyKey.ProductCode, \n\tSRT_PolicyKey.Company, \n\tSRT_PolicyKey.PolicyNumber, \n\tSRT_PolicyKey.TransactionCode, \n\tSRT_PolicyKey.TransactionEffectiveDate, \n\tSRT_PolicyKey.CoverageEffectiveDate, \n\tSRT_PolicyKey.CoverageExpirationDate, \n\tSRT_PolicyKey.out_CoverageGrossPremium, \n\tSRT_PolicyKey.out_CoverageNetPremium, \n\tSRT_PolicyKey.PreviousPolicyNumber, \n\tSRT_PolicyKey.ProgramID, \n\tSRT_PolicyKey.NameOfInsured, \n\tSRT_PolicyKey.CoverageType, \n\tAGG_CoverageCount.PolicyNumber AS PolicyNumber_agg, \n\tAGG_CoverageCount.count, \n\tSRT_PolicyKey.ContractNumber, \n\tSRT_PolicyKey.PremiumTransactionEnteredDate\n\tFROM SRT_PolicyKey\n\tLEFT OUTER JOIN AGG_CoverageCount\n\tON AGG_CoverageCount.PolicyNumber = SRT_PolicyKey.PolicyNumber\n),\nEXP_ContractNumber AS (\n\tSELECT\n\tAuditID,\n\tCreatedDate,\n\tModifiedDate,\n\tRunDate,\n\tProductCode,\n\tCompany,\n\tPolicyNumber,\n\tTransactionCode,\n\tTransactionEffectiveDate,\n\tCoverageEffectiveDate,\n\tCoverageExpirationDate,\n\tout_CoverageGrossPremium,\n\tout_CoverageNetPremium,\n\tPreviousPolicyNumber,\n\tProgramID,\n\tNameOfInsured,\n\tCoverageType,\n\tPolicyNumber_agg,\n\tcount AS counter,\n\tContractNumber,\n\t-- *INF*: IIF(counter=2,\r\n\t-- Decode(True,\r\n\t-- IN(ContractNumber,'1003696','1003697'),'1003654',\r\n\t-- IN(ContractNumber,'1003699','1003698'),'1003655',\r\n\t-- IN(ContractNumber,'1003703','1003702'),'1003656',\r\n\t-- IN(ContractNumber,'1003700','1003701'),'1003657'\r\n\t-- ),\r\n\t-- ContractNumber)\r\n\t-- \n\tIFF(\n\t    counter = 2,\n\t    Decode(\n\t        True,\n\t        ContractNumber IN ('1003696','1003697'), '1003654',\n\t        ContractNumber IN ('1003699','1003698'), '1003655',\n\t        ContractNumber IN ('1003703','1003702'), '1003656',\n\t        ContractNumber IN ('1003700','1003701'), '1003657'\n\t    ),\n\t    ContractNumber\n\t) AS out_ContractNumber,\n\tPremiumTransactionEnteredDate\n\tFROM JNR_CountToRecords\n),\nFLTR_CoverageGrossPremium AS (\n\tSELECT\n\tAuditID, \n\tCreatedDate, \n\tModifiedDate, \n\tRunDate, \n\tProductCode, \n\tCompany, \n\tPolicyNumber, \n\tTransactionCode, \n\tTransactionEffectiveDate, \n\tCoverageEffectiveDate, \n\tCoverageExpirationDate, \n\tout_CoverageGrossPremium AS CoverageGrossPremium, \n\tout_CoverageNetPremium AS CoverageNetPremium, \n\tPreviousPolicyNumber, \n\tProgramID, \n\tNameOfInsured, \n\tout_ContractNumber AS ContractNumber, \n\tPremiumTransactionEnteredDate\n\tFROM EXP_ContractNumber\n\tWHERE CoverageGrossPremium != 0\n),\nHSBCyberPaymentBordereauExtract AS (\n\tTRUNCATE TABLE HSBCyberPaymentBordereauExtract;\n\tINSERT INTO HSBCyberPaymentBordereauExtract\n\t(AuditId, CreatedDate, ModifiedDate, RunDate, ProductCode, Company, PolicyNumber, TransactionCode, TransactionEffectiveDate, CoverageEffectiveDate, CoverageExpirationDate, CoverageGrossPremium, CoverageNetPremium, PreviousPolicyNumber, ProgramID, NameOfInsured, ContractNumber)\n\tSELECT \n\tAuditID AS AUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tRUNDATE, \n\tPRODUCTCODE, \n\tCOMPANY, \n\tPOLICYNUMBER, \n\tTRANSACTIONCODE, \n\tTRANSACTIONEFFECTIVEDATE, \n\tCOVERAGEEFFECTIVEDATE, \n\tCOVERAGEEXPIRATIONDATE, \n\tCOVERAGEGROSSPREMIUM, \n\tCOVERAGENETPREMIUM, \n\tPREVIOUSPOLICYNUMBER, \n\tPROGRAMID, \n\tNAMEOFINSURED, \n\tCONTRACTNUMBER\n\tFROM FLTR_CoverageGrossPremium\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

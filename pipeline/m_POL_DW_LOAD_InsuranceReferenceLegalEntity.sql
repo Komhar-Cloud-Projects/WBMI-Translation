@@ -17,22 +17,17 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_EffectiveDate
+	IFF(
+	    i_EffectiveDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate
 	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ExpirationDate
+	IFF(
+	    i_ExpirationDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'),
+	    i_ExpirationDate
 	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ModifiedDate
+	IFF(
+	    i_ModifiedDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate
 	) AS o_ModifiedDate
 	FROM SQ_LegalEntity
 ),
@@ -41,15 +36,9 @@ EXP_NumericValues AS (
 	LegalEntityId AS i_LegalEntityId,
 	LegalEntityAKId AS i_LegalEntityAKId,
 	-- *INF*: IIF(ISNULL(i_LegalEntityId),-1,i_LegalEntityId)
-	IFF(i_LegalEntityId IS NULL,
-		- 1,
-		i_LegalEntityId
-	) AS o_LegalEntityId,
+	IFF(i_LegalEntityId IS NULL, - 1, i_LegalEntityId) AS o_LegalEntityId,
 	-- *INF*: IIF(ISNULL(i_LegalEntityAKId),-1,i_LegalEntityAKId)
-	IFF(i_LegalEntityAKId IS NULL,
-		- 1,
-		i_LegalEntityAKId
-	) AS o_LegalEntityAKId
+	IFF(i_LegalEntityAKId IS NULL, - 1, i_LegalEntityAKId) AS o_LegalEntityAKId
 	FROM SQ_LegalEntity
 ),
 EXP_StringValues AS (
@@ -59,43 +48,36 @@ EXP_StringValues AS (
 	LegalEntityDescription AS i_LegalEntityDescription,
 	LegalEntityAbbreviation AS i_LegalEntityAbbreviation,
 	-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)
-	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'
-		),
-		1,
-		0
-	) AS o_CurrentSnapshotFlag,
+	IFF(TRUNC(i_ExpirationDate) = TO_TIMESTAMP('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_LegalEntityCode) OR LENGTH(i_LegalEntityCode)=0 OR IS_SPACES(i_LegalEntityCode),'N/A',LTRIM(RTRIM(i_LegalEntityCode)))
-	IFF(i_LegalEntityCode IS NULL 
-		OR LENGTH(i_LegalEntityCode
-		) = 0 
-		OR LENGTH(i_LegalEntityCode)>0 AND TRIM(i_LegalEntityCode)='',
-		'N/A',
-		LTRIM(RTRIM(i_LegalEntityCode
-			)
-		)
+	IFF(
+	    i_LegalEntityCode IS NULL
+	    or LENGTH(i_LegalEntityCode) = 0
+	    or LENGTH(i_LegalEntityCode)>0
+	    and TRIM(i_LegalEntityCode)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_LegalEntityCode))
 	) AS o_LegalEntityCode,
 	-- *INF*: IIF(ISNULL(i_LegalEntityDescription) OR LENGTH(i_LegalEntityDescription)=0 OR IS_SPACES(i_LegalEntityDescription),'N/A',LTRIM(RTRIM(i_LegalEntityDescription)))
-	IFF(i_LegalEntityDescription IS NULL 
-		OR LENGTH(i_LegalEntityDescription
-		) = 0 
-		OR LENGTH(i_LegalEntityDescription)>0 AND TRIM(i_LegalEntityDescription)='',
-		'N/A',
-		LTRIM(RTRIM(i_LegalEntityDescription
-			)
-		)
+	IFF(
+	    i_LegalEntityDescription IS NULL
+	    or LENGTH(i_LegalEntityDescription) = 0
+	    or LENGTH(i_LegalEntityDescription)>0
+	    and TRIM(i_LegalEntityDescription)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_LegalEntityDescription))
 	) AS o_LegalEntityDescription,
 	-- *INF*: IIF(ISNULL(i_LegalEntityAbbreviation) OR LENGTH(i_LegalEntityAbbreviation)=0 OR IS_SPACES(i_LegalEntityAbbreviation),'N/A',LTRIM(RTRIM(i_LegalEntityAbbreviation)))
-	IFF(i_LegalEntityAbbreviation IS NULL 
-		OR LENGTH(i_LegalEntityAbbreviation
-		) = 0 
-		OR LENGTH(i_LegalEntityAbbreviation)>0 AND TRIM(i_LegalEntityAbbreviation)='',
-		'N/A',
-		LTRIM(RTRIM(i_LegalEntityAbbreviation
-			)
-		)
+	IFF(
+	    i_LegalEntityAbbreviation IS NULL
+	    or LENGTH(i_LegalEntityAbbreviation) = 0
+	    or LENGTH(i_LegalEntityAbbreviation)>0
+	    and TRIM(i_LegalEntityAbbreviation)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_LegalEntityAbbreviation))
 	) AS o_LegalEntityAbbreviation
 	FROM SQ_LegalEntity
 ),

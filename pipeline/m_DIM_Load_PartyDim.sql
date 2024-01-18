@@ -73,122 +73,63 @@ EXP_Detect_Changes AS (
 	SQ_Party.AssociationCode AS i_AssociationCode,
 	LKP_Association.AssociationDescription AS i_AssociationDescription,
 	-- *INF*: IIF(ISNULL(lkp_EDWPartyPKID), 'NEW', 'NOCHANGE')
-	IFF(lkp_EDWPartyPKID IS NULL,
-		'NEW',
-		'NOCHANGE'
-	) AS v_changed_flag,
+	IFF(lkp_EDWPartyPKID IS NULL, 'NEW', 'NOCHANGE') AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: IIF(v_changed_flag='NEW',
 	-- 	TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_changed_flag = 'NEW',
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	i_PartyId AS PartyId,
 	-- *INF*: IIF( ISNULL(i_PartyNumber ), 'N/A', i_PartyNumber )
-	IFF(i_PartyNumber IS NULL,
-		'N/A',
-		i_PartyNumber
-	) AS PartyNumber,
+	IFF(i_PartyNumber IS NULL, 'N/A', i_PartyNumber) AS PartyNumber,
 	-- *INF*: IIF( ISNULL(i_PartyAKId), -1, i_PartyAKId)
-	IFF(i_PartyAKId IS NULL,
-		- 1,
-		i_PartyAKId
-	) AS PartyAKId,
+	IFF(i_PartyAKId IS NULL, - 1, i_PartyAKId) AS PartyAKId,
 	-- *INF*: IIF( ISNULL(i_PrimaryPhoneNumber ), 'N/A', i_PrimaryPhoneNumber )
-	IFF(i_PrimaryPhoneNumber IS NULL,
-		'N/A',
-		i_PrimaryPhoneNumber
-	) AS PrimaryPhoneNumber,
+	IFF(i_PrimaryPhoneNumber IS NULL, 'N/A', i_PrimaryPhoneNumber) AS PrimaryPhoneNumber,
 	-- *INF*: IIF(ISNULL(i_OriginalPolicyInceptionDate), TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'), i_OriginalPolicyInceptionDate)
-	IFF(i_OriginalPolicyInceptionDate IS NULL,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		i_OriginalPolicyInceptionDate
+	IFF(
+	    i_OriginalPolicyInceptionDate IS NULL,
+	    TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    i_OriginalPolicyInceptionDate
 	) AS OriginalPolicyInceptionDate,
 	-- *INF*: IIF(ISNULL(i_DeletedIndicator), 'N/A', i_DeletedIndicator)
-	IFF(i_DeletedIndicator IS NULL,
-		'N/A',
-		i_DeletedIndicator
-	) AS DeletedIndicator,
+	IFF(i_DeletedIndicator IS NULL, 'N/A', i_DeletedIndicator) AS DeletedIndicator,
 	-- *INF*: IIF(ISNULL(i_StatusCode), 'N/A', i_StatusCode)
-	IFF(i_StatusCode IS NULL,
-		'N/A',
-		i_StatusCode
-	) AS StatusCode,
+	IFF(i_StatusCode IS NULL, 'N/A', i_StatusCode) AS StatusCode,
 	-- *INF*: IIF(ISNULL(i_Name), 'N/A', i_Name)
-	IFF(i_Name IS NULL,
-		'N/A',
-		i_Name
-	) AS Name,
+	IFF(i_Name IS NULL, 'N/A', i_Name) AS Name,
 	-- *INF*: IIF(ISNULL(i_DoingBusinessAs), 'N/A', i_DoingBusinessAs)
-	IFF(i_DoingBusinessAs IS NULL,
-		'N/A',
-		i_DoingBusinessAs
-	) AS DoingBusinessAs,
+	IFF(i_DoingBusinessAs IS NULL, 'N/A', i_DoingBusinessAs) AS DoingBusinessAs,
 	-- *INF*: IIF(ISNULL(i_LegalEntityTypeCode), 'N/A', i_LegalEntityTypeCode)
-	IFF(i_LegalEntityTypeCode IS NULL,
-		'N/A',
-		i_LegalEntityTypeCode
-	) AS LegalEntityTypeCode,
+	IFF(i_LegalEntityTypeCode IS NULL, 'N/A', i_LegalEntityTypeCode) AS LegalEntityTypeCode,
 	-- *INF*: IIF(ISNULL(i_SicCode), 'N/A', i_SicCode)
-	IFF(i_SicCode IS NULL,
-		'N/A',
-		i_SicCode
-	) AS SicCode,
+	IFF(i_SicCode IS NULL, 'N/A', i_SicCode) AS SicCode,
 	-- *INF*: IIF(ISNULL(i_SicCodeTitle), 'N/A', i_SicCodeTitle)
-	IFF(i_SicCodeTitle IS NULL,
-		'N/A',
-		i_SicCodeTitle
-	) AS SicCodeTitle,
+	IFF(i_SicCodeTitle IS NULL, 'N/A', i_SicCodeTitle) AS SicCodeTitle,
 	-- *INF*: IIF(ISNULL(i_NaicsCode), 'N/A', i_NaicsCode)
-	IFF(i_NaicsCode IS NULL,
-		'N/A',
-		i_NaicsCode
-	) AS NaicsCode,
+	IFF(i_NaicsCode IS NULL, 'N/A', i_NaicsCode) AS NaicsCode,
 	-- *INF*: IIF(ISNULL(i_NaicsCodeTitle), 'N/A', i_NaicsCodeTitle)
-	IFF(i_NaicsCodeTitle IS NULL,
-		'N/A',
-		i_NaicsCodeTitle
-	) AS NaicsCodeTitle,
+	IFF(i_NaicsCodeTitle IS NULL, 'N/A', i_NaicsCodeTitle) AS NaicsCodeTitle,
 	-- *INF*: IIF(ISNULL(i_PrefixTitleCode), 'N/A', i_PrefixTitleCode)
-	IFF(i_PrefixTitleCode IS NULL,
-		'N/A',
-		i_PrefixTitleCode
-	) AS PrefixTitleCode,
+	IFF(i_PrefixTitleCode IS NULL, 'N/A', i_PrefixTitleCode) AS PrefixTitleCode,
 	-- *INF*: IIF(ISNULL(i_FirstName), 'N/A', i_FirstName)
-	IFF(i_FirstName IS NULL,
-		'N/A',
-		i_FirstName
-	) AS FirstName,
+	IFF(i_FirstName IS NULL, 'N/A', i_FirstName) AS FirstName,
 	-- *INF*: IIF(ISNULL(i_MiddleName), 'N/A', i_MiddleName)
-	IFF(i_MiddleName IS NULL,
-		'N/A',
-		i_MiddleName
-	) AS MiddleName,
+	IFF(i_MiddleName IS NULL, 'N/A', i_MiddleName) AS MiddleName,
 	-- *INF*: IIF(ISNULL(i_LastName), 'N/A', i_LastName)
-	IFF(i_LastName IS NULL,
-		'N/A',
-		i_LastName
-	) AS LastName,
+	IFF(i_LastName IS NULL, 'N/A', i_LastName) AS LastName,
 	-- *INF*: IIF(  ISNULL(i_AssociationCode), 'N/A', i_AssociationCode)
-	IFF(i_AssociationCode IS NULL,
-		'N/A',
-		i_AssociationCode
-	) AS AssociationCode,
+	IFF(i_AssociationCode IS NULL, 'N/A', i_AssociationCode) AS AssociationCode,
 	-- *INF*: IIF(  ISNULL(i_AssociationDescription ), 'N/A', i_AssociationDescription )
-	IFF(i_AssociationDescription IS NULL,
-		'N/A',
-		i_AssociationDescription
-	) AS AssociationDescription
+	IFF(i_AssociationDescription IS NULL, 'N/A', i_AssociationDescription) AS AssociationDescription
 	FROM SQ_Party
 	LEFT JOIN LKP_Association
 	ON LKP_Association.AssociationCode = SQ_Party.AssociationCode
@@ -290,9 +231,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- EDWPartyAKID = v_prev_EDWPartyAKID , ADD_TO_DATE(v_prev_EffectiveDate,'SS',-1),
 	-- OriginalExpirationDate)
-	DECODE(TRUE,
-		EDWPartyAKID = v_prev_EDWPartyAKID, DATEADD(SECOND,- 1,v_prev_EffectiveDate),
-		OriginalExpirationDate
+	DECODE(
+	    TRUE,
+	    EDWPartyAKID = v_prev_EDWPartyAKID, DATEADD(SECOND,- 1,v_prev_EffectiveDate),
+	    OriginalExpirationDate
 	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	EDWPartyAKID AS v_prev_EDWPartyAKID,

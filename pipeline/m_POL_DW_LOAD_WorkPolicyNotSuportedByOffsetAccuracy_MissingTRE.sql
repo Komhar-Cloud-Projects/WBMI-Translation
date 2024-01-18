@@ -52,15 +52,12 @@ mplt_Exclusivereason_WorkPolicyNotSuportedByOffsetAccuracy AS (WITH
 		-- NOT ISNULL(lkp_ExclusionReason) AND INSTR(lkp_ExclusionReason,'Data Repair') = 0,
 		-- CONCAT(lkp_ExclusionReason,', Data Repair'),
 		-- lkp_ExclusionReason)
-		DECODE(TRUE,
-			lkp_ExclusionReason = 'Data Repair', lkp_ExclusionReason,
-			lkp_ExclusionReason IS NULL 
-			OR lkp_ExclusionReason = '', 'Data Repair',
-			lkp_ExclusionReason IS NULL 
-			AND REGEXP_INSTR(lkp_ExclusionReason, 'Data Repair'
-			)NOT  = 0, CONCAT(lkp_ExclusionReason, ', Data Repair'
-			),
-			lkp_ExclusionReason
+		DECODE(
+		    TRUE,
+		    lkp_ExclusionReason = 'Data Repair', lkp_ExclusionReason,
+		    lkp_ExclusionReason IS NULL OR lkp_ExclusionReason = '', 'Data Repair',
+		    lkp_ExclusionReason IS NULL AND REGEXP_INSTR(lkp_ExclusionReason, 'Data Repair')NOT  = 0, CONCAT(lkp_ExclusionReason, ', Data Repair'),
+		    lkp_ExclusionReason
 		) AS v_DataRepair,
 		-- *INF*: DECODE(TRUE,
 		-- lkp_ExclusionReason = 'Missing/blank WorkDCTPremiumTransactionTracking', lkp_ExclusionReason,
@@ -68,15 +65,12 @@ mplt_Exclusivereason_WorkPolicyNotSuportedByOffsetAccuracy AS (WITH
 		-- NOT ISNULL(lkp_ExclusionReason) AND INSTR(lkp_ExclusionReason,'Missing/blank WorkDCTPremiumTransactionTracking') = 0,
 		-- CONCAT(lkp_ExclusionReason,', Missing/blank WorkDCTPremiumTransactionTracking'),
 		-- lkp_ExclusionReason)
-		DECODE(TRUE,
-			lkp_ExclusionReason = 'Missing/blank WorkDCTPremiumTransactionTracking', lkp_ExclusionReason,
-			lkp_ExclusionReason IS NULL 
-			OR lkp_ExclusionReason = '', 'Missing/blank WorkDCTPremiumTransactionTracking',
-			lkp_ExclusionReason IS NULL 
-			AND REGEXP_INSTR(lkp_ExclusionReason, 'Missing/blank WorkDCTPremiumTransactionTracking'
-			)NOT  = 0, CONCAT(lkp_ExclusionReason, ', Missing/blank WorkDCTPremiumTransactionTracking'
-			),
-			lkp_ExclusionReason
+		DECODE(
+		    TRUE,
+		    lkp_ExclusionReason = 'Missing/blank WorkDCTPremiumTransactionTracking', lkp_ExclusionReason,
+		    lkp_ExclusionReason IS NULL OR lkp_ExclusionReason = '', 'Missing/blank WorkDCTPremiumTransactionTracking',
+		    lkp_ExclusionReason IS NULL AND REGEXP_INSTR(lkp_ExclusionReason, 'Missing/blank WorkDCTPremiumTransactionTracking')NOT  = 0, CONCAT(lkp_ExclusionReason, ', Missing/blank WorkDCTPremiumTransactionTracking'),
+		    lkp_ExclusionReason
 		) AS v_MissingTre,
 		-- *INF*: DECODE(TRUE,
 		-- lkp_ExclusionReason = 'CoverageId changed on PT', lkp_ExclusionReason,
@@ -84,15 +78,12 @@ mplt_Exclusivereason_WorkPolicyNotSuportedByOffsetAccuracy AS (WITH
 		-- NOT ISNULL(lkp_ExclusionReason) AND INSTR(lkp_ExclusionReason,'CoverageId changed on PT') = 0,
 		-- CONCAT(lkp_ExclusionReason,', CoverageId changed on PT'),
 		-- lkp_ExclusionReason)
-		DECODE(TRUE,
-			lkp_ExclusionReason = 'CoverageId changed on PT', lkp_ExclusionReason,
-			lkp_ExclusionReason IS NULL 
-			OR lkp_ExclusionReason = '', 'CoverageId changed on PT',
-			lkp_ExclusionReason IS NULL 
-			AND REGEXP_INSTR(lkp_ExclusionReason, 'CoverageId changed on PT'
-			)NOT  = 0, CONCAT(lkp_ExclusionReason, ', CoverageId changed on PT'
-			),
-			lkp_ExclusionReason
+		DECODE(
+		    TRUE,
+		    lkp_ExclusionReason = 'CoverageId changed on PT', lkp_ExclusionReason,
+		    lkp_ExclusionReason IS NULL OR lkp_ExclusionReason = '', 'CoverageId changed on PT',
+		    lkp_ExclusionReason IS NULL AND REGEXP_INSTR(lkp_ExclusionReason, 'CoverageId changed on PT')NOT  = 0, CONCAT(lkp_ExclusionReason, ', CoverageId changed on PT'),
+		    lkp_ExclusionReason
 		) AS v_coidchange,
 		v_DataRepair AS o_DataRepair,
 		v_MissingTre AS o_MissingTre,
@@ -119,21 +110,15 @@ EXP_Get_Values AS (
 	-- NOT ISNULL(i_ExclusionReason) AND INSTR(i_ExclusionReason,'Missing/blank WorkDCTPremiumTransactionTracking') = 0,
 	-- CONCAT(i_ExclusionReason,', Missing/blank WorkDCTPremiumTransactionTracking'),
 	-- i_ExclusionReason)
-	DECODE(TRUE,
-		i_ExclusionReason = 'Missing/blank WorkDCTPremiumTransactionTracking', i_ExclusionReason,
-		i_ExclusionReason IS NULL 
-		OR i_ExclusionReason = '', 'Missing/blank WorkDCTPremiumTransactionTracking',
-		i_ExclusionReason IS NULL 
-		AND REGEXP_INSTR(i_ExclusionReason, 'Missing/blank WorkDCTPremiumTransactionTracking'
-		)NOT  = 0, CONCAT(i_ExclusionReason, ', Missing/blank WorkDCTPremiumTransactionTracking'
-		),
-		i_ExclusionReason
+	DECODE(
+	    TRUE,
+	    i_ExclusionReason = 'Missing/blank WorkDCTPremiumTransactionTracking', i_ExclusionReason,
+	    i_ExclusionReason IS NULL OR i_ExclusionReason = '', 'Missing/blank WorkDCTPremiumTransactionTracking',
+	    i_ExclusionReason IS NULL AND REGEXP_INSTR(i_ExclusionReason, 'Missing/blank WorkDCTPremiumTransactionTracking')NOT  = 0, CONCAT(i_ExclusionReason, ', Missing/blank WorkDCTPremiumTransactionTracking'),
+	    i_ExclusionReason
 	) AS v_ExclusionReason,
 	-- *INF*: IIF(ISNULL(i_WorkPolicyNotSuportedByOffsetAccuracyId),'INSERT','UPDATE')
-	IFF(i_WorkPolicyNotSuportedByOffsetAccuracyId IS NULL,
-		'INSERT',
-		'UPDATE'
-	) AS v_ChangeFlag,
+	IFF(i_WorkPolicyNotSuportedByOffsetAccuracyId IS NULL, 'INSERT', 'UPDATE') AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag,
 	i_WorkPolicyNotSuportedByOffsetAccuracyId AS o_WorkPolicyNotSuportedByOffsetAccuracyId,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,

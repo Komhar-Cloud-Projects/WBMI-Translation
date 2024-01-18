@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Clines_STG_Insert_quote",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Clines_STG_Insert_quote",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_quote AS (\n\tSELECT\n\t\tquote_id,\n\t\tpkg_id,\n\t\tname,\n\t\teff_date,\n\t\teff_date_set_by_chc_id,\n\t\tlob_chc_id,\n\t\tstatus_chc_id,\n\t\tumb_prem_last_quoted,\n\t\ttotal_prem_last_quoted,\n\t\tnotes_to_uw,\n\t\tcorp_owner_chc_id,\n\t\tapp_or_quote_chc_id,\n\t\tpms_pol_num,\n\t\tfirst_quoted_user_id,\n\t\tfirst_quoted_date,\n\t\tapp_cmpltd_user_id,\n\t\tapp_cmpltd_date,\n\t\tcreated_user_id,\n\t\tcreated_date,\n\t\tmodified_user_id,\n\t\tmodified_date,\n\t\thidden_flag,\n\t\trequest_for_quote_flag,\n\t\tversion_num,\n\t\toffering_id,\n\t\tpol_sym,\n\t\tpol_num,\n\t\tpol_mod,\n\t\tpol_mco,\n\t\trcvd_date,\n\t\tstrtgc_bus_unit_dvsn_prog_id,\n\t\texp_date,\n\t\tbindable_flag,\n\t\trisk_grade_wbmi_id,\n\t\tprfrm_clearance_flag,\n\t\treins_req_flag,\n\t\tpol_pco,\n\t\ttax_and_surchg_amt,\n\t\tbus_class_code,\n\t\tlast_quoted_user_id,\n\t\tlast_quoted_date\n\tFROM quote\n),\nEXP_Values AS (\n\tSELECT\n\tquote_id,\n\tpkg_id,\n\tname,\n\teff_date,\n\teff_date_set_by_chc_id,\n\tlob_chc_id,\n\tstatus_chc_id,\n\tumb_prem_last_quoted,\n\ttotal_prem_last_quoted,\n\tnotes_to_uw,\n\tcorp_owner_chc_id,\n\tapp_or_quote_chc_id,\n\tpms_pol_num,\n\tfirst_quoted_user_id,\n\tfirst_quoted_date,\n\tapp_cmpltd_user_id,\n\tapp_cmpltd_date,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tmodified_date,\n\thidden_flag,\n\trequest_for_quote_flag,\n\tversion_num,\n\toffering_id,\n\tpol_sym,\n\tpol_num,\n\tpol_mod,\n\tpol_mco,\n\trcvd_date,\n\tstrtgc_bus_unit_dvsn_prog_id,\n\texp_date,\n\tbindable_flag,\n\trisk_grade_wbmi_id,\n\tprfrm_clearance_flag,\n\treins_req_flag,\n\tpol_pco,\n\ttax_and_surchg_amt,\n\tbus_class_code,\n\tlast_quoted_user_id,\n\tlast_quoted_date,\n\tSYSDATE AS extract_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id\n\tFROM SQ_quote\n),\nquote_cl_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.quote_cl_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.quote_cl_stage\n\t(quote_id, pkg_id, name, eff_date, eff_date_set_by_chc_id, lob_chc_id, status_chc_id, umb_prem_last_quoted, total_prem_last_quoted, notes_to_uw, corp_owner_chc_id, app_or_quote_chc_id, pms_pol_num, first_quoted_user_id, first_quoted_date, app_cmpltd_user_id, app_cmpltd_date, created_user_id, created_date, modified_user_id, modified_date, hidden_flag, request_for_quote_flag, version_num, offering_id, pol_sym, pol_num, pol_mod, pol_mco, rcvd_date, strtgc_bus_unit_dvsn_prog_id, exp_date, bindable_flag, risk_grade_wbmi_id, prfrm_clearance_flag, reins_req_flag, pol_pco, tax_and_surchg_amt, bus_class_code, last_quoted_user_id, last_quoted_date, extract_date, source_system_id)\n\tSELECT \n\tQUOTE_ID, \n\tPKG_ID, \n\tNAME, \n\tEFF_DATE, \n\tEFF_DATE_SET_BY_CHC_ID, \n\tLOB_CHC_ID, \n\tSTATUS_CHC_ID, \n\tUMB_PREM_LAST_QUOTED, \n\tTOTAL_PREM_LAST_QUOTED, \n\tNOTES_TO_UW, \n\tCORP_OWNER_CHC_ID, \n\tAPP_OR_QUOTE_CHC_ID, \n\tPMS_POL_NUM, \n\tFIRST_QUOTED_USER_ID, \n\tFIRST_QUOTED_DATE, \n\tAPP_CMPLTD_USER_ID, \n\tAPP_CMPLTD_DATE, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tHIDDEN_FLAG, \n\tREQUEST_FOR_QUOTE_FLAG, \n\tVERSION_NUM, \n\tOFFERING_ID, \n\tPOL_SYM, \n\tPOL_NUM, \n\tPOL_MOD, \n\tPOL_MCO, \n\tRCVD_DATE, \n\tSTRTGC_BUS_UNIT_DVSN_PROG_ID, \n\tEXP_DATE, \n\tBINDABLE_FLAG, \n\tRISK_GRADE_WBMI_ID, \n\tPRFRM_CLEARANCE_FLAG, \n\tREINS_REQ_FLAG, \n\tPOL_PCO, \n\tTAX_AND_SURCHG_AMT, \n\tBUS_CLASS_CODE, \n\tLAST_QUOTED_USER_ID, \n\tLAST_QUOTED_DATE, \n\tEXTRACT_DATE, \n\tSOURCE_SYSTEM_ID\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CommonStaging/"
+        },
+        "annotations": []
+    }
+}

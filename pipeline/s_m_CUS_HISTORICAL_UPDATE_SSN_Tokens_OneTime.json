@@ -1,0 +1,38 @@
+{
+    "name": "s_m_CUS_HISTORICAL_UPDATE_SSN_Tokens_OneTime",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CUS_HISTORICAL_UPDATE_SSN_Tokens_OneTime",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkTokenExResponse_Customer AS (\n\tSELECT 1 as SSNId, 1 as SSNToken\n),\nEXP_INPUT AS (\n\tSELECT\n\tSSNId,\n\tSSNToken\n\tFROM SQ_WorkTokenExResponse_Customer\n),\nSQL_Customer AS (-- SQL_Customer\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nsql_error_Customer AS (\n\tINSERT INTO sql_error\n\t(sql_error)\n\tSELECT \n\tSQLError AS SQL_ERROR\n\tFROM SQL_Customer\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "HistoricalDataUpdate/"
+        },
+        "annotations": []
+    }
+}

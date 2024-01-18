@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_MED_BILL_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_MED_BILL_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_med_bill_stage AS (\n\tSELECT\n\t\tmed_bill_stage_id,\n\t\tmed_bill_id,\n\t\tvendor_bill_num,\n\t\tpt_acct_num,\n\t\tpt_last_name,\n\t\tpt_first_name,\n\t\tpt_mid_name,\n\t\tpt_addr,\n\t\tpt_city,\n\t\tpt_state,\n\t\tpt_zip_code,\n\t\tpt_dob,\n\t\tpt_gndr,\n\t\tpt_ssn,\n\t\tpt_inj_dt,\n\t\trefer_physician,\n\t\tserv_from_date,\n\t\tserv_to_date,\n\t\tinpt_outpt_ind,\n\t\tbill_issued_date,\n\t\tbill_rcvd_date,\n\t\tbus_rcvd_date,\n\t\tbill_process_date,\n\t\tpt_admit_date,\n\t\tpt_discharge_date,\n\t\tdaily_hospital_rt,\n\t\tbill_review_cost,\n\t\ttotal_bill_charge,\n\t\ttotal_bill_red,\n\t\ttotal_network_red,\n\t\ttotal_recom_pay,\n\t\ttotal_addtl_charge,\n\t\tbill_type,\n\t\tbill_status_code,\n\t\tfee_sched_code,\n\t\tnetwork_name,\n\t\tnetwork_num,\n\t\tserv_line_num,\n\t\tdeleted_ind,\n\t\templyr,\n\t\tacct_id,\n\t\tvendor_code,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id,\n\t\tebill_ind,\n\t\tautopay_ind,\n\t\teor_rcvd_date,\n\t\toriginal_vendor_bill_num,\n\t\tauto_adjudicated\n\tFROM med_bill_stage\n),\nEXP_arch_med_bill_stage AS (\n\tSELECT\n\tmed_bill_stage_id,\n\tmed_bill_id,\n\tvendor_bill_num,\n\tpt_acct_num,\n\tpt_last_name,\n\tpt_first_name,\n\tpt_mid_name,\n\tpt_addr,\n\tpt_city,\n\tpt_state,\n\tpt_zip_code,\n\tpt_dob,\n\tpt_gndr,\n\tpt_ssn,\n\tpt_inj_dt,\n\trefer_physician,\n\tserv_from_date,\n\tserv_to_date,\n\tinpt_outpt_ind,\n\tbill_issued_date,\n\tbill_rcvd_date,\n\tbus_rcvd_date,\n\tbill_process_date,\n\tpt_admit_date,\n\tpt_discharge_date,\n\tdaily_hospital_rt,\n\tbill_review_cost,\n\ttotal_bill_charge,\n\ttotal_bill_red,\n\ttotal_network_red,\n\ttotal_recom_pay,\n\ttotal_addtl_charge,\n\tbill_type,\n\tbill_status_code,\n\tfee_sched_code,\n\tnetwork_name,\n\tnetwork_num,\n\tserv_line_num,\n\tdeleted_ind,\n\templyr,\n\tacct_id,\n\tvendor_code,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP,\n\tebill_ind,\n\tautopay_ind,\n\teor_rcvd_date,\n\toriginal_vendor_bill_num,\n\tauto_adjudicated\n\tFROM SQ_med_bill_stage\n),\narch_med_bill_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_med_bill_stage\n\t(med_bill_stage_id, med_bill_id, vendor_bill_num, pt_acct_num, pt_last_name, pt_first_name, pt_mid_name, pt_addr, pt_city, pt_state, pt_zip_code, pt_dob, pt_gndr, pt_ssn, pt_inj_dt, refer_physician, serv_from_date, serv_to_date, inpt_outpt_ind, bill_issued_date, bill_rcvd_date, bus_rcvd_date, bill_process_date, pt_admit_date, pt_discharge_date, daily_hospital_rt, bill_review_cost, total_bill_charge, total_bill_red, total_network_red, total_recom_pay, total_addtl_charge, bill_type, bill_status_code, fee_sched_code, network_name, network_num, serv_line_num, deleted_ind, emplyr, acct_id, vendor_code, extract_date, as_of_date, record_count, source_system_id, audit_id, ebill_ind, autopay_ind, eor_rcvd_date, original_vendor_bill_num, auto_adjudicated)\n\tSELECT \n\tMED_BILL_STAGE_ID, \n\tMED_BILL_ID, \n\tVENDOR_BILL_NUM, \n\tPT_ACCT_NUM, \n\tPT_LAST_NAME, \n\tPT_FIRST_NAME, \n\tPT_MID_NAME, \n\tPT_ADDR, \n\tPT_CITY, \n\tPT_STATE, \n\tPT_ZIP_CODE, \n\tPT_DOB, \n\tPT_GNDR, \n\tPT_SSN, \n\tPT_INJ_DT, \n\tREFER_PHYSICIAN, \n\tSERV_FROM_DATE, \n\tSERV_TO_DATE, \n\tINPT_OUTPT_IND, \n\tBILL_ISSUED_DATE, \n\tBILL_RCVD_DATE, \n\tBUS_RCVD_DATE, \n\tBILL_PROCESS_DATE, \n\tPT_ADMIT_DATE, \n\tPT_DISCHARGE_DATE, \n\tDAILY_HOSPITAL_RT, \n\tBILL_REVIEW_COST, \n\tTOTAL_BILL_CHARGE, \n\tTOTAL_BILL_RED, \n\tTOTAL_NETWORK_RED, \n\tTOTAL_RECOM_PAY, \n\tTOTAL_ADDTL_CHARGE, \n\tBILL_TYPE, \n\tBILL_STATUS_CODE, \n\tFEE_SCHED_CODE, \n\tNETWORK_NAME, \n\tNETWORK_NUM, \n\tSERV_LINE_NUM, \n\tDELETED_IND, \n\tEMPLYR, \n\tACCT_ID, \n\tVENDOR_CODE, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID, \n\tEBILL_IND, \n\tAUTOPAY_IND, \n\tEOR_RCVD_DATE, \n\tORIGINAL_VENDOR_BILL_NUM, \n\tAUTO_ADJUDICATED\n\tFROM EXP_arch_med_bill_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

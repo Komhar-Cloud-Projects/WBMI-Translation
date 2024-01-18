@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Plines_STG_Insert_Sup_Protect_Device",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Plines_STG_Insert_Sup_Protect_Device",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_sup_protect_device AS (\n\tSELECT\n\t\tstate_type_code,\n\t\tcode,\n\t\tho_type_code,\n\t\teff_date,\n\t\texp_date,\n\t\tpmsc_code,\n\t\tdescript,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\tdiscount_descript,\n\t\tsort_order,\n\t\tdevice_group\n\tFROM sup_protect_device\n),\nEXPTRANS AS (\n\tSELECT\n\tstate_type_code,\n\tcode,\n\tho_type_code,\n\teff_date,\n\texp_date,\n\tpmsc_code,\n\tdescript,\n\tmodified_date,\n\tmodified_user_id,\n\tdiscount_descript,\n\tsort_order,\n\tdevice_group,\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t'' AS RECORD_COUNT,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID\n\tFROM SQ_sup_protect_device\n),\nsup_protect_device_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_protect_device_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_protect_device_stage\n\t(state_type_code, code, ho_type_code, eff_date, exp_date, pmsc_code, descript, modified_date, modified_user_id, discount_descript, sort_order, device_group, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tSTATE_TYPE_CODE, \n\tCODE, \n\tHO_TYPE_CODE, \n\tEFF_DATE, \n\tEXP_DATE, \n\tPMSC_CODE, \n\tDESCRIPT, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tDISCOUNT_DESCRIPT, \n\tSORT_ORDER, \n\tDEVICE_GROUP, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CommonStaging/"
+        },
+        "annotations": []
+    }
+}

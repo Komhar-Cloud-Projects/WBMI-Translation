@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_STG_INSERT_AgencyEmployeeStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_STG_INSERT_AgencyEmployeeStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AgencyEmployee AS (\n\tSELECT\n\t\tAgencyEmployeeID,\n\t\tSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tAgencyEmployeeCode,\n\t\tAgencyEmployeeRole,\n\t\tProducerCode,\n\t\tLastName,\n\t\tFirstName,\n\t\tMiddleName,\n\t\tSuffix,\n\t\tNickName,\n\t\tPrincipalFlag,\n\t\tPrimaryContactFlag,\n\t\tPhoneNumber,\n\t\tFaxNumber,\n\t\tEmailAddress,\n\t\tStatusCode,\n\t\tStatusCodeDescription,\n\t\tListedDate,\n\t\tTerminatedDate,\n\t\tUserID\n\tFROM AgencyEmployee\n),\nLKP_AgencyCode AS (\n\tSELECT\n\tAgencyCode,\n\tAgencyID\n\tFROM (\n\t\tSELECT \n\t\t\tAgencyCode,\n\t\t\tAgencyID\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.Agency\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyID ORDER BY AgencyCode) = 1\n),\nEXP_Add_MetaDataFields AS (\n\tSELECT\n\tSQ_AgencyEmployee.AgencyEmployeeID,\n\tSQ_AgencyEmployee.SourceSystemID,\n\tSQ_AgencyEmployee.HashKey,\n\tSQ_AgencyEmployee.ModifiedUserID,\n\tSQ_AgencyEmployee.ModifiedDate,\n\tSQ_AgencyEmployee.AgencyID,\n\tLKP_AgencyCode.AgencyCode,\n\tSQ_AgencyEmployee.AgencyEmployeeCode,\n\tSQ_AgencyEmployee.AgencyEmployeeRole,\n\tSQ_AgencyEmployee.ProducerCode,\n\tSQ_AgencyEmployee.LastName,\n\tSQ_AgencyEmployee.FirstName,\n\tSQ_AgencyEmployee.MiddleName,\n\tSQ_AgencyEmployee.Suffix,\n\tSQ_AgencyEmployee.NickName,\n\tSQ_AgencyEmployee.PrincipalFlag,\n\tSQ_AgencyEmployee.PrimaryContactFlag,\n\tSQ_AgencyEmployee.PhoneNumber,\n\tSQ_AgencyEmployee.FaxNumber,\n\tSQ_AgencyEmployee.EmailAddress,\n\tSQ_AgencyEmployee.StatusCode,\n\tSQ_AgencyEmployee.StatusCodeDescription,\n\tSQ_AgencyEmployee.ListedDate,\n\tSQ_AgencyEmployee.TerminatedDate,\n\tSQ_AgencyEmployee.UserID,\n\tsysdate AS Extract_Date,\n\tSysdate AS As_of_Date,\n\t1 AS Record_Count,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS Source_System_ID\n\tFROM SQ_AgencyEmployee\n\tLEFT JOIN LKP_AgencyCode\n\tON LKP_AgencyCode.AgencyID = SQ_AgencyEmployee.AgencyID\n),\nAgencyEmployeeStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyEmployeeStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyEmployeeStage\n\t(AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, AgencyEmployeeCode, AgencyEmployeeRole, ProducerCode, LastName, FirstName, MiddleName, Suffix, NickName, PrincipalFlag, PrimaryContactFlag, PhoneNumber, FaxNumber, EmailAddress, StatusCode, StatusCodeDescription, ListedDate, TerminatedDate, UserID, ExtractDate, AsOfDate, RecordCount, SourceSystemID)\n\tSELECT \n\tSourceSystemID AS AGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tAGENCYCODE, \n\tAGENCYEMPLOYEECODE, \n\tAGENCYEMPLOYEEROLE, \n\tPRODUCERCODE, \n\tLASTNAME, \n\tFIRSTNAME, \n\tMIDDLENAME, \n\tSUFFIX, \n\tNICKNAME, \n\tPRINCIPALFLAG, \n\tPRIMARYCONTACTFLAG, \n\tPHONENUMBER, \n\tFAXNUMBER, \n\tEMAILADDRESS, \n\tSTATUSCODE, \n\tSTATUSCODEDESCRIPTION, \n\tLISTEDDATE, \n\tTERMINATEDDATE, \n\tUSERID, \n\tExtract_Date AS EXTRACTDATE, \n\tAs_of_Date AS ASOFDATE, \n\tRecord_Count AS RECORDCOUNT, \n\tSource_System_ID AS SOURCESYSTEMID\n\tFROM EXP_Add_MetaDataFields\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

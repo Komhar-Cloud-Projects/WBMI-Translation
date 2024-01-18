@@ -1,0 +1,38 @@
+{
+    "name": "s_m_POL_FEED_Arch_Reinsurance_SourceData",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Arch_Reinsurance_SourceData",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SapiensReinsurancePolicy AS (\n\tSELECT\n\t\tSapiensReinsurancePolicyId,\n\t\tAuditId,\n\t\tCreatedDate,\n\t\tModifiedDate,\n\t\tPolicyKey,\n\t\tDocumntType,\n\t\tAccountingDate,\n\t\tMonthlyTotalDirectWrittenPremium,\n\t\tProductCode,\n\t\tStrategicProfitCenterAbbreviation,\n\t\tAccountingProductCode,\n\t\tInsuranceReferenceLineOfBusinessCode,\n\t\tASLCode,\n\t\tSubASLCode,\n\t\tPrimaryStateCode,\n\t\tCoverageEffectiveDate,\n\t\tCoverageExpirationDate,\n\t\tEndorsementStartDate,\n\t\tEndorsementIssueDate,\n\t\tPolicyIssueDate,\n\t\tSourceSequenceNumber,\n\t\tTransactionNumber,\n\t\tEndorsementNumber,\n\t\tASLCoversKey,\n\t\tDateKey,\n\t\tPremiumMasterCalculationPKId,\n\t\tReinsuranceUmbrellaLayer,\n\t\tOSECode,\n\t\tPremiumTransactionPKID,\n\t\tEntryProcess,\n\t\tRatingPlanAbbreviation,\n\t\tFirstNameIsured\n\tFROM SapiensReinsurancePolicy\n),\nEXP_DataCollect AS (\n\tSELECT\n\tSapiensReinsurancePolicyId,\n\tAuditId,\n\tCreatedDate,\n\tModifiedDate,\n\tPolicyKey,\n\tDocumntType,\n\tAccountingDate,\n\tMonthlyTotalDirectWrittenPremium,\n\tProductCode,\n\tStrategicProfitCenterAbbreviation,\n\tAccountingProductCode,\n\tInsuranceReferenceLineOfBusinessCode,\n\tASLCode,\n\tSubASLCode,\n\tPrimaryStateCode,\n\tCoverageEffectiveDate,\n\tCoverageExpirationDate,\n\tEndorsementStartDate,\n\tEndorsementIssueDate,\n\tPolicyIssueDate,\n\tSourceSequenceNumber,\n\tTransactionNumber,\n\tEndorsementNumber,\n\tASLCoversKey,\n\tDateKey,\n\tPremiumMasterCalculationPKId,\n\tReinsuranceUmbrellaLayer,\n\tOSECode,\n\tPremiumTransactionPKID,\n\tEntryProcess,\n\tRatingPlanAbbreviation,\n\tFirstNameIsured\n\tFROM SQ_SapiensReinsurancePolicy\n),\nArchSapiensReinsurancePolicy AS (\n\tINSERT INTO ArchSapiensReinsurancePolicy\n\t(AuditId, CreatedDate, ModifiedDate, SapiensReinsurancePolicyId, PolicyKey, DocumntType, AccountingDate, MonthlyTotalDirectWrittenPremium, ProductCode, StrategicProfitCenterAbbreviation, AccountingProductCode, InsuranceReferenceLineOfBusinessCode, ASLCode, SubASLCode, PrimaryStateCode, CoverageEffectiveDate, CoverageExpirationDate, EndorsementStartDate, EndorsementIssueDate, PolicyIssueDate, SourceSequenceNumber, TransactionNumber, EndorsementNumber, ASLCoversKey, DateKey, PremiumMasterCalculationPKId, ReinsuranceUmbrellaLayer, OSECode, PremiumTransactionPKID, EntryProcess, RatingPlanAbbreviation, FirstNameIsured)\n\tSELECT \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tSAPIENSREINSURANCEPOLICYID, \n\tPOLICYKEY, \n\tDOCUMNTTYPE, \n\tACCOUNTINGDATE, \n\tMONTHLYTOTALDIRECTWRITTENPREMIUM, \n\tPRODUCTCODE, \n\tSTRATEGICPROFITCENTERABBREVIATION, \n\tACCOUNTINGPRODUCTCODE, \n\tINSURANCEREFERENCELINEOFBUSINESSCODE, \n\tASLCODE, \n\tSUBASLCODE, \n\tPRIMARYSTATECODE, \n\tCOVERAGEEFFECTIVEDATE, \n\tCOVERAGEEXPIRATIONDATE, \n\tENDORSEMENTSTARTDATE, \n\tENDORSEMENTISSUEDATE, \n\tPOLICYISSUEDATE, \n\tSOURCESEQUENCENUMBER, \n\tTRANSACTIONNUMBER, \n\tENDORSEMENTNUMBER, \n\tASLCOVERSKEY, \n\tDATEKEY, \n\tPREMIUMMASTERCALCULATIONPKID, \n\tREINSURANCEUMBRELLALAYER, \n\tOSECODE, \n\tPREMIUMTRANSACTIONPKID, \n\tENTRYPROCESS, \n\tRATINGPLANABBREVIATION, \n\tFIRSTNAMEISURED\n\tFROM EXP_DataCollect\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

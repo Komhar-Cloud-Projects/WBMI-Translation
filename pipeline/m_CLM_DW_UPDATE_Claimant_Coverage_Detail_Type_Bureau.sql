@@ -27,24 +27,19 @@ EXP_Values AS (
 	claim_party_occurrence_ak_id,
 	loc_unit_num,
 	-- *INF*: RTRIM(loc_unit_num)
-	RTRIM(loc_unit_num
-	) AS loc_unit_num_out,
+	RTRIM(loc_unit_num) AS loc_unit_num_out,
 	sub_loc_unit_num,
 	-- *INF*: RTRIM(sub_loc_unit_num)
-	RTRIM(sub_loc_unit_num
-	) AS sub_loc_unit_num_out,
+	RTRIM(sub_loc_unit_num) AS sub_loc_unit_num_out,
 	ins_line,
 	-- *INF*: RTRIM(ins_line)
-	RTRIM(ins_line
-	) AS ins_line1,
+	RTRIM(ins_line) AS ins_line1,
 	risk_unit_grp,
 	-- *INF*: RTRIM(risk_unit_grp)
-	RTRIM(risk_unit_grp
-	) AS risk_unit_grp1,
+	RTRIM(risk_unit_grp) AS risk_unit_grp1,
 	risk_unit_grp_seq_num,
 	-- *INF*: RTRIM(risk_unit_grp_seq_num)
-	RTRIM(risk_unit_grp_seq_num
-	) AS risk_unit_grp_seq_num1,
+	RTRIM(risk_unit_grp_seq_num) AS risk_unit_grp_seq_num1,
 	risk_unit,
 	-- *INF*: RTRIM(SUBSTR(risk_unit,1,3))
 	-- 
@@ -52,30 +47,21 @@ EXP_Values AS (
 	-- 
 	-- 
 	-- ---RTRIM(risk_unit)
-	RTRIM(SUBSTR(risk_unit, 1, 3
-		)
-	) AS risk_unit_out,
+	RTRIM(SUBSTR(risk_unit, 1, 3)) AS risk_unit_out,
 	risk_unit_seq_num,
 	-- *INF*: RTRIM(risk_unit_seq_num)
-	RTRIM(risk_unit_seq_num
-	) AS risk_unit_seq_num1,
+	RTRIM(risk_unit_seq_num) AS risk_unit_seq_num1,
 	major_peril_code,
 	-- *INF*: RTRIM(major_peril_code)
-	RTRIM(major_peril_code
-	) AS major_peril_code_out,
+	RTRIM(major_peril_code) AS major_peril_code_out,
 	major_peril_seq,
 	-- *INF*: RTRIM(major_peril_seq)
-	RTRIM(major_peril_seq
-	) AS major_peril_seq1,
+	RTRIM(major_peril_seq) AS major_peril_seq1,
 	pms_type_exposure,
 	claimant_cov_eff_date,
 	risk_type_ind,
 	-- *INF*: LTRIM(RTRIM(risk_unit_seq_num)) || LTRIM(RTRIM(risk_type_ind))
-	LTRIM(RTRIM(risk_unit_seq_num
-		)
-	) || LTRIM(RTRIM(risk_type_ind
-		)
-	) AS risk_unit_seq_num_out,
+	LTRIM(RTRIM(risk_unit_seq_num)) || LTRIM(RTRIM(risk_type_ind)) AS risk_unit_seq_num_out,
 	source_sys_id
 	FROM SQ_claimant_coverage_detail_Type_Bureau
 ),
@@ -156,10 +142,7 @@ EXP_LKP_Values AS (
 	EXP_Values.claimant_cov_det_ak_id,
 	LKP_V2_Coverage.type_bureau_code,
 	-- *INF*: IIF(ISNULL(type_bureau_code),'N/A',type_bureau_code)
-	IFF(type_bureau_code IS NULL,
-		'N/A',
-		type_bureau_code
-	) AS type_bureau_code_out,
+	IFF(type_bureau_code IS NULL, 'N/A', type_bureau_code) AS type_bureau_code_out,
 	LKP_V2_Coverage.pol_ak_id,
 	LKP_V2_Coverage.ins_line,
 	LKP_V2_Coverage.loc_unit_num,
@@ -321,25 +304,15 @@ EXP_EXP_Trim_Expression AS (
 	StatisticalCoverageAKID AS i_StatisticalCoverageAKID,
 	CoverageGUID AS i_CoverageGUID,
 	-- *INF*: IIF(ISNULL(i_CoverageGUID), 'N/A',i_CoverageGUID)
-	IFF(i_CoverageGUID IS NULL,
-		'N/A',
-		i_CoverageGUID
-	) AS o_CoverageGUID,
+	IFF(i_CoverageGUID IS NULL, 'N/A', i_CoverageGUID) AS o_CoverageGUID,
 	-- *INF*: IIF(ISNULL(i_InsuranceReferenceLineOfBusinessAKId), -1,i_InsuranceReferenceLineOfBusinessAKId)
-	IFF(i_InsuranceReferenceLineOfBusinessAKId IS NULL,
-		- 1,
-		i_InsuranceReferenceLineOfBusinessAKId
+	IFF(
+	    i_InsuranceReferenceLineOfBusinessAKId IS NULL, - 1, i_InsuranceReferenceLineOfBusinessAKId
 	) AS o_InsuranceReferenceLineOfBusinessAKId,
 	-- *INF*: IIF(ISNULL(i_ProductAKId), -1,i_ProductAKId)
-	IFF(i_ProductAKId IS NULL,
-		- 1,
-		i_ProductAKId
-	) AS o_ProductAKId,
+	IFF(i_ProductAKId IS NULL, - 1, i_ProductAKId) AS o_ProductAKId,
 	-- *INF*: IIF(ISNULL(i_StatisticalCoverageAKID), -1,i_StatisticalCoverageAKID)
-	IFF(i_StatisticalCoverageAKID IS NULL,
-		- 1,
-		i_StatisticalCoverageAKID
-	) AS o_StatisticalCoverageAKID
+	IFF(i_StatisticalCoverageAKID IS NULL, - 1, i_StatisticalCoverageAKID) AS o_StatisticalCoverageAKID
 	FROM SQ_claimant_coverage_detail_Stat_Cvg
 ),
 FIL_Remove_minus_1_Updates AS (

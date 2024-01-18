@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CUS_STG_Insert_DCT_PartyAssociation_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CUS_STG_Insert_DCT_PartyAssociation_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_PartyAssociation AS (\n\tSELECT DC_PartyAssociation.ObjectId, DC_PartyAssociation.ObjectName, DC_PartyAssociation.PartyId, DC_PartyAssociation.PartyAssociationId, DC_PartyAssociation.SessionId, DC_PartyAssociation.PartyXmlId, DC_PartyAssociation.PartyAssociationType, DC_PartyAssociation.PartyAssociationStatus, DC_PartyAssociation.PartyReference, DC_PartyAssociation.Description, DC_PartyAssociation.EntityType, DC_PartyAssociation.EntityOtherType, DC_PartyAssociation.FederalEmployeeIDNumber, DC_PartyAssociation.CompanyNumber, DC_PartyAssociation.LicensePlateNumber \r\n\tFROM\r\n\tDC_PartyAssociation\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session on\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_PartyAssociation.SessionId=@{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session.SessionId\r\n\tWHERE\r\n\tDC_Session.CreateDateTime >=  '@{pipeline().parameters.SELECTION_START_TS}' \r\n\tand  DC_Session.CreateDateTime <  '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tORDER BY\r\n\tDC_PartyAssociation.SessionId\n),\nExp_PartyAssociation AS (\n\tSELECT\n\tObjectId,\n\tObjectName,\n\tPartyId,\n\tPartyAssociationId,\n\tSessionId,\n\tPartyXmlId,\n\tPartyAssociationType,\n\tPartyAssociationStatus,\n\tPartyReference,\n\tDescription,\n\tEntityType,\n\tEntityOtherType,\n\tFederalEmployeeIDNumber,\n\tCompanyNumber,\n\tLicensePlateNumber,\n\tSysdate AS ExtractDate,\n\t'DCT' AS SourceSystemID\n\tFROM SQ_DC_PartyAssociation\n),\nDCPartyAssociationStage AS (\n\tINSERT INTO Shortcut_to_DCPartyAssociationStage\n\t(ExtractDate, SourceSystemid, ObjectId, ObjectName, PartyId, PartyAssociationId, SessionId, PartyXmlId, PartyAssociationType, PartyAssociationStatus, PartyReference, Description, EntityType, EntityOtherType, FederalEmployeeIDNumber, CompanyNumber, LicensePlateNumber)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemID AS SOURCESYSTEMID, \n\tOBJECTID, \n\tOBJECTNAME, \n\tPARTYID, \n\tPARTYASSOCIATIONID, \n\tSESSIONID, \n\tPARTYXMLID, \n\tPARTYASSOCIATIONTYPE, \n\tPARTYASSOCIATIONSTATUS, \n\tPARTYREFERENCE, \n\tDESCRIPTION, \n\tENTITYTYPE, \n\tENTITYOTHERTYPE, \n\tFEDERALEMPLOYEEIDNUMBER, \n\tCOMPANYNUMBER, \n\tLICENSEPLATENUMBER\n\tFROM Exp_PartyAssociation\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CustomerStaging/"
+        },
+        "annotations": []
+    }
+}

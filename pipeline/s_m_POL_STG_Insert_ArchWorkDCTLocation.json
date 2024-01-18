@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchWorkDCTLocation",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchWorkDCTLocation",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTLocation AS (\n\tSELECT\n\t\tWorkDCTLocationId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tLocationAssociationId,\n\t\tLocationAssociationObjectId,\n\t\tLocationAssociationObjectName,\n\t\tLocationId,\n\t\tSessionId,\n\t\tTerritory,\n\t\tLocationNumber,\n\t\tLocationXmlId,\n\t\tStateProvince,\n\t\tPostalCode,\n\t\tCity,\n\t\tCounty,\n\t\tAddress1,\n\t\tLocationDescription,\n\t\tPrimaryStateLocationIndicator,\n\t\tPrimaryRatingLocationIndicator,\n\t\tAddress2,\n\t\tCountry,\n\t\tLocationAssociationType\n\tFROM WorkDCTLocation\n),\nEXp_Default AS (\n\tSELECT\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\tWorkDCTLocationId,\n\tLocationAssociationId,\n\tLocationAssociationObjectId,\n\tLocationAssociationObjectName,\n\tLocationId,\n\tSessionId,\n\tTerritory,\n\tLocationNumber,\n\tLocationXmlId,\n\tStateProvince,\n\tPostalCode,\n\tCity,\n\tCounty,\n\tAddress1,\n\tLocationDescription,\n\tPrimaryStateLocationIndicator,\n\t-- *INF*: DECODE(PrimaryStateLocationIndicator, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    PrimaryStateLocationIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PrimaryStateLocationIndicator,\n\tPrimaryRatingLocationIndicator,\n\t-- *INF*: DECODE(PrimaryRatingLocationIndicator, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    PrimaryRatingLocationIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PrimaryRatingLocationIndicator,\n\tAddress2,\n\tCountry,\n\tLocationAssociationType\n\tFROM SQ_WorkDCTLocation\n),\nArchWorkDCTLocation AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWorkDCTLocation\n\t(ExtractDate, SourceSystemId, AuditId, WorkDCTLocationId, LocationAssociationId, LocationAssociationObjectId, LocationAssociationObjectName, LocationId, SessionId, Territory, LocationNumber, LocationXmlId, StateProvince, PostalCode, City, County, Address1, LocationDescription, PrimaryStateLocationIndicator, PrimaryRatingLocationIndicator, Address2, Country, LocationAssociationType)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\taudit_id AS AUDITID, \n\tWORKDCTLOCATIONID, \n\tLOCATIONASSOCIATIONID, \n\tLOCATIONASSOCIATIONOBJECTID, \n\tLOCATIONASSOCIATIONOBJECTNAME, \n\tLOCATIONID, \n\tSESSIONID, \n\tTERRITORY, \n\tLOCATIONNUMBER, \n\tLOCATIONXMLID, \n\tSTATEPROVINCE, \n\tPOSTALCODE, \n\tCITY, \n\tCOUNTY, \n\tADDRESS1, \n\tLOCATIONDESCRIPTION, \n\to_PrimaryStateLocationIndicator AS PRIMARYSTATELOCATIONINDICATOR, \n\to_PrimaryRatingLocationIndicator AS PRIMARYRATINGLOCATIONINDICATOR, \n\tADDRESS2, \n\tCOUNTRY, \n\tLOCATIONASSOCIATIONTYPE\n\tFROM EXp_Default\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -34,8 +34,7 @@ EXP_Default AS (
 	pif_policy_number,
 	pif_module,
 	-- *INF*: (pif_symbol  || pif_policy_number || pif_module)
-	( pif_symbol || pif_policy_number || pif_module 
-	) AS Pol_Key,
+	(pif_symbol || pif_policy_number || pif_module) AS Pol_Key,
 	sar_insurance_line,
 	sar_location_x,
 	sar_sub_location_x,
@@ -68,100 +67,68 @@ EXP_Values AS (
 	LKP_Policy.pol_ak_id,
 	EXP_Default.sar_insurance_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line
-	) AS sar_insurance_line_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_insurance_line) AS sar_insurance_line_Out,
 	EXP_Default.sar_location_x,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_location_x)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_location_x
-	) AS sar_location_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_location_x) AS sar_location_Out,
 	EXP_Default.sar_sub_location_x,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x
-	) AS sar_sub_location_x1,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_sub_location_x) AS sar_sub_location_x1,
 	EXP_Default.sar_risk_unit_group,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group
-	) AS sar_risk_unit_group_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit_group) AS sar_risk_unit_group_Out,
 	EXP_Default.sar_class_code_grp_x,
 	EXP_Default.sar_class_code_mem_x,
 	-- *INF*:  ( sar_class_code_grp_x || sar_class_code_mem_x)
-	( sar_class_code_grp_x || sar_class_code_mem_x 
-	) AS v_risk_unit_group_seq,
+	(sar_class_code_grp_x || sar_class_code_mem_x) AS v_risk_unit_group_seq,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_risk_unit_group_seq)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_risk_unit_group_seq
-	) AS risk_unit_group_seq_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(v_risk_unit_group_seq) AS risk_unit_group_seq_Out,
 	EXP_Default.sar_unit_complete,
 	-- *INF*: IIF(LENGTH(LTRIM(RTRIM(sar_unit_complete)))= 0 OR IS_SPACES(LTRIM(RTRIM(sar_unit_complete))), '000000',sar_unit_complete)
-	IFF(LENGTH(LTRIM(RTRIM(sar_unit_complete
-				)
-			)
-		) = 0 
-		OR LENGTH(LTRIM(RTRIM(sar_unit_complete
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(sar_unit_complete
-			)
-		))='',
-		'000000',
-		sar_unit_complete
+	IFF(
+	    LENGTH(LTRIM(RTRIM(sar_unit_complete))) = 0
+	    or LENGTH(LTRIM(RTRIM(sar_unit_complete)))>0
+	    and TRIM(LTRIM(RTRIM(sar_unit_complete)))='',
+	    '000000',
+	    sar_unit_complete
 	) AS v_sar_unit,
 	v_sar_unit AS sar_risk_unit,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit
-	) AS sar_risk_unit_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_risk_unit) AS sar_risk_unit_Out,
 	EXP_Default.sar_seq_rsk_unt_a,
 	-- *INF*: RPAD(LTRIM(RTRIM(sar_seq_rsk_unt_a)),2,'0')
-	RPAD(LTRIM(RTRIM(sar_seq_rsk_unt_a
-			)
-		), 2, '0'
-	) AS v_sar_seq_rsk_unt_a,
+	RPAD(LTRIM(RTRIM(sar_seq_rsk_unt_a)), 2, '0') AS v_sar_seq_rsk_unt_a,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a
-	) AS sar_rsk_unit_seq_out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_seq_rsk_unt_a) AS sar_rsk_unit_seq_out,
 	EXP_Default.sar_type_exposure,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure
-	) AS sar_type_exposure_out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_type_exposure) AS sar_type_exposure_out,
 	EXP_Default.sar_major_peril,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_major_peril)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_major_peril
-	) AS sar_major_peril_out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_major_peril) AS sar_major_peril_out,
 	EXP_Default.sar_seq_no,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_no)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_seq_no
-	) AS sar_major_peril_seq_no,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_seq_no) AS sar_major_peril_seq_no,
 	EXP_Default.sar_cov_eff_year,
 	-- *INF*: TO_CHAR(sar_cov_eff_year)
-	TO_CHAR(sar_cov_eff_year
-	) AS v_sar_cov_eff_year,
+	TO_CHAR(sar_cov_eff_year) AS v_sar_cov_eff_year,
 	EXP_Default.sar_cov_eff_month,
 	-- *INF*: LPAD(TO_CHAR(sar_cov_eff_month),2,'0')
-	LPAD(TO_CHAR(sar_cov_eff_month
-		), 2, '0'
-	) AS v_sar_cov_eff_month,
+	LPAD(TO_CHAR(sar_cov_eff_month), 2, '0') AS v_sar_cov_eff_month,
 	EXP_Default.sar_cov_eff_day,
 	-- *INF*: LPAD(TO_CHAR(sar_cov_eff_day),2,'0')
-	LPAD(TO_CHAR(sar_cov_eff_day
-		), 2, '0'
-	) AS v_sar_cov_eff_day,
+	LPAD(TO_CHAR(sar_cov_eff_day), 2, '0') AS v_sar_cov_eff_day,
 	-- *INF*: LPAD(TO_CHAR(sar_cov_eff_month),2,'0') || '/' || LPAD(TO_CHAR(sar_cov_eff_day),2,'0')	||	'/'	||
 	-- TO_CHAR(sar_cov_eff_year)
-	LPAD(TO_CHAR(sar_cov_eff_month
-		), 2, '0'
-	) || '/' || LPAD(TO_CHAR(sar_cov_eff_day
-		), 2, '0'
-	) || '/' || TO_CHAR(sar_cov_eff_year
-	) AS v_sar_cov_eff_date,
+	LPAD(TO_CHAR(sar_cov_eff_month), 2, '0') || '/' || LPAD(TO_CHAR(sar_cov_eff_day), 2, '0') || '/' || TO_CHAR(sar_cov_eff_year) AS v_sar_cov_eff_date,
 	-- *INF*: TO_DATE(v_sar_cov_eff_month  || '/'  || v_sar_cov_eff_day  || '/'  || v_sar_cov_eff_year, 'MM/DD/YYYY')
-	TO_DATE(v_sar_cov_eff_month || '/' || v_sar_cov_eff_day || '/' || v_sar_cov_eff_year, 'MM/DD/YYYY'
-	) AS sar_cov_eff_date,
+	TO_TIMESTAMP(v_sar_cov_eff_month || '/' || v_sar_cov_eff_day || '/' || v_sar_cov_eff_year, 'MM/DD/YYYY') AS sar_cov_eff_date,
 	EXP_Default.sar_type_bureau,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_bureau)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_type_bureau
-	) AS sar_type_bureau_out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_type_bureau) AS sar_type_bureau_out,
 	'N/A' AS default_NA,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59' , 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
@@ -255,22 +222,20 @@ EXP_Detect_Changes AS (
 	-- 
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(lkp_cov_id IS NULL,
-		'NEW',
-		IFF(lkp_type_bureau_code <> sar_type_bureau_out,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    lkp_cov_id IS NULL, 'NEW',
+	    IFF(
+	        lkp_type_bureau_code <> sar_type_bureau_out, 'UPDATE', 'NOCHANGE'
+	    )
 	) AS v_Changed_Flag,
 	v_Changed_Flag AS Changed_Flag,
 	EXP_Values.default_NA,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    v_Changed_Flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS v_eff_from_date,
 	v_eff_from_date AS eff_from_date,
 	EXP_Values.eff_to_date,
@@ -325,10 +290,7 @@ EXP_Detemine_AK_ID AS (
 	modified_date,
 	lkp_cov_ak_id,
 	-- *INF*: IIF(ISNULL(lkp_cov_ak_id),NEXTVAL,lkp_cov_ak_id)
-	IFF(lkp_cov_ak_id IS NULL,
-		NEXTVAL,
-		lkp_cov_ak_id
-	) AS cov_ak_id_out,
+	IFF(lkp_cov_ak_id IS NULL, NEXTVAL, lkp_cov_ak_id) AS cov_ak_id_out,
 	pol_ak_id,
 	ins_line,
 	loc_unit_num,
@@ -431,19 +393,10 @@ EXP_Expire_Rows AS (
 	-- 
 	-- , ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1)
 	-- ,Orig_eff_to_date)
-	DECODE(TRUE,
-		ins_line = v_PREV_ROW_ins_line 
-		AND loc_unit_num = v_PREV_ROW_loc_unit_num 
-		AND sub_loc_unit_num = v_PREV_ROW_sub_loc_unit_num 
-		AND risk_unit_grp = v_PREV_ROW_risk_unit_grp 
-		AND risk_unit_grp_seq_num = v_PREV_ROW_risk_unit_grp_seq_num 
-		AND risk_unit = v_PREV_ROW_risk_unit 
-		AND risk_unit_seq_num = v_PREV_ROW_risk_unit_seq_num 
-		AND major_peril_code = v_PREV_ROW_major_peril_code 
-		AND major_peril_seq_num = v_PEV_ROW_major_peril_seq_num 
-		AND pms_type_exposure = v_PEV_ROW_pms_type_exposure 
-		AND cov_eff_date = v_PEV_ROW_cov_eff_date, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		Orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    ins_line = v_PREV_ROW_ins_line AND loc_unit_num = v_PREV_ROW_loc_unit_num AND sub_loc_unit_num = v_PREV_ROW_sub_loc_unit_num AND risk_unit_grp = v_PREV_ROW_risk_unit_grp AND risk_unit_grp_seq_num = v_PREV_ROW_risk_unit_grp_seq_num AND risk_unit = v_PREV_ROW_risk_unit AND risk_unit_seq_num = v_PREV_ROW_risk_unit_seq_num AND major_peril_code = v_PREV_ROW_major_peril_code AND major_peril_seq_num = v_PEV_ROW_major_peril_seq_num AND pms_type_exposure = v_PEV_ROW_pms_type_exposure AND cov_eff_date = v_PEV_ROW_cov_eff_date, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    Orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	0 AS crrnt_snapshot_flag,

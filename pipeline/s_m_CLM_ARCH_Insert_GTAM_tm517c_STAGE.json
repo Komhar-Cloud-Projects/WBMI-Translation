@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_GTAM_tm517c_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_GTAM_tm517c_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_tm517c_stage AS (\n\tSELECT\n\t\ttm517c_stage_id,\n\t\ttable_fld,\n\t\tkey_len,\n\t\tline_of_business,\n\t\tinsurance_line,\n\t\trisk_unit_group,\n\t\tproduct_type_code,\n\t\tlanguage_indicator,\n\t\tdata_len,\n\t\trisk_unit_group_literal,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_sytem_id\n\tFROM gtam_tm517c_stage\n),\nEXP_arch_gtam_tm517c_stage AS (\n\tSELECT\n\ttm517c_stage_id,\n\ttable_fld,\n\tkey_len,\n\tline_of_business,\n\tinsurance_line,\n\trisk_unit_group,\n\tproduct_type_code,\n\tlanguage_indicator,\n\tdata_len,\n\trisk_unit_group_literal,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_sytem_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_gtam_tm517c_stage\n),\narch_gtam_tm517c_stage AS (\n\tINSERT INTO arch_gtam_tm517c_stage\n\t(tm517c_stage_id, table_fld, key_len, line_of_business, insurance_line, risk_unit_group, product_type_code, language_indicator, data_len, risk_unit_group_literal, extract_date, as_of_date, record_count, source_sytem_id, audit_id)\n\tSELECT \n\tTM517C_STAGE_ID, \n\tTABLE_FLD, \n\tKEY_LEN, \n\tLINE_OF_BUSINESS, \n\tINSURANCE_LINE, \n\tRISK_UNIT_GROUP, \n\tPRODUCT_TYPE_CODE, \n\tLANGUAGE_INDICATOR, \n\tDATA_LEN, \n\tRISK_UNIT_GROUP_LITERAL, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_arch_gtam_tm517c_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

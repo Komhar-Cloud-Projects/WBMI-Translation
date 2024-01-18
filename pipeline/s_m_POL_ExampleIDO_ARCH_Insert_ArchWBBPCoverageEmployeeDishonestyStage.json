@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageEmployeeDishonestyStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageEmploye_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBBPCoverageEmployeeDishonestyStage AS (\n\tSELECT\n\t\tWBBPCoverageEmployeeDishonestyStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tBP_CoverageEmployeeDishonestyId,\n\t\tWB_BP_CoverageEmployeeDishonestyId,\n\t\tSessionId,\n\t\tERISAPlanName,\n\t\tAuditConducted,\n\t\tWhoPerformsAudit,\n\t\tAuditRenderedTo,\n\t\tBankAccountsReconciled,\n\t\tCountersignatureRequired,\n\t\tSecuritiesJointControl,\n\t\tVacationRequired,\n\t\tDesignatedAgentsAsEmployees\n\tFROM WBBPCoverageEmployeeDishonestyStage\n),\nEXP_TRANS AS (\n\tSELECT\n\tWBBPCoverageEmployeeDishonestyStageId,\n\tExtractDate,\n\tSourceSystemid,\n\tBP_CoverageEmployeeDishonestyId,\n\tWB_BP_CoverageEmployeeDishonestyId,\n\tSessionId,\n\tERISAPlanName,\n\tAuditConducted,\n\tWhoPerformsAudit,\n\tAuditRenderedTo,\n\tBankAccountsReconciled,\n\tCountersignatureRequired,\n\tSecuritiesJointControl,\n\tVacationRequired,\n\tDesignatedAgentsAsEmployees,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBBPCoverageEmployeeDishonestyStage\n),\nArchWBBPCoverageEmployeeDishonestyStage AS (\n\tINSERT INTO ArchWBBPCoverageEmployeeDishonestyStage\n\t(ExtractDate, SourceSystemId, AuditId, WBBPCoverageEmployeeDishonestyStageId, BP_CoverageEmployeeDishonestyId, WB_BP_CoverageEmployeeDishonestyId, SessionId, ERISAPlanName, AuditConducted, WhoPerformsAudit, AuditRenderedTo, BankAccountsReconciled, CountersignatureRequired, SecuritiesJointControl, VacationRequired, DesignatedAgentsAsEmployees)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemid AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBBPCOVERAGEEMPLOYEEDISHONESTYSTAGEID, \n\tBP_COVERAGEEMPLOYEEDISHONESTYID, \n\tWB_BP_COVERAGEEMPLOYEEDISHONESTYID, \n\tSESSIONID, \n\tERISAPLANNAME, \n\tAUDITCONDUCTED, \n\tWHOPERFORMSAUDIT, \n\tAUDITRENDEREDTO, \n\tBANKACCOUNTSRECONCILED, \n\tCOUNTERSIGNATUREREQUIRED, \n\tSECURITIESJOINTCONTROL, \n\tVACATIONREQUIRED, \n\tDESIGNATEDAGENTSASEMPLOYEES\n\tFROM EXP_TRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Plines_STG_Insert_Umbrella",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Plines_STG_Insert_Umbrella",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_umbrella AS (\n\tSELECT\n\t\tumb_seq,\n\t\tpolicy_num,\n\t\tpolicy_sym,\n\t\tpolicy_mod,\n\t\tpolicy_mco,\n\t\tumb_amt_type_code,\n\t\tum_include_flag,\n\t\tuim_include_flag,\n\t\tcredit_exist_ins_exp_date,\n\t\tunderlying_cov_include_flag,\n\t\tother_prim_ins_flag,\n\t\tacc_violation_flag,\n\t\tacc_violation_descript,\n\t\tnon_compensate_pos_flag,\n\t\tnon_compensate_pos_descript,\n\t\tnon_own_prop_flag,\n\t\tnon_own_prop_descript,\n\t\tbus_act_include_flag,\n\t\tbus_act_include_descript,\n\t\tlibel_slander_flag,\n\t\titem_not_covered_flag,\n\t\titem_not_covered_descript,\n\t\tadd_int_na_flag,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\tsigned_rejection_flag,\n\t\toccupation_flag,\n\t\tum_limit_type_code,\n\t\tuim_limit_type_code\n\tFROM umbrella\n),\nEXP_UMBRELLA AS (\n\tSELECT\n\tumb_seq,\n\tpolicy_num,\n\tpolicy_sym,\n\tpolicy_mod,\n\tpolicy_mco,\n\tumb_amt_type_code,\n\tum_include_flag,\n\tuim_include_flag,\n\tcredit_exist_ins_exp_date,\n\tunderlying_cov_include_flag,\n\tother_prim_ins_flag,\n\tacc_violation_flag,\n\tacc_violation_descript,\n\tnon_compensate_pos_flag,\n\tnon_compensate_pos_descript,\n\tnon_own_prop_flag,\n\tnon_own_prop_descript,\n\tbus_act_include_flag,\n\tbus_act_include_descript,\n\tlibel_slander_flag,\n\titem_not_covered_flag,\n\titem_not_covered_descript,\n\tadd_int_na_flag,\n\tmodified_date,\n\tmodified_user_id,\n\tsigned_rejection_flag,\n\toccupation_flag,\n\tum_limit_type_code,\n\tuim_limit_type_code,\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t'' AS RECORD_COUNT,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID\n\tFROM SQ_umbrella\n),\numbrella_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.umbrella_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.umbrella_stage\n\t(umb_seq, policy_num, policy_sym, policy_mod, policy_mco, umb_amt_type_code, um_include_flag, uim_include_flag, credit_exist_ins_exp_date, underlying_cov_include_flag, other_prim_ins_flag, acc_violation_flag, acc_violation_descript, non_compensate_pos_flag, non_compensate_pos_descript, non_own_prop_flag, non_own_prop_descript, bus_act_include_flag, bus_act_include_descript, libel_slander_flag, item_not_covered_flag, item_not_covered_descript, add_int_na_flag, modified_date, modified_user_id, signed_rejection_flag, occupation_flag, um_limit_type_code, uim_limit_type_code, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tUMB_SEQ, \n\tPOLICY_NUM, \n\tPOLICY_SYM, \n\tPOLICY_MOD, \n\tPOLICY_MCO, \n\tUMB_AMT_TYPE_CODE, \n\tUM_INCLUDE_FLAG, \n\tUIM_INCLUDE_FLAG, \n\tCREDIT_EXIST_INS_EXP_DATE, \n\tUNDERLYING_COV_INCLUDE_FLAG, \n\tOTHER_PRIM_INS_FLAG, \n\tACC_VIOLATION_FLAG, \n\tACC_VIOLATION_DESCRIPT, \n\tNON_COMPENSATE_POS_FLAG, \n\tNON_COMPENSATE_POS_DESCRIPT, \n\tNON_OWN_PROP_FLAG, \n\tNON_OWN_PROP_DESCRIPT, \n\tBUS_ACT_INCLUDE_FLAG, \n\tBUS_ACT_INCLUDE_DESCRIPT, \n\tLIBEL_SLANDER_FLAG, \n\tITEM_NOT_COVERED_FLAG, \n\tITEM_NOT_COVERED_DESCRIPT, \n\tADD_INT_NA_FLAG, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tSIGNED_REJECTION_FLAG, \n\tOCCUPATION_FLAG, \n\tUM_LIMIT_TYPE_CODE, \n\tUIM_LIMIT_TYPE_CODE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_UMBRELLA\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CommonStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,55 @@
+{
+    "name": "s_m_CLM_STG_Insert_APPLICATION_CONTEXT_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Insert_APPLICATION_CONTEXT_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_application_context AS (\n\tSELECT\r\n\t\tapp_con.app_context_guid, \r\n\t\tapp_con.app_guid, \r\n\t\tapp_con.app_context_ent_name, \r\n\t\tapp_con.display_name, \r\n\t\tapp_con.created_user_id, \r\n\t\tapp_con.created_date, \r\n\t\tapp_con.modified_user_id, \r\n\t\tapp_con.modified_date\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.application_context AS app_con WITH (NOLOCK)\r\n\tWHERE app_con.created_date >=  '@{pipeline().parameters.SELECTION_START_TS}'\r\n\t          OR app_con.modified_date >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_SOURCE AS (\n\tSELECT\n\tapp_context_guid,\n\tapp_guid,\n\tapp_context_ent_name,\n\tdisplay_name,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tmodified_date,\n\tsysdate AS EXTRACT_DATE,\n\tsysdate AS AS_OF_DATE,\n\t'' AS record_count,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID\n\tFROM SQ_application_context\n),\napplication_context_stage_INS AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.application_context_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.application_context_stage\n\t(app_context_guid, app_guid, app_context_ent_name, display_name, created_user_id, created_date, modified_user_id, modified_date, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tAPP_CONTEXT_GUID, \n\tAPP_GUID, \n\tAPP_CONTEXT_ENT_NAME, \n\tDISPLAY_NAME, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_SOURCE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

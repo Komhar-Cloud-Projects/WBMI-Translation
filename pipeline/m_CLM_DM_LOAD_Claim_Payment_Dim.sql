@@ -124,42 +124,25 @@ EXP_get_values AS (
 	pay_cashed_date,
 	pay_to_code AS IN_pay_to_code,
 	-- *INF*: IIF(ISNULL(IN_pay_to_code) OR LENGTH(LTRIM(RTRIM(IN_pay_to_code))) = 0, 'N/A', LTRIM(RTRIM(IN_pay_to_code)) )
-	IFF(IN_pay_to_code IS NULL 
-		OR LENGTH(LTRIM(RTRIM(IN_pay_to_code
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(IN_pay_to_code
-			)
-		)
+	IFF(
+	    IN_pay_to_code IS NULL OR LENGTH(LTRIM(RTRIM(IN_pay_to_code))) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_pay_to_code))
 	) AS pay_to_code,
 	payee_note,
 	pay_ind,
 	pay_type_code AS IN_pay_type_code,
 	-- *INF*: IIF(ISNULL(IN_pay_type_code) OR LENGTH(LTRIM(RTRIM(IN_pay_type_code))) = 0, 'N/A', LTRIM(RTRIM(IN_pay_type_code)) )
-	IFF(IN_pay_type_code IS NULL 
-		OR LENGTH(LTRIM(RTRIM(IN_pay_type_code
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(IN_pay_type_code
-			)
-		)
+	IFF(
+	    IN_pay_type_code IS NULL OR LENGTH(LTRIM(RTRIM(IN_pay_type_code))) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_pay_type_code))
 	) AS pay_type_code,
 	pay_entry_oper_id,
 	pay_entry_oper_role_code AS IN_pay_entry_oper_role_code,
 	-- *INF*: IIF(ISNULL(IN_pay_entry_oper_role_code) OR LENGTH(LTRIM(RTRIM(IN_pay_entry_oper_role_code))) = 0, 'N/A', LTRIM(RTRIM(IN_pay_entry_oper_role_code)) )
-	IFF(IN_pay_entry_oper_role_code IS NULL 
-		OR LENGTH(LTRIM(RTRIM(IN_pay_entry_oper_role_code
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(IN_pay_entry_oper_role_code
-			)
-		)
+	IFF(
+	    IN_pay_entry_oper_role_code IS NULL OR LENGTH(LTRIM(RTRIM(IN_pay_entry_oper_role_code))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(IN_pay_entry_oper_role_code))
 	) AS pay_entry_oper_role_code,
 	pay_disbursement_date,
 	pay_disbursement_status,
@@ -171,41 +154,23 @@ EXP_get_values AS (
 	new_draft_num,
 	payee_phrase_code AS IN_payee_phrase_code,
 	-- *INF*: IIF(ISNULL(IN_payee_phrase_code) OR LENGTH(LTRIM(RTRIM(IN_payee_phrase_code))) = 0, 'N/A', LTRIM(RTRIM(IN_payee_phrase_code)) )
-	IFF(IN_payee_phrase_code IS NULL 
-		OR LENGTH(LTRIM(RTRIM(IN_payee_phrase_code
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(IN_payee_phrase_code
-			)
-		)
+	IFF(
+	    IN_payee_phrase_code IS NULL OR LENGTH(LTRIM(RTRIM(IN_payee_phrase_code))) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_payee_phrase_code))
 	) AS payee_phrase_code,
 	pay_to_the_order_of_name,
 	memo_phrase_code AS IN_memo_phrase_code,
 	-- *INF*: IIF(ISNULL(IN_memo_phrase_code) OR LENGTH(LTRIM(RTRIM(IN_memo_phrase_code))) = 0, 'N/A', LTRIM(RTRIM(IN_memo_phrase_code)) )
-	IFF(IN_memo_phrase_code IS NULL 
-		OR LENGTH(LTRIM(RTRIM(IN_memo_phrase_code
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(IN_memo_phrase_code
-			)
-		)
+	IFF(
+	    IN_memo_phrase_code IS NULL OR LENGTH(LTRIM(RTRIM(IN_memo_phrase_code))) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_memo_phrase_code))
 	) AS memo_phrase_code,
 	memo_phrase_comment,
 	mail_to_code AS IN_mail_to_code,
 	-- *INF*: IIF(ISNULL(IN_mail_to_code) OR LENGTH(LTRIM(RTRIM(IN_mail_to_code))) = 0, 'N/A', LTRIM(RTRIM(IN_mail_to_code)) )
-	IFF(IN_mail_to_code IS NULL 
-		OR LENGTH(LTRIM(RTRIM(IN_mail_to_code
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(IN_mail_to_code
-			)
-		)
+	IFF(
+	    IN_mail_to_code IS NULL OR LENGTH(LTRIM(RTRIM(IN_mail_to_code))) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_mail_to_code))
 	) AS mail_to_code,
 	mail_to_name,
 	mail_to_addr,
@@ -221,10 +186,11 @@ EXP_get_values AS (
 	-- )
 	-- 
 	-- -- was IIF(source_sys_id = 'EXCEED', 'P', 'N/A')
-	DECODE(source_sys_id,
-		'EXCEED', 'P',
-		'DCT', 'P',
-		'N/A'
+	DECODE(
+	    source_sys_id,
+	    'EXCEED', 'P',
+	    'DCT', 'P',
+	    'N/A'
 	) AS v_payee_type,
 	v_payee_type AS payee_type,
 	prim_payee_name,
@@ -239,10 +205,7 @@ EXP_get_values AS (
 	-- *INF*: iif(isnull(claim_party_role_code)
 	-- ,'N/A'
 	-- ,claim_party_role_code)
-	IFF(claim_party_role_code IS NULL,
-		'N/A',
-		claim_party_role_code
-	) AS o_claim_party_role_code,
+	IFF(claim_party_role_code IS NULL, 'N/A', claim_party_role_code) AS o_claim_party_role_code,
 	claim_party_addr,
 	claim_party_city,
 	claim_party_county,
@@ -252,10 +215,7 @@ EXP_get_values AS (
 	tax_ssn_id,
 	tax_fed_id,
 	-- *INF*: IIF(tax_ssn_id = 'N/A',tax_fed_id,tax_ssn_id)
-	IFF(tax_ssn_id = 'N/A',
-		tax_fed_id,
-		tax_ssn_id
-	) AS Tax_id,
+	IFF(tax_ssn_id = 'N/A', tax_fed_id, tax_ssn_id) AS Tax_id,
 	eff_from_date2,
 	claim_party_occurrence_pay_id,
 	payee_type AS payee_type1,
@@ -421,35 +381,25 @@ EXP_get_descriptions AS (
 	EXP_get_values.pay_to_code,
 	LKP_sup_pay_to_code.pay_to_code_descript AS IN_pay_to_code_descript,
 	-- *INF*: IIF(ISNULL(IN_pay_to_code_descript), 'N/A', IN_pay_to_code_descript)
-	IFF(IN_pay_to_code_descript IS NULL,
-		'N/A',
-		IN_pay_to_code_descript
-	) AS pay_to_code_descript,
+	IFF(IN_pay_to_code_descript IS NULL, 'N/A', IN_pay_to_code_descript) AS pay_to_code_descript,
 	EXP_get_values.payee_note,
 	EXP_get_values.pay_ind,
 	EXP_get_values.pay_type_code,
 	LKP_sup_claim_payment_type_code.pay_type_code_descript AS IN_pay_type_code_descript,
 	-- *INF*: IIF(ISNULL(IN_pay_type_code_descript), 'N/A', IN_pay_type_code_descript)
-	IFF(IN_pay_type_code_descript IS NULL,
-		'N/A',
-		IN_pay_type_code_descript
-	) AS pay_type_code_descript,
+	IFF(IN_pay_type_code_descript IS NULL, 'N/A', IN_pay_type_code_descript) AS pay_type_code_descript,
 	EXP_get_values.pay_entry_oper_id,
 	EXP_get_values.pay_entry_oper_role_code,
 	LKP_sup_claim_payment_entry_operator_role_code.pay_entry_oper_role_code_descript AS IN_pay_entry_oper_role_code_descript,
 	-- *INF*: IIF(ISNULL(IN_pay_entry_oper_role_code_descript), 'N/A', IN_pay_entry_oper_role_code_descript)
-	IFF(IN_pay_entry_oper_role_code_descript IS NULL,
-		'N/A',
-		IN_pay_entry_oper_role_code_descript
+	IFF(
+	    IN_pay_entry_oper_role_code_descript IS NULL, 'N/A', IN_pay_entry_oper_role_code_descript
 	) AS pay_entry_oper_role_code_descript,
 	EXP_get_values.pay_disbursement_date,
 	EXP_get_values.pay_disbursement_status,
 	LKP_Pay_disbursement_status_description.pay_disbursement_status_descript,
 	-- *INF*: iif(isnull(pay_disbursement_status_descript),'N/A',pay_disbursement_status_descript)
-	IFF(pay_disbursement_status_descript IS NULL,
-		'N/A',
-		pay_disbursement_status_descript
-	) AS o_pay_disbursement_status_descript,
+	IFF(pay_disbursement_status_descript IS NULL, 'N/A', pay_disbursement_status_descript) AS o_pay_disbursement_status_descript,
 	EXP_get_values.pay_disbursement_loc_code,
 	EXP_get_values.reported_to_irs_ind,
 	EXP_get_values.pay_voided_date,
@@ -459,26 +409,17 @@ EXP_get_descriptions AS (
 	EXP_get_values.payee_phrase_code,
 	LKP_sup_claim_payee_phrase.payee_phrase_descript AS IN_payee_phrase_descript,
 	-- *INF*: IIF(ISNULL(IN_payee_phrase_descript), 'N/A', IN_payee_phrase_descript)
-	IFF(IN_payee_phrase_descript IS NULL,
-		'N/A',
-		IN_payee_phrase_descript
-	) AS payee_phrase_descript,
+	IFF(IN_payee_phrase_descript IS NULL, 'N/A', IN_payee_phrase_descript) AS payee_phrase_descript,
 	EXP_get_values.pay_to_the_order_of_name,
 	EXP_get_values.memo_phrase_code,
 	LKP_sup_claim_memo_phrase.memo_phrase_descript AS IN_memo_phrase_descript,
 	-- *INF*: IIF(ISNULL(IN_memo_phrase_descript), 'N/A', IN_memo_phrase_descript)
-	IFF(IN_memo_phrase_descript IS NULL,
-		'N/A',
-		IN_memo_phrase_descript
-	) AS memo_phrase_descript,
+	IFF(IN_memo_phrase_descript IS NULL, 'N/A', IN_memo_phrase_descript) AS memo_phrase_descript,
 	EXP_get_values.memo_phrase_comment,
 	EXP_get_values.mail_to_code,
 	LKP_sup_claim_mail_to_code.mail_to_code_descript AS IN_mail_to_code_descript,
 	-- *INF*: IIF(ISNULL(IN_mail_to_code_descript), 'N/A', IN_mail_to_code_descript)
-	IFF(IN_mail_to_code_descript IS NULL,
-		'N/A',
-		IN_mail_to_code_descript
-	) AS mail_to_code_descript,
+	IFF(IN_mail_to_code_descript IS NULL, 'N/A', IN_mail_to_code_descript) AS mail_to_code_descript,
 	EXP_get_values.mail_to_name,
 	EXP_get_values.mail_to_addr,
 	EXP_get_values.mail_to_city,
@@ -491,8 +432,7 @@ EXP_get_descriptions AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	EXP_get_values.eff_from_date2 AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	EXP_get_values.prim_payee_name,
@@ -507,10 +447,7 @@ EXP_get_descriptions AS (
 	-- *INF*: iif(isnull(claim_party_role_descript)
 	-- ,'N/A'
 	-- ,claim_party_role_descript)
-	IFF(claim_party_role_descript IS NULL,
-		'N/A',
-		claim_party_role_descript
-	) AS claim_party_role_descript_out,
+	IFF(claim_party_role_descript IS NULL, 'N/A', claim_party_role_descript) AS claim_party_role_descript_out,
 	EXP_get_values.claim_party_addr,
 	EXP_get_values.claim_party_city,
 	EXP_get_values.claim_party_county,
@@ -520,12 +457,10 @@ EXP_get_descriptions AS (
 	EXP_get_values.Tax_id AS tax_ssn_id,
 	LKP_sup_payment_system.payment_system AS in_payment_system,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_payment_system)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_payment_system
-	) AS o_payment_system,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_payment_system) AS o_payment_system,
 	LKP_sup_payment_method.payment_method AS in_payment_method,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_payment_method)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_payment_method
-	) AS o_payment_method,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_payment_method) AS o_payment_method,
 	EXP_get_values.approval_status,
 	EXP_get_values.approval_by_user_id,
 	EXP_get_values.approval_date,
@@ -534,14 +469,10 @@ EXP_get_descriptions AS (
 	EXP_get_values.payee_category,
 	LKP_sup_claim_payment_workflow.payment_workflow AS in_payment_workflow,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_payment_workflow)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_payment_workflow
-	) AS o_payment_workflow,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_payment_workflow) AS o_payment_workflow,
 	EXP_get_values.attached_document_count,
 	-- *INF*: iif(isnull(attached_document_count),0,attached_document_count)
-	IFF(attached_document_count IS NULL,
-		0,
-		attached_document_count
-	) AS o_attached_document_count
+	IFF(attached_document_count IS NULL, 0, attached_document_count) AS o_attached_document_count
 	FROM EXP_get_values
 	LEFT JOIN LKP_Pay_disbursement_status_description
 	ON LKP_Pay_disbursement_status_description.pay_disbursement_status = EXP_get_values.pay_disbursement_status

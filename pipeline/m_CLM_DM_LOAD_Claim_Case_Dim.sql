@@ -502,36 +502,31 @@ EXP_Default AS (
 	-- *INF*: iif(isnull(suit_status_code)
 	-- ,'N/A'
 	-- ,suit_status_code)
-	IFF(suit_status_code IS NULL,
-		'N/A',
-		suit_status_code
-	) AS v_suit_status_code,
+	IFF(suit_status_code IS NULL, 'N/A', suit_status_code) AS v_suit_status_code,
 	v_suit_status_code AS suit_status_code_out,
 	-- *INF*: iif(isnull(:LKP.LKP_CLAIM_SUIT_STATUS_CODE(v_suit_status_code))
 	-- ,'N/A'
 	-- ,:LKP.LKP_CLAIM_SUIT_STATUS_CODE(v_suit_status_code)
 	-- )
-	IFF(LKP_CLAIM_SUIT_STATUS_CODE_v_suit_status_code.suit_status_code_descript IS NULL,
-		'N/A',
-		LKP_CLAIM_SUIT_STATUS_CODE_v_suit_status_code.suit_status_code_descript
+	IFF(
+	    LKP_CLAIM_SUIT_STATUS_CODE_v_suit_status_code.suit_status_code_descript IS NULL, 'N/A',
+	    LKP_CLAIM_SUIT_STATUS_CODE_v_suit_status_code.suit_status_code_descript
 	) AS suit_status_code_desc,
 	suit_denial_date,
 	prim_litigation_handler_role_code,
 	-- *INF*: iif(isnull(prim_litigation_handler_role_code)
 	-- ,'N/A'
 	-- ,prim_litigation_handler_role_code)
-	IFF(prim_litigation_handler_role_code IS NULL,
-		'N/A',
-		prim_litigation_handler_role_code
-	) AS v_prim_litigation_handler_role_code,
+	IFF(prim_litigation_handler_role_code IS NULL, 'N/A', prim_litigation_handler_role_code) AS v_prim_litigation_handler_role_code,
 	v_prim_litigation_handler_role_code AS prim_litigation_handler_role_code_out,
 	-- *INF*: iif(isnull(:LKP.LKP_PRIM_LITIGATION_HANDLER_ROLE_CODE(v_prim_litigation_handler_role_code))
 	-- ,'N/A'
 	-- ,:LKP.LKP_PRIM_LITIGATION_HANDLER_ROLE_CODE(v_prim_litigation_handler_role_code)
 	-- )
-	IFF(LKP_PRIM_LITIGATION_HANDLER_ROLE_CODE_v_prim_litigation_handler_role_code.prim_litigation_role_code_descript IS NULL,
-		'N/A',
-		LKP_PRIM_LITIGATION_HANDLER_ROLE_CODE_v_prim_litigation_handler_role_code.prim_litigation_role_code_descript
+	IFF(
+	    LKP_PRIM_LITIGATION_HANDLER_ROLE_CODE_v_prim_litigation_handler_role_code.prim_litigation_role_code_descript IS NULL,
+	    'N/A',
+	    LKP_PRIM_LITIGATION_HANDLER_ROLE_CODE_v_prim_litigation_handler_role_code.prim_litigation_role_code_descript
 	) AS prim_litigation_handler_role_code_desc,
 	suit_open_date,
 	suit_close_date,
@@ -546,136 +541,121 @@ EXP_Default AS (
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	sysdate AS created_date,
 	sysdate AS modified_date,
 	claim_party_id AS ext_lit_pk_id,
 	-- *INF*: iif((v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
 	-- ext_lit_pk_id,-1)
-	IFF(( v_prim_litigation_handler_role_code = 'REG' 
-			OR v_prim_litigation_handler_role_code = 'ARB' 
-		),
-		ext_lit_pk_id,
-		- 1
+	IFF(
+	    (v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
+	    ext_lit_pk_id,
+	    - 1
 	) AS o_ext_lit_pk_id,
 	claim_party_ak_id AS ext_lit_ak_id,
 	-- *INF*: iif((v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
 	-- ext_lit_ak_id,-1)
-	IFF(( v_prim_litigation_handler_role_code = 'REG' 
-			OR v_prim_litigation_handler_role_code = 'ARB' 
-		),
-		ext_lit_ak_id,
-		- 1
+	IFF(
+	    (v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
+	    ext_lit_ak_id,
+	    - 1
 	) AS o_ext_lit_ak_id,
 	claim_party_full_name AS ext_lit_claim_party_full_name,
 	-- *INF*: iif((v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
 	-- ext_lit_claim_party_full_name,'N/A')
 	-- 
-	IFF(( v_prim_litigation_handler_role_code = 'REG' 
-			OR v_prim_litigation_handler_role_code = 'ARB' 
-		),
-		ext_lit_claim_party_full_name,
-		'N/A'
+	IFF(
+	    (v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
+	    ext_lit_claim_party_full_name,
+	    'N/A'
 	) AS o_ext_lit_claim_party_full_name,
 	claim_party_first_name AS ext_lit_claim_party_first_name,
 	-- *INF*: iif((v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
 	-- ext_lit_claim_party_first_name,'N/A')
-	IFF(( v_prim_litigation_handler_role_code = 'REG' 
-			OR v_prim_litigation_handler_role_code = 'ARB' 
-		),
-		ext_lit_claim_party_first_name,
-		'N/A'
+	IFF(
+	    (v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
+	    ext_lit_claim_party_first_name,
+	    'N/A'
 	) AS o_ext_lit_claim_party_first_name,
 	claim_party_last_name AS ext_lit_claim_party_last_name,
 	-- *INF*: iif((v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
 	-- wppp_claim_party_last_name,'N/A')
-	IFF(( v_prim_litigation_handler_role_code = 'REG' 
-			OR v_prim_litigation_handler_role_code = 'ARB' 
-		),
-		wppp_claim_party_last_name,
-		'N/A'
+	IFF(
+	    (v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
+	    wppp_claim_party_last_name,
+	    'N/A'
 	) AS o_ext_lit_claim_party_last_name,
 	claim_party_mid_name AS ext_lit_claim_party_mid_name,
 	-- *INF*: iif((v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
 	-- ext_lit_claim_party_mid_name,'N/A')
-	IFF(( v_prim_litigation_handler_role_code = 'REG' 
-			OR v_prim_litigation_handler_role_code = 'ARB' 
-		),
-		ext_lit_claim_party_mid_name,
-		'N/A'
+	IFF(
+	    (v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
+	    ext_lit_claim_party_mid_name,
+	    'N/A'
 	) AS o_ext_lit_claim_party_mid_name,
 	claim_party_name_prfx AS ext_lit_claim_party_name_prfx,
 	-- *INF*: iif((v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
 	-- ext_lit_claim_party_name_prfx,'N/A')
-	IFF(( v_prim_litigation_handler_role_code = 'REG' 
-			OR v_prim_litigation_handler_role_code = 'ARB' 
-		),
-		ext_lit_claim_party_name_prfx,
-		'N/A'
+	IFF(
+	    (v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
+	    ext_lit_claim_party_name_prfx,
+	    'N/A'
 	) AS o_ext_lit_claim_party_name_prfx,
 	claim_party_name_sfx AS ext_lit_claim_party_name_sfx,
 	-- *INF*: iif((v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
 	-- ext_lit_claim_party_name_sfx,'N/A')
-	IFF(( v_prim_litigation_handler_role_code = 'REG' 
-			OR v_prim_litigation_handler_role_code = 'ARB' 
-		),
-		ext_lit_claim_party_name_sfx,
-		'N/A'
+	IFF(
+	    (v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
+	    ext_lit_claim_party_name_sfx,
+	    'N/A'
 	) AS o_ext_lit_claim_party_name_sfx,
 	claim_party_addr AS ext_lit_claim_party_addr,
 	-- *INF*: iif((v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
 	-- ext_lit_claim_party_addr,'N/A')
-	IFF(( v_prim_litigation_handler_role_code = 'REG' 
-			OR v_prim_litigation_handler_role_code = 'ARB' 
-		),
-		ext_lit_claim_party_addr,
-		'N/A'
+	IFF(
+	    (v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
+	    ext_lit_claim_party_addr,
+	    'N/A'
 	) AS o_ext_lit_claim_party_addr,
 	claim_party_city AS ext_lit_claim_party_city,
 	-- *INF*: iif((v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
 	-- ext_lit_claim_party_city,'N/A')
-	IFF(( v_prim_litigation_handler_role_code = 'REG' 
-			OR v_prim_litigation_handler_role_code = 'ARB' 
-		),
-		ext_lit_claim_party_city,
-		'N/A'
+	IFF(
+	    (v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
+	    ext_lit_claim_party_city,
+	    'N/A'
 	) AS o_ext_lit_claim_party_city,
 	claim_party_county AS ext_lit_claim_party_county,
 	-- *INF*: iif((v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
 	-- ext_lit_claim_party_county,'N/A')
-	IFF(( v_prim_litigation_handler_role_code = 'REG' 
-			OR v_prim_litigation_handler_role_code = 'ARB' 
-		),
-		ext_lit_claim_party_county,
-		'N/A'
+	IFF(
+	    (v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
+	    ext_lit_claim_party_county,
+	    'N/A'
 	) AS o_ext_lit_claim_party_county,
 	claim_party_state AS ext_lit_claim_party_state,
 	-- *INF*: iif((v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
 	-- ext_lit_claim_party_state,'N/A')
-	IFF(( v_prim_litigation_handler_role_code = 'REG' 
-			OR v_prim_litigation_handler_role_code = 'ARB' 
-		),
-		ext_lit_claim_party_state,
-		'N/A'
+	IFF(
+	    (v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
+	    ext_lit_claim_party_state,
+	    'N/A'
 	) AS o_ext_lit_claim_party_state,
 	claim_party_zip AS ext_lit_claim_party_zip,
 	-- *INF*: iif((v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
 	-- ext_lit_claim_party_zip,'N/A')
-	IFF(( v_prim_litigation_handler_role_code = 'REG' 
-			OR v_prim_litigation_handler_role_code = 'ARB' 
-		),
-		ext_lit_claim_party_zip,
-		'N/A'
+	IFF(
+	    (v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
+	    ext_lit_claim_party_zip,
+	    'N/A'
 	) AS o_ext_lit_claim_party_zip,
 	addr_type AS ext_lit_addr_type,
 	-- *INF*: iif((v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
 	-- ext_lit_addr_type,'N/A')
-	IFF(( v_prim_litigation_handler_role_code = 'REG' 
-			OR v_prim_litigation_handler_role_code = 'ARB' 
-		),
-		ext_lit_addr_type,
-		'N/A'
+	IFF(
+	    (v_prim_litigation_handler_role_code = 'REG' OR v_prim_litigation_handler_role_code = 'ARB'),
+	    ext_lit_addr_type,
+	    'N/A'
 	) AS o_ext_lit_addr_type,
 	claim_party_id1 AS def_claim_party_id,
 	claim_party_ak_id2 AS def_claim_party_ak_id,
@@ -696,59 +676,35 @@ EXP_Default AS (
 	-- *INF*: iif(isnull(def_claim_party_id)
 	-- ,code_claim_party_id
 	-- ,def_claim_party_id)
-	IFF(def_claim_party_id IS NULL,
-		code_claim_party_id,
-		def_claim_party_id
-	) AS o_defd_claim_party_id,
+	IFF(def_claim_party_id IS NULL, code_claim_party_id, def_claim_party_id) AS o_defd_claim_party_id,
 	-- *INF*: iif(isnull(def_claim_party_id)
 	-- ,code_claim_party_ak_id
 	-- ,def_claim_party_ak_id)
-	IFF(def_claim_party_id IS NULL,
-		code_claim_party_ak_id,
-		def_claim_party_ak_id
-	) AS o_defd_claim_party_ak_id,
+	IFF(def_claim_party_id IS NULL, code_claim_party_ak_id, def_claim_party_ak_id) AS o_defd_claim_party_ak_id,
 	-- *INF*: iif(isnull(def_claim_party_id)
 	-- ,code_claim_party_full_name2
 	-- ,defd_claim_party_full_name1)
-	IFF(def_claim_party_id IS NULL,
-		code_claim_party_full_name2,
-		defd_claim_party_full_name1
-	) AS o_defd_claim_party_full_Name,
+	IFF(def_claim_party_id IS NULL, code_claim_party_full_name2, defd_claim_party_full_name1) AS o_defd_claim_party_full_Name,
 	-- *INF*: iif(isnull(def_claim_party_id)
 	-- ,code_claim_party_first_name2
 	-- ,defd_claim_party_first_name1)
-	IFF(def_claim_party_id IS NULL,
-		code_claim_party_first_name2,
-		defd_claim_party_first_name1
-	) AS o_defd_claim_party_first_name,
+	IFF(def_claim_party_id IS NULL, code_claim_party_first_name2, defd_claim_party_first_name1) AS o_defd_claim_party_first_name,
 	-- *INF*: iif(isnull(def_claim_party_id)
 	-- ,code_claim_party_last_name2
 	-- ,defd_claim_party_last_name1)
-	IFF(def_claim_party_id IS NULL,
-		code_claim_party_last_name2,
-		defd_claim_party_last_name1
-	) AS o_defd_claim_party_last_name,
+	IFF(def_claim_party_id IS NULL, code_claim_party_last_name2, defd_claim_party_last_name1) AS o_defd_claim_party_last_name,
 	-- *INF*: iif(isnull(def_claim_party_id)
 	-- ,code_claim_party_mid_name2
 	-- ,defd_claim_party_mid_name1)
-	IFF(def_claim_party_id IS NULL,
-		code_claim_party_mid_name2,
-		defd_claim_party_mid_name1
-	) AS o_defd_claim_party_mid_name,
+	IFF(def_claim_party_id IS NULL, code_claim_party_mid_name2, defd_claim_party_mid_name1) AS o_defd_claim_party_mid_name,
 	-- *INF*: iif(isnull(def_claim_party_id)
 	-- ,code_claim_party_name_prfx2
 	-- ,defd_claim_party_name_prfx1)
-	IFF(def_claim_party_id IS NULL,
-		code_claim_party_name_prfx2,
-		defd_claim_party_name_prfx1
-	) AS o_defd_claim_party_name_prfx,
+	IFF(def_claim_party_id IS NULL, code_claim_party_name_prfx2, defd_claim_party_name_prfx1) AS o_defd_claim_party_name_prfx,
 	-- *INF*: iif(isnull(def_claim_party_id)
 	-- ,code_claim_party_name_sfx2
 	-- ,defd_claim_party_name_sfx1)
-	IFF(def_claim_party_id IS NULL,
-		code_claim_party_name_sfx2,
-		defd_claim_party_name_sfx1
-	) AS o_defd_claim_party_name_sfx,
+	IFF(def_claim_party_id IS NULL, code_claim_party_name_sfx2, defd_claim_party_name_sfx1) AS o_defd_claim_party_name_sfx,
 	claim_party_id5 AS wppp_claim_party_id,
 	claim_party_ak_id6 AS wppp_claim_party_ak_id,
 	claim_party_full_name5 AS wppp_claim_party_full_name,
@@ -780,12 +736,11 @@ EXP_Default AS (
 	-- 			,plat_claim_party_id)
 	--    )
 	-- 
-	IFF(wppp_claim_party_id IS NOT NULL,
-		wppp_claim_party_id,
-		IFF(plat_claim_party_id IS NULL,
-			iplt_claim_party_id,
-			plat_claim_party_id
-		)
+	IFF(
+	    wppp_claim_party_id IS NOT NULL, wppp_claim_party_id,
+	    IFF(
+	        plat_claim_party_id IS NULL, iplt_claim_party_id, plat_claim_party_id
+	    )
 	) AS o_plat_claim_party_id,
 	-- *INF*: iif(not isnull(wppp_claim_party_id)
 	-- ,wppp_claim_party_ak_id
@@ -793,12 +748,11 @@ EXP_Default AS (
 	-- ,iplt_claim_party_ak_id
 	-- ,plat_claim_party_ak_id)
 	-- )
-	IFF(wppp_claim_party_id IS NOT NULL,
-		wppp_claim_party_ak_id,
-		IFF(plat_claim_party_id IS NULL,
-			iplt_claim_party_ak_id,
-			plat_claim_party_ak_id
-		)
+	IFF(
+	    wppp_claim_party_id IS NOT NULL, wppp_claim_party_ak_id,
+	    IFF(
+	        plat_claim_party_id IS NULL, iplt_claim_party_ak_id, plat_claim_party_ak_id
+	    )
 	) AS o_plat_claim_party_ak_id,
 	-- *INF*: iif(not isnull(wppp_claim_party_id)
 	-- ,wppp_claim_party_full_name
@@ -806,12 +760,12 @@ EXP_Default AS (
 	-- ,iplt_claim_party_full_name4
 	-- ,plat_claim_party_full_name3)
 	-- )
-	IFF(wppp_claim_party_id IS NOT NULL,
-		wppp_claim_party_full_name,
-		IFF(plat_claim_party_id IS NULL,
-			iplt_claim_party_full_name4,
-			plat_claim_party_full_name3
-		)
+	IFF(
+	    wppp_claim_party_id IS NOT NULL, wppp_claim_party_full_name,
+	    IFF(
+	        plat_claim_party_id IS NULL, iplt_claim_party_full_name4,
+	        plat_claim_party_full_name3
+	    )
 	) AS o_plat_claim_party_full_name,
 	-- *INF*: iif(not isnull(wppp_claim_party_id)
 	-- ,wppp_claim_party_first_name
@@ -819,12 +773,12 @@ EXP_Default AS (
 	-- ,iplt_claim_party_first_name4
 	-- ,plat_claim_party_first_name3)
 	-- )
-	IFF(wppp_claim_party_id IS NOT NULL,
-		wppp_claim_party_first_name,
-		IFF(plat_claim_party_id IS NULL,
-			iplt_claim_party_first_name4,
-			plat_claim_party_first_name3
-		)
+	IFF(
+	    wppp_claim_party_id IS NOT NULL, wppp_claim_party_first_name,
+	    IFF(
+	        plat_claim_party_id IS NULL, iplt_claim_party_first_name4,
+	        plat_claim_party_first_name3
+	    )
 	) AS o_plat_claim_party_first_name,
 	-- *INF*: iif(not isnull(wppp_claim_party_id)
 	-- ,wppp_claim_party_last_name
@@ -832,12 +786,12 @@ EXP_Default AS (
 	-- ,iplt_claim_party_last_name4
 	-- ,plat_claim_party_last_name3)
 	-- )
-	IFF(wppp_claim_party_id IS NOT NULL,
-		wppp_claim_party_last_name,
-		IFF(plat_claim_party_id IS NULL,
-			iplt_claim_party_last_name4,
-			plat_claim_party_last_name3
-		)
+	IFF(
+	    wppp_claim_party_id IS NOT NULL, wppp_claim_party_last_name,
+	    IFF(
+	        plat_claim_party_id IS NULL, iplt_claim_party_last_name4,
+	        plat_claim_party_last_name3
+	    )
 	) AS o_plat_claim_party_last_name,
 	-- *INF*: iif(not isnull(wppp_claim_party_id)
 	-- ,wppp_claim_party_mid_name
@@ -845,12 +799,11 @@ EXP_Default AS (
 	-- ,iplt_claim_party_mid_name4
 	-- ,plat_claim_party_mid_name3)
 	-- )
-	IFF(wppp_claim_party_id IS NOT NULL,
-		wppp_claim_party_mid_name,
-		IFF(plat_claim_party_id IS NULL,
-			iplt_claim_party_mid_name4,
-			plat_claim_party_mid_name3
-		)
+	IFF(
+	    wppp_claim_party_id IS NOT NULL, wppp_claim_party_mid_name,
+	    IFF(
+	        plat_claim_party_id IS NULL, iplt_claim_party_mid_name4, plat_claim_party_mid_name3
+	    )
 	) AS o_plat_claim_party_mid_name,
 	-- *INF*: iif(not isnull(wppp_claim_party_id)
 	-- ,wppp_claim_party_name_prfx
@@ -858,12 +811,12 @@ EXP_Default AS (
 	-- ,iplt_claim_party_name_prfx4
 	-- ,plat_claim_party_name_prfx3)
 	-- )
-	IFF(wppp_claim_party_id IS NOT NULL,
-		wppp_claim_party_name_prfx,
-		IFF(plat_claim_party_id IS NULL,
-			iplt_claim_party_name_prfx4,
-			plat_claim_party_name_prfx3
-		)
+	IFF(
+	    wppp_claim_party_id IS NOT NULL, wppp_claim_party_name_prfx,
+	    IFF(
+	        plat_claim_party_id IS NULL, iplt_claim_party_name_prfx4,
+	        plat_claim_party_name_prfx3
+	    )
 	) AS o_plat_claim_party_name_prfx,
 	-- *INF*: iif(not isnull(wppp_claim_party_id)
 	-- ,wppp_claim_party_name_sfx
@@ -871,12 +824,11 @@ EXP_Default AS (
 	-- ,iplt_claim_party_name_sfx4
 	-- ,plat_claim_party_name_sfx3)
 	-- )
-	IFF(wppp_claim_party_id IS NOT NULL,
-		wppp_claim_party_name_sfx,
-		IFF(plat_claim_party_id IS NULL,
-			iplt_claim_party_name_sfx4,
-			plat_claim_party_name_sfx3
-		)
+	IFF(
+	    wppp_claim_party_id IS NOT NULL, wppp_claim_party_name_sfx,
+	    IFF(
+	        plat_claim_party_id IS NULL, iplt_claim_party_name_sfx4, plat_claim_party_name_sfx3
+	    )
 	) AS o_plat_claim_party_name_sfx
 	FROM SQ_claim_case
 	LEFT JOIN LKP_CLAIM_SUIT_STATUS_CODE LKP_CLAIM_SUIT_STATUS_CODE_v_suit_status_code
@@ -1059,81 +1011,65 @@ Agg_Plaintiff_Data AS (
 	-- *INF*: iif(isnull(first(plat_claim_party_id,plat_claim_party_id != -1))
 	-- ,-1
 	-- ,first(plat_claim_party_id,plat_claim_party_id != -1))
-	IFF(first(plat_claim_party_id, plat_claim_party_id != - 1
-		) IS NULL,
-		- 1,
-		first(plat_claim_party_id, plat_claim_party_id != - 1
-		)
+	IFF(
+	    first(plat_claim_party_id, plat_claim_party_id != - 1) IS NULL, - 1,
+	    first(plat_claim_party_id, plat_claim_party_id != - 1)
 	) AS o_plat_claim_party_id,
 	o_plat_claim_party_ak_id AS plat_claim_party_ak_id,
 	-- *INF*: iif(isnull(first(plat_claim_party_ak_id,plat_claim_party_ak_id != -1))
 	-- ,-1
 	-- ,first(plat_claim_party_ak_id,plat_claim_party_ak_id != -1))
-	IFF(first(plat_claim_party_ak_id, plat_claim_party_ak_id != - 1
-		) IS NULL,
-		- 1,
-		first(plat_claim_party_ak_id, plat_claim_party_ak_id != - 1
-		)
+	IFF(
+	    first(plat_claim_party_ak_id, plat_claim_party_ak_id != - 1) IS NULL, - 1,
+	    first(plat_claim_party_ak_id, plat_claim_party_ak_id != - 1)
 	) AS o_plat_claim_party_ak_id,
 	o_plat_claim_party_full_name AS plat_claim_party_full_name,
 	-- *INF*: iif(isnull(first(plat_claim_party_full_name,plat_claim_party_full_name != 'N/A'))
 	-- ,'N/A'
 	-- ,first(plat_claim_party_full_name,plat_claim_party_full_name != 'N/A'))
-	IFF(first(plat_claim_party_full_name, plat_claim_party_full_name != 'N/A'
-		) IS NULL,
-		'N/A',
-		first(plat_claim_party_full_name, plat_claim_party_full_name != 'N/A'
-		)
+	IFF(
+	    first(plat_claim_party_full_name, plat_claim_party_full_name != 'N/A') IS NULL, 'N/A',
+	    first(plat_claim_party_full_name, plat_claim_party_full_name != 'N/A')
 	) AS o_plat_claim_party_full_name,
 	o_plat_claim_party_first_name AS plat_claim_party_first_name,
 	-- *INF*: iif(isnull(first(plat_claim_party_first_name,plat_claim_party_first_name  != 'N/A'))
 	-- ,'N/A'
 	-- ,first(plat_claim_party_first_name,plat_claim_party_first_name  != 'N/A'))
-	IFF(first(plat_claim_party_first_name, plat_claim_party_first_name != 'N/A'
-		) IS NULL,
-		'N/A',
-		first(plat_claim_party_first_name, plat_claim_party_first_name != 'N/A'
-		)
+	IFF(
+	    first(plat_claim_party_first_name, plat_claim_party_first_name != 'N/A') IS NULL, 'N/A',
+	    first(plat_claim_party_first_name, plat_claim_party_first_name != 'N/A')
 	) AS o_plat_claim_party_first_name,
 	o_plat_claim_party_last_name AS plat_claim_party_last_name,
 	-- *INF*: iif(isnull(first(plat_claim_party_last_name,plat_claim_party_last_name != 'N/A'))
 	-- ,'N/A'
 	-- ,first(plat_claim_party_last_name,plat_claim_party_last_name != 'N/A'))
-	IFF(first(plat_claim_party_last_name, plat_claim_party_last_name != 'N/A'
-		) IS NULL,
-		'N/A',
-		first(plat_claim_party_last_name, plat_claim_party_last_name != 'N/A'
-		)
+	IFF(
+	    first(plat_claim_party_last_name, plat_claim_party_last_name != 'N/A') IS NULL, 'N/A',
+	    first(plat_claim_party_last_name, plat_claim_party_last_name != 'N/A')
 	) AS o_plat_claim_party_last_name,
 	o_plat_claim_party_mid_name AS plat_claim_party_mid_name,
 	-- *INF*: iif(isnull(first(plat_claim_party_mid_name,plat_claim_party_mid_name  != 'N/A'))
 	-- ,'N/A'
 	-- ,first(plat_claim_party_mid_name,plat_claim_party_mid_name  != 'N/A'))
-	IFF(first(plat_claim_party_mid_name, plat_claim_party_mid_name != 'N/A'
-		) IS NULL,
-		'N/A',
-		first(plat_claim_party_mid_name, plat_claim_party_mid_name != 'N/A'
-		)
+	IFF(
+	    first(plat_claim_party_mid_name, plat_claim_party_mid_name != 'N/A') IS NULL, 'N/A',
+	    first(plat_claim_party_mid_name, plat_claim_party_mid_name != 'N/A')
 	) AS o_plat_claim_party_mid_name,
 	o_plat_claim_party_name_prfx AS plat_claim_party_name_prfx,
 	-- *INF*: iif(isnull(first(plat_claim_party_name_prfx,plat_claim_party_name_prfx != 'N/A'))
 	-- ,'N/A'
 	-- ,first(plat_claim_party_name_prfx,plat_claim_party_name_prfx != 'N/A'))
-	IFF(first(plat_claim_party_name_prfx, plat_claim_party_name_prfx != 'N/A'
-		) IS NULL,
-		'N/A',
-		first(plat_claim_party_name_prfx, plat_claim_party_name_prfx != 'N/A'
-		)
+	IFF(
+	    first(plat_claim_party_name_prfx, plat_claim_party_name_prfx != 'N/A') IS NULL, 'N/A',
+	    first(plat_claim_party_name_prfx, plat_claim_party_name_prfx != 'N/A')
 	) AS o_plat_claim_party_name_prfx,
 	o_plat_claim_party_name_sfx AS plat_claim_party_name_sfx,
 	-- *INF*: iif(isnull(first(plat_claim_party_name_sfx,plat_claim_party_name_sfx != 'N/A'))
 	-- ,'N/A'
 	-- ,first(plat_claim_party_name_sfx,plat_claim_party_name_sfx != 'N/A'))
-	IFF(first(plat_claim_party_name_sfx, plat_claim_party_name_sfx != 'N/A'
-		) IS NULL,
-		'N/A',
-		first(plat_claim_party_name_sfx, plat_claim_party_name_sfx != 'N/A'
-		)
+	IFF(
+	    first(plat_claim_party_name_sfx, plat_claim_party_name_sfx != 'N/A') IS NULL, 'N/A',
+	    first(plat_claim_party_name_sfx, plat_claim_party_name_sfx != 'N/A')
 	) AS o_plat_claim_party_name_sfx
 	FROM SRT_Sort_Plaintiffs
 	GROUP BY claim_case_ak_id, eff_from_date
@@ -1303,83 +1239,67 @@ Agg_Defendant_Data AS (
 	-- ,-1
 	-- ,first(defd_claim_party_id,defd_claim_party_id != -1)
 	-- )
-	IFF(first(defd_claim_party_id, defd_claim_party_id != - 1
-		) IS NULL,
-		- 1,
-		first(defd_claim_party_id, defd_claim_party_id != - 1
-		)
+	IFF(
+	    first(defd_claim_party_id, defd_claim_party_id != - 1) IS NULL, - 1,
+	    first(defd_claim_party_id, defd_claim_party_id != - 1)
 	) AS o_defd_claim_party_id,
 	o_defd_claim_party_ak_id AS defd_claim_party_ak_id,
 	-- *INF*: iif(isnull(first(defd_claim_party_ak_id, defd_claim_party_ak_id != -1))
 	-- ,-1
 	-- ,first(defd_claim_party_ak_id, defd_claim_party_ak_id != -1)
 	-- )
-	IFF(first(defd_claim_party_ak_id, defd_claim_party_ak_id != - 1
-		) IS NULL,
-		- 1,
-		first(defd_claim_party_ak_id, defd_claim_party_ak_id != - 1
-		)
+	IFF(
+	    first(defd_claim_party_ak_id, defd_claim_party_ak_id != - 1) IS NULL, - 1,
+	    first(defd_claim_party_ak_id, defd_claim_party_ak_id != - 1)
 	) AS o_defd_claim_party_ak_id,
 	o_defd_claim_party_full_Name AS defd_claim_party_full_Name,
 	-- *INF*: iif(isnull(first(defd_claim_party_full_Name, defd_claim_party_full_Name != 'N/A'))
 	-- ,'N/A'
 	-- ,first(defd_claim_party_full_Name, defd_claim_party_full_Name != 'N/A')
 	-- )
-	IFF(first(defd_claim_party_full_Name, defd_claim_party_full_Name != 'N/A'
-		) IS NULL,
-		'N/A',
-		first(defd_claim_party_full_Name, defd_claim_party_full_Name != 'N/A'
-		)
+	IFF(
+	    first(defd_claim_party_full_Name, defd_claim_party_full_Name != 'N/A') IS NULL, 'N/A',
+	    first(defd_claim_party_full_Name, defd_claim_party_full_Name != 'N/A')
 	) AS o_defd_claim_party_full_Name,
 	o_defd_claim_party_first_name AS defd_claim_party_first_name,
 	-- *INF*: iif(isnull(first(defd_claim_party_first_name,defd_claim_party_first_name != 'N/A'))
 	-- ,'N/A'
 	-- ,first(defd_claim_party_first_name,defd_claim_party_first_name != 'N/A'))
-	IFF(first(defd_claim_party_first_name, defd_claim_party_first_name != 'N/A'
-		) IS NULL,
-		'N/A',
-		first(defd_claim_party_first_name, defd_claim_party_first_name != 'N/A'
-		)
+	IFF(
+	    first(defd_claim_party_first_name, defd_claim_party_first_name != 'N/A') IS NULL, 'N/A',
+	    first(defd_claim_party_first_name, defd_claim_party_first_name != 'N/A')
 	) AS o_defd_claim_party_first_name,
 	o_defd_claim_party_last_name AS defd_claim_party_last_name,
 	-- *INF*: iif(isnull(first(defd_claim_party_last_name,defd_claim_party_last_name != 'N/A'))
 	-- ,'N/A'
 	-- ,first(defd_claim_party_last_name,defd_claim_party_last_name != 'N/A'))
-	IFF(first(defd_claim_party_last_name, defd_claim_party_last_name != 'N/A'
-		) IS NULL,
-		'N/A',
-		first(defd_claim_party_last_name, defd_claim_party_last_name != 'N/A'
-		)
+	IFF(
+	    first(defd_claim_party_last_name, defd_claim_party_last_name != 'N/A') IS NULL, 'N/A',
+	    first(defd_claim_party_last_name, defd_claim_party_last_name != 'N/A')
 	) AS o_defd_claim_party_last_name,
 	o_defd_claim_party_mid_name AS defd_claim_party_mid_name,
 	-- *INF*: iif(isnull(first(defd_claim_party_mid_name,defd_claim_party_mid_name != 'N/A'))
 	-- ,'N/A'
 	-- ,first(defd_claim_party_mid_name,defd_claim_party_mid_name != 'N/A'))
-	IFF(first(defd_claim_party_mid_name, defd_claim_party_mid_name != 'N/A'
-		) IS NULL,
-		'N/A',
-		first(defd_claim_party_mid_name, defd_claim_party_mid_name != 'N/A'
-		)
+	IFF(
+	    first(defd_claim_party_mid_name, defd_claim_party_mid_name != 'N/A') IS NULL, 'N/A',
+	    first(defd_claim_party_mid_name, defd_claim_party_mid_name != 'N/A')
 	) AS o_defd_claim_party_mid_name,
 	o_defd_claim_party_name_prfx AS defd_claim_party_name_prfx,
 	-- *INF*: iif(isnull(first(defd_claim_party_name_prfx,defd_claim_party_name_prfx != 'N/A'))
 	-- ,'N/A'
 	-- ,first(defd_claim_party_name_prfx,defd_claim_party_name_prfx != 'N/A'))
-	IFF(first(defd_claim_party_name_prfx, defd_claim_party_name_prfx != 'N/A'
-		) IS NULL,
-		'N/A',
-		first(defd_claim_party_name_prfx, defd_claim_party_name_prfx != 'N/A'
-		)
+	IFF(
+	    first(defd_claim_party_name_prfx, defd_claim_party_name_prfx != 'N/A') IS NULL, 'N/A',
+	    first(defd_claim_party_name_prfx, defd_claim_party_name_prfx != 'N/A')
 	) AS o_defd_claim_party_name_prfx,
 	o_defd_claim_party_name_sfx AS defd_claim_party_name_sfx,
 	-- *INF*: iif(isnull(first(defd_claim_party_name_sfx,defd_claim_party_name_sfx != 'N/A'))
 	-- ,'N/A'
 	-- ,first(defd_claim_party_name_sfx,defd_claim_party_name_sfx != 'N/A'))
-	IFF(first(defd_claim_party_name_sfx, defd_claim_party_name_sfx != 'N/A'
-		) IS NULL,
-		'N/A',
-		first(defd_claim_party_name_sfx, defd_claim_party_name_sfx != 'N/A'
-		)
+	IFF(
+	    first(defd_claim_party_name_sfx, defd_claim_party_name_sfx != 'N/A') IS NULL, 'N/A',
+	    first(defd_claim_party_name_sfx, defd_claim_party_name_sfx != 'N/A')
 	) AS o_defd_claim_party_name_sfx
 	FROM SRT_Sort_Defendants
 	GROUP BY claim_case_ak_id, eff_from_date
@@ -1552,10 +1472,7 @@ EXP_validate_lookup_values AS (
 	optn_text,
 	-- *INF*: IIF(ISNULL(optn_text),'N/A',optn_text)
 	-- 
-	IFF(optn_text IS NULL,
-		'N/A',
-		optn_text
-	) AS OUT_InjuredWorkerRepresentedFlag
+	IFF(optn_text IS NULL, 'N/A', optn_text) AS OUT_InjuredWorkerRepresentedFlag
 	FROM LKP_Question_Center_IsInjuredPartyRepresented_daily
 ),
 LKP_Target AS (
@@ -1817,9 +1734,10 @@ EXP_Source AS (
 	-- 
 	-- 
 	-- 
-	DECODE(TRUE,
-		edw_claim_case_ak_id = v_PREV_ROW_edw_claim_case_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    edw_claim_case_ak_id = v_PREV_ROW_edw_claim_case_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS o_eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

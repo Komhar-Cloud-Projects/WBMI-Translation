@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBCARiskStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBCARiskStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_CA_Risk AS (\n\tWITH cte_WBCARisk(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CA_RiskId, \r\n\tX.WB_CA_RiskId, \r\n\tX.SessionId, \r\n\tX.PurePremium, \r\n\tX.ApplyChargeTransportClients, \r\n\tX.ExtendedEmployeeCovMessage, \r\n\tX.SecondLevelCoverage, \r\n\tX.HaulingOperations, \r\n\tX.CustomEquipment, \r\n\tX.CustomEquipmentCost, \r\n\tX.TotalVehicleCost, \r\n\tX.CoverageType, \r\n\tX.RentalReimbursementSoftMessage, \r\n\tX.LoanLeaseSotMsg, \r\n\tX.SubjectToNoFaultMessage, \r\n\tX.GVWUC, \r\n\tX.DriverTrainingIndicator, \r\n\tX.LayUpCredit, \r\n\tX.LayUpCreditDays, \r\n\tX.NewVehicleIndicator, \r\n\tX.VINHasChangedIndicator \r\n\tFROM\r\n\tWB_CA_Risk X\r\n\tinner join\r\n\tcte_WBCARisk Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tCA_RiskId,\n\tWB_CA_RiskId,\n\tSessionId,\n\tPurePremium,\n\t-- *INF*: decode(LimitedLiability,'T',1,'F',0,NULL)\n\tdecode(\n\t    LimitedLiability,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS LimitedLiability_out,\n\t-- *INF*: decode(LossPayee,'T',1,'F',0,NULL)\n\tdecode(\n\t    LossPayee,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS LossPayee_out,\n\t-- *INF*: decode(ActualLossSustained,'T',1,'F',0,NULL)\n\tdecode(\n\t    ActualLossSustained,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS ActualLossSustained_out,\n\tApplyChargeTransportClients,\n\t-- *INF*: DECODE(ApplyChargeTransportClients,'T',1,'F',0,NULL)\n\tDECODE(\n\t    ApplyChargeTransportClients,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS ApplyChargeTransportClients_out,\n\tExtendedEmployeeCovMessage,\n\tSecondLevelCoverage,\n\t-- *INF*: DECODE(SecondLevelCoverage,'T',1,'F',0,NULL)\n\tDECODE(\n\t    SecondLevelCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS SecondLevelCoverage_out,\n\tHaulingOperations,\n\tCustomEquipment,\n\tCustomEquipmentCost,\n\tTotalVehicleCost,\n\tCoverageType,\n\tRentalReimbursementSoftMessage,\n\tLoanLeaseSotMsg,\n\tSubjectToNoFaultMessage,\n\tGVWUC,\n\tDriverTrainingIndicator,\n\t-- *INF*: decode(DriverTrainingIndicator,'T',1,'F',0,NULL)\n\tdecode(\n\t    DriverTrainingIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS DriverTrainingIndicator_out,\n\tLayUpCredit,\n\t-- *INF*: decode(LayUpCredit,'T',1,'F',0,NULL)\n\tdecode(\n\t    LayUpCredit,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS LayUpCredit_out,\n\tLayUpCreditDays,\n\tNewVehicleIndicator,\n\t-- *INF*: decode(NewVehicleIndicator,'T',1,'F',0,NULL)\n\tdecode(\n\t    NewVehicleIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS NewVehicleIndicator_out,\n\tVINHasChangedIndicator,\n\t-- *INF*: DECODE(VINHasChangedIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    VINHasChangedIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS VINHasChangedIndicator_out\n\tFROM SQ_WB_CA_Risk\n),\nWBCARiskStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCARiskStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCARiskStaging\n\t(ExtractDate, SourceSystemId, CA_RiskId, WB_CA_RiskId, SessionId, PurePremium, ApplyChargeTransportClients, ExtendedEmployeeCovMessage, SecondLevelCoverage, HaulingOperations, CustomEquipment, CustomEquipmentCost, TotalVehicleCost, CoverageType, RentalReimbursementSoftMessage, LoanLeaseSotMsg, SubjectToNoFaultMessage, GVWUC, DriverTrainingIndicator, LayUpCredit, LayUpCreditDays, NewVehicleIndicator, VINHasChangedIndicator)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCA_RISKID, \n\tWB_CA_RISKID, \n\tSESSIONID, \n\tPUREPREMIUM, \n\tApplyChargeTransportClients_out AS APPLYCHARGETRANSPORTCLIENTS, \n\tEXTENDEDEMPLOYEECOVMESSAGE, \n\tSecondLevelCoverage_out AS SECONDLEVELCOVERAGE, \n\tHAULINGOPERATIONS, \n\tCUSTOMEQUIPMENT, \n\tCUSTOMEQUIPMENTCOST, \n\tTOTALVEHICLECOST, \n\tCOVERAGETYPE, \n\tRENTALREIMBURSEMENTSOFTMESSAGE, \n\tLOANLEASESOTMSG, \n\tSUBJECTTONOFAULTMESSAGE, \n\tGVWUC, \n\tDriverTrainingIndicator_out AS DRIVERTRAININGINDICATOR, \n\tLayUpCredit_out AS LAYUPCREDIT, \n\tLAYUPCREDITDAYS, \n\tNewVehicleIndicator_out AS NEWVEHICLEINDICATOR, \n\tVINHasChangedIndicator_out AS VINHASCHANGEDINDICATOR\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

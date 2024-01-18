@@ -1,0 +1,76 @@
+WITH
+SQ_PifDept1553Stage AS (
+	SELECT
+		Pifdept1553StageId,
+		ExtractDate,
+		SourceSystemid,
+		PifSymbol,
+		PifPolicyNumber,
+		PifModule,
+		DECLPTId,
+		DECLPTLoc,
+		DECLPTFormNumber,
+		DECLPTSeqSameForm,
+		DECLPTSeq0098,
+		DECLPTNoOfPrecedBlkLines1,
+		DECLPTText1701,
+		DECLPTText71791,
+		DECLPTNoOfPrecedBlkLines2,
+		DECLPTText1702,
+		DECLPTText71792,
+		DECLPTPmsFutureUse,
+		DECLPTYr2000CustUse,
+		DECLPTDupKeySeqNo
+	FROM PifDept1553Stage
+),
+EXP_PifDept1553Stage AS (
+	SELECT
+	Pifdept1553StageId,
+	ExtractDate,
+	SourceSystemid,
+	PifSymbol,
+	PifPolicyNumber,
+	PifModule,
+	DECLPTId,
+	DECLPTLoc,
+	DECLPTFormNumber,
+	DECLPTSeqSameForm,
+	DECLPTSeq0098,
+	DECLPTNoOfPrecedBlkLines1,
+	DECLPTText1701,
+	DECLPTText71791,
+	DECLPTNoOfPrecedBlkLines2,
+	DECLPTText1702,
+	DECLPTText71792,
+	DECLPTPmsFutureUse,
+	DECLPTYr2000CustUse,
+	DECLPTDupKeySeqNo,
+	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_audit_id
+	FROM SQ_PifDept1553Stage
+),
+ArchPifDept1553Stage AS (
+	INSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchPifDept1553Stage
+	(ExtractDate, SourceSystemid, AuditId, PifSymbol, PifPolicyNumber, PifModule, DECLPTId, DECLPTLoc, DECLPTFormNumber, DECLPTSeqSameForm, DECLPTSeq0098, DECLPTNoOfPrecedBlkLines1, DECLPTText1701, DECLPTText71791, DECLPTNoOfPrecedBlkLines2, DECLPTText1702, DECLPTText71792, DECLPTPmsFutureUse, DECLPTYr2000CustUse, DECLPTDupKeySeqNo)
+	SELECT 
+	EXTRACTDATE, 
+	SOURCESYSTEMID, 
+	o_audit_id AS AUDITID, 
+	PIFSYMBOL, 
+	PIFPOLICYNUMBER, 
+	PIFMODULE, 
+	DECLPTID, 
+	DECLPTLOC, 
+	DECLPTFORMNUMBER, 
+	DECLPTSEQSAMEFORM, 
+	DECLPTSEQ0098, 
+	DECLPTNOOFPRECEDBLKLINES1, 
+	DECLPTTEXT1701, 
+	DECLPTTEXT71791, 
+	DECLPTNOOFPRECEDBLKLINES2, 
+	DECLPTTEXT1702, 
+	DECLPTTEXT71792, 
+	DECLPTPMSFUTUREUSE, 
+	DECLPTYR2000CUSTUSE, 
+	DECLPTDUPKEYSEQNO
+	FROM EXP_PifDept1553Stage
+),

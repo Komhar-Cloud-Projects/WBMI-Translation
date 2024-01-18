@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_FEED_Load_WCPOLS_21_Record",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Load_WCPOLS_21_Record",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WCPols00Record AS (\n\tSELECT\r\n\t\tWCTrackHistoryID,\r\n\t\tLinkData,\r\n\t     AuditId\r\n\tFROM dbo.WCPols00Record\r\n\tWHERE 1=1\r\n\tAND AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tORDER BY WCTrackHistoryID\n),\nSQ_WorkWCForms AS (\n\tSELECT\r\n\t\tST.WCTrackHistoryID\r\n\t\t,F.FormName\r\n\t\t,PT.Name\r\n\t\t,Pol.TransactionEffectiveDate\r\n\t\t,Lim.LimitValue\r\n\t\t,PD.Value\r\n\t    ,ROW_NUMBER() OVER(PARTITION BY ST.WCTrackHistoryID ORDER BY F.FormName DESC) AS EndorsementSeqNbr\r\n\t\r\n\tFROM dbo.WorkWCStateTerm ST\r\n\t\r\n\tINNER JOIN dbo.WorkWCForms F\r\n\t\tON ST.WCTrackHistoryID = F.WCTrackHistoryID\r\n\tAND F.FormName like 'WC000201%'\r\n\t\r\n\tINNER JOIN dbo.WorkWCParty PT\r\n\t\tON PT.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\t\tAND PT.PartyAssociationType = 'Account'\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicy Pol\r\n\t\tON Pol.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\r\n\tINNER JOIN dbo.WorkWCLimit Lim\r\n\t\tON Lim.WCTrackHistoryID=ST.WCTrackHistoryID\r\n\t\t\tAND Lim.LimitType='AdmiraltyIncreased'\r\n\t\t\tAND Lim.CoverageType = 'AdmiraltyIncreasedLimits'\r\n\t\r\n\tINNER JOIN DBO.WorkWCPolicyDetails PD\r\n\t\tON PD.WCTrackHistoryID=ST.WCTrackHistoryID\r\n\t\t\tAND PD.Attribute='MaritimeWorkDescription201A'\r\n\t\r\n\tWHERE 1 = 1\r\n\tAND ST.AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t@{pipeline().parameters.WHERE_CLAUSE_21}\r\n\t\r\n\tORDER BY ST.WCTrackHistoryID\n),\nJNR_21_Record AS (SELECT\n\tSQ_WCPols00Record.WCTrackHistoryID, \n\tSQ_WCPols00Record.LinkData, \n\tSQ_WCPols00Record.AuditId, \n\tSQ_WorkWCForms.WCTrackHistoryID AS WCTrackHistoryID1, \n\tSQ_WorkWCForms.FormName, \n\tSQ_WorkWCForms.Name, \n\tSQ_WorkWCForms.TransactionEffectiveDate, \n\tSQ_WorkWCForms.LimitValue, \n\tSQ_WorkWCForms.Value, \n\tSQ_WorkWCForms.EndorsementSeqNbr\n\tFROM SQ_WorkWCForms\n\tINNER JOIN SQ_WCPols00Record\n\tON SQ_WCPols00Record.WCTrackHistoryID = SQ_WorkWCForms.WCTrackHistoryID\n),\nmplt_Parse_FormNameField AS (WITH\n\tINPUT_FormName AS (\n\t\t\n\t),\n\tEXPTRANS AS (\n\t\tSELECT\n\t\tParsedNameOfForm,\n\t\tFormNameFromSource,\n\t\t-- *INF*: REVERSE(FormNameFromSource)\n\t\tREVERSE(FormNameFromSource) AS vReversedFromNameFromSource,\n\t\t-- *INF*: REVERSE(substr(vReversedFromNameFromSource,1,4))\n\t\tREVERSE(substr(vReversedFromNameFromSource, 1, 4)) AS vFormEdition,\n\t\t-- *INF*: DECODE(TRUE,\r\n\t\t-- substr(vReversedFromNameFromSource,5,1) >='A' and substr(vReversedFromNameFromSource,5,1) <='Z', substr(vReversedFromNameFromSource,5,1),\r\n\t\t-- ' '\r\n\t\t-- )\r\n\t\t-- \r\n\t\t-- -- check if within A and Z, if not then space\n\t\tDECODE(\n\t\t    TRUE,\n\t\t    substr(vReversedFromNameFromSource, 5, 1) >= 'A' and substr(vReversedFromNameFromSource, 5, 1) <= 'Z', substr(vReversedFromNameFromSource, 5, 1),\n\t\t    ' '\n\t\t) AS vBureauCode,\n\t\tvFormEdition AS oFormEdition,\n\t\tvBureauCode AS oBureauCode\n\t\tFROM INPUT_FormName\n\t),\n\tOUTPUT_FormName AS (\n\t\tSELECT\n\t\tParsedNameOfForm, \n\t\tFormNameFromSource, \n\t\toFormEdition AS FormEdition, \n\t\toBureauCode AS BureauCode\n\t\tFROM EXPTRANS\n\t),\n),\nEXP_21_Format_Output AS (\n\tSELECT\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\tJNR_21_Record.AuditId,\n\tJNR_21_Record.WCTrackHistoryID,\n\tJNR_21_Record.LinkData,\n\tJNR_21_Record.FormName,\n\t'21' AS o_RecordTypeCode,\n\t'WC000201' AS o_EndorsementNumber,\n\t-- *INF*: SUBSTR(FormName, Length(FormName)-4, 1)\n\tSUBSTR(FormName, Length(FormName) - 4, 1) AS v_BureauID,\n\t-- *INF*: IIF(v_BureauID >= 'A' and v_BureauID <= 'Z', v_BureauID,' ')\n\tIFF(v_BureauID >= 'A' and v_BureauID <= 'Z', v_BureauID, ' ') AS o_BureauVersionIdentifierEditionIdentifier,\n\t-- *INF*: SUBSTR(FormName, Length(FormName)-3, 4)\n\tSUBSTR(FormName, Length(FormName) - 3, 4) AS o_CarrierVersionIdentifier,\n\tmplt_Parse_FormNameField.BureauCode,\n\tmplt_Parse_FormNameField.FormEdition,\n\tJNR_21_Record.Name AS NameOfInsured,\n\tJNR_21_Record.TransactionEffectiveDate,\n\t-- *INF*: To_Char(TransactionEffectiveDate, 'YYMMDD')\n\tTo_Char(TransactionEffectiveDate, 'YYMMDD') AS o_EndorsementEffectiveDate,\n\tJNR_21_Record.LimitValue,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- IN(LTRIM(RTRIM(LimitValue)),'NoCoverage','No Coverage'),'',\r\n\t-- ISNULL(LimitValue),'',\r\n\t-- TO_CHAR(TO_INTEGER(LimitValue)*1000))\n\tDECODE(\n\t    TRUE,\n\t    LTRIM(RTRIM(LimitValue)) IN ('NoCoverage','No Coverage'), '',\n\t    LimitValue IS NULL, '',\n\t    TO_CHAR(CAST(LimitValue AS INTEGER) * 1000)\n\t) AS o_LimitValue,\n\tJNR_21_Record.Value,\n\t-- *INF*: IIF(ISNULL(Value),'',Value)\n\tIFF(Value IS NULL, '', Value) AS WorkDescription,\n\tJNR_21_Record.EndorsementSeqNbr\n\tFROM JNR_21_Record\n\t -- Manually join with mplt_Parse_FormNameField\n),\nWCPols21Record AS (\n\n\t------------ PRE SQL ----------\n\tDELETE\r\n\t  FROM dbo.WCPols21Record\r\n\t  WHERE 1=1\r\n\t  AND AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\n\t-------------------------------\n\n\n\tINSERT INTO WCPols21Record\n\t(ExtractDate, AuditId, WCTrackHistoryID, LinkData, RecordTypeCode, EndorsementNumber, BureauVersionIdentifierEditionIdentifier, CarrierVersionIdentifier, EmployerLiabilityLimitAmountMaritimeBodilyInjuryByAccidentAmount, EmployerLiabilityLimitAmountMaritimeBodilyInjuryByDiseaseAmount, WorkDescription, EndorsementSequenceNumber, NameOfInsured, EndorsementEffectiveDate)\n\tSELECT \n\tEXTRACTDATE, \n\tAUDITID, \n\tWCTRACKHISTORYID, \n\tLINKDATA, \n\to_RecordTypeCode AS RECORDTYPECODE, \n\to_EndorsementNumber AS ENDORSEMENTNUMBER, \n\tBureauCode AS BUREAUVERSIONIDENTIFIEREDITIONIDENTIFIER, \n\tFormEdition AS CARRIERVERSIONIDENTIFIER, \n\to_LimitValue AS EMPLOYERLIABILITYLIMITAMOUNTMARITIMEBODILYINJURYBYACCIDENTAMOUNT, \n\to_LimitValue AS EMPLOYERLIABILITYLIMITAMOUNTMARITIMEBODILYINJURYBYDISEASEAMOUNT, \n\tWORKDESCRIPTION, \n\tEndorsementSeqNbr AS ENDORSEMENTSEQUENCENUMBER, \n\tNAMEOFINSURED, \n\to_EndorsementEffectiveDate AS ENDORSEMENTEFFECTIVEDATE\n\tFROM EXP_21_Format_Output\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE_21": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

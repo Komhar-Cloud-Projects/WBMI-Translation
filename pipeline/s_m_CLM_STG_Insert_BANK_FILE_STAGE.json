@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_STG_Insert_BANK_FILE_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Insert_BANK_FILE_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Bank_file AS (\n\n-- TODO Manual --\n\n),\nEXP_bank_file AS (\n\tSELECT\n\tWS_TYPE AS ws_type,\n\tWS_BANK_NBR AS IN_ws_bank_nbr,\n\t'04' AS o_ws_bank_nbr,\n\tWS_ACCT_NBR AS IN_ws_acct_nbr,\n\t-- *INF*: IN_ws_acct_nbr\r\n\t-- \r\n\t-- --IIF(ws_type = 'D',IN_ws_acct_nbr,NULL)\n\tIN_ws_acct_nbr AS ws_acct_nbr,\n\tWS_TRANS_TYPE AS IN_ws_trans_type,\n\t-- *INF*: IIF(ws_type = 'D',IN_ws_trans_type,NULL)\n\tIFF(ws_type = 'D', IN_ws_trans_type, NULL) AS ws_trans_type,\n\tWS_CHECK_NBR AS IN_ws_check_nbr,\n\t-- *INF*: IIF(ws_type = 'D',IN_ws_check_nbr,NULL)\n\tIFF(ws_type = 'D', IN_ws_check_nbr, NULL) AS ws_check_nbr,\n\tWS_AMOUNT AS IN_ws_amount,\n\t-- *INF*: IIF(ws_type = 'D',   SUBSTR(IN_ws_amount,1,11)  || '.' ||\r\n\t-- SUBSTR(IN_ws_amount,12,2)  \r\n\t-- ,NULL)  \r\n\t-- \r\n\t-- \n\tIFF(ws_type = 'D', SUBSTR(IN_ws_amount, 1, 11) || '.' || SUBSTR(IN_ws_amount, 12, 2), NULL) AS v_ws_amount,\n\t-- *INF*: IIF(ws_type = 'D',TO_DECIMAL(v_ws_amount),NULL)\n\tIFF(ws_type = 'D', CAST(v_ws_amount AS FLOAT), NULL) AS ws_amount,\n\tWS_TRANS_CODE AS IN_ws_trans_code,\n\t-- *INF*: IIF(ws_type = 'D',IN_ws_trans_code,NULL)\n\tIFF(ws_type = 'D', IN_ws_trans_code, NULL) AS ws_trans_code,\n\tWS_TRANS_DATE AS IN_ws_trans_date,\n\t-- *INF*:  IIF(ws_type = 'D', TO_DATE(IN_ws_trans_date,'MMDDYY') ,NULL)  \n\tIFF(ws_type = 'D', TO_TIMESTAMP(IN_ws_trans_date, 'MMDDYY'), NULL) AS ws_trans_date,\n\tWS_CONTROL_NBR AS IN_ws_control_nbr,\n\t-- *INF*: IIF(ws_type = 'D',IN_ws_control_nbr,NULL)\n\tIFF(ws_type = 'D', IN_ws_control_nbr, NULL) AS ws_control_nbr,\n\tWS_TRANS_STATUS AS IN_ws_trans_status,\n\t-- *INF*: IIF(ws_type = 'D',IN_ws_trans_status,NULL)\n\tIFF(ws_type = 'D', IN_ws_trans_status, NULL) AS ws_trans_status,\n\t-- *INF*: IIF(ws_type = 'T',\r\n\t--  ws_type || \r\n\t--  IN_ws_bank_nbr || IN_ws_acct_nbr || IN_ws_trans_type || IN_ws_check_nbr || IN_ws_amount || IN_ws_trans_code || IN_ws_trans_date || IN_ws_control_nbr || IN_ws_trans_status || FILLER_1\r\n\t-- ,NULL)  \r\n\t-- \r\n\t-- \r\n\t-- \r\n\t-- \r\n\t--  \n\tIFF(\n\t    ws_type = 'T',\n\t    ws_type || IN_ws_bank_nbr || IN_ws_acct_nbr || IN_ws_trans_type || IN_ws_check_nbr || IN_ws_amount || IN_ws_trans_code || IN_ws_trans_date || IN_ws_control_nbr || IN_ws_trans_status || FILLER_1,\n\t    NULL\n\t) AS v_trailer_str,\n\t-- *INF*: IIF(ws_type = 'T',   SUBSTR(v_trailer_str,15,11)  || '.' ||\r\n\t-- SUBSTR(v_trailer_str,26,2)  \r\n\t-- ,NULL)  \r\n\t-- \r\n\t-- \r\n\t--  \r\n\t--   \n\tIFF(\n\t    ws_type = 'T', SUBSTR(v_trailer_str, 15, 11) || '.' || SUBSTR(v_trailer_str, 26, 2), NULL\n\t) AS v_ws_total_cr_amount_str,\n\t-- *INF*: IIF(ws_type = 'T', TO_DECIMAL(v_ws_total_cr_amount_str), NULL)\r\n\t-- \r\n\t-- \r\n\t-- \n\tIFF(ws_type = 'T', CAST(v_ws_total_cr_amount_str AS FLOAT), NULL) AS ws_total_cr_amount,\n\t-- *INF*: IIF(ws_type = 'T',  LTRIM(SUBSTR(v_trailer_str,  28,6 ) ,'0'),NULL)  \r\n\t-- \r\n\t-- \r\n\t--  \n\tIFF(ws_type = 'T', LTRIM(SUBSTR(v_trailer_str, 28, 6), '0'), NULL) AS v_ws_total_cr_count_str,\n\t-- *INF*: IIF(ws_type = 'T', TO_INTEGER(v_ws_total_cr_count_str),NULL)  \r\n\t-- \r\n\t-- \r\n\t-- \n\tIFF(ws_type = 'T', CAST(v_ws_total_cr_count_str AS INTEGER), NULL) AS ws_total_cr_count,\n\t-- *INF*: IIF(ws_type = 'T',   SUBSTR(v_trailer_str,34,11)  || '.' ||\r\n\t-- SUBSTR(v_trailer_str,45,2)  \r\n\t-- ,NULL)  \r\n\t--   \n\tIFF(\n\t    ws_type = 'T', SUBSTR(v_trailer_str, 34, 11) || '.' || SUBSTR(v_trailer_str, 45, 2), NULL\n\t) AS v_ws_total_db_amount_str,\n\t-- *INF*: IIF(ws_type = 'T', TO_DECIMAL(v_ws_total_db_amount_str), NULL)\r\n\t-- \r\n\t-- \r\n\t--  \n\tIFF(ws_type = 'T', CAST(v_ws_total_db_amount_str AS FLOAT), NULL) AS ws_total_db_amount,\n\t-- *INF*: IIF(ws_type = 'T',   LTRIM(SUBSTR(v_trailer_str,47,6),'0')\r\n\t-- ,NULL)  \r\n\t--   \n\tIFF(ws_type = 'T', LTRIM(SUBSTR(v_trailer_str, 47, 6), '0'), NULL) AS v_ws_total_db_count_str,\n\t-- *INF*: IIF(ws_type = 'T', TO_INTEGER(v_ws_total_db_count_str),NULL)  \n\tIFF(ws_type = 'T', CAST(v_ws_total_db_count_str AS INTEGER), NULL) AS ws_total_db_count,\n\t-- *INF*: IIF(ws_type = 'T',   SUBSTR(v_trailer_str,53,6)\r\n\t-- ,NULL)  \n\tIFF(ws_type = 'T', SUBSTR(v_trailer_str, 53, 6), NULL) AS v_ws_processing_date_str,\n\t-- *INF*: IIF(ws_type = 'T', TO_DATE(v_ws_processing_date_str,'MMDDYY') ,NULL)  \n\tIFF(ws_type = 'T', TO_TIMESTAMP(v_ws_processing_date_str, 'MMDDYY'), NULL) AS ws_processing_date,\n\t-- *INF*: IIF(ws_type = 'T',   SUBSTR(v_trailer_str,59,11)  || '.' ||\r\n\t-- SUBSTR(v_trailer_str,70,2)  \r\n\t-- ,NULL)  \n\tIFF(\n\t    ws_type = 'T', SUBSTR(v_trailer_str, 59, 11) || '.' || SUBSTR(v_trailer_str, 70, 2), NULL\n\t) AS v_ws_cycle_to_date_amt_str,\n\t-- *INF*: IIF(ws_type = 'T', TO_DECIMAL(v_ws_cycle_to_date_amt_str), NULL)\n\tIFF(ws_type = 'T', CAST(v_ws_cycle_to_date_amt_str AS FLOAT), NULL) AS ws_cycle_to_date_amount,\n\t-- *INF*: IIF(ws_type = 'T', SUBSTR( v_trailer_str,72,1) ,NULL)  \n\tIFF(ws_type = 'T', SUBSTR(v_trailer_str, 72, 1), NULL) AS o_ws_balance_sign,\n\tSYSDATE AS extract_date,\n\tSYSDATE AS as_of_date,\n\t'' AS record_count,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id,\n\tWS_FILLER AS FILLER_1\n\tFROM SQ_Bank_file\n),\nbank_file_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.bank_file_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.bank_file_stage\n\t(ws_type, ws_bank_nbr, ws_acct_nbr, ws_trans_type, ws_check_nbr, ws_amount, ws_trans_code, ws_trans_date, ws_control_nbr, ws_trans_status, ws_total_cr_amount, ws_total_cr_count, ws_total_db_amount, ws_total_db_count, ws_processing_date, ws_cycle_to_date_amount, ws_balance_sign, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tWS_TYPE, \n\to_ws_bank_nbr AS WS_BANK_NBR, \n\tWS_ACCT_NBR, \n\tWS_TRANS_TYPE, \n\tWS_CHECK_NBR, \n\tWS_AMOUNT, \n\tWS_TRANS_CODE, \n\tWS_TRANS_DATE, \n\tWS_CONTROL_NBR, \n\tWS_TRANS_STATUS, \n\tWS_TOTAL_CR_AMOUNT, \n\tWS_TOTAL_CR_COUNT, \n\tWS_TOTAL_DB_AMOUNT, \n\tWS_TOTAL_DB_COUNT, \n\tWS_PROCESSING_DATE, \n\tWS_CYCLE_TO_DATE_AMOUNT, \n\to_ws_balance_sign AS WS_BALANCE_SIGN, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID\n\tFROM EXP_bank_file\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

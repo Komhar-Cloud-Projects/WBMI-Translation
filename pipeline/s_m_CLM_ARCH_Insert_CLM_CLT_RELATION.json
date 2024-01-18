@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLM_CLT_RELATION",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLM_CLT_RELATION",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_clm_clt_relation_stage AS (\n\tSELECT\n\t\tclm_clt_relation_stage_id,\n\t\tcre_claim_nbr,\n\t\tcre_seq_nbr,\n\t\tcre_client_id,\n\t\tcre_client_role_cd,\n\t\tcre_rel_to_clt_id,\n\t\tcre_rel_to_role_cd,\n\t\tcre_object_type_cd,\n\t\tcre_object_seq_nbr,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM clm_clt_relation_stage\n),\nEXP_CLM_CLT_RELATION_STAGE AS (\n\tSELECT\n\tclm_clt_relation_stage_id,\n\tcre_claim_nbr,\n\tcre_seq_nbr,\n\tcre_client_id,\n\tcre_client_role_cd,\n\tcre_rel_to_clt_id,\n\tcre_rel_to_role_cd,\n\tcre_object_type_cd,\n\tcre_object_seq_nbr,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_clm_clt_relation_stage\n),\narch_clm_clt_relation_stage AS (\n\tINSERT INTO arch_clm_clt_relation_stage\n\t(clm_clt_relation_stage_id, cre_claim_nbr, cre_seq_nbr, cre_client_id, cre_client_role_cd, cre_rel_to_clt_id, cre_rel_to_role_cd, cre_object_type_cd, cre_object_seq_nbr, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCLM_CLT_RELATION_STAGE_ID, \n\tCRE_CLAIM_NBR, \n\tCRE_SEQ_NBR, \n\tCRE_CLIENT_ID, \n\tCRE_CLIENT_ROLE_CD, \n\tCRE_REL_TO_CLT_ID, \n\tCRE_REL_TO_ROLE_CD, \n\tCRE_OBJECT_TYPE_CD, \n\tCRE_OBJECT_SEQ_NBR, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_CLM_CLT_RELATION_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

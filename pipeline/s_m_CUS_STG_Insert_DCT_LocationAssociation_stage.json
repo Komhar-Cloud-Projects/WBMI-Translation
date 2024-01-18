@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CUS_STG_Insert_DCT_LocationAssociation_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CUS_STG_Insert_DCT_LocationAssociation_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_LocationAssociation AS (\n\tSELECT DC_LocationAssociation.ObjectId, DC_LocationAssociation.ObjectName, DC_LocationAssociation.LocationId, DC_LocationAssociation.LocationAssociationId, DC_LocationAssociation.SessionId, DC_LocationAssociation.LocationXmlId, DC_LocationAssociation.LocationAssociationType \r\n\tFROM\r\n\tDC_LocationAssociation\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session on\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_LocationAssociation.SessionId=@{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session.SessionId\r\n\tWHERE\r\n\tDC_Session.CreateDateTime >=  '@{pipeline().parameters.SELECTION_START_TS}' \r\n\tand \r\n\tDC_Session.CreateDateTime <  '@{pipeline().parameters.SELECTION_END_TS}'\r\n\tORDER BY\r\n\tDC_LocationAssociation.SessionId\n),\nExp_LocationAssociation AS (\n\tSELECT\n\tObjectId,\n\tObjectName,\n\tLocationId,\n\tLocationAssociationId,\n\tSessionId,\n\tLocationXmlId,\n\tLocationAssociationType,\n\tSysdate AS ExtractDate,\n\t'DCT' AS SourceSystemID\n\tFROM SQ_DC_LocationAssociation\n),\nDCLocationAssociationStage AS (\n\tINSERT INTO Shortcut_to_DCLocationAssociationStage\n\t(ExtractDate, SourceSystemid, ObjectId, ObjectName, LocationId, LocationAssociationId, SessionId, LocationXmlId, LocationAssociationType)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemID AS SOURCESYSTEMID, \n\tOBJECTID, \n\tOBJECTNAME, \n\tLOCATIONID, \n\tLOCATIONASSOCIATIONID, \n\tSESSIONID, \n\tLOCATIONXMLID, \n\tLOCATIONASSOCIATIONTYPE\n\tFROM Exp_LocationAssociation\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CustomerStaging/"
+        },
+        "annotations": []
+    }
+}

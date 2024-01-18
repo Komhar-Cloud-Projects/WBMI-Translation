@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_AdmSecurityGrpsStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_AdmSecurityGrpsStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AdmSecurityGrpsStage AS (\n\tSELECT\n\t\tAdmSecurityGrpsStageId,\n\t\tGroupSecurityId,\n\t\tGroupType,\n\t\tCreatedDate,\n\t\tGroupName,\n\t\tModifiedDate,\n\t\tModifiedUserId,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM AdmSecurityGrpsStage\n),\nEXPTRANS AS (\n\tSELECT\n\tAdmSecurityGrpsStageId,\n\tGroupSecurityId,\n\tGroupType,\n\tCreatedDate,\n\tGroupName,\n\tModifiedDate,\n\tModifiedUserId,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_AdmSecurityGrpsStage\n),\nArchAdmSecurityGrpsStage AS (\n\tINSERT INTO ArchAdmSecurityGrpsStage\n\t(AdmSecurityGrpsStageId, GroupSecurityId, GroupType, CreatedDate, GroupName, ModifiedDate, ModifiedUserId, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tADMSECURITYGRPSSTAGEID, \n\tGROUPSECURITYID, \n\tGROUPTYPE, \n\tCREATEDDATE, \n\tGROUPNAME, \n\tMODIFIEDDATE, \n\tMODIFIEDUSERID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

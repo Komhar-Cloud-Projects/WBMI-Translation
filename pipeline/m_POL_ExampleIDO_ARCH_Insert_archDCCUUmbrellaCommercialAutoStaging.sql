@@ -1,0 +1,127 @@
+WITH
+SQ_DCCUUmbrellaCommercialAutoStaging AS (
+	SELECT
+		DCCUUmbrellaCommercialAutoStagingId,
+		ExtractDate,
+		SourceSystemId,
+		LineId,
+		CU_UmbrellaCommercialAutoId,
+		SessionId,
+		Id,
+		Description,
+		EffectiveDate,
+		ExpirationDate,
+		ExtraHeavyVehicleCount,
+		ExtraHeavyVehicleCountAudited,
+		ExtraHeavyVehicleCountEstimated,
+		HeavyVehicleCount,
+		HeavyVehicleCountAudited,
+		HeavyVehicleCountEstimated,
+		LightVehicleCount,
+		LightVehicleCountAudited,
+		LightVehicleCountEstimated,
+		MediumVehicleCount,
+		MediumVehicleCountAudited,
+		MediumVehicleCountEstimated,
+		PolicyNumber,
+		PolicyType,
+		PrivatePassengerVehicleCount,
+		PrivatePassengerVehicleCountAudited,
+		PrivatePassengerVehicleCountEstimated,
+		TerrorismCA,
+		TerrorismSelectCA2386,
+		TerrorismSelectCA2387
+	FROM DCCUUmbrellaCommercialAutoStaging
+),
+EXP_Metadata AS (
+	SELECT
+	DCCUUmbrellaCommercialAutoStagingId,
+	ExtractDate,
+	SourceSystemId,
+	LineId,
+	CU_UmbrellaCommercialAutoId,
+	SessionId,
+	Id,
+	Description,
+	EffectiveDate,
+	ExpirationDate,
+	ExtraHeavyVehicleCount,
+	ExtraHeavyVehicleCountAudited,
+	ExtraHeavyVehicleCountEstimated,
+	HeavyVehicleCount,
+	HeavyVehicleCountAudited,
+	HeavyVehicleCountEstimated,
+	LightVehicleCount,
+	LightVehicleCountAudited,
+	LightVehicleCountEstimated,
+	MediumVehicleCount,
+	MediumVehicleCountAudited,
+	MediumVehicleCountEstimated,
+	PolicyNumber,
+	PolicyType,
+	PrivatePassengerVehicleCount,
+	PrivatePassengerVehicleCountAudited,
+	PrivatePassengerVehicleCountEstimated,
+	TerrorismCA,
+	TerrorismSelectCA2386,
+	TerrorismSelectCA2387,
+	-- *INF*: DECODE(TerrorismCA, 'T', 1, 'F', 0, NULL)
+	DECODE(
+	    TerrorismCA,
+	    'T', 1,
+	    'F', 0,
+	    NULL
+	) AS o_TerrorismCA,
+	-- *INF*: DECODE(TerrorismSelectCA2386, 'T', 1, 'F', 0, NULL)
+	DECODE(
+	    TerrorismSelectCA2386,
+	    'T', 1,
+	    'F', 0,
+	    NULL
+	) AS o_TerrorismSelectCA2386,
+	-- *INF*: DECODE(TerrorismSelectCA2387, 'T', 1, 'F', 0, NULL)
+	DECODE(
+	    TerrorismSelectCA2387,
+	    'T', 1,
+	    'F', 0,
+	    NULL
+	) AS o_TerrorismSelectCA2387,
+	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId
+	FROM SQ_DCCUUmbrellaCommercialAutoStaging
+),
+ArchDCCUUmbrellaCommercialAutoStaging AS (
+	INSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCUUmbrellaCommercialAutoStaging
+	(ExtractDate, SourceSystemId, AuditId, LineId, CU_UmbrellaCommercialAutoId, SessionId, Id, Description, EffectiveDate, ExpirationDate, ExtraHeavyVehicleCount, ExtraHeavyVehicleCountAudited, ExtraHeavyVehicleCountEstimated, HeavyVehicleCount, HeavyVehicleCountAudited, HeavyVehicleCountEstimated, LightVehicleCount, LightVehicleCountAudited, LightVehicleCountEstimated, MediumVehicleCount, MediumVehicleCountAudited, MediumVehicleCountEstimated, PolicyNumber, PolicyType, PrivatePassengerVehicleCount, PrivatePassengerVehicleCountAudited, PrivatePassengerVehicleCountEstimated, TerrorismCA, TerrorismSelectCA2386, TerrorismSelectCA2387)
+	SELECT 
+	EXTRACTDATE, 
+	SOURCESYSTEMID, 
+	o_AuditId AS AUDITID, 
+	LINEID, 
+	CU_UMBRELLACOMMERCIALAUTOID, 
+	SESSIONID, 
+	ID, 
+	DESCRIPTION, 
+	EFFECTIVEDATE, 
+	EXPIRATIONDATE, 
+	EXTRAHEAVYVEHICLECOUNT, 
+	EXTRAHEAVYVEHICLECOUNTAUDITED, 
+	EXTRAHEAVYVEHICLECOUNTESTIMATED, 
+	HEAVYVEHICLECOUNT, 
+	HEAVYVEHICLECOUNTAUDITED, 
+	HEAVYVEHICLECOUNTESTIMATED, 
+	LIGHTVEHICLECOUNT, 
+	LIGHTVEHICLECOUNTAUDITED, 
+	LIGHTVEHICLECOUNTESTIMATED, 
+	MEDIUMVEHICLECOUNT, 
+	MEDIUMVEHICLECOUNTAUDITED, 
+	MEDIUMVEHICLECOUNTESTIMATED, 
+	POLICYNUMBER, 
+	POLICYTYPE, 
+	PRIVATEPASSENGERVEHICLECOUNT, 
+	PRIVATEPASSENGERVEHICLECOUNTAUDITED, 
+	PRIVATEPASSENGERVEHICLECOUNTESTIMATED, 
+	o_TerrorismCA AS TERRORISMCA, 
+	o_TerrorismSelectCA2386 AS TERRORISMSELECTCA2386, 
+	o_TerrorismSelectCA2387 AS TERRORISMSELECTCA2387
+	FROM EXP_Metadata
+),

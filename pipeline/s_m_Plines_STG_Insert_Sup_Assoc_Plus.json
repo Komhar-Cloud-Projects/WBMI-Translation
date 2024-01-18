@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Plines_STG_Insert_Sup_Assoc_Plus",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Plines_STG_Insert_Sup_Assoc_Plus",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_sup_assoc_plus AS (\n\tSELECT\n\t\tcode,\n\t\tstate_type_code,\n\t\tagency_state_num,\n\t\tagency_pay_type,\n\t\tagency_num,\n\t\teff_date,\n\t\texp_date,\n\t\tdescript,\n\t\tmodified_date,\n\t\tmodified_user_id\n\tFROM sup_assoc_plus\n),\nEXP_SUP_ASSOC_PLUS AS (\n\tSELECT\n\tcode,\n\tstate_type_code,\n\tagency_state_num,\n\tagency_pay_type,\n\tagency_num,\n\teff_date,\n\texp_date,\n\tdescript,\n\tmodified_date,\n\tmodified_user_id,\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t'' AS RECORD_COUNT,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID\n\tFROM SQ_sup_assoc_plus\n),\nsup_assoc_plus_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_assoc_plus_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_assoc_plus_stage\n\t(code, state_type_code, agency_state_num, agency_pay_type, agency_num, eff_date, exp_date, descript, modified_date, modified_user_id, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tCODE, \n\tSTATE_TYPE_CODE, \n\tAGENCY_STATE_NUM, \n\tAGENCY_PAY_TYPE, \n\tAGENCY_NUM, \n\tEFF_DATE, \n\tEXP_DATE, \n\tDESCRIPT, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_SUP_ASSOC_PLUS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CommonStaging/"
+        },
+        "annotations": []
+    }
+}

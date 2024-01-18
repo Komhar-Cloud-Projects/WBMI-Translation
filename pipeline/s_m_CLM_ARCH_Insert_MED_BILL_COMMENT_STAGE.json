@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_MED_BILL_COMMENT_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_MED_BILL_COMMENT_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_med_bill_comment_stage AS (\n\tSELECT\n\t\tmed_bill_comment_stage_id,\n\t\tmed_bill_cmnt_id,\n\t\tmed_bill_id,\n\t\tcomment_seq_num,\n\t\tcomment_type,\n\t\tcomment,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM med_bill_comment_stage\n),\nEXP_arch_med_bill_comment_stage AS (\n\tSELECT\n\tmed_bill_comment_stage_id,\n\tmed_bill_cmnt_id,\n\tmed_bill_id,\n\tcomment_seq_num,\n\tcomment_type,\n\tcomment,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_med_bill_comment_stage\n),\narch_med_bill_comment_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_med_bill_comment_stage\n\t(med_bill_comment_stage_id, med_bill_cmnt_id, med_bill_id, comment_seq_num, comment_type, comment, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tMED_BILL_COMMENT_STAGE_ID, \n\tMED_BILL_CMNT_ID, \n\tMED_BILL_ID, \n\tCOMMENT_SEQ_NUM, \n\tCOMMENT_TYPE, \n\tCOMMENT, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_arch_med_bill_comment_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

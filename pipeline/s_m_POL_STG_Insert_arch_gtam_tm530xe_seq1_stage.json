@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_gtam_tm530xe_seq1_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_gtam_tm530xe_seq1_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_tm530xe_seq1_stage1 AS (\n\tSELECT\n\t\tgtam_tm530xe_seq1_stage_id,\n\t\ttable_fld,\n\t\tkey_len,\n\t\tlocation,\n\t\tpolicy_company,\n\t\tstate,\n\t\tbusiness_classification_code,\n\t\tseq_ind,\n\t\tfuture_use,\n\t\texpiration_date,\n\t\tdata_len,\n\t\tlong_desc,\n\t\tlong_length,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_tm530xe_seq1_stage1\n),\nLKP_arch_gtam_530xe_seq1_stage1 AS (\n\tSELECT\n\tarch_gtam_tm530xe_seq1_stage_id,\n\tlong_length,\n\tlong_desc,\n\tlocation,\n\tpolicy_company,\n\tstate,\n\tbusiness_classification_code,\n\tseq_ind,\n\tfuture_use,\n\texpiration_date\n\tFROM (\n\t\tSELECT tl.arch_gtam_tm530xe_seq1_stage_id as arch_gtam_tm530xe_seq1_stage_id\r\n\t\t      ,tl.gtam_tm530xe_seq1_stage_id as gtam_tm530xe_seq1_stage_id       \r\n\t\t      ,tl.location as location  \r\n\t\t      ,tl.policy_company as policy_company\r\n\t\t      ,tl.state as state\r\n\t\t      ,tl.business_classification_code as business_classification_code\r\n\t\t      ,tl.seq_ind as seq_ind\r\n\t\t      ,tl.future_use as future_use\r\n\t\t      ,tl.expiration_date as expiration_date \r\n\t\t      ,tl.long_length as long_length \r\n\t\t      ,tl.long_desc as long_desc      \r\n\t\t  FROM arch_gtam_tm530xe_seq1_stage tl\r\n\t\t   where \ttl.arch_gtam_tm530xe_seq1_stage_id In\r\n\t\t\t(Select max(arch_gtam_tm530xe_seq1_stage_id) from arch_gtam_tm530xe_seq1_stage b\r\n\t\t\tgroup by b.location\r\n\t\t      ,b.policy_company  \r\n\t\t      ,b.state \r\n\t\t      ,b.business_classification_code  \r\n\t\t      ,b.seq_ind  \r\n\t\t      ,b.future_use  \r\n\t\t      ,b.expiration_date  )\r\n\t\torder by tl.location\r\n\t\t      ,tl.policy_company  \r\n\t\t      ,tl.state \r\n\t\t      ,tl.business_classification_code  \r\n\t\t      ,tl.seq_ind  \r\n\t\t      ,tl.future_use  \r\n\t\t      ,tl.expiration_date --\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY location,policy_company,state,business_classification_code,seq_ind,future_use,expiration_date ORDER BY arch_gtam_tm530xe_seq1_stage_id) = 1\n),\nEXP_arch_tm530xe_seq1_stage AS (\n\tSELECT\n\tSQ_gtam_tm530xe_seq1_stage1.gtam_tm530xe_seq1_stage_id AS gtam_tm530xe_stage_id,\n\tSQ_gtam_tm530xe_seq1_stage1.table_fld AS Table_fld,\n\tSQ_gtam_tm530xe_seq1_stage1.key_len AS Key_len,\n\tSQ_gtam_tm530xe_seq1_stage1.location,\n\tSQ_gtam_tm530xe_seq1_stage1.policy_company,\n\tSQ_gtam_tm530xe_seq1_stage1.state,\n\tSQ_gtam_tm530xe_seq1_stage1.business_classification_code,\n\tSQ_gtam_tm530xe_seq1_stage1.seq_ind,\n\tSQ_gtam_tm530xe_seq1_stage1.future_use,\n\tSQ_gtam_tm530xe_seq1_stage1.expiration_date,\n\tSQ_gtam_tm530xe_seq1_stage1.data_len,\n\tSQ_gtam_tm530xe_seq1_stage1.long_desc,\n\tSQ_gtam_tm530xe_seq1_stage1.long_length,\n\tSQ_gtam_tm530xe_seq1_stage1.extract_date AS EXTRACT_DATE,\n\tSQ_gtam_tm530xe_seq1_stage1.as_of_date AS AS_OF_DATE,\n\tSQ_gtam_tm530xe_seq1_stage1.record_count AS RECORD_COUNT,\n\tSQ_gtam_tm530xe_seq1_stage1.source_system_id AS SOURCE_SYSTEM_ID,\n\tLKP_arch_gtam_530xe_seq1_stage1.arch_gtam_tm530xe_seq1_stage_id AS LKP_arch_gtam_tm530xe_seq1_stage_id,\n\tLKP_arch_gtam_530xe_seq1_stage1.long_length AS LKP_long_length,\n\tLKP_arch_gtam_530xe_seq1_stage1.long_desc AS LKP_long_desc,\n\t-- *INF*: iif(isnull(LKP_arch_gtam_tm530xe_seq1_stage_id),'NEW',\r\n\t--     iif(\r\n\t-- rtrim(ltrim( LKP_long_length )) <>  rtrim(ltrim( long_length ))    \r\n\t-- OR rtrim(ltrim( LKP_long_desc))    <> rtrim(ltrim( long_desc))     \r\n\t-- , 'UPDATE', 'NOCHANGE'))\n\tIFF(\n\t    LKP_arch_gtam_tm530xe_seq1_stage_id IS NULL, 'NEW',\n\t    IFF(\n\t        rtrim(ltrim(LKP_long_length)) <> rtrim(ltrim(long_length))\n\t        or rtrim(ltrim(LKP_long_desc)) <> rtrim(ltrim(long_desc)),\n\t        'UPDATE',\n\t        'NOCHANGE'\n\t    )\n\t) AS v_Changed_Flag,\n\tv_Changed_Flag AS Changed_Flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID\n\tFROM SQ_gtam_tm530xe_seq1_stage1\n\tLEFT JOIN LKP_arch_gtam_530xe_seq1_stage1\n\tON LKP_arch_gtam_530xe_seq1_stage1.location = SQ_gtam_tm530xe_seq1_stage1.location AND LKP_arch_gtam_530xe_seq1_stage1.policy_company = SQ_gtam_tm530xe_seq1_stage1.policy_company AND LKP_arch_gtam_530xe_seq1_stage1.state = SQ_gtam_tm530xe_seq1_stage1.state AND LKP_arch_gtam_530xe_seq1_stage1.business_classification_code = SQ_gtam_tm530xe_seq1_stage1.business_classification_code AND LKP_arch_gtam_530xe_seq1_stage1.seq_ind = SQ_gtam_tm530xe_seq1_stage1.seq_ind AND LKP_arch_gtam_530xe_seq1_stage1.future_use = SQ_gtam_tm530xe_seq1_stage1.future_use AND LKP_arch_gtam_530xe_seq1_stage1.expiration_date = SQ_gtam_tm530xe_seq1_stage1.expiration_date\n),\nFIL_Inserts AS (\n\tSELECT\n\tgtam_tm530xe_stage_id AS gtam_tm530xe_seq1_stage_id, \n\tTable_fld, \n\tKey_len, \n\tlocation, \n\tpolicy_company, \n\tstate, \n\tbusiness_classification_code, \n\tseq_ind, \n\tfuture_use, \n\texpiration_date, \n\tdata_len, \n\tlong_desc, \n\tlong_length, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tChanged_Flag, \n\tAUDIT_ID\n\tFROM EXP_arch_tm530xe_seq1_stage\n\tWHERE Changed_Flag = 'NEW' or Changed_Flag = 'UPDATE'\n),\narch_gtam_tm530xe_seq1_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_gtam_tm530xe_seq1_stage\n\t(gtam_tm530xe_seq1_stage_id, table_fld, key_len, location, policy_company, state, business_classification_code, seq_ind, future_use, expiration_date, data_len, long_desc, long_length, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tGTAM_TM530XE_SEQ1_STAGE_ID, \n\tTable_fld AS TABLE_FLD, \n\tKey_len AS KEY_LEN, \n\tLOCATION, \n\tPOLICY_COMPANY, \n\tSTATE, \n\tBUSINESS_CLASSIFICATION_CODE, \n\tSEQ_IND, \n\tFUTURE_USE, \n\tEXPIRATION_DATE, \n\tDATA_LEN, \n\tLONG_DESC, \n\tLONG_LENGTH, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID\n\tFROM FIL_Inserts\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

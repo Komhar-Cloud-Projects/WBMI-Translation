@@ -34,55 +34,25 @@ EXP_Default_Values AS (
 	Purpose AS i_Purpose,
 	SessionId AS i_SessionId,
 	-- *INF*: IIF(NOT ISNULL(i_PolicyNumber), i_PolicyNumber, '0')
-	IFF(i_PolicyNumber IS NOT NULL,
-		i_PolicyNumber,
-		'0'
-	) AS o_PolicyNumber,
+	IFF(i_PolicyNumber IS NOT NULL, i_PolicyNumber, '0') AS o_PolicyNumber,
 	-- *INF*: IIF(NOT ISNULL(i_PolicyVersion), i_PolicyVersion, '0')
-	IFF(i_PolicyVersion IS NOT NULL,
-		i_PolicyVersion,
-		'0'
-	) AS o_PolicyVersion,
+	IFF(i_PolicyVersion IS NOT NULL, i_PolicyVersion, '0') AS o_PolicyVersion,
 	-- *INF*: IIF(NOT ISNULL(i_HistoryID), i_HistoryID, 0)
-	IFF(i_HistoryID IS NOT NULL,
-		i_HistoryID,
-		0
-	) AS o_HistoryID,
+	IFF(i_HistoryID IS NOT NULL, i_HistoryID, 0) AS o_HistoryID,
 	-- *INF*: IIF(NOT ISNULL(i_Description), i_Description, '0')
-	IFF(i_Description IS NOT NULL,
-		i_Description,
-		'0'
-	) AS o_Description,
+	IFF(i_Description IS NOT NULL, i_Description, '0') AS o_Description,
 	-- *INF*: IIF(NOT ISNULL(i_SourceResults), i_SourceResults, 0)
-	IFF(i_SourceResults IS NOT NULL,
-		i_SourceResults,
-		0
-	) AS o_SourceResults,
+	IFF(i_SourceResults IS NOT NULL, i_SourceResults, 0) AS o_SourceResults,
 	-- *INF*: IIF(NOT ISNULL(i_TargetResults), i_TargetResults, 0)
-	IFF(i_TargetResults IS NOT NULL,
-		i_TargetResults,
-		0
-	) AS o_TargetResults,
+	IFF(i_TargetResults IS NOT NULL, i_TargetResults, 0) AS o_TargetResults,
 	-- *INF*: IIF(NOT ISNULL(i_OutOfBalanceAmount), i_OutOfBalanceAmount, 0)
-	IFF(i_OutOfBalanceAmount IS NOT NULL,
-		i_OutOfBalanceAmount,
-		0
-	) AS o_OutOfBalanceAmount,
+	IFF(i_OutOfBalanceAmount IS NOT NULL, i_OutOfBalanceAmount, 0) AS o_OutOfBalanceAmount,
 	-- *INF*: IIF(NOT ISNULL(i_ComparisonType), i_ComparisonType, '0')
-	IFF(i_ComparisonType IS NOT NULL,
-		i_ComparisonType,
-		'0'
-	) AS o_ComparisonType,
+	IFF(i_ComparisonType IS NOT NULL, i_ComparisonType, '0') AS o_ComparisonType,
 	-- *INF*: IIF(NOT ISNULL(i_Purpose), i_Purpose, '0')
-	IFF(i_Purpose IS NOT NULL,
-		i_Purpose,
-		'0'
-	) AS o_Purpose,
+	IFF(i_Purpose IS NOT NULL, i_Purpose, '0') AS o_Purpose,
 	-- *INF*: IIF(NOT ISNULL(i_SessionId), i_SessionId, 0)
-	IFF(i_SessionId IS NOT NULL,
-		i_SessionId,
-		0
-	) AS o_SessionId
+	IFF(i_SessionId IS NOT NULL, i_SessionId, 0) AS o_SessionId
 	FROM SQ_WB_EDWBalancingRuleResults1
 ),
 WBEDWBalancingRuleResults AS (

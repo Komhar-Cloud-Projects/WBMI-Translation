@@ -34,14 +34,12 @@ EXP_Source AS (
 	-- IS_SPACES(risk_state_prov_code),'N/A',
 	-- LENGTH(risk_state_prov_code)=0,'N/A',
 	-- LTRIM(RTRIM(risk_state_prov_code)))
-	DECODE(TRUE,
-		risk_state_prov_code IS NULL, 'N/A',
-		LENGTH(risk_state_prov_code)>0 AND TRIM(risk_state_prov_code)='', 'N/A',
-		LENGTH(risk_state_prov_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(risk_state_prov_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    risk_state_prov_code IS NULL, 'N/A',
+	    LENGTH(risk_state_prov_code)>0 AND TRIM(risk_state_prov_code)='', 'N/A',
+	    LENGTH(risk_state_prov_code) = 0, 'N/A',
+	    LTRIM(RTRIM(risk_state_prov_code))
 	) AS risk_state_prov_code_lkp,
 	risk_zip_code,
 	-- *INF*: DECODE(TRUE,
@@ -49,14 +47,12 @@ EXP_Source AS (
 	-- IS_SPACES(risk_zip_code),'N/A',
 	-- LENGTH(risk_zip_code)=0,'N/A',
 	-- LTRIM(RTRIM(risk_zip_code)))
-	DECODE(TRUE,
-		risk_zip_code IS NULL, 'N/A',
-		LENGTH(risk_zip_code)>0 AND TRIM(risk_zip_code)='', 'N/A',
-		LENGTH(risk_zip_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(risk_zip_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    risk_zip_code IS NULL, 'N/A',
+	    LENGTH(risk_zip_code)>0 AND TRIM(risk_zip_code)='', 'N/A',
+	    LENGTH(risk_zip_code) = 0, 'N/A',
+	    LTRIM(RTRIM(risk_zip_code))
 	) AS risk_zip_code_lkp,
 	terr_code,
 	-- *INF*: DECODE(TRUE,
@@ -64,32 +60,28 @@ EXP_Source AS (
 	-- IS_SPACES(terr_code),'N/A',
 	-- LENGTH(terr_code)=0,'N/A',
 	-- LTRIM(RTRIM(terr_code)))
-	DECODE(TRUE,
-		terr_code IS NULL, 'N/A',
-		LENGTH(terr_code)>0 AND TRIM(terr_code)='', 'N/A',
-		LENGTH(terr_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(terr_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    terr_code IS NULL, 'N/A',
+	    LENGTH(terr_code)>0 AND TRIM(terr_code)='', 'N/A',
+	    LENGTH(terr_code) = 0, 'N/A',
+	    LTRIM(RTRIM(terr_code))
 	) AS terr_code_lkp,
 	tax_loc,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRING_NUMERIC(tax_loc)
-	:UDF.DEFAULT_VALUE_FOR_STRING_NUMERIC(tax_loc
-	) AS tax_loc_lkp,
+	UDF_DEFAULT_VALUE_FOR_STRING_NUMERIC(tax_loc) AS tax_loc_lkp,
 	-- *INF*: IIF(ISNULL(tax_loc) OR IS_SPACES(tax_loc) OR LENGTH(tax_loc)=0 OR NOT IS_NUMBER(LTRIM(RTRIM(tax_loc))),'N/A',
 	-- tax_loc)
 	-- 
 	-- -- we are not using LTRIM ,RTRIM  functions because we need to spaces as it is as they are used for IBS Bureau Reporting.
-	IFF(tax_loc IS NULL 
-		OR LENGTH(tax_loc)>0 AND TRIM(tax_loc)='' 
-		OR LENGTH(tax_loc
-		) = 0 
-		OR NOT REGEXP_LIKE(LTRIM(RTRIM(tax_loc
-			)
-		), '^[0-9]+$'),
-		'N/A',
-		tax_loc
+	IFF(
+	    tax_loc IS NULL
+	    or LENGTH(tax_loc)>0
+	    and TRIM(tax_loc)=''
+	    or LENGTH(tax_loc) = 0
+	    or NOT REGEXP_LIKE(LTRIM(RTRIM(tax_loc)), '^[0-9]+$'),
+	    'N/A',
+	    tax_loc
 	) AS tax_loc_out,
 	class_code,
 	-- *INF*: DECODE(TRUE,
@@ -97,14 +89,12 @@ EXP_Source AS (
 	-- IS_SPACES(class_code),'N/A',
 	-- LENGTH(class_code)=0,'N/A',
 	-- LTRIM(RTRIM(class_code)))
-	DECODE(TRUE,
-		class_code IS NULL, 'N/A',
-		LENGTH(class_code)>0 AND TRIM(class_code)='', 'N/A',
-		LENGTH(class_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(class_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    class_code IS NULL, 'N/A',
+	    LENGTH(class_code)>0 AND TRIM(class_code)='', 'N/A',
+	    LENGTH(class_code) = 0, 'N/A',
+	    LTRIM(RTRIM(class_code))
 	) AS class_code_lkp,
 	exposure,
 	sub_line_code,
@@ -113,14 +103,12 @@ EXP_Source AS (
 	-- IS_SPACES(sub_line_code),'N/A',
 	-- LENGTH(sub_line_code)=0,'N/A',
 	-- LTRIM(RTRIM(sub_line_code)))
-	DECODE(TRUE,
-		sub_line_code IS NULL, 'N/A',
-		LENGTH(sub_line_code)>0 AND TRIM(sub_line_code)='', 'N/A',
-		LENGTH(sub_line_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(sub_line_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    sub_line_code IS NULL, 'N/A',
+	    LENGTH(sub_line_code)>0 AND TRIM(sub_line_code)='', 'N/A',
+	    LENGTH(sub_line_code) = 0, 'N/A',
+	    LTRIM(RTRIM(sub_line_code))
 	) AS sub_line_code_lkp,
 	source_sar_asl,
 	-- *INF*: DECODE(TRUE,
@@ -130,14 +118,12 @@ EXP_Source AS (
 	-- LTRIM(RTRIM(REPLACECHR(TRUE, source_sar_asl, '.' , ''))))
 	-- 
 	-- 
-	DECODE(TRUE,
-		source_sar_asl IS NULL, 'N/A',
-		LENGTH(source_sar_asl)>0 AND TRIM(source_sar_asl)='', 'N/A',
-		LENGTH(source_sar_asl
-		) = 0, 'N/A',
-		LTRIM(RTRIM(REGEXP_REPLACE(source_sar_asl,'.','')
-			)
-		)
+	DECODE(
+	    TRUE,
+	    source_sar_asl IS NULL, 'N/A',
+	    LENGTH(source_sar_asl)>0 AND TRIM(source_sar_asl)='', 'N/A',
+	    LENGTH(source_sar_asl) = 0, 'N/A',
+	    LTRIM(RTRIM(REGEXP_REPLACE(source_sar_asl,'.','')))
 	) AS source_sar_asl_lkp,
 	source_sar_prdct_line,
 	-- *INF*: DECODE(TRUE,
@@ -145,14 +131,12 @@ EXP_Source AS (
 	-- IS_SPACES(source_sar_prdct_line),'N/A',
 	-- LENGTH(source_sar_prdct_line)=0,'N/A',
 	-- LTRIM(RTRIM(source_sar_prdct_line)))
-	DECODE(TRUE,
-		source_sar_prdct_line IS NULL, 'N/A',
-		LENGTH(source_sar_prdct_line)>0 AND TRIM(source_sar_prdct_line)='', 'N/A',
-		LENGTH(source_sar_prdct_line
-		) = 0, 'N/A',
-		LTRIM(RTRIM(source_sar_prdct_line
-			)
-		)
+	DECODE(
+	    TRUE,
+	    source_sar_prdct_line IS NULL, 'N/A',
+	    LENGTH(source_sar_prdct_line)>0 AND TRIM(source_sar_prdct_line)='', 'N/A',
+	    LENGTH(source_sar_prdct_line) = 0, 'N/A',
+	    LTRIM(RTRIM(source_sar_prdct_line))
 	) AS source_sar_prdct_line_lkp,
 	source_sar_sp_use_code,
 	-- *INF*: DECODE(TRUE,
@@ -160,25 +144,24 @@ EXP_Source AS (
 	-- IS_SPACES(source_sar_sp_use_code),'N/A',
 	-- LENGTH(source_sar_sp_use_code)=0,'N/A',
 	-- LTRIM(RTRIM(source_sar_sp_use_code)))
-	DECODE(TRUE,
-		source_sar_sp_use_code IS NULL, 'N/A',
-		LENGTH(source_sar_sp_use_code)>0 AND TRIM(source_sar_sp_use_code)='', 'N/A',
-		LENGTH(source_sar_sp_use_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(source_sar_sp_use_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    source_sar_sp_use_code IS NULL, 'N/A',
+	    LENGTH(source_sar_sp_use_code)>0 AND TRIM(source_sar_sp_use_code)='', 'N/A',
+	    LENGTH(source_sar_sp_use_code) = 0, 'N/A',
+	    LTRIM(RTRIM(source_sar_sp_use_code))
 	) AS source_sar_sp_use_code_lkp,
 	-- *INF*: IIF(ISNULL(source_sar_sp_use_code) OR IS_SPACES(source_sar_sp_use_code) OR LENGTH(source_sar_sp_use_code)=0,'N/A',
 	-- source_sar_sp_use_code)
 	-- 
 	-- -- we are not using LTRIM ,RTRIM  functions because we need to spaces as it is as they are used for IBS Bureau Reporting.
-	IFF(source_sar_sp_use_code IS NULL 
-		OR LENGTH(source_sar_sp_use_code)>0 AND TRIM(source_sar_sp_use_code)='' 
-		OR LENGTH(source_sar_sp_use_code
-		) = 0,
-		'N/A',
-		source_sar_sp_use_code
+	IFF(
+	    source_sar_sp_use_code IS NULL
+	    or LENGTH(source_sar_sp_use_code)>0
+	    and TRIM(source_sar_sp_use_code)=''
+	    or LENGTH(source_sar_sp_use_code) = 0,
+	    'N/A',
+	    source_sar_sp_use_code
 	) AS source_sar_sp_use_code_Out,
 	statistical_line AS source_statistical_line,
 	-- *INF*: DECODE(TRUE,
@@ -186,14 +169,12 @@ EXP_Source AS (
 	-- IS_SPACES(source_statistical_line),'N/A',
 	-- LENGTH(source_statistical_line)=0,'N/A',
 	-- LTRIM(RTRIM(source_statistical_line)))
-	DECODE(TRUE,
-		source_statistical_line IS NULL, 'N/A',
-		LENGTH(source_statistical_line)>0 AND TRIM(source_statistical_line)='', 'N/A',
-		LENGTH(source_statistical_line
-		) = 0, 'N/A',
-		LTRIM(RTRIM(source_statistical_line
-			)
-		)
+	DECODE(
+	    TRUE,
+	    source_statistical_line IS NULL, 'N/A',
+	    LENGTH(source_statistical_line)>0 AND TRIM(source_statistical_line)='', 'N/A',
+	    LENGTH(source_statistical_line) = 0, 'N/A',
+	    LTRIM(RTRIM(source_statistical_line))
 	) AS source_statistical_line_lkp,
 	variation_code,
 	-- *INF*: DECODE(TRUE,
@@ -201,14 +182,12 @@ EXP_Source AS (
 	-- IS_SPACES(variation_code),'N/A',
 	-- LENGTH(variation_code)=0,'N/A',
 	-- LTRIM(RTRIM(variation_code)))
-	DECODE(TRUE,
-		variation_code IS NULL, 'N/A',
-		LENGTH(variation_code)>0 AND TRIM(variation_code)='', 'N/A',
-		LENGTH(variation_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(variation_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    variation_code IS NULL, 'N/A',
+	    LENGTH(variation_code)>0 AND TRIM(variation_code)='', 'N/A',
+	    LENGTH(variation_code) = 0, 'N/A',
+	    LTRIM(RTRIM(variation_code))
 	) AS variation_code_lkp,
 	pol_type,
 	-- *INF*: DECODE(TRUE,
@@ -216,25 +195,20 @@ EXP_Source AS (
 	-- IS_SPACES(pol_type),'N/A',
 	-- LENGTH(pol_type)=0,'N/A',
 	-- LTRIM(RTRIM(pol_type)))
-	DECODE(TRUE,
-		pol_type IS NULL, 'N/A',
-		LENGTH(pol_type)>0 AND TRIM(pol_type)='', 'N/A',
-		LENGTH(pol_type
-		) = 0, 'N/A',
-		LTRIM(RTRIM(pol_type
-			)
-		)
+	DECODE(
+	    TRUE,
+	    pol_type IS NULL, 'N/A',
+	    LENGTH(pol_type)>0 AND TRIM(pol_type)='', 'N/A',
+	    LENGTH(pol_type) = 0, 'N/A',
+	    LTRIM(RTRIM(pol_type))
 	) AS pol_type_lkp,
 	-- *INF*: IIF(ISNULL(pol_type) OR IS_SPACES(pol_type) OR LENGTH(pol_type)=0,'N/A',
 	-- pol_type)
 	-- 
 	-- -- we are not using LTRIM ,RTRIM  functions because we need to spaces as it is as they are used for IBS Bureau Reporting.
-	IFF(pol_type IS NULL 
-		OR LENGTH(pol_type)>0 AND TRIM(pol_type)='' 
-		OR LENGTH(pol_type
-		) = 0,
-		'N/A',
-		pol_type
+	IFF(
+	    pol_type IS NULL OR LENGTH(pol_type)>0 AND TRIM(pol_type)='' OR LENGTH(pol_type) = 0, 'N/A',
+	    pol_type
 	) AS pol_type_out,
 	auto_reins_facility,
 	-- *INF*: DECODE(TRUE,
@@ -242,14 +216,12 @@ EXP_Source AS (
 	-- IS_SPACES(auto_reins_facility),'N/A',
 	-- LENGTH(auto_reins_facility)=0,'N/A',
 	-- LTRIM(RTRIM(auto_reins_facility)))
-	DECODE(TRUE,
-		auto_reins_facility IS NULL, 'N/A',
-		LENGTH(auto_reins_facility)>0 AND TRIM(auto_reins_facility)='', 'N/A',
-		LENGTH(auto_reins_facility
-		) = 0, 'N/A',
-		LTRIM(RTRIM(auto_reins_facility
-			)
-		)
+	DECODE(
+	    TRUE,
+	    auto_reins_facility IS NULL, 'N/A',
+	    LENGTH(auto_reins_facility)>0 AND TRIM(auto_reins_facility)='', 'N/A',
+	    LENGTH(auto_reins_facility) = 0, 'N/A',
+	    LTRIM(RTRIM(auto_reins_facility))
 	) AS auto_reins_facility_lkp,
 	statistical_brkdwn_line,
 	-- *INF*: DECODE(TRUE,
@@ -257,14 +229,12 @@ EXP_Source AS (
 	-- IS_SPACES(statistical_brkdwn_line),'N/A',
 	-- LENGTH(statistical_brkdwn_line)=0,'N/A',
 	-- LTRIM(RTRIM(statistical_brkdwn_line)))
-	DECODE(TRUE,
-		statistical_brkdwn_line IS NULL, 'N/A',
-		LENGTH(statistical_brkdwn_line)>0 AND TRIM(statistical_brkdwn_line)='', 'N/A',
-		LENGTH(statistical_brkdwn_line
-		) = 0, 'N/A',
-		LTRIM(RTRIM(statistical_brkdwn_line
-			)
-		)
+	DECODE(
+	    TRUE,
+	    statistical_brkdwn_line IS NULL, 'N/A',
+	    LENGTH(statistical_brkdwn_line)>0 AND TRIM(statistical_brkdwn_line)='', 'N/A',
+	    LENGTH(statistical_brkdwn_line) = 0, 'N/A',
+	    LTRIM(RTRIM(statistical_brkdwn_line))
 	) AS statistical_brkdwn_line_lkp,
 	statistical_code1,
 	-- *INF*: DECODE(TRUE,
@@ -274,25 +244,24 @@ EXP_Source AS (
 	-- LTRIM(RTRIM(statistical_code1)))
 	-- 
 	-- -- We are using LTRIM ,RTRIM  functions to match on  Target lookup values, since these are string fields
-	DECODE(TRUE,
-		statistical_code1 IS NULL, 'N/A',
-		LENGTH(statistical_code1)>0 AND TRIM(statistical_code1)='', 'N/A',
-		LENGTH(statistical_code1
-		) = 0, 'N/A',
-		LTRIM(RTRIM(statistical_code1
-			)
-		)
+	DECODE(
+	    TRUE,
+	    statistical_code1 IS NULL, 'N/A',
+	    LENGTH(statistical_code1)>0 AND TRIM(statistical_code1)='', 'N/A',
+	    LENGTH(statistical_code1) = 0, 'N/A',
+	    LTRIM(RTRIM(statistical_code1))
 	) AS statistical_code1_lkp,
 	-- *INF*: IIF(ISNULL(statistical_code1) OR IS_SPACES(statistical_code1) OR LENGTH(statistical_code1)=0,'N/A',
 	-- statistical_code1)
 	-- 
 	-- -- we are not using LTRIM ,RTRIM  functions because we need to spaces as it is as they are used for IBS Bureau Reporting.
-	IFF(statistical_code1 IS NULL 
-		OR LENGTH(statistical_code1)>0 AND TRIM(statistical_code1)='' 
-		OR LENGTH(statistical_code1
-		) = 0,
-		'N/A',
-		statistical_code1
+	IFF(
+	    statistical_code1 IS NULL
+	    or LENGTH(statistical_code1)>0
+	    and TRIM(statistical_code1)=''
+	    or LENGTH(statistical_code1) = 0,
+	    'N/A',
+	    statistical_code1
 	) AS statistical_code1_Out,
 	statistical_code2,
 	-- *INF*: DECODE(TRUE,
@@ -303,26 +272,25 @@ EXP_Source AS (
 	-- 
 	-- 
 	-- -- We are using LTRIM ,RTRIM  functions to match on  Target lookup values, since these are string fields
-	DECODE(TRUE,
-		statistical_code2 IS NULL, 'N/A',
-		LENGTH(statistical_code2)>0 AND TRIM(statistical_code2)='', 'N/A',
-		LENGTH(statistical_code2
-		) = 0, 'N/A',
-		LTRIM(RTRIM(statistical_code2
-			)
-		)
+	DECODE(
+	    TRUE,
+	    statistical_code2 IS NULL, 'N/A',
+	    LENGTH(statistical_code2)>0 AND TRIM(statistical_code2)='', 'N/A',
+	    LENGTH(statistical_code2) = 0, 'N/A',
+	    LTRIM(RTRIM(statistical_code2))
 	) AS statistical_code2_lkp,
 	-- *INF*: IIF(ISNULL(statistical_code2) OR IS_SPACES(statistical_code2) OR LENGTH(statistical_code2)=0,'N/A',
 	-- statistical_code2)
 	-- 
 	-- 
 	-- -- we are not using LTRIM ,RTRIM  functions because we need to spaces as it is as they are used for IBS Bureau Reporting.
-	IFF(statistical_code2 IS NULL 
-		OR LENGTH(statistical_code2)>0 AND TRIM(statistical_code2)='' 
-		OR LENGTH(statistical_code2
-		) = 0,
-		'N/A',
-		statistical_code2
+	IFF(
+	    statistical_code2 IS NULL
+	    or LENGTH(statistical_code2)>0
+	    and TRIM(statistical_code2)=''
+	    or LENGTH(statistical_code2) = 0,
+	    'N/A',
+	    statistical_code2
 	) AS statistical_code2_Out,
 	statistical_code3,
 	-- *INF*: DECODE(TRUE,
@@ -332,26 +300,25 @@ EXP_Source AS (
 	-- LTRIM(RTRIM(statistical_code3))) 
 	-- 
 	-- -- We are using LTRIM ,RTRIM  functions to match on  Target lookup values, since these are string fields
-	DECODE(TRUE,
-		statistical_code3 IS NULL, 'N/A',
-		LENGTH(statistical_code3)>0 AND TRIM(statistical_code3)='', 'N/A',
-		LENGTH(statistical_code3
-		) = 0, 'N/A',
-		LTRIM(RTRIM(statistical_code3
-			)
-		)
+	DECODE(
+	    TRUE,
+	    statistical_code3 IS NULL, 'N/A',
+	    LENGTH(statistical_code3)>0 AND TRIM(statistical_code3)='', 'N/A',
+	    LENGTH(statistical_code3) = 0, 'N/A',
+	    LTRIM(RTRIM(statistical_code3))
 	) AS statistical_code3_lkp,
 	-- *INF*: IIF(ISNULL(statistical_code3) OR IS_SPACES(statistical_code3) OR LENGTH(statistical_code3)=0,'N/A',
 	-- statistical_code3)
 	-- 
 	-- 
 	-- -- we are not using LTRIM ,RTRIM  functions because we need to spaces as it is as they are used for IBS Bureau Reporting.
-	IFF(statistical_code3 IS NULL 
-		OR LENGTH(statistical_code3)>0 AND TRIM(statistical_code3)='' 
-		OR LENGTH(statistical_code3
-		) = 0,
-		'N/A',
-		statistical_code3
+	IFF(
+	    statistical_code3 IS NULL
+	    or LENGTH(statistical_code3)>0
+	    and TRIM(statistical_code3)=''
+	    or LENGTH(statistical_code3) = 0,
+	    'N/A',
+	    statistical_code3
 	) AS statistical_code3_Out,
 	loss_master_cov_code,
 	-- *INF*: DECODE(TRUE,
@@ -359,14 +326,12 @@ EXP_Source AS (
 	-- IS_SPACES(loss_master_cov_code),'N/A',
 	-- LENGTH(loss_master_cov_code)=0,'N/A',
 	-- LTRIM(RTRIM(loss_master_cov_code)))
-	DECODE(TRUE,
-		loss_master_cov_code IS NULL, 'N/A',
-		LENGTH(loss_master_cov_code)>0 AND TRIM(loss_master_cov_code)='', 'N/A',
-		LENGTH(loss_master_cov_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(loss_master_cov_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    loss_master_cov_code IS NULL, 'N/A',
+	    LENGTH(loss_master_cov_code)>0 AND TRIM(loss_master_cov_code)='', 'N/A',
+	    LENGTH(loss_master_cov_code) = 0, 'N/A',
+	    LTRIM(RTRIM(loss_master_cov_code))
 	) AS loss_master_cov_code_lkp
 	FROM SQ_loss_master_calculation
 ),
@@ -524,11 +489,9 @@ EXP_Target AS (
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date

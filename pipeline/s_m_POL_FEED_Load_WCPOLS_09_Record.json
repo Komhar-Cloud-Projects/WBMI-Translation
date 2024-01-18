@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_FEED_Load_WCPOLS_09_Record",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Load_WCPOLS_09_Record",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nLKP_SupWCPOLS AS (\n\tSELECT\n\tWCPOLSCode,\n\tSourcesystemID,\n\tSourceCode,\n\tTableName,\n\tProcessName,\n\ti_SourcesystemID,\n\ti_SourceCode,\n\ti_TableName,\n\ti_ProcessName\n\tFROM (\n\t\tSELECT\r\n\t\t     WCPOLSCode as WCPOLSCode\r\n\t\t\t,SourcesystemID as SourcesystemID\r\n\t\t\t,SourceCode as SourceCode\r\n\t\t\t,TableName as TableName\r\n\t\t\t,ProcessName as ProcessName\r\n\t\tFROM SupWCPOLS\r\n\t\tWHERE CurrentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY SourcesystemID,SourceCode,TableName,ProcessName ORDER BY WCPOLSCode) = 1\n),\nSQ_WCPols00Record AS (\n\tSELECT\r\n\t\tWCTrackHistoryID,\r\n\t\tLinkData,\r\n\t     AuditId\r\n\tFROM dbo.WCPols00Record\r\n\tWHERE 1=1\r\n\tAND AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tORDER BY WCTrackHistoryID\n),\nSQ_WorkWCForms AS (\n\tSELECT DISTINCT\r\n\t\tST.WCTrackHistoryID\r\n\t\t,F.FormName\r\n\t\t,ST.[State]\r\n\t\t,L.AnniversaryRatingDate\r\n\t\t,PT.Name\r\n\t\t,Pol.TransactionEffectiveDate\r\n\t\t\r\n\tFROM dbo.WorkWCStateTerm ST\r\n\t\r\n\tINNER JOIN dbo.WorkWCForms F\r\n\t\tON ST.WCTrackHistoryID = F.WCTrackHistoryID\r\n\tAND F.FormName like 'WC000402%' AND (F.OnPolicy=1 or F.[Add]=1) AND (F.Remove is NULL or F.Remove=0)\r\n\t\r\n\tINNER JOIN dbo.WorkWCParty PT\r\n\t\tON PT.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\t\tAND PT.PartyAssociationType = 'Account'\r\n\t\r\n\tINNER JOIN dbo.WorkWCLine L\r\n\t\tON L.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicy Pol\r\n\t\tON Pol.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\r\n\tWHERE 1 = 1\r\n\tAND ST.AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t@{pipeline().parameters.WHERE_CLAUSE_09}\r\n\t\r\n\tORDER BY ST.WCTrackHistoryID\n),\nJNR_09_Record AS (SELECT\n\tSQ_WCPols00Record.WCTrackHistoryID, \n\tSQ_WCPols00Record.LinkData, \n\tSQ_WCPols00Record.AuditId, \n\tSQ_WorkWCForms.WCTrackHistoryID AS WCTrackHistoryID1, \n\tSQ_WorkWCForms.FormName, \n\tSQ_WorkWCForms.State, \n\tSQ_WorkWCForms.AnniversaryRatingDate, \n\tSQ_WorkWCForms.Name, \n\tSQ_WorkWCForms.TransactionEffectiveDate\n\tFROM SQ_WorkWCForms\n\tINNER JOIN SQ_WCPols00Record\n\tON SQ_WCPols00Record.WCTrackHistoryID = SQ_WorkWCForms.WCTrackHistoryID\n),\nEXP_09_Format_Output AS (\n\tSELECT\n\tCURRENT_TIMESTAMP AS o_ExtractDate,\n\tAuditId,\n\tWCTrackHistoryID,\n\tLinkData,\n\tFormName,\n\tState,\n\t-- *INF*: :LKP.LKP_SupWCPOLS('DCT',State,'WCPOLS09Record','StateCodeRecord09')\r\n\t-- \r\n\t-- \r\n\t-- --IIF((IsNull(FoundFlag) and StateCount > 1),'99', :LKP.LKP_SupWCPOLS('DCT',State,'WCPOLS09Record','StateCodeRecord09'))\n\tLKP_SUPWCPOLS__DCT_State_WCPOLS09Record_StateCodeRecord09.WCPOLSCode AS o_StateCode,\n\t'09' AS o_RecordTypeCode,\n\t'WC000402' AS o_EndorsementNumber,\n\t-- *INF*: SUBSTR(FormName, Length(FormName)-4, 1)\n\tSUBSTR(FormName, Length(FormName) - 4, 1) AS v_BureauID,\n\t-- *INF*: IIF(v_BureauID >= 'A' and v_BureauID <= 'Z', v_BureauID,' ')\n\tIFF(v_BureauID >= 'A' and v_BureauID <= 'Z', v_BureauID, ' ') AS o_BureauVersionIdentifierEditionIdentifier,\n\t-- *INF*: SUBSTR(FormName, Length(FormName)-3, 4)\n\tSUBSTR(FormName, Length(FormName) - 3, 4) AS o_CarrierVersionIdentifier,\n\t-- *INF*: To_Char(ExperienceModEffectiveDate,'YYMMDD')\n\tTo_Char(ExperienceModEffectiveDate, 'YYMMDD') AS o_ContingentModificationEffectiveDate,\n\tTransactionEffectiveDate,\n\t-- *INF*: To_Char(TransactionEffectiveDate, 'YYMMDD')\n\tTo_Char(TransactionEffectiveDate, 'YYMMDD') AS o_EndorsementEffectiveDate,\n\tName AS NameOfInsured,\n\tAnniversaryRatingDate,\n\t-- *INF*: To_Char(AnniversaryRatingDate, 'YYMMDD')\n\tTo_Char(AnniversaryRatingDate, 'YYMMDD') AS o_AnniversaryRatingDate\n\tFROM JNR_09_Record\n\tLEFT JOIN LKP_SUPWCPOLS LKP_SUPWCPOLS__DCT_State_WCPOLS09Record_StateCodeRecord09\n\tON LKP_SUPWCPOLS__DCT_State_WCPOLS09Record_StateCodeRecord09.SourcesystemID = 'DCT'\n\tAND LKP_SUPWCPOLS__DCT_State_WCPOLS09Record_StateCodeRecord09.SourceCode = State\n\tAND LKP_SUPWCPOLS__DCT_State_WCPOLS09Record_StateCodeRecord09.TableName = 'WCPOLS09Record'\n\tAND LKP_SUPWCPOLS__DCT_State_WCPOLS09Record_StateCodeRecord09.ProcessName = 'StateCodeRecord09'\n\n),\nWCPols09Record AS (\n\n\t------------ PRE SQL ----------\n\tDELETE\r\n\t  FROM dbo.WCPols09Record\r\n\t  WHERE 1=1\r\n\t  AND AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\n\t-------------------------------\n\n\n\tINSERT INTO WCPols09Record\n\t(ExtractDate, AuditId, WCTrackHistoryID, LinkData, StateCode, RecordTypeCode, EndorsementNumber, BureauVersionIdentifierEditionIdentifier, CarrierVersionIdentifier, AnniversaryRatingDate, NameOfInsured, EndorsementEffectiveDate)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\tAUDITID, \n\tWCTRACKHISTORYID, \n\tLINKDATA, \n\to_StateCode AS STATECODE, \n\to_RecordTypeCode AS RECORDTYPECODE, \n\to_EndorsementNumber AS ENDORSEMENTNUMBER, \n\to_BureauVersionIdentifierEditionIdentifier AS BUREAUVERSIONIDENTIFIEREDITIONIDENTIFIER, \n\to_CarrierVersionIdentifier AS CARRIERVERSIONIDENTIFIER, \n\to_AnniversaryRatingDate AS ANNIVERSARYRATINGDATE, \n\tNAMEOFINSURED, \n\to_EndorsementEffectiveDate AS ENDORSEMENTEFFECTIVEDATE\n\tFROM EXP_09_Format_Output\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE_09": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

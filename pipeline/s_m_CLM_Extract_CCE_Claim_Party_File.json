@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_Extract_CCE_Claim_Party_File",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_Extract_CCE_Claim_Party_File",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_EDW_Claim_Tables AS (\n\tSELECT co.claim_occurrence_key as claim_occurrence_key, \r\n\t      cp.claim_party_key as claim_party_key,\r\n\t\tRTRIM(co.s3p_claim_num) as s3p_claim_num,\r\n\t\tcp.claim_party_full_name as claim_party_full_name,\r\n\t\tcp.claim_party_birthdate as claim_party_birthdate,\r\n\t\tRTRIM(cpo.claim_party_role_code) as claim_party_role_code,\r\n\t\tco.claim_occurrence_ak_id as claim_occurrence_ak_id,\r\n\t\tcp.claim_party_ak_id as claim_party_ak_id,\r\n\t\tROW_NUMBER() OVER (PARTITION BY co.claim_occurrence_ak_id, cp.claim_party_ak_id ORDER BY cpo.claim_party_role_code) as RoleNumberForCPO,\r\n\tcp.claim_party_state as Party_State,\r\n\t\tcp.claim_party_city as Party_City,\r\n\t\tcp.claim_party_addr as Party_Street,\r\n\t\tcp.claim_party_zip as Party_Zip\r\n\tFROM dbo.claim_party_occurrence cpo with (nolock) \r\n\tINNER JOIN dbo.claim_occurrence co with (nolock) ON co.claim_occurrence_ak_id = cpo.claim_occurrence_ak_id AND co.crrnt_snpsht_flag = 1\r\n\tand cpo.crrnt_snpsht_flag = 1\r\n\tINNER JOIN dbo.claim_party cp with (nolock) ON cpo.claim_party_ak_id = cp.claim_party_ak_id AND cp.crrnt_snpsht_flag = 1\r\n\tAND co.source_sys_id = 'EXCEED'\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\r\n\tORDER BY co.claim_occurrence_key,cp.claim_party_full_name\n),\nEXP_Evaluate AS (\n\tSELECT\n\tclaim_occurrence_key,\n\tclaim_party_key,\n\ts3p_claim_num,\n\tclaim_party_full_name,\n\tclaim_party_birthdate,\n\tclaim_party_role_code,\n\tclaim_occurrence_ak_id,\n\tclaim_party_ak_id,\n\tRoleNumberForCPO,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- claim_party_birthdate = TO_DATE('12/31/9999','MM/DD/YYYY'),'N',\r\n\t-- claim_party_birthdate = TO_DATE('12/31/2100','MM/DD/YYYY'),'N',\r\n\t-- DATE_DIFF(SYSDATE, claim_party_birthdate,'YYYY') < 18,'Y',\r\n\t-- 'N')\r\n\t-- \r\n\t-- \r\n\t-- --IIF(DATE_DIFF(SYSDATE, claim_party_birthdate,'YYYY') < 18, 'Y','N')\n\tDECODE(\n\t    TRUE,\n\t    claim_party_birthdate = TO_TIMESTAMP('12/31/9999', 'MM/DD/YYYY'), 'N',\n\t    claim_party_birthdate = TO_TIMESTAMP('12/31/2100', 'MM/DD/YYYY'), 'N',\n\t    DATEDIFF(YEAR,CURRENT_TIMESTAMP,claim_party_birthdate) < 18, 'Y',\n\t    'N'\n\t) AS MinorFlag,\n\t-- *INF*: IIF(v_prev_row_claim_occurrence_ak_id = claim_occurrence_ak_id  AND v_prev_row_claim_party_ak_id = claim_party_ak_id,\r\n\t-- v_prev_row_role_values  ||  ', '  ||  claim_party_role_code, claim_party_role_code)\n\tIFF(\n\t    v_prev_row_claim_occurrence_ak_id = claim_occurrence_ak_id\n\t    and v_prev_row_claim_party_ak_id = claim_party_ak_id,\n\t    v_prev_row_role_values || ', ' || claim_party_role_code,\n\t    claim_party_role_code\n\t) AS v_role_values,\n\tv_role_values AS Role_values,\n\tclaim_occurrence_ak_id AS v_prev_row_claim_occurrence_ak_id,\n\tclaim_party_ak_id AS v_prev_row_claim_party_ak_id,\n\tv_role_values AS v_prev_row_role_values,\n\tclaim_party_state,\n\tclaim_party_city,\n\tclaim_party_addr,\n\tclaim_party_zip\n\tFROM SQ_EDW_Claim_Tables\n),\nAGG_Data AS (\n\tSELECT\n\tclaim_occurrence_key,\n\ts3p_claim_num,\n\tclaim_party_full_name,\n\tclaim_party_key,\n\tclaim_party_birthdate,\n\tclaim_occurrence_ak_id,\n\tclaim_party_ak_id,\n\tRoleNumberForCPO,\n\tMinorFlag,\n\tRole_values,\n\t-- *INF*: LAST(Role_values)\n\tLAST(Role_values) AS Out_Role_values,\n\tclaim_party_state,\n\tclaim_party_city,\n\tclaim_party_addr,\n\tclaim_party_zip\n\tFROM EXP_Evaluate\n\tGROUP BY claim_occurrence_ak_id, claim_party_ak_id\n),\nClaim_Party_File AS (\n\tINSERT INTO FF_Claim_Party_File\n\t(Claim_Number, Party_Id, Claim_Party_Full_Name, Minor_Flag, Rolevalues, Party_State, Party_City, Party_Street, Party_Zip)\n\tSELECT \n\ts3p_claim_num AS CLAIM_NUMBER, \n\tclaim_party_key AS PARTY_ID, \n\tclaim_party_full_name AS CLAIM_PARTY_FULL_NAME, \n\tMinorFlag AS MINOR_FLAG, \n\tOut_Role_values AS ROLEVALUES, \n\tclaim_party_state AS PARTY_STATE, \n\tclaim_party_city AS PARTY_CITY, \n\tclaim_party_addr AS PARTY_STREET, \n\tclaim_party_zip AS PARTY_ZIP\n\tFROM AGG_Data\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/ClaimDataServices/"
+        },
+        "annotations": []
+    }
+}

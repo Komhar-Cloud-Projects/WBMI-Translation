@@ -988,16 +988,12 @@ EXP_PassThrough_Source_Fields AS (
 	PremiumType,
 	ReasonAmendedCode AS i_ReasonAmendedCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ReasonAmendedCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ReasonAmendedCode
-	) AS o_ReasonAmendedCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_ReasonAmendedCode) AS o_ReasonAmendedCode,
 	SupPremiumTransactionCodeId,
 	-- *INF*: :LKP.LKP_sup_premium_transaction_code(SupPremiumTransactionCodeId)
 	LKP_SUP_PREMIUM_TRANSACTION_CODE_SupPremiumTransactionCodeId.StandardPremiumTransactionCode AS v_PremiumTransactionCode,
 	-- *INF*: IIF(ISNULL(v_PremiumTransactionCode), 'N/A', v_PremiumTransactionCode)
-	IFF(v_PremiumTransactionCode IS NULL,
-		'N/A',
-		v_PremiumTransactionCode
-	) AS o_PremiumTransactionCode,
+	IFF(v_PremiumTransactionCode IS NULL, 'N/A', v_PremiumTransactionCode) AS o_PremiumTransactionCode,
 	pol_sym,
 	pms_pol_lob_code,
 	InsuranceLine,
@@ -1034,45 +1030,26 @@ EXP_PassThrough_Source_Fields AS (
 	InsuranceSegmentCode AS i_InsuranceSegmentCode,
 	StandardInsuranceLineCode AS i_StandardInsuranceLineCode,
 	-- *INF*: IIF(NOT ISNULL(i_ProductCode), i_ProductCode, '000')
-	IFF(i_ProductCode IS NOT NULL,
-		i_ProductCode,
-		'000'
-	) AS ProductCode,
+	IFF(i_ProductCode IS NOT NULL, i_ProductCode, '000') AS ProductCode,
 	-- *INF*: IIF(NOT ISNULL(i_PolicyOfferingCode), i_PolicyOfferingCode, '000')
-	IFF(i_PolicyOfferingCode IS NOT NULL,
-		i_PolicyOfferingCode,
-		'000'
-	) AS PolicyOfferingCode,
+	IFF(i_PolicyOfferingCode IS NOT NULL, i_PolicyOfferingCode, '000') AS PolicyOfferingCode,
 	-- *INF*: IIF(NOT ISNULL(i_InsuranceReferenceLineOfBusinessCode), i_InsuranceReferenceLineOfBusinessCode, '000')
-	IFF(i_InsuranceReferenceLineOfBusinessCode IS NOT NULL,
-		i_InsuranceReferenceLineOfBusinessCode,
-		'000'
+	IFF(
+	    i_InsuranceReferenceLineOfBusinessCode IS NOT NULL, i_InsuranceReferenceLineOfBusinessCode,
+	    '000'
 	) AS InsuranceReferenceLineOfBusinessCode,
 	-- *INF*: IIF(NOT ISNULL(i_EnterpriseGroupCode), i_EnterpriseGroupCode, '1')
-	IFF(i_EnterpriseGroupCode IS NOT NULL,
-		i_EnterpriseGroupCode,
-		'1'
-	) AS EnterpriseGroupCode,
+	IFF(i_EnterpriseGroupCode IS NOT NULL, i_EnterpriseGroupCode, '1') AS EnterpriseGroupCode,
 	-- *INF*: IIF(NOT ISNULL(i_InsuranceReferenceLegalEntityCode), i_InsuranceReferenceLegalEntityCode, '1')
-	IFF(i_InsuranceReferenceLegalEntityCode IS NOT NULL,
-		i_InsuranceReferenceLegalEntityCode,
-		'1'
+	IFF(
+	    i_InsuranceReferenceLegalEntityCode IS NOT NULL, i_InsuranceReferenceLegalEntityCode, '1'
 	) AS InsuranceReferenceLegalEntityCode,
 	-- *INF*: IIF(NOT ISNULL(i_StrategicProfitCenterCode), i_StrategicProfitCenterCode, '6')
-	IFF(i_StrategicProfitCenterCode IS NOT NULL,
-		i_StrategicProfitCenterCode,
-		'6'
-	) AS StrategicProfitCenterCode,
+	IFF(i_StrategicProfitCenterCode IS NOT NULL, i_StrategicProfitCenterCode, '6') AS StrategicProfitCenterCode,
 	-- *INF*: IIF(NOT ISNULL(i_InsuranceSegmentCode), i_InsuranceSegmentCode, 'N/A')
-	IFF(i_InsuranceSegmentCode IS NOT NULL,
-		i_InsuranceSegmentCode,
-		'N/A'
-	) AS InsuranceSegmentCode,
+	IFF(i_InsuranceSegmentCode IS NOT NULL, i_InsuranceSegmentCode, 'N/A') AS InsuranceSegmentCode,
 	-- *INF*: IIF(NOT ISNULL(i_StandardInsuranceLineCode), i_StandardInsuranceLineCode, 'N/A')
-	IFF(i_StandardInsuranceLineCode IS NOT NULL,
-		i_StandardInsuranceLineCode,
-		'N/A'
-	) AS StandardInsuranceLineCode,
+	IFF(i_StandardInsuranceLineCode IS NOT NULL, i_StandardInsuranceLineCode, 'N/A') AS StandardInsuranceLineCode,
 	RiskLocationHashKey,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	PerilGroup,
@@ -1088,10 +1065,7 @@ EXP_PassThrough_Source_Fields AS (
 	CustomerCareCommissionRate,
 	RatingPlanCode AS i_RatingPlanCode,
 	-- *INF*: IIF(ISNULL(i_RatingPlanCode), '1', i_RatingPlanCode)
-	IFF(i_RatingPlanCode IS NULL,
-		'1',
-		i_RatingPlanCode
-	) AS o_RatingPlanCode,
+	IFF(i_RatingPlanCode IS NULL, '1', i_RatingPlanCode) AS o_RatingPlanCode,
 	DeclaredEventFlag
 	FROM SQ_PremiumTransaction_Tables
 	LEFT JOIN LKP_SUP_PREMIUM_TRANSACTION_CODE LKP_SUP_PREMIUM_TRANSACTION_CODE_SupPremiumTransactionCodeId
@@ -1169,70 +1143,46 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		StatisticalCoverageAKID,
 		PremiumTransactionCode,
 		-- *INF*: LTRIM(RTRIM(PremiumTransactionCode))
-		LTRIM(RTRIM(PremiumTransactionCode
-			)
-		) AS PremiumTransactionCode_out,
+		LTRIM(RTRIM(PremiumTransactionCode)) AS PremiumTransactionCode_out,
 		PremiumTransactionEnteredDate,
 		PremiumTransactionEffectiveDate,
 		PremiumTransactionExpirationDate,
 		PremiumTransactionBookedDate,
 		PremiumType,
 		-- *INF*: LTRIM(RTRIM(PremiumType))
-		LTRIM(RTRIM(PremiumType
-			)
-		) AS PremiumType_out,
+		LTRIM(RTRIM(PremiumType)) AS PremiumType_out,
 		ReasonAmendedCode,
 		-- *INF*: LTRIM(RTRIM(ReasonAmendedCode))
-		LTRIM(RTRIM(ReasonAmendedCode
-			)
-		) AS ReasonAmendedCode_out,
+		LTRIM(RTRIM(ReasonAmendedCode)) AS ReasonAmendedCode_out,
 		PolicySymbol,
 		-- *INF*: LTRIM(RTRIM(PolicySymbol))
-		LTRIM(RTRIM(PolicySymbol
-			)
-		) AS PolicySymbol_out,
+		LTRIM(RTRIM(PolicySymbol)) AS PolicySymbol_out,
 		Line_of_Business,
 		-- *INF*: LTRIM(RTRIM(Line_of_Business))
-		LTRIM(RTRIM(Line_of_Business
-			)
-		) AS Line_of_Business_out,
+		LTRIM(RTRIM(Line_of_Business)) AS Line_of_Business_out,
 		Insurance_Line,
 		-- *INF*: LTRIM(RTRIM(Insurance_Line))
-		LTRIM(RTRIM(Insurance_Line
-			)
-		) AS Insurance_Line_out,
+		LTRIM(RTRIM(Insurance_Line)) AS Insurance_Line_out,
 		TypeBureauCode,
 		-- *INF*: LTRIM(RTRIM(TypeBureauCode))
-		LTRIM(RTRIM(TypeBureauCode
-			)
-		) AS TypeBureauCode_out,
+		LTRIM(RTRIM(TypeBureauCode)) AS TypeBureauCode_out,
 		RiskUnitGroup,
 		-- *INF*: LTRIM(RTRIM(RiskUnitGroup))
-		LTRIM(RTRIM(RiskUnitGroup
-			)
-		) AS RiskUnitGroup_out,
+		LTRIM(RTRIM(RiskUnitGroup)) AS RiskUnitGroup_out,
 		RiskUnit,
 		RiskUnitSequenceNumber,
 		MajorPerilCode,
 		-- *INF*: LTRIM(RTRIM(MajorPerilCode))
-		LTRIM(RTRIM(MajorPerilCode
-			)
-		) AS MajorPerilCode_out,
+		LTRIM(RTRIM(MajorPerilCode)) AS MajorPerilCode_out,
 		SubLineCode,
 		-- *INF*: LTRIM(RTRIM(SubLineCode))
-		LTRIM(RTRIM(SubLineCode
-			)
-		) AS SubLineCode_out,
+		LTRIM(RTRIM(SubLineCode)) AS SubLineCode_out,
 		ClassCode,
 		-- *INF*: LTRIM(RTRIM(ClassCode))
-		LTRIM(RTRIM(ClassCode
-			)
-		) AS ClassCode_out,
+		LTRIM(RTRIM(ClassCode)) AS ClassCode_out,
 		class_of_business,
 		-- *INF*: LTRIM(RTRIM(class_of_business))
-		LTRIM(RTRIM(class_of_business
-			)
-		) AS class_of_business_out,
+		LTRIM(RTRIM(class_of_business)) AS class_of_business_out,
 		nsi_indicator,
 		PremiumAmount,
 		FullTermPremiumAmount,
@@ -1385,8 +1335,7 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		class_of_business_out AS class_of_business,
 		nsi_indicator,
 		-- *INF*: SUBSTR(PolicySymbol,1,2)
-		SUBSTR(PolicySymbol, 1, 2
-		) AS v_symbol_pos_1_2,
+		SUBSTR(PolicySymbol, 1, 2) AS v_symbol_pos_1_2,
 		PremiumAmount,
 		FullTermPremiumAmount,
 		EarnedPremiumAmount,
@@ -1441,131 +1390,50 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- 
 		-- 
 		-- 
-		DECODE(TRUE,
-			v_symbol_pos_1_2 IN ('CP','BC','BD','NA','NB','NS','BO') 
-			AND type_bureau = 'CF' 
-			AND risk_unit_group IN ('917','918','967','974'), '140',
-			v_symbol_pos_1_2 IN ('HH','FP','FL') 
-			AND major_peril IN ('210','211','249','250','081','280') 
-			AND type_bureau = 'PF', '20',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BO','BG','BH','NS','NA','NB','CM') 
-			AND major_peril IN ('415','463','490','496','498','599','919') 
-			AND type_bureau = 'CF', '20',
-			v_symbol_pos_1_2 IN ('HH','FP','FL') 
-			AND major_peril IN (@{pipeline().parameters.MP_220_230}) 
-			AND type_bureau = 'PF', '40',
-			v_symbol_pos_1_2 IN ('BA','BB','BC','BD','BG','BH','CP','FL','FP','NA','NB','NS','BO') 
-			AND major_peril = '050' 
-			AND type_bureau IN ('MS','NB'), '40',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BO','BG','BH','NS','NA','NB','CM') 
-			AND major_peril IN ('425','426','435','455','480','599') 
-			AND type_bureau IN ('CF','GS'), '40',
-			v_symbol_pos_1_2 IN ('HH','HB','HA','HX','PX','XX') 
-			AND major_peril IN ('002','097','911','050','914') 
-			AND type_bureau IN ('PH','MS'), '60',
-			v_symbol_pos_1_2 IN ('BG','BH') 
-			AND major_peril IN ('901','902') 
-			AND type_bureau IN ('CF','BC'), '80',
-			v_symbol_pos_1_2 IN ('BA','BB') 
-			AND major_peril = '919' 
-			AND type_bureau = 'BC', '80',
-			v_symbol_pos_1_2 IN ('BA','BB','BG','BH') 
-			AND major_peril IN ('903','904','905','908') 
-			AND type_bureau IN ('BB','BE','BC'), '80',
-			v_symbol_pos_1_2 IN ('BA','BB','XX') 
-			AND major_peril IN ('901','902','599') 
-			AND type_bureau IN ('BB','BE','BC'), '80',
-			v_symbol_pos_1_2 IN ('BG','BH') 
-			AND major_peril IN ('901','902') 
-			AND type_bureau IN ('CF','BC'), '100',
-			v_symbol_pos_1_2 IN ('BG','BH','BA','BB') 
-			AND major_peril = '907' 
-			AND type_bureau = 'BE', '100',
-			v_symbol_pos_1_2 IN ('BA','BB') 
-			AND major_peril = '919' 
-			AND type_bureau = 'BE', '100',
-			v_symbol_pos_1_2 IN ('BA','BB','XX') 
-			AND major_peril IN ('901','902','599') 
-			AND type_bureau IN ('BB','BE','BC'), '100',
-			v_symbol_pos_1_2 IN ('HH','HB','HA','IP','IB','CP','BC','BD','BO','BG','BH','NS','NA','NB','PX') 
-			AND major_peril IN ('062','200','201','042','044','206','551','599','909','919') 
-			AND type_bureau IN ('PI','IM'), '120',
-			v_symbol_pos_1_2 IN ('HH','HB','HA','FP','FL') 
-			AND major_peril IN (@{pipeline().parameters.MP_260_261}) 
-			AND type_bureau = 'PQ', '140',
-			type_bureau IN ('WP','WC'), '160',
-			v_symbol_pos_1_2 IN ('HH','HB','HA','IB') 
-			AND type_bureau = 'PL', '200',
-			v_symbol_pos_1_2 IN ('CP','BO','NS','BG','BH') 
-			AND major_peril IN ('530','550','599') 
-			AND type_bureau = 'GL' 
-			AND subline IN ('336','365'), '240',
-			v_symbol_pos_1_2 IN ('CM','NE','NS') 
-			AND major_peril IN ('540') 
-			AND type_bureau = 'GL' 
-			AND subline = '336', '250',
-			v_symbol_pos_1_2 IN ('HH','UP','XX') 
-			AND major_peril = '017' 
-			AND type_bureau = 'GL', '220',
-			v_symbol_pos_1_2 IN ('UC','CP','NU','CU') 
-			AND major_peril = '517' 
-			AND type_bureau = 'GL', '220',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BO','BG','BH','NS','NA','NB','XX') 
-			AND major_peril IN ('530','599','919','067','084','085') 
-			AND type_bureau = 'GL' 
-			AND subline IN (@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350},'324'), '220',
-			v_symbol_pos_1_2 IN ('BA','BB') 
-			AND major_peril = '540' 
-			AND type_bureau = 'BE' 
-			AND risk_unit_group IN ('366','367'), '230',
-			v_symbol_pos_1_2 IN ('BC','BD','BG','BH','CP','BO','NS','NA','NB') 
-			AND major_peril IN ('540','541') 
-			AND type_bureau = 'GL' 
-			AND subline = '334' 
-			AND class_code IN ('22222','22250'), '230',
-			v_symbol_pos_1_2 IN ('BC','BD','BG','BH','CP','BO','NS','NA','NB') 
-			AND type_bureau = 'GL' 
-			AND risk_unit_group IN ('366','367'), '230',
-			v_symbol_pos_1_2 IN ('BG','BH','CP','NS') 
-			AND major_peril = '540' 
-			AND type_bureau = 'AL' 
-			AND risk_unit_group IN ('417','418'), '230',
-			v_symbol_pos_1_2 = 'NS' 
-			AND major_peril = '540' 
-			AND type_bureau = 'GL' 
-			AND risk_unit_group IN ('340'), '230',
-			v_symbol_pos_1_2 = 'CP' 
-			AND major_peril = '540' 
-			AND type_bureau = 'GL' 
-			AND subline = '345', '230',
-			v_symbol_pos_1_2 IN ('NN','NK','NE','CD','CM'), '230',
-			v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','HA','XX') 
-			AND major_peril IN (@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'150') 
-			AND type_bureau IN ('RL','RN'), '260',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB','XX') 
-			AND major_peril IN (@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'150','599',@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_930_931}) 
-			AND type_bureau IN ('AN','AL','NB'), '340',
-			v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','HA','XA','XX') 
-			AND major_peril IN (@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},'168','169',@{pipeline().parameters.MP_170_178},'912') 
-			AND type_bureau = 'RP', '440',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB') 
-			AND major_peril IN ('132',@{pipeline().parameters.MP_145_160},'177','178',@{pipeline().parameters.MP_163_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) 
-			AND type_bureau = 'AP', '500',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BO','BG','BH','NS','NA','NB','FF') 
-			AND major_peril IN ('566','016') 
-			AND type_bureau IN ('FT','CR'), '600',
-			v_symbol_pos_1_2 IN ('NF') 
-			AND major_peril IN ('566','599'), '600',
-			v_symbol_pos_1_2 IN ('NC','NJ','NL','NO','NM'), '620',
-			v_symbol_pos_1_2 = 'NF' 
-			AND major_peril = '565', '640',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BO','BG','BH','NS','NA','NB') 
-			AND major_peril IN ('565','599') 
-			AND type_bureau IN ('BT','CR','FT'), '640',
-			v_symbol_pos_1_2 IN ('CP','BA','BB','BC','BD','BO','BG','BH','NS','NA','NB','CM') 
-			AND major_peril IN ('570','906') 
-			AND type_bureau IN ('CF','BE','BM'), '660',
-			'999'
+		DECODE(
+		    TRUE,
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','NA','NB','NS','BO') AND type_bureau = 'CF' AND risk_unit_group IN ('917','918','967','974'), '140',
+		    v_symbol_pos_1_2 IN ('HH','FP','FL') AND major_peril IN ('210','211','249','250','081','280') AND type_bureau = 'PF', '20',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BO','BG','BH','NS','NA','NB','CM') AND major_peril IN ('415','463','490','496','498','599','919') AND type_bureau = 'CF', '20',
+		    v_symbol_pos_1_2 IN ('HH','FP','FL') AND major_peril IN (@{pipeline().parameters.MP_220_230}) AND type_bureau = 'PF', '40',
+		    v_symbol_pos_1_2 IN ('BA','BB','BC','BD','BG','BH','CP','FL','FP','NA','NB','NS','BO') AND major_peril = '050' AND type_bureau IN ('MS','NB'), '40',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BO','BG','BH','NS','NA','NB','CM') AND major_peril IN ('425','426','435','455','480','599') AND type_bureau IN ('CF','GS'), '40',
+		    v_symbol_pos_1_2 IN ('HH','HB','HA','HX','PX','XX') AND major_peril IN ('002','097','911','050','914') AND type_bureau IN ('PH','MS'), '60',
+		    v_symbol_pos_1_2 IN ('BG','BH') AND major_peril IN ('901','902') AND type_bureau IN ('CF','BC'), '80',
+		    v_symbol_pos_1_2 IN ('BA','BB') AND major_peril = '919' AND type_bureau = 'BC', '80',
+		    v_symbol_pos_1_2 IN ('BA','BB','BG','BH') AND major_peril IN ('903','904','905','908') AND type_bureau IN ('BB','BE','BC'), '80',
+		    v_symbol_pos_1_2 IN ('BA','BB','XX') AND major_peril IN ('901','902','599') AND type_bureau IN ('BB','BE','BC'), '80',
+		    v_symbol_pos_1_2 IN ('BG','BH') AND major_peril IN ('901','902') AND type_bureau IN ('CF','BC'), '100',
+		    v_symbol_pos_1_2 IN ('BG','BH','BA','BB') AND major_peril = '907' AND type_bureau = 'BE', '100',
+		    v_symbol_pos_1_2 IN ('BA','BB') AND major_peril = '919' AND type_bureau = 'BE', '100',
+		    v_symbol_pos_1_2 IN ('BA','BB','XX') AND major_peril IN ('901','902','599') AND type_bureau IN ('BB','BE','BC'), '100',
+		    v_symbol_pos_1_2 IN ('HH','HB','HA','IP','IB','CP','BC','BD','BO','BG','BH','NS','NA','NB','PX') AND major_peril IN ('062','200','201','042','044','206','551','599','909','919') AND type_bureau IN ('PI','IM'), '120',
+		    v_symbol_pos_1_2 IN ('HH','HB','HA','FP','FL') AND major_peril IN (@{pipeline().parameters.MP_260_261}) AND type_bureau = 'PQ', '140',
+		    type_bureau IN ('WP','WC'), '160',
+		    v_symbol_pos_1_2 IN ('HH','HB','HA','IB') AND type_bureau = 'PL', '200',
+		    v_symbol_pos_1_2 IN ('CP','BO','NS','BG','BH') AND major_peril IN ('530','550','599') AND type_bureau = 'GL' AND subline IN ('336','365'), '240',
+		    v_symbol_pos_1_2 IN ('CM','NE','NS') AND major_peril IN ('540') AND type_bureau = 'GL' AND subline = '336', '250',
+		    v_symbol_pos_1_2 IN ('HH','UP','XX') AND major_peril = '017' AND type_bureau = 'GL', '220',
+		    v_symbol_pos_1_2 IN ('UC','CP','NU','CU') AND major_peril = '517' AND type_bureau = 'GL', '220',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BO','BG','BH','NS','NA','NB','XX') AND major_peril IN ('530','599','919','067','084','085') AND type_bureau = 'GL' AND subline IN (@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350},'324'), '220',
+		    v_symbol_pos_1_2 IN ('BA','BB') AND major_peril = '540' AND type_bureau = 'BE' AND risk_unit_group IN ('366','367'), '230',
+		    v_symbol_pos_1_2 IN ('BC','BD','BG','BH','CP','BO','NS','NA','NB') AND major_peril IN ('540','541') AND type_bureau = 'GL' AND subline = '334' AND class_code IN ('22222','22250'), '230',
+		    v_symbol_pos_1_2 IN ('BC','BD','BG','BH','CP','BO','NS','NA','NB') AND type_bureau = 'GL' AND risk_unit_group IN ('366','367'), '230',
+		    v_symbol_pos_1_2 IN ('BG','BH','CP','NS') AND major_peril = '540' AND type_bureau = 'AL' AND risk_unit_group IN ('417','418'), '230',
+		    v_symbol_pos_1_2 = 'NS' AND major_peril = '540' AND type_bureau = 'GL' AND risk_unit_group IN ('340'), '230',
+		    v_symbol_pos_1_2 = 'CP' AND major_peril = '540' AND type_bureau = 'GL' AND subline = '345', '230',
+		    v_symbol_pos_1_2 IN ('NN','NK','NE','CD','CM'), '230',
+		    v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','HA','XX') AND major_peril IN (@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'150') AND type_bureau IN ('RL','RN'), '260',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB','XX') AND major_peril IN (@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'150','599',@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_930_931}) AND type_bureau IN ('AN','AL','NB'), '340',
+		    v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','HA','XA','XX') AND major_peril IN (@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},'168','169',@{pipeline().parameters.MP_170_178},'912') AND type_bureau = 'RP', '440',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB') AND major_peril IN ('132',@{pipeline().parameters.MP_145_160},'177','178',@{pipeline().parameters.MP_163_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) AND type_bureau = 'AP', '500',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BO','BG','BH','NS','NA','NB','FF') AND major_peril IN ('566','016') AND type_bureau IN ('FT','CR'), '600',
+		    v_symbol_pos_1_2 IN ('NF') AND major_peril IN ('566','599'), '600',
+		    v_symbol_pos_1_2 IN ('NC','NJ','NL','NO','NM'), '620',
+		    v_symbol_pos_1_2 = 'NF' AND major_peril = '565', '640',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BO','BG','BH','NS','NA','NB') AND major_peril IN ('565','599') AND type_bureau IN ('BT','CR','FT'), '640',
+		    v_symbol_pos_1_2 IN ('CP','BA','BB','BC','BD','BO','BG','BH','NS','NA','NB','CM') AND major_peril IN ('570','906') AND type_bureau IN ('CF','BE','BM'), '660',
+		    '999'
 		) AS v_Coverage_Code_1_or_ASL_Code,
 		v_Coverage_Code_1_or_ASL_Code AS aslcode,
 		-- *INF*: DECODE(TRUE,
@@ -1588,41 +1456,20 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- 
 		-- 
 		-- 
-		DECODE(TRUE,
-			v_symbol_pos_1_2 IN ('HH','FP','FL') 
-			AND major_peril IN (@{pipeline().parameters.MP_220_230}) 
-			AND type_bureau = 'PF', '421',
-			v_symbol_pos_1_2 IN ('BA','BB','BC','BD','BG','BH','CP','FL','FP','NA','NB','NS','BO') 
-			AND major_peril = '050' 
-			AND type_bureau IN ('MS','NB'), '421',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BO','BG','BH','NS','NA','NB','CM') 
-			AND major_peril IN ('425','426','435','455','480','599') 
-			AND type_bureau IN ('CF','GS'), '421',
-			v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','HA','XX') 
-			AND major_peril IN ('130') 
-			AND type_bureau = 'RN', '270',
-			v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','HA','XX') 
-			AND major_peril IN (@{pipeline().parameters.MP_100_121},@{pipeline().parameters.MP_140_143},'150') 
-			AND type_bureau = 'RL', '280',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB','XX') 
-			AND major_peril IN ('130',@{pipeline().parameters.MP_930_931}) 
-			AND type_bureau IN ('AN','NB'), '360',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB','XX') 
-			AND major_peril IN (@{pipeline().parameters.MP_100_125},@{pipeline().parameters.MP_140_143},'150',@{pipeline().parameters.MP_271_274},'599') 
-			AND type_bureau IN ('AL'), '380',
-			v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','HA','XX') 
-			AND major_peril IN (@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_155},'168','169',@{pipeline().parameters.MP_157_163},'174','912') 
-			AND type_bureau = 'RP', '460',
-			v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','XA','XX') 
-			AND major_peril IN (@{pipeline().parameters.MP_170_173},'178','156') 
-			AND type_bureau = 'RP', '480',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB') 
-			AND major_peril IN ('132','147','177','270','145','146',@{pipeline().parameters.MP_148_155},@{pipeline().parameters.MP_157_160},@{pipeline().parameters.MP_163_166}) 
-			AND type_bureau = 'AP', '520',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB') 
-			AND major_peril IN ('156','178','269',@{pipeline().parameters.MP_170_173}) 
-			AND type_bureau = 'AP', '540',
-			'N/A'
+		DECODE(
+		    TRUE,
+		    v_symbol_pos_1_2 IN ('HH','FP','FL') AND major_peril IN (@{pipeline().parameters.MP_220_230}) AND type_bureau = 'PF', '421',
+		    v_symbol_pos_1_2 IN ('BA','BB','BC','BD','BG','BH','CP','FL','FP','NA','NB','NS','BO') AND major_peril = '050' AND type_bureau IN ('MS','NB'), '421',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BO','BG','BH','NS','NA','NB','CM') AND major_peril IN ('425','426','435','455','480','599') AND type_bureau IN ('CF','GS'), '421',
+		    v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','HA','XX') AND major_peril IN ('130') AND type_bureau = 'RN', '270',
+		    v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','HA','XX') AND major_peril IN (@{pipeline().parameters.MP_100_121},@{pipeline().parameters.MP_140_143},'150') AND type_bureau = 'RL', '280',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB','XX') AND major_peril IN ('130',@{pipeline().parameters.MP_930_931}) AND type_bureau IN ('AN','NB'), '360',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB','XX') AND major_peril IN (@{pipeline().parameters.MP_100_125},@{pipeline().parameters.MP_140_143},'150',@{pipeline().parameters.MP_271_274},'599') AND type_bureau IN ('AL'), '380',
+		    v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','HA','XX') AND major_peril IN (@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_155},'168','169',@{pipeline().parameters.MP_157_163},'174','912') AND type_bureau = 'RP', '460',
+		    v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','XA','XX') AND major_peril IN (@{pipeline().parameters.MP_170_173},'178','156') AND type_bureau = 'RP', '480',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB') AND major_peril IN ('132','147','177','270','145','146',@{pipeline().parameters.MP_148_155},@{pipeline().parameters.MP_157_160},@{pipeline().parameters.MP_163_166}) AND type_bureau = 'AP', '520',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB') AND major_peril IN ('156','178','269',@{pipeline().parameters.MP_170_173}) AND type_bureau = 'AP', '540',
+		    'N/A'
 		) AS v_Coverage_Code_2_or_SubASLCode,
 		v_Coverage_Code_2_or_SubASLCode AS subaslcode,
 		-- *INF*: DECODE(TRUE,
@@ -1641,29 +1488,16 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- 
 		-- 
 		-- 
-		DECODE(TRUE,
-			v_symbol_pos_1_2 IN ('HH','FP','FL') 
-			AND major_peril IN (@{pipeline().parameters.MP_220_230}) 
-			AND type_bureau = 'PF', '421',
-			v_symbol_pos_1_2 IN ('BA','BB','BC','BD','BG','BH','CP','FL','FP','NA','NB','NS','BO') 
-			AND major_peril = '050' 
-			AND type_bureau IN ('MS','NB'), '421',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BO','BG','BH','NS','NA','NB','CM') 
-			AND major_peril IN ('425','426','435','455','480','599') 
-			AND type_bureau IN ('CF','GS'), '421',
-			v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','HA','XX') 
-			AND major_peril IN (@{pipeline().parameters.MP_101_103},@{pipeline().parameters.MP_114_119},'130',@{pipeline().parameters.MP_140_143},'100') 
-			AND type_bureau IN ('RL','RN'), '300',
-			v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','HA','XX') 
-			AND major_peril IN (@{pipeline().parameters.MP_110_112},@{pipeline().parameters.MP_120_121},'100') 
-			AND type_bureau = 'RL', '320',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB','XX') 
-			AND major_peril IN (@{pipeline().parameters.MP_101_103},@{pipeline().parameters.MP_114_119},'130',@{pipeline().parameters.MP_140_143},'150',@{pipeline().parameters.MP_271_274},'100','599',@{pipeline().parameters.MP_930_931}) 
-			AND type_bureau IN ('AN','AL','NB'), '400',
-			v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB','XX') 
-			AND major_peril IN (@{pipeline().parameters.MP_110_112},@{pipeline().parameters.MP_120_125},'100',@{pipeline().parameters.MP_271_274},'599') 
-			AND type_bureau IN ('AL'), '420',
-			'N/A'
+		DECODE(
+		    TRUE,
+		    v_symbol_pos_1_2 IN ('HH','FP','FL') AND major_peril IN (@{pipeline().parameters.MP_220_230}) AND type_bureau = 'PF', '421',
+		    v_symbol_pos_1_2 IN ('BA','BB','BC','BD','BG','BH','CP','FL','FP','NA','NB','NS','BO') AND major_peril = '050' AND type_bureau IN ('MS','NB'), '421',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BO','BG','BH','NS','NA','NB','CM') AND major_peril IN ('425','426','435','455','480','599') AND type_bureau IN ('CF','GS'), '421',
+		    v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','HA','XX') AND major_peril IN (@{pipeline().parameters.MP_101_103},@{pipeline().parameters.MP_114_119},'130',@{pipeline().parameters.MP_140_143},'100') AND type_bureau IN ('RL','RN'), '300',
+		    v_symbol_pos_1_2 IN ('HH','PP','PA','PM','PS','PT','HA','XX') AND major_peril IN (@{pipeline().parameters.MP_110_112},@{pipeline().parameters.MP_120_121},'100') AND type_bureau = 'RL', '320',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB','XX') AND major_peril IN (@{pipeline().parameters.MP_101_103},@{pipeline().parameters.MP_114_119},'130',@{pipeline().parameters.MP_140_143},'150',@{pipeline().parameters.MP_271_274},'100','599',@{pipeline().parameters.MP_930_931}) AND type_bureau IN ('AN','AL','NB'), '400',
+		    v_symbol_pos_1_2 IN ('CP','BC','BD','BG','BH','GG','NS','NA','NB','XX') AND major_peril IN (@{pipeline().parameters.MP_110_112},@{pipeline().parameters.MP_120_125},'100',@{pipeline().parameters.MP_271_274},'599') AND type_bureau IN ('AL'), '420',
+		    'N/A'
 		) AS v_Coverage_Code_3_or_NonsSubASLcode,
 		v_Coverage_Code_3_or_NonsSubASLcode AS Nonsubaslcode,
 		-- *INF*: DECODE(TRUE,
@@ -1733,200 +1567,65 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- '999')
 		-- 
 		-- 
-		DECODE(TRUE,
-			v_symbol_pos_1_2 IN ('HH','HX','PX','XA','XX') 
-			AND major_peril IN ('081','280',@{pipeline().parameters.MP_210_211},@{pipeline().parameters.MP_249_250},@{pipeline().parameters.MP_220_230},'002','097','911','914','042','062','200','201','206',@{pipeline().parameters.MP_260_261},'017','150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178},'044','010') 
-			AND type_bureau IN ('PF','PH','PI','PQ','PL','GL','RL','RP','RN'), '20',
-			v_symbol_pos_1_2 = 'PP' 
-			AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}) 
-			AND type_bureau IN ('RL','RP','RN'), '40',
-			v_symbol_pos_1_2 = 'PA' 
-			AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}) 
-			AND type_bureau IN ('RL','RP','RN'), '60',
-			v_symbol_pos_1_2 IN ('HB','HX') 
-			AND major_peril IN (@{pipeline().parameters.MP_220_230},'002','042','044','062','200','201','206',@{pipeline().parameters.MP_260_261}) 
-			AND type_bureau IN ('NB','PH','PI','PQ','PL'), '80',
-			v_symbol_pos_1_2 = 'HA' 
-			AND major_peril IN (@{pipeline().parameters.MP_220_230},'002','042','044','062','200','201','206',@{pipeline().parameters.MP_260_261}) 
-			AND type_bureau IN ('NB','PH','PI','PQ','PL'), '100',
-			v_symbol_pos_1_2 IN ('FP','FL') 
-			AND major_peril IN (@{pipeline().parameters.MP_210_211},'081',@{pipeline().parameters.MP_249_250},@{pipeline().parameters.MP_220_230},@{pipeline().parameters.MP_260_261}) 
-			AND type_bureau IN ('NB','PF','PQ'), '120',
-			v_symbol_pos_1_2 IN ('IP') 
-			AND type_bureau IN ('PI','PL'), '140',
-			v_symbol_pos_1_2 IN ('PM') 
-			AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}) 
-			AND type_bureau IN ('RL','RP','RN'), '160',
-			v_symbol_pos_1_2 IN ('IB') 
-			AND type_bureau IN ('PI','PL'), '180',
-			v_symbol_pos_1_2 IN ('PS') 
-			AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}) 
-			AND type_bureau IN ('RL','RP','RN'), '200',
-			v_symbol_pos_1_2 IN ('PT') 
-			AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}) 
-			AND type_bureau IN ('RL','RP','RN'), '220',
-			v_symbol_pos_1_2 IN ('BC','BD','CP','BG','BH','GG','XX') 
-			AND major_peril IN ('150','599',@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},@{pipeline().parameters.MP_930_931},'132','147','177','178',@{pipeline().parameters.MP_145_146},@{pipeline().parameters.MP_148_160},@{pipeline().parameters.MP_163_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) 
-			AND type_bureau IN ('AN','AL','NB','AP') 
-			AND NOT SubLine IN ('641','643','645','648'), '240',
-			v_symbol_pos_1_2 IN ('CP') 
-			AND major_peril IN ('599',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_930_931},'132','177','178',@{pipeline().parameters.MP_145_159},@{pipeline().parameters.MP_165_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) 
-			AND type_bureau IN ('AN','AL','NB','AP') 
-			AND SubLine IN ('641','643','645','648'), '260',
-			( SUBSTR(v_symbol_pos_1_2, 1, 1
-				) IN ('V','W','Y') 
-				OR v_symbol_pos_1_2 = 'XX' 
-			) 
-			AND type_bureau IN ('WC','WP'), '280',
-			v_symbol_pos_1_2 IN ('CP') 
-			AND NOT class_of_business IN ('I','O') 
-			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480') 
-			AND type_bureau IN ('CF','NB','GS'), '300',
-			v_symbol_pos_1_2 IN ('CP') 
-			AND class_of_business = 'I' 
-			AND major_peril = '599' 
-			AND type_bureau = 'GL' 
-			AND SubLine = '336' 
-			AND Class_Code = '22222', '320',
-			v_symbol_pos_1_2 IN ('CP','FF') 
-			AND class_of_business = 'I' 
-			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480','551','530','540','550','566','016','565') 
-			AND type_bureau IN ('GL') 
-			AND SubLine IN (@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350},'336','365') 
-			AND NOT Class_Code IN ('99999','22222','22250'), '320',
-			v_symbol_pos_1_2 IN ('CP','FF') 
-			AND class_of_business = 'I' 
-			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480','551','530','540','550','566','016','565') 
-			AND type_bureau IN ('CF','NB','GS','IM','CM','FT','CR','BT'), '320',
-			v_symbol_pos_1_2 IN ('CP','FF') 
-			AND class_of_business = 'O' 
-			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480','551','530','540','550','566','016','565') 
-			AND type_bureau IN ('GL') 
-			AND SubLine IN (@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350},'336','365') 
-			AND NOT Class_Code IN ('99999','22222','22250'), '340',
-			v_symbol_pos_1_2 IN ('CP','FF') 
-			AND class_of_business = 'O' 
-			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480','551','530','540','550','566','016','565') 
-			AND type_bureau IN ('CF','NB','GS','IM','CM','FT','CR','BT'), '340',
-			v_symbol_pos_1_2 IN ('CP') 
-			AND NOT class_of_business IN ('I','O') 
-			AND major_peril IN ('530','599','919','550','540') 
-			AND type_bureau = 'GL' 
-			AND SubLine IN (@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350},'336','365') 
-			AND NOT Class_Code IN ('22222','22250'), '360',
-			v_symbol_pos_1_2 IN ('CP') 
-			AND NOT class_of_business IN ('I','O') 
-			AND major_peril = '599' 
-			AND type_bureau = 'GL' 
-			AND Class_Code IN ('22222','22250'), '360',
-			v_symbol_pos_1_2 = 'XX' 
-			AND major_peril IN ('084','085') 
-			AND type_bureau = 'GL', '360',
-			v_symbol_pos_1_2 IN ('CP','FF') 
-			AND NOT class_of_business IN ('I','O') 
-			AND major_peril IN ('566','016','565','599') 
-			AND type_bureau IN ('FT','BT','CR'), '380',
-			v_symbol_pos_1_2 IN ('CP') 
-			AND NOT class_of_business IN ('I','O') 
-			AND major_peril IN ('551','599','919') 
-			AND type_bureau = 'IM', '400',
-			v_symbol_pos_1_2 IN ('BA','BB','XX') 
-			AND major_peril IN (@{pipeline().parameters.MP_901_904},'905','908','919','599','907','919') 
-			AND type_bureau IN ('BB','BC','BE','NB'), '420',
-			v_symbol_pos_1_2 IN ('BC','BD') 
-			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480','551','530','566','565') 
-			AND type_bureau IN ('CF','GS','IM','GL','FT','BT'), '440',
-			v_symbol_pos_1_2 IN ('BO') 
-			AND major_peril IN ('016','336','365','415','463','490','496','498','599','919','425','426','435','455','480','550','551','530','566','565','540') 
-			AND type_bureau IN ('GL') 
-			AND SubLine IN ('334','336'), '450',
-			v_symbol_pos_1_2 IN ('BO') 
-			AND major_peril IN ('016','336','365','415','463','490','496','498','599','919','425','426','435','455','480','550','551','530','566','565','540') 
-			AND type_bureau IN ('CR','CF','IM','FT','BT'), '450',
-			v_symbol_pos_1_2 IN ('BG','BH') 
-			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480','551','530','566','565','907','269',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_930_931},@{pipeline().parameters.MP_901_904},@{pipeline().parameters.MP_145_160},@{pipeline().parameters.MP_165_166},@{pipeline().parameters.MP_170_173}) 
-			AND type_bureau IN ('CF','GS','IM','GL','AN','AL','NB','BE','AP','FT','BT','BC'), '460',
-			v_symbol_pos_1_2 = 'UP' 
-			AND Major_Peril = '017' 
-			AND Type_Bureau = 'GL', '480',
-			v_symbol_pos_1_2 IN ('CP','UC','CU') 
-			AND Major_Peril = '517' 
-			AND Type_Bureau = 'GL', '500',
-			v_symbol_pos_1_2 IN ('BG','BH','CP') 
-			AND major_peril IN ('540') 
-			AND Type_Bureau = 'AL' 
-			AND Risk_Unit_Group IN ('417','418'), '520',
-			major_peril IN ('540') 
-			AND Type_Bureau = 'BE' 
-			AND Risk_Unit_Group IN ('366','367'), '520',
-			v_symbol_pos_1_2 IN ('BC','BD','BG','BH','CP') 
-			AND major_peril IN ('540') 
-			AND Type_Bureau = 'GL' 
-			AND Class_Code IN ('22222','22250') 
-			AND Risk_Unit_Group IN ('366','367','340'), '520',
-			v_symbol_pos_1_2 IN ('CD','CM') 
-			AND major_peril IN ('540','599','919') 
-			AND Type_Bureau = 'GL' 
-			AND SubLine IN ('345','334'), '530',
-			v_symbol_pos_1_2 IN ('BA','BB','BC','BD','BG','BH','BO','CP') 
-			AND major_peril IN ('570','906') 
-			AND Type_Bureau IN ('CF','BE','BM'), '540',
-			v_symbol_pos_1_2 IN ('HA','HB','HH','CP','BA','BB','BC','BD','BG','BH','BO','FL','FP') 
-			AND major_peril = '050' 
-			AND Type_Bureau IN ('MS','NB'), '560',
-			PolicySymbol = 'ZZZ', '580',
-			v_symbol_pos_1_2 IN ('NA','NB','NS') 
-			AND major_peril IN ('150','599',@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},@{pipeline().parameters.MP_930_931},'132','147','177','178',@{pipeline().parameters.MP_145_146},@{pipeline().parameters.MP_148_160},@{pipeline().parameters.MP_163_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) 
-			AND Type_Bureau IN ('AN','AL','NB','AP') 
-			AND NOT SubLine IN ('641','643','645','648'), '600',
-			v_symbol_pos_1_2 IN ('NS') 
-			AND major_peril IN ('599',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_930_931},'132','177','178',@{pipeline().parameters.MP_145_159},@{pipeline().parameters.MP_165_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) 
-			AND Type_Bureau IN ('AN','AL','NB','AP') 
-			AND SubLine IN ('641','643','645','648'), '620',
-			SUBSTR(v_symbol_pos_1_2, 1, 1
-			) IN ('R','S','T') 
-			AND type_bureau IN ('WC','WP'), '640',
-			v_symbol_pos_1_2 IN ('NS') 
-			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480') 
-			AND Type_Bureau IN ('CF','NB','GS'), '660',
-			v_symbol_pos_1_2 IN ('NS','NE') 
-			AND NOT class_of_business IN ('I','O') 
-			AND major_peril IN ('530','919','540','599') 
-			AND type_bureau IN ('GL') 
-			AND SubLine IN (@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350},'336'), '680',
-			v_symbol_pos_1_2 IN ('NS') 
-			AND major_peril IN ('566','016','565','599') 
-			AND Type_Bureau IN ('FT','BT','CR'), '700',
-			v_symbol_pos_1_2 IN ('NS') 
-			AND major_peril IN ('551','919','599') 
-			AND Type_Bureau IN ('IM'), '720',
-			v_symbol_pos_1_2 IN ('NA','NB') 
-			AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480','551','530','566','565') 
-			AND Type_Bureau IN ('GS','IM','GL','FT','BT','CF'), '740',
-			v_symbol_pos_1_2 = 'NU' 
-			AND major_peril = '517' 
-			AND Type_Bureau = 'GL', '760',
-			v_symbol_pos_1_2 = 'NF' 
-			AND major_peril IN ('566','599','565'), '780',
-			v_symbol_pos_1_2 IN ('NC','NJ','NL','NO','NM'), '800',
-			v_symbol_pos_1_2 = 'NE' 
-			AND SubLine = '360', '820',
-			v_symbol_pos_1_2 IN ('NA','NB','NS') 
-			AND Major_Peril = '540' 
-			AND Type_Bureau = 'GL' 
-			AND Class_Code IN ('22222','22250') 
-			AND Risk_Unit_Group IN ('366','367','340'), '820',
-			v_symbol_pos_1_2 IN ('NK','NN'), '840',
-			v_symbol_pos_1_2 IN ('NA','NB','NS') 
-			AND Major_Peril IN ('570','906') 
-			AND Type_Bureau IN ('CF','BE','BM'), '860',
-			v_symbol_pos_1_2 IN ('NA','NB','NS') 
-			AND Major_Peril = '050' 
-			AND Type_Bureau IN ('MS','NB'), '880',
-			SUBSTR(v_symbol_pos_1_2, 1, 1
-			) IN ('A','J','L') 
-			AND type_bureau IN ('WC','WP'), '950',
-			'999'
+		DECODE(
+		    TRUE,
+		    v_symbol_pos_1_2 IN ('HH','HX','PX','XA','XX') AND major_peril IN ('081','280',@{pipeline().parameters.MP_210_211},@{pipeline().parameters.MP_249_250},@{pipeline().parameters.MP_220_230},'002','097','911','914','042','062','200','201','206',@{pipeline().parameters.MP_260_261},'017','150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178},'044','010') AND type_bureau IN ('PF','PH','PI','PQ','PL','GL','RL','RP','RN'), '20',
+		    v_symbol_pos_1_2 = 'PP' AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}) AND type_bureau IN ('RL','RP','RN'), '40',
+		    v_symbol_pos_1_2 = 'PA' AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}) AND type_bureau IN ('RL','RP','RN'), '60',
+		    v_symbol_pos_1_2 IN ('HB','HX') AND major_peril IN (@{pipeline().parameters.MP_220_230},'002','042','044','062','200','201','206',@{pipeline().parameters.MP_260_261}) AND type_bureau IN ('NB','PH','PI','PQ','PL'), '80',
+		    v_symbol_pos_1_2 = 'HA' AND major_peril IN (@{pipeline().parameters.MP_220_230},'002','042','044','062','200','201','206',@{pipeline().parameters.MP_260_261}) AND type_bureau IN ('NB','PH','PI','PQ','PL'), '100',
+		    v_symbol_pos_1_2 IN ('FP','FL') AND major_peril IN (@{pipeline().parameters.MP_210_211},'081',@{pipeline().parameters.MP_249_250},@{pipeline().parameters.MP_220_230},@{pipeline().parameters.MP_260_261}) AND type_bureau IN ('NB','PF','PQ'), '120',
+		    v_symbol_pos_1_2 IN ('IP') AND type_bureau IN ('PI','PL'), '140',
+		    v_symbol_pos_1_2 IN ('PM') AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}) AND type_bureau IN ('RL','RP','RN'), '160',
+		    v_symbol_pos_1_2 IN ('IB') AND type_bureau IN ('PI','PL'), '180',
+		    v_symbol_pos_1_2 IN ('PS') AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}) AND type_bureau IN ('RL','RP','RN'), '200',
+		    v_symbol_pos_1_2 IN ('PT') AND major_peril IN ('150',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},'168','169','912',@{pipeline().parameters.MP_145_149},@{pipeline().parameters.MP_151_163},@{pipeline().parameters.MP_170_178}) AND type_bureau IN ('RL','RP','RN'), '220',
+		    v_symbol_pos_1_2 IN ('BC','BD','CP','BG','BH','GG','XX') AND major_peril IN ('150','599',@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},@{pipeline().parameters.MP_930_931},'132','147','177','178',@{pipeline().parameters.MP_145_146},@{pipeline().parameters.MP_148_160},@{pipeline().parameters.MP_163_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) AND type_bureau IN ('AN','AL','NB','AP') AND NOT SubLine IN ('641','643','645','648'), '240',
+		    v_symbol_pos_1_2 IN ('CP') AND major_peril IN ('599',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_930_931},'132','177','178',@{pipeline().parameters.MP_145_159},@{pipeline().parameters.MP_165_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) AND type_bureau IN ('AN','AL','NB','AP') AND SubLine IN ('641','643','645','648'), '260',
+		    (SUBSTR(v_symbol_pos_1_2, 1, 1) IN ('V','W','Y') OR v_symbol_pos_1_2 = 'XX') AND type_bureau IN ('WC','WP'), '280',
+		    v_symbol_pos_1_2 IN ('CP') AND NOT class_of_business IN ('I','O') AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480') AND type_bureau IN ('CF','NB','GS'), '300',
+		    v_symbol_pos_1_2 IN ('CP') AND class_of_business = 'I' AND major_peril = '599' AND type_bureau = 'GL' AND SubLine = '336' AND Class_Code = '22222', '320',
+		    v_symbol_pos_1_2 IN ('CP','FF') AND class_of_business = 'I' AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480','551','530','540','550','566','016','565') AND type_bureau IN ('GL') AND SubLine IN (@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350},'336','365') AND NOT Class_Code IN ('99999','22222','22250'), '320',
+		    v_symbol_pos_1_2 IN ('CP','FF') AND class_of_business = 'I' AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480','551','530','540','550','566','016','565') AND type_bureau IN ('CF','NB','GS','IM','CM','FT','CR','BT'), '320',
+		    v_symbol_pos_1_2 IN ('CP','FF') AND class_of_business = 'O' AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480','551','530','540','550','566','016','565') AND type_bureau IN ('GL') AND SubLine IN (@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350},'336','365') AND NOT Class_Code IN ('99999','22222','22250'), '340',
+		    v_symbol_pos_1_2 IN ('CP','FF') AND class_of_business = 'O' AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480','551','530','540','550','566','016','565') AND type_bureau IN ('CF','NB','GS','IM','CM','FT','CR','BT'), '340',
+		    v_symbol_pos_1_2 IN ('CP') AND NOT class_of_business IN ('I','O') AND major_peril IN ('530','599','919','550','540') AND type_bureau = 'GL' AND SubLine IN (@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350},'336','365') AND NOT Class_Code IN ('22222','22250'), '360',
+		    v_symbol_pos_1_2 IN ('CP') AND NOT class_of_business IN ('I','O') AND major_peril = '599' AND type_bureau = 'GL' AND Class_Code IN ('22222','22250'), '360',
+		    v_symbol_pos_1_2 = 'XX' AND major_peril IN ('084','085') AND type_bureau = 'GL', '360',
+		    v_symbol_pos_1_2 IN ('CP','FF') AND NOT class_of_business IN ('I','O') AND major_peril IN ('566','016','565','599') AND type_bureau IN ('FT','BT','CR'), '380',
+		    v_symbol_pos_1_2 IN ('CP') AND NOT class_of_business IN ('I','O') AND major_peril IN ('551','599','919') AND type_bureau = 'IM', '400',
+		    v_symbol_pos_1_2 IN ('BA','BB','XX') AND major_peril IN (@{pipeline().parameters.MP_901_904},'905','908','919','599','907','919') AND type_bureau IN ('BB','BC','BE','NB'), '420',
+		    v_symbol_pos_1_2 IN ('BC','BD') AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480','551','530','566','565') AND type_bureau IN ('CF','GS','IM','GL','FT','BT'), '440',
+		    v_symbol_pos_1_2 IN ('BO') AND major_peril IN ('016','336','365','415','463','490','496','498','599','919','425','426','435','455','480','550','551','530','566','565','540') AND type_bureau IN ('GL') AND SubLine IN ('334','336'), '450',
+		    v_symbol_pos_1_2 IN ('BO') AND major_peril IN ('016','336','365','415','463','490','496','498','599','919','425','426','435','455','480','550','551','530','566','565','540') AND type_bureau IN ('CR','CF','IM','FT','BT'), '450',
+		    v_symbol_pos_1_2 IN ('BG','BH') AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480','551','530','566','565','907','269',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_930_931},@{pipeline().parameters.MP_901_904},@{pipeline().parameters.MP_145_160},@{pipeline().parameters.MP_165_166},@{pipeline().parameters.MP_170_173}) AND type_bureau IN ('CF','GS','IM','GL','AN','AL','NB','BE','AP','FT','BT','BC'), '460',
+		    v_symbol_pos_1_2 = 'UP' AND Major_Peril = '017' AND Type_Bureau = 'GL', '480',
+		    v_symbol_pos_1_2 IN ('CP','UC','CU') AND Major_Peril = '517' AND Type_Bureau = 'GL', '500',
+		    v_symbol_pos_1_2 IN ('BG','BH','CP') AND major_peril IN ('540') AND Type_Bureau = 'AL' AND Risk_Unit_Group IN ('417','418'), '520',
+		    major_peril IN ('540') AND Type_Bureau = 'BE' AND Risk_Unit_Group IN ('366','367'), '520',
+		    v_symbol_pos_1_2 IN ('BC','BD','BG','BH','CP') AND major_peril IN ('540') AND Type_Bureau = 'GL' AND Class_Code IN ('22222','22250') AND Risk_Unit_Group IN ('366','367','340'), '520',
+		    v_symbol_pos_1_2 IN ('CD','CM') AND major_peril IN ('540','599','919') AND Type_Bureau = 'GL' AND SubLine IN ('345','334'), '530',
+		    v_symbol_pos_1_2 IN ('BA','BB','BC','BD','BG','BH','BO','CP') AND major_peril IN ('570','906') AND Type_Bureau IN ('CF','BE','BM'), '540',
+		    v_symbol_pos_1_2 IN ('HA','HB','HH','CP','BA','BB','BC','BD','BG','BH','BO','FL','FP') AND major_peril = '050' AND Type_Bureau IN ('MS','NB'), '560',
+		    PolicySymbol = 'ZZZ', '580',
+		    v_symbol_pos_1_2 IN ('NA','NB','NS') AND major_peril IN ('150','599',@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_140_143},@{pipeline().parameters.MP_930_931},'132','147','177','178',@{pipeline().parameters.MP_145_146},@{pipeline().parameters.MP_148_160},@{pipeline().parameters.MP_163_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) AND Type_Bureau IN ('AN','AL','NB','AP') AND NOT SubLine IN ('641','643','645','648'), '600',
+		    v_symbol_pos_1_2 IN ('NS') AND major_peril IN ('599',@{pipeline().parameters.MP_100_130},@{pipeline().parameters.MP_271_274},@{pipeline().parameters.MP_930_931},'132','177','178',@{pipeline().parameters.MP_145_159},@{pipeline().parameters.MP_165_166},@{pipeline().parameters.MP_170_173},@{pipeline().parameters.MP_269_270}) AND Type_Bureau IN ('AN','AL','NB','AP') AND SubLine IN ('641','643','645','648'), '620',
+		    SUBSTR(v_symbol_pos_1_2, 1, 1) IN ('R','S','T') AND type_bureau IN ('WC','WP'), '640',
+		    v_symbol_pos_1_2 IN ('NS') AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480') AND Type_Bureau IN ('CF','NB','GS'), '660',
+		    v_symbol_pos_1_2 IN ('NS','NE') AND NOT class_of_business IN ('I','O') AND major_peril IN ('530','919','540','599') AND type_bureau IN ('GL') AND SubLine IN (@{pipeline().parameters.SUB_325_335},@{pipeline().parameters.SUB_342_350},'336'), '680',
+		    v_symbol_pos_1_2 IN ('NS') AND major_peril IN ('566','016','565','599') AND Type_Bureau IN ('FT','BT','CR'), '700',
+		    v_symbol_pos_1_2 IN ('NS') AND major_peril IN ('551','919','599') AND Type_Bureau IN ('IM'), '720',
+		    v_symbol_pos_1_2 IN ('NA','NB') AND major_peril IN ('415','463','490','496','498','599','919','425','426','435','455','480','551','530','566','565') AND Type_Bureau IN ('GS','IM','GL','FT','BT','CF'), '740',
+		    v_symbol_pos_1_2 = 'NU' AND major_peril = '517' AND Type_Bureau = 'GL', '760',
+		    v_symbol_pos_1_2 = 'NF' AND major_peril IN ('566','599','565'), '780',
+		    v_symbol_pos_1_2 IN ('NC','NJ','NL','NO','NM'), '800',
+		    v_symbol_pos_1_2 = 'NE' AND SubLine = '360', '820',
+		    v_symbol_pos_1_2 IN ('NA','NB','NS') AND Major_Peril = '540' AND Type_Bureau = 'GL' AND Class_Code IN ('22222','22250') AND Risk_Unit_Group IN ('366','367','340'), '820',
+		    v_symbol_pos_1_2 IN ('NK','NN'), '840',
+		    v_symbol_pos_1_2 IN ('NA','NB','NS') AND Major_Peril IN ('570','906') AND Type_Bureau IN ('CF','BE','BM'), '860',
+		    v_symbol_pos_1_2 IN ('NA','NB','NS') AND Major_Peril = '050' AND Type_Bureau IN ('MS','NB'), '880',
+		    SUBSTR(v_symbol_pos_1_2, 1, 1) IN ('A','J','L') AND type_bureau IN ('WC','WP'), '950',
+		    '999'
 		) AS v_ASLProduct_Code,
 		v_ASLProduct_Code AS ASLProduct_Code,
 		-- *INF*: DECODE(TRUE,
@@ -2011,95 +1710,47 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- IN(v_symbol_pos_1_2,'HH','UP','HX','XX') AND Type_Bureau ='GL' AND Major_Peril='017','890',
 		-- 
 		-- '000')
-		DECODE(TRUE,
-			v_symbol_pos_1_2 IN ('CP','NS') 
-			AND Insurance_Line = 'GL' 
-			AND Major_Peril IN ('530','599') 
-			AND RTRIM(Class_Code
-			) = '99999' 
-			AND SubLine IN ('334','336'), '320',
-			v_symbol_pos_1_2 IN ('CP','NS') 
-			AND Line_of_Business = 'CPP' 
-			AND Type_Bureau = 'CR', '520',
-			v_symbol_pos_1_2 IN ('CP','NS') 
-			AND Type_Bureau = 'IM', '550',
-			v_symbol_pos_1_2 = 'CP' 
-			AND Insurance_Line = 'GL' 
-			AND SubLine = '365', '380',
-			v_symbol_pos_1_2 IN ('CP','NS') 
-			AND Insurance_Line = 'GL' 
-			AND Major_Peril IN ('599','919') 
-			AND Risk_Unit_Group IN ('345','367'), '300',
-			v_symbol_pos_1_2 IN ('CP','NS') 
-			AND Insurance_Line = 'GL' 
-			AND Major_Peril IN ('530','540','919','599') 
-			AND RTRIM(Class_Code
-			) <> '99999' 
-			AND NOT Risk_Unit_Group IN ('345','346','355','900','901','367','286','365'), '300',
-			v_symbol_pos_1_2 IN ('CF','CP','NS') 
-			AND Insurance_Line IN ('BM','CF','CG','CR','GS','N/A') 
-			AND NOT Type_Bureau IN ('AL','AP','AN','GL','IM'), '500',
-			v_symbol_pos_1_2 IN ('BC','BD','BG','BH','CA','CP','NB','NS','NA','XX') 
-			AND Insurance_Line IN ('N/A','CA') 
-			AND Type_Bureau IN ('AL','AP','AN'), '200',
-			v_symbol_pos_1_2 IN ('CP','NS') 
-			AND Insurance_Line = 'GL' 
-			AND Risk_Unit_Group = '355', '370',
-			v_symbol_pos_1_2 IN ('BA','BB','XX') 
-			AND Line_of_Business IN ('BOP','BO') 
-			AND NOT Insurance_Line IN ('CA'), '400',
-			v_symbol_pos_1_2 = 'CM' 
-			AND Insurance_Line = 'GL' 
-			AND Risk_Unit_Group IN ('901','902','903'), '360',
-			v_symbol_pos_1_2 IN ('CP','NS') 
-			AND Insurance_Line = 'GL' 
-			AND Risk_Unit_Group = '345', '365',
-			v_symbol_pos_1_2 IN ('CU','NU','CP','UC') 
-			AND Type_Bureau = 'GL' 
-			AND Major_Peril IN ('517'), '900',
-			v_symbol_pos_1_2 IN ('BC','BD') 
-			AND Insurance_Line IN ('CF','GL','CR','IM','CG','N/A'), '410',
-			v_symbol_pos_1_2 = 'CP' 
-			AND Insurance_Line = 'GL' 
-			AND Risk_Unit_Group = '346', '321',
-			v_symbol_pos_1_2 IN ('NA','NB') 
-			AND Insurance_Line IN ('CF','GL','CR','IM','CG'), '430',
-			v_symbol_pos_1_2 IN ('BG','BH','GG') 
-			AND Insurance_Line IN ('CF','GL','CR','IM','GA','CG','N/A'), '420',
-			v_symbol_pos_1_2 = 'NF' 
-			AND class_of_business IN ('XN','XO','XP','XQ','9'), '620',
-			v_symbol_pos_1_2 IN ('CD','CM') 
-			AND Risk_Unit_Group IN ('367','900'), '350',
-			v_symbol_pos_1_2 IN ('BA','BB') 
-			AND Insurance_Line = 'GL' 
-			AND Risk_Unit_Group IN ('110','111'), '200',
-			v_symbol_pos_1_2 IN ('CP','NS') 
-			AND Insurance_Line = 'GA', '340',
-			v_symbol_pos_1_2 IN ('HH','HA','HB','HX','IB','IP','PA','PX','XX') 
-			AND Type_Bureau IN ('PH','PI','PL','PQ','MS'), '800',
-			v_symbol_pos_1_2 = 'BO', '450',
-			v_symbol_pos_1_2 IN ('GL','XX') 
-			AND Major_Peril IN ('084','085'), '300',
-			v_symbol_pos_1_2 = 'NN', '310',
-			v_symbol_pos_1_2 = 'NK', '311',
-			v_symbol_pos_1_2 = 'NE', '330',
-			Major_Peril = '032', '100',
-			v_symbol_pos_1_2 = 'NC', '610',
-			v_symbol_pos_1_2 = 'NJ', '630',
-			v_symbol_pos_1_2 = 'NL', '640',
-			v_symbol_pos_1_2 = 'NM', '650',
-			v_symbol_pos_1_2 = 'NO', '660',
-			v_symbol_pos_1_2 = 'FF', '510',
-			v_symbol_pos_1_2 IN ('FL','FP') 
-			AND Type_Bureau IN ('PF','PQ','MS'), '820',
-			v_symbol_pos_1_2 = 'HH' 
-			AND Type_Bureau = 'PF', '820',
-			v_symbol_pos_1_2 IN ('HH','PA','PM','PP','PS','PT','HA','XX','XA') 
-			AND Type_Bureau IN ('RL','RP','RN'), '850',
-			v_symbol_pos_1_2 IN ('HH','UP','HX','XX') 
-			AND Type_Bureau = 'GL' 
-			AND Major_Peril = '017', '890',
-			'000'
+		DECODE(
+		    TRUE,
+		    v_symbol_pos_1_2 IN ('CP','NS') AND Insurance_Line = 'GL' AND Major_Peril IN ('530','599') AND RTRIM(Class_Code) = '99999' AND SubLine IN ('334','336'), '320',
+		    v_symbol_pos_1_2 IN ('CP','NS') AND Line_of_Business = 'CPP' AND Type_Bureau = 'CR', '520',
+		    v_symbol_pos_1_2 IN ('CP','NS') AND Type_Bureau = 'IM', '550',
+		    v_symbol_pos_1_2 = 'CP' AND Insurance_Line = 'GL' AND SubLine = '365', '380',
+		    v_symbol_pos_1_2 IN ('CP','NS') AND Insurance_Line = 'GL' AND Major_Peril IN ('599','919') AND Risk_Unit_Group IN ('345','367'), '300',
+		    v_symbol_pos_1_2 IN ('CP','NS') AND Insurance_Line = 'GL' AND Major_Peril IN ('530','540','919','599') AND RTRIM(Class_Code) <> '99999' AND NOT Risk_Unit_Group IN ('345','346','355','900','901','367','286','365'), '300',
+		    v_symbol_pos_1_2 IN ('CF','CP','NS') AND Insurance_Line IN ('BM','CF','CG','CR','GS','N/A') AND NOT Type_Bureau IN ('AL','AP','AN','GL','IM'), '500',
+		    v_symbol_pos_1_2 IN ('BC','BD','BG','BH','CA','CP','NB','NS','NA','XX') AND Insurance_Line IN ('N/A','CA') AND Type_Bureau IN ('AL','AP','AN'), '200',
+		    v_symbol_pos_1_2 IN ('CP','NS') AND Insurance_Line = 'GL' AND Risk_Unit_Group = '355', '370',
+		    v_symbol_pos_1_2 IN ('BA','BB','XX') AND Line_of_Business IN ('BOP','BO') AND NOT Insurance_Line IN ('CA'), '400',
+		    v_symbol_pos_1_2 = 'CM' AND Insurance_Line = 'GL' AND Risk_Unit_Group IN ('901','902','903'), '360',
+		    v_symbol_pos_1_2 IN ('CP','NS') AND Insurance_Line = 'GL' AND Risk_Unit_Group = '345', '365',
+		    v_symbol_pos_1_2 IN ('CU','NU','CP','UC') AND Type_Bureau = 'GL' AND Major_Peril IN ('517'), '900',
+		    v_symbol_pos_1_2 IN ('BC','BD') AND Insurance_Line IN ('CF','GL','CR','IM','CG','N/A'), '410',
+		    v_symbol_pos_1_2 = 'CP' AND Insurance_Line = 'GL' AND Risk_Unit_Group = '346', '321',
+		    v_symbol_pos_1_2 IN ('NA','NB') AND Insurance_Line IN ('CF','GL','CR','IM','CG'), '430',
+		    v_symbol_pos_1_2 IN ('BG','BH','GG') AND Insurance_Line IN ('CF','GL','CR','IM','GA','CG','N/A'), '420',
+		    v_symbol_pos_1_2 = 'NF' AND class_of_business IN ('XN','XO','XP','XQ','9'), '620',
+		    v_symbol_pos_1_2 IN ('CD','CM') AND Risk_Unit_Group IN ('367','900'), '350',
+		    v_symbol_pos_1_2 IN ('BA','BB') AND Insurance_Line = 'GL' AND Risk_Unit_Group IN ('110','111'), '200',
+		    v_symbol_pos_1_2 IN ('CP','NS') AND Insurance_Line = 'GA', '340',
+		    v_symbol_pos_1_2 IN ('HH','HA','HB','HX','IB','IP','PA','PX','XX') AND Type_Bureau IN ('PH','PI','PL','PQ','MS'), '800',
+		    v_symbol_pos_1_2 = 'BO', '450',
+		    v_symbol_pos_1_2 IN ('GL','XX') AND Major_Peril IN ('084','085'), '300',
+		    v_symbol_pos_1_2 = 'NN', '310',
+		    v_symbol_pos_1_2 = 'NK', '311',
+		    v_symbol_pos_1_2 = 'NE', '330',
+		    Major_Peril = '032', '100',
+		    v_symbol_pos_1_2 = 'NC', '610',
+		    v_symbol_pos_1_2 = 'NJ', '630',
+		    v_symbol_pos_1_2 = 'NL', '640',
+		    v_symbol_pos_1_2 = 'NM', '650',
+		    v_symbol_pos_1_2 = 'NO', '660',
+		    v_symbol_pos_1_2 = 'FF', '510',
+		    v_symbol_pos_1_2 IN ('FL','FP') AND Type_Bureau IN ('PF','PQ','MS'), '820',
+		    v_symbol_pos_1_2 = 'HH' AND Type_Bureau = 'PF', '820',
+		    v_symbol_pos_1_2 IN ('HH','PA','PM','PP','PS','PT','HA','XX','XA') AND Type_Bureau IN ('RL','RP','RN'), '850',
+		    v_symbol_pos_1_2 IN ('HH','UP','HX','XX') AND Type_Bureau = 'GL' AND Major_Peril = '017', '890',
+		    '000'
 		) AS v_Hierarchy_Product_Code,
 		v_Hierarchy_Product_Code AS Hierarchy_Product_Code,
 		-- *INF*: DECODE(TRUE,
@@ -2146,124 +1797,51 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- v_symbol_pos_1_2='NE','330',
 		-- Type_Bureau='IM','550',
 		-- Major_Peril='032','100')
-		DECODE(TRUE,
-			v_symbol_pos_1_2 IN ('BA','BB') 
-			AND Type_Bureau = 'BE' 
-			AND Major_Peril = '540' 
-			AND Risk_Unit_Group IN ('366','367'), '330',
-			v_symbol_pos_1_2 IN ('BC','BD','BO','CP','NA','NB','NS') 
-			AND Insurance_Line = 'GL' 
-			AND Major_Peril <> '517' 
-			AND NOT RTRIM(Class_Code
-			) IN ('22222','22250'), '300',
-			v_symbol_pos_1_2 IN ('BC','BD','BO','CP','NA','NB','NS') 
-			AND Type_Bureau = 'GL' 
-			AND Major_Peril <> '517' 
-			AND Class_Code IN ('22222','22250'), '330',
-			v_symbol_pos_1_2 IN ('BC','BD','BO','CP','NA','NB','NS') 
-			AND Type_Bureau IN ('CF','GS') 
-			AND Major_Peril IN ('415','463','490','496','498','599','919','425','426','435','455','480'), '500',
-			v_symbol_pos_1_2 = 'HH' 
-			AND Type_Bureau = 'PL' 
-			AND NOT RTRIM(Special_Use
-			) IN ('H164','H828','H075','HOBM','HBBM','HOMT','HOPE','HOTR'), '830',
-			v_symbol_pos_1_2 IN ('CU','NU','CP') 
-			AND Type_Bureau = 'GL' 
-			AND Major_Peril = '517', '900',
-			v_symbol_pos_1_2 = 'HH' 
-			AND Type_Bureau IN ('RL','RP','RN') 
-			AND RTRIM(Class_Code
-			) <> '9', '850',
-			v_symbol_pos_1_2 IN ('BA','BB','BC','BD','BG','BH','BO','CP','NA','NB','NS') 
-			AND Type_Bureau = 'NB' 
-			AND Major_Peril = '050', '590',
-			v_symbol_pos_1_2 = 'CM' 
-			AND Type_Bureau = 'GL' 
-			AND Risk_Unit_Group = '900', '310',
-			v_symbol_pos_1_2 IN ('CP','NS') 
-			AND Insurance_Line = 'GA' 
-			AND Risk_Unit_Group IN ('417','418'), '330',
-			v_symbol_pos_1_2 = 'HH' 
-			AND Type_Bureau = 'PI' 
-			AND Major_Peril = '201', '830',
-			v_symbol_pos_1_2 = 'HH' 
-			AND Type_Bureau = 'GL' 
-			AND Major_Peril = '017', '890',
-			v_symbol_pos_1_2 = 'HH' 
-			AND Type_Bureau = 'PQ' 
-			AND Major_Peril IN ('260','261'), '811',
-			v_symbol_pos_1_2 = 'HH' 
-			AND Type_Bureau = 'MS' 
-			AND Major_Peril = '050', '812',
-			v_symbol_pos_1_2 IN ('BC','BD','BG','BH','CA','CP','NB','NS','NA') 
-			AND Insurance_Line IN ('N/A','CA') 
-			AND Type_Bureau IN ('AL','AP','AN'), '200',
-			v_symbol_pos_1_2 IN ('BA','BB') 
-			AND Insurance_Line = 'GL' 
-			AND Risk_Unit_Group IN ('110','111'), '200',
-			v_symbol_pos_1_2 = 'CM' 
-			AND Insurance_Line = 'GL' 
-			AND Risk_Unit_Group IN ('901','902','903'), '360',
-			v_symbol_pos_1_2 = 'HH' 
-			AND SUBSTR(RiskUnit, 1, 1
-			) = '1' 
-			AND sar_code_2 = '3', '803',
-			v_symbol_pos_1_2 = 'HH' 
-			AND SUBSTR(RiskUnit, 1, 1
-			) = '1' 
-			AND sar_code_2 = '4', '804',
-			v_symbol_pos_1_2 = 'HH' 
-			AND SUBSTR(RiskUnit, 1, 1
-			) = '1' 
-			AND sar_code_2 = '6', '806',
-			v_symbol_pos_1_2 IN ('BA','BB') 
-			AND Major_Peril IN ('901','902','903','904'), '500',
-			v_symbol_pos_1_2 IN ('BA','BB') 
-			AND Major_Peril IN ('901','902','903','904'), '300',
-			v_symbol_pos_1_2 IN ('BC','BD','BG','BH','BO','CP','NA','NB','NS') 
-			AND Type_Bureau IN ('BT','CR','FT'), '520',
-			v_symbol_pos_1_2 IN ('CP','NS') 
-			AND Insurance_Line = 'GA', '340',
-			v_symbol_pos_1_2 IN ('BA','BB','BG') 
-			AND Major_Peril = '908', '520',
-			v_symbol_pos_1_2 = 'HH' 
-			AND RTRIM(Special_Use
-			) IN ('H164','H828'), '880',
-			v_symbol_pos_1_2 = 'HH' 
-			AND RTRIM(Special_Use
-			) IN ('H075','HOBM','HBBM','HOMT','HOPE','HOTR'), '870',
-			v_symbol_pos_1_2 = 'HH' 
-			AND RTRIM(Class_Code
-			) IN ('9221','9222','9223','9224','9225','9226','9231','9232','9233','9234','9235','9236','9520'), '860',
-			v_symbol_pos_1_2 = 'HH' 
-			AND RTRIM(Class_Code
-			) IN ('9620','9900'), '852',
-			v_symbol_pos_1_2 = 'HH' 
-			AND RTRIM(Class_Code
-			) IN ('9410','9442'), '856',
-			v_symbol_pos_1_2 = 'HH' 
-			AND RTRIM(Class_Code
-			) = '9437', '854',
-			v_symbol_pos_1_2 = 'HH' 
-			AND Major_Peril = '097', '813',
-			v_symbol_pos_1_2 = 'HH' 
-			AND Type_Bureau = 'PF', '820',
-			Type_Bureau IN ('CF','BE','BM') 
-			AND Major_Peril IN ('570','906'), '530',
-			v_symbol_pos_1_2 = 'NF' 
-			AND class_of_business IN ('XN','XO','XP','XQ'), '640',
-			v_symbol_pos_1_2 = 'NF' 
-			AND class_of_business = '9', '520',
-			v_symbol_pos_1_2 = 'NK' 
-			AND Type_Bureau = 'GL', '310',
-			v_symbol_pos_1_2 = 'CD' 
-			AND Type_Bureau = 'GL', '310',
-			v_symbol_pos_1_2 = 'NK' 
-			AND Type_Bureau = 'GL', '330',
-			v_symbol_pos_1_2 IN ('NC','NJ','NL','NO','NM'), '600',
-			v_symbol_pos_1_2 = 'NE', '330',
-			Type_Bureau = 'IM', '550',
-			Major_Peril = '032', '100'
+		DECODE(
+		    TRUE,
+		    v_symbol_pos_1_2 IN ('BA','BB') and Type_Bureau = 'BE' and Major_Peril = '540' and Risk_Unit_Group IN ('366','367'), '330',
+		    v_symbol_pos_1_2 IN ('BC','BD','BO','CP','NA','NB','NS') and Insurance_Line = 'GL' and Major_Peril <> '517' and NOT RTRIM(Class_Code) IN ('22222','22250'), '300',
+		    v_symbol_pos_1_2 IN ('BC','BD','BO','CP','NA','NB','NS') and Type_Bureau = 'GL' and Major_Peril <> '517' and Class_Code IN ('22222','22250'), '330',
+		    v_symbol_pos_1_2 IN ('BC','BD','BO','CP','NA','NB','NS') and Type_Bureau IN ('CF','GS') and Major_Peril IN ('415','463','490','496','498','599','919','425','426','435','455','480'), '500',
+		    v_symbol_pos_1_2 = 'HH' and Type_Bureau = 'PL' and NOT RTRIM(Special_Use) IN ('H164','H828','H075','HOBM','HBBM','HOMT','HOPE','HOTR'), '830',
+		    v_symbol_pos_1_2 IN ('CU','NU','CP') and Type_Bureau = 'GL' and Major_Peril = '517', '900',
+		    v_symbol_pos_1_2 = 'HH' and Type_Bureau IN ('RL','RP','RN') and RTRIM(Class_Code) <> '9', '850',
+		    v_symbol_pos_1_2 IN ('BA','BB','BC','BD','BG','BH','BO','CP','NA','NB','NS') and Type_Bureau = 'NB' and Major_Peril = '050', '590',
+		    v_symbol_pos_1_2 = 'CM' and Type_Bureau = 'GL' and Risk_Unit_Group = '900', '310',
+		    v_symbol_pos_1_2 IN ('CP','NS') and Insurance_Line = 'GA' and Risk_Unit_Group IN ('417','418'), '330',
+		    v_symbol_pos_1_2 = 'HH' and Type_Bureau = 'PI' and Major_Peril = '201', '830',
+		    v_symbol_pos_1_2 = 'HH' and Type_Bureau = 'GL' and Major_Peril = '017', '890',
+		    v_symbol_pos_1_2 = 'HH' and Type_Bureau = 'PQ' and Major_Peril IN ('260','261'), '811',
+		    v_symbol_pos_1_2 = 'HH' and Type_Bureau = 'MS' and Major_Peril = '050', '812',
+		    v_symbol_pos_1_2 IN ('BC','BD','BG','BH','CA','CP','NB','NS','NA') and Insurance_Line IN ('N/A','CA') and Type_Bureau IN ('AL','AP','AN'), '200',
+		    v_symbol_pos_1_2 IN ('BA','BB') and Insurance_Line = 'GL' and Risk_Unit_Group IN ('110','111'), '200',
+		    v_symbol_pos_1_2 = 'CM' and Insurance_Line = 'GL' and Risk_Unit_Group IN ('901','902','903'), '360',
+		    v_symbol_pos_1_2 = 'HH' and SUBSTR(RiskUnit, 1, 1) = '1' and sar_code_2 = '3', '803',
+		    v_symbol_pos_1_2 = 'HH' and SUBSTR(RiskUnit, 1, 1) = '1' and sar_code_2 = '4', '804',
+		    v_symbol_pos_1_2 = 'HH' and SUBSTR(RiskUnit, 1, 1) = '1' and sar_code_2 = '6', '806',
+		    v_symbol_pos_1_2 IN ('BA','BB') and Major_Peril IN ('901','902','903','904'), '500',
+		    v_symbol_pos_1_2 IN ('BA','BB') and Major_Peril IN ('901','902','903','904'), '300',
+		    v_symbol_pos_1_2 IN ('BC','BD','BG','BH','BO','CP','NA','NB','NS') and Type_Bureau IN ('BT','CR','FT'), '520',
+		    v_symbol_pos_1_2 IN ('CP','NS') and Insurance_Line = 'GA', '340',
+		    v_symbol_pos_1_2 IN ('BA','BB','BG') and Major_Peril = '908', '520',
+		    v_symbol_pos_1_2 = 'HH' and RTRIM(Special_Use) IN ('H164','H828'), '880',
+		    v_symbol_pos_1_2 = 'HH' and RTRIM(Special_Use) IN ('H075','HOBM','HBBM','HOMT','HOPE','HOTR'), '870',
+		    v_symbol_pos_1_2 = 'HH' and RTRIM(Class_Code) IN ('9221','9222','9223','9224','9225','9226','9231','9232','9233','9234','9235','9236','9520'), '860',
+		    v_symbol_pos_1_2 = 'HH' and RTRIM(Class_Code) IN ('9620','9900'), '852',
+		    v_symbol_pos_1_2 = 'HH' and RTRIM(Class_Code) IN ('9410','9442'), '856',
+		    v_symbol_pos_1_2 = 'HH' and RTRIM(Class_Code) = '9437', '854',
+		    v_symbol_pos_1_2 = 'HH' and Major_Peril = '097', '813',
+		    v_symbol_pos_1_2 = 'HH' and Type_Bureau = 'PF', '820',
+		    Type_Bureau IN ('CF','BE','BM') and Major_Peril IN ('570','906'), '530',
+		    v_symbol_pos_1_2 = 'NF' and class_of_business IN ('XN','XO','XP','XQ'), '640',
+		    v_symbol_pos_1_2 = 'NF' and class_of_business = '9', '520',
+		    v_symbol_pos_1_2 = 'NK' and Type_Bureau = 'GL', '310',
+		    v_symbol_pos_1_2 = 'CD' and Type_Bureau = 'GL', '310',
+		    v_symbol_pos_1_2 = 'NK' and Type_Bureau = 'GL', '330',
+		    v_symbol_pos_1_2 IN ('NC','NJ','NL','NO','NM'), '600',
+		    v_symbol_pos_1_2 = 'NE', '330',
+		    Type_Bureau = 'IM', '550',
+		    Major_Peril = '032', '100'
 		) AS v_Line_Of_Business_Code,
 		v_Line_Of_Business_Code AS Line_Of_Business_Code,
 		StatisticalCoverageEffectiveDate,
@@ -2597,64 +2175,44 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (.35) * PremiumAmount,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (.35) * PremiumAmount,
 		-- PremiumAmount)
-		DECODE(TRUE,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( .35 
-			) * PremiumAmount,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( .35 
-			) * PremiumAmount,
-			PremiumAmount
+		DECODE(
+		    TRUE,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (.35) * PremiumAmount,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (.35) * PremiumAmount,
+		    PremiumAmount
 		) AS PremiumAmount_Out,
 		FullTermPremiumAmount,
 		-- *INF*: DECODE(TRUE,
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (.35) * FullTermPremiumAmount,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (.35) * FullTermPremiumAmount,
 		-- FullTermPremiumAmount)
-		DECODE(TRUE,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( .35 
-			) * FullTermPremiumAmount,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( .35 
-			) * FullTermPremiumAmount,
-			FullTermPremiumAmount
+		DECODE(
+		    TRUE,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (.35) * FullTermPremiumAmount,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (.35) * FullTermPremiumAmount,
+		    FullTermPremiumAmount
 		) AS FullTermPremiumAmount_Out,
 		EarnedPremiumAmount,
 		-- *INF*: DECODE(TRUE,
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (.35) * EarnedPremiumAmount,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (.35) * EarnedPremiumAmount,
 		-- EarnedPremiumAmount)
-		DECODE(TRUE,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( .35 
-			) * EarnedPremiumAmount,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( .35 
-			) * EarnedPremiumAmount,
-			EarnedPremiumAmount
+		DECODE(
+		    TRUE,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (.35) * EarnedPremiumAmount,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (.35) * EarnedPremiumAmount,
+		    EarnedPremiumAmount
 		) AS EarnedPremiumAmount_Out,
 		ChangeInEarnedPremium,
 		-- *INF*: DECODE(TRUE,
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (.35) * ChangeInEarnedPremium,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (.35) * ChangeInEarnedPremium,
 		-- ChangeInEarnedPremium)
-		DECODE(TRUE,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( .35 
-			) * ChangeInEarnedPremium,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( .35 
-			) * ChangeInEarnedPremium,
-			ChangeInEarnedPremium
+		DECODE(
+		    TRUE,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (.35) * ChangeInEarnedPremium,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (.35) * ChangeInEarnedPremium,
+		    ChangeInEarnedPremium
 		) AS ChangeInEarnedPremium_out,
 		'100' AS aslcode,
 		'N/A' AS subaslcode,
@@ -2722,31 +2280,21 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- *INF*: DECODE(TRUE,
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (.35) * pm_reins_ceded_premium5,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (.35) * pm_reins_ceded_premium5, pm_reins_ceded_premium5)
-		DECODE(TRUE,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( .35 
-			) * pm_reins_ceded_premium5,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( .35 
-			) * pm_reins_ceded_premium5,
-			pm_reins_ceded_premium5
+		DECODE(
+		    TRUE,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (.35) * pm_reins_ceded_premium5,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (.35) * pm_reins_ceded_premium5,
+		    pm_reins_ceded_premium5
 		) AS out_pm_reins_ceded_premium,
 		pm_reins_ceded_original_premium AS pm_reins_ceded_original_premium5,
 		-- *INF*: DECODE(TRUE,
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (.35) * pm_reins_ceded_original_premium5,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (.35) * pm_reins_ceded_original_premium5, pm_reins_ceded_original_premium5)
-		DECODE(TRUE,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( .35 
-			) * pm_reins_ceded_original_premium5,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( .35 
-			) * pm_reins_ceded_original_premium5,
-			pm_reins_ceded_original_premium5
+		DECODE(
+		    TRUE,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (.35) * pm_reins_ceded_original_premium5,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (.35) * pm_reins_ceded_original_premium5,
+		    pm_reins_ceded_original_premium5
 		) AS out_pm_reins_ceded_original_premium,
 		pm_reinsurance_type_code AS pm_reinsurance_type_code5,
 		pm_reinsurance_company_number AS pm_reinsurance_company_number5,
@@ -2765,11 +2313,12 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- *INF*: IIF(IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,@{pipeline().parameters.MP_901_904},'599') AND IN(TypeBureauCode,'BB','BE','BC'),'300',InsuranceReferenceLineOfBusinessCode5)
 		-- 
 		-- ---- InsuraceReferenceLineofBusinessCode for Symbol - BA,BA  need to be changed to 300 when the % Split is 35%, other wise it is original value of 500 from StatisticalCoverage.
-		IFF(symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN (@{pipeline().parameters.MP_901_904},'599') 
-			AND TypeBureauCode IN ('BB','BE','BC'),
-			'300',
-			InsuranceReferenceLineOfBusinessCode5
+		IFF(
+		    symbol_pos_1_2 IN ('BA','BB')
+		    and MajorPerilCode IN (@{pipeline().parameters.MP_901_904},'599')
+		    and TypeBureauCode IN ('BB','BE','BC'),
+		    '300',
+		    InsuranceReferenceLineOfBusinessCode5
 		) AS InsuranceReferenceLineOfBusinessCode,
 		EnterpriseGroupCode AS EnterpriseGroupCode5,
 		InsuranceReferenceLegalEntityCode AS InsuranceReferenceLegalEntityCode5,
@@ -2808,106 +2357,71 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (.35) * i_DirectWrittenPremium5,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (.35) * i_DirectWrittenPremium5,
 		-- i_DirectWrittenPremium5)
-		DECODE(TRUE,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( .35 
-			) * i_DirectWrittenPremium5,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( .35 
-			) * i_DirectWrittenPremium5,
-			i_DirectWrittenPremium5
+		DECODE(
+		    TRUE,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (.35) * i_DirectWrittenPremium5,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (.35) * i_DirectWrittenPremium5,
+		    i_DirectWrittenPremium5
 		) AS o_DirectWrittenPremium5,
 		-- *INF*: DECODE(TRUE,
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (.35) * i_RatablePremium5,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (.35) * i_RatablePremium5,
 		-- i_RatablePremium5)
-		DECODE(TRUE,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( .35 
-			) * i_RatablePremium5,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( .35 
-			) * i_RatablePremium5,
-			i_RatablePremium5
+		DECODE(
+		    TRUE,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (.35) * i_RatablePremium5,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (.35) * i_RatablePremium5,
+		    i_RatablePremium5
 		) AS o_RatablePremium5,
 		-- *INF*: DECODE(TRUE,
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (.35) * i_ClassifiedPremium5,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (.35) * i_ClassifiedPremium5,
 		-- i_ClassifiedPremium5)
-		DECODE(TRUE,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( .35 
-			) * i_ClassifiedPremium5,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( .35 
-			) * i_ClassifiedPremium5,
-			i_ClassifiedPremium5
+		DECODE(
+		    TRUE,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (.35) * i_ClassifiedPremium5,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (.35) * i_ClassifiedPremium5,
+		    i_ClassifiedPremium5
 		) AS o_ClassifiedPremium5,
 		-- *INF*: DECODE(TRUE,
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (.35) * i_OtherModifiedPremium5,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (.35) * i_OtherModifiedPremium5,
 		-- i_OtherModifiedPremium5)
-		DECODE(TRUE,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( .35 
-			) * i_OtherModifiedPremium5,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( .35 
-			) * i_OtherModifiedPremium5,
-			i_OtherModifiedPremium5
+		DECODE(
+		    TRUE,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (.35) * i_OtherModifiedPremium5,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (.35) * i_OtherModifiedPremium5,
+		    i_OtherModifiedPremium5
 		) AS o_OtherModifiedPremium5,
 		-- *INF*: DECODE(TRUE,
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (.35) * i_ScheduleModifiedPremium5,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (.35) * i_ScheduleModifiedPremium5,
 		-- i_ScheduleModifiedPremium5)
-		DECODE(TRUE,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( .35 
-			) * i_ScheduleModifiedPremium5,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( .35 
-			) * i_ScheduleModifiedPremium5,
-			i_ScheduleModifiedPremium5
+		DECODE(
+		    TRUE,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (.35) * i_ScheduleModifiedPremium5,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (.35) * i_ScheduleModifiedPremium5,
+		    i_ScheduleModifiedPremium5
 		) AS o_ScheduleModifiedPremium5,
 		-- *INF*: DECODE(TRUE,
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (.35) * i_ExperienceModifiedPremium5,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (.35) * i_ExperienceModifiedPremium5,
 		-- i_ExperienceModifiedPremium5)
-		DECODE(TRUE,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( .35 
-			) * i_ExperienceModifiedPremium5,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( .35 
-			) * i_ExperienceModifiedPremium5,
-			i_ExperienceModifiedPremium5
+		DECODE(
+		    TRUE,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (.35) * i_ExperienceModifiedPremium5,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (.35) * i_ExperienceModifiedPremium5,
+		    i_ExperienceModifiedPremium5
 		) AS o_ExperienceModifiedPremium5,
 		-- *INF*: DECODE(TRUE,
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (.35) * i_SubjectWrittenPremium5,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (.35) * i_SubjectWrittenPremium5,
 		-- i_SubjectWrittenPremium5)
-		DECODE(TRUE,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( .35 
-			) * i_SubjectWrittenPremium5,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( .35 
-			) * i_SubjectWrittenPremium5,
-			i_SubjectWrittenPremium5
+		DECODE(
+		    TRUE,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (.35) * i_SubjectWrittenPremium5,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (.35) * i_SubjectWrittenPremium5,
+		    i_SubjectWrittenPremium5
 		) AS o_SubjectWrittenPremium5,
 		EarnedDirectWrittenPremium AS EarnedDirectWrittenPremium5,
 		EarnedClassifiedPremium AS EarnedClassifiedPremium5,
@@ -2949,56 +2463,44 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- aslcode = '340' AND IN(MajorPerilCode,@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * PremiumAmount,
 		-- PremiumAmount)
 		-- 
-		DECODE(TRUE,
-			aslcode = '260' 
-			AND MajorPerilCode = '100', ( 0.68 
-			) * PremiumAmount,
-			aslcode = '340' 
-			AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), ( 0.68 
-			) * PremiumAmount,
-			PremiumAmount
+		DECODE(
+		    TRUE,
+		    aslcode = '260' AND MajorPerilCode = '100', (0.68) * PremiumAmount,
+		    aslcode = '340' AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * PremiumAmount,
+		    PremiumAmount
 		) AS PremiumAmount_Out,
 		FullTermPremiumAmount,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode = '260' AND MajorPerilCode ='100' , (0.68) * FullTermPremiumAmount, 
 		-- aslcode = '340' AND IN(MajorPerilCode,@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * FullTermPremiumAmount,
 		-- FullTermPremiumAmount)
-		DECODE(TRUE,
-			aslcode = '260' 
-			AND MajorPerilCode = '100', ( 0.68 
-			) * FullTermPremiumAmount,
-			aslcode = '340' 
-			AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), ( 0.68 
-			) * FullTermPremiumAmount,
-			FullTermPremiumAmount
+		DECODE(
+		    TRUE,
+		    aslcode = '260' AND MajorPerilCode = '100', (0.68) * FullTermPremiumAmount,
+		    aslcode = '340' AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * FullTermPremiumAmount,
+		    FullTermPremiumAmount
 		) AS FullTermPremiumAmount_Out,
 		EarnedPremiumAmount,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode = '260' AND MajorPerilCode ='100' , (0.68) * EarnedPremiumAmount, 
 		-- aslcode = '340' AND IN(MajorPerilCode,@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * EarnedPremiumAmount,
 		-- EarnedPremiumAmount)
-		DECODE(TRUE,
-			aslcode = '260' 
-			AND MajorPerilCode = '100', ( 0.68 
-			) * EarnedPremiumAmount,
-			aslcode = '340' 
-			AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), ( 0.68 
-			) * EarnedPremiumAmount,
-			EarnedPremiumAmount
+		DECODE(
+		    TRUE,
+		    aslcode = '260' AND MajorPerilCode = '100', (0.68) * EarnedPremiumAmount,
+		    aslcode = '340' AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * EarnedPremiumAmount,
+		    EarnedPremiumAmount
 		) AS EarnedPremiumAmount_Out,
 		ChangeInEarnedPremium,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode = '260' AND MajorPerilCode ='100' , (0.68) * ChangeInEarnedPremium, 
 		-- aslcode = '340' AND IN(MajorPerilCode,@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * ChangeInEarnedPremium,
 		-- ChangeInEarnedPremium)
-		DECODE(TRUE,
-			aslcode = '260' 
-			AND MajorPerilCode = '100', ( 0.68 
-			) * ChangeInEarnedPremium,
-			aslcode = '340' 
-			AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), ( 0.68 
-			) * ChangeInEarnedPremium,
-			ChangeInEarnedPremium
+		DECODE(
+		    TRUE,
+		    aslcode = '260' AND MajorPerilCode = '100', (0.68) * ChangeInEarnedPremium,
+		    aslcode = '340' AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * ChangeInEarnedPremium,
+		    ChangeInEarnedPremium
 		) AS ChangeInEarnedPremium_Out,
 		aslcode,
 		subaslcode,
@@ -3067,28 +2569,22 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- aslcode = '260' AND MajorPerilCode ='100' , (0.68) * pm_reins_ceded_premium7, 
 		-- aslcode = '340' AND IN(MajorPerilCode,@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * pm_reins_ceded_premium7,
 		-- pm_reins_ceded_premium7)
-		DECODE(TRUE,
-			aslcode = '260' 
-			AND MajorPerilCode = '100', ( 0.68 
-			) * pm_reins_ceded_premium7,
-			aslcode = '340' 
-			AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), ( 0.68 
-			) * pm_reins_ceded_premium7,
-			pm_reins_ceded_premium7
+		DECODE(
+		    TRUE,
+		    aslcode = '260' AND MajorPerilCode = '100', (0.68) * pm_reins_ceded_premium7,
+		    aslcode = '340' AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * pm_reins_ceded_premium7,
+		    pm_reins_ceded_premium7
 		) AS out_pm_reins_ceded_premium,
 		pm_reins_ceded_original_premium AS pm_reins_ceded_original_premium7,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode = '260' AND MajorPerilCode ='100' , (0.68) * pm_reins_ceded_original_premium7, 
 		-- aslcode = '340' AND IN(MajorPerilCode,@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * pm_reins_ceded_original_premium7,
 		-- pm_reins_ceded_original_premium7)
-		DECODE(TRUE,
-			aslcode = '260' 
-			AND MajorPerilCode = '100', ( 0.68 
-			) * pm_reins_ceded_original_premium7,
-			aslcode = '340' 
-			AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), ( 0.68 
-			) * pm_reins_ceded_original_premium7,
-			pm_reins_ceded_original_premium7
+		DECODE(
+		    TRUE,
+		    aslcode = '260' AND MajorPerilCode = '100', (0.68) * pm_reins_ceded_original_premium7,
+		    aslcode = '340' AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * pm_reins_ceded_original_premium7,
+		    pm_reins_ceded_original_premium7
 		) AS out_pm_reins_ceded_original_premium,
 		pm_reinsurance_type_code AS pm_reinsurance_type_code7,
 		pm_reinsurance_company_number AS pm_reinsurance_company_number7,
@@ -3141,94 +2637,73 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- aslcode = '260' AND MajorPerilCode ='100' , (0.68) * i_DirectWrittenPremium7, 
 		-- aslcode = '340' AND IN(MajorPerilCode,@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * i_DirectWrittenPremium7,
 		-- i_DirectWrittenPremium7)
-		DECODE(TRUE,
-			aslcode = '260' 
-			AND MajorPerilCode = '100', ( 0.68 
-			) * i_DirectWrittenPremium7,
-			aslcode = '340' 
-			AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), ( 0.68 
-			) * i_DirectWrittenPremium7,
-			i_DirectWrittenPremium7
+		DECODE(
+		    TRUE,
+		    aslcode = '260' AND MajorPerilCode = '100', (0.68) * i_DirectWrittenPremium7,
+		    aslcode = '340' AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * i_DirectWrittenPremium7,
+		    i_DirectWrittenPremium7
 		) AS o_DirectWrittenPremium7,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode = '260' AND MajorPerilCode ='100' , (0.68) * i_RatablePremium7, 
 		-- aslcode = '340' AND IN(MajorPerilCode,@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * i_RatablePremium7,
 		-- i_RatablePremium7)
-		DECODE(TRUE,
-			aslcode = '260' 
-			AND MajorPerilCode = '100', ( 0.68 
-			) * i_RatablePremium7,
-			aslcode = '340' 
-			AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), ( 0.68 
-			) * i_RatablePremium7,
-			i_RatablePremium7
+		DECODE(
+		    TRUE,
+		    aslcode = '260' AND MajorPerilCode = '100', (0.68) * i_RatablePremium7,
+		    aslcode = '340' AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * i_RatablePremium7,
+		    i_RatablePremium7
 		) AS o_RatablePremium7,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode = '260' AND MajorPerilCode ='100' , (0.68) * i_ClassifiedPremium7, 
 		-- aslcode = '340' AND IN(MajorPerilCode,@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * i_ClassifiedPremium7,
 		-- i_ClassifiedPremium7)
-		DECODE(TRUE,
-			aslcode = '260' 
-			AND MajorPerilCode = '100', ( 0.68 
-			) * i_ClassifiedPremium7,
-			aslcode = '340' 
-			AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), ( 0.68 
-			) * i_ClassifiedPremium7,
-			i_ClassifiedPremium7
+		DECODE(
+		    TRUE,
+		    aslcode = '260' AND MajorPerilCode = '100', (0.68) * i_ClassifiedPremium7,
+		    aslcode = '340' AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * i_ClassifiedPremium7,
+		    i_ClassifiedPremium7
 		) AS o_ClassifiedPremium7,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode = '260' AND MajorPerilCode ='100' , (0.68) * i_ScheduleModifiedPremium7, 
 		-- aslcode = '340' AND IN(MajorPerilCode,@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * i_ScheduleModifiedPremium7,
 		-- i_ScheduleModifiedPremium7)
 		-- 
-		DECODE(TRUE,
-			aslcode = '260' 
-			AND MajorPerilCode = '100', ( 0.68 
-			) * i_ScheduleModifiedPremium7,
-			aslcode = '340' 
-			AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), ( 0.68 
-			) * i_ScheduleModifiedPremium7,
-			i_ScheduleModifiedPremium7
+		DECODE(
+		    TRUE,
+		    aslcode = '260' AND MajorPerilCode = '100', (0.68) * i_ScheduleModifiedPremium7,
+		    aslcode = '340' AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * i_ScheduleModifiedPremium7,
+		    i_ScheduleModifiedPremium7
 		) AS o_ScheduleModifiedPremium7,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode = '260' AND MajorPerilCode ='100' , (0.68) * i_OtherModifiedPremium7, 
 		-- aslcode = '340' AND IN(MajorPerilCode,@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * i_OtherModifiedPremium7,
 		-- i_OtherModifiedPremium7)
 		-- 
-		DECODE(TRUE,
-			aslcode = '260' 
-			AND MajorPerilCode = '100', ( 0.68 
-			) * i_OtherModifiedPremium7,
-			aslcode = '340' 
-			AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), ( 0.68 
-			) * i_OtherModifiedPremium7,
-			i_OtherModifiedPremium7
+		DECODE(
+		    TRUE,
+		    aslcode = '260' AND MajorPerilCode = '100', (0.68) * i_OtherModifiedPremium7,
+		    aslcode = '340' AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * i_OtherModifiedPremium7,
+		    i_OtherModifiedPremium7
 		) AS o_OtherModifiedPremium7,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode = '260' AND MajorPerilCode ='100' , (0.68) * i_ExperienceModifiedPremium7, 
 		-- aslcode = '340' AND IN(MajorPerilCode,@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * i_ExperienceModifiedPremium7,
 		-- i_ExperienceModifiedPremium7)
-		DECODE(TRUE,
-			aslcode = '260' 
-			AND MajorPerilCode = '100', ( 0.68 
-			) * i_ExperienceModifiedPremium7,
-			aslcode = '340' 
-			AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), ( 0.68 
-			) * i_ExperienceModifiedPremium7,
-			i_ExperienceModifiedPremium7
+		DECODE(
+		    TRUE,
+		    aslcode = '260' AND MajorPerilCode = '100', (0.68) * i_ExperienceModifiedPremium7,
+		    aslcode = '340' AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * i_ExperienceModifiedPremium7,
+		    i_ExperienceModifiedPremium7
 		) AS o_ExperienceModifiedPremium7,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode = '260' AND MajorPerilCode ='100' , (0.68) * i_SubjectWrittenPremium7, 
 		-- aslcode = '340' AND IN(MajorPerilCode,@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * i_SubjectWrittenPremium7,
 		-- i_SubjectWrittenPremium7)
-		DECODE(TRUE,
-			aslcode = '260' 
-			AND MajorPerilCode = '100', ( 0.68 
-			) * i_SubjectWrittenPremium7,
-			aslcode = '340' 
-			AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), ( 0.68 
-			) * i_SubjectWrittenPremium7,
-			i_SubjectWrittenPremium7
+		DECODE(
+		    TRUE,
+		    aslcode = '260' AND MajorPerilCode = '100', (0.68) * i_SubjectWrittenPremium7,
+		    aslcode = '340' AND MajorPerilCode IN (@{pipeline().parameters.MP_271_274},'100','599'), (0.68) * i_SubjectWrittenPremium7,
+		    i_SubjectWrittenPremium7
 		) AS o_SubjectWrittenPremium7,
 		EarnedDirectWrittenPremium AS EarnedDirectWrittenPremium7,
 		EarnedClassifiedPremium AS EarnedClassifiedPremium7,
@@ -3265,30 +2740,18 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		nsi_indicator,
 		PremiumAmount,
 		-- *INF*: IIF(MajorPerilCode = '599', 0.5 * PremiumAmount, PremiumAmount)
-		IFF(MajorPerilCode = '599',
-			0.5 * PremiumAmount,
-			PremiumAmount
-		) AS PremiumAmount_Out,
+		IFF(MajorPerilCode = '599', 0.5 * PremiumAmount, PremiumAmount) AS PremiumAmount_Out,
 		FullTermPremiumAmount,
 		-- *INF*: IIF(MajorPerilCode = '599', 0.5 * FullTermPremiumAmount, FullTermPremiumAmount)
-		IFF(MajorPerilCode = '599',
-			0.5 * FullTermPremiumAmount,
-			FullTermPremiumAmount
-		) AS FullTermPremiumAmount_Out,
+		IFF(MajorPerilCode = '599', 0.5 * FullTermPremiumAmount, FullTermPremiumAmount) AS FullTermPremiumAmount_Out,
 		EarnedPremiumAmount,
 		-- *INF*: IIF(MajorPerilCode = '599', 0.5 * EarnedPremiumAmount, EarnedPremiumAmount)
 		-- 
-		IFF(MajorPerilCode = '599',
-			0.5 * EarnedPremiumAmount,
-			EarnedPremiumAmount
-		) AS EarnedPremiumAmount_Out,
+		IFF(MajorPerilCode = '599', 0.5 * EarnedPremiumAmount, EarnedPremiumAmount) AS EarnedPremiumAmount_Out,
 		ChangeInEarnedPremium AS ChangeInEarnedPremium4,
 		-- *INF*: IIF(MajorPerilCode = '599', 0.5 * ChangeInEarnedPremium4, ChangeInEarnedPremium4)
 		-- 
-		IFF(MajorPerilCode = '599',
-			0.5 * ChangeInEarnedPremium4,
-			ChangeInEarnedPremium4
-		) AS ChangeInEarnedPremium_Out,
+		IFF(MajorPerilCode = '599', 0.5 * ChangeInEarnedPremium4, ChangeInEarnedPremium4) AS ChangeInEarnedPremium_Out,
 		symbol_pos_1_2 AS symbol_pos_1_2_out,
 		'40' AS aslcode,
 		'N/A' AS subaslcode,
@@ -3354,15 +2817,12 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		pm_coverage_expiration_date AS pm_coverage_expiration_date4,
 		pm_reins_ceded_premium AS pm_reins_ceded_premium4,
 		-- *INF*: IIF(MajorPerilCode = '599', 0.5 * pm_reins_ceded_premium4, pm_reins_ceded_premium4)
-		IFF(MajorPerilCode = '599',
-			0.5 * pm_reins_ceded_premium4,
-			pm_reins_ceded_premium4
-		) AS out_pm_reins_ceded_premium,
+		IFF(MajorPerilCode = '599', 0.5 * pm_reins_ceded_premium4, pm_reins_ceded_premium4) AS out_pm_reins_ceded_premium,
 		pm_reins_ceded_original_premium AS pm_reins_ceded_original_premium4,
 		-- *INF*: IIF(MajorPerilCode = '599', 0.5 * pm_reins_ceded_original_premium4, pm_reins_ceded_original_premium4)
-		IFF(MajorPerilCode = '599',
-			0.5 * pm_reins_ceded_original_premium4,
-			pm_reins_ceded_original_premium4
+		IFF(
+		    MajorPerilCode = '599', 0.5 * pm_reins_ceded_original_premium4,
+		    pm_reins_ceded_original_premium4
 		) AS out_pm_reins_ceded_original_premium,
 		pm_reinsurance_type_code AS pm_reinsurance_type_code4,
 		pm_reinsurance_company_number AS pm_reinsurance_company_number4,
@@ -3412,41 +2872,22 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		ExperienceModifiedPremium AS i_ExperienceModifiedPremium4,
 		SubjectWrittenPremium AS i_SubjectWrittenPremium4,
 		-- *INF*: IIF(MajorPerilCode = '599', 0.5 * i_DirectWrittenPremium4, i_DirectWrittenPremium4)
-		IFF(MajorPerilCode = '599',
-			0.5 * i_DirectWrittenPremium4,
-			i_DirectWrittenPremium4
-		) AS o_DirectWrittenPremium4,
+		IFF(MajorPerilCode = '599', 0.5 * i_DirectWrittenPremium4, i_DirectWrittenPremium4) AS o_DirectWrittenPremium4,
 		-- *INF*: IIF(MajorPerilCode = '599', 0.5 * i_RatablePremium4, i_RatablePremium4)
-		IFF(MajorPerilCode = '599',
-			0.5 * i_RatablePremium4,
-			i_RatablePremium4
-		) AS o_RatablePremium4,
+		IFF(MajorPerilCode = '599', 0.5 * i_RatablePremium4, i_RatablePremium4) AS o_RatablePremium4,
 		-- *INF*: IIF(MajorPerilCode = '599', 0.5 * i_ClassifiedPremium4, i_ClassifiedPremium4)
-		IFF(MajorPerilCode = '599',
-			0.5 * i_ClassifiedPremium4,
-			i_ClassifiedPremium4
-		) AS o_ClassifiedPremium4,
+		IFF(MajorPerilCode = '599', 0.5 * i_ClassifiedPremium4, i_ClassifiedPremium4) AS o_ClassifiedPremium4,
 		-- *INF*: IIF(MajorPerilCode = '599', 0.5 * i_OtherModifiedPremium4, i_OtherModifiedPremium4)
 		-- 
-		IFF(MajorPerilCode = '599',
-			0.5 * i_OtherModifiedPremium4,
-			i_OtherModifiedPremium4
-		) AS o_OtherModifiedPremium4,
+		IFF(MajorPerilCode = '599', 0.5 * i_OtherModifiedPremium4, i_OtherModifiedPremium4) AS o_OtherModifiedPremium4,
 		-- *INF*: IIF(MajorPerilCode = '599', 0.5 * i_ScheduleModifiedPremium4, i_ScheduleModifiedPremium4)
-		IFF(MajorPerilCode = '599',
-			0.5 * i_ScheduleModifiedPremium4,
-			i_ScheduleModifiedPremium4
-		) AS o_ScheduleModifiedPremium4,
+		IFF(MajorPerilCode = '599', 0.5 * i_ScheduleModifiedPremium4, i_ScheduleModifiedPremium4) AS o_ScheduleModifiedPremium4,
 		-- *INF*: IIF(MajorPerilCode = '599', 0.5 * i_ExperienceModifiedPremium4, i_ExperienceModifiedPremium4)
-		IFF(MajorPerilCode = '599',
-			0.5 * i_ExperienceModifiedPremium4,
-			i_ExperienceModifiedPremium4
+		IFF(
+		    MajorPerilCode = '599', 0.5 * i_ExperienceModifiedPremium4, i_ExperienceModifiedPremium4
 		) AS o_ExperienceModifiedPremium4,
 		-- *INF*: IIF(MajorPerilCode = '599', 0.5 * i_SubjectWrittenPremium4, i_SubjectWrittenPremium4)
-		IFF(MajorPerilCode = '599',
-			0.5 * i_SubjectWrittenPremium4,
-			i_SubjectWrittenPremium4
-		) AS o_SubjectWrittenPremium4,
+		IFF(MajorPerilCode = '599', 0.5 * i_SubjectWrittenPremium4, i_SubjectWrittenPremium4) AS o_SubjectWrittenPremium4,
 		EarnedDirectWrittenPremium AS EarnedDirectWrittenPremium4,
 		EarnedClassifiedPremium AS EarnedClassifiedPremium4,
 		EarnedRatablePremium AS EarnedRatablePremium4,
@@ -3487,18 +2928,12 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (0.65) * PremiumAmount,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (0.65) * PremiumAmount,
 		-- PremiumAmount)
-		DECODE(TRUE,
-			aslcode = '20' 
-			AND MajorPerilCode = '599', 0.5 * PremiumAmount,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( 0.65 
-			) * PremiumAmount,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( 0.65 
-			) * PremiumAmount,
-			PremiumAmount
+		DECODE(
+		    TRUE,
+		    aslcode = '20' AND MajorPerilCode = '599', 0.5 * PremiumAmount,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (0.65) * PremiumAmount,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (0.65) * PremiumAmount,
+		    PremiumAmount
 		) AS PremiumAmount_Out,
 		FullTermPremiumAmount,
 		-- *INF*: DECODE(TRUE,
@@ -3506,18 +2941,12 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (0.65) * FullTermPremiumAmount,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (0.65) * FullTermPremiumAmount,
 		-- FullTermPremiumAmount)
-		DECODE(TRUE,
-			aslcode = '20' 
-			AND MajorPerilCode = '599', 0.5 * FullTermPremiumAmount,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( 0.65 
-			) * FullTermPremiumAmount,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( 0.65 
-			) * FullTermPremiumAmount,
-			FullTermPremiumAmount
+		DECODE(
+		    TRUE,
+		    aslcode = '20' AND MajorPerilCode = '599', 0.5 * FullTermPremiumAmount,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (0.65) * FullTermPremiumAmount,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (0.65) * FullTermPremiumAmount,
+		    FullTermPremiumAmount
 		) AS FullTermPremiumAmount_Out,
 		EarnedPremiumAmount,
 		-- *INF*: DECODE(TRUE,
@@ -3525,18 +2954,12 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (0.65) * EarnedPremiumAmount,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (0.65) * EarnedPremiumAmount,
 		-- EarnedPremiumAmount)
-		DECODE(TRUE,
-			aslcode = '20' 
-			AND MajorPerilCode = '599', 0.5 * EarnedPremiumAmount,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( 0.65 
-			) * EarnedPremiumAmount,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( 0.65 
-			) * EarnedPremiumAmount,
-			EarnedPremiumAmount
+		DECODE(
+		    TRUE,
+		    aslcode = '20' AND MajorPerilCode = '599', 0.5 * EarnedPremiumAmount,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (0.65) * EarnedPremiumAmount,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (0.65) * EarnedPremiumAmount,
+		    EarnedPremiumAmount
 		) AS EarnedPremiumAmount_out,
 		ChangeInEarnedPremium,
 		-- *INF*: DECODE(TRUE,
@@ -3544,32 +2967,20 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (0.65) * ChangeInEarnedPremium,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (0.65) * ChangeInEarnedPremium,
 		-- ChangeInEarnedPremium)
-		DECODE(TRUE,
-			aslcode = '20' 
-			AND MajorPerilCode = '599', 0.5 * ChangeInEarnedPremium,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( 0.65 
-			) * ChangeInEarnedPremium,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( 0.65 
-			) * ChangeInEarnedPremium,
-			ChangeInEarnedPremium
+		DECODE(
+		    TRUE,
+		    aslcode = '20' AND MajorPerilCode = '599', 0.5 * ChangeInEarnedPremium,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (0.65) * ChangeInEarnedPremium,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (0.65) * ChangeInEarnedPremium,
+		    ChangeInEarnedPremium
 		) AS ChangeInEarnedPremium_out,
 		aslcode,
 		subaslcode,
 		-- *INF*: IIF(subaslcode='421',subaslcode ,'N/A')
-		IFF(subaslcode = '421',
-			subaslcode,
-			'N/A'
-		) AS subaslcode_out,
+		IFF(subaslcode = '421', subaslcode, 'N/A') AS subaslcode_out,
 		Nonsubaslcode,
 		-- *INF*: IIF(Nonsubaslcode='421',Nonsubaslcode,'N/A')
-		IFF(Nonsubaslcode = '421',
-			Nonsubaslcode,
-			'N/A'
-		) AS Nonsubaslcode_out,
+		IFF(Nonsubaslcode = '421', Nonsubaslcode, 'N/A') AS Nonsubaslcode_out,
 		ASLProduct_Code AS ASLProduct_Code1,
 		Hierarchy_Product_Code AS Hierarchy_Product_Code1,
 		StatisticalCoverageEffectiveDate AS StatisticalCoverageEffectiveDate1,
@@ -3634,36 +3045,24 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- aslcode= '20' AND MajorPerilCode = '599', 0.5 * pm_reins_ceded_premium1, 
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (0.65) * pm_reins_ceded_premium1,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (0.65) * pm_reins_ceded_premium1,pm_reins_ceded_premium1)
-		DECODE(TRUE,
-			aslcode = '20' 
-			AND MajorPerilCode = '599', 0.5 * pm_reins_ceded_premium1,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( 0.65 
-			) * pm_reins_ceded_premium1,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( 0.65 
-			) * pm_reins_ceded_premium1,
-			pm_reins_ceded_premium1
+		DECODE(
+		    TRUE,
+		    aslcode = '20' AND MajorPerilCode = '599', 0.5 * pm_reins_ceded_premium1,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (0.65) * pm_reins_ceded_premium1,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (0.65) * pm_reins_ceded_premium1,
+		    pm_reins_ceded_premium1
 		) AS out_pm_reins_ceded_premium,
 		pm_reins_ceded_original_premium AS pm_reins_ceded_original_premium1,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode= '20' AND MajorPerilCode = '599', 0.5 * pm_reins_ceded_original_premium1, 
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (0.65) * pm_reins_ceded_original_premium1,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (0.65) * pm_reins_ceded_original_premium1, pm_reins_ceded_original_premium1)
-		DECODE(TRUE,
-			aslcode = '20' 
-			AND MajorPerilCode = '599', 0.5 * pm_reins_ceded_original_premium1,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( 0.65 
-			) * pm_reins_ceded_original_premium1,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( 0.65 
-			) * pm_reins_ceded_original_premium1,
-			pm_reins_ceded_original_premium1
+		DECODE(
+		    TRUE,
+		    aslcode = '20' AND MajorPerilCode = '599', 0.5 * pm_reins_ceded_original_premium1,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (0.65) * pm_reins_ceded_original_premium1,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (0.65) * pm_reins_ceded_original_premium1,
+		    pm_reins_ceded_original_premium1
 		) AS out_pm_reins_ceded_original_premium,
 		pm_reinsurance_type_code AS pm_reinsurance_type_code1,
 		pm_reinsurance_company_number AS pm_reinsurance_company_number1,
@@ -3717,126 +3116,84 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (0.65) * i_DirectWrittenPremium1,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (0.65) * i_DirectWrittenPremium1,
 		-- i_DirectWrittenPremium1)
-		DECODE(TRUE,
-			aslcode = '20' 
-			AND MajorPerilCode = '599', 0.5 * i_DirectWrittenPremium1,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( 0.65 
-			) * i_DirectWrittenPremium1,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( 0.65 
-			) * i_DirectWrittenPremium1,
-			i_DirectWrittenPremium1
+		DECODE(
+		    TRUE,
+		    aslcode = '20' AND MajorPerilCode = '599', 0.5 * i_DirectWrittenPremium1,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (0.65) * i_DirectWrittenPremium1,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (0.65) * i_DirectWrittenPremium1,
+		    i_DirectWrittenPremium1
 		) AS o_DirectWrittenPremium1,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode= '20' AND MajorPerilCode = '599', 0.5 * i_RatablePremium1, 
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (0.65) * i_RatablePremium1,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (0.65) * i_RatablePremium1,
 		-- i_RatablePremium1)
-		DECODE(TRUE,
-			aslcode = '20' 
-			AND MajorPerilCode = '599', 0.5 * i_RatablePremium1,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( 0.65 
-			) * i_RatablePremium1,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( 0.65 
-			) * i_RatablePremium1,
-			i_RatablePremium1
+		DECODE(
+		    TRUE,
+		    aslcode = '20' AND MajorPerilCode = '599', 0.5 * i_RatablePremium1,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (0.65) * i_RatablePremium1,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (0.65) * i_RatablePremium1,
+		    i_RatablePremium1
 		) AS o_RatablePremium1,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode= '20' AND MajorPerilCode = '599', 0.5 * i_ClassifiedPremium1, 
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (0.65) * i_ClassifiedPremium1,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (0.65) * i_ClassifiedPremium1,
 		-- i_ClassifiedPremium1)
-		DECODE(TRUE,
-			aslcode = '20' 
-			AND MajorPerilCode = '599', 0.5 * i_ClassifiedPremium1,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( 0.65 
-			) * i_ClassifiedPremium1,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( 0.65 
-			) * i_ClassifiedPremium1,
-			i_ClassifiedPremium1
+		DECODE(
+		    TRUE,
+		    aslcode = '20' AND MajorPerilCode = '599', 0.5 * i_ClassifiedPremium1,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (0.65) * i_ClassifiedPremium1,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (0.65) * i_ClassifiedPremium1,
+		    i_ClassifiedPremium1
 		) AS o_ClassifiedPremium1,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode= '20' AND MajorPerilCode = '599', 0.5 * i_OtherModifiedPremium1, 
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (0.65) * i_OtherModifiedPremium1,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (0.65) * i_OtherModifiedPremium1,
 		-- i_OtherModifiedPremium1)
-		DECODE(TRUE,
-			aslcode = '20' 
-			AND MajorPerilCode = '599', 0.5 * i_OtherModifiedPremium1,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( 0.65 
-			) * i_OtherModifiedPremium1,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( 0.65 
-			) * i_OtherModifiedPremium1,
-			i_OtherModifiedPremium1
+		DECODE(
+		    TRUE,
+		    aslcode = '20' AND MajorPerilCode = '599', 0.5 * i_OtherModifiedPremium1,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (0.65) * i_OtherModifiedPremium1,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (0.65) * i_OtherModifiedPremium1,
+		    i_OtherModifiedPremium1
 		) AS o_OtherModifiedPremium1,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode= '20' AND MajorPerilCode = '599', 0.5 * i_ScheduleModifiedPremium1, 
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (0.65) * i_ScheduleModifiedPremium1,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (0.65) * i_ScheduleModifiedPremium1,
 		-- i_ScheduleModifiedPremium1)
-		DECODE(TRUE,
-			aslcode = '20' 
-			AND MajorPerilCode = '599', 0.5 * i_ScheduleModifiedPremium1,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( 0.65 
-			) * i_ScheduleModifiedPremium1,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( 0.65 
-			) * i_ScheduleModifiedPremium1,
-			i_ScheduleModifiedPremium1
+		DECODE(
+		    TRUE,
+		    aslcode = '20' AND MajorPerilCode = '599', 0.5 * i_ScheduleModifiedPremium1,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (0.65) * i_ScheduleModifiedPremium1,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (0.65) * i_ScheduleModifiedPremium1,
+		    i_ScheduleModifiedPremium1
 		) AS o_ScheduleModifiedPremium1,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode= '20' AND MajorPerilCode = '599', 0.5 * i_ExperienceModifiedPremium1, 
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (0.65) * i_ExperienceModifiedPremium1,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (0.65) * i_ExperienceModifiedPremium1,
 		-- i_ExperienceModifiedPremium1)
-		DECODE(TRUE,
-			aslcode = '20' 
-			AND MajorPerilCode = '599', 0.5 * i_ExperienceModifiedPremium1,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( 0.65 
-			) * i_ExperienceModifiedPremium1,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( 0.65 
-			) * i_ExperienceModifiedPremium1,
-			i_ExperienceModifiedPremium1
+		DECODE(
+		    TRUE,
+		    aslcode = '20' AND MajorPerilCode = '599', 0.5 * i_ExperienceModifiedPremium1,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (0.65) * i_ExperienceModifiedPremium1,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (0.65) * i_ExperienceModifiedPremium1,
+		    i_ExperienceModifiedPremium1
 		) AS o_ExperienceModifiedPremium1,
 		-- *INF*: DECODE(TRUE,
 		-- aslcode= '20' AND MajorPerilCode = '599', 0.5 * i_SubjectWrittenPremium1, 
 		-- IN (symbol_pos_1_2,'BG','BH') AND IN (MajorPerilCode,'901','902') AND TypeBureauCode = 'CF', (0.65) * i_SubjectWrittenPremium1,
 		-- IN (symbol_pos_1_2,'BA','BB') AND IN (MajorPerilCode,'901','902','599') AND IN(TypeBureauCode,'BB','BE','BC'), (0.65) * i_SubjectWrittenPremium1,
 		-- i_SubjectWrittenPremium1)
-		DECODE(TRUE,
-			aslcode = '20' 
-			AND MajorPerilCode = '599', 0.5 * i_SubjectWrittenPremium1,
-			symbol_pos_1_2 IN ('BG','BH') 
-			AND MajorPerilCode IN ('901','902') 
-			AND TypeBureauCode = 'CF', ( 0.65 
-			) * i_SubjectWrittenPremium1,
-			symbol_pos_1_2 IN ('BA','BB') 
-			AND MajorPerilCode IN ('901','902','599') 
-			AND TypeBureauCode IN ('BB','BE','BC'), ( 0.65 
-			) * i_SubjectWrittenPremium1,
-			i_SubjectWrittenPremium1
+		DECODE(
+		    TRUE,
+		    aslcode = '20' AND MajorPerilCode = '599', 0.5 * i_SubjectWrittenPremium1,
+		    symbol_pos_1_2 IN ('BG','BH') AND MajorPerilCode IN ('901','902') AND TypeBureauCode = 'CF', (0.65) * i_SubjectWrittenPremium1,
+		    symbol_pos_1_2 IN ('BA','BB') AND MajorPerilCode IN ('901','902','599') AND TypeBureauCode IN ('BB','BE','BC'), (0.65) * i_SubjectWrittenPremium1,
+		    i_SubjectWrittenPremium1
 		) AS o_SubjectWrittenPremium1,
 		EarnedDirectWrittenPremium AS EarnedDirectWrittenPremium1,
 		EarnedClassifiedPremium AS EarnedClassifiedPremium1,
@@ -3874,32 +3231,16 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		symbol_pos_1_2 AS symbol_pos_1_2_out,
 		PremiumAmount,
 		-- *INF*: IIF(MajorPerilCode = '100', (0.32) * PremiumAmount, PremiumAmount)
-		IFF(MajorPerilCode = '100',
-			( 0.32 
-			) * PremiumAmount,
-			PremiumAmount
-		) AS PremiumAmount_Out,
+		IFF(MajorPerilCode = '100', (0.32) * PremiumAmount, PremiumAmount) AS PremiumAmount_Out,
 		FullTermPremiumAmount,
 		-- *INF*: IIF(MajorPerilCode = '100', (0.32) * FullTermPremiumAmount, FullTermPremiumAmount)
-		IFF(MajorPerilCode = '100',
-			( 0.32 
-			) * FullTermPremiumAmount,
-			FullTermPremiumAmount
-		) AS FullTermPremiumAmount_Out,
+		IFF(MajorPerilCode = '100', (0.32) * FullTermPremiumAmount, FullTermPremiumAmount) AS FullTermPremiumAmount_Out,
 		EarnedPremiumAmount,
 		-- *INF*: IIF(MajorPerilCode = '100', (0.32) * EarnedPremiumAmount, EarnedPremiumAmount)
-		IFF(MajorPerilCode = '100',
-			( 0.32 
-			) * EarnedPremiumAmount,
-			EarnedPremiumAmount
-		) AS EarnedPremiumAmount_Out,
+		IFF(MajorPerilCode = '100', (0.32) * EarnedPremiumAmount, EarnedPremiumAmount) AS EarnedPremiumAmount_Out,
 		ChangeInEarnedPremium,
 		-- *INF*: IIF(MajorPerilCode = '100', (0.32) * ChangeInEarnedPremium, ChangeInEarnedPremium)
-		IFF(MajorPerilCode = '100',
-			( 0.32 
-			) * ChangeInEarnedPremium,
-			ChangeInEarnedPremium
-		) AS ChangeInEarnedPremium_Out,
+		IFF(MajorPerilCode = '100', (0.32) * ChangeInEarnedPremium, ChangeInEarnedPremium) AS ChangeInEarnedPremium_Out,
 		'260' AS aslcode,
 		'280' AS subaslcode,
 		'320' AS Nonsubaslcode,
@@ -3964,17 +3305,12 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		pm_coverage_expiration_date AS pm_coverage_expiration_date8,
 		pm_reins_ceded_premium AS pm_reins_ceded_premium8,
 		-- *INF*: IIF(MajorPerilCode = '100', (0.32) * pm_reins_ceded_premium8, pm_reins_ceded_premium8)
-		IFF(MajorPerilCode = '100',
-			( 0.32 
-			) * pm_reins_ceded_premium8,
-			pm_reins_ceded_premium8
-		) AS out_pm_reins_ceded_premium,
+		IFF(MajorPerilCode = '100', (0.32) * pm_reins_ceded_premium8, pm_reins_ceded_premium8) AS out_pm_reins_ceded_premium,
 		pm_reins_ceded_original_premium AS pm_reins_ceded_original_premium8,
 		-- *INF*: IIF(MajorPerilCode = '100', (0.32) * pm_reins_ceded_original_premium8, pm_reins_ceded_original_premium8)
-		IFF(MajorPerilCode = '100',
-			( 0.32 
-			) * pm_reins_ceded_original_premium8,
-			pm_reins_ceded_original_premium8
+		IFF(
+		    MajorPerilCode = '100', (0.32) * pm_reins_ceded_original_premium8,
+		    pm_reins_ceded_original_premium8
 		) AS out_pm_reins_ceded_original_premium,
 		pm_reinsurance_type_code AS pm_reinsurance_type_code8,
 		pm_reinsurance_company_number AS pm_reinsurance_company_number8,
@@ -4024,47 +3360,21 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		ExperienceModifiedPremium AS i_ExperienceModifiedPremium8,
 		SubjectWrittenPremium AS i_SubjectWrittenPremium8,
 		-- *INF*: IIF(MajorPerilCode = '100', (0.32) * i_DirectWrittenPremium8, i_DirectWrittenPremium8)
-		IFF(MajorPerilCode = '100',
-			( 0.32 
-			) * i_DirectWrittenPremium8,
-			i_DirectWrittenPremium8
-		) AS o_DirectWrittenPremium8,
+		IFF(MajorPerilCode = '100', (0.32) * i_DirectWrittenPremium8, i_DirectWrittenPremium8) AS o_DirectWrittenPremium8,
 		-- *INF*: IIF(MajorPerilCode = '100', (0.32) * i_RatablePremium8, i_RatablePremium8)
-		IFF(MajorPerilCode = '100',
-			( 0.32 
-			) * i_RatablePremium8,
-			i_RatablePremium8
-		) AS o_RatablePremium8,
+		IFF(MajorPerilCode = '100', (0.32) * i_RatablePremium8, i_RatablePremium8) AS o_RatablePremium8,
 		-- *INF*: IIF(MajorPerilCode = '100', (0.32) * i_ClassifiedPremium8, i_ClassifiedPremium8)
-		IFF(MajorPerilCode = '100',
-			( 0.32 
-			) * i_ClassifiedPremium8,
-			i_ClassifiedPremium8
-		) AS o_ClassifiedPremium8,
+		IFF(MajorPerilCode = '100', (0.32) * i_ClassifiedPremium8, i_ClassifiedPremium8) AS o_ClassifiedPremium8,
 		-- *INF*: IIF(MajorPerilCode = '100', (0.32) * i_OtherModifiedPremium8, i_OtherModifiedPremium8)
-		IFF(MajorPerilCode = '100',
-			( 0.32 
-			) * i_OtherModifiedPremium8,
-			i_OtherModifiedPremium8
-		) AS o_OtherModifiedPremium8,
+		IFF(MajorPerilCode = '100', (0.32) * i_OtherModifiedPremium8, i_OtherModifiedPremium8) AS o_OtherModifiedPremium8,
 		-- *INF*: IIF(MajorPerilCode = '100', (0.32) * i_ScheduleModifiedPremium8, i_ScheduleModifiedPremium8)
-		IFF(MajorPerilCode = '100',
-			( 0.32 
-			) * i_ScheduleModifiedPremium8,
-			i_ScheduleModifiedPremium8
-		) AS o_ScheduleModifiedPremium8,
+		IFF(MajorPerilCode = '100', (0.32) * i_ScheduleModifiedPremium8, i_ScheduleModifiedPremium8) AS o_ScheduleModifiedPremium8,
 		-- *INF*: IIF(MajorPerilCode = '100', (0.32) * i_ExperienceModifiedPremium8, i_ExperienceModifiedPremium8)
-		IFF(MajorPerilCode = '100',
-			( 0.32 
-			) * i_ExperienceModifiedPremium8,
-			i_ExperienceModifiedPremium8
+		IFF(
+		    MajorPerilCode = '100', (0.32) * i_ExperienceModifiedPremium8, i_ExperienceModifiedPremium8
 		) AS o_ExperienceModifiedPremium8,
 		-- *INF*: IIF(MajorPerilCode = '100', (0.32) * i_SubjectWrittenPremium8, i_SubjectWrittenPremium8)
-		IFF(MajorPerilCode = '100',
-			( 0.32 
-			) * i_SubjectWrittenPremium8,
-			i_SubjectWrittenPremium8
-		) AS o_SubjectWrittenPremium8,
+		IFF(MajorPerilCode = '100', (0.32) * i_SubjectWrittenPremium8, i_SubjectWrittenPremium8) AS o_SubjectWrittenPremium8,
 		EarnedDirectWrittenPremium AS EarnedDirectWrittenPremium8,
 		EarnedClassifiedPremium AS EarnedClassifiedPremium8,
 		EarnedRatablePremium AS EarnedRatablePremium8,
@@ -4403,26 +3713,22 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- *INF*: (0.32) * PremiumAmount
 		-- 
 		-- --IIF(IN(MajorPerilCode, @{pipeline().parameters.MP_271_274}, '100','599'), (0.32) * PremiumAmount, PremiumAmount)
-		( 0.32 
-		) * PremiumAmount AS PremiumAmount_Out,
+		(0.32) * PremiumAmount AS PremiumAmount_Out,
 		FullTermPremiumAmount,
 		-- *INF*: (0.32) * FullTermPremiumAmount
 		-- 
 		-- --IIF(IN(MajorPerilCode, @{pipeline().parameters.MP_271_274}, '100','599'), (0.32) * FullTermPremiumAmount, FullTermPremiumAmount)
-		( 0.32 
-		) * FullTermPremiumAmount AS FullTermPremiumAmount_Out,
+		(0.32) * FullTermPremiumAmount AS FullTermPremiumAmount_Out,
 		EarnedPremiumAmount,
 		-- *INF*: (0.32) * EarnedPremiumAmount
 		-- 
 		-- --IIF(IN(MajorPerilCode, @{pipeline().parameters.MP_271_274}, '100','599'), (0.32) * EarnedPremiumAmount, EarnedPremiumAmount)
-		( 0.32 
-		) * EarnedPremiumAmount AS EarnedPremiumAmount_Out,
+		(0.32) * EarnedPremiumAmount AS EarnedPremiumAmount_Out,
 		ChangeInEarnedPremium,
 		-- *INF*: (0.32) * ChangeInEarnedPremium
 		-- 
 		-- --IIF(IN(MajorPerilCode, @{pipeline().parameters.MP_271_274}, '100','599'), (0.32) * ChangeInEarnedPremium, ChangeInEarnedPremium)
-		( 0.32 
-		) * ChangeInEarnedPremium AS ChangeInEarnedPremium_Out,
+		(0.32) * ChangeInEarnedPremium AS ChangeInEarnedPremium_Out,
 		'340' AS aslcode,
 		'380' AS subaslcode,
 		'420' AS Nonsubaslcode,
@@ -4489,14 +3795,12 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- *INF*: (0.32) * pm_reins_ceded_premium9
 		-- 
 		-- --IIF(IN(MajorPerilCode, @{pipeline().parameters.MP_271_274}, '100','599'), (0.32) * pm_reins_ceded_premium9)
-		( 0.32 
-		) * pm_reins_ceded_premium9 AS out_pm_reins_ceded_premium,
+		(0.32) * pm_reins_ceded_premium9 AS out_pm_reins_ceded_premium,
 		pm_reins_ceded_original_premium AS pm_reins_ceded_original_premium9,
 		-- *INF*: (0.32) * pm_reins_ceded_original_premium9
 		-- 
 		-- --IIF(IN(MajorPerilCode, @{pipeline().parameters.MP_271_274}, '100','599'), (0.32) * pm_reins_ceded_original_premium9)
-		( 0.32 
-		) * pm_reins_ceded_original_premium9 AS out_pm_reins_ceded_original_premium,
+		(0.32) * pm_reins_ceded_original_premium9 AS out_pm_reins_ceded_original_premium,
 		pm_reinsurance_type_code AS pm_reinsurance_type_code9,
 		pm_reinsurance_company_number AS pm_reinsurance_company_number9,
 		pm_reinsurance_ratio AS pm_reinsurance_ratio9,
@@ -4548,26 +3852,19 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		ExperienceModifiedPremium AS i_ExperienceModifiedPremium9,
 		SubjectWrittenPremium AS i_SubjectWrittenPremium9,
 		-- *INF*: (0.32) * i_DirectWrittenPremium9
-		( 0.32 
-		) * i_DirectWrittenPremium9 AS o_DirectWrittenPremium9,
+		(0.32) * i_DirectWrittenPremium9 AS o_DirectWrittenPremium9,
 		-- *INF*: (0.32) * i_RatablePremium9
-		( 0.32 
-		) * i_RatablePremium9 AS o_RatablePremium9,
+		(0.32) * i_RatablePremium9 AS o_RatablePremium9,
 		-- *INF*: (0.32) * i_ClassifiedPremium9
-		( 0.32 
-		) * i_ClassifiedPremium9 AS o_ClassifiedPremium9,
+		(0.32) * i_ClassifiedPremium9 AS o_ClassifiedPremium9,
 		-- *INF*: (0.32) * i_OtherModifiedPremium9
-		( 0.32 
-		) * i_OtherModifiedPremium9 AS o_OtherModifiedPremium9,
+		(0.32) * i_OtherModifiedPremium9 AS o_OtherModifiedPremium9,
 		-- *INF*: (0.32) * i_ScheduleModifiedPremium9
-		( 0.32 
-		) * i_ScheduleModifiedPremium9 AS o_ScheduleModifiedPremium9,
+		(0.32) * i_ScheduleModifiedPremium9 AS o_ScheduleModifiedPremium9,
 		-- *INF*: (0.32) * i_ExperienceModifiedPremium9
-		( 0.32 
-		) * i_ExperienceModifiedPremium9 AS o_ExperienceModifiedPremium9,
+		(0.32) * i_ExperienceModifiedPremium9 AS o_ExperienceModifiedPremium9,
 		-- *INF*: (0.32) * i_SubjectWrittenPremium9
-		( 0.32 
-		) * i_SubjectWrittenPremium9 AS o_SubjectWrittenPremium9,
+		(0.32) * i_SubjectWrittenPremium9 AS o_SubjectWrittenPremium9,
 		EarnedDirectWrittenPremium AS EarnedDirectWrittenPremium9,
 		EarnedClassifiedPremium AS EarnedClassifiedPremium9,
 		EarnedRatablePremium AS EarnedRatablePremium9,
@@ -4723,57 +4020,35 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		--      ) 
 		-- ,1,0 
 		--      )
-		IFF(SubNonAnnualStatementLineCode_DCT IN ('400') 
-			AND StandardInsuranceLineCode = 'CA' 
-			AND ( CoverageCode IN ('ADLINS','AGTEO','BIPDEX','BIPD','BRDCOVGA','BRDFRMPRDCOMOP','BRDFRMPRD','COMPMISC','COMRLIABUIM','COMRLIABUM','COMRLIAB','CAFEMPCOV','EMPLESSOR','EMPLBEN','FELEMPL','INJLEASEWRKS','LSECONCRN','LIMMEXCOV','LEMONLAW','MINPREM','MNRENTVHCL','NFRNCHSAD','MANU','MNRENTVEH','PLSPAK - BRD','RAILOPTS','RACEXCL','REINSPREM','RNTTEMPVHCL','TLEASE','TLENDG','WATRCRFTEXT','UMBIPD','COMRLIABUMBIPD','EXCDWYP','EXCDP','PRDAMEO','LGLDEFCST','EXCPWYP','EXCDRENTP','EXCNAFAD','LIMCTLIABPAA','CADLGLAL','LIMPRODW','EMPLBENERPE','FACTESTHAZ','BIPDBUYBK') 
-				OR CoverageCode IN ('UIM','UM') 
-				AND CoverageType IN ('UIM','UMBIPD','DriveOtherCarUIM','NonOwnedAutoUIM','NonOwnedAutoUM','NonOwnedAutoStateUIM') 
-				OR CoverageCode = 'SR22' 
-				AND CoverageType IN ('FinancialResponsibilityLiability','FinancialResponsibilityLawsLiability') 
-			),
-			1,
-			0
+		IFF(
+		    SubNonAnnualStatementLineCode_DCT IN ('400')
+		    and StandardInsuranceLineCode = 'CA'
+		    and (CoverageCode IN ('ADLINS','AGTEO','BIPDEX','BIPD','BRDCOVGA','BRDFRMPRDCOMOP','BRDFRMPRD','COMPMISC','COMRLIABUIM','COMRLIABUM','COMRLIAB','CAFEMPCOV','EMPLESSOR','EMPLBEN','FELEMPL','INJLEASEWRKS','LSECONCRN','LIMMEXCOV','LEMONLAW','MINPREM','MNRENTVHCL','NFRNCHSAD','MANU','MNRENTVEH','PLSPAK - BRD','RAILOPTS','RACEXCL','REINSPREM','RNTTEMPVHCL','TLEASE','TLENDG','WATRCRFTEXT','UMBIPD','COMRLIABUMBIPD','EXCDWYP','EXCDP','PRDAMEO','LGLDEFCST','EXCPWYP','EXCDRENTP','EXCNAFAD','LIMCTLIABPAA','CADLGLAL','LIMPRODW','EMPLBENERPE','FACTESTHAZ','BIPDBUYBK')
+		    or CoverageCode IN ('UIM','UM')
+		    and CoverageType IN ('UIM','UMBIPD','DriveOtherCarUIM','NonOwnedAutoUIM','NonOwnedAutoUM','NonOwnedAutoStateUIM')
+		    or CoverageCode = 'SR22'
+		    and CoverageType IN ('FinancialResponsibilityLiability','FinancialResponsibilityLawsLiability')),
+		    1,
+		    0
 		) AS v_68Flag,
 		-- *INF*: IIF( v_68Flag=0, i_PremiumAmount,
 		-- (0.68) * i_PremiumAmount)
-		IFF(v_68Flag = 0,
-			i_PremiumAmount,
-			( 0.68 
-			) * i_PremiumAmount
-		) AS o_PremiumAmount,
+		IFF(v_68Flag = 0, i_PremiumAmount, (0.68) * i_PremiumAmount) AS o_PremiumAmount,
 		-- *INF*: IIF( v_68Flag=0,i_FullTermPremiumAmount,
 		-- (0.68) * i_FullTermPremiumAmount)
-		IFF(v_68Flag = 0,
-			i_FullTermPremiumAmount,
-			( 0.68 
-			) * i_FullTermPremiumAmount
-		) AS o_FullTermPremiumAmount,
+		IFF(v_68Flag = 0, i_FullTermPremiumAmount, (0.68) * i_FullTermPremiumAmount) AS o_FullTermPremiumAmount,
 		-- *INF*: IIF( v_68Flag=0, i_EarnedPremiumAmount,(0.68) * i_EarnedPremiumAmount)
-		IFF(v_68Flag = 0,
-			i_EarnedPremiumAmount,
-			( 0.68 
-			) * i_EarnedPremiumAmount
-		) AS o_EarnedPremiumAmount,
+		IFF(v_68Flag = 0, i_EarnedPremiumAmount, (0.68) * i_EarnedPremiumAmount) AS o_EarnedPremiumAmount,
 		-- *INF*: IIF( v_68Flag=0, i_ChangeInEarnedPremium,
 		-- (0.68) * i_ChangeInEarnedPremium)
-		IFF(v_68Flag = 0,
-			i_ChangeInEarnedPremium,
-			( 0.68 
-			) * i_ChangeInEarnedPremium
-		) AS o_ChangeInEarnedPremium,
+		IFF(v_68Flag = 0, i_ChangeInEarnedPremium, (0.68) * i_ChangeInEarnedPremium) AS o_ChangeInEarnedPremium,
 		-- *INF*: IIF( v_68Flag=0, i_pm_reins_ceded_premium,
 		-- (0.68) * i_pm_reins_ceded_premium)
-		IFF(v_68Flag = 0,
-			i_pm_reins_ceded_premium,
-			( 0.68 
-			) * i_pm_reins_ceded_premium
-		) AS o_pm_reins_ceded_premium,
+		IFF(v_68Flag = 0, i_pm_reins_ceded_premium, (0.68) * i_pm_reins_ceded_premium) AS o_pm_reins_ceded_premium,
 		-- *INF*: IIF( v_68Flag=0, i_pm_reins_ceded_original_premium,
 		-- (0.68) * i_pm_reins_ceded_original_premium)
-		IFF(v_68Flag = 0,
-			i_pm_reins_ceded_original_premium,
-			( 0.68 
-			) * i_pm_reins_ceded_original_premium
+		IFF(
+		    v_68Flag = 0, i_pm_reins_ceded_original_premium, (0.68) * i_pm_reins_ceded_original_premium
 		) AS o_pm_reins_ceded_original_premium,
 		CustomerCareCommissionRate AS CustomerCareCommissionRate10,
 		RatingPlanCode AS RatingPlanCode10,
@@ -4783,63 +4058,35 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- *INF*: IIF( v_68Flag=0, i_DirectWrittenPremium10,
 		-- (0.68) * i_DirectWrittenPremium10)
 		-- 
-		IFF(v_68Flag = 0,
-			i_DirectWrittenPremium10,
-			( 0.68 
-			) * i_DirectWrittenPremium10
-		) AS o_DirectWrittenPremium10,
+		IFF(v_68Flag = 0, i_DirectWrittenPremium10, (0.68) * i_DirectWrittenPremium10) AS o_DirectWrittenPremium10,
 		RatablePremium AS i_RatablePremium10,
 		-- *INF*: IIF( v_68Flag=0, i_RatablePremium10,
 		-- (0.68) * i_RatablePremium10)
 		-- 
-		IFF(v_68Flag = 0,
-			i_RatablePremium10,
-			( 0.68 
-			) * i_RatablePremium10
-		) AS o_RatablePremium10,
+		IFF(v_68Flag = 0, i_RatablePremium10, (0.68) * i_RatablePremium10) AS o_RatablePremium10,
 		ClassifiedPremium AS i_ClassifiedPremium10,
 		-- *INF*: IIF( v_68Flag=0, i_ClassifiedPremium10,
 		-- (0.68) * i_ClassifiedPremium10)
 		-- 
-		IFF(v_68Flag = 0,
-			i_ClassifiedPremium10,
-			( 0.68 
-			) * i_ClassifiedPremium10
-		) AS o_ClassifiedPremium10,
+		IFF(v_68Flag = 0, i_ClassifiedPremium10, (0.68) * i_ClassifiedPremium10) AS o_ClassifiedPremium10,
 		OtherModifiedPremium AS i_OtherModifiedPremium10,
 		-- *INF*: IIF( v_68Flag=0, i_OtherModifiedPremium10,
 		-- (0.68) * i_OtherModifiedPremium10)
-		IFF(v_68Flag = 0,
-			i_OtherModifiedPremium10,
-			( 0.68 
-			) * i_OtherModifiedPremium10
-		) AS o_OtherModifiedPremium10,
+		IFF(v_68Flag = 0, i_OtherModifiedPremium10, (0.68) * i_OtherModifiedPremium10) AS o_OtherModifiedPremium10,
 		ScheduleModifiedPremium AS i_ScheduleModifiedPremium10,
 		-- *INF*: IIF( v_68Flag=0, i_ScheduleModifiedPremium10,
 		-- (0.68) * i_ScheduleModifiedPremium10) 
-		IFF(v_68Flag = 0,
-			i_ScheduleModifiedPremium10,
-			( 0.68 
-			) * i_ScheduleModifiedPremium10
-		) AS o_ScheduleModifiedPremium10,
+		IFF(v_68Flag = 0, i_ScheduleModifiedPremium10, (0.68) * i_ScheduleModifiedPremium10) AS o_ScheduleModifiedPremium10,
 		ExperienceModifiedPremium AS i_ExperienceModifiedPremium10,
 		-- *INF*: IIF( v_68Flag=0, i_ExperienceModifiedPremium10,
 		-- (0.68) * i_ExperienceModifiedPremium10)
 		-- 
-		IFF(v_68Flag = 0,
-			i_ExperienceModifiedPremium10,
-			( 0.68 
-			) * i_ExperienceModifiedPremium10
-		) AS o_ExperienceModifiedPremium10,
+		IFF(v_68Flag = 0, i_ExperienceModifiedPremium10, (0.68) * i_ExperienceModifiedPremium10) AS o_ExperienceModifiedPremium10,
 		SubjectWrittenPremium AS i_SubjectWrittenPremium10,
 		-- *INF*: IIF( v_68Flag=0, i_SubjectWrittenPremium10,
 		-- (0.68) * i_SubjectWrittenPremium10)
 		-- 
-		IFF(v_68Flag = 0,
-			i_SubjectWrittenPremium10,
-			( 0.68 
-			) * i_SubjectWrittenPremium10
-		) AS o_i_SubjectWrittenPremium10,
+		IFF(v_68Flag = 0, i_SubjectWrittenPremium10, (0.68) * i_SubjectWrittenPremium10) AS o_i_SubjectWrittenPremium10,
 		EarnedDirectWrittenPremium AS i_EarnedDirectWrittenPremium10,
 		EarnedClassifiedPremium AS i_EarnedClassifiedPremium10,
 		EarnedRatablePremium AS i_EarnedRatablePremium10,
@@ -5068,22 +4315,17 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		SubAnnualStatementLineCode_DCT,
 		SubNonAnnualStatementLineCode_DCT,
 		-- *INF*: IIF(ISNULL(AnnualStatementLineCode_DCT),'N/A',AnnualStatementLineCode_DCT)
-		IFF(AnnualStatementLineCode_DCT IS NULL,
-			'N/A',
-			AnnualStatementLineCode_DCT
-		) AS v_AnnualStatementLineCode_DCT,
+		IFF(AnnualStatementLineCode_DCT IS NULL, 'N/A', AnnualStatementLineCode_DCT) AS v_AnnualStatementLineCode_DCT,
 		-- *INF*: IIF(ISNULL(SubAnnualStatementLineCode_DCT),'N/A',SubAnnualStatementLineCode_DCT)
-		IFF(SubAnnualStatementLineCode_DCT IS NULL,
-			'N/A',
-			SubAnnualStatementLineCode_DCT
-		) AS v_SubAnnualStatementLineCode_DCT,
+		IFF(SubAnnualStatementLineCode_DCT IS NULL, 'N/A', SubAnnualStatementLineCode_DCT) AS v_SubAnnualStatementLineCode_DCT,
 		-- *INF*: DECODE(True,
 		-- SourceSystemID='PMS',:LKP.LKP_ASL_DIM(aslcode, subaslcode, Nonsubaslcode),
 		-- SourceSystemID='DCT',:LKP.LKP_ASL_DIM(v_AnnualStatementLineCode_DCT,v_SubAnnualStatementLineCode_DCT, SubNonAnnualStatementLineCode_DCT),-1)
-		DECODE(True,
-			SourceSystemID = 'PMS', LKP_ASL_DIM_aslcode_subaslcode_Nonsubaslcode.asl_dim_id,
-			SourceSystemID = 'DCT', LKP_ASL_DIM_v_AnnualStatementLineCode_DCT_v_SubAnnualStatementLineCode_DCT_SubNonAnnualStatementLineCode_DCT.asl_dim_id,
-			- 1
+		DECODE(
+		    True,
+		    SourceSystemID = 'PMS', LKP_ASL_DIM_aslcode_subaslcode_Nonsubaslcode.asl_dim_id,
+		    SourceSystemID = 'DCT', LKP_ASL_DIM_v_AnnualStatementLineCode_DCT_v_SubAnnualStatementLineCode_DCT_SubNonAnnualStatementLineCode_DCT.asl_dim_id,
+		    - 1
 		) AS v_asldimID,
 		-- *INF*: :LKP.LKP_ASL_PRODUCT_CODE(ASLProductCode)
 		LKP_ASL_PRODUCT_CODE_ASLProductCode.asl_prdct_code_dim_id AS v_aslproductcodedimID,
@@ -5092,25 +4334,13 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		-- *INF*: :LKP.LKP_STRATEGIC_BUSINESS_DIVISION_DIM(strtgc_bus_dvsn_ak_id)
 		LKP_STRATEGIC_BUSINESS_DIVISION_DIM_strtgc_bus_dvsn_ak_id.strtgc_bus_dvsn_dim_id AS v_strategicbusinessdivisiondimID,
 		-- *INF*: IIF(ISNULL(v_asldimID),-1,v_asldimID)
-		IFF(v_asldimID IS NULL,
-			- 1,
-			v_asldimID
-		) AS o_asldimID,
+		IFF(v_asldimID IS NULL, - 1, v_asldimID) AS o_asldimID,
 		-- *INF*: IIF(ISNULL(v_aslproductcodedimID),-1,v_aslproductcodedimID)
-		IFF(v_aslproductcodedimID IS NULL,
-			- 1,
-			v_aslproductcodedimID
-		) AS o_aslproductcodedimID,
+		IFF(v_aslproductcodedimID IS NULL, - 1, v_aslproductcodedimID) AS o_aslproductcodedimID,
 		-- *INF*: IIF(ISNULL(v_productcodedimID),-1,v_productcodedimID)
-		IFF(v_productcodedimID IS NULL,
-			- 1,
-			v_productcodedimID
-		) AS o_productcodedimID,
+		IFF(v_productcodedimID IS NULL, - 1, v_productcodedimID) AS o_productcodedimID,
 		-- *INF*: IIF(ISNULL(v_strategicbusinessdivisiondimID),-1,v_strategicbusinessdivisiondimID)
-		IFF(v_strategicbusinessdivisiondimID IS NULL,
-			- 1,
-			v_strategicbusinessdivisiondimID
-		) AS o_strategicbusinessdivisiondimID,
+		IFF(v_strategicbusinessdivisiondimID IS NULL, - 1, v_strategicbusinessdivisiondimID) AS o_strategicbusinessdivisiondimID,
 		PremiumMasterCalculationID,
 		AgencyAKID,
 		PolicyAKID,
@@ -5171,11 +4401,7 @@ mplt_Premium_ASL_Insurance_Hierarchy AS (WITH
 		pm_reinsurance_ratio,
 		AuditID,
 		-- *INF*: IIF(PremiumType='C' AND MajorPerilCode='050',050,AuditID)
-		IFF(PremiumType = 'C' 
-			AND MajorPerilCode = '050',
-			050,
-			AuditID
-		) AS o_AuditID,
+		IFF(PremiumType = 'C' AND MajorPerilCode = '050', 050, AuditID) AS o_AuditID,
 		PolicyEffectiveDate,
 		PolicyExpirationDate,
 		StatisticalCoverageExpirationDate,
@@ -5445,25 +4671,24 @@ EXP_Process_Maplet_Fields AS (
 	AgencyActualCommissionRate1 AS AgencyActualCommissionRate,
 	RatingCoverageAKID1 AS RatingCoverageAKID,
 	-- *INF*: IIF(PremiumType='D' AND IN(PremiumTransactionCode,'10','11','12','13','14','15','18','19','20','21','22','23','24','25','28','29','57','67','30','31') AND not in (i_ReasonAmendedCode, 'COL' , 'CWO', 'CWB'),i_PremiumAmount,0)
-	IFF(PremiumType = 'D' 
-		AND PremiumTransactionCode IN ('10','11','12','13','14','15','18','19','20','21','22','23','24','25','28','29','57','67','30','31') 
-		AND NOT i_ReasonAmendedCode IN ('COL','CWO','CWB'),
-		i_PremiumAmount,
-		0
+	IFF(
+	    PremiumType = 'D'
+	    and PremiumTransactionCode IN ('10','11','12','13','14','15','18','19','20','21','22','23','24','25','28','29','57','67','30','31')
+	    and not i_ReasonAmendedCode IN ('COL','CWO','CWB'),
+	    i_PremiumAmount,
+	    0
 	) AS v_DirectWrittenPremium,
 	-- *INF*: IIF(PremiumType='C' AND IN(PremiumTransactionCode,'10','11','12','13','14','15','18','19','20','21','22','23','24','25','28','29','57','67') ,i_PremiumAmount,0)
-	IFF(PremiumType = 'C' 
-		AND PremiumTransactionCode IN ('10','11','12','13','14','15','18','19','20','21','22','23','24','25','28','29','57','67'),
-		i_PremiumAmount,
-		0
+	IFF(
+	    PremiumType = 'C'
+	    and PremiumTransactionCode IN ('10','11','12','13','14','15','18','19','20','21','22','23','24','25','28','29','57','67'),
+	    i_PremiumAmount,
+	    0
 	) AS v_CededWrittenPremium,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(TO_DATE('21001231','YYYYMMDD'))
 	LKP_CALENDER_DIM_TO_DATE_21001231_YYYYMMDD.clndr_id AS v_clndr_id,
 	-- *INF*: IIF(NOT ISNULL(v_clndr_id),v_clndr_id,-1)
-	IFF(v_clndr_id IS NOT NULL,
-		v_clndr_id,
-		- 1
-	) AS v_default_clndr_id,
+	IFF(v_clndr_id IS NOT NULL, v_clndr_id, - 1) AS v_default_clndr_id,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(TRUNC(i_PolicyEffectiveDate,'D'))
 	LKP_CALENDER_DIM_TRUNC_i_PolicyEffectiveDate_D.clndr_id AS v_PolicyEffectiveDateID,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(TRUNC(i_PolicyExpirationDate,'D'))
@@ -5498,15 +4723,11 @@ EXP_Process_Maplet_Fields AS (
 	o_TypeBureauCode AS i_TypeBureauCode,
 	o_MajorPerilCode AS i_MajorPerilCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode
-	) AS v_MajorPerilCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_MajorPerilCode) AS v_MajorPerilCode,
 	-- *INF*: IIF(LTRIM(v_MajorPerilCode,'0')='' OR REG_MATCH(v_MajorPerilCode,'[^0-9a-zA-Z]'),'N/A',v_MajorPerilCode)
-	IFF(LTRIM(v_MajorPerilCode, '0'
-		) = '' 
-		OR REGEXP_LIKE(v_MajorPerilCode, '[^0-9a-zA-Z]'
-		),
-		'N/A',
-		v_MajorPerilCode
+	IFF(
+	    LTRIM(v_MajorPerilCode, '0') = '' OR REGEXP_LIKE(v_MajorPerilCode, '[^0-9a-zA-Z]'), 'N/A',
+	    v_MajorPerilCode
 	) AS v_Reg_MajorPerilCode,
 	v_Reg_MajorPerilCode AS o_MajorPerilCode,
 	o_RiskUnit AS i_RiskUnit,
@@ -5515,30 +4736,26 @@ EXP_Process_Maplet_Fields AS (
 	SourceSystemID1 AS SourceSystemID,
 	StandardInsuranceLineCode1 AS i_StandardInsuranceLineCode,
 	-- *INF*: IIF(REG_MATCH(i_StandardInsuranceLineCode,'[^0-9a-zA-Z]'),'N/A',i_StandardInsuranceLineCode)
-	IFF(REGEXP_LIKE(i_StandardInsuranceLineCode, '[^0-9a-zA-Z]'
-		),
-		'N/A',
-		i_StandardInsuranceLineCode
+	IFF(
+	    REGEXP_LIKE(i_StandardInsuranceLineCode, '[^0-9a-zA-Z]'), 'N/A', i_StandardInsuranceLineCode
 	) AS v_Reg_StandardInsuranceLineCode,
 	-- *INF*: IIF(v_Reg_StandardInsuranceLineCode='N/A' AND (IN(i_TypeBureauCode,'AL','AN','AP') OR IN(v_Reg_MajorPerilCode,'930','931')),'CA',v_Reg_StandardInsuranceLineCode)
-	IFF(v_Reg_StandardInsuranceLineCode = 'N/A' 
-		AND ( i_TypeBureauCode IN ('AL','AN','AP') 
-			OR v_Reg_MajorPerilCode IN ('930','931') 
-		),
-		'CA',
-		v_Reg_StandardInsuranceLineCode
+	IFF(
+	    v_Reg_StandardInsuranceLineCode = 'N/A'
+	    and (i_TypeBureauCode IN ('AL','AN','AP')
+	    or v_Reg_MajorPerilCode IN ('930','931')),
+	    'CA',
+	    v_Reg_StandardInsuranceLineCode
 	) AS v_StandardInsuranceLineCode,
 	-- *INF*: IIF(v_StandardInsuranceLineCode='N/A' AND IN(i_TypeBureauCode,'CF','B2','BB','BE','BF','BM','BT','FT','GL','GS','IM','MS','PF','PH','PI','PL','PQ','WC','WP','NB','RL','RN','RP','BC','N/A'),1,0)
-	IFF(v_StandardInsuranceLineCode = 'N/A' 
-		AND i_TypeBureauCode IN ('CF','B2','BB','BE','BF','BM','BT','FT','GL','GS','IM','MS','PF','PH','PI','PL','PQ','WC','WP','NB','RL','RN','RP','BC','N/A'),
-		1,
-		0
+	IFF(
+	    v_StandardInsuranceLineCode = 'N/A'
+	    and i_TypeBureauCode IN ('CF','B2','BB','BE','BF','BM','BT','FT','GL','GS','IM','MS','PF','PH','PI','PL','PQ','WC','WP','NB','RL','RN','RP','BC','N/A'),
+	    1,
+	    0
 	) AS v_flag,
 	-- *INF*: IIF(SourceSystemID='PMS',v_StandardInsuranceLineCode,v_Reg_StandardInsuranceLineCode)
-	IFF(SourceSystemID = 'PMS',
-		v_StandardInsuranceLineCode,
-		v_Reg_StandardInsuranceLineCode
-	) AS o_StandardInsuranceLineCode,
+	IFF(SourceSystemID = 'PMS', v_StandardInsuranceLineCode, v_Reg_StandardInsuranceLineCode) AS o_StandardInsuranceLineCode,
 	RatingCoverage1 AS RatingCoverage,
 	CoverageForm1 AS i_CoverageForm,
 	RiskType1 AS i_RiskType,
@@ -5546,22 +4763,15 @@ EXP_Process_Maplet_Fields AS (
 	CoverageType1 AS CoverageType,
 	ClassCode1 AS i_ClassCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassCode
-	) AS v_ClassCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_ClassCode) AS v_ClassCode,
 	RiskLocationHashKey1 AS RiskLocationHashKey,
 	-- *INF*: IIF(IN(v_StandardInsuranceLineCode,'CR') OR v_flag=1,'N/A',:UDF.DEFAULT_VALUE_FOR_STRINGS(i_Risk_Unit_Group))
-	IFF(v_StandardInsuranceLineCode IN ('CR') 
-		OR v_flag = 1,
-		'N/A',
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(i_Risk_Unit_Group
-		)
+	IFF(
+	    v_StandardInsuranceLineCode IN ('CR') OR v_flag = 1, 'N/A',
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(i_Risk_Unit_Group)
 	) AS v_Risk_Unit_Group,
 	-- *INF*: IIF(LTRIM(v_Risk_Unit_Group,'0')='','N/A',v_Risk_Unit_Group)
-	IFF(LTRIM(v_Risk_Unit_Group, '0'
-		) = '',
-		'N/A',
-		v_Risk_Unit_Group
-	) AS v_Zero_Risk_Unit_Group,
+	IFF(LTRIM(v_Risk_Unit_Group, '0') = '', 'N/A', v_Risk_Unit_Group) AS v_Zero_Risk_Unit_Group,
 	-- *INF*: IIF(
 	--   v_flag=1
 	-- OR   (v_StandardInsuranceLineCode='GL' AND (NOT IN(v_MajorPerilCode,'540','599','919')
@@ -5569,99 +4779,76 @@ EXP_Process_Maplet_Fields AS (
 	--   OR IN(v_StandardInsuranceLineCode,'WC','IM','CG','CA')=1,
 	--  'N/A',:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnit)
 	-- )
-	IFF(v_flag = 1 
-		OR ( v_StandardInsuranceLineCode = 'GL' 
-			AND ( NOT v_MajorPerilCode IN ('540','599','919') 
-				OR NOT v_ClassCode IN ('11111','22222','22250','92100','17000','17001','17002','80051','80052','80053','80054','80055','80056','80057','80058') 
-			) 
-		) 
-		OR v_StandardInsuranceLineCode IN ('WC','IM','CG','CA') = 1,
-		'N/A',
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RiskUnit
-		)
+	IFF(
+	    v_flag = 1
+	    or (v_StandardInsuranceLineCode = 'GL'
+	    and (NOT v_MajorPerilCode IN ('540','599','919')
+	    or NOT v_ClassCode IN ('11111','22222','22250','92100','17000','17001','17002','80051','80052','80053','80054','80055','80056','80057','80058')))
+	    or v_StandardInsuranceLineCode IN ('WC','IM','CG','CA') = 1,
+	    'N/A',
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(i_RiskUnit)
 	) AS v_RiskUnit,
 	-- *INF*: IIF(LTRIM(v_RiskUnit,'0')='','N/A',v_RiskUnit)
-	IFF(LTRIM(v_RiskUnit, '0'
-		) = '',
-		'N/A',
-		v_RiskUnit
-	) AS v_Zero_RiskUnit,
+	IFF(LTRIM(v_RiskUnit, '0') = '', 'N/A', v_RiskUnit) AS v_Zero_RiskUnit,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_RiskUnitSequenceNumber,2,1))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_RiskUnitSequenceNumber, 2, 1
-		)
-	) AS v_ProductTypeCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_RiskUnitSequenceNumber, 2, 1)) AS v_ProductTypeCode,
 	-- *INF*: IIF(REG_MATCH(v_Zero_Risk_Unit_Group,'[^0-9a-zA-Z]'),'N/A',v_Zero_Risk_Unit_Group)
-	IFF(REGEXP_LIKE(v_Zero_Risk_Unit_Group, '[^0-9a-zA-Z]'
-		),
-		'N/A',
-		v_Zero_Risk_Unit_Group
-	) AS o_Risk_Unit_Group,
+	IFF(REGEXP_LIKE(v_Zero_Risk_Unit_Group, '[^0-9a-zA-Z]'), 'N/A', v_Zero_Risk_Unit_Group) AS o_Risk_Unit_Group,
 	-- *INF*: IIF(
 	--   REG_MATCH(v_ProductTypeCode,'[^0-9a-zA-Z]') OR v_Reg_StandardInsuranceLineCode<>'GL' OR v_ProductTypeCode='0',
 	--   'N/A',v_ProductTypeCode
 	-- )
-	IFF(REGEXP_LIKE(v_ProductTypeCode, '[^0-9a-zA-Z]'
-		) 
-		OR v_Reg_StandardInsuranceLineCode <> 'GL' 
-		OR v_ProductTypeCode = '0',
-		'N/A',
-		v_ProductTypeCode
+	IFF(
+	    REGEXP_LIKE(v_ProductTypeCode, '[^0-9a-zA-Z]')
+	    or v_Reg_StandardInsuranceLineCode <> 'GL'
+	    or v_ProductTypeCode = '0',
+	    'N/A',
+	    v_ProductTypeCode
 	) AS o_ProductTypeCode,
 	-- *INF*: IIF(REG_MATCH(v_Zero_RiskUnit,'[^0-9a-zA-Z]'),'N/A',v_Zero_RiskUnit)
-	IFF(REGEXP_LIKE(v_Zero_RiskUnit, '[^0-9a-zA-Z]'
-		),
-		'N/A',
-		v_Zero_RiskUnit
-	) AS o_RiskUnit,
+	IFF(REGEXP_LIKE(v_Zero_RiskUnit, '[^0-9a-zA-Z]'), 'N/A', v_Zero_RiskUnit) AS o_RiskUnit,
 	-- *INF*: IIF(ISNULL(v_PolicyEffectiveDateID),v_default_clndr_id,v_PolicyEffectiveDateID)
-	IFF(v_PolicyEffectiveDateID IS NULL,
-		v_default_clndr_id,
-		v_PolicyEffectiveDateID
-	) AS o_PolicyEffectiveDateID,
+	IFF(v_PolicyEffectiveDateID IS NULL, v_default_clndr_id, v_PolicyEffectiveDateID) AS o_PolicyEffectiveDateID,
 	-- *INF*: IIF(ISNULL(v_PolicyExpirationDateID),v_default_clndr_id,v_PolicyExpirationDateID)
-	IFF(v_PolicyExpirationDateID IS NULL,
-		v_default_clndr_id,
-		v_PolicyExpirationDateID
-	) AS o_PolicyExpirationDateID,
+	IFF(v_PolicyExpirationDateID IS NULL, v_default_clndr_id, v_PolicyExpirationDateID) AS o_PolicyExpirationDateID,
 	-- *INF*: IIF(ISNULL(v_PolicyCoverageEffectiveDateID),v_default_clndr_id,v_PolicyCoverageEffectiveDateID)
-	IFF(v_PolicyCoverageEffectiveDateID IS NULL,
-		v_default_clndr_id,
-		v_PolicyCoverageEffectiveDateID
+	IFF(
+	    v_PolicyCoverageEffectiveDateID IS NULL, v_default_clndr_id, v_PolicyCoverageEffectiveDateID
 	) AS o_PolicyCoverageEffectiveDateID,
 	-- *INF*: IIF(ISNULL(v_PolicyCoverageExpirationDateID),v_default_clndr_id,v_PolicyCoverageExpirationDateID)
-	IFF(v_PolicyCoverageExpirationDateID IS NULL,
-		v_default_clndr_id,
-		v_PolicyCoverageExpirationDateID
+	IFF(
+	    v_PolicyCoverageExpirationDateID IS NULL, v_default_clndr_id,
+	    v_PolicyCoverageExpirationDateID
 	) AS o_PolicyCoverageExpirationDateID,
 	-- *INF*: IIF(ISNULL(v_StatisticalCoverageEffectiveDateID),v_default_clndr_id,v_StatisticalCoverageEffectiveDateID)
-	IFF(v_StatisticalCoverageEffectiveDateID IS NULL,
-		v_default_clndr_id,
-		v_StatisticalCoverageEffectiveDateID
+	IFF(
+	    v_StatisticalCoverageEffectiveDateID IS NULL, v_default_clndr_id,
+	    v_StatisticalCoverageEffectiveDateID
 	) AS o_StatisticalCoverageEffectiveDateID,
 	-- *INF*: IIF(ISNULL(v_StatisticalCoverageExpirationDateID),v_default_clndr_id,v_StatisticalCoverageExpirationDateID)
-	IFF(v_StatisticalCoverageExpirationDateID IS NULL,
-		v_default_clndr_id,
-		v_StatisticalCoverageExpirationDateID
+	IFF(
+	    v_StatisticalCoverageExpirationDateID IS NULL, v_default_clndr_id,
+	    v_StatisticalCoverageExpirationDateID
 	) AS o_StatisticalCoverageExpirationDateID,
 	-- *INF*: IIF(ISNULL(v_PremiumTransactionEnteredDateID),v_default_clndr_id,v_PremiumTransactionEnteredDateID)
-	IFF(v_PremiumTransactionEnteredDateID IS NULL,
-		v_default_clndr_id,
-		v_PremiumTransactionEnteredDateID
+	IFF(
+	    v_PremiumTransactionEnteredDateID IS NULL, v_default_clndr_id,
+	    v_PremiumTransactionEnteredDateID
 	) AS o_PremiumTransactionEnteredDateID,
 	-- *INF*: IIF(ISNULL(v_PremiumTransactionEffectiveDateID),v_default_clndr_id,v_PremiumTransactionEffectiveDateID)
-	IFF(v_PremiumTransactionEffectiveDateID IS NULL,
-		v_default_clndr_id,
-		v_PremiumTransactionEffectiveDateID
+	IFF(
+	    v_PremiumTransactionEffectiveDateID IS NULL, v_default_clndr_id,
+	    v_PremiumTransactionEffectiveDateID
 	) AS o_PremiumTransactionEffectiveDateID,
 	-- *INF*: IIF(ISNULL(v_PremiumTransactionExpirationDateID),v_default_clndr_id,v_PremiumTransactionExpirationDateID)
-	IFF(v_PremiumTransactionExpirationDateID IS NULL,
-		v_default_clndr_id,
-		v_PremiumTransactionExpirationDateID
+	IFF(
+	    v_PremiumTransactionExpirationDateID IS NULL, v_default_clndr_id,
+	    v_PremiumTransactionExpirationDateID
 	) AS o_PremiumTransactionExpirationDateID,
 	-- *INF*: IIF(ISNULL(v_PremiumTransactionBookedDateID),v_default_clndr_id,v_PremiumTransactionBookedDateID)
-	IFF(v_PremiumTransactionBookedDateID IS NULL,
-		v_default_clndr_id,
-		v_PremiumTransactionBookedDateID
+	IFF(
+	    v_PremiumTransactionBookedDateID IS NULL, v_default_clndr_id,
+	    v_PremiumTransactionBookedDateID
 	) AS o_PremiumTransactionBookedDateID,
 	v_DirectWrittenPremium AS o_DirectWrittenPremium,
 	v_CededWrittenPremium AS o_CededWrittenPremium,
@@ -5670,44 +4857,38 @@ EXP_Process_Maplet_Fields AS (
 	-- 
 	-- 
 	-- IIF(IN(PremiumTransactionCode,'14','24') ,i_PremiumAmount,0)
-	IFF(PremiumTransactionCode IN ('14','24'),
-		i_PremiumAmount,
-		0
-	) AS o_AuditPremium,
+	IFF(PremiumTransactionCode IN ('14','24'), i_PremiumAmount, 0) AS o_AuditPremium,
 	-- *INF*: IIF(IN(PremiumTransactionCode,'20','21','22','23','24','25','28','29','67') And NOT IN(i_ReasonAmendedCode,'CWB'),i_PremiumAmount,0)
-	IFF(PremiumTransactionCode IN ('20','21','22','23','24','25','28','29','67') 
-		AND NOT i_ReasonAmendedCode IN ('CWB'),
-		i_PremiumAmount,
-		0
+	IFF(
+	    PremiumTransactionCode IN ('20','21','22','23','24','25','28','29','67')
+	    and NOT i_ReasonAmendedCode IN ('CWB'),
+	    i_PremiumAmount,
+	    0
 	) AS o_ReturnedPremium,
 	-- *INF*: IIF(IN(PremiumTransactionCode,'10','11','12','13','14','15','18','22','23','24','25','28') AND IN(i_ReasonAmendedCode,'COL', 'CWO'),i_PremiumAmount)
-	IFF(PremiumTransactionCode IN ('10','11','12','13','14','15','18','22','23','24','25','28') 
-		AND i_ReasonAmendedCode IN ('COL','CWO'),
-		i_PremiumAmount
+	IFF(
+	    PremiumTransactionCode IN ('10','11','12','13','14','15','18','22','23','24','25','28')
+	    and i_ReasonAmendedCode IN ('COL','CWO'),
+	    i_PremiumAmount
 	) AS o_CollectionWriteOffPremium,
 	-- *INF*: IIF(i_ReasonAmendedCode='CWB', i_PremiumAmount, AgencyActualCommissionRate*i_PremiumAmount)
-	IFF(i_ReasonAmendedCode = 'CWB',
-		i_PremiumAmount,
-		AgencyActualCommissionRate * i_PremiumAmount
+	IFF(
+	    i_ReasonAmendedCode = 'CWB', i_PremiumAmount, AgencyActualCommissionRate * i_PremiumAmount
 	) AS o_AgencyDirectWrittenCommission,
 	-- *INF*: IIF(ISNULL(v_RatingCoverageEffectiveDateId),v_default_clndr_id,v_RatingCoverageEffectiveDateId)
-	IFF(v_RatingCoverageEffectiveDateId IS NULL,
-		v_default_clndr_id,
-		v_RatingCoverageEffectiveDateId
+	IFF(
+	    v_RatingCoverageEffectiveDateId IS NULL, v_default_clndr_id, v_RatingCoverageEffectiveDateId
 	) AS o_RatingCoverageEffectiveDateId,
 	-- *INF*: IIF(ISNULL(v_RatingCoverageExpirationDateId),v_default_clndr_id,v_RatingCoverageExpirationDateId)
-	IFF(v_RatingCoverageExpirationDateId IS NULL,
-		v_default_clndr_id,
-		v_RatingCoverageExpirationDateId
+	IFF(
+	    v_RatingCoverageExpirationDateId IS NULL, v_default_clndr_id,
+	    v_RatingCoverageExpirationDateId
 	) AS o_RatingCoverageExpirationDateId,
 	i_ReasonAmendedCode AS o_ReasonAmendedCode,
 	-- *INF*: :LKP.LKP_CoverageDetailDim(PremiumTransactionID)
 	LKP_COVERAGEDETAILDIM_PremiumTransactionID.CoverageDetailDimId AS v_CoverageDetailDimId,
 	-- *INF*: IIF(ISNULL(v_CoverageDetailDimId), -1, v_CoverageDetailDimId)
-	IFF(v_CoverageDetailDimId IS NULL,
-		- 1,
-		v_CoverageDetailDimId
-	) AS CoverageDetailDimId,
+	IFF(v_CoverageDetailDimId IS NULL, - 1, v_CoverageDetailDimId) AS CoverageDetailDimId,
 	PerilGroup1,
 	PolicyAuditAKID1,
 	PolicyAuditEffectiveDate1,
@@ -5718,8 +4899,7 @@ EXP_Process_Maplet_Fields AS (
 	DeclaredEventFlag1
 	FROM mplt_Premium_ASL_Insurance_Hierarchy
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TO_DATE_21001231_YYYYMMDD
-	ON LKP_CALENDER_DIM_TO_DATE_21001231_YYYYMMDD.clndr_date = TO_DATE('21001231', 'YYYYMMDD'
-)
+	ON LKP_CALENDER_DIM_TO_DATE_21001231_YYYYMMDD.clndr_date = TO_TIMESTAMP('21001231', 'YYYYMMDD')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TRUNC_i_PolicyEffectiveDate_D
 	ON LKP_CALENDER_DIM_TRUNC_i_PolicyEffectiveDate_D.clndr_date = CAST(TRUNC(i_PolicyEffectiveDate, 'DAY') AS TIMESTAMP_NTZ(0))
@@ -5991,23 +5171,22 @@ EXP_Get_Tgt_Values AS (
 	LKP_InsuranceReferenceCoverageDim_PMS.InsuranceReferenceCoverageDimId AS InsuranceReferenceCoverageDimId_PMS,
 	LKP_InsuranceReferenceCoverageDim_DCT.InsuranceReferenceCoverageDimId AS InsuranceReferenceCoverageDimId_DCT,
 	-- *INF*: DECODE(SourceSystemID,'PMS',InsuranceReferenceCoverageDimId_PMS,'DCT',InsuranceReferenceCoverageDimId_DCT)
-	DECODE(SourceSystemID,
-		'PMS', InsuranceReferenceCoverageDimId_PMS,
-		'DCT', InsuranceReferenceCoverageDimId_DCT
+	DECODE(
+	    SourceSystemID,
+	    'PMS', InsuranceReferenceCoverageDimId_PMS,
+	    'DCT', InsuranceReferenceCoverageDimId_DCT
 	) AS o_InsuranceReferenceCoverageDimId,
 	EXP_Process_Maplet_Fields.CoverageDetailDimId,
 	LKP_PolicyAuditDim.PolicyAuditDimId AS i_PolicyAuditDimId,
 	-- *INF*: IIF(ISNULL(i_PolicyAuditDimId),-1,i_PolicyAuditDimId)
-	IFF(i_PolicyAuditDimId IS NULL,
-		- 1,
-		i_PolicyAuditDimId
-	) AS o_PolicyAuditDimID,
+	IFF(i_PolicyAuditDimId IS NULL, - 1, i_PolicyAuditDimId) AS o_PolicyAuditDimID,
 	EXP_Process_Maplet_Fields.DeclaredEventFlag1 AS DeclaredEventFlag,
 	-- *INF*: DECODE(DeclaredEventFlag, 'T', 1, 'F', 0,Null)
-	DECODE(DeclaredEventFlag,
-		'T', 1,
-		'F', 0,
-		Null
+	DECODE(
+	    DeclaredEventFlag,
+	    'T', 1,
+	    'F', 0,
+	    Null
 	) AS o_DeclaredEventFlag
 	FROM EXP_Process_Maplet_Fields
 	LEFT JOIN LKP_AgencyDimID

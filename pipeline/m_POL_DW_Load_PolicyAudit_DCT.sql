@@ -162,87 +162,77 @@ EXP_UnderlyingInfo AS (
 	StateProv AS i_StateProv,
 	AuditablePremium AS i_AuditablePremium,
 	-- *INF*: IIF(i_IsAuditable='1', NULL, :LKP.LKP_WBCLLINESTAGE(i_PolicyKey,i_InsuranceLine,i_CreatedDate))
-	IFF(i_IsAuditable = '1',
-		NULL,
-		LKP_WBCLLINESTAGE_i_PolicyKey_i_InsuranceLine_i_CreatedDate.IsAuditable
+	IFF(
+	    i_IsAuditable = '1', NULL,
+	    LKP_WBCLLINESTAGE_i_PolicyKey_i_InsuranceLine_i_CreatedDate.IsAuditable
 	) AS v_StagePrevAuditableFlag,
 	-- *INF*: DECODE(TRUE,
 	-- i_IsAuditable='1', NULL,
 	-- NOT ISNULL(v_StagePrevAuditableFlag), v_StagePrevAuditableFlag,
 	-- :LKP.LKP_EDWAUDITSTATUS(i_PolicyKey,i_InsuranceLine,i_CreatedDate))
-	DECODE(TRUE,
-		i_IsAuditable = '1', NULL,
-		v_StagePrevAuditableFlag IS NOT NULL, v_StagePrevAuditableFlag,
-		LKP_EDWAUDITSTATUS_i_PolicyKey_i_InsuranceLine_i_CreatedDate.AuditableFlag
+	DECODE(
+	    TRUE,
+	    i_IsAuditable = '1', NULL,
+	    v_StagePrevAuditableFlag IS NOT NULL, v_StagePrevAuditableFlag,
+	    LKP_EDWAUDITSTATUS_i_PolicyKey_i_InsuranceLine_i_CreatedDate.AuditableFlag
 	) AS v_EDWPrevAuditableFlag,
 	-- *INF*: IIF(v_EDWPrevAuditableFlag='T','1',v_EDWPrevAuditableFlag)
-	IFF(v_EDWPrevAuditableFlag = 'T',
-		'1',
-		v_EDWPrevAuditableFlag
-	) AS v_PrevAuditableFlag,
+	IFF(v_EDWPrevAuditableFlag = 'T', '1', v_EDWPrevAuditableFlag) AS v_PrevAuditableFlag,
 	-- *INF*: :LKP.LKP_LATESTPREMIUMTRANSACTION(i_PolicyAKId)
 	LKP_LATESTPREMIUMTRANSACTION_i_PolicyAKId.PremiumTransactionCode AS v_AuditStatus,
 	Type,
 	NoncomplianceofWCPoolAudit,
 	i_PolicyAKId AS o_PolicyAKId,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_InsuranceLine)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_InsuranceLine
-	) AS o_InsuranceLine,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_InsuranceLine) AS o_InsuranceLine,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_AssignedAuditor)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_AssignedAuditor
-	) AS o_AssignedAuditor,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_AssignedAuditor) AS o_AssignedAuditor,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_AuditPeriod)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_AuditPeriod
-	) AS o_AuditFrequency,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_AuditPeriod) AS o_AuditFrequency,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_AuditType)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_AuditType
-	) AS o_AuditType,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_AuditType) AS o_AuditType,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_City)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_City
-	) AS o_AuditContactCity,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_City) AS o_AuditContactCity,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_StateProv)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_StateProv
-	) AS o_AuditContactStateAbbreviation,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_StateProv) AS o_AuditContactStateAbbreviation,
 	-- *INF*: IIF(NOT ISNULL(i_CreatedDate),i_CreatedDate,TO_DATE('1800-1-1','YYYY-MM-DD'))
-	IFF(i_CreatedDate IS NOT NULL,
-		i_CreatedDate,
-		TO_DATE('1800-1-1', 'YYYY-MM-DD'
-		)
-	) AS o_CreatedDate,
+	IFF(i_CreatedDate IS NOT NULL, i_CreatedDate, TO_TIMESTAMP('1800-1-1', 'YYYY-MM-DD')) AS o_CreatedDate,
 	-- *INF*: DECODE(i_AuditTypePermanentOverride,'T','1','F','0','0')
-	DECODE(i_AuditTypePermanentOverride,
-		'T', '1',
-		'F', '0',
-		'0'
+	DECODE(
+	    i_AuditTypePermanentOverride,
+	    'T', '1',
+	    'F', '0',
+	    '0'
 	) AS o_PermanentOverrideFlag,
 	-- *INF*: DECODE(i_AuditTypePolicyPeriodOverride,'T','1','F','0','0')
-	DECODE(i_AuditTypePolicyPeriodOverride,
-		'T', '1',
-		'F', '0',
-		'0'
+	DECODE(
+	    i_AuditTypePolicyPeriodOverride,
+	    'T', '1',
+	    'F', '0',
+	    '0'
 	) AS o_PolicyPeriodOverrideFlag,
 	-- *INF*: DECODE(i_HasCorrespondingFrontingPolicy,'T','1','F','0','0')
-	DECODE(i_HasCorrespondingFrontingPolicy,
-		'T', '1',
-		'F', '0',
-		'0'
+	DECODE(
+	    i_HasCorrespondingFrontingPolicy,
+	    'T', '1',
+	    'F', '0',
+	    '0'
 	) AS o_FrontingPolicyFlag,
 	-- *INF*: DECODE(i_CloseAudit,'T','1','F','0','0')
-	DECODE(i_CloseAudit,
-		'T', '1',
-		'F', '0',
-		'0'
+	DECODE(
+	    i_CloseAudit,
+	    'T', '1',
+	    'F', '0',
+	    '0'
 	) AS o_AuditCloseOutFlag,
 	-- *INF*: IIF(IN(LTRIM(RTRIM(v_AuditStatus)),'FinalAudit','RevisedFinalAudit'),'Completed','NotCompleted')
 	-- 
 	-- --IIF(IN(LTRIM(RTRIM(:LKP.LKP_LATESTPREMIUMTRANSACTION(i_PolicyAKId))),'FinalAudit','RevisedFinalAudit'),'Completed','NotCompleted')
 	-- 
 	-- 
-	IFF(LTRIM(RTRIM(v_AuditStatus
-			)
-		) IN ('FinalAudit','RevisedFinalAudit'),
-		'Completed',
-		'NotCompleted'
+	IFF(
+	    LTRIM(RTRIM(v_AuditStatus)) IN ('FinalAudit','RevisedFinalAudit'), 'Completed',
+	    'NotCompleted'
 	) AS o_AuditStatus,
 	i_IsAuditable AS o_AuditableFlag,
 	i_LineAuditable AS o_LineAuditableFlag,
@@ -251,41 +241,36 @@ EXP_UnderlyingInfo AS (
 	-- i_AssignedAuditorPolicyPeriodOverride='T','POL',
 	-- i_AssignedAuditorPermanentOverride='T','PERM',
 	-- '')
-	DECODE(TRUE,
-		i_AssignedAuditorPolicyPeriodOverride = 'T' 
-		AND i_AssignedAuditorPermanentOverride = 'T', 'PERM',
-		i_AssignedAuditorPolicyPeriodOverride = 'T', 'POL',
-		i_AssignedAuditorPermanentOverride = 'T', 'PERM',
-		''
+	DECODE(
+	    TRUE,
+	    i_AssignedAuditorPolicyPeriodOverride = 'T' AND i_AssignedAuditorPermanentOverride = 'T', 'PERM',
+	    i_AssignedAuditorPolicyPeriodOverride = 'T', 'POL',
+	    i_AssignedAuditorPermanentOverride = 'T', 'PERM',
+	    ''
 	) AS o_AssignedAuditorOverideFlag,
 	-- *INF*: DECODE(TRUE,
 	-- i_AuditTypePolicyPeriodOverride='T' AND i_AuditTypePermanentOverride='T','PERM',
 	-- i_AuditTypePolicyPeriodOverride='T','POL',
 	-- i_AuditTypePermanentOverride='T','PERM',
 	-- '')
-	DECODE(TRUE,
-		i_AuditTypePolicyPeriodOverride = 'T' 
-		AND i_AuditTypePermanentOverride = 'T', 'PERM',
-		i_AuditTypePolicyPeriodOverride = 'T', 'POL',
-		i_AuditTypePermanentOverride = 'T', 'PERM',
-		''
+	DECODE(
+	    TRUE,
+	    i_AuditTypePolicyPeriodOverride = 'T' AND i_AuditTypePermanentOverride = 'T', 'PERM',
+	    i_AuditTypePolicyPeriodOverride = 'T', 'POL',
+	    i_AuditTypePermanentOverride = 'T', 'PERM',
+	    ''
 	) AS o_AuditTypeOverrideFlag,
 	-- *INF*: IIF(NOT ISNULL(i_AuditablePremium),ROUND(i_AuditablePremium,4),0)
-	IFF(i_AuditablePremium IS NOT NULL,
-		ROUND(i_AuditablePremium, 4
-		),
-		0
-	) AS o_AuditablePremium,
+	IFF(i_AuditablePremium IS NOT NULL, ROUND(i_AuditablePremium, 4), 0) AS o_AuditablePremium,
 	-- *INF*: DECODE(TRUE,
 	-- i_IsAuditable='1' OR i_LineAuditable='1', '1',
 	-- v_PrevAuditableFlag='1' OR i_LineAuditable='1', '1',
 	-- '0')
-	DECODE(TRUE,
-		i_IsAuditable = '1' 
-		OR i_LineAuditable = '1', '1',
-		v_PrevAuditableFlag = '1' 
-		OR i_LineAuditable = '1', '1',
-		'0'
+	DECODE(
+	    TRUE,
+	    i_IsAuditable = '1' OR i_LineAuditable = '1', '1',
+	    v_PrevAuditableFlag = '1' OR i_LineAuditable = '1', '1',
+	    '0'
 	) AS o_FilterFlag
 	FROM SQ_DCLimitStaging
 	LEFT JOIN LKP_WBCLLINESTAGE LKP_WBCLLINESTAGE_i_PolicyKey_i_InsuranceLine_i_CreatedDate
@@ -400,10 +385,11 @@ EXPTRANS AS (
 	AGGTRANS.Type AS i_Type,
 	AGGTRANS.NoncomplianceofWCPoolAudit AS i_NoncomplianceofWCPoolAudit,
 	-- *INF*: DECODE(i_NoncomplianceofWCPoolAudit, 'T', '1', 'F', '0', NULL)
-	DECODE(i_NoncomplianceofWCPoolAudit,
-		'T', '1',
-		'F', '0',
-		NULL
+	DECODE(
+	    i_NoncomplianceofWCPoolAudit,
+	    'T', '1',
+	    'F', '0',
+	    NULL
 	) AS o_NoncomplianceofWCPoolAudit,
 	AGGTRANS.PolicyAKId,
 	AGGTRANS.InsuranceLine,
@@ -424,20 +410,22 @@ EXPTRANS AS (
 	AGGTRANS.AuditablePremium,
 	-- *INF*: DECODE(lkp_IsAuditableFlag,'T',1,'F',0,'1',1,'0',0,0)
 	-- 
-	DECODE(lkp_IsAuditableFlag,
-		'T', 1,
-		'F', 0,
-		'1', 1,
-		'0', 0,
-		0
+	DECODE(
+	    lkp_IsAuditableFlag,
+	    'T', 1,
+	    'F', 0,
+	    '1', 1,
+	    '0', 0,
+	    0
 	) AS v_lkp_IsAuditableFlag,
 	-- *INF*: DECODE(LineAuditableFlag,'T',1,'F',0,'1',1,'0',0,0)
-	DECODE(LineAuditableFlag,
-		'T', 1,
-		'F', 0,
-		'1', 1,
-		'0', 0,
-		0
+	DECODE(
+	    LineAuditableFlag,
+	    'T', 1,
+	    'F', 0,
+	    '1', 1,
+	    '0', 0,
+	    0
 	) AS v_LineAuditableFlag,
 	-- *INF*: MD5(AssignedAuditor||
 	-- AuditFrequency||
@@ -453,9 +441,7 @@ EXPTRANS AS (
 	-- AuditTypeOverrideFlag||
 	-- i_Type||
 	-- TO_CHAR(AuditablePremium)||i_NoncomplianceofWCPoolAudit)
-	MD5(AssignedAuditor || AuditFrequency || AuditType || AuditContactCity || AuditContactStateAbbreviation || PermanentOverrideFlag || PolicyPeriodOverrideFlag || FrontingPolicyFlag || AuditStatus || AuditCloseOutFlag || AssignedAuditorOverideFlag || AuditTypeOverrideFlag || i_Type || TO_CHAR(AuditablePremium
-		) || i_NoncomplianceofWCPoolAudit
-	) AS v_HashKey,
+	MD5(AssignedAuditor || AuditFrequency || AuditType || AuditContactCity || AuditContactStateAbbreviation || PermanentOverrideFlag || PolicyPeriodOverrideFlag || FrontingPolicyFlag || AuditStatus || AuditCloseOutFlag || AssignedAuditorOverideFlag || AuditTypeOverrideFlag || i_Type || TO_CHAR(AuditablePremium) || i_NoncomplianceofWCPoolAudit) AS v_HashKey,
 	-- *INF*: DECODE(TRUE,PolicyAKId=v_prev_PolicyAKId AND InsuranceLine=v_prev_InsuranceLine AND v_HashKey=v_prev_HashKey AND
 	-- v_LineAuditableFlag=v_prev_LineAuditableFlag,0,
 	-- ISNULL(lkp_PolicyAuditAKId),1,
@@ -466,45 +452,27 @@ EXPTRANS AS (
 	-- (lkp_HashKey!=v_HashKey OR v_lkp_IsAuditableFlag != v_LineAuditableFlag),3,
 	-- lkp_HashKey=v_HashKey and lkp_EffectiveDate != i_CreatedDate,3,
 	-- 0)
-	DECODE(TRUE,
-		PolicyAKId = v_prev_PolicyAKId 
-		AND InsuranceLine = v_prev_InsuranceLine 
-		AND v_HashKey = v_prev_HashKey 
-		AND v_LineAuditableFlag = v_prev_LineAuditableFlag, 0,
-		lkp_PolicyAuditAKId IS NULL, 1,
-		( lkp_HashKey != v_HashKey 
-			OR v_lkp_IsAuditableFlag != v_LineAuditableFlag 
-		) 
-		AND i_Type IN ('New','Renew','Reissue','Rewrite'), 2,
-		( lkp_HashKey != v_HashKey 
-			OR v_lkp_IsAuditableFlag != v_LineAuditableFlag 
-		) 
-		AND lkp_EffectiveDate = i_CreatedDate, 2,
-		( lkp_HashKey != v_HashKey 
-			OR v_lkp_IsAuditableFlag != v_LineAuditableFlag 
-		) 
-		AND PolicyAKId = v_prev_PolicyAKId 
-		AND InsuranceLine = v_prev_InsuranceLine, 3,
-		( lkp_HashKey != v_HashKey 
-			OR v_lkp_IsAuditableFlag != v_LineAuditableFlag 
-		) 
-		AND lkp_AuditablePremium IS NULL, 2,
-		( lkp_HashKey != v_HashKey 
-			OR v_lkp_IsAuditableFlag != v_LineAuditableFlag 
-		), 3,
-		lkp_HashKey = v_HashKey 
-		AND lkp_EffectiveDate != i_CreatedDate, 3,
-		0
+	DECODE(
+	    TRUE,
+	    PolicyAKId = v_prev_PolicyAKId AND InsuranceLine = v_prev_InsuranceLine AND v_HashKey = v_prev_HashKey AND v_LineAuditableFlag = v_prev_LineAuditableFlag, 0,
+	    lkp_PolicyAuditAKId IS NULL, 1,
+	    (lkp_HashKey != v_HashKey OR v_lkp_IsAuditableFlag != v_LineAuditableFlag) AND i_Type IN ('New','Renew','Reissue','Rewrite'), 2,
+	    (lkp_HashKey != v_HashKey OR v_lkp_IsAuditableFlag != v_LineAuditableFlag) AND lkp_EffectiveDate = i_CreatedDate, 2,
+	    (lkp_HashKey != v_HashKey OR v_lkp_IsAuditableFlag != v_LineAuditableFlag) AND PolicyAKId = v_prev_PolicyAKId AND InsuranceLine = v_prev_InsuranceLine, 3,
+	    (lkp_HashKey != v_HashKey OR v_lkp_IsAuditableFlag != v_LineAuditableFlag) AND lkp_AuditablePremium IS NULL, 2,
+	    (lkp_HashKey != v_HashKey OR v_lkp_IsAuditableFlag != v_LineAuditableFlag), 3,
+	    lkp_HashKey = v_HashKey and lkp_EffectiveDate != i_CreatedDate, 3,
+	    0
 	) AS v_ChangeFlag,
 	-- *INF*: DECODE(TRUE,
 	-- PolicyAKId=v_prev_PolicyAKId AND InsuranceLine=v_prev_InsuranceLine,v_PolicyAuditAKId,
 	-- v_ChangeFlag=1,i_NEXTVAL,
 	-- lkp_PolicyAuditAKId)
-	DECODE(TRUE,
-		PolicyAKId = v_prev_PolicyAKId 
-		AND InsuranceLine = v_prev_InsuranceLine, v_PolicyAuditAKId,
-		v_ChangeFlag = 1, i_NEXTVAL,
-		lkp_PolicyAuditAKId
+	DECODE(
+	    TRUE,
+	    PolicyAKId = v_prev_PolicyAKId AND InsuranceLine = v_prev_InsuranceLine, v_PolicyAuditAKId,
+	    v_ChangeFlag = 1, i_NEXTVAL,
+	    lkp_PolicyAuditAKId
 	) AS v_PolicyAuditAKId,
 	PolicyAKId AS v_prev_PolicyAKId,
 	InsuranceLine AS v_prev_InsuranceLine,
@@ -515,8 +483,7 @@ EXPTRANS AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	i_CreatedDate AS o_EffectiveDate,
 	-- *INF*: TO_DATE('21001231235959','YYYYMMDDHH24MISS')
-	TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS') AS o_ExpirationDate,
 	'DCT' AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -657,9 +624,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- i_PolicyAuditAKId = v_prev_PolicyAuditAKId ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
-	DECODE(TRUE,
-		i_PolicyAuditAKId = v_prev_PolicyAuditAKId, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    i_PolicyAuditAKId = v_prev_PolicyAuditAKId, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	i_PolicyAuditAKId AS v_prev_PolicyAuditAKId,
 	eff_from_date AS v_prev_eff_from_date,

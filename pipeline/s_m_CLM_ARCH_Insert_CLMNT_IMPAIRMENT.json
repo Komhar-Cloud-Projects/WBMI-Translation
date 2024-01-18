@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLMNT_IMPAIRMENT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLMNT_IMPAIRMENT",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_clmnt_impairment_stage AS (\n\tSELECT\n\t\tclmnt_impairment_stage_id,\n\t\tclaim_nbr,\n\t\tclient_id,\n\t\tseq_nbr,\n\t\tbody_part_code,\n\t\timpair_percentage,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM clmnt_impairment_stage\n),\nEXP_CLMNT_IMPAIRMENT_STAGE AS (\n\tSELECT\n\tclaim_nbr,\n\tclient_id,\n\tseq_nbr,\n\tbody_part_code,\n\timpair_percentage,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id\n\tFROM SQ_clmnt_impairment_stage\n),\narch_clmnt_impairment_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_clmnt_impairment_stage\n\t(claim_nbr, client_id, seq_nbr, body_part_code, impair_percentage, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tCLAIM_NBR, \n\tCLIENT_ID, \n\tSEQ_NBR, \n\tBODY_PART_CODE, \n\tIMPAIR_PERCENTAGE, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID\n\tFROM EXP_CLMNT_IMPAIRMENT_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

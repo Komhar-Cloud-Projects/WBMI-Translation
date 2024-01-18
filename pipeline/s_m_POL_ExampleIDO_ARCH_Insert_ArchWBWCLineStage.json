@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBWCLineStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBWCLineStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBWCLineStage AS (\n\tSELECT\n\t\tWBWCLineStageId,\n\t\tWCLineId,\n\t\tWBWCLineId,\n\t\tSessionId,\n\t\tInterstateRiskID,\n\t\tCurrentIteration,\n\t\tSpace,\n\t\tSelected,\n\t\tClaimsInExcessOf,\n\t\tRetrieveExperienceModifier,\n\t\tAddState,\n\t\tManuallyCalculate,\n\t\tOtherStatesInsuranceConditional,\n\t\tOtherStatesInsuranceIterator,\n\t\tOtherStatesInsuranceCalculation,\n\t\tOtherStatesInsuranceSumIterator,\n\t\tMinimumPremiumMaximum,\n\t\tExpenseConstantMaximum,\n\t\tTotalClaimsIncurred,\n\t\tTotalStatePremiumForDividend,\n\t\tDividendAmount,\n\t\tDividendPrior,\n\t\tDividendChange,\n\t\tDividendWritten,\n\t\tDividendPremium,\n\t\tTotalDividendIncurredLossRatio,\n\t\tDividendPercentage,\n\t\tDividendPercentagePrior,\n\t\tDividendAmountFinal,\n\t\tDividendProjectedDate,\n\t\tDividendPaidDate,\n\t\tTotalClaimsAmountPaid,\n\t\tTotalClaimsOutstanding,\n\t\tTotalClaimsExpense,\n\t\tDividendWrittenDuplicatePath,\n\t\tDividendCharge,\n\t\tOtherPoliciesWC000503,\n\t\tPriorCountForRetrospectiveCalculation,\n\t\tAnyContractorClassCode,\n\t\tPreviousFinalCommission,\n\t\tExperienceModMessage,\n\t\tExperienceModIndicator,\n\t\tValue,\n\t\tRetrieveExperienceMod,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM WBWCLineStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBWCLineStageId,\n\tWCLineId,\n\tWBWCLineId,\n\tSessionId,\n\tInterstateRiskID,\n\tCurrentIteration,\n\tSpace,\n\tSelected,\n\t-- *INF*: IIF(Selected='T', '1','0')\n\tIFF(Selected = 'T', '1', '0') AS o_Selected,\n\tClaimsInExcessOf,\n\tRetrieveExperienceModifier,\n\tAddState,\n\tManuallyCalculate,\n\t-- *INF*: IIF(ManuallyCalculate='T','1','0')\n\tIFF(ManuallyCalculate = 'T', '1', '0') AS o_ManuallyCalculate,\n\tOtherStatesInsuranceConditional,\n\tOtherStatesInsuranceIterator,\n\t-- *INF*: IIF(OtherStatesInsuranceIterator='T', '1', '0')\n\tIFF(OtherStatesInsuranceIterator = 'T', '1', '0') AS o_OtherStatesInsuranceIterator,\n\tOtherStatesInsuranceCalculation,\n\tOtherStatesInsuranceSumIterator,\n\tMinimumPremiumMaximum,\n\tExpenseConstantMaximum,\n\tTotalClaimsIncurred,\n\tTotalStatePremiumForDividend,\n\tDividendAmount,\n\tDividendPrior,\n\tDividendChange,\n\tDividendWritten,\n\tDividendPremium,\n\tTotalDividendIncurredLossRatio,\n\tDividendPercentage,\n\tDividendPercentagePrior,\n\tDividendAmountFinal,\n\tDividendProjectedDate,\n\tDividendPaidDate,\n\tTotalClaimsAmountPaid,\n\tTotalClaimsOutstanding,\n\tTotalClaimsExpense,\n\tDividendWrittenDuplicatePath,\n\tDividendCharge,\n\tOtherPoliciesWC000503,\n\tPriorCountForRetrospectiveCalculation,\n\tAnyContractorClassCode,\n\t-- *INF*: IIF(AnyContractorClassCode='T','1','0')\n\tIFF(AnyContractorClassCode = 'T', '1', '0') AS o_AnyContractorClassCode,\n\tPreviousFinalCommission,\n\tExperienceModMessage,\n\tExperienceModIndicator,\n\tValue,\n\tRetrieveExperienceMod,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBWCLineStage\n),\nTGT_ArchWBWCLineStage_Insert AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBWCLineStage\n\t(ExtractDate, SourceSystemId, AuditId, WBWCLineStageId, WCLineId, WBWCLineId, SessionId, InterstateRiskID, CurrentIteration, Space, Selected, ClaimsInExcessOf, RetrieveExperienceModifier, AddState, ManuallyCalculate, OtherStatesInsuranceConditional, OtherStatesInsuranceIterator, OtherStatesInsuranceCalculation, OtherStatesInsuranceSumIterator, MinimumPremiumMaximum, ExpenseConstantMaximum, TotalClaimsIncurred, TotalStatePremiumForDividend, DividendAmount, DividendPrior, DividendChange, DividendWritten, DividendPremium, TotalDividendIncurredLossRatio, DividendPercentage, DividendPercentagePrior, DividendAmountFinal, DividendProjectedDate, DividendPaidDate, TotalClaimsAmountPaid, TotalClaimsOutstanding, TotalClaimsExpense, DividendWrittenDuplicatePath, DividendCharge, OtherPoliciesWC000503, PriorCountForRetrospectiveCalculation, AnyContractorClassCode, PreviousFinalCommission, ExperienceModMessage, ExperienceModIndicator, Value, RetrieveExperienceMod)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBWCLINESTAGEID, \n\tWCLINEID, \n\tWBWCLINEID, \n\tSESSIONID, \n\tINTERSTATERISKID, \n\tCURRENTITERATION, \n\tSPACE, \n\to_Selected AS SELECTED, \n\tCLAIMSINEXCESSOF, \n\tRETRIEVEEXPERIENCEMODIFIER, \n\tADDSTATE, \n\to_ManuallyCalculate AS MANUALLYCALCULATE, \n\tOTHERSTATESINSURANCECONDITIONAL, \n\to_OtherStatesInsuranceIterator AS OTHERSTATESINSURANCEITERATOR, \n\tOTHERSTATESINSURANCECALCULATION, \n\tOTHERSTATESINSURANCESUMITERATOR, \n\tMINIMUMPREMIUMMAXIMUM, \n\tEXPENSECONSTANTMAXIMUM, \n\tTOTALCLAIMSINCURRED, \n\tTOTALSTATEPREMIUMFORDIVIDEND, \n\tDIVIDENDAMOUNT, \n\tDIVIDENDPRIOR, \n\tDIVIDENDCHANGE, \n\tDIVIDENDWRITTEN, \n\tDIVIDENDPREMIUM, \n\tTOTALDIVIDENDINCURREDLOSSRATIO, \n\tDIVIDENDPERCENTAGE, \n\tDIVIDENDPERCENTAGEPRIOR, \n\tDIVIDENDAMOUNTFINAL, \n\tDIVIDENDPROJECTEDDATE, \n\tDIVIDENDPAIDDATE, \n\tTOTALCLAIMSAMOUNTPAID, \n\tTOTALCLAIMSOUTSTANDING, \n\tTOTALCLAIMSEXPENSE, \n\tDIVIDENDWRITTENDUPLICATEPATH, \n\tDIVIDENDCHARGE, \n\tOTHERPOLICIESWC000503, \n\tPRIORCOUNTFORRETROSPECTIVECALCULATION, \n\to_AnyContractorClassCode AS ANYCONTRACTORCLASSCODE, \n\tPREVIOUSFINALCOMMISSION, \n\tEXPERIENCEMODMESSAGE, \n\tEXPERIENCEMODINDICATOR, \n\tVALUE, \n\tRETRIEVEEXPERIENCEMOD\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

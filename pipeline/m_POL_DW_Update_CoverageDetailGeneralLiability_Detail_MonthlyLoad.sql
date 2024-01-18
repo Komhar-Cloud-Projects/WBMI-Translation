@@ -235,34 +235,21 @@ EXP_MetaData AS (
 	-- NOT ISNULL(:LKP.LKP_SupClassificationGeneralLiability(i_ClassCode,i_SublineCode,i_RatingStateCode)),:LKP.LKP_SupClassificationGeneralLiability(i_ClassCode,i_SublineCode,i_RatingStateCode),
 	-- NOT ISNULL(:LKP.LKP_SupClassificationGeneralLiability(i_ClassCode,i_SublineCode,'99')),:LKP.LKP_SupClassificationGeneralLiability(i_ClassCode,i_SublineCode,'99'),
 	-- 'N/A')
-	DECODE(true,
-		LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode.lkp_result IS NOT NULL, LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode.lkp_result,
-		LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_99.lkp_result IS NOT NULL, LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_99.lkp_result,
-		'N/A'
+	DECODE(
+	    true,
+	    LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode.lkp_result IS NOT NULL, LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode.lkp_result,
+	    LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_99.lkp_result IS NOT NULL, LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_99.lkp_result,
+	    'N/A'
 	) AS v_lkp_result,
 	-- *INF*: SUBSTR(v_lkp_result,1,instr(v_lkp_result,'@1')-1)
-	SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1'
-		) - 1
-	) AS v_ClassSummary,
+	SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1') - 1) AS v_ClassSummary,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@1')+2,instr(v_lkp_result,'@2')-instr(v_lkp_result,'@1')-2)
-	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@1'
-		) + 2, REGEXP_INSTR(v_lkp_result, '@2'
-		) - REGEXP_INSTR(v_lkp_result, '@1'
-		) - 2
-	) AS v_ClassGroupCode,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@1') + 2, REGEXP_INSTR(v_lkp_result, '@2') - REGEXP_INSTR(v_lkp_result, '@1') - 2) AS v_ClassGroupCode,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	-- *INF*: IIF(length(v_ClassSummary)=0,'N/A',v_ClassSummary)
-	IFF(length(v_ClassSummary
-		) = 0,
-		'N/A',
-		v_ClassSummary
-	) AS o_ISOGeneralLiabilityClassSummary,
+	IFF(length(v_ClassSummary) = 0, 'N/A', v_ClassSummary) AS o_ISOGeneralLiabilityClassSummary,
 	-- *INF*: IIF(length(v_ClassGroupCode)=0,'N/A',v_ClassGroupCode)
-	IFF(length(v_ClassGroupCode
-		) = 0,
-		'N/A',
-		v_ClassGroupCode
-	) AS o_ISOGeneralLiabilityClassGroupCode
+	IFF(length(v_ClassGroupCode) = 0, 'N/A', v_ClassGroupCode) AS o_ISOGeneralLiabilityClassGroupCode
 	FROM Union_DCT_PMS
 	LEFT JOIN LKP_SUPCLASSIFICATIONGENERALLIABILITY LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode
 	ON LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode.ClassCode = i_ClassCode

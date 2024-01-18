@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archWBReasonStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archWBReasonStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBReasonStaging AS (\n\tSELECT\n\t\tTransactionId,\n\t\tWB_ReasonId,\n\t\tSessionId,\n\t\tCode,\n\t\tCodeCaption,\n\t\tDescription,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM WBReasonStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tTransactionId,\n\tWB_ReasonId,\n\tSessionId,\n\tCode,\n\tCodeCaption,\n\tDescription,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBReasonStaging\n),\narchWBReasonStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archWBReasonStaging\n\t(TransactionId, WB_ReasonId, SessionId, Code, CodeCaption, Description, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tTRANSACTIONID, \n\tWB_REASONID, \n\tSESSIONID, \n\tCODE, \n\tCODECAPTION, \n\tDESCRIPTION, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

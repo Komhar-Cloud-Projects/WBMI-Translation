@@ -1,0 +1,38 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCACoveragePIPStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCACoveragePIPStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCACoveragePIPStage AS (\n\tSELECT\n\t\tWBCACoveragePIPStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCACoveragePIPId,\n\t\tSessionId,\n\t\tRideSharingArrangement,\n\t\tRideSharingUsage,\n\t\tMedicalExpenses,\n\t\tWBCACoveragePIPId\n\tFROM WBCACoveragePIPStage\n),\nEXPTRANS AS (\n\tSELECT\n\tWBCACoveragePIPStageId,\n\tCACoveragePIPId,\n\tWBCACoveragePIPId,\n\tSessionId,\n\tRideSharingArrangement,\n\tRideSharingUsage,\n\tMedicalExpenses,\n\tExtractDate,\n\tSourceSystemId\n\tFROM SQ_WBCACoveragePIPStage\n),\nArchWBCACoveragePIPStage AS (\n\tINSERT INTO ArchWBCACoveragePIPStage\n\t(WBCACoveragePIPStageId, ExtractDate, SourceSystemId, CACoveragePIPId, WBCACoveragePIPId, SessionId, RideSharingArrangement, RideSharingUsage, MedicalExpenses)\n\tSELECT \n\tWBCACOVERAGEPIPSTAGEID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tCACOVERAGEPIPID, \n\tWBCACOVERAGEPIPID, \n\tSESSIONID, \n\tRIDESHARINGARRANGEMENT, \n\tRIDESHARINGUSAGE, \n\tMEDICALEXPENSES\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

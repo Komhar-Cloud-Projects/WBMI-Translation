@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBTransactionStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBTransactionStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBTransactionStage AS (\n\tSELECT\n\t\tWBTransactionStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tTransactionId,\n\t\tWBTransactionId,\n\t\tSessionId,\n\t\tProRataFactor,\n\t\tQuoteActionUserClassification,\n\t\tQuoteActionTimeStamp,\n\t\tQuoteActionUserName,\n\t\tQuoteActionStatus,\n\t\tVerifiedDate,\n\t\tDataFix,\n\t\tDataFixDate,\n\t\tDataFixType,\n\t\tDeclaredEvent,\n\t\tHistoryIDOriginal,\n\t\tOriginalID,\n\t\tOnsetBy\n\tFROM WBTransactionStage\n),\nEXP_Values AS (\n\tSELECT\n\tWBTransactionStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tTransactionId,\n\tWBTransactionId,\n\tSessionId,\n\tProRataFactor,\n\tQuoteActionUserClassification,\n\tQuoteActionTimeStamp,\n\tQuoteActionUserName,\n\tQuoteActionStatus,\n\tVerifiedDate,\n\tDataFix,\n\tDataFixDate,\n\tDataFixType,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tDeclaredEvent AS i_DeclaredEvent,\n\t-- *INF*: DECODE(i_DeclaredEvent, 'T', 1, 'F', 0,Null)\n\tDECODE(\n\t    i_DeclaredEvent,\n\t    'T', 1,\n\t    'F', 0,\n\t    Null\n\t) AS o_DeclaredEvent,\n\tHistoryIDOriginal,\n\tOriginalID,\n\tOnsetBy\n\tFROM SQ_WBTransactionStage\n),\nArchWBTransactionStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBTransactionStage\n\t(ExtractDate, SourceSystemId, AuditId, WBTransactionStageId, TransactionId, WBTransactionId, SessionId, ProRataFactor, QuoteActionUserClassification, QuoteActionTimeStamp, QuoteActionUserName, QuoteActionStatus, VerifiedDate, DataFix, DataFixDate, DataFixType, DeclaredEvent, HistoryIDOriginal, OriginalID, OnsetBy)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBTRANSACTIONSTAGEID, \n\tTRANSACTIONID, \n\tWBTRANSACTIONID, \n\tSESSIONID, \n\tPRORATAFACTOR, \n\tQUOTEACTIONUSERCLASSIFICATION, \n\tQUOTEACTIONTIMESTAMP, \n\tQUOTEACTIONUSERNAME, \n\tQUOTEACTIONSTATUS, \n\tVERIFIEDDATE, \n\tDATAFIX, \n\tDATAFIXDATE, \n\tDATAFIXTYPE, \n\to_DeclaredEvent AS DECLAREDEVENT, \n\tHISTORYIDORIGINAL, \n\tORIGINALID, \n\tONSETBY\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

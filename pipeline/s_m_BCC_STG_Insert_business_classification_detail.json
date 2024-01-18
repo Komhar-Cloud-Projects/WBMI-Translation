@@ -1,0 +1,47 @@
+{
+    "name": "s_m_BCC_STG_Insert_business_classification_detail",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_BCC_STG_Insert_business_classification_detail",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_business_classification_detail AS (\n\tSELECT\n\t\tbus_class_det_id,\n\t\tbus_class_code,\n\t\tbus_class_descript,\n\t\tbus_seg_id,\n\t\tstrtgc_bus_unit_id,\n\t\tapproval_status_id,\n\t\tapproval_status_chg_id,\n\t\tshort_descript,\n\t\tbus_rule_descript,\n\t\tinternal_reports_descript,\n\t\tcreated_user_id,\n\t\tcreated_date,\n\t\tmodified_user_id,\n\t\tmodified_date,\n\t\teff_date,\n\t\texp_date\n\tFROM business_classification_detail\n),\nEXP_Values AS (\n\tSELECT\n\tbus_class_det_id,\n\tbus_class_code,\n\tbus_class_descript,\n\tbus_seg_id,\n\tstrtgc_bus_unit_id,\n\tapproval_status_id,\n\tapproval_status_chg_id,\n\tshort_descript,\n\tbus_rule_descript,\n\tinternal_reports_descript,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tmodified_date,\n\teff_date,\n\texp_date,\n\tSYSDATE AS EXTRACT_DATE,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID\n\tFROM SQ_business_classification_detail\n),\nbusiness_classification_detail_bcc_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.business_classification_detail_bcc_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.business_classification_detail_bcc_stage\n\t(bus_class_det_id, bus_class_code, bus_class_descript, bus_seg_id, strtgc_bus_unit_id, approval_status_id, approval_status_chg_id, short_descript, bus_rule_descript, internal_reports_descript, created_user_id, created_date, modified_user_id, modified_date, eff_date, exp_date, extract_date, source_system_id)\n\tSELECT \n\tBUS_CLASS_DET_ID, \n\tBUS_CLASS_CODE, \n\tBUS_CLASS_DESCRIPT, \n\tBUS_SEG_ID, \n\tSTRTGC_BUS_UNIT_ID, \n\tAPPROVAL_STATUS_ID, \n\tAPPROVAL_STATUS_CHG_ID, \n\tSHORT_DESCRIPT, \n\tBUS_RULE_DESCRIPT, \n\tINTERNAL_REPORTS_DESCRIPT, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tEFF_DATE, \n\tEXP_DATE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CommonStaging/"
+        },
+        "annotations": []
+    }
+}

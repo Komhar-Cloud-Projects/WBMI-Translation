@@ -202,23 +202,18 @@ EXP_Policystatus AS (
 	-- --	when convert(varchar(6),pol.pol_eff_date,112)> convert(varchar(6),CalendarEndOfMonthDate,112) 
 	-- --	then 'Future Inforce' 
 	-- --	else 'Inforce' end Pol_derived_status,
-	IFF(TO_CHAR(pol_cancellation_date, 'YYYYMMDD'
-		) <> '21001231' 
-		AND TO_CHAR(pol_cancellation_date, 'YYYYMM'
-		) <= TO_CHAR(rundate, 'YYYYMM'
-		),
-		'Cancelled',
-		IFF(TO_CHAR(pol_exp_date, 'YYYYMM'
-			) <= TO_CHAR(rundate, 'YYYYMM'
-			),
-			'Not Inforce',
-			IFF(TO_CHAR(pol_eff_date, 'YYYYMM'
-				) > TO_CHAR(rundate, 'YYYYMM'
-				),
-				'Future Inforce',
-				'Inforce'
-			)
-		)
+	IFF(
+	    TO_CHAR(pol_cancellation_date, 'YYYYMMDD') <> '21001231'
+	    and TO_CHAR(pol_cancellation_date, 'YYYYMM') <= TO_CHAR(rundate, 'YYYYMM'),
+	    'Cancelled',
+	    IFF(
+	        TO_CHAR(pol_exp_date, 'YYYYMM') <= TO_CHAR(rundate, 'YYYYMM'), 'Not Inforce',
+	        IFF(
+	            TO_CHAR(pol_eff_date, 'YYYYMM') > TO_CHAR(rundate, 'YYYYMM'),
+	            'Future Inforce',
+	            'Inforce'
+	        )
+	    )
 	) AS v_policystatusdescription,
 	v_policystatusdescription AS out_policystatusdescription,
 	-- *INF*: IIF( TO_CHAR(pol_cancellation_date,'YYYYMMDD')<>'21001231' AND
@@ -244,30 +239,24 @@ EXP_Policystatus AS (
 	-- --	when convert(varchar(6),pol.pol_eff_date,112)> convert(varchar(6),dateadd(dd,1,CalendarEndOfMonthDate),112) 
 	-- --	then 'Future Inforce' 
 	-- --	else 'Inforce' end Pol_Future_derived_status,
-	IFF(TO_CHAR(pol_cancellation_date, 'YYYYMMDD'
-		) <> '21001231' 
-		AND TO_CHAR(pol_cancellation_date, 'YYYYMM'
-		) <= TO_CHAR(rundate, 'YYYYMM'
-		),
-		'Cancelled',
-		IFF(TO_CHAR(pol_cancellation_date, 'YYYYMMDD'
-			) <> '21001231' 
-			AND TO_CHAR(pol_cancellation_date, 'YYYYMM'
-			) > TO_CHAR(rundate, 'YYYYMM'
-			),
-			'FutureCancellation',
-			IFF(TO_CHAR(pol_exp_date, 'YYYYMM'
-				) <= TO_CHAR(DATEADD(DAY,1,rundate), 'YYYYMM'
-				),
-				'Not Inforce',
-				IFF(TO_CHAR(pol_eff_date, 'YYYYMM'
-					) > TO_CHAR(DATEADD(DAY,1,rundate), 'YYYYMM'
-					),
-					'Future Inforce',
-					'Inforce'
-				)
-			)
-		)
+	IFF(
+	    TO_CHAR(pol_cancellation_date, 'YYYYMMDD') <> '21001231'
+	    and TO_CHAR(pol_cancellation_date, 'YYYYMM') <= TO_CHAR(rundate, 'YYYYMM'),
+	    'Cancelled',
+	    IFF(
+	        TO_CHAR(pol_cancellation_date, 'YYYYMMDD') <> '21001231'
+	        and TO_CHAR(pol_cancellation_date, 'YYYYMM') > TO_CHAR(rundate, 'YYYYMM'),
+	        'FutureCancellation',
+	        IFF(
+	            TO_CHAR(pol_exp_date, 'YYYYMM') <= TO_CHAR(DATEADD(DAY,1,rundate), 'YYYYMM'),
+	            'Not Inforce',
+	            IFF(
+	                TO_CHAR(pol_eff_date, 'YYYYMM') > TO_CHAR(DATEADD(DAY,1,rundate), 'YYYYMM'),
+	                'Future Inforce',
+	                'Inforce'
+	            )
+	        )
+	    )
 	) AS v_futurepolicystatusdescription,
 	v_futurepolicystatusdescription AS out_futurepolicystatusdescription,
 	-- *INF*: IIF(v_policystatusdescription='Cancelled' ,pol_cancellation_date,
@@ -275,10 +264,9 @@ EXP_Policystatus AS (
 	-- )
 	-- 
 	-- --case when Pol_derived_status='Cancelled' then pol_cancellation_date else '2100-12-31 23:59:59' end pol_cancellation_date,
-	IFF(v_policystatusdescription = 'Cancelled',
-		pol_cancellation_date,
-		TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-		)
+	IFF(
+	    v_policystatusdescription = 'Cancelled', pol_cancellation_date,
+	    TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
 	) AS v_pol_cancellation_date,
 	v_pol_cancellation_date AS out_pol_cancellation_date,
 	-- *INF*: IIF(IN(v_futurepolicystatusdescription,'FutureCancellation','Cancelled') ,pol_cancellation_date,
@@ -286,20 +274,16 @@ EXP_Policystatus AS (
 	-- )
 	-- 
 	-- --Pol_derived_status,case when Pol_Future_derived_status='Cancelled' then pol_cancellation_date else '2100-12-31 23:59:59' end pol_Future_cancellation_date,
-	IFF(v_futurepolicystatusdescription IN ('FutureCancellation','Cancelled'),
-		pol_cancellation_date,
-		TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-		)
+	IFF(
+	    v_futurepolicystatusdescription IN ('FutureCancellation','Cancelled'), pol_cancellation_date,
+	    TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
 	) AS v_future_pol_cancellation_date,
 	v_future_pol_cancellation_date AS out_future_pol_cancellation_date,
 	EXP_Collect.pol_ak_id,
 	sessstarttime AS out_created_date,
 	LKP_Policy_Dim.pol_dim_id,
 	-- *INF*: iif(isnull(pol_dim_id),-1,pol_dim_id)
-	IFF(pol_dim_id IS NULL,
-		- 1,
-		pol_dim_id
-	) AS out_pol_dim_id,
+	IFF(pol_dim_id IS NULL, - 1, pol_dim_id) AS out_pol_dim_id,
 	-- *INF*: IIF(IN(v_futurepolicystatusdescription,'FutureCancellation','Cancelled') ,compare_date,
 	-- TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
 	-- )
@@ -309,10 +293,9 @@ EXP_Policystatus AS (
 	-- --)
 	-- 
 	-- --case when Pol_derived_status='Cancelled' then Cancellation_Enter_date else '2100-12-31 23:59:59'
-	IFF(v_futurepolicystatusdescription IN ('FutureCancellation','Cancelled'),
-		compare_date,
-		TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-		)
+	IFF(
+	    v_futurepolicystatusdescription IN ('FutureCancellation','Cancelled'), compare_date,
+	    TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
 	) AS v_Pol_cancellation_enter_date,
 	v_Pol_cancellation_enter_date AS out_Pol_cancellation_enter_date,
 	EXP_Collect.pol_status_code,
@@ -327,11 +310,13 @@ EXP_Policystatus AS (
 	-- 
 	-- 
 	-- 
-	IFF(source_sys_id = 'DCT',
-		IFF(LKP_REASONAMENDEDCODE_DCT_pol_key_TO_CHAR_pol_cancellation_date_YYYYMMDD.ReasonAmendedCodeDimId IS NULL,
-			- 2,
-			LKP_REASONAMENDEDCODE_DCT_pol_key_TO_CHAR_pol_cancellation_date_YYYYMMDD.ReasonAmendedCodeDimId
-		)
+	IFF(
+	    source_sys_id = 'DCT',
+	    IFF(
+	        LKP_REASONAMENDEDCODE_DCT_pol_key_TO_CHAR_pol_cancellation_date_YYYYMMDD.ReasonAmendedCodeDimId IS NULL,
+	        - 2,
+	        LKP_REASONAMENDEDCODE_DCT_pol_key_TO_CHAR_pol_cancellation_date_YYYYMMDD.ReasonAmendedCodeDimId
+	    )
 	) AS v_ReasonAmendedCodeDimId_dct,
 	-- *INF*:  iif(source_sys_id='PMS' ,
 	-- iif(isnull(lkp_ReasonAmendedCodeDimId_pms),-2,
@@ -339,25 +324,26 @@ EXP_Policystatus AS (
 	-- ))
 	-- 
 	-- 
-	IFF(source_sys_id = 'PMS',
-		IFF(lkp_ReasonAmendedCodeDimId_pms IS NULL,
-			- 2,
-			lkp_ReasonAmendedCodeDimId_pms
-		)
+	IFF(
+	    source_sys_id = 'PMS',
+	    IFF(
+	        lkp_ReasonAmendedCodeDimId_pms IS NULL, - 2, lkp_ReasonAmendedCodeDimId_pms
+	    )
 	) AS v_ReasonAmendedCodeDimId_pms,
 	-- *INF*: iif(source_sys_id='DCT' and v_policystatusdescription='Cancelled',v_ReasonAmendedCodeDimId_dct,
 	-- iif(source_sys_id='PMS' and v_policystatusdescription='Cancelled',v_ReasonAmendedCodeDimId_pms,-1)
 	-- )
 	-- 
 	-- 
-	IFF(source_sys_id = 'DCT' 
-		AND v_policystatusdescription = 'Cancelled',
-		v_ReasonAmendedCodeDimId_dct,
-		IFF(source_sys_id = 'PMS' 
-			AND v_policystatusdescription = 'Cancelled',
-			v_ReasonAmendedCodeDimId_pms,
-			- 1
-		)
+	IFF(
+	    source_sys_id = 'DCT' and v_policystatusdescription = 'Cancelled',
+	    v_ReasonAmendedCodeDimId_dct,
+	    IFF(
+	        source_sys_id = 'PMS'
+	    and v_policystatusdescription = 'Cancelled',
+	        v_ReasonAmendedCodeDimId_pms,
+	        - 1
+	    )
 	) AS v_ReasonAmendedCodeDimId,
 	v_ReasonAmendedCodeDimId AS out_ReasonAmendedCodeDimId,
 	-- *INF*: iif(NOT IN(v_futurepolicystatusdescription,'FutureCancellation','Cancelled') ,-1,
@@ -366,14 +352,14 @@ EXP_Policystatus AS (
 	-- )))
 	-- 
 	-- 
-	IFF(NOT v_futurepolicystatusdescription IN ('FutureCancellation','Cancelled'),
-		- 1,
-		IFF(source_sys_id = 'DCT',
-			v_ReasonAmendedCodeDimId_dct,
-			IFF(source_sys_id = 'PMS',
-				v_ReasonAmendedCodeDimId_pms
-			)
-		)
+	IFF(
+	    NOT v_futurepolicystatusdescription IN ('FutureCancellation','Cancelled'), - 1,
+	    IFF(
+	        source_sys_id = 'DCT', v_ReasonAmendedCodeDimId_dct,
+	        IFF(
+	            source_sys_id = 'PMS', v_ReasonAmendedCodeDimId_pms
+	        )
+	    )
 	) AS v_FutureReasonAmendedCodeDimId,
 	v_FutureReasonAmendedCodeDimId AS out_FutureReasonAmendedCodeDimId,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId
@@ -384,8 +370,7 @@ EXP_Policystatus AS (
 	ON LKP_ReasonAmendedCodeDim_PMS.ReasonAmendedCode = EXP_Collect.pol_cancellation_rsn_code
 	LEFT JOIN LKP_REASONAMENDEDCODE_DCT LKP_REASONAMENDEDCODE_DCT_pol_key_TO_CHAR_pol_cancellation_date_YYYYMMDD
 	ON LKP_REASONAMENDEDCODE_DCT_pol_key_TO_CHAR_pol_cancellation_date_YYYYMMDD.pol_key = pol_key
-	AND LKP_REASONAMENDEDCODE_DCT_pol_key_TO_CHAR_pol_cancellation_date_YYYYMMDD.pol_cancellation_date = TO_CHAR(pol_cancellation_date, 'YYYYMMDD'
-		)
+	AND LKP_REASONAMENDEDCODE_DCT_pol_key_TO_CHAR_pol_cancellation_date_YYYYMMDD.pol_cancellation_date = TO_CHAR(pol_cancellation_date, 'YYYYMMDD')
 
 ),
 LKP_PolicyCurrentStatusDim AS (

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_gtam_wbmtmrkt_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_gtam_wbmtmrkt_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_wbmtmrkt_stage AS (\n\tSELECT\n\t\tgtam_wbmtmrkt_stage_id,\n\t\tabbreviation_of_target_mkt,\n\t\tdate_field1,\n\t\tdate_field2,\n\t\tdescription_of_target_mkt,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_wbmtmrkt_stage\n),\nLKP_arch_gtam_wbmtmrkt_stage AS (\n\tSELECT\n\tarch_wbmtmrkt_stage_id,\n\tgtam_wbmtmrkt_stage_id,\n\tdate_field1,\n\tdate_field2,\n\tdescription_of_target_mkt,\n\tin_abbreviation_of_target_mkt,\n\tabbreviation_of_target_mkt\n\tFROM (\n\t\tSELECT arch_gtam_wbmtmrkt_stage.arch_wbmtmrkt_stage_id as arch_wbmtmrkt_stage_id, arch_gtam_wbmtmrkt_stage.gtam_wbmtmrkt_stage_id as gtam_wbmtmrkt_stage_id, arch_gtam_wbmtmrkt_stage.date_field1 as date_field1, arch_gtam_wbmtmrkt_stage.date_field2 as date_field2, arch_gtam_wbmtmrkt_stage.description_of_target_mkt as description_of_target_mkt, arch_gtam_wbmtmrkt_stage.abbreviation_of_target_mkt as abbreviation_of_target_mkt FROM arch_gtam_wbmtmrkt_stage\r\n\t\twhere \tarch_gtam_wbmtmrkt_stage.arch_wbmtmrkt_stage_id In\r\n\t\t\t(Select max(arch_wbmtmrkt_stage_id) from arch_gtam_wbmtmrkt_stage b\r\n\t\t\tgroup by  b.abbreviation_of_target_mkt)\r\n\t\torder by  arch_gtam_wbmtmrkt_stage.abbreviation_of_target_mkt--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY abbreviation_of_target_mkt ORDER BY arch_wbmtmrkt_stage_id) = 1\n),\nEXP_Detect_Changes AS (\n\tSELECT\n\tSQ_gtam_wbmtmrkt_stage.gtam_wbmtmrkt_stage_id,\n\tSQ_gtam_wbmtmrkt_stage.abbreviation_of_target_mkt,\n\tSQ_gtam_wbmtmrkt_stage.date_field1,\n\tSQ_gtam_wbmtmrkt_stage.date_field2,\n\tSQ_gtam_wbmtmrkt_stage.description_of_target_mkt,\n\tSQ_gtam_wbmtmrkt_stage.extract_date,\n\tSQ_gtam_wbmtmrkt_stage.as_of_date,\n\tSQ_gtam_wbmtmrkt_stage.record_count,\n\tSQ_gtam_wbmtmrkt_stage.source_system_id,\n\tLKP_arch_gtam_wbmtmrkt_stage.arch_wbmtmrkt_stage_id AS old_arch_wbmtmrkt_stage_id,\n\tLKP_arch_gtam_wbmtmrkt_stage.date_field1 AS old_date_field1,\n\tLKP_arch_gtam_wbmtmrkt_stage.date_field2 AS old_date_field2,\n\tLKP_arch_gtam_wbmtmrkt_stage.description_of_target_mkt AS old_description_of_target_mkt,\n\t-- *INF*: iif(isnull(old_arch_wbmtmrkt_stage_id),'NEW',\r\n\t-- \tiif((old_date_field1 <> date_field1) OR\r\n\t--              (old_date_field2 <> date_field2) OR\r\n\t--              (old_description_of_target_mkt <> description_of_target_mkt),\r\n\t-- \t'UPDATE',\r\n\t-- \t'NOCHANGE'))\n\tIFF(\n\t    old_arch_wbmtmrkt_stage_id IS NULL, 'NEW',\n\t    IFF(\n\t        (old_date_field1 <> date_field1)\n\t        or (old_date_field2 <> date_field2)\n\t        or (old_description_of_target_mkt <> description_of_target_mkt),\n\t        'UPDATE',\n\t        'NOCHANGE'\n\t    )\n\t) AS v_Changed_Flag,\n\tv_Changed_Flag AS Changed_Flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_ID\n\tFROM SQ_gtam_wbmtmrkt_stage\n\tLEFT JOIN LKP_arch_gtam_wbmtmrkt_stage\n\tON LKP_arch_gtam_wbmtmrkt_stage.abbreviation_of_target_mkt = SQ_gtam_wbmtmrkt_stage.abbreviation_of_target_mkt\n),\nFIL_Inserts AS (\n\tSELECT\n\tgtam_wbmtmrkt_stage_id, \n\tabbreviation_of_target_mkt, \n\tdate_field1, \n\tdate_field2, \n\tdescription_of_target_mkt, \n\textract_date, \n\tas_of_date, \n\trecord_count, \n\tsource_system_id, \n\tChanged_Flag, \n\tAudit_ID\n\tFROM EXP_Detect_Changes\n\tWHERE Changed_Flag='NEW' or Changed_Flag='UPDATE'\n),\narch_gtam_wbmtmrkt_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_gtam_wbmtmrkt_stage\n\t(gtam_wbmtmrkt_stage_id, abbreviation_of_target_mkt, date_field1, date_field2, description_of_target_mkt, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tGTAM_WBMTMRKT_STAGE_ID, \n\tABBREVIATION_OF_TARGET_MKT, \n\tDATE_FIELD1, \n\tDATE_FIELD2, \n\tDESCRIPTION_OF_TARGET_MKT, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAudit_ID AS AUDIT_ID\n\tFROM FIL_Inserts\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

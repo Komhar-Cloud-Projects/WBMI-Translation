@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCABusinessInterruptionOptionScheduleStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCABusinessInterru_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCABusinessInterruptionOptionScheduleStage AS (\n\tSELECT\n\t\tDCCABusinessInterruptionOptionScheduleStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tCA_BusinessInterruptionOptionId,\n\t\tCA_BusinessInterruptionOptionScheduleId,\n\t\tSessionId,\n\t\tId,\n\t\tDescriptionOfScheduledProperty\n\tFROM DCCABusinessInterruptionOptionScheduleStage\n),\nEXP_MetaData AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tDCCABusinessInterruptionOptionScheduleStageId,\n\tExtractDate,\n\tSourceSystemid,\n\tCA_BusinessInterruptionOptionId,\n\tCA_BusinessInterruptionOptionScheduleId,\n\tSessionId,\n\tId,\n\tDescriptionOfScheduledProperty\n\tFROM SQ_DCCABusinessInterruptionOptionScheduleStage\n),\nArchDCCABusinessInterruptionOptionScheduleStage AS (\n\tINSERT INTO ArchDCCABusinessInterruptionOptionScheduleStage\n\t(ExtractDate, SourceSystemId, AuditId, DCCABusinessInterruptionOptionScheduleStageId, CA_BusinessInterruptionOptionId, CA_BusinessInterruptionOptionScheduleId, SessionId, Id, DescriptionOfScheduledProperty)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemid AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCCABUSINESSINTERRUPTIONOPTIONSCHEDULESTAGEID, \n\tCA_BUSINESSINTERRUPTIONOPTIONID, \n\tCA_BUSINESSINTERRUPTIONOPTIONSCHEDULEID, \n\tSESSIONID, \n\tID, \n\tDESCRIPTIONOFSCHEDULEDPROPERTY\n\tFROM EXP_MetaData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

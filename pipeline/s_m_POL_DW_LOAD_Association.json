@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_Association AS (\n\tSELECT\n\t\tAssociationId,\n\t\tModifiedDate,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tAssociationAKId,\n\t\tAssociationCode,\n\t\tAssociationDescription\n\tFROM Association\n),\nEXP_DateValues AS (\n\tSELECT\n\tModifiedDate AS i_ModifiedDate,\n\tEffectiveDate AS i_EffectiveDate,\n\tExpirationDate AS i_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)\n\tIFF(i_EffectiveDate IS NULL,\n\t\tTO_DATE('21001231235959', 'YYYYMMDDHH24MISS'\n\t\t),\n\t\ti_EffectiveDate\n\t) AS o_EffectiveDate,\n\t-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)\n\tIFF(i_ExpirationDate IS NULL,\n\t\tTO_DATE('21001231235959', 'YYYYMMDDHH24MISS'\n\t\t),\n\t\ti_ExpirationDate\n\t) AS o_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)\n\tIFF(i_ModifiedDate IS NULL,\n\t\tTO_DATE('21001231235959', 'YYYYMMDDHH24MISS'\n\t\t),\n\t\ti_ModifiedDate\n\t) AS o_ModifiedDate\n\tFROM SQ_Association\n),\nEXP_NumericValues AS (\n\tSELECT\n\tAssociationId AS i_AssociationId,\n\tAssociationAKId AS i_AssociationAKId,\n\t-- *INF*: IIF(ISNULL(i_AssociationId),-1,i_AssociationId)\n\tIFF(i_AssociationId IS NULL,\n\t\t- 1,\n\t\ti_AssociationId\n\t) AS o_AssociationId,\n\t-- *INF*: IIF(ISNULL(i_AssociationAKId),-1,i_AssociationAKId)\n\tIFF(i_AssociationAKId IS NULL,\n\t\t- 1,\n\t\ti_AssociationAKId\n\t) AS o_AssociationAKId\n\tFROM SQ_Association\n),\nEXP_StringValues AS (\n\tSELECT\n\tExpirationDate AS i_ExpirationDate,\n\tAssociationCode AS i_AssociationCode,\n\tAssociationDescription AS i_AssociationDescription,\n\t-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)\n\tIFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'\n\t\t),\n\t\t1,\n\t\t0\n\t) AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tSYSDATE AS o_CreatedDate,\n\t-- *INF*: IIF(ISNULL(i_AssociationCode) OR LENGTH(i_AssociationCode)=0 OR IS_SPACES(i_AssociationCode),'N/A',LTRIM(RTRIM(i_AssociationCode)))\n\tIFF(i_AssociationCode IS NULL \n\t\tOR LENGTH(i_AssociationCode\n\t\t) = 0 \n\t\tOR LENGTH(i_AssociationCode)>0 AND TRIM(i_AssociationCode)='',\n\t\t'N/A',\n\t\tLTRIM(RTRIM(i_AssociationCode\n\t\t\t)\n\t\t)\n\t) AS o_AssociationCode,\n\t-- *INF*: IIF(ISNULL(i_AssociationDescription) OR LENGTH(i_AssociationDescription)=0 OR IS_SPACES(i_AssociationDescription),'N/A',LTRIM(RTRIM(i_AssociationDescription)))\n\tIFF(i_AssociationDescription IS NULL \n\t\tOR LENGTH(i_AssociationDescription\n\t\t) = 0 \n\t\tOR LENGTH(i_AssociationDescription)>0 AND TRIM(i_AssociationDescription)='',\n\t\t'N/A',\n\t\tLTRIM(RTRIM(i_AssociationDescription\n\t\t\t)\n\t\t)\n\t) AS o_AssociationDescription\n\tFROM SQ_Association\n),\nTGT_Association_UpdateElseInsert AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.Association AS T\n\tUSING EXP_StringValues AS S\n\tON T.AssociationId = S.o_AssociationId\n\tWHEN MATCHED THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.o_CurrentSnapshotFlag, T.AuditId = S.o_AuditId, T.EffectiveDate = S.o_EffectiveDate, T.ExpirationDate = S.o_ExpirationDate, T.SourceSystemId = S.o_SourceSystemId, T.CreatedDate = S.o_CreatedDate, T.ModifiedDate = S.o_ModifiedDate, T.AssociationAKId = S.o_AssociationAKId, T.AssociationCode = S.o_AssociationCode, T.AssociationDescription = S.o_AssociationDescription\n\tWHEN NOT MATCHED THEN\n\tINSERT (AssociationId, CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, AssociationAKId, AssociationCode, AssociationDescription)\n\tVALUES (\n\tEXP_NumericValues.o_AssociationId AS ASSOCIATIONID, \n\tEXP_StringValues.o_CurrentSnapshotFlag AS CURRENTSNAPSHOTFLAG, \n\tEXP_StringValues.o_AuditId AS AUDITID, \n\tEXP_DateValues.o_EffectiveDate AS EFFECTIVEDATE, \n\tEXP_DateValues.o_ExpirationDate AS EXPIRATIONDATE, \n\tEXP_StringValues.o_SourceSystemId AS SOURCESYSTEMID, \n\tEXP_StringValues.o_CreatedDate AS CREATEDDATE, \n\tEXP_DateValues.o_ModifiedDate AS MODIFIEDDATE, \n\tEXP_NumericValues.o_AssociationAKId AS ASSOCIATIONAKID, \n\tEXP_StringValues.o_AssociationCode AS ASSOCIATIONCODE, \n\tEXP_StringValues.o_AssociationDescription AS ASSOCIATIONDESCRIPTION)\n),"
+                            "text": "WITH\nSQ_Association AS (\n\tSELECT\n\t\tAssociationId,\n\t\tModifiedDate,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tAssociationAKId,\n\t\tAssociationCode,\n\t\tAssociationDescription\n\tFROM Association\n),\nEXP_DateValues AS (\n\tSELECT\n\tModifiedDate AS i_ModifiedDate,\n\tEffectiveDate AS i_EffectiveDate,\n\tExpirationDate AS i_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)\n\tIFF(\n\t    i_EffectiveDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate\n\t) AS o_EffectiveDate,\n\t-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)\n\tIFF(\n\t    i_ExpirationDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'),\n\t    i_ExpirationDate\n\t) AS o_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)\n\tIFF(\n\t    i_ModifiedDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate\n\t) AS o_ModifiedDate\n\tFROM SQ_Association\n),\nEXP_NumericValues AS (\n\tSELECT\n\tAssociationId AS i_AssociationId,\n\tAssociationAKId AS i_AssociationAKId,\n\t-- *INF*: IIF(ISNULL(i_AssociationId),-1,i_AssociationId)\n\tIFF(i_AssociationId IS NULL, - 1, i_AssociationId) AS o_AssociationId,\n\t-- *INF*: IIF(ISNULL(i_AssociationAKId),-1,i_AssociationAKId)\n\tIFF(i_AssociationAKId IS NULL, - 1, i_AssociationAKId) AS o_AssociationAKId\n\tFROM SQ_Association\n),\nEXP_StringValues AS (\n\tSELECT\n\tExpirationDate AS i_ExpirationDate,\n\tAssociationCode AS i_AssociationCode,\n\tAssociationDescription AS i_AssociationDescription,\n\t-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)\n\tIFF(TRUNC(i_ExpirationDate) = TO_TIMESTAMP('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tSYSDATE AS o_CreatedDate,\n\t-- *INF*: IIF(ISNULL(i_AssociationCode) OR LENGTH(i_AssociationCode)=0 OR IS_SPACES(i_AssociationCode),'N/A',LTRIM(RTRIM(i_AssociationCode)))\n\tIFF(\n\t    i_AssociationCode IS NULL\n\t    or LENGTH(i_AssociationCode) = 0\n\t    or LENGTH(i_AssociationCode)>0\n\t    and TRIM(i_AssociationCode)='',\n\t    'N/A',\n\t    LTRIM(RTRIM(i_AssociationCode))\n\t) AS o_AssociationCode,\n\t-- *INF*: IIF(ISNULL(i_AssociationDescription) OR LENGTH(i_AssociationDescription)=0 OR IS_SPACES(i_AssociationDescription),'N/A',LTRIM(RTRIM(i_AssociationDescription)))\n\tIFF(\n\t    i_AssociationDescription IS NULL\n\t    or LENGTH(i_AssociationDescription) = 0\n\t    or LENGTH(i_AssociationDescription)>0\n\t    and TRIM(i_AssociationDescription)='',\n\t    'N/A',\n\t    LTRIM(RTRIM(i_AssociationDescription))\n\t) AS o_AssociationDescription\n\tFROM SQ_Association\n),\nTGT_Association_UpdateElseInsert AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.Association AS T\n\tUSING EXP_StringValues AS S\n\tON T.AssociationId = S.o_AssociationId\n\tWHEN MATCHED THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.o_CurrentSnapshotFlag, T.AuditId = S.o_AuditId, T.EffectiveDate = S.o_EffectiveDate, T.ExpirationDate = S.o_ExpirationDate, T.SourceSystemId = S.o_SourceSystemId, T.CreatedDate = S.o_CreatedDate, T.ModifiedDate = S.o_ModifiedDate, T.AssociationAKId = S.o_AssociationAKId, T.AssociationCode = S.o_AssociationCode, T.AssociationDescription = S.o_AssociationDescription\n\tWHEN NOT MATCHED THEN\n\tINSERT (AssociationId, CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, AssociationAKId, AssociationCode, AssociationDescription)\n\tVALUES (\n\tEXP_NumericValues.o_AssociationId AS ASSOCIATIONID, \n\tEXP_StringValues.o_CurrentSnapshotFlag AS CURRENTSNAPSHOTFLAG, \n\tEXP_StringValues.o_AuditId AS AUDITID, \n\tEXP_DateValues.o_EffectiveDate AS EFFECTIVEDATE, \n\tEXP_DateValues.o_ExpirationDate AS EXPIRATIONDATE, \n\tEXP_StringValues.o_SourceSystemId AS SOURCESYSTEMID, \n\tEXP_StringValues.o_CreatedDate AS CREATEDDATE, \n\tEXP_DateValues.o_ModifiedDate AS MODIFIEDDATE, \n\tEXP_NumericValues.o_AssociationAKId AS ASSOCIATIONAKID, \n\tEXP_StringValues.o_AssociationCode AS ASSOCIATIONCODE, \n\tEXP_StringValues.o_AssociationDescription AS ASSOCIATIONDESCRIPTION)\n),"
                         }
                     ]
                 },
@@ -32,47 +32,19 @@
         "parameters": {
             "WBMI_AUDIT_CONTROL_RUN_ID": {
                 "type": "string",
-                "defaultValue": "246483"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "905450"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7602748"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "08/29/2023 22:00:17"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/30/2023 22:00:17"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_InsuranceReference_Policy"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
-            "TARGET_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
+                "defaultValue": "Default Value"
             },
             "SOURCE_SYSTEM_ID": {
                 "type": "string",
-                "defaultValue": "InsRef"
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Policy DataWarehouse/"
+            "name": "RPT_EDM and EDW/Policy DataWarehouse/"
         },
         "annotations": []
     }

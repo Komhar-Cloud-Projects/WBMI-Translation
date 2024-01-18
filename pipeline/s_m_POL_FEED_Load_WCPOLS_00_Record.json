@@ -1,0 +1,51 @@
+{
+    "name": "s_m_POL_FEED_Load_WCPOLS_00_Record",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Load_WCPOLS_00_Record",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nLKP_SupWCPOLS AS (\n\tSELECT\n\tWCPOLSCode,\n\tSourcesystemID,\n\tSourceCode,\n\tTableName,\n\tProcessName,\n\ti_SourcesystemID,\n\ti_SourceCode,\n\ti_TableName,\n\ti_ProcessName\n\tFROM (\n\t\tSELECT\r\n\t\t     WCPOLSCode as WCPOLSCode\r\n\t\t\t,SourcesystemID as SourcesystemID\r\n\t\t\t,SourceCode as SourceCode\r\n\t\t\t,TableName as TableName\r\n\t\t\t,ProcessName as ProcessName\r\n\t\tFROM SupWCPOLS\r\n\t\tWHERE CurrentSnapshotFlag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY SourcesystemID,SourceCode,TableName,ProcessName ORDER BY WCPOLSCode) = 1\n),\nSQ_WorkWCPolicy AS (\n\tSELECT DISTINCT\r\n\t       P.WCTrackHistoryID\r\n\t      ,P.PolicyKey\r\n\t      ,P.PolicyEffectiveDate\r\n\t      ,P.TransactionDate\r\n\t\t,P.PreviousPolicyKey\r\n\t\t,th.HistoryID\r\n\t      ,case when th.TransactionType in ('Rewrite','Reissue') then th.PreviousPolicyTransactionType else th.TransactionType end TransactionType\r\n\t\t,th.PremiumBearingFlag\r\n\t\t,th.StateAddFlag\r\n\t  FROM dbo.WorkWCPolicy P\r\n\t\r\n\tINNER JOIN dbo.WorkWCTrackHistory th\r\n\t\tON th.WCTrackHistoryID = P.WCTrackHistoryID\r\n\t\r\n\t  WHERE 1=1\r\n\t  AND P.AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t  @{pipeline().parameters.WHERE_CLAUSE_00}\n),\nEXP_PrepLKP_00 AS (\n\tSELECT\n\tWCTrackHistoryID,\n\tPolicyKey,\n\tPolicyEffectiveDate,\n\tTransactionDate,\n\tPreviousPolicyKey,\n\tHistoryID,\n\tTransactionType,\n\tPremiumBearingFlag,\n\tStateAddFlag,\n\t-- *INF*: IIF(TransactionType='Endorse',IIF(StateAddFlag='1','EndorseAddDeleteState',IIF(PremiumBearingFlag='1','EndorsePremiumBearing','EndorseNonPremiumBearing')),TransactionType)\n\tIFF(\n\t    TransactionType = 'Endorse',\n\t    IFF(\n\t        StateAddFlag = '1', 'EndorseAddDeleteState',\n\t        IFF(\n\t            PremiumBearingFlag = '1', 'EndorsePremiumBearing',\n\t            'EndorseNonPremiumBearing'\n\t        )\n\t    ),\n\t    TransactionType\n\t) AS v_TransactionType,\n\t-- *INF*: TO_CHAR(PolicyEffectiveDate, 'YYMMDD')\n\tTO_CHAR(PolicyEffectiveDate, 'YYMMDD') AS o_PolicyEffectiveDate_YYMMDD,\n\t-- *INF*: TO_CHAR(TransactionDate,'YYDDD')\n\tTO_CHAR(TransactionDate, 'YYDDD') AS o_TransactionDate_YYDDD,\n\t-- *INF*: :LKP.LKP_SupWCPOLS('DCT',v_TransactionType,'WCPOLS00Record','TransactionCode')\n\tLKP_SUPWCPOLS__DCT_v_TransactionType_WCPOLS00Record_TransactionCode.WCPOLSCode AS o_TransactionCode\n\tFROM SQ_WorkWCPolicy\n\tLEFT JOIN LKP_SUPWCPOLS LKP_SUPWCPOLS__DCT_v_TransactionType_WCPOLS00Record_TransactionCode\n\tON LKP_SUPWCPOLS__DCT_v_TransactionType_WCPOLS00Record_TransactionCode.SourcesystemID = 'DCT'\n\tAND LKP_SUPWCPOLS__DCT_v_TransactionType_WCPOLS00Record_TransactionCode.SourceCode = v_TransactionType\n\tAND LKP_SUPWCPOLS__DCT_v_TransactionType_WCPOLS00Record_TransactionCode.TableName = 'WCPOLS00Record'\n\tAND LKP_SUPWCPOLS__DCT_v_TransactionType_WCPOLS00Record_TransactionCode.ProcessName = 'TransactionCode'\n\n),\nLKP_ValidTransactions AS (\n\tSELECT\n\tHistoryID,\n\tIN_PolicyKey,\n\tIN_HistoryID,\n\tPolicyKey\n\tFROM (\n\t\tSelect PolicyKey AS PolicyKey,Max(HistoryID) AS HistoryID from WorkWCTrackHistory\r\n\t\twhere TransactionType like '%Endorse%'\r\n\t\tAND AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t\tgroup by PolicyKey,TransactionDate\r\n\t\t\r\n\t\tUNION\r\n\t\t\r\n\t\tSelect PolicyKey AS PolicyKey,HistoryID AS HistoryID from WorkWCTrackHistory\r\n\t\twhere TransactionType NOT like '%Endorse%'\r\n\t\tAND AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t\tgroup by PolicyKey,HistoryID,TransactionDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyKey,HistoryID ORDER BY HistoryID) = 1\n),\nFILTRANS AS (\n\tSELECT\n\tEXP_PrepLKP_00.WCTrackHistoryID, \n\tEXP_PrepLKP_00.PolicyKey, \n\tEXP_PrepLKP_00.PreviousPolicyKey, \n\tEXP_PrepLKP_00.TransactionType, \n\tEXP_PrepLKP_00.o_PolicyEffectiveDate_YYMMDD AS PolicyEffectiveDate_YYMMDD, \n\tEXP_PrepLKP_00.o_TransactionDate_YYDDD AS TransactionDate_YYDDD, \n\tEXP_PrepLKP_00.o_TransactionCode AS TransactionCode, \n\tLKP_ValidTransactions.HistoryID\n\tFROM EXP_PrepLKP_00\n\tLEFT JOIN LKP_ValidTransactions\n\tON LKP_ValidTransactions.PolicyKey = EXP_PrepLKP_00.PolicyKey AND LKP_ValidTransactions.HistoryID = EXP_PrepLKP_00.HistoryID\n\tWHERE NOT IsNull(TransactionCode) AND NOT ISNULL(HistoryID)\n),\nEXP_Format_00_Output AS (\n\tSELECT\n\tWCTrackHistoryID,\n\tPolicyKey,\n\tPreviousPolicyKey,\n\tTransactionType,\n\tPolicyEffectiveDate_YYMMDD,\n\tTransactionDate_YYDDD AS TransactionEffectiveDate_YYDDD,\n\tTransactionCode,\n\tCURRENT_TIMESTAMP AS o_ExtractDate,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_Auditid,\n\t'17124' AS o_CarrierCode,\n\t-- *INF*: --IIF(IN(TransactionType,'New','Renew'),IIF(IsNull(@{pipeline().parameters.TEST_FLAG_INSERT}) or @{pipeline().parameters.TEST_FLAG_INSERT} = '',' ',Substr(@{pipeline().parameters.TEST_FLAG_INSERT},1,1)),' ')\r\n\t-- \r\n\t-- IIF(IsNull(@{pipeline().parameters.TEST_FLAG_INSERT}) or @{pipeline().parameters.TEST_FLAG_INSERT} = '',' ',Substr(@{pipeline().parameters.TEST_FLAG_INSERT},1,1))\n\tIFF(\n\t    @{pipeline().parameters.TEST_FLAG_INSERT} IS NULL or @{pipeline().parameters.TEST_FLAG_INSERT} = '', ' ', Substr(@{pipeline().parameters.TEST_FLAG_INSERT}, 1, 1)\n\t) AS v_TestFlag,\n\t-- *INF*: '17124'||RPAD((PolicyKey || v_TestFlag),25)||PolicyEffectiveDate_YYMMDD||TransactionEffectiveDate_YYDDD||RPAD(TransactionCode,2)\n\t'17124' || RPAD((PolicyKey || v_TestFlag), 25) || PolicyEffectiveDate_YYMMDD || TransactionEffectiveDate_YYDDD || RPAD(TransactionCode, 2) AS o_LinkData,\n\tHistoryID\n\tFROM FILTRANS\n),\nWCPols00Record AS (\n\n\t------------ PRE SQL ----------\n\tDELETE\r\n\t  FROM dbo.WCPols00Record\r\n\t  WHERE 1=1\r\n\t  AND AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\n\t-------------------------------\n\n\n\tINSERT INTO WCPols00Record\n\t(ExtractDate, AuditId, WCTrackHistoryID, LinkData, CarrierCode, PolicyNumberID, PolicyEffectiveDate, TransactionIssueDate, TransactionCode, OriginalLinkData)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_Auditid AS AUDITID, \n\tWCTRACKHISTORYID, \n\to_LinkData AS LINKDATA, \n\to_CarrierCode AS CARRIERCODE, \n\tPolicyKey AS POLICYNUMBERID, \n\tPolicyEffectiveDate_YYMMDD AS POLICYEFFECTIVEDATE, \n\tTransactionEffectiveDate_YYDDD AS TRANSACTIONISSUEDATE, \n\tTRANSACTIONCODE, \n\to_LinkData AS ORIGINALLINKDATA\n\tFROM EXP_Format_00_Output\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE_00": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TEST_FLAG_INSERT": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

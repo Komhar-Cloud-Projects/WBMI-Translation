@@ -21,14 +21,12 @@ EXP_values AS (
 	-- IS_SPACES(in_abbreviation_of_target_mkt),'N/A',
 	-- LENGTH(in_abbreviation_of_target_mkt)=0,'N/A',
 	-- LTRIM(RTRIM(in_abbreviation_of_target_mkt)))
-	decode(TRUE,
-		in_abbreviation_of_target_mkt IS NULL, 'N/A',
-		LENGTH(in_abbreviation_of_target_mkt)>0 AND TRIM(in_abbreviation_of_target_mkt)='', 'N/A',
-		LENGTH(in_abbreviation_of_target_mkt
-		) = 0, 'N/A',
-		LTRIM(RTRIM(in_abbreviation_of_target_mkt
-			)
-		)
+	decode(
+	    TRUE,
+	    in_abbreviation_of_target_mkt IS NULL, 'N/A',
+	    LENGTH(in_abbreviation_of_target_mkt)>0 AND TRIM(in_abbreviation_of_target_mkt)='', 'N/A',
+	    LENGTH(in_abbreviation_of_target_mkt) = 0, 'N/A',
+	    LTRIM(RTRIM(in_abbreviation_of_target_mkt))
 	) AS target_market_code,
 	description_of_target_mkt AS in_description_of_target_mkt,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_description_of_target_mkt)
@@ -43,8 +41,7 @@ EXP_values AS (
 	-- --IS_SPACES(in_description_of_target_mkt),'N/A',
 	-- --LENGTH(in_description_of_target_mkt)=0,'N/A',
 	-- --LTRIM(RTRIM(in_description_of_target_mkt)))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_description_of_target_mkt
-	) AS target_mrkt_code_descript
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_description_of_target_mkt) AS target_mrkt_code_descript
 	FROM SQ_gtam_wbmtmrkt_stage
 ),
 LKP_sup_target_marget_code AS (
@@ -76,30 +73,25 @@ EXP_Detect_Changes AS (
 	-- 
 	-- 
 	-- 
-	IFF(lkp_sup_target_mrkt_code_id IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(lkp_target_mrkt_code_descript
-				)
-			) != LTRIM(RTRIM(target_mrkt_code_descript
-				)
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    lkp_sup_target_mrkt_code_id IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(lkp_target_mrkt_code_descript)) != LTRIM(RTRIM(target_mrkt_code_descript)),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -168,9 +160,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- target_mrkt_code = v_prev_target_mrkt_code,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
-	DECODE(TRUE,
-		target_mrkt_code = v_prev_target_mrkt_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    target_mrkt_code = v_prev_target_mrkt_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	target_mrkt_code AS v_prev_target_mrkt_code,

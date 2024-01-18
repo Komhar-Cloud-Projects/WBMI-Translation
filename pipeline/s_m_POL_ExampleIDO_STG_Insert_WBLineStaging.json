@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBLineStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBLineStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_Line AS (\n\tWITH cte_WBLine(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.LineId, \r\n\tX.WB_LineId, \r\n\tX.SessionId, \r\n\tX.ApplicableToPackage, \r\n\tX.IsEligibleForClearing, \r\n\tX.Cleared, \r\n\tX.ClearedDateTimeStamp, \r\n\tX.Contribution, \r\n\tX.IsContribution, \r\n\tX.IsLossSensitiveCommission, \r\n\tX.IsOverride, \r\n\tX.LossSensitiveCommission, \r\n\tX.Override, \r\n\tX.LossRatio, \r\n\tX.FinalCommission, \r\n\tX.CommissionAmount, \r\n\tX.ConsentToRate, \r\n\tX.RiskGrade, \r\n\tX.IsGraduated, \r\n\tX.CommissionAmountGraduated, \r\n\tX.FinalCommissionGraduated, \r\n\tX.TransactionCommissionGraduated, \r\n\tX.TransactionCommissionGraduatedValue, \r\n\tX.HasCommissionPlanRan, \r\n\tX.PurePremium, \r\n\tX.CommissionGraduatedTierLevel, \r\n\tX.TransactionCommissionGraduatedTierLevel, \r\n\tX.GraduatedRateValue, \r\n\tX.ApplyLossSensitiveCommission, \r\n\tX.Graduated, \r\n\tX.Maximum, \r\n\tX.Minimum, \r\n\tX.RateValue, \r\n\tX.CommissionCustomerCareAmount, \r\n\tX.CommissionAssociationAmount, \r\n\tX.CommissionProgramAmount, \r\n\tX.AdjustedBaseCommission, \r\n\tX.AdjustedBaseCommissionGraduated, \r\n\tX.PolicyType, \r\n\tX.CommissionLOBSpecificAmount, \r\n\tX.GetTransactionCommissionValue, \r\n\tX.GetTransactionGraduatedCommissionValue, \r\n\tX.OverrideCommissionPlanId, \r\n\tX.TransactionCommissionLOBSpecificValue, \r\n\tX.TransactionLOBBaseCommissionValue, \r\n\tX.TransactionLOBBaseCommissionGraduatedValue \r\n\tFROM\r\n\tWB_Line X\r\n\tinner join\r\n\tcte_WBLine Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tsysdate AS ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSyStemId,\n\tLineId,\n\tWB_LineId,\n\tSessionId,\n\tApplicableToPackage,\n\tIsEligibleForClearing,\n\t-- *INF*: DECODE(TRUE,IsEligibleForClearing='T',1,IsEligibleForClearing='F',0,NULL)\n\tDECODE(\n\t    TRUE,\n\t    IsEligibleForClearing = 'T', 1,\n\t    IsEligibleForClearing = 'F', 0,\n\t    NULL\n\t) AS IsEligibleForClearing_out,\n\tCleared,\n\t-- *INF*: decode(true,Cleared='T',1,Cleared='F',0,NULL)\n\tdecode(\n\t    true,\n\t    Cleared = 'T', 1,\n\t    Cleared = 'F', 0,\n\t    NULL\n\t) AS Cleared_out,\n\tClearedDateTimeStamp,\n\tContribution,\n\tIsContribution,\n\t-- *INF*: decode(true,IsContribution='T',1,IsContribution='F',0,NULL)\n\tdecode(\n\t    true,\n\t    IsContribution = 'T', 1,\n\t    IsContribution = 'F', 0,\n\t    NULL\n\t) AS IsContribution_out,\n\tIsLossSensitiveCommission,\n\t-- *INF*: DECODE(TRUE,IsLossSensitiveCommission='T',1,IsLossSensitiveCommission='F',0,NULL)\n\tDECODE(\n\t    TRUE,\n\t    IsLossSensitiveCommission = 'T', 1,\n\t    IsLossSensitiveCommission = 'F', 0,\n\t    NULL\n\t) AS IsLossSensitiveCommission_out,\n\tIsOverride,\n\t-- *INF*: DECODE(TRUE,IsOverride='T',1,IsOverride='F',0,NULL)\n\tDECODE(\n\t    TRUE,\n\t    IsOverride = 'T', 1,\n\t    IsOverride = 'F', 0,\n\t    NULL\n\t) AS IsOverride_out,\n\tLossSensitiveCommission,\n\tOverride,\n\tLossRatio,\n\tFinalCommission,\n\t-- *INF*: IIF(IsNull(FinalCommission),0,FinalCommission)\n\tIFF(FinalCommission IS NULL, 0, FinalCommission) AS FinalCommission_out,\n\tCommissionAmount,\n\tConsentToRate,\n\t-- *INF*: DECODE(TRUE,ConsentToRate='T',1,ConsentToRate='F',0,NULL)\n\tDECODE(\n\t    TRUE,\n\t    ConsentToRate = 'T', 1,\n\t    ConsentToRate = 'F', 0,\n\t    NULL\n\t) AS ConsentToRate_out,\n\tRiskGrade,\n\tIsGraduated,\n\t-- *INF*: DECODE(TRUE,IsGraduated='T',1,IsGraduated='F',0,NULL)\n\tDECODE(\n\t    TRUE,\n\t    IsGraduated = 'T', 1,\n\t    IsGraduated = 'F', 0,\n\t    NULL\n\t) AS IsGraduated_out,\n\tCommissionAmountGraduated,\n\tFinalCommissionGraduated,\n\tTransactionCommissionGraduated,\n\t-- *INF*: DECODE(TRUE,TransactionCommissionGraduated='T',1,TransactionCommissionGraduated='F',0,NULL)\n\tDECODE(\n\t    TRUE,\n\t    TransactionCommissionGraduated = 'T', 1,\n\t    TransactionCommissionGraduated = 'F', 0,\n\t    NULL\n\t) AS TransactionCommissionGraduated_out,\n\tTransactionCommissionGraduatedValue,\n\tHasCommissionPlanRan,\n\t-- *INF*: DECODE(TRUE,HasCommissionPlanRan='T',1,HasCommissionPlanRan='F',0,NULL)\n\tDECODE(\n\t    TRUE,\n\t    HasCommissionPlanRan = 'T', 1,\n\t    HasCommissionPlanRan = 'F', 0,\n\t    NULL\n\t) AS HasCommissionPlanRan_out,\n\tPurePremium,\n\tCommissionGraduatedTierLevel,\n\tTransactionCommissionGraduatedTierLevel,\n\tGraduatedRateValue,\n\tApplyLossSensitiveCommission,\n\tGraduated,\n\t-- *INF*: DECODE(TRUE,Graduated='T',1,Graduated='F',0,NULL)\n\tDECODE(\n\t    TRUE,\n\t    Graduated = 'T', 1,\n\t    Graduated = 'F', 0,\n\t    NULL\n\t) AS Graduated_out,\n\tMaximum,\n\tMinimum,\n\tRateValue,\n\tCommissionCustomerCareAmount,\n\tCommissionAssociationAmount,\n\tCommissionProgramAmount,\n\tAdjustedBaseCommission,\n\tAdjustedBaseCommissionGraduated,\n\tPolicyType,\n\tCommissionLOBSpecificAmount,\n\tGetTransactionCommissionValue,\n\tGetTransactionGraduatedCommissionValue,\n\tOverrideCommissionPlanId,\n\tTransactionCommissionLOBSpecificValue,\n\tTransactionLOBBaseCommissionValue,\n\tTransactionLOBBaseCommissionGraduatedValue\n\tFROM SQ_WB_Line\n),\nWBLineStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBLineStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBLineStaging\n\t(ExtractDate, SourceSystemId, LineId, WB_LineId, SessionId, PurePremium, Contribution, IsContribution, IsOverride, Override, IsLossSensitiveCommission, LossSensitiveCommission, LossRatio, ApplyLossSensitiveCommission, FinalCommission, CommissionAmount, IsGraduated, CommissionAmountGraduated, FinalCommissionGraduated, CommissionGraduatedTierLevel, CommissionCustomerCareAmount, CommissionAssociationAmount, CommissionProgramAmount, AdjustedBaseCommission, AdjustedBaseCommissionGraduated, ConsentToRate, ApplicableToPackage, IsEligibleForClearing, RiskGrade, Cleared, ClearedDateTimeStamp, TransactionCommissionGraduated, TransactionCommissionGraduatedValue, HasCommissionPlanRan, GraduatedRateValue, Maximum, Minimum, RateValue, Graduated, TransactionCommissionGraduatedTierLevel, OverrideCommissionPlanId, PolicyType, CommissionLOBSpecificAmount, GetTransactionCommissionValue, GetTransactionGraduatedCommissionValue, TransactionCommissionLOBSpecificValue, TransactionLOBBaseCommissionValue, TransactionLOBBaseCommissionGraduatedValue)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSyStemId AS SOURCESYSTEMID, \n\tLINEID, \n\tWB_LINEID, \n\tSESSIONID, \n\tPUREPREMIUM, \n\tCONTRIBUTION, \n\tIsContribution_out AS ISCONTRIBUTION, \n\tIsOverride_out AS ISOVERRIDE, \n\tOVERRIDE, \n\tIsLossSensitiveCommission_out AS ISLOSSSENSITIVECOMMISSION, \n\tLOSSSENSITIVECOMMISSION, \n\tLOSSRATIO, \n\tAPPLYLOSSSENSITIVECOMMISSION, \n\tFinalCommission_out AS FINALCOMMISSION, \n\tCOMMISSIONAMOUNT, \n\tIsGraduated_out AS ISGRADUATED, \n\tCOMMISSIONAMOUNTGRADUATED, \n\tFINALCOMMISSIONGRADUATED, \n\tCOMMISSIONGRADUATEDTIERLEVEL, \n\tCOMMISSIONCUSTOMERCAREAMOUNT, \n\tCOMMISSIONASSOCIATIONAMOUNT, \n\tCOMMISSIONPROGRAMAMOUNT, \n\tADJUSTEDBASECOMMISSION, \n\tADJUSTEDBASECOMMISSIONGRADUATED, \n\tConsentToRate_out AS CONSENTTORATE, \n\tAPPLICABLETOPACKAGE, \n\tIsEligibleForClearing_out AS ISELIGIBLEFORCLEARING, \n\tRISKGRADE, \n\tCleared_out AS CLEARED, \n\tCLEAREDDATETIMESTAMP, \n\tTransactionCommissionGraduated_out AS TRANSACTIONCOMMISSIONGRADUATED, \n\tTRANSACTIONCOMMISSIONGRADUATEDVALUE, \n\tHasCommissionPlanRan_out AS HASCOMMISSIONPLANRAN, \n\tGRADUATEDRATEVALUE, \n\tMAXIMUM, \n\tMINIMUM, \n\tRATEVALUE, \n\tGraduated_out AS GRADUATED, \n\tTRANSACTIONCOMMISSIONGRADUATEDTIERLEVEL, \n\tOVERRIDECOMMISSIONPLANID, \n\tPOLICYTYPE, \n\tCOMMISSIONLOBSPECIFICAMOUNT, \n\tGETTRANSACTIONCOMMISSIONVALUE, \n\tGETTRANSACTIONGRADUATEDCOMMISSIONVALUE, \n\tTRANSACTIONCOMMISSIONLOBSPECIFICVALUE, \n\tTRANSACTIONLOBBASECOMMISSIONVALUE, \n\tTRANSACTIONLOBBASECOMMISSIONGRADUATEDVALUE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

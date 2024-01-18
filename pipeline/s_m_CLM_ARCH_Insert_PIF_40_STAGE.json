@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_PIF_40_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_PIF_40_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_pif_40_stage AS (\n\tSELECT\n\t\tpif_40_stage_id,\n\t\tpif_symbol,\n\t\tpif_policy_number,\n\t\tpif_module,\n\t\trein_rec_length,\n\t\trein_action_code,\n\t\trein_file_id,\n\t\trein_id,\n\t\treins_section_code,\n\t\treins_insurance_line,\n\t\treins_location_number,\n\t\treins_sub_location_number,\n\t\treins_risk_unit_group,\n\t\treins_seq_rsk_unt_grp,\n\t\treins_location,\n\t\treins_risk_sequence,\n\t\treins_risk_type_ind,\n\t\treins_layer,\n\t\treins_company_no,\n\t\treins_eff_year,\n\t\treins_eff_month,\n\t\treins_eff_day,\n\t\treins_percent_prem_ceded,\n\t\treins_percent_loss_ceded,\n\t\treins_percent_fac_comm,\n\t\treins_exp_year,\n\t\treins_exp_month,\n\t\treins_exp_day,\n\t\treins_cession_no,\n\t\treins_type,\n\t\treins_ent_year,\n\t\treins_ent_month,\n\t\treins_ent_day,\n\t\treins_broker_no,\n\t\treins_excess_amt,\n\t\treins_occur_limit,\n\t\treins_aggregate_limit,\n\t\treins_special_use,\n\t\treins_proportional_code,\n\t\treins_pms_future_use,\n\t\treins_cust_future_use,\n\t\treins_yr2000_cust_use,\n\t\treins_dup_key_seq_num,\n\t\tlogical_flag,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id,\n\t\tinf_action,\n\t\tinf_timestamp\n\tFROM pif_40_stage\n),\nEXP_arch_PIF_4578_stage AS (\n\tSELECT\n\tpif_40_stage_id,\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module,\n\trein_rec_length,\n\trein_action_code,\n\trein_file_id,\n\trein_id,\n\treins_section_code,\n\treins_insurance_line,\n\treins_location_number,\n\treins_sub_location_number,\n\treins_risk_unit_group,\n\treins_seq_rsk_unt_grp,\n\treins_location,\n\treins_risk_sequence,\n\treins_risk_type_ind,\n\treins_layer,\n\treins_company_no,\n\treins_eff_year,\n\treins_eff_month,\n\treins_eff_day,\n\treins_percent_prem_ceded,\n\treins_percent_loss_ceded,\n\treins_percent_fac_comm,\n\treins_exp_year,\n\treins_exp_month,\n\treins_exp_day,\n\treins_cession_no,\n\treins_type,\n\treins_ent_year,\n\treins_ent_month,\n\treins_ent_day,\n\treins_broker_no,\n\treins_excess_amt,\n\treins_occur_limit,\n\treins_aggregate_limit,\n\treins_special_use,\n\treins_proportional_code,\n\treins_pms_future_use,\n\treins_cust_future_use,\n\treins_yr2000_cust_use,\n\treins_dup_key_seq_num,\n\tlogical_flag,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\tinf_action,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP,\n\tinf_timestamp\n\tFROM SQ_pif_40_stage\n),\narch_pif_40_stage AS (\n\tINSERT INTO arch_pif_40_stage\n\t(pif_40_stage_id, pif_symbol, pif_policy_number, pif_module, rein_rec_length, rein_action_code, rein_file_id, rein_id, reins_section_code, reins_insurance_line, reins_location_number, reins_sub_location_number, reins_risk_unit_group, reins_seq_rsk_unt_grp, reins_location, reins_risk_sequence, reins_risk_type_ind, reins_layer, reins_company_no, reins_eff_year, reins_eff_month, reins_eff_day, reins_percent_prem_ceded, reins_percent_loss_ceded, reins_percent_fac_comm, reins_exp_year, reins_exp_month, reins_exp_day, reins_cession_no, reins_type, reins_ent_year, reins_ent_month, reins_ent_day, reins_broker_no, reins_excess_amt, reins_occur_limit, reins_aggregate_limit, reins_special_use, reins_proportional_code, reins_pms_future_use, reins_cust_future_use, reins_yr2000_cust_use, reins_dup_key_seq_num, logical_flag, extract_date, as_of_date, record_count, source_system_id, audit_id, inf_action, inf_timestamp)\n\tSELECT \n\tPIF_40_STAGE_ID, \n\tPIF_SYMBOL, \n\tPIF_POLICY_NUMBER, \n\tPIF_MODULE, \n\tREIN_REC_LENGTH, \n\tREIN_ACTION_CODE, \n\tREIN_FILE_ID, \n\tREIN_ID, \n\tREINS_SECTION_CODE, \n\tREINS_INSURANCE_LINE, \n\tREINS_LOCATION_NUMBER, \n\tREINS_SUB_LOCATION_NUMBER, \n\tREINS_RISK_UNIT_GROUP, \n\tREINS_SEQ_RSK_UNT_GRP, \n\tREINS_LOCATION, \n\tREINS_RISK_SEQUENCE, \n\tREINS_RISK_TYPE_IND, \n\tREINS_LAYER, \n\tREINS_COMPANY_NO, \n\tREINS_EFF_YEAR, \n\tREINS_EFF_MONTH, \n\tREINS_EFF_DAY, \n\tREINS_PERCENT_PREM_CEDED, \n\tREINS_PERCENT_LOSS_CEDED, \n\tREINS_PERCENT_FAC_COMM, \n\tREINS_EXP_YEAR, \n\tREINS_EXP_MONTH, \n\tREINS_EXP_DAY, \n\tREINS_CESSION_NO, \n\tREINS_TYPE, \n\tREINS_ENT_YEAR, \n\tREINS_ENT_MONTH, \n\tREINS_ENT_DAY, \n\tREINS_BROKER_NO, \n\tREINS_EXCESS_AMT, \n\tREINS_OCCUR_LIMIT, \n\tREINS_AGGREGATE_LIMIT, \n\tREINS_SPECIAL_USE, \n\tREINS_PROPORTIONAL_CODE, \n\tREINS_PMS_FUTURE_USE, \n\tREINS_CUST_FUTURE_USE, \n\tREINS_YR2000_CUST_USE, \n\tREINS_DUP_KEY_SEQ_NUM, \n\tLOGICAL_FLAG, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID, \n\tINF_ACTION, \n\tINF_TIMESTAMP\n\tFROM EXP_arch_PIF_4578_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

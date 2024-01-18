@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCAMotorJunkLicenseStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCAMotorJunkLicens_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCAMotorJunkLicenseStage AS (\n\tSELECT\n\t\tDCCAMotorJunkLicenseStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCA_StateId,\n\t\tCA_MotorJunkLicenseId,\n\t\tSessionId,\n\t\tId,\n\t\tCertificateOfInsurance,\n\t\tTerritory\n\tFROM DCCAMotorJunkLicenseStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCCAMotorJunkLicenseStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCA_StateId,\n\tCA_MotorJunkLicenseId,\n\tSessionId,\n\tId,\n\tCertificateOfInsurance,\n\tTerritory,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCAMotorJunkLicenseStage\n),\nArchDCCAMotorJunkLicenseStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCAMotorJunkLicenseStage\n\t(ExtractDate, SourceSystemId, AuditId, DCCAMotorJunkLicenseStageId, CA_StateId, CA_MotorJunkLicenseId, SessionId, Id, CertificateOfInsurance, Territory)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCCAMOTORJUNKLICENSESTAGEID, \n\tCA_STATEID, \n\tCA_MOTORJUNKLICENSEID, \n\tSESSIONID, \n\tID, \n\tCERTIFICATEOFINSURANCE, \n\tTERRITORY\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchSalesReportingRelationshipStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchSalesReportingRelationshipStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SalesReportingRelationshipStage AS (\n\tSELECT\n\t\tSalesReportingRelationshipStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAssociateID,\n\t\tWestBendAssociateID,\n\t\tReportToAssociateID,\n\t\tReportToWestBendAssociateID,\n\t\tRelationshipType,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID\n\tFROM SalesReportingRelationshipStage\n),\nLKP_ExistingArchive AS (\n\tSELECT\n\tHashKey,\n\tAssociateID,\n\tReportToAssociateID\n\tFROM (\n\t\tselect\ta.ModifiedDate as ModifiedDate,\r\n\t\t\t\ta.HashKey as HashKey,\r\n\t\t\t\ta.AssociateID as AssociateID,\r\n\t\t\t\ta.ReportToAssociateID as ReportToAssociateID\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchSalesReportingRelationshipStage a\r\n\t\tinner join (\r\n\t\t\t\t\tselect AssociateID, ReportToAssociateID, max(ModifiedDate) as ModifiedDate\r\n\t\t\t\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchSalesReportingRelationshipStage\r\n\t\t\t\t\tgroup by AssociateID, ReportToAssociateID) b\r\n\t\ton  a.AssociateID = b.AssociateID\r\n\t\tand a.ReportToAssociateID = b.ReportToAssociateID\r\n\t\tand a.ModifiedDate = b.ModifiedDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AssociateID,ReportToAssociateID ORDER BY HashKey) = 1\n),\nEXP_CheckForChange AS (\n\tSELECT\n\tSQ_SalesReportingRelationshipStage.SalesReportingRelationshipStageID,\n\tSQ_SalesReportingRelationshipStage.AgencyODSSourceSystemID,\n\tSQ_SalesReportingRelationshipStage.HashKey,\n\tSQ_SalesReportingRelationshipStage.ModifiedUserID,\n\tSQ_SalesReportingRelationshipStage.ModifiedDate,\n\tSQ_SalesReportingRelationshipStage.AssociateID,\n\tSQ_SalesReportingRelationshipStage.WestBendAssociateID,\n\tSQ_SalesReportingRelationshipStage.ReportToAssociateID,\n\tSQ_SalesReportingRelationshipStage.ReportToWestBendAssociateID,\n\tSQ_SalesReportingRelationshipStage.RelationshipType,\n\tSQ_SalesReportingRelationshipStage.ExtractDate,\n\tSQ_SalesReportingRelationshipStage.AsOfDate,\n\tSQ_SalesReportingRelationshipStage.RecordCount,\n\tSQ_SalesReportingRelationshipStage.SourceSystemID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID,\n\tLKP_ExistingArchive.HashKey AS lkp_HashKey,\n\t-- *INF*: Decode(true,\r\n\t-- HashKey = lkp_HashKey, 'IGNORE',\r\n\t-- IsNull(lkp_HashKey), 'INSERT',\r\n\t-- 'UPDATE')\n\tDecode(\n\t    true,\n\t    HashKey = lkp_HashKey, 'IGNORE',\n\t    lkp_HashKey IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag\n\tFROM SQ_SalesReportingRelationshipStage\n\tLEFT JOIN LKP_ExistingArchive\n\tON LKP_ExistingArchive.AssociateID = SQ_SalesReportingRelationshipStage.AssociateID AND LKP_ExistingArchive.ReportToAssociateID = SQ_SalesReportingRelationshipStage.ReportToAssociateID\n),\nFIL_ChangesOnly AS (\n\tSELECT\n\tSalesReportingRelationshipStageID, \n\tAgencyODSSourceSystemID, \n\tHashKey, \n\tModifiedUserID, \n\tModifiedDate, \n\tAssociateID, \n\tWestBendAssociateID, \n\tReportToAssociateID, \n\tReportToWestBendAssociateID, \n\tRelationshipType, \n\tExtractDate, \n\tAsOfDate, \n\tRecordCount, \n\tSourceSystemID, \n\tOUT_AUDIT_ID, \n\to_ChangeFlag\n\tFROM EXP_CheckForChange\n\tWHERE o_ChangeFlag = 'INSERT' OR o_ChangeFlag = 'UPDATE'\n),\nArchSalesReportingRelationshipStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchSalesReportingRelationshipStage\n\t(SalesReportingRelationshipStageID, AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AssociateID, WestBendAssociateID, ReportToAssociateID, ReportToWestBendAssociateID, RelationshipType, ExtractDate, AsOfDate, RecordCount, SourceSystemID, AuditID)\n\tSELECT \n\tSALESREPORTINGRELATIONSHIPSTAGEID, \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tASSOCIATEID, \n\tWESTBENDASSOCIATEID, \n\tREPORTTOASSOCIATEID, \n\tREPORTTOWESTBENDASSOCIATEID, \n\tRELATIONSHIPTYPE, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\tOUT_AUDIT_ID AS AUDITID\n\tFROM FIL_ChangesOnly\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

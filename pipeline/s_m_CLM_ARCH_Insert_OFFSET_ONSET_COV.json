@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_OFFSET_ONSET_COV",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_OFFSET_ONSET_COV",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_offset_onset_cov_stage AS (\n\tSELECT\n\t\toffset_onset_cov_stage_id,\n\t\ttch_claim_nbr,\n\t\toff_onset_ts,\n\t\tmajor_peril,\n\t\tcause_of_loss,\n\t\treserve_cat,\n\t\tloss_disability,\n\t\tcov_eff_date,\n\t\tunit_seq_nbr,\n\t\toff_client_id,\n\t\ton_majr_peril_seq,\n\t\toff_majr_peril_seq,\n\t\ton_sar_id,\n\t\toff_sar_id,\n\t\toff_ins_line,\n\t\toff_loc_unit_num,\n\t\toff_risk_unit_grp,\n\t\toff_rsk_unt_gr_seq,\n\t\toff_risk_unit,\n\t\toff_risk_type_ind,\n\t\toff_sub_loc_num,\n\t\toff_seq_risk_unit,\n\t\ton_ins_line,\n\t\ton_loc_unit_num,\n\t\ton_risk_unit_grp,\n\t\ton_rsk_unt_gr_seq,\n\t\ton_risk_unit,\n\t\ton_risk_type_ind,\n\t\ton_sub_loc_num,\n\t\ton_seq_risk_unit,\n\t\toff_cov_eff_date,\n\t\toff_cov_exp_date,\n\t\tcov_type_cd,\n\t\tcov_seq_nbr,\n\t\tprocess_sta_ind,\n\t\tlogical_flag,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id,\n\t\toff_coverage_form,\n\t\toff_coverage_type,\n\t\toff_risk_type,\n\t\ton_coverage_form,\n\t\ton_coverage_type,\n\t\ton_risk_type,\n\t\toff_pol_cov_id,\n\t\ton_pol_cov_id\n\tFROM offset_onset_cov_stage\n\tWHERE offset_onset_cov_stage.off_onset_ts >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_Default AS (\n\tSELECT\n\toffset_onset_cov_stage_id,\n\ttch_claim_nbr,\n\toff_onset_ts,\n\tmajor_peril,\n\tcause_of_loss,\n\treserve_cat,\n\tloss_disability,\n\tcov_eff_date,\n\tunit_seq_nbr,\n\toff_client_id,\n\ton_majr_peril_seq,\n\toff_majr_peril_seq,\n\ton_sar_id,\n\toff_sar_id,\n\toff_ins_line,\n\toff_loc_unit_num,\n\toff_risk_unit_grp,\n\toff_rsk_unt_gr_seq,\n\toff_risk_unit,\n\toff_risk_type_ind,\n\toff_sub_loc_num,\n\toff_seq_risk_unit,\n\ton_ins_line,\n\ton_loc_unit_num,\n\ton_risk_unit_grp,\n\ton_rsk_unt_gr_seq,\n\ton_risk_unit,\n\ton_risk_type_ind,\n\ton_sub_loc_num,\n\ton_seq_risk_unit,\n\toff_cov_eff_date,\n\toff_cov_exp_date,\n\tcov_type_cd,\n\tcov_seq_nbr,\n\tprocess_sta_ind,\n\tlogical_flag,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\toff_coverage_form,\n\toff_coverage_type,\n\toff_risk_type,\n\ton_coverage_form,\n\ton_coverage_type,\n\ton_risk_type,\n\toff_pol_cov_id,\n\ton_pol_cov_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AUDIT_ID_OP\n\tFROM SQ_offset_onset_cov_stage\n),\narch_offset_onset_cov_stage AS (\n\tINSERT INTO arch_offset_onset_cov_stage\n\t(offset_onset_cov_stage_id, tch_claim_nbr, off_onset_ts, major_peril, cause_of_loss, reserve_cat, loss_disability, cov_eff_date, unit_seq_nbr, off_client_id, on_majr_peril_seq, off_majr_peril_seq, on_sar_id, off_sar_id, off_ins_line, off_loc_unit_num, off_risk_unit_grp, off_rsk_unt_gr_seq, off_risk_unit, off_risk_type_ind, off_sub_loc_num, off_seq_risk_unit, on_ins_line, on_loc_unit_num, on_risk_unit_grp, on_rsk_unt_gr_seq, on_risk_unit, on_risk_type_ind, on_sub_loc_num, on_seq_risk_unit, off_cov_eff_date, off_cov_exp_date, cov_type_cd, cov_seq_nbr, process_sta_ind, logical_flag, extract_date, as_of_date, record_count, source_system_id, audit_id, off_coverage_form, off_coverage_type, off_risk_type, on_coverage_form, on_coverage_type, on_risk_type, off_pol_cov_id, on_pol_cov_id)\n\tSELECT \n\tOFFSET_ONSET_COV_STAGE_ID, \n\tTCH_CLAIM_NBR, \n\tOFF_ONSET_TS, \n\tMAJOR_PERIL, \n\tCAUSE_OF_LOSS, \n\tRESERVE_CAT, \n\tLOSS_DISABILITY, \n\tCOV_EFF_DATE, \n\tUNIT_SEQ_NBR, \n\tOFF_CLIENT_ID, \n\tON_MAJR_PERIL_SEQ, \n\tOFF_MAJR_PERIL_SEQ, \n\tON_SAR_ID, \n\tOFF_SAR_ID, \n\tOFF_INS_LINE, \n\tOFF_LOC_UNIT_NUM, \n\tOFF_RISK_UNIT_GRP, \n\tOFF_RSK_UNT_GR_SEQ, \n\tOFF_RISK_UNIT, \n\tOFF_RISK_TYPE_IND, \n\tOFF_SUB_LOC_NUM, \n\tOFF_SEQ_RISK_UNIT, \n\tON_INS_LINE, \n\tON_LOC_UNIT_NUM, \n\tON_RISK_UNIT_GRP, \n\tON_RSK_UNT_GR_SEQ, \n\tON_RISK_UNIT, \n\tON_RISK_TYPE_IND, \n\tON_SUB_LOC_NUM, \n\tON_SEQ_RISK_UNIT, \n\tOFF_COV_EFF_DATE, \n\tOFF_COV_EXP_DATE, \n\tCOV_TYPE_CD, \n\tCOV_SEQ_NBR, \n\tPROCESS_STA_IND, \n\tLOGICAL_FLAG, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\to_AUDIT_ID_OP AS AUDIT_ID, \n\tOFF_COVERAGE_FORM, \n\tOFF_COVERAGE_TYPE, \n\tOFF_RISK_TYPE, \n\tON_COVERAGE_FORM, \n\tON_COVERAGE_TYPE, \n\tON_RISK_TYPE, \n\tOFF_POL_COV_ID, \n\tON_POL_COV_ID\n\tFROM EXP_Default\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

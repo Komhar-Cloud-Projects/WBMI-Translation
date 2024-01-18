@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_WS_Process_Violations",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_WS_Process_Violations",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DriverStage AS (\n\tSELECT\n\t\tDriverStageId,\n\t\tCreatedDate,\n\t\tModifiedDate,\n\t\tFileCreationDate,\n\t\tFileIDCode,\n\t\tSenderName,\n\t\tLicenseState,\n\t\tLicenseNumber,\n\t\tLastName,\n\t\tFirstName,\n\t\tMiddleName,\n\t\tStreetAddress,\n\t\tCity,\n\t\tStateCode,\n\t\tZipCode,\n\t\tBirthDate,\n\t\tGender,\n\t\tBodyWeight,\n\t\tEyeColor,\n\t\tPolicyNumber,\n\t\tPolicyExpirationDate,\n\t\tQuoteBackPolicyNumber,\n\t\tQuoteBackAgencyNumber,\n\t\tQuoteBackLineOfBusiness,\n\t\tQuoteBackDriverId,\n\t\tQuoteBackState,\n\t\tQuoteBackUnderwriterNumber,\n\t\tQuoteBack,\n\t\tInsuranceIndicator,\n\t\tAccountNumber,\n\t\tRejectSource,\n\t\tRejectReason,\n\t\tRejectCount,\n\t\tSupProcessStatusId,\n\t\tErrorDescription,\n\t\tIncidentSequence,\n\t\tHeight,\n\t\tPreviousLicense\n\tFROM DriverStage\n\tWHERE DriverStage.SupProcessStatusId IN (SELECT SupProcessStatusId FROM DCTtoWBStaging.DBO.SupProcessStatus \r\n\tWHERE ProcessStatus = 'Request')\n),\nEXP_Violations AS (\n\tSELECT\n\tDriverStageId,\n\tCreatedDate,\n\tModifiedDate,\n\tFileCreationDate,\n\tFileIDCode,\n\tSenderName,\n\tLicenseState,\n\tLicenseNumber,\n\tLastName,\n\tFirstName,\n\tMiddleName,\n\tStreetAddress,\n\tCity,\n\tStateCode,\n\tZipCode,\n\tBirthDate,\n\tGender,\n\tBodyWeight,\n\tEyeColor,\n\tPolicyNumber,\n\tPolicyExpirationDate,\n\tQuoteBackPolicyNumber,\n\tQuoteBackAgencyNumber,\n\tQuoteBackLineOfBusiness,\n\tQuoteBackDriverId,\n\tQuoteBackState,\n\tQuoteBackUnderwriterNumber,\n\tQuoteBack,\n\tInsuranceIndicator,\n\tAccountNumber,\n\tRejectSource,\n\tRejectReason,\n\tRejectCount,\n\tSupProcessStatusId,\n\tErrorDescription,\n\tIncidentSequence,\n\tHeight,\n\tPreviousLicense,\n\t-- *INF*: SYSTIMESTAMP() || 'batchnumber' || TO_CHAR(v_batch_number)\n\tCURRENT_TIMESTAMP() || 'batchnumber' || TO_CHAR(v_batch_number) AS out_EARSBatch,\n\t-- *INF*: IIF(v_SeqNumber = 0,@{pipeline().parameters.BATCHSIZE},v_SeqNumber + 1)\n\tIFF(v_SeqNumber = 0, @{pipeline().parameters.BATCHSIZE}, v_SeqNumber + 1) AS v_SeqNumber,\n\t-- *INF*: TRUNC(v_batch_number/ @{pipeline().parameters.BATCHSIZE},0)\n\tTRUNC(v_batch_number / @{pipeline().parameters.BATCHSIZE},0) AS v_batch_number,\n\tv_batch_number AS out_BatchNumber,\n\tv_SeqNumber AS out_SeqNumber\n\tFROM SQ_DriverStage\n),\nAGGTRANS AS (\n\tSELECT\n\tout_BatchNumber,\n\tout_EARSBatch,\n\tout_SeqNumber\n\tFROM EXP_Violations\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY out_BatchNumber ORDER BY NULL) = 1\n),\nSEQ_DriverID AS (\n\tCREATE SEQUENCE SEQ_DriverID\n\tSTART = 0\n\tINCREMENT = 1;\n),\nwsc_DuckCreekFacadeService_AddEARSEntities AS (-- wsc_DuckCreekFacadeService_AddEARSEntities\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nFIL_ErrorMessage AS (\n\tSELECT\n\ttns2_ErrorMessage AS ServiceErrorMessage\n\tFROM wsc_DuckCreekFacadeService_AddEARSEntities\n\tWHERE NOT ISNULL(ServiceErrorMessage)\n),\nServiceError AS (\n\tINSERT INTO ServiceError\n\t(ErrorMessage)\n\tSELECT \n\tServiceErrorMessage AS ERRORMESSAGE\n\tFROM FIL_ErrorMessage\n),\nEXP_RegisterWorkFlowError AS (\n\tSELECT\n\tServiceErrorMessage,\n\t-- *INF*: ERROR(ServiceErrorMessage)\n\tERROR(ServiceErrorMessage) AS WorkFlowError\n\tFROM FIL_ErrorMessage\n),\nServiceError_Not_Used AS (\n\tINSERT INTO ServiceError\n\t(ErrorMessage)\n\tSELECT \n\tServiceErrorMessage AS ERRORMESSAGE\n\tFROM EXP_RegisterWorkFlowError\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "BATCHSIZE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

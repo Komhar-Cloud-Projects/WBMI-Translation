@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBGLCoverageWB516GLStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBGLCoverageWB516GLStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_GL_CoverageWB516GL AS (\n\tWITH cte_WBGLCoverageWB516GL(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CoverageId, \r\n\tX.WB_GL_CoverageWB516GLId, \r\n\tX.SessionId, \r\n\tX.Deductible, \r\n\tX.RetroactiveDate, \r\n\tX.NumberOfEmployees, \r\n\tX.BillingLOB, \r\n\tX.CommissionPlanId, \r\n\tX.IsBillingSubline, \r\n\tX.ParentBillingLOB, \r\n\tX.PurePremium, \r\n\tX.TransactionCommissionType, \r\n\tX.TransactionCommissionValue, \r\n\tX.TransactionFinalCommissionValue \r\n\tFROM\r\n\tWB_GL_CoverageWB516GL X\r\n\tinner join\r\n\tcte_WBGLCoverageWB516GL Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tCoverageId,\n\tWB_GL_CoverageWB516GLId,\n\tSessionId,\n\tDeductible,\n\tRetroactiveDate,\n\tNumberOfEmployees,\n\tBillingLOB,\n\tCommissionPlanId,\n\tIsBillingSubline,\n\tParentBillingLOB,\n\tPurePremium,\n\tTransactionCommissionType,\n\tTransactionCommissionValue,\n\tTransactionFinalCommissionValue\n\tFROM SQ_WB_GL_CoverageWB516GL\n),\nWBGLCoverageWB516GLStage AS (\n\tTRUNCATE TABLE WBGLCoverageWB516GLStage;\n\tINSERT INTO WBGLCoverageWB516GLStage\n\t(ExtractDate, SourceSystemId, CoverageId, WB_GL_CoverageWB516GLId, SessionId, Deductible, RetroactiveDate, NumberOfEmployees, BillingLOB, CommissionPlanId, IsBillingSubline, ParentBillingLOB, PurePremium, TransactionCommissionType, TransactionCommissionValue, TransactionFinalCommissionValue)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCOVERAGEID, \n\tWB_GL_COVERAGEWB516GLID, \n\tSESSIONID, \n\tDEDUCTIBLE, \n\tRETROACTIVEDATE, \n\tNUMBEROFEMPLOYEES, \n\tBILLINGLOB, \n\tCOMMISSIONPLANID, \n\tISBILLINGSUBLINE, \n\tPARENTBILLINGLOB, \n\tPUREPREMIUM, \n\tTRANSACTIONCOMMISSIONTYPE, \n\tTRANSACTIONCOMMISSIONVALUE, \n\tTRANSACTIONFINALCOMMISSIONVALUE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

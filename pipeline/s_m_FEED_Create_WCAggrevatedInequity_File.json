@@ -1,0 +1,55 @@
+{
+    "name": "s_m_FEED_Create_WCAggrevatedInequity_File",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_FEED_Create_WCAggrevatedInequity_File",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WCAggravatedInequityExtract AS (\n\tSELECT WCAggravatedInequityExtract.PolicyKey, WCAggravatedInequityExtract.PolicyEffectiveDate, \r\n\tWCAggravatedInequityExtract.ClaimNumber, WCAggravatedInequityExtract.PaidIndemnityAmount, \r\n\tWCAggravatedInequityExtract.PaidMedicalAmount, WCAggravatedInequityExtract.ClaimantNumber,\r\n\t WCAggravatedInequityExtract.ClaimantFullName, WCAggravatedInequityExtract.ClaimLossDate,\r\n\t WCAggravatedInequityExtract.ClaimantCloseDate, WCAggravatedInequityExtract.Qualify, \r\n\t WCAggravatedInequityExtract.Comments, WCAggravatedInequityExtract.MonthsSinceUnitStat, \r\n\t WCAggravatedInequityExtract.CustomerNumber, WCAggravatedInequityExtract.RatingState \r\n\tFROM @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WCAggravatedInequityExtract\r\n\twhere WCAggravatedInequityExtract.AuditId=@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\r\n\tORDER BY  WCAggravatedInequityExtract.PolicyEffectiveDate\n),\nEXP_Filename AS (\n\tSELECT\n\tClaimantFullName,\n\tClaimantNumber,\n\tPolicyKey,\n\tPolicyEffectiveDate,\n\tClaimNumber,\n\tClaimLossDate,\n\tClaimantCloseDate,\n\tPaidIndemnityAmount,\n\tPaidMedicalAmount,\n\tCustomerNumber,\n\tQualify,\n\tComments,\n\tMonthsSinceUnitStat,\n\t-- *INF*: 'WC_Aggravated_Inequity_Data_File_'||RatingState||'_'||TO_CHAR(ClaimantCloseDate,'YYYYMM')||'.CSV'\r\n\t-- --'WC_Aggravated_Inequity_Data_File_'||RatingState||'_'||TO_CHAR(ADD_TO_DATE(SYSDATE ,'MONTH',-1),'YYYYMM')||'.CSV'\n\t'WC_Aggravated_Inequity_Data_File_' || RatingState || '_' || TO_CHAR(ClaimantCloseDate, 'YYYYMM') || '.CSV' AS v_output_file_name,\n\tv_output_file_name AS Output_file_name,\n\tRatingState\n\tFROM SQ_WCAggravatedInequityExtract\n),\nRTR_ByState AS (\n\tSELECT\n\tClaimantFullName,\n\tClaimantNumber,\n\tPolicyKey,\n\tPolicyEffectiveDate,\n\tClaimNumber,\n\tClaimLossDate,\n\tClaimantCloseDate,\n\tPaidIndemnityAmount,\n\tPaidMedicalAmount,\n\tCustomerNumber,\n\tQualify,\n\tComments,\n\tOutput_file_name,\n\tRatingState\n\tFROM EXP_Filename\n),\nRTR_ByState_WI AS (SELECT * FROM RTR_ByState WHERE RatingState='WI'),\nRTR_ByState_MN AS (SELECT * FROM RTR_ByState WHERE RatingState='MN'),\nRTR_ByState_MI AS (SELECT * FROM RTR_ByState WHERE RatingState='MI'),\nWC_Aggrevated_Inequity_MI AS (\n\tINSERT INTO WC_Aggrevated_Inequity\n\t(FileName1, Policy_key, Date_Of_Loss, Claim_Number, Claimant_Number, Claimant_Full_name, Policy_Effective_Date, Claimant_Close_Date, Paid_Indemnity, Paid_Medical, CustomerNumber, Qualify, Comments, RatingState)\n\tSELECT \n\tOutput_file_name AS FILENAME1, \n\tPolicyKey AS POLICY_KEY, \n\tClaimLossDate AS DATE_OF_LOSS, \n\tClaimNumber AS CLAIM_NUMBER, \n\tClaimantNumber AS CLAIMANT_NUMBER, \n\tClaimantFullName AS CLAIMANT_FULL_NAME, \n\tPolicyEffectiveDate AS POLICY_EFFECTIVE_DATE, \n\tClaimantCloseDate AS CLAIMANT_CLOSE_DATE, \n\tPaidIndemnityAmount AS PAID_INDEMNITY, \n\tPaidMedicalAmount AS PAID_MEDICAL, \n\tCUSTOMERNUMBER, \n\tQUALIFY, \n\tCOMMENTS, \n\tRATINGSTATE\n\tFROM RTR_ByState_MI\n),\nWC_Aggrevated_Inequity_WI AS (\n\tINSERT INTO WC_Aggrevated_Inequity\n\t(FileName1, Policy_key, Date_Of_Loss, Claim_Number, Claimant_Number, Claimant_Full_name, Policy_Effective_Date, Claimant_Close_Date, Paid_Indemnity, Paid_Medical, CustomerNumber, Qualify, Comments, RatingState)\n\tSELECT \n\tOutput_file_name AS FILENAME1, \n\tPolicyKey AS POLICY_KEY, \n\tClaimLossDate AS DATE_OF_LOSS, \n\tClaimNumber AS CLAIM_NUMBER, \n\tClaimantNumber AS CLAIMANT_NUMBER, \n\tClaimantFullName AS CLAIMANT_FULL_NAME, \n\tPolicyEffectiveDate AS POLICY_EFFECTIVE_DATE, \n\tClaimantCloseDate AS CLAIMANT_CLOSE_DATE, \n\tPaidIndemnityAmount AS PAID_INDEMNITY, \n\tPaidMedicalAmount AS PAID_MEDICAL, \n\tCUSTOMERNUMBER, \n\tQUALIFY, \n\tCOMMENTS, \n\tRATINGSTATE\n\tFROM RTR_ByState_WI\n),\nWC_Aggrevated_Inequity_MN AS (\n\tINSERT INTO WC_Aggrevated_Inequity\n\t(FileName1, Policy_key, Date_Of_Loss, Claim_Number, Claimant_Number, Claimant_Full_name, Policy_Effective_Date, Claimant_Close_Date, Paid_Indemnity, Paid_Medical, CustomerNumber, Qualify, Comments, RatingState)\n\tSELECT \n\tOutput_file_name AS FILENAME1, \n\tPolicyKey AS POLICY_KEY, \n\tClaimLossDate AS DATE_OF_LOSS, \n\tClaimNumber AS CLAIM_NUMBER, \n\tClaimantNumber AS CLAIMANT_NUMBER, \n\tClaimantFullName AS CLAIMANT_FULL_NAME, \n\tPolicyEffectiveDate AS POLICY_EFFECTIVE_DATE, \n\tClaimantCloseDate AS CLAIMANT_CLOSE_DATE, \n\tPaidIndemnityAmount AS PAID_INDEMNITY, \n\tPaidMedicalAmount AS PAID_MEDICAL, \n\tCUSTOMERNUMBER, \n\tQUALIFY, \n\tCOMMENTS, \n\tRATINGSTATE\n\tFROM RTR_ByState_MN\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

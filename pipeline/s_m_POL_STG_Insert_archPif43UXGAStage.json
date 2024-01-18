@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_archPif43UXGAStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_archPif43UXGAStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif43UXGAStage AS (\n\tSELECT\n\t\tPif43UXGAStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tPifSymbol,\n\t\tPifPolicyNumber,\n\t\tPifModule,\n\t\tPMDUXA1SegmentId,\n\t\tPMDUXA1SegmentStatus,\n\t\tPMDUXA1YearTransaction,\n\t\tPMDUXA1MonthTransaction,\n\t\tPMDUXA1DayTransaction,\n\t\tPMDUXA1SegmentLevelCode,\n\t\tPMDUXA1SegmentPartCode,\n\t\tPMDUXA1SubPartCode,\n\t\tPMDUXA1InsuranceLine,\n\t\tPMDUXA1Location,\n\t\tPMDUXA1SubLocationNumber,\n\t\tPMDUXA1RiskUnitGroup,\n\t\tPMDUXA1SeqRiskUnitGroup,\n\t\tPMDUXA1DpdTypeNumb,\n\t\tPMDUXA1Sequence,\n\t\tPMDUXA1YearItemEffective,\n\t\tPMDUXA1MonthItemEffective,\n\t\tPMDUXA1DayItemEffective,\n\t\tPMDUXA1AddInterestType,\n\t\tPMDUXA1AddInterestSeq,\n\t\tPMDUXA1YearProcess,\n\t\tPMDUXA1MonthProcess,\n\t\tPMDUXA1DayProcess,\n\t\tPMDUXA1YearExpiration,\n\t\tPMDUXA1MonthExpiration,\n\t\tPMDUXA1DayExpiration,\n\t\tPMDUXA1DealerSw,\n\t\tPMDUXA1ClassCode,\n\t\tPMDUXA1Tort,\n\t\tPMDUXA1RegNoPersons,\n\t\tPMDUXA1RegRatingUnits,\n\t\tPMDUXA1RegMgind,\n\t\tPMDUXA1OtherNoPersons,\n\t\tPMDUXA1OtherRatingUnits,\n\t\tPMDUXA1OtherMgind,\n\t\tPMDUXA1Und25NoPersons,\n\t\tPMDUXA1Und25RatingUnits,\n\t\tPMDUXA1UndMgind,\n\t\tPMDUXA1Ov25NoPersons,\n\t\tPMDUXA1Ov25RatingUnits,\n\t\tPMDUXA1OvMgind,\n\t\tPMDUXA1EmpRegOperRu,\n\t\tPMDUXA1EmpOtherRu,\n\t\tPMDUXA1NempUnd25Ru,\n\t\tPMDUXA1NempOver25Ru,\n\t\tPMDUXA1TotalRatingUnits,\n\t\tPMDUXA1NdPayroll,\n\t\tPMDUXA1PmscFutureUse,\n\t\tPMDUXA1DecChangeFlag,\n\t\tPMDUXA1CompSpInd,\n\t\tPMDUXA1CollInd,\n\t\tPMDUXA1CustFutureUse,\n\t\tPMDUXA1Yr2000CustUse\n\tFROM Pif43UXGAStage\n),\nEXP_Pif43UXGAStage AS (\n\tSELECT\n\tPif43UXGAStageId,\n\tExtractDate,\n\tSourceSystemid,\n\tPifSymbol,\n\tPifPolicyNumber,\n\tPifModule,\n\tPMDUXA1SegmentId,\n\tPMDUXA1SegmentStatus,\n\tPMDUXA1YearTransaction,\n\tPMDUXA1MonthTransaction,\n\tPMDUXA1DayTransaction,\n\tPMDUXA1SegmentLevelCode,\n\tPMDUXA1SegmentPartCode,\n\tPMDUXA1SubPartCode,\n\tPMDUXA1InsuranceLine,\n\tPMDUXA1Location,\n\tPMDUXA1SubLocationNumber,\n\tPMDUXA1RiskUnitGroup,\n\tPMDUXA1SeqRiskUnitGroup,\n\tPMDUXA1DpdTypeNumb,\n\tPMDUXA1Sequence,\n\tPMDUXA1YearItemEffective,\n\tPMDUXA1MonthItemEffective,\n\tPMDUXA1DayItemEffective,\n\tPMDUXA1AddInterestType,\n\tPMDUXA1AddInterestSeq,\n\tPMDUXA1YearProcess,\n\tPMDUXA1MonthProcess,\n\tPMDUXA1DayProcess,\n\tPMDUXA1YearExpiration,\n\tPMDUXA1MonthExpiration,\n\tPMDUXA1DayExpiration,\n\tPMDUXA1DealerSw,\n\tPMDUXA1ClassCode,\n\tPMDUXA1Tort,\n\tPMDUXA1RegNoPersons,\n\tPMDUXA1RegRatingUnits,\n\tPMDUXA1RegMgind,\n\tPMDUXA1OtherNoPersons,\n\tPMDUXA1OtherRatingUnits,\n\tPMDUXA1OtherMgind,\n\tPMDUXA1Und25NoPersons,\n\tPMDUXA1Und25RatingUnits,\n\tPMDUXA1UndMgind,\n\tPMDUXA1Ov25NoPersons,\n\tPMDUXA1Ov25RatingUnits,\n\tPMDUXA1OvMgind,\n\tPMDUXA1EmpRegOperRu,\n\tPMDUXA1EmpOtherRu,\n\tPMDUXA1NempUnd25Ru,\n\tPMDUXA1NempOver25Ru,\n\tPMDUXA1TotalRatingUnits,\n\tPMDUXA1NdPayroll,\n\tPMDUXA1PmscFutureUse,\n\tPMDUXA1DecChangeFlag,\n\tPMDUXA1CompSpInd,\n\tPMDUXA1CollInd,\n\tPMDUXA1CustFutureUse,\n\tPMDUXA1Yr2000CustUse,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_audit_id\n\tFROM SQ_Pif43UXGAStage\n),\nArchPif43UXGAStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchPif43UXGAStage\n\t(ExtractDate, SourceSystemid, AuditId, PifSymbol, PifPolicyNumber, PifModule, PMDUXA1SegmentId, PMDUXA1SegmentStatus, PMDUXA1YearTransaction, PMDUXA1MonthTransaction, PMDUXA1DayTransaction, PMDUXA1SegmentLevelCode, PMDUXA1SegmentPartCode, PMDUXA1SubPartCode, PMDUXA1InsuranceLine, PMDUXA1Location, PMDUXA1SubLocationNumber, PMDUXA1RiskUnitGroup, PMDUXA1SeqRiskUnitGroup, PMDUXA1DpdTypeNumb, PMDUXA1Sequence, PMDUXA1YearItemEffective, PMDUXA1MonthItemEffective, PMDUXA1DayItemEffective, PMDUXA1AddInterestType, PMDUXA1AddInterestSeq, PMDUXA1YearProcess, PMDUXA1MonthProcess, PMDUXA1DayProcess, PMDUXA1YearExpiration, PMDUXA1MonthExpiration, PMDUXA1DayExpiration, PMDUXA1DealerSw, PMDUXA1ClassCode, PMDUXA1Tort, PMDUXA1RegNoPersons, PMDUXA1RegRatingUnits, PMDUXA1RegMgind, PMDUXA1OtherNoPersons, PMDUXA1OtherRatingUnits, PMDUXA1OtherMgind, PMDUXA1Und25NoPersons, PMDUXA1Und25RatingUnits, PMDUXA1UndMgind, PMDUXA1Ov25NoPersons, PMDUXA1Ov25RatingUnits, PMDUXA1OvMgind, PMDUXA1EmpRegOperRu, PMDUXA1EmpOtherRu, PMDUXA1NempUnd25Ru, PMDUXA1NempOver25Ru, PMDUXA1TotalRatingUnits, PMDUXA1NdPayroll, PMDUXA1PmscFutureUse, PMDUXA1DecChangeFlag, PMDUXA1CompSpInd, PMDUXA1CollInd, PMDUXA1CustFutureUse, PMDUXA1Yr2000CustUse)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_audit_id AS AUDITID, \n\tPIFSYMBOL, \n\tPIFPOLICYNUMBER, \n\tPIFMODULE, \n\tPMDUXA1SEGMENTID, \n\tPMDUXA1SEGMENTSTATUS, \n\tPMDUXA1YEARTRANSACTION, \n\tPMDUXA1MONTHTRANSACTION, \n\tPMDUXA1DAYTRANSACTION, \n\tPMDUXA1SEGMENTLEVELCODE, \n\tPMDUXA1SEGMENTPARTCODE, \n\tPMDUXA1SUBPARTCODE, \n\tPMDUXA1INSURANCELINE, \n\tPMDUXA1LOCATION, \n\tPMDUXA1SUBLOCATIONNUMBER, \n\tPMDUXA1RISKUNITGROUP, \n\tPMDUXA1SEQRISKUNITGROUP, \n\tPMDUXA1DPDTYPENUMB, \n\tPMDUXA1SEQUENCE, \n\tPMDUXA1YEARITEMEFFECTIVE, \n\tPMDUXA1MONTHITEMEFFECTIVE, \n\tPMDUXA1DAYITEMEFFECTIVE, \n\tPMDUXA1ADDINTERESTTYPE, \n\tPMDUXA1ADDINTERESTSEQ, \n\tPMDUXA1YEARPROCESS, \n\tPMDUXA1MONTHPROCESS, \n\tPMDUXA1DAYPROCESS, \n\tPMDUXA1YEAREXPIRATION, \n\tPMDUXA1MONTHEXPIRATION, \n\tPMDUXA1DAYEXPIRATION, \n\tPMDUXA1DEALERSW, \n\tPMDUXA1CLASSCODE, \n\tPMDUXA1TORT, \n\tPMDUXA1REGNOPERSONS, \n\tPMDUXA1REGRATINGUNITS, \n\tPMDUXA1REGMGIND, \n\tPMDUXA1OTHERNOPERSONS, \n\tPMDUXA1OTHERRATINGUNITS, \n\tPMDUXA1OTHERMGIND, \n\tPMDUXA1UND25NOPERSONS, \n\tPMDUXA1UND25RATINGUNITS, \n\tPMDUXA1UNDMGIND, \n\tPMDUXA1OV25NOPERSONS, \n\tPMDUXA1OV25RATINGUNITS, \n\tPMDUXA1OVMGIND, \n\tPMDUXA1EMPREGOPERRU, \n\tPMDUXA1EMPOTHERRU, \n\tPMDUXA1NEMPUND25RU, \n\tPMDUXA1NEMPOVER25RU, \n\tPMDUXA1TOTALRATINGUNITS, \n\tPMDUXA1NDPAYROLL, \n\tPMDUXA1PMSCFUTUREUSE, \n\tPMDUXA1DECCHANGEFLAG, \n\tPMDUXA1COMPSPIND, \n\tPMDUXA1COLLIND, \n\tPMDUXA1CUSTFUTUREUSE, \n\tPMDUXA1YR2000CUSTUSE\n\tFROM EXP_Pif43UXGAStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

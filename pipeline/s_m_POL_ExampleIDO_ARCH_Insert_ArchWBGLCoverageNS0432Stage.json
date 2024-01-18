@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBGLCoverageNS0432Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBGLCoverageNS0432S_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBGLCoverageNS0432Stage AS (\n\tSELECT\n\t\tWBGLCoverageNS0432StageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tCoverageId,\n\t\tWB_GL_CoverageNS0432Id,\n\t\tSessionId,\n\t\tBodilyInjuryAndPropertyDamageLimitedCoverage,\n\t\tPersonalAndAdvertisingInjuryLimitedCoverage\n\tFROM WBGLCoverageNS0432Stage\n),\nEXP_MetaData AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tWBGLCoverageNS0432StageId,\n\tExtractDate,\n\tSourceSystemid,\n\tCoverageId,\n\tWB_GL_CoverageNS0432Id,\n\tSessionId,\n\tBodilyInjuryAndPropertyDamageLimitedCoverage,\n\tPersonalAndAdvertisingInjuryLimitedCoverage\n\tFROM SQ_WBGLCoverageNS0432Stage\n),\nArchWBGLCoverageNS0432Stage AS (\n\tINSERT INTO ArchWBGLCoverageNS0432Stage\n\t(ExtractDate, SourceSystemId, AuditId, WBGLCoverageNS0432StageId, CoverageId, WB_GL_CoverageNS0432Id, SessionId, BodilyInjuryAndPropertyDamageLimitedCoverage, PersonalAndAdvertisingInjuryLimitedCoverage)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemid AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBGLCOVERAGENS0432STAGEID, \n\tCOVERAGEID, \n\tWB_GL_COVERAGENS0432ID, \n\tSESSIONID, \n\tBODILYINJURYANDPROPERTYDAMAGELIMITEDCOVERAGE, \n\tPERSONALANDADVERTISINGINJURYLIMITEDCOVERAGE\n\tFROM EXP_MetaData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

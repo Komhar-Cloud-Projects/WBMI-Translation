@@ -22,12 +22,10 @@ EXP_Generate_Log AS (
 	SQLError,
 	Query_output AS SQL_Query_output,
 	-- *INF*: TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS')||' SQL Statement: '||CHR(10)||SQL_Query_output||CHR(10)||DECODE(TRUE,ISNULL(SQLError),'Command(s) completed successfully. ','SQLError: '||SQLError)
-	TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
-	) || ' SQL Statement: ' || CHR(10
-	) || SQL_Query_output || CHR(10
-	) || DECODE(TRUE,
-		SQLError IS NULL, 'Command(s) completed successfully. ',
-		'SQLError: ' || SQLError
+	TO_CHAR(CURRENT_TIMESTAMP, 'MM/DD/YYYY HH24:MI:SS') || ' SQL Statement: ' || CHR(10) || SQL_Query_output || CHR(10) || DECODE(
+	    TRUE,
+	    SQLError IS NULL, 'Command(s) completed successfully. ',
+	    'SQLError: ' || SQLError
 	) AS Result
 	FROM SQL_Enable_Indexes
 ),

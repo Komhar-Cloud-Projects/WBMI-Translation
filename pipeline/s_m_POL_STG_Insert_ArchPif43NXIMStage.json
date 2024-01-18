@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchPif43NXIMStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchPif43NXIMStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif43NXIMStage AS (\n\tSELECT\n\t\tPif43NXIMStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tPifSymbol,\n\t\tPifPolicyNumber,\n\t\tPifModule,\n\t\tPMDNXI1SegmentId,\n\t\tPMDNXI1SegmentStatus,\n\t\tPMDNXI1YearTransaction,\n\t\tPMDNXI1MonthTransaction,\n\t\tPMDNXI1DayTransaction,\n\t\tPMDNXI1SegmentLevelCode,\n\t\tPMDNXI1SegmentPartCode,\n\t\tPMDNXI1SubPartCode,\n\t\tPMDNXI1InsuranceLine,\n\t\tPMDNXI1LocationNumber,\n\t\tPMDNXI1SubLocationNumber,\n\t\tPMDNXI1YearItemEffective,\n\t\tPMDNXI1MonthItemEffective,\n\t\tPMDNXI1DayItemEffective,\n\t\tPMDNXI1VariableKey,\n\t\tPMDNXI1YearProcess,\n\t\tPMDNXI1MonthProcess,\n\t\tPMDNXI1DayProcess,\n\t\tPMDNXI1RatingState,\n\t\tPMDNXI1TerrCode,\n\t\tPMDNXI1ClassDescSource,\n\t\tPMDNXI1BldgCspClassCode,\n\t\tPMDNXI1RatePlan,\n\t\tPMDNXI1ContCspClassCode,\n\t\tPMDNXI1CspConstrCod,\n\t\tPMDNXI1ProtectionClassPart1,\n\t\tPMDNXI1ProtectionClassPart2,\n\t\tPMDNXI1GrpiiEcSymbol,\n\t\tPMDNXI1GrpiiNumPrefixX,\n\t\tPMDNXI1GrpiSpecificRate,\n\t\tPMDNXI1GrpiiSpecificRate,\n\t\tPMDNXI1ArReportPeriod,\n\t\tPMDNXI1ArAdjPeriod,\n\t\tPMDNXI1GenlClsRtGrp,\n\t\tPMDNXI1GrpiCode,\n\t\tPMDNXI1Zone,\n\t\tPMDNXI1ZoneArea,\n\t\tPMDNXI1OccCls,\n\t\tPMDNXI1OccSym,\n\t\tPMDNXI1GrpiiType,\n\t\tPMDNXI1GrpiiCode,\n\t\tPMDNXI1ClassDescription,\n\t\tPMDNXI1MassDistrict,\n\t\tPMDNXI1MassTenReloExp,\n\t\tPMDNXI1DecChangeFlag,\n\t\tPMDNXI1FartsBreakage,\n\t\tPMDNXI1TransRadius,\n\t\tPMDNXI1BusinessClass,\n\t\tPMDNXI1TransGroupN,\n\t\tPMDNXI1EdpBackup,\n\t\tPMDNXI1EdpAddlFact,\n\t\tPMDNXI1TransInd,\n\t\tPMDNXI1EdpEqInd,\n\t\tPMDNXI1PmsFutureUse,\n\t\tPMDNXI1MinimumPremium,\n\t\tPMDNXI1ReportingRate,\n\t\tPMDNXI1EdpOtlSw,\n\t\tPMDNXI1CustomerUse,\n\t\tPMDNXI1Yr2000CustUse\n\tFROM Pif43NXIMStage\n),\nEXP_Pif43NXIMStage AS (\n\tSELECT\n\tPif43NXIMStageId,\n\tExtractDate,\n\tSourceSystemid,\n\tPifSymbol,\n\tPifPolicyNumber,\n\tPifModule,\n\tPMDNXI1SegmentId,\n\tPMDNXI1SegmentStatus,\n\tPMDNXI1YearTransaction,\n\tPMDNXI1MonthTransaction,\n\tPMDNXI1DayTransaction,\n\tPMDNXI1SegmentLevelCode,\n\tPMDNXI1SegmentPartCode,\n\tPMDNXI1SubPartCode,\n\tPMDNXI1InsuranceLine,\n\tPMDNXI1LocationNumber,\n\tPMDNXI1SubLocationNumber,\n\tPMDNXI1YearItemEffective,\n\tPMDNXI1MonthItemEffective,\n\tPMDNXI1DayItemEffective,\n\tPMDNXI1VariableKey,\n\tPMDNXI1YearProcess,\n\tPMDNXI1MonthProcess,\n\tPMDNXI1DayProcess,\n\tPMDNXI1RatingState,\n\tPMDNXI1TerrCode,\n\tPMDNXI1ClassDescSource,\n\tPMDNXI1BldgCspClassCode,\n\tPMDNXI1RatePlan,\n\tPMDNXI1ContCspClassCode,\n\tPMDNXI1CspConstrCod,\n\tPMDNXI1ProtectionClassPart1,\n\tPMDNXI1ProtectionClassPart2,\n\tPMDNXI1GrpiiEcSymbol,\n\tPMDNXI1GrpiiNumPrefixX,\n\tPMDNXI1GrpiSpecificRate,\n\tPMDNXI1GrpiiSpecificRate,\n\tPMDNXI1ArReportPeriod,\n\tPMDNXI1ArAdjPeriod,\n\tPMDNXI1GenlClsRtGrp,\n\tPMDNXI1GrpiCode,\n\tPMDNXI1Zone,\n\tPMDNXI1ZoneArea,\n\tPMDNXI1OccCls,\n\tPMDNXI1OccSym,\n\tPMDNXI1GrpiiType,\n\tPMDNXI1GrpiiCode,\n\tPMDNXI1ClassDescription,\n\tPMDNXI1MassDistrict,\n\tPMDNXI1MassTenReloExp,\n\tPMDNXI1DecChangeFlag,\n\tPMDNXI1FartsBreakage,\n\tPMDNXI1TransRadius,\n\tPMDNXI1BusinessClass,\n\tPMDNXI1TransGroupN,\n\tPMDNXI1EdpBackup,\n\tPMDNXI1EdpAddlFact,\n\tPMDNXI1TransInd,\n\tPMDNXI1EdpEqInd,\n\tPMDNXI1PmsFutureUse,\n\tPMDNXI1MinimumPremium,\n\tPMDNXI1ReportingRate,\n\tPMDNXI1EdpOtlSw,\n\tPMDNXI1CustomerUse,\n\tPMDNXI1Yr2000CustUse,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_audit_id\n\tFROM SQ_Pif43NXIMStage\n),\nArchPif43NXIMStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchPif43NXIMStage\n\t(ExtractDate, SourceSystemid, AuditId, PifSymbol, PifPolicyNumber, PifModule, PMDNXI1SegmentId, PMDNXI1SegmentStatus, PMDNXI1YearTransaction, PMDNXI1MonthTransaction, PMDNXI1DayTransaction, PMDNXI1SegmentLevelCode, PMDNXI1SegmentPartCode, PMDNXI1SubPartCode, PMDNXI1InsuranceLine, PMDNXI1LocationNumber, PMDNXI1SubLocationNumber, PMDNXI1YearItemEffective, PMDNXI1MonthItemEffective, PMDNXI1DayItemEffective, PMDNXI1VariableKey, PMDNXI1YearProcess, PMDNXI1MonthProcess, PMDNXI1DayProcess, PMDNXI1RatingState, PMDNXI1TerrCode, PMDNXI1ClassDescSource, PMDNXI1BldgCspClassCode, PMDNXI1RatePlan, PMDNXI1ContCspClassCode, PMDNXI1CspConstrCod, PMDNXI1ProtectionClassPart1, PMDNXI1ProtectionClassPart2, PMDNXI1GrpiiEcSymbol, PMDNXI1GrpiiNumPrefixX, PMDNXI1GrpiSpecificRate, PMDNXI1GrpiiSpecificRate, PMDNXI1ArReportPeriod, PMDNXI1ArAdjPeriod, PMDNXI1GenlClsRtGrp, PMDNXI1GrpiCode, PMDNXI1Zone, PMDNXI1ZoneArea, PMDNXI1OccCls, PMDNXI1OccSym, PMDNXI1GrpiiType, PMDNXI1GrpiiCode, PMDNXI1ClassDescription, PMDNXI1MassDistrict, PMDNXI1MassTenReloExp, PMDNXI1DecChangeFlag, PMDNXI1FartsBreakage, PMDNXI1TransRadius, PMDNXI1BusinessClass, PMDNXI1TransGroupN, PMDNXI1EdpBackup, PMDNXI1EdpAddlFact, PMDNXI1TransInd, PMDNXI1EdpEqInd, PMDNXI1PmsFutureUse, PMDNXI1MinimumPremium, PMDNXI1ReportingRate, PMDNXI1EdpOtlSw, PMDNXI1CustomerUse, PMDNXI1Yr2000CustUse)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_audit_id AS AUDITID, \n\tPIFSYMBOL, \n\tPIFPOLICYNUMBER, \n\tPIFMODULE, \n\tPMDNXI1SEGMENTID, \n\tPMDNXI1SEGMENTSTATUS, \n\tPMDNXI1YEARTRANSACTION, \n\tPMDNXI1MONTHTRANSACTION, \n\tPMDNXI1DAYTRANSACTION, \n\tPMDNXI1SEGMENTLEVELCODE, \n\tPMDNXI1SEGMENTPARTCODE, \n\tPMDNXI1SUBPARTCODE, \n\tPMDNXI1INSURANCELINE, \n\tPMDNXI1LOCATIONNUMBER, \n\tPMDNXI1SUBLOCATIONNUMBER, \n\tPMDNXI1YEARITEMEFFECTIVE, \n\tPMDNXI1MONTHITEMEFFECTIVE, \n\tPMDNXI1DAYITEMEFFECTIVE, \n\tPMDNXI1VARIABLEKEY, \n\tPMDNXI1YEARPROCESS, \n\tPMDNXI1MONTHPROCESS, \n\tPMDNXI1DAYPROCESS, \n\tPMDNXI1RATINGSTATE, \n\tPMDNXI1TERRCODE, \n\tPMDNXI1CLASSDESCSOURCE, \n\tPMDNXI1BLDGCSPCLASSCODE, \n\tPMDNXI1RATEPLAN, \n\tPMDNXI1CONTCSPCLASSCODE, \n\tPMDNXI1CSPCONSTRCOD, \n\tPMDNXI1PROTECTIONCLASSPART1, \n\tPMDNXI1PROTECTIONCLASSPART2, \n\tPMDNXI1GRPIIECSYMBOL, \n\tPMDNXI1GRPIINUMPREFIXX, \n\tPMDNXI1GRPISPECIFICRATE, \n\tPMDNXI1GRPIISPECIFICRATE, \n\tPMDNXI1ARREPORTPERIOD, \n\tPMDNXI1ARADJPERIOD, \n\tPMDNXI1GENLCLSRTGRP, \n\tPMDNXI1GRPICODE, \n\tPMDNXI1ZONE, \n\tPMDNXI1ZONEAREA, \n\tPMDNXI1OCCCLS, \n\tPMDNXI1OCCSYM, \n\tPMDNXI1GRPIITYPE, \n\tPMDNXI1GRPIICODE, \n\tPMDNXI1CLASSDESCRIPTION, \n\tPMDNXI1MASSDISTRICT, \n\tPMDNXI1MASSTENRELOEXP, \n\tPMDNXI1DECCHANGEFLAG, \n\tPMDNXI1FARTSBREAKAGE, \n\tPMDNXI1TRANSRADIUS, \n\tPMDNXI1BUSINESSCLASS, \n\tPMDNXI1TRANSGROUPN, \n\tPMDNXI1EDPBACKUP, \n\tPMDNXI1EDPADDLFACT, \n\tPMDNXI1TRANSIND, \n\tPMDNXI1EDPEQIND, \n\tPMDNXI1PMSFUTUREUSE, \n\tPMDNXI1MINIMUMPREMIUM, \n\tPMDNXI1REPORTINGRATE, \n\tPMDNXI1EDPOTLSW, \n\tPMDNXI1CUSTOMERUSE, \n\tPMDNXI1YR2000CUSTUSE\n\tFROM EXP_Pif43NXIMStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

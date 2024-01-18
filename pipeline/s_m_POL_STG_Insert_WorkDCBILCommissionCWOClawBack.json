@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_WorkDCBILCommissionCWOClawBack",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_WorkDCBILCommissionCWOClawBack",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBILCommissionAuthorizationStage AS (\n\tselect pt.PolicyReference, pt.PolicyTermEffectiveDate,pt.PolicyTermExpirationDate, ca.AuthorizationDate,\r\n\tca.CommissionPercent, SUM(ca.TierAmount) as TierAmount,\r\n\t\tSUM(ca.AuthorizedAmount) as AuthorizedAmount\r\n\tfrom DCBILPolicyTermStage pt    \r\n\tinner join DCBILCommissionAuthorizationStage ca      \r\n\ton pt.PolicyTermId = ca.PolicyTermId     \r\n\twhere \r\n\tca.Activity in ('WriteOff','WriteOffReversal') \r\n\t--and exists(select 1 from WorkControlKey where pt.PolicyReference = WorkControlKey.ControlKeyValue)\r\n\tand ca.AuthorizationDate>=SUBSTRING('@{pipeline().parameters.SELECTION_START_TS}',1,10)\r\n\tgroup by  pt.PolicyReference, pt.PolicyTermEffectiveDate,pt.PolicyTermExpirationDate, ca.AuthorizationDate, ca.CommissionPercent\n),\nEXP_DEFAULT AS (\n\tSELECT\n\tPolicyReference AS i_PolicyReference,\n\tAuthorizationDate AS i_AuthorizationDate,\n\tTierAmount AS i_CWOAmount,\n\tCommissionPercent AS i_CommissionPercent,\n\tAuthorizedAmount AS i_AuthorizedAmount,\n\t-- *INF*: TRUNC(@{pipeline().parameters.SELECTION_START_TS})\n\tTRUNC(@{pipeline().parameters.SELECTION_START_TS}) AS ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId,\n\tPolicyTermEffectiveDate,\n\tPolicyTermExpirationDate\n\tFROM SQ_DCBILCommissionAuthorizationStage\n),\nWorkDCBILCommissionCWOClawBack AS (\n\tTRUNCATE TABLE WorkDCBILCommissionCWOClawBack;\n\tINSERT INTO WorkDCBILCommissionCWOClawBack\n\t(ExtractDate, SourceSystemId, AuthorizationDate, CWOAmount, CommissionPercent, AuthorizedAmount, PolicyReference, PolicyTermEffectiveDate, PolicyTermExpirationDate)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\ti_AuthorizationDate AS AUTHORIZATIONDATE, \n\ti_CWOAmount AS CWOAMOUNT, \n\ti_CommissionPercent AS COMMISSIONPERCENT, \n\ti_AuthorizedAmount AS AUTHORIZEDAMOUNT, \n\ti_PolicyReference AS POLICYREFERENCE, \n\tPOLICYTERMEFFECTIVEDATE, \n\tPOLICYTERMEXPIRATIONDATE\n\tFROM EXP_DEFAULT\n),\nSQ_DCBILGeneralJounalStage AS (\n\tselect PT.PolicyReference, pt.PolicyTermEffectiveDate,pt.PolicyTermExpirationDate, GJ.ActivityEffectiveDate, \r\n\tsum(TransactionGrossAmount) as WriteOffAmount\r\n\tfrom DCBILGeneralJounalStage GJ join DCBILPolicyTermStage PT on PT.PolicyTermId=GJ.PolicyTermId\r\n\twhere GJ.ActivityTypeCode in ('WO', 'RCWR') and AccountingClassCode in ('AR0','AR1') and GJ.JournalTypeCode='PREM'\r\n\tand GJ.ActivityEffectiveDate>=SUBSTRING('@{pipeline().parameters.SELECTION_START_TS}',1,10)\r\n\tand GJ.TransactionTypeCode in ('COLL', 'CWCP', 'UND')\r\n\tgroup by PT.PolicyReference, pt.PolicyTermEffectiveDate,pt.PolicyTermExpirationDate, GJ.ActivityEffectiveDate\n),\nEXP_AdditionalRule AS (\n\tSELECT\n\tPolicyReference,\n\tActivityEffectiveDate AS WriteOffRequestDate,\n\tWriteOffAmount,\n\t0 AS CommissionPercent,\n\tPolicyTermEffectiveDate,\n\tPolicyTermExpirationDate\n\tFROM SQ_DCBILGeneralJounalStage\n),\nLKP_Exist AS (\n\tSELECT\n\tWorkDCBILCommissionCWOClawBackId,\n\tPolicyReference\n\tFROM (\n\t\tSELECT \n\t\t\tWorkDCBILCommissionCWOClawBackId,\n\t\t\tPolicyReference\n\t\tFROM WorkDCBILCommissionCWOClawBack\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyReference ORDER BY WorkDCBILCommissionCWOClawBackId) = 1\n),\nEXP_FilterFlag AS (\n\tSELECT\n\tLKP_Exist.WorkDCBILCommissionCWOClawBackId AS lkp_WorkDCBILCommissionCWOClawBackId,\n\tEXP_AdditionalRule.PolicyReference,\n\tEXP_AdditionalRule.WriteOffRequestDate,\n\tEXP_AdditionalRule.WriteOffAmount,\n\tEXP_AdditionalRule.CommissionPercent,\n\t-- *INF*: IIF(ISNULL(lkp_WorkDCBILCommissionCWOClawBackId),1,0)\n\tIFF(lkp_WorkDCBILCommissionCWOClawBackId IS NULL, 1, 0) AS Filter_Flag,\n\t0 AS AuthorizedAmount,\n\t-- *INF*: trunc(@{pipeline().parameters.SELECTION_START_TS})\n\tTRUNC(@{pipeline().parameters.SELECTION_START_TS}) AS ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,\n\tEXP_AdditionalRule.PolicyTermEffectiveDate,\n\tEXP_AdditionalRule.PolicyTermExpirationDate\n\tFROM EXP_AdditionalRule\n\tLEFT JOIN LKP_Exist\n\tON LKP_Exist.PolicyReference = EXP_AdditionalRule.PolicyReference\n),\nFIL_Additional AS (\n\tSELECT\n\tPolicyReference, \n\tWriteOffRequestDate, \n\tWriteOffAmount, \n\tCommissionPercent, \n\tFilter_Flag, \n\tAuthorizedAmount, \n\tExtractDate, \n\tSourceSystemID AS SourceSytemID, \n\tPolicyTermEffectiveDate, \n\tPolicyTermExpirationDate\n\tFROM EXP_FilterFlag\n\tWHERE Filter_Flag=1\n),\nWorkDCBILCommissionCWOClawBack_Graduated AS (\n\tINSERT INTO WorkDCBILCommissionCWOClawBack\n\t(ExtractDate, SourceSystemId, AuthorizationDate, CWOAmount, CommissionPercent, AuthorizedAmount, PolicyReference, PolicyTermEffectiveDate, PolicyTermExpirationDate)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSytemID AS SOURCESYSTEMID, \n\tWriteOffRequestDate AS AUTHORIZATIONDATE, \n\tWriteOffAmount AS CWOAMOUNT, \n\tCOMMISSIONPERCENT, \n\tAUTHORIZEDAMOUNT, \n\tPOLICYREFERENCE, \n\tPOLICYTERMEFFECTIVEDATE, \n\tPOLICYTERMEXPIRATIONDATE\n\tFROM FIL_Additional\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

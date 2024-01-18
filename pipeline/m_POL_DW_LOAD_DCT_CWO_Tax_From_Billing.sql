@@ -119,26 +119,26 @@ EXP_AmountCalc AS (
 	InstallmentDate AS i_InstallmentDate,
 	SEQ_PassThroughChargeTransactionAKID.NEXTVAL AS i_NEXTVAL,
 	-- *INF*: IIF(i_TotalPassThroughAmount=0,0,i_PassThroughChargeTransactionAmount/i_TotalPassThroughAmount)
-	IFF(i_TotalPassThroughAmount = 0,
-		0,
-		i_PassThroughChargeTransactionAmount / i_TotalPassThroughAmount
+	IFF(
+	    i_TotalPassThroughAmount = 0, 0,
+	    i_PassThroughChargeTransactionAmount / i_TotalPassThroughAmount
 	) AS v_AllocationFactor,
 	v_AllocationFactor*i_WrittenOffAmount AS v_CWOAmount,
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	i_EffectiveDate AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	i_LogicalIndicator AS o_LogicalIndicator,
 	-- *INF*: DECODE(TRUE,i_LogicalDeleteFlag='T','1',i_LogicalDeleteFlag='F','0','0')
-	DECODE(TRUE,
-		i_LogicalDeleteFlag = 'T', '1',
-		i_LogicalDeleteFlag = 'F', '0',
-		'0'
+	DECODE(
+	    TRUE,
+	    i_LogicalDeleteFlag = 'T', '1',
+	    i_LogicalDeleteFlag = 'F', '0',
+	    '0'
 	) AS o_LogicalDeleteFlag,
 	i_DuplicateSequence AS o_DuplicateSequence,
 	i_PassThroughChargeTransactionHashKey AS o_PassThroughChargeTransactionHashKey,

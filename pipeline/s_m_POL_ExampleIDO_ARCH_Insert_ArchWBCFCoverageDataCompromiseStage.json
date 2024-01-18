@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCFCoverageDataCompromiseStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCFCoverageDataCom_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCFCoverageDataCompromiseStage AS (\n\tSELECT\n\t\tWBCFCoverageDataCompromiseStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCoverageId,\n\t\tWB_CF_CoverageDataCompromiseId,\n\t\tSessionId,\n\t\tProgramType,\n\t\tProgramQuestionOne,\n\t\tProgramQuestionTwo,\n\t\tProgramQuestionThree,\n\t\tProgramQuestionFour,\n\t\tAssistedLivingEligibilityQuestion,\n\t\tRatingTierForProgramtype,\n\t\tBillingLOB,\n\t\tCommissionPlanId,\n\t\tIsBillingSubline,\n\t\tParentBillingLOB,\n\t\tPurePremium,\n\t\tTransactionCommissionType,\n\t\tTransactionCommissionValue,\n\t\tTransactionFinalCommissionValue,\n\t\tWB_CL_CoverageDataCompromiseId\n\tFROM WBCFCoverageDataCompromiseStage\n),\nEXP_Metadata AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tWBCFCoverageDataCompromiseStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCoverageId,\n\tWB_CF_CoverageDataCompromiseId,\n\tSessionId,\n\tProgramType,\n\tProgramQuestionOne,\n\tProgramQuestionTwo,\n\tProgramQuestionThree,\n\tProgramQuestionFour,\n\tAssistedLivingEligibilityQuestion,\n\tRatingTierForProgramtype,\n\tBillingLOB,\n\tCommissionPlanId,\n\tIsBillingSubline,\n\tParentBillingLOB,\n\tPurePremium,\n\tTransactionCommissionType,\n\tTransactionCommissionValue,\n\tTransactionFinalCommissionValue,\n\tWB_CL_CoverageDataCompromiseId\n\tFROM SQ_WBCFCoverageDataCompromiseStage\n),\nArchWBCFCoverageDataCompromiseStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCFCoverageDataCompromiseStage\n\t(ExtractDate, SourceSystemId, AuditId, WBCFCoverageDataCompromiseStageId, CoverageId, WB_CF_CoverageDataCompromiseId, SessionId, ProgramType, ProgramQuestionOne, ProgramQuestionTwo, ProgramQuestionThree, ProgramQuestionFour, AssistedLivingEligibilityQuestion, RatingTierForProgramtype, BillingLOB, CommissionPlanId, IsBillingSubline, ParentBillingLOB, PurePremium, TransactionCommissionType, TransactionCommissionValue, TransactionFinalCommissionValue, WB_CL_CoverageDataCompromiseId)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBCFCOVERAGEDATACOMPROMISESTAGEID, \n\tCOVERAGEID, \n\tWB_CF_COVERAGEDATACOMPROMISEID, \n\tSESSIONID, \n\tPROGRAMTYPE, \n\tPROGRAMQUESTIONONE, \n\tPROGRAMQUESTIONTWO, \n\tPROGRAMQUESTIONTHREE, \n\tPROGRAMQUESTIONFOUR, \n\tASSISTEDLIVINGELIGIBILITYQUESTION, \n\tRATINGTIERFORPROGRAMTYPE, \n\tBILLINGLOB, \n\tCOMMISSIONPLANID, \n\tISBILLINGSUBLINE, \n\tPARENTBILLINGLOB, \n\tPUREPREMIUM, \n\tTRANSACTIONCOMMISSIONTYPE, \n\tTRANSACTIONCOMMISSIONVALUE, \n\tTRANSACTIONFINALCOMMISSIONVALUE, \n\tWB_CL_COVERAGEDATACOMPROMISEID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

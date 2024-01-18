@@ -45,8 +45,7 @@ AGG_Indemnity_SavingsAmount AS (
 	ImpactCategory,
 	SavingsAmount,
 	-- *INF*: sum(SavingsAmount)
-	sum(SavingsAmount
-	) AS IndemnityVocationalCategorySavings,
+	sum(SavingsAmount) AS IndemnityVocationalCategorySavings,
 	NurseImpactId1
 	FROM SRT_Src_Values
 	GROUP BY NurseAssignmentAkId, ImpactCategory
@@ -194,39 +193,24 @@ EXP_Default_Values AS (
 	SELECT
 	mplt_Claimant_Occurrence_dim_ids.claimant_dim_id AS IN_claimant_dim_id,
 	-- *INF*: iif(isnull(IN_claimant_dim_id),-1,IN_claimant_dim_id)
-	IFF(IN_claimant_dim_id IS NULL,
-		- 1,
-		IN_claimant_dim_id
-	) AS v_claimant_dim_id,
+	IFF(IN_claimant_dim_id IS NULL, - 1, IN_claimant_dim_id) AS v_claimant_dim_id,
 	v_claimant_dim_id AS claimant_dim_id,
 	mplt_Claimant_Occurrence_dim_ids.claim_occurrence_dim_id AS IN_claim_occurrence_dim_id,
 	-- *INF*: iif(isnull(IN_claim_occurrence_dim_id),-1,IN_claim_occurrence_dim_id)
-	IFF(IN_claim_occurrence_dim_id IS NULL,
-		- 1,
-		IN_claim_occurrence_dim_id
-	) AS v_claim_occurrence_dim_id,
+	IFF(IN_claim_occurrence_dim_id IS NULL, - 1, IN_claim_occurrence_dim_id) AS v_claim_occurrence_dim_id,
 	v_claim_occurrence_dim_id AS claim_occurrence_dim_id,
 	AGG_Indemnity_SavingsAmount.NurseAssignmentImpactId,
 	LKP_NurseAssignmentDim.NurseAssignmentDimId AS IN_NurseAssignmentDimId,
 	-- *INF*: iif(isnull(IN_NurseAssignmentDimId),-1,IN_NurseAssignmentDimId)
-	IFF(IN_NurseAssignmentDimId IS NULL,
-		- 1,
-		IN_NurseAssignmentDimId
-	) AS v_NurseAssignmentDimId,
+	IFF(IN_NurseAssignmentDimId IS NULL, - 1, IN_NurseAssignmentDimId) AS v_NurseAssignmentDimId,
 	v_NurseAssignmentDimId AS NurseAssignmentDimId,
 	LKP_NurseAssignmentImpactDim.NurseAssignmentImpactDimId AS IN_NurseAssignmentImpactDimId,
 	-- *INF*: iif(isnull(IN_NurseAssignmentImpactDimId),-1,IN_NurseAssignmentImpactDimId)
-	IFF(IN_NurseAssignmentImpactDimId IS NULL,
-		- 1,
-		IN_NurseAssignmentImpactDimId
-	) AS v_NurseAssignmentImpactDimId,
+	IFF(IN_NurseAssignmentImpactDimId IS NULL, - 1, IN_NurseAssignmentImpactDimId) AS v_NurseAssignmentImpactDimId,
 	v_NurseAssignmentImpactDimId AS NurseAssignmentImpactDimId,
 	AGG_Indemnity_SavingsAmount.IndemnityVocationalCategorySavings AS IN_IndemnityVocationalCategorySavings,
 	-- *INF*: iif(isnull(IN_IndemnityVocationalCategorySavings),0,IN_IndemnityVocationalCategorySavings)
-	IFF(IN_IndemnityVocationalCategorySavings IS NULL,
-		0,
-		IN_IndemnityVocationalCategorySavings
-	) AS v_IndemnityVocationalCategorySavings,
+	IFF(IN_IndemnityVocationalCategorySavings IS NULL, 0, IN_IndemnityVocationalCategorySavings) AS v_IndemnityVocationalCategorySavings,
 	v_IndemnityVocationalCategorySavings AS IndemnityVocationalCategorySavings
 	FROM AGG_Indemnity_SavingsAmount
 	 -- Manually join with mplt_Claimant_Occurrence_dim_ids
@@ -284,17 +268,18 @@ EXP_Detect_Changes AS (
 	--  'UPDATE','NOCHANGE' )
 	-- 
 	--   )
-	IFF(Lkp_NurseAssignmentIndemnityVocationalFactId IS NULL,
-		'NEW',
-		IFF(Lkp_claimant_dim_id <> claimant_dim_id 
-			OR Lkp_claim_occurrence_dim_id <> claim_occurrence_dim_id 
-			OR Lkp_EdwNurseAssignmentImpactPkId <> NurseAssignmentImpactId 
-			OR Lkp_NurseAssignmentDimId <> NurseAssignmentDimId 
-			OR Lkp_NurseAssignmentImpactDimId <> NurseAssignmentImpactDimId 
-			OR Lkp_IndemnityVocationalCategorySavings <> IndemnityVocationalCategorySavings,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    Lkp_NurseAssignmentIndemnityVocationalFactId IS NULL, 'NEW',
+	    IFF(
+	        Lkp_claimant_dim_id <> claimant_dim_id
+	        or Lkp_claim_occurrence_dim_id <> claim_occurrence_dim_id
+	        or Lkp_EdwNurseAssignmentImpactPkId <> NurseAssignmentImpactId
+	        or Lkp_NurseAssignmentDimId <> NurseAssignmentDimId
+	        or Lkp_NurseAssignmentImpactDimId <> NurseAssignmentImpactDimId
+	        or Lkp_IndemnityVocationalCategorySavings <> IndemnityVocationalCategorySavings,
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangedFlag,
 	EXP_Default_Values.claimant_dim_id,

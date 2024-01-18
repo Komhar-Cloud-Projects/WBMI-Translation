@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBECLineStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBECLineStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBECLineStage AS (\n\tSELECT\n\t\tWBECLineStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tLineId,\n\t\tWB_CL_LineId,\n\t\tWB_EC_LineId,\n\t\tSessionId\n\tFROM WBECLineStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBECLineStageId,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tLineId,\n\tWB_CL_LineId,\n\tWB_EC_LineId,\n\tSessionId\n\tFROM SQ_WBECLineStage\n),\nArchWBECLineStage AS (\n\tINSERT INTO ArchWBECLineStage\n\t(ExtractDate, SourceSystemId, AuditId, WBECLineStageId, LineId, WB_CL_LineId, WB_EC_LineId, SessionId)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBECLINESTAGEID, \n\tLINEID, \n\tWB_CL_LINEID, \n\tWB_EC_LINEID, \n\tSESSIONID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

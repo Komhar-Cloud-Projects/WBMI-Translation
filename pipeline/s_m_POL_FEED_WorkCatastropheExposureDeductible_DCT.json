@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_FEED_WorkCatastropheExposureDeductible_DCT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_WorkCatastropheExposureDeductible_DCT",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkCatastropheExposureTransaction AS (\n\tselect distinct WCET.SourceSystemId,\r\n\tPOL.pol_key,\r\n\tRL.LocationUnitNumber,\r\n\tRC.RiskType,\r\n\tRC.SubLocationUnitNumber,\r\n\tCDCA.VehicleNumber,\r\n\tWCET.BusinessType,\r\n\tCD.CoverageDeductibleType,\r\n\tFIRST_VALUE(CD.CoverageDeductibleValue) OVER (PARTITION BY WCET.SourceSystemId, POL.pol_key, RL.LocationUnitNumber, RC.RiskType, RC.SubLocationUnitNumber, CDCA.VehicleNumber, WCET.BusinessType, CD.CoverageDeductibleType ORDER BY PT.PremiumTransactionEffectiveDate desc, PT.PremiumTransactionEnteredDate desc, PT.Effectivedate desc, CDB.CreatedDate desc) AS CoverageDeductibleValue\r\n\tfrom @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.WorkCatastropheExposureTransaction WCET\r\n\tinner join @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PremiumTransaction PT\r\n\ton WCET.PremiumTransactionAKId=PT.PremiumTransactionAKID\r\n\tand PT.CurrentSnapshotFlag=1\r\n\tinner join @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.RatingCoverage RC\r\n\ton PT.RatingCoverageAKID=RC.RatingCoverageAKID\r\n\tand RC.EffectiveDate=PT.EffectiveDate \r\n\tinner join @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.PolicyCoverage PC\r\n\ton PC.PolicyCoverageAKID=RC.PolicyCoverageAKID\r\n\tand PC.CurrentSnapshotFlag=1\r\n\tinner join @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.RiskLocation RL\r\n\ton PC.RiskLocationAKID=RL.RiskLocationAKID\r\n\tand RL.CurrentSnapshotFlag=1\r\n\tinner join @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER_V2}.policy POL\r\n\ton POL.pol_ak_id=RL.PolicyAKID\r\n\tand POL.crrnt_snpsht_flag=1\r\n\tinner join @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.CoverageDeductibleBridge CDB\r\n\ton CDB.PremiumTransactionAKId = PT.PremiumTransactionAKID\r\n\tinner join @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.CoverageDeductible CD \r\n\ton CDB.CoverageDeductibleId = CD.CoverageDeductibleId\r\n\tleft join @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.CoverageDetailCommercialAuto CDCA\r\n\ton CDCA.PremiumTransactionId=PT.PremiumTransactionId\r\n\t\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_MetaData AS (\n\tSELECT\n\tSourceSystemId AS i_SourceSystemId,\n\tpol_key AS i_pol_key,\n\tLocationUnitNumber AS i_LocationUnitNumber,\n\tRiskType AS i_RiskType,\n\tSubLocationUnitNumber AS i_SubLocationUnitNumber,\n\tVehicleNumber AS i_VehicleNumber,\n\tBusinessType AS i_BusinessType,\n\tCoverageDeductibleType AS i_CoverageDeductibleType,\n\tCoverageDeductibleValue AS i_CoverageDeductibleValue,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\t-- *INF*: IIF(ISNULL(i_SourceSystemId), 'N/A',i_SourceSystemId)\n\tIFF(i_SourceSystemId IS NULL, 'N/A', i_SourceSystemId) AS o_SourceSystemId,\n\t-- *INF*: IIF(ISNULL(i_pol_key), 'N/A', i_pol_key)\n\tIFF(i_pol_key IS NULL, 'N/A', i_pol_key) AS o_PolicyKey,\n\t-- *INF*: IIF(IN(i_BusinessType, 'Commercial Property','SBOP','SMARTbusiness','Dealers Physical Damage','Garagekeepers Liability', 'Commercial Inland Marine'), i_LocationUnitNumber, NULL)\n\tIFF(\n\t    i_BusinessType IN ('Commercial Property','SBOP','SMARTbusiness','Dealers Physical Damage','Garagekeepers Liability','Commercial Inland Marine'),\n\t    i_LocationUnitNumber,\n\t    NULL\n\t) AS o_LocationNumber,\n\t-- *INF*: IIF(IN(i_BusinessType, 'Commercial Property','SBOP','SMARTbusiness'), i_SubLocationUnitNumber, NULL)\n\tIFF(\n\t    i_BusinessType IN ('Commercial Property','SBOP','SMARTbusiness'), i_SubLocationUnitNumber,\n\t    NULL\n\t) AS o_BuildingNumber,\n\t-- *INF*: IIF(i_BusinessType= 'Commercial Auto', i_VehicleNumber, NULL)\n\tIFF(i_BusinessType = 'Commercial Auto', i_VehicleNumber, NULL) AS o_VehicleNumber,\n\ti_BusinessType AS o_BusinessType,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- i_BusinessType= 'Commercial Property' and i_CoverageDeductibleType= 'EarthquakeStandard', i_CoverageDeductibleType || i_RiskType,\r\n\t-- i_BusinessType= 'SBOP' and i_CoverageDeductibleType= 'EarthquakeStandard', i_CoverageDeductibleType || i_RiskType,\r\n\t-- i_CoverageDeductibleType)\n\tDECODE(\n\t    TRUE,\n\t    i_BusinessType = 'Commercial Property' and i_CoverageDeductibleType = 'EarthquakeStandard', i_CoverageDeductibleType || i_RiskType,\n\t    i_BusinessType = 'SBOP' and i_CoverageDeductibleType = 'EarthquakeStandard', i_CoverageDeductibleType || i_RiskType,\n\t    i_CoverageDeductibleType\n\t) AS o_DeductibleType,\n\ti_CoverageDeductibleValue AS o_DeductibleValue\n\tFROM SQ_WorkCatastropheExposureTransaction\n),\nWorkCatastropheExposureDeductible AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkCatastropheExposureDeductible;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkCatastropheExposureDeductible\n\t(AuditId, CreatedDate, ModifiedDate, SourceSystemId, PolicyKey, LocationNumber, BuildingNumber, VehicleNumber, BusinessType, DeductibleType, DeductibleValue)\n\tSELECT \n\to_AuditId AS AUDITID, \n\to_CreatedDate AS CREATEDDATE, \n\to_ModifiedDate AS MODIFIEDDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\to_PolicyKey AS POLICYKEY, \n\to_LocationNumber AS LOCATIONNUMBER, \n\to_BuildingNumber AS BUILDINGNUMBER, \n\to_VehicleNumber AS VEHICLENUMBER, \n\to_BusinessType AS BUSINESSTYPE, \n\to_DeductibleType AS DEDUCTIBLETYPE, \n\to_DeductibleValue AS DEDUCTIBLEVALUE\n\tFROM EXP_MetaData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "TARGET_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER_V2": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

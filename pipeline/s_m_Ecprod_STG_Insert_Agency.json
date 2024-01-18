@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Ecprod_STG_Insert_Agency",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Ecprod_STG_Insert_Agency",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Agency AS (\n\tSELECT\n\t\tAgencyCode,\n\t\tAgencyName,\n\t\tAgencyCity,\n\t\tAgencyState,\n\t\tAgencyPhone1,\n\t\tAgencyPhone2,\n\t\tAgencyPhone3,\n\t\tAgencyActiveCC,\n\t\tAgencyActiveYY,\n\t\tAgencyActiveMM,\n\t\tAgencyActiveDD,\n\t\tAgencyOwnerLName,\n\t\tAgencyOwnerFName,\n\t\tAgencyOwnerEmail,\n\t\tAgencyContactLName,\n\t\tAgencyContactFName,\n\t\tAgencyContactEmail,\n\t\tAgencyContactsubcode,\n\t\tAgencyUpdated,\n\t\tTimeStamp,\n\t\tAgencyPayCode,\n\t\tPAgencyCode,\n\t\tAgencyRSMTerr,\n\t\tAgencySR22,\n\t\tAgencyAppsSwitch,\n\t\tAgencyCommercialSwitch,\n\t\tAgencyBillClaimSwitch,\n\t\tHHSwitch,\n\t\tEFTAgreementFlag,\n\t\tInterfaceAgreementFlag,\n\t\tAppSubmissionSignupFlag,\n\t\tChoicePointFlag,\n\t\tChoicePoint_account,\n\t\tNSIBondFlag,\n\t\tiibond_bill_code,\n\t\tloss_history_code,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\tservice_center_code\n\tFROM Agency\n),\nEXP_Values AS (\n\tSELECT\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t'' AS RECORD_COUNT,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,\n\tAgencyCode,\n\tAgencyName,\n\tAgencyCity,\n\tAgencyState,\n\tAgencyPhone1,\n\tAgencyPhone2,\n\tAgencyPhone3,\n\tAgencyActiveCC,\n\tAgencyActiveYY,\n\tAgencyActiveMM,\n\tAgencyActiveDD,\n\tAgencyOwnerLName,\n\tAgencyOwnerFName,\n\tAgencyOwnerEmail,\n\tAgencyContactLName,\n\tAgencyContactFName,\n\tAgencyContactEmail,\n\tAgencyContactsubcode,\n\tAgencyUpdated,\n\tTimeStamp,\n\tAgencyPayCode,\n\tPAgencyCode,\n\tAgencyRSMTerr,\n\tAgencySR22,\n\tAgencyAppsSwitch,\n\tAgencyCommercialSwitch,\n\tAgencyBillClaimSwitch,\n\tHHSwitch,\n\tEFTAgreementFlag,\n\tInterfaceAgreementFlag,\n\tAppSubmissionSignupFlag,\n\tChoicePointFlag,\n\tChoicePoint_account,\n\tNSIBondFlag,\n\tiibond_bill_code,\n\tloss_history_code,\n\tmodified_date,\n\tmodified_user_id,\n\tservice_center_code\n\tFROM SQ_Agency\n),\nagency_ecprod_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.agency_ecprod_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.agency_ecprod_stage\n\t(AgencyCode, AgencyName, AgencyCity, AgencyState, AgencyPhone1, AgencyPhone2, AgencyPhone3, AgencyActiveCC, AgencyActiveYY, AgencyActiveMM, AgencyActiveDD, AgencyOwnerLName, AgencyOwnerFName, AgencyOwnerEmail, AgencyContactLName, AgencyContactFName, AgencyContactEmail, AgencyContactsubcode, AgencyUpdated, TimeStamp, AgencyPayCode, PAgencyCode, AgencyRSMTerr, AgencySR22, AgencyAppsSwitch, AgencyCommercialSwitch, AgencyBillClaimSwitch, HHSwitch, EFTAgreementFlag, InterfaceAgreementFlag, AppSubmissionSignupFlag, ChoicePointFlag, ChoicePoint_account, NSIBondFlag, iibond_bill_code, loss_history_code, modified_date, modified_user_id, service_center_code, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tAGENCYCODE, \n\tAGENCYNAME, \n\tAGENCYCITY, \n\tAGENCYSTATE, \n\tAGENCYPHONE1, \n\tAGENCYPHONE2, \n\tAGENCYPHONE3, \n\tAGENCYACTIVECC, \n\tAGENCYACTIVEYY, \n\tAGENCYACTIVEMM, \n\tAGENCYACTIVEDD, \n\tAGENCYOWNERLNAME, \n\tAGENCYOWNERFNAME, \n\tAGENCYOWNEREMAIL, \n\tAGENCYCONTACTLNAME, \n\tAGENCYCONTACTFNAME, \n\tAGENCYCONTACTEMAIL, \n\tAGENCYCONTACTSUBCODE, \n\tAGENCYUPDATED, \n\tTIMESTAMP, \n\tAGENCYPAYCODE, \n\tPAGENCYCODE, \n\tAGENCYRSMTERR, \n\tAGENCYSR22, \n\tAGENCYAPPSSWITCH, \n\tAGENCYCOMMERCIALSWITCH, \n\tAGENCYBILLCLAIMSWITCH, \n\tHHSWITCH, \n\tEFTAGREEMENTFLAG, \n\tINTERFACEAGREEMENTFLAG, \n\tAPPSUBMISSIONSIGNUPFLAG, \n\tCHOICEPOINTFLAG, \n\tCHOICEPOINT_ACCOUNT, \n\tNSIBONDFLAG, \n\tIIBOND_BILL_CODE, \n\tLOSS_HISTORY_CODE, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tSERVICE_CENTER_CODE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CommonStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_gtam_wbimcls_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_gtam_wbimcls_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_wbimcls_stage AS (\n\tSELECT\n\t\tgtam_wbimcls_stage_id,\n\t\ttable_fld,\n\t\tkey_len,\n\t\tinland_marine_class_code,\n\t\tdata_len,\n\t\tinland_marine_class_description,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_wbimcls_stage\n),\nLKP_arch_gtam_wbimcls_stage AS (\n\tSELECT\n\tarch_gtam_wbimcls_stage_id,\n\tinland_marine_class_description,\n\tinland_marine_class_code\n\tFROM (\n\t\tSELECT tl.arch_gtam_wbimcls_stage_id as arch_gtam_wbimcls_stage_id          \r\n\t\t      ,tl.inland_marine_class_code as  inland_marine_class_code \r\n\t\t      ,tl.inland_marine_class_description as inland_marine_class_description       \r\n\t\t  FROM  arch_gtam_wbimcls_stage tl \r\n\t\t   where \ttl.arch_gtam_wbimcls_stage_id  In\r\n\t\t\t(Select max(arch_gtam_wbimcls_stage_id ) from arch_gtam_wbimcls_stage b\r\n\t\t\tgroup by b.inland_marine_class_code)\r\n\t\torder by tl.inland_marine_class_code--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY inland_marine_class_code ORDER BY arch_gtam_wbimcls_stage_id) = 1\n),\nEXP_arch_wbimcls_stage AS (\n\tSELECT\n\tSQ_gtam_wbimcls_stage.gtam_wbimcls_stage_id,\n\tSQ_gtam_wbimcls_stage.table_fld AS Table_fld,\n\tSQ_gtam_wbimcls_stage.key_len AS Key_len,\n\tSQ_gtam_wbimcls_stage.inland_marine_class_code,\n\tSQ_gtam_wbimcls_stage.data_len,\n\tSQ_gtam_wbimcls_stage.inland_marine_class_description,\n\tSQ_gtam_wbimcls_stage.extract_date AS EXTRACT_DATE,\n\tSQ_gtam_wbimcls_stage.as_of_date AS AS_OF_DATE,\n\tSQ_gtam_wbimcls_stage.record_count AS RECORD_COUNT,\n\tSQ_gtam_wbimcls_stage.source_system_id AS SOURCE_SYSTEM_ID,\n\tLKP_arch_gtam_wbimcls_stage.arch_gtam_wbimcls_stage_id AS LKP_arch_gtam_wbimcls_stage_id,\n\tLKP_arch_gtam_wbimcls_stage.inland_marine_class_description AS LKP_inland_marine_class_description,\n\t-- *INF*: iif(isnull(LKP_arch_gtam_wbimcls_stage_id),'NEW',\r\n\t--     iif(  \r\n\t-- ltrim(rtrim(LKP_inland_marine_class_description))\r\n\t-- <>  ltrim(rtrim(inland_marine_class_description))\r\n\t-- , 'UPDATE', 'NOCHANGE'))\n\tIFF(\n\t    LKP_arch_gtam_wbimcls_stage_id IS NULL, 'NEW',\n\t    IFF(\n\t        ltrim(rtrim(LKP_inland_marine_class_description)) <> ltrim(rtrim(inland_marine_class_description)),\n\t        'UPDATE',\n\t        'NOCHANGE'\n\t    )\n\t) AS v_Changed_Flag,\n\tv_Changed_Flag AS Changed_Flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID\n\tFROM SQ_gtam_wbimcls_stage\n\tLEFT JOIN LKP_arch_gtam_wbimcls_stage\n\tON LKP_arch_gtam_wbimcls_stage.inland_marine_class_code = SQ_gtam_wbimcls_stage.inland_marine_class_code\n),\nFIL_Inserts AS (\n\tSELECT\n\tgtam_wbimcls_stage_id AS gtam_wbmicls_stage_id, \n\tTable_fld, \n\tKey_len, \n\tinland_marine_class_code, \n\tdata_len, \n\tinland_marine_class_description, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tChanged_Flag, \n\tAUDIT_ID\n\tFROM EXP_arch_wbimcls_stage\n\tWHERE Changed_Flag = 'NEW' or Changed_Flag = 'UPDATE'\n),\narch_gtam_wbimcls_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_gtam_wbimcls_stage\n\t(gtam_wbimcls_stage_id, table_fld, key_len, inland_marine_class_code, data_len, inland_marine_class_description, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tgtam_wbmicls_stage_id AS GTAM_WBIMCLS_STAGE_ID, \n\tTable_fld AS TABLE_FLD, \n\tKey_len AS KEY_LEN, \n\tINLAND_MARINE_CLASS_CODE, \n\tDATA_LEN, \n\tINLAND_MARINE_CLASS_DESCRIPTION, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID\n\tFROM FIL_Inserts\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

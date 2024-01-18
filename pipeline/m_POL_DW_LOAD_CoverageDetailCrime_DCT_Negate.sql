@@ -45,11 +45,9 @@ EXP_DetectChanges AS (
 	1 AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800/01/01 00:00:00','YYYY/MM/DD HH24:MI:SS')
-	TO_DATE('1800/01/01 00:00:00', 'YYYY/MM/DD HH24:MI:SS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('1800/01/01 00:00:00', 'YYYY/MM/DD HH24:MI:SS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100/12/31 23:59:59','YYYY/MM/DD HH24:MI:SS')
-	TO_DATE('2100/12/31 23:59:59', 'YYYY/MM/DD HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('2100/12/31 23:59:59', 'YYYY/MM/DD HH24:MI:SS') AS o_ExpirationDate,
 	'DCT' AS o_SourceSystemID,
 	sysdate AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -57,9 +55,10 @@ EXP_DetectChanges AS (
 	-- ISNULL(lkp_PremiumTransactionID),
 	-- 'INSERT',
 	-- 'UPDATE')
-	DECODE(TRUE,
-		lkp_PremiumTransactionID IS NULL, 'INSERT',
-		'UPDATE'
+	DECODE(
+	    TRUE,
+	    lkp_PremiumTransactionID IS NULL, 'INSERT',
+	    'UPDATE'
 	) AS o_changeflag
 	FROM EXP_Default
 	LEFT JOIN LKP_CoverageDetailCrime

@@ -61,10 +61,7 @@ EXP_Evaluate AS (
 	ARCH_claim_occurrence_key,
 	ARCH_SUM_Trans_Amt,
 	-- *INF*: IIF(ARCH_SUM_Trans_Amt = EDW_SUM_Trans_Amt,'Y','N')
-	IFF(ARCH_SUM_Trans_Amt = EDW_SUM_Trans_Amt,
-		'Y',
-		'N'
-	) AS v_Balance_Amount,
+	IFF(ARCH_SUM_Trans_Amt = EDW_SUM_Trans_Amt, 'Y', 'N') AS v_Balance_Amount,
 	-- *INF*: DECODE(TRUE,
 	-- EDW_SUM_Trans_Amt <> ARCH_SUM_Trans_Amt , -1,
 	-- EDW_SUM_Trans_Amt = ARCH_SUM_Trans_Amt 
@@ -79,11 +76,11 @@ EXP_Evaluate AS (
 	-- ---  IIF(v_Balance_Amount = 'Y', 1, -1)
 	-- 
 	-- 
-	DECODE(TRUE,
-		EDW_SUM_Trans_Amt <> ARCH_SUM_Trans_Amt, - 1,
-		EDW_SUM_Trans_Amt = ARCH_SUM_Trans_Amt 
-		AND EDW_COUNT_of_Transactions != ARCH_COUNT_of_Transactions, - 2,
-		0
+	DECODE(
+	    TRUE,
+	    EDW_SUM_Trans_Amt <> ARCH_SUM_Trans_Amt, - 1,
+	    EDW_SUM_Trans_Amt = ARCH_SUM_Trans_Amt AND EDW_COUNT_of_Transactions != ARCH_COUNT_of_Transactions, - 2,
+	    0
 	) AS err_flag_change,
 	err_flag_change AS out_err_flag_bal_txn
 	FROM JNR_EDW_ARCHIVE
@@ -184,15 +181,9 @@ EXP_Evaluate_Bal_Reins_Txn AS (
 	ARCH_claim_occurrence_key,
 	ARCH_SUM_Reins_Trans_Amt,
 	-- *INF*: IIF(ARCH_SUM_Reins_Trans_Amt = EDW_SUM_Reins_Trans_Amt,'Y','N')
-	IFF(ARCH_SUM_Reins_Trans_Amt = EDW_SUM_Reins_Trans_Amt,
-		'Y',
-		'N'
-	) AS v_Balance_Amount,
+	IFF(ARCH_SUM_Reins_Trans_Amt = EDW_SUM_Reins_Trans_Amt, 'Y', 'N') AS v_Balance_Amount,
 	-- *INF*: IIF(v_Balance_Amount = 'Y', 1, -1)
-	IFF(v_Balance_Amount = 'Y',
-		1,
-		- 1
-	) AS err_flag_change,
+	IFF(v_Balance_Amount = 'Y', 1, - 1) AS err_flag_change,
 	err_flag_change AS out_err_flag_reins_txn
 	FROM JNR_EDW_ARCHIVE_Bal_Reins_Txn
 ),

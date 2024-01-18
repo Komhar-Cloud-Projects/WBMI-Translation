@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCFRiskStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCFRiskStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCFRiskStage AS (\n\tSELECT\n\t\tWBCFRiskStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCF_RiskId,\n\t\tWB_CF_RiskId,\n\t\tSessionId,\n\t\tPurePremium,\n\t\tOriginalPackageModifier,\n\t\tCurrentFiledRatesBG1,\n\t\tCurrentFiledRatesBG2,\n\t\tCurrentFiledRatesAllOther,\n\t\tSelected,\n\t\tExpiringRatesBG1,\n\t\tExpiringRatesBG2,\n\t\tExpiringRatesAllOther,\n\t\tDifferenceBG1,\n\t\tDifferenceBG2,\n\t\tDifferenceAllOther,\n\t\tAdjustmentBG1,\n\t\tOne,\n\t\tAdjustmentBG2,\n\t\tAdjustmentAllOther,\n\t\tLastExpiringRatesBG1,\n\t\tLastExpiringRatesBG2,\n\t\tLastExpiringRatesAllOther,\n\t\tYear1Adj,\n\t\tYear2Adj,\n\t\tYear3Adj,\n\t\tYear1AdjBG2,\n\t\tYear2AdjBG2,\n\t\tYear3AdjBG2,\n\t\tYear1AdjAllOther,\n\t\tYear2AdjAllOther,\n\t\tYear3AdjAllOther,\n\t\tExpiringRatesCaption,\n\t\tCurrentFiledRatesCaption,\n\t\tDifferenceCaption,\n\t\tAdjustmentFactorCaption,\n\t\tHeaderExpiringRates,\n\t\tHeaderCurrentFiledRates,\n\t\tHeaderDifference,\n\t\tHeaderAdjustmentFactor,\n\t\tRiskID,\n\t\tBuildingID\n\tFROM WBCFRiskStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBCFRiskStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCF_RiskId,\n\tWB_CF_RiskId,\n\tSessionId,\n\tPurePremium,\n\tOriginalPackageModifier,\n\tCurrentFiledRatesBG1,\n\tCurrentFiledRatesBG2,\n\tCurrentFiledRatesAllOther,\n\tSelected AS i_Selected,\n\t-- *INF*: DECODE(i_Selected, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_Selected,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_Selected,\n\tExpiringRatesBG1,\n\tExpiringRatesBG2,\n\tExpiringRatesAllOther,\n\tDifferenceBG1,\n\tDifferenceBG2,\n\tDifferenceAllOther,\n\tAdjustmentBG1,\n\tOne,\n\tAdjustmentBG2,\n\tAdjustmentAllOther,\n\tLastExpiringRatesBG1,\n\tLastExpiringRatesBG2,\n\tLastExpiringRatesAllOther,\n\tYear1Adj,\n\tYear2Adj,\n\tYear3Adj,\n\tYear1AdjBG2,\n\tYear2AdjBG2,\n\tYear3AdjBG2,\n\tYear1AdjAllOther,\n\tYear2AdjAllOther,\n\tYear3AdjAllOther,\n\tExpiringRatesCaption,\n\tCurrentFiledRatesCaption,\n\tDifferenceCaption,\n\tAdjustmentFactorCaption,\n\tHeaderExpiringRates,\n\tHeaderCurrentFiledRates,\n\tHeaderDifference,\n\tHeaderAdjustmentFactor,\n\tRiskID,\n\tBuildingID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBCFRiskStage\n),\nArchWBCFRiskStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCFRiskStage\n\t(ExtractDate, SourceSystemId, AuditId, WBCFRiskStageId, CF_RiskId, WB_CF_RiskId, SessionId, PurePremium, OriginalPackageModifier, CurrentFiledRatesBG1, CurrentFiledRatesBG2, CurrentFiledRatesAllOther, Selected, ExpiringRatesBG1, ExpiringRatesBG2, ExpiringRatesAllOther, DifferenceBG1, DifferenceBG2, DifferenceAllOther, AdjustmentBG1, One, AdjustmentBG2, AdjustmentAllOther, LastExpiringRatesBG1, LastExpiringRatesBG2, LastExpiringRatesAllOther, Year1Adj, Year2Adj, Year3Adj, Year1AdjBG2, Year2AdjBG2, Year3AdjBG2, Year1AdjAllOther, Year2AdjAllOther, Year3AdjAllOther, ExpiringRatesCaption, CurrentFiledRatesCaption, DifferenceCaption, AdjustmentFactorCaption, HeaderExpiringRates, HeaderCurrentFiledRates, HeaderDifference, HeaderAdjustmentFactor, RiskID, BuildingID)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBCFRISKSTAGEID, \n\tCF_RISKID, \n\tWB_CF_RISKID, \n\tSESSIONID, \n\tPUREPREMIUM, \n\tORIGINALPACKAGEMODIFIER, \n\tCURRENTFILEDRATESBG1, \n\tCURRENTFILEDRATESBG2, \n\tCURRENTFILEDRATESALLOTHER, \n\to_Selected AS SELECTED, \n\tEXPIRINGRATESBG1, \n\tEXPIRINGRATESBG2, \n\tEXPIRINGRATESALLOTHER, \n\tDIFFERENCEBG1, \n\tDIFFERENCEBG2, \n\tDIFFERENCEALLOTHER, \n\tADJUSTMENTBG1, \n\tONE, \n\tADJUSTMENTBG2, \n\tADJUSTMENTALLOTHER, \n\tLASTEXPIRINGRATESBG1, \n\tLASTEXPIRINGRATESBG2, \n\tLASTEXPIRINGRATESALLOTHER, \n\tYEAR1ADJ, \n\tYEAR2ADJ, \n\tYEAR3ADJ, \n\tYEAR1ADJBG2, \n\tYEAR2ADJBG2, \n\tYEAR3ADJBG2, \n\tYEAR1ADJALLOTHER, \n\tYEAR2ADJALLOTHER, \n\tYEAR3ADJALLOTHER, \n\tEXPIRINGRATESCAPTION, \n\tCURRENTFILEDRATESCAPTION, \n\tDIFFERENCECAPTION, \n\tADJUSTMENTFACTORCAPTION, \n\tHEADEREXPIRINGRATES, \n\tHEADERCURRENTFILEDRATES, \n\tHEADERDIFFERENCE, \n\tHEADERADJUSTMENTFACTOR, \n\tRISKID, \n\tBUILDINGID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

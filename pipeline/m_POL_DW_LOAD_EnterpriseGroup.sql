@@ -17,22 +17,17 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_EffectiveDate
+	IFF(
+	    i_EffectiveDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate
 	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ExpirationDate
+	IFF(
+	    i_ExpirationDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'),
+	    i_ExpirationDate
 	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ModifiedDate
+	IFF(
+	    i_ModifiedDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate
 	) AS o_ModifiedDate
 	FROM SQ_EnterpriseGroup
 ),
@@ -41,15 +36,9 @@ EXP_NumericValues AS (
 	EnterpriseGroupId AS i_EnterpriseGroupId,
 	EnterpriseGroupAKId AS i_EnterpriseGroupAKId,
 	-- *INF*: IIF(ISNULL(i_EnterpriseGroupId),-1,i_EnterpriseGroupId)
-	IFF(i_EnterpriseGroupId IS NULL,
-		- 1,
-		i_EnterpriseGroupId
-	) AS o_EnterpriseGroupId,
+	IFF(i_EnterpriseGroupId IS NULL, - 1, i_EnterpriseGroupId) AS o_EnterpriseGroupId,
 	-- *INF*: IIF(ISNULL(i_EnterpriseGroupAKId),-1,i_EnterpriseGroupAKId)
-	IFF(i_EnterpriseGroupAKId IS NULL,
-		- 1,
-		i_EnterpriseGroupAKId
-	) AS o_EnterpriseGroupAKId
+	IFF(i_EnterpriseGroupAKId IS NULL, - 1, i_EnterpriseGroupAKId) AS o_EnterpriseGroupAKId
 	FROM SQ_EnterpriseGroup
 ),
 EXP_StringValues AS (
@@ -59,43 +48,36 @@ EXP_StringValues AS (
 	EnterpriseGroupDescription AS i_EnterpriseGroupDescription,
 	EnterpriseGroupAbbreviation AS i_EnterpriseGroupAbbreviation,
 	-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)
-	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'
-		),
-		1,
-		0
-	) AS o_CurrentSnapshotFlag,
+	IFF(TRUNC(i_ExpirationDate) = TO_TIMESTAMP('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_EnterpriseGroupCode) OR LENGTH(i_EnterpriseGroupCode)=0 OR IS_SPACES(i_EnterpriseGroupCode),'N/A',LTRIM(RTRIM(i_EnterpriseGroupCode)))
-	IFF(i_EnterpriseGroupCode IS NULL 
-		OR LENGTH(i_EnterpriseGroupCode
-		) = 0 
-		OR LENGTH(i_EnterpriseGroupCode)>0 AND TRIM(i_EnterpriseGroupCode)='',
-		'N/A',
-		LTRIM(RTRIM(i_EnterpriseGroupCode
-			)
-		)
+	IFF(
+	    i_EnterpriseGroupCode IS NULL
+	    or LENGTH(i_EnterpriseGroupCode) = 0
+	    or LENGTH(i_EnterpriseGroupCode)>0
+	    and TRIM(i_EnterpriseGroupCode)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_EnterpriseGroupCode))
 	) AS o_EnterpriseGroupCode,
 	-- *INF*: IIF(ISNULL(i_EnterpriseGroupDescription) OR LENGTH(i_EnterpriseGroupDescription)=0 OR IS_SPACES(i_EnterpriseGroupDescription),'N/A',LTRIM(RTRIM(i_EnterpriseGroupDescription)))
-	IFF(i_EnterpriseGroupDescription IS NULL 
-		OR LENGTH(i_EnterpriseGroupDescription
-		) = 0 
-		OR LENGTH(i_EnterpriseGroupDescription)>0 AND TRIM(i_EnterpriseGroupDescription)='',
-		'N/A',
-		LTRIM(RTRIM(i_EnterpriseGroupDescription
-			)
-		)
+	IFF(
+	    i_EnterpriseGroupDescription IS NULL
+	    or LENGTH(i_EnterpriseGroupDescription) = 0
+	    or LENGTH(i_EnterpriseGroupDescription)>0
+	    and TRIM(i_EnterpriseGroupDescription)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_EnterpriseGroupDescription))
 	) AS o_EnterpriseGroupDescription,
 	-- *INF*: IIF(ISNULL(i_EnterpriseGroupAbbreviation) OR LENGTH(i_EnterpriseGroupAbbreviation)=0 OR IS_SPACES(i_EnterpriseGroupAbbreviation),'N/A',LTRIM(RTRIM(i_EnterpriseGroupAbbreviation)))
-	IFF(i_EnterpriseGroupAbbreviation IS NULL 
-		OR LENGTH(i_EnterpriseGroupAbbreviation
-		) = 0 
-		OR LENGTH(i_EnterpriseGroupAbbreviation)>0 AND TRIM(i_EnterpriseGroupAbbreviation)='',
-		'N/A',
-		LTRIM(RTRIM(i_EnterpriseGroupAbbreviation
-			)
-		)
+	IFF(
+	    i_EnterpriseGroupAbbreviation IS NULL
+	    or LENGTH(i_EnterpriseGroupAbbreviation) = 0
+	    or LENGTH(i_EnterpriseGroupAbbreviation)>0
+	    and TRIM(i_EnterpriseGroupAbbreviation)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_EnterpriseGroupAbbreviation))
 	) AS o_EnterpriseGroupAbbreviation
 	FROM SQ_EnterpriseGroup
 ),

@@ -1,0 +1,38 @@
+{
+    "name": "s_m_BILL_DCT_Load_NWB_Remittance_Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_BILL_DCT_Load_NWB_Remittance_Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_NWBPayments_source AS (\n\n-- TODO Manual --\n\n),\nEXPTRANS AS (\n\tSELECT\n\tLocation,\n\tTransactionDate AS Transaction_Date,\n\tfiller1 AS Filler1,\n\tTransactionSeq AS Transaction_Seq,\n\tfiller2 AS Filler2,\n\tAccountNum AS Acct_Number,\n\tfiller3 AS Filler3,\n\tPaidAmt AS Paid_Amt,\n\tfiller4 AS Filler4,\n\t'N' AS out_RemittanceSource,\n\t'InformN' AS out_ModifiedUserId,\n\t'Processed' AS out_TransactionStatus,\n\t'AACH' AS out_PaymentMode,\n\t-- *INF*: SYSTIMESTAMP()\n\tCURRENT_TIMESTAMP() AS out_ReconcilationDate,\n\t-- *INF*: SYSTIMESTAMP()\n\tCURRENT_TIMESTAMP() AS out_ModifyDate,\n\t-- *INF*: (TO_DECIMAL(Paid_Amt)  *  .01)\n\t(CAST(Paid_Amt AS FLOAT) * .01) AS out_PaidAmt,\n\t'Payment' AS out_TransactionType,\n\t'N' AS out_ProcessedStatus,\n\tLocation||Transaction_Date||Filler1||Transaction_Seq||Filler2||Filler3||Paid_Amt||Filler4 AS out_TransactionData,\n\t'USER' AS out_AuthorizedBy,\n\tTransaction_Date||'NWB'||Transaction_Seq AS out_TransactionId\n\tFROM SQ_NWBPayments_source\n),\nWB_BIL_RemittanceStage AS (\n\tINSERT INTO WB_BIL_RemittanceStage\n\t(ModifiedUserId, ModifiedDate, TransactionId, TransactionType, TransactionData, RemittanceSource, ProcessedStatusCode, ReconciliationDate, PaidAmount, PaymentMode, AuthorizedBy, PolicyNumber)\n\tSELECT \n\tout_ModifiedUserId AS MODIFIEDUSERID, \n\tout_ModifyDate AS MODIFIEDDATE, \n\tout_TransactionId AS TRANSACTIONID, \n\tout_TransactionType AS TRANSACTIONTYPE, \n\tout_TransactionData AS TRANSACTIONDATA, \n\tout_RemittanceSource AS REMITTANCESOURCE, \n\tout_ProcessedStatus AS PROCESSEDSTATUSCODE, \n\tout_ReconcilationDate AS RECONCILIATIONDATE, \n\tout_PaidAmt AS PAIDAMOUNT, \n\tout_PaymentMode AS PAYMENTMODE, \n\tout_AuthorizedBy AS AUTHORIZEDBY, \n\tAcct_Number AS POLICYNUMBER\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "DataFeed -Informatica/BillingDataServices/"
+        },
+        "annotations": []
+    }
+}

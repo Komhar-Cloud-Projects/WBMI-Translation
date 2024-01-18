@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCWCCoverageMeritRatingStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCWCCoverageMeritRa_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCWCCoverageMeritRatingStaging AS (\n\tSELECT\n\t\tCoverageId,\n\t\tWC_CoverageMeritRatingId,\n\t\tSessionId,\n\t\tALMeritRatingSelections,\n\t\tARMeritRatingSelections,\n\t\tDEMeritRatingSelections,\n\t\tGAMeritRatingSelections,\n\t\tHIMeritRatingSelections,\n\t\tMAMeritRatingSelections,\n\t\tMEMeritRatingSelections,\n\t\tMIMeritRatingSelections,\n\t\tNYMeritRatingSelections,\n\t\tOKMeritRatingSelections,\n\t\tORMeritRatingSelections,\n\t\tPAMeritRatingSelections,\n\t\tSDMeritRatingSelections,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCWCCoverageMeritRatingStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tCoverageId,\n\tWC_CoverageMeritRatingId,\n\tSessionId,\n\tALMeritRatingSelections,\n\tARMeritRatingSelections,\n\tDEMeritRatingSelections,\n\tGAMeritRatingSelections,\n\tHIMeritRatingSelections,\n\tMAMeritRatingSelections,\n\tMEMeritRatingSelections,\n\tMIMeritRatingSelections,\n\tNYMeritRatingSelections,\n\tOKMeritRatingSelections,\n\tORMeritRatingSelections,\n\tPAMeritRatingSelections,\n\tSDMeritRatingSelections,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCWCCoverageMeritRatingStaging\n),\narchDCWCCoverageMeritRatingStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCWCCoverageMeritRatingStaging\n\t(CoverageId, WC_CoverageMeritRatingId, SessionId, ALMeritRatingSelections, ARMeritRatingSelections, DEMeritRatingSelections, GAMeritRatingSelections, HIMeritRatingSelections, MAMeritRatingSelections, MEMeritRatingSelections, MIMeritRatingSelections, NYMeritRatingSelections, OKMeritRatingSelections, ORMeritRatingSelections, PAMeritRatingSelections, SDMeritRatingSelections, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tCOVERAGEID, \n\tWC_COVERAGEMERITRATINGID, \n\tSESSIONID, \n\tALMERITRATINGSELECTIONS, \n\tARMERITRATINGSELECTIONS, \n\tDEMERITRATINGSELECTIONS, \n\tGAMERITRATINGSELECTIONS, \n\tHIMERITRATINGSELECTIONS, \n\tMAMERITRATINGSELECTIONS, \n\tMEMERITRATINGSELECTIONS, \n\tMIMERITRATINGSELECTIONS, \n\tNYMERITRATINGSELECTIONS, \n\tOKMERITRATINGSELECTIONS, \n\tORMERITRATINGSELECTIONS, \n\tPAMERITRATINGSELECTIONS, \n\tSDMERITRATINGSELECTIONS, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

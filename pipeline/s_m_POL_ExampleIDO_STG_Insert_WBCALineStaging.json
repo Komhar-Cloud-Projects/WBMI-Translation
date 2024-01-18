@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBCALineStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBCALineStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_CA_Line AS (\n\tWITH cte_WBCALine(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CA_LineId, \r\n\tX.WB_CA_LineId, \r\n\tX.SessionId, \r\n\tX.CheckWB1327, \r\n\tX.Commission, \r\n\tX.ConsentToRate, \r\n\tX.ContributionIndicator, \r\n\tX.OverrideIndicator, \r\n\tX.PolicyType, \r\n\tX.Override, \r\n\tX.RatingInfo1, \r\n\tX.RatingInfo2, \r\n\tX.Instructions1, \r\n\tX.Instructions2,\r\n\tX.GarageDealerClassCode,\r\n\tX.CoverageForm \r\n\tFROM\r\n\tWB_CA_Line X\r\n\tinner join\r\n\tcte_WBCALine Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_HANDLE AS (\n\tSELECT\n\tCA_LineId AS i_CA_LineId,\n\tWB_CA_LineId AS i_WB_CA_LineId,\n\tSessionId AS i_SessionId,\n\tCheckWB1327 AS i_CheckWB1327,\n\tCommission AS i_Commission,\n\tConsentToRate AS i_ConsentToRate,\n\tContributionIndicator AS i_ContributionIndicator,\n\tOverrideIndicator AS i_OverrideIndicator,\n\tPolicyType AS i_PolicyType,\n\tOverride AS i_Override,\n\tRatingInfo1 AS i_RatingInfo1,\n\tRatingInfo2 AS i_RatingInfo2,\n\tInstructions1 AS i_Instructions1,\n\tInstructions2 AS i_Instructions2,\n\tGarageDealerClassCode AS i_GarageDealerClassCode,\n\tCoverageForm AS i_CoverageForm,\n\tsysdate AS o_Extracdate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_sourceSystemid,\n\ti_CA_LineId AS o_CA_LineId,\n\ti_WB_CA_LineId AS o_WB_CA_LineId,\n\ti_SessionId AS o_SessionId,\n\ti_CheckWB1327 AS o_CheckWB1327,\n\ti_Commission AS o_Commission,\n\t-- *INF*: decode(i_ConsentToRate,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_ConsentToRate,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ConsentToRate,\n\t-- *INF*: decode(i_ContributionIndicator,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_ContributionIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ContributionIndicator,\n\t-- *INF*: DECODE(i_OverrideIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_OverrideIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_OverrideIndicator,\n\ti_PolicyType AS o_PolicyType,\n\t-- *INF*: decode(i_Override,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_Override,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Override,\n\ti_RatingInfo1 AS o_RatingInfo1,\n\ti_RatingInfo2 AS o_RatingInfo2,\n\ti_Instructions1 AS o_Instructions1,\n\ti_Instructions2 AS o_Instructions2,\n\ti_GarageDealerClassCode AS o_GarageDealerClassCode,\n\ti_CoverageForm AS o_CoverageForm\n\tFROM SQ_WB_CA_Line\n),\nWBCALineStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCALineStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCALineStaging\n\t(ExtractDate, SourceSystemId, CA_LineId, WB_CA_LineId, SessionId, CheckWB1327, Commission, ConsentToRate, ContributionIndicator, OverrideIndicator, PolicyType, Override, RatingInfo1, RatingInfo2, Instructions1, Instructions2, GarageDealerClassCode, CoverageForm)\n\tSELECT \n\to_Extracdate AS EXTRACTDATE, \n\to_sourceSystemid AS SOURCESYSTEMID, \n\to_CA_LineId AS CA_LINEID, \n\to_WB_CA_LineId AS WB_CA_LINEID, \n\to_SessionId AS SESSIONID, \n\to_CheckWB1327 AS CHECKWB1327, \n\to_Commission AS COMMISSION, \n\to_ConsentToRate AS CONSENTTORATE, \n\to_ContributionIndicator AS CONTRIBUTIONINDICATOR, \n\to_OverrideIndicator AS OVERRIDEINDICATOR, \n\to_PolicyType AS POLICYTYPE, \n\to_Override AS OVERRIDE, \n\to_RatingInfo1 AS RATINGINFO1, \n\to_RatingInfo2 AS RATINGINFO2, \n\to_Instructions1 AS INSTRUCTIONS1, \n\to_Instructions2 AS INSTRUCTIONS2, \n\to_GarageDealerClassCode AS GARAGEDEALERCLASSCODE, \n\to_CoverageForm AS COVERAGEFORM\n\tFROM EXP_HANDLE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

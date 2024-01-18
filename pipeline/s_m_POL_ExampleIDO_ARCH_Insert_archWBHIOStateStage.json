@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archWBHIOStateStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archWBHIOStateStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBHIOStateStage AS (\n\tSELECT\n\t\tWBHIOStateStageId,\n\t\tLineId,\n\t\tWBHIOStateId,\n\t\tSessionId,\n\t\tIsStateUsed,\n\t\tStateAbbreviation,\n\t\tStateNumber,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM WBHIOStateStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBHIOStateStageId,\n\tLineId,\n\tWBHIOStateId,\n\tSessionId,\n\tIsStateUsed AS i_IsStateUsed,\n\t-- *INF*: IIF(i_IsStateUsed='T','1','0')\n\tIFF(i_IsStateUsed = 'T', '1', '0') AS o_IsStateUsed,\n\tStateAbbreviation,\n\tStateNumber,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBHIOStateStage\n),\nArchWBHIOStateStage AS (\n\tINSERT INTO ArchWBHIOStateStage\n\t(ExtractDate, SourceSystemId, AuditId, WBHIOStateStageId, LineId, WBHIOStateId, SessionId, IsStateUsed, StateAbbreviation, StateNumber)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBHIOSTATESTAGEID, \n\tLINEID, \n\tWBHIOSTATEID, \n\tSESSIONID, \n\to_IsStateUsed AS ISSTATEUSED, \n\tSTATEABBREVIATION, \n\tSTATENUMBER\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

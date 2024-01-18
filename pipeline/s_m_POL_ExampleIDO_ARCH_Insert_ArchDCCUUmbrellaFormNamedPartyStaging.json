@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCUUmbrellaFormNamedPartyStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCUUmbrellaFormNam_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCUUmbrellaFormNamedPartyStaging AS (\n\tSELECT\n\t\tDCCUUmbrellaFormNamedPartyStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCU_UmbrellaFormId,\n\t\tCU_UmbrellaFormNamedPartyId,\n\t\tSessionId,\n\t\tType,\n\t\tNameOfPersonOrOrganization\n\tFROM DCCUUmbrellaFormNamedPartyStaging\n),\nEXPTRANS AS (\n\tSELECT\n\tDCCUUmbrellaFormNamedPartyStagingId,\n\tExtractDate,\n\tSourceSystemId,\n\tCU_UmbrellaFormId,\n\tCU_UmbrellaFormNamedPartyId,\n\tSessionId,\n\tType,\n\tNameOfPersonOrOrganization,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_auditid\n\tFROM SQ_DCCUUmbrellaFormNamedPartyStaging\n),\nArchDCCUUmbrellaFormNamedPartyStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCUUmbrellaFormNamedPartyStaging\n\t(ExtractDate, SourceSystemId, AuditId, CU_UmbrellaFormId, CU_UmbrellaFormNamedPartyId, SessionId, Type, NameOfPersonOrOrganization)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_auditid AS AUDITID, \n\tCU_UMBRELLAFORMID, \n\tCU_UMBRELLAFORMNAMEDPARTYID, \n\tSESSIONID, \n\tTYPE, \n\tNAMEOFPERSONORORGANIZATION\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

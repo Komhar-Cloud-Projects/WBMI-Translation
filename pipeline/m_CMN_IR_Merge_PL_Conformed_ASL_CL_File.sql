@@ -44,98 +44,81 @@ EXP_Src_DataCollect AS (
 	-- AND (ISNULL(Sub_Non_Annual_Statement_Line_Code) or IS_SPACES(Sub_Non_Annual_Statement_Line_Code)  or LENGTH(Sub_Non_Annual_Statement_Line_Code)=0)
 	-- AND (ISNULL(Sub_Non_Annual_Statement_Line_Code_Description) or IS_SPACES(Sub_Non_Annual_Statement_Line_Code_Description)  or LENGTH(Sub_Non_Annual_Statement_Line_Code_Description)=0)
 	-- ,1,0)
-	IFF(( Source_System IS NULL 
-			OR LENGTH(Source_System)>0 AND TRIM(Source_System)='' 
-			OR LENGTH(Source_System
-			) = 0 
-		) 
-		AND ( Product_Code IS NULL 
-			OR LENGTH(Product_Code)>0 AND TRIM(Product_Code)='' 
-			OR LENGTH(Product_Code
-			) = 0 
-		) 
-		AND ( Product_Description IS NULL 
-			OR LENGTH(Product_Description)>0 AND TRIM(Product_Description)='' 
-			OR LENGTH(Product_Description
-			) = 0 
-		) 
-		AND ( Coverage_Summary_Code IS NULL 
-			OR LENGTH(Coverage_Summary_Code)>0 AND TRIM(Coverage_Summary_Code)='' 
-			OR LENGTH(Coverage_Summary_Code
-			) = 0 
-		) 
-		AND ( Coverage_Summary_Description IS NULL 
-			OR LENGTH(Coverage_Summary_Description)>0 AND TRIM(Coverage_Summary_Description)='' 
-			OR LENGTH(Coverage_Summary_Description
-			) = 0 
-		) 
-		AND ( Coverage_Group_Code IS NULL 
-			OR LENGTH(Coverage_Group_Code)>0 AND TRIM(Coverage_Group_Code)='' 
-			OR LENGTH(Coverage_Group_Code
-			) = 0 
-		) 
-		AND ( Coverage_Group_Description IS NULL 
-			OR LENGTH(Coverage_Group_Description)>0 AND TRIM(Coverage_Group_Description)='' 
-			OR LENGTH(Coverage_Group_Description
-			) = 0 
-		) 
-		AND ( Coverage_Code IS NULL 
-			OR LENGTH(Coverage_Code)>0 AND TRIM(Coverage_Code)='' 
-			OR LENGTH(Coverage_Code
-			) = 0 
-		) 
-		AND ( Coverage_Description IS NULL 
-			OR LENGTH(Coverage_Description)>0 AND TRIM(Coverage_Description)='' 
-			OR LENGTH(Coverage_Description
-			) = 0 
-		) 
-		AND ( Coverage_Code_ACORD IS NULL 
-			OR LENGTH(Coverage_Code_ACORD)>0 AND TRIM(Coverage_Code_ACORD)='' 
-			OR LENGTH(Coverage_Code_ACORD
-			) = 0 
-		) 
-		AND ( Rated_Coverage_Code IS NULL 
-			OR LENGTH(Rated_Coverage_Code)>0 AND TRIM(Rated_Coverage_Code)='' 
-			OR LENGTH(Rated_Coverage_Code
-			) = 0 
-		) 
-		AND ( Rated_Coverage_Description IS NULL 
-			OR LENGTH(Rated_Coverage_Description)>0 AND TRIM(Rated_Coverage_Description)='' 
-			OR LENGTH(Rated_Coverage_Description
-			) = 0 
-		) 
-		AND ( Annual_Statement_Line_Code IS NULL 
-			OR LENGTH(Annual_Statement_Line_Code)>0 AND TRIM(Annual_Statement_Line_Code)='' 
-			OR LENGTH(Annual_Statement_Line_Code
-			) = 0 
-		) 
-		AND ( Annual_Statement_Line_Code_Description IS NULL 
-			OR LENGTH(Annual_Statement_Line_Code_Description)>0 AND TRIM(Annual_Statement_Line_Code_Description)='' 
-			OR LENGTH(Annual_Statement_Line_Code_Description
-			) = 0 
-		) 
-		AND ( Sub_Annual_Statement_Line_Code IS NULL 
-			OR LENGTH(Sub_Annual_Statement_Line_Code)>0 AND TRIM(Sub_Annual_Statement_Line_Code)='' 
-			OR LENGTH(Sub_Annual_Statement_Line_Code
-			) = 0 
-		) 
-		AND ( Sub_Annual_Statement_Line_Code_Description IS NULL 
-			OR LENGTH(Sub_Annual_Statement_Line_Code_Description)>0 AND TRIM(Sub_Annual_Statement_Line_Code_Description)='' 
-			OR LENGTH(Sub_Annual_Statement_Line_Code_Description
-			) = 0 
-		) 
-		AND ( Sub_Non_Annual_Statement_Line_Code IS NULL 
-			OR LENGTH(Sub_Non_Annual_Statement_Line_Code)>0 AND TRIM(Sub_Non_Annual_Statement_Line_Code)='' 
-			OR LENGTH(Sub_Non_Annual_Statement_Line_Code
-			) = 0 
-		) 
-		AND ( Sub_Non_Annual_Statement_Line_Code_Description IS NULL 
-			OR LENGTH(Sub_Non_Annual_Statement_Line_Code_Description)>0 AND TRIM(Sub_Non_Annual_Statement_Line_Code_Description)='' 
-			OR LENGTH(Sub_Non_Annual_Statement_Line_Code_Description
-			) = 0 
-		),
-		1,
-		0
+	IFF(
+	    (Source_System IS NULL
+	    or LENGTH(Source_System)>0
+	    and TRIM(Source_System)=''
+	    or LENGTH(Source_System) = 0)
+	    and (Product_Code IS NULL
+	    or LENGTH(Product_Code)>0
+	    and TRIM(Product_Code)=''
+	    or LENGTH(Product_Code) = 0)
+	    and (Product_Description IS NULL
+	    or LENGTH(Product_Description)>0
+	    and TRIM(Product_Description)=''
+	    or LENGTH(Product_Description) = 0)
+	    and (Coverage_Summary_Code IS NULL
+	    or LENGTH(Coverage_Summary_Code)>0
+	    and TRIM(Coverage_Summary_Code)=''
+	    or LENGTH(Coverage_Summary_Code) = 0)
+	    and (Coverage_Summary_Description IS NULL
+	    or LENGTH(Coverage_Summary_Description)>0
+	    and TRIM(Coverage_Summary_Description)=''
+	    or LENGTH(Coverage_Summary_Description) = 0)
+	    and (Coverage_Group_Code IS NULL
+	    or LENGTH(Coverage_Group_Code)>0
+	    and TRIM(Coverage_Group_Code)=''
+	    or LENGTH(Coverage_Group_Code) = 0)
+	    and (Coverage_Group_Description IS NULL
+	    or LENGTH(Coverage_Group_Description)>0
+	    and TRIM(Coverage_Group_Description)=''
+	    or LENGTH(Coverage_Group_Description) = 0)
+	    and (Coverage_Code IS NULL
+	    or LENGTH(Coverage_Code)>0
+	    and TRIM(Coverage_Code)=''
+	    or LENGTH(Coverage_Code) = 0)
+	    and (Coverage_Description IS NULL
+	    or LENGTH(Coverage_Description)>0
+	    and TRIM(Coverage_Description)=''
+	    or LENGTH(Coverage_Description) = 0)
+	    and (Coverage_Code_ACORD IS NULL
+	    or LENGTH(Coverage_Code_ACORD)>0
+	    and TRIM(Coverage_Code_ACORD)=''
+	    or LENGTH(Coverage_Code_ACORD) = 0)
+	    and (Rated_Coverage_Code IS NULL
+	    or LENGTH(Rated_Coverage_Code)>0
+	    and TRIM(Rated_Coverage_Code)=''
+	    or LENGTH(Rated_Coverage_Code) = 0)
+	    and (Rated_Coverage_Description IS NULL
+	    or LENGTH(Rated_Coverage_Description)>0
+	    and TRIM(Rated_Coverage_Description)=''
+	    or LENGTH(Rated_Coverage_Description) = 0)
+	    and (Annual_Statement_Line_Code IS NULL
+	    or LENGTH(Annual_Statement_Line_Code)>0
+	    and TRIM(Annual_Statement_Line_Code)=''
+	    or LENGTH(Annual_Statement_Line_Code) = 0)
+	    and (Annual_Statement_Line_Code_Description IS NULL
+	    or LENGTH(Annual_Statement_Line_Code_Description)>0
+	    and TRIM(Annual_Statement_Line_Code_Description)=''
+	    or LENGTH(Annual_Statement_Line_Code_Description) = 0)
+	    and (Sub_Annual_Statement_Line_Code IS NULL
+	    or LENGTH(Sub_Annual_Statement_Line_Code)>0
+	    and TRIM(Sub_Annual_Statement_Line_Code)=''
+	    or LENGTH(Sub_Annual_Statement_Line_Code) = 0)
+	    and (Sub_Annual_Statement_Line_Code_Description IS NULL
+	    or LENGTH(Sub_Annual_Statement_Line_Code_Description)>0
+	    and TRIM(Sub_Annual_Statement_Line_Code_Description)=''
+	    or LENGTH(Sub_Annual_Statement_Line_Code_Description) = 0)
+	    and (Sub_Non_Annual_Statement_Line_Code IS NULL
+	    or LENGTH(Sub_Non_Annual_Statement_Line_Code)>0
+	    and TRIM(Sub_Non_Annual_Statement_Line_Code)=''
+	    or LENGTH(Sub_Non_Annual_Statement_Line_Code) = 0)
+	    and (Sub_Non_Annual_Statement_Line_Code_Description IS NULL
+	    or LENGTH(Sub_Non_Annual_Statement_Line_Code_Description)>0
+	    and TRIM(Sub_Non_Annual_Statement_Line_Code_Description)=''
+	    or LENGTH(Sub_Non_Annual_Statement_Line_Code_Description) = 0),
+	    1,
+	    0
 	) AS o_FilterFlag
 	FROM SQ_PL_Conformed_Coverage_MasterFile
 ),
@@ -263,138 +246,113 @@ EXP_Src_DataCollect_CC AS (
 	-- AND (ISNULL(LossHistoryDescription) or IS_SPACES(LossHistoryDescription)  or LENGTH(LossHistoryDescription)=0)
 	-- AND (ISNULL(ISOMajorCrimeGroup) or IS_SPACES(ISOMajorCrimeGroup)  or LENGTH(ISOMajorCrimeGroup)=0)
 	-- ,1,0)
-	IFF(( CoverageSummaryCode IS NULL 
-			OR LENGTH(CoverageSummaryCode)>0 AND TRIM(CoverageSummaryCode)='' 
-			OR LENGTH(CoverageSummaryCode
-			) = 0 
-		) 
-		AND ( CoverageSummaryDescription IS NULL 
-			OR LENGTH(CoverageSummaryDescription)>0 AND TRIM(CoverageSummaryDescription)='' 
-			OR LENGTH(CoverageSummaryDescription
-			) = 0 
-		) 
-		AND ( CoverageGroupCode IS NULL 
-			OR LENGTH(CoverageGroupCode)>0 AND TRIM(CoverageGroupCode)='' 
-			OR LENGTH(CoverageGroupCode
-			) = 0 
-		) 
-		AND ( CoverageGroupDescription IS NULL 
-			OR LENGTH(CoverageGroupDescription)>0 AND TRIM(CoverageGroupDescription)='' 
-			OR LENGTH(CoverageGroupDescription
-			) = 0 
-		) 
-		AND ( CoverageCode IS NULL 
-			OR LENGTH(CoverageCode)>0 AND TRIM(CoverageCode)='' 
-			OR LENGTH(CoverageCode
-			) = 0 
-		) 
-		AND ( CoverageDescription IS NULL 
-			OR LENGTH(CoverageDescription)>0 AND TRIM(CoverageDescription)='' 
-			OR LENGTH(CoverageDescription
-			) = 0 
-		) 
-		AND ( RatedCoverageCode IS NULL 
-			OR LENGTH(RatedCoverageCode)>0 AND TRIM(RatedCoverageCode)='' 
-			OR LENGTH(RatedCoverageCode
-			) = 0 
-		) 
-		AND ( RatedCoverageDescription IS NULL 
-			OR LENGTH(RatedCoverageDescription)>0 AND TRIM(RatedCoverageDescription)='' 
-			OR LENGTH(RatedCoverageDescription
-			) = 0 
-		) 
-		AND ( InsuranceLineCode IS NULL 
-			OR LENGTH(InsuranceLineCode)>0 AND TRIM(InsuranceLineCode)='' 
-			OR LENGTH(InsuranceLineCode
-			) = 0 
-		) 
-		AND ( InsuranceLineDescription IS NULL 
-			OR LENGTH(InsuranceLineDescription)>0 AND TRIM(InsuranceLineDescription)='' 
-			OR LENGTH(InsuranceLineDescription
-			) = 0 
-		) 
-		AND ( SourceSystemId IS NULL 
-			OR LENGTH(SourceSystemId)>0 AND TRIM(SourceSystemId)='' 
-			OR LENGTH(SourceSystemId
-			) = 0 
-		) 
-		AND ( DctRiskTypeCode IS NULL 
-			OR LENGTH(DctRiskTypeCode)>0 AND TRIM(DctRiskTypeCode)='' 
-			OR LENGTH(DctRiskTypeCode
-			) = 0 
-		) 
-		AND ( DctCoverageTypeCode IS NULL 
-			OR LENGTH(DctCoverageTypeCode)>0 AND TRIM(DctCoverageTypeCode)='' 
-			OR LENGTH(DctCoverageTypeCode
-			) = 0 
-		) 
-		AND ( DctSubCoverageTypeCode IS NULL 
-			OR LENGTH(DctSubCoverageTypeCode)>0 AND TRIM(DctSubCoverageTypeCode)='' 
-			OR LENGTH(DctSubCoverageTypeCode
-			) = 0 
-		) 
-		AND ( DctPerilGroup IS NULL 
-			OR LENGTH(DctPerilGroup)>0 AND TRIM(DctPerilGroup)='' 
-			OR LENGTH(DctPerilGroup
-			) = 0 
-		) 
-		AND ( DctCoverageVersion IS NULL 
-			OR LENGTH(DctCoverageVersion)>0 AND TRIM(DctCoverageVersion)='' 
-			OR LENGTH(DctCoverageVersion
-			) = 0 
-		) 
-		AND ( PmsRiskUnitGroupCode IS NULL 
-			OR LENGTH(PmsRiskUnitGroupCode)>0 AND TRIM(PmsRiskUnitGroupCode)='' 
-			OR LENGTH(PmsRiskUnitGroupCode
-			) = 0 
-		) 
-		AND ( PmsRiskUnitGroupDescription IS NULL 
-			OR LENGTH(PmsRiskUnitGroupDescription)>0 AND TRIM(PmsRiskUnitGroupDescription)='' 
-			OR LENGTH(PmsRiskUnitGroupDescription
-			) = 0 
-		) 
-		AND ( PmsRiskUnitCode IS NULL 
-			OR LENGTH(PmsRiskUnitCode)>0 AND TRIM(PmsRiskUnitCode)='' 
-			OR LENGTH(PmsRiskUnitCode
-			) = 0 
-		) 
-		AND ( PmsRiskUnitDescription IS NULL 
-			OR LENGTH(PmsRiskUnitDescription)>0 AND TRIM(PmsRiskUnitDescription)='' 
-			OR LENGTH(PmsRiskUnitDescription
-			) = 0 
-		) 
-		AND ( PmsMajorPerilCode IS NULL 
-			OR LENGTH(PmsMajorPerilCode)>0 AND TRIM(PmsMajorPerilCode)='' 
-			OR LENGTH(PmsMajorPerilCode
-			) = 0 
-		) 
-		AND ( PmsMajorPerilDescription IS NULL 
-			OR LENGTH(PmsMajorPerilDescription)>0 AND TRIM(PmsMajorPerilDescription)='' 
-			OR LENGTH(PmsMajorPerilDescription
-			) = 0 
-		) 
-		AND ( PmsProductTypeCode IS NULL 
-			OR LENGTH(PmsProductTypeCode)>0 AND TRIM(PmsProductTypeCode)='' 
-			OR LENGTH(PmsProductTypeCode
-			) = 0 
-		) 
-		AND ( LossHistoryCode IS NULL 
-			OR LENGTH(LossHistoryCode)>0 AND TRIM(LossHistoryCode)='' 
-			OR LENGTH(LossHistoryCode
-			) = 0 
-		) 
-		AND ( LossHistoryDescription IS NULL 
-			OR LENGTH(LossHistoryDescription)>0 AND TRIM(LossHistoryDescription)='' 
-			OR LENGTH(LossHistoryDescription
-			) = 0 
-		) 
-		AND ( ISOMajorCrimeGroup IS NULL 
-			OR LENGTH(ISOMajorCrimeGroup)>0 AND TRIM(ISOMajorCrimeGroup)='' 
-			OR LENGTH(ISOMajorCrimeGroup
-			) = 0 
-		),
-		1,
-		0
+	IFF(
+	    (CoverageSummaryCode IS NULL
+	    or LENGTH(CoverageSummaryCode)>0
+	    and TRIM(CoverageSummaryCode)=''
+	    or LENGTH(CoverageSummaryCode) = 0)
+	    and (CoverageSummaryDescription IS NULL
+	    or LENGTH(CoverageSummaryDescription)>0
+	    and TRIM(CoverageSummaryDescription)=''
+	    or LENGTH(CoverageSummaryDescription) = 0)
+	    and (CoverageGroupCode IS NULL
+	    or LENGTH(CoverageGroupCode)>0
+	    and TRIM(CoverageGroupCode)=''
+	    or LENGTH(CoverageGroupCode) = 0)
+	    and (CoverageGroupDescription IS NULL
+	    or LENGTH(CoverageGroupDescription)>0
+	    and TRIM(CoverageGroupDescription)=''
+	    or LENGTH(CoverageGroupDescription) = 0)
+	    and (CoverageCode IS NULL
+	    or LENGTH(CoverageCode)>0
+	    and TRIM(CoverageCode)=''
+	    or LENGTH(CoverageCode) = 0)
+	    and (CoverageDescription IS NULL
+	    or LENGTH(CoverageDescription)>0
+	    and TRIM(CoverageDescription)=''
+	    or LENGTH(CoverageDescription) = 0)
+	    and (RatedCoverageCode IS NULL
+	    or LENGTH(RatedCoverageCode)>0
+	    and TRIM(RatedCoverageCode)=''
+	    or LENGTH(RatedCoverageCode) = 0)
+	    and (RatedCoverageDescription IS NULL
+	    or LENGTH(RatedCoverageDescription)>0
+	    and TRIM(RatedCoverageDescription)=''
+	    or LENGTH(RatedCoverageDescription) = 0)
+	    and (InsuranceLineCode IS NULL
+	    or LENGTH(InsuranceLineCode)>0
+	    and TRIM(InsuranceLineCode)=''
+	    or LENGTH(InsuranceLineCode) = 0)
+	    and (InsuranceLineDescription IS NULL
+	    or LENGTH(InsuranceLineDescription)>0
+	    and TRIM(InsuranceLineDescription)=''
+	    or LENGTH(InsuranceLineDescription) = 0)
+	    and (SourceSystemId IS NULL
+	    or LENGTH(SourceSystemId)>0
+	    and TRIM(SourceSystemId)=''
+	    or LENGTH(SourceSystemId) = 0)
+	    and (DctRiskTypeCode IS NULL
+	    or LENGTH(DctRiskTypeCode)>0
+	    and TRIM(DctRiskTypeCode)=''
+	    or LENGTH(DctRiskTypeCode) = 0)
+	    and (DctCoverageTypeCode IS NULL
+	    or LENGTH(DctCoverageTypeCode)>0
+	    and TRIM(DctCoverageTypeCode)=''
+	    or LENGTH(DctCoverageTypeCode) = 0)
+	    and (DctSubCoverageTypeCode IS NULL
+	    or LENGTH(DctSubCoverageTypeCode)>0
+	    and TRIM(DctSubCoverageTypeCode)=''
+	    or LENGTH(DctSubCoverageTypeCode) = 0)
+	    and (DctPerilGroup IS NULL
+	    or LENGTH(DctPerilGroup)>0
+	    and TRIM(DctPerilGroup)=''
+	    or LENGTH(DctPerilGroup) = 0)
+	    and (DctCoverageVersion IS NULL
+	    or LENGTH(DctCoverageVersion)>0
+	    and TRIM(DctCoverageVersion)=''
+	    or LENGTH(DctCoverageVersion) = 0)
+	    and (PmsRiskUnitGroupCode IS NULL
+	    or LENGTH(PmsRiskUnitGroupCode)>0
+	    and TRIM(PmsRiskUnitGroupCode)=''
+	    or LENGTH(PmsRiskUnitGroupCode) = 0)
+	    and (PmsRiskUnitGroupDescription IS NULL
+	    or LENGTH(PmsRiskUnitGroupDescription)>0
+	    and TRIM(PmsRiskUnitGroupDescription)=''
+	    or LENGTH(PmsRiskUnitGroupDescription) = 0)
+	    and (PmsRiskUnitCode IS NULL
+	    or LENGTH(PmsRiskUnitCode)>0
+	    and TRIM(PmsRiskUnitCode)=''
+	    or LENGTH(PmsRiskUnitCode) = 0)
+	    and (PmsRiskUnitDescription IS NULL
+	    or LENGTH(PmsRiskUnitDescription)>0
+	    and TRIM(PmsRiskUnitDescription)=''
+	    or LENGTH(PmsRiskUnitDescription) = 0)
+	    and (PmsMajorPerilCode IS NULL
+	    or LENGTH(PmsMajorPerilCode)>0
+	    and TRIM(PmsMajorPerilCode)=''
+	    or LENGTH(PmsMajorPerilCode) = 0)
+	    and (PmsMajorPerilDescription IS NULL
+	    or LENGTH(PmsMajorPerilDescription)>0
+	    and TRIM(PmsMajorPerilDescription)=''
+	    or LENGTH(PmsMajorPerilDescription) = 0)
+	    and (PmsProductTypeCode IS NULL
+	    or LENGTH(PmsProductTypeCode)>0
+	    and TRIM(PmsProductTypeCode)=''
+	    or LENGTH(PmsProductTypeCode) = 0)
+	    and (LossHistoryCode IS NULL
+	    or LENGTH(LossHistoryCode)>0
+	    and TRIM(LossHistoryCode)=''
+	    or LENGTH(LossHistoryCode) = 0)
+	    and (LossHistoryDescription IS NULL
+	    or LENGTH(LossHistoryDescription)>0
+	    and TRIM(LossHistoryDescription)=''
+	    or LENGTH(LossHistoryDescription) = 0)
+	    and (ISOMajorCrimeGroup IS NULL
+	    or LENGTH(ISOMajorCrimeGroup)>0
+	    and TRIM(ISOMajorCrimeGroup)=''
+	    or LENGTH(ISOMajorCrimeGroup) = 0),
+	    1,
+	    0
 	) AS o_FilterFlag
 	FROM SQ_CSV_ConformedCoverage
 ),
@@ -598,148 +556,121 @@ EXP_Src_DataCollect_ASL AS (
 	-- AND (ISNULL(PmsMajorPerilDescription) or IS_SPACES(PmsMajorPerilDescription)  or LENGTH(PmsMajorPerilDescription)=0)
 	-- AND (ISNULL(PmsProductTypeCode) or IS_SPACES(PmsProductTypeCode)  or LENGTH(PmsProductTypeCode)=0)
 	-- ,1,0)
-	IFF(( ASLCode IS NULL 
-			OR LENGTH(ASLCode)>0 AND TRIM(ASLCode)='' 
-			OR LENGTH(ASLCode
-			) = 0 
-		) 
-		AND ( ASLCodeDescription IS NULL 
-			OR LENGTH(ASLCodeDescription)>0 AND TRIM(ASLCodeDescription)='' 
-			OR LENGTH(ASLCodeDescription
-			) = 0 
-		) 
-		AND ( SubASLCode IS NULL 
-			OR LENGTH(SubASLCode)>0 AND TRIM(SubASLCode)='' 
-			OR LENGTH(SubASLCode
-			) = 0 
-		) 
-		AND ( SubASLCodeDescription IS NULL 
-			OR LENGTH(SubASLCodeDescription)>0 AND TRIM(SubASLCodeDescription)='' 
-			OR LENGTH(SubASLCodeDescription
-			) = 0 
-		) 
-		AND ( NonSubASLCode IS NULL 
-			OR LENGTH(NonSubASLCode)>0 AND TRIM(NonSubASLCode)='' 
-			OR LENGTH(NonSubASLCode
-			) = 0 
-		) 
-		AND ( NonSubASLCodeDescription IS NULL 
-			OR LENGTH(NonSubASLCodeDescription)>0 AND TRIM(NonSubASLCodeDescription)='' 
-			OR LENGTH(NonSubASLCodeDescription
-			) = 0 
-		) 
-		AND ( InsuranceLineCode IS NULL 
-			OR LENGTH(InsuranceLineCode)>0 AND TRIM(InsuranceLineCode)='' 
-			OR LENGTH(InsuranceLineCode
-			) = 0 
-		) 
-		AND ( InsuranceLineDescription IS NULL 
-			OR LENGTH(InsuranceLineDescription)>0 AND TRIM(InsuranceLineDescription)='' 
-			OR LENGTH(InsuranceLineDescription
-			) = 0 
-		) 
-		AND ( RatedCoverageCode IS NULL 
-			OR LENGTH(RatedCoverageCode)>0 AND TRIM(RatedCoverageCode)='' 
-			OR LENGTH(RatedCoverageCode
-			) = 0 
-		) 
-		AND ( RatedCoverageDescription IS NULL 
-			OR LENGTH(RatedCoverageDescription)>0 AND TRIM(RatedCoverageDescription)='' 
-			OR LENGTH(RatedCoverageDescription
-			) = 0 
-		) 
-		AND ( CoverageSummaryCode IS NULL 
-			OR LENGTH(CoverageSummaryCode)>0 AND TRIM(CoverageSummaryCode)='' 
-			OR LENGTH(CoverageSummaryCode
-			) = 0 
-		) 
-		AND ( CoverageSummaryDescription IS NULL 
-			OR LENGTH(CoverageSummaryDescription)>0 AND TRIM(CoverageSummaryDescription)='' 
-			OR LENGTH(CoverageSummaryDescription
-			) = 0 
-		) 
-		AND ( CoverageGroupCode IS NULL 
-			OR LENGTH(CoverageGroupCode)>0 AND TRIM(CoverageGroupCode)='' 
-			OR LENGTH(CoverageGroupCode
-			) = 0 
-		) 
-		AND ( CoverageGroupDescription IS NULL 
-			OR LENGTH(CoverageGroupDescription)>0 AND TRIM(CoverageGroupDescription)='' 
-			OR LENGTH(CoverageGroupDescription
-			) = 0 
-		) 
-		AND ( CoverageCode IS NULL 
-			OR LENGTH(CoverageCode)>0 AND TRIM(CoverageCode)='' 
-			OR LENGTH(CoverageCode
-			) = 0 
-		) 
-		AND ( CoverageDescription IS NULL 
-			OR LENGTH(CoverageDescription)>0 AND TRIM(CoverageDescription)='' 
-			OR LENGTH(CoverageDescription
-			) = 0 
-		) 
-		AND ( DctRiskTypeCode IS NULL 
-			OR LENGTH(DctRiskTypeCode)>0 AND TRIM(DctRiskTypeCode)='' 
-			OR LENGTH(DctRiskTypeCode
-			) = 0 
-		) 
-		AND ( DctCoverageTypeCode IS NULL 
-			OR LENGTH(DctCoverageTypeCode)>0 AND TRIM(DctCoverageTypeCode)='' 
-			OR LENGTH(DctCoverageTypeCode
-			) = 0 
-		) 
-		AND ( DctSubCoverageTypeCode IS NULL 
-			OR LENGTH(DctSubCoverageTypeCode)>0 AND TRIM(DctSubCoverageTypeCode)='' 
-			OR LENGTH(DctSubCoverageTypeCode
-			) = 0 
-		) 
-		AND ( DctPerilGroup IS NULL 
-			OR LENGTH(DctPerilGroup)>0 AND TRIM(DctPerilGroup)='' 
-			OR LENGTH(DctPerilGroup
-			) = 0 
-		) 
-		AND ( DctCoverageVersion IS NULL 
-			OR LENGTH(DctCoverageVersion)>0 AND TRIM(DctCoverageVersion)='' 
-			OR LENGTH(DctCoverageVersion
-			) = 0 
-		) 
-		AND ( PmsRiskUnitGroupCode IS NULL 
-			OR LENGTH(PmsRiskUnitGroupCode)>0 AND TRIM(PmsRiskUnitGroupCode)='' 
-			OR LENGTH(PmsRiskUnitGroupCode
-			) = 0 
-		) 
-		AND ( PmsRiskUnitGroupDescription IS NULL 
-			OR LENGTH(PmsRiskUnitGroupDescription)>0 AND TRIM(PmsRiskUnitGroupDescription)='' 
-			OR LENGTH(PmsRiskUnitGroupDescription
-			) = 0 
-		) 
-		AND ( PmsRiskUnitCode IS NULL 
-			OR LENGTH(PmsRiskUnitCode)>0 AND TRIM(PmsRiskUnitCode)='' 
-			OR LENGTH(PmsRiskUnitCode
-			) = 0 
-		) 
-		AND ( PmsRiskUnitDescription IS NULL 
-			OR LENGTH(PmsRiskUnitDescription)>0 AND TRIM(PmsRiskUnitDescription)='' 
-			OR LENGTH(PmsRiskUnitDescription
-			) = 0 
-		) 
-		AND ( PmsMajorPerilCode IS NULL 
-			OR LENGTH(PmsMajorPerilCode)>0 AND TRIM(PmsMajorPerilCode)='' 
-			OR LENGTH(PmsMajorPerilCode
-			) = 0 
-		) 
-		AND ( PmsMajorPerilDescription IS NULL 
-			OR LENGTH(PmsMajorPerilDescription)>0 AND TRIM(PmsMajorPerilDescription)='' 
-			OR LENGTH(PmsMajorPerilDescription
-			) = 0 
-		) 
-		AND ( PmsProductTypeCode IS NULL 
-			OR LENGTH(PmsProductTypeCode)>0 AND TRIM(PmsProductTypeCode)='' 
-			OR LENGTH(PmsProductTypeCode
-			) = 0 
-		),
-		1,
-		0
+	IFF(
+	    (ASLCode IS NULL
+	    or LENGTH(ASLCode)>0
+	    and TRIM(ASLCode)=''
+	    or LENGTH(ASLCode) = 0)
+	    and (ASLCodeDescription IS NULL
+	    or LENGTH(ASLCodeDescription)>0
+	    and TRIM(ASLCodeDescription)=''
+	    or LENGTH(ASLCodeDescription) = 0)
+	    and (SubASLCode IS NULL
+	    or LENGTH(SubASLCode)>0
+	    and TRIM(SubASLCode)=''
+	    or LENGTH(SubASLCode) = 0)
+	    and (SubASLCodeDescription IS NULL
+	    or LENGTH(SubASLCodeDescription)>0
+	    and TRIM(SubASLCodeDescription)=''
+	    or LENGTH(SubASLCodeDescription) = 0)
+	    and (NonSubASLCode IS NULL
+	    or LENGTH(NonSubASLCode)>0
+	    and TRIM(NonSubASLCode)=''
+	    or LENGTH(NonSubASLCode) = 0)
+	    and (NonSubASLCodeDescription IS NULL
+	    or LENGTH(NonSubASLCodeDescription)>0
+	    and TRIM(NonSubASLCodeDescription)=''
+	    or LENGTH(NonSubASLCodeDescription) = 0)
+	    and (InsuranceLineCode IS NULL
+	    or LENGTH(InsuranceLineCode)>0
+	    and TRIM(InsuranceLineCode)=''
+	    or LENGTH(InsuranceLineCode) = 0)
+	    and (InsuranceLineDescription IS NULL
+	    or LENGTH(InsuranceLineDescription)>0
+	    and TRIM(InsuranceLineDescription)=''
+	    or LENGTH(InsuranceLineDescription) = 0)
+	    and (RatedCoverageCode IS NULL
+	    or LENGTH(RatedCoverageCode)>0
+	    and TRIM(RatedCoverageCode)=''
+	    or LENGTH(RatedCoverageCode) = 0)
+	    and (RatedCoverageDescription IS NULL
+	    or LENGTH(RatedCoverageDescription)>0
+	    and TRIM(RatedCoverageDescription)=''
+	    or LENGTH(RatedCoverageDescription) = 0)
+	    and (CoverageSummaryCode IS NULL
+	    or LENGTH(CoverageSummaryCode)>0
+	    and TRIM(CoverageSummaryCode)=''
+	    or LENGTH(CoverageSummaryCode) = 0)
+	    and (CoverageSummaryDescription IS NULL
+	    or LENGTH(CoverageSummaryDescription)>0
+	    and TRIM(CoverageSummaryDescription)=''
+	    or LENGTH(CoverageSummaryDescription) = 0)
+	    and (CoverageGroupCode IS NULL
+	    or LENGTH(CoverageGroupCode)>0
+	    and TRIM(CoverageGroupCode)=''
+	    or LENGTH(CoverageGroupCode) = 0)
+	    and (CoverageGroupDescription IS NULL
+	    or LENGTH(CoverageGroupDescription)>0
+	    and TRIM(CoverageGroupDescription)=''
+	    or LENGTH(CoverageGroupDescription) = 0)
+	    and (CoverageCode IS NULL
+	    or LENGTH(CoverageCode)>0
+	    and TRIM(CoverageCode)=''
+	    or LENGTH(CoverageCode) = 0)
+	    and (CoverageDescription IS NULL
+	    or LENGTH(CoverageDescription)>0
+	    and TRIM(CoverageDescription)=''
+	    or LENGTH(CoverageDescription) = 0)
+	    and (DctRiskTypeCode IS NULL
+	    or LENGTH(DctRiskTypeCode)>0
+	    and TRIM(DctRiskTypeCode)=''
+	    or LENGTH(DctRiskTypeCode) = 0)
+	    and (DctCoverageTypeCode IS NULL
+	    or LENGTH(DctCoverageTypeCode)>0
+	    and TRIM(DctCoverageTypeCode)=''
+	    or LENGTH(DctCoverageTypeCode) = 0)
+	    and (DctSubCoverageTypeCode IS NULL
+	    or LENGTH(DctSubCoverageTypeCode)>0
+	    and TRIM(DctSubCoverageTypeCode)=''
+	    or LENGTH(DctSubCoverageTypeCode) = 0)
+	    and (DctPerilGroup IS NULL
+	    or LENGTH(DctPerilGroup)>0
+	    and TRIM(DctPerilGroup)=''
+	    or LENGTH(DctPerilGroup) = 0)
+	    and (DctCoverageVersion IS NULL
+	    or LENGTH(DctCoverageVersion)>0
+	    and TRIM(DctCoverageVersion)=''
+	    or LENGTH(DctCoverageVersion) = 0)
+	    and (PmsRiskUnitGroupCode IS NULL
+	    or LENGTH(PmsRiskUnitGroupCode)>0
+	    and TRIM(PmsRiskUnitGroupCode)=''
+	    or LENGTH(PmsRiskUnitGroupCode) = 0)
+	    and (PmsRiskUnitGroupDescription IS NULL
+	    or LENGTH(PmsRiskUnitGroupDescription)>0
+	    and TRIM(PmsRiskUnitGroupDescription)=''
+	    or LENGTH(PmsRiskUnitGroupDescription) = 0)
+	    and (PmsRiskUnitCode IS NULL
+	    or LENGTH(PmsRiskUnitCode)>0
+	    and TRIM(PmsRiskUnitCode)=''
+	    or LENGTH(PmsRiskUnitCode) = 0)
+	    and (PmsRiskUnitDescription IS NULL
+	    or LENGTH(PmsRiskUnitDescription)>0
+	    and TRIM(PmsRiskUnitDescription)=''
+	    or LENGTH(PmsRiskUnitDescription) = 0)
+	    and (PmsMajorPerilCode IS NULL
+	    or LENGTH(PmsMajorPerilCode)>0
+	    and TRIM(PmsMajorPerilCode)=''
+	    or LENGTH(PmsMajorPerilCode) = 0)
+	    and (PmsMajorPerilDescription IS NULL
+	    or LENGTH(PmsMajorPerilDescription)>0
+	    and TRIM(PmsMajorPerilDescription)=''
+	    or LENGTH(PmsMajorPerilDescription) = 0)
+	    and (PmsProductTypeCode IS NULL
+	    or LENGTH(PmsProductTypeCode)>0
+	    and TRIM(PmsProductTypeCode)=''
+	    or LENGTH(PmsProductTypeCode) = 0),
+	    1,
+	    0
 	) AS o_FilterFlag
 	FROM SQ_DCTASLCoverageCombinations
 ),

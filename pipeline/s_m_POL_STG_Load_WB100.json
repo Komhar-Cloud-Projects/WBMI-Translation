@@ -1,0 +1,59 @@
+{
+    "name": "s_m_POL_STG_Load_WB100",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Load_WB100",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Coverage_Miscellaneous AS (\n\tselect distinct DT.HistoryID,\r\n\tDC.ID,\r\n\tWCLM.FormNumber,\r\n\tWCLM.FormCaption\r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Policy DP\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Policy WP\r\n\ton DP.Policyid=WP.Policyid\r\n\tand DP.Sessionid=WP.Sessionid\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction DT\r\n\ton DP.SessionId=DT.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session DS\r\n\ton DT.Sessionid=DS.Sessionid\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Coverage DC\r\n\ton DT.SessionId=DC.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_CoverageMiscellaneous WCM\r\n\ton DC.CoverageId=WCM.CoverageId\r\n\tand DC.SessionId=WCM.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_CL_CoverageMiscellaneous WCLM\r\n\ton WCLM.WB_CoverageMiscellaneousId=WCM.WB_CoverageMiscellaneousId\r\n\tand WCLM.SessionId=WCM.SessionId\r\n\twhere WCM.FormRequired=1\r\n\tand DT.HistoryID in (select max(C.HistoryID) HistoryID \r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Policy A\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Policy B\r\n\t\ton A.SessionId=B.SessionId\r\n\t\tand A.PolicyId=B.PolicyId\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction C\r\n\t\ton A.SessionId=C.SessionId\r\n\t\twhere C.State='Committed'\r\n\t\tgroup by B.PolicyNumber, B.PolicyVersionFormatted)\r\n\tand DT.State='Committed'\r\n\tand DT.TransactionDate between @{pipeline().parameters.START_DATE} and @{pipeline().parameters.END_DATE}\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nSQ_WB100 AS (\n\tselect distinct WP.PolicyNumber,\r\n\tWP.PolicyVersionFormatted,\r\n\tDP.EffectiveDate PolicyEffectiveDate,\r\n\tDP.ExpirationDate PolicyExpirationDate,\r\n\tcase when DP.Status='Cancelled' and DT.EffectiveDate>=getdate() then 'InForce'\r\n\twhen DP.Status='InForce' and DP.EffectiveDate>Getdate() then 'FutureInForce' \r\n\twhen DP.Status='InForce' and DP.ExpirationDate<getdate() then 'NotInForce'\r\n\telse DP.Status end PolicyStatus,\r\n\tWPT.CustomerNum,\r\n\tWA.Reference AgencyCode,\r\n\tDPTAG.Name AgencyLegalName,\r\n\tDPTA.Name PartyName,\r\n\tWP.Division,\r\n\tDL.Type InsuranceLine,\r\n\tWP.WBProduct,\r\n\tWP.PolicyProgram,\r\n\tDP.PrimaryRatingState,\r\n\tDC.Written,\r\n\tWCCM.CoverageForm,\r\n\tWCCM.PageCaption,\r\n\tcast(WCCM.Text as varchar(max)) Text,\r\n\tDC.ID CoverageGUID,\r\n\tDT.HistoryID,\r\n\tWCCM.Signature\r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Policy DP\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Policy WP\r\n\ton DP.Policyid=WP.Policyid\r\n\tand DP.Sessionid=WP.Sessionid\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction DT\r\n\ton DP.Sessionid=DT.Sessionid\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session DS\r\n\ton DP.Sessionid=DS.Sessionid\r\n\tinner Join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Line DL\r\n\ton DP.SessionId=DL.Sessionid\r\n\tand DP.PolicyId=DL.PolicyId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Coverage DC\r\n\ton DP.SessionId=DC.SessionId\r\n\tand DL.LineId=DC.ObjectID\r\n\tand DC.ObjectName='DC_Line'\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_CoverageMiscellaneous WCM\r\n\ton DC.CoverageId=WCM.CoverageId\r\n\tand DC.SessionId=WCM.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Party DPTA\r\n\ton DP.SessionId=DPTA.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_PartyAssociation DPAA\r\n\ton DPTA.SessionId=DPAA.SessionId\r\n\tand DPTA.PartyId=DPAA.PartyId\r\n\tand DPAA.PartyAssociationType='Account'\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Party DPTAG\r\n\ton DP.SessionId=DPTAG.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_PartyAssociation DPAAG\r\n\ton DPTAG.SessionId=DPAAG.SessionId\r\n\tand DPTAG.PartyId=DPAAG.PartyId\r\n\tand DPAAG.PartyAssociationType='Agency'\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Party WPT\r\n\ton DPTA.SessionId=WPT.SessionId\r\n\tand DPTA.PartyId=WPT.PartyId\r\n\tleft join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Agency WA\r\n\ton DPTAG.SessionId=WA.SessionId\r\n\tand DPTAG.PartyId=WA.PartyId\r\n\tleft Join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_CL_CoverageMiscellaneous WCCM\r\n\ton DC.SessionId=WCCM.SessionId\r\n\tand WCM.WB_CoverageMiscellaneousId=WCCM.WB_CoverageMiscellaneousId\r\n\twhere WCM.FormRequired=1\r\n\tand DT.State='Committed'\r\n\tand DT.HistoryID in (select max(C.HistoryID) HistoryID \r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Policy A\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Policy B\r\n\t\ton A.SessionId=B.SessionId\r\n\t\tand A.PolicyId=B.PolicyId\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction C\r\n\t\ton A.SessionId=C.SessionId\r\n\t\twhere C.State='Committed'\r\n\t\tgroup by B.PolicyNumber,B.PolicyVersionFormatted)\r\n\tand DT.TransactionDate between @{pipeline().parameters.START_DATE} and @{pipeline().parameters.END_DATE}\r\n\t@{pipeline().parameters.WHERE_CLAUSE_WB}\n),\nJNR_WB100 AS (SELECT\n\tSQ_WB100.PolicyNumber, \n\tSQ_WB100.PolicyVersionFormatted, \n\tSQ_WB100.PolicyEffectiveDate, \n\tSQ_WB100.PolicyExpirationDate, \n\tSQ_WB100.PolicyStatus, \n\tSQ_WB100.CustomerNum, \n\tSQ_WB100.AgencyCode, \n\tSQ_WB100.AgencyLegalName, \n\tSQ_WB100.PartyName, \n\tSQ_WB100.Division, \n\tSQ_WB100.InsuranceLine, \n\tSQ_WB100.WBProduct, \n\tSQ_WB100.PolicyProgram, \n\tSQ_WB100.PrimaryRatingState, \n\tSQ_WB100.Written, \n\tSQ_WB100.CoverageForm, \n\tSQ_WB100.PageCaption, \n\tSQ_WB100.Text, \n\tSQ_WB100.CoverageGUID, \n\tSQ_WB100.HistoryID, \n\tSQ_Coverage_Miscellaneous.HistoryID AS HistoryID1, \n\tSQ_Coverage_Miscellaneous.Id, \n\tSQ_WB100.Signature, \n\tSQ_Coverage_Miscellaneous.FormNumber, \n\tSQ_Coverage_Miscellaneous.FormCaption\n\tFROM SQ_WB100\n\tLEFT OUTER JOIN SQ_Coverage_Miscellaneous\n\tON SQ_Coverage_Miscellaneous.HistoryID = SQ_WB100.HistoryID AND SQ_Coverage_Miscellaneous.Id = SQ_WB100.CoverageGUID\n),\nSRT_WB100 AS (\n\tSELECT\n\tPolicyNumber, \n\tPolicyVersionFormatted, \n\tPolicyEffectiveDate, \n\tPolicyExpirationDate, \n\tPolicyStatus, \n\tCustomerNum, \n\tAgencyCode, \n\tAgencyLegalName, \n\tPartyName, \n\tDivision, \n\tInsuranceLine, \n\tWBProduct, \n\tPolicyProgram, \n\tPrimaryRatingState, \n\tWritten, \n\tCoverageForm, \n\tPageCaption, \n\tText, \n\tCoverageGUID, \n\tHistoryID, \n\tSignature, \n\tFormNumber, \n\tFormCaption\n\tFROM JNR_WB100\n\tORDER BY PolicyNumber ASC, PolicyVersionFormatted ASC\n),\nEXP_WB100 AS (\n\tSELECT\n\tPolicyNumber,\n\tPolicyVersionFormatted,\n\tPolicyEffectiveDate,\n\tPolicyExpirationDate,\n\tPolicyStatus,\n\tCustomerNum,\n\tAgencyCode,\n\tAgencyLegalName AS i_AgencyLegalName,\n\t-- *INF*: chr(34) || i_AgencyLegalName || chr(34)\n\tchr(34) || i_AgencyLegalName || chr(34) AS o_AgencyLegalName,\n\tPartyName AS i_PartyName,\n\t-- *INF*: chr(34) || i_PartyName || chr(34)\n\tchr(34) || i_PartyName || chr(34) AS o_PartyName,\n\tDivision AS i_Division,\n\t-- *INF*: chr(34) || i_Division || chr(34)\n\tchr(34) || i_Division || chr(34) AS o_Division,\n\tInsuranceLine,\n\tWBProduct,\n\tPolicyProgram,\n\tPrimaryRatingState,\n\tWritten,\n\tCoverageForm AS i_CoverageForm,\n\t-- *INF*: chr(34) || i_CoverageForm || chr(34)\n\tchr(34) || i_CoverageForm || chr(34) AS o_CoverageForm,\n\tPageCaption AS i_PageCaption,\n\t-- *INF*: chr(34) || i_PageCaption || chr(34)\n\tchr(34) || i_PageCaption || chr(34) AS o_PageCaption,\n\tText AS i_Text,\n\t-- *INF*: chr(34) || REPLACECHR(0,REPLACECHR(0, REPLACECHR(0, REPLACECHR(0, i_Text, CHR(10), ' '), CHR(13),' '), CHR(9),' '),CHR(34),'') || chr(34)\n\tchr(34) || REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(i_Text,CHR(10),' ','i'),CHR(13),' ','i'),CHR(9),' ','i'),CHR(34),'','i') || chr(34) AS o_Text,\n\tCoverageGUID,\n\tHistoryID,\n\tFormNumber,\n\tSignature AS i_Signature,\n\t-- *INF*: IIF(i_Signature = '1', 'Y', 'N')\n\tIFF(i_Signature = '1', 'Y', 'N') AS v_Signature,\n\t-- *INF*: chr(34) || v_Signature || chr(34)\n\tchr(34) || v_Signature || chr(34) AS o_Signature,\n\tFormCaption AS i_FormCaption,\n\t-- *INF*: chr(34) || i_FormCaption || chr(34)\n\tchr(34) || i_FormCaption || chr(34) AS o_FormCaption\n\tFROM SRT_WB100\n),\nWB100 AS (\n\tINSERT INTO WB100\n\t(PolicyNumber, PolicyVersionFormatted, PolicyEffectiveDate, PolicyExpirationDate, PolicyStatus, CustomerNum, AgencyCode, AgencyLegalName, PartyName, Division, InsuranceLine, WBProduct, PolicyProgram, PrimaryRatingState, Written, CoverageForm, PageCaption, Text, CoverageGUID, HistoryID, Signature, FormNumber, FormCaption)\n\tSELECT \n\tPOLICYNUMBER, \n\tPOLICYVERSIONFORMATTED, \n\tPOLICYEFFECTIVEDATE, \n\tPOLICYEXPIRATIONDATE, \n\tPOLICYSTATUS, \n\tCUSTOMERNUM, \n\tAGENCYCODE, \n\to_AgencyLegalName AS AGENCYLEGALNAME, \n\to_PartyName AS PARTYNAME, \n\to_Division AS DIVISION, \n\tINSURANCELINE, \n\tWBPRODUCT, \n\tPOLICYPROGRAM, \n\tPRIMARYRATINGSTATE, \n\tWRITTEN, \n\to_CoverageForm AS COVERAGEFORM, \n\to_PageCaption AS PAGECAPTION, \n\to_Text AS TEXT, \n\tCOVERAGEGUID, \n\tHISTORYID, \n\to_Signature AS SIGNATURE, \n\tFORMNUMBER, \n\to_FormCaption AS FORMCAPTION\n\tFROM EXP_WB100\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "START_DATE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "END_DATE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

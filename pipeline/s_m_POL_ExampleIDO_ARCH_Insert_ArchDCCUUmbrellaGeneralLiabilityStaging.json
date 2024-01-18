@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCUUmbrellaGeneralLiabilityStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCUUmbrellaGeneral_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCUUmbrellaGeneralLiabilityStaging AS (\n\tSELECT\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tLineId,\n\t\tCU_UmbrellaGeneralLiabilityId,\n\t\tSessionId,\n\t\tId,\n\t\tCGL,\n\t\tDescription,\n\t\tEffectiveDate,\n\t\tEmployeeBenefitLiability,\n\t\tExpirationDate,\n\t\tLiquorLiability,\n\t\tOCP,\n\t\tPolicyNumber,\n\t\tPredominantClassTable,\n\t\tRejected,\n\t\tTerrorismGL\n\tFROM DCCUUmbrellaGeneralLiabilityStaging4\n),\nEXP_Metadata AS (\n\tSELECT\n\tExtractDate AS i_ExtractDate,\n\tSourceSystemId AS i_SourceSystemId,\n\tLineId AS i_LineId,\n\tCU_UmbrellaGeneralLiabilityId AS i_CU_UmbrellaGeneralLiabilityId,\n\tSessionId AS i_SessionId,\n\tId AS i_Id,\n\tCGL AS i_CGL,\n\tDescription AS i_Description,\n\tEffectiveDate AS i_EffectiveDate,\n\tEmployeeBenefitLiability AS i_EmployeeBenefitLiability,\n\tExpirationDate AS i_ExpirationDate,\n\tLiquorLiability AS i_LiquorLiability,\n\tOCP AS i_OCP,\n\tPolicyNumber AS i_PolicyNumber,\n\tPredominantClassTable AS i_PredominantClassTable,\n\tRejected AS i_Rejected,\n\tTerrorismGL AS i_TerrorismGL,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\ti_ExtractDate AS o_ExtractDate,\n\ti_SourceSystemId AS o_SourceSystemId,\n\ti_LineId AS o_LineId,\n\ti_CU_UmbrellaGeneralLiabilityId AS o_CU_UmbrellaGeneralLiabilityId,\n\ti_SessionId AS o_SessionId,\n\ti_Id AS o_Id,\n\t-- *INF*: decode(i_CGL,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_CGL,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_CGL,\n\ti_Description AS o_Description,\n\ti_EffectiveDate AS o_EffectiveDate,\n\t-- *INF*: decode(i_EmployeeBenefitLiability,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_EmployeeBenefitLiability,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_EmployeeBenefitLiability,\n\ti_ExpirationDate AS o_ExpirationDate,\n\t-- *INF*: decode(i_LiquorLiability,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_LiquorLiability,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_LiquorLiability,\n\t-- *INF*: decode(i_OCP,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_OCP,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_OCP,\n\ti_PolicyNumber AS o_PolicyNumber,\n\ti_PredominantClassTable AS o_PredominantClassTable,\n\t-- *INF*: decode(i_Rejected,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_Rejected,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Rejected,\n\t-- *INF*: decode(i_TerrorismGL,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_TerrorismGL,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TerrorismGL\n\tFROM SQ_DCCUUmbrellaGeneralLiabilityStaging\n),\nArchDCCUUmbrellaGeneralLiabilityStaging4 AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCUUmbrellaGeneralLiabilityStaging\n\t(ExtractDate, SourceSystemId, AuditId, LineId, CU_UmbrellaGeneralLiabilityId, SessionId, Id, CGL, Description, EffectiveDate, EmployeeBenefitLiability, ExpirationDate, LiquorLiability, OCP, PolicyNumber, PredominantClassTable, Rejected, TerrorismGL)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\to_LineId AS LINEID, \n\to_CU_UmbrellaGeneralLiabilityId AS CU_UMBRELLAGENERALLIABILITYID, \n\to_SessionId AS SESSIONID, \n\to_Id AS ID, \n\to_CGL AS CGL, \n\to_Description AS DESCRIPTION, \n\to_EffectiveDate AS EFFECTIVEDATE, \n\to_EmployeeBenefitLiability AS EMPLOYEEBENEFITLIABILITY, \n\to_ExpirationDate AS EXPIRATIONDATE, \n\to_LiquorLiability AS LIQUORLIABILITY, \n\to_OCP AS OCP, \n\to_PolicyNumber AS POLICYNUMBER, \n\to_PredominantClassTable AS PREDOMINANTCLASSTABLE, \n\to_Rejected AS REJECTED, \n\to_TerrorismGL AS TERRORISMGL\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

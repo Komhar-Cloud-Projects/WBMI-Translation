@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_InsurPayPayment",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_InsurPayPayment",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_InsurPayPaymentStage AS (\n\tSELECT\n\t\tInsurPayPaymentStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tInsurPayPaymentId,\n\t\tExceedDraftNumber,\n\t\tInsurPayBatchId,\n\t\tInsurPayTrackingNumber,\n\t\tInsurPayStatus,\n\t\tPaymentCashedDate,\n\t\tPaymentMethod,\n\t\tOFACSubmittedTimestamp,\n\t\tFlaggedByOFAC,\n\t\tStopPayRequestedTime,\n\t\tCreatedUserId,\n\t\tCreatedDate,\n\t\tModifiedUserId,\n\t\tModifiedDate,\n\t\tCheckNumber,\n\t\tAccountNumberLast4Digit,\n\t\tPaidDate,\n\t\tPaymentType,\n\t\tStopPayRequestedUser,\n\t\tUploadAttemptCount,\n\t\tSupPaymentWorkflowId,\n\t\tLateInsurPayStatusNotifiedTimestamp,\n\t\tExpediteRequested,\n\t\tCertifiedRequested,\n\t\tAdditionalDocumentsMessageRequested,\n\t\tMailTrackingNumber,\n\t\tLateExpeditedPaymentNotifiedTimestamp,\n\t\tLateExpeditedPaymentReceivedNotifiedTimestamp,\n\t\tAttachedDocumentCount\n\tFROM InsurPayPaymentStage\n),\nEXPTRANS AS (\n\tSELECT\n\tInsurPayPaymentStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tInsurPayPaymentId,\n\tExceedDraftNumber,\n\tInsurPayBatchId,\n\tInsurPayTrackingNumber,\n\tInsurPayStatus,\n\tPaymentCashedDate,\n\tPaymentMethod,\n\tOFACSubmittedTimestamp,\n\tFlaggedByOFAC,\n\tStopPayRequestedTime,\n\tCreatedUserId,\n\tCreatedDate,\n\tModifiedUserId,\n\tModifiedDate,\n\tCheckNumber,\n\tAccountNumberLast4Digit,\n\tPaidDate,\n\tPaymentType,\n\tStopPayRequestedUser,\n\tUploadAttemptCount,\n\tSupPaymentWorkflowId,\n\tLateInsurPayStatusNotifiedTimestamp,\n\tExpediteRequested,\n\tCertifiedRequested,\n\tAdditionalDocumentsMessageRequested,\n\tMailTrackingNumber,\n\tLateExpeditedPaymentNotifiedTimestamp,\n\tLateExpeditedPaymentReceivedNotifiedTimestamp,\n\tAttachedDocumentCount,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_InsurPayPaymentStage\n),\nArchInsurPayPaymentStage AS (\n\tINSERT INTO ArchInsurPayPaymentStage\n\t(AuditId, InsurPayPaymentStageId, ExtractDate, SourceSystemId, InsurPayPaymentId, ExceedDraftNumber, InsurPayBatchId, InsurPayTrackingNumber, InsurPayStatus, PaymentCashedDate, PaymentMethod, OFACSubmittedTimestamp, FlaggedByOFAC, StopPayRequestedTime, CreatedUserId, CreatedDate, ModifiedUserId, ModifiedDate, CheckNumber, AccountNumberLast4Digit, PaidDate, PaymentType, StopPayRequestedUser, UploadAttemptCount, SupPaymentWorkflowId, LateInsurPayStatusNotifiedTimestamp, ExpediteRequested, CertifiedRequested, AdditionalDocumentsMessageRequested, MailTrackingNumber, LateExpeditedPaymentNotifiedTimestamp, LateExpeditedPaymentReceivedNotifiedTimestamp, AttachedDocumentCount)\n\tSELECT \n\tAUDITID, \n\tINSURPAYPAYMENTSTAGEID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tINSURPAYPAYMENTID, \n\tEXCEEDDRAFTNUMBER, \n\tINSURPAYBATCHID, \n\tINSURPAYTRACKINGNUMBER, \n\tINSURPAYSTATUS, \n\tPAYMENTCASHEDDATE, \n\tPAYMENTMETHOD, \n\tOFACSUBMITTEDTIMESTAMP, \n\tFLAGGEDBYOFAC, \n\tSTOPPAYREQUESTEDTIME, \n\tCREATEDUSERID, \n\tCREATEDDATE, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tCHECKNUMBER, \n\tACCOUNTNUMBERLAST4DIGIT, \n\tPAIDDATE, \n\tPAYMENTTYPE, \n\tSTOPPAYREQUESTEDUSER, \n\tUPLOADATTEMPTCOUNT, \n\tSUPPAYMENTWORKFLOWID, \n\tLATEINSURPAYSTATUSNOTIFIEDTIMESTAMP, \n\tEXPEDITEREQUESTED, \n\tCERTIFIEDREQUESTED, \n\tADDITIONALDOCUMENTSMESSAGEREQUESTED, \n\tMAILTRACKINGNUMBER, \n\tLATEEXPEDITEDPAYMENTNOTIFIEDTIMESTAMP, \n\tLATEEXPEDITEDPAYMENTRECEIVEDNOTIFIEDTIMESTAMP, \n\tATTACHEDDOCUMENTCOUNT\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

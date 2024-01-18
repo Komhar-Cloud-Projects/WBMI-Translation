@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBGLLineStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBGLLineStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_GL_Line AS (\n\tWith CTE_WBGLLine(sessionID) as \r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT  WBGL.GL_LineId\r\n\t      ,WBGL.WB_GL_LineId\r\n\t      ,WBGL.SessionId\r\n\t      ,WBGL.QuotedScheduleMod\r\n\t      ,WBGL.LossSensitiveCommission\r\n\t      ,WBGL.StudentGroupAccidentPolicy\r\n\t      ,WBGL.HiredAndNonOwnedAuto\r\n\t      ,WBGL.AbuseMolestationCoverage\r\n\t      ,WBGL.WaterActivities\r\n\t      ,WBGL.Lifeguard\r\n\t      ,WBGL.TypeOfWaterActivities\r\n\t      ,WBGL.OtherDescription\r\n\t      ,WBGL.WhereWaterActivitiesOccur\r\n\t      ,WBGL.EmployeeBenefitLiability\r\n\t      ,WBGL.EmployeeBenefitLiabilityRetroDate\r\n\t      ,WBGL.EmploymentPracticesLiability\r\n\t      ,WBGL.EmploymentPracticesNumberOfEmployees\r\n\t      ,WBGL.EmploymentPracticesRetroDate\r\n\t      ,WBGL.StopGapEmployersLiability\r\n\t      ,WBGL.EmploymentPracticesNumberOfEmployeesDisplay\r\n\t      ,WBGL.StopGapNumberOfEmployeesDisplay\r\n\t      ,WBGL.EmployeePracticesFlatCharge\r\n\t      ,WBGL.WaterActivitiesCaption\r\n\t      ,WBGL.Premium\r\n\t      ,WBGL.PremiumWritten\r\n\t      ,WBGL.PremiumChange\r\n\t      ,WBGL.CheckWB1372\r\n\t      ,WBGL.RetroDate2\r\n\t      ,WBGL.ReinsuranceApplies\r\n\t      ,WBGL.ReinsurancePremium\r\n\t      ,WBGL.ReinsuranceAppliesCGLMessage\r\n\t      ,WBGL.ReinsurancePremiumMessage\r\n\t      ,WBGL.PremOpBIPDDeductible\r\n\t      ,WBGL.SplitBIPDDeductible\r\n\t      ,WBGL.ProductsBIPDDeductible\r\n\t      ,WBGL.ProductWithdrawalCutoffDate\r\n\t      ,WBGL.FringeFactor\r\n\t      ,WBGL.SGAFactorForRMF\r\n\t      ,WBGL.AuditablePremium\r\n\t      ,WBGL.WB1482TotalPremium\r\n\t      ,WBGL.AnnotationForPolicyPerOccurenceLimit\r\n\t      ,WBGL.PolicyAggregateLimitAnnotation\r\n\t      ,WBGL.OCPTotalPremium\r\n\t      ,WBGL.RRTotalPremium\r\n\t      ,WBGL.ExpectedLossRatioLookup\r\n\t      ,WBGL.DeductibleBIPerClaim\r\n\t      ,WBGL.DeductibleBIPerOccurrence\r\n\t      ,WBGL.DeductiblePDPerClaim\r\n\t      ,WBGL.DeductiblePDPerOccurrence\r\n\t      FROM WB_GL_Line WBGL\r\n\tinner join CTE_WBGLLine CTE on WBGL.sessionID = CTE.sessionID\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_METADATA AS (\n\tSELECT\n\tSYSDATE AS O_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS O_SourceSystemID,\n\tGL_LineId,\n\tWB_GL_LineId,\n\tSessionId,\n\tQuotedScheduleMod,\n\tLossSensitiveCommission,\n\tStudentGroupAccidentPolicy,\n\tHiredAndNonOwnedAuto,\n\tAbuseMolestationCoverage,\n\tWaterActivities,\n\tLifeguard,\n\tTypeOfWaterActivities,\n\tOtherDescription,\n\tWhereWaterActivitiesOccur,\n\tEmployeeBenefitLiability,\n\tEmployeeBenefitLiabilityRetroDate,\n\tEmploymentPracticesLiability,\n\tEmploymentPracticesNumberOfEmployees,\n\tEmploymentPracticesRetroDate,\n\tStopGapEmployersLiability,\n\tEmploymentPracticesNumberOfEmployeesDisplay,\n\tStopGapNumberOfEmployeesDisplay,\n\tEmployeePracticesFlatCharge,\n\tWaterActivitiesCaption,\n\tPremium,\n\tPremiumWritten,\n\tPremiumChange,\n\tCheckWB1372,\n\tRetroDate2,\n\tReinsuranceApplies,\n\tReinsurancePremium,\n\tReinsuranceAppliesCGLMessage,\n\tReinsurancePremiumMessage,\n\tPremOpBIPDDeductible,\n\tSplitBIPDDeductible,\n\tProductsBIPDDeductible,\n\tProductWithdrawalCutoffDate,\n\tFringeFactor,\n\tSGAFactorForRMF,\n\tAuditablePremium,\n\tWB1482TotalPremium,\n\tAnnotationForPolicyPerOccurenceLimit,\n\tPolicyAggregateLimitAnnotation,\n\tOCPTotalPremium,\n\tRRTotalPremium,\n\tExpectedLossRatioLookup,\n\tDeductibleBIPerClaim,\n\tDeductibleBIPerOccurrence,\n\tDeductiblePDPerClaim,\n\tDeductiblePDPerOccurrence\n\tFROM SQ_WB_GL_Line\n),\nWBGLLineStage AS (\n\tTRUNCATE TABLE WBGLLineStage;\n\tINSERT INTO WBGLLineStage\n\t(ExtractDate, SourceSystemid, GL_LineId, WB_GL_LineId, SessionId, QuotedScheduleMod, LossSensitiveCommission, StudentGroupAccidentPolicy, HiredAndNonOwnedAuto, AbuseMolestationCoverage, WaterActivities, Lifeguard, TypeOfWaterActivities, OtherDescription, WhereWaterActivitiesOccur, EmployeeBenefitLiability, EmployeeBenefitLiabilityRetroDate, EmploymentPracticesLiability, EmploymentPracticesNumberOfEmployees, EmploymentPracticesRetroDate, StopGapEmployersLiability, EmploymentPracticesNumberOfEmployeesDisplay, StopGapNumberOfEmployeesDisplay, EmployeePracticesFlatCharge, WaterActivitiesCaption, Premium, PremiumWritten, PremiumChange, CheckWB1372, RetroDate2, ReinsuranceApplies, ReinsurancePremium, ReinsuranceAppliesCGLMessage, ReinsurancePremiumMessage, PremOpBIPDDeductible, SplitBIPDDeductible, ProductsBIPDDeductible, ProductWithdrawalCutoffDate, FringeFactor, SGAFactorForRMF, AuditablePremium, WB1482TotalPremium, AnnotationForPolicyPerOccurenceLimit, PolicyAggregateLimitAnnotation, OCPTotalPremium, RRTotalPremium, ExpectedLossRatioLookup, DeductibleBIPerClaim, DeductibleBIPerOccurrence, DeductiblePDPerClaim, DeductiblePDPerOccurrence)\n\tSELECT \n\tO_ExtractDate AS EXTRACTDATE, \n\tO_SourceSystemID AS SOURCESYSTEMID, \n\tGL_LINEID, \n\tWB_GL_LINEID, \n\tSESSIONID, \n\tQUOTEDSCHEDULEMOD, \n\tLOSSSENSITIVECOMMISSION, \n\tSTUDENTGROUPACCIDENTPOLICY, \n\tHIREDANDNONOWNEDAUTO, \n\tABUSEMOLESTATIONCOVERAGE, \n\tWATERACTIVITIES, \n\tLIFEGUARD, \n\tTYPEOFWATERACTIVITIES, \n\tOTHERDESCRIPTION, \n\tWHEREWATERACTIVITIESOCCUR, \n\tEMPLOYEEBENEFITLIABILITY, \n\tEMPLOYEEBENEFITLIABILITYRETRODATE, \n\tEMPLOYMENTPRACTICESLIABILITY, \n\tEMPLOYMENTPRACTICESNUMBEROFEMPLOYEES, \n\tEMPLOYMENTPRACTICESRETRODATE, \n\tSTOPGAPEMPLOYERSLIABILITY, \n\tEMPLOYMENTPRACTICESNUMBEROFEMPLOYEESDISPLAY, \n\tSTOPGAPNUMBEROFEMPLOYEESDISPLAY, \n\tEMPLOYEEPRACTICESFLATCHARGE, \n\tWATERACTIVITIESCAPTION, \n\tPREMIUM, \n\tPREMIUMWRITTEN, \n\tPREMIUMCHANGE, \n\tCHECKWB1372, \n\tRETRODATE2, \n\tREINSURANCEAPPLIES, \n\tREINSURANCEPREMIUM, \n\tREINSURANCEAPPLIESCGLMESSAGE, \n\tREINSURANCEPREMIUMMESSAGE, \n\tPREMOPBIPDDEDUCTIBLE, \n\tSPLITBIPDDEDUCTIBLE, \n\tPRODUCTSBIPDDEDUCTIBLE, \n\tPRODUCTWITHDRAWALCUTOFFDATE, \n\tFRINGEFACTOR, \n\tSGAFACTORFORRMF, \n\tAUDITABLEPREMIUM, \n\tWB1482TOTALPREMIUM, \n\tANNOTATIONFORPOLICYPEROCCURENCELIMIT, \n\tPOLICYAGGREGATELIMITANNOTATION, \n\tOCPTOTALPREMIUM, \n\tRRTOTALPREMIUM, \n\tEXPECTEDLOSSRATIOLOOKUP, \n\tDEDUCTIBLEBIPERCLAIM, \n\tDEDUCTIBLEBIPEROCCURRENCE, \n\tDEDUCTIBLEPDPERCLAIM, \n\tDEDUCTIBLEPDPEROCCURRENCE\n\tFROM EXP_METADATA\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

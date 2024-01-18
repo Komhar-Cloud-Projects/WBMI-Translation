@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CUS_STG_Insert_DCTransaction_Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CUS_STG_Insert_DCTransaction_Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_Transaction AS (\n\tSELECT DC_Transaction.TransactionId, DC_Transaction.SessionId, DC_Transaction.Id, DC_Transaction.Type, DC_Transaction.State, DC_Transaction.EffectiveDate, DC_Transaction.ScheduleDate, DC_Transaction.CreatedDate, DC_Transaction.CreatedUser, DC_Transaction.OriginalCharge, DC_Transaction.Charge, DC_Transaction.ProRateFactor, DC_Transaction.TermPremium, DC_Transaction.PriorPremium, DC_Transaction.NewPremium, DC_Transaction.HistoryID, DC_Transaction.ConvertedTransactionType, DC_Transaction.CancellationDate, DC_Transaction.TransactionDate, DC_Transaction.ExpirationDate, DC_Transaction.Deposit, DC_Transaction.AuditCharge, DC_Transaction.AuditPremium, DC_Transaction.StatusUserContext, DC_Transaction.StatusUser, DC_Transaction.PolicyStatus, DC_Transaction.IssuedDate, DC_Transaction.IssuedUserName \r\n\tFROM\r\n\tDC_Transaction\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session on\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}. DC_Transaction.SessionId=@{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session.SessionId\r\n\tWHERE\r\n\tDC_Session.CreateDateTime >=  '@{pipeline().parameters.SELECTION_START_TS}'\r\n\tand \r\n\tDC_Session.CreateDateTime <  '@{pipeline().parameters.SELECTION_END_TS}'\r\n\tORDER BY\r\n\tDC_Transaction.SessionId\n),\nExp_DC_Transaction AS (\n\tSELECT\n\tTransactionId,\n\tSessionId,\n\tId,\n\tType,\n\tState,\n\tEffectiveDate,\n\tScheduleDate,\n\tCreatedDate,\n\tCreatedUser,\n\tOriginalCharge,\n\tCharge,\n\tProRateFactor,\n\tTermPremium,\n\tPriorPremium,\n\tNewPremium,\n\tHistoryID,\n\tConvertedTransactionType,\n\tCancellationDate,\n\tTransactionDate,\n\tExpirationDate,\n\tDeposit,\n\tAuditCharge,\n\tAuditPremium,\n\tStatusUserContext,\n\tStatusUser,\n\tPolicyStatus,\n\tIssuedDate,\n\tIssuedUserName,\n\tSysdate AS ExtractDate,\n\t'DCT' AS SourceSystemID\n\tFROM SQ_DC_Transaction\n),\nDCTransactionStage AS (\n\tINSERT INTO Shortcut_to_DCTransactionStage\n\t(ExtractDate, SourceSystemid, TransactionId, SessionId, Id, Type, State, EffectiveDate, ScheduleDate, CreatedDate, CreatedUser, OriginalCharge, Charge, ProRateFactor, TermPremium, PriorPremium, NewPremium, HistoryID, ConvertedTransactionType, CancellationDate, TransactionDate, ExpirationDate, Deposit, AuditCharge, AuditPremium, StatusUserContext, StatusUser, PolicyStatus, IssuedDate, IssuedUserName)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemID AS SOURCESYSTEMID, \n\tTRANSACTIONID, \n\tSESSIONID, \n\tID, \n\tTYPE, \n\tSTATE, \n\tEFFECTIVEDATE, \n\tSCHEDULEDATE, \n\tCREATEDDATE, \n\tCREATEDUSER, \n\tORIGINALCHARGE, \n\tCHARGE, \n\tPRORATEFACTOR, \n\tTERMPREMIUM, \n\tPRIORPREMIUM, \n\tNEWPREMIUM, \n\tHISTORYID, \n\tCONVERTEDTRANSACTIONTYPE, \n\tCANCELLATIONDATE, \n\tTRANSACTIONDATE, \n\tEXPIRATIONDATE, \n\tDEPOSIT, \n\tAUDITCHARGE, \n\tAUDITPREMIUM, \n\tSTATUSUSERCONTEXT, \n\tSTATUSUSER, \n\tPOLICYSTATUS, \n\tISSUEDDATE, \n\tISSUEDUSERNAME\n\tFROM Exp_DC_Transaction\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CustomerStaging/"
+        },
+        "annotations": []
+    }
+}

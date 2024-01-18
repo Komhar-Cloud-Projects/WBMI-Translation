@@ -1,0 +1,151 @@
+{
+    "name": "wkf_POL_Tokenize_ExploreEARSDriverRecord",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_Detokenize_ExploreEARSDriverRecord",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_GENERATE_EARSTokenFile"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "wklt_POL_FileWatcher_DetokenFile",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_Detokenize_ExploreEARSDriverRecord",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_Tokenize_ExploreEARSDriverRecord",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_Update_ExploreEARSDriverRecord_Detokenize",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_GENERATE_EARSTokenFile"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Update_ExploreEARSDriverRecord_Detokenize",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "wklt_POL_FileWatcher_DetokenFile",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Update_ExploreEARSDriverRecord"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "wklt_POL_FileWatcher_TokensFile",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_Tokenize_ExploreEARSDriverRecord",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_Update_ExploreEARSDriverRecord_Tokenize",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "wklt_POL_FileWatcher_TokensFile",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_Update_ExploreEARSDriverRecord"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "variables": {}
+    }
+}

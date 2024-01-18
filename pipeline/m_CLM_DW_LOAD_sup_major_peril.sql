@@ -19,23 +19,11 @@ EXP_Default_Values_xtsa01 AS (
 	SELECT
 	field_label,
 	-- *INF*: IIF(ISNULL( rtrim(ltrim(field_label))), 'N/A', rtrim(ltrim( field_label)))
-	IFF(rtrim(ltrim(field_label
-			)
-		) IS NULL,
-		'N/A',
-		rtrim(ltrim(field_label
-			)
-		)
-	) AS MAJOR_PERIL_OUT,
+	IFF(rtrim(ltrim(field_label)) IS NULL, 'N/A', rtrim(ltrim(field_label))) AS MAJOR_PERIL_OUT,
 	major_peril_translation,
 	-- *INF*: IIF(ISNULL(rtrim(ltrim(major_peril_translation))), 'N/A', rtrim(ltrim(major_peril_translation)))
-	IFF(rtrim(ltrim(major_peril_translation
-			)
-		) IS NULL,
-		'N/A',
-		rtrim(ltrim(major_peril_translation
-			)
-		)
+	IFF(
+	    rtrim(ltrim(major_peril_translation)) IS NULL, 'N/A', rtrim(ltrim(major_peril_translation))
 	) AS LONG_ALPHABETIC_DESCRIPTION_OUT
 	FROM SQ_gtam_xtsa01_stage
 ),
@@ -60,31 +48,25 @@ EXP_detect_changes_xtsa01 AS (
 	EXP_Default_Values_xtsa01.LONG_ALPHABETIC_DESCRIPTION_OUT,
 	-- *INF*: IIF(ISNULL(LKP_sup_major_peril_id), 'NEW', IIF(LTRIM(RTRIM(LKP_major_peril_descript)) <> (LTRIM(RTRIM(LONG_ALPHABETIC_DESCRIPTION_OUT))), 'UPDATE', 'NOCHANGE'))
 	-- 
-	IFF(LKP_sup_major_peril_id IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(LKP_major_peril_descript
-				)
-			) <> ( LTRIM(RTRIM(LONG_ALPHABETIC_DESCRIPTION_OUT
-					)
-				) 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    LKP_sup_major_peril_id IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(LKP_major_peril_descript)) <> (LTRIM(RTRIM(LONG_ALPHABETIC_DESCRIPTION_OUT))),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_CHANGED_FLAG,
 	v_CHANGED_FLAG AS CHANGED_FLAG,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_CHANGED_FLAG='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_CHANGED_FLAG = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_CHANGED_FLAG = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id
@@ -148,9 +130,10 @@ EXP_lag_eff_from_date AS (
 	-- 	major_peril_code= v_Prev_row_major_peril_code, ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	-- 	
-	DECODE(TRUE,
-		major_peril_code = v_Prev_row_major_peril_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    major_peril_code = v_Prev_row_major_peril_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	major_peril_code AS v_Prev_row_major_peril_code,

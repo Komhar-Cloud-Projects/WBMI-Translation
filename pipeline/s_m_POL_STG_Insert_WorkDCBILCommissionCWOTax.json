@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_WorkDCBILCommissionCWOTax",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_WorkDCBILCommissionCWOTax",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBILGeneralJounalStage AS (\n\tselect PT.PolicyReference,pt.PolicyTermEffectiveDate,pt.PolicyTermExpirationDate, GJ.ActivityEffectiveDate as InstallmentDate, SUM(GJ.TransactionGrossAmount) as WrittenOffAmount\r\n\tfrom DCBILGeneralJounalStage GJ join DCBILPolicyTermStage PT on PT.PolicyTermId=GJ.PolicyTermId\r\n\twhere GJ.JournalTypeCode='Tax' and GJ.ActivityTypeCode in ('WO', 'RCWR') and GJ.AccountingClassCode in ('AR0','AR1')\r\n\tAnd GJ.TransactionGrossAmount !=0\r\n\tand GJ.ActivityEffectiveDate >=SUBSTRING('@{pipeline().parameters.SELECTION_START_TS}',1,10)\r\n\t group by PT.PolicyReference,pt.PolicyTermEffectiveDate,pt.PolicyTermExpirationDate,  GJ.ActivityEffectiveDate\n),\nEXP_DEFAULT AS (\n\tSELECT\n\tPolicyReference,\n\tInstallmentDate,\n\tItemWrittenOffAmount,\n\t-- *INF*: trunc(@{pipeline().parameters.SELECTION_START_TS})\n\tTRUNC(@{pipeline().parameters.SELECTION_START_TS}) AS ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,\n\tPolicyTermEffectiveDate,\n\tPolicyTermExpirationDate\n\tFROM SQ_DCBILGeneralJounalStage\n),\nWorkDCBILCommissionCWOTax AS (\n\tTRUNCATE TABLE WorkDCBILCommissionCWOTax;\n\tINSERT INTO WorkDCBILCommissionCWOTax\n\t(ExtractDate, SourceSystemId, InstallmentDate, WrittenOffAmount, PolicyReference, PolicyTermEffectiveDate, PolicyTermExpirationDate)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemID AS SOURCESYSTEMID, \n\tINSTALLMENTDATE, \n\tItemWrittenOffAmount AS WRITTENOFFAMOUNT, \n\tPOLICYREFERENCE, \n\tPOLICYTERMEFFECTIVEDATE, \n\tPOLICYTERMEXPIRATIONDATE\n\tFROM EXP_DEFAULT\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

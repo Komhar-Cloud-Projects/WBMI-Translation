@@ -19,22 +19,17 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_EffectiveDate
+	IFF(
+	    i_EffectiveDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate
 	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ExpirationDate
+	IFF(
+	    i_ExpirationDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'),
+	    i_ExpirationDate
 	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ModifiedDate
+	IFF(
+	    i_ModifiedDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate
 	) AS o_ModifiedDate
 	FROM SQ_StrategicProfitCenter
 ),
@@ -45,25 +40,13 @@ EXP_NumericValues AS (
 	EnterpriseGroupId AS i_EnterpriseGroupId,
 	LegalEntityId AS i_LegalEntityId,
 	-- *INF*: IIF(ISNULL(i_StrategicProfitCenterId),-1,i_StrategicProfitCenterId)
-	IFF(i_StrategicProfitCenterId IS NULL,
-		- 1,
-		i_StrategicProfitCenterId
-	) AS o_StrategicProfitCenterId,
+	IFF(i_StrategicProfitCenterId IS NULL, - 1, i_StrategicProfitCenterId) AS o_StrategicProfitCenterId,
 	-- *INF*: IIF(ISNULL(i_StrategicProfitCenterAKId),-1,i_StrategicProfitCenterAKId)
-	IFF(i_StrategicProfitCenterAKId IS NULL,
-		- 1,
-		i_StrategicProfitCenterAKId
-	) AS o_StrategicProfitCenterAKId,
+	IFF(i_StrategicProfitCenterAKId IS NULL, - 1, i_StrategicProfitCenterAKId) AS o_StrategicProfitCenterAKId,
 	-- *INF*: IIF(ISNULL(i_EnterpriseGroupId),-1,i_EnterpriseGroupId)
-	IFF(i_EnterpriseGroupId IS NULL,
-		- 1,
-		i_EnterpriseGroupId
-	) AS o_EnterpriseGroupId,
+	IFF(i_EnterpriseGroupId IS NULL, - 1, i_EnterpriseGroupId) AS o_EnterpriseGroupId,
 	-- *INF*: IIF(ISNULL(i_LegalEntityId),-1,i_LegalEntityId)
-	IFF(i_LegalEntityId IS NULL,
-		- 1,
-		i_LegalEntityId
-	) AS o_LegalEntityId
+	IFF(i_LegalEntityId IS NULL, - 1, i_LegalEntityId) AS o_LegalEntityId
 	FROM SQ_StrategicProfitCenter
 ),
 EXP_StringValues AS (
@@ -73,43 +56,36 @@ EXP_StringValues AS (
 	StrategicProfitCenterAbbreviation AS i_StrategicProfitCenterAbbreviation,
 	StrategicProfitCenterDescription AS i_StrategicProfitCenterDescription,
 	-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)
-	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'
-		),
-		1,
-		0
-	) AS o_CurrentSnapshotFlag,
+	IFF(TRUNC(i_ExpirationDate) = TO_TIMESTAMP('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_StrategicProfitCenterCode) OR LENGTH(i_StrategicProfitCenterCode)=0 OR IS_SPACES(i_StrategicProfitCenterCode),'N/A',LTRIM(RTRIM(i_StrategicProfitCenterCode)))
-	IFF(i_StrategicProfitCenterCode IS NULL 
-		OR LENGTH(i_StrategicProfitCenterCode
-		) = 0 
-		OR LENGTH(i_StrategicProfitCenterCode)>0 AND TRIM(i_StrategicProfitCenterCode)='',
-		'N/A',
-		LTRIM(RTRIM(i_StrategicProfitCenterCode
-			)
-		)
+	IFF(
+	    i_StrategicProfitCenterCode IS NULL
+	    or LENGTH(i_StrategicProfitCenterCode) = 0
+	    or LENGTH(i_StrategicProfitCenterCode)>0
+	    and TRIM(i_StrategicProfitCenterCode)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_StrategicProfitCenterCode))
 	) AS o_StrategicProfitCenterCode,
 	-- *INF*: IIF(ISNULL(i_StrategicProfitCenterAbbreviation) OR LENGTH(i_StrategicProfitCenterAbbreviation)=0 OR IS_SPACES(i_StrategicProfitCenterAbbreviation),'N/A',LTRIM(RTRIM(i_StrategicProfitCenterAbbreviation)))
-	IFF(i_StrategicProfitCenterAbbreviation IS NULL 
-		OR LENGTH(i_StrategicProfitCenterAbbreviation
-		) = 0 
-		OR LENGTH(i_StrategicProfitCenterAbbreviation)>0 AND TRIM(i_StrategicProfitCenterAbbreviation)='',
-		'N/A',
-		LTRIM(RTRIM(i_StrategicProfitCenterAbbreviation
-			)
-		)
+	IFF(
+	    i_StrategicProfitCenterAbbreviation IS NULL
+	    or LENGTH(i_StrategicProfitCenterAbbreviation) = 0
+	    or LENGTH(i_StrategicProfitCenterAbbreviation)>0
+	    and TRIM(i_StrategicProfitCenterAbbreviation)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_StrategicProfitCenterAbbreviation))
 	) AS o_StrategicProfitCenterAbbreviation,
 	-- *INF*: IIF(ISNULL(i_StrategicProfitCenterDescription) OR LENGTH(i_StrategicProfitCenterDescription)=0 OR IS_SPACES(i_StrategicProfitCenterDescription),'N/A',LTRIM(RTRIM(i_StrategicProfitCenterDescription)))
-	IFF(i_StrategicProfitCenterDescription IS NULL 
-		OR LENGTH(i_StrategicProfitCenterDescription
-		) = 0 
-		OR LENGTH(i_StrategicProfitCenterDescription)>0 AND TRIM(i_StrategicProfitCenterDescription)='',
-		'N/A',
-		LTRIM(RTRIM(i_StrategicProfitCenterDescription
-			)
-		)
+	IFF(
+	    i_StrategicProfitCenterDescription IS NULL
+	    or LENGTH(i_StrategicProfitCenterDescription) = 0
+	    or LENGTH(i_StrategicProfitCenterDescription)>0
+	    and TRIM(i_StrategicProfitCenterDescription)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_StrategicProfitCenterDescription))
 	) AS o_StrategicProfitCenterDescription
 	FROM SQ_StrategicProfitCenter
 ),

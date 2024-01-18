@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCACoverageOTCStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCACoverageOTCStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCACoverageOTCStage AS (\n\tSELECT\n\t\tWBCACoverageOTCStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCA_CoverageOTCId,\n\t\tWB_CA_CoverageOTCId,\n\t\tSessionId,\n\t\tAntiTheftDeviceDiscountKY,\n\t\tAntiTheftDeviceDiscountMN,\n\t\tAcceptOTCCoverageSoftMsg,\n\t\tReplacementCost,\n\t\tFullSafetyGlassCoverage,\n\t\tDeductibleType\n\tFROM WBCACoverageOTCStage\n),\nEXPTRANS AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tWBCACoverageOTCStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCA_CoverageOTCId,\n\tWB_CA_CoverageOTCId,\n\tSessionId,\n\tAntiTheftDeviceDiscountKY,\n\tAntiTheftDeviceDiscountMN,\n\tAcceptOTCCoverageSoftMsg,\n\tReplacementCost AS i_ReplacementCost,\n\t-- *INF*: decode(i_ReplacementCost,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_ReplacementCost,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ReplacementCost,\n\tFullSafetyGlassCoverage AS i_FullSafetyGlassCoverage,\n\t-- *INF*: decode(i_FullSafetyGlassCoverage,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_FullSafetyGlassCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_FullSafetyGlassCoverage,\n\tDeductibleType\n\tFROM SQ_WBCACoverageOTCStage\n),\nArchWBCACoverageOTCStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCACoverageOTCStage\n\t(ExtractDate, SourceSystemId, AuditId, WBCACoverageOTCStageId, CA_CoverageOTCId, WB_CA_CoverageOTCId, SessionId, AntiTheftDeviceDiscountKY, AntiTheftDeviceDiscountMN, AcceptOTCCoverageSoftMsg, ReplacementCost, FullSafetyGlassCoverage, DeductibleType)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBCACOVERAGEOTCSTAGEID, \n\tCA_COVERAGEOTCID, \n\tWB_CA_COVERAGEOTCID, \n\tSESSIONID, \n\tANTITHEFTDEVICEDISCOUNTKY, \n\tANTITHEFTDEVICEDISCOUNTMN, \n\tACCEPTOTCCOVERAGESOFTMSG, \n\to_ReplacementCost AS REPLACEMENTCOST, \n\to_FullSafetyGlassCoverage AS FULLSAFETYGLASSCOVERAGE, \n\tDEDUCTIBLETYPE\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

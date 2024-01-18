@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCSessionStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCSessionStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCSessionStaging AS (\n\tSELECT\n\t\tDCSessionStagingId,\n\t\tSessionId,\n\t\tExampleQuoteId,\n\t\tUserName,\n\t\tCreateDateTime,\n\t\tPurpose,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCSessionStaging\n),\nEXPTRANS AS (\n\tSELECT\n\tDCSessionStagingId,\n\tSessionId,\n\tExampleQuoteId,\n\tUserName,\n\tCreateDateTime,\n\tPurpose,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCSessionStaging\n),\narchDCSessionStaging AS (\n\tINSERT INTO archDCSessionStaging\n\t(ExtractDate, SourceSystemId, AuditId, DCSessionStagingId, SessionId, ExampleQuoteId, UserName, CreateDateTime, Purpose)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCSESSIONSTAGINGID, \n\tSESSIONID, \n\tEXAMPLEQUOTEID, \n\tUSERNAME, \n\tCREATEDATETIME, \n\tPURPOSE\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

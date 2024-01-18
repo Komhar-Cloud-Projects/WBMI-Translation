@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Plines_STG_Insert_Coverage_Master",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Plines_STG_Insert_Coverage_Master",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_coverage_master AS (\n\tSELECT\n\t\tcov_master_seq,\n\t\tpolicy_num,\n\t\tpolicy_sym,\n\t\tpolicy_mod,\n\t\tpolicy_mco,\n\t\tcov_part_seq,\n\t\tcov_type_code,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\tcov_part_type_code\n\tFROM coverage_master\n\tWHERE coverage_master.cov_master_seq%3=0\n),\nEXP_COVERAGE_MASTER AS (\n\tSELECT\n\tcov_master_seq,\n\tpolicy_num,\n\tpolicy_sym,\n\tpolicy_mod,\n\tpolicy_mco,\n\tcov_part_seq,\n\tcov_type_code,\n\tmodified_date,\n\tmodified_user_id,\n\tcov_part_type_code,\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t'' AS RECORD_COUNT,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID\n\tFROM SQ_coverage_master\n),\ncoverage_master_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.coverage_master_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.coverage_master_stage\n\t(cov_master_seq, policy_num, policy_sym, policy_mod, policy_mco, cov_part_seq, cov_type_code, modified_date, modified_user_id, cov_part_type_code, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tCOV_MASTER_SEQ, \n\tPOLICY_NUM, \n\tPOLICY_SYM, \n\tPOLICY_MOD, \n\tPOLICY_MCO, \n\tCOV_PART_SEQ, \n\tCOV_TYPE_CODE, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tCOV_PART_TYPE_CODE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_COVERAGE_MASTER\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CommonStaging/"
+        },
+        "annotations": []
+    }
+}

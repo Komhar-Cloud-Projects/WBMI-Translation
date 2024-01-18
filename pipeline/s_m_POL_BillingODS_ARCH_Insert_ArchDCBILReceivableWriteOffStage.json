@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILReceivableWriteOffStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_BillingODS_ARCH_Insert_ArchDCBILReceivableWrit_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBILReceivableWriteOffStage AS (\n\tSELECT\n\t\tDCBILReceivableWriteOffStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tReceivableWriteOffId,\n\t\tReceivableSourceId,\n\t\tAccountId,\n\t\tPolicyTermId,\n\t\tReceivableSourceTypeCode,\n\t\tWriteOffStatusCode,\n\t\tWriteOffAmount,\n\t\tWriteOffTypeCode,\n\t\tWriteOffRequestDate,\n\t\tWriteOffProcessedDateTime,\n\t\tWriteOffReasonCode,\n\t\tReversalDateTime,\n\t\tReversalReasonCode,\n\t\tLastUpdatedTimestamp,\n\t\tLastUpdatedUserId,\n\t\tReceivableWriteOffLockingTS,\n\t\tWriteOffNetAmount,\n\t\tWriteOffCommissionAmount,\n\t\tTransactionGUID\n\tFROM DCBILReceivableWriteOffStage\n),\nEXP_Metadata AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tDCBILReceivableWriteOffStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tReceivableWriteOffId,\n\tReceivableSourceId,\n\tAccountId,\n\tPolicyTermId,\n\tReceivableSourceTypeCode,\n\tWriteOffStatusCode,\n\tWriteOffAmount,\n\tWriteOffTypeCode,\n\tWriteOffRequestDate,\n\tWriteOffProcessedDateTime,\n\tWriteOffReasonCode,\n\tReversalDateTime,\n\tReversalReasonCode,\n\tLastUpdatedTimestamp,\n\tLastUpdatedUserId,\n\tReceivableWriteOffLockingTS,\n\tWriteOffNetAmount,\n\tWriteOffCommissionAmount,\n\tTransactionGUID\n\tFROM SQ_DCBILReceivableWriteOffStage\n),\nLKP_ArchExist AS (\n\tSELECT\n\tArchDCBILReceivableWriteOffStageId,\n\tReceivableWriteOffId\n\tFROM (\n\t\tSELECT \n\t\t\tArchDCBILReceivableWriteOffStageId,\n\t\t\tReceivableWriteOffId\n\t\tFROM ArchDCBILReceivableWriteOffStage\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ReceivableWriteOffId ORDER BY ArchDCBILReceivableWriteOffStageId) = 1\n),\nFIL_Exist AS (\n\tSELECT\n\tLKP_ArchExist.ArchDCBILReceivableWriteOffStageId AS lkp_ArchDCBILReceivableWriteOffStageId, \n\tEXP_Metadata.o_AuditId, \n\tEXP_Metadata.DCBILReceivableWriteOffStageId, \n\tEXP_Metadata.ExtractDate, \n\tEXP_Metadata.SourceSystemId, \n\tEXP_Metadata.ReceivableWriteOffId, \n\tEXP_Metadata.ReceivableSourceId, \n\tEXP_Metadata.AccountId, \n\tEXP_Metadata.PolicyTermId, \n\tEXP_Metadata.ReceivableSourceTypeCode, \n\tEXP_Metadata.WriteOffStatusCode, \n\tEXP_Metadata.WriteOffAmount, \n\tEXP_Metadata.WriteOffTypeCode, \n\tEXP_Metadata.WriteOffRequestDate, \n\tEXP_Metadata.WriteOffProcessedDateTime, \n\tEXP_Metadata.WriteOffReasonCode, \n\tEXP_Metadata.ReversalDateTime, \n\tEXP_Metadata.ReversalReasonCode, \n\tEXP_Metadata.LastUpdatedTimestamp, \n\tEXP_Metadata.LastUpdatedUserId, \n\tEXP_Metadata.ReceivableWriteOffLockingTS, \n\tEXP_Metadata.WriteOffNetAmount, \n\tEXP_Metadata.WriteOffCommissionAmount, \n\tEXP_Metadata.TransactionGUID\n\tFROM EXP_Metadata\n\tLEFT JOIN LKP_ArchExist\n\tON LKP_ArchExist.ReceivableWriteOffId = EXP_Metadata.ReceivableWriteOffId\n\tWHERE ISNULL(lkp_ArchDCBILReceivableWriteOffStageId)\n),\nArchDCBILReceivableWriteOffStage AS (\n\tINSERT INTO ArchDCBILReceivableWriteOffStage\n\t(ExtractDate, SourceSystemId, AuditId, DCBILReceivableWriteOffStageId, ReceivableWriteOffId, ReceivableSourceId, AccountId, PolicyTermId, ReceivableSourceTypeCode, WriteOffStatusCode, WriteOffAmount, WriteOffTypeCode, WriteOffRequestDate, WriteOffProcessedDateTime, WriteOffReasonCode, ReversalDateTime, ReversalReasonCode, LastUpdatedTimestamp, LastUpdatedUserId, ReceivableWriteOffLockingTS, WriteOffNetAmount, WriteOffCommissionAmount, TransactionGUID)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCBILRECEIVABLEWRITEOFFSTAGEID, \n\tRECEIVABLEWRITEOFFID, \n\tRECEIVABLESOURCEID, \n\tACCOUNTID, \n\tPOLICYTERMID, \n\tRECEIVABLESOURCETYPECODE, \n\tWRITEOFFSTATUSCODE, \n\tWRITEOFFAMOUNT, \n\tWRITEOFFTYPECODE, \n\tWRITEOFFREQUESTDATE, \n\tWRITEOFFPROCESSEDDATETIME, \n\tWRITEOFFREASONCODE, \n\tREVERSALDATETIME, \n\tREVERSALREASONCODE, \n\tLASTUPDATEDTIMESTAMP, \n\tLASTUPDATEDUSERID, \n\tRECEIVABLEWRITEOFFLOCKINGTS, \n\tWRITEOFFNETAMOUNT, \n\tWRITEOFFCOMMISSIONAMOUNT, \n\tTRANSACTIONGUID\n\tFROM FIL_Exist\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_SupTaskStatus",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_SupTaskStatus",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SupTaskStatusStage AS (\n\tSELECT SupTaskStatusStageId, ExtractDate, SourceSystemId, SupTaskStatusId, CreatedDate, CreatedUserId, ModifiedDate, ModifiedUserId, Code, Description, SortOrder, CategoryName\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupTaskStatusStage \r\n\tWHERE CreatedDate > '@{pipeline().parameters.SELECTION_START_TS}' \r\n\tOR ModifiedDate > '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_Collect AS (\n\tSELECT\n\tSupTaskStatusStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tSupTaskStatusId,\n\tCreatedDate,\n\tCreatedUserId,\n\tModifiedDate,\n\tModifiedUserId,\n\tCode,\n\tDescription,\n\tSortOrder,\n\tCategoryName,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_SupTaskStatusStage\n),\nArchSupTaskStatusStage AS (\n\tINSERT INTO ArchSupTaskStatusStage\n\t(ExtractDate, SourceSystemId, AuditId, SupTaskStatusId, CreatedDate, CreatedUserId, ModifiedDate, ModifiedUserId, Code, Description, SortOrder, CategoryName)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tSUPTASKSTATUSID, \n\tCREATEDDATE, \n\tCREATEDUSERID, \n\tMODIFIEDDATE, \n\tMODIFIEDUSERID, \n\tCODE, \n\tDESCRIPTION, \n\tSORTORDER, \n\tCATEGORYNAME\n\tFROM EXP_Collect\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

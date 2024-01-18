@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_gtam_tl14_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_gtam_tl14_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_tl14_stage AS (\n\tSELECT\n\t\tgtam_tl14_stage_id,\n\t\ttable_fld,\n\t\tkey_len,\n\t\tlocation,\n\t\tmaster_company_number,\n\t\treason_amended_code,\n\t\tlanguage_indicator,\n\t\tdata_len,\n\t\talpha_descr_of_reason_amended,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_tl14_stage1\n),\nLKP_arch_gtam_tl14_stage AS (\n\tSELECT\n\tarch_gtam_tl14_stage_id,\n\talpha_descr_of_reason_amended,\n\tlocation,\n\tmaster_company_number,\n\treason_amended_code,\n\tlanguage_indicator\n\tFROM (\n\t\tSELECT \r\n\t\t   tl.arch_gtam_tl14_stage_id as arch_gtam_tl14_stage_id  \r\n\t\t      , tl.location as location    \r\n\t\t      ,tl.master_company_number as master_company_number\r\n\t\t      ,tl.reason_amended_code as reason_amended_code\r\n\t\t       ,tl.language_indicator as language_indicator             \r\n\t\t      ,tl.alpha_descr_of_reason_amended as alpha_descr_of_reason_amended      \r\n\t\t  FROM arch_gtam_tl14_stage tl \r\n\t\t  where \ttl.arch_gtam_tl14_stage_id In\r\n\t\t\t(Select max(arch_gtam_tl14_stage_id) from arch_gtam_tl14_stage b\r\n\t\t\tgroup by b.location ,b.master_company_number\r\n\t\t      ,b.reason_amended_code \r\n\t\t      ,b.language_indicator )\r\n\t\torder by tl.location\r\n\t\t,tl.master_company_number\r\n\t\t      ,tl.reason_amended_code \r\n\t\t      ,tl.language_indicator--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY location,master_company_number,reason_amended_code,language_indicator ORDER BY arch_gtam_tl14_stage_id DESC) = 1\n),\nEXP_arch_tl14_stage AS (\n\tSELECT\n\tSQ_gtam_tl14_stage.gtam_tl14_stage_id,\n\tSQ_gtam_tl14_stage.table_fld AS Table_fld,\n\tSQ_gtam_tl14_stage.key_len AS Key_len,\n\tSQ_gtam_tl14_stage.location,\n\tSQ_gtam_tl14_stage.master_company_number,\n\tSQ_gtam_tl14_stage.reason_amended_code,\n\tSQ_gtam_tl14_stage.language_indicator,\n\tSQ_gtam_tl14_stage.data_len,\n\tSQ_gtam_tl14_stage.alpha_descr_of_reason_amended,\n\tSQ_gtam_tl14_stage.extract_date AS EXTRACT_DATE,\n\tSQ_gtam_tl14_stage.as_of_date AS AS_OF_DATE,\n\tSQ_gtam_tl14_stage.record_count AS RECORD_COUNT,\n\tSQ_gtam_tl14_stage.source_system_id AS SOURCE_SYSTEM_ID,\n\tLKP_arch_gtam_tl14_stage.arch_gtam_tl14_stage_id AS LKP_arch_gtam_tl07rx_stage_id,\n\tLKP_arch_gtam_tl14_stage.alpha_descr_of_reason_amended AS LKP_alpha_descr_of_reason_amended,\n\t-- *INF*: iif(isnull(LKP_arch_gtam_tl07rx_stage_id),'NEW',\r\n\t--     iif((  ltrim(rtrim(LKP_alpha_descr_of_reason_amended)) <>  ltrim(rtrim(alpha_descr_of_reason_amended))\r\n\t-- ), 'UPDATE', 'NOCHANGE'))\n\tIFF(\n\t    LKP_arch_gtam_tl07rx_stage_id IS NULL, 'NEW',\n\t    IFF(\n\t        (ltrim(rtrim(LKP_alpha_descr_of_reason_amended)) <> ltrim(rtrim(alpha_descr_of_reason_amended))),\n\t        'UPDATE',\n\t        'NOCHANGE'\n\t    )\n\t) AS v_Changed_Flag,\n\tv_Changed_Flag AS Changed_Flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID\n\tFROM SQ_gtam_tl14_stage\n\tLEFT JOIN LKP_arch_gtam_tl14_stage\n\tON LKP_arch_gtam_tl14_stage.location = SQ_gtam_tl14_stage.location AND LKP_arch_gtam_tl14_stage.master_company_number = SQ_gtam_tl14_stage.master_company_number AND LKP_arch_gtam_tl14_stage.reason_amended_code = SQ_gtam_tl14_stage.reason_amended_code AND LKP_arch_gtam_tl14_stage.language_indicator = SQ_gtam_tl14_stage.language_indicator\n),\nFIL_Inserts1 AS (\n\tSELECT\n\tgtam_tl14_stage_id, \n\tTable_fld, \n\tKey_len, \n\tlocation, \n\tmaster_company_number, \n\treason_amended_code, \n\tlanguage_indicator, \n\tdata_len, \n\talpha_descr_of_reason_amended, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tChanged_Flag, \n\tAUDIT_ID\n\tFROM EXP_arch_tl14_stage\n\tWHERE Changed_Flag = 'NEW' or Changed_Flag = 'UPDATE'\n),\narch_gtam_tl14_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_gtam_tl14_stage\n\t(gtam_tl14_stage_id, table_fld, key_len, location, master_company_number, reason_amended_code, language_indicator, data_len, alpha_descr_of_reason_amended, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tGTAM_TL14_STAGE_ID, \n\tTable_fld AS TABLE_FLD, \n\tKey_len AS KEY_LEN, \n\tLOCATION, \n\tMASTER_COMPANY_NUMBER, \n\tREASON_AMENDED_CODE, \n\tLANGUAGE_INDICATOR, \n\tDATA_LEN, \n\tALPHA_DESCR_OF_REASON_AMENDED, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID\n\tFROM FIL_Inserts1\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

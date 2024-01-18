@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCCACoverageOTCStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCCACoverageOTCStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_CA_CoverageOTC AS (\n\tWITH cte_DCCACoverageOTCStage(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CoverageId,\r\n\tX.CA_CoverageOTCId,\r\n\tX.SessionId,\r\n\tX.AcceptOTCCoverage,\r\n\tX.AllPerilsDeductible,\r\n\tX.AllPerilsDeductibleGarageKeepers,\r\n\tX.AntiTheftDeviceDiscount,\r\n\tX.FallThroughIceCoverage,\r\n\tX.OTCCauseOfLoss,\r\n\tX.OTCCoverage,\r\n\tX.UnderwriterOverride,\r\n\tX.ExperienceRatingBasicLimitPremium,\r\n\tX.ExperienceRatingBasicLimitPremiumGarage\r\n\tFROM\r\n\tDC_CA_CoverageOTC X\r\n\tinner join\r\n\tcte_DCCACoverageOTCStage Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tSYSDATE AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tCoverageId,\n\tCA_CoverageOTCId,\n\tSessionId,\n\tAcceptOTCCoverage AS i_AcceptOTCCoverage,\n\t-- *INF*: decode(i_AcceptOTCCoverage,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_AcceptOTCCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AcceptOTCCoverage,\n\tAllPerilsDeductible AS i_AllPerilsDeductible,\n\t-- *INF*: decode(i_AllPerilsDeductible,'T',1,'F',0,NULL)\r\n\t-- \n\tdecode(\n\t    i_AllPerilsDeductible,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AllPerilsDeductible,\n\tAllPerilsDeductibleGarageKeepers AS i_AllPerilsDeductibleGarageKeepers,\n\t-- *INF*: decode(i_AllPerilsDeductibleGarageKeepers,'T',1,'F',0,NULL)\r\n\t-- \n\tdecode(\n\t    i_AllPerilsDeductibleGarageKeepers,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AllPerilsDeductibleGarageKeepers,\n\tAntiTheftDeviceDiscount,\n\tFallThroughIceCoverage AS i_FallThroughIceCoverage,\n\t-- *INF*: decode(i_FallThroughIceCoverage,'T',1,'F',0,NULL)\r\n\t-- \n\tdecode(\n\t    i_FallThroughIceCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_FallThroughIceCoverage,\n\tOTCCauseOfLoss,\n\tOTCCoverage AS i_OTCCoverage,\n\t-- *INF*: decode(i_OTCCoverage,'T',1,'F',0,NULL)\r\n\t-- \n\tdecode(\n\t    i_OTCCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_OTCCoverage,\n\tUnderwriterOverride AS i_UnderwriterOverride,\n\t-- *INF*: decode(i_UnderwriterOverride,'T',1,'F',0,NULL)\r\n\t-- \n\tdecode(\n\t    i_UnderwriterOverride,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_UnderwriterOverride,\n\tExperienceRatingBasicLimitPremium,\n\tExperienceRatingBasicLimitPremiumGarage\n\tFROM SQ_DC_CA_CoverageOTC\n),\nDCCACoverageOTCStage AS (\n\tTRUNCATE TABLE DCCACoverageOTCStage;\n\tINSERT INTO DCCACoverageOTCStage\n\t(ExtractDate, SourceSystemId, CoverageId, CA_CoverageOTCId, SessionId, AcceptOTCCoverage, AllPerilsDeductible, AllPerilsDeductibleGarageKeepers, AntiTheftDeviceDiscount, FallThroughIceCoverage, OTCCauseOfLoss, OTCCoverage, UnderwriterOverride, ExperienceRatingBasicLimitPremium, ExperienceRatingBasicLimitPremiumGarage)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCOVERAGEID, \n\tCA_COVERAGEOTCID, \n\tSESSIONID, \n\to_AcceptOTCCoverage AS ACCEPTOTCCOVERAGE, \n\to_AllPerilsDeductible AS ALLPERILSDEDUCTIBLE, \n\to_AllPerilsDeductibleGarageKeepers AS ALLPERILSDEDUCTIBLEGARAGEKEEPERS, \n\tANTITHEFTDEVICEDISCOUNT, \n\to_FallThroughIceCoverage AS FALLTHROUGHICECOVERAGE, \n\tOTCCAUSEOFLOSS, \n\to_OTCCoverage AS OTCCOVERAGE, \n\to_UnderwriterOverride AS UNDERWRITEROVERRIDE, \n\tEXPERIENCERATINGBASICLIMITPREMIUM, \n\tEXPERIENCERATINGBASICLIMITPREMIUMGARAGE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

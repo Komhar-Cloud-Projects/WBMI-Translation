@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_WBExampleData_STG_Insert_WBEDWIncrementalDataQualitySessions",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_WBExampleData_STG_Insert_WBEDWIncrementalDataQ_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_EDWIncrementalDataQualitySessions AS (\n\tSELECT A.PolicyNumber, A.PolicyVersion, A.HistoryID, A.Purpose, A.SessionId, A.SourceAccountingDate, A.ModifiedDate, A.Indicator, A.Autoshred \r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions A\r\n\twhere A.ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' AND '@{pipeline().parameters.SELECTION_END_TS}'\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_METADATA AS (\n\tSELECT\n\tSYSDATE AS ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,\n\tPolicyNumber,\n\tPolicyVersion,\n\tHistoryId AS HistoryID,\n\tPurpose,\n\tSessionId,\n\tSourceAccountingDate,\n\tModifiedDate,\n\tIndicator,\n\tAutoshred\n\tFROM SQ_WB_EDWIncrementalDataQualitySessions\n),\nWBEDWIncrementalDataQualitySessions AS (\n\tTRUNCATE TABLE WBEDWIncrementalDataQualitySessions;\n\tINSERT INTO WBEDWIncrementalDataQualitySessions\n\t(ExtractDate, SourceSystemid, PolicyNumber, PolicyVersion, HistoryID, Purpose, SessionID, SourceAccountingDate, SourceModifiedDate, Indicator, Autoshred)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemID AS SOURCESYSTEMID, \n\tPOLICYNUMBER, \n\tPOLICYVERSION, \n\tHISTORYID, \n\tPURPOSE, \n\tSessionId AS SESSIONID, \n\tSOURCEACCOUNTINGDATE, \n\tModifiedDate AS SOURCEMODIFIEDDATE, \n\tINDICATOR, \n\tAUTOSHRED\n\tFROM EXP_METADATA\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

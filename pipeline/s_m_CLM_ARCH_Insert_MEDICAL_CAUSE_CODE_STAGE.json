@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_MEDICAL_CAUSE_CODE_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_MEDICAL_CAUSE_CODE_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_MedicalCauseCodeStage AS (\n\tSELECT \r\n\tM.MedicalCauseCodeStageId, \r\n\tM.code, \r\n\tM.short_descript, \r\n\tM.long_descript, \r\n\tM.med_class_code_type_id, \r\n\tM.ExtractDate, \r\n\tM.SourceSystemId\r\n\t \r\n\tFROM\r\n\t MedicalCauseCodeStage M\n),\nEXP_Src_Value AS (\n\tSELECT\n\tcode,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(code),'N/A',\r\n\t-- IS_SPACES(code),'N/A',\r\n\t-- LENGTH(code)=0,'N/A',\r\n\t-- LTRIM(RTRIM(code)))\n\tDECODE(\n\t    TRUE,\n\t    code IS NULL, 'N/A',\n\t    LENGTH(code)>0 AND TRIM(code)='', 'N/A',\n\t    LENGTH(code) = 0, 'N/A',\n\t    LTRIM(RTRIM(code))\n\t) AS o_code,\n\tshort_descript,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(short_descript),'N/A',\r\n\t-- IS_SPACES(short_descript),'N/A',\r\n\t-- LENGTH(short_descript)=0,'N/A',\r\n\t-- LTRIM(RTRIM(short_descript)))\n\tDECODE(\n\t    TRUE,\n\t    short_descript IS NULL, 'N/A',\n\t    LENGTH(short_descript)>0 AND TRIM(short_descript)='', 'N/A',\n\t    LENGTH(short_descript) = 0, 'N/A',\n\t    LTRIM(RTRIM(short_descript))\n\t) AS o_short_descript,\n\tlong_descript,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(long_descript),'N/A',\r\n\t-- IS_SPACES(long_descript),'N/A',\r\n\t-- LENGTH(long_descript)=0,'N/A',\r\n\t-- LTRIM(RTRIM(long_descript)))\n\tDECODE(\n\t    TRUE,\n\t    long_descript IS NULL, 'N/A',\n\t    LENGTH(long_descript)>0 AND TRIM(long_descript)='', 'N/A',\n\t    LENGTH(long_descript) = 0, 'N/A',\n\t    LTRIM(RTRIM(long_descript))\n\t) AS o_long_descript,\n\tmed_class_code_type_id,\n\tExtractDate,\n\tSourceSystemId\n\tFROM SQ_MedicalCauseCodeStage\n),\nLKP_ArchMedicalCauseCode_Target AS (\n\tSELECT\n\tArchMedicalCauseCodeStageId,\n\tMedicalCauseCodeStageId,\n\tcode,\n\tmed_class_code_type_id,\n\tshort_descript,\n\tlong_descript\n\tFROM (\n\t\tSELECT \n\t\t\tArchMedicalCauseCodeStageId,\n\t\t\tMedicalCauseCodeStageId,\n\t\t\tcode,\n\t\t\tmed_class_code_type_id,\n\t\t\tshort_descript,\n\t\t\tlong_descript\n\t\tFROM ArchMedicalCauseCodeStage\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY MedicalCauseCodeStageId ORDER BY ArchMedicalCauseCodeStageId) = 1\n),\nEXP_ArchMedicalCauseCodeStage AS (\n\tSELECT\n\tLKP_ArchMedicalCauseCode_Target.ArchMedicalCauseCodeStageId AS Lkp_ArchMedicalCauseCodeStageId,\n\tLKP_ArchMedicalCauseCode_Target.MedicalCauseCodeStageId AS Lkp_MedicalCauseCodeStageId,\n\tLKP_ArchMedicalCauseCode_Target.code AS Lkp_code,\n\tLKP_ArchMedicalCauseCode_Target.med_class_code_type_id AS Lkp_med_class_code_type_id,\n\tLKP_ArchMedicalCauseCode_Target.short_descript AS Lkp_short_descript,\n\tLKP_ArchMedicalCauseCode_Target.long_descript AS Lkp_long_descript,\n\tSQ_MedicalCauseCodeStage.MedicalCauseCodeStageId,\n\tEXP_Src_Value.o_code AS code,\n\t-- *INF*: ltrim(rtrim(code))\n\tltrim(rtrim(code)) AS o_code,\n\tEXP_Src_Value.o_short_descript AS short_descript,\n\t-- *INF*: ltrim(rtrim(short_descript))\n\tltrim(rtrim(short_descript)) AS o_short_descript,\n\tEXP_Src_Value.o_long_descript AS long_descript,\n\t-- *INF*: ltrim(rtrim(long_descript))\n\tltrim(rtrim(long_descript)) AS o_long_descript,\n\tEXP_Src_Value.med_class_code_type_id,\n\tv_ChangedFlag AS ChangedFlag,\n\t-- *INF*: iif(isnull(Lkp_ArchMedicalCauseCodeStageId),'NEW',\r\n\t-- \r\n\t--         iif(\r\n\t-- \r\n\t--         LTRIM(RTRIM(code)) != LTRIM(RTRIM(Lkp_code)) \r\n\t-- \r\n\t-- or\r\n\t--   \r\n\t--         LTRIM(RTRIM(med_class_code_type_id)) != LTRIM(RTRIM(Lkp_med_class_code_type_id))\r\n\t-- \r\n\t-- or\r\n\t--   \r\n\t--         LTRIM(RTRIM(short_descript)) != LTRIM(RTRIM(Lkp_short_descript))\r\n\t-- \r\n\t-- or\r\n\t--   \r\n\t--         LTRIM(RTRIM(Lkp_MedicalCauseCodeStageId)) != LTRIM(RTRIM(MedicalCauseCodeStageId))\r\n\t-- \r\n\t-- or\r\n\t--   \r\n\t--         LTRIM(RTRIM(long_descript)) != LTRIM(RTRIM(Lkp_long_descript)),\r\n\t-- \r\n\t--         \r\n\t--         'UPDATE', 'NOCHANGE')\r\n\t-- \r\n\t--    )\n\tIFF(\n\t    Lkp_ArchMedicalCauseCodeStageId IS NULL, 'NEW',\n\t    IFF(\n\t        LTRIM(RTRIM(code)) != LTRIM(RTRIM(Lkp_code))\n\t        or LTRIM(RTRIM(med_class_code_type_id)) != LTRIM(RTRIM(Lkp_med_class_code_type_id))\n\t        or LTRIM(RTRIM(short_descript)) != LTRIM(RTRIM(Lkp_short_descript))\n\t        or LTRIM(RTRIM(Lkp_MedicalCauseCodeStageId)) != LTRIM(RTRIM(MedicalCauseCodeStageId))\n\t        or LTRIM(RTRIM(long_descript)) != LTRIM(RTRIM(Lkp_long_descript)),\n\t        'UPDATE',\n\t        'NOCHANGE'\n\t    )\n\t) AS v_ChangedFlag,\n\tEXP_Src_Value.ExtractDate,\n\tEXP_Src_Value.SourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM EXP_Src_Value\n\t -- Manually join with SQ_MedicalCauseCodeStage\n\tLEFT JOIN LKP_ArchMedicalCauseCode_Target\n\tON LKP_ArchMedicalCauseCode_Target.MedicalCauseCodeStageId = SQ_MedicalCauseCodeStage.MedicalCauseCodeStageId\n),\nFIL_ArchMedicalCauseCodeStage AS (\n\tSELECT\n\tMedicalCauseCodeStageId, \n\to_code, \n\to_short_descript, \n\to_long_descript, \n\tmed_class_code_type_id, \n\tChangedFlag, \n\tExtractDate, \n\tSourceSystemId, \n\to_AuditId\n\tFROM EXP_ArchMedicalCauseCodeStage\n\tWHERE ChangedFlag = 'NEW' or ChangedFlag = 'UPDATE'\n),\nArchMedicalCauseCodeStage AS (\n\tINSERT INTO ArchMedicalCauseCodeStage\n\t(MedicalCauseCodeStageId, code, short_descript, long_descript, med_class_code_type_id, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tMEDICALCAUSECODESTAGEID, \n\to_code AS CODE, \n\to_short_descript AS SHORT_DESCRIPT, \n\to_long_descript AS LONG_DESCRIPT, \n\tMED_CLASS_CODE_TYPE_ID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM FIL_ArchMedicalCauseCodeStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCrRiskStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCrRiskStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DcCrRiskStage AS (\n\tSELECT\n\t\tDcCrRiskStageId,\n\t\tLineId,\n\t\tCrOccupancyId,\n\t\tCrRiskId,\n\t\tSessionId,\n\t\tId,\n\t\tCrOccupancyXmlId,\n\t\tManufacturers,\n\t\tRiskState,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DcCrRiskStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDcCrRiskStageId,\n\tLineId,\n\tCrOccupancyId,\n\tCrRiskId,\n\tSessionId,\n\tId,\n\tCrOccupancyXmlId,\n\tManufacturers AS i_Manufacturers,\n\t-- *INF*: DECODE(i_Manufacturers, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_Manufacturers,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_Manufacturers,\n\tRiskState,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DcCrRiskStage\n),\nArchDCCrRiskStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCrRiskStage\n\t(DcCrRiskStageId, LineId, CrOccupancyId, CrRiskId, SessionId, Id, CrOccupancyXmlId, Manufacturers, RiskState, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tDCCRRISKSTAGEID, \n\tLINEID, \n\tCROCCUPANCYID, \n\tCRRISKID, \n\tSESSIONID, \n\tID, \n\tCROCCUPANCYXMLID, \n\to_Manufacturers AS MANUFACTURERS, \n\tRISKSTATE, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

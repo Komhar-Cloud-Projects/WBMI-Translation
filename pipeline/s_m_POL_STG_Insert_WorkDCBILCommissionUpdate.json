@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_WorkDCBILCommissionUpdate",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_WorkDCBILCommissionUpdate",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBILCommissionAuthorization AS (\n\tSet QUOTED_IDENTIFIER on\r\n\t\r\n\tWith SRC as(\r\n\tselect pt.PolicyTermId,pt.PolicyReference ,ca.LastUpdatedTimestamp,  ca.AuthorizedAmount,ca.TierAmount,ca.AuthorizationDate,ca.PlanId,ca.AccountId,ca.AuthorizationDateTime,\r\n\tROW_NUMBER() over(partition by pt.PolicyReference order by ca.PolicyTermId, ca.PlanId, ca.AccountId, ca.CommissionAuthorizationId) Rownum\r\n\tfrom DCBILPolicyTermStage pt \r\n\tinner join DCBILCommissionAuthorizationStage ca on pt.PolicyTermId = ca.PolicyTermId \r\n\tinner join DCPLTPlanStage P on P.PlanId = ca.PlanId\r\n\twhere AuthorizationTypeCode='POT'\r\n\t)\r\n\tselect S.PolicyReference, BI.ItemEffectiveDate, S.AuthorizedAmount, S.TierAmount,  'Graduate' as UpdateType\r\n\tfrom \r\n\t(select S1.PolicyTermId, S1.PolicyReference, S1.LastUpdatedTimestamp as CurrLastTS, ISNULL(S2.LastUpdatedTimestamp,'1990-01-01 00:00:00.000') as PrevLastTS,\r\n\tS1.AuthorizedAmount-ISNULL(S2.AuthorizedAmount,0) as AuthorizedAmount, \r\n\tS1.TierAmount, S1.AuthorizationDate, S1.PlanId, S1.AccountId, S1.AuthorizationDateTime as CurrAuthTS, \r\n\tISNULL(S2.AuthorizationDateTime,'1990-01-01 00:00:00.000') as PrevAuthTS\r\n\tfrom SRC S1\r\n\tleft join SRC S2 on S2.RowNum = S1.RowNum-1 and S1.PolicyTermid=S2.PolicyTermid and S1.PlanId=S2.PlanId and (S1.AccountId=S2.AccountId OR S2.AccountId is null)\r\n\t) S\r\n\tinner join  DCBILBillItemStage BI \r\n\ton BI.PolicyTermId=S.PolicyTermId and BI.CommissionPlanId=S.PlanId and \r\n\t(BI.AccountId=S.AccountId OR S.AccountID  is NULL)\r\n\tand BI.ReceivableTypeCode='Prem' and \r\n\t((BI.PostedTimestamp<=S.CurrAuthTS and BI.PostedTimestamp> S.PrevAuthTS) or \r\n\t(BI.TransferredAmount <> 0 and BI.LastUpdatedTimestamp<=S.CurrLastTS and BI.LastUpdatedTimestamp> S.PrevLastTS))\r\n\tand ItemID in \r\n\t(select max(Bi.ItemId) from DCBILBillItemStage BI \r\n\twhere BI.PolicyTermId=S.PolicyTermId and BI.CommissionPlanId=S.PlanId and \r\n\t(BI.AccountId=S.AccountId OR S.AccountID  is NULL)\r\n\tand BI.ReceivableTypeCode='Prem' and \r\n\t((BI.PostedTimestamp<=S.CurrAuthTS and BI.PostedTimestamp> S.PrevAuthTS) or \r\n\t(BI.TransferredAmount <> 0 and BI.LastUpdatedTimestamp<=S.CurrLastTS and BI.LastUpdatedTimestamp> S.PrevLastTS)))\r\n\twhere S.AuthorizedAmount<>0 and BI.ItemId is not null\r\n\tand S.CurrLastTS>=SUBSTRING('@{pipeline().parameters.SELECTION_START_TS}',1,10)\r\n\t--FinalAudit\r\n\t UNION ALL\r\n\tselect pt.PolicyReference ,BI.ItemEffectiveDate, ca.AuthorizedAmount, ca.TierAmount,'FinalAudit' as UpdateType\r\n\tfrom DCBILPolicyTermStage pt \r\n\tinner join DCBILCommissionAuthorizationStage ca \r\n\ton pt.PolicyTermId = ca.PolicyTermId and pt.PolicyTermConfigCommissionScheme ='POP1' and AuthorizationTypeCode='AUTO'\r\n\tinner join DCPLTPlanStage P on P.PlanId = ca.PlanId\r\n\tinner join  DCBILBillItemStage BI \r\n\ton BI.PolicyTermId=PT.PolicyTermId and BI.CommissionPlanId=P.PlanId and \r\n\t(BI.AccountId=ca.AccountId OR ca.AccountID  is NULL)\r\n\tand BI.ReceivableTypeCode='Prem' and \r\n\t((BI.PostedTimestamp<=ca.AuthorizationDateTime) or (BI.TransferredAmount <> 0 and BI.LastUpdatedTimestamp<=ca.LastUpdatedTimestamp))\r\n\tand ItemID in \r\n\t(select max(Bi.ItemId) from DCBILBillItemStage BI \r\n\twhere BI.PolicyTermId=PT.PolicyTermId and BI.CommissionPlanId=P.PlanId and \r\n\t(BI.AccountId=ca.AccountId OR ca.AccountID  is NULL)\r\n\tand BI.ReceivableTypeCode='Prem' and \r\n\t((BI.PostedTimestamp<=ca.AuthorizationDateTime) or (BI.TransferredAmount <> 0 and BI.LastUpdatedTimestamp<=ca.LastUpdatedTimestamp)))\r\n\twhere pt.PolicyReference in \r\n\t(select distinct pt.PolicyReference\r\n\tfrom DCBILBillItemStage BI join DCBILPolicyTermStage PT on BI.PolicyTermId = PT.PolicyTermId\r\n\twhere BI.ReceivableTypeCode='PREM'\r\n\tand BI.TransactionTypeCode in ('FAUD','RAUD')\r\n\tand BI.LastUpdatedTimestamp >= SUBSTRING('@{pipeline().parameters.SELECTION_START_TS}',1,10))\r\n\t--where ca.LastUpdatedTimestamp>=SUBSTRING('@{pipeline().parameters.SELECTION_START_TS}',1,10)\n),\nAGG_PolicyAndDate AS (\n\tSELECT\n\tPolicyReference,\n\tItemEffectiveDate,\n\tAuthorizedAmount,\n\tTierAmount,\n\tUpdateType,\n\t-- *INF*: SUM(AuthorizedAmount)\n\tSUM(AuthorizedAmount) AS o_AuthorizedAmount,\n\t-- *INF*: SUM(TierAmount)\n\tSUM(TierAmount) AS o_TierAmount\n\tFROM SQ_DCBILCommissionAuthorization\n\tGROUP BY PolicyReference, ItemEffectiveDate, UpdateType\n),\nEXP_Metadata AS (\n\tSELECT\n\tPolicyReference,\n\tItemEffectiveDate AS AuthorizationDate,\n\to_AuthorizedAmount AS AuthorizedAmount,\n\to_TierAmount AS TierAmount,\n\t-- *INF*: IIF(ISNULL(AuthorizedAmount),0,AuthorizedAmount)\n\tIFF(AuthorizedAmount IS NULL, 0, AuthorizedAmount) AS o_AuthorizedAmount,\n\t-- *INF*: IIF(ISNULL(TierAmount),0,TierAmount)\n\tIFF(TierAmount IS NULL, 0, TierAmount) AS o_TierAmount,\n\tUpdateType,\n\t-- *INF*: TRUNC(@{pipeline().parameters.SELECTION_START_TS})\n\tTRUNC(@{pipeline().parameters.SELECTION_START_TS}) AS ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId\n\tFROM AGG_PolicyAndDate\n),\nWorkDCBILCommissionUpdate AS (\n\tTRUNCATE TABLE WorkDCBILCommissionUpdate;\n\tINSERT INTO WorkDCBILCommissionUpdate\n\t(ExtractDate, SourceSystemId, PolicyReference, AuthorizationDate, AuthorizedAmount, TierAmount, UpdateType)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tPOLICYREFERENCE, \n\tAUTHORIZATIONDATE, \n\to_AuthorizedAmount AS AUTHORIZEDAMOUNT, \n\to_TierAmount AS TIERAMOUNT, \n\tUPDATETYPE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

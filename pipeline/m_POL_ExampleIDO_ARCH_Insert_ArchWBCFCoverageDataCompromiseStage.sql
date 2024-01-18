@@ -1,0 +1,83 @@
+WITH
+SQ_WBCFCoverageDataCompromiseStage AS (
+	SELECT
+		WBCFCoverageDataCompromiseStageId,
+		ExtractDate,
+		SourceSystemId,
+		CoverageId,
+		WB_CF_CoverageDataCompromiseId,
+		SessionId,
+		ProgramType,
+		ProgramQuestionOne,
+		ProgramQuestionTwo,
+		ProgramQuestionThree,
+		ProgramQuestionFour,
+		AssistedLivingEligibilityQuestion,
+		RatingTierForProgramtype,
+		BillingLOB,
+		CommissionPlanId,
+		IsBillingSubline,
+		ParentBillingLOB,
+		PurePremium,
+		TransactionCommissionType,
+		TransactionCommissionValue,
+		TransactionFinalCommissionValue,
+		WB_CL_CoverageDataCompromiseId
+	FROM WBCFCoverageDataCompromiseStage
+),
+EXP_Metadata AS (
+	SELECT
+	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
+	WBCFCoverageDataCompromiseStageId,
+	ExtractDate,
+	SourceSystemId,
+	CoverageId,
+	WB_CF_CoverageDataCompromiseId,
+	SessionId,
+	ProgramType,
+	ProgramQuestionOne,
+	ProgramQuestionTwo,
+	ProgramQuestionThree,
+	ProgramQuestionFour,
+	AssistedLivingEligibilityQuestion,
+	RatingTierForProgramtype,
+	BillingLOB,
+	CommissionPlanId,
+	IsBillingSubline,
+	ParentBillingLOB,
+	PurePremium,
+	TransactionCommissionType,
+	TransactionCommissionValue,
+	TransactionFinalCommissionValue,
+	WB_CL_CoverageDataCompromiseId
+	FROM SQ_WBCFCoverageDataCompromiseStage
+),
+ArchWBCFCoverageDataCompromiseStage AS (
+	INSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCFCoverageDataCompromiseStage
+	(ExtractDate, SourceSystemId, AuditId, WBCFCoverageDataCompromiseStageId, CoverageId, WB_CF_CoverageDataCompromiseId, SessionId, ProgramType, ProgramQuestionOne, ProgramQuestionTwo, ProgramQuestionThree, ProgramQuestionFour, AssistedLivingEligibilityQuestion, RatingTierForProgramtype, BillingLOB, CommissionPlanId, IsBillingSubline, ParentBillingLOB, PurePremium, TransactionCommissionType, TransactionCommissionValue, TransactionFinalCommissionValue, WB_CL_CoverageDataCompromiseId)
+	SELECT 
+	EXTRACTDATE, 
+	SOURCESYSTEMID, 
+	o_AuditId AS AUDITID, 
+	WBCFCOVERAGEDATACOMPROMISESTAGEID, 
+	COVERAGEID, 
+	WB_CF_COVERAGEDATACOMPROMISEID, 
+	SESSIONID, 
+	PROGRAMTYPE, 
+	PROGRAMQUESTIONONE, 
+	PROGRAMQUESTIONTWO, 
+	PROGRAMQUESTIONTHREE, 
+	PROGRAMQUESTIONFOUR, 
+	ASSISTEDLIVINGELIGIBILITYQUESTION, 
+	RATINGTIERFORPROGRAMTYPE, 
+	BILLINGLOB, 
+	COMMISSIONPLANID, 
+	ISBILLINGSUBLINE, 
+	PARENTBILLINGLOB, 
+	PUREPREMIUM, 
+	TRANSACTIONCOMMISSIONTYPE, 
+	TRANSACTIONCOMMISSIONVALUE, 
+	TRANSACTIONFINALCOMMISSIONVALUE, 
+	WB_CL_COVERAGEDATACOMPROMISEID
+	FROM EXP_Metadata
+),

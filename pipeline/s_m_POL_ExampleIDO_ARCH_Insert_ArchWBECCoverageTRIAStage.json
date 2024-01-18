@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBECCoverageTRIAStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBECCoverageTRIAStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBECCoverageTRIAStage AS (\n\tSELECT\n\t\tWBECCoverageTRIAStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCoverageId,\n\t\tWB_EC_CoverageTRIAId,\n\t\tSessionId\n\tFROM WBECCoverageTRIAStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBECCoverageTRIAStageId,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tCoverageId,\n\tWB_EC_CoverageTRIAId,\n\tSessionId\n\tFROM SQ_WBECCoverageTRIAStage\n),\nArchWBECCoverageTRIAStage AS (\n\tINSERT INTO ArchWBECCoverageTRIAStage\n\t(ExtractDate, SourceSystemId, AuditId, WBECCoverageTRIAStageId, CoverageId, WB_EC_CoverageTRIAId, SessionId)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBECCOVERAGETRIASTAGEID, \n\tCOVERAGEID, \n\tWB_EC_COVERAGETRIAID, \n\tSESSIONID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

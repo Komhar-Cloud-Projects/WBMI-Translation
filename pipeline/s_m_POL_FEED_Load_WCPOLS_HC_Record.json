@@ -1,0 +1,51 @@
+{
+    "name": "s_m_POL_FEED_Load_WCPOLS_HC_Record",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Load_WCPOLS_HC_Record",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WCPols00Record AS (\n\tSELECT\r\n\t\tWCTrackHistoryID,\r\n\t\tLinkData,\r\n\t     AuditId\r\n\t\tFROM dbo.WCPols00Record\r\n\tWHERE 1=1\r\n\tAND AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tORDER BY WCTrackHistoryID\n),\nSQ_WorkWCPolicyDetails AS (\n\tSELECT distinct\r\n\t\tST.WCTrackHistoryID\r\n\t\t,F.FormName\r\n\t\t,PT.Name\r\n\t\t,Pol.TransactionEffectiveDate\r\n\t\t,CLT_NM.Value ClientName\r\n\t\t,CLT_ADD.Value Address\r\n\t\t,CLT_CT.Value City\r\n\t\t,CLT_ST.Value State\r\n\t\t,CLT_ZIP.Value Zip\r\n\t\t,CLT_FEIN.Value FEINNumber\r\n\t\t,CLT_UI.Value UINumber\r\n\t\t,'1' LeasingAddressTypeCode\r\n\t\r\n\tFROM dbo.WorkWCStateTerm ST\r\n\t\r\n\tINNER JOIN dbo.WorkWCForms F\r\n\t\tON ST.WCTrackHistoryID = F.WCTrackHistoryID\r\n\tAND F.FormName like 'WC220304%' AND (F.OnPolicy=1 or F.[Add]=1) AND (F.Remove is NULL or F.Remove=0)\r\n\t\r\n\tINNER JOIN dbo.WorkWCParty PT\r\n\t\tON PT.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\t\tAND PT.PartyAssociationType = 'Account'\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicy Pol\r\n\t\tON Pol.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CLT_NM\r\n\t\tON CLT_NM.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CLT_NM.Attribute='ClientNameWC220304'\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CLT_ADD\r\n\t\tON CLT_ADD.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CLT_ADD.Attribute='ClientAddressWC220304'\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CLT_CT\r\n\t\tON CLT_CT.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CLT_CT.Attribute='ClientCityWC220304'\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CLT_ST\r\n\t\tON CLT_ST.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CLT_ST.Attribute='ClientStateWC220304'\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CLT_ZIP\r\n\t\tON CLT_ZIP.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CLT_ZIP.Attribute='ClientZipWC220304'\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CLT_FEIN\r\n\t\tON CLT_FEIN.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CLT_FEIN.Attribute='ClientFEINNumberWC220304'\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CLT_UI\r\n\t\tON CLT_UI.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CLT_UI.Attribute='ClientUINumberwC220304'\r\n\t\r\n\tWHERE 1 = 1\r\n\tAND ST.AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t@{pipeline().parameters.WHERE_CLAUSE_HC_RECORD}\r\n\t\r\n\tUNION \r\n\t\r\n\tSELECT distinct\r\n\t\tST.WCTrackHistoryID\r\n\t\t,F.FormName\r\n\t\t,PT.Name\r\n\t\t,Pol.TransactionEffectiveDate\r\n\t\t,'' ClientName\r\n\t\t,CLT_ADD.Value Address\r\n\t\t,CLT_CT.Value City\r\n\t\t,CLT_ST.Value State\r\n\t\t,CLT_ZIP.Value Zip\r\n\t\t,'' FEINNumber\r\n\t\t,'' UINumber\r\n\t\t,'2' LeasingAddressTypeCode\r\n\t\r\n\tFROM dbo.WorkWCStateTerm ST\r\n\t\r\n\tINNER JOIN dbo.WorkWCForms F\r\n\t\tON ST.WCTrackHistoryID = F.WCTrackHistoryID\r\n\tAND F.FormName like 'WC220304%' AND (F.OnPolicy=1 or F.[Add]=1) AND (F.Remove is NULL or F.Remove=0)\r\n\t\r\n\tINNER JOIN dbo.WorkWCParty PT\r\n\t\tON PT.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\t\tAND PT.PartyAssociationType = 'Account'\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicy Pol\r\n\t\tON Pol.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CLT_ADD\r\n\t\tON CLT_ADD.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CLT_ADD.Attribute='IncludedClientAddress'\r\n\t\t\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CLT_CT\r\n\t\tON CLT_CT.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CLT_CT.Attribute='IncludedClientCity'\r\n\t\tAND CLT_ADD.ProcessID=CLT_CT.ProcessID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CLT_ST\r\n\t\tON CLT_ST.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CLT_ST.Attribute='IncludedClientState'\r\n\t\tAND CLT_ADD.ProcessID=CLT_ST.ProcessID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CLT_ZIP\r\n\t\tON CLT_ZIP.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CLT_ZIP.Attribute='IncludedClientZipcode'\r\n\t\tAND CLT_ADD.ProcessID=CLT_ZIP.ProcessID\r\n\t\r\n\tWHERE 1 = 1\r\n\tAND ST.AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t@{pipeline().parameters.WHERE_CLAUSE_HC_CLIENT}\r\n\t\r\n\tORDER BY ST.WCTrackHistoryID,LeasingAddressTypeCode\n),\nJNR_RecordHC AS (SELECT\n\tSQ_WCPols00Record.WCTrackHistoryID AS WCTrackHistoryID_00Recod, \n\tSQ_WCPols00Record.LinkData, \n\tSQ_WCPols00Record.AuditId, \n\tSQ_WorkWCPolicyDetails.WCTrackHistoryID, \n\tSQ_WorkWCPolicyDetails.FormName, \n\tSQ_WorkWCPolicyDetails.Name, \n\tSQ_WorkWCPolicyDetails.TransactionEffectiveDate, \n\tSQ_WorkWCPolicyDetails.ClientName, \n\tSQ_WorkWCPolicyDetails.Address, \n\tSQ_WorkWCPolicyDetails.City, \n\tSQ_WorkWCPolicyDetails.State, \n\tSQ_WorkWCPolicyDetails.Zip, \n\tSQ_WorkWCPolicyDetails.FEINNumber, \n\tSQ_WorkWCPolicyDetails.UINumber, \n\tSQ_WorkWCPolicyDetails.LeasingAddressTypeCode\n\tFROM SQ_WCPols00Record\n\tINNER JOIN SQ_WorkWCPolicyDetails\n\tON SQ_WorkWCPolicyDetails.WCTrackHistoryID = SQ_WCPols00Record.WCTrackHistoryID\n),\nmplt_Parse_FormNameField AS (WITH\n\tINPUT_FormName AS (\n\t\t\n\t),\n\tEXPTRANS AS (\n\t\tSELECT\n\t\tParsedNameOfForm,\n\t\tFormNameFromSource,\n\t\t-- *INF*: REVERSE(FormNameFromSource)\n\t\tREVERSE(FormNameFromSource) AS vReversedFromNameFromSource,\n\t\t-- *INF*: REVERSE(substr(vReversedFromNameFromSource,1,4))\n\t\tREVERSE(substr(vReversedFromNameFromSource, 1, 4)) AS vFormEdition,\n\t\t-- *INF*: DECODE(TRUE,\r\n\t\t-- substr(vReversedFromNameFromSource,5,1) >='A' and substr(vReversedFromNameFromSource,5,1) <='Z', substr(vReversedFromNameFromSource,5,1),\r\n\t\t-- ' '\r\n\t\t-- )\r\n\t\t-- \r\n\t\t-- -- check if within A and Z, if not then space\n\t\tDECODE(\n\t\t    TRUE,\n\t\t    substr(vReversedFromNameFromSource, 5, 1) >= 'A' and substr(vReversedFromNameFromSource, 5, 1) <= 'Z', substr(vReversedFromNameFromSource, 5, 1),\n\t\t    ' '\n\t\t) AS vBureauCode,\n\t\tvFormEdition AS oFormEdition,\n\t\tvBureauCode AS oBureauCode\n\t\tFROM INPUT_FormName\n\t),\n\tOUTPUT_FormName AS (\n\t\tSELECT\n\t\tParsedNameOfForm, \n\t\tFormNameFromSource, \n\t\toFormEdition AS FormEdition, \n\t\toBureauCode AS BureauCode\n\t\tFROM EXPTRANS\n\t),\n),\nEXP_HC_Record AS (\n\tSELECT\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\tJNR_RecordHC.AuditId,\n\tJNR_RecordHC.WCTrackHistoryID_00Recod AS WCTrackHistoryID,\n\tJNR_RecordHC.LinkData,\n\t'22' AS StateCode,\n\t'HC' AS RecordTypeCode,\n\t'WC220304' AS EndorsementNumber,\n\tmplt_Parse_FormNameField.BureauCode,\n\tmplt_Parse_FormNameField.FormEdition,\n\tJNR_RecordHC.FormName,\n\tJNR_RecordHC.ClientName,\n\tJNR_RecordHC.Address,\n\tJNR_RecordHC.City,\n\tJNR_RecordHC.State,\n\tJNR_RecordHC.Zip,\n\tJNR_RecordHC.FEINNumber,\n\t-- *INF*: REPLACECHR(1,FEINNumber,'-','')\n\tREGEXP_REPLACE(FEINNumber,'-','') AS o_FEINNumber,\n\tJNR_RecordHC.UINumber,\n\tJNR_RecordHC.LeasingAddressTypeCode,\n\tJNR_RecordHC.Name,\n\tJNR_RecordHC.TransactionEffectiveDate,\n\t-- *INF*: TO_CHAR(TransactionEffectiveDate,'YYMMDD')\n\tTO_CHAR(TransactionEffectiveDate, 'YYMMDD') AS o_TransactionEffectiveDate\n\tFROM JNR_RecordHC\n\t -- Manually join with mplt_Parse_FormNameField\n),\nSRTTRANS AS (\n\tSELECT\n\tExtractDate, \n\tAuditId, \n\tWCTrackHistoryID, \n\tLinkData, \n\tStateCode, \n\tRecordTypeCode, \n\tEndorsementNumber, \n\tBureauCode, \n\tFormEdition, \n\tClientName, \n\tLeasingAddressTypeCode, \n\tAddress, \n\tCity, \n\tState, \n\tZip, \n\to_FEINNumber AS FEINNumber, \n\tUINumber, \n\tName, \n\to_TransactionEffectiveDate AS TransactionEffectiveDate\n\tFROM EXP_HC_Record\n\tORDER BY WCTrackHistoryID ASC, LeasingAddressTypeCode ASC\n),\nWCPolsHCRecord AS (\n\tINSERT INTO WCPolsHCRecord\n\t(ExtractDate, AuditId, WCTrackHistoryID, LinkData, StateCode, RecordTypeCode, EndorsementNumber, BureauVersionIdentifierEditionIdentifier, CarrierVersionIdentifier, NameOfClient, LeasingAddressTypeCode, AddressStreet, AddressCity, AddressState, AddressZipCode, ClientFederalEmployerIdentificationNumber, ClientsUnemploymentInsuranceNumber, NameOfInsured, EndorsementEffectiveDate)\n\tSELECT \n\tEXTRACTDATE, \n\tAUDITID, \n\tWCTRACKHISTORYID, \n\tLINKDATA, \n\tSTATECODE, \n\tRECORDTYPECODE, \n\tENDORSEMENTNUMBER, \n\tBureauCode AS BUREAUVERSIONIDENTIFIEREDITIONIDENTIFIER, \n\tFormEdition AS CARRIERVERSIONIDENTIFIER, \n\tClientName AS NAMEOFCLIENT, \n\tLEASINGADDRESSTYPECODE, \n\tAddress AS ADDRESSSTREET, \n\tCity AS ADDRESSCITY, \n\tState AS ADDRESSSTATE, \n\tZip AS ADDRESSZIPCODE, \n\tFEINNumber AS CLIENTFEDERALEMPLOYERIDENTIFICATIONNUMBER, \n\tUINumber AS CLIENTSUNEMPLOYMENTINSURANCENUMBER, \n\tName AS NAMEOFINSURED, \n\tTransactionEffectiveDate AS ENDORSEMENTEFFECTIVEDATE\n\tFROM SRTTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE_HC_RECORD": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE_HC_CLIENT": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCFCoverageEquipmentBreakDownStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCFCoverageEquipme_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCFCoverageEquipmentBreakdownStage AS (\n\tSELECT\n\t\tWBCFCoverageEquipmentBreakdownStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCoverageId,\n\t\tWB_CF_CoverageEquipmentBreakdownId,\n\t\tSessionId,\n\t\tARate,\n\t\tBlanket,\n\t\tBlanketNOCDescription,\n\t\tCoinsurance,\n\t\tDeductible,\n\t\tInceptionDate,\n\t\tIndicator,\n\t\tOtherFlood,\n\t\tOtherFloodOther,\n\t\tOtherFloodPrimary,\n\t\tSpecific,\n\t\tSpecificNOCDescription,\n\t\tWaiveUnderlyingInsurance,\n\t\tEquipmentBreakdownPremiumOverride,\n\t\tPriorTermEquipmentBreakdownPremium,\n\t\tPerishableGoodsPolicyPremium,\n\t\tAlgorithmPart2Display,\n\t\tAlgorithmPart1Display,\n\t\tAlgorithmPart3Effective2013Display,\n\t\tAlgorithmPart3Effective2014Display,\n\t\tPremiumDisplay,\n\t\tBillingLOB,\n\t\tParentBillingLOB,\n\t\tCommissionPlanId,\n\t\tTransactionCommissionType,\n\t\tTransactionCommissionValue,\n\t\tPurePremium,\n\t\tTransactionFinalCommissionValue,\n\t\tIsBillingSubline,\n\t\tAlgorithmPart3Year1TransitionDisplay,\n\t\tAlgorithmPart3Year2TransitionDisplay,\n\t\tAlgorithmPart3Year1TransitionAdjustmentPremiumDisplay,\n\t\tAlgorithmPart3Year2TransitionAdjustmentPremiumDisplay,\n\t\tAlgorithmPart3EquipmentBreakdownPremiumDisplay\n\tFROM WBCFCoverageEquipmentBreakdownStage\n),\nEXP_Metadata AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tWBCFCoverageEquipmentBreakdownStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCoverageId,\n\tWB_CF_CoverageEquipmentBreakdownId,\n\tSessionId,\n\tARate,\n\tBlanket,\n\tBlanketNOCDescription,\n\tCoinsurance,\n\tDeductible,\n\tInceptionDate,\n\tIndicator,\n\tOtherFlood,\n\tOtherFloodOther,\n\tOtherFloodPrimary,\n\tSpecific,\n\tSpecificNOCDescription,\n\tWaiveUnderlyingInsurance,\n\tEquipmentBreakdownPremiumOverride,\n\tPriorTermEquipmentBreakdownPremium,\n\tPerishableGoodsPolicyPremium,\n\tAlgorithmPart2Display,\n\tAlgorithmPart1Display,\n\tAlgorithmPart3Effective2013Display,\n\tAlgorithmPart3Effective2014Display,\n\tPremiumDisplay,\n\tBillingLOB,\n\tParentBillingLOB,\n\tCommissionPlanId,\n\tTransactionCommissionType,\n\tTransactionCommissionValue,\n\tPurePremium,\n\tTransactionFinalCommissionValue,\n\tIsBillingSubline,\n\tAlgorithmPart3Year1TransitionDisplay,\n\tAlgorithmPart3Year2TransitionDisplay,\n\tAlgorithmPart3Year1TransitionAdjustmentPremiumDisplay,\n\tAlgorithmPart3Year2TransitionAdjustmentPremiumDisplay,\n\tAlgorithmPart3EquipmentBreakdownPremiumDisplay\n\tFROM SQ_WBCFCoverageEquipmentBreakdownStage\n),\nArchWBCFCoverageEquipmentBreakdownStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCFCoverageEquipmentBreakdownStage\n\t(ExtractDate, SourceSystemId, AuditId, WBCFCoverageEquipmentBreakdownStageId, CoverageId, WB_CF_CoverageEquipmentBreakdownId, SessionId, ARate, Blanket, BlanketNOCDescription, Coinsurance, Deductible, InceptionDate, Indicator, OtherFlood, OtherFloodOther, OtherFloodPrimary, Specific, SpecificNOCDescription, WaiveUnderlyingInsurance, EquipmentBreakdownPremiumOverride, PriorTermEquipmentBreakdownPremium, PerishableGoodsPolicyPremium, AlgorithmPart2Display, AlgorithmPart1Display, AlgorithmPart3Effective2013Display, AlgorithmPart3Effective2014Display, PremiumDisplay, BillingLOB, ParentBillingLOB, CommissionPlanId, TransactionCommissionType, TransactionCommissionValue, PurePremium, TransactionFinalCommissionValue, IsBillingSubline, AlgorithmPart3Year1TransitionDisplay, AlgorithmPart3Year2TransitionDisplay, AlgorithmPart3Year1TransitionAdjustmentPremiumDisplay, AlgorithmPart3Year2TransitionAdjustmentPremiumDisplay, AlgorithmPart3EquipmentBreakdownPremiumDisplay)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBCFCOVERAGEEQUIPMENTBREAKDOWNSTAGEID, \n\tCOVERAGEID, \n\tWB_CF_COVERAGEEQUIPMENTBREAKDOWNID, \n\tSESSIONID, \n\tARATE, \n\tBLANKET, \n\tBLANKETNOCDESCRIPTION, \n\tCOINSURANCE, \n\tDEDUCTIBLE, \n\tINCEPTIONDATE, \n\tINDICATOR, \n\tOTHERFLOOD, \n\tOTHERFLOODOTHER, \n\tOTHERFLOODPRIMARY, \n\tSPECIFIC, \n\tSPECIFICNOCDESCRIPTION, \n\tWAIVEUNDERLYINGINSURANCE, \n\tEQUIPMENTBREAKDOWNPREMIUMOVERRIDE, \n\tPRIORTERMEQUIPMENTBREAKDOWNPREMIUM, \n\tPERISHABLEGOODSPOLICYPREMIUM, \n\tALGORITHMPART2DISPLAY, \n\tALGORITHMPART1DISPLAY, \n\tALGORITHMPART3EFFECTIVE2013DISPLAY, \n\tALGORITHMPART3EFFECTIVE2014DISPLAY, \n\tPREMIUMDISPLAY, \n\tBILLINGLOB, \n\tPARENTBILLINGLOB, \n\tCOMMISSIONPLANID, \n\tTRANSACTIONCOMMISSIONTYPE, \n\tTRANSACTIONCOMMISSIONVALUE, \n\tPUREPREMIUM, \n\tTRANSACTIONFINALCOMMISSIONVALUE, \n\tISBILLINGSUBLINE, \n\tALGORITHMPART3YEAR1TRANSITIONDISPLAY, \n\tALGORITHMPART3YEAR2TRANSITIONDISPLAY, \n\tALGORITHMPART3YEAR1TRANSITIONADJUSTMENTPREMIUMDISPLAY, \n\tALGORITHMPART3YEAR2TRANSITIONADJUSTMENTPREMIUMDISPLAY, \n\tALGORITHMPART3EQUIPMENTBREAKDOWNPREMIUMDISPLAY\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

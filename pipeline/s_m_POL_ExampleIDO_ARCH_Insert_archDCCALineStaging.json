@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCALineStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCCALineStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCALineStaging AS (\n\tSELECT\n\t\tDCCALineStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tLineId,\n\t\tCA_LineId,\n\t\tSessionId,\n\t\tId,\n\t\tType,\n\t\tAttorneysFees,\n\t\tCommercialDrivingSchoolTerritory,\n\t\tCompositeRating,\n\t\tCompositeRatingBasis,\n\t\tDescription,\n\t\tDescriptionOverride,\n\t\tDriverTraining,\n\t\tGrossReceiptsPIP,\n\t\tHiredLiability,\n\t\tHiredLiabilityTruckingMotorCarrier,\n\t\tHiredPhysicalDamage,\n\t\tHiredPhysicalDamageWithDriver,\n\t\tLeasingGrossReceipts,\n\t\tNOHAFuneralDirectorsMedical,\n\t\tNonOwnedAuto,\n\t\tPrimaryRateTerritory,\n\t\tPublicGrossReceipts,\n\t\tTerrorismProgramYear,\n\t\tTruckersGrossReceipts\n\tFROM DCCALineStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCCALineStagingId,\n\tExtractDate,\n\tSourceSystemId,\n\tLineId,\n\tCA_LineId,\n\tSessionId,\n\tId,\n\tType,\n\tAttorneysFees,\n\tCommercialDrivingSchoolTerritory,\n\tCompositeRating,\n\tCompositeRatingBasis,\n\tDescription,\n\tDescriptionOverride,\n\tDriverTraining,\n\tGrossReceiptsPIP,\n\tHiredLiability,\n\tHiredLiabilityTruckingMotorCarrier,\n\tHiredPhysicalDamage,\n\tHiredPhysicalDamageWithDriver,\n\tLeasingGrossReceipts,\n\tNOHAFuneralDirectorsMedical,\n\tNonOwnedAuto,\n\tPrimaryRateTerritory,\n\tPublicGrossReceipts,\n\tTerrorismProgramYear,\n\tTruckersGrossReceipts,\n\t-- *INF*: DECODE(AttorneysFees, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    AttorneysFees,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AttorneysFees,\n\t-- *INF*: DECODE(CompositeRating, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    CompositeRating,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_CompositeRating,\n\t-- *INF*: DECODE(DriverTraining, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    DriverTraining,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_DriverTraining,\n\t-- *INF*: DECODE(GrossReceiptsPIP, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    GrossReceiptsPIP,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_GrossReceiptsPIP,\n\t-- *INF*: DECODE(HiredLiability, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    HiredLiability,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_HiredLiability,\n\t-- *INF*: DECODE(HiredLiabilityTruckingMotorCarrier, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    HiredLiabilityTruckingMotorCarrier,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_HiredLiabilityTruckingMotorCarrier,\n\t-- *INF*: DECODE(HiredPhysicalDamage, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    HiredPhysicalDamage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_HiredPhysicalDamage,\n\t-- *INF*: DECODE(HiredPhysicalDamageWithDriver, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    HiredPhysicalDamageWithDriver,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_HiredPhysicalDamageWithDriver,\n\t-- *INF*: DECODE(LeasingGrossReceipts, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    LeasingGrossReceipts,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_LeasingGrossReceipts,\n\t-- *INF*: DECODE(NOHAFuneralDirectorsMedical, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    NOHAFuneralDirectorsMedical,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_NOHAFuneralDirectorsMedical,\n\t-- *INF*: DECODE(NonOwnedAuto, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    NonOwnedAuto,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_NonOwnedAuto,\n\t-- *INF*: DECODE(PublicGrossReceipts, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    PublicGrossReceipts,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PublicGrossReceipts,\n\t-- *INF*: DECODE(TruckersGrossReceipts, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    TruckersGrossReceipts,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TruckersGrossReceipts,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_auditid\n\tFROM SQ_DCCALineStaging\n),\nArchDCCALineStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCALineStaging\n\t(ExtractDate, SourceSystemId, AuditId, LineId, CA_LineId, SessionId, Id, Type, AttorneysFees, CommercialDrivingSchoolTerritory, CompositeRating, CompositeRatingBasis, Description, DescriptionOverride, DriverTraining, GrossReceiptsPIP, HiredLiability, HiredLiabilityTruckingMotorCarrier, HiredPhysicalDamage, HiredPhysicalDamageWithDriver, LeasingGrossReceipts, NOHAFuneralDirectorsMedical, NonOwnedAuto, PrimaryRateTerritory, PublicGrossReceipts, TerrorismProgramYear, TruckersGrossReceipts)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_auditid AS AUDITID, \n\tLINEID, \n\tCA_LINEID, \n\tSESSIONID, \n\tID, \n\tTYPE, \n\to_AttorneysFees AS ATTORNEYSFEES, \n\tCOMMERCIALDRIVINGSCHOOLTERRITORY, \n\to_CompositeRating AS COMPOSITERATING, \n\tCOMPOSITERATINGBASIS, \n\tDESCRIPTION, \n\tDESCRIPTIONOVERRIDE, \n\to_DriverTraining AS DRIVERTRAINING, \n\to_GrossReceiptsPIP AS GROSSRECEIPTSPIP, \n\to_HiredLiability AS HIREDLIABILITY, \n\to_HiredLiabilityTruckingMotorCarrier AS HIREDLIABILITYTRUCKINGMOTORCARRIER, \n\to_HiredPhysicalDamage AS HIREDPHYSICALDAMAGE, \n\to_HiredPhysicalDamageWithDriver AS HIREDPHYSICALDAMAGEWITHDRIVER, \n\to_LeasingGrossReceipts AS LEASINGGROSSRECEIPTS, \n\to_NOHAFuneralDirectorsMedical AS NOHAFUNERALDIRECTORSMEDICAL, \n\to_NonOwnedAuto AS NONOWNEDAUTO, \n\tPRIMARYRATETERRITORY, \n\to_PublicGrossReceipts AS PUBLICGROSSRECEIPTS, \n\tTERRORISMPROGRAMYEAR, \n\to_TruckersGrossReceipts AS TRUCKERSGROSSRECEIPTS\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

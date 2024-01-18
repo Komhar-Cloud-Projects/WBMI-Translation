@@ -1,0 +1,43 @@
+{
+    "name": "s_m_AGY_STG_INSERT_AgencySilverCircleTierStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_STG_INSERT_AgencySilverCircleTierStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SilverCircle AS (\n\tSELECT\n\t\tSilverCircle.AgencyID,\n\t\tSilverCircle.SilverCircleYear,\n\t\tSilverCircle.SilverCircleLevelDescription,\n\t\tSilverCircle.SourceSystemID,\n\t\tSilverCircle.HashKey,\n\t\tSilverCircle.ModifiedUserId,\n\t\tSilverCircle.ModifiedDate,\n\t\tAgency.AgencyCode\n\tFROM Agency\n\tINNER JOIN SilverCircle\n\tON Agency.AgencyID = SilverCircle.AgencyID\n),\nEXPTRANS AS (\n\tSELECT\n\tAgencyID,\n\tSilverCircleYear,\n\tSilverCircleLevelDescription,\n\tSourceSystemID,\n\tHashKey,\n\tModifiedUserId,\n\tModifiedDate,\n\tAgencyCode,\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS SourceSystemID_1\n\tFROM SQ_SilverCircle\n),\nAgencySilverCircleTierStaging AS (\n\tTRUNCATE TABLE AgencySilverCircleTierStaging;\n\tINSERT INTO AgencySilverCircleTierStaging\n\t(AgencyCode, SilverCircleYear, SilverCircleLevelDescription, HashKey, ModifiedUserId, ModifiedDate, ExtractDate, SourceSystemId)\n\tSELECT \n\tAGENCYCODE, \n\tSILVERCIRCLEYEAR, \n\tSILVERCIRCLELEVELDESCRIPTION, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tEXTRACTDATE, \n\tSourceSystemID_1 AS SOURCESYSTEMID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

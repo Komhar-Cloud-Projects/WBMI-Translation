@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPPartyStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBBPPartyStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBBPPartyStaging AS (\n\tSELECT\n\t\tWBBPPartyStageId AS WBBPPartyStageID,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tWB_CL_PartyId,\n\t\tWB_BP_PartyId,\n\t\tSessionId,\n\t\tNumberOfUnits,\n\t\tNumberOfPools,\n\t\tAnyDryCleaning,\n\t\tAnySaleOfAnimals,\n\t\tAnySaleOfTravelTickets,\n\t\tTaxidermyWork,\n\t\tInstallationServiceOrRepair,\n\t\tBOP_New_BusinessClassCode,\n\t\tBOP_New_BusinessSegment,\n\t\tBOP_New_COBLiabilityFactor,\n\t\tBOP_New_COBPropertyFactor,\n\t\tBOP_New_COBAllOtherFactor,\n\t\tLocationNumber,\n\t\tBuildingNumber,\n\t\tBuildingDescription,\n\t\tConstructionCode,\n\t\tLocationProtectionClass,\n\t\tBOP_New_EquipmentBreakdownGroup,\n\t\tSelectLocationForCopy,\n\t\tSelectBuildingValidRefTest\n\tFROM WBBPPartyStaging\n),\nEXPTRANS AS (\n\tSELECT\n\tWBBPPartyStageID,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tWB_CL_PartyId,\n\tWB_BP_PartyId,\n\tSessionId,\n\tNumberOfUnits,\n\tNumberOfPools,\n\tAnyDryCleaning,\n\t-- *INF*: DECODE(AnyDryCleaning, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    AnyDryCleaning,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_AnyDryCleaning,\n\tAnySaleOfAnimals,\n\t-- *INF*: DECODE(AnySaleOfAnimals, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    AnySaleOfAnimals,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_AnySaleOfAnimals,\n\tAnySaleOfTravelTickets,\n\t-- *INF*: DECODE(AnySaleOfTravelTickets, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    AnySaleOfTravelTickets,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_AnySaleOfTravelTickets,\n\tTaxidermyWork,\n\t-- *INF*: DECODE(TaxidermyWork, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    TaxidermyWork,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_TaxidermyWork,\n\tInstallationServiceOrRepair,\n\t-- *INF*: DECODE(InstallationServiceOrRepair, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    InstallationServiceOrRepair,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_InstallationServiceOrRepair,\n\tBOP_New_BusinessClassCode,\n\tBOP_New_BusinessSegment,\n\tBOP_New_COBLiabilityFactor,\n\tBOP_New_COBPropertyFactor,\n\tBOP_New_COBAllOtherFactor,\n\tLocationNumber,\n\tBuildingNumber,\n\tBuildingDescription,\n\tConstructionCode,\n\tLocationProtectionClass,\n\tBOP_New_EquipmentBreakdownGroup,\n\tSelectLocationForCopy,\n\tSelectBuildingValidRefTest\n\tFROM SQ_WBBPPartyStaging\n),\nArchWBBPPartyStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBBPPartyStage\n\t(ExtractDate, SourceSystemId, AuditId, WBBPPartyStageId, WB_CL_PartyId, WB_BP_PartyId, SessionId, NumberOfUnits, NumberOfPools, AnyDryCleaning, AnySaleOfAnimals, AnySaleOfTravelTickets, TaxidermyWork, InstallationServiceOrRepair, BOP_New_BusinessClassCode, BOP_New_BusinessSegment, BOP_New_COBLiabilityFactor, BOP_New_COBPropertyFactor, BOP_New_COBAllOtherFactor, LocationNumber, BuildingNumber, BuildingDescription, ConstructionCode, LocationProtectionClass, BOP_New_EquipmentBreakdownGroup, SelectLocationForCopy, SelectBuildingValidRefTest)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBBPPartyStageID AS WBBPPARTYSTAGEID, \n\tWB_CL_PARTYID, \n\tWB_BP_PARTYID, \n\tSESSIONID, \n\tNUMBEROFUNITS, \n\tNUMBEROFPOOLS, \n\to_AnyDryCleaning AS ANYDRYCLEANING, \n\to_AnySaleOfAnimals AS ANYSALEOFANIMALS, \n\to_AnySaleOfTravelTickets AS ANYSALEOFTRAVELTICKETS, \n\to_TaxidermyWork AS TAXIDERMYWORK, \n\to_InstallationServiceOrRepair AS INSTALLATIONSERVICEORREPAIR, \n\tBOP_NEW_BUSINESSCLASSCODE, \n\tBOP_NEW_BUSINESSSEGMENT, \n\tBOP_NEW_COBLIABILITYFACTOR, \n\tBOP_NEW_COBPROPERTYFACTOR, \n\tBOP_NEW_COBALLOTHERFACTOR, \n\tLOCATIONNUMBER, \n\tBUILDINGNUMBER, \n\tBUILDINGDESCRIPTION, \n\tCONSTRUCTIONCODE, \n\tLOCATIONPROTECTIONCLASS, \n\tBOP_NEW_EQUIPMENTBREAKDOWNGROUP, \n\tSELECTLOCATIONFORCOPY, \n\tSELECTBUILDINGVALIDREFTEST\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_SUP_CLAIM_STAFF_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_SUP_CLAIM_STAFF_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_sup_claim_staff_stage AS (\n\tSELECT\n\t\tsup_claim_staff_stage_id,\n\t\tSTAFF_CODE,\n\t\tEFF_DATE,\n\t\tINITIALS,\n\t\tFIRST_NAME,\n\t\tLAST_NAME,\n\t\tPOSITION_TYPE,\n\t\tPHONE,\n\t\tFAX,\n\t\tEMAIL,\n\t\tREPORT_OFFICE_CODE,\n\t\tEXP_DATE,\n\t\tOPERATOR_ID,\n\t\tWBCONNECT_USER_ID,\n\t\tMODIFIED_DATE,\n\t\tMODIFIED_USER_ID,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM sup_claim_staff_stage\n),\nLKP_Target AS (\n\tSELECT\n\tarch_sup_claim_staff_stage_id,\n\tEFF_DATE,\n\tINITIALS,\n\tFIRST_NAME,\n\tLAST_NAME,\n\tPOSITION_TYPE,\n\tPHONE,\n\tFAX,\n\tEMAIL,\n\tREPORT_OFFICE_CODE,\n\tEXP_DATE,\n\tOPERATOR_ID,\n\tWBCONNECT_USER_ID,\n\tMODIFIED_DATE,\n\tMODIFIED_USER_ID,\n\tSTAFF_CODE\n\tFROM (\n\t\tSELECT \n\t\t\tarch_sup_claim_staff_stage_id,\n\t\t\tEFF_DATE,\n\t\t\tINITIALS,\n\t\t\tFIRST_NAME,\n\t\t\tLAST_NAME,\n\t\t\tPOSITION_TYPE,\n\t\t\tPHONE,\n\t\t\tFAX,\n\t\t\tEMAIL,\n\t\t\tREPORT_OFFICE_CODE,\n\t\t\tEXP_DATE,\n\t\t\tOPERATOR_ID,\n\t\t\tWBCONNECT_USER_ID,\n\t\t\tMODIFIED_DATE,\n\t\t\tMODIFIED_USER_ID,\n\t\t\tSTAFF_CODE\n\t\tFROM arch_sup_claim_staff_stage\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY STAFF_CODE ORDER BY arch_sup_claim_staff_stage_id) = 1\n),\nEXP_Source AS (\n\tSELECT\n\tLKP_Target.arch_sup_claim_staff_stage_id,\n\tLKP_Target.EFF_DATE AS llkp_EFF_DATE,\n\tLKP_Target.INITIALS AS lkp_INITIALS,\n\tLKP_Target.FIRST_NAME AS lkp_FIRST_NAME,\n\tLKP_Target.LAST_NAME AS lkp_LAST_NAME,\n\tLKP_Target.POSITION_TYPE AS lkp_POSITION_TYPE,\n\tLKP_Target.PHONE AS lkp_PHONE,\n\tLKP_Target.FAX AS lkp_FAX,\n\tLKP_Target.EMAIL AS lkp_EMAIL,\n\tLKP_Target.REPORT_OFFICE_CODE AS lkp_REPORT_OFFICE_CODE,\n\tLKP_Target.EXP_DATE AS lkp_EXP_DATE,\n\tLKP_Target.OPERATOR_ID AS lkp_OPERATOR_ID,\n\tLKP_Target.WBCONNECT_USER_ID AS lkp_WBCONNECT_USER_ID,\n\tLKP_Target.MODIFIED_DATE AS lkp_MODIFIED_DATE,\n\tLKP_Target.MODIFIED_USER_ID AS lkp_MODIFIED_USER_ID,\n\tSQ_sup_claim_staff_stage.sup_claim_staff_stage_id,\n\tSQ_sup_claim_staff_stage.STAFF_CODE,\n\tSQ_sup_claim_staff_stage.EFF_DATE,\n\tSQ_sup_claim_staff_stage.INITIALS,\n\tSQ_sup_claim_staff_stage.FIRST_NAME,\n\tSQ_sup_claim_staff_stage.LAST_NAME,\n\tSQ_sup_claim_staff_stage.POSITION_TYPE,\n\tSQ_sup_claim_staff_stage.PHONE,\n\tSQ_sup_claim_staff_stage.FAX,\n\tSQ_sup_claim_staff_stage.EMAIL,\n\tSQ_sup_claim_staff_stage.REPORT_OFFICE_CODE,\n\tSQ_sup_claim_staff_stage.EXP_DATE,\n\tSQ_sup_claim_staff_stage.OPERATOR_ID,\n\tSQ_sup_claim_staff_stage.WBCONNECT_USER_ID,\n\tSQ_sup_claim_staff_stage.MODIFIED_DATE,\n\tSQ_sup_claim_staff_stage.MODIFIED_USER_ID,\n\tSQ_sup_claim_staff_stage.extract_date,\n\tSQ_sup_claim_staff_stage.as_of_date,\n\tSQ_sup_claim_staff_stage.record_count,\n\tSQ_sup_claim_staff_stage.source_system_id,\n\t-- *INF*: IIF(ISNULL(arch_sup_claim_staff_stage_id)\r\n\t-- ,'Insert'\r\n\t-- , decode(1,llkp_EFF_DATE != EFF_DATE OR \r\n\t-- lkp_INITIALS != INITIALS OR \r\n\t-- lkp_FIRST_NAME != FIRST_NAME  OR \r\n\t-- lkp_LAST_NAME != LAST_NAME OR \r\n\t-- lkp_POSITION_TYPE != POSITION_TYPE OR \r\n\t-- lkp_PHONE != PHONE OR \r\n\t-- lkp_FAX != FAX OR \r\n\t-- lkp_EMAIL != EMAIL OR \r\n\t-- lkp_REPORT_OFFICE_CODE != REPORT_OFFICE_CODE OR \r\n\t-- lkp_EXP_DATE != EXP_DATE OR \r\n\t-- lkp_OPERATOR_ID != OPERATOR_ID OR \r\n\t-- lkp_WBCONNECT_USER_ID != WBCONNECT_USER_ID OR \r\n\t-- lkp_MODIFIED_DATE != MODIFIED_DATE OR \r\n\t-- lkp_MODIFIED_USER_ID != MODIFIED_USER_ID,\r\n\t-- 'Update', 'No Change')\r\n\t-- )\n\tIFF(\n\t    arch_sup_claim_staff_stage_id IS NULL, 'Insert',\n\t    decode(\n\t        1,\n\t        llkp_EFF_DATE != EFF_DATE\n\t    or lkp_INITIALS != INITIALS\n\t    or lkp_FIRST_NAME != FIRST_NAME\n\t    or lkp_LAST_NAME != LAST_NAME\n\t    or lkp_POSITION_TYPE != POSITION_TYPE\n\t    or lkp_PHONE != PHONE\n\t    or lkp_FAX != FAX\n\t    or lkp_EMAIL != EMAIL\n\t    or lkp_REPORT_OFFICE_CODE != REPORT_OFFICE_CODE\n\t    or lkp_EXP_DATE != EXP_DATE\n\t    or lkp_OPERATOR_ID != OPERATOR_ID\n\t    or lkp_WBCONNECT_USER_ID != WBCONNECT_USER_ID\n\t    or lkp_MODIFIED_DATE != MODIFIED_DATE\n\t    or lkp_MODIFIED_USER_ID != MODIFIED_USER_ID, 'Update',\n\t        'No Change'\n\t    )\n\t) AS v_change_flag,\n\tv_change_flag AS change_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_ID\n\tFROM SQ_sup_claim_staff_stage\n\tLEFT JOIN LKP_Target\n\tON LKP_Target.STAFF_CODE = SQ_sup_claim_staff_stage.STAFF_CODE\n),\nFLT_New_Records AS (\n\tSELECT\n\tsup_claim_staff_stage_id, \n\tSTAFF_CODE, \n\tEFF_DATE, \n\tINITIALS, \n\tFIRST_NAME, \n\tLAST_NAME, \n\tPOSITION_TYPE, \n\tPHONE, \n\tFAX, \n\tEMAIL, \n\tREPORT_OFFICE_CODE, \n\tEXP_DATE, \n\tOPERATOR_ID, \n\tWBCONNECT_USER_ID, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\textract_date, \n\tas_of_date, \n\trecord_count, \n\tsource_system_id, \n\tchange_flag, \n\tAudit_ID\n\tFROM EXP_Source\n\tWHERE change_flag='Update' or change_flag = 'Insert'\n),\narch_sup_claim_staff_stage AS (\n\tINSERT INTO Shortcut_to_arch_sup_claim_staff_stage\n\t(sup_claim_staff_stage_id, STAFF_CODE, EFF_DATE, INITIALS, FIRST_NAME, LAST_NAME, POSITION_TYPE, PHONE, FAX, EMAIL, REPORT_OFFICE_CODE, EXP_DATE, OPERATOR_ID, WBCONNECT_USER_ID, MODIFIED_DATE, MODIFIED_USER_ID, extract_date, as_of_date, source_system_id, audit_id)\n\tSELECT \n\tSUP_CLAIM_STAFF_STAGE_ID, \n\tSTAFF_CODE, \n\tEFF_DATE, \n\tINITIALS, \n\tFIRST_NAME, \n\tLAST_NAME, \n\tPOSITION_TYPE, \n\tPHONE, \n\tFAX, \n\tEMAIL, \n\tREPORT_OFFICE_CODE, \n\tEXP_DATE, \n\tOPERATOR_ID, \n\tWBCONNECT_USER_ID, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tSOURCE_SYSTEM_ID, \n\tAudit_ID AS AUDIT_ID\n\tFROM FLT_New_Records\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

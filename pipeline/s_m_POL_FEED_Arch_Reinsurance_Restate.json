@@ -1,0 +1,38 @@
+{
+    "name": "s_m_POL_FEED_Arch_Reinsurance_Restate",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Arch_Reinsurance_Restate",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SapiensReinsurancePolicyRestate AS (\n\tSELECT\n\t\tSapiensReinsurancePolicyRestateId,\n\t\tAuditId,\n\t\tCreatedDate,\n\t\tModifiedDate,\n\t\tPolicyKey,\n\t\tNegateFlag,\n\t\tNegateDate,\n\t\tSourceSequenceNumber\n\tFROM SapiensReinsurancePolicyRestate\n),\nEXP_Passthrough AS (\n\tSELECT\n\tSapiensReinsurancePolicyRestateId,\n\tAuditId,\n\tCreatedDate,\n\tModifiedDate,\n\tPolicyKey,\n\tNegateFlag,\n\tNegateDate,\n\tSourceSequenceNumber\n\tFROM SQ_SapiensReinsurancePolicyRestate\n),\nArchSapiensReinsurancePolicyRestate AS (\n\tINSERT INTO ArchSapiensReinsurancePolicyRestate\n\t(AuditId, CreatedDate, ModifiedDate, SapiensReinsurancePolicyRestateId, PolicyKey, NegateFlag, NegateDate, SourceSequenceNumber)\n\tSELECT \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tSAPIENSREINSURANCEPOLICYRESTATEID, \n\tPOLICYKEY, \n\tNEGATEFLAG, \n\tNEGATEDATE, \n\tSOURCESEQUENCENUMBER\n\tFROM EXP_Passthrough\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

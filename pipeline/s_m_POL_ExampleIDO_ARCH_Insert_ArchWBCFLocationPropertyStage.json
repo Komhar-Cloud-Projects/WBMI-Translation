@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCFLocationPropertyStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCFLocationPropert_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCFLocationPropertyStage AS (\n\tSELECT\n\t\tWBCFLocationPropertyStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCFLocationPropertyId AS CfLocationPropertyId,\n\t\tWBCFLocationPropertyId AS WbCfLocationPropertyId,\n\t\tSessionId,\n\t\tProtectionClassOverride,\n\t\tIncreasePersonalComputersCoverageEDP,\n\t\tExcessPersonalComputersEDPLimit,\n\t\tIncreaseMoneyAndSecurities,\n\t\tExcessMoneyAndSecuritiesOutsideLimit,\n\t\tIncreaseOutdoorDetachedSigns,\n\t\tExcessOutdoorDetachedSignsLimit,\n\t\tExcessMoneyAndSecuritiesInsideLimit,\n\t\tLocationIRPMManagementSetCommentValue,\n\t\tLocationIRPMManagementSetValueValue,\n\t\tSetCommentValue,\n\t\tSetValueValue,\n\t\tLocationIRPMEmployeesSetCommentValue,\n\t\tLocationIRPMEmployeesSetValueValue,\n\t\tLocationIRPMLocationSetCommentValue,\n\t\tLocationIRPMLocationSetValueValue,\n\t\tLocationIRPMPremisesSetCommentValue,\n\t\tLocationIRPMPremisesSetValueValue,\n\t\tLocationIRPMProtectionSetCommentValue,\n\t\tLocationIRPMProtectionSetValueValue,\n\t\tMultipleLocationCreditFactor,\n\t\tIncreasePersonalComputersCoverageEDPText,\n\t\tIncreaseMoneyAndSecuritiesText,\n\t\tIncreaseOutdoorDetachedSignsText,\n\t\tExcessPersonalComputersEDPPremium,\n\t\tOutdoorDetachedSignsPremium,\n\t\tMoneyAndSecuritiesInsidePremium,\n\t\tMoneyAndSecuritiesOutsidePremium\n\tFROM WBCFLocationPropertyStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBCFLocationPropertyStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCfLocationPropertyId,\n\tWbCfLocationPropertyId,\n\tSessionId,\n\tProtectionClassOverride,\n\tIncreasePersonalComputersCoverageEDP AS i_IncreasePersonalComputersCoverageEDP,\n\t-- *INF*: DECODE(i_IncreasePersonalComputersCoverageEDP,\r\n\t-- 'T',\r\n\t-- '1',\r\n\t-- 'F',\r\n\t-- '0',\r\n\t-- NULL\r\n\t-- )\n\tDECODE(\n\t    i_IncreasePersonalComputersCoverageEDP,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_IncreasePersonalComputersCoverageEDP,\n\tExcessPersonalComputersEDPLimit,\n\tIncreaseMoneyAndSecurities AS i_IncreaseMoneyAndSecurities,\n\t-- *INF*: DECODE(i_IncreaseMoneyAndSecurities,\r\n\t-- 'T',\r\n\t-- '1',\r\n\t-- 'F',\r\n\t-- '0',\r\n\t-- NULL\r\n\t-- )\n\tDECODE(\n\t    i_IncreaseMoneyAndSecurities,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_IncreaseMoneyAndSecurities,\n\tExcessMoneyAndSecuritiesOutsideLimit,\n\tIncreaseOutdoorDetachedSigns AS i_IncreaseOutdoorDetachedSigns,\n\t-- *INF*: DECODE(i_IncreaseOutdoorDetachedSigns,\r\n\t-- 'T',\r\n\t-- '1',\r\n\t-- 'F',\r\n\t-- '0',\r\n\t-- NULL\r\n\t-- )\n\tDECODE(\n\t    i_IncreaseOutdoorDetachedSigns,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_IncreaseOutdoorDetachedSigns,\n\tExcessOutdoorDetachedSignsLimit,\n\tExcessMoneyAndSecuritiesInsideLimit,\n\tLocationIRPMManagementSetCommentValue,\n\tLocationIRPMManagementSetValueValue,\n\tSetCommentValue,\n\tSetValueValue,\n\tLocationIRPMEmployeesSetCommentValue,\n\tLocationIRPMEmployeesSetValueValue,\n\tLocationIRPMLocationSetCommentValue,\n\tLocationIRPMLocationSetValueValue,\n\tLocationIRPMPremisesSetCommentValue,\n\tLocationIRPMPremisesSetValueValue,\n\tLocationIRPMProtectionSetCommentValue,\n\tLocationIRPMProtectionSetValueValue,\n\tMultipleLocationCreditFactor,\n\tIncreasePersonalComputersCoverageEDPText,\n\tIncreaseMoneyAndSecuritiesText,\n\tIncreaseOutdoorDetachedSignsText,\n\tExcessPersonalComputersEDPPremium,\n\tOutdoorDetachedSignsPremium,\n\tMoneyAndSecuritiesInsidePremium,\n\tMoneyAndSecuritiesOutsidePremium,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBCFLocationPropertyStage\n),\nArchWBCFLocationPropertyStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCFLocationPropertyStage\n\t(ExtractDate, SourceSystemId, AuditId, WBCFLocationPropertyStageId, CFLocationPropertyId, WBCFLocationPropertyId, SessionId, ProtectionClassOverride, IncreasePersonalComputersCoverageEDP, ExcessPersonalComputersEDPLimit, IncreaseMoneyAndSecurities, ExcessMoneyAndSecuritiesOutsideLimit, IncreaseOutdoorDetachedSigns, ExcessOutdoorDetachedSignsLimit, ExcessMoneyAndSecuritiesInsideLimit, LocationIRPMManagementSetCommentValue, LocationIRPMManagementSetValueValue, SetCommentValue, SetValueValue, LocationIRPMEmployeesSetCommentValue, LocationIRPMEmployeesSetValueValue, LocationIRPMLocationSetCommentValue, LocationIRPMLocationSetValueValue, LocationIRPMPremisesSetCommentValue, LocationIRPMPremisesSetValueValue, LocationIRPMProtectionSetCommentValue, LocationIRPMProtectionSetValueValue, MultipleLocationCreditFactor, IncreasePersonalComputersCoverageEDPText, IncreaseMoneyAndSecuritiesText, IncreaseOutdoorDetachedSignsText, ExcessPersonalComputersEDPPremium, OutdoorDetachedSignsPremium, MoneyAndSecuritiesInsidePremium, MoneyAndSecuritiesOutsidePremium)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBCFLOCATIONPROPERTYSTAGEID, \n\tCfLocationPropertyId AS CFLOCATIONPROPERTYID, \n\tWbCfLocationPropertyId AS WBCFLOCATIONPROPERTYID, \n\tSESSIONID, \n\tPROTECTIONCLASSOVERRIDE, \n\to_IncreasePersonalComputersCoverageEDP AS INCREASEPERSONALCOMPUTERSCOVERAGEEDP, \n\tEXCESSPERSONALCOMPUTERSEDPLIMIT, \n\to_IncreaseMoneyAndSecurities AS INCREASEMONEYANDSECURITIES, \n\tEXCESSMONEYANDSECURITIESOUTSIDELIMIT, \n\to_IncreaseOutdoorDetachedSigns AS INCREASEOUTDOORDETACHEDSIGNS, \n\tEXCESSOUTDOORDETACHEDSIGNSLIMIT, \n\tEXCESSMONEYANDSECURITIESINSIDELIMIT, \n\tLOCATIONIRPMMANAGEMENTSETCOMMENTVALUE, \n\tLOCATIONIRPMMANAGEMENTSETVALUEVALUE, \n\tSETCOMMENTVALUE, \n\tSETVALUEVALUE, \n\tLOCATIONIRPMEMPLOYEESSETCOMMENTVALUE, \n\tLOCATIONIRPMEMPLOYEESSETVALUEVALUE, \n\tLOCATIONIRPMLOCATIONSETCOMMENTVALUE, \n\tLOCATIONIRPMLOCATIONSETVALUEVALUE, \n\tLOCATIONIRPMPREMISESSETCOMMENTVALUE, \n\tLOCATIONIRPMPREMISESSETVALUEVALUE, \n\tLOCATIONIRPMPROTECTIONSETCOMMENTVALUE, \n\tLOCATIONIRPMPROTECTIONSETVALUEVALUE, \n\tMULTIPLELOCATIONCREDITFACTOR, \n\tINCREASEPERSONALCOMPUTERSCOVERAGEEDPTEXT, \n\tINCREASEMONEYANDSECURITIESTEXT, \n\tINCREASEOUTDOORDETACHEDSIGNSTEXT, \n\tEXCESSPERSONALCOMPUTERSEDPPREMIUM, \n\tOUTDOORDETACHEDSIGNSPREMIUM, \n\tMONEYANDSECURITIESINSIDEPREMIUM, \n\tMONEYANDSECURITIESOUTSIDEPREMIUM\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

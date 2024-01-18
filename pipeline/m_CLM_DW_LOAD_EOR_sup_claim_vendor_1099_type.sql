@@ -38,47 +38,43 @@ EXP_vendor_change AS (
 	EXP_vendor_type.vendor_1099_type_id,
 	EXP_vendor_type.vendor_type_code AS in_vendor_type_code,
 	-- *INF*: iif(isnull(in_vendor_type_code) or IS_SPACES(in_vendor_type_code) or LENGTH(in_vendor_type_code)=0,'N/A',in_vendor_type_code)
-	IFF(in_vendor_type_code IS NULL 
-		OR LENGTH(in_vendor_type_code)>0 AND TRIM(in_vendor_type_code)='' 
-		OR LENGTH(in_vendor_type_code
-		) = 0,
-		'N/A',
-		in_vendor_type_code
+	IFF(
+	    in_vendor_type_code IS NULL
+	    or LENGTH(in_vendor_type_code)>0
+	    and TRIM(in_vendor_type_code)=''
+	    or LENGTH(in_vendor_type_code) = 0,
+	    'N/A',
+	    in_vendor_type_code
 	) AS v_vendor_type_code,
 	v_vendor_type_code AS vendor_type_code,
 	EXP_vendor_type.vendor_type_desc AS in_vendor_type_desc,
 	-- *INF*: iif(isnull(in_vendor_type_desc) or IS_SPACES(in_vendor_type_desc) or LENGTH(in_vendor_type_desc)=0,'N/A',ltrim(rtrim(in_vendor_type_desc)))
-	IFF(in_vendor_type_desc IS NULL 
-		OR LENGTH(in_vendor_type_desc)>0 AND TRIM(in_vendor_type_desc)='' 
-		OR LENGTH(in_vendor_type_desc
-		) = 0,
-		'N/A',
-		ltrim(rtrim(in_vendor_type_desc
-			)
-		)
+	IFF(
+	    in_vendor_type_desc IS NULL
+	    or LENGTH(in_vendor_type_desc)>0
+	    and TRIM(in_vendor_type_desc)=''
+	    or LENGTH(in_vendor_type_desc) = 0,
+	    'N/A',
+	    ltrim(rtrim(in_vendor_type_desc))
 	) AS v_vendor_type_desc,
 	v_vendor_type_desc AS vendor_type_desc,
 	-- *INF*: IIF(ISNULL(in_LKP_sup_claim_vendor_1099_type_id), 'NEW', 
 	-- IIF(ltrim(rtrim(in_LKP_vendor_type_code_descript)) != ltrim(rtrim(v_vendor_type_desc)),
 	-- 'UPDATE', 'NOCHANGE'))
-	IFF(in_LKP_sup_claim_vendor_1099_type_id IS NULL,
-		'NEW',
-		IFF(ltrim(rtrim(in_LKP_vendor_type_code_descript
-				)
-			) != ltrim(rtrim(v_vendor_type_desc
-				)
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    in_LKP_sup_claim_vendor_1099_type_id IS NULL, 'NEW',
+	    IFF(
+	        ltrim(rtrim(in_LKP_vendor_type_code_descript)) != ltrim(rtrim(v_vendor_type_desc)),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS v_eff_from_date,
 	v_eff_from_date AS eff_from_date
 	FROM EXP_vendor_type
@@ -104,8 +100,7 @@ EXP_default_values AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -153,9 +148,10 @@ EXP_vendor_1099_upadte AS (
 	-- vendor_type_code=v_prev_vendor_type_code,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
 	-- 
-	DECODE(TRUE,
-		vendor_type_code = v_prev_vendor_type_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    vendor_type_code = v_prev_vendor_type_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	vendor_type_code AS v_prev_vendor_type_code,

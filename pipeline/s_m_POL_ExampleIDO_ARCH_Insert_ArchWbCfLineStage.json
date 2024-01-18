@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWbCfLineStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWbCfLineStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WbCfLineStage AS (\n\tSELECT\n\t\tWBCFLineStageId AS WbCfLineStageID,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCFLineId AS CfLineId,\n\t\tWBCFLineId AS WbCfLineId,\n\t\tSessionId,\n\t\tRerateIndicator,\n\t\tRerateIndicatorChange,\n\t\tRerateIndicatorWritten,\n\t\tTerrorismForWorksheet,\n\t\tScheduleModCaption,\n\t\tQuotedScheduledMod,\n\t\tPolicyCoverage,\n\t\tApplyTransition,\n\t\tBlanketAgreedValue,\n\t\tBlanketAgreedValueExpirationDate,\n\t\tOverrideForRMFCalculation,\n\t\tMNFireSafetySurchargePremium\n\tFROM WbCfLineStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWbCfLineStageID AS i_WbCfLineStageID,\n\tExtractDate AS i_ExtractDate,\n\tSourceSystemId AS i_SourceSystemId,\n\tCfLineId AS i_CfLineId,\n\tWbCfLineId AS i_WbCfLineId,\n\tSessionId AS i_SessionId,\n\tRerateIndicator AS i_RerateIndicator,\n\tRerateIndicatorChange AS i_RerateIndicatorChange,\n\tRerateIndicatorWritten AS i_RerateIndicatorWritten,\n\tTerrorismForWorksheet AS i_TerrorismForWorksheet,\n\tScheduleModCaption AS i_ScheduleModCaption,\n\tQuotedScheduledMod AS i_QuotedScheduledMod,\n\tPolicyCoverage AS i_PolicyCoverage,\n\tApplyTransition AS i_ApplyTransition,\n\tBlanketAgreedValue AS i_BlanketAgreedValue,\n\tBlanketAgreedValueExpirationDate AS i_BlanketAgreedValueExpirationDate,\n\tOverrideForRMFCalculation AS i_OverrideForRMFCalculation,\n\tMNFireSafetySurchargePremium AS i_MNFireSafetySurchargePremium,\n\ti_ExtractDate AS o_ExtractDate,\n\ti_SourceSystemId AS o_SourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\ti_WbCfLineStageID AS o_WbCfLineStageID,\n\ti_CfLineId AS o_CfLineId,\n\ti_WbCfLineId AS o_WbCfLineId,\n\ti_SessionId AS o_SessionId,\n\t-- *INF*: DECODE(i_RerateIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_RerateIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_RerateIndicator,\n\t-- *INF*: DECODE(i_RerateIndicatorChange,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_RerateIndicatorChange,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_RerateIndicatorChange,\n\t-- *INF*: DECODE(i_RerateIndicatorWritten,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_RerateIndicatorWritten,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_RerateIndicatorWritten,\n\ti_TerrorismForWorksheet AS o_TerrorismForWorksheet,\n\ti_ScheduleModCaption AS o_ScheduleModCaption,\n\ti_QuotedScheduledMod AS o_QuotedScheduledMod,\n\ti_PolicyCoverage AS o_PolicyCoverage,\n\t-- *INF*: DECODE(i_ApplyTransition,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ApplyTransition,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ApplyTransition,\n\t-- *INF*: DECODE(i_BlanketAgreedValue,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_BlanketAgreedValue,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_BlanketAgreedValue,\n\ti_BlanketAgreedValueExpirationDate AS o_BlanketAgreedValueExpirationDate,\n\ti_OverrideForRMFCalculation AS o_OverrideForRMFCalculation,\n\ti_MNFireSafetySurchargePremium AS o_MNFireSafetySurchargePremium\n\tFROM SQ_WbCfLineStage\n),\nArchWbCfLineStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWbCfLineStage\n\t(ExtractDate, SourceSystemId, AuditId, WBCFLineStageId, CFLineId, WBCFLineId, SessionId, RerateIndicator, RerateIndicatorChange, RerateIndicatorWritten, TerrorismForWorksheet, ScheduleModCaption, QuotedScheduledMod, PolicyCoverage, ApplyTransition, BlanketAgreedValue, BlanketAgreedValueExpirationDate, OverrideForRMFCalculation, MNFireSafetySurchargePremium)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\to_WbCfLineStageID AS WBCFLINESTAGEID, \n\to_CfLineId AS CFLINEID, \n\to_WbCfLineId AS WBCFLINEID, \n\to_SessionId AS SESSIONID, \n\to_RerateIndicator AS RERATEINDICATOR, \n\to_RerateIndicatorChange AS RERATEINDICATORCHANGE, \n\to_RerateIndicatorWritten AS RERATEINDICATORWRITTEN, \n\to_TerrorismForWorksheet AS TERRORISMFORWORKSHEET, \n\to_ScheduleModCaption AS SCHEDULEMODCAPTION, \n\to_QuotedScheduledMod AS QUOTEDSCHEDULEDMOD, \n\to_PolicyCoverage AS POLICYCOVERAGE, \n\to_ApplyTransition AS APPLYTRANSITION, \n\to_BlanketAgreedValue AS BLANKETAGREEDVALUE, \n\to_BlanketAgreedValueExpirationDate AS BLANKETAGREEDVALUEEXPIRATIONDATE, \n\to_OverrideForRMFCalculation AS OVERRIDEFORRMFCALCULATION, \n\to_MNFireSafetySurchargePremium AS MNFIRESAFETYSURCHARGEPREMIUM\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

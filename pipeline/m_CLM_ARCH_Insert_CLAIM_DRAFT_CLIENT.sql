@@ -1,0 +1,77 @@
+WITH
+SQ_CLAIM_DRAFT_CLIENT_STAGE1 AS (
+	SELECT
+		claim_draft_client_id AS CLAIM_DRAFT_CLIENT_ID,
+		cdc_draft_nbr AS CDC_DRAFT_NBR,
+		cdc_seq_nbr AS CDC_SEQ_NBR,
+		cdc_payee_nm_id AS CDC_PAYEE_NM_ID,
+		cdc_name_type_ind AS CDC_NAME_TYPE_IND,
+		cdc_tax_id_nbr AS CDC_TAX_ID_NBR,
+		cdc_report_to_irs AS CDC_REPORT_TO_IRS,
+		cdc_tax_id_type_cd AS CDC_TAX_ID_TYPE_CD,
+		cdc_cct_clt_seq AS CDC_CCT_CLT_SEQ,
+		cdc_entry_opr_id AS CDC_ENTRY_OPR_ID,
+		cdc_update_opr_id AS CDC_UPDATE_OPR_ID,
+		cdc_upd_ts AS CDC_UPD_TS,
+		cdc_pmsd_ts AS CDC_PMSD_TS,
+		cdc_claim_nbr AS CDC_CLAIM_NBR,
+		cdc_create_ts AS CDC_CREATE_TS,
+		extract_date AS EXTRACT_DATE,
+		as_of_date AS AS_OF_DATE,
+		record_count AS RECORD_COUNT,
+		source_system_id AS SOURCE_SYSTEM_ID,
+		cdc_pye_nm_cmt_id
+	FROM CLAIM_DRAFT_CLIENT_STAGE
+),
+EXP_CLAIM_DRAFT_CLIENT_STAGE AS (
+	SELECT
+	CLAIM_DRAFT_CLIENT_ID,
+	CDC_DRAFT_NBR,
+	CDC_SEQ_NBR,
+	CDC_PAYEE_NM_ID,
+	CDC_NAME_TYPE_IND,
+	CDC_TAX_ID_NBR,
+	CDC_REPORT_TO_IRS,
+	CDC_TAX_ID_TYPE_CD,
+	CDC_CCT_CLT_SEQ,
+	CDC_ENTRY_OPR_ID,
+	CDC_UPDATE_OPR_ID,
+	CDC_UPD_TS,
+	CDC_PMSD_TS,
+	CDC_CLAIM_NBR,
+	CDC_CREATE_TS,
+	EXTRACT_DATE,
+	AS_OF_DATE,
+	RECORD_COUNT,
+	SOURCE_SYSTEM_ID,
+	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP,
+	cdc_pye_nm_cmt_id
+	FROM SQ_CLAIM_DRAFT_CLIENT_STAGE1
+),
+ARCH_CLAIM_DRAFT_CLIENT_STAGE AS (
+	INSERT INTO ARCH_CLAIM_DRAFT_CLIENT_STAGE
+	(claim_draft_client_id, cdc_draft_nbr, cdc_seq_nbr, cdc_payee_nm_id, cdc_name_type_ind, cdc_tax_id_nbr, cdc_report_to_irs, cdc_tax_id_type_cd, cdc_cct_clt_seq, cdc_entry_opr_id, cdc_update_opr_id, cdc_upd_ts, cdc_pmsd_ts, cdc_claim_nbr, cdc_create_ts, extract_date, as_of_date, record_count, source_system_id, audit_id, cdc_pye_nm_cmt_id)
+	SELECT 
+	CLAIM_DRAFT_CLIENT_ID AS CLAIM_DRAFT_CLIENT_ID, 
+	CDC_DRAFT_NBR AS CDC_DRAFT_NBR, 
+	CDC_SEQ_NBR AS CDC_SEQ_NBR, 
+	CDC_PAYEE_NM_ID AS CDC_PAYEE_NM_ID, 
+	CDC_NAME_TYPE_IND AS CDC_NAME_TYPE_IND, 
+	CDC_TAX_ID_NBR AS CDC_TAX_ID_NBR, 
+	CDC_REPORT_TO_IRS AS CDC_REPORT_TO_IRS, 
+	CDC_TAX_ID_TYPE_CD AS CDC_TAX_ID_TYPE_CD, 
+	CDC_CCT_CLT_SEQ AS CDC_CCT_CLT_SEQ, 
+	CDC_ENTRY_OPR_ID AS CDC_ENTRY_OPR_ID, 
+	CDC_UPDATE_OPR_ID AS CDC_UPDATE_OPR_ID, 
+	CDC_UPD_TS AS CDC_UPD_TS, 
+	CDC_PMSD_TS AS CDC_PMSD_TS, 
+	CDC_CLAIM_NBR AS CDC_CLAIM_NBR, 
+	CDC_CREATE_TS AS CDC_CREATE_TS, 
+	EXTRACT_DATE AS EXTRACT_DATE, 
+	AS_OF_DATE AS AS_OF_DATE, 
+	RECORD_COUNT AS RECORD_COUNT, 
+	SOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, 
+	AUDIT_ID_OP AS AUDIT_ID, 
+	CDC_PYE_NM_CMT_ID
+	FROM EXP_CLAIM_DRAFT_CLIENT_STAGE
+),

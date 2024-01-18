@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_STG_INSERT_UnderwriterProductRelationshipStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_STG_INSERT_UnderwriterProductRelationshipStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_UnderwriterProductRelationship AS (\n\tSELECT\n\t\tUnderwriterProductRelationshipId,\n\t\tSourceSystemId,\n\t\tHashKey,\n\t\tModifiedUserId,\n\t\tModifiedDate,\n\t\tAssociateId,\n\t\tStrategicProfitCenterCode,\n\t\tPolicyOfferingCode,\n\t\tProgramCode,\n\t\tPolicyAmountMinimum,\n\t\tPolicyAmountMaximum,\n\t\tInsuranceSegmentCode,\n\t\tBondCategory\n\tFROM UnderwriterProductRelationship\n),\nLKP_WestBendAssociateID AS (\n\tSELECT\n\tWestBendAssociateID,\n\tAssociateID\n\tFROM (\n\t\tSELECT \n\t\t\tWestBendAssociateID,\n\t\t\tAssociateID\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.Associate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AssociateID ORDER BY WestBendAssociateID) = 1\n),\nEXP_Add_MetaDataFields AS (\n\tSELECT\n\tSQ_UnderwriterProductRelationship.UnderwriterProductRelationshipId,\n\tSQ_UnderwriterProductRelationship.SourceSystemId AS AgencyODSSourceSystemID,\n\tSQ_UnderwriterProductRelationship.HashKey,\n\tSQ_UnderwriterProductRelationship.ModifiedUserId AS ModifiedUserID,\n\tSQ_UnderwriterProductRelationship.ModifiedDate,\n\tSQ_UnderwriterProductRelationship.AssociateId AS AssociateID,\n\tLKP_WestBendAssociateID.WestBendAssociateID AS lkp_WestBendAssociateID,\n\tSQ_UnderwriterProductRelationship.StrategicProfitCenterCode,\n\tSQ_UnderwriterProductRelationship.PolicyOfferingCode,\n\tSQ_UnderwriterProductRelationship.ProgramCode,\n\tSQ_UnderwriterProductRelationship.PolicyAmountMinimum,\n\tSQ_UnderwriterProductRelationship.PolicyAmountMaximum,\n\tSQ_UnderwriterProductRelationship.InsuranceSegmentCode,\n\tSQ_UnderwriterProductRelationship.BondCategory,\n\tsysdate AS Extract_Date,\n\tsysdate AS As_of_Date,\n\t1 AS Record_Count,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS Source_System_ID\n\tFROM SQ_UnderwriterProductRelationship\n\tLEFT JOIN LKP_WestBendAssociateID\n\tON LKP_WestBendAssociateID.AssociateID = SQ_UnderwriterProductRelationship.AssociateId\n),\nUnderwriterProductRelationshipStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwriterProductRelationshipStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwriterProductRelationshipStage\n\t(AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AssociateID, WestBendAssociateID, StrategicProfitCenterCode, PolicyOfferingCode, ProgramCode, PolicyAmountMinimum, PolicyAmountMaximum, AgencyODSRelationshipId, ExtractDate, AsOfDate, RecordCount, SourceSystemID, InsuranceSegmentCode, BondCategory)\n\tSELECT \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tASSOCIATEID, \n\tlkp_WestBendAssociateID AS WESTBENDASSOCIATEID, \n\tSTRATEGICPROFITCENTERCODE, \n\tPOLICYOFFERINGCODE, \n\tPROGRAMCODE, \n\tPOLICYAMOUNTMINIMUM, \n\tPOLICYAMOUNTMAXIMUM, \n\tUnderwriterProductRelationshipId AS AGENCYODSRELATIONSHIPID, \n\tExtract_Date AS EXTRACTDATE, \n\tAs_of_Date AS ASOFDATE, \n\tRecord_Count AS RECORDCOUNT, \n\tSource_System_ID AS SOURCESYSTEMID, \n\tINSURANCESEGMENTCODE, \n\tBONDCATEGORY\n\tFROM EXP_Add_MetaDataFields\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

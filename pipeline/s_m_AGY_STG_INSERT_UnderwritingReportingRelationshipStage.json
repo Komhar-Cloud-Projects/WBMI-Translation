@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_STG_INSERT_UnderwritingReportingRelationshipStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_STG_INSERT_UnderwritingReportingRelationshipStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_UnderwritingReportingRelationship_ODS AS (\n\tSELECT\n\t\tUnderwritingReportingRelationshipID,\n\t\tSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAssociateID,\n\t\tReportAssociateID,\n\t\tRelationshipType\n\tFROM UnderwritingReportingRelationship_ODS\n),\nLKP_ReportToWestBendAssociateID AS (\n\tSELECT\n\tWestBendAssociateID,\n\tin_ReportAssociateID,\n\tAssociateID\n\tFROM (\n\t\tSELECT \n\t\t\tWestBendAssociateID,\n\t\t\tin_ReportAssociateID,\n\t\t\tAssociateID\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.Associate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AssociateID ORDER BY WestBendAssociateID) = 1\n),\nLKP_WestBendAssociateID AS (\n\tSELECT\n\tWestBendAssociateID,\n\tAssociateID\n\tFROM (\n\t\tSELECT \n\t\t\tWestBendAssociateID,\n\t\t\tAssociateID\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.Associate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AssociateID ORDER BY WestBendAssociateID) = 1\n),\nEXP_Add_MetaDataFields AS (\n\tSELECT\n\tSQ_UnderwritingReportingRelationship_ODS.UnderwritingReportingRelationshipID,\n\tSQ_UnderwritingReportingRelationship_ODS.SourceSystemID,\n\tSQ_UnderwritingReportingRelationship_ODS.HashKey,\n\tSQ_UnderwritingReportingRelationship_ODS.ModifiedUserID,\n\tSQ_UnderwritingReportingRelationship_ODS.ModifiedDate,\n\tSQ_UnderwritingReportingRelationship_ODS.AssociateID,\n\tSQ_UnderwritingReportingRelationship_ODS.ReportAssociateID,\n\tSQ_UnderwritingReportingRelationship_ODS.RelationshipType,\n\tLKP_WestBendAssociateID.WestBendAssociateID AS lkp_WestBendAssociateID,\n\tLKP_ReportToWestBendAssociateID.WestBendAssociateID AS lkp_ReportToWestBendAssociateID,\n\tsysdate AS Extract_Date,\n\tsysdate AS As_of_Date,\n\t1 AS Record_Count,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS Source_System_ID\n\tFROM SQ_UnderwritingReportingRelationship_ODS\n\tLEFT JOIN LKP_ReportToWestBendAssociateID\n\tON LKP_ReportToWestBendAssociateID.AssociateID = SQ_UnderwritingReportingRelationship_ODS.ReportAssociateID\n\tLEFT JOIN LKP_WestBendAssociateID\n\tON LKP_WestBendAssociateID.AssociateID = SQ_UnderwritingReportingRelationship_ODS.AssociateID\n),\nUnderwritingReportingRelationshipStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwritingReportingRelationshipStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwritingReportingRelationshipStage\n\t(AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AssociateID, WestBendAssociateID, ReportToAssociateID, ReportToWestBendAssociateID, RelationshipType, ExtractDate, AsOfDate, RecordCount, SourceSystemID)\n\tSELECT \n\tSourceSystemID AS AGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tASSOCIATEID, \n\tlkp_WestBendAssociateID AS WESTBENDASSOCIATEID, \n\tReportAssociateID AS REPORTTOASSOCIATEID, \n\tlkp_ReportToWestBendAssociateID AS REPORTTOWESTBENDASSOCIATEID, \n\tRELATIONSHIPTYPE, \n\tExtract_Date AS EXTRACTDATE, \n\tAs_of_Date AS ASOFDATE, \n\tRecord_Count AS RECORDCOUNT, \n\tSource_System_ID AS SOURCESYSTEMID\n\tFROM EXP_Add_MetaDataFields\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

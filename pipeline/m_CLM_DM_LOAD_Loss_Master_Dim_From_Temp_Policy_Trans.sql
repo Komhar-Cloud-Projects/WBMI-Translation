@@ -123,14 +123,12 @@ EXP_source_temp_policy_transaction AS (
 	-- IS_SPACES(risk_state_prov_code),'N/A',
 	-- LENGTH(risk_state_prov_code)=0,'N/A',
 	-- LTRIM(RTRIM(risk_state_prov_code)))
-	DECODE(TRUE,
-		risk_state_prov_code IS NULL, 'N/A',
-		LENGTH(risk_state_prov_code)>0 AND TRIM(risk_state_prov_code)='', 'N/A',
-		LENGTH(risk_state_prov_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(risk_state_prov_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    risk_state_prov_code IS NULL, 'N/A',
+	    LENGTH(risk_state_prov_code)>0 AND TRIM(risk_state_prov_code)='', 'N/A',
+	    LENGTH(risk_state_prov_code) = 0, 'N/A',
+	    LTRIM(RTRIM(risk_state_prov_code))
 	) AS risk_state_prov_code_out,
 	risk_zip_code,
 	-- *INF*: DECODE(TRUE,
@@ -138,14 +136,12 @@ EXP_source_temp_policy_transaction AS (
 	-- IS_SPACES(risk_zip_code),'N/A',
 	-- LENGTH(risk_zip_code)=0,'N/A',
 	-- LTRIM(RTRIM(risk_zip_code)))
-	DECODE(TRUE,
-		risk_zip_code IS NULL, 'N/A',
-		LENGTH(risk_zip_code)>0 AND TRIM(risk_zip_code)='', 'N/A',
-		LENGTH(risk_zip_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(risk_zip_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    risk_zip_code IS NULL, 'N/A',
+	    LENGTH(risk_zip_code)>0 AND TRIM(risk_zip_code)='', 'N/A',
+	    LENGTH(risk_zip_code) = 0, 'N/A',
+	    LTRIM(RTRIM(risk_zip_code))
 	) AS risk_zip_code_out,
 	terr_code,
 	-- *INF*: DECODE(TRUE,
@@ -153,19 +149,16 @@ EXP_source_temp_policy_transaction AS (
 	-- IS_SPACES(terr_code),'N/A',
 	-- LENGTH(terr_code)=0,'N/A',
 	-- LTRIM(RTRIM(terr_code)))
-	DECODE(TRUE,
-		terr_code IS NULL, 'N/A',
-		LENGTH(terr_code)>0 AND TRIM(terr_code)='', 'N/A',
-		LENGTH(terr_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(terr_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    terr_code IS NULL, 'N/A',
+	    LENGTH(terr_code)>0 AND TRIM(terr_code)='', 'N/A',
+	    LENGTH(terr_code) = 0, 'N/A',
+	    LTRIM(RTRIM(terr_code))
 	) AS terr_code_out,
 	tax_loc,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRING_NUMERIC(tax_loc)
-	:UDF.DEFAULT_VALUE_FOR_STRING_NUMERIC(tax_loc
-	) AS tax_loc_out,
+	UDF_DEFAULT_VALUE_FOR_STRING_NUMERIC(tax_loc) AS tax_loc_out,
 	class_code,
 	exposure,
 	sub_line_code,
@@ -174,14 +167,12 @@ EXP_source_temp_policy_transaction AS (
 	-- IS_SPACES(sub_line_code),'N/A',
 	-- LENGTH(sub_line_code)=0,'N/A',
 	-- LTRIM(RTRIM(sub_line_code)))
-	DECODE(TRUE,
-		sub_line_code IS NULL, 'N/A',
-		LENGTH(sub_line_code)>0 AND TRIM(sub_line_code)='', 'N/A',
-		LENGTH(sub_line_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(sub_line_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    sub_line_code IS NULL, 'N/A',
+	    LENGTH(sub_line_code)>0 AND TRIM(sub_line_code)='', 'N/A',
+	    LENGTH(sub_line_code) = 0, 'N/A',
+	    LTRIM(RTRIM(sub_line_code))
 	) AS sub_line_code_out,
 	source_sar_asl,
 	-- *INF*: DECODE(TRUE,
@@ -191,14 +182,12 @@ EXP_source_temp_policy_transaction AS (
 	-- LTRIM(RTRIM(REPLACECHR(TRUE, source_sar_asl, '.' , ''))))
 	-- 
 	-- 
-	DECODE(TRUE,
-		source_sar_asl IS NULL, 'N/A',
-		LENGTH(source_sar_asl)>0 AND TRIM(source_sar_asl)='', 'N/A',
-		LENGTH(source_sar_asl
-		) = 0, 'N/A',
-		LTRIM(RTRIM(REGEXP_REPLACE(source_sar_asl,'.','')
-			)
-		)
+	DECODE(
+	    TRUE,
+	    source_sar_asl IS NULL, 'N/A',
+	    LENGTH(source_sar_asl)>0 AND TRIM(source_sar_asl)='', 'N/A',
+	    LENGTH(source_sar_asl) = 0, 'N/A',
+	    LTRIM(RTRIM(REGEXP_REPLACE(source_sar_asl,'.','')))
 	) AS source_sar_asl_out,
 	source_sar_prdct_line,
 	-- *INF*: DECODE(TRUE,
@@ -206,14 +195,12 @@ EXP_source_temp_policy_transaction AS (
 	-- IS_SPACES(source_sar_prdct_line),'N/A',
 	-- LENGTH(source_sar_prdct_line)=0,'N/A',
 	-- LTRIM(RTRIM(source_sar_prdct_line)))
-	DECODE(TRUE,
-		source_sar_prdct_line IS NULL, 'N/A',
-		LENGTH(source_sar_prdct_line)>0 AND TRIM(source_sar_prdct_line)='', 'N/A',
-		LENGTH(source_sar_prdct_line
-		) = 0, 'N/A',
-		LTRIM(RTRIM(source_sar_prdct_line
-			)
-		)
+	DECODE(
+	    TRUE,
+	    source_sar_prdct_line IS NULL, 'N/A',
+	    LENGTH(source_sar_prdct_line)>0 AND TRIM(source_sar_prdct_line)='', 'N/A',
+	    LENGTH(source_sar_prdct_line) = 0, 'N/A',
+	    LTRIM(RTRIM(source_sar_prdct_line))
 	) AS source_sar_prdct_line_out,
 	source_sar_sp_use_code,
 	-- *INF*: DECODE(TRUE,
@@ -223,32 +210,28 @@ EXP_source_temp_policy_transaction AS (
 	-- source_sar_sp_use_code)
 	-- 
 	-- -- we are not using LTRIM ,RTRIM  functions because we need to spaces as it is as they are used for IBS Bureau Reporting.
-	DECODE(TRUE,
-		source_sar_sp_use_code IS NULL, 'N/A',
-		LENGTH(source_sar_sp_use_code)>0 AND TRIM(source_sar_sp_use_code)='', 'N/A',
-		LENGTH(source_sar_sp_use_code
-		) = 0, 'N/A',
-		source_sar_sp_use_code
+	DECODE(
+	    TRUE,
+	    source_sar_sp_use_code IS NULL, 'N/A',
+	    LENGTH(source_sar_sp_use_code)>0 AND TRIM(source_sar_sp_use_code)='', 'N/A',
+	    LENGTH(source_sar_sp_use_code) = 0, 'N/A',
+	    source_sar_sp_use_code
 	) AS source_sar_sp_use_code_out,
 	'N/A' AS auto_reins_facility_out,
 	-- *INF*: substr(source_sar_prdct_line,1,2)
-	substr(source_sar_prdct_line, 1, 2
-	) AS v_statistical_brkdwn_line,
+	substr(source_sar_prdct_line, 1, 2) AS v_statistical_brkdwn_line,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_statistical_brkdwn_line)
 	-- 
 	-- 
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_statistical_brkdwn_line
-	) AS statistical_brkdwn_line_out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(v_statistical_brkdwn_line) AS statistical_brkdwn_line_out,
 	source_statistical_code,
 	type_bureau_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(type_bureau_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(type_bureau_code
-	) AS v_type_bureau_code,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(type_bureau_code) AS v_type_bureau_code,
 	v_type_bureau_code AS type_bureau_out,
 	major_peril_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(major_peril_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(major_peril_code
-	) AS major_peril_code_out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(major_peril_code) AS major_peril_code_out,
 	major_peril_seq_num,
 	-- *INF*: DECODE(TRUE,
 	-- IN( v_type_bureau_code,'AL','LP','AI','LI','RL'), '100',
@@ -259,15 +242,16 @@ EXP_source_temp_policy_transaction AS (
 	-- IN( v_type_bureau_code,'BD'),'722',
 	-- IN( v_type_bureau_code,'BI','BT','RB'),'800'
 	-- ,'N/A')
-	DECODE(TRUE,
-		v_type_bureau_code IN ('AL','LP','AI','LI','RL'), '100',
-		v_type_bureau_code IN ('GS','GM','RG'), '400',
-		v_type_bureau_code IN ('WC','WP'), '500',
-		v_type_bureau_code IN ('GL','GI','GN','RQ'), '600',
-		v_type_bureau_code IN ('FF','FM','BF','BP','FT','FP'), '711',
-		v_type_bureau_code IN ('BD'), '722',
-		v_type_bureau_code IN ('BI','BT','RB'), '800',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    v_type_bureau_code IN ('AL','LP','AI','LI','RL'), '100',
+	    v_type_bureau_code IN ('GS','GM','RG'), '400',
+	    v_type_bureau_code IN ('WC','WP'), '500',
+	    v_type_bureau_code IN ('GL','GI','GN','RQ'), '600',
+	    v_type_bureau_code IN ('FF','FM','BF','BP','FT','FP'), '711',
+	    v_type_bureau_code IN ('BD'), '722',
+	    v_type_bureau_code IN ('BI','BT','RB'), '800',
+	    'N/A'
 	) AS v_statistical_line,
 	v_statistical_line AS statistical_line,
 	ins_line,
@@ -280,10 +264,7 @@ EXP_source_temp_policy_transaction AS (
 	pms_pol_lob_code,
 	variation_code,
 	-- *INF*: IIF(IN(pms_pol_lob_code,'ACA','AFA','APA','ATA','ACJ','AFJ','APJ'),'6',variation_code)
-	IFF(pms_pol_lob_code IN ('ACA','AFA','APA','ATA','ACJ','AFJ','APJ'),
-		'6',
-		variation_code
-	) AS variation_code_Out
+	IFF(pms_pol_lob_code IN ('ACA','AFA','APA','ATA','ACJ','AFJ','APJ'), '6', variation_code) AS variation_code_Out
 	FROM SQ_temp_policy_transaction
 ),
 EXP_Transform_Statistical_Codes AS (
@@ -307,189 +288,67 @@ EXP_Transform_Statistical_Codes AS (
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,1,1))=0,' ',SUBSTR(v_statistical_code,1,1))
 	-- 
 	-- ----8/18/2011 Uma Bollu - Introducing Blank Space intentionally as PIF_4514_Stage has spaces but when we add this data into EDW we do a LTRIM, RTRIM so this Target Lookup finds a match but this Statistical Code calculation we need spaces because of the logic which re-arranges the fields and this is very important for Bureau Reporting etc.
-	IFF(LENGTH(SUBSTR(v_statistical_code, 1, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 1, 1
-		)
-	) AS v_pos_1,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 1, 1)) = 0, ' ', SUBSTR(v_statistical_code, 1, 1)) AS v_pos_1,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,2,1))=0,' ',SUBSTR(v_statistical_code,2,1))
 	-- 
 	-- ----Introducing Blank Space intentionally as PIF_4514_Stage has spaces but when we add this data into EDW we do a LTRIM, RTRIM so this Target Lookup finds a match but this Statistical Code calculation we need spaces because of the logic which re-arranges the fields and this is very important for Bureau Reporting etc.
-	IFF(LENGTH(SUBSTR(v_statistical_code, 2, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 2, 1
-		)
-	) AS v_pos_2,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 2, 1)) = 0, ' ', SUBSTR(v_statistical_code, 2, 1)) AS v_pos_2,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,3,1))=0,' ',SUBSTR(v_statistical_code,3,1))
 	-- 
 	-- ----Introducing Blank Space intentionally as PIF_4514_Stage has spaces but when we add this data into EDW we do a LTRIM, RTRIM so this Target Lookup finds a match but this Statistical Code calculation we need spaces because of the logic which re-arranges the fields and this is very important for Bureau Reporting etc.
-	IFF(LENGTH(SUBSTR(v_statistical_code, 3, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 3, 1
-		)
-	) AS v_pos_3,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 3, 1)) = 0, ' ', SUBSTR(v_statistical_code, 3, 1)) AS v_pos_3,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,4,1))=0,' ',SUBSTR(v_statistical_code,4,1))
 	-- 
 	-- ----Introducing Blank Space intentionally as PIF_4514_Stage has spaces but when we add this data into EDW we do a LTRIM, RTRIM so this Target Lookup finds a match but this Statistical Code calculation we need spaces because of the logic which re-arranges the fields and this is very important for Bureau Reporting etc.
-	IFF(LENGTH(SUBSTR(v_statistical_code, 4, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 4, 1
-		)
-	) AS v_pos_4,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 4, 1)) = 0, ' ', SUBSTR(v_statistical_code, 4, 1)) AS v_pos_4,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,5,1))=0,' ',SUBSTR(v_statistical_code,5,1))
 	-- 
 	-- ----8/18/2011 Uma Bollu - Introducing Blank Space intentionally as PIF_4514_Stage has spaces but when we add this data into EDW we do a LTRIM, RTRIM so this Target Lookup finds a match but this Statistical Code calculation we need spaces because of the logic which re-arranges the fields and this is very important for Bureau Reporting etc.
-	IFF(LENGTH(SUBSTR(v_statistical_code, 5, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 5, 1
-		)
-	) AS v_pos_5,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 5, 1)) = 0, ' ', SUBSTR(v_statistical_code, 5, 1)) AS v_pos_5,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,6,1))=0,' ',SUBSTR(v_statistical_code,6,1))
 	-- 
 	-- 
 	-- ----8/18/2011 Uma Bollu - Introducing Blank Space intentionally as PIF_4514_Stage has spaces but when we add this data into EDW we do a LTRIM, RTRIM so this Target Lookup finds a match but this Statistical Code calculation we need spaces because of the logic which re-arranges the fields and this is very important for Bureau Reporting etc.
-	IFF(LENGTH(SUBSTR(v_statistical_code, 6, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 6, 1
-		)
-	) AS v_pos_6,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 6, 1)) = 0, ' ', SUBSTR(v_statistical_code, 6, 1)) AS v_pos_6,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,7,1))=0,' ',SUBSTR(v_statistical_code,7,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 7, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 7, 1
-		)
-	) AS v_pos_7,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 7, 1)) = 0, ' ', SUBSTR(v_statistical_code, 7, 1)) AS v_pos_7,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,8,1))=0,' ',SUBSTR(v_statistical_code,8,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 8, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 8, 1
-		)
-	) AS v_pos_8,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 8, 1)) = 0, ' ', SUBSTR(v_statistical_code, 8, 1)) AS v_pos_8,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,9,1))=0,' ',SUBSTR(v_statistical_code,9,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 9, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 9, 1
-		)
-	) AS v_pos_9,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 9, 1)) = 0, ' ', SUBSTR(v_statistical_code, 9, 1)) AS v_pos_9,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,10,1))=0,' ',SUBSTR(v_statistical_code,10,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 10, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 10, 1
-		)
-	) AS v_pos_10,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 10, 1)) = 0, ' ', SUBSTR(v_statistical_code, 10, 1)) AS v_pos_10,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,11,1))=0,' ',SUBSTR(v_statistical_code,11,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 11, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 11, 1
-		)
-	) AS v_pos_11,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 11, 1)) = 0, ' ', SUBSTR(v_statistical_code, 11, 1)) AS v_pos_11,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,12,1))=0,' ',SUBSTR(v_statistical_code,12,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 12, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 12, 1
-		)
-	) AS v_pos_12,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 12, 1)) = 0, ' ', SUBSTR(v_statistical_code, 12, 1)) AS v_pos_12,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,13,1))=0,' ',SUBSTR(v_statistical_code,13,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 13, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 13, 1
-		)
-	) AS v_pos_13,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 13, 1)) = 0, ' ', SUBSTR(v_statistical_code, 13, 1)) AS v_pos_13,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,14,1))=0,' ',SUBSTR(v_statistical_code,14,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 14, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 14, 1
-		)
-	) AS v_pos_14,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 14, 1)) = 0, ' ', SUBSTR(v_statistical_code, 14, 1)) AS v_pos_14,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,15,1))=0,' ',SUBSTR(v_statistical_code,15,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 15, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 15, 1
-		)
-	) AS v_pos_15,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 15, 1)) = 0, ' ', SUBSTR(v_statistical_code, 15, 1)) AS v_pos_15,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,16,1))=0,' ',SUBSTR(v_statistical_code,16,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 16, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 16, 1
-		)
-	) AS v_pos_16,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 16, 1)) = 0, ' ', SUBSTR(v_statistical_code, 16, 1)) AS v_pos_16,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,17,1))=0,' ',SUBSTR(v_statistical_code,17,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 17, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 17, 1
-		)
-	) AS v_pos_17,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 17, 1)) = 0, ' ', SUBSTR(v_statistical_code, 17, 1)) AS v_pos_17,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,18,1))=0,' ',SUBSTR(v_statistical_code,18,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 18, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 18, 1
-		)
-	) AS v_pos_18,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 18, 1)) = 0, ' ', SUBSTR(v_statistical_code, 18, 1)) AS v_pos_18,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,19,1))=0,' ',SUBSTR(v_statistical_code,19,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 19, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 19, 1
-		)
-	) AS v_pos_19,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 19, 1)) = 0, ' ', SUBSTR(v_statistical_code, 19, 1)) AS v_pos_19,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,20,1))=0,' ',SUBSTR(v_statistical_code,20,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 20, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 20, 1
-		)
-	) AS v_pos_20,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 20, 1)) = 0, ' ', SUBSTR(v_statistical_code, 20, 1)) AS v_pos_20,
 	-- *INF*: DECODE(TRUE,Type_Bureau='RP','0',
 	-- LENGTH(SUBSTR(v_statistical_code,21,1))=0,' ',SUBSTR(v_statistical_code,21,1))
 	-- --IIF(LENGTH(SUBSTR(v_statistical_code,21,1))=0,' ',SUBSTR(v_statistical_code,21,1))
 	-- 
 	-- 
 	-- --- Statistical Code field is initialised at the begining of the WMM01A0 module to all spaces but since it is a sign field for Type Bureau of RP, these are defaulted to '0'
-	DECODE(TRUE,
-		Type_Bureau = 'RP', '0',
-		LENGTH(SUBSTR(v_statistical_code, 21, 1
-			)
-		) = 0, ' ',
-		SUBSTR(v_statistical_code, 21, 1
-		)
+	DECODE(
+	    TRUE,
+	    Type_Bureau = 'RP', '0',
+	    LENGTH(SUBSTR(v_statistical_code, 21, 1)) = 0, ' ',
+	    SUBSTR(v_statistical_code, 21, 1)
 	) AS v_pos_21,
 	-- *INF*: DECODE(TRUE,Type_Bureau='RP','0',
 	-- LENGTH(SUBSTR(v_statistical_code,22,1))=0,' ',SUBSTR(v_statistical_code,22,1))
@@ -497,13 +356,11 @@ EXP_Transform_Statistical_Codes AS (
 	-- --IIF(LENGTH(SUBSTR(v_statistical_code,22,1))=0,' ',SUBSTR(v_statistical_code,22,1))
 	-- 
 	-- --- Statistical Code field is initialised at the begining of the WMM01A0 module to all spaces but since it is a sign field for Type Bureau of RP, these are defaulted to '0'
-	DECODE(TRUE,
-		Type_Bureau = 'RP', '0',
-		LENGTH(SUBSTR(v_statistical_code, 22, 1
-			)
-		) = 0, ' ',
-		SUBSTR(v_statistical_code, 22, 1
-		)
+	DECODE(
+	    TRUE,
+	    Type_Bureau = 'RP', '0',
+	    LENGTH(SUBSTR(v_statistical_code, 22, 1)) = 0, ' ',
+	    SUBSTR(v_statistical_code, 22, 1)
 	) AS v_pos_22,
 	-- *INF*: DECODE(TRUE,Type_Bureau='RP','0',
 	-- LENGTH(SUBSTR(v_statistical_code,23,1))=0,' ',SUBSTR(v_statistical_code,23,1))
@@ -511,13 +368,11 @@ EXP_Transform_Statistical_Codes AS (
 	-- --IIF(LENGTH(SUBSTR(v_statistical_code,23,1))=0,' ',SUBSTR(v_statistical_code,23,1))
 	-- 
 	-- --- Statistical Code field is initialised at the begining of the WMM01A0 module to all spaces but since it is a sign field for Type Bureau of RP, these are defaulted to '0'
-	DECODE(TRUE,
-		Type_Bureau = 'RP', '0',
-		LENGTH(SUBSTR(v_statistical_code, 23, 1
-			)
-		) = 0, ' ',
-		SUBSTR(v_statistical_code, 23, 1
-		)
+	DECODE(
+	    TRUE,
+	    Type_Bureau = 'RP', '0',
+	    LENGTH(SUBSTR(v_statistical_code, 23, 1)) = 0, ' ',
+	    SUBSTR(v_statistical_code, 23, 1)
 	) AS v_pos_23,
 	-- *INF*: DECODE(TRUE,Type_Bureau='RP','0',
 	-- LENGTH(SUBSTR(v_statistical_code,24,1))=0,' ',SUBSTR(v_statistical_code,24,1))
@@ -525,13 +380,11 @@ EXP_Transform_Statistical_Codes AS (
 	-- --IIF(LENGTH(SUBSTR(v_statistical_code,24,1))=0,' ',SUBSTR(v_statistical_code,24,1))
 	-- 
 	-- --- Statistical Code field is initialised at the begining of the WMM01A0 module to all spaces but since it is a sign field for Type Bureau of RP, these are defaulted to '0'
-	DECODE(TRUE,
-		Type_Bureau = 'RP', '0',
-		LENGTH(SUBSTR(v_statistical_code, 24, 1
-			)
-		) = 0, ' ',
-		SUBSTR(v_statistical_code, 24, 1
-		)
+	DECODE(
+	    TRUE,
+	    Type_Bureau = 'RP', '0',
+	    LENGTH(SUBSTR(v_statistical_code, 24, 1)) = 0, ' ',
+	    SUBSTR(v_statistical_code, 24, 1)
 	) AS v_pos_24,
 	-- *INF*: DECODE(TRUE,Type_Bureau='RP','{',
 	-- LENGTH(SUBSTR(v_statistical_code,25,1))=0,' ',SUBSTR(v_statistical_code,25,1))
@@ -541,218 +394,123 @@ EXP_Transform_Statistical_Codes AS (
 	-- --- Statistical Code field is initialised at the begining of the WMM01A0 module to all spaces but since it is a sign field for Type Bureau of RP, these are defaulted to '{'
 	-- 
 	-- --IIF(LENGTH(SUBSTR(v_statistical_code,25,1))=0,' ',SUBSTR(v_statistical_code,25,1))
-	DECODE(TRUE,
-		Type_Bureau = 'RP', '{',
-		LENGTH(SUBSTR(v_statistical_code, 25, 1
-			)
-		) = 0, ' ',
-		SUBSTR(v_statistical_code, 25, 1
-		)
+	DECODE(
+	    TRUE,
+	    Type_Bureau = 'RP', '{',
+	    LENGTH(SUBSTR(v_statistical_code, 25, 1)) = 0, ' ',
+	    SUBSTR(v_statistical_code, 25, 1)
 	) AS v_pos_25,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,26,1))=0,' ',SUBSTR(v_statistical_code,26,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 26, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 26, 1
-		)
-	) AS v_pos_26,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 26, 1)) = 0, ' ', SUBSTR(v_statistical_code, 26, 1)) AS v_pos_26,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,27,1))=0,' ',SUBSTR(v_statistical_code,27,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 27, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 27, 1
-		)
-	) AS v_pos_27,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 27, 1)) = 0, ' ', SUBSTR(v_statistical_code, 27, 1)) AS v_pos_27,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,28,1))=0,' ',SUBSTR(v_statistical_code,28,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 28, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 28, 1
-		)
-	) AS v_pos_28,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 28, 1)) = 0, ' ', SUBSTR(v_statistical_code, 28, 1)) AS v_pos_28,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,29,1))=0,' ',SUBSTR(v_statistical_code,29,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 29, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 29, 1
-		)
-	) AS v_pos_29,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 29, 1)) = 0, ' ', SUBSTR(v_statistical_code, 29, 1)) AS v_pos_29,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,30,1))=0,' ',SUBSTR(v_statistical_code,30,1))
-	IFF(LENGTH(SUBSTR(v_statistical_code, 30, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 30, 1
-		)
-	) AS v_pos_30,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 30, 1)) = 0, ' ', SUBSTR(v_statistical_code, 30, 1)) AS v_pos_30,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,31,1))=0,' ',SUBSTR(v_statistical_code,31,1))
 	-- 
 	-- ----8/18/2011 Uma Bollu - Introducing Blank Space intentionally as PIF_4514_Stage has spaces but when we add this data into EDW we do a LTRIM, RTRIM so this Target Lookup finds a match but this Statistical Code calculation we need spaces because of the logic which re-arranges the fields and this is very important for Bureau Reporting etc.
-	IFF(LENGTH(SUBSTR(v_statistical_code, 31, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 31, 1
-		)
-	) AS v_pos_31,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 31, 1)) = 0, ' ', SUBSTR(v_statistical_code, 31, 1)) AS v_pos_31,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,32,1))=0,' ',SUBSTR(v_statistical_code,32,1))
 	-- 
-	IFF(LENGTH(SUBSTR(v_statistical_code, 32, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 32, 1
-		)
-	) AS v_pos_32,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 32, 1)) = 0, ' ', SUBSTR(v_statistical_code, 32, 1)) AS v_pos_32,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,33,1))=0,' ',SUBSTR(v_statistical_code,33,1))
 	-- 
 	-- 
-	IFF(LENGTH(SUBSTR(v_statistical_code, 33, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 33, 1
-		)
-	) AS v_pos_33,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 33, 1)) = 0, ' ', SUBSTR(v_statistical_code, 33, 1)) AS v_pos_33,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,34,1))=0,' ',SUBSTR(v_statistical_code,34,1))
 	-- 
 	-- 
-	IFF(LENGTH(SUBSTR(v_statistical_code, 34, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 34, 1
-		)
-	) AS v_pos_34,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 34, 1)) = 0, ' ', SUBSTR(v_statistical_code, 34, 1)) AS v_pos_34,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,35,1))=0,' ',SUBSTR(v_statistical_code,35,1))
 	-- 
 	-- 
-	IFF(LENGTH(SUBSTR(v_statistical_code, 35, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 35, 1
-		)
-	) AS v_pos_35,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 35, 1)) = 0, ' ', SUBSTR(v_statistical_code, 35, 1)) AS v_pos_35,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,36,1))=0,' ',SUBSTR(v_statistical_code,36,1))
 	-- 
 	-- 
-	IFF(LENGTH(SUBSTR(v_statistical_code, 36, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 36, 1
-		)
-	) AS v_pos_36,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 36, 1)) = 0, ' ', SUBSTR(v_statistical_code, 36, 1)) AS v_pos_36,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,37,1))=0,' ',SUBSTR(v_statistical_code,37,1))
 	-- 
 	-- 
-	IFF(LENGTH(SUBSTR(v_statistical_code, 37, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 37, 1
-		)
-	) AS v_pos_37,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 37, 1)) = 0, ' ', SUBSTR(v_statistical_code, 37, 1)) AS v_pos_37,
 	-- *INF*: IIF(LENGTH(SUBSTR(v_statistical_code,38,1))=0,' ',SUBSTR(v_statistical_code,38,1))
 	-- 
 	-- 
-	IFF(LENGTH(SUBSTR(v_statistical_code, 38, 1
-			)
-		) = 0,
-		' ',
-		SUBSTR(v_statistical_code, 38, 1
-		)
-	) AS v_pos_38,
+	IFF(LENGTH(SUBSTR(v_statistical_code, 38, 1)) = 0, ' ', SUBSTR(v_statistical_code, 38, 1)) AS v_pos_38,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22  ||  v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26  || v_pos_27  || v_pos_28  || v_pos_29  || v_pos_30  || v_pos_31 || v_pos_32  ||  v_pos_33  || v_pos_34  ||  v_pos_35  || v_pos_36 || v_pos_37  || v_pos_38)
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36 || v_pos_37 || v_pos_38 
-	) AS Generic,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36 || v_pos_37 || v_pos_38) AS Generic,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 )
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 
-	) AS v_Stat_Code_AC,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16) AS v_Stat_Code_AC,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 )
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 
-	) AS v_Stat_Codes_AI,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16) AS v_Stat_Codes_AI,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_26 || '       ' || v_pos_25 || v_pos_23  || v_pos_24  || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22)
 	-- 
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_26 || '       ' || v_pos_25 || v_pos_23 || v_pos_24 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 
-	) AS v_Stat_Codes_AL,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_26 || '       ' || v_pos_25 || v_pos_23 || v_pos_24 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22) AS v_Stat_Codes_AL,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_8 || v_pos_9 || v_pos_10  || v_pos_11|| v_pos_20 || v_pos_21  || 
 	-- '             ' ||  v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19  )
 	-- 
 	--  -----It has a Filler of 13 spaces
 	-- --- I have checked this code this is fine
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_20 || v_pos_21 || '             ' || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 
-	) AS v_Stat_Codes_AN,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_20 || v_pos_21 || '             ' || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19) AS v_Stat_Codes_AN,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 ||
 	-- '      ' || v_pos_14 || v_pos_23  || v_pos_24  || '  '  ||  v_pos_26  || v_pos_27  || v_pos_28  || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22)
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || '      ' || v_pos_14 || v_pos_23 || v_pos_24 || '  ' || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 
-	) AS v_Stat_Codes_AP,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || '      ' || v_pos_14 || v_pos_23 || v_pos_24 || '  ' || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22) AS v_Stat_Codes_AP,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_11 || v_pos_10 || 
 	--   v_pos_12 || v_pos_13 )
 	-- 
 	-- --- Verified the logic
 	-- 
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_11 || v_pos_10 || v_pos_12 || v_pos_13 
-	) AS v_Stat_Codes_A2,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_11 || v_pos_10 || v_pos_12 || v_pos_13) AS v_Stat_Codes_A2,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_11 || v_pos_12 )
 	-- 
 	-- --- Verified logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_11 || v_pos_12 
-	) AS v_Stat_Codes_A3,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_11 || v_pos_12) AS v_Stat_Codes_A3,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 ||
 	-- '           '  ||  v_pos_22 || v_pos_29 || '  ' || v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26  || v_pos_27  || v_pos_28)
 	-- 
 	-- --- Verified logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || '           ' || v_pos_22 || v_pos_29 || '  ' || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 
-	) AS v_Stat_Codes_BB,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || '           ' || v_pos_22 || v_pos_29 || '  ' || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28) AS v_Stat_Codes_BB,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17  || v_pos_20  || v_pos_27  || v_pos_28  || v_pos_29 || '    ' ||v_pos_21  ||  v_pos_22  ||  v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26 )
 	-- 
 	-- 
 	-- -- Verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_20 || v_pos_27 || v_pos_28 || v_pos_29 || '    ' || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 
-	) AS v_Stat_Codes_BC,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_20 || v_pos_27 || v_pos_28 || v_pos_29 || '    ' || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26) AS v_Stat_Codes_BC,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_5  || v_pos_6 || v_pos_7)
 	-- 
 	-- --- Verified logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_5 || v_pos_6 || v_pos_7 
-	) AS v_Stat_Codes_BD,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_5 || v_pos_6 || v_pos_7) AS v_Stat_Codes_BD,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 ||  v_pos_6 || v_pos_7 || '                    ' || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13)
 	-- 
 	-- 
 	--  ---  Verified Logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_6 || v_pos_7 || '                    ' || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 
-	) AS v_Stat_Codes_BE,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_6 || v_pos_7 || '                    ' || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13) AS v_Stat_Codes_BE,
 	-- *INF*: ('  '  || v_pos_4  || v_pos_5 || ' ' || v_pos_14 || '  ' || v_pos_15 || v_pos_16 || '   ' ||  v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || '     ' || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22 || '   ')
 	-- 
 	-- 
 	-- --8/22/2011 - Added 2 spaces in the beginning. In COBOL, statitistical code field is initialised to spaces at the start of reformatting. If there is no code to move certain fields then the spaces stay as it is except other fileds are layed out over spaces.
 	-- --- Verified the logic
 	-- 
-	( '  ' || v_pos_4 || v_pos_5 || ' ' || v_pos_14 || '  ' || v_pos_15 || v_pos_16 || '   ' || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || '     ' || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || '   ' 
-	) AS v_Stat_Codes_BF,
+	('  ' || v_pos_4 || v_pos_5 || ' ' || v_pos_14 || '  ' || v_pos_15 || v_pos_16 || '   ' || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || '     ' || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || '   ') AS v_Stat_Codes_BF,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_4  || v_pos_5)
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_4 || v_pos_5 
-	) AS v_Stat_Codes_BP,
+	(v_pos_1 || v_pos_2 || v_pos_4 || v_pos_5) AS v_Stat_Codes_BP,
 	-- *INF*: (v_pos_1 || v_pos_2 )
 	-- 
 	-- --- Verified the logic
-	( v_pos_1 || v_pos_2 
-	) AS v_Stat_Codes_BI,
+	(v_pos_1 || v_pos_2) AS v_Stat_Codes_BI,
 	-- *INF*: v_pos_1
 	-- 
 	-- -- verified the logic
@@ -761,57 +519,46 @@ EXP_Transform_Statistical_Codes AS (
 	-- || '    ' ||  v_pos_29  || v_pos_30  || v_pos_31 || v_pos_32  ||  v_pos_33  || v_pos_34 || v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26  || v_pos_27  || v_pos_28 || '   ' )
 	-- 
 	-- --- Verfied the logic
-	( SUBSTR(sar_class_code, 1, 3
-		) || '  ' || v_pos_18 || v_pos_19 || v_pos_1 || ' ' || v_pos_2 || v_pos_3 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || '    ' || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || '   ' 
-	) AS v_Stat_Codes_BM,
+	(SUBSTR(sar_class_code, 1, 3) || '  ' || v_pos_18 || v_pos_19 || v_pos_1 || ' ' || v_pos_2 || v_pos_3 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || '    ' || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || '   ') AS v_Stat_Codes_BM,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || '      '  ||  v_pos_8 || v_pos_9 || '           ' || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19)
 	-- 
 	--  ---- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || '      ' || v_pos_8 || v_pos_9 || '           ' || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 
-	) AS v_Stat_Codes_BT,
+	(v_pos_1 || v_pos_2 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || '      ' || v_pos_8 || v_pos_9 || '           ' || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19) AS v_Stat_Codes_BT,
 	-- *INF*: (v_pos_1 || v_pos_2 || '      '  || v_pos_9 || v_pos_10 || v_pos_17 || v_pos_18 ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22  ||  v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26  || v_pos_27  || v_pos_28  || v_pos_29  || v_pos_30  || v_pos_31)
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_2 || '      ' || v_pos_9 || v_pos_10 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 
-	) AS v_Stat_Codes_B2,
+	(v_pos_1 || v_pos_2 || '      ' || v_pos_9 || v_pos_10 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31) AS v_Stat_Codes_B2,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_11 || v_pos_12 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17)
 	-- 
 	-- ----- verified the logic
 	-- 
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_11 || v_pos_12 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 
-	) AS v_Stat_Codes_CC,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_11 || v_pos_12 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17) AS v_Stat_Codes_CC,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || 
 	--  v_pos_17 || v_pos_18  || ' ' ||  v_pos_20 || '              ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 )
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_17 || v_pos_18 || ' ' || v_pos_20 || '              ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 
-	) AS v_Stat_Codes_CF,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_17 || v_pos_18 || ' ' || v_pos_20 || '              ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16) AS v_Stat_Codes_CF,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22  ||  v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26  || v_pos_27  || v_pos_28  || v_pos_29  || v_pos_30  || v_pos_31 || v_pos_32  ||  v_pos_33  || v_pos_34  ||  v_pos_35  || v_pos_36 || v_pos_37  || v_pos_38)
 	-- 
 	-- ---- Generic 
 	-- -- No Change from Input copybook to Output
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36 || v_pos_37 || v_pos_38 
-	) AS v_Stat_Code_CR,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36 || v_pos_37 || v_pos_38) AS v_Stat_Code_CR,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_6 || v_pos_7 || ' '  || v_pos_9 || '  ' || v_pos_12 || ' ' || v_pos_14 || v_pos_15 )
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_6 || v_pos_7 || ' ' || v_pos_9 || '  ' || v_pos_12 || ' ' || v_pos_14 || v_pos_15 
-	) AS v_Stat_Codes_CI,
+	(v_pos_1 || v_pos_2 || v_pos_6 || v_pos_7 || ' ' || v_pos_9 || '  ' || v_pos_12 || ' ' || v_pos_14 || v_pos_15) AS v_Stat_Codes_CI,
 	-- *INF*: (v_pos_1 || v_pos_4  || v_pos_6 || v_pos_7 )
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_4 || v_pos_6 || v_pos_7 
-	) AS v_Stat_Codes_CL,
+	(v_pos_1 || v_pos_4 || v_pos_6 || v_pos_7) AS v_Stat_Codes_CL,
 	-- *INF*: ('  ' || v_pos_1 || v_pos_2 || v_pos_5  || v_pos_6 || v_pos_7)
 	-- 
 	-- ---- verified the logic
-	( '  ' || v_pos_1 || v_pos_2 || v_pos_5 || v_pos_6 || v_pos_7 
-	) AS v_Stat_Codes_CP,
+	('  ' || v_pos_1 || v_pos_2 || v_pos_5 || v_pos_6 || v_pos_7) AS v_Stat_Codes_CP,
 	-- *INF*: (v_pos_3 || v_pos_4  || v_pos_5 )
 	-- 
 	-- ---- verified the logic
-	( v_pos_3 || v_pos_4 || v_pos_5 
-	) AS v_Stat_Codes_CN,
+	(v_pos_3 || v_pos_4 || v_pos_5) AS v_Stat_Codes_CN,
 	-- *INF*: v_pos_1
 	-- 
 	-- -----
@@ -820,60 +567,50 @@ EXP_Transform_Statistical_Codes AS (
 	-- 
 	-- ---- verified the logic
 	-- --- 19 spaces
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_6 || v_pos_7 || '                   ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 
-	) AS v_Stat_Codes_EQ,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_6 || v_pos_7 || '                   ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16) AS v_Stat_Codes_EQ,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 )
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 
-	) AS v_Stat_Codes_FC,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4) AS v_Stat_Codes_FC,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 
 	-- || '                  ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 )
 	-- 
 	-- ---- verified the logic
 	-- ---- 18 Spaces
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || '                  ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 
-	) AS v_Stat_Codes_FF,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || '                  ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16) AS v_Stat_Codes_FF,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5)
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 
-	) AS v_Stat_Codes_FM,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5) AS v_Stat_Codes_FM,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || '                   ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16)
 	-- 
 	-- ---- verified the logic
 	-- --- 19 spaces
 	-- 
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || '                   ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 
-	) AS v_Stat_Codes_FO,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || '                   ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16) AS v_Stat_Codes_FO,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3)
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 
-	) AS v_Stat_Codes_FP,
+	(v_pos_1 || v_pos_2 || v_pos_3) AS v_Stat_Codes_FP,
 	-- *INF*: (v_pos_1 || v_pos_2 || ' ' || v_pos_3 || '  ' || v_pos_6 || v_pos_7 || '   ' || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 ||
 	-- '       ' || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22 || '   ')
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_2 || ' ' || v_pos_3 || '  ' || v_pos_6 || v_pos_7 || '   ' || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || '       ' || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || '   ' 
-	) AS v_Stat_Codes_FT,
+	(v_pos_1 || v_pos_2 || ' ' || v_pos_3 || '  ' || v_pos_6 || v_pos_7 || '   ' || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || '       ' || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || '   ') AS v_Stat_Codes_FT,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_12 || v_pos_13 || '                '  || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9)
 	-- 
 	-- ---- verified the logic
 	-- -- 17 Spaces
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_12 || v_pos_13 || '                ' || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 
-	) AS v_Stat_Codes_GI,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_12 || v_pos_13 || '                ' || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9) AS v_Stat_Codes_GI,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_6 || v_pos_7 || v_pos_4  || v_pos_5  || v_pos_8 || v_pos_9 || v_pos_11 || v_pos_12 || '      ' || v_pos_13 || v_pos_29  || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19 ||  v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26  || v_pos_27  || v_pos_28)
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_6 || v_pos_7 || v_pos_4 || v_pos_5 || v_pos_8 || v_pos_9 || v_pos_11 || v_pos_12 || '      ' || v_pos_13 || v_pos_29 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 
-	) AS v_Stat_Codes_GL,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_6 || v_pos_7 || v_pos_4 || v_pos_5 || v_pos_8 || v_pos_9 || v_pos_11 || v_pos_12 || '      ' || v_pos_13 || v_pos_29 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28) AS v_Stat_Codes_GL,
 	-- *INF*: (v_pos_1 || '           '  ||   v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7)
 	-- 
 	-- ---- verified the logic
 	-- 
-	( v_pos_1 || '           ' || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 
-	) AS v_Stat_Codes_GP,
+	(v_pos_1 || '           ' || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7) AS v_Stat_Codes_GP,
 	-- *INF*: (v_pos_1 || '                       ' || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_11 || v_pos_12 || v_pos_13)
 	-- 
 	-- ---- verified the logic
@@ -881,272 +618,236 @@ EXP_Transform_Statistical_Codes AS (
 	-- 
 	-- 
 	-- 
-	( v_pos_1 || '                       ' || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_11 || v_pos_12 || v_pos_13 
-	) AS v_Stat_Codes_GS,
+	(v_pos_1 || '                       ' || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_11 || v_pos_12 || v_pos_13) AS v_Stat_Codes_GS,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_10 || ' ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_18  ||  v_pos_19  
 	-- || ' ' || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || '                ')
 	-- 
 	-- 
 	-- ---- verified the logic
 	-- --- 16 Spaces at the end
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_10 || ' ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_18 || v_pos_19 || ' ' || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || '                ' 
-	) AS v_Stat_Codes_HO,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_10 || ' ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_18 || v_pos_19 || ' ' || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || '                ') AS v_Stat_Codes_HO,
 	-- *INF*: ('        ' || v_pos_11 || v_pos_12 || '               '  || v_pos_4  || v_pos_5  || v_pos_6  || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_14 || v_pos_15 || v_pos_17)
 	-- 
 	-- ---- verified the logic
-	( '        ' || v_pos_11 || v_pos_12 || '               ' || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_14 || v_pos_15 || v_pos_17 
-	) AS v_Stat_Codes_IM,
+	('        ' || v_pos_11 || v_pos_12 || '               ' || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_14 || v_pos_15 || v_pos_17) AS v_Stat_Codes_IM,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  || v_pos_24  || v_pos_25  || v_pos_26 || v_pos_28  || v_pos_29  || v_pos_30 || v_pos_31 || v_pos_32  ||  v_pos_33  || v_pos_34  ||  v_pos_35)
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 
-	) AS v_Stat_Codes_JR,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35) AS v_Stat_Codes_JR,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  )
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 
-	) AS v_Stat_Codes_ME,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5) AS v_Stat_Codes_ME,
 	-- *INF*: (v_pos_1 || ' '  || v_pos_3 || v_pos_4  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_10 || ' ' ||  v_pos_11 || v_pos_12 || v_pos_13 || '  ' || v_pos_18  || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || ' ' || '                ' ) 
 	-- 
 	-- --- need logic for stat-plan -id
 	-- ---- 16 Spaces at the end
-	( v_pos_1 || ' ' || v_pos_3 || v_pos_4 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_10 || ' ' || v_pos_11 || v_pos_12 || v_pos_13 || '  ' || v_pos_18 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || ' ' || '                ' 
-	) AS v_Stat_Codes_MH,
+	(v_pos_1 || ' ' || v_pos_3 || v_pos_4 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_10 || ' ' || v_pos_11 || v_pos_12 || v_pos_13 || '  ' || v_pos_18 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || ' ' || '                ') AS v_Stat_Codes_MH,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || '                  '  || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7)
 	-- 
 	--  --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || '                  ' || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 
-	) AS v_Stat_Codes_MI,
+	(v_pos_1 || v_pos_2 || v_pos_3 || '                  ' || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7) AS v_Stat_Codes_MI,
 	-- *INF*: (v_pos_6 || v_pos_7 || v_pos_3 || v_pos_4  || v_pos_2 || '      ' || v_pos_1 || '        ' || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || ' ' ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22  ||  v_pos_23  || v_pos_24 )
 	-- 
 	--  --- verified the logic
-	( v_pos_6 || v_pos_7 || v_pos_3 || v_pos_4 || v_pos_2 || '      ' || v_pos_1 || '        ' || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || ' ' || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 
-	) AS v_Stat_Codes_ML,
+	(v_pos_6 || v_pos_7 || v_pos_3 || v_pos_4 || v_pos_2 || '      ' || v_pos_1 || '        ' || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || ' ' || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24) AS v_Stat_Codes_ML,
 	-- *INF*: -- No Stats code in the Output Copybook just the policy_type logic
 	'' AS v_Stat_Codes_MP,
 	-- *INF*: (SUBSTR(sar_class_code,1,3) || v_pos_17 || v_pos_18 ||  v_pos_19  || v_pos_1 || v_pos_2 || v_pos_3 || v_pos_20  ||  v_pos_21  ||  v_pos_22  ||  v_pos_23  || v_pos_24  || v_pos_25  || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || '   ' || '       ' || '      ' )
 	-- 
 	-- --- Need to look at complete logic
 	-- 
-	( SUBSTR(sar_class_code, 1, 3
-		) || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_1 || v_pos_2 || v_pos_3 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || '   ' || '       ' || '      ' 
-	) AS v_Stat_Codes_M2,
+	(SUBSTR(sar_class_code, 1, 3) || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_1 || v_pos_2 || v_pos_3 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || '   ' || '       ' || '      ') AS v_Stat_Codes_M2,
 	-- *INF*: ( '                 ' || v_stat_plan_id)
 	-- 
 	-- ----verified the logic
-	( '                 ' || v_stat_plan_id 
-	) AS v_Stat_Codes_NE,
+	('                 ' || v_stat_plan_id) AS v_Stat_Codes_NE,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  ||  v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_19)
 	-- 
 	-- --- Verified the Logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_19 
-	) AS v_Stat_Codes_PC,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_19) AS v_Stat_Codes_PC,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || ' ' || v_pos_19  || v_pos_20  ||  v_pos_21)
 	-- 
 	-- --- verified the logic
 	--  
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || ' ' || v_pos_19 || v_pos_20 || v_pos_21 
-	) AS v_Stat_Codes_PH,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || ' ' || v_pos_19 || v_pos_20 || v_pos_21) AS v_Stat_Codes_PH,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22  ||  v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26  || v_pos_27  || v_pos_28  || v_pos_29  || v_pos_30  || v_pos_31 || v_pos_32  ||  v_pos_33  || v_pos_34  ||  v_pos_35  || v_pos_36 || v_pos_37  || v_pos_38)
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36 || v_pos_37 || v_pos_38 
-	) AS v_Stat_Code_PF,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36 || v_pos_37 || v_pos_38) AS v_Stat_Code_PF,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22  ||  v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26  || v_pos_27  || v_pos_28  || v_pos_29  || v_pos_30  || v_pos_31 || v_pos_32  ||  v_pos_33  || v_pos_34  ||  v_pos_35  || v_pos_36 || v_pos_37  || v_pos_38)
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36 || v_pos_37 || v_pos_38 
-	) AS v_Stat_Code_PI,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36 || v_pos_37 || v_pos_38) AS v_Stat_Code_PI,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22  ||  v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26  || v_pos_27  || v_pos_28  || v_pos_29  || v_pos_30  || v_pos_31 || v_pos_32  ||  v_pos_33  || v_pos_34  ||  v_pos_35  || v_pos_36 || v_pos_37  || v_pos_38)
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36 || v_pos_37 || v_pos_38 
-	) AS v_Stat_Code_PL,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36 || v_pos_37 || v_pos_38) AS v_Stat_Code_PL,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 ||  v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18)
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 
-	) AS v_Stat_Codes_PM,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18) AS v_Stat_Codes_PM,
 	-- *INF*: (v_pos_1 || v_pos_2)
 	-- 
 	-- --- verified the logic
 	-- 
-	( v_pos_1 || v_pos_2 
-	) AS v_Stat_Codes_RB,
+	(v_pos_1 || v_pos_2) AS v_Stat_Codes_RB,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3)
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 
-	) AS v_Stat_Codes_RG,
+	(v_pos_1 || v_pos_2 || v_pos_3) AS v_Stat_Codes_RG,
 	-- *INF*: (v_pos_1 || v_pos_2)
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 
-	) AS v_Stat_Codes_RI,
+	(v_pos_1 || v_pos_2) AS v_Stat_Codes_RI,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22  ||  v_pos_23  || v_pos_24)
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 
-	) AS v_Stat_Codes_RL,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24) AS v_Stat_Codes_RL,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_8 || v_pos_9 || v_pos_10)
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_8 || v_pos_9 || v_pos_10 
-	) AS v_Stat_Codes_RM,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_8 || v_pos_9 || v_pos_10) AS v_Stat_Codes_RM,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || ' ' || 
 	-- v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21 || v_pos_22 ||  v_pos_23  || v_pos_24)
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || ' ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 
-	) AS v_Stat_Codes_RN,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || ' ' || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24) AS v_Stat_Codes_RN,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22  ||  v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26  || v_pos_27  || v_pos_28  || v_pos_29 || v_pos_30 || v_pos_31|| v_pos_33 || v_pos_34  ||  v_pos_35  || v_pos_32)
 	-- 
 	-- ----
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_32 
-	) AS v_Stat_Codes_RP,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_32) AS v_Stat_Codes_RP,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5 )
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 
-	) AS v_Stat_Codes_RQ,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5) AS v_Stat_Codes_RQ,
 	-- *INF*: (v_pos_1 || ' ' || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 )
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || ' ' || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 
-	) AS v_Stat_Codes_SM,
+	(v_pos_1 || ' ' || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8) AS v_Stat_Codes_SM,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_6 || v_pos_8 || v_pos_11 || v_pos_9)
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_6 || v_pos_8 || v_pos_11 || v_pos_9 
-	) AS v_Stat_Codes_TH,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_6 || v_pos_8 || v_pos_11 || v_pos_9) AS v_Stat_Codes_TH,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 
 	-- || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19
 	-- ||  v_pos_22  ||  v_pos_23  || v_pos_24 || '       ' || v_pos_32  ||  v_pos_33  || v_pos_34  ||  v_pos_35  || v_pos_36)
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_22 || v_pos_23 || v_pos_24 || '       ' || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36 
-	) AS v_Stat_Codes_VL,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_22 || v_pos_23 || v_pos_24 || '       ' || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36) AS v_Stat_Codes_VL,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19 
 	--  ||  v_pos_22  ||  v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26  || v_pos_27  || v_pos_28  || v_pos_29  || v_pos_30 || ' ' || v_pos_32  ||  v_pos_33
 	-- || v_pos_34  ||  v_pos_35  || v_pos_36 )
 	-- 
 	-- --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || ' ' || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36 
-	) AS v_Stat_Codes_VP,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || ' ' || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36) AS v_Stat_Codes_VP,
 	-- *INF*: ('   ' || v_pos_4  || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12  || ' ' || v_pos_14 || v_pos_15 || '              ' 
 	-- || v_pos_31 || v_pos_32  ||  v_pos_33  || v_pos_34 || v_pos_35)
 	-- 
 	-- --- verified the logic
-	( '   ' || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || ' ' || v_pos_14 || v_pos_15 || '              ' || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 
-	) AS v_Stat_Codes_VN,
+	('   ' || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || ' ' || v_pos_14 || v_pos_15 || '              ' || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35) AS v_Stat_Codes_VN,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22  ||  v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26  
 	-- || ' ' || v_pos_28  || v_pos_29  || v_pos_30  || v_pos_31 || '    ' || v_pos_36 || v_pos_37  || v_pos_38)
 	-- 
 	-- ---- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || ' ' || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || '    ' || v_pos_36 || v_pos_37 || v_pos_38 
-	) AS v_Stat_Codes_VC,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || ' ' || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || '    ' || v_pos_36 || v_pos_37 || v_pos_38) AS v_Stat_Codes_VC,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22  ||  v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26  || v_pos_27  || v_pos_28  || v_pos_29  || v_pos_30  || v_pos_31)
 	-- 
 	--  --- verified the logic
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 
-	) AS v_Stat_Codes_WC,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31) AS v_Stat_Codes_WC,
 	-- *INF*: (v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4  || v_pos_5  || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18  ||  v_pos_19  || v_pos_20  ||  v_pos_21  ||  v_pos_22  ||  v_pos_23  || v_pos_24  || v_pos_25  || v_pos_26  || v_pos_27  || v_pos_28  || v_pos_29  || v_pos_30  || v_pos_31 || v_pos_32  ||  v_pos_33  || v_pos_34  ||  v_pos_35  || v_pos_36 || v_pos_37  || v_pos_38)
-	( v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36 || v_pos_37 || v_pos_38 
-	) AS v_Stat_Code_WP,
+	(v_pos_1 || v_pos_2 || v_pos_3 || v_pos_4 || v_pos_5 || v_pos_6 || v_pos_7 || v_pos_8 || v_pos_9 || v_pos_10 || v_pos_11 || v_pos_12 || v_pos_13 || v_pos_14 || v_pos_15 || v_pos_16 || v_pos_17 || v_pos_18 || v_pos_19 || v_pos_20 || v_pos_21 || v_pos_22 || v_pos_23 || v_pos_24 || v_pos_25 || v_pos_26 || v_pos_27 || v_pos_28 || v_pos_29 || v_pos_30 || v_pos_31 || v_pos_32 || v_pos_33 || v_pos_34 || v_pos_35 || v_pos_36 || v_pos_37 || v_pos_38) AS v_Stat_Code_WP,
 	-- *INF*: ('   ' || v_pos_1 || v_pos_2 || '            ' || v_stat_plan_id)
 	-- 
 	-- --8/19/2011 Added v_stat_plan_id
 	-- --- need to bring stat plan_id
 	--  --- verified the logic but need stat plan id
 	-- 
-	( '   ' || v_pos_1 || v_pos_2 || '            ' || v_stat_plan_id 
-	) AS v_Stat_Codes_WL,
+	('   ' || v_pos_1 || v_pos_2 || '            ' || v_stat_plan_id) AS v_Stat_Codes_WL,
 	-- *INF*: DECODE(Type_Bureau, 'AC', v_Stat_Code_AC, 'AI', v_Stat_Codes_AI, 'AL', v_Stat_Codes_AL, 'AN', v_Stat_Codes_AN, 'AP', v_Stat_Codes_AP, 'A2', v_Stat_Codes_A2, 'A3', v_Stat_Codes_A3, 'BB', v_Stat_Codes_BB, 'BC', v_Stat_Codes_BC, 'BD', v_Stat_Codes_BD, 'BE', v_Stat_Codes_BE, 'BF', v_Stat_Codes_BF, 'BP', v_Stat_Codes_BP, 'BI', v_Stat_Codes_BI, 'BL', v_Stat_Codes_BL, 'BM', v_Stat_Codes_BM, 'BT', v_Stat_Codes_BT, 'B2', v_Stat_Codes_B2, 'CC', v_Stat_Codes_CC, 'CF', v_Stat_Codes_CF, 'CI', v_Stat_Codes_CI, 'CL', v_Stat_Codes_CL, 'CN', v_Stat_Codes_CN, 'CP', v_Stat_Codes_CP, 'EI', v_Stat_Codes_EI, 'EQ', v_Stat_Codes_EQ, 'FC', v_Stat_Codes_FC, 'FF', v_Stat_Codes_FF, 'FM', v_Stat_Codes_FM, 'FO', v_Stat_Codes_FO, 'FP', v_Stat_Codes_FP, 'FT', v_Stat_Codes_FT, 'GI', v_Stat_Codes_GI, 'GL', v_Stat_Codes_GL, 'GP', v_Stat_Codes_GP, 'GS', v_Stat_Codes_GS, 'HO', v_Stat_Codes_HO, 'IM', v_Stat_Codes_IM, 'JR', v_Stat_Codes_JR, 'ME', v_Stat_Codes_ME, 'MH', v_Stat_Codes_MH, 'MI', v_Stat_Codes_MI, 'ML',
 	-- v_Stat_Codes_ML, 'MP', v_Stat_Codes_MP, 'M2', v_Stat_Codes_M2, 'NE', v_Stat_Codes_NE, 'PC', v_Stat_Codes_PC, 'PH', v_Stat_Codes_PH, 'PM', v_Stat_Codes_PM, 'RB', v_Stat_Codes_RB, 'RG', v_Stat_Codes_RG, 'RI', v_Stat_Codes_RI, 'RL', v_Stat_Codes_RL, 'RM', v_Stat_Codes_RM, 'RN', v_Stat_Codes_RN, 'RP', v_Stat_Codes_RP, 'RQ', v_Stat_Codes_RQ, 'SM', v_Stat_Codes_SM, 'TH', v_Stat_Codes_TH, 'VL', v_Stat_Codes_VL, 'VP', v_Stat_Codes_VP, 'VN', v_Stat_Codes_VN, 'VC', v_Stat_Codes_VC, 'WC', v_Stat_Codes_WC, 'WL', v_Stat_Codes_WL,
 	-- 'CR', v_Stat_Code_CR, 'PF', v_Stat_Code_PF,'PI', v_Stat_Code_PI, 'PL', v_Stat_Code_PL,
 	-- 'WP', v_Stat_Code_WP,v_statistical_code) 
-	DECODE(Type_Bureau,
-		'AC', v_Stat_Code_AC,
-		'AI', v_Stat_Codes_AI,
-		'AL', v_Stat_Codes_AL,
-		'AN', v_Stat_Codes_AN,
-		'AP', v_Stat_Codes_AP,
-		'A2', v_Stat_Codes_A2,
-		'A3', v_Stat_Codes_A3,
-		'BB', v_Stat_Codes_BB,
-		'BC', v_Stat_Codes_BC,
-		'BD', v_Stat_Codes_BD,
-		'BE', v_Stat_Codes_BE,
-		'BF', v_Stat_Codes_BF,
-		'BP', v_Stat_Codes_BP,
-		'BI', v_Stat_Codes_BI,
-		'BL', v_Stat_Codes_BL,
-		'BM', v_Stat_Codes_BM,
-		'BT', v_Stat_Codes_BT,
-		'B2', v_Stat_Codes_B2,
-		'CC', v_Stat_Codes_CC,
-		'CF', v_Stat_Codes_CF,
-		'CI', v_Stat_Codes_CI,
-		'CL', v_Stat_Codes_CL,
-		'CN', v_Stat_Codes_CN,
-		'CP', v_Stat_Codes_CP,
-		'EI', v_Stat_Codes_EI,
-		'EQ', v_Stat_Codes_EQ,
-		'FC', v_Stat_Codes_FC,
-		'FF', v_Stat_Codes_FF,
-		'FM', v_Stat_Codes_FM,
-		'FO', v_Stat_Codes_FO,
-		'FP', v_Stat_Codes_FP,
-		'FT', v_Stat_Codes_FT,
-		'GI', v_Stat_Codes_GI,
-		'GL', v_Stat_Codes_GL,
-		'GP', v_Stat_Codes_GP,
-		'GS', v_Stat_Codes_GS,
-		'HO', v_Stat_Codes_HO,
-		'IM', v_Stat_Codes_IM,
-		'JR', v_Stat_Codes_JR,
-		'ME', v_Stat_Codes_ME,
-		'MH', v_Stat_Codes_MH,
-		'MI', v_Stat_Codes_MI,
-		'ML', v_Stat_Codes_ML,
-		'MP', v_Stat_Codes_MP,
-		'M2', v_Stat_Codes_M2,
-		'NE', v_Stat_Codes_NE,
-		'PC', v_Stat_Codes_PC,
-		'PH', v_Stat_Codes_PH,
-		'PM', v_Stat_Codes_PM,
-		'RB', v_Stat_Codes_RB,
-		'RG', v_Stat_Codes_RG,
-		'RI', v_Stat_Codes_RI,
-		'RL', v_Stat_Codes_RL,
-		'RM', v_Stat_Codes_RM,
-		'RN', v_Stat_Codes_RN,
-		'RP', v_Stat_Codes_RP,
-		'RQ', v_Stat_Codes_RQ,
-		'SM', v_Stat_Codes_SM,
-		'TH', v_Stat_Codes_TH,
-		'VL', v_Stat_Codes_VL,
-		'VP', v_Stat_Codes_VP,
-		'VN', v_Stat_Codes_VN,
-		'VC', v_Stat_Codes_VC,
-		'WC', v_Stat_Codes_WC,
-		'WL', v_Stat_Codes_WL,
-		'CR', v_Stat_Code_CR,
-		'PF', v_Stat_Code_PF,
-		'PI', v_Stat_Code_PI,
-		'PL', v_Stat_Code_PL,
-		'WP', v_Stat_Code_WP,
-		v_statistical_code
+	DECODE(
+	    Type_Bureau,
+	    'AC', v_Stat_Code_AC,
+	    'AI', v_Stat_Codes_AI,
+	    'AL', v_Stat_Codes_AL,
+	    'AN', v_Stat_Codes_AN,
+	    'AP', v_Stat_Codes_AP,
+	    'A2', v_Stat_Codes_A2,
+	    'A3', v_Stat_Codes_A3,
+	    'BB', v_Stat_Codes_BB,
+	    'BC', v_Stat_Codes_BC,
+	    'BD', v_Stat_Codes_BD,
+	    'BE', v_Stat_Codes_BE,
+	    'BF', v_Stat_Codes_BF,
+	    'BP', v_Stat_Codes_BP,
+	    'BI', v_Stat_Codes_BI,
+	    'BL', v_Stat_Codes_BL,
+	    'BM', v_Stat_Codes_BM,
+	    'BT', v_Stat_Codes_BT,
+	    'B2', v_Stat_Codes_B2,
+	    'CC', v_Stat_Codes_CC,
+	    'CF', v_Stat_Codes_CF,
+	    'CI', v_Stat_Codes_CI,
+	    'CL', v_Stat_Codes_CL,
+	    'CN', v_Stat_Codes_CN,
+	    'CP', v_Stat_Codes_CP,
+	    'EI', v_Stat_Codes_EI,
+	    'EQ', v_Stat_Codes_EQ,
+	    'FC', v_Stat_Codes_FC,
+	    'FF', v_Stat_Codes_FF,
+	    'FM', v_Stat_Codes_FM,
+	    'FO', v_Stat_Codes_FO,
+	    'FP', v_Stat_Codes_FP,
+	    'FT', v_Stat_Codes_FT,
+	    'GI', v_Stat_Codes_GI,
+	    'GL', v_Stat_Codes_GL,
+	    'GP', v_Stat_Codes_GP,
+	    'GS', v_Stat_Codes_GS,
+	    'HO', v_Stat_Codes_HO,
+	    'IM', v_Stat_Codes_IM,
+	    'JR', v_Stat_Codes_JR,
+	    'ME', v_Stat_Codes_ME,
+	    'MH', v_Stat_Codes_MH,
+	    'MI', v_Stat_Codes_MI,
+	    'ML', v_Stat_Codes_ML,
+	    'MP', v_Stat_Codes_MP,
+	    'M2', v_Stat_Codes_M2,
+	    'NE', v_Stat_Codes_NE,
+	    'PC', v_Stat_Codes_PC,
+	    'PH', v_Stat_Codes_PH,
+	    'PM', v_Stat_Codes_PM,
+	    'RB', v_Stat_Codes_RB,
+	    'RG', v_Stat_Codes_RG,
+	    'RI', v_Stat_Codes_RI,
+	    'RL', v_Stat_Codes_RL,
+	    'RM', v_Stat_Codes_RM,
+	    'RN', v_Stat_Codes_RN,
+	    'RP', v_Stat_Codes_RP,
+	    'RQ', v_Stat_Codes_RQ,
+	    'SM', v_Stat_Codes_SM,
+	    'TH', v_Stat_Codes_TH,
+	    'VL', v_Stat_Codes_VL,
+	    'VP', v_Stat_Codes_VP,
+	    'VN', v_Stat_Codes_VN,
+	    'VC', v_Stat_Codes_VC,
+	    'WC', v_Stat_Codes_WC,
+	    'WL', v_Stat_Codes_WL,
+	    'CR', v_Stat_Code_CR,
+	    'PF', v_Stat_Code_PF,
+	    'PI', v_Stat_Code_PI,
+	    'PL', v_Stat_Code_PL,
+	    'WP', v_Stat_Code_WP,
+	    v_statistical_code
 	) AS V_Formatted_Stat_Codes,
 	-- *INF*: SUBSTR(V_Formatted_Stat_Codes,1,25)
-	SUBSTR(V_Formatted_Stat_Codes, 1, 25
-	) AS Formatted_Stat_Codes,
+	SUBSTR(V_Formatted_Stat_Codes, 1, 25) AS Formatted_Stat_Codes,
 	-- *INF*: SUBSTR(V_Formatted_Stat_Codes,26,9)
-	SUBSTR(V_Formatted_Stat_Codes, 26, 9
-	) AS Formatted_Stat_Codes_26_34,
+	SUBSTR(V_Formatted_Stat_Codes, 26, 9) AS Formatted_Stat_Codes_26_34,
 	-- *INF*: SUBSTR(V_Formatted_Stat_Codes,35,4)
-	SUBSTR(V_Formatted_Stat_Codes, 35, 4
-	) AS Formatted_Stat_Codes_34_38,
+	SUBSTR(V_Formatted_Stat_Codes, 35, 4) AS Formatted_Stat_Codes_34_38,
 	-- *INF*: DECODE(Type_Bureau,'AI', (v_pos_11 || v_pos_12),
 	-- 'AL', (v_pos_15  ||  v_pos_16),
 	-- 'AN',(v_pos_12 || v_pos_13),
@@ -1190,113 +891,77 @@ EXP_Transform_Statistical_Codes AS (
 	-- 
 	-- 
 	-- 
-	DECODE(Type_Bureau,
-		'AI', ( v_pos_11 || v_pos_12 
-		),
-		'AL', ( v_pos_15 || v_pos_16 
-		),
-		'AN', ( v_pos_12 || v_pos_13 
-		),
-		'AP', ( v_pos_12 || v_pos_13 
-		),
-		'A2', ( v_pos_8 || v_pos_9 
-		),
-		'A3', ( v_pos_8 || v_pos_9 
-		),
-		'BB', ( v_pos_20 || v_pos_21 
-		),
-		'BC', ( v_pos_18 || v_pos_19 
-		),
-		'BE', ( v_pos_4 || v_pos_5 
-		),
-		'BF', ( v_pos_1 || v_pos_2 
-		),
-		'BP', ( ' ' || v_pos_2 
-		),
-		'BI', ( v_pos_3 || v_pos_4 
-		),
-		'BL', ( v_pos_3 || v_pos_4 
-		),
-		'BM', ( v_pos_20 || v_pos_21 
-		),
-		'BT', ( v_pos_11 || v_pos_12 
-		),
-		'B2', ( v_pos_14 || v_pos_15 
-		),
-		'CF', ( v_pos_8 || v_pos_9 
-		),
-		'CI', ( v_pos_3 || v_pos_4 
-		),
-		'CN', ( v_pos_1 || v_pos_2 
-		),
-		'CP', ( v_pos_3 || v_pos_4 
-		),
-		'EI', ( v_pos_2 || v_pos_3 
-		),
-		'EQ', ( v_pos_8 || v_pos_9 
-		),
-		'FF', ( v_pos_8 || v_pos_9 
-		),
-		'FI', ( v_pos_1 || v_pos_2 
-		),
-		'FM', ( v_pos_6 || v_pos_7 
-		),
-		'FO', ( v_pos_8 || v_pos_9 
-		),
-		'FP', ( v_pos_2 || v_pos_3 
-		),
-		'FT', ( v_pos_4 || v_pos_5 
-		),
-		'GI', ( v_pos_10 || v_pos_11 
-		),
-		'GL', ( v_pos_20 || v_pos_21 
-		),
-		'GM', ( v_pos_1 || v_pos_2 
-		),
-		'GP', ( v_pos_8 || v_pos_9 
-		),
-		'GS', ( v_pos_3 || v_pos_4 
-		),
-		'II', ( v_pos_1 || v_pos_2 
-		),
-		'IM', ( v_pos_1 || v_pos_2 
-		),
-		'MI', ( v_pos_10 || v_pos_11 
-		),
-		'ML', ( v_pos_16 || v_pos_17 
-		),
-		'MP', ( v_pos_1 || v_pos_2 
-		),
-		'M2', ( v_pos_15 || v_pos_16 
-		),
-		'  '
+	DECODE(
+	    Type_Bureau,
+	    'AI', (v_pos_11 || v_pos_12),
+	    'AL', (v_pos_15 || v_pos_16),
+	    'AN', (v_pos_12 || v_pos_13),
+	    'AP', (v_pos_12 || v_pos_13),
+	    'A2', (v_pos_8 || v_pos_9),
+	    'A3', (v_pos_8 || v_pos_9),
+	    'BB', (v_pos_20 || v_pos_21),
+	    'BC', (v_pos_18 || v_pos_19),
+	    'BE', (v_pos_4 || v_pos_5),
+	    'BF', (v_pos_1 || v_pos_2),
+	    'BP', (' ' || v_pos_2),
+	    'BI', (v_pos_3 || v_pos_4),
+	    'BL', (v_pos_3 || v_pos_4),
+	    'BM', (v_pos_20 || v_pos_21),
+	    'BT', (v_pos_11 || v_pos_12),
+	    'B2', (v_pos_14 || v_pos_15),
+	    'CF', (v_pos_8 || v_pos_9),
+	    'CI', (v_pos_3 || v_pos_4),
+	    'CN', (v_pos_1 || v_pos_2),
+	    'CP', (v_pos_3 || v_pos_4),
+	    'EI', (v_pos_2 || v_pos_3),
+	    'EQ', (v_pos_8 || v_pos_9),
+	    'FF', (v_pos_8 || v_pos_9),
+	    'FI', (v_pos_1 || v_pos_2),
+	    'FM', (v_pos_6 || v_pos_7),
+	    'FO', (v_pos_8 || v_pos_9),
+	    'FP', (v_pos_2 || v_pos_3),
+	    'FT', (v_pos_4 || v_pos_5),
+	    'GI', (v_pos_10 || v_pos_11),
+	    'GL', (v_pos_20 || v_pos_21),
+	    'GM', (v_pos_1 || v_pos_2),
+	    'GP', (v_pos_8 || v_pos_9),
+	    'GS', (v_pos_3 || v_pos_4),
+	    'II', (v_pos_1 || v_pos_2),
+	    'IM', (v_pos_1 || v_pos_2),
+	    'MI', (v_pos_10 || v_pos_11),
+	    'ML', (v_pos_16 || v_pos_17),
+	    'MP', (v_pos_1 || v_pos_2),
+	    'M2', (v_pos_15 || v_pos_16),
+	    '  '
 	) AS V_Policy_Type,
 	V_Policy_Type AS Policy_Type,
 	-- *INF*: SUBSTR(sar_class_code,1,3)
-	SUBSTR(sar_class_code, 1, 3
-	) AS v_sar_class_3,
+	SUBSTR(sar_class_code, 1, 3) AS v_sar_class_3,
 	-- *INF*: DECODE(TRUE,
 	-- IN (Type_Bureau,'BP','FP','BF','FT'),V_Policy_Type)
-	DECODE(TRUE,
-		Type_Bureau IN ('BP','FP','BF','FT'), V_Policy_Type
+	DECODE(
+	    TRUE,
+	    Type_Bureau IN ('BP','FP','BF','FT'), V_Policy_Type
 	) AS v_type_policy_45,
 	-- *INF*: DECODE(TRUE,
 	-- Type_Bureau='BP',v_pos_2,
 	-- Type_Bureau='BF',v_pos_2,
 	-- Type_Bureau='FP',' ',
 	-- Type_Bureau='FT',' '  )
-	DECODE(TRUE,
-		Type_Bureau = 'BP', v_pos_2,
-		Type_Bureau = 'BF', v_pos_2,
-		Type_Bureau = 'FP', ' ',
-		Type_Bureau = 'FT', ' '
+	DECODE(
+	    TRUE,
+	    Type_Bureau = 'BP', v_pos_2,
+	    Type_Bureau = 'BF', v_pos_2,
+	    Type_Bureau = 'FP', ' ',
+	    Type_Bureau = 'FT', ' '
 	) AS v_type_of_bond_6,
 	-- *INF*: DECODE(TRUE,
 	--  IN(Type_Bureau,'BP','BF','FP','FT'),v_sar_class_3  || v_type_policy_45 || v_type_of_bond_6,
 	-- sar_class_code)
-	DECODE(TRUE,
-		Type_Bureau IN ('BP','BF','FP','FT'), v_sar_class_3 || v_type_policy_45 || v_type_of_bond_6,
-		sar_class_code
+	DECODE(
+	    TRUE,
+	    Type_Bureau IN ('BP','BF','FP','FT'), v_sar_class_3 || v_type_policy_45 || v_type_of_bond_6,
+	    sar_class_code
 	) AS v_hold_sar_class_code,
 	v_hold_sar_class_code AS sar_class_code_out
 	FROM EXP_source_temp_policy_transaction
@@ -1313,11 +978,7 @@ EXP_pre_join AS (
 	EXP_source_temp_policy_transaction.risk_unit_seq_num,
 	-- *INF*: IIF(risk_unit_seq_num='N/A',risk_unit_seq_num,substr(risk_unit_seq_num,1,1))
 	-- -- when comparing to claimant coverage detail we can only match on a single length value.
-	IFF(risk_unit_seq_num = 'N/A',
-		risk_unit_seq_num,
-		substr(risk_unit_seq_num, 1, 1
-		)
-	) AS risk_unit_seq_num_out,
+	IFF(risk_unit_seq_num = 'N/A', risk_unit_seq_num, substr(risk_unit_seq_num, 1, 1)) AS risk_unit_seq_num_out,
 	EXP_source_temp_policy_transaction.major_peril_code_out AS major_peril_code,
 	EXP_source_temp_policy_transaction.major_peril_seq_num,
 	EXP_source_temp_policy_transaction.risk_state_prov_code_out AS risk_state_prov_code,
@@ -1330,14 +991,12 @@ EXP_pre_join AS (
 	-- IS_SPACES(class_code),'N/A',
 	-- LENGTH(class_code)=0,'N/A',
 	-- LTRIM(RTRIM(class_code)))
-	DECODE(TRUE,
-		class_code IS NULL, 'N/A',
-		LENGTH(class_code)>0 AND TRIM(class_code)='', 'N/A',
-		LENGTH(class_code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(class_code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    class_code IS NULL, 'N/A',
+	    LENGTH(class_code)>0 AND TRIM(class_code)='', 'N/A',
+	    LENGTH(class_code) = 0, 'N/A',
+	    LTRIM(RTRIM(class_code))
 	) AS class_code_out,
 	EXP_source_temp_policy_transaction.exposure,
 	EXP_source_temp_policy_transaction.sub_line_code_out AS sub_line_code,
@@ -1352,12 +1011,13 @@ EXP_pre_join AS (
 	-- 
 	-- --- Previously we were using User Defined function but in the user defined function we have a LTRIM, RTRIM which we dont want to do as we want to preserve the spaces since these fields are used for IBS Bureau Reporting.
 	-- 
-	IFF(Formatted_Stat_Codes IS NULL 
-		OR LENGTH(Formatted_Stat_Codes)>0 AND TRIM(Formatted_Stat_Codes)='' 
-		OR LENGTH(Formatted_Stat_Codes
-		) = 0,
-		'N/A',
-		Formatted_Stat_Codes
+	IFF(
+	    Formatted_Stat_Codes IS NULL
+	    or LENGTH(Formatted_Stat_Codes)>0
+	    and TRIM(Formatted_Stat_Codes)=''
+	    or LENGTH(Formatted_Stat_Codes) = 0,
+	    'N/A',
+	    Formatted_Stat_Codes
 	) AS statistical_code_1,
 	EXP_Transform_Statistical_Codes.Formatted_Stat_Codes_26_34,
 	-- *INF*: IIF(ISNULL(Formatted_Stat_Codes_26_34) OR IS_SPACES(Formatted_Stat_Codes_26_34) OR LENGTH(Formatted_Stat_Codes_26_34) = 0 , 'N/A', Formatted_Stat_Codes_26_34)
@@ -1366,12 +1026,13 @@ EXP_pre_join AS (
 	-- --:UDF.DEFAULT_VALUE_FOR_STRINGS(Formatted_Stat_Codes_26_34)
 	-- 
 	-- --- Previously we were using User Defined function but in the user defined function we have a LTRIM, RTRIM which we dont want to do as we want to preserve the spaces since these fields are used for IBS Bureau Reporting.
-	IFF(Formatted_Stat_Codes_26_34 IS NULL 
-		OR LENGTH(Formatted_Stat_Codes_26_34)>0 AND TRIM(Formatted_Stat_Codes_26_34)='' 
-		OR LENGTH(Formatted_Stat_Codes_26_34
-		) = 0,
-		'N/A',
-		Formatted_Stat_Codes_26_34
+	IFF(
+	    Formatted_Stat_Codes_26_34 IS NULL
+	    or LENGTH(Formatted_Stat_Codes_26_34)>0
+	    and TRIM(Formatted_Stat_Codes_26_34)=''
+	    or LENGTH(Formatted_Stat_Codes_26_34) = 0,
+	    'N/A',
+	    Formatted_Stat_Codes_26_34
 	) AS statistical_code_2,
 	EXP_Transform_Statistical_Codes.Formatted_Stat_Codes_34_38,
 	-- *INF*: IIF(ISNULL(Formatted_Stat_Codes_34_38) OR IS_SPACES(Formatted_Stat_Codes_34_38) OR LENGTH(Formatted_Stat_Codes_34_38) = 0 , 'N/A', Formatted_Stat_Codes_34_38)
@@ -1379,12 +1040,13 @@ EXP_pre_join AS (
 	-- ---:UDF.DEFAULT_VALUE_FOR_STRINGS(Formatted_Stat_Codes_34_38)
 	-- 
 	-- --- Previously we were using User Defined function but in the user defined function we have a LTRIM, RTRIM which we dont want to do as we want to preserve the spaces since these fields are used for IBS Bureau Reporting.
-	IFF(Formatted_Stat_Codes_34_38 IS NULL 
-		OR LENGTH(Formatted_Stat_Codes_34_38)>0 AND TRIM(Formatted_Stat_Codes_34_38)='' 
-		OR LENGTH(Formatted_Stat_Codes_34_38
-		) = 0,
-		'N/A',
-		Formatted_Stat_Codes_34_38
+	IFF(
+	    Formatted_Stat_Codes_34_38 IS NULL
+	    or LENGTH(Formatted_Stat_Codes_34_38)>0
+	    and TRIM(Formatted_Stat_Codes_34_38)=''
+	    or LENGTH(Formatted_Stat_Codes_34_38) = 0,
+	    'N/A',
+	    Formatted_Stat_Codes_34_38
 	) AS statistical_code_3,
 	EXP_source_temp_policy_transaction.type_bureau_out AS type_bureau,
 	EXP_source_temp_policy_transaction.variation_code_Out AS variation_code,
@@ -1500,107 +1162,70 @@ EXP_converge AS (
 	SELECT
 	IN_risk_state_prov_code AS risk_state_prov_code,
 	-- *INF*: ltrim(rtrim(risk_state_prov_code))
-	ltrim(rtrim(risk_state_prov_code
-		)
-	) AS risk_state_prov_code_out,
+	ltrim(rtrim(risk_state_prov_code)) AS risk_state_prov_code_out,
 	IN_risk_zip_code AS risk_zip_code,
 	-- *INF*: rtrim(ltrim(risk_zip_code))
-	rtrim(ltrim(risk_zip_code
-		)
-	) AS risk_zip_code_out,
+	rtrim(ltrim(risk_zip_code)) AS risk_zip_code_out,
 	IN_terr_code AS terr_code,
 	-- *INF*: ltrim(rtrim(terr_code))
-	ltrim(rtrim(terr_code
-		)
-	) AS terr_code_out,
+	ltrim(rtrim(terr_code)) AS terr_code_out,
 	IN_tax_loc AS tax_loc,
 	-- *INF*: IIF(NOT IS_NUMBER(tax_loc),'N/A',tax_loc)
 	-- 
 	-- 
 	-- ------ Using IS_NUMBER Function so that we can default (0   ) value to N/A. Do not use LTRIM, RTRIM function as we dont want spaces to be removed.
-	IFF(NOT REGEXP_LIKE(tax_loc, '^[0-9]+$'),
-		'N/A',
-		tax_loc
-	) AS tax_loc_out,
+	IFF(NOT REGEXP_LIKE(tax_loc, '^[0-9]+$'), 'N/A', tax_loc) AS tax_loc_out,
 	-- *INF*: rtrim(ltrim(tax_loc))
-	rtrim(ltrim(tax_loc
-		)
-	) AS tax_loc_lkp,
+	rtrim(ltrim(tax_loc)) AS tax_loc_lkp,
 	IN_class_code AS class_code,
 	-- *INF*: rtrim(ltrim(class_code))
-	rtrim(ltrim(class_code
-		)
-	) AS class_code_out,
+	rtrim(ltrim(class_code)) AS class_code_out,
 	IN_exposure AS exposure,
 	IN_sub_line_code AS sub_line_code,
 	-- *INF*: rtrim(ltrim(sub_line_code))
-	rtrim(ltrim(sub_line_code
-		)
-	) AS sub_line_code_out,
+	rtrim(ltrim(sub_line_code)) AS sub_line_code_out,
 	IN_source_sar_asl AS source_sar_asl,
 	-- *INF*: rtrim(ltrim(source_sar_asl))
-	rtrim(ltrim(source_sar_asl
-		)
-	) AS source_sar_asl_out,
+	rtrim(ltrim(source_sar_asl)) AS source_sar_asl_out,
 	IN_source_sar_prdct_line AS source_sar_prdct_line,
 	-- *INF*: rtrim(ltrim(source_sar_prdct_line))
-	rtrim(ltrim(source_sar_prdct_line
-		)
-	) AS source_sar_prdct_line_out,
+	rtrim(ltrim(source_sar_prdct_line)) AS source_sar_prdct_line_out,
 	IN_source_sar_sp_use_code AS source_sar_sp_use_code,
 	-- *INF*: rtrim(ltrim(source_sar_sp_use_code))
-	rtrim(ltrim(source_sar_sp_use_code
-		)
-	) AS source_sar_sp_use_code_lkp,
+	rtrim(ltrim(source_sar_sp_use_code)) AS source_sar_sp_use_code_lkp,
 	IN_auto_reins_facility_out AS auto_reins_facility,
 	-- *INF*: ltrim(rtrim(auto_reins_facility))
-	ltrim(rtrim(auto_reins_facility
-		)
-	) AS auto_reins_facility_out,
+	ltrim(rtrim(auto_reins_facility)) AS auto_reins_facility_out,
 	IN_statistical_brkdwn_line AS statistical_brkdwn_line,
 	-- *INF*: rtrim(ltrim(statistical_brkdwn_line))
-	rtrim(ltrim(statistical_brkdwn_line
-		)
-	) AS statistical_brkdwn_line_out,
+	rtrim(ltrim(statistical_brkdwn_line)) AS statistical_brkdwn_line_out,
 	IN_statistical_code_1 AS statistical_code_1,
 	-- *INF*: ltrim(rtrim(statistical_code_1))
 	-- 
 	-- -- We are trimming the spaces so that we can find a match on the Target Lookup Values  
-	ltrim(rtrim(statistical_code_1
-		)
-	) AS statistical_code_1_lkp,
+	ltrim(rtrim(statistical_code_1)) AS statistical_code_1_lkp,
 	IN_statistical_code_2 AS statistical_code_2,
 	-- *INF*: ltrim(rtrim(statistical_code_2))
 	-- 
 	-- -- We are trimming the spaces so that we can find a match on the Target Lookup Values  
-	ltrim(rtrim(statistical_code_2
-		)
-	) AS statistical_code_2_lkp,
+	ltrim(rtrim(statistical_code_2)) AS statistical_code_2_lkp,
 	IN_statistical_code_3 AS statistical_code_3,
 	-- *INF*: ltrim(rtrim(statistical_code_3))
 	-- 
 	-- -- We are trimming the spaces so that we can find a match on the Target Lookup Values  
-	ltrim(rtrim(statistical_code_3
-		)
-	) AS statistical_code_3_lkp,
+	ltrim(rtrim(statistical_code_3)) AS statistical_code_3_lkp,
 	IN_variation_code AS variation_code,
 	-- *INF*: ltrim(rtrim(variation_code))
-	ltrim(rtrim(variation_code
-		)
-	) AS variation_code_out,
+	ltrim(rtrim(variation_code)) AS variation_code_out,
 	IN_statistical_line AS source_statistical_line,
 	-- *INF*: ltrim(rtrim(source_statistical_line))
-	ltrim(rtrim(source_statistical_line
-		)
-	) AS source_statistical_line_out,
+	ltrim(rtrim(source_statistical_line)) AS source_statistical_line_out,
 	IN_Policy_Type AS Policy_Type,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(Policy_Type)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(Policy_Type
-	) AS policy_type_lkp,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(Policy_Type) AS policy_type_lkp,
 	IN_coverage_code AS coverage_code_in,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(coverage_code_in)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(coverage_code_in
-	) AS coverage_code_out
+	UDF_DEFAULT_VALUE_FOR_STRINGS(coverage_code_in) AS coverage_code_out
 	FROM AGG_post_join
 ),
 LKP_loss_master_dim AS (
@@ -1726,11 +1351,9 @@ EXP_Target1 AS (
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -2003,11 +1626,9 @@ EXP_Target11 AS (
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date

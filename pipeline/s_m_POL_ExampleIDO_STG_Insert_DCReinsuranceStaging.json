@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCReinsuranceStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCReinsuranceStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_Reinsurance AS (\n\tWITH cte_DCReinsurance(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.PolicyId, \r\n\tX.ReinsuranceId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.Type, \r\n\tX.AggregateLimit, \r\n\tX.CertificatePolicyNumber, \r\n\tX.CommissionRate, \r\n\tX.OccurrenceLimit, \r\n\tX.PercentCeded, \r\n\tX.PercentLoss, \r\n\tX.Company, \r\n\tX.CompanyNumber, \r\n\tX.EffectiveDate, \r\n\tX.ExpirationDate \r\n\tFROM\r\n\tDC_Reinsurance X\r\n\tinner join\r\n\tcte_DCReinsurance Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tPolicyId,\n\tReinsuranceId,\n\tSessionId,\n\tId,\n\tType,\n\tAggregateLimit,\n\tCertificatePolicyNumber,\n\tCommissionRate,\n\tOccurrenceLimit,\n\tPercentCeded,\n\tPercentLoss,\n\tCompany,\n\tCompanyNumber,\n\tEffectiveDate,\n\tExpirationDate,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_DC_Reinsurance\n),\nDCReinsuranceStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCReinsuranceStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCReinsuranceStaging\n\t(PolicyId, ReinsuranceId, SessionId, Id, Type, AggregateLimit, CertificatePolicyNumber, CommissionRate, OccurrenceLimit, PercentCeded, PercentLoss, Company, CompanyNumber, EffectiveDate, ExpirationDate, ExtractDate, SourceSystemId)\n\tSELECT \n\tPOLICYID, \n\tREINSURANCEID, \n\tSESSIONID, \n\tID, \n\tTYPE, \n\tAGGREGATELIMIT, \n\tCERTIFICATEPOLICYNUMBER, \n\tCOMMISSIONRATE, \n\tOCCURRENCELIMIT, \n\tPERCENTCEDED, \n\tPERCENTLOSS, \n\tCOMPANY, \n\tCOMPANYNUMBER, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

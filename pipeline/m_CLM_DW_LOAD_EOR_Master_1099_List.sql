@@ -34,126 +34,107 @@ EXP_Validate_Data AS (
 	master_1099_list_stage_id AS IN_master_1099_list_stage_id,
 	tax_id AS IN_tax_id,
 	-- *INF*: LTRIM(RTRIM(IN_tax_id))
-	LTRIM(RTRIM(IN_tax_id
-		)
-	) AS v_tax_id_1,
+	LTRIM(RTRIM(IN_tax_id)) AS v_tax_id_1,
 	-- *INF*: iif(isnull(IN_tax_id)  OR length(IN_tax_id)= 0 OR IS_SPACES(IN_tax_id), '000000000',ltrim(rtrim(IN_tax_id)) )
-	IFF(IN_tax_id IS NULL 
-		OR length(IN_tax_id
-		) = 0 
-		OR LENGTH(IN_tax_id)>0 AND TRIM(IN_tax_id)='',
-		'000000000',
-		ltrim(rtrim(IN_tax_id
-			)
-		)
+	IFF(
+	    IN_tax_id IS NULL OR length(IN_tax_id) = 0 OR LENGTH(IN_tax_id)>0 AND TRIM(IN_tax_id)='',
+	    '000000000',
+	    ltrim(rtrim(IN_tax_id))
 	) AS v_tax_id,
 	v_tax_id AS out_tax_id,
 	reportable_ind AS IN_reportable_ind,
 	-- *INF*: iif(isnull(IN_reportable_ind)  OR length(IN_reportable_ind)= 0 OR IS_SPACES(IN_reportable_ind), 'N/A',ltrim(rtrim(IN_reportable_ind)) )
-	IFF(IN_reportable_ind IS NULL 
-		OR length(IN_reportable_ind
-		) = 0 
-		OR LENGTH(IN_reportable_ind)>0 AND TRIM(IN_reportable_ind)='',
-		'N/A',
-		ltrim(rtrim(IN_reportable_ind
-			)
-		)
+	IFF(
+	    IN_reportable_ind IS NULL
+	    or length(IN_reportable_ind) = 0
+	    or LENGTH(IN_reportable_ind)>0
+	    and TRIM(IN_reportable_ind)='',
+	    'N/A',
+	    ltrim(rtrim(IN_reportable_ind))
 	) AS v_reportable_ind,
 	v_reportable_ind AS out_reportable_id,
 	tax_levy_ind AS IN_tax_levy_ind,
 	-- *INF*: iif(isnull(IN_tax_levy_ind)  OR length(IN_tax_levy_ind)= 0 OR IS_SPACES(IN_tax_levy_ind), 'N/A',ltrim(rtrim(IN_tax_levy_ind)) )
-	IFF(IN_tax_levy_ind IS NULL 
-		OR length(IN_tax_levy_ind
-		) = 0 
-		OR LENGTH(IN_tax_levy_ind)>0 AND TRIM(IN_tax_levy_ind)='',
-		'N/A',
-		ltrim(rtrim(IN_tax_levy_ind
-			)
-		)
+	IFF(
+	    IN_tax_levy_ind IS NULL
+	    or length(IN_tax_levy_ind) = 0
+	    or LENGTH(IN_tax_levy_ind)>0
+	    and TRIM(IN_tax_levy_ind)='',
+	    'N/A',
+	    ltrim(rtrim(IN_tax_levy_ind))
 	) AS v_tax_levy_ind,
 	v_tax_levy_ind AS out_v_tax_levy_ind,
 	irs_name AS IN_irs_name,
 	-- *INF*: iif(isnull(IN_irs_name)  OR length(IN_irs_name)= 0 OR IS_SPACES(IN_irs_name), 'N/A',ltrim(rtrim(IN_irs_name)) )
-	IFF(IN_irs_name IS NULL 
-		OR length(IN_irs_name
-		) = 0 
-		OR LENGTH(IN_irs_name)>0 AND TRIM(IN_irs_name)='',
-		'N/A',
-		ltrim(rtrim(IN_irs_name
-			)
-		)
+	IFF(
+	    IN_irs_name IS NULL
+	    or length(IN_irs_name) = 0
+	    or LENGTH(IN_irs_name)>0
+	    and TRIM(IN_irs_name)='',
+	    'N/A',
+	    ltrim(rtrim(IN_irs_name))
 	) AS v_irs_name,
 	v_irs_name AS out_irs_name,
 	address_line_1 AS IN_address_line_1,
 	-- *INF*: iif(isnull(IN_address_line_1)  OR length(IN_address_line_1)= 0 OR IS_SPACES(IN_address_line_1), 'N/A',ltrim(rtrim(IN_address_line_1)) )
-	IFF(IN_address_line_1 IS NULL 
-		OR length(IN_address_line_1
-		) = 0 
-		OR LENGTH(IN_address_line_1)>0 AND TRIM(IN_address_line_1)='',
-		'N/A',
-		ltrim(rtrim(IN_address_line_1
-			)
-		)
+	IFF(
+	    IN_address_line_1 IS NULL
+	    or length(IN_address_line_1) = 0
+	    or LENGTH(IN_address_line_1)>0
+	    and TRIM(IN_address_line_1)='',
+	    'N/A',
+	    ltrim(rtrim(IN_address_line_1))
 	) AS v_address_line_1,
 	v_address_line_1 AS out_address_line_1,
 	address_line_2 AS IN_address_line_2,
 	-- *INF*: iif(isnull(IN_address_line_2)  OR length(IN_address_line_2)= 0 OR IS_SPACES(IN_address_line_2), 'N/A',ltrim(rtrim(IN_address_line_2)) )
-	IFF(IN_address_line_2 IS NULL 
-		OR length(IN_address_line_2
-		) = 0 
-		OR LENGTH(IN_address_line_2)>0 AND TRIM(IN_address_line_2)='',
-		'N/A',
-		ltrim(rtrim(IN_address_line_2
-			)
-		)
+	IFF(
+	    IN_address_line_2 IS NULL
+	    or length(IN_address_line_2) = 0
+	    or LENGTH(IN_address_line_2)>0
+	    and TRIM(IN_address_line_2)='',
+	    'N/A',
+	    ltrim(rtrim(IN_address_line_2))
 	) AS v_address_line_2,
 	v_address_line_2 AS out_address_line_2,
 	city AS IN_city,
 	-- *INF*: iif(isnull(IN_city)  OR length(IN_city)= 0 OR IS_SPACES(IN_city), 'N/A',ltrim(rtrim(IN_city)) )
-	IFF(IN_city IS NULL 
-		OR length(IN_city
-		) = 0 
-		OR LENGTH(IN_city)>0 AND TRIM(IN_city)='',
-		'N/A',
-		ltrim(rtrim(IN_city
-			)
-		)
+	IFF(
+	    IN_city IS NULL OR length(IN_city) = 0 OR LENGTH(IN_city)>0 AND TRIM(IN_city)='', 'N/A',
+	    ltrim(rtrim(IN_city))
 	) AS v_city,
 	v_city AS out_city,
 	state_code AS IN_state_code,
 	-- *INF*: iif(isnull(IN_state_code)  OR length(IN_state_code)= 0 OR IS_SPACES(IN_state_code), 'N/A',ltrim(rtrim(IN_state_code)) )
-	IFF(IN_state_code IS NULL 
-		OR length(IN_state_code
-		) = 0 
-		OR LENGTH(IN_state_code)>0 AND TRIM(IN_state_code)='',
-		'N/A',
-		ltrim(rtrim(IN_state_code
-			)
-		)
+	IFF(
+	    IN_state_code IS NULL
+	    or length(IN_state_code) = 0
+	    or LENGTH(IN_state_code)>0
+	    and TRIM(IN_state_code)='',
+	    'N/A',
+	    ltrim(rtrim(IN_state_code))
 	) AS v_state_code,
 	v_state_code AS out_state_code,
 	zip_code AS IN_zip_code,
 	-- *INF*: iif(isnull(IN_zip_code)  OR length(IN_zip_code)= 0 OR IS_SPACES(IN_zip_code), 'N/A',ltrim(rtrim(IN_zip_code)) )
-	IFF(IN_zip_code IS NULL 
-		OR length(IN_zip_code
-		) = 0 
-		OR LENGTH(IN_zip_code)>0 AND TRIM(IN_zip_code)='',
-		'N/A',
-		ltrim(rtrim(IN_zip_code
-			)
-		)
+	IFF(
+	    IN_zip_code IS NULL
+	    or length(IN_zip_code) = 0
+	    or LENGTH(IN_zip_code)>0
+	    and TRIM(IN_zip_code)='',
+	    'N/A',
+	    ltrim(rtrim(IN_zip_code))
 	) AS v_zip_code,
 	v_zip_code AS out_zip_code,
 	country_code AS IN_country_code,
 	-- *INF*: iif(isnull(IN_country_code)  OR length(IN_country_code)= 0 OR IS_SPACES(IN_country_code), 'N/A',ltrim(rtrim(IN_country_code)) )
-	IFF(IN_country_code IS NULL 
-		OR length(IN_country_code
-		) = 0 
-		OR LENGTH(IN_country_code)>0 AND TRIM(IN_country_code)='',
-		'N/A',
-		ltrim(rtrim(IN_country_code
-			)
-		)
+	IFF(
+	    IN_country_code IS NULL
+	    or length(IN_country_code) = 0
+	    or LENGTH(IN_country_code)>0
+	    and TRIM(IN_country_code)='',
+	    'N/A',
+	    ltrim(rtrim(IN_country_code))
 	) AS v_country_code,
 	v_country_code AS out_country_code,
 	modified_ts AS IN_modified_ts,
@@ -162,27 +143,19 @@ EXP_Validate_Data AS (
 	search_tax_id AS IN_search_tax_id,
 	tax_id_type AS in_tax_id_type,
 	-- *INF*: iif(isnull(in_tax_id_type)  OR length(ltrim(ltrim(in_tax_id_type)))= 0 OR IS_SPACES(in_tax_id_type), '',ltrim(rtrim(in_tax_id_type)) )
-	IFF(in_tax_id_type IS NULL 
-		OR length(ltrim(ltrim(in_tax_id_type
-				)
-			)
-		) = 0 
-		OR LENGTH(in_tax_id_type)>0 AND TRIM(in_tax_id_type)='',
-		'',
-		ltrim(rtrim(in_tax_id_type
-			)
-		)
+	IFF(
+	    in_tax_id_type IS NULL
+	    or length(ltrim(ltrim(in_tax_id_type))) = 0
+	    or LENGTH(in_tax_id_type)>0
+	    and TRIM(in_tax_id_type)='',
+	    '',
+	    ltrim(rtrim(in_tax_id_type))
 	) AS tax_id_type,
 	phone AS IN_phone,
 	-- *INF*: iif(isnull(IN_phone)  OR length(IN_phone)= 0 OR IS_SPACES(IN_phone), 'N/A',ltrim(rtrim(IN_phone)) )
-	IFF(IN_phone IS NULL 
-		OR length(IN_phone
-		) = 0 
-		OR LENGTH(IN_phone)>0 AND TRIM(IN_phone)='',
-		'N/A',
-		ltrim(rtrim(IN_phone
-			)
-		)
+	IFF(
+	    IN_phone IS NULL OR length(IN_phone) = 0 OR LENGTH(IN_phone)>0 AND TRIM(IN_phone)='', 'N/A',
+	    ltrim(rtrim(IN_phone))
 	) AS v_phone,
 	v_phone AS out_phone,
 	-- *INF*: iif(SUBSTR(v_tax_id_1,3,1)='-' and INSTR(v_tax_id_1,' ')=0 and LENGTH(v_tax_id_1)=10,0,IIF(LENGTH(v_tax_id_1)=11,0,
@@ -190,43 +163,37 @@ EXP_Validate_Data AS (
 	-- 
 	-- 
 	-- 
-	IFF(SUBSTR(v_tax_id_1, 3, 1
-		) = '-' 
-		AND REGEXP_INSTR(v_tax_id_1, ' '
-		) = 0 
-		AND LENGTH(v_tax_id_1
-		) = 10,
-		0,
-		IFF(LENGTH(v_tax_id_1
-			) = 11,
-			0,
-			- 1
-		)
+	IFF(
+	    SUBSTR(v_tax_id_1, 3, 1) = '-'
+	    and REGEXP_INSTR(v_tax_id_1, ' ') = 0
+	    and LENGTH(v_tax_id_1) = 10,
+	    0,
+	    IFF(
+	        LENGTH(v_tax_id_1) = 11, 0, - 1
+	    )
 	) AS v_err_flag,
 	v_err_flag AS out_err_flag,
 	last_modified_dt AS IN_last_modified_dt,
 	irs_1099_type AS in_irs_1099_type,
 	-- *INF*: iif(isnull(in_irs_1099_type)  OR length(in_irs_1099_type)= 0 OR IS_SPACES(in_irs_1099_type), 'M',ltrim(rtrim(in_irs_1099_type)) )
-	IFF(in_irs_1099_type IS NULL 
-		OR length(in_irs_1099_type
-		) = 0 
-		OR LENGTH(in_irs_1099_type)>0 AND TRIM(in_irs_1099_type)='',
-		'M',
-		ltrim(rtrim(in_irs_1099_type
-			)
-		)
+	IFF(
+	    in_irs_1099_type IS NULL
+	    or length(in_irs_1099_type) = 0
+	    or LENGTH(in_irs_1099_type)>0
+	    and TRIM(in_irs_1099_type)='',
+	    'M',
+	    ltrim(rtrim(in_irs_1099_type))
 	) AS v_irs_1099_type,
 	v_irs_1099_type AS irs_1099_type,
 	vendor_type_cd AS in_vendor_type_cd,
 	-- *INF*: iif(isnull(in_vendor_type_cd)  OR length(in_vendor_type_cd)= 0 OR IS_SPACES(in_vendor_type_cd), 'N/A',ltrim(rtrim(in_vendor_type_cd)) )
-	IFF(in_vendor_type_cd IS NULL 
-		OR length(in_vendor_type_cd
-		) = 0 
-		OR LENGTH(in_vendor_type_cd)>0 AND TRIM(in_vendor_type_cd)='',
-		'N/A',
-		ltrim(rtrim(in_vendor_type_cd
-			)
-		)
+	IFF(
+	    in_vendor_type_cd IS NULL
+	    or length(in_vendor_type_cd) = 0
+	    or LENGTH(in_vendor_type_cd)>0
+	    and TRIM(in_vendor_type_cd)='',
+	    'N/A',
+	    ltrim(rtrim(in_vendor_type_cd))
 	) AS v_vendor_type_cd,
 	v_vendor_type_cd AS vendor_type_cd,
 	extract_date AS IN_extract_date,
@@ -236,52 +203,43 @@ EXP_Validate_Data AS (
 	-- *INF*: iif(isnull(IN_modified_ts),TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),IN_modified_ts)
 	-- 
 	-- 
-	IFF(IN_modified_ts IS NULL,
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		IN_modified_ts
+	IFF(
+	    IN_modified_ts IS NULL, TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    IN_modified_ts
 	) AS modified_ts,
 	-- *INF*: iif(isnull(IN_modified_user_id)  OR length(IN_modified_user_id)= 0 OR IS_SPACES(IN_modified_user_id), 'N/A',ltrim(rtrim(IN_modified_user_id)) )
-	IFF(IN_modified_user_id IS NULL 
-		OR length(IN_modified_user_id
-		) = 0 
-		OR LENGTH(IN_modified_user_id)>0 AND TRIM(IN_modified_user_id)='',
-		'N/A',
-		ltrim(rtrim(IN_modified_user_id
-			)
-		)
+	IFF(
+	    IN_modified_user_id IS NULL
+	    or length(IN_modified_user_id) = 0
+	    or LENGTH(IN_modified_user_id)>0
+	    and TRIM(IN_modified_user_id)='',
+	    'N/A',
+	    ltrim(rtrim(IN_modified_user_id))
 	) AS modified_user_id,
 	-- *INF*: iif(isnull(IN_notes)  OR length(IN_notes)= 0 OR IS_SPACES(IN_notes), 'N/A',ltrim(rtrim(IN_notes)) )
-	IFF(IN_notes IS NULL 
-		OR length(IN_notes
-		) = 0 
-		OR LENGTH(IN_notes)>0 AND TRIM(IN_notes)='',
-		'N/A',
-		ltrim(rtrim(IN_notes
-			)
-		)
+	IFF(
+	    IN_notes IS NULL OR length(IN_notes) = 0 OR LENGTH(IN_notes)>0 AND TRIM(IN_notes)='', 'N/A',
+	    ltrim(rtrim(IN_notes))
 	) AS notes,
 	-- *INF*: iif(isnull(IN_search_tax_id)  OR length(IN_search_tax_id)= 0 OR IS_SPACES(IN_search_tax_id), 'N/A',ltrim(rtrim(IN_search_tax_id)) )
-	IFF(IN_search_tax_id IS NULL 
-		OR length(IN_search_tax_id
-		) = 0 
-		OR LENGTH(IN_search_tax_id)>0 AND TRIM(IN_search_tax_id)='',
-		'N/A',
-		ltrim(rtrim(IN_search_tax_id
-			)
-		)
+	IFF(
+	    IN_search_tax_id IS NULL
+	    or length(IN_search_tax_id) = 0
+	    or LENGTH(IN_search_tax_id)>0
+	    and TRIM(IN_search_tax_id)='',
+	    'N/A',
+	    ltrim(rtrim(IN_search_tax_id))
 	) AS v_search_tax_id,
 	v_search_tax_id AS search_tax_id,
 	is_valid AS in_is_valid,
 	-- *INF*: IIF(isnull(in_is_valid) or length(rtrim(ltrim(in_is_valid)))=0 or IS_SPACES(in_is_valid), 'N',in_is_valid) 
-	IFF(in_is_valid IS NULL 
-		OR length(rtrim(ltrim(in_is_valid
-				)
-			)
-		) = 0 
-		OR LENGTH(in_is_valid)>0 AND TRIM(in_is_valid)='',
-		'N',
-		in_is_valid
+	IFF(
+	    in_is_valid IS NULL
+	    or length(rtrim(ltrim(in_is_valid))) = 0
+	    or LENGTH(in_is_valid)>0
+	    and TRIM(in_is_valid)='',
+	    'N',
+	    in_is_valid
 	) AS is_valid
 	FROM SQ_master_1099_list_stage
 ),
@@ -396,11 +354,12 @@ EXP_detect_changes AS (
 	-- 0)
 	-- 
 	-- -- bit types seem to be randomly converted to either integers or strings in informatica so allowances have to be made when trying to do comparisons.
-	DECODE(true,
-		LKP_crrnt_snpsht_flag1 = 'T', 1,
-		LKP_crrnt_snpsht_flag1 = '1', 1,
-		LKP_crrnt_snpsht_flag1 = 'Y', 1,
-		0
+	DECODE(
+	    true,
+	    LKP_crrnt_snpsht_flag1 = 'T', 1,
+	    LKP_crrnt_snpsht_flag1 = '1', 1,
+	    LKP_crrnt_snpsht_flag1 = 'Y', 1,
+	    0
 	) AS v_LKP_crrnt_snpsht_flag1,
 	LKP_claim_master_1099_list.audit_id AS LKP_audit_id1,
 	LKP_claim_master_1099_list.eff_from_date AS LKP_eff_from_date1,
@@ -425,10 +384,7 @@ EXP_detect_changes AS (
 	FIL_keep_conditions.vendor_type_cd,
 	FIL_keep_conditions.is_valid,
 	-- *INF*: IIF(is_valid='Y',1,0)
-	IFF(is_valid = 'Y',
-		1,
-		0
-	) AS v_crrnt_snpsht_flag,
+	IFF(is_valid = 'Y', 1, 0) AS v_crrnt_snpsht_flag,
 	v_crrnt_snpsht_flag AS out_crrnt_snpsht_flag,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(LKP_claim_master_1099_list_id),'NEW',
@@ -449,105 +405,41 @@ EXP_detect_changes AS (
 	-- rtrim(ltrim(LKP_irs_tax_id)) <> rtrim(ltrim(search_tax_id)),'UPDATE',
 	-- v_LKP_crrnt_snpsht_flag1 <> v_crrnt_snpsht_flag, 'UPDATE',
 	-- 'NOCHANGE')
-	DECODE(TRUE,
-		LKP_claim_master_1099_list_id IS NULL, 'NEW',
-		rtrim(ltrim(LKP_tax_id
-			)
-		) <> rtrim(ltrim(out_tax_id
-			)
-		), 'UPDATE',
-		rtrim(ltrim(LKP_tax_id_type
-			)
-		) <> rtrim(ltrim(in_tax_id_type
-			)
-		), 'UPDATE',
-		rtrim(ltrim(LKP_reportable_ind
-			)
-		) <> rtrim(ltrim(out_reportable_id
-			)
-		), 'UPDATE',
-		rtrim(ltrim(LKP_tax_levy_ind
-			)
-		) <> rtrim(ltrim(out_v_tax_levy_ind
-			)
-		), 'UPDATE',
-		rtrim(ltrim(LKP_irs_name
-			)
-		) <> rtrim(ltrim(out_irs_name
-			)
-		), 'UPDATE',
-		rtrim(ltrim(LKP_address_line_1
-			)
-		) <> rtrim(ltrim(out_address_line_1
-			)
-		), 'UPDATE',
-		rtrim(ltrim(LKP_address_line_2
-			)
-		) <> rtrim(ltrim(out_address_line_2
-			)
-		), 'UPDATE',
-		rtrim(ltrim(LKP_city
-			)
-		) <> rtrim(ltrim(out_city
-			)
-		), 'UPDATE',
-		rtrim(ltrim(LKP_state_code
-			)
-		) <> rtrim(ltrim(out_state_code
-			)
-		), 'UPDATE',
-		rtrim(ltrim(LKP_zip_code
-			)
-		) <> rtrim(ltrim(out_zip_code
-			)
-		), 'UPDATE',
-		rtrim(ltrim(LKP_country_code
-			)
-		) <> rtrim(ltrim(out_country_code
-			)
-		), 'UPDATE',
-		rtrim(ltrim(LKP_phone
-			)
-		) <> rtrim(ltrim(out_phone
-			)
-		), 'UPDATE',
-		rtrim(ltrim(LKP_irs_1099_type1
-			)
-		) <> rtrim(ltrim(irs_1099_type
-			)
-		), 'UPDATE',
-		rtrim(ltrim(LKP_vendor_type_code
-			)
-		) <> rtrim(ltrim(vendor_type_cd
-			)
-		), 'UPDATE',
-		rtrim(ltrim(LKP_irs_tax_id
-			)
-		) <> rtrim(ltrim(search_tax_id
-			)
-		), 'UPDATE',
-		v_LKP_crrnt_snpsht_flag1 <> v_crrnt_snpsht_flag, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    LKP_claim_master_1099_list_id IS NULL, 'NEW',
+	    rtrim(ltrim(LKP_tax_id)) <> rtrim(ltrim(out_tax_id)), 'UPDATE',
+	    rtrim(ltrim(LKP_tax_id_type)) <> rtrim(ltrim(in_tax_id_type)), 'UPDATE',
+	    rtrim(ltrim(LKP_reportable_ind)) <> rtrim(ltrim(out_reportable_id)), 'UPDATE',
+	    rtrim(ltrim(LKP_tax_levy_ind)) <> rtrim(ltrim(out_v_tax_levy_ind)), 'UPDATE',
+	    rtrim(ltrim(LKP_irs_name)) <> rtrim(ltrim(out_irs_name)), 'UPDATE',
+	    rtrim(ltrim(LKP_address_line_1)) <> rtrim(ltrim(out_address_line_1)), 'UPDATE',
+	    rtrim(ltrim(LKP_address_line_2)) <> rtrim(ltrim(out_address_line_2)), 'UPDATE',
+	    rtrim(ltrim(LKP_city)) <> rtrim(ltrim(out_city)), 'UPDATE',
+	    rtrim(ltrim(LKP_state_code)) <> rtrim(ltrim(out_state_code)), 'UPDATE',
+	    rtrim(ltrim(LKP_zip_code)) <> rtrim(ltrim(out_zip_code)), 'UPDATE',
+	    rtrim(ltrim(LKP_country_code)) <> rtrim(ltrim(out_country_code)), 'UPDATE',
+	    rtrim(ltrim(LKP_phone)) <> rtrim(ltrim(out_phone)), 'UPDATE',
+	    rtrim(ltrim(LKP_irs_1099_type1)) <> rtrim(ltrim(irs_1099_type)), 'UPDATE',
+	    rtrim(ltrim(LKP_vendor_type_code)) <> rtrim(ltrim(vendor_type_cd)), 'UPDATE',
+	    rtrim(ltrim(LKP_irs_tax_id)) <> rtrim(ltrim(search_tax_id)), 'UPDATE',
+	    v_LKP_crrnt_snpsht_flag1 <> v_crrnt_snpsht_flag, 'UPDATE',
+	    'NOCHANGE'
 	) AS v_change_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: IIF(v_change_flag='NEW',TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
 	-- --TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	IFF(v_change_flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    v_change_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	-- *INF*: iif(ISNULL(LKP_claim_master_1099_list_id),1,0)
-	IFF(LKP_claim_master_1099_list_id IS NULL,
-		1,
-		0
-	) AS v_check_master_list_id,
+	IFF(LKP_claim_master_1099_list_id IS NULL, 1, 0) AS v_check_master_list_id,
 	v_check_master_list_id AS out_check_master_list_id,
 	FIL_keep_conditions.search_tax_id,
 	v_change_flag AS change_flag,
@@ -599,10 +491,7 @@ EXP_Insert_Update_Out AS (
 	LKP_claim_master_1099_list_id AS LKP_claim_master_1099_list_id1,
 	LKP_claim_master_1099_list_ak_id AS LKP_claim_master_1099_list_ak_id1,
 	-- *INF*: IIF(change_flag1='NEW',NEXTVAL,LKP_claim_master_1099_list_ak_id1)
-	IFF(change_flag1 = 'NEW',
-		NEXTVAL,
-		LKP_claim_master_1099_list_ak_id1
-	) AS claim_master_1099_list_ak_id,
+	IFF(change_flag1 = 'NEW', NEXTVAL, LKP_claim_master_1099_list_ak_id1) AS claim_master_1099_list_ak_id,
 	out_tax_id AS out_tax_id1,
 	out_reportable_id AS out_reportable_id1,
 	out_v_tax_levy_ind AS out_v_tax_levy_ind1,

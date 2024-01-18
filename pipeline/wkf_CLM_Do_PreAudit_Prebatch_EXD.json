@@ -1,0 +1,231 @@
+{
+    "name": "wkf_CLM_Do_PreAudit_Prebatch_EXD",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sp-PreBatch_ClaimsStaging_EXD",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "sp-PreAudit_ClaimsStaging_EXD",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_PreBatch]",
+                    "storedProcedureParameters": {
+                        "BatchName": {
+                            "value": {
+                                "value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['batch_name']",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "spt-Get_Audit_Batch_values",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": {
+                                "value": "@concat('EXEC Proc_Get_Audit_Batch @workflow_name = ''', pipeline().Pipeline, '''')",
+                                "type": "Expression"
+                            }
+                        }
+                    ],
+                    "scriptBlockExecutionTimeout": "02:00:00"
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "spt-Get Pipeline Parameters",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "sp-PreBatch_ClaimsStaging_EXD",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": {
+                                "value": "@concat('EXEC Proc_Pipeline_Parameters @workflow_name = ''', pipeline().Pipeline, '''')",
+                                "type": "Expression"
+                            }
+                        }
+                    ],
+                    "scriptBlockExecutionTimeout": "02:00:00"
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sv-Set Params",
+                "type": "SetVariable",
+                "dependsOn": [
+                    {
+                        "activity": "spt-Get Pipeline Parameters",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "Params",
+                    "value": {
+                        "value": "@activity('spt-Get Pipeline Parameters').output.resultSets[0].rows[0]['json_value']",
+                        "type": "Expression"
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sp-PreAudit_ClaimsStaging_EXD",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "spt-Get_Audit_Batch_values",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_PreAudit]",
+                    "storedProcedureParameters": {
+                        "AuditName": {
+                            "value": {
+                                "value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['audit_name']",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "variables": {
+            "Params": {
+                "type": "String"
+            }
+        }
+    }
+}

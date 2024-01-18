@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_DCTInsights_ARCH_Insert_ArchWorkDCTPLParty",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DCTInsights_ARCH_Insert_ArchWorkDCTPLParty",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTPLParty AS (\n\tSELECT\n\t\tWorkDCTPLPartyId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tPolicyId,\n\t\tPartyId,\n\t\tAddressId,\n\t\tRoleId,\n\t\tPolicyKey,\n\t\tPartyKey,\n\t\tAddressKey,\n\t\tRoleCode,\n\t\tRoleDesc,\n\t\tPolicyNumber,\n\t\tPolicyVersion,\n\t\tPolicySymbol,\n\t\tCustomerNumber,\n\t\tFullName,\n\t\tFEIN,\n\t\tBusinessName,\n\t\tPrimaryPhone,\n\t\tPhoneExtension,\n\t\tEmail,\n\t\tLastName,\n\t\tLegalEntityCode,\n\t\tFirstName,\n\t\tMiddleName,\n\t\tAddressType,\n\t\tStreetAddressLine1,\n\t\tStreetAddressLine2,\n\t\tStreetAddressLine3,\n\t\tCityName,\n\t\tStateName,\n\t\tPostalCode,\n\t\tPostalCodeExt,\n\t\tCountyName,\n\t\tCountryName,\n\t\tEmailType,\n\t\tEmailPriority,\n\t\tStartDate\n\tFROM WorkDCTPLParty\n),\nEXP_SRC_DataCollect AS (\n\tSELECT\n\tWorkDCTPLPartyId,\n\tExtractDate,\n\tSourceSystemId,\n\tPolicyId,\n\tPartyId,\n\tAddressId,\n\tRoleId,\n\tPolicyKey,\n\tPartyKey,\n\tAddressKey,\n\tRoleCode,\n\tRoleDesc,\n\tPolicyNumber,\n\tPolicyVersion,\n\tPolicySymbol,\n\tCustomerNumber,\n\tFullName,\n\tFEIN,\n\tBusinessName,\n\tPrimaryPhone,\n\tPhoneExtension,\n\tEmail,\n\tLastName,\n\tLegalEntityCode,\n\tFirstName,\n\tMiddleName,\n\tAddressType,\n\tStreetAddressLine1,\n\tStreetAddressLine2,\n\tStreetAddressLine3,\n\tCityName,\n\tStateName,\n\tPostalCode,\n\tPostalCodeExt,\n\tCountyName,\n\tCountryName,\n\tEmailType,\n\tEmailPriority,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_Auditid,\n\tStartDate\n\tFROM SQ_WorkDCTPLParty\n),\nArchWorkDCTPLParty AS (\n\tINSERT INTO ArchWorkDCTPLParty\n\t(Auditid, ExtractDate, SourceSystemId, WorkDCTPLPartyId, PolicyId, PartyId, AddressId, RoleId, PolicyKey, PartyKey, AddressKey, RoleCode, RoleDesc, PolicyNumber, PolicyVersion, PolicySymbol, CustomerNumber, FullName, FEIN, BusinessName, PrimaryPhone, PhoneExtension, Email, LastName, LegalEntityCode, FirstName, MiddleName, AddressType, StreetAddressLine1, StreetAddressLine2, StreetAddressLine3, CityName, StateName, PostalCode, PostalCodeExt, CountyName, CountryName, EmailType, EmailPriority, StartDate)\n\tSELECT \n\to_Auditid AS AUDITID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tWORKDCTPLPARTYID, \n\tPOLICYID, \n\tPARTYID, \n\tADDRESSID, \n\tROLEID, \n\tPOLICYKEY, \n\tPARTYKEY, \n\tADDRESSKEY, \n\tROLECODE, \n\tROLEDESC, \n\tPOLICYNUMBER, \n\tPOLICYVERSION, \n\tPOLICYSYMBOL, \n\tCUSTOMERNUMBER, \n\tFULLNAME, \n\tFEIN, \n\tBUSINESSNAME, \n\tPRIMARYPHONE, \n\tPHONEEXTENSION, \n\tEMAIL, \n\tLASTNAME, \n\tLEGALENTITYCODE, \n\tFIRSTNAME, \n\tMIDDLENAME, \n\tADDRESSTYPE, \n\tSTREETADDRESSLINE1, \n\tSTREETADDRESSLINE2, \n\tSTREETADDRESSLINE3, \n\tCITYNAME, \n\tSTATENAME, \n\tPOSTALCODE, \n\tPOSTALCODEEXT, \n\tCOUNTYNAME, \n\tCOUNTRYNAME, \n\tEMAILTYPE, \n\tEMAILPRIORITY, \n\tSTARTDATE\n\tFROM EXP_SRC_DataCollect\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

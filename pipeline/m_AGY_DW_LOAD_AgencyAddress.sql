@@ -37,70 +37,37 @@ EXP_CleanupValues AS (
 	SQ_AgencyAddressODSStage.AddressType,
 	SQ_AgencyAddressODSStage.AddressLine1,
 	-- *INF*: IIF(IsNull(AddressLine1), 'N/A', AddressLine1)
-	IFF(AddressLine1 IS NULL,
-		'N/A',
-		AddressLine1
-	) AS o_AddressLine1,
+	IFF(AddressLine1 IS NULL, 'N/A', AddressLine1) AS o_AddressLine1,
 	SQ_AgencyAddressODSStage.AddressLine2,
 	-- *INF*: IIF(IsNull(AddressLine2), 'N/A', AddressLine2)
-	IFF(AddressLine2 IS NULL,
-		'N/A',
-		AddressLine2
-	) AS o_AddressLine2,
+	IFF(AddressLine2 IS NULL, 'N/A', AddressLine2) AS o_AddressLine2,
 	SQ_AgencyAddressODSStage.AddressLine3,
 	-- *INF*: IIF(IsNull(AddressLine3), 'N/A', AddressLine3)
-	IFF(AddressLine3 IS NULL,
-		'N/A',
-		AddressLine3
-	) AS o_AddressLine3,
+	IFF(AddressLine3 IS NULL, 'N/A', AddressLine3) AS o_AddressLine3,
 	SQ_AgencyAddressODSStage.City,
 	-- *INF*: IIF(IsNull(City), 'N/A', City)
-	IFF(City IS NULL,
-		'N/A',
-		City
-	) AS o_City,
+	IFF(City IS NULL, 'N/A', City) AS o_City,
 	SQ_AgencyAddressODSStage.ZipCode,
 	-- *INF*: IIF(IsNull(ZipCode), 'N/A', ZipCode)
-	IFF(ZipCode IS NULL,
-		'N/A',
-		ZipCode
-	) AS o_ZipCode,
+	IFF(ZipCode IS NULL, 'N/A', ZipCode) AS o_ZipCode,
 	SQ_AgencyAddressODSStage.CountyCode,
 	-- *INF*: IIF(IsNull(CountyCode), 'N/A', CountyCode)
-	IFF(CountyCode IS NULL,
-		'N/A',
-		CountyCode
-	) AS o_CountyCode,
+	IFF(CountyCode IS NULL, 'N/A', CountyCode) AS o_CountyCode,
 	SQ_AgencyAddressODSStage.CountyName,
 	-- *INF*: IIF(IsNull(CountyName), 'N/A', CountyName)
-	IFF(CountyName IS NULL,
-		'N/A',
-		CountyName
-	) AS o_CountyName,
+	IFF(CountyName IS NULL, 'N/A', CountyName) AS o_CountyName,
 	SQ_AgencyAddressODSStage.StateAbbreviation,
 	-- *INF*: IIF(IsNull(StateAbbreviation), 'NA', StateAbbreviation)
-	IFF(StateAbbreviation IS NULL,
-		'NA',
-		StateAbbreviation
-	) AS o_StateAbbreviation,
+	IFF(StateAbbreviation IS NULL, 'NA', StateAbbreviation) AS o_StateAbbreviation,
 	SQ_AgencyAddressODSStage.CountryAbbreviation,
 	-- *INF*: IIF(IsNull(CountryAbbreviation), 'USA', CountryAbbreviation)
-	IFF(CountryAbbreviation IS NULL,
-		'USA',
-		CountryAbbreviation
-	) AS o_CountryAbbreviation,
+	IFF(CountryAbbreviation IS NULL, 'USA', CountryAbbreviation) AS o_CountryAbbreviation,
 	SQ_AgencyAddressODSStage.Latitude,
 	-- *INF*: IIF(IsNull(Latitude), 000.000000, Latitude)
-	IFF(Latitude IS NULL,
-		000.000000,
-		Latitude
-	) AS o_Latitude,
+	IFF(Latitude IS NULL, 000.000000, Latitude) AS o_Latitude,
 	SQ_AgencyAddressODSStage.Longitude,
 	-- *INF*: IIF(IsNull(Longitude), 000.000000, Longitude)
-	IFF(Longitude IS NULL,
-		000.000000,
-		Longitude
-	) AS o_Longitude,
+	IFF(Longitude IS NULL, 000.000000, Longitude) AS o_Longitude,
 	SQ_AgencyAddressODSStage.SourceSystemID
 	FROM SQ_AgencyAddressODSStage
 	LEFT JOIN LKP_AgencyAKID
@@ -141,36 +108,31 @@ EXP_Detect_Changes AS (
 	EXP_CleanupValues.o_Latitude AS Latitude,
 	EXP_CleanupValues.o_Longitude AS Longitude,
 	-- *INF*: MD5(AddressLine1 || AddressLine2 || AddressLine3 || City || ZipCode || CountyCode || CountyName || StateAbbreviation || CountryAbbreviation || to_char(Latitude) || to_char(Longitude))
-	MD5(AddressLine1 || AddressLine2 || AddressLine3 || City || ZipCode || CountyCode || CountyName || StateAbbreviation || CountryAbbreviation || to_char(Latitude
-		) || to_char(Longitude
-		)
-	) AS v_NewHashKey,
+	MD5(AddressLine1 || AddressLine2 || AddressLine3 || City || ZipCode || CountyCode || CountyName || StateAbbreviation || CountryAbbreviation || to_char(Latitude) || to_char(Longitude)) AS v_NewHashKey,
 	v_NewHashKey AS o_HashKey,
 	-- *INF*: Decode(true,
 	-- IsNull(AgencyAKID), 'IGNORE',
 	-- IsNull(lkp_AgencyAddressAKID), 'NEW', 
 	-- (lkp_HashKey <> v_NewHashKey), 'UPDATE' ,
 	-- 'NOCHANGE')
-	Decode(true,
-		AgencyAKID IS NULL, 'IGNORE',
-		lkp_AgencyAddressAKID IS NULL, 'NEW',
-		( lkp_HashKey <> v_NewHashKey 
-		), 'UPDATE',
-		'NOCHANGE'
+	Decode(
+	    true,
+	    AgencyAKID IS NULL, 'IGNORE',
+	    lkp_AgencyAddressAKID IS NULL, 'NEW',
+	    (lkp_HashKey <> v_NewHashKey), 'UPDATE',
+	    'NOCHANGE'
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS EffectiveFromDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS EffectiveToDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveToDate,
 	EXP_CleanupValues.SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate
@@ -224,10 +186,7 @@ EXP_Assign_AKID AS (
 	lkp_AgencyAddressAKID,
 	SEQ_AgencyAddress_AKID.NEXTVAL,
 	-- *INF*: iif(isnull(lkp_AgencyAddressAKID),NEXTVAL,lkp_AgencyAddressAKID)
-	IFF(lkp_AgencyAddressAKID IS NULL,
-		NEXTVAL,
-		lkp_AgencyAddressAKID
-	) AS o_AgencyAddressAKID,
+	IFF(lkp_AgencyAddressAKID IS NULL, NEXTVAL, lkp_AgencyAddressAKID) AS o_AgencyAddressAKID,
 	AgencyAKID,
 	AddressType,
 	AddressLine1,
@@ -301,9 +260,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- AgencyAddressAKID = v_prev_AKID , ADD_TO_DATE(v_prev_EffectiveFromDate,'SS',-1),
 	-- OriginalEffectiveToDate)
-	DECODE(TRUE,
-		AgencyAddressAKID = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_EffectiveFromDate),
-		OriginalEffectiveToDate
+	DECODE(
+	    TRUE,
+	    AgencyAddressAKID = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_EffectiveFromDate),
+	    OriginalEffectiveToDate
 	) AS v_EffectiveToDate,
 	v_EffectiveToDate AS o_EffectiveToDate,
 	AgencyAddressAKID AS v_prev_AKID,

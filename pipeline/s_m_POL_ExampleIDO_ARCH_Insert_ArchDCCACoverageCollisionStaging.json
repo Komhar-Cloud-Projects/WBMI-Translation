@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCACoverageCollisionStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCACoverageCollisi_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCACoverageCollisionStaging AS (\n\tSELECT\n\t\tDCCACoverageCollisionStagingId,\n\t\tCoverageId,\n\t\tCA_CoverageCollisionId,\n\t\tSessionId,\n\t\tAcceptCollisionCoverage,\n\t\tAutoDealersTotalCollisionRatingUnits,\n\t\tBroadenedCollision,\n\t\tCollisionType,\n\t\tLimitedFullCoverageCollision,\n\t\tNumberNamedDrivers,\n\t\tNumberOfSafetyFeatures,\n\t\tUnderwriterOverride,\n\t\tExperienceRatingBasicLimitPremium,\n\t\tExperienceRatingBasicLimitPremiumGarage,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCCACoverageCollisionStaging\n),\nEXPTRANS AS (\n\tSELECT\n\tDCCACoverageCollisionStagingId,\n\tCoverageId,\n\tCA_CoverageCollisionId,\n\tSessionId,\n\tAcceptCollisionCoverage,\n\tAutoDealersTotalCollisionRatingUnits,\n\tBroadenedCollision,\n\tCollisionType,\n\tLimitedFullCoverageCollision,\n\tNumberNamedDrivers,\n\tNumberOfSafetyFeatures,\n\tUnderwriterOverride,\n\tExperienceRatingBasicLimitPremium,\n\tExperienceRatingBasicLimitPremiumGarage,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_DCCACoverageCollisionStaging\n),\narchDCCACoverageCollisionStaging AS (\n\tINSERT INTO archDCCACoverageCollisionStaging\n\t(DCCACoverageCollisionStagingId, CoverageId, CA_CoverageCollisionId, SessionId, AcceptCollisionCoverage, AutoDealersTotalCollisionRatingUnits, BroadenedCollision, CollisionType, LimitedFullCoverageCollision, NumberNamedDrivers, NumberOfSafetyFeatures, UnderwriterOverride, ExperienceRatingBasicLimitPremium, ExperienceRatingBasicLimitPremiumGarage, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tDCCACOVERAGECOLLISIONSTAGINGID, \n\tCOVERAGEID, \n\tCA_COVERAGECOLLISIONID, \n\tSESSIONID, \n\tACCEPTCOLLISIONCOVERAGE, \n\tAUTODEALERSTOTALCOLLISIONRATINGUNITS, \n\tBROADENEDCOLLISION, \n\tCOLLISIONTYPE, \n\tLIMITEDFULLCOVERAGECOLLISION, \n\tNUMBERNAMEDDRIVERS, \n\tNUMBEROFSAFETYFEATURES, \n\tUNDERWRITEROVERRIDE, \n\tEXPERIENCERATINGBASICLIMITPREMIUM, \n\tEXPERIENCERATINGBASICLIMITPREMIUMGARAGE, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCBPCoverageSpoilageStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCBPCoverageSpoilageStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_BP_CoverageSpoilage AS (\n\tWITH cte_DCBPCoverageSpoilage(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CoverageId, \r\n\tX.BP_CoverageSpoilageId, \r\n\tX.SessionId, \r\n\tX.Agreement, \r\n\tX.ARate, \r\n\tX.ClassGroup, \r\n\tX.Type \r\n\tFROM\r\n\tDC_BP_CoverageSpoilage X\r\n\tinner join\r\n\tcte_DCBPCoverageSpoilage Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_DefaultValues AS (\n\tSELECT\n\tSYSDATE AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tCoverageId,\n\tBP_CoverageSpoilageId,\n\tSessionId,\n\tAgreement AS i_Agreement,\n\t-- *INF*: IIF(i_Agreement='T',1,0)\n\tIFF(i_Agreement = 'T', 1, 0) AS o_Agreement,\n\tARate,\n\tClassGroup,\n\tType\n\tFROM SQ_DC_BP_CoverageSpoilage\n),\nDCBPCoverageSpoilageStage AS (\n\tTRUNCATE TABLE DCBPCoverageSpoilageStage;\n\tINSERT INTO DCBPCoverageSpoilageStage\n\t(ExtractDate, SourceSystemId, CoverageId, BP_CoverageSpoilageId, SessionId, Agreement, ARate, ClassGroup, Type)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCOVERAGEID, \n\tBP_COVERAGESPOILAGEID, \n\tSESSIONID, \n\to_Agreement AS AGREEMENT, \n\tARATE, \n\tCLASSGROUP, \n\tTYPE\n\tFROM EXP_DefaultValues\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

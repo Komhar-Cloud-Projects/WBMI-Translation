@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_GTAM_tc26_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_GTAM_tc26_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_GTAM_tc26_stage AS (\n\tSELECT\n\t\ttc26_stage_id AS TC26_stage_ID,\n\t\ttable_fld AS TABLE_FLD,\n\t\tkey_len AS KEY_LEN,\n\t\tlocation AS LOCATION,\n\t\tmaster_company_number AS MASTER_COMPANY_NUMBER,\n\t\tline_of_business AS LINE_OF_BUSINESS,\n\t\tloss_disability_code AS LOSS_DISABILITY_CODE,\n\t\tdata_len AS DATA_LEN,\n\t\tloss_disability_code_element AS LOSS_DISABILITY_CODE_ELEMENT,\n\t\tloss_disability_literal AS LOSS_DISABILITY_LITERAL,\n\t\textract_date AS EXTRACT_DATE,\n\t\tas_of_date AS AS_OF_DATE,\n\t\trecord_count AS RECORD_COUNT,\n\t\tsource_system_id AS SOURCE_SYSTEM_ID\n\tFROM GTAM_tc26_stage\n),\nEXP_arch_GTAM_tc26_stage AS (\n\tSELECT\n\tTC26_stage_ID,\n\tTABLE_FLD,\n\tKEY_LEN,\n\tLOCATION,\n\tMASTER_COMPANY_NUMBER,\n\tLINE_OF_BUSINESS,\n\tLOSS_DISABILITY_CODE,\n\tDATA_LEN,\n\tLOSS_DISABILITY_CODE_ELEMENT,\n\tLOSS_DISABILITY_LITERAL,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_GTAM_tc26_stage\n),\narch_GTAM_tc26_stage AS (\n\tINSERT INTO arch_GTAM_tc26_stage\n\t(TC26_stage_ID, TABLE_FLD, KEY_LEN, LOCATION, MASTER_COMPANY_NUMBER, LINE_OF_BUSINESS, LOSS_DISABILITY_CODE, DATA_LEN, LOSS_DISABILITY_CODE_ELEMENT, LOSS_DISABILITY_LITERAL, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, audit_id)\n\tSELECT \n\tTC26_STAGE_ID, \n\tTABLE_FLD, \n\tKEY_LEN, \n\tLOCATION, \n\tMASTER_COMPANY_NUMBER, \n\tLINE_OF_BUSINESS, \n\tLOSS_DISABILITY_CODE, \n\tDATA_LEN, \n\tLOSS_DISABILITY_CODE_ELEMENT, \n\tLOSS_DISABILITY_LITERAL, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_arch_GTAM_tc26_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCCFBuilderStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCCFBuilderStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_CF_Builder AS (\n\tWITH cte_DCCFBuilder(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CF_RiskId, \r\n\tX.CF_BuilderId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.Renovations, \r\n\tX.TheftOfBuildingMaterials, \r\n\tX.BuildingMaterialsSuppliesOfOthersPremium, \r\n\tX.Collapse, \r\n\tX.SubContractors, \r\n\tX.BuildingPremisesDescription \r\n\tFROM\r\n\tDC_CF_Builder X\r\n\tinner join\r\n\tcte_DCCFBuilder Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tCF_RiskId,\n\tCF_BuilderId,\n\tSessionId,\n\tId,\n\tRenovations AS i_Renovations,\n\t-- *INF*: DECODE(i_Renovations,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_Renovations,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Renovations,\n\tTheftOfBuildingMaterials AS i_TheftOfBuildingMaterials,\n\t-- *INF*: DECODE(i_TheftOfBuildingMaterials,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_TheftOfBuildingMaterials,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TheftOfBuildingMaterials,\n\tBuildingMaterialsSuppliesOfOthersPremium,\n\tCollapse,\n\tSubContractors,\n\tBuildingPremisesDescription,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_DC_CF_Builder\n),\nDCCFBuilderStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCFBuilderStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCFBuilderStaging\n\t(ExtractDate, SourceSystemId, CF_RiskId, CF_BuilderId, SessionId, Id, Renovations, TheftOfBuildingMaterials, BuildingMaterialsSuppliesOfOthersPremium, Collapse, SubContractors, BuildingPremisesDescription)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCF_RISKID, \n\tCF_BUILDERID, \n\tSESSIONID, \n\tID, \n\to_Renovations AS RENOVATIONS, \n\to_TheftOfBuildingMaterials AS THEFTOFBUILDINGMATERIALS, \n\tBUILDINGMATERIALSSUPPLIESOFOTHERSPREMIUM, \n\tCOLLAPSE, \n\tSUBCONTRACTORS, \n\tBUILDINGPREMISESDESCRIPTION\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -38,26 +38,22 @@ EXP_Metadata AS (
 	BuildingClassCodeDescription AS i_BuildingClassCodeDescription,
 	NewNegatePremiumTransactionID AS o_PremiumTransactionID,
 	-- *INF*: RTRIM(LTRIM(i_CoverageGUID))
-	RTRIM(LTRIM(i_CoverageGUID
-		)
-	) AS o_CoverageGUID,
+	RTRIM(LTRIM(i_CoverageGUID)) AS o_CoverageGUID,
 	-- *INF*: IIF(NOT ISNULL(i_ISOBusinessOwnersPropertyRateNumber),i_ISOBusinessOwnersPropertyRateNumber,'N/A')
-	IFF(i_ISOBusinessOwnersPropertyRateNumber IS NOT NULL,
-		i_ISOBusinessOwnersPropertyRateNumber,
-		'N/A'
+	IFF(
+	    i_ISOBusinessOwnersPropertyRateNumber IS NOT NULL, i_ISOBusinessOwnersPropertyRateNumber,
+	    'N/A'
 	) AS o_ISOBusinessOwnersPropertyRateNumber,
 	-- *INF*: IIF(NOT ISNULL(i_ISOBusinessOwnersLiabilityClassGroup),i_ISOBusinessOwnersLiabilityClassGroup,'N/A')
-	IFF(i_ISOBusinessOwnersLiabilityClassGroup IS NOT NULL,
-		i_ISOBusinessOwnersLiabilityClassGroup,
-		'N/A'
+	IFF(
+	    i_ISOBusinessOwnersLiabilityClassGroup IS NOT NULL, i_ISOBusinessOwnersLiabilityClassGroup,
+	    'N/A'
 	) AS o_ISOBusinessOwnersLiabilityClassGroup,
 	i_ISOOccupancyType AS o_ISOOccupancyType,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_BuildingBCCCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_BuildingBCCCode
-	) AS o_BuildingBCCCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_BuildingBCCCode) AS o_BuildingBCCCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_BuildingClassCodeDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_BuildingClassCodeDescription
-	) AS o_BuildingClassCodeDescription
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_BuildingClassCodeDescription) AS o_BuildingClassCodeDescription
 	FROM Exp_CoverageDetailGeneralLiability
 ),
 LKP_CoverageDetailBusinessOwners AS (
@@ -94,18 +90,14 @@ EXP_Detect_Changes AS (
 	EXP_Metadata.o_BuildingBCCCode AS i_BuildingBCCCode,
 	EXP_Metadata.o_BuildingClassCodeDescription AS i_BuildingClassCodeDescription,
 	-- *INF*: RTRIM(LTRIM(lkp_CoverageGuid))
-	RTRIM(LTRIM(lkp_CoverageGuid
-		)
-	) AS v_lkp_CoverageGuid,
+	RTRIM(LTRIM(lkp_CoverageGuid)) AS v_lkp_CoverageGuid,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -119,9 +111,10 @@ EXP_Detect_Changes AS (
 	-- ISNULL(lkp_PremiumTransactionID),'NEW'
 	-- ,'UPDATE'
 	-- )
-	DECODE(TRUE,
-		lkp_PremiumTransactionID IS NULL, 'NEW',
-		'UPDATE'
+	DECODE(
+	    TRUE,
+	    lkp_PremiumTransactionID IS NULL, 'NEW',
+	    'UPDATE'
 	) AS o_ChangeFlag
 	FROM EXP_Metadata
 	LEFT JOIN LKP_CoverageDetailBusinessOwners

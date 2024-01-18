@@ -23,22 +23,17 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_EffectiveDate
+	IFF(
+	    i_EffectiveDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate
 	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ExpirationDate
+	IFF(
+	    i_ExpirationDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'),
+	    i_ExpirationDate
 	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ModifiedDate
+	IFF(
+	    i_ModifiedDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate
 	) AS o_ModifiedDate
 	FROM SQ_SupPolicyOfferingRules
 ),
@@ -48,20 +43,11 @@ EXP_NumericValues AS (
 	SupPolicyOfferingRuleAKId AS i_SupPolicyOfferingRuleAKId,
 	SequenceNumber AS i_SequenceNumber,
 	-- *INF*: IIF(ISNULL(i_SupPolicyOfferingRulesId),-1,i_SupPolicyOfferingRulesId)
-	IFF(i_SupPolicyOfferingRulesId IS NULL,
-		- 1,
-		i_SupPolicyOfferingRulesId
-	) AS o_SupPolicyOfferingRulesId,
+	IFF(i_SupPolicyOfferingRulesId IS NULL, - 1, i_SupPolicyOfferingRulesId) AS o_SupPolicyOfferingRulesId,
 	-- *INF*: IIF(ISNULL(i_SupPolicyOfferingRuleAKId),-1,i_SupPolicyOfferingRuleAKId)
-	IFF(i_SupPolicyOfferingRuleAKId IS NULL,
-		- 1,
-		i_SupPolicyOfferingRuleAKId
-	) AS o_SupPolicyOfferingRuleAKId,
+	IFF(i_SupPolicyOfferingRuleAKId IS NULL, - 1, i_SupPolicyOfferingRuleAKId) AS o_SupPolicyOfferingRuleAKId,
 	-- *INF*: IIF(ISNULL(i_SequenceNumber),-1,i_SequenceNumber)
-	IFF(i_SequenceNumber IS NULL,
-		- 1,
-		i_SequenceNumber
-	) AS o_SequenceNumber
+	IFF(i_SequenceNumber IS NULL, - 1, i_SequenceNumber) AS o_SequenceNumber
 	FROM SQ_SupPolicyOfferingRules
 ),
 EXP_StringValues AS (
@@ -76,93 +62,81 @@ EXP_StringValues AS (
 	RiskUnitGroup AS i_RiskUnitGroup,
 	ClassCode AS i_ClassCode,
 	-- *INF*: IIF(i_ExpirationDate>=TO_DATE('21001231','YYYYMMDD'),1,0)
-	IFF(i_ExpirationDate >= TO_DATE('21001231', 'YYYYMMDD'
-		),
-		1,
-		0
-	) AS o_CurrentSnapshotFlag,
+	IFF(i_ExpirationDate >= TO_TIMESTAMP('21001231', 'YYYYMMDD'), 1, 0) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_SourceCode) OR LENGTH(i_SourceCode)=0 OR IS_SPACES(i_SourceCode),'N/A',LTRIM(RTRIM(i_SourceCode)))
-	IFF(i_SourceCode IS NULL 
-		OR LENGTH(i_SourceCode
-		) = 0 
-		OR LENGTH(i_SourceCode)>0 AND TRIM(i_SourceCode)='',
-		'N/A',
-		LTRIM(RTRIM(i_SourceCode
-			)
-		)
+	IFF(
+	    i_SourceCode IS NULL
+	    or LENGTH(i_SourceCode) = 0
+	    or LENGTH(i_SourceCode)>0
+	    and TRIM(i_SourceCode)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_SourceCode))
 	) AS o_SourceCode,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingCode) OR LENGTH(i_PolicyOfferingCode)=0 OR IS_SPACES(i_PolicyOfferingCode),'N/A',LTRIM(RTRIM(i_PolicyOfferingCode)))
-	IFF(i_PolicyOfferingCode IS NULL 
-		OR LENGTH(i_PolicyOfferingCode
-		) = 0 
-		OR LENGTH(i_PolicyOfferingCode)>0 AND TRIM(i_PolicyOfferingCode)='',
-		'N/A',
-		LTRIM(RTRIM(i_PolicyOfferingCode
-			)
-		)
+	IFF(
+	    i_PolicyOfferingCode IS NULL
+	    or LENGTH(i_PolicyOfferingCode) = 0
+	    or LENGTH(i_PolicyOfferingCode)>0
+	    and TRIM(i_PolicyOfferingCode)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_PolicyOfferingCode))
 	) AS o_PolicyOfferingCode,
 	-- *INF*: IIF(ISNULL(i_PolicySymbol) OR LENGTH(i_PolicySymbol)=0 OR IS_SPACES(i_PolicySymbol),'N/A',LTRIM(RTRIM(i_PolicySymbol)))
-	IFF(i_PolicySymbol IS NULL 
-		OR LENGTH(i_PolicySymbol
-		) = 0 
-		OR LENGTH(i_PolicySymbol)>0 AND TRIM(i_PolicySymbol)='',
-		'N/A',
-		LTRIM(RTRIM(i_PolicySymbol
-			)
-		)
+	IFF(
+	    i_PolicySymbol IS NULL
+	    or LENGTH(i_PolicySymbol) = 0
+	    or LENGTH(i_PolicySymbol)>0
+	    and TRIM(i_PolicySymbol)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_PolicySymbol))
 	) AS o_PolicySymbol,
 	-- *INF*: IIF(ISNULL(i_InsuranceLine) OR LENGTH(i_InsuranceLine)=0 OR IS_SPACES(i_InsuranceLine),'N/A',LTRIM(RTRIM(i_InsuranceLine)))
-	IFF(i_InsuranceLine IS NULL 
-		OR LENGTH(i_InsuranceLine
-		) = 0 
-		OR LENGTH(i_InsuranceLine)>0 AND TRIM(i_InsuranceLine)='',
-		'N/A',
-		LTRIM(RTRIM(i_InsuranceLine
-			)
-		)
+	IFF(
+	    i_InsuranceLine IS NULL
+	    or LENGTH(i_InsuranceLine) = 0
+	    or LENGTH(i_InsuranceLine)>0
+	    and TRIM(i_InsuranceLine)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_InsuranceLine))
 	) AS o_InsuranceLine,
 	-- *INF*: IIF(ISNULL(i_MajorPerilCode) OR LENGTH(i_MajorPerilCode)=0 OR IS_SPACES(i_MajorPerilCode),'N/A',LTRIM(RTRIM(i_MajorPerilCode)))
-	IFF(i_MajorPerilCode IS NULL 
-		OR LENGTH(i_MajorPerilCode
-		) = 0 
-		OR LENGTH(i_MajorPerilCode)>0 AND TRIM(i_MajorPerilCode)='',
-		'N/A',
-		LTRIM(RTRIM(i_MajorPerilCode
-			)
-		)
+	IFF(
+	    i_MajorPerilCode IS NULL
+	    or LENGTH(i_MajorPerilCode) = 0
+	    or LENGTH(i_MajorPerilCode)>0
+	    and TRIM(i_MajorPerilCode)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_MajorPerilCode))
 	) AS o_MajorPerilCode,
 	-- *INF*: IIF(ISNULL(i_SublineCode) OR LENGTH(i_SublineCode)=0 OR IS_SPACES(i_SublineCode),'N/A',LTRIM(RTRIM(i_SublineCode)))
-	IFF(i_SublineCode IS NULL 
-		OR LENGTH(i_SublineCode
-		) = 0 
-		OR LENGTH(i_SublineCode)>0 AND TRIM(i_SublineCode)='',
-		'N/A',
-		LTRIM(RTRIM(i_SublineCode
-			)
-		)
+	IFF(
+	    i_SublineCode IS NULL
+	    or LENGTH(i_SublineCode) = 0
+	    or LENGTH(i_SublineCode)>0
+	    and TRIM(i_SublineCode)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_SublineCode))
 	) AS o_SublineCode,
 	-- *INF*: IIF(ISNULL(i_RiskUnitGroup) OR LENGTH(i_RiskUnitGroup)=0 OR IS_SPACES(i_RiskUnitGroup),'N/A',LTRIM(RTRIM(i_RiskUnitGroup)))
-	IFF(i_RiskUnitGroup IS NULL 
-		OR LENGTH(i_RiskUnitGroup
-		) = 0 
-		OR LENGTH(i_RiskUnitGroup)>0 AND TRIM(i_RiskUnitGroup)='',
-		'N/A',
-		LTRIM(RTRIM(i_RiskUnitGroup
-			)
-		)
+	IFF(
+	    i_RiskUnitGroup IS NULL
+	    or LENGTH(i_RiskUnitGroup) = 0
+	    or LENGTH(i_RiskUnitGroup)>0
+	    and TRIM(i_RiskUnitGroup)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_RiskUnitGroup))
 	) AS o_RiskUnitGroup,
 	-- *INF*: IIF(ISNULL(i_ClassCode) OR LENGTH(i_ClassCode)=0 OR IS_SPACES(i_ClassCode),'N/A',LTRIM(RTRIM(i_ClassCode)))
-	IFF(i_ClassCode IS NULL 
-		OR LENGTH(i_ClassCode
-		) = 0 
-		OR LENGTH(i_ClassCode)>0 AND TRIM(i_ClassCode)='',
-		'N/A',
-		LTRIM(RTRIM(i_ClassCode
-			)
-		)
+	IFF(
+	    i_ClassCode IS NULL
+	    or LENGTH(i_ClassCode) = 0
+	    or LENGTH(i_ClassCode)>0
+	    and TRIM(i_ClassCode)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_ClassCode))
 	) AS o_ClassCode
 	FROM SQ_SupPolicyOfferingRules
 ),

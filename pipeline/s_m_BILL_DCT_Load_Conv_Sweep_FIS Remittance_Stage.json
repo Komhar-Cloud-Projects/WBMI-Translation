@@ -1,0 +1,38 @@
+{
+    "name": "s_m_BILL_DCT_Load_Conv_Sweep_FIS Remittance_Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_BILL_DCT_Load_Conv_Sweep_FIS Remittance_Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Conv_Sweep_FIS_Payments AS (\n\n-- TODO Manual --\n\n),\nEXPTRANS AS (\n\tSELECT\n\tDCAccountNumber,\n\tMod_UserID,\n\tMod_Date,\n\tRemit_SRC,\n\tReconcil_Date,\n\tPol_EFF_Date,\n\tPol_Cleared_Date,\n\tPol_Init_Date,\n\tStatus,\n\tApprovalCode,\n\tAuth_By,\n\tPaidAmount,\n\tTransactionID,\n\tTransactionData,\n\t-- *INF*: TO_DATE(LTRIM(RTRIM(Pol_EFF_Date)),'YYYYMMDD')\r\n\t-- \n\tTO_TIMESTAMP(LTRIM(RTRIM(Pol_EFF_Date)), 'YYYYMMDD') AS o_pol_eff_date,\n\t-- *INF*: TO_DATE(LTRIM(RTRIM(Reconcil_Date)),'YYYYMMDD') \n\tTO_TIMESTAMP(LTRIM(RTRIM(Reconcil_Date)), 'YYYYMMDD') AS o_Reconcil_date,\n\t-- *INF*: TO_DATE(LTRIM(RTRIM(Mod_Date)),'YYYYMMDDHH24MISS')\n\tTO_TIMESTAMP(LTRIM(RTRIM(Mod_Date)), 'YYYYMMDDHH24MISS') AS o_Mod_date,\n\t-- *INF*: TO_DATE(LTRIM(RTRIM(Pol_Cleared_Date)),'YYYYMMDDHH24MISS')\n\tTO_TIMESTAMP(LTRIM(RTRIM(Pol_Cleared_Date)), 'YYYYMMDDHH24MISS') AS o_Pol_Cleared_date,\n\t-- *INF*: TO_DATE(LTRIM(RTRIM(Pol_Init_Date)),'YYYYMMDDHH24MISS')\n\tTO_TIMESTAMP(LTRIM(RTRIM(Pol_Init_Date)), 'YYYYMMDDHH24MISS') AS o_Pol_init_Date,\n\t'Payment' AS o_transactionType,\n\t'N' AS o_ProcessStatueCode,\n\t'AACH' AS o_paymentMode,\n\t-- *INF*: SUBSTR(DCAccountNumber,9,1)\n\tSUBSTR(DCAccountNumber, 9, 1) AS v_ACCT_9,\n\t-- *INF*: DECODE(true,IS_NUMBER(v_ACCT_9)\r\n\t--     ,SUBSTR(DCAccountNumber,1,12),\r\n\t-- null)\n\tDECODE(\n\t    true,\n\t    REGEXP_LIKE(v_ACCT_9, '^[0-9]+$'), SUBSTR(DCAccountNumber, 1, 12),\n\t    null\n\t) AS o_Account,\n\t-- *INF*: DECODE(true,\r\n\t-- v_ACCT_9 = 'H' ,SUBSTR(DCAccountNumber,1,12),\r\n\t-- v_ACCT_9 = 'D' ,SUBSTR(DCAccountNumber,1,12),\r\n\t-- null)\n\tDECODE(\n\t    true,\n\t    v_ACCT_9 = 'H', SUBSTR(DCAccountNumber, 1, 12),\n\t    v_ACCT_9 = 'D', SUBSTR(DCAccountNumber, 1, 12),\n\t    null\n\t) AS o_policy\n\tFROM SQ_Conv_Sweep_FIS_Payments\n),\nWB_BIL_RemittanceStage AS (\n\tINSERT INTO WB_BIL_RemittanceStage\n\t(ModifiedUserId, ModifiedDate, TransactionId, TransactionType, TransactionData, RemittanceSource, ProcessedStatusCode, ReconciliationDate, VendorAccountNumber, EffectiveDate, DateCleared, DateInitiated, PaidAmount, PaymentMode, TransactionStatus, ApprovalCode, AuthorizedBy, PolicyNumber)\n\tSELECT \n\tMod_UserID AS MODIFIEDUSERID, \n\to_Mod_date AS MODIFIEDDATE, \n\tTransactionID AS TRANSACTIONID, \n\to_transactionType AS TRANSACTIONTYPE, \n\tTRANSACTIONDATA, \n\tRemit_SRC AS REMITTANCESOURCE, \n\to_ProcessStatueCode AS PROCESSEDSTATUSCODE, \n\to_Reconcil_date AS RECONCILIATIONDATE, \n\to_Account AS VENDORACCOUNTNUMBER, \n\to_pol_eff_date AS EFFECTIVEDATE, \n\to_Pol_Cleared_date AS DATECLEARED, \n\to_Pol_init_Date AS DATEINITIATED, \n\tPAIDAMOUNT, \n\to_paymentMode AS PAYMENTMODE, \n\tStatus AS TRANSACTIONSTATUS, \n\tAPPROVALCODE, \n\tAuth_By AS AUTHORIZEDBY, \n\to_policy AS POLICYNUMBER\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "DataFeed -Informatica/BillingDataServices/"
+        },
+        "annotations": []
+    }
+}

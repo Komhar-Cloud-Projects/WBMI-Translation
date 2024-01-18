@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLT_REF_RELATION",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLT_REF_RELATION",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_clt_ref_relation_stage AS (\n\tSELECT clt_ref_relation_stage.clt_ref_relation_stage_id, clt_ref_relation_stage.client_id, clt_ref_relation_stage.cirf_ref_seq_nbr, clt_ref_relation_stage.history_vld_nbr, clt_ref_relation_stage.cirf_eff_dt, clt_ref_relation_stage.cirf_ref_id, clt_ref_relation_stage.ref_typ_cd, clt_ref_relation_stage.cirf_exp_dt, clt_ref_relation_stage.user_id, clt_ref_relation_stage.status_cd, clt_ref_relation_stage.terminal_id, clt_ref_relation_stage.cirf_eff_acy_ts, clt_ref_relation_stage.cirf_exp_acy_ts, clt_ref_relation_stage.extract_date, clt_ref_relation_stage.as_of_date, clt_ref_relation_stage.record_count, clt_ref_relation_stage.source_system_id \r\n\tFROM\r\n\t clt_ref_relation_stage\r\n\tWHERE clt_ref_relation_stage.cirf_eff_acy_ts >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_clt_ref_relation AS (\n\tSELECT\n\tclt_ref_relation_stage_id,\n\tclient_id,\n\tcirf_ref_seq_nbr,\n\thistory_vld_nbr,\n\tcirf_eff_dt,\n\tcirf_ref_id,\n\tref_typ_cd,\n\tcirf_exp_dt,\n\tuser_id,\n\tstatus_cd,\n\tterminal_id,\n\tcirf_eff_acy_ts,\n\tcirf_exp_acy_ts,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_clt_ref_relation_stage\n),\narch_clt_ref_relation_stage AS (\n\tINSERT INTO arch_clt_ref_relation_stage\n\t(clt_ref_relation_stage_id, client_id, cirf_ref_seq_nbr, history_vld_nbr, cirf_eff_dt, cirf_ref_id, ref_typ_cd, cirf_exp_dt, user_id, status_cd, terminal_id, cirf_eff_acy_ts, cirf_exp_acy_ts, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCLT_REF_RELATION_STAGE_ID, \n\tCLIENT_ID, \n\tCIRF_REF_SEQ_NBR, \n\tHISTORY_VLD_NBR, \n\tCIRF_EFF_DT, \n\tCIRF_REF_ID, \n\tREF_TYP_CD, \n\tCIRF_EXP_DT, \n\tUSER_ID, \n\tSTATUS_CD, \n\tTERMINAL_ID, \n\tCIRF_EFF_ACY_TS, \n\tCIRF_EXP_ACY_TS, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_clt_ref_relation\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchWorkDCTTransactionInsuranceLineLocationBridge",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchWorkDCTTransactionInsuranceLine_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTTransactionInsuranceLineLocationBridge AS (\n\tSELECT\n\t\tWorkDCTTransactionInsuranceLineLocationBridgeId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tLocationAssociationId,\n\t\tSessionId,\n\t\tLineId,\n\t\tIndividualRiskPremiumModification,\n\t\tCoverageId,\n\t\tCoverageRiskType,\n\t\tCoverageForm,\n\t\tRiskId,\n\t\tRiskType,\n\t\tExposure,\n\t\tCommissionPercentage,\n\t\tCoverageVersion,\n\t\tSpecialClassLevel1,\n\t\tBuildingNumber,\n\t\tPolicyCoverage,\n\t\tCauseOfLoss,\n\t\tILFTableAssignmentCode,\n\t\tOccupancyType,\n\t\tRetroactiveDate,\n\t\tOrginalPackageModifier,\n\t\tYearBuilt,\n\t\tExperienceModEffectiveDate,\n\t\tConstructionCode,\n\t\tRateEffectiveDate,\n\t\tRatingPlan,\n\t\tProtectionClass,\n\t\tMultipleLocationCreditFactor,\n\t\tPreferredPropertyCreditFactor,\n\t\tPerilGroup,\n\t\tWindCoverageIndicator,\n\t\tVehicleNumber,\n\t\tPredominantPersonalPropertyRateNumber,\n\t\tPredominantLiabilityLiabClassGroup,\n\t\tExposureBasis,\n\t\tSprinkerFlag AS SprinklerFlag,\n\t\tFullCoverageGlass,\n\t\tISOOccupancyType,\n\t\tOccupancyClassDescription,\n\t\tActiveBuildingFlag,\n\t\tRateType,\n\t\tPropertyType,\n\t\tOccupancyCategory,\n\t\tCensusBlockGroup,\n\t\tLatitude,\n\t\tLongitude,\n\t\tRatingTerritoryCode,\n\t\tPredominantBuildingBCCCode,\n\t\tPredominantBuildingClassCodeDescription\n\tFROM WorkDCTTransactionInsuranceLineLocationBridge\n),\nEXp_Default AS (\n\tSELECT\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\tWorkDCTTransactionInsuranceLineLocationBridgeId,\n\tLocationAssociationId,\n\tSessionId,\n\tLineId,\n\tIndividualRiskPremiumModification,\n\tCoverageId,\n\tCoverageRiskType,\n\tCoverageForm,\n\tRiskId,\n\tRiskType,\n\tExposure,\n\tCommissionPercentage,\n\tCoverageVersion,\n\tSpecialClassLevel1,\n\tBuildingNumber,\n\tPolicyCoverage,\n\tCauseOfLoss,\n\tILFTableAssignmentCode,\n\tOccupancyType,\n\tRetroactiveDate,\n\tOrginalPackageModifier,\n\tYearBuilt,\n\tExperienceModEffectiveDate,\n\tConstructionCode,\n\tRateEffectiveDate,\n\tRatingPlan,\n\tProtectionClass,\n\tMultipleLocationCreditFactor,\n\tPreferredPropertyCreditFactor,\n\tPerilGroup,\n\tWindCoverageIndicator,\n\t-- *INF*: DECODE(WindCoverageIndicator, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    WindCoverageIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_WindCoverageIndicator,\n\tVehicleNumber,\n\tPredominantPersonalPropertyRateNumber,\n\tPredominantLiabilityLiabClassGroup,\n\tExposureBasis,\n\tSprinklerFlag,\n\t-- *INF*: DECODE(SprinklerFlag,'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    SprinklerFlag,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_SprinklerFlag,\n\tFullCoverageGlass AS i_FullCoverageGlass,\n\t-- *INF*: DECODE(i_FullCoverageGlass,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_FullCoverageGlass,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_FullCoverageGlass,\n\tISOOccupancyType,\n\tOccupancyClassDescription,\n\tActiveBuildingFlag AS i_ActiveBuildingFlag,\n\t-- *INF*: DECODE(i_ActiveBuildingFlag,'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ActiveBuildingFlag,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ActiveBuildingFlag,\n\tRateType,\n\tPropertyType,\n\tOccupancyCategory,\n\tCensusBlockGroup,\n\tLatitude,\n\tLongitude,\n\tRatingTerritoryCode,\n\tPredominantBuildingBCCCode,\n\tPredominantBuildingClassCodeDescription\n\tFROM SQ_WorkDCTTransactionInsuranceLineLocationBridge\n),\nArchWorkDCTTransactionInsuranceLineLocationBridge AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWorkDCTTransactionInsuranceLineLocationBridge\n\t(ExtractDate, SourceSystemId, AuditId, WorkDCTTransactionInsuranceLineLocationBridgeId, LocationAssociationId, SessionId, LineId, IndividualRiskPremiumModification, CoverageId, CoverageRiskType, CoverageForm, RiskId, RiskType, Exposure, CommissionPercentage, CoverageVersion, SpecialClassLevel1, BuildingNumber, PolicyCoverage, CauseOfLoss, ILFTableAssignmentCode, OccupancyType, RetroactiveDate, OrginalPackageModifier, YearBuilt, ExperienceModEffectiveDate, ConstructionCode, RateEffectiveDate, RatingPlan, ProtectionClass, MultipleLocationCreditFactor, PreferredPropertyCreditFactor, PerilGroup, WindCoverageIndicator, VehicleNumber, ExposureBasis, SprinkerFlag, PredominantPersonalPropertyRateNumber, PredominantLiabilityLiabClassGroup, FullCoverageGlass, ISOOccupancyType, OccupancyClassDescription, ActiveBuildingFlag, RateType, PropertyType, OccupancyCategory, CensusBlockGroup, Latitude, Longitude, RatingTerritoryCode, PredominantBuildingBCCCode, PredominantBuildingClassCodeDescription)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\taudit_id AS AUDITID, \n\tWORKDCTTRANSACTIONINSURANCELINELOCATIONBRIDGEID, \n\tLOCATIONASSOCIATIONID, \n\tSESSIONID, \n\tLINEID, \n\tINDIVIDUALRISKPREMIUMMODIFICATION, \n\tCOVERAGEID, \n\tCOVERAGERISKTYPE, \n\tCOVERAGEFORM, \n\tRISKID, \n\tRISKTYPE, \n\tEXPOSURE, \n\tCOMMISSIONPERCENTAGE, \n\tCOVERAGEVERSION, \n\tSPECIALCLASSLEVEL1, \n\tBUILDINGNUMBER, \n\tPOLICYCOVERAGE, \n\tCAUSEOFLOSS, \n\tILFTABLEASSIGNMENTCODE, \n\tOCCUPANCYTYPE, \n\tRETROACTIVEDATE, \n\tORGINALPACKAGEMODIFIER, \n\tYEARBUILT, \n\tEXPERIENCEMODEFFECTIVEDATE, \n\tCONSTRUCTIONCODE, \n\tRATEEFFECTIVEDATE, \n\tRATINGPLAN, \n\tPROTECTIONCLASS, \n\tMULTIPLELOCATIONCREDITFACTOR, \n\tPREFERREDPROPERTYCREDITFACTOR, \n\tPERILGROUP, \n\to_WindCoverageIndicator AS WINDCOVERAGEINDICATOR, \n\tVEHICLENUMBER, \n\tEXPOSUREBASIS, \n\to_SprinklerFlag AS SPRINKERFLAG, \n\tPREDOMINANTPERSONALPROPERTYRATENUMBER, \n\tPREDOMINANTLIABILITYLIABCLASSGROUP, \n\to_FullCoverageGlass AS FULLCOVERAGEGLASS, \n\tISOOCCUPANCYTYPE, \n\tOCCUPANCYCLASSDESCRIPTION, \n\to_ActiveBuildingFlag AS ACTIVEBUILDINGFLAG, \n\tRATETYPE, \n\tPROPERTYTYPE, \n\tOCCUPANCYCATEGORY, \n\tCENSUSBLOCKGROUP, \n\tLATITUDE, \n\tLONGITUDE, \n\tRATINGTERRITORYCODE, \n\tPREDOMINANTBUILDINGBCCCODE, \n\tPREDOMINANTBUILDINGCLASSCODEDESCRIPTION\n\tFROM EXp_Default\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

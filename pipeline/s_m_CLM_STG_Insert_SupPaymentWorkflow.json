@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_STG_Insert_SupPaymentWorkflow",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Insert_SupPaymentWorkflow",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SupPaymentWorkflow AS (\n\tselect [SupPaymentWorkflowId]\r\n\t      ,[CreatedDate]\r\n\t      ,[CreatedUserId]\r\n\t      ,[ModifiedDate]\r\n\t      ,[ModifiedUserId]\r\n\t      ,[PaymentWorkFlow]\r\n\tfrom [dbo].[SupPaymentWorkflow]\r\n\twhere (CreatedDate  >= '@{pipeline().parameters.SELECTION_START_TS}' \r\n\t    or ModifiedDate  >= '@{pipeline().parameters.SELECTION_START_TS}')\n),\nEXPTRANS AS (\n\tSELECT\n\tSupPaymentWorkflowId,\n\tCreatedDate,\n\tCreatedUserId,\n\tModifiedDate,\n\tModifiedUserId,\n\tPaymentWorkFlow,\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\t'InsurPay' AS SourceSystemId\n\tFROM SQ_SupPaymentWorkflow\n),\nSupPaymentWorkflowStage AS (\n\tTRUNCATE TABLE SupPaymentWorkflowStage;\n\tINSERT INTO SupPaymentWorkflowStage\n\t(ExtractDate, SourceSystemId, SupPaymentWorkflowId, CreatedDate, CreatedUserId, ModifiedDate, ModifiedUserId, PaymentWorkflow)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tSUPPAYMENTWORKFLOWID, \n\tCREATEDDATE, \n\tCREATEDUSERID, \n\tMODIFIEDDATE, \n\tMODIFIEDUSERID, \n\tPaymentWorkFlow AS PAYMENTWORKFLOW\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

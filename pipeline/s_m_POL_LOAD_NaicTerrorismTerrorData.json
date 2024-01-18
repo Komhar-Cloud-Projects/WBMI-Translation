@@ -1,0 +1,55 @@
+{
+    "name": "s_m_POL_LOAD_NaicTerrorismTerrorData",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_LOAD_NaicTerrorismTerrorData",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkNAICTerrorismSubTotal AS (\n\tSELECT \r\n\t                     t.WorkNAICTerrorismSubTotalId as WorkNAICTerrorismSubTotalId, \r\n\t                     t.CreatedDate as CreatedDate, \r\n\t                     t.ModifiedDate as ModifiedDate, \r\n\t                     t.pol_key as pol_key, \r\n\t                     t.RatingStatCoverageID as RatingStatCoverageID,\r\n\t                     t.SourceSystemID as SourceSystemID, \r\n\t                     t.TableCode as TableCode,\r\n\t                     t.[Year] as Year,\r\n\t\t\t\t  t.AuditId as AuditId,\r\n\t                     t.Stabbr as Stabbr, \r\n\t                     t.CoCode as CoCode, \r\n\t                     t.CoType as CoType, \r\n\t                     t.Zip as Zip, \r\n\t                     t.PolCat as PolCat, \r\n\t                     t.Coverage as Coverage, \r\n\t                     t.IndCodeType as IndCodeType, \r\n\t                     t.Code as Code, \r\n\t                     t.PolType as PolType, \r\n\t                     t.CovType as CovType, \r\n\t                     t.PolNum as PolNum, \r\n\t                     t.EstNum as EstNum, \r\n\t                     t.Limit as Limit, \r\n\t                     t.DirectWrittenPremium as DirectWrittenPremium, \r\n\t                     t.EarnedPremium as EarnedPremium, \r\n\t                     t.TableCodeInsuranceLine as TableCodeInsuranceLine, \r\n\t                     t.ReinsurancePercent as ReinsurancePercent, \r\n\t                     t.ReinsuranceEarnedPremium as ReinsuranceEarnedPremium, \r\n\t                     t.TerrorismRiskInd as TerrorismRiskInd, \r\n\t                     t.BlackListCoverageFlag as BlackListCoverageFlag, \r\n\t                     t.CoverageLimitValueGLStateOverride as CoverageLimitValueGLStateOverride, \r\n\t                     t.LimitHashKey as LimitHashKey,\r\n\t                     CASE\r\n\t                     WHEN c.CoverageCode IN ('BRDLBL','CONDOMISC','FOODCN','ORDLC','RPTFORM','SEWER','USERVDDBR','USERVDDPO','UTILSERVBLDG','UTILSERVPP', 'UTILSERVTE','VACPMT') THEN 0\r\n\t                     WHEN c.CoverageCode = 'TRIA' and c.ProductCode = '430' and c.PolicyOfferingCode='430' and c.InsuranceReferenceLineOfBusinessCode='300' THEN 0\r\n\t                     WHEN c.CoverageCode = 'TRIA' and c.ProductCode = '300' THEN 0\r\n\t                     WHEN c.CoverageCode = 'TRIA' and c.ProductCode = '450' and c.PolicyOfferingCode='450' and c.InsuranceReferenceLineOfBusinessCode in ('300','500') THEN 0\r\n\t                     ELSE t.Deductible\r\n\t                     END AS Deductible,\r\n\t                     c.Lob as Lob,\r\n\t                     c.InsuranceLineCode as InsuranceLineCode, \r\n\t                     c.CoverageCode as CoverageCode,\r\n\t\t\t\t c.MaxRiskLocationAKID as MaxRiskLocationAKID,\r\n\t\t\t\t CASE WHEN CHARINDEX('-', c.CoverageCode) > 0 then\r\n\t\t\t\t   LEFT(c.CoverageCode, CHARINDEX('-', c.CoverageCode) - 1) ELSE c.CoverageCode END as CoverageCodeBreakup\r\n\tFROM         \r\n\t\t dbo.WorkNAICTerrorismSubTotal AS t WITH (nolock) \r\n\t       INNER JOIN\r\n\t(\r\n\tselect\r\n\tStatisticalCoverageAKID,\r\n\tRatingCoverageAKId,\r\n\tSourceSystemID,\r\n\tpol_key,\r\n\tInsuranceLineCode,\r\n\tCoverageCode,\r\n\tZipPostalCode,\r\n\tPolicyEffectiveDateYear,\r\n\tmax(RiskLocationAKID) as MaxRiskLocationAKID,\r\n\tcase when AslNum = '2' THEN '02' ELSE lob END as Lob,\r\n\tAuditId,\r\n\tProductCode,\r\n\tPolicyOfferingCode,\r\n\tInsuranceReferenceLineOfBusinessCode\r\n\tFROM\r\n\tWorkNAICTerrorismControl \r\n\tWHERE \r\n\tSourceSystemID='@{pipeline().parameters.SOURCE_SYSTEM_ID}' AND \r\n\tPolicyEffectiveDateYear='@{pipeline().parameters.YEAR}' AND\r\n\tAuditid=@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tGROUP BY\r\n\tStatisticalCoverageAKID,\r\n\tRatingCoverageAKId,\r\n\tSourceSystemID,\r\n\tpol_key,\r\n\tInsuranceLineCode,\r\n\tCoverageCode,\r\n\tZipPostalCode,\r\n\tPolicyEffectiveDateYear,\r\n\tcase when AslNum = '2' THEN '02' ELSE lob END,\r\n\tAuditId,\r\n\tProductCode,\r\n\tPolicyOfferingCode,\r\n\tInsuranceReferenceLineOfBusinessCode\r\n\t) c on \r\n\tt.SourceSystemID=C.SourceSystemID and \r\n\tt.RatingStatCoverageID=C.RatingCoverageAKId and\r\n\tt.Year=C.PolicyEffectiveDateYear and \r\n\tt.pol_key=C.pol_key and \r\n\tt.zip=C.ZipPostalCode and\r\n\tt.AuditId=C.AuditId\r\n\tWHERE \r\n\tt.Year='@{pipeline().parameters.YEAR}' AND \r\n\tt.SourceSystemID='@{pipeline().parameters.SOURCE_SYSTEM_ID}' AND\r\n\tt.auditid = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t@{pipeline().parameters.WHERE}\n),\nEXPTRANS AS (\n\tSELECT\n\tWorkNAICTerrorismSubTotalId,\n\tCreatedDate,\n\tModifiedDate,\n\tpol_key,\n\tRatingStatCoverageID,\n\tSourceSystemID,\n\tTableCode,\n\tYear,\n\tAuditId,\n\tStabbr,\n\tCoCode,\n\tCoType,\n\tZip,\n\tPolCat,\n\tCoverage,\n\tIndCodeType,\n\tCode,\n\tPolType,\n\tCovType,\n\tPolNum,\n\tEstNum,\n\tLimit,\n\tDirectWrittenPremium,\n\tEarnedPremium,\n\tTableCodeInsuranceLine,\n\tReinsurancePercent,\n\tReinsuranceEarnedPremium,\n\tTerrorismRiskInd,\n\tBlackListCoverageFlag,\n\tCoverageLimitValueGLStateOverride,\n\tLimitHashKey,\n\tDeductible,\n\tLob,\n\tInsuranceLineCode,\n\tCoverageCode,\n\tMaxRiskLocationAKID,\n\tCoverageCodeBreakup\n\tFROM SQ_WorkNAICTerrorismSubTotal\n),\nTerrorData AS (\n\n\t------------ PRE SQL ----------\n\tdelete from TerrorData where AuditId=@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} and Year=@{pipeline().parameters.YEAR}\n\t-------------------------------\n\n\n\tINSERT INTO TerrorData\n\t(WorkNAICTerrorismSubTotalId, CreatedDate, ModifiedDate, PolKey, RatingStatCoverageID, SourceSystemID, TableCode, Year, AuditId, Stabbr, CoCode, CoType, Zip, PolCat, Coverage, IndCodeType, Code, PolType, CovType, PolNum, EstNum, Limit, DirectWrittenPremium, EarnedPremium, TableCodeInsuranceLine, ReinsurancePercent, ReinsuranceEarnedPremium, TerrorismRiskInd, BlackListCoverageFlag, CoverageLimitValueGLStateOverride, LimitHashKey, Deductible, LOB, InsuranceLineCode, CoverageCode, MaxRiskLocationAKID, CoverageCodeBreakup)\n\tSELECT \n\tWORKNAICTERRORISMSUBTOTALID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tpol_key AS POLKEY, \n\tRATINGSTATCOVERAGEID, \n\tSOURCESYSTEMID, \n\tTABLECODE, \n\tYEAR, \n\tAUDITID, \n\tSTABBR, \n\tCOCODE, \n\tCOTYPE, \n\tZIP, \n\tPOLCAT, \n\tCOVERAGE, \n\tINDCODETYPE, \n\tCODE, \n\tPOLTYPE, \n\tCOVTYPE, \n\tPOLNUM, \n\tESTNUM, \n\tLIMIT, \n\tDIRECTWRITTENPREMIUM, \n\tEARNEDPREMIUM, \n\tTABLECODEINSURANCELINE, \n\tREINSURANCEPERCENT, \n\tREINSURANCEEARNEDPREMIUM, \n\tTERRORISMRISKIND, \n\tBLACKLISTCOVERAGEFLAG, \n\tCOVERAGELIMITVALUEGLSTATEOVERRIDE, \n\tLIMITHASHKEY, \n\tDEDUCTIBLE, \n\tLob AS LOB, \n\tINSURANCELINECODE, \n\tCOVERAGECODE, \n\tMAXRISKLOCATIONAKID, \n\tCOVERAGECODEBREAKUP\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "YEAR": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "DataFeed -Informatica/PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

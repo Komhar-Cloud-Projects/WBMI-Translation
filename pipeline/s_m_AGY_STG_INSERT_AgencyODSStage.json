@@ -1,0 +1,47 @@
+{
+    "name": "s_m_AGY_STG_INSERT_AgencyODSStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_STG_INSERT_AgencyODSStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Agency AS (\n\tSELECT\n\t\tAgencyID,\n\t\tSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyCode,\n\t\tLegalName,\n\t\tDoingBusinessAsName,\n\t\tPrimaryPhoneNumber,\n\t\tPrimaryFaxNumber,\n\t\tPrimaryEmailAddress,\n\t\tStatusCode,\n\t\tStatusDescription,\n\t\tAppointedDate,\n\t\tTerminatedDate,\n\t\tCustomerCareStatus,\n\t\tFederalTaxId,\n\t\tLicensedIndicator,\n\t\tProfitSharingGuaranteeFlag,\n\t\tAbbreviatedName,\n\t\tAssignedStateCode,\n\t\tClosedDate\n\tFROM Agency\n),\nEXP_Add_MetaDataFields AS (\n\tSELECT\n\tAgencyID,\n\tSourceSystemID,\n\tHashKey,\n\tModifiedUserID,\n\tModifiedDate,\n\tAgencyCode,\n\tLegalName,\n\tDoingBusinessAsName,\n\tPrimaryPhoneNumber,\n\tPrimaryFaxNumber,\n\tPrimaryEmailAddress,\n\tStatusCode,\n\tStatusDescription,\n\tAppointedDate,\n\tTerminatedDate,\n\tCustomerCareStatus,\n\tFederalTaxId,\n\tLicensedIndicator,\n\tProfitSharingGuaranteeFlag,\n\tAbbreviatedName,\n\tAssignedStateCode,\n\tClosedDate,\n\tsysdate AS Extract_Date,\n\tsysdate AS As_of_Date,\n\t1 AS Record_Count,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS Source_System_ID\n\tFROM SQ_Agency\n),\nAgencyODSStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyODSStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyODSStage\n\t(AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, LegalName, DoingBusinessAsName, PrimaryPhoneNumber, PrimaryFaxNumber, PrimaryEmailAddress, StatusCode, StatusDescription, AppointedDate, TerminatedDate, CustomerCareStatus, FederalTaxID, ExtractDate, AsOfDate, RecordCount, SourceSystemID, ProfitSharingGuaranteeFlag, LicensedIndicator, AbbreviatedName, AssignedStateCode, ClosedDate)\n\tSELECT \n\tSourceSystemID AS AGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tAGENCYCODE, \n\tLEGALNAME, \n\tDOINGBUSINESSASNAME, \n\tPRIMARYPHONENUMBER, \n\tPRIMARYFAXNUMBER, \n\tPRIMARYEMAILADDRESS, \n\tSTATUSCODE, \n\tSTATUSDESCRIPTION, \n\tAPPOINTEDDATE, \n\tTERMINATEDDATE, \n\tCUSTOMERCARESTATUS, \n\tFederalTaxId AS FEDERALTAXID, \n\tExtract_Date AS EXTRACTDATE, \n\tAs_of_Date AS ASOFDATE, \n\tRecord_Count AS RECORDCOUNT, \n\tSource_System_ID AS SOURCESYSTEMID, \n\tPROFITSHARINGGUARANTEEFLAG, \n\tLICENSEDINDICATOR, \n\tABBREVIATEDNAME, \n\tASSIGNEDSTATECODE, \n\tCLOSEDDATE\n\tFROM EXP_Add_MetaDataFields\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

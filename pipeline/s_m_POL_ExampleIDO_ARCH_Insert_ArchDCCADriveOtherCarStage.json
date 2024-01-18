@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCADriveOtherCarStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCADriveOtherCarStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCADriveOtherCarStage AS (\n\tSELECT\n\t\tDCCADriveOtherCarStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCA_StateId,\n\t\tCA_DriveOtherCarId,\n\t\tSessionId,\n\t\tId,\n\t\tCertificateOfInsurance,\n\t\tNumberOfEmployeesEstimate,\n\t\tRiskDOCStacked,\n\t\tRiskDOCUIMStacked,\n\t\tTerritory\n\tFROM DCCADriveOtherCarStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCCADriveOtherCarStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCA_StateId,\n\tCA_DriveOtherCarId,\n\tSessionId,\n\tId,\n\tCertificateOfInsurance,\n\tNumberOfEmployeesEstimate,\n\tRiskDOCStacked AS i_RiskDOCStacked,\n\tRiskDOCUIMStacked AS i_RiskDOCUIMStacked,\n\t-- *INF*: DECODE(i_RiskDOCStacked, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_RiskDOCStacked,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_RiskDOCStacked,\n\t-- *INF*: DECODE(i_RiskDOCUIMStacked, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_RiskDOCUIMStacked,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_RiskDOCUIMStacked,\n\tTerritory,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCADriveOtherCarStage\n),\nArchDCCADriveOtherCarStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCADriveOtherCarStage\n\t(ExtractDate, SourceSystemId, AuditId, DCCADriveOtherCarStageId, CA_StateId, CA_DriveOtherCarId, SessionId, Id, CertificateOfInsurance, NumberOfEmployeesEstimate, RiskDOCStacked, RiskDOCUIMStacked, Territory)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCCADRIVEOTHERCARSTAGEID, \n\tCA_STATEID, \n\tCA_DRIVEOTHERCARID, \n\tSESSIONID, \n\tID, \n\tCERTIFICATEOFINSURANCE, \n\tNUMBEROFEMPLOYEESESTIMATE, \n\to_RiskDOCStacked AS RISKDOCSTACKED, \n\to_RiskDOCUIMStacked AS RISKDOCUIMSTACKED, \n\tTERRITORY\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

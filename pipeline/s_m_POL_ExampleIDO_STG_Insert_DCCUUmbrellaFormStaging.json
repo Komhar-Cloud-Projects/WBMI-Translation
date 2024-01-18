@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCCUUmbrellaFormStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCCUUmbrellaFormStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_to_DC_CU_UmbrellaForm AS (\n\tWITH cte_DCCUUmbrellaForm(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CU_LineId, \r\n\tX.CU_UmbrellaFormId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.BICoverageProvided, \r\n\tX.GarageBIAndPDNotApplicable, \r\n\tX.PDCoverageProvided, \r\n\tX.PersonalAdvertisingInjuryCoverageProvided \r\n\tFROM\r\n\tDC_CU_UmbrellaForm X\r\n\tinner join\r\n\tcte_DCCUUmbrellaForm Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_handle AS (\n\tSELECT\n\tCU_LineId,\n\tCU_UmbrellaFormId,\n\tSessionId,\n\tId,\n\tBICoverageProvided,\n\tGarageBIAndPDNotApplicable,\n\tPDCoverageProvided,\n\tPersonalAdvertisingInjuryCoverageProvided,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemid,\n\t-- *INF*: decode(BICoverageProvided,'T',1,'F',0,NULL)\n\tdecode(\n\t    BICoverageProvided,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_BICoverageProvided,\n\t-- *INF*: DECODE(GarageBIAndPDNotApplicable,'T',1,'F',0,NULL)\n\tDECODE(\n\t    GarageBIAndPDNotApplicable,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_GarageBIAndPDNotApplicable,\n\t-- *INF*: decode(PDCoverageProvided,'T',1,'F',0,NULL)\n\tdecode(\n\t    PDCoverageProvided,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PDCoverageProvided,\n\t-- *INF*: decode(PersonalAdvertisingInjuryCoverageProvided,'T',1,'F',0,NULL)\n\tdecode(\n\t    PersonalAdvertisingInjuryCoverageProvided,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PersonalAdvertisingInjuryCoverageProvided\n\tFROM SQ_to_DC_CU_UmbrellaForm\n),\nDCCUUmbrellaFormStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCUUmbrellaFormStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCUUmbrellaFormStaging\n\t(ExtractDate, SourceSystemId, CU_LineId, CU_UmbrellaFormId, SessionId, Id, BICoverageProvided, GarageBIAndPDNotApplicable, PDCoverageProvided, PersonalAdvertisingInjuryCoverageProvided)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemid AS SOURCESYSTEMID, \n\tCU_LINEID, \n\tCU_UMBRELLAFORMID, \n\tSESSIONID, \n\tID, \n\to_BICoverageProvided AS BICOVERAGEPROVIDED, \n\to_GarageBIAndPDNotApplicable AS GARAGEBIANDPDNOTAPPLICABLE, \n\to_PDCoverageProvided AS PDCOVERAGEPROVIDED, \n\to_PersonalAdvertisingInjuryCoverageProvided AS PERSONALADVERTISINGINJURYCOVERAGEPROVIDED\n\tFROM EXP_handle\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

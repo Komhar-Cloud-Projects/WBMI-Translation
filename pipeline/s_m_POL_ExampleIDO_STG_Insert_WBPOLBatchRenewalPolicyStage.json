@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBPOLBatchRenewalPolicyStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBPOLBatchRenewalPolicyS_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_POL_BatchRenewalPolicy AS (\n\tSELECT WB_POL_BatchRenewalPolicy.HistoryId, WB_POL_BatchRenewalPolicy.ModifiedUserId, WB_POL_BatchRenewalPolicy.ModifiedDate, WB_POL_BatchRenewalPolicy.QuoteId, WB_POL_BatchRenewalPolicy.HistoryIdRenewalPolicyVersion, WB_POL_BatchRenewalPolicy.PolicyQualifiedAutomaticRenewalIndicator, WB_POL_BatchRenewalPolicy.CustomerQualifiedAutomaticRenewalIndicator, WB_POL_BatchRenewalPolicy.CustomerBatchProcessedIndicator, WB_POL_BatchRenewalPolicy.AutoRenewedIndicator, WB_POL_BatchRenewalPolicy.TransactionDate, WB_POL_BatchRenewalPolicy.BusinessDivision,\r\n\tWB_POL_BatchRenewalPolicy.CustomerCarePolicyQualifiedAutomaticRenewalIndicator \r\n\tFROM WBExampleData.dbo.WB_POL_BatchRenewalPolicy \r\n\tWHERE ModifiedDate>='@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_Metadata AS (\n\tSELECT\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tHistoryId,\n\tModifiedUserId,\n\tModifiedDate,\n\tQuoteId,\n\tHistoryIdRenewalPolicyVersion,\n\tPolicyQualifiedAutomaticRenewalIndicator AS i_PolicyQualifiedAutomaticRenewalIndicator,\n\t-- *INF*: IIF(i_PolicyQualifiedAutomaticRenewalIndicator='T','1','0')\n\tIFF(i_PolicyQualifiedAutomaticRenewalIndicator = 'T', '1', '0') AS o_PolicyQualifiedAutomaticRenewalIndicator,\n\tCustomerQualifiedAutomaticRenewalIndicator AS i_CustomerQualifiedAutomaticRenewalIndicator,\n\t-- *INF*: IIF(i_CustomerQualifiedAutomaticRenewalIndicator='T','1','0')\n\tIFF(i_CustomerQualifiedAutomaticRenewalIndicator = 'T', '1', '0') AS o_CustomerQualifiedAutomaticRenewalIndicator,\n\tCustomerBatchProcessedIndicator AS i_CustomerBatchProcessedIndicator,\n\t-- *INF*: IIF(i_CustomerBatchProcessedIndicator='T','1','0')\n\tIFF(i_CustomerBatchProcessedIndicator = 'T', '1', '0') AS o_CustomerBatchProcessedIndicator,\n\tAutoRenewedIndicator AS i_AutoRenewedIndicator,\n\t-- *INF*: IIF(i_AutoRenewedIndicator='T','1','0')\n\tIFF(i_AutoRenewedIndicator = 'T', '1', '0') AS o_AutoRenewedIndicator,\n\tTransactionDate,\n\tBusinessDivision,\n\tCustomerCarePolicyQualifiedAutomaticRenewalIndicator,\n\t-- *INF*: iif(CustomerCarePolicyQualifiedAutomaticRenewalIndicator='T','1','0')\n\tIFF(CustomerCarePolicyQualifiedAutomaticRenewalIndicator = 'T', '1', '0') AS o_CustomerCarePolicyQualifiedAutomaticRenewalIndicator\n\tFROM SQ_WB_POL_BatchRenewalPolicy\n),\nWBPOLBatchRenewalPolicyStage AS (\n\tTRUNCATE TABLE WBPOLBatchRenewalPolicyStage;\n\tINSERT INTO WBPOLBatchRenewalPolicyStage\n\t(ExtractDate, SourceSystemid, HistoryId, ModifiedUserId, ModifiedDate, QuoteId, HistoryIdRenewalPolicyVersion, PolicyQualifiedAutomaticRenewalIndicator, CustomerQualifiedAutomaticRenewalIndicator, CustomerBatchProcessedIndicator, AutoRenewedIndicator, TransactionDate, BusinessDivision, CustomerCarePolicyQualifiedAutomaticRenewalIndicator)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tHISTORYID, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tQUOTEID, \n\tHISTORYIDRENEWALPOLICYVERSION, \n\to_PolicyQualifiedAutomaticRenewalIndicator AS POLICYQUALIFIEDAUTOMATICRENEWALINDICATOR, \n\to_CustomerQualifiedAutomaticRenewalIndicator AS CUSTOMERQUALIFIEDAUTOMATICRENEWALINDICATOR, \n\to_CustomerBatchProcessedIndicator AS CUSTOMERBATCHPROCESSEDINDICATOR, \n\to_AutoRenewedIndicator AS AUTORENEWEDINDICATOR, \n\tTRANSACTIONDATE, \n\tBUSINESSDIVISION, \n\to_CustomerCarePolicyQualifiedAutomaticRenewalIndicator AS CUSTOMERCAREPOLICYQUALIFIEDAUTOMATICRENEWALINDICATOR\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleData_STG_Insert_DCBILReceivableWriteOffStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleData_STG_Insert_DCBILReceivableWriteOff_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_BIL_ReceivableWriteOff AS (\n\tSELECT\n\t\tReceivableWriteOffId,\n\t\tReceivableSourceId,\n\t\tAccountId,\n\t\tPolicyTermId,\n\t\tReceivableSourceTypeCode,\n\t\tWriteOffStatusCode,\n\t\tWriteOffAmount,\n\t\tWriteOffTypeCode,\n\t\tWriteOffRequestDate,\n\t\tWriteOffProcessedDateTime,\n\t\tWriteOffReasonCode,\n\t\tReversalDateTime,\n\t\tReversalReasonCode,\n\t\tLastUpdatedTimestamp,\n\t\tLastUpdatedUserId,\n\t\tReceivableWriteOffLockingTS,\n\t\tWriteOffNetAmount,\n\t\tWriteOffCommissionAmount,\n\t\tTransactionGUID\n\tFROM DC_BIL_ReceivableWriteOff\n),\nEXP_Metadata AS (\n\tSELECT\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tReceivableWriteOffId,\n\tReceivableSourceId,\n\tAccountId,\n\tPolicyTermId,\n\tReceivableSourceTypeCode,\n\tWriteOffStatusCode,\n\tWriteOffAmount,\n\tWriteOffTypeCode,\n\tWriteOffRequestDate,\n\tWriteOffProcessedDateTime,\n\tWriteOffReasonCode,\n\tReversalDateTime,\n\tReversalReasonCode,\n\tLastUpdatedTimestamp,\n\tLastUpdatedUserId,\n\tReceivableWriteOffLockingTS,\n\tWriteOffNetAmount,\n\tWriteOffCommissionAmount,\n\tTransactionGUID\n\tFROM SQ_DC_BIL_ReceivableWriteOff\n),\nDCBILReceivableWriteOffStage AS (\n\tTRUNCATE TABLE DCBILReceivableWriteOffStage;\n\tINSERT INTO DCBILReceivableWriteOffStage\n\t(ExtractDate, SourceSystemId, ReceivableWriteOffId, ReceivableSourceId, AccountId, PolicyTermId, ReceivableSourceTypeCode, WriteOffStatusCode, WriteOffAmount, WriteOffTypeCode, WriteOffRequestDate, WriteOffProcessedDateTime, WriteOffReasonCode, ReversalDateTime, ReversalReasonCode, LastUpdatedTimestamp, LastUpdatedUserId, ReceivableWriteOffLockingTS, WriteOffNetAmount, WriteOffCommissionAmount, TransactionGUID)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tRECEIVABLEWRITEOFFID, \n\tRECEIVABLESOURCEID, \n\tACCOUNTID, \n\tPOLICYTERMID, \n\tRECEIVABLESOURCETYPECODE, \n\tWRITEOFFSTATUSCODE, \n\tWRITEOFFAMOUNT, \n\tWRITEOFFTYPECODE, \n\tWRITEOFFREQUESTDATE, \n\tWRITEOFFPROCESSEDDATETIME, \n\tWRITEOFFREASONCODE, \n\tREVERSALDATETIME, \n\tREVERSALREASONCODE, \n\tLASTUPDATEDTIMESTAMP, \n\tLASTUPDATEDUSERID, \n\tRECEIVABLEWRITEOFFLOCKINGTS, \n\tWRITEOFFNETAMOUNT, \n\tWRITEOFFCOMMISSIONAMOUNT, \n\tTRANSACTIONGUID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

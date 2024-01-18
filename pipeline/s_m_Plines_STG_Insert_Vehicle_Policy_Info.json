@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Plines_STG_Insert_Vehicle_Policy_Info",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Plines_STG_Insert_Vehicle_Policy_Info",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_vehicle_policy_info AS (\n\tSELECT\n\t\tpolicy_num,\n\t\tpolicy_sym,\n\t\tpolicy_mod,\n\t\tpolicy_mco,\n\t\tloss_flag,\n\t\tacc_violation_flag,\n\t\tbridge_flag,\n\t\ttrans_ins_within_agency_flag,\n\t\teno_prim_ins_flag,\n\t\trollover_flag,\n\t\teno_extend_flag,\n\t\teno_connect_garage_bus_flag,\n\t\thm_own_disc_flag,\n\t\ttransfer_disc_flag,\n\t\tres_driver_disc_flag,\n\t\tveh_cotitle_flag,\n\t\tmulti_car_flag,\n\t\tauto_cov_decline_flag,\n\t\tveh_home_own_disc,\n\t\town_personal_auto_flag,\n\t\tcar_dealer_flag,\n\t\tinsd_elsewhere_flag,\n\t\tlicensed_driver_no_auto_ins_flag,\n\t\tspecialty_veh_flag,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\tcorp_own_flag,\n\t\tfour_or_less_flag,\n\t\tcorp_own_veh_pers_use_flag,\n\t\tpublic_or_livery_convey_flag,\n\t\tperm_assign_to_insd_flag,\n\t\tcorp_own_veh_oper_by_insd_flag,\n\t\tused_for_insd_occupation_flag,\n\t\tkept_at_school_flag,\n\t\tsigned_auto_supp_flag,\n\t\tcorp_own_descript,\n\t\tkept_at_school_descript,\n\t\tsigned_reject_auto_supp_flag,\n\t\tmanually_rated_code\n\tFROM vehicle_policy_info\n),\nEXP_VEHICLE_POLICY_INFO AS (\n\tSELECT\n\tpolicy_num,\n\tpolicy_sym,\n\tpolicy_mod,\n\tpolicy_mco,\n\tloss_flag,\n\tacc_violation_flag,\n\tbridge_flag,\n\ttrans_ins_within_agency_flag,\n\teno_prim_ins_flag,\n\trollover_flag,\n\teno_extend_flag,\n\teno_connect_garage_bus_flag,\n\thm_own_disc_flag,\n\ttransfer_disc_flag,\n\tres_driver_disc_flag,\n\tveh_cotitle_flag,\n\tmulti_car_flag,\n\tauto_cov_decline_flag,\n\tveh_home_own_disc,\n\town_personal_auto_flag,\n\tcar_dealer_flag,\n\tinsd_elsewhere_flag,\n\tlicensed_driver_no_auto_ins_flag,\n\tspecialty_veh_flag,\n\tmodified_date,\n\tmodified_user_id,\n\tcorp_own_flag,\n\tfour_or_less_flag,\n\tcorp_own_veh_pers_use_flag,\n\tpublic_or_livery_convey_flag,\n\tperm_assign_to_insd_flag,\n\tcorp_own_veh_oper_by_insd_flag,\n\tused_for_insd_occupation_flag,\n\tkept_at_school_flag,\n\tsigned_auto_supp_flag,\n\tcorp_own_descript,\n\tkept_at_school_descript,\n\tsigned_reject_auto_supp_flag,\n\tmanually_rated_code,\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t'' AS RECORD_COUNT,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID\n\tFROM SQ_vehicle_policy_info\n),\nvehicle_policy_info_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.vehicle_policy_info_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.vehicle_policy_info_stage\n\t(policy_num, policy_sym, policy_mod, policy_mco, loss_flag, acc_violation_flag, bridge_flag, trans_ins_within_agency_flag, eno_prim_ins_flag, rollover_flag, eno_extend_flag, eno_connect_garage_bus_flag, hm_own_disc_flag, transfer_disc_flag, res_driver_disc_flag, veh_cotitle_flag, multi_car_flag, auto_cov_decline_flag, veh_home_own_disc, own_personal_auto_flag, car_dealer_flag, insd_elsewhere_flag, licensed_driver_no_auto_ins_flag, specialty_veh_flag, modified_date, modified_user_id, corp_own_flag, four_or_less_flag, corp_own_veh_pers_use_flag, public_or_livery_convey_flag, perm_assign_to_insd_flag, corp_own_veh_oper_by_insd_flag, used_for_insd_occupation_flag, kept_at_school_flag, signed_auto_supp_flag, corp_own_descript, kept_at_school_descript, signed_reject_auto_supp_flag, manually_rated_code, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tPOLICY_NUM, \n\tPOLICY_SYM, \n\tPOLICY_MOD, \n\tPOLICY_MCO, \n\tLOSS_FLAG, \n\tACC_VIOLATION_FLAG, \n\tBRIDGE_FLAG, \n\tTRANS_INS_WITHIN_AGENCY_FLAG, \n\tENO_PRIM_INS_FLAG, \n\tROLLOVER_FLAG, \n\tENO_EXTEND_FLAG, \n\tENO_CONNECT_GARAGE_BUS_FLAG, \n\tHM_OWN_DISC_FLAG, \n\tTRANSFER_DISC_FLAG, \n\tRES_DRIVER_DISC_FLAG, \n\tVEH_COTITLE_FLAG, \n\tMULTI_CAR_FLAG, \n\tAUTO_COV_DECLINE_FLAG, \n\tVEH_HOME_OWN_DISC, \n\tOWN_PERSONAL_AUTO_FLAG, \n\tCAR_DEALER_FLAG, \n\tINSD_ELSEWHERE_FLAG, \n\tLICENSED_DRIVER_NO_AUTO_INS_FLAG, \n\tSPECIALTY_VEH_FLAG, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tCORP_OWN_FLAG, \n\tFOUR_OR_LESS_FLAG, \n\tCORP_OWN_VEH_PERS_USE_FLAG, \n\tPUBLIC_OR_LIVERY_CONVEY_FLAG, \n\tPERM_ASSIGN_TO_INSD_FLAG, \n\tCORP_OWN_VEH_OPER_BY_INSD_FLAG, \n\tUSED_FOR_INSD_OCCUPATION_FLAG, \n\tKEPT_AT_SCHOOL_FLAG, \n\tSIGNED_AUTO_SUPP_FLAG, \n\tCORP_OWN_DESCRIPT, \n\tKEPT_AT_SCHOOL_DESCRIPT, \n\tSIGNED_REJECT_AUTO_SUPP_FLAG, \n\tMANUALLY_RATED_CODE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_VEHICLE_POLICY_INFO\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CommonStaging/"
+        },
+        "annotations": []
+    }
+}

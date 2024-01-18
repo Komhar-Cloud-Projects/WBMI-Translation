@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBCAPolicyStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBCAPolicyStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_to_WB_CA_Policy AS (\n\tWITH cte_WBCAPolicy(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.WB_CL_PolicyId, \r\n\tX.WB_CA_PolicyId, \r\n\tX.SessionId, \r\n\tX.TaskFlagCAFormSelectedWB1409, \r\n\tX.TaskFlagHistoricVehicleRegistration, \r\n\tX.TaskFlagCAFormSelectedWB1525, \r\n\tX.TaskFlagCAFormSelectedWB1396, \r\n\tX.TaskFlagCAOTCCoverageOnAntiqueAuto, \r\n\tX.TaskFlagCADriverFinancialResponsibility, \r\n\tX.TaskFlagCADriverLicenseNumber, \r\n\tX.PlusPakAuto, \r\n\tX.PlusPakGarage, \r\n\tX.ReinsuranceLiabilityLimit, \r\n\tX.ReinsuranceLiabilityPremium, \r\n\tX.ReinsurancePremiumMessage, \r\n\tX.ReinsuranceIndicatorMessage \r\n\tFROM\r\n\tWB_CA_Policy X\r\n\tinner join\r\n\tcte_WBCAPolicy Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_handle AS (\n\tSELECT\n\tWB_CL_PolicyId AS i_WB_CL_PolicyId,\n\tWB_CA_PolicyId AS i_WB_CA_PolicyId,\n\tSessionId AS i_SessionId,\n\tTaskFlagCAFormSelectedWB1409 AS i_TaskFlagCAFormSelectedWB1409,\n\tTaskFlagHistoricVehicleRegistration AS i_TaskFlagHistoricVehicleRegistration,\n\tTaskFlagCAFormSelectedWB1525 AS i_TaskFlagCAFormSelectedWB1525,\n\tTaskFlagCAFormSelectedWB1396 AS i_TaskFlagCAFormSelectedWB1396,\n\tTaskFlagCAOTCCoverageOnAntiqueAuto AS i_TaskFlagCAOTCCoverageOnAntiqueAuto,\n\tTaskFlagCADriverFinancialResponsibility AS i_TaskFlagCADriverFinancialResponsibility,\n\tTaskFlagCADriverLicenseNumber AS i_TaskFlagCADriverLicenseNumber,\n\tPlusPakAuto AS i_PlusPakAuto,\n\tPlusPakGarage AS i_PlusPakGarage,\n\tReinsuranceLiabilityLimit AS i_ReinsuranceLiabilityLimit,\n\tReinsuranceLiabilityPremium AS i_ReinsuranceLiabilityPremium,\n\tReinsurancePremiumMessage AS i_ReinsurancePremiumMessage,\n\tReinsuranceIndicatorMessage AS i_ReinsuranceIndicatorMessage,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemid,\n\ti_WB_CL_PolicyId AS o_WB_CL_PolicyId,\n\ti_WB_CA_PolicyId AS o_WB_CA_PolicyId,\n\ti_SessionId AS o_SessionId,\n\t-- *INF*: DECODE(i_PlusPakAuto,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_PlusPakAuto,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PlusPakAuto,\n\t-- *INF*: decode(i_PlusPakGarage,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_PlusPakGarage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PlusPakGarage,\n\ti_ReinsuranceLiabilityLimit AS o_ReinsuranceLiabilityLimit,\n\ti_ReinsuranceLiabilityPremium AS o_ReinsuranceLiabilityPremium,\n\ti_ReinsurancePremiumMessage AS o_ReinsurancePremiumMessage,\n\ti_ReinsuranceIndicatorMessage AS o_ReinsuranceIndicatorMessage,\n\t-- *INF*: decode(i_TaskFlagCAFormSelectedWB1409,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_TaskFlagCAFormSelectedWB1409,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaskFlagCAFormSelectedWB1409,\n\t-- *INF*: decode(i_TaskFlagHistoricVehicleRegistration,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_TaskFlagHistoricVehicleRegistration,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaskFlagHistoricVehicleRegistration,\n\t-- *INF*: decode(i_TaskFlagCAFormSelectedWB1525,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_TaskFlagCAFormSelectedWB1525,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaskFlagCAFormSelectedWB1525,\n\t-- *INF*: decode(i_TaskFlagCAFormSelectedWB1396,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_TaskFlagCAFormSelectedWB1396,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaskFlagCAFormSelectedWB1396,\n\t-- *INF*: decode(i_TaskFlagCAOTCCoverageOnAntiqueAuto,'T',1,'F',NULL)\n\tdecode(\n\t    i_TaskFlagCAOTCCoverageOnAntiqueAuto,\n\t    'T', 1,\n\t    'F', NULL\n\t) AS o_TaskFlagCAOTCCoverageOnAntiqueAuto,\n\t-- *INF*: decode(i_TaskFlagCADriverFinancialResponsibility,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_TaskFlagCADriverFinancialResponsibility,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaskFlagCADriverFinancialResponsibility,\n\t-- *INF*: decode(i_TaskFlagCADriverLicenseNumber,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_TaskFlagCADriverLicenseNumber,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaskFlagCADriverLicenseNumber\n\tFROM SQ_to_WB_CA_Policy\n),\nWBCAPolicyStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCAPolicyStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCAPolicyStaging\n\t(ExtractDate, SourceSystemId, WB_CL_PolicyId, WB_CA_PolicyId, SessionId, TaskFlagCAFormSelectedWB1409, TaskFlagHistoricVehicleRegistration, TaskFlagCAFormSelectedWB1525, TaskFlagCAFormSelectedWB1396, TaskFlagCAOTCCoverageOnAntiqueAuto, TaskFlagCADriverFinancialResponsibility, TaskFlagCADriverLicenseNumber, PlusPakAuto, PlusPakGarage, ReinsuranceLiabilityLimit, ReinsuranceLiabilityPremium, ReinsurancePremiumMessage, ReinsuranceIndicatorMessage)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemid AS SOURCESYSTEMID, \n\to_WB_CL_PolicyId AS WB_CL_POLICYID, \n\to_WB_CA_PolicyId AS WB_CA_POLICYID, \n\to_SessionId AS SESSIONID, \n\to_TaskFlagCAFormSelectedWB1409 AS TASKFLAGCAFORMSELECTEDWB1409, \n\to_TaskFlagHistoricVehicleRegistration AS TASKFLAGHISTORICVEHICLEREGISTRATION, \n\to_TaskFlagCAFormSelectedWB1525 AS TASKFLAGCAFORMSELECTEDWB1525, \n\to_TaskFlagCAFormSelectedWB1396 AS TASKFLAGCAFORMSELECTEDWB1396, \n\to_TaskFlagCAOTCCoverageOnAntiqueAuto AS TASKFLAGCAOTCCOVERAGEONANTIQUEAUTO, \n\to_TaskFlagCADriverFinancialResponsibility AS TASKFLAGCADRIVERFINANCIALRESPONSIBILITY, \n\to_TaskFlagCADriverLicenseNumber AS TASKFLAGCADRIVERLICENSENUMBER, \n\to_PlusPakAuto AS PLUSPAKAUTO, \n\to_PlusPakGarage AS PLUSPAKGARAGE, \n\to_ReinsuranceLiabilityLimit AS REINSURANCELIABILITYLIMIT, \n\to_ReinsuranceLiabilityPremium AS REINSURANCELIABILITYPREMIUM, \n\to_ReinsurancePremiumMessage AS REINSURANCEPREMIUMMESSAGE, \n\to_ReinsuranceIndicatorMessage AS REINSURANCEINDICATORMESSAGE\n\tFROM EXP_handle\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

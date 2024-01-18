@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPLocationAccountStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBBPLocationAccount_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBBPLocationAccountStage AS (\n\tSELECT\n\t\tWBBPLocationAccountStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tWB_CL_LocationAccountId,\n\t\tWB_BP_LocationAccountId,\n\t\tSessionId,\n\t\tBuildingLessThan1000FtFromFireHydrant,\n\t\tBuildingLessThan5MilesFromFireDepartment,\n\t\tProtectionClassOverride,\n\t\tQuotedScheduleModification,\n\t\tLiabilityOnly,\n\t\tTerritoryProtectionClassWithLeadingZero,\n\t\tAnyAlcoholSold,\n\t\tAnyOutdoorServiceArea,\n\t\tLicenseOrPermitNumber,\n\t\tTotalSalesOffPremises,\n\t\tTotalSalesOnPremises,\n\t\tCompleteInformation,\n\t\tQ10041HasCookingEquipProtectedServicedPerNFPA,\n\t\tQ10045ComplianceWithNFPALifeSafetyCodesRestaurant,\n\t\tQ10051RestaurantExposuresCatering,\n\t\tQ10058RestaurantExposuresFastFood,\n\t\tQ10040AAnyCommercialCooking,\n\t\tQ10216HasOnSiteConsumptionOfFoodBeverages,\n\t\tQ10150DoesVehicleRepairInstallation\n\tFROM WBBPLocationAccountStage\n),\nEXPTRANS AS (\n\tSELECT\n\tWBBPLocationAccountStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tWB_CL_LocationAccountId,\n\tWB_BP_LocationAccountId,\n\tSessionId,\n\tBuildingLessThan1000FtFromFireHydrant AS I_BuildingLessThan1000FtFromFireHydrant,\n\t-- *INF*: DECODE(I_BuildingLessThan1000FtFromFireHydrant,'T','1','F','0',NULL)\n\tDECODE(\n\t    I_BuildingLessThan1000FtFromFireHydrant,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_BuildingLessThan1000FtFromFireHydrant,\n\tBuildingLessThan5MilesFromFireDepartment AS i_BuildingLessThan5MilesFromFireDepartment,\n\t-- *INF*: DECODE(i_BuildingLessThan5MilesFromFireDepartment,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_BuildingLessThan5MilesFromFireDepartment,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_BuildingLessThan5MilesFromFireDepartment,\n\tProtectionClassOverride,\n\tQuotedScheduleModification,\n\tLiabilityOnly,\n\tTerritoryProtectionClassWithLeadingZero,\n\tAnyAlcoholSold,\n\tAnyOutdoorServiceArea,\n\tLicenseOrPermitNumber,\n\tTotalSalesOffPremises,\n\tTotalSalesOnPremises,\n\tCompleteInformation AS i_CompleteInformation,\n\t-- *INF*: DECODE(i_CompleteInformation,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_CompleteInformation,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_CompleteInformation,\n\tQ10041HasCookingEquipProtectedServicedPerNFPA,\n\tQ10045ComplianceWithNFPALifeSafetyCodesRestaurant,\n\tQ10051RestaurantExposuresCatering,\n\tQ10058RestaurantExposuresFastFood,\n\tQ10040AAnyCommercialCooking,\n\tQ10216HasOnSiteConsumptionOfFoodBeverages,\n\tQ10150DoesVehicleRepairInstallation,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBBPLocationAccountStage\n),\nArchWBBPLocationAccountStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBBPLocationAccountStage\n\t(ExtractDate, SourceSystemId, AuditId, WBBPLocationAccountStageId, WB_CL_LocationAccountId, WB_BP_LocationAccountId, SessionId, BuildingLessThan1000FtFromFireHydrant, BuildingLessThan5MilesFromFireDepartment, ProtectionClassOverride, QuotedScheduleModification, LiabilityOnly, TerritoryProtectionClassWithLeadingZero, AnyAlcoholSold, AnyOutdoorServiceArea, LicenseOrPermitNumber, TotalSalesOffPremises, TotalSalesOnPremises, CompleteInformation, Q10041HasCookingEquipProtectedServicedPerNFPA, Q10045ComplianceWithNFPALifeSafetyCodesRestaurant, Q10051RestaurantExposuresCatering, Q10058RestaurantExposuresFastFood, Q10040AAnyCommercialCooking, Q10216HasOnSiteConsumptionOfFoodBeverages, Q10150DoesVehicleRepairInstallation)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBBPLOCATIONACCOUNTSTAGEID, \n\tWB_CL_LOCATIONACCOUNTID, \n\tWB_BP_LOCATIONACCOUNTID, \n\tSESSIONID, \n\to_BuildingLessThan1000FtFromFireHydrant AS BUILDINGLESSTHAN1000FTFROMFIREHYDRANT, \n\to_BuildingLessThan5MilesFromFireDepartment AS BUILDINGLESSTHAN5MILESFROMFIREDEPARTMENT, \n\tPROTECTIONCLASSOVERRIDE, \n\tQUOTEDSCHEDULEMODIFICATION, \n\tLIABILITYONLY, \n\tTERRITORYPROTECTIONCLASSWITHLEADINGZERO, \n\tANYALCOHOLSOLD, \n\tANYOUTDOORSERVICEAREA, \n\tLICENSEORPERMITNUMBER, \n\tTOTALSALESOFFPREMISES, \n\tTOTALSALESONPREMISES, \n\to_CompleteInformation AS COMPLETEINFORMATION, \n\tQ10041HASCOOKINGEQUIPPROTECTEDSERVICEDPERNFPA, \n\tQ10045COMPLIANCEWITHNFPALIFESAFETYCODESRESTAURANT, \n\tQ10051RESTAURANTEXPOSURESCATERING, \n\tQ10058RESTAURANTEXPOSURESFASTFOOD, \n\tQ10040AANYCOMMERCIALCOOKING, \n\tQ10216HASONSITECONSUMPTIONOFFOODBEVERAGES, \n\tQ10150DOESVEHICLEREPAIRINSTALLATION\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

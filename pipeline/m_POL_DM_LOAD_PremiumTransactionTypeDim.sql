@@ -58,11 +58,9 @@ exp_Collect_Data_columns AS (
 	SYSDATE AS createddate,
 	SYSDATE AS modifieddate,
 	-- *INF*: TO_DATE('1/1/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('1/1/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS EffectiveDate,
+	TO_TIMESTAMP('1/1/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate
 	FROM SQ_PremiumTransaction
 ),
 lkp_sup_premium_transaction_code AS (
@@ -103,58 +101,53 @@ Exp_Collect_LookupData AS (
 	SELECT
 	lkp_sup_premium_transaction_code.prem_trans_code_descript AS lkp_prem_trans_code_descript,
 	-- *INF*: iif(isnull(lkp_prem_trans_code_descript) or IS_SPACES(lkp_prem_trans_code_descript) or LENGTH(lkp_prem_trans_code_descript)=0,'N/A',LTRIM(RTRIM(lkp_prem_trans_code_descript)))
-	IFF(lkp_prem_trans_code_descript IS NULL 
-		OR LENGTH(lkp_prem_trans_code_descript)>0 AND TRIM(lkp_prem_trans_code_descript)='' 
-		OR LENGTH(lkp_prem_trans_code_descript
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(lkp_prem_trans_code_descript
-			)
-		)
+	IFF(
+	    lkp_prem_trans_code_descript IS NULL
+	    or LENGTH(lkp_prem_trans_code_descript)>0
+	    and TRIM(lkp_prem_trans_code_descript)=''
+	    or LENGTH(lkp_prem_trans_code_descript) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(lkp_prem_trans_code_descript))
 	) AS o_lkp_prem_trans_code_descript,
 	lkp_sup_premium_transaction_code.prem_trans_type_descript AS lkp_prem_trans_type_descript,
 	-- *INF*: iif(isnull(lkp_prem_trans_type_descript) or IS_SPACES(lkp_prem_trans_type_descript) or LENGTH(lkp_prem_trans_type_descript)=0,'N/A',LTRIM(RTRIM(lkp_prem_trans_type_descript)))
-	IFF(lkp_prem_trans_type_descript IS NULL 
-		OR LENGTH(lkp_prem_trans_type_descript)>0 AND TRIM(lkp_prem_trans_type_descript)='' 
-		OR LENGTH(lkp_prem_trans_type_descript
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(lkp_prem_trans_type_descript
-			)
-		)
+	IFF(
+	    lkp_prem_trans_type_descript IS NULL
+	    or LENGTH(lkp_prem_trans_type_descript)>0
+	    and TRIM(lkp_prem_trans_type_descript)=''
+	    or LENGTH(lkp_prem_trans_type_descript) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(lkp_prem_trans_type_descript))
 	) AS o_lkp_prem_trans_type_descript,
 	lkp_sup_reason_amended_code.StandardReasonAmendedDescription AS lkp_rsn_amended_code_descript,
 	-- *INF*: iif(isnull(lkp_rsn_amended_code_descript) or IS_SPACES(lkp_rsn_amended_code_descript) or LENGTH(lkp_rsn_amended_code_descript)=0,'N/A',LTRIM(RTRIM(lkp_rsn_amended_code_descript)))
-	IFF(lkp_rsn_amended_code_descript IS NULL 
-		OR LENGTH(lkp_rsn_amended_code_descript)>0 AND TRIM(lkp_rsn_amended_code_descript)='' 
-		OR LENGTH(lkp_rsn_amended_code_descript
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(lkp_rsn_amended_code_descript
-			)
-		)
+	IFF(
+	    lkp_rsn_amended_code_descript IS NULL
+	    or LENGTH(lkp_rsn_amended_code_descript)>0
+	    and TRIM(lkp_rsn_amended_code_descript)=''
+	    or LENGTH(lkp_rsn_amended_code_descript) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(lkp_rsn_amended_code_descript))
 	) AS o_lkp_rsn_amended_code_descript,
 	lkp_sup_premium_transaction_code.StandardPremiumTransactionCode AS lkp_StandardPremiumTransactionCode,
 	-- *INF*: iif(isnull(lkp_StandardPremiumTransactionCode) or IS_SPACES(lkp_StandardPremiumTransactionCode) or LENGTH(lkp_StandardPremiumTransactionCode)=0,'N/A',LTRIM(RTRIM(lkp_StandardPremiumTransactionCode)))
-	IFF(lkp_StandardPremiumTransactionCode IS NULL 
-		OR LENGTH(lkp_StandardPremiumTransactionCode)>0 AND TRIM(lkp_StandardPremiumTransactionCode)='' 
-		OR LENGTH(lkp_StandardPremiumTransactionCode
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(lkp_StandardPremiumTransactionCode
-			)
-		)
+	IFF(
+	    lkp_StandardPremiumTransactionCode IS NULL
+	    or LENGTH(lkp_StandardPremiumTransactionCode)>0
+	    and TRIM(lkp_StandardPremiumTransactionCode)=''
+	    or LENGTH(lkp_StandardPremiumTransactionCode) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(lkp_StandardPremiumTransactionCode))
 	) AS o_PremiumTransactionCode,
 	lkp_sup_reason_amended_code.StandardReasonAmendedCode AS lkp_StandardReasonAmendedCode,
 	-- *INF*: IIF(ISNULL(lkp_StandardReasonAmendedCode) or IS_SPACES(lkp_StandardReasonAmendedCode) or LENGTH(lkp_StandardReasonAmendedCode)=0,'N/A',LTRIM(RTRIM(lkp_StandardReasonAmendedCode)))
-	IFF(lkp_StandardReasonAmendedCode IS NULL 
-		OR LENGTH(lkp_StandardReasonAmendedCode)>0 AND TRIM(lkp_StandardReasonAmendedCode)='' 
-		OR LENGTH(lkp_StandardReasonAmendedCode
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(lkp_StandardReasonAmendedCode
-			)
-		)
+	IFF(
+	    lkp_StandardReasonAmendedCode IS NULL
+	    or LENGTH(lkp_StandardReasonAmendedCode)>0
+	    and TRIM(lkp_StandardReasonAmendedCode)=''
+	    or LENGTH(lkp_StandardReasonAmendedCode) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(lkp_StandardReasonAmendedCode))
 	) AS o_ReasonAmendedCode,
 	exp_Collect_Data_columns.PremiumType,
 	exp_Collect_Data_columns.CurrentSnapshotFlag,

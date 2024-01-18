@@ -20,15 +20,9 @@ EXP_Default_Value1 AS (
 	DataQualityRestoredDate,
 	ModifiedDate,
 	-- *INF*: IIF(NOT ISNULL(i_HistoryId), i_HistoryId, 0)
-	IFF(i_HistoryId IS NOT NULL,
-		i_HistoryId,
-		0
-	) AS o_HistoryId,
+	IFF(i_HistoryId IS NOT NULL, i_HistoryId, 0) AS o_HistoryId,
 	-- *INF*: IIF(NOT ISNULL(i_Purpose), i_Purpose, '0')
-	IFF(i_Purpose IS NOT NULL,
-		i_Purpose,
-		'0'
-	) AS o_Purpose
+	IFF(i_Purpose IS NOT NULL, i_Purpose, '0') AS o_Purpose
 	FROM SQ_WB_BalancingJournalDataQuality1
 ),
 WBBalancingJournalDataQuality AS (

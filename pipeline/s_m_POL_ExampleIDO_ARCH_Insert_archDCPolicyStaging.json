@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCPolicyStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCPolicyStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCPolicyStaging AS (\n\tSELECT\n\t\tPolicyId,\n\t\tSessionId,\n\t\tId,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tLineOfBusiness,\n\t\tTerm,\n\t\tPrimaryRatingState,\n\t\tProduct,\n\t\tHonorRates,\n\t\tAuditPeriod,\n\t\tSICCode,\n\t\tSICCodeDesc,\n\t\tNAICSCode,\n\t\tNAICSCodeDesc,\n\t\tQuoteNumber,\n\t\tTermFactor,\n\t\tCancellationDate,\n\t\tDescription,\n\t\tPolicyNumber,\n\t\tStatus,\n\t\tTransactionDate,\n\t\tTransactionDateTime,\n\t\tPreviousPolicyNumber,\n\t\tInceptionDate,\n\t\tPolicyTermID,\n\t\tAccountID,\n\t\tTaxesSurcharges,\n\t\tAuditable,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCPolicyStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tPolicyId,\n\tSessionId,\n\tId,\n\tEffectiveDate,\n\tExpirationDate,\n\tLineOfBusiness,\n\tTerm,\n\tPrimaryRatingState,\n\tProduct,\n\tHonorRates,\n\tAuditPeriod,\n\tSICCode,\n\tSICCodeDesc,\n\tNAICSCode,\n\tNAICSCodeDesc,\n\tQuoteNumber,\n\tTermFactor,\n\tCancellationDate,\n\tDescription,\n\tPolicyNumber,\n\tStatus,\n\tTransactionDate,\n\tTransactionDateTime,\n\tPreviousPolicyNumber,\n\tInceptionDate,\n\tPolicyTermID,\n\tAccountID,\n\tTaxesSurcharges,\n\tAuditable,\n\tExtractDate,\n\tSourceSystemId,\n\t-- *INF*: DECODE(HonorRates,'T',1,'F',0,NULL)\n\tDECODE(\n\t    HonorRates,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_HonorRates,\n\t-- *INF*: DECODE(Auditable,'T',1,'F',0,NULL)\n\tDECODE(\n\t    Auditable,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Auditable,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCPolicyStaging\n),\narchDCPolicyStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCPolicyStaging\n\t(PolicyId, SessionId, Id, EffectiveDate, ExpirationDate, LineOfBusiness, Term, PrimaryRatingState, Product, HonorRates, AuditPeriod, SICCode, SICCodeDesc, NAICSCode, NAICSCodeDesc, QuoteNumber, TermFactor, CancellationDate, Description, PolicyNumber, Status, TransactionDate, TransactionDateTime, PreviousPolicyNumber, InceptionDate, PolicyTermID, AccountID, TaxesSurcharges, Auditable, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tPOLICYID, \n\tSESSIONID, \n\tID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tLINEOFBUSINESS, \n\tTERM, \n\tPRIMARYRATINGSTATE, \n\tPRODUCT, \n\to_HonorRates AS HONORRATES, \n\tAUDITPERIOD, \n\tSICCODE, \n\tSICCODEDESC, \n\tNAICSCODE, \n\tNAICSCODEDESC, \n\tQUOTENUMBER, \n\tTERMFACTOR, \n\tCANCELLATIONDATE, \n\tDESCRIPTION, \n\tPOLICYNUMBER, \n\tSTATUS, \n\tTRANSACTIONDATE, \n\tTRANSACTIONDATETIME, \n\tPREVIOUSPOLICYNUMBER, \n\tINCEPTIONDATE, \n\tPOLICYTERMID, \n\tACCOUNTID, \n\tTAXESSURCHARGES, \n\to_Auditable AS AUDITABLE, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

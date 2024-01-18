@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CUS_STG_Insert_DCT_WB_Policy_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CUS_STG_Insert_DCT_WB_Policy_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_Policy AS (\n\tSELECT WB_Policy.PolicyId, WB_Policy.WB_PolicyId, WB_Policy.SessionId, WB_Policy.PolicyCoverage, WB_Policy.PurePremium, WB_Policy.CustomerCare, WB_Policy.Division, WB_Policy.Terrorism, WB_Policy.IsPreliminaryAuditRequired, WB_Policy.IsMidTermAuditRequired, WB_Policy.PolicyProgram, WB_Policy.Association, WB_Policy.ReceivedAMPM, WB_Policy.ReceivedDate, WB_Policy.ReceivedTimeHour, WB_Policy.ReceivedTimeMinute, WB_Policy.BCCCode, WB_Policy.PlusPak, WB_Policy.PolicyNumber, WB_Policy.IsRollover, WB_Policy.PriorCarrierNameOther, WB_Policy.PremiumMining, WB_Policy.QuoteType, WB_Policy.BCCCodeDesc, WB_Policy.DescriptionOfChildCarePremises, WB_Policy.ConsentToRate, WB_Policy.MultipleLocationCredit, WB_Policy.WBProduct, WB_Policy.WBProductType, WB_Policy.RequestingEntity, WB_Policy.PolicyVersion, WB_Policy.PolicyVersionFormatted, WB_Policy.AssociationDiscount, WB_Policy.AssociationDiscountFactor, WB_Policy.AssociationMessages, WB_Policy.AssociationMessagesMCRA, WB_Policy.RiskGrade, WB_Policy.ProgramFactor, WB_Policy.ClearedIdentification, WB_Policy.ClearedIdentificationDateTimeStamp, WB_Policy.LegalNoticeRequired, WB_Policy.AutomaticRenewalIndicator, WB_Policy.IsBindableFlag, WB_Policy.AssignedUnderwriterFirstName, WB_Policy.AssignedUnderwriterLastName, WB_Policy.PreviousPolicyVersion, WB_Policy.Code, WB_Policy.Comments, WB_Policy.Decision, WB_Policy.Message, WB_Policy.RuleType, WB_Policy.Program, WB_Policy.StatusCode, WB_Policy.ReinsuranceIndicator, WB_Policy.OriginalBillingAccountNumber, WB_Policy.OriginalPayPlan, WB_Policy.OriginalTargetDueDate, WB_Policy.EndorseProcessedBy, WB_Policy.Deleted \r\n\tFROM\r\n\tWB_Policy\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session on\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Policy.SessionId=@{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session.SessionId\r\n\tWHERE\r\n\tDC_Session.CreateDateTime >=  '@{pipeline().parameters.SELECTION_START_TS}' \r\n\tand\r\n\tDC_Session.CreateDateTime <  '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tORDER BY\r\n\tWB_Policy.SessionId\n),\nExp_WB_Policy AS (\n\tSELECT\n\tPolicyId,\n\tWB_PolicyId,\n\tSessionId,\n\tPolicyCoverage,\n\tPurePremium,\n\tCustomerCare,\n\tDivision,\n\tTerrorism,\n\tIsPreliminaryAuditRequired,\n\tIsMidTermAuditRequired,\n\tPolicyProgram,\n\tAssociation,\n\tReceivedAMPM,\n\tReceivedDate,\n\tReceivedTimeHour,\n\tReceivedTimeMinute,\n\tBCCCode,\n\tPlusPak,\n\tPolicyNumber,\n\tIsRollover,\n\tPriorCarrierNameOther,\n\tPremiumMining,\n\tQuoteType,\n\tBCCCodeDesc,\n\tDescriptionOfChildCarePremises,\n\tConsentToRate,\n\tMultipleLocationCredit,\n\tWBProduct,\n\tWBProductType,\n\tRequestingEntity,\n\tPolicyVersion,\n\tPolicyVersionFormatted,\n\tAssociationDiscount,\n\tAssociationDiscountFactor,\n\tAssociationMessages,\n\tAssociationMessagesMCRA,\n\tRiskGrade,\n\tProgramFactor,\n\tClearedIdentification,\n\tClearedIdentificationDateTimeStamp,\n\tLegalNoticeRequired,\n\tAutomaticRenewalIndicator,\n\tIsBindableFlag,\n\tAssignedUnderwriterFirstName,\n\tAssignedUnderwriterLastName,\n\tPreviousPolicyVersion,\n\tCode,\n\tComments,\n\tDecision,\n\tMessage,\n\tRuleType,\n\tProgram,\n\tStatusCode,\n\tReinsuranceIndicator,\n\tOriginalBillingAccountNumber,\n\tOriginalPayPlan,\n\tOriginalTargetDueDate,\n\tEndorseProcessedBy,\n\tDeleted,\n\tSysdate AS ExtractDate,\n\t'DCT' AS SourceSystemID\n\tFROM SQ_WB_Policy\n),\nWBPolicyStage AS (\n\tINSERT INTO Shortcut_to_WBPolicyStage\n\t(ExtractDate, SourceSystemid, PolicyId, WB_PolicyId, SessionId, Division, Program, PolicyVersion, ReceivedDate, CustomerCare, Terrorism, IsPreliminaryAuditRequired, IsMidTermAuditRequired, PlusPak, PolicyNumber, IsRollover, PriorCarrierNameOther, Association, PremiumMining, QuoteType, ReceivedAMPM, ReceivedTimeHour, ReceivedTimeMinute, BCCCode, DescriptionOfChildCarePremises, AssociationMessages, AssociationMessagesMCRA, AssociationDiscount, RiskGrade, AssociationDiscountFactor, ProgramFactor, ClearedIdentification, ClearedIdentificationDateTimeStamp, LegalNoticeRequired, PolicyVersionFormatted, AssignedUnderwriterFirstName, AssignedUnderwriterLastName, StatusCode, Code, BCCCodeDesc, ConsentToRate, MultipleLocationCredit, Comments, Decision, Message, AutomaticRenewalIndicator, WBProduct, WBProductType, PolicyCoverage, IsBindableFlag, PurePremium, RuleType, RequestingEntity, PolicyProgram, PreviousPolicyVersion, ReinsuranceIndicator, OriginalBillingAccountNumber, OriginalPayPlan, OriginalTargetDueDate, EndorseProcessedBy, Deleted)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemID AS SOURCESYSTEMID, \n\tPOLICYID, \n\tWB_POLICYID, \n\tSESSIONID, \n\tDIVISION, \n\tPROGRAM, \n\tPOLICYVERSION, \n\tRECEIVEDDATE, \n\tCUSTOMERCARE, \n\tTERRORISM, \n\tISPRELIMINARYAUDITREQUIRED, \n\tISMIDTERMAUDITREQUIRED, \n\tPLUSPAK, \n\tPOLICYNUMBER, \n\tISROLLOVER, \n\tPRIORCARRIERNAMEOTHER, \n\tASSOCIATION, \n\tPREMIUMMINING, \n\tQUOTETYPE, \n\tRECEIVEDAMPM, \n\tRECEIVEDTIMEHOUR, \n\tRECEIVEDTIMEMINUTE, \n\tBCCCODE, \n\tDESCRIPTIONOFCHILDCAREPREMISES, \n\tASSOCIATIONMESSAGES, \n\tASSOCIATIONMESSAGESMCRA, \n\tASSOCIATIONDISCOUNT, \n\tRISKGRADE, \n\tASSOCIATIONDISCOUNTFACTOR, \n\tPROGRAMFACTOR, \n\tCLEAREDIDENTIFICATION, \n\tCLEAREDIDENTIFICATIONDATETIMESTAMP, \n\tLEGALNOTICEREQUIRED, \n\tPOLICYVERSIONFORMATTED, \n\tASSIGNEDUNDERWRITERFIRSTNAME, \n\tASSIGNEDUNDERWRITERLASTNAME, \n\tSTATUSCODE, \n\tCODE, \n\tBCCCODEDESC, \n\tCONSENTTORATE, \n\tMULTIPLELOCATIONCREDIT, \n\tCOMMENTS, \n\tDECISION, \n\tMESSAGE, \n\tAUTOMATICRENEWALINDICATOR, \n\tWBPRODUCT, \n\tWBPRODUCTTYPE, \n\tPOLICYCOVERAGE, \n\tISBINDABLEFLAG, \n\tPUREPREMIUM, \n\tRULETYPE, \n\tREQUESTINGENTITY, \n\tPOLICYPROGRAM, \n\tPREVIOUSPOLICYVERSION, \n\tREINSURANCEINDICATOR, \n\tORIGINALBILLINGACCOUNTNUMBER, \n\tORIGINALPAYPLAN, \n\tORIGINALTARGETDUEDATE, \n\tENDORSEPROCESSEDBY, \n\tDELETED\n\tFROM Exp_WB_Policy\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "Staging/CustomerStaging/"
+        },
+        "annotations": []
+    }
+}

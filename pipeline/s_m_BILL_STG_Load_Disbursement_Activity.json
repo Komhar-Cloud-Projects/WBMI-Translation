@@ -1,0 +1,38 @@
+{
+    "name": "s_m_BILL_STG_Load_Disbursement_Activity",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_BILL_STG_Load_Disbursement_Activity",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DisbursementsFile AS (\n\n-- TODO Manual --\n\n),\nEXP_Load_Disbursement_Activity AS (\n\tSELECT\n\tDisbursementId AS in_DisbursementId,\n\t-- *INF*: TO_BIGINT(RTRIM(in_DisbursementId))\n\tCAST(RTRIM(in_DisbursementId) AS BIGINT) AS out_DisbursementId,\n\tDisbursementStatusCode AS in_DisbursementStatusCode,\n\t-- *INF*: IIF(in_DisbursementStatusCode = 'C', 'D',\r\n\t-- IIF(in_DisbursementStatusCode = 'V', 'S',\r\n\t-- in_DisbursementStatusCode))\n\tIFF(\n\t    in_DisbursementStatusCode = 'C', 'D',\n\t    IFF(\n\t        in_DisbursementStatusCode = 'V', 'S', in_DisbursementStatusCode\n\t    )\n\t) AS out_DisbursementStatusCode,\n\tTransactionDate AS in_TransactionDate,\n\t-- *INF*: TO_DATE(in_TransactionDate,'YYYYMMDD')\n\tTO_TIMESTAMP(in_TransactionDate, 'YYYYMMDD') AS out_TransactionDate,\n\tCheckNumber,\n\t'infmatca' AS out_ModifiedUserId,\n\t-- *INF*: SYSTIMESTAMP()\n\tCURRENT_TIMESTAMP() AS out_ModifiedDate,\n\t'N' AS out_ProcessedStatusCode\n\tFROM SQ_DisbursementsFile\n),\nLKP_WB_BIL_DisbursementActivity AS (\n\tSELECT\n\tDisbursementActivityId,\n\tDisbursementId,\n\tCheckNumber,\n\tTransactionDate,\n\tDisbursementStatusCode\n\tFROM (\n\t\tSELECT \n\t\t\tDisbursementActivityId,\n\t\t\tDisbursementId,\n\t\t\tCheckNumber,\n\t\t\tTransactionDate,\n\t\t\tDisbursementStatusCode\n\t\tFROM WB_BIL_DisbursementActivity\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY DisbursementId,CheckNumber,TransactionDate,DisbursementStatusCode ORDER BY DisbursementActivityId) = 1\n),\nFIL_Null_DisbursementActivityId AS (\n\tSELECT\n\tLKP_WB_BIL_DisbursementActivity.DisbursementActivityId AS in_DisbursementActivityId, \n\tEXP_Load_Disbursement_Activity.out_DisbursementId AS DisbursementId, \n\tEXP_Load_Disbursement_Activity.out_DisbursementStatusCode AS DisbursementStatusCode, \n\tEXP_Load_Disbursement_Activity.out_TransactionDate AS TransactionDate, \n\tEXP_Load_Disbursement_Activity.CheckNumber, \n\tEXP_Load_Disbursement_Activity.out_ModifiedUserId AS ModifiedUserId, \n\tEXP_Load_Disbursement_Activity.out_ModifiedDate AS ModifiedDate, \n\tEXP_Load_Disbursement_Activity.out_ProcessedStatusCode AS ProcessedStatusCode\n\tFROM EXP_Load_Disbursement_Activity\n\tLEFT JOIN LKP_WB_BIL_DisbursementActivity\n\tON LKP_WB_BIL_DisbursementActivity.DisbursementId = EXP_Load_Disbursement_Activity.out_DisbursementId AND LKP_WB_BIL_DisbursementActivity.CheckNumber = EXP_Load_Disbursement_Activity.CheckNumber AND LKP_WB_BIL_DisbursementActivity.TransactionDate = EXP_Load_Disbursement_Activity.out_TransactionDate AND LKP_WB_BIL_DisbursementActivity.DisbursementStatusCode = EXP_Load_Disbursement_Activity.out_DisbursementStatusCode\n\tWHERE ISNULL(in_DisbursementActivityId)\n),\nWB_BIL_DisbursementActivity AS (\n\tINSERT INTO WB_BIL_DisbursementActivity\n\t(ModifiedUserId, ModifiedDate, DisbursementId, CheckNumber, TransactionDate, DisbursementStatusCode, ProcessedStatusCode)\n\tSELECT \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tDISBURSEMENTID, \n\tCHECKNUMBER, \n\tTRANSACTIONDATE, \n\tDISBURSEMENTSTATUSCODE, \n\tPROCESSEDSTATUSCODE\n\tFROM FIL_Null_DisbursementActivityId\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "DataFeed -Informatica/BillingDataServices/"
+        },
+        "annotations": []
+    }
+}

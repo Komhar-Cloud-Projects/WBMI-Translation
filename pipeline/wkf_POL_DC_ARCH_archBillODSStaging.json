@@ -1,0 +1,176 @@
+{
+    "name": "wkf_POL_DC_ARCH_archBillODSStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILBillItemSche_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILBillItemScheduleStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILBillItemScheduleStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILCommissionAu_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILCommissionAuthorizationStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILCommissionAuthorizationStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILPolicyTermStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILPolicyTermStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILReceivableWr_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILReceivableWriteOffStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILReceivableWriteOffStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_BillingODS_ARCH_Insert_ArchDCPLTPlanStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_BillingODS_ARCH_Insert_ArchDCPLTPlanStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILBillItemStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILBillItemStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILGeneralJourn_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILGeneralJournalStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILGeneralJournalStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "Staging/PolicyStaging/"
+        },
+        "variables": {}
+    }
+}
