@@ -1,0 +1,47 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_Archive_RSM",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_Archive_RSM",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_RSM_stage AS (\n\tSELECT\n\t\tRSM_stage_id,\n\t\tRSM_ID,\n\t\tRSM_FIRST_NAME,\n\t\tRSM_MIDDLE_NAME,\n\t\tRSM_LAST_NAME,\n\t\tRSM_SUFFIX,\n\t\tRSM_EMAIL,\n\t\tEMP_ID,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM RSM_stage\n),\nEXP_AGY_ARCH_Insert_RSM AS (\n\tSELECT\n\tRSM_stage_id,\n\tRSM_ID,\n\tRSM_FIRST_NAME,\n\tRSM_MIDDLE_NAME,\n\tRSM_LAST_NAME,\n\tRSM_SUFFIX,\n\tRSM_EMAIL,\n\tEMP_ID,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID\n\tFROM SQ_RSM_stage\n),\nTGT_Arch_RSM_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_RSM_stage\n\t(RSM_stage_id, RSM_ID, RSM_FIRST_NAME, RSM_MIDDLE_NAME, RSM_LAST_NAME, RSM_SUFFIX, RSM_EMAIL, EMP_ID, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, audit_id)\n\tSELECT \n\tRSM_STAGE_ID, \n\tRSM_ID, \n\tRSM_FIRST_NAME, \n\tRSM_MIDDLE_NAME, \n\tRSM_LAST_NAME, \n\tRSM_SUFFIX, \n\tRSM_EMAIL, \n\tEMP_ID, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tOUT_AUDIT_ID AS AUDIT_ID\n\tFROM EXP_AGY_ARCH_Insert_RSM\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

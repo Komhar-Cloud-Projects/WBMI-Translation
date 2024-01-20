@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCFOccupancyStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCCFOccupancyStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCFOccupancyStaging AS (\n\tSELECT\n\t\tCF_OccupancyId,\n\t\tSessionId,\n\t\tId,\n\t\tOccupancyType,\n\t\tClassLimit,\n\t\tClassLimitOverride,\n\t\tClassLimitOverrideInput,\n\t\tCSP,\n\t\tCSPOverride,\n\t\tDescription,\n\t\tDescriptionLA,\n\t\tDescriptionMS,\n\t\tDescriptionWA,\n\t\tOccupancyTypeMonoline,\n\t\tOccupancyTypeOverride,\n\t\tProtectionClassMultiplier,\n\t\tRateGroup,\n\t\tRateGroupOverride,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCF_RiskId\n\tFROM DCCFOccupancyStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tCF_OccupancyId AS i_CF_OccupancyId,\n\tSessionId AS i_SessionId,\n\tId AS i_Id,\n\tOccupancyType AS i_OccupancyType,\n\tClassLimit AS i_ClassLimit,\n\tClassLimitOverride AS i_ClassLimitOverride,\n\tClassLimitOverrideInput AS i_ClassLimitOverrideInput,\n\tCSP AS i_CSP,\n\tCSPOverride AS i_CSPOverride,\n\tDescription AS i_Description,\n\tDescriptionLA AS i_DescriptionLA,\n\tDescriptionMS AS i_DescriptionMS,\n\tDescriptionWA AS i_DescriptionWA,\n\tOccupancyTypeMonoline AS i_OccupancyTypeMonoline,\n\tOccupancyTypeOverride AS i_OccupancyTypeOverride,\n\tProtectionClassMultiplier AS i_ProtectionClassMultiplier,\n\tRateGroup AS i_RateGroup,\n\tRateGroupOverride AS i_RateGroupOverride,\n\tExtractDate AS i_ExtractDate,\n\tSourceSystemId AS i_SourceSystemId,\n\tCF_RiskId AS i_CF_RiskId,\n\ti_CF_RiskId AS o_CF_RiskId,\n\ti_CF_OccupancyId AS o_CF_OccupancyId,\n\ti_SessionId AS o_SessionId,\n\ti_Id AS o_Id,\n\ti_OccupancyType AS o_OccupancyType,\n\ti_ClassLimit AS o_ClassLimit,\n\ti_ClassLimitOverride AS o_ClassLimitOverride,\n\ti_ClassLimitOverrideInput AS o_ClassLimitOverrideInput,\n\ti_CSP AS o_CSP,\n\ti_CSPOverride AS o_CSPOverride,\n\ti_Description AS o_Description,\n\ti_DescriptionLA AS o_DescriptionLA,\n\ti_DescriptionMS AS o_DescriptionMS,\n\ti_DescriptionWA AS o_DescriptionWA,\n\ti_OccupancyTypeMonoline AS o_OccupancyTypeMonoline,\n\ti_OccupancyTypeOverride AS o_OccupancyTypeOverride,\n\t-- *INF*: DECODE(i_ProtectionClassMultiplier,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ProtectionClassMultiplier,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ProtectionClassMultiplier,\n\ti_RateGroup AS o_RateGroup,\n\ti_RateGroupOverride AS o_RateGroupOverride,\n\ti_ExtractDate AS o_ExtractDate,\n\ti_SourceSystemId AS o_SourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCFOccupancyStaging\n),\narchDCCFOccupancyStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCCFOccupancyStaging\n\t(CF_RiskId, CF_OccupancyId, SessionId, Id, OccupancyType, ClassLimit, ClassLimitOverride, ClassLimitOverrideInput, CSP, CSPOverride, Description, DescriptionLA, DescriptionMS, DescriptionWA, OccupancyTypeMonoline, OccupancyTypeOverride, ProtectionClassMultiplier, RateGroup, RateGroupOverride, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\to_CF_RiskId AS CF_RISKID, \n\to_CF_OccupancyId AS CF_OCCUPANCYID, \n\to_SessionId AS SESSIONID, \n\to_Id AS ID, \n\to_OccupancyType AS OCCUPANCYTYPE, \n\to_ClassLimit AS CLASSLIMIT, \n\to_ClassLimitOverride AS CLASSLIMITOVERRIDE, \n\to_ClassLimitOverrideInput AS CLASSLIMITOVERRIDEINPUT, \n\to_CSP AS CSP, \n\to_CSPOverride AS CSPOVERRIDE, \n\to_Description AS DESCRIPTION, \n\to_DescriptionLA AS DESCRIPTIONLA, \n\to_DescriptionMS AS DESCRIPTIONMS, \n\to_DescriptionWA AS DESCRIPTIONWA, \n\to_OccupancyTypeMonoline AS OCCUPANCYTYPEMONOLINE, \n\to_OccupancyTypeOverride AS OCCUPANCYTYPEOVERRIDE, \n\to_ProtectionClassMultiplier AS PROTECTIONCLASSMULTIPLIER, \n\to_RateGroup AS RATEGROUP, \n\to_RateGroupOverride AS RATEGROUPOVERRIDE, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

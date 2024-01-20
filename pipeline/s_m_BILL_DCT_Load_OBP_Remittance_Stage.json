@@ -1,0 +1,38 @@
+{
+    "name": "s_m_BILL_DCT_Load_OBP_Remittance_Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_BILL_DCT_Load_OBP_Remittance_Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_OBPfile_source AS (\n\n-- TODO Manual --\n\n),\nFILTRANS AS (\n\tSELECT\n\tRecord_type, \n\ttran_Code, \n\tRecv_ID, \n\tChk_Digit, \n\tAcct_Num AS AccT_Num, \n\tPaid_Amt, \n\tPayor_Name, \n\tPayor_ID_Num, \n\tDiscr_Data, \n\tAddeda_Rec_Ind AS Addeda_Rec_IND, \n\tReference_id\n\tFROM SQ_OBPfile_source\n\tWHERE Record_type = '6'\n),\nEXPTRANS AS (\n\tSELECT\n\tRecord_type,\n\ttran_Code,\n\tRecv_ID,\n\tChk_Digit,\n\tAccT_Num,\n\tPaid_Amt,\n\tPayor_Name,\n\tPayor_ID_Num,\n\tDiscr_Data,\n\tAddeda_Rec_IND,\n\tReference_id,\n\t'O' AS out_RemittanceSource,\n\t'InformO' AS out_ModifiedUserId,\n\t'Processed' AS out_Transaction_status,\n\t'OBP' AS out_Payment_mode,\n\t-- *INF*: SYSTIMESTAMP()\n\tCURRENT_TIMESTAMP() AS out_reconcilation_date,\n\t-- *INF*: SYSTIMESTAMP()\n\tCURRENT_TIMESTAMP() AS out_ModifyDate,\n\t-- *INF*: (TO_DECIMAL(Paid_Amt)  *  .01)\n\t(CAST(Paid_Amt AS FLOAT) * .01) AS out_PaidAmt,\n\t'Payment' AS out_Transaction_Type,\n\t'N' AS out_ProcessedStatus,\n\tRecord_type || tran_Code || Recv_ID  || Chk_Digit || AccT_Num || Paid_Amt  || Payor_Name || Payor_ID_Num || Discr_Data || Addeda_Rec_IND || Reference_id AS out_transactionData,\n\t'USER' AS out_AuthorizedBy\n\tFROM FILTRANS\n),\nWB_BIL_RemittanceStage AS (\n\tINSERT INTO WB_BIL_RemittanceStage\n\t(ModifiedUserId, ModifiedDate, TransactionId, TransactionType, TransactionData, RemittanceSource, ProcessedStatusCode, ReconciliationDate, VendorAccountNumber, PaidAmount, PaymentMode, TransactionStatus, AuthorizedBy)\n\tSELECT \n\tout_ModifiedUserId AS MODIFIEDUSERID, \n\tout_ModifyDate AS MODIFIEDDATE, \n\tReference_id AS TRANSACTIONID, \n\tout_Transaction_Type AS TRANSACTIONTYPE, \n\tout_transactionData AS TRANSACTIONDATA, \n\tout_RemittanceSource AS REMITTANCESOURCE, \n\tout_ProcessedStatus AS PROCESSEDSTATUSCODE, \n\tout_reconcilation_date AS RECONCILIATIONDATE, \n\tPayor_ID_Num AS VENDORACCOUNTNUMBER, \n\tout_PaidAmt AS PAIDAMOUNT, \n\tout_Payment_mode AS PAYMENTMODE, \n\tout_Transaction_status AS TRANSACTIONSTATUS, \n\tout_AuthorizedBy AS AUTHORIZEDBY\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "BillingDataServices/"
+        },
+        "annotations": []
+    }
+}

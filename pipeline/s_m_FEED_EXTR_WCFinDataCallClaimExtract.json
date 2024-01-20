@@ -1,0 +1,43 @@
+{
+    "name": "s_m_FEED_EXTR_WCFinDataCallClaimExtract",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_FEED_EXTR_WCFinDataCallClaimExtract",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkClaimWorkersCompensationDataCallExtract AS (\n\tSELECT WorkClaimWorkersCompensationDataCallExtract.WorkClaimWorkersCompensationDataCallExtractId, WorkClaimWorkersCompensationDataCallExtract.AuditId, \r\n\tWorkClaimWorkersCompensationDataCallExtract.CreatedDate, WorkClaimWorkersCompensationDataCallExtract.RunDate, WorkClaimWorkersCompensationDataCallExtract.StrategicProfitCenterAbbreviation, \r\n\tWorkClaimWorkersCompensationDataCallExtract.InsuranceSegmentDescription, WorkClaimWorkersCompensationDataCallExtract.PolicyOfferingDescription,\r\n\t WorkClaimWorkersCompensationDataCallExtract.PolicyKey, WorkClaimWorkersCompensationDataCallExtract.PolicyEffectiveDate, WorkClaimWorkersCompensationDataCallExtract.ClaimOccurrenceKey,\r\n\t  WorkClaimWorkersCompensationDataCallExtract.StateCode, WorkClaimWorkersCompensationDataCallExtract.ClaimLossDate, WorkClaimWorkersCompensationDataCallExtract.IndemnityOpenClaimCount,\r\n\t  WorkClaimWorkersCompensationDataCallExtract.IndemnityClosedWithPayClaimCount, WorkClaimWorkersCompensationDataCallExtract.DirectLossPaidToDate, \r\n\t  WorkClaimWorkersCompensationDataCallExtract.OutstandingAmountToDate \r\n\tFROM\r\n\tWorkClaimWorkersCompensationDataCallExtract\r\n\twhere \r\n\t( \r\n\t   (@{pipeline().parameters.RUN_YEAR} !=0 AND YEAR(CAST(WorkClaimWorkersCompensationDataCallExtract.RunDate as DATE))=@{pipeline().parameters.RUN_YEAR})\r\n\t  OR\r\n\t  (@{pipeline().parameters.RUN_YEAR} =0 AND YEAR(CAST(WorkClaimWorkersCompensationDataCallExtract.RunDate as DATE))=(SELECT YEAR(CAST(MAX(RunDate)as DATE)) from WorkClaimWorkersCompensationDataCallExtract))\r\n\t) \r\n\t\r\n\torder by PolicyEffectiveDate,StateCode\n),\nEXP_WCFinDataCallClaimExtract AS (\n\tSELECT\n\tWorkClaimWorkersCompensationDataCallExtractId,\n\tAuditId,\n\tCreatedDate,\n\tRunDate,\n\tStrategicProfitCenterAbbreviation,\n\tInsuranceSegmentDescription,\n\tPolicyOfferingDescription,\n\tPolicyKey,\n\tPolicyEffectiveDate,\n\t-- *INF*: GET_DATE_PART(PolicyEffectiveDate, 'YYYY')\n\tDATE_PART(PolicyEffectiveDate, 'YYYY') AS PolicyYear,\n\tClaimOccurrenceKey,\n\tStateCode,\n\tClaimLossDate,\n\t-- *INF*: GET_DATE_PART(ClaimLossDate, 'YYYY')\n\tDATE_PART(ClaimLossDate, 'YYYY') AS ClaimLossYear,\n\tIndemnityOpenClaimCount,\n\tIndemnityClosedWithPayClaimCount,\n\tDirectLossPaidToDate,\n\tOutstandingAmountToDate\n\tFROM SQ_WorkClaimWorkersCompensationDataCallExtract\n),\nAGG_WCFinDataCallClaimExtract AS (\n\tSELECT\n\tWorkClaimWorkersCompensationDataCallExtractId,\n\tAuditId,\n\tCreatedDate,\n\tRunDate,\n\tStrategicProfitCenterAbbreviation,\n\tInsuranceSegmentDescription,\n\tPolicyOfferingDescription,\n\tPolicyKey,\n\tPolicyYear,\n\tClaimOccurrenceKey,\n\tStateCode,\n\tClaimLossYear,\n\tIndemnityOpenClaimCount,\n\t-- *INF*: sum(IndemnityOpenClaimCount)\n\tsum(IndemnityOpenClaimCount) AS o_OpenClaimCount,\n\tIndemnityClosedWithPayClaimCount,\n\t-- *INF*: sum(IndemnityClosedWithPayClaimCount)\n\tsum(IndemnityClosedWithPayClaimCount) AS o_ClosedClaimCount,\n\tDirectLossPaidToDate,\n\tOutstandingAmountToDate\n\tFROM EXP_WCFinDataCallClaimExtract\n\tGROUP BY StrategicProfitCenterAbbreviation, InsuranceSegmentDescription, PolicyOfferingDescription, PolicyKey, PolicyYear, StateCode, ClaimLossYear\n),\nSRT_EXTR AS (\n\tSELECT\n\tStateCode, \n\tPolicyKey, \n\tPolicyYear, \n\tClaimLossYear, \n\tStrategicProfitCenterAbbreviation, \n\tInsuranceSegmentDescription, \n\tPolicyOfferingDescription, \n\tRunDate, \n\to_OpenClaimCount, \n\to_ClosedClaimCount\n\tFROM AGG_WCFinDataCallClaimExtract\n\tORDER BY StateCode ASC, PolicyKey ASC, PolicyYear ASC, ClaimLossYear ASC, StrategicProfitCenterAbbreviation ASC, InsuranceSegmentDescription ASC, PolicyOfferingDescription ASC\n),\nWorkClaimWorkersCompensationExtractFile AS (\n\tINSERT INTO WorkClaimWorkersCompensationExtractFile\n\t(RunDate, StateCode, StrategicProfitCenterAbbreviation, InsuranceSegmentDescription, PolicyOfferingDescription, PolicyYear, AccidentYear, IndemnityOpenCount, IndemnityCWPCount)\n\tSELECT \n\tRUNDATE, \n\tSTATECODE, \n\tSTRATEGICPROFITCENTERABBREVIATION, \n\tINSURANCESEGMENTDESCRIPTION, \n\tPOLICYOFFERINGDESCRIPTION, \n\tPOLICYYEAR, \n\tClaimLossYear AS ACCIDENTYEAR, \n\to_OpenClaimCount AS INDEMNITYOPENCOUNT, \n\to_ClosedClaimCount AS INDEMNITYCWPCOUNT\n\tFROM SRT_EXTR\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "RUN_YEAR": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_FEED_Load_HSBCyberSuite_Payment_PreExtract_Tables",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_FEED_Load_HSBCyberSuite_Payment_PreExtract_Tables",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_PaymentRecordTable AS (\n\tSELECT   b.AuditId, b.PolicyKey,  b.RunDate,b.Company,  b.ProductCode,b.ContractNumber,b.InsuredName, b.PreviousPolicyNumber, b.coveragetype,b.PremiumTransactionCode, b.PremiumTransactionEffectiveDate,\r\n\tb.CoverageEffectiveDate, b.CoverageExpirationDate, b.CyberSuiteCoverageGrossPremium, b.CyberSuiteCoverageNetPremium, b.ProgramCode,b.premiumtransactionentereddate,\r\n\tb.Limit \r\n\tfrom\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkHSBCyberSuite b\r\n\twhere b.AuditId=@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\n),\nEXP_PaymentRecord AS (\n\tSELECT\n\tAuditID,\n\tSysdate AS CreatedDate,\n\tSysdate AS ModifiedDate,\n\tRunDate,\n\tProductCode,\n\tPolKey,\n\tCompany,\n\t-- *INF*: SUBSTR(PolKey,1,10)\n\tSUBSTR(PolKey, 1, 10) AS PolicyNumber,\n\tTransactionCode,\n\tTransactionEffectiveDate,\n\tCoverageEffectiveDate,\n\tCoverageExpirationDate,\n\tCyberSuiteCoverageGrossPremium AS CoverageGrossPremium,\n\tCyberSuiteCoverageNetPremium AS CoverageNetPremium,\n\tCoverageNetPremium AS v_CoverageGrossPremium,\n\tv_CoverageGrossPremium AS out_CoverageGrossPremium,\n\t-- *INF*: ROUND(0.7*v_CoverageGrossPremium,2)\r\n\t-- \n\tROUND(0.7 * v_CoverageGrossPremium, 2) AS out_CoverageNetPremium,\n\tPreviousPolicyNumber,\n\tProgramID,\n\tNameOfInsured,\n\tCoverageType,\n\tContractNumber,\n\tPremiumTransactionEnteredDate,\n\tLimit\n\tFROM SQ_PaymentRecordTable\n),\nSRT_PolicyKey AS (\n\tSELECT\n\tPolicyNumber, \n\tAuditID, \n\tCreatedDate, \n\tModifiedDate, \n\tRunDate, \n\tProductCode, \n\tCompany, \n\tTransactionCode, \n\tTransactionEffectiveDate, \n\tCoverageEffectiveDate, \n\tCoverageExpirationDate, \n\tout_CoverageGrossPremium, \n\tout_CoverageNetPremium, \n\tPreviousPolicyNumber, \n\tProgramID, \n\tNameOfInsured, \n\tCoverageType, \n\tContractNumber, \n\tPremiumTransactionEnteredDate, \n\tLimit\n\tFROM EXP_PaymentRecord\n\tORDER BY PolicyNumber ASC, RunDate ASC, PremiumTransactionEnteredDate ASC\n),\nEXP_PreFilter AS (\n\tSELECT\n\tAuditID,\n\tCreatedDate,\n\tModifiedDate,\n\tRunDate,\n\tProductCode,\n\tCompany,\n\tPolicyNumber,\n\tTransactionCode,\n\tTransactionEffectiveDate,\n\tCoverageEffectiveDate,\n\tCoverageExpirationDate,\n\tout_CoverageGrossPremium,\n\tout_CoverageNetPremium,\n\tPreviousPolicyNumber,\n\tProgramID,\n\tNameOfInsured,\n\tCoverageType,\n\tContractNumber,\n\tPremiumTransactionEnteredDate\n\tFROM SRT_PolicyKey\n),\nFLT_CoverageGrossPremium AS (\n\tSELECT\n\tAuditID, \n\tCreatedDate, \n\tModifiedDate, \n\tRunDate, \n\tProductCode, \n\tCompany, \n\tPolicyNumber, \n\tTransactionCode, \n\tTransactionEffectiveDate, \n\tCoverageEffectiveDate, \n\tCoverageExpirationDate, \n\tout_CoverageGrossPremium AS CoverageGrossPremium, \n\tout_CoverageNetPremium AS CoverageNetPremium, \n\tPreviousPolicyNumber, \n\tProgramID, \n\tNameOfInsured, \n\tContractNumber, \n\tPremiumTransactionEnteredDate\n\tFROM EXP_PreFilter\n\tWHERE CoverageGrossPremium != 0\n),\nHSBCyberSuiteBordereauExtract AS (\n\tTRUNCATE TABLE HSBCyberSuiteBordereauExtract;\n\tINSERT INTO HSBCyberSuiteBordereauExtract\n\t(AuditId, CreatedDate, ModifiedDate, RunDate, ProductCode, Company, PolicyNumber, TransactionCode, TransactionEffectiveDate, CoverageEffectiveDate, CoverageExpirationDate, CoverageGrossPremium, CoverageNetPremium, PreviousPolicyNumber, ProgramID, NameOfInsured, ContractNumber)\n\tSELECT \n\tAuditID AS AUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tRUNDATE, \n\tPRODUCTCODE, \n\tCOMPANY, \n\tPOLICYNUMBER, \n\tTRANSACTIONCODE, \n\tTRANSACTIONEFFECTIVEDATE, \n\tCOVERAGEEFFECTIVEDATE, \n\tCOVERAGEEXPIRATIONDATE, \n\tCOVERAGEGROSSPREMIUM, \n\tCOVERAGENETPREMIUM, \n\tPREVIOUSPOLICYNUMBER, \n\tPROGRAMID, \n\tNAMEOFINSURED, \n\tCONTRACTNUMBER\n\tFROM FLT_CoverageGrossPremium\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

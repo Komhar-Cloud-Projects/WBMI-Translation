@@ -64,45 +64,45 @@ EXP_DetectChanges AS (
 	i_CurrentSnapshotFlag AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800/01/01 00:00:00','YYYY/MM/DD HH24:MI:SS')
-	TO_DATE('1800/01/01 00:00:00', 'YYYY/MM/DD HH24:MI:SS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('1800/01/01 00:00:00', 'YYYY/MM/DD HH24:MI:SS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100/12/31 23:59:59','YYYY/MM/DD HH24:MI:SS')
-	TO_DATE('2100/12/31 23:59:59', 'YYYY/MM/DD HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('2100/12/31 23:59:59', 'YYYY/MM/DD HH24:MI:SS') AS o_ExpirationDate,
 	'PMS' AS o_SourceSystemID,
 	sysdate AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	i_CoverageGUID AS o_CoverageGUID,
 	-- *INF*: IIF( NOT ISNULL(:LKP.LKP_SupClassificationCrime(i_ClassCode,i_StateCode) ) , :LKP.LKP_SupClassificationCrime(i_ClassCode, i_StateCode) , 'N/A')
-	IFF(LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_i_StateCode.IndustryGroup IS NOT NULL,
-		LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_i_StateCode.IndustryGroup,
-		'N/A'
+	IFF(
+	    LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_i_StateCode.IndustryGroup IS NOT NULL,
+	    LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_i_StateCode.IndustryGroup,
+	    'N/A'
 	) AS v_lkp_result,
 	-- *INF*: IIF( v_lkp_result ='N/A', 
 	-- IIF( NOT ISNULL(:LKP.LKP_SupClassificationCrime(i_ClassCode,'99') ) , :LKP.LKP_SupClassificationCrime(i_ClassCode, '99') , 'N/A')
 	--   ,v_lkp_result )
 	-- --IIF( NOT ISNULL(:LKP.LKP_SupClassificationCrime(i_ClassCode,'99') ) , :LKP.LKP_SupClassificationCrime(i_ClassCode, '99') , 'N/A'), 
-	IFF(v_lkp_result = 'N/A',
-		IFF(LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_99.IndustryGroup IS NOT NULL,
-			LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_99.IndustryGroup,
-			'N/A'
-		),
-		v_lkp_result
+	IFF(
+	    v_lkp_result = 'N/A',
+	    IFF(
+	        LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_99.IndustryGroup IS NOT NULL,
+	        LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_99.IndustryGroup,
+	        'N/A'
+	    ),
+	    v_lkp_result
 	) AS v_lkp_result_99,
 	-- *INF*: Ltrim(Rtrim(v_lkp_result_99))
-	Ltrim(Rtrim(v_lkp_result_99
-		)
-	) AS o_IndustryGroup,
+	Ltrim(Rtrim(v_lkp_result_99)) AS o_IndustryGroup,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(lkp_PremiumTransactionID),
 	-- 'INSERT',
 	-- lkp_IndustryGroup<>v_lkp_result_99,
 	-- 'UPDATE',
 	-- 'NOCHANGE')
-	DECODE(TRUE,
-		lkp_PremiumTransactionID IS NULL, 'INSERT',
-		lkp_IndustryGroup <> v_lkp_result_99, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    lkp_PremiumTransactionID IS NULL, 'INSERT',
+	    lkp_IndustryGroup <> v_lkp_result_99, 'UPDATE',
+	    'NOCHANGE'
 	) AS o_changeflag
 	FROM SQ_PremiumTransaction
 	LEFT JOIN LKP_CDC

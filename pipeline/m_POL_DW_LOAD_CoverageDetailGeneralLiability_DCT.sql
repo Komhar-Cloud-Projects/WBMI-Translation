@@ -57,9 +57,10 @@ EXP_Stage AS (
 	-- :LKP.LKP_WBNDOCOVERAGEDIRECTORSANDOFFICERSNFPSTAGE(CoverageId),
 	-- i_RetroactiveDate
 	-- )
-	IFF(LineType = 'DirectorsAndOfficersNFP',
-		LKP_WBNDOCOVERAGEDIRECTORSANDOFFICERSNFPSTAGE_CoverageId.RetroactiveDate,
-		i_RetroactiveDate
+	IFF(
+	    LineType = 'DirectorsAndOfficersNFP',
+	    LKP_WBNDOCOVERAGEDIRECTORSANDOFFICERSNFPSTAGE_CoverageId.RetroactiveDate,
+	    i_RetroactiveDate
 	) AS o_RetroactiveDate
 	FROM SQ_DCTWorkTable
 	LEFT JOIN LKP_WBNDOCOVERAGEDIRECTORSANDOFFICERSNFPSTAGE LKP_WBNDOCOVERAGEDIRECTORSANDOFFICERSNFPSTAGE_CoverageId
@@ -128,34 +129,25 @@ EXP_Valuate AS (
 	LineType,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	-- *INF*: RTRIM(LTRIM(i_CoverageGUID))
-	RTRIM(LTRIM(i_CoverageGUID
-		)
-	) AS o_CoverageGUID,
+	RTRIM(LTRIM(i_CoverageGUID)) AS o_CoverageGUID,
 	i_RetroactiveDate AS o_RetroactiveDate,
 	-- *INF*: IIF(ISNULL(i_CoverageVersion) OR IS_SPACES(i_CoverageVersion) OR LENGTH(i_CoverageVersion)=0, 'N/A', i_CoverageVersion)
-	IFF(i_CoverageVersion IS NULL 
-		OR LENGTH(i_CoverageVersion)>0 AND TRIM(i_CoverageVersion)='' 
-		OR LENGTH(i_CoverageVersion
-		) = 0,
-		'N/A',
-		i_CoverageVersion
+	IFF(
+	    i_CoverageVersion IS NULL
+	    or LENGTH(i_CoverageVersion)>0
+	    and TRIM(i_CoverageVersion)=''
+	    or LENGTH(i_CoverageVersion) = 0,
+	    'N/A',
+	    i_CoverageVersion
 	) AS o_CoverageVersion,
 	-- *INF*: LTRIM(RTRIM(i_ClassCode))
-	LTRIM(RTRIM(i_ClassCode
-		)
-	) AS o_ClassCode,
+	LTRIM(RTRIM(i_ClassCode)) AS o_ClassCode,
 	-- *INF*: LTRIM(RTRIM(i_SublineCode))
-	LTRIM(RTRIM(i_SublineCode
-		)
-	) AS o_SublineCode,
+	LTRIM(RTRIM(i_SublineCode)) AS o_SublineCode,
 	-- *INF*: RTRIM(LTRIM(i_RatingStateCode))
-	RTRIM(LTRIM(i_RatingStateCode
-		)
-	) AS o_RatingStateCode,
+	RTRIM(LTRIM(i_RatingStateCode)) AS o_RatingStateCode,
 	-- *INF*: LTRIM(RTRIM(i_ClassCodeOrganizationCode))
-	LTRIM(RTRIM(i_ClassCodeOrganizationCode
-		)
-	) AS o_ClassCodeOrganizationCode
+	LTRIM(RTRIM(i_ClassCodeOrganizationCode)) AS o_ClassCodeOrganizationCode
 	FROM AGG_DuplicateRemove
 ),
 EXP_Metadata AS (
@@ -173,21 +165,19 @@ EXP_Metadata AS (
 	-- IN(i_LineType,'GeneralLiability','SBOPGeneralLiability') AND NOT ISNULL(:LKP.LKP_SupClassificationGeneralLiability(i_ClassCode,i_SublineCode,i_RatingStateCode)),:LKP.LKP_SupClassificationGeneralLiability(i_ClassCode,i_SublineCode,i_RatingStateCode),
 	-- IN(i_LineType,'GeneralLiability','SBOPGeneralLiability') AND NOT ISNULL(:LKP.LKP_SupClassificationGeneralLiability(i_ClassCode,i_SublineCode,'99')),:LKP.LKP_SupClassificationGeneralLiability(i_ClassCode,i_SublineCode,'99'),
 	-- 'N/A')
-	DECODE(true,
-		i_LineType IN ('GeneralLiability','SBOPGeneralLiability') 
-		AND LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode.lkp_result IS NOT NULL, LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode.lkp_result,
-		i_LineType IN ('GeneralLiability','SBOPGeneralLiability') 
-		AND LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_99.lkp_result IS NOT NULL, LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_99.lkp_result,
-		'N/A'
+	DECODE(
+	    true,
+	    i_LineType IN ('GeneralLiability','SBOPGeneralLiability') AND LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode.lkp_result IS NOT NULL, LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode.lkp_result,
+	    i_LineType IN ('GeneralLiability','SBOPGeneralLiability') AND LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_99.lkp_result IS NOT NULL, LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_99.lkp_result,
+	    'N/A'
 	) AS v_lkp_result,
 	-- *INF*: IIF(ISNULL(i_RetroactiveDate),
 	-- TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS'),
 	-- i_RetroactiveDate
 	-- )
-	IFF(i_RetroactiveDate IS NULL,
-		TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
-		),
-		i_RetroactiveDate
+	IFF(
+	    i_RetroactiveDate IS NULL, TO_TIMESTAMP('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'),
+	    i_RetroactiveDate
 	) AS v_RetroactiveDate,
 	-- *INF*: DECODE(TRUE,
 	-- i_LineType<>'DirectorsAndOfficersNFP' and i_LiabilityFormCode='OCCURRENCE', '3',
@@ -195,88 +185,50 @@ EXP_Metadata AS (
 	-- (i_LiabilityFormCode='CLAIMSMADE' or IN(i_LineType, 'DirectorsAndOfficersNFP', 'DirectorsAndOffsCondos', 'EmploymentPracticesLiab')) and NOT ISNULL(i_RetroactiveDate), '1',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_LineType <> 'DirectorsAndOfficersNFP' 
-		AND i_LiabilityFormCode = 'OCCURRENCE', '3',
-		( i_LiabilityFormCode = 'CLAIMSMADE' 
-			OR i_LineType IN ('DirectorsAndOfficersNFP','DirectorsAndOffsCondos','EmploymentPracticesLiab') 
-		) 
-		AND i_RetroactiveDate IS NULL, '4',
-		( i_LiabilityFormCode = 'CLAIMSMADE' 
-			OR i_LineType IN ('DirectorsAndOfficersNFP','DirectorsAndOffsCondos','EmploymentPracticesLiab') 
-		) 
-		AND i_RetroactiveDate IS NOT NULL, '1',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_LineType <> 'DirectorsAndOfficersNFP' and i_LiabilityFormCode = 'OCCURRENCE', '3',
+	    (i_LiabilityFormCode = 'CLAIMSMADE' or i_LineType IN ('DirectorsAndOfficersNFP','DirectorsAndOffsCondos','EmploymentPracticesLiab')) and i_RetroactiveDate IS NULL, '4',
+	    (i_LiabilityFormCode = 'CLAIMSMADE' or i_LineType IN ('DirectorsAndOfficersNFP','DirectorsAndOffsCondos','EmploymentPracticesLiab')) and i_RetroactiveDate IS NOT NULL, '1',
+	    'N/A'
 	) AS v_LiabilityFormCode,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_CoverageGUID)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_CoverageGUID
-	) AS o_CoverageGUID,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_CoverageGUID) AS o_CoverageGUID,
 	v_RetroactiveDate AS o_RetroactiveDate,
 	v_LiabilityFormCode AS o_LiabilityFormCode,
 	-- *INF*: IIF(v_lkp_result='N/A' OR ISNULL(v_lkp_result), 'N/A',
 	--     IIF(ISNULL(SUBSTR(v_lkp_result,1,instr(v_lkp_result,'@1')-1)) OR LENGTH(SUBSTR(v_lkp_result,1,instr(v_lkp_result,'@1')-1))=0 ,'N/A',SUBSTR(v_lkp_result,1,instr(v_lkp_result,'@1')-1))
 	-- )
-	IFF(v_lkp_result = 'N/A' 
-		OR v_lkp_result IS NULL,
-		'N/A',
-		IFF(SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1'
-				) - 1
-			) IS NULL 
-			OR LENGTH(SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1'
-					) - 1
-				)
-			) = 0,
-			'N/A',
-			SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1'
-				) - 1
-			)
-		)
+	IFF(
+	    v_lkp_result = 'N/A' OR v_lkp_result IS NULL, 'N/A',
+	    IFF(
+	        SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1') - 1) IS NULL
+	        or LENGTH(SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1') - 1)) = 0,
+	        'N/A',
+	        SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1') - 1)
+	    )
 	) AS o_ClassSummary,
 	-- *INF*: IIF(v_lkp_result='N/A' OR ISNULL(v_lkp_result), 'N/A',
 	-- IIF(ISNULL(SUBSTR(v_lkp_result,(instr(v_lkp_result,'@1')+2),(instr(v_lkp_result,'@2')-(instr(v_lkp_result,'@1')+2)))) OR LENGTH(SUBSTR(v_lkp_result,(instr(v_lkp_result,'@1')+2),(instr(v_lkp_result,'@2')-(instr(v_lkp_result,'@1')+2)))) =0 , 'N/A'  ,SUBSTR(v_lkp_result,(instr(v_lkp_result,'@1')+2),(instr(v_lkp_result,'@2')-(instr(v_lkp_result,'@1')+2))))
 	-- )
-	IFF(v_lkp_result = 'N/A' 
-		OR v_lkp_result IS NULL,
-		'N/A',
-		IFF(SUBSTR(v_lkp_result, ( REGEXP_INSTR(v_lkp_result, '@1'
-					) + 2 
-				), ( REGEXP_INSTR(v_lkp_result, '@2'
-					) - ( REGEXP_INSTR(v_lkp_result, '@1'
-						) + 2 
-					) 
-				)
-			) IS NULL 
-			OR LENGTH(SUBSTR(v_lkp_result, ( REGEXP_INSTR(v_lkp_result, '@1'
-						) + 2 
-					), ( REGEXP_INSTR(v_lkp_result, '@2'
-						) - ( REGEXP_INSTR(v_lkp_result, '@1'
-							) + 2 
-						) 
-					)
-				)
-			) = 0,
-			'N/A',
-			SUBSTR(v_lkp_result, ( REGEXP_INSTR(v_lkp_result, '@1'
-					) + 2 
-				), ( REGEXP_INSTR(v_lkp_result, '@2'
-					) - ( REGEXP_INSTR(v_lkp_result, '@1'
-						) + 2 
-					) 
-				)
-			)
-		)
+	IFF(
+	    v_lkp_result = 'N/A' OR v_lkp_result IS NULL, 'N/A',
+	    IFF(
+	        SUBSTR(v_lkp_result, (REGEXP_INSTR(v_lkp_result, '@1') + 2), (REGEXP_INSTR(v_lkp_result, '@2') - (REGEXP_INSTR(v_lkp_result, '@1') + 2))) IS NULL
+	        or LENGTH(SUBSTR(v_lkp_result, (REGEXP_INSTR(v_lkp_result, '@1') + 2), (REGEXP_INSTR(v_lkp_result, '@2') - (REGEXP_INSTR(v_lkp_result, '@1') + 2)))) = 0,
+	        'N/A',
+	        SUBSTR(v_lkp_result, (REGEXP_INSTR(v_lkp_result, '@1') + 2), (REGEXP_INSTR(v_lkp_result, '@2') - (REGEXP_INSTR(v_lkp_result, '@1') + 2)))
+	    )
 	) AS o_ClassGroup
 	FROM EXP_Valuate
 	LEFT JOIN LKP_SUPCLASSIFICATIONGENERALLIABILITY LKP_SUPCLASSIFICATIONGENERALLIABILITY_i_ClassCode_i_SublineCode_i_RatingStateCode
@@ -344,13 +296,11 @@ EXP_DetectChanges AS (
 	-- ,'UPDATE',
 	-- 'NOCHANGE'
 	-- )
-	DECODE(TRUE,
-		lkp_PremiumTransactionID IS NULL, 'NEW',
-		lkp_RetroactiveDate != RetroactiveDate 
-		OR lkp_LiabilityFormCode != LiabilityFormCode 
-		OR lkp_ClassSummary != ClassSummary 
-		OR lkp_ClassGroupCode != ClassGroup, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    lkp_PremiumTransactionID IS NULL, 'NEW',
+	    lkp_RetroactiveDate != RetroactiveDate OR lkp_LiabilityFormCode != LiabilityFormCode OR lkp_ClassSummary != ClassSummary OR lkp_ClassGroupCode != ClassGroup, 'UPDATE',
+	    'NOCHANGE'
 	) AS o_ChangeFlag
 	FROM EXP_Metadata
 	LEFT JOIN LKP_CoverageDetailGeneralLiability

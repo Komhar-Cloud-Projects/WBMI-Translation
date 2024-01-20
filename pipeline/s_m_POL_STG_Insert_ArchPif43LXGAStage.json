@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchPif43LXGAStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchPif43LXGAStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif43LXGAStage AS (\n\tSELECT\n\t\tPif43LXGAStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tPifSymbol,\n\t\tPifPolicyNumber,\n\t\tPifModule,\n\t\tPMDLXA1SegmentId,\n\t\tPMDLXA1SegmentStatus,\n\t\tPMDLXA1YearTransaction,\n\t\tPMDLXA1MonthTransaction,\n\t\tPMDLXA1DayTransaction,\n\t\tPMDLXA1SegmentLevelCode,\n\t\tPMDLXA1SegmentPartCode,\n\t\tPMDLXA1SubPartCode,\n\t\tPMDLXA1InsuranceLine,\n\t\tPMDLXA1LocationNumber,\n\t\tPMDLXA1YearItemEffective,\n\t\tPMDLXA1MonthItemEffective,\n\t\tPMDLXA1DayItemEffective,\n\t\tPMDLXA1YearProcess,\n\t\tPMDLXA1MonthProcess,\n\t\tPMDLXA1DayProcess,\n\t\tPMDLXA1YearOrigProcess,\n\t\tPMDLXA1MonthOrigProcess,\n\t\tPMDLXA1DayOrigProcess,\n\t\tPMDLXA1PolicyCompany,\n\t\tPMDLXA1LiabilityAudit,\n\t\tPMDLXA1PhysicalDamage,\n\t\tPMDLXA1BroadenedCoverage,\n\t\tPMDLXA1Pilg1,\n\t\tPMDLXA1Pilg2,\n\t\tPMDLXA1Pilg3,\n\t\tPMDLXA1DelExcC,\n\t\tPMDLXA1BroadFormProducts,\n\t\tPMDLXA1Delete100Comp,\n\t\tPMDLXA1CompanyDeviation,\n\t\tPMDLXA1BlkColAdjFac,\n\t\tPMDLXA1TermFactor,\n\t\tPMDLXA1BlkColValuFac,\n\t\tPMDLXA1SaveLiabUxAc,\n\t\tPMDLXA1LiabUxTransDate,\n\t\tPMDLXA1SaveLiabRxAc,\n\t\tPMDLXA1LiabRxTransDate,\n\t\tPMDLXA1AgentsCommRate,\n\t\tPMDLXA1FireLegalLiab,\n\t\tPMDLXA1PmaCode,\n\t\tPMDLXA1RateLevelDate,\n\t\tPMDLXA1WorkSheetInd,\n\t\tPMDLXA1PmsFutureUse,\n\t\tPMDLXA1CustomerUse,\n\t\tPMDLXA1Yr2000CustUse\n\tFROM Pif43LXGAStage\n),\nEXP_Pif43LXGAStage AS (\n\tSELECT\n\tPif43LXGAStageId,\n\tExtractDate,\n\tSourceSystemid,\n\tPifSymbol,\n\tPifPolicyNumber,\n\tPifModule,\n\tPMDLXA1SegmentId,\n\tPMDLXA1SegmentStatus,\n\tPMDLXA1YearTransaction,\n\tPMDLXA1MonthTransaction,\n\tPMDLXA1DayTransaction,\n\tPMDLXA1SegmentLevelCode,\n\tPMDLXA1SegmentPartCode,\n\tPMDLXA1SubPartCode,\n\tPMDLXA1InsuranceLine,\n\tPMDLXA1LocationNumber,\n\tPMDLXA1YearItemEffective,\n\tPMDLXA1MonthItemEffective,\n\tPMDLXA1DayItemEffective,\n\tPMDLXA1YearProcess,\n\tPMDLXA1MonthProcess,\n\tPMDLXA1DayProcess,\n\tPMDLXA1YearOrigProcess,\n\tPMDLXA1MonthOrigProcess,\n\tPMDLXA1DayOrigProcess,\n\tPMDLXA1PolicyCompany,\n\tPMDLXA1LiabilityAudit,\n\tPMDLXA1PhysicalDamage,\n\tPMDLXA1BroadenedCoverage,\n\tPMDLXA1Pilg1,\n\tPMDLXA1Pilg2,\n\tPMDLXA1Pilg3,\n\tPMDLXA1DelExcC,\n\tPMDLXA1BroadFormProducts,\n\tPMDLXA1Delete100Comp,\n\tPMDLXA1CompanyDeviation,\n\tPMDLXA1BlkColAdjFac,\n\tPMDLXA1TermFactor,\n\tPMDLXA1BlkColValuFac,\n\tPMDLXA1SaveLiabUxAc,\n\tPMDLXA1LiabUxTransDate,\n\tPMDLXA1SaveLiabRxAc,\n\tPMDLXA1LiabRxTransDate,\n\tPMDLXA1AgentsCommRate,\n\tPMDLXA1FireLegalLiab,\n\tPMDLXA1PmaCode,\n\tPMDLXA1RateLevelDate,\n\tPMDLXA1WorkSheetInd,\n\tPMDLXA1PmsFutureUse,\n\tPMDLXA1CustomerUse,\n\tPMDLXA1Yr2000CustUse,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_audit_id\n\tFROM SQ_Pif43LXGAStage\n),\nArchPif43LXGAStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchPif43LXGAStage\n\t(ExtractDate, SourceSystemid, AuditId, PifSymbol, PifPolicyNumber, PifModule, PMDLXA1SegmentId, PMDLXA1SegmentStatus, PMDLXA1YearTransaction, PMDLXA1MonthTransaction, PMDLXA1DayTransaction, PMDLXA1SegmentLevelCode, PMDLXA1SegmentPartCode, PMDLXA1SubPartCode, PMDLXA1InsuranceLine, PMDLXA1LocationNumber, PMDLXA1YearItemEffective, PMDLXA1MonthItemEffective, PMDLXA1DayItemEffective, PMDLXA1YearProcess, PMDLXA1MonthProcess, PMDLXA1DayProcess, PMDLXA1YearOrigProcess, PMDLXA1MonthOrigProcess, PMDLXA1DayOrigProcess, PMDLXA1PolicyCompany, PMDLXA1LiabilityAudit, PMDLXA1PhysicalDamage, PMDLXA1BroadenedCoverage, PMDLXA1Pilg1, PMDLXA1Pilg2, PMDLXA1Pilg3, PMDLXA1DelExcC, PMDLXA1BroadFormProducts, PMDLXA1Delete100Comp, PMDLXA1CompanyDeviation, PMDLXA1BlkColAdjFac, PMDLXA1TermFactor, PMDLXA1BlkColValuFac, PMDLXA1SaveLiabUxAc, PMDLXA1LiabUxTransDate, PMDLXA1SaveLiabRxAc, PMDLXA1LiabRxTransDate, PMDLXA1AgentsCommRate, PMDLXA1FireLegalLiab, PMDLXA1PmaCode, PMDLXA1RateLevelDate, PMDLXA1WorkSheetInd, PMDLXA1PmsFutureUse, PMDLXA1CustomerUse, PMDLXA1Yr2000CustUse)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_audit_id AS AUDITID, \n\tPIFSYMBOL, \n\tPIFPOLICYNUMBER, \n\tPIFMODULE, \n\tPMDLXA1SEGMENTID, \n\tPMDLXA1SEGMENTSTATUS, \n\tPMDLXA1YEARTRANSACTION, \n\tPMDLXA1MONTHTRANSACTION, \n\tPMDLXA1DAYTRANSACTION, \n\tPMDLXA1SEGMENTLEVELCODE, \n\tPMDLXA1SEGMENTPARTCODE, \n\tPMDLXA1SUBPARTCODE, \n\tPMDLXA1INSURANCELINE, \n\tPMDLXA1LOCATIONNUMBER, \n\tPMDLXA1YEARITEMEFFECTIVE, \n\tPMDLXA1MONTHITEMEFFECTIVE, \n\tPMDLXA1DAYITEMEFFECTIVE, \n\tPMDLXA1YEARPROCESS, \n\tPMDLXA1MONTHPROCESS, \n\tPMDLXA1DAYPROCESS, \n\tPMDLXA1YEARORIGPROCESS, \n\tPMDLXA1MONTHORIGPROCESS, \n\tPMDLXA1DAYORIGPROCESS, \n\tPMDLXA1POLICYCOMPANY, \n\tPMDLXA1LIABILITYAUDIT, \n\tPMDLXA1PHYSICALDAMAGE, \n\tPMDLXA1BROADENEDCOVERAGE, \n\tPMDLXA1PILG1, \n\tPMDLXA1PILG2, \n\tPMDLXA1PILG3, \n\tPMDLXA1DELEXCC, \n\tPMDLXA1BROADFORMPRODUCTS, \n\tPMDLXA1DELETE100COMP, \n\tPMDLXA1COMPANYDEVIATION, \n\tPMDLXA1BLKCOLADJFAC, \n\tPMDLXA1TERMFACTOR, \n\tPMDLXA1BLKCOLVALUFAC, \n\tPMDLXA1SAVELIABUXAC, \n\tPMDLXA1LIABUXTRANSDATE, \n\tPMDLXA1SAVELIABRXAC, \n\tPMDLXA1LIABRXTRANSDATE, \n\tPMDLXA1AGENTSCOMMRATE, \n\tPMDLXA1FIRELEGALLIAB, \n\tPMDLXA1PMACODE, \n\tPMDLXA1RATELEVELDATE, \n\tPMDLXA1WORKSHEETIND, \n\tPMDLXA1PMSFUTUREUSE, \n\tPMDLXA1CUSTOMERUSE, \n\tPMDLXA1YR2000CUSTUSE\n\tFROM EXP_Pif43LXGAStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

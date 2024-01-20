@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLAIM",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLAIM",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_claim_stage AS (\n\tSELECT claim_stage.claim_stage_id, claim_stage.claim_id, claim_stage.loss_date, claim_stage.loss_occurrence, claim_stage.policy_num, claim_stage.policy_sym, claim_stage.policy_mod, claim_stage.policy_mco, claim_stage.loss_report_date, claim_stage.loss_entry_date, claim_stage.cat_code, claim_stage.loss_street1, claim_stage.loss_street2, claim_stage.loss_street3, claim_stage.loss_city, claim_stage.loss_zip_code, claim_stage.loss_state_code, claim_stage.loss_descript, claim_stage.remark, claim_stage.loss_entry_status, claim_stage.claim_rep_code, claim_stage.appraiser_code, claim_stage.modified_user_id, claim_stage.modified_date, claim_stage.report_office_code, claim_stage.manager_to_notify, claim_stage.fax_to_agency_flag, claim_stage.reprocess_flag, claim_stage.special_entry, claim_stage.direct_report_code, claim_stage.claim_num, claim_stage.extract_date, claim_stage.as_of_date, claim_stage.record_count, claim_stage.source_system_id \r\n\tFROM\r\n\t claim_stage\r\n\tWHERE\r\n\tclaim_stage.modified_date >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_claim AS (\n\tSELECT\n\tclaim_stage_id,\n\tclaim_id,\n\tloss_date,\n\tloss_occurrence,\n\tpolicy_num,\n\tpolicy_sym,\n\tpolicy_mod,\n\tpolicy_mco,\n\tloss_report_date,\n\tloss_entry_date,\n\tcat_code,\n\tloss_street1,\n\tloss_street2,\n\tloss_street3,\n\tloss_city,\n\tloss_zip_code,\n\tloss_state_code,\n\tloss_descript,\n\tremark,\n\tloss_entry_status,\n\tclaim_rep_code,\n\tappraiser_code,\n\tmodified_user_id,\n\tmodified_date,\n\treport_office_code,\n\tmanager_to_notify,\n\tfax_to_agency_flag,\n\treprocess_flag,\n\tspecial_entry,\n\tdirect_report_code,\n\tclaim_num,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_claim_stage\n),\narch_claim_stage AS (\n\tINSERT INTO arch_claim_stage\n\t(claim_stage_id, claim_id, loss_date, loss_occurrence, policy_num, policy_sym, policy_mod, policy_mco, loss_report_date, loss_entry_date, cat_code, loss_street1, loss_street2, loss_street3, loss_city, loss_zip_code, loss_state_code, loss_descript, remark, loss_entry_status, claim_rep_code, appraiser_code, modified_user_id, modified_date, report_office_code, manager_to_notify, fax_to_agency_flag, reprocess_flag, special_entry, direct_report_code, claim_num, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCLAIM_STAGE_ID, \n\tCLAIM_ID, \n\tLOSS_DATE, \n\tLOSS_OCCURRENCE, \n\tPOLICY_NUM, \n\tPOLICY_SYM, \n\tPOLICY_MOD, \n\tPOLICY_MCO, \n\tLOSS_REPORT_DATE, \n\tLOSS_ENTRY_DATE, \n\tCAT_CODE, \n\tLOSS_STREET1, \n\tLOSS_STREET2, \n\tLOSS_STREET3, \n\tLOSS_CITY, \n\tLOSS_ZIP_CODE, \n\tLOSS_STATE_CODE, \n\tLOSS_DESCRIPT, \n\tREMARK, \n\tLOSS_ENTRY_STATUS, \n\tCLAIM_REP_CODE, \n\tAPPRAISER_CODE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tREPORT_OFFICE_CODE, \n\tMANAGER_TO_NOTIFY, \n\tFAX_TO_AGENCY_FLAG, \n\tREPROCESS_FLAG, \n\tSPECIAL_ENTRY, \n\tDIRECT_REPORT_CODE, \n\tCLAIM_NUM, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_claim\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

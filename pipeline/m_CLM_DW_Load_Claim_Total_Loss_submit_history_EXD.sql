@@ -31,166 +31,82 @@ EXP_source_anchor AS (
 	SELECT
 	tch_claim_nbr,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(tch_claim_nbr))) OR LENGTH(LTRIM(RTRIM(tch_claim_nbr))) = 0, 'N/A', LTRIM(RTRIM(tch_claim_nbr)))
-	IFF(LTRIM(RTRIM(tch_claim_nbr
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(tch_claim_nbr
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(tch_claim_nbr
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(tch_claim_nbr)) IS NULL OR LENGTH(LTRIM(RTRIM(tch_claim_nbr))) = 0, 'N/A',
+	    LTRIM(RTRIM(tch_claim_nbr))
 	) AS tch_claim_nbr_out,
 	tch_client_id,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(tch_client_id))) OR LENGTH(LTRIM(RTRIM(tch_client_id))) = 0, 'N/A', LTRIM(RTRIM(tch_client_id)))
-	IFF(LTRIM(RTRIM(tch_client_id
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(tch_client_id
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(tch_client_id
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(tch_client_id)) IS NULL OR LENGTH(LTRIM(RTRIM(tch_client_id))) = 0, 'N/A',
+	    LTRIM(RTRIM(tch_client_id))
 	) AS tch_client_id_out,
 	object_type_cd,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(object_type_cd))) OR LENGTH(LTRIM(RTRIM(object_type_cd))) = 0, 'N/A', LTRIM(RTRIM(object_type_cd)))
-	IFF(LTRIM(RTRIM(object_type_cd
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(object_type_cd
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(object_type_cd
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(object_type_cd)) IS NULL OR LENGTH(LTRIM(RTRIM(object_type_cd))) = 0, 'N/A',
+	    LTRIM(RTRIM(object_type_cd))
 	) AS object_type_cd_out,
 	object_seq_nbr,
 	cov_type_cd,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(cov_type_cd))) OR LENGTH(LTRIM(RTRIM(cov_type_cd))) = 0, 'N/A', LTRIM(RTRIM(cov_type_cd)))
-	IFF(LTRIM(RTRIM(cov_type_cd
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(cov_type_cd
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(cov_type_cd
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(cov_type_cd)) IS NULL OR LENGTH(LTRIM(RTRIM(cov_type_cd))) = 0, 'N/A',
+	    LTRIM(RTRIM(cov_type_cd))
 	) AS cov_type_cd_out,
 	cov_seq_nbr,
 	bur_cause_loss,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(bur_cause_loss))) OR LENGTH(LTRIM(RTRIM(bur_cause_loss))) = 0, 'N/A',  SUBSTR(bur_cause_loss, 1,2))
-	IFF(LTRIM(RTRIM(bur_cause_loss
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(bur_cause_loss
-				)
-			)
-		) = 0,
-		'N/A',
-		SUBSTR(bur_cause_loss, 1, 2
-		)
+	IFF(
+	    LTRIM(RTRIM(bur_cause_loss)) IS NULL OR LENGTH(LTRIM(RTRIM(bur_cause_loss))) = 0, 'N/A',
+	    SUBSTR(bur_cause_loss, 1, 2)
 	) AS bur_cause_loss_out,
 	-- *INF*: IIF(ISNULL(bur_cause_loss) OR IS_SPACES(bur_cause_loss), 'N/A', SUBSTR(bur_cause_loss, 3,1))
-	IFF(bur_cause_loss IS NULL 
-		OR LENGTH(bur_cause_loss)>0 AND TRIM(bur_cause_loss)='',
-		'N/A',
-		SUBSTR(bur_cause_loss, 3, 1
-		)
+	IFF(
+	    bur_cause_loss IS NULL OR LENGTH(bur_cause_loss)>0 AND TRIM(bur_cause_loss)='', 'N/A',
+	    SUBSTR(bur_cause_loss, 3, 1)
 	) AS reserve_category_out,
 	seq_nbr,
 	add_uuid,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(add_uuid))) OR LENGTH(LTRIM(RTRIM(add_uuid))) = 0, 'N/A', LTRIM(RTRIM(add_uuid)))
-	IFF(LTRIM(RTRIM(add_uuid
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(add_uuid
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(add_uuid
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(add_uuid)) IS NULL OR LENGTH(LTRIM(RTRIM(add_uuid))) = 0, 'N/A',
+	    LTRIM(RTRIM(add_uuid))
 	) AS add_uuid_out,
 	vehicle_vin,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(vehicle_vin))) OR LENGTH(LTRIM(RTRIM(vehicle_vin))) = 0, 'N/A', LTRIM(RTRIM(vehicle_vin)))
-	IFF(LTRIM(RTRIM(vehicle_vin
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(vehicle_vin
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(vehicle_vin
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(vehicle_vin)) IS NULL OR LENGTH(LTRIM(RTRIM(vehicle_vin))) = 0, 'N/A',
+	    LTRIM(RTRIM(vehicle_vin))
 	) AS vehicle_vin_out,
 	add_action,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(add_action))) OR LENGTH(LTRIM(RTRIM(add_action))) = 0, 'N/A', LTRIM(RTRIM(add_action))) 
-	IFF(LTRIM(RTRIM(add_action
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(add_action
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(add_action
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(add_action)) IS NULL OR LENGTH(LTRIM(RTRIM(add_action))) = 0, 'N/A',
+	    LTRIM(RTRIM(add_action))
 	) AS add_action_out,
 	add_actionts,
 	-- *INF*: IIF(ISNULL(add_actionts), to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'), add_actionts)
-	IFF(add_actionts IS NULL,
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		add_actionts
+	IFF(
+	    add_actionts IS NULL, TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    add_actionts
 	) AS add_actionts_out,
 	loss_date,
 	-- *INF*: IIF(ISNULL(loss_date), to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'), loss_date)
-	IFF(loss_date IS NULL,
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		loss_date
+	IFF(
+	    loss_date IS NULL, TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), loss_date
 	) AS loss_date_out,
 	loss_owner,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(loss_owner))) OR LENGTH(LTRIM(RTRIM(loss_owner))), 'N/A', LTRIM(RTRIM(loss_owner)))
-	IFF(LTRIM(RTRIM(loss_owner
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(loss_owner
-				)
-			)
-		),
-		'N/A',
-		LTRIM(RTRIM(loss_owner
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(loss_owner)) IS NULL OR LENGTH(LTRIM(RTRIM(loss_owner))), 'N/A',
+	    LTRIM(RTRIM(loss_owner))
 	) AS loss_owner_out,
 	new_owner,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(new_owner))) OR LENGTH(LTRIM(RTRIM(new_owner))), 'N/A', LTRIM(RTRIM(new_owner)))
-	IFF(LTRIM(RTRIM(new_owner
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(new_owner
-				)
-			)
-		),
-		'N/A',
-		LTRIM(RTRIM(new_owner
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(new_owner)) IS NULL OR LENGTH(LTRIM(RTRIM(new_owner))), 'N/A',
+	    LTRIM(RTRIM(new_owner))
 	) AS new_owner_out,
 	create_ts,
 	create_user_id,
@@ -416,16 +332,17 @@ EXP_gather_old_values AS (
 	-- ,'NOCHANGE')
 	-- )
 	-- 
-	IFF(old_claim_total_loss_ak_id IS NULL,
-		'NEW',
-		IFF(old_submit_to_vendor_action != add_action_out 
-			OR old_vin_num != vehicle_vin_out 
-			OR old_total_loss_date != loss_date_out 
-			OR old_loss_owner != loss_owner_out 
-			OR old_new_owner != new_owner_out,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    old_claim_total_loss_ak_id IS NULL, 'NEW',
+	    IFF(
+	        old_submit_to_vendor_action != add_action_out
+	        or old_vin_num != vehicle_vin_out
+	        or old_total_loss_date != loss_date_out
+	        or old_loss_owner != loss_owner_out
+	        or old_new_owner != new_owner_out,
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	EXP_gather_values.vehicle_vin_out,
@@ -464,22 +381,20 @@ EXP_determine_AK AS (
 	SEQ_claim_total_loss_submit_hist_ak_id.NEXTVAL,
 	changed_flag,
 	-- *INF*: IIF(ISNULL(old_claim_total_loss_submit_hist_ak_id), NEXTVAL, old_claim_total_loss_submit_hist_ak_id)
-	IFF(old_claim_total_loss_submit_hist_ak_id IS NULL,
-		NEXTVAL,
-		old_claim_total_loss_submit_hist_ak_id
+	IFF(
+	    old_claim_total_loss_submit_hist_ak_id IS NULL, NEXTVAL,
+	    old_claim_total_loss_submit_hist_ak_id
 	) AS claim_total_loss_submit_hist_ak_id_out,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id,
 	SYSDATE AS created_modified_date,
 	vehicle_vin_out,
@@ -545,10 +460,10 @@ EXP_expire_rows AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	claim_total_loss_submit_hist_ak_id = v_prev_row_claim_total_loss_ak_id AND claim_total_loss_ak_id = v_prev_row_claimant_cov_det_ak_id, ADD_TO_DATE(v_prev_row_eff_from_date,'SS',-1),
 	-- 	eff_to_date)
-	DECODE(TRUE,
-		claim_total_loss_submit_hist_ak_id = v_prev_row_claim_total_loss_ak_id 
-		AND claim_total_loss_ak_id = v_prev_row_claimant_cov_det_ak_id, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
-		eff_to_date
+	DECODE(
+	    TRUE,
+	    claim_total_loss_submit_hist_ak_id = v_prev_row_claim_total_loss_ak_id AND claim_total_loss_ak_id = v_prev_row_claimant_cov_det_ak_id, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
+	    eff_to_date
 	) AS v_new_eff_to_date,
 	v_new_eff_to_date AS new_eff_to_date,
 	0 AS new_crrnt_snpsht_flag,

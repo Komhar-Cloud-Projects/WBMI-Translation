@@ -89,12 +89,12 @@ EXP_Evaluate_PassThroughCharges AS (
 	-- StatisticalCoverageID <> Arch_Row_Count , 'RowCountDoesNotMatch',
 	-- ISNULL(pol_key),'MissingEDWPolicy',
 	-- StatisticalCoverageID = Arch_Row_Count  AND TotalPremiumTransactionAmount = Arch_TotalPremiumAmount,'MatchFound')
-	DECODE(TRUE,
-		TotalPremiumTransactionAmount <> Arch_TotalPremiumAmount, 'AmountDoesNotMatch',
-		StatisticalCoverageID <> Arch_Row_Count, 'RowCountDoesNotMatch',
-		pol_key IS NULL, 'MissingEDWPolicy',
-		StatisticalCoverageID = Arch_Row_Count 
-		AND TotalPremiumTransactionAmount = Arch_TotalPremiumAmount, 'MatchFound'
+	DECODE(
+	    TRUE,
+	    TotalPremiumTransactionAmount <> Arch_TotalPremiumAmount, 'AmountDoesNotMatch',
+	    StatisticalCoverageID <> Arch_Row_Count, 'RowCountDoesNotMatch',
+	    pol_key IS NULL, 'MissingEDWPolicy',
+	    StatisticalCoverageID = Arch_Row_Count AND TotalPremiumTransactionAmount = Arch_TotalPremiumAmount, 'MatchFound'
 	) AS V_Difference_Flag,
 	V_Difference_Flag AS Flag,
 	'PassThroughChargesTransaction' AS EDWPolicyTransactionType,
@@ -232,12 +232,12 @@ EXP_Evaluate AS (
 	-- EDW_Row_Count <> Arch_Row_Count , 'RowCountDoesNotMatch',
 	-- ISNULL(pol_key),'MissingEDWPolicy',
 	-- EDW_Row_Count = Arch_Row_Count  AND TotalPremiumTransactionAmount = Arch_TotalPremiumAmount,'MatchFound')
-	DECODE(TRUE,
-		TotalPremiumTransactionAmount <> Arch_TotalPremiumAmount, 'AmountDoesNotMatch',
-		EDW_Row_Count <> Arch_Row_Count, 'RowCountDoesNotMatch',
-		pol_key IS NULL, 'MissingEDWPolicy',
-		EDW_Row_Count = Arch_Row_Count 
-		AND TotalPremiumTransactionAmount = Arch_TotalPremiumAmount, 'MatchFound'
+	DECODE(
+	    TRUE,
+	    TotalPremiumTransactionAmount <> Arch_TotalPremiumAmount, 'AmountDoesNotMatch',
+	    EDW_Row_Count <> Arch_Row_Count, 'RowCountDoesNotMatch',
+	    pol_key IS NULL, 'MissingEDWPolicy',
+	    EDW_Row_Count = Arch_Row_Count AND TotalPremiumTransactionAmount = Arch_TotalPremiumAmount, 'MatchFound'
 	) AS V_Difference_Flag,
 	V_Difference_Flag AS Flag,
 	'PremiumTransaction' AS EDWPolicyTransactionType,

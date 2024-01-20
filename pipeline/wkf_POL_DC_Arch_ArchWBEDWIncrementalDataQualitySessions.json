@@ -1,0 +1,47 @@
+{
+    "name": "wkf_POL_DC_Arch_ArchWBEDWIncrementalDataQualitySessions",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_WBExampleData_ARCH_Insert_ArchWBEDWIncrement_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_WBExampleData_ARCH_Insert_ArchWBEDWIncrementalDataQualitySessions"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_WBExampleData_ARCH_Insert_ArchWBEDWIncrementalDataQualitySessions",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "variables": {}
+    }
+}

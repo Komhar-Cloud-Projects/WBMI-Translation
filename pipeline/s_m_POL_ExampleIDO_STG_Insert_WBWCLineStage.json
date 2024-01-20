@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBWCLineStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBWCLineStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_WC_Line AS (\n\tWITH cte_WBWCLine(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.WC_LineId, \r\n\tX.WB_WC_LineId, \r\n\tX.SessionId, \r\n\tX.CurrentIteration, \r\n\tX.Space, \r\n\tX.Selected, \r\n\tX.ClaimsInExcessOf, \r\n\tX.RetrieveExperienceModifier, \r\n\tX.OtherStatesInsuranceConditional, \r\n\tX.OtherStatesInsuranceIterator, \r\n\tX.OtherStatesInsuranceCalculation, \r\n\tX.OtherStatesInsuranceSumIterator, \r\n\tX.MinimumPremiumMaximum, \r\n\tX.TotalClaimsIncurred, \r\n\tX.TotalStatePremiumForDividend, \r\n\tX.DividendAmount, \r\n\tX.DividendPrior, \r\n\tX.DividendChange, \r\n\tX.DividendWritten, \r\n\tX.DividendPremium, \r\n\tX.TotalDividendIncurredLossRatio, \r\n\tX.DividendPercentage, \r\n\tX.DividendPercentagePrior, \r\n\tX.DividendAmountFinal, \r\n\tX.DividendProjectedDate, \r\n\tX.DividendPaidDate, \r\n\tX.TotalClaimsAmountPaid, \r\n\tX.TotalClaimsOutstanding, \r\n\tX.TotalClaimsExpense, \r\n\tX.DividendWrittenDuplicatePath, \r\n\tX.ExperienceModMessage, \r\n\tX.ExperienceModIndicator, \r\n\tX.Value, \r\n\tX.RetrieveExperienceMod, \r\n\tX.ExpenseConstantMaximum, \r\n\tX.AddState, \r\n\tX.PriorCountForRetrospectiveCalculation, \r\n\tX.AnyContractorClassCode, \r\n\tX.PreviousFinalCommission, \r\n\tX.DividendCharge, \r\n\tX.ManuallyCalculate, \r\n\tX.OtherPoliciesWC000503, \r\n\tX.InterstateRiskID\r\n\tFROM  \r\n\tWB_WC_Line X\r\n\tinner join\r\n\tcte_WBWCLine Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tWC_LineId,\n\tWB_WC_LineId,\n\tSessionId,\n\tCurrentIteration,\n\tSpace,\n\tSelected,\n\t-- *INF*: IIF(Selected='T', '1','0')\n\tIFF(Selected = 'T', '1', '0') AS o_Selected,\n\tClaimsInExcessOf,\n\tRetrieveExperienceModifier,\n\tOtherStatesInsuranceConditional,\n\tOtherStatesInsuranceIterator,\n\t-- *INF*: IIF(OtherStatesInsuranceIterator='T', '1','0')\n\tIFF(OtherStatesInsuranceIterator = 'T', '1', '0') AS o_OtherStatesInsuranceIterator,\n\tOtherStatesInsuranceCalculation,\n\tOtherStatesInsuranceSumIterator,\n\tMinimumPremiumMaximum,\n\tTotalClaimsIncurred,\n\tTotalStatePremiumForDividend,\n\tDividendAmount,\n\tDividendPrior,\n\tDividendChange,\n\tDividendWritten,\n\tDividendPremium,\n\tTotalDividendIncurredLossRatio,\n\tDividendPercentage,\n\tDividendPercentagePrior,\n\tDividendAmountFinal,\n\tDividendProjectedDate,\n\tDividendPaidDate,\n\tTotalClaimsAmountPaid,\n\tTotalClaimsOutstanding,\n\tTotalClaimsExpense,\n\tDividendWrittenDuplicatePath,\n\tExperienceModMessage,\n\tExperienceModIndicator,\n\tValue,\n\tRetrieveExperienceMod,\n\tExpenseConstantMaximum,\n\tAddState,\n\tPriorCountForRetrospectiveCalculation,\n\tAnyContractorClassCode,\n\t-- *INF*: IIF(AnyContractorClassCode='T', '1','0')\n\tIFF(AnyContractorClassCode = 'T', '1', '0') AS o_AnyContractorClassCode,\n\tPreviousFinalCommission,\n\tDividendCharge,\n\tManuallyCalculate,\n\tOtherPoliciesWC000503,\n\tInterstateRiskID,\n\t-- *INF*: IIF(ManuallyCalculate='T', '1','0')\n\tIFF(ManuallyCalculate = 'T', '1', '0') AS o_ManuallyCalculate,\n\tsysdate AS o_ExtractDate,\n\tSYSDATE AS o_AsOfDate,\n\tnull AS o_RecordCount,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_WB_WC_Line\n),\nTGT_WBWCLineStage_Insert AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBWCLineStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBWCLineStage\n\t(ExtractDate, SourceSystemId, WCLineId, WBWCLineId, SessionId, InterstateRiskID, CurrentIteration, Space, Selected, ClaimsInExcessOf, RetrieveExperienceModifier, AddState, ManuallyCalculate, OtherStatesInsuranceConditional, OtherStatesInsuranceIterator, OtherStatesInsuranceCalculation, OtherStatesInsuranceSumIterator, MinimumPremiumMaximum, ExpenseConstantMaximum, TotalClaimsIncurred, TotalStatePremiumForDividend, DividendAmount, DividendPrior, DividendChange, DividendWritten, DividendPremium, TotalDividendIncurredLossRatio, DividendPercentage, DividendPercentagePrior, DividendAmountFinal, DividendProjectedDate, DividendPaidDate, TotalClaimsAmountPaid, TotalClaimsOutstanding, TotalClaimsExpense, DividendWrittenDuplicatePath, DividendCharge, OtherPoliciesWC000503, PriorCountForRetrospectiveCalculation, AnyContractorClassCode, PreviousFinalCommission, ExperienceModMessage, ExperienceModIndicator, Value, RetrieveExperienceMod)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tWC_LineId AS WCLINEID, \n\tWB_WC_LineId AS WBWCLINEID, \n\tSESSIONID, \n\tINTERSTATERISKID, \n\tCURRENTITERATION, \n\tSPACE, \n\to_Selected AS SELECTED, \n\tCLAIMSINEXCESSOF, \n\tRETRIEVEEXPERIENCEMODIFIER, \n\tADDSTATE, \n\to_ManuallyCalculate AS MANUALLYCALCULATE, \n\tOTHERSTATESINSURANCECONDITIONAL, \n\to_OtherStatesInsuranceIterator AS OTHERSTATESINSURANCEITERATOR, \n\tOTHERSTATESINSURANCECALCULATION, \n\tOTHERSTATESINSURANCESUMITERATOR, \n\tMINIMUMPREMIUMMAXIMUM, \n\tEXPENSECONSTANTMAXIMUM, \n\tTOTALCLAIMSINCURRED, \n\tTOTALSTATEPREMIUMFORDIVIDEND, \n\tDIVIDENDAMOUNT, \n\tDIVIDENDPRIOR, \n\tDIVIDENDCHANGE, \n\tDIVIDENDWRITTEN, \n\tDIVIDENDPREMIUM, \n\tTOTALDIVIDENDINCURREDLOSSRATIO, \n\tDIVIDENDPERCENTAGE, \n\tDIVIDENDPERCENTAGEPRIOR, \n\tDIVIDENDAMOUNTFINAL, \n\tDIVIDENDPROJECTEDDATE, \n\tDIVIDENDPAIDDATE, \n\tTOTALCLAIMSAMOUNTPAID, \n\tTOTALCLAIMSOUTSTANDING, \n\tTOTALCLAIMSEXPENSE, \n\tDIVIDENDWRITTENDUPLICATEPATH, \n\tDIVIDENDCHARGE, \n\tOTHERPOLICIESWC000503, \n\tPRIORCOUNTFORRETROSPECTIVECALCULATION, \n\to_AnyContractorClassCode AS ANYCONTRACTORCLASSCODE, \n\tPREVIOUSFINALCOMMISSION, \n\tEXPERIENCEMODMESSAGE, \n\tEXPERIENCEMODINDICATOR, \n\tVALUE, \n\tRETRIEVEEXPERIENCEMOD\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

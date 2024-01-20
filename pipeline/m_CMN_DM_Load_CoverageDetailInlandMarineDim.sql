@@ -50,28 +50,17 @@ EXP_GetMetaData AS (
 	SQ_CoverageDetailInlandMarineDim.ExpirationDate AS i_ExpirationDate,
 	SQ_CoverageDetailInlandMarineDim.IsoFireProtectionCode AS i_IsoFireProtectionCode,
 	-- *INF*: IIF(ISNULL(i_AaisClassCode), 'N/A', i_AaisClassCode)
-	IFF(i_AaisClassCode IS NULL,
-		'N/A',
-		i_AaisClassCode
-	) AS v_AaisClassCode,
+	IFF(i_AaisClassCode IS NULL, 'N/A', i_AaisClassCode) AS v_AaisClassCode,
 	-- *INF*: IIF(ISNULL(i_AaisClassDescription), 'N/A', i_AaisClassDescription)
-	IFF(i_AaisClassDescription IS NULL,
-		'N/A',
-		i_AaisClassDescription
-	) AS v_AaisClassDescription,
+	IFF(i_AaisClassDescription IS NULL, 'N/A', i_AaisClassDescription) AS v_AaisClassDescription,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_CoverageDetailDimId_IM), 'NEW',
 	-- LTRIM(RTRIM(i_AaisClassCode_IM)) !=v_AaisClassCode OR i_AaisClassDescription_IM != v_AaisClassDescription OR i_EffectiveDate_IM != i_EffectiveDate OR i_ExpirationDate_IM != i_ExpirationDate OR i_IsoFireProtectionCode_IM != i_IsoFireProtectionCode, 'UPDATE', 'NOCHANGE')
-	DECODE(TRUE,
-		i_CoverageDetailDimId_IM IS NULL, 'NEW',
-		LTRIM(RTRIM(i_AaisClassCode_IM
-			)
-		) != v_AaisClassCode 
-		OR i_AaisClassDescription_IM != v_AaisClassDescription 
-		OR i_EffectiveDate_IM != i_EffectiveDate 
-		OR i_ExpirationDate_IM != i_ExpirationDate 
-		OR i_IsoFireProtectionCode_IM != i_IsoFireProtectionCode, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    i_CoverageDetailDimId_IM IS NULL, 'NEW',
+	    LTRIM(RTRIM(i_AaisClassCode_IM)) != v_AaisClassCode OR i_AaisClassDescription_IM != v_AaisClassDescription OR i_EffectiveDate_IM != i_EffectiveDate OR i_ExpirationDate_IM != i_ExpirationDate OR i_IsoFireProtectionCode_IM != i_IsoFireProtectionCode, 'UPDATE',
+	    'NOCHANGE'
 	) AS o_ChangeFlag,
 	i_CoverageDetailDimId AS o_CoverageDetailDimId,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,

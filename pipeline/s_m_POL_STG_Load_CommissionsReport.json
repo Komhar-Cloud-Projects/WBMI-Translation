@@ -1,0 +1,55 @@
+{
+    "name": "s_m_POL_STG_Load_CommissionsReport",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Load_CommissionsReport",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CommissionsReport AS (\n\tselect\r\n\twbp.Division\r\n\t,dcp.PolicyNumber\r\n\t,wbpartyCust.CustomerNum\r\n\t,wbag.Reference AS Agency_Number\r\n\t,dcp.PrimaryRatingState\r\n\t,dcp.Status\r\n\t,dcp.EffectiveDate\r\n\t,wbl.CommissionCustomerCareAmount\r\n\t,wbl.IsContribution as Contribution\r\n\t,wbl.Contribution as ContributionAmount\r\n\t,wbl.CommissionProgramAmount as ProgramAdjustment\r\n\t,dcl.Type as LOB_Type \r\n\t,wbl.IsOverride as Override\r\n\t,wbl.IsGraduated as Graduated\r\n\t,wbl.FinalCommission\r\n\t,wbl.CommissionAmount\r\n\t,wbl.FinalCommissionGraduated\r\n\t,wbl.CommissionAmountGraduated\r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Policy dcp with(nolock)\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Policy wbp with(nolock) \r\n\ton wbp.SessionId = dcp.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Party wbpartyCust with(nolock) \r\n\ton wbpartyCust.SessionId = wbp.SessionId \r\n\tand wbpartyCust.CustomerNum is not null\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Agency wbag with(nolock) \r\n\ton wbag.SessionId = dcp.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Line wbl with(nolock) \r\n\ton wbl.SessionId = dcp.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Line dcl with(nolock) \r\n\ton dcl.LineId = wbl.lineid\r\n\twhere\r\n\tdcp.Status in ('Inforce', 'Cancel-Pending', 'CancelPending')\r\n\tand DATEPART(quarter,dcp.EffectiveDate) = @{pipeline().parameters.PREV_QUARTER}\r\n\tand YEAR(dcp.EffectiveDate) = @{pipeline().parameters.PREV_QUARTER_YEAR}\r\n\tand dcp.sessionID in \r\n\t(\r\n\t    select max(sessionID)\r\n\t    from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Policy dcp with(nolock)\r\n\t    group by PolicyNumber, dcp.EffectiveDate\r\n\t)\r\n\tand\r\n\t(\r\n\t\t(wbl.IsGraduated = 0 and wbl.FinalCommission != wbl.CommissionAmount)\r\n\t\tor (wbl.IsGraduated = 1 and wbl.FinalCommission = wbl.CommissionAmount and wbl.CommissionAmountGraduated != wbl.FinalCommissionGraduated)\r\n\t\tor (wbl.IsGraduated = 1 and wbl.FinalCommission != wbl.CommissionAmount and wbl.CommissionAmountGraduated = wbl.FinalCommissionGraduated)\r\n\t\tor (wbl.IsGraduated = 1 and wbl.FinalCommission != wbl.CommissionAmount and wbl.CommissionAmountGraduated != wbl.FinalCommissionGraduated)\r\n\t\tor (wbl.IsContribution = 1 and wbl.FinalCommission = wbl.CommissionAmount and Contribution > 0)\r\n\t)\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nSRTTRANS AS (\n\tSELECT\n\tDivision, \n\tPolicyNumber, \n\tCustomerNum, \n\tAgency_Number, \n\tPrimaryRatingState, \n\tStatus, \n\tEffectiveDate, \n\tCommissionCustomerCareAmount, \n\tContribution, \n\tContributionAmount, \n\tProgramAdjustment, \n\tLOB_Type, \n\tOverride, \n\tGraduated, \n\tFinalCommission, \n\tCommissionAmount, \n\tFinalCommissionGraduated, \n\tCommissionAmountGraduated\n\tFROM SQ_CommissionsReport\n\tORDER BY Division ASC, PolicyNumber ASC, EffectiveDate ASC\n),\nEXP_FileName_TransFlag AS (\n\tSELECT\n\tPolicyNumber AS i_PolicyNumber,\n\t-- *INF*: CHR(39) || i_PolicyNumber || CHR(39)\n\tCHR(39) || i_PolicyNumber || CHR(39) AS o_PolicyNumber,\n\tDivision,\n\tCustomerNum AS i_CustomerNum,\n\t-- *INF*: CHR(39) || i_CustomerNum || CHR(39)\n\tCHR(39) || i_CustomerNum || CHR(39) AS o_CustomerNum,\n\tAgency_Number,\n\tPrimaryRatingState,\n\tStatus,\n\tEffectiveDate,\n\tCommissionCustomerCareAmount,\n\tContribution AS i_Contribution,\n\t-- *INF*: DECODE(i_Contribution, 'T', 'Y', 'F', 'N')\n\tDECODE(\n\t    i_Contribution,\n\t    'T', 'Y',\n\t    'F', 'N'\n\t) AS v_Contribution,\n\tv_Contribution AS o_Contribution,\n\tContributionAmount,\n\tProgramAdjustment,\n\tLOB_Type,\n\tOverride AS i_Override,\n\t-- *INF*: DECODE(i_Override, 'T', 'Y', 'F', 'N')\n\tDECODE(\n\t    i_Override,\n\t    'T', 'Y',\n\t    'F', 'N'\n\t) AS v_Override,\n\tv_Override AS o_Override,\n\tGraduated AS i_Graduated,\n\t-- *INF*: DECODE(i_Graduated, 'T', 'Y', 'F', 'N')\n\tDECODE(\n\t    i_Graduated,\n\t    'T', 'Y',\n\t    'F', 'N'\n\t) AS v_Graduated,\n\tv_Graduated AS o_Graduated,\n\tFinalCommission,\n\tCommissionAmount,\n\tFinalCommissionGraduated,\n\tCommissionAmountGraduated,\n\t-- *INF*: IIF(ISNULL(v_LastDivision) OR v_LastDivision  !=  Division, 'Y', 'N')\n\tIFF(v_LastDivision IS NULL OR v_LastDivision != Division, 'Y', 'N') AS v_NewTransFlag,\n\tDivision AS v_LastDivision,\n\t-- *INF*: Division || '_' || TO_CHAR(EffectiveDate, 'YYYY') || '_Q' || TO_CHAR(EffectiveDate, 'Q') || '.csv'\n\tDivision || '_' || TO_CHAR(EffectiveDate, 'YYYY') || '_Q' || TO_CHAR(EffectiveDate, 'Q') || '.csv' AS v_FileName,\n\tv_FileName AS o_FileName,\n\tv_NewTransFlag AS o_NewTransFlag\n\tFROM SRTTRANS\n),\nTC_Trans_PerDivision AS (\n),\nCommissionsReport_FF AS (\n\tINSERT INTO CommissionsReport_FF\n\t(PolicyNumber, Division, CustomerNum, Agency_Number, PrimaryRatingState, Status, EffectiveDate, CommissionCustomerCareAmount, Contribution, ContributionAmount, ProgramAdjustment, LOB_Type, Override, Graduated, FinalCommission, CommissionAmount, FinalCommissionGraduated, CommissionAmountGraduated, FileName)\n\tSELECT \n\tPOLICYNUMBER, \n\tDIVISION, \n\tCUSTOMERNUM, \n\tAGENCY_NUMBER, \n\tPRIMARYRATINGSTATE, \n\tSTATUS, \n\tEFFECTIVEDATE, \n\tCOMMISSIONCUSTOMERCAREAMOUNT, \n\tCONTRIBUTION, \n\tCONTRIBUTIONAMOUNT, \n\tPROGRAMADJUSTMENT, \n\tLOB_TYPE, \n\tOVERRIDE, \n\tGRADUATED, \n\tFINALCOMMISSION, \n\tCOMMISSIONAMOUNT, \n\tFINALCOMMISSIONGRADUATED, \n\tCOMMISSIONAMOUNTGRADUATED, \n\tFILENAME\n\tFROM TC_Trans_PerDivision\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "PREV_QUARTER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "PREV_QUARTER_YEAR": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

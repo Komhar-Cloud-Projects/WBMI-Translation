@@ -37,170 +37,84 @@ EXP_source_anchor AS (
 	clm_subrogation_stage_id,
 	tch_claim_nbr,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(tch_claim_nbr))) OR LENGTH(LTRIM(RTRIM(tch_claim_nbr))) = 0, 'N/A', LTRIM(RTRIM(tch_claim_nbr)))
-	IFF(LTRIM(RTRIM(tch_claim_nbr
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(tch_claim_nbr
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(tch_claim_nbr
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(tch_claim_nbr)) IS NULL OR LENGTH(LTRIM(RTRIM(tch_claim_nbr))) = 0, 'N/A',
+	    LTRIM(RTRIM(tch_claim_nbr))
 	) AS tch_claim_nbr_out,
 	tch_claimant_id,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(tch_claimant_id))) OR LENGTH(LTRIM(RTRIM(tch_claimant_id))) = 0, 'N/A', LTRIM(RTRIM(tch_claimant_id)))
-	IFF(LTRIM(RTRIM(tch_claimant_id
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(tch_claimant_id
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(tch_claimant_id
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(tch_claimant_id)) IS NULL OR LENGTH(LTRIM(RTRIM(tch_claimant_id))) = 0, 'N/A',
+	    LTRIM(RTRIM(tch_claimant_id))
 	) AS tch_claimant_id_out,
 	object_type_cd,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(object_type_cd))) OR LENGTH(LTRIM(RTRIM(object_type_cd))) = 0, 'N/A', LTRIM(RTRIM(object_type_cd)))
-	IFF(LTRIM(RTRIM(object_type_cd
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(object_type_cd
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(object_type_cd
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(object_type_cd)) IS NULL OR LENGTH(LTRIM(RTRIM(object_type_cd))) = 0, 'N/A',
+	    LTRIM(RTRIM(object_type_cd))
 	) AS object_type_cd_out,
 	object_seq_nbr,
 	cov_type_cd,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(cov_type_cd))) OR LENGTH(LTRIM(RTRIM(cov_type_cd))) = 0, 'N/A', LTRIM(RTRIM(cov_type_cd)))
-	IFF(LTRIM(RTRIM(cov_type_cd
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(cov_type_cd
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(cov_type_cd
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(cov_type_cd)) IS NULL OR LENGTH(LTRIM(RTRIM(cov_type_cd))) = 0, 'N/A',
+	    LTRIM(RTRIM(cov_type_cd))
 	) AS cov_type_cd_out,
 	cov_seq_nbr,
 	bur_cause_loss,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(bur_cause_loss))) OR LENGTH(LTRIM(RTRIM(bur_cause_loss))) = 0, 'N/A',  SUBSTR(bur_cause_loss, 1,2))
-	IFF(LTRIM(RTRIM(bur_cause_loss
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(bur_cause_loss
-				)
-			)
-		) = 0,
-		'N/A',
-		SUBSTR(bur_cause_loss, 1, 2
-		)
+	IFF(
+	    LTRIM(RTRIM(bur_cause_loss)) IS NULL OR LENGTH(LTRIM(RTRIM(bur_cause_loss))) = 0, 'N/A',
+	    SUBSTR(bur_cause_loss, 1, 2)
 	) AS bur_cause_loss_out,
 	-- *INF*: IIF(ISNULL(bur_cause_loss) OR IS_SPACES(bur_cause_loss), 'N/A', SUBSTR(bur_cause_loss, 3,1))
-	IFF(bur_cause_loss IS NULL 
-		OR LENGTH(bur_cause_loss)>0 AND TRIM(bur_cause_loss)='',
-		'N/A',
-		SUBSTR(bur_cause_loss, 3, 1
-		)
+	IFF(
+	    bur_cause_loss IS NULL OR LENGTH(bur_cause_loss)>0 AND TRIM(bur_cause_loss)='', 'N/A',
+	    SUBSTR(bur_cause_loss, 3, 1)
 	) AS reserve_category_out,
 	insd_deduct,
 	-- *INF*: IIF (ISNULL(insd_deduct), 0 , insd_deduct)
-	IFF(insd_deduct IS NULL,
-		0,
-		insd_deduct
-	) AS insd_deduct_out,
+	IFF(insd_deduct IS NULL, 0, insd_deduct) AS insd_deduct_out,
 	ref_subro_dt,
 	-- *INF*: IIF(ISNULL(ref_subro_dt), to_date('01/01/1800', 'MM/DD/YYYY'), ref_subro_dt)
-	IFF(ref_subro_dt IS NULL,
-		to_date('01/01/1800', 'MM/DD/YYYY'
-		),
-		ref_subro_dt
-	) AS ref_subro_dt_out,
+	IFF(ref_subro_dt IS NULL, TO_TIMESTAMP('01/01/1800', 'MM/DD/YYYY'), ref_subro_dt) AS ref_subro_dt_out,
 	general_comment,
 	install_reached,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(install_reached))) OR LENGTH(LTRIM(RTRIM(install_reached))) = 0, 'N/A', LTRIM(RTRIM(install_reached)))
-	IFF(LTRIM(RTRIM(install_reached
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(install_reached
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(install_reached
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(install_reached)) IS NULL OR LENGTH(LTRIM(RTRIM(install_reached))) = 0, 'N/A',
+	    LTRIM(RTRIM(install_reached))
 	) AS install_reached_out,
 	amt_of_agreement,
 	-- *INF*: IIF(ISNULL(amt_of_agreement), 0, amt_of_agreement)
-	IFF(amt_of_agreement IS NULL,
-		0,
-		amt_of_agreement
-	) AS amt_of_agreement_out,
+	IFF(amt_of_agreement IS NULL, 0, amt_of_agreement) AS amt_of_agreement_out,
 	install_amt_month,
 	-- *INF*: IIF(ISNULL(install_amt_month), 0,install_amt_month) 
-	IFF(install_amt_month IS NULL,
-		0,
-		install_amt_month
-	) AS install_amt_month_out,
+	IFF(install_amt_month IS NULL, 0, install_amt_month) AS install_amt_month_out,
 	start_pmt_dt,
 	-- *INF*: IIF(ISNULL(start_pmt_dt), to_date('01/01/1800', 'MM/DD/YYYY'), start_pmt_dt)
-	IFF(start_pmt_dt IS NULL,
-		to_date('01/01/1800', 'MM/DD/YYYY'
-		),
-		start_pmt_dt
-	) AS start_pmt_dt_out,
+	IFF(start_pmt_dt IS NULL, TO_TIMESTAMP('01/01/1800', 'MM/DD/YYYY'), start_pmt_dt) AS start_pmt_dt_out,
 	update_ts,
 	update_user_id,
 	create_ts,
 	create_user_id,
 	closure_date,
 	-- *INF*: IIF(ISNULL(closure_date), to_date('01/01/1800', 'MM/DD/YYYY'), closure_date)
-	IFF(closure_date IS NULL,
-		to_date('01/01/1800', 'MM/DD/YYYY'
-		),
-		closure_date
-	) AS closure_date_out,
+	IFF(closure_date IS NULL, TO_TIMESTAMP('01/01/1800', 'MM/DD/YYYY'), closure_date) AS closure_date_out,
 	subro_rep_clt_id,
 	subro_mgr_clt_id,
 	referring_adj_id,
 	file_status,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(file_status))) OR LENGTH(LTRIM(RTRIM(file_status))) = 0, 'N/A', LTRIM(RTRIM(file_status)))
-	IFF(LTRIM(RTRIM(file_status
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(file_status
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(file_status
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(file_status)) IS NULL OR LENGTH(LTRIM(RTRIM(file_status))) = 0, 'N/A',
+	    LTRIM(RTRIM(file_status))
 	) AS file_status_out,
 	deduct_has_been,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(deduct_has_been))) OR LENGTH(LTRIM(RTRIM(deduct_has_been))) = 0, 'N/A', LTRIM(RTRIM(deduct_has_been)))
-	IFF(LTRIM(RTRIM(deduct_has_been
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(deduct_has_been
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(deduct_has_been
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(deduct_has_been)) IS NULL OR LENGTH(LTRIM(RTRIM(deduct_has_been))) = 0, 'N/A',
+	    LTRIM(RTRIM(deduct_has_been))
 	) AS deduct_has_been_out,
 	extract_date,
 	as_of_date,
@@ -416,17 +330,9 @@ EXP_gather_old_values AS (
 	EXP_gather_values.closure_date,
 	LKP_CLM_COMMENTS_STAGE.TCC_COMMENT_TXT,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(TCC_COMMENT_TXT))) OR LENGTH(LTRIM(RTRIM(TCC_COMMENT_TXT))) = 0, 'N/A', LTRIM(RTRIM(TCC_COMMENT_TXT)))
-	IFF(LTRIM(RTRIM(TCC_COMMENT_TXT
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(TCC_COMMENT_TXT
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(TCC_COMMENT_TXT
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(TCC_COMMENT_TXT)) IS NULL OR LENGTH(LTRIM(RTRIM(TCC_COMMENT_TXT))) = 0, 'N/A',
+	    LTRIM(RTRIM(TCC_COMMENT_TXT))
 	) AS v_TCC_COMMENT_TXT,
 	v_TCC_COMMENT_TXT AS TCC_COMMENT_TXT_out,
 	-- *INF*: iif(isnull(old_claimant_cov_det_ak_id)
@@ -445,21 +351,22 @@ EXP_gather_old_values AS (
 	-- ,'NOCHANGE')
 	-- )
 	-- 
-	IFF(old_claimant_cov_det_ak_id IS NULL,
-		'NEW',
-		IFF(old_insd_ded_amt != insd_deduct 
-			OR old_referred_to_subrogation_date != ref_subro_dt 
-			OR old_subrogation_comment != v_TCC_COMMENT_TXT 
-			OR old_installment_reached_ind != install_reached_out 
-			OR old_agreement_amt != amt_of_agreement 
-			OR old_monthly_installment_amt != install_amt_month 
-			OR old_pay_start_date != start_pmt_dt 
-			OR old_file_status_code != file_status 
-			OR old_ded_status_code != deduct_has_been 
-			OR old_closure_date != closure_date,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    old_claimant_cov_det_ak_id IS NULL, 'NEW',
+	    IFF(
+	        old_insd_ded_amt != insd_deduct
+	        or old_referred_to_subrogation_date != ref_subro_dt
+	        or old_subrogation_comment != v_TCC_COMMENT_TXT
+	        or old_installment_reached_ind != install_reached_out
+	        or old_agreement_amt != amt_of_agreement
+	        or old_monthly_installment_amt != install_amt_month
+	        or old_pay_start_date != start_pmt_dt
+	        or old_file_status_code != file_status
+	        or old_ded_status_code != deduct_has_been
+	        or old_closure_date != closure_date,
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	EXP_gather_values.claimant_cov_det_ak_id
@@ -512,22 +419,17 @@ EXP_determine_AK AS (
 	changed_flag,
 	SEQ_claim_subrogation_ak_id.NEXTVAL,
 	-- *INF*: IIF(ISNULL(claim_subrogation_ak_id), NEXTVAL, claim_subrogation_ak_id)
-	IFF(claim_subrogation_ak_id IS NULL,
-		NEXTVAL,
-		claim_subrogation_ak_id
-	) AS claim_subrogation_ak_id_out,
+	IFF(claim_subrogation_ak_id IS NULL, NEXTVAL, claim_subrogation_ak_id) AS claim_subrogation_ak_id_out,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id,
 	SYSDATE AS created_modified_date
 	FROM FIL_insert_rows
@@ -589,10 +491,10 @@ EXP_expire_rows AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	claim_subrogation_ak_id = v_prev_row_claim_subrogation_ak_id AND claimant_cov_det_ak_id = v_prev_row_claimant_cov_det_ak_id, ADD_TO_DATE(v_prev_row_eff_from_date,'SS',-1),
 	-- 	eff_to_date)
-	DECODE(TRUE,
-		claim_subrogation_ak_id = v_prev_row_claim_subrogation_ak_id 
-		AND claimant_cov_det_ak_id = v_prev_row_claimant_cov_det_ak_id, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
-		eff_to_date
+	DECODE(
+	    TRUE,
+	    claim_subrogation_ak_id = v_prev_row_claim_subrogation_ak_id AND claimant_cov_det_ak_id = v_prev_row_claimant_cov_det_ak_id, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
+	    eff_to_date
 	) AS v_new_eff_to_date,
 	v_new_eff_to_date AS new_eff_to_date,
 	0 AS new_crrnt_snpsht_flag,

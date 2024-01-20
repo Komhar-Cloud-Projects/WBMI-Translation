@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_FEED_Load_WCPOLS_18_Record",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Load_WCPOLS_18_Record",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkWCStateTerm AS (\n\tSELECT DISTINCT \r\n\tTerm.WCTrackHistoryID as WCTrackHistoryID, \r\n\tTerm.Auditid as Auditid, \r\n\tTerm.State as State,\r\n\tSup.WCPOLSCode as WCPOLSCode\r\n\tFROM\r\n\t WorkWCStateTerm Term\r\n\tINNER JOIN  SupWCPOLS Sup ON\r\n\t\tTerm.State =  Sup.SourceCode\r\n\tWHERE \r\n\tSup.Tablename='WCPOLS18Record' AND \r\n\tProcessName='StateCodeRecord18' AND\r\n\tTerm.Auditid=@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\torder by 1,4\n),\nEXP_State_Input AS (\n\tSELECT\n\tWCTrackHistoryID,\n\tAuditid,\n\tState,\n\tWCPOLSCode\n\tFROM SQ_WorkWCStateTerm\n),\nAGG_combine_States AS (\n\tSELECT\n\tWCTrackHistoryID,\n\tAuditid,\n\tWCPOLSCode AS i_WCPOLSCode,\n\t-- *INF*: IIF(WCTrackHistoryID=v_PrevWCTrackHistoryID,0,1)\n\tIFF(WCTrackHistoryID = v_PrevWCTrackHistoryID, 0, 1) AS v_NewTrackId,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- v_NewTrackId=1, i_WCPOLSCode,\r\n\t-- v_NewTrackId=0 AND i_WCPOLSCode!= v_PrevPolsState, v_PolsState ||i_WCPOLSCode,\r\n\t-- v_NewTrackId=0, v_PolsState,\r\n\t-- ''\r\n\t-- )\r\n\t-- \r\n\t-- -- if new record overwrite WcPolsCode (which is State)\r\n\t-- -- if not new record and State != previous State then concatenate comma and State\r\n\t-- -- if not new record retain State value (assumed State =  prevState)\r\n\t-- -- else blank out the field\n\tDECODE(\n\t    TRUE,\n\t    v_NewTrackId = 1, i_WCPOLSCode,\n\t    v_NewTrackId = 0 AND i_WCPOLSCode != v_PrevPolsState, v_PolsState || i_WCPOLSCode,\n\t    v_NewTrackId = 0, v_PolsState,\n\t    ''\n\t) AS v_PolsState,\n\ti_WCPOLSCode AS v_PrevPolsState,\n\tWCTrackHistoryID AS v_PrevWCTrackHistoryID,\n\tv_PolsState AS o_State\n\tFROM EXP_State_Input\n\tGROUP BY WCTrackHistoryID, Auditid\n),\nEXP_AggOutput AS (\n\tSELECT\n\tWCTrackHistoryID,\n\to_State AS StateList\n\tFROM AGG_combine_States\n),\nSQ_WorkWCTrackHistory AS (\n\tSELECT \r\n\tTrack.WCTrackHistoryID as WCTrackHistoryID, \r\n\t'WC000104' as ParsedFormName,\r\n\tForms.FormName as FormName, \r\n\tLimit.LimitType as FELAIncreasedLimitType,\r\n\tLimit.LimitValue as AccidentAmount,\r\n\tLimit.LimitValue as DiseaseAmount,\r\n\tParty.Name as Name,\r\n\tPolicy.TransactionEffectiveDate as TransactionEffectiveDate  \r\n\tFROM\r\n\tWorkWCForms Forms\r\n\tinner join WorkWCTrackHistory Track \ton \r\n\t\tForms.WCTrackHistoryID=Track.WCTrackHistoryID and \r\n\t\tForms.FormName like 'WC000104%' and \r\n\t\t((Forms.OnPolicy=1 OR Forms.[Add] = 1) AND (Forms.Remove is null OR Forms.Remove = 0))\r\n\tinner join WorkWCParty Party on \r\n\t\tParty.WCTrackHistoryID=Track.WCTrackHistoryID AND \r\n\t\tParty.PartyAssociationType='Account'\r\n\tinner join WorkWCPolicy Policy on \r\n\t\tPolicy.WCTrackHistoryID=Track.WCTrackHistoryID\r\n\tleft join WorkWCLimit Limit on\r\n\t\tLimit.WCTrackHistoryID=Track.WCTrackHistoryID AND\r\n\t\tLimitType='FELAIncreased'\r\n\tWHERE\r\n\tForms.Auditid = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t@{pipeline().parameters.WHERE_CLAUSE_18}\r\n\torder by 1\n),\nEXP_DataInput AS (\n\tSELECT\n\tWCTrackHistoryID,\n\tParsedFormName,\n\tFormName,\n\tFELAIncreasedLimitType,\n\tAccidentAmount,\n\tDiseaseAmount,\n\tName,\n\tTransactionEffectiveDate\n\tFROM SQ_WorkWCTrackHistory\n),\nJNR_Data AS (SELECT\n\tEXP_DataInput.WCTrackHistoryID, \n\tEXP_DataInput.ParsedFormName, \n\tEXP_DataInput.FormName, \n\tEXP_DataInput.FELAIncreasedLimitType, \n\tEXP_DataInput.AccidentAmount, \n\tEXP_DataInput.DiseaseAmount, \n\tEXP_DataInput.Name, \n\tEXP_DataInput.TransactionEffectiveDate, \n\tEXP_AggOutput.WCTrackHistoryID AS WCTrackHistoryID1, \n\tEXP_AggOutput.StateList\n\tFROM EXP_DataInput\n\tINNER JOIN EXP_AggOutput\n\tON EXP_AggOutput.WCTrackHistoryID = EXP_DataInput.WCTrackHistoryID\n),\nEXP_PostDataJoin AS (\n\tSELECT\n\tWCTrackHistoryID,\n\tParsedFormName,\n\tFormName,\n\tFELAIncreasedLimitType,\n\tAccidentAmount,\n\tDiseaseAmount,\n\tName,\n\tTransactionEffectiveDate,\n\tStateList\n\tFROM JNR_Data\n),\nSQ_WCPols00Record AS (\n\tSELECT\r\n\t\tWCTrackHistoryID,\r\n\t\tLinkData,\r\n\t      AuditId\r\n\tFROM dbo.WCPols00Record\r\n\tWHERE \r\n\t AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tORDER BY WCTrackHistoryID\n),\nJNR_finalJoin AS (SELECT\n\tSQ_WCPols00Record.WCTrackHistoryID, \n\tSQ_WCPols00Record.LinkData, \n\tSQ_WCPols00Record.AuditId, \n\tEXP_PostDataJoin.WCTrackHistoryID AS WCTrackHistoryID1, \n\tEXP_PostDataJoin.ParsedFormName, \n\tEXP_PostDataJoin.FormName, \n\tEXP_PostDataJoin.FELAIncreasedLimitType, \n\tEXP_PostDataJoin.AccidentAmount, \n\tEXP_PostDataJoin.DiseaseAmount, \n\tEXP_PostDataJoin.Name, \n\tEXP_PostDataJoin.TransactionEffectiveDate, \n\tEXP_PostDataJoin.StateList\n\tFROM SQ_WCPols00Record\n\tINNER JOIN EXP_PostDataJoin\n\tON EXP_PostDataJoin.WCTrackHistoryID = SQ_WCPols00Record.WCTrackHistoryID\n),\nmplt_Parse_FormNameField AS (WITH\n\tINPUT_FormName AS (\n\t\t\n\t),\n\tEXPTRANS AS (\n\t\tSELECT\n\t\tParsedNameOfForm,\n\t\tFormNameFromSource,\n\t\t-- *INF*: REVERSE(FormNameFromSource)\n\t\tREVERSE(FormNameFromSource) AS vReversedFromNameFromSource,\n\t\t-- *INF*: REVERSE(substr(vReversedFromNameFromSource,1,4))\n\t\tREVERSE(substr(vReversedFromNameFromSource, 1, 4)) AS vFormEdition,\n\t\t-- *INF*: DECODE(TRUE,\r\n\t\t-- substr(vReversedFromNameFromSource,5,1) >='A' and substr(vReversedFromNameFromSource,5,1) <='Z', substr(vReversedFromNameFromSource,5,1),\r\n\t\t-- ' '\r\n\t\t-- )\r\n\t\t-- \r\n\t\t-- -- check if within A and Z, if not then space\n\t\tDECODE(\n\t\t    TRUE,\n\t\t    substr(vReversedFromNameFromSource, 5, 1) >= 'A' and substr(vReversedFromNameFromSource, 5, 1) <= 'Z', substr(vReversedFromNameFromSource, 5, 1),\n\t\t    ' '\n\t\t) AS vBureauCode,\n\t\tvFormEdition AS oFormEdition,\n\t\tvBureauCode AS oBureauCode\n\t\tFROM INPUT_FormName\n\t),\n\tOUTPUT_FormName AS (\n\t\tSELECT\n\t\tParsedNameOfForm, \n\t\tFormNameFromSource, \n\t\toFormEdition AS FormEdition, \n\t\toBureauCode AS BureauCode\n\t\tFROM EXPTRANS\n\t),\n),\nEXP_output AS (\n\tSELECT\n\tJNR_finalJoin.WCTrackHistoryID,\n\tJNR_finalJoin.LinkData,\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\t18 AS RecordTypeCode,\n\tJNR_finalJoin.ParsedFormName,\n\tJNR_finalJoin.FELAIncreasedLimitType,\n\tJNR_finalJoin.AccidentAmount,\n\tJNR_finalJoin.DiseaseAmount,\n\tJNR_finalJoin.Name,\n\tJNR_finalJoin.TransactionEffectiveDate AS i_TransactionEffectiveDate,\n\t-- *INF*: TO_CHAR(i_TransactionEffectiveDate,'YYMMDD')\n\tTO_CHAR(i_TransactionEffectiveDate, 'YYMMDD') AS o_TransactionEffectiveDate,\n\tJNR_finalJoin.StateList,\n\tmplt_Parse_FormNameField.FormEdition,\n\tmplt_Parse_FormNameField.BureauCode\n\tFROM JNR_finalJoin\n\t -- Manually join with mplt_Parse_FormNameField\n),\nWCPols18Record AS (\n\n\t------------ PRE SQL ----------\n\tDELETE\r\n\t  FROM dbo.WCPols18Record\r\n\t  WHERE 1=1\r\n\t  AND AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\n\t-------------------------------\n\n\n\tINSERT INTO WCPols18Record\n\t(ExtractDate, AuditId, WCTrackHistoryID, LinkData, RecordTypeCode, EndorsementNumber, BureauVersionIdentifierEditionIdentifier, CarrierVersionIdentifier, EmployerLiabilityLimitAmountFederalBodilyInjuryByAccidentAmount, EmployerLiabilityLimitAmountFederalBodilyInjuryByDiseaseAmount, ScheduleStateCode, NameOfInsured, EndorsementEffectiveDate)\n\tSELECT \n\tEXTRACTDATE, \n\tAuditid AS AUDITID, \n\tWCTRACKHISTORYID, \n\tLINKDATA, \n\tRECORDTYPECODE, \n\tParsedFormName AS ENDORSEMENTNUMBER, \n\tBureauCode AS BUREAUVERSIONIDENTIFIEREDITIONIDENTIFIER, \n\tFormEdition AS CARRIERVERSIONIDENTIFIER, \n\tAccidentAmount AS EMPLOYERLIABILITYLIMITAMOUNTFEDERALBODILYINJURYBYACCIDENTAMOUNT, \n\tDiseaseAmount AS EMPLOYERLIABILITYLIMITAMOUNTFEDERALBODILYINJURYBYDISEASEAMOUNT, \n\tStateList AS SCHEDULESTATECODE, \n\tName AS NAMEOFINSURED, \n\to_TransactionEffectiveDate AS ENDORSEMENTEFFECTIVEDATE\n\tFROM EXP_output\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE_18": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

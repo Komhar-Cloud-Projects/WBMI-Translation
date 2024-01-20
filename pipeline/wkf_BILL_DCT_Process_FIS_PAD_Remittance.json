@@ -1,0 +1,193 @@
+{
+    "name": "wkf_BILL_DCT_Process_FIS_PAD_Remittance",
+    "properties": {
+        "activities": [
+            {
+                "name": "cmd_DeleteFISPADRemittanceListFile",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_BILL_DCT_Process_FIS_PAD_Remittance",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "cmd_Delete_FISPADRemittance_Files",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "cmd_DeleteFISPADRemittanceListFile",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "cmd_MoveFISPADRemittanceFiles",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "cmd_Create_FISPADRemittanceList",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "cmd_CreateNullFISDPAInput",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "asgn_ErrorHandlingFiles",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_BILL_DCT_Load_FIS_DPA_Remittance_Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "cmd_Create_FISPADRemittanceList",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "cmd_CreateNullFISDPAInput",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_BILL_DCT_Load_FIS_DPA_Remittance_Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "cmd_MoveFISPADRemittanceFiles",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_BILL_DCT_Load_FIS_DPA_Remittance_Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_BILL_DCT_Process_FIS_PAD_Remittance",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "asgn_ErrorHandlingFiles",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_BILL_DCT_Process_Remittance"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "BillingDataServices/"
+        },
+        "variables": {}
+    }
+}

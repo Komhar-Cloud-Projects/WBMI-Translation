@@ -1,0 +1,51 @@
+{
+    "name": "s_m_POL_STG_Insert_WorkDCTInsuranceLine",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_WorkDCTInsuranceLine",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTInsuranceLine AS (\n\tSELECT dp.SessionId,\r\n\t       dp.PolicyId,\r\n\t       dl.LineId,\r\n\t       dl.Type LineType,\r\n\t       wl.RiskGrade,\r\n\t       wcl.IsAuditable,\r\n\t       PriorInsurance.CarrierName PriorCarrierName,\r\n\t       PriorInsurance.PolicyNumber PriorPolicyNumber,\r\n\t       PriorInsurance.LineOfBusiness PriorLineOfBusiness,\r\n\t       dcm.value ExperienceModifier,\r\n\t       wl.FinalCommission,\r\n\t       wl.CommissionCustomerCareAmount\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCPolicyStaging dp\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCLineStaging dl\r\n\t     ON dp.PolicyId = dl.PolicyId\r\n\t        AND dp.SessionId = dl.SessionId\r\n\tLEFT OUTER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WBLineStaging wl\r\n\t     ON dl.LineId = wl.LineId\r\n\t        AND dl.SessionId = wl.SessionId\r\n\tLEFT OUTER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WBCLLineStage wcl\r\n\t     ON wl.WB_LineId = wcl.WBLineId\r\n\t        AND wl.SessionId = wcl.SessionId\r\n\tOUTER APPLY\r\n\t(\r\n\t    -- Get the policy key information from the Prior Insurance tables for one and only one policy \r\n\t    SELECT TOP 1 dpi.CarrierName,\r\n\t                 wpi.CarrierNameOther,\r\n\t                 wcpi.PolicySymbol,\r\n\t                 dpi.PolicyNumber,\r\n\t                 wpi.LineOfBusiness,\r\n\t                 CASE\r\n\t                     WHEN ISNUMERIC(wcpi.PolicyMod) = 1\r\n\t                     THEN RIGHT('00'+CAST(wcpi.PolicyMod AS VARCHAR(2)), 2)\r\n\t                     ELSE NULL\r\n\t                 END AS PolicyMod\r\n\t    FROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCPriorInsuranceStaging dpi\r\n\t    INNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WBPriorInsuranceStage wpi\r\n\t         ON dpi.PriorInsuranceId = wpi.PriorInsuranceId\r\n\t            AND dpi.SessionId = wpi.SessionId\r\n\t    INNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WBCLPriorInsuranceStage wcpi\r\n\t         ON wpi.WBPriorInsuranceId = wcpi.WBPriorInsuranceId\r\n\t            AND wpi.SessionId = wcpi.SessionId\r\n\t    WHERE dpi.PolicyId = dp.PolicyId\r\n\t          AND dpi.SessionId = dp.SessionId\r\n\t          AND wpi.PriorInsuranceId = dpi.PriorInsuranceId\r\n\t          --Attempt to match on Line of Business when we can for known lines, otherwise just pick one if a direct line to line match does not exist.\r\n\t          AND (CASE wpi.LineOfBusiness\r\n\t                   WHEN 'EPLI'\r\n\t                   THEN 'EmploymentPracticesLiab'\r\n\t                   WHEN 'Auto'\r\n\t                   THEN 'CommercialAuto'\r\n\t                   WHEN 'Crime'\r\n\t                   THEN 'Crime'\r\n\t                   WHEN 'WorkersComp'\r\n\t                   THEN 'WorkersCompensation'\r\n\t                   WHEN 'NFPDO'\r\n\t                   THEN 'DirectorsAndOfficersNFP'\r\n\t                   WHEN 'Umbrella'\r\n\t                   THEN 'CommercialUmbrella'\r\n\t               END = dl.Type\r\n\t               OR wpi.LineOfBusiness NOT IN('EPLI', 'Auto', 'Crime', 'WorkersComp', 'NFPDO', 'Umbrella'))\r\n\t    ORDER BY wcpi.PolicySymbol,\r\n\t             dpi.PolicyNumber,\r\n\t             wcpi.PolicyMod\r\n\t) PriorInsurance LEFT OUTER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCModifierStaging DCM\r\n\tON DCM.ObjectId = dl.LineId\r\n\t   AND DCM.ObjectName = 'DC_Line'\r\n\t   AND DCM.Type = 'ExperienceMod'\r\n\t   AND DCM.ModifierId IN\r\n\t(\r\n\t    SELECT MAX(a.ModifierId)\r\n\t    FROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCModifierStaging a\r\n\t    WHERE a.ObjectId = DCM.ObjectId\r\n\t          AND a.ObjectName = 'DC_Line'\r\n\t          AND a.Type = 'ExperienceMod'\r\n\t)\n),\nEXP_Default AS (\n\tSELECT\n\tSYSDATE AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tSessionId,\n\tPolicyId,\n\tLineId,\n\tLineType,\n\tRiskGrade,\n\tIsAuditable AS i_IsAuditable,\n\t-- *INF*: DECODE(i_IsAuditable,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_IsAuditable,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IsAuditable,\n\tPriorCarrierName,\n\tPriorPolicyNumber,\n\tPriorLineOfBusiness,\n\tExperienceModifier,\n\tFinalCommission,\n\tCommissionCustomerCareAmount\n\tFROM SQ_WorkDCTInsuranceLine\n),\nWorkDCTInsuranceLine AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkDCTInsuranceLine;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkDCTInsuranceLine\n\t(ExtractDate, SourceSystemId, SessionId, PolicyId, LineId, LineType, RiskGrade, IsAuditable, PriorCarrierName, PriorPolicyNumber, PriorLineOfBusiness, ExperienceModifier, FinalCommission, CommissionCustomerCareAmount)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tSESSIONID, \n\tPOLICYID, \n\tLINEID, \n\tLINETYPE, \n\tRISKGRADE, \n\to_IsAuditable AS ISAUDITABLE, \n\tPRIORCARRIERNAME, \n\tPRIORPOLICYNUMBER, \n\tPRIORLINEOFBUSINESS, \n\tEXPERIENCEMODIFIER, \n\tFINALCOMMISSION, \n\tCOMMISSIONCUSTOMERCAREAMOUNT\n\tFROM EXP_Default\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

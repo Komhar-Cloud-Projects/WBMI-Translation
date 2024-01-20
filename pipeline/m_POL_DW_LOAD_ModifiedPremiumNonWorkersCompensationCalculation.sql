@@ -135,19 +135,15 @@ EXP_Natural AS (
 	DATEADD(SECOND,86399,CAST(TRUNC(NewRunDate, 'DAY') AS TIMESTAMP_NTZ(0))) AS v_NewRunDate,
 	SourceSystemID,
 	-- *INF*: GREATEST(RunDate,v_NewRunDate)
-	GREATEST(RunDate, v_NewRunDate
-	) AS o_RunDate,
+	GREATEST(RunDate, v_NewRunDate) AS o_RunDate,
 	'0' AS GeneratedRecordIndicator,
 	PremiumTransactionAmount AS OtherModifiedPremium,
 	-- *INF*: ROUND(PremiumTransactionAmount/OtherModifiedFactor,4)
-	ROUND(PremiumTransactionAmount / OtherModifiedFactor, 4
-	) AS ScheduleModifiedPremium,
+	ROUND(PremiumTransactionAmount / OtherModifiedFactor, 4) AS ScheduleModifiedPremium,
 	-- *INF*: ROUND(PremiumTransactionAmount/OtherModifiedFactor/ScheduleModifiedFactor,4)
-	ROUND(PremiumTransactionAmount / OtherModifiedFactor / ScheduleModifiedFactor, 4
-	) AS ExperienceModifiedPremium,
+	ROUND(PremiumTransactionAmount / OtherModifiedFactor / ScheduleModifiedFactor, 4) AS ExperienceModifiedPremium,
 	-- *INF*: ROUND(PremiumTransactionAmount/OtherModifiedFactor/ScheduleModifiedFactor/ExperienceModifiedFactor,4)
-	ROUND(PremiumTransactionAmount / OtherModifiedFactor / ScheduleModifiedFactor / ExperienceModifiedFactor, 4
-	) AS SubjectWrittenPremium
+	ROUND(PremiumTransactionAmount / OtherModifiedFactor / ScheduleModifiedFactor / ExperienceModifiedFactor, 4) AS SubjectWrittenPremium
 	FROM SQ_Natural
 ),
 SQ_Generated AS (
@@ -269,15 +265,15 @@ EXP_Cancelled AS (
 	PreviousScheduleModifiedFactor,
 	PreviousExperienceModifiedFactor,
 	-- *INF*: ADD_TO_DATE(LAST_DAY(RunDate),'SS',86399)
-	DATEADD(SECOND,86399,LAST_DAY(RunDate
-	)) AS v_RunMonth,
+	DATEADD(SECOND,86399,LAST_DAY(RunDate)) AS v_RunMonth,
 	-- *INF*: DECODE(SourceSystemID,
 	-- 'DCT',:LKP.LKP_RATINGCOVERAGE_CANCELLATION(RatingCoverageAKId,WorkRatingModifierAKId,RunDate),
 	-- 'PMS',:LKP.LKP_WORKEARNEDPREMIUMCOVERAGEMONTHLY(StatisticalCoverageAKId,v_RunMonth)
 	-- -1)
-	DECODE(SourceSystemID,
-		'DCT', LKP_RATINGCOVERAGE_CANCELLATION_RatingCoverageAKId_WorkRatingModifierAKId_RunDate.WorkRatingModifierAKId,
-		'PMS', LKP_WORKEARNEDPREMIUMCOVERAGEMONTHLY_StatisticalCoverageAKId_v_RunMonth.StatisticalCoverageAKID - 1
+	DECODE(
+	    SourceSystemID,
+	    'DCT', LKP_RATINGCOVERAGE_CANCELLATION_RatingCoverageAKId_WorkRatingModifierAKId_RunDate.WorkRatingModifierAKId,
+	    'PMS', LKP_WORKEARNEDPREMIUMCOVERAGEMONTHLY_StatisticalCoverageAKId_v_RunMonth.StatisticalCoverageAKID - 1
 	) AS CancelFlag
 	FROM SQ_Generated
 	LEFT JOIN LKP_RATINGCOVERAGE_CANCELLATION LKP_RATINGCOVERAGE_CANCELLATION_RatingCoverageAKId_WorkRatingModifierAKId_RunDate
@@ -320,14 +316,11 @@ EXP_Generated AS (
 	PreviousExperienceModifiedFactor,
 	PremiumTransactionAmount AS v_OtherModifiedPremium,
 	-- *INF*: ROUND(PremiumTransactionAmount/OtherModifiedFactor-PremiumTransactionAmount/PreviousOtherModifiedFactor,4)
-	ROUND(PremiumTransactionAmount / OtherModifiedFactor - PremiumTransactionAmount / PreviousOtherModifiedFactor, 4
-	) AS v_ScheduleModifiedPremium,
+	ROUND(PremiumTransactionAmount / OtherModifiedFactor - PremiumTransactionAmount / PreviousOtherModifiedFactor, 4) AS v_ScheduleModifiedPremium,
 	-- *INF*: ROUND(PremiumTransactionAmount/OtherModifiedFactor/ScheduleModifiedFactor-PremiumTransactionAmount/PreviousOtherModifiedFactor/PreviousScheduleModifiedFactor,4)
-	ROUND(PremiumTransactionAmount / OtherModifiedFactor / ScheduleModifiedFactor - PremiumTransactionAmount / PreviousOtherModifiedFactor / PreviousScheduleModifiedFactor, 4
-	) AS v_ExperienceModifiedPremium,
+	ROUND(PremiumTransactionAmount / OtherModifiedFactor / ScheduleModifiedFactor - PremiumTransactionAmount / PreviousOtherModifiedFactor / PreviousScheduleModifiedFactor, 4) AS v_ExperienceModifiedPremium,
 	-- *INF*: ROUND(PremiumTransactionAmount/OtherModifiedFactor/ScheduleModifiedFactor/ExperienceModifiedFactor-PremiumTransactionAmount/PreviousOtherModifiedFactor/PreviousScheduleModifiedFactor/PreviousExperienceModifiedFactor,4)
-	ROUND(PremiumTransactionAmount / OtherModifiedFactor / ScheduleModifiedFactor / ExperienceModifiedFactor - PremiumTransactionAmount / PreviousOtherModifiedFactor / PreviousScheduleModifiedFactor / PreviousExperienceModifiedFactor, 4
-	) AS v_SubjectWrittenPremium,
+	ROUND(PremiumTransactionAmount / OtherModifiedFactor / ScheduleModifiedFactor / ExperienceModifiedFactor - PremiumTransactionAmount / PreviousOtherModifiedFactor / PreviousScheduleModifiedFactor / PreviousExperienceModifiedFactor, 4) AS v_SubjectWrittenPremium,
 	'1' AS GeneratedRecordIndicator,
 	v_OtherModifiedPremium AS OtherModifiedPremium,
 	v_ScheduleModifiedPremium AS ScheduleModifiedPremium,
@@ -339,12 +332,13 @@ EXP_Generated AS (
 	-- v_ExperienceModifiedPremium!=0,1,
 	-- v_SubjectWrittenPremium!=0,1,
 	-- 0)
-	DECODE(TRUE,
-		v_OtherModifiedPremium != 0, 1,
-		v_ScheduleModifiedPremium != 0, 1,
-		v_ExperienceModifiedPremium != 0, 1,
-		v_SubjectWrittenPremium != 0, 1,
-		0
+	DECODE(
+	    TRUE,
+	    v_OtherModifiedPremium != 0, 1,
+	    v_ScheduleModifiedPremium != 0, 1,
+	    v_ExperienceModifiedPremium != 0, 1,
+	    v_SubjectWrittenPremium != 0, 1,
+	    0
 	) AS FilterFlag
 	FROM FIL_Cancelled
 ),
@@ -421,14 +415,15 @@ EXP_DetectChange AS (
 	-- lkp_ExperienceModifiedPremium!=ExperienceModifiedPremium,'CHANGE',
 	-- lkp_SubjectWrittenPremium!=SubjectWrittenPremium,'CHANGE',
 	-- 'NOCHANGE')
-	DECODE(TRUE,
-		lkp_ModifiedPremiumNonWorkersCompensationCalculationId IS NULL, 'NEW',
-		lkp_DirectWrittenPremium != DirectWrittenPremium, 'CHANGE',
-		lkp_OtherModifiedPremium != OtherModifiedPremium, 'CHANGE',
-		lkp_ScheduleModifiedPremium != ScheduleModifiedPremium, 'CHANGE',
-		lkp_ExperienceModifiedPremium != ExperienceModifiedPremium, 'CHANGE',
-		lkp_SubjectWrittenPremium != SubjectWrittenPremium, 'CHANGE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    lkp_ModifiedPremiumNonWorkersCompensationCalculationId IS NULL, 'NEW',
+	    lkp_DirectWrittenPremium != DirectWrittenPremium, 'CHANGE',
+	    lkp_OtherModifiedPremium != OtherModifiedPremium, 'CHANGE',
+	    lkp_ScheduleModifiedPremium != ScheduleModifiedPremium, 'CHANGE',
+	    lkp_ExperienceModifiedPremium != ExperienceModifiedPremium, 'CHANGE',
+	    lkp_SubjectWrittenPremium != SubjectWrittenPremium, 'CHANGE',
+	    'NOCHANGE'
 	) AS o_ChangeFlag
 	FROM UN_Generated_Natural
 	LEFT JOIN LKP_ModifiedPremiumNonWorkersCompensationCalculation

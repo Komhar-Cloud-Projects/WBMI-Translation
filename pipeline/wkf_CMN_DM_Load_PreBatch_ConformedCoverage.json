@@ -130,7 +130,7 @@
             }
         ],
         "folder": {
-            "name": "Common DataMart/"
+            "name": "CommonDataMart/"
         },
         "variables": {
             "Params": {

@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_med_bill_comment_stage AS (\n\tSELECT \r\n\tRTRIM(med_bill_comment_stage.med_bill_id), \r\n\tmed_bill_comment_stage.comment_seq_num,\r\n\tCASE RTRIM(med_bill_comment_stage.comment_type) \r\n\t\tWHEN '' THEN 'N/A' \r\n\t\tELSE RTRIM(med_bill_comment_stage.comment_type) END, \r\n\tCASE RTRIM(med_bill_comment_stage.comment) \r\n\t\tWHEN '' THEN 'N/A' \r\n\t\tELSE RTRIM(med_bill_comment_stage.comment) END \r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.med_bill_comment_stage\r\n\t-- JIRA-PROD-3730 NPTolan Changed CASE statements for comment_type and comment columns to return 'N/A' instead of NULL\n),\nLKP_MED_BILL_KEY AS (\n\tSELECT\n\tmed_bill_ak_id,\n\tmed_bill_key,\n\tTCH_BILL_NBR\n\tFROM (\n\t\tSELECT \r\n\t\tmedical_bill.med_bill_ak_id as med_bill_ak_id, \r\n\t\tRTRIM(medical_bill.med_bill_key) as med_bill_key \r\n\t\tFROM \r\n\t\t@{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill medical_bill\r\n\t\tWHERE\r\n\t\tmedical_bill.CRRNT_SNPSHT_FLAG = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY med_bill_key ORDER BY med_bill_ak_id) = 1\n),\nLKP_MEDICAL_BILL_COMMENT AS (\n\tSELECT\n\tNewLookupRow,\n\tmed_bill_comment_ak_id,\n\tin_med_bill_ak_id,\n\tmed_bill_ak_id,\n\tin_comment_seq_num,\n\tcomment_seq_num,\n\tcomment_type,\n\tin_comment_type,\n\tcomment,\n\tin_comment\n\tFROM (\n\t\tSELECT \r\n\t\tmedical_bill_comment.med_bill_comment_ak_id as med_bill_comment_ak_id, RTRIM(medical_bill_comment.comment_type) as comment_type, RTRIM(medical_bill_comment.comment) as comment, medical_bill_comment.med_bill_ak_id as med_bill_ak_id, medical_bill_comment.comment_seq_num as comment_seq_num \r\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill_comment medical_bill_comment\r\n\t\tWHERE\r\n\t\tmedical_bill_comment.CRRNT_SNPSHT_FLAG = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY med_bill_ak_id,comment_seq_num ORDER BY NewLookupRow) = 1\n),\nFIL_NEW_UNCHANGED_ROWS AS (\n\tSELECT\n\tNewLookupRow, \n\tmed_bill_ak_id, \n\tcomment_seq_num, \n\tcomment_type, \n\tcomment, \n\tmed_bill_comment_ak_id\n\tFROM LKP_MEDICAL_BILL_COMMENT\n\tWHERE NewLookupRow = 1 OR\r\nNewLookupRow = 2\n),\nEXP_AUDIT_FIELDS AS (\n\tSELECT\n\tNewLookupRow,\n\tmed_bill_ak_id,\n\tcomment_seq_num,\n\tcomment_type,\n\t1 AS crrnt_snpsht_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t-- *INF*: iif(NewLookupRow=1,\r\n\t-- \tto_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)\n\tIFF(NewLookupRow = 1,\n\t\tto_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'\n\t\t),\n\t\tsysdate\n\t) AS eff_from_date,\n\t-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tto_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'\n\t) AS eff_to_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,\n\tSYSDATE AS created_date,\n\tcomment,\n\tmed_bill_comment_ak_id\n\tFROM FIL_NEW_UNCHANGED_ROWS\n),\nmedical_bill_comment_insert AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill_comment\n\t(med_bill_comment_ak_id, med_bill_ak_id, comment_seq_num, comment_type, comment, crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, source_sys_id, created_date, modified_date)\n\tSELECT \n\tMED_BILL_COMMENT_AK_ID, \n\tMED_BILL_AK_ID, \n\tCOMMENT_SEQ_NUM, \n\tCOMMENT_TYPE, \n\tCOMMENT, \n\tCRRNT_SNPSHT_FLAG, \n\tAUDIT_ID, \n\tEFF_FROM_DATE, \n\tEFF_TO_DATE, \n\tSOURCE_SYS_ID, \n\tCREATED_DATE, \n\tcreated_date AS MODIFIED_DATE\n\tFROM EXP_AUDIT_FIELDS\n),\nSQ_medical_bill_comment AS (\n\tSELECT \r\n\tmedical_bill_comment.med_bill_comment_id, medical_bill_comment.med_bill_comment_ak_id, medical_bill_comment.eff_from_date, \r\n\tmedical_bill_comment.eff_to_date \r\n\tFROM\r\n\t@{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill_comment AS medical_bill_comment\r\n\tWHERE\r\n\tmedical_bill_comment.SOURCE_SYS_ID = '@{pipeline().parameters.SOURCE_SYSTEM_ID}' AND EXISTS\r\n\t(\r\n\tSELECT 1 FROM @{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill_comment AS medical_bill_comment2\r\n\tWHERE source_sys_id = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'  and crrnt_snpsht_flag = 1 and\r\n\tmedical_bill_comment2.med_bill_comment_ak_id = medical_bill_comment.med_bill_comment_ak_id \r\n\tGROUP BY medical_bill_comment2.med_bill_comment_ak_id HAVING COUNT(*) > 1\r\n\t)\r\n\torder by medical_bill_comment.med_bill_comment_ak_id, medical_bill_comment.eff_from_date  desc\n),\nEXP_Lag_eff_from_date111 AS (\n\tSELECT\n\tmed_bill_comment_id,\n\tmed_bill_comment_ak_id,\n\teff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- \tmed_bill_comment_ak_id = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),\r\n\t-- \torig_eff_to_date)\n\tDECODE(TRUE,\n\t\tmed_bill_comment_ak_id = v_PREV_ROW_occurrence_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),\n\t\torig_eff_to_date\n\t) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\teff_from_date AS v_PREV_ROW_eff_from_date,\n\tmed_bill_comment_ak_id AS v_PREV_ROW_occurrence_key,\n\tSYSDATE AS modified_date,\n\t0 AS crrnt_snpsht_flag\n\tFROM SQ_medical_bill_comment\n),\nFIL_First_Row_in_AK_Group AS (\n\tSELECT\n\tmed_bill_comment_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tmodified_date, \n\tcrrnt_snpsht_flag\n\tFROM EXP_Lag_eff_from_date111\n\tWHERE orig_eff_to_date <> eff_to_date\n),\nUPD_TO_DATE AS (\n\tSELECT\n\tmed_bill_comment_id, \n\teff_to_date, \n\tmodified_date, \n\tcrrnt_snpsht_flag\n\tFROM FIL_First_Row_in_AK_Group\n),\nmedical_bill_comment_update AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill_comment AS T\n\tUSING UPD_TO_DATE AS S\n\tON T.med_bill_comment_id = S.med_bill_comment_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_date\n),"
+                            "text": "WITH\nSQ_med_bill_comment_stage AS (\n\tSELECT \r\n\tRTRIM(med_bill_comment_stage.med_bill_id), \r\n\tmed_bill_comment_stage.comment_seq_num,\r\n\tCASE RTRIM(med_bill_comment_stage.comment_type) \r\n\t\tWHEN '' THEN 'N/A' \r\n\t\tELSE RTRIM(med_bill_comment_stage.comment_type) END, \r\n\tCASE RTRIM(med_bill_comment_stage.comment) \r\n\t\tWHEN '' THEN 'N/A' \r\n\t\tELSE RTRIM(med_bill_comment_stage.comment) END \r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.med_bill_comment_stage\r\n\t-- JIRA-PROD-3730 NPTolan Changed CASE statements for comment_type and comment columns to return 'N/A' instead of NULL\n),\nLKP_MED_BILL_KEY AS (\n\tSELECT\n\tmed_bill_ak_id,\n\tmed_bill_key,\n\tTCH_BILL_NBR\n\tFROM (\n\t\tSELECT \r\n\t\tmedical_bill.med_bill_ak_id as med_bill_ak_id, \r\n\t\tRTRIM(medical_bill.med_bill_key) as med_bill_key \r\n\t\tFROM \r\n\t\t@{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill medical_bill\r\n\t\tWHERE\r\n\t\tmedical_bill.CRRNT_SNPSHT_FLAG = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY med_bill_key ORDER BY med_bill_ak_id) = 1\n),\nLKP_MEDICAL_BILL_COMMENT AS (\n\tSELECT\n\tNewLookupRow,\n\tmed_bill_comment_ak_id,\n\tin_med_bill_ak_id,\n\tmed_bill_ak_id,\n\tin_comment_seq_num,\n\tcomment_seq_num,\n\tcomment_type,\n\tin_comment_type,\n\tcomment,\n\tin_comment\n\tFROM (\n\t\tSELECT \r\n\t\tmedical_bill_comment.med_bill_comment_ak_id as med_bill_comment_ak_id, RTRIM(medical_bill_comment.comment_type) as comment_type, RTRIM(medical_bill_comment.comment) as comment, medical_bill_comment.med_bill_ak_id as med_bill_ak_id, medical_bill_comment.comment_seq_num as comment_seq_num \r\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill_comment medical_bill_comment\r\n\t\tWHERE\r\n\t\tmedical_bill_comment.CRRNT_SNPSHT_FLAG = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY med_bill_ak_id,comment_seq_num ORDER BY NewLookupRow) = 1\n),\nFIL_NEW_UNCHANGED_ROWS AS (\n\tSELECT\n\tNewLookupRow, \n\tmed_bill_ak_id, \n\tcomment_seq_num, \n\tcomment_type, \n\tcomment, \n\tmed_bill_comment_ak_id\n\tFROM LKP_MEDICAL_BILL_COMMENT\n\tWHERE NewLookupRow = 1 OR\r\nNewLookupRow = 2\n),\nEXP_AUDIT_FIELDS AS (\n\tSELECT\n\tNewLookupRow,\n\tmed_bill_ak_id,\n\tcomment_seq_num,\n\tcomment_type,\n\t1 AS crrnt_snpsht_flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\t-- *INF*: iif(NewLookupRow=1,\r\n\t-- \tto_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)\n\tIFF(\n\t    NewLookupRow = 1, TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),\n\t    CURRENT_TIMESTAMP\n\t) AS eff_from_date,\n\t-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')\n\tTO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,\n\tSYSDATE AS created_date,\n\tcomment,\n\tmed_bill_comment_ak_id\n\tFROM FIL_NEW_UNCHANGED_ROWS\n),\nmedical_bill_comment_insert AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill_comment\n\t(med_bill_comment_ak_id, med_bill_ak_id, comment_seq_num, comment_type, comment, crrnt_snpsht_flag, audit_id, eff_from_date, eff_to_date, source_sys_id, created_date, modified_date)\n\tSELECT \n\tMED_BILL_COMMENT_AK_ID, \n\tMED_BILL_AK_ID, \n\tCOMMENT_SEQ_NUM, \n\tCOMMENT_TYPE, \n\tCOMMENT, \n\tCRRNT_SNPSHT_FLAG, \n\tAUDIT_ID, \n\tEFF_FROM_DATE, \n\tEFF_TO_DATE, \n\tSOURCE_SYS_ID, \n\tCREATED_DATE, \n\tcreated_date AS MODIFIED_DATE\n\tFROM EXP_AUDIT_FIELDS\n),\nSQ_medical_bill_comment AS (\n\tSELECT \r\n\tmedical_bill_comment.med_bill_comment_id, medical_bill_comment.med_bill_comment_ak_id, medical_bill_comment.eff_from_date, \r\n\tmedical_bill_comment.eff_to_date \r\n\tFROM\r\n\t@{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill_comment AS medical_bill_comment\r\n\tWHERE\r\n\tmedical_bill_comment.SOURCE_SYS_ID = '@{pipeline().parameters.SOURCE_SYSTEM_ID}' AND EXISTS\r\n\t(\r\n\tSELECT 1 FROM @{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill_comment AS medical_bill_comment2\r\n\tWHERE source_sys_id = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'  and crrnt_snpsht_flag = 1 and\r\n\tmedical_bill_comment2.med_bill_comment_ak_id = medical_bill_comment.med_bill_comment_ak_id \r\n\tGROUP BY medical_bill_comment2.med_bill_comment_ak_id HAVING COUNT(*) > 1\r\n\t)\r\n\torder by medical_bill_comment.med_bill_comment_ak_id, medical_bill_comment.eff_from_date  desc\n),\nEXP_Lag_eff_from_date111 AS (\n\tSELECT\n\tmed_bill_comment_id,\n\tmed_bill_comment_ak_id,\n\teff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- \tmed_bill_comment_ak_id = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),\r\n\t-- \torig_eff_to_date)\n\tDECODE(\n\t    TRUE,\n\t    med_bill_comment_ak_id = v_PREV_ROW_occurrence_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),\n\t    orig_eff_to_date\n\t) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\teff_from_date AS v_PREV_ROW_eff_from_date,\n\tmed_bill_comment_ak_id AS v_PREV_ROW_occurrence_key,\n\tSYSDATE AS modified_date,\n\t0 AS crrnt_snpsht_flag\n\tFROM SQ_medical_bill_comment\n),\nFIL_First_Row_in_AK_Group AS (\n\tSELECT\n\tmed_bill_comment_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tmodified_date, \n\tcrrnt_snpsht_flag\n\tFROM EXP_Lag_eff_from_date111\n\tWHERE orig_eff_to_date <> eff_to_date\n),\nUPD_TO_DATE AS (\n\tSELECT\n\tmed_bill_comment_id, \n\teff_to_date, \n\tmodified_date, \n\tcrrnt_snpsht_flag\n\tFROM FIL_First_Row_in_AK_Group\n),\nmedical_bill_comment_update AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.medical_bill_comment AS T\n\tUSING UPD_TO_DATE AS S\n\tON T.med_bill_comment_id = S.med_bill_comment_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_date\n),"
                         }
                     ]
                 },
@@ -30,65 +30,25 @@
             }
         ],
         "parameters": {
-            "WBMI_AUDIT_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "246497"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "905526"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7604447"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "08/30/2023 02:30:37"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/31/2023 02:35:40"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_WC_Stage_Claim"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
             "SOURCE_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": "DBO"
+                "defaultValue": "Default Value"
             },
             "TARGET_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": "DBO"
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
             },
             "SOURCE_SYSTEM_ID": {
                 "type": "string",
-                "defaultValue": "COMPLOGIC"
-            },
-            "SOURCE_DATABASE_NAME": {
-                "type": "string",
-                "defaultValue": "WC_Stage"
-            },
-            "TARGET_DATABASE_NAME": {
-                "type": "string",
-                "defaultValue": "RPT_EDM"
-            },
-            "TARGET_TABLE_OWNER_V2": {
-                "type": "string",
-                "defaultValue": "v2"
-            },
-            "WHERE_CLAUSE": {
-                "type": "string",
-                "defaultValue": ""
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Claims DataWarehouse/"
+            "name": "ClaimsDataWarehouse/"
         },
         "annotations": []
     }

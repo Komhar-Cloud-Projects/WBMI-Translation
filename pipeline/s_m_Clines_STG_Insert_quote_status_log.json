@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Clines_STG_Insert_quote_status_log",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Clines_STG_Insert_quote_status_log",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_quote_status_log AS (\n\tSELECT\n\t\tquote_status_log_id,\n\t\tquote_id,\n\t\tquote_status_id,\n\t\tquote_status_date_time,\n\t\tnote\n\tFROM quote_status_log\n),\nEXP_Values AS (\n\tSELECT\n\tquote_status_log_id,\n\tquote_id,\n\tquote_status_id,\n\tquote_status_date_time,\n\tnote,\n\tSYSDATE AS extract_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id\n\tFROM SQ_quote_status_log\n),\nquote_status_log_cl_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.SOURCE_TABLE_OWNER}.quote_status_log_cl_stage;\n\tINSERT INTO @{pipeline().parameters.SOURCE_TABLE_OWNER}.quote_status_log_cl_stage\n\t(quote_status_log_id, quote_id, quote_status_id, quote_status_date_time, note, extract_date, source_system_id)\n\tSELECT \n\tQUOTE_STATUS_LOG_ID, \n\tQUOTE_ID, \n\tQUOTE_STATUS_ID, \n\tQUOTE_STATUS_DATE_TIME, \n\tNOTE, \n\tEXTRACT_DATE, \n\tSOURCE_SYSTEM_ID\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CommonStaging/"
+        },
+        "annotations": []
+    }
+}

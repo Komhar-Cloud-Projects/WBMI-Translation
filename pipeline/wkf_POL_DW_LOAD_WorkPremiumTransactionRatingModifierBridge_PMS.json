@@ -373,7 +373,7 @@
             }
         ],
         "folder": {
-            "name": "Policy DataWarehouse/"
+            "name": "PolicyDataWarehouse/"
         },
         "variables": {
             "Params": {

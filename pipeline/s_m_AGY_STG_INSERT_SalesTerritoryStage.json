@@ -1,0 +1,47 @@
+{
+    "name": "s_m_AGY_STG_INSERT_SalesTerritoryStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_STG_INSERT_SalesTerritoryStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SalesTerritory_ODS AS (\n\tSELECT\n\t\tSalesTerritoryID,\n\t\tSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tSalesTerritoryCode,\n\t\tSalesTerritoryCodeDescription\n\tFROM SalesTerritory_ODS\n),\nEXP_Add_MetaDataFields AS (\n\tSELECT\n\tSalesTerritoryID,\n\tSourceSystemID,\n\tHashKey,\n\tModifiedUserID,\n\tModifiedDate,\n\tSalesTerritoryCode,\n\tSalesTerritoryCodeDescription,\n\tsysdate AS Extract_Date,\n\tsysdate AS As_of_Date,\n\t1 AS Record_Count,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS Source_System_ID\n\tFROM SQ_SalesTerritory_ODS\n),\nSalesTerritoryStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.SalesTerritoryStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.SalesTerritoryStage\n\t(AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, SalesTerritoryCode, SalesTerritoryCodeDescription, ExtractDate, AsOfDate, RecordCount, SourceSystemID)\n\tSELECT \n\tSourceSystemID AS AGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tSALESTERRITORYCODE, \n\tSALESTERRITORYCODEDESCRIPTION, \n\tExtract_Date AS EXTRACTDATE, \n\tAs_of_Date AS ASOFDATE, \n\tRecord_Count AS RECORDCOUNT, \n\tSource_System_ID AS SOURCESYSTEMID\n\tFROM EXP_Add_MetaDataFields\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

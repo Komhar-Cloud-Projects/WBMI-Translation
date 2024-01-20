@@ -48,8 +48,7 @@ EXP_DefaultValue AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	SYSDATE AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	i_StandardLimitType AS o_LimitType

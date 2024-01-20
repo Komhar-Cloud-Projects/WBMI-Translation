@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_FEED_Load_WCPOLS_36_Record",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Load_WCPOLS_36_Record",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WCPols00Record AS (\n\tSELECT\r\n\t\tWCTrackHistoryID,\r\n\t\tLinkData,\r\n\t     AuditId\r\n\t\tFROM dbo.WCPols00Record\r\n\tWHERE 1=1\r\n\tAND AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tORDER BY WCTrackHistoryID\n),\nSQ_WorkWCForms_Record36 AS (\n\tSELECT distinct\r\n\t\tST.WCTrackHistoryID\r\n\t\t,F.FormName\r\n\t\t,L.AnniversaryRatingDate\r\n\t\t,PT.Name\r\n\t\t,Pol.TransactionEffectiveDate\r\n\t\t,Det.Value as AlternateEmployerWaiverDescription\r\n\t\r\n\tFROM dbo.WorkWCStateTerm ST\r\n\t\r\n\tINNER JOIN dbo.WorkWCForms F\r\n\t\tON ST.WCTrackHistoryID = F.WCTrackHistoryID\r\n\tAND F.FormName like 'WC000313%'\r\n\t\r\n\tINNER JOIN dbo.WorkWCParty PT\r\n\t\tON PT.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\t\tAND PT.PartyAssociationType = 'Account'\r\n\t\r\n\tINNER JOIN dbo.WorkWCLine L\r\n\t\tON L.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicy Pol\r\n\t\tON Pol.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails Det\r\n\t\tON Pol.WCTrackHistoryID =  Det.WCTrackHistoryID\r\n\t\tAND Pol.PolicyId = Det.PolicyId\r\n\t\tAND Det.Attribute = 'AlternateEmployerWaiverDescription'\r\n\t\r\n\tWHERE 1 = 1\r\n\tAND ST.AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tAND Det.Value IS NOT NULL\r\n\t@{pipeline().parameters.WHERE_CLAUSE_36}\r\n\t\r\n\tORDER BY ST.WCTrackHistoryID\n),\nJNR_Record36 AS (SELECT\n\tSQ_WCPols00Record.AuditId, \n\tSQ_WCPols00Record.WCTrackHistoryID, \n\tSQ_WCPols00Record.LinkData, \n\tSQ_WorkWCForms_Record36.WCTrackHistoryID AS WCTrackHistoryID1, \n\tSQ_WorkWCForms_Record36.FormName, \n\tSQ_WorkWCForms_Record36.AnniversaryRatingDate, \n\tSQ_WorkWCForms_Record36.Name, \n\tSQ_WorkWCForms_Record36.TransactionEffectiveDate, \n\tSQ_WorkWCForms_Record36.AlternateEmployerWaiverDescription\n\tFROM SQ_WCPols00Record\n\tINNER JOIN SQ_WorkWCForms_Record36\n\tON SQ_WorkWCForms_Record36.WCTrackHistoryID = SQ_WCPols00Record.WCTrackHistoryID\n),\nmplt_Parse_FormNameField AS (WITH\n\tINPUT_FormName AS (\n\t\t\n\t),\n\tEXPTRANS AS (\n\t\tSELECT\n\t\tParsedNameOfForm,\n\t\tFormNameFromSource,\n\t\t-- *INF*: REVERSE(FormNameFromSource)\n\t\tREVERSE(FormNameFromSource) AS vReversedFromNameFromSource,\n\t\t-- *INF*: REVERSE(substr(vReversedFromNameFromSource,1,4))\n\t\tREVERSE(substr(vReversedFromNameFromSource, 1, 4)) AS vFormEdition,\n\t\t-- *INF*: DECODE(TRUE,\r\n\t\t-- substr(vReversedFromNameFromSource,5,1) >='A' and substr(vReversedFromNameFromSource,5,1) <='Z', substr(vReversedFromNameFromSource,5,1),\r\n\t\t-- ' '\r\n\t\t-- )\r\n\t\t-- \r\n\t\t-- -- check if within A and Z, if not then space\n\t\tDECODE(\n\t\t    TRUE,\n\t\t    substr(vReversedFromNameFromSource, 5, 1) >= 'A' and substr(vReversedFromNameFromSource, 5, 1) <= 'Z', substr(vReversedFromNameFromSource, 5, 1),\n\t\t    ' '\n\t\t) AS vBureauCode,\n\t\tvFormEdition AS oFormEdition,\n\t\tvBureauCode AS oBureauCode\n\t\tFROM INPUT_FormName\n\t),\n\tOUTPUT_FormName AS (\n\t\tSELECT\n\t\tParsedNameOfForm, \n\t\tFormNameFromSource, \n\t\toFormEdition AS FormEdition, \n\t\toBureauCode AS BureauCode\n\t\tFROM EXPTRANS\n\t),\n),\nEXP_Record36 AS (\n\tSELECT\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\tJNR_Record36.AuditId,\n\tJNR_Record36.WCTrackHistoryID,\n\tJNR_Record36.LinkData,\n\t'36' AS RecordTypeCode,\n\tJNR_Record36.FormName,\n\tJNR_Record36.AnniversaryRatingDate,\n\tmplt_Parse_FormNameField.ParsedNameOfForm1,\n\tmplt_Parse_FormNameField.FormNameFromSource1,\n\t'WC000313' AS o_EndorsementNumber,\n\tmplt_Parse_FormNameField.BureauCode,\n\tmplt_Parse_FormNameField.FormEdition,\n\tJNR_Record36.Name,\n\tJNR_Record36.TransactionEffectiveDate,\n\t-- *INF*: TO_CHAR(TransactionEffectiveDate,'YYMMDD')\n\tTO_CHAR(TransactionEffectiveDate, 'YYMMDD') AS o_TransactionEffectiveDate,\n\tJNR_Record36.AlternateEmployerWaiverDescription\n\tFROM JNR_Record36\n\t -- Manually join with mplt_Parse_FormNameField\n),\nWCPols36Record AS (\n\tINSERT INTO WCPols36Record\n\t(ExtractDate, AuditId, WCTrackHistoryID, LinkData, RecordTypeCode, EndorsementNumber, BureauVersionIdentifierEditionIdentifier, CarrierVersionIdentifier, NameOfOrganization, NameOfInsured, EndorsementEffectiveDate)\n\tSELECT \n\tEXTRACTDATE, \n\tAUDITID, \n\tWCTRACKHISTORYID, \n\tLINKDATA, \n\tRECORDTYPECODE, \n\to_EndorsementNumber AS ENDORSEMENTNUMBER, \n\tBureauCode AS BUREAUVERSIONIDENTIFIEREDITIONIDENTIFIER, \n\tFormEdition AS CARRIERVERSIONIDENTIFIER, \n\tAlternateEmployerWaiverDescription AS NAMEOFORGANIZATION, \n\tName AS NAMEOFINSURED, \n\to_TransactionEffectiveDate AS ENDORSEMENTEFFECTIVEDATE\n\tFROM EXP_Record36\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE_36": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

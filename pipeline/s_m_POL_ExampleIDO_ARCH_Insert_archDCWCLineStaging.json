@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCWCLineStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCWCLineStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCWCLineStaging AS (\n\tSELECT\n\t\tLineId,\n\t\tWC_LineId,\n\t\tSessionId,\n\t\tId,\n\t\tAdmiraltyMinimumPremiumMaximumState,\n\t\tAnniversaryRating,\n\t\tAnniversaryRatingDate,\n\t\tAnyARDIndicator,\n\t\tCommissionPercentage,\n\t\tDescription,\n\t\tDescriptionOverride,\n\t\tEmployersLiabilityIncreasedLimitsMaximumState,\n\t\tExpenseConstantMaximumState,\n\t\tExperienceModType,\n\t\tExperienceRated,\n\t\tFELAMinimumPremiumMaximumState,\n\t\tInstallmentType,\n\t\tInvalidAdmiraltyLimitsIndicator,\n\t\tInvalidELLimitsIndicator,\n\t\tInvalidFELALimitsIndicator,\n\t\tMinimumPremiumMaximumState,\n\t\tPeriodDate,\n\t\tPolicyRatingType,\n\t\tPolicyType,\n\t\tPrimaryLocationState,\n\t\tProrateExpenseConstantIndicator,\n\t\tProrateMinimumPremiumIndicator,\n\t\tRatingPlan,\n\t\tValidAdmiraltyLimitsIndicator,\n\t\tValidELLimitsIndicator,\n\t\tValidFELALimitsIndicator,\n\t\tWaiverOfSubrogationMinimumPremiumMaximumState,\n\t\tWithoutWorkersCompensation,\n\t\tWrapUpPolicy,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCombinedPolicyPremium\n\tFROM DCWCLineStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tLineId,\n\tWC_LineId,\n\tSessionId,\n\tId,\n\tAdmiraltyMinimumPremiumMaximumState,\n\tAnniversaryRating AS i_AnniversaryRating,\n\t-- *INF*: DECODE(i_AnniversaryRating,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_AnniversaryRating,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AnniversaryRating,\n\tAnniversaryRatingDate,\n\tAnyARDIndicator AS i_AnyARDIndicator,\n\t-- *INF*: DECODE(i_AnyARDIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_AnyARDIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AnyARDIndicator,\n\tCommissionPercentage,\n\tDescription,\n\tDescriptionOverride,\n\tEmployersLiabilityIncreasedLimitsMaximumState,\n\tExpenseConstantMaximumState,\n\tExperienceModType,\n\tExperienceRated AS i_ExperienceRated,\n\t-- *INF*: DECODE(i_ExperienceRated,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ExperienceRated,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ExperienceRated,\n\tFELAMinimumPremiumMaximumState,\n\tInstallmentType,\n\tInvalidAdmiraltyLimitsIndicator AS i_InvalidAdmiraltyLimitsIndicator,\n\t-- *INF*: DECODE(i_InvalidAdmiraltyLimitsIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_InvalidAdmiraltyLimitsIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_InvalidAdmiraltyLimitsIndicator,\n\tInvalidELLimitsIndicator AS i_InvalidELLimitsIndicator,\n\t-- *INF*: DECODE(i_InvalidELLimitsIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_InvalidELLimitsIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_InvalidELLimitsIndicator,\n\tInvalidFELALimitsIndicator AS i_InvalidFELALimitsIndicator,\n\t-- *INF*: DECODE(i_InvalidFELALimitsIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_InvalidFELALimitsIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_InvalidFELALimitsIndicator,\n\tMinimumPremiumMaximumState,\n\tPeriodDate,\n\tPolicyRatingType,\n\tPolicyType,\n\tPrimaryLocationState,\n\tProrateExpenseConstantIndicator AS i_ProrateExpenseConstantIndicator,\n\t-- *INF*: DECODE(i_ProrateExpenseConstantIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ProrateExpenseConstantIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ProrateExpenseConstantIndicator,\n\tProrateMinimumPremiumIndicator AS i_ProrateMinimumPremiumIndicator,\n\t-- *INF*: DECODE(i_ProrateMinimumPremiumIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ProrateMinimumPremiumIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ProrateMinimumPremiumIndicator,\n\tRatingPlan,\n\tValidAdmiraltyLimitsIndicator AS i_ValidAdmiraltyLimitsIndicator,\n\t-- *INF*: DECODE(i_ValidAdmiraltyLimitsIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ValidAdmiraltyLimitsIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ValidAdmiraltyLimitsIndicator,\n\tValidELLimitsIndicator AS i_ValidELLimitsIndicator,\n\t-- *INF*: DECODE(i_ValidELLimitsIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ValidELLimitsIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ValidELLimitsIndicator,\n\tValidFELALimitsIndicator AS i_ValidFELALimitsIndicator,\n\t-- *INF*: DECODE(i_ValidFELALimitsIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ValidFELALimitsIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ValidFELALimitsIndicator,\n\tWaiverOfSubrogationMinimumPremiumMaximumState,\n\tWithoutWorkersCompensation AS i_WithoutWorkersCompensation,\n\t-- *INF*: DECODE(i_WithoutWorkersCompensation,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_WithoutWorkersCompensation,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_WithoutWorkersCompensation,\n\tWrapUpPolicy AS i_WrapUpPolicy,\n\t-- *INF*: DECODE(i_WrapUpPolicy,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_WrapUpPolicy,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_WrapUpPolicy,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tCombinedPolicyPremium\n\tFROM SQ_DCWCLineStaging\n),\narchDCWCLineStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCWCLineStaging\n\t(LineId, WC_LineId, SessionId, Id, AdmiraltyMinimumPremiumMaximumState, AnniversaryRating, AnniversaryRatingDate, AnyARDIndicator, CommissionPercentage, Description, DescriptionOverride, EmployersLiabilityIncreasedLimitsMaximumState, ExpenseConstantMaximumState, ExperienceModType, ExperienceRated, FELAMinimumPremiumMaximumState, InstallmentType, InvalidAdmiraltyLimitsIndicator, InvalidELLimitsIndicator, InvalidFELALimitsIndicator, MinimumPremiumMaximumState, PeriodDate, PolicyRatingType, PolicyType, PrimaryLocationState, ProrateExpenseConstantIndicator, ProrateMinimumPremiumIndicator, RatingPlan, ValidAdmiraltyLimitsIndicator, ValidELLimitsIndicator, ValidFELALimitsIndicator, WaiverOfSubrogationMinimumPremiumMaximumState, WithoutWorkersCompensation, WrapUpPolicy, ExtractDate, SourceSystemId, AuditId, CombinedPolicyPremium)\n\tSELECT \n\tLINEID, \n\tWC_LINEID, \n\tSESSIONID, \n\tID, \n\tADMIRALTYMINIMUMPREMIUMMAXIMUMSTATE, \n\to_AnniversaryRating AS ANNIVERSARYRATING, \n\tANNIVERSARYRATINGDATE, \n\to_AnyARDIndicator AS ANYARDINDICATOR, \n\tCOMMISSIONPERCENTAGE, \n\tDESCRIPTION, \n\tDESCRIPTIONOVERRIDE, \n\tEMPLOYERSLIABILITYINCREASEDLIMITSMAXIMUMSTATE, \n\tEXPENSECONSTANTMAXIMUMSTATE, \n\tEXPERIENCEMODTYPE, \n\to_ExperienceRated AS EXPERIENCERATED, \n\tFELAMINIMUMPREMIUMMAXIMUMSTATE, \n\tINSTALLMENTTYPE, \n\to_InvalidAdmiraltyLimitsIndicator AS INVALIDADMIRALTYLIMITSINDICATOR, \n\to_InvalidELLimitsIndicator AS INVALIDELLIMITSINDICATOR, \n\to_InvalidFELALimitsIndicator AS INVALIDFELALIMITSINDICATOR, \n\tMINIMUMPREMIUMMAXIMUMSTATE, \n\tPERIODDATE, \n\tPOLICYRATINGTYPE, \n\tPOLICYTYPE, \n\tPRIMARYLOCATIONSTATE, \n\to_ProrateExpenseConstantIndicator AS PRORATEEXPENSECONSTANTINDICATOR, \n\to_ProrateMinimumPremiumIndicator AS PRORATEMINIMUMPREMIUMINDICATOR, \n\tRATINGPLAN, \n\to_ValidAdmiraltyLimitsIndicator AS VALIDADMIRALTYLIMITSINDICATOR, \n\to_ValidELLimitsIndicator AS VALIDELLIMITSINDICATOR, \n\to_ValidFELALimitsIndicator AS VALIDFELALIMITSINDICATOR, \n\tWAIVEROFSUBROGATIONMINIMUMPREMIUMMAXIMUMSTATE, \n\to_WithoutWorkersCompensation AS WITHOUTWORKERSCOMPENSATION, \n\to_WrapUpPolicy AS WRAPUPPOLICY, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tCOMBINEDPOLICYPREMIUM\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

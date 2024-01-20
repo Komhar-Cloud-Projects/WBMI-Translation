@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchPifDept1553Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchPifDept1553Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_PifDept1553Stage AS (\n\tSELECT\n\t\tPifdept1553StageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tPifSymbol,\n\t\tPifPolicyNumber,\n\t\tPifModule,\n\t\tDECLPTId,\n\t\tDECLPTLoc,\n\t\tDECLPTFormNumber,\n\t\tDECLPTSeqSameForm,\n\t\tDECLPTSeq0098,\n\t\tDECLPTNoOfPrecedBlkLines1,\n\t\tDECLPTText1701,\n\t\tDECLPTText71791,\n\t\tDECLPTNoOfPrecedBlkLines2,\n\t\tDECLPTText1702,\n\t\tDECLPTText71792,\n\t\tDECLPTPmsFutureUse,\n\t\tDECLPTYr2000CustUse,\n\t\tDECLPTDupKeySeqNo\n\tFROM PifDept1553Stage\n),\nEXP_PifDept1553Stage AS (\n\tSELECT\n\tPifdept1553StageId,\n\tExtractDate,\n\tSourceSystemid,\n\tPifSymbol,\n\tPifPolicyNumber,\n\tPifModule,\n\tDECLPTId,\n\tDECLPTLoc,\n\tDECLPTFormNumber,\n\tDECLPTSeqSameForm,\n\tDECLPTSeq0098,\n\tDECLPTNoOfPrecedBlkLines1,\n\tDECLPTText1701,\n\tDECLPTText71791,\n\tDECLPTNoOfPrecedBlkLines2,\n\tDECLPTText1702,\n\tDECLPTText71792,\n\tDECLPTPmsFutureUse,\n\tDECLPTYr2000CustUse,\n\tDECLPTDupKeySeqNo,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_audit_id\n\tFROM SQ_PifDept1553Stage\n),\nArchPifDept1553Stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchPifDept1553Stage\n\t(ExtractDate, SourceSystemid, AuditId, PifSymbol, PifPolicyNumber, PifModule, DECLPTId, DECLPTLoc, DECLPTFormNumber, DECLPTSeqSameForm, DECLPTSeq0098, DECLPTNoOfPrecedBlkLines1, DECLPTText1701, DECLPTText71791, DECLPTNoOfPrecedBlkLines2, DECLPTText1702, DECLPTText71792, DECLPTPmsFutureUse, DECLPTYr2000CustUse, DECLPTDupKeySeqNo)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_audit_id AS AUDITID, \n\tPIFSYMBOL, \n\tPIFPOLICYNUMBER, \n\tPIFMODULE, \n\tDECLPTID, \n\tDECLPTLOC, \n\tDECLPTFORMNUMBER, \n\tDECLPTSEQSAMEFORM, \n\tDECLPTSEQ0098, \n\tDECLPTNOOFPRECEDBLKLINES1, \n\tDECLPTTEXT1701, \n\tDECLPTTEXT71791, \n\tDECLPTNOOFPRECEDBLKLINES2, \n\tDECLPTTEXT1702, \n\tDECLPTTEXT71792, \n\tDECLPTPMSFUTUREUSE, \n\tDECLPTYR2000CUSTUSE, \n\tDECLPTDUPKEYSEQNO\n\tFROM EXP_PifDept1553Stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

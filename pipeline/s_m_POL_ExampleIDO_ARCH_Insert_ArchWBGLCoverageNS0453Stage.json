@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBGLCoverageNS0453Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBGLCoverageNS0453S_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBGLCoverageNS0453Stage AS (\n\tSELECT\n\t\tWBGLCoverageNS0453StageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCoverageId,\n\t\tWBGLCoverageNS0453Id AS WB_GL_CoverageNS0453Id,\n\t\tSessionId,\n\t\tRadonRetroactiveDate,\n\t\tLimitedPollutionRetroDate\n\tFROM WBGLCoverageNS0453Stage\n),\nEXP_Metadata1 AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tWBGLCoverageNS0453StageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCoverageId,\n\tWB_GL_CoverageNS0453Id,\n\tSessionId,\n\tRadonRetroactiveDate,\n\tLimitedPollutionRetroDate\n\tFROM SQ_WBGLCoverageNS0453Stage\n),\nArchWBGLCoverageNS0453Stage AS (\n\tINSERT INTO ArchWBGLCoverageNS0453Stage\n\t(ExtractDate, AuditId, WBGLCoverageNS0453StageId, SourceSystemId, CoverageId, WBGLCoverageNS0453Id, SessionId, RadonRetroactiveDate, LimitedPollutionRetroDate)\n\tSELECT \n\tEXTRACTDATE, \n\tAUDITID, \n\tWBGLCOVERAGENS0453STAGEID, \n\tSOURCESYSTEMID, \n\tCOVERAGEID, \n\tWB_GL_CoverageNS0453Id AS WBGLCOVERAGENS0453ID, \n\tSESSIONID, \n\tRADONRETROACTIVEDATE, \n\tLIMITEDPOLLUTIONRETRODATE\n\tFROM EXP_Metadata1\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

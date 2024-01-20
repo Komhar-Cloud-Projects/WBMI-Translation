@@ -30,69 +30,33 @@
             }
         ],
         "parameters": {
-            "WBMI_AUDIT_CONTROL_RUN_ID": {
+            "NO_MONTHS": {
                 "type": "string",
-                "defaultValue": "246244"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "903271"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7594684"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "07/26/2023 05:02:27"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/26/2023 03:40:27"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Policy"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_WC_Data_Mart_Policy"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "dbo"
-            },
-            "TARGET_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "dbo"
+                "defaultValue": "Default Value"
             },
             "SOURCE_DATABASE_NAME": {
                 "type": "string",
-                "defaultValue": "RPT_EDM"
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
             },
             "TARGET_DATABASE_NAME": {
                 "type": "string",
-                "defaultValue": "WC_DATA_MART"
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
             },
             "WHERE_CLAUSE": {
                 "type": "string",
-                "defaultValue": "and (Dim.IndustryGroup is NULL or Dim.IndustryGroup ='N/A') and Crime.CreatedDate > @Date1"
-            },
-            "PCOLUMN": {
-                "type": "string",
-                "defaultValue": "Dim.CoverageDetailDimId"
-            },
-            "NO_MONTHS": {
-                "type": "string",
-                "defaultValue": ""
-            },
-            "NUM_OF_PARTITIONS": {
-                "type": "string",
-                "defaultValue": "4"
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Common DataMart/"
+            "name": "CommonDataMart/"
         },
         "annotations": []
     }

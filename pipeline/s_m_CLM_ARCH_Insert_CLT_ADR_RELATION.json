@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLT_ADR_RELATION",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLT_ADR_RELATION",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLT_ADR_RELATION_STAGE AS (\n\tSELECT CLT_ADR_RELATION_STAGE.CLT_ADR_RELATION_stage_ID, CLT_ADR_RELATION_STAGE.CLIENT_ID, CLT_ADR_RELATION_STAGE.HISTORY_VLD_NBR, CLT_ADR_RELATION_STAGE.ADR_SEQ_NBR, CLT_ADR_RELATION_STAGE.CIAR_EFF_DT, CLT_ADR_RELATION_STAGE.ADR_ID, CLT_ADR_RELATION_STAGE.ADR_TYP_CD, CLT_ADR_RELATION_STAGE.TCH_OBJECT_KEY, CLT_ADR_RELATION_STAGE.CIAR_EXP_DT, CLT_ADR_RELATION_STAGE.CIAR_SER_ADR_1_TXT, CLT_ADR_RELATION_STAGE.CIAR_SER_CIT_NM, CLT_ADR_RELATION_STAGE.CIAR_SER_ST_CD, CLT_ADR_RELATION_STAGE.CIAR_SER_PST_CD, CLT_ADR_RELATION_STAGE.USER_ID, CLT_ADR_RELATION_STAGE.STATUS_CD, CLT_ADR_RELATION_STAGE.TERMINAL_ID, CLT_ADR_RELATION_STAGE.CIAR_EFF_ACY_TS, CLT_ADR_RELATION_STAGE.CIAR_EXP_ACY_TS, CLT_ADR_RELATION_STAGE.EXTRACT_DATE, CLT_ADR_RELATION_STAGE.AS_OF_DATE, CLT_ADR_RELATION_STAGE.RECORD_COUNT, CLT_ADR_RELATION_STAGE.SOURCE_SYSTEM_ID \r\n\tFROM\r\n\t CLT_ADR_RELATION_STAGE\r\n\tWHERE\r\n\tCLT_ADR_RELATION_STAGE.CIAR_EFF_ACY_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_CLT_ADR_RELATION AS (\n\tSELECT\n\tCLT_ADR_RELATION_stage_ID,\n\tCLIENT_ID,\n\tHISTORY_VLD_NBR,\n\tADR_SEQ_NBR,\n\tCIAR_EFF_DT,\n\tADR_ID,\n\tADR_TYP_CD,\n\tTCH_OBJECT_KEY,\n\tCIAR_EXP_DT,\n\tCIAR_SER_ADR_1_TXT,\n\tCIAR_SER_CIT_NM,\n\tCIAR_SER_ST_CD,\n\tCIAR_SER_PST_CD,\n\tUSER_ID,\n\tSTATUS_CD,\n\tTERMINAL_ID,\n\tCIAR_EFF_ACY_TS,\n\tCIAR_EXP_ACY_TS,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_CLT_ADR_RELATION_STAGE\n),\narch_CLT_ADR_RELATION_STAGE AS (\n\tINSERT INTO arch_CLT_ADR_RELATION_STAGE\n\t(CLT_ADR_RELATION_stage_ID, CLIENT_ID, HISTORY_VLD_NBR, ADR_SEQ_NBR, CIAR_EFF_DT, ADR_ID, ADR_TYP_CD, TCH_OBJECT_KEY, CIAR_EXP_DT, CIAR_SER_ADR_1_TXT, CIAR_SER_CIT_NM, CIAR_SER_ST_CD, CIAR_SER_PST_CD, USER_ID, STATUS_CD, TERMINAL_ID, CIAR_EFF_ACY_TS, CIAR_EXP_ACY_TS, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, audit_id)\n\tSELECT \n\tCLT_ADR_RELATION_STAGE_ID, \n\tCLIENT_ID, \n\tHISTORY_VLD_NBR, \n\tADR_SEQ_NBR, \n\tCIAR_EFF_DT, \n\tADR_ID, \n\tADR_TYP_CD, \n\tTCH_OBJECT_KEY, \n\tCIAR_EXP_DT, \n\tCIAR_SER_ADR_1_TXT, \n\tCIAR_SER_CIT_NM, \n\tCIAR_SER_ST_CD, \n\tCIAR_SER_PST_CD, \n\tUSER_ID, \n\tSTATUS_CD, \n\tTERMINAL_ID, \n\tCIAR_EFF_ACY_TS, \n\tCIAR_EXP_ACY_TS, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_CLT_ADR_RELATION\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

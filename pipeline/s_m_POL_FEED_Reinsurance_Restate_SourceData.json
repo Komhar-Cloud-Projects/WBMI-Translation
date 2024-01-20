@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_FEED_Reinsurance_Restate_SourceData",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Reinsurance_Restate_SourceData",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nLKP_Get_Max_Sapiens_SourceSequenceNumber AS (\n\tSELECT\n\tSource_Seq_Num,\n\tID\n\tFROM (\n\t\tSELECT MAX(A.SourceSequenceNumber) AS Source_Seq_Num,\r\n\t\t\t1 AS ID\r\n\t\tFROM (\r\n\t\t\tSELECT isnull(max(SourceSequenceNumber), 999) AS SourceSequenceNumber\r\n\t\t\tFROM @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.SapiensReinsurancePolicy\r\n\t\t\tUNION ALL\r\n\t\t\tSELECT isnull(max(SourceSequenceNumber), 999) AS SourceSequenceNumber\r\n\t\t\tFROM @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.ArchSapiensReinsurancePolicy\r\n\t\t\tUNION ALL\r\n\t\t\tSELECT isnull(max(SourceSequenceNumber), 999) AS SourceSequenceNumber\r\n\t\t\tFROM @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.SapiensReinsuranceClaim\r\n\t\t\tUNION ALL\r\n\t\t\tSELECT isnull(max(SourceSequenceNumber), 999) AS SourceSequenceNumber\r\n\t\t\tFROM @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.ArchSapiensReinsuranceClaim\r\n\t\t\tUNION ALL\r\n\t\t\tSELECT isnull(max(SourceSequenceNumber), 999) AS SourceSequenceNumber\r\n\t\t\tFROM @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.SapiensReinsuranceClaimRestate\r\n\t\t\tUNION ALL\r\n\t\t\tSELECT isnull(max(SourceSequenceNumber), 999) AS SourceSequenceNumber\r\n\t\t\tFROM @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.ArchSapiensReinsuranceClaimRestate\r\n\t\t       UNION ALL\r\n\t\t\tSELECT isnull(max(SourceSequenceNumber), 999) AS SourceSequenceNumber\r\n\t\t\tFROM @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.SapiensReinsurancePolicyRestate\r\n\t\t       UNION ALL\r\n\t\t\tSELECT isnull(max(SourceSequenceNumber), 999) AS SourceSequenceNumber\r\n\t\t\tFROM @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.ArchSapiensReinsurancePolicyRestate\t) A\r\n\t\t\t--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ID ORDER BY Source_Seq_Num DESC) = 1\n),\nSQ_SapiensPolicyRestate AS (\n\n-- TODO Manual --\n\n),\nSQ_SapiensPolicyRestateClaimsMade AS (\n\n-- TODO Manual --\n\n),\nJNR_UsrList_ClaimsMadeList AS (SELECT\n\tSQ_SapiensPolicyRestate.Policy, \n\tSQ_SapiensPolicyRestate.NegateFlag, \n\tSQ_SapiensPolicyRestate.UserName, \n\tSQ_SapiensPolicyRestate.DateTime, \n\tSQ_SapiensPolicyRestateClaimsMade.Policy AS Policy_CM, \n\tSQ_SapiensPolicyRestateClaimsMade.NegateFlag AS NegateFlag_CM, \n\tSQ_SapiensPolicyRestateClaimsMade.UserName AS UserName_CM, \n\tSQ_SapiensPolicyRestateClaimsMade.DateTime AS DateTime_CM\n\tFROM SQ_SapiensPolicyRestate\n\tFULL OUTER JOIN SQ_SapiensPolicyRestateClaimsMade\n\tON SQ_SapiensPolicyRestateClaimsMade.Policy = SQ_SapiensPolicyRestate.Policy\n),\nEXPTRANS AS (\n\tSELECT\n\tPolicy,\n\tNegateFlag,\n\tUserName,\n\tDateTime,\n\tPolicy_CM,\n\tNegateFlag_CM,\n\tUserName_CM,\n\tDateTime_CM,\n\t-- *INF*: IIF(ISNULL(Policy),Ltrim(rtrim(Policy_CM)),Ltrim(rtrim(Policy)))\n\tIFF(Policy IS NULL, Ltrim(rtrim(Policy_CM)), Ltrim(rtrim(Policy))) AS O_Policy,\n\t-- *INF*: IIF(ISNULL(NegateFlag_CM),NegateFlag,NegateFlag_CM)\n\tIFF(NegateFlag_CM IS NULL, NegateFlag, NegateFlag_CM) AS O_NegateFlag,\n\t-- *INF*: IIF(ISNULL(UserName_CM),UserName,UserName_CM)\n\tIFF(UserName_CM IS NULL, UserName, UserName_CM) AS O_UserName,\n\t-- *INF*: IIF(ISNULL(DateTime_CM),DateTime,DateTime_CM)\n\tIFF(DateTime_CM IS NULL, DateTime, DateTime_CM) AS O_DateTime\n\tFROM JNR_UsrList_ClaimsMadeList\n),\nLKP_PolicyKey_sent_to_Sapiens AS (\n\tSELECT\n\tSourceSeqNum,\n\tPolicyKey,\n\tDocumentType\n\tFROM (\n\t\tSELECT \r\n\t\ta.maxssn as SourceSeqNum, \r\n\t\tb.document_type as DocumentType,\r\n\t\trtrim(a.policy_no) as PolicyKey\r\n\t\tfrom\r\n\t\t(select max(SOURCE_SEQ_NUM) as maxssn, \r\n\t\tPOLICY_NO \r\n\t\tfrom \r\n\t\t@{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.ArchSapiensReinsuranceHeaderExtract\r\n\t\tWHERE DATA_SOURCE = 'SRP'\r\n\t\tgroup by\r\n\t\tPOLICY_NO)a\r\n\t\tinner join\r\n\t\t@{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.ArchSapiensReinsuranceHeaderExtract b\r\n\t\ton a.POLICY_NO = b.POLICY_NO and a.maxssn = b.SOURCE_SEQ_NUM\r\n\t\tWHERE b.DATA_SOURCE = 'SRP' \r\n\t\t--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PolicyKey ORDER BY SourceSeqNum DESC) = 1\n),\nEXP_PreTarget AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tsysdate AS CreatedDate,\n\tsysdate AS ModifiedDate,\n\tEXPTRANS.O_Policy AS PolicyKey,\n\tEXPTRANS.O_NegateFlag AS i_NegateFlag,\n\tLKP_PolicyKey_sent_to_Sapiens.DocumentType AS DOCUMENT_TYPE,\n\t-- *INF*: IIF(DOCUMENT_TYPE='N' OR ISNULL(DOCUMENT_TYPE),'N','Y')\r\n\t-- \n\tIFF(DOCUMENT_TYPE = 'N' OR DOCUMENT_TYPE IS NULL, 'N', 'Y') AS v_PolicySentFlag,\n\t-- *INF*: IIF(v_PolicySentFlag = 'Y' ,\r\n\t-- IIF(i_NegateFlag = 'Y','1','0'),\r\n\t-- '0')\n\tIFF(v_PolicySentFlag = 'Y', IFF(\n\t        i_NegateFlag = 'Y', '1', '0'\n\t    ), '0') AS v_NegateFlag,\n\tv_NegateFlag AS o_NegateFlag,\n\t@{pipeline().parameters.SELECTION_START_TS} AS o_NegateDate,\n\t-- *INF*: IIF(ISNULL(:LKP.LKP_Get_Max_Sapiens_SourceSequenceNumber(1)),\r\n\t--  0,\r\n\t--  :LKP.LKP_Get_Max_Sapiens_SourceSequenceNumber(1))\n\tIFF(\n\t    LKP_GET_MAX_SAPIENS_SOURCESEQUENCENUMBER_1.Source_Seq_Num IS NULL, 0,\n\t    LKP_GET_MAX_SAPIENS_SOURCESEQUENCENUMBER_1.Source_Seq_Num\n\t) AS v_SourceSequenceNumber,\n\tv_count + 1 AS v_count,\n\t-- *INF*: IIF(v_NegateFlag = '1',v_SourceSequenceNumber + v_count,NULL)\n\tIFF(v_NegateFlag = '1', v_SourceSequenceNumber + v_count, NULL) AS SourceSequenceNumber,\n\tLKP_PolicyKey_sent_to_Sapiens.SourceSeqNum AS SOURCE_SEQ_NUM,\n\tLKP_PolicyKey_sent_to_Sapiens.PolicyKey AS POLICY_NO\n\tFROM EXPTRANS\n\tLEFT JOIN LKP_PolicyKey_sent_to_Sapiens\n\tON LKP_PolicyKey_sent_to_Sapiens.PolicyKey = EXPTRANS.O_Policy\n\tLEFT JOIN LKP_GET_MAX_SAPIENS_SOURCESEQUENCENUMBER LKP_GET_MAX_SAPIENS_SOURCESEQUENCENUMBER_1\n\tON LKP_GET_MAX_SAPIENS_SOURCESEQUENCENUMBER_1.ID = 1\n\n),\nSapiensReinsurancePolicyRestate AS (\n\tTRUNCATE TABLE SapiensReinsurancePolicyRestate;\n\tINSERT INTO SapiensReinsurancePolicyRestate\n\t(AuditId, CreatedDate, ModifiedDate, PolicyKey, NegateFlag, NegateDate, SourceSequenceNumber)\n\tSELECT \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tPOLICYKEY, \n\to_NegateFlag AS NEGATEFLAG, \n\to_NegateDate AS NEGATEDATE, \n\tSOURCESEQUENCENUMBER\n\tFROM EXP_PreTarget\n),\nSQ_SapiensReinsuranceClaimsRestate AS (\n\tselect distinct \r\n\t    P.Pol_Key as PolicyKey,\r\n\t    CASE WHEN cod.claim_num = 'N/A' THEN RTRIM(cod.claim_occurrence_key) ELSE RTRIM(cod.claim_num) END as ClaimNumber\r\n\tFROM @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_loss_transaction_fact cltf with (nolock) \r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.policy_dim P with (nolock) ON cltf.pol_dim_id = P.pol_dim_id\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_occurrence_dim cod with (nolock) ON cltf.claim_occurrence_dim_id = cod.claim_occurrence_dim_id\r\n\t      INNER JOIN @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.SapiensReinsurancePolicyRestate srps with (nolock) ON P.pol_key = srps.PolicyKey\n),\nEXP_Consolidated AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tSYSDATE AS CreatedDate,\n\tSYSDATE AS ModifiedDate,\n\tClaimKey AS ClaimNumber,\n\t'' AS Defaultchar,\n\t0 AS DefaultNum,\n\tPolicyKey,\n\t'0' AS NegateFlag\n\tFROM SQ_SapiensReinsuranceClaimsRestate\n),\nSapiensReinsuranceClaimRestate AS (\n\tTRUNCATE TABLE SapiensReinsuranceClaimRestate;\n\tINSERT INTO SapiensReinsuranceClaimRestate\n\t(AuditId, CreatedDate, ModifiedDate, ClaimNumber, PreviousCatastropheCode, CurrentCatastropheCode, PreviousClaimRelationshipId, CurrentClaimRelationshipId, CurrentPolicyKey, NegateFlag)\n\tSELECT \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tCLAIMNUMBER, \n\tDefaultchar AS PREVIOUSCATASTROPHECODE, \n\tDefaultchar AS CURRENTCATASTROPHECODE, \n\tDefaultNum AS PREVIOUSCLAIMRELATIONSHIPID, \n\tDefaultNum AS CURRENTCLAIMRELATIONSHIPID, \n\tPolicyKey AS CURRENTPOLICYKEY, \n\tNEGATEFLAG\n\tFROM EXP_Consolidated\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "TARGET_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

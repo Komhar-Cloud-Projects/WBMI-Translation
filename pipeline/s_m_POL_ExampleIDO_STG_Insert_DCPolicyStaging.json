@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCPolicyStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCPolicyStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_Policy AS (\n\tWITH cte_DCPolicy(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.PolicyId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.EffectiveDate, \r\n\tX.ExpirationDate, \r\n\tX.LineOfBusiness, \r\n\tX.Term, \r\n\tX.PrimaryRatingState, \r\n\tX.Product, \r\n\tX.HonorRates, \r\n\tX.AuditPeriod, \r\n\tX.SICCode, \r\n\tX.SICCodeDesc, \r\n\tX.NAICSCode, \r\n\tX.NAICSCodeDesc, \r\n\tX.QuoteNumber, \r\n\tX.TermFactor, \r\n\tX.CancellationDate, \r\n\tX.Description, \r\n\tX.PolicyNumber, \r\n\tX.Status, \r\n\tX.TransactionDate, \r\n\tX.TransactionDateTime, \r\n\tX.PreviousPolicyNumber, \r\n\tX.InceptionDate, \r\n\tX.PolicyTermID, \r\n\tX.AccountID, \r\n\tX.TaxesSurcharges, \r\n\tX.Auditable \r\n\tFROM\r\n\tDC_Policy X\r\n\tinner join\r\n\tcte_DCPolicy Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tPolicyId,\n\tSessionId,\n\tId,\n\tEffectiveDate,\n\tExpirationDate,\n\tLineOfBusiness,\n\tTerm,\n\tPrimaryRatingState,\n\tProduct,\n\tHonorRates,\n\tAuditPeriod,\n\tSICCode,\n\tSICCodeDesc,\n\tNAICSCode,\n\tNAICSCodeDesc,\n\tQuoteNumber,\n\tTermFactor,\n\tCancellationDate,\n\tDescription,\n\tPolicyNumber,\n\tStatus,\n\tTransactionDate,\n\tTransactionDateTime,\n\tPreviousPolicyNumber,\n\tInceptionDate,\n\tPolicyTermID,\n\tAccountID,\n\tTaxesSurcharges,\n\tAuditable,\n\t-- *INF*: DECODE(HonorRates, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    HonorRates,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_HonorRates,\n\t-- *INF*: DECODE(Auditable, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    Auditable,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Auditable,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_DC_Policy\n),\nDCPolicyStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCPolicyStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCPolicyStaging\n\t(PolicyId, SessionId, Id, EffectiveDate, ExpirationDate, LineOfBusiness, Term, PrimaryRatingState, Product, HonorRates, AuditPeriod, SICCode, SICCodeDesc, NAICSCode, NAICSCodeDesc, QuoteNumber, TermFactor, CancellationDate, Description, PolicyNumber, Status, TransactionDate, TransactionDateTime, PreviousPolicyNumber, InceptionDate, PolicyTermID, AccountID, TaxesSurcharges, Auditable, ExtractDate, SourceSystemId)\n\tSELECT \n\tPOLICYID, \n\tSESSIONID, \n\tID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tLINEOFBUSINESS, \n\tTERM, \n\tPRIMARYRATINGSTATE, \n\tPRODUCT, \n\to_HonorRates AS HONORRATES, \n\tAUDITPERIOD, \n\tSICCODE, \n\tSICCODEDESC, \n\tNAICSCODE, \n\tNAICSCODEDESC, \n\tQUOTENUMBER, \n\tTERMFACTOR, \n\tCANCELLATIONDATE, \n\tDESCRIPTION, \n\tPOLICYNUMBER, \n\tSTATUS, \n\tTRANSACTIONDATE, \n\tTRANSACTIONDATETIME, \n\tPREVIOUSPOLICYNUMBER, \n\tINCEPTIONDATE, \n\tPOLICYTERMID, \n\tACCOUNTID, \n\tTAXESSURCHARGES, \n\to_Auditable AS AUDITABLE, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

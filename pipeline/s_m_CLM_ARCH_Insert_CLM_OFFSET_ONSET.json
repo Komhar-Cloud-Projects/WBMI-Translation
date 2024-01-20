@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLM_OFFSET_ONSET",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLM_OFFSET_ONSET",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLM_OFFSET_ONSET_STAGE AS (\n\tSELECT\n\t\tclm_offset_onset_id,\n\t\ttch_claim_nbr,\n\t\toff_onset_ts,\n\t\toff_policy_sym,\n\t\toff_policy_nbr,\n\t\toff_policy_mod,\n\t\toff_date_loss,\n\t\toff_occ_nbr,\n\t\ton_policy_sym,\n\t\ton_policy_num,\n\t\ton_policy_mod,\n\t\ton_date_loss,\n\t\ton_occ_nbr,\n\t\tprocess_sta_ind,\n\t\tentry_opr_id,\n\t\tentry_timestamp,\n\t\tupdate_opr_id,\n\t\tupdate_timestamp,\n\t\toff_line_business,\n\t\ton_line_business,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM CLM_OFFSET_ONSET_STAGE\n\tWHERE clm_offset_onset_stage.off_onset_ts >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_CLM_OFFSET_ONSET_STAGE AS (\n\tSELECT\n\tclm_offset_onset_id AS CLM_OFFSET_ONSET_ID,\n\ttch_claim_nbr AS TCH_CLAIM_NBR,\n\toff_onset_ts AS OFF_ONSET_TS,\n\toff_policy_sym AS OFF_POLICY_SYM,\n\toff_policy_nbr AS OFF_POLICY_NBR,\n\toff_policy_mod AS OFF_POLICY_MOD,\n\toff_date_loss AS OFF_DATE_LOSS,\n\toff_occ_nbr AS OFF_OCC_NBR,\n\ton_policy_sym AS ON_POLICY_SYM,\n\ton_policy_num AS ON_POLICY_NUM,\n\ton_policy_mod AS ON_POLICY_MOD,\n\ton_date_loss AS ON_DATE_LOSS,\n\ton_occ_nbr AS ON_OCC_NBR,\n\tprocess_sta_ind AS PROCESS_STA_IND,\n\tentry_opr_id AS ENTRY_OPR_ID,\n\tentry_timestamp AS ENTRY_TIMESTAMP,\n\tupdate_opr_id AS UPDATE_OPR_ID,\n\tupdate_timestamp AS UPDATE_TIMESTAMP,\n\toff_line_business AS OFF_LINE_BUSINESS,\n\ton_line_business AS ON_LINE_BUSINESS,\n\textract_date AS EXTRACT_DATE,\n\tas_of_date AS AS_OF_DATE,\n\trecord_count AS RECORD_COUNT,\n\tsource_system_id AS SOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_CLM_OFFSET_ONSET_STAGE\n),\nARCH_CLM_OFFSET_ONSET_STAGE AS (\n\tINSERT INTO ARCH_CLM_OFFSET_ONSET_STAGE\n\t(CLM_OFFSET_ONSET_ID, TCH_CLAIM_NBR, OFF_ONSET_TS, OFF_POLICY_SYM, OFF_POLICY_NBR, OFF_POLICY_MOD, OFF_DATE_LOSS, OFF_OCC_NBR, ON_POLICY_SYM, ON_POLICY_NUM, ON_POLICY_MOD, ON_DATE_LOSS, ON_OCC_NBR, PROCESS_STA_IND, ENTRY_OPR_ID, ENTRY_TIMESTAMP, UPDATE_OPR_ID, UPDATE_TIMESTAMP, OFF_LINE_BUSINESS, ON_LINE_BUSINESS, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, AUDIT_ID)\n\tSELECT \n\tCLM_OFFSET_ONSET_ID, \n\tTCH_CLAIM_NBR, \n\tOFF_ONSET_TS, \n\tOFF_POLICY_SYM, \n\tOFF_POLICY_NBR, \n\tOFF_POLICY_MOD, \n\tOFF_DATE_LOSS, \n\tOFF_OCC_NBR, \n\tON_POLICY_SYM, \n\tON_POLICY_NUM, \n\tON_POLICY_MOD, \n\tON_DATE_LOSS, \n\tON_OCC_NBR, \n\tPROCESS_STA_IND, \n\tENTRY_OPR_ID, \n\tENTRY_TIMESTAMP, \n\tUPDATE_OPR_ID, \n\tUPDATE_TIMESTAMP, \n\tOFF_LINE_BUSINESS, \n\tON_LINE_BUSINESS, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_CLM_OFFSET_ONSET_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

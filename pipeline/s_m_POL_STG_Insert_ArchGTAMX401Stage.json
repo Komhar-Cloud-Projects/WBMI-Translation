@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchGTAMX401Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchGTAMX401Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_GTAMX401Stage AS (\n\tSELECT\n\t\tGTAMX401StageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tTableField,\n\t\tKeyLength,\n\t\tLocationCode,\n\t\tMasterCompanyNumber,\n\t\tTypeBureauCode,\n\t\tMajorPerilCode,\n\t\tCoverageCode,\n\t\tOutputDataLength,\n\t\tBureauCoverageCode,\n\t\tDecutibleType,\n\t\tDecutibleAmount,\n\t\tSublineCode\n\tFROM GTAMX401Stage\n),\nEXP_Set_AuditID AS (\n\tSELECT\n\tGTAMX401StageId,\n\tExtractDate,\n\tSourceSystemId,\n\tTableField,\n\tKeyLength,\n\tLocationCode,\n\tMasterCompanyNumber,\n\tTypeBureauCode,\n\tMajorPerilCode,\n\tCoverageCode,\n\tOutputDataLength,\n\tBureauCoverageCode,\n\tDecutibleType,\n\tDecutibleAmount,\n\tSublineCode,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_GTAMX401Stage\n),\nArchGTAMX401Stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchGTAMX401Stage\n\t(ExtractDate, SourceSystemId, AuditId, GTAMX401StageId, TableField, KeyLength, LocationCode, MasterCompanyNumber, TypeBureauCode, MajorPerilCode, CoverageCode, OutputDataLength, BureauCoverageCode, DecutibleType, DecutibleAmount, SublineCode)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tGTAMX401STAGEID, \n\tTABLEFIELD, \n\tKEYLENGTH, \n\tLOCATIONCODE, \n\tMASTERCOMPANYNUMBER, \n\tTYPEBUREAUCODE, \n\tMAJORPERILCODE, \n\tCOVERAGECODE, \n\tOUTPUTDATALENGTH, \n\tBUREAUCOVERAGECODE, \n\tDECUTIBLETYPE, \n\tDECUTIBLEAMOUNT, \n\tSUBLINECODE\n\tFROM EXP_Set_AuditID\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

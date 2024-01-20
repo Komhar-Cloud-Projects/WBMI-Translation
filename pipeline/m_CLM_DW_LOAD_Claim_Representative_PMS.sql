@@ -29,11 +29,7 @@ EXP_Source AS (
 	-- *INF*: IIF(IS_SPACES(ADNM_NAME) OR ISNULL(ADNM_NAME)
 	-- ,'N/A'
 	-- ,ADNM_NAME)
-	IFF(LENGTH(ADNM_NAME)>0 AND TRIM(ADNM_NAME)='' 
-		OR ADNM_NAME IS NULL,
-		'N/A',
-		ADNM_NAME
-	) AS out_ADNM_NAME
+	IFF(LENGTH(ADNM_NAME)>0 AND TRIM(ADNM_NAME)='' OR ADNM_NAME IS NULL, 'N/A', ADNM_NAME) AS out_ADNM_NAME
 	FROM SQ_PMS_ADJUSTER_MASTER_STAGE
 ),
 LKP_Sup_Claim_Adjuster_EDW AS (
@@ -70,22 +66,20 @@ EXP_Adjustor_Claim_Exists AS (
 	-- *INF*: iif(isnull(ipfcgp_loss_handling_office) or is_spaces(ipfcgp_loss_handling_office) or ipfcgp_loss_handling_office ='' OR LENGTH( ipfcgp_loss_handling_office) = 0
 	-- ,'N/A'
 	-- ,ipfcgp_loss_handling_office)
-	IFF(ipfcgp_loss_handling_office IS NULL 
-		OR LENGTH(ipfcgp_loss_handling_office)>0 AND TRIM(ipfcgp_loss_handling_office)='' 
-		OR ipfcgp_loss_handling_office = '' 
-		OR LENGTH(ipfcgp_loss_handling_office
-		) = 0,
-		'N/A',
-		ipfcgp_loss_handling_office
+	IFF(
+	    ipfcgp_loss_handling_office IS NULL
+	    or LENGTH(ipfcgp_loss_handling_office)>0
+	    and TRIM(ipfcgp_loss_handling_office)=''
+	    or ipfcgp_loss_handling_office = ''
+	    or LENGTH(ipfcgp_loss_handling_office) = 0,
+	    'N/A',
+	    ipfcgp_loss_handling_office
 	) AS ipfcgp_loss_handling_office_v,
 	ipfcgp_loss_handling_office_v AS ipfcgp_loss_handling_office_out,
 	-- *INF*: iif(ipfcgp_loss_handling_office_v = 'N/A'
 	-- ,'N'
 	-- ,'Y')
-	IFF(ipfcgp_loss_handling_office_v = 'N/A',
-		'N',
-		'Y'
-	) AS v_Exists_At_Claim_Level,
+	IFF(ipfcgp_loss_handling_office_v = 'N/A', 'N', 'Y') AS v_Exists_At_Claim_Level,
 	v_Exists_At_Claim_Level AS Exists_At_Claim_level
 	FROM LKP_Claim_Rep_handling_office
 ),
@@ -184,9 +178,9 @@ EXP_TARGET AS (
 	-- ,'N/A'
 	-- ,:LKP.LKP_SUP_CLAIM_STAFF_EMAIL(Adjuster_User_id)
 	-- )
-	IFF(LKP_SUP_CLAIM_STAFF_EMAIL_Adjuster_User_id.EMAIL IS NULL,
-		'N/A',
-		LKP_SUP_CLAIM_STAFF_EMAIL_Adjuster_User_id.EMAIL
+	IFF(
+	    LKP_SUP_CLAIM_STAFF_EMAIL_Adjuster_User_id.EMAIL IS NULL, 'N/A',
+	    LKP_SUP_CLAIM_STAFF_EMAIL_Adjuster_User_id.EMAIL
 	) AS Claim_Rep_Email_ID,
 	LKP_Sup_Claim_Adjuster_EDW_HANDLING_OFFICE_MGR.wbconnect_user_id AS wbconnect_user_id_handling_office_mgr,
 	-- *INF*: iif(isnull(:LKP.LKP_SUP_CLAIM_STAFF_EMAIL(wbconnect_user_id_handling_office_mgr))
@@ -194,21 +188,17 @@ EXP_TARGET AS (
 	-- ,:LKP.LKP_SUP_CLAIM_STAFF_EMAIL(wbconnect_user_id_handling_office_mgr)
 	-- )
 	-- 
-	IFF(LKP_SUP_CLAIM_STAFF_EMAIL_wbconnect_user_id_handling_office_mgr.EMAIL IS NULL,
-		'N/A',
-		LKP_SUP_CLAIM_STAFF_EMAIL_wbconnect_user_id_handling_office_mgr.EMAIL
+	IFF(
+	    LKP_SUP_CLAIM_STAFF_EMAIL_wbconnect_user_id_handling_office_mgr.EMAIL IS NULL, 'N/A',
+	    LKP_SUP_CLAIM_STAFF_EMAIL_wbconnect_user_id_handling_office_mgr.EMAIL
 	) AS Handling_Office_Mgr_Email_ID,
 	EXP_Source.ADNM_ADJUSTOR_BRANCH_NUMBER AS adnm_adjustor_branch_number,
 	-- *INF*: lpad(:UDF.DEFAULT_VALUE_FOR_STRINGS(TO_CHAR(adnm_adjustor_branch_number)),3,'0')
-	lpad(:UDF.DEFAULT_VALUE_FOR_STRINGS(TO_CHAR(adnm_adjustor_branch_number
-			)
-		), 3, '0'
-	) AS adnm_adjustor_branch_number_Out,
+	lpad(UDF_DEFAULT_VALUE_FOR_STRINGS(TO_CHAR(adnm_adjustor_branch_number)), 3, '0') AS adnm_adjustor_branch_number_Out,
 	LKP_gtam_wbadj_stage.Cost_Center_Number,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(Cost_Center_Number)
 	-- --rtrim(ltrim(Cost_Center_Number))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(Cost_Center_Number
-	) AS cost_center_number_Out
+	UDF_DEFAULT_VALUE_FOR_STRINGS(Cost_Center_Number) AS cost_center_number_Out
 	FROM EXP_Adjustor_Claim_Exists
 	 -- Manually join with EXP_Source
 	LEFT JOIN LKP_Claim_Representative_Hierachy_EDW
@@ -387,49 +377,43 @@ EXP_Detect_Changes AS (
 	-- )
 	-- ,'UPDATE'
 	-- ,'NO CHANGE'))
-	IFF(lkp_claim_rep_id IS NULL,
-		'NEW',
-		IFF(Exists_At_Claim_level = 'Y' 
-			AND ( lkp_claim_rep_name != claim_rep_name 
-				OR lkp_dvsn_code != DIVISION_CODE 
-				OR lkp_dvsn_descript != DIVISION_DESC 
-				OR lkp_dept_descript != DEPT_DESC 
-				OR lkp_dept_name != DEPT_CODE 
-				OR lkp_dept_mgr != DEPT_MGR 
-				OR lkp_handling_office_code != OFFICE_ID 
-				OR lkp_handling_office_descript != REPORT_OFFICE_NAME 
-				OR lkp_handling_office_mgr != Handling_Office_Mgr 
-				OR lkp_webconnect_user_id != USER_ID 
-				OR lkp_claim_rep_email != Claim_Rep_Email_ID 
-				OR lkp_handling_office_mgr_email != Handling_Office_Mgr_Email_ID 
-				OR lkp_claim_rep_direct_automatic_pay_lmt != Claim_Rep_DIR_AUT_PMT 
-				OR lkp_claim_rep_direct_automatic_reserve_lmt != Claim_Rep_DIR_AUT_RES 
-				OR lkp_handling_office_mgr_direct_automatic_pay_lmt != Handling_Office_Mgr_DIR_AUT_PMT 
-				OR lkp_handling_office_mgr_direct_automatic_reserve_lmt != Handling_Office_Mgr_DIR_AUT_RES 
-				OR rtrim(ltrim(lkp_cost_center
-					)
-				) != rtrim(ltrim(cost_center_number
-					)
-				) 
-				OR lkp_claim_rep_branch_num != adnm_adjustor_branch_number 
-			),
-			'UPDATE',
-			'NO CHANGE'
-		)
+	IFF(
+	    lkp_claim_rep_id IS NULL, 'NEW',
+	    IFF(
+	        Exists_At_Claim_level = 'Y'
+	        and (lkp_claim_rep_name != claim_rep_name
+	        or lkp_dvsn_code != DIVISION_CODE
+	        or lkp_dvsn_descript != DIVISION_DESC
+	        or lkp_dept_descript != DEPT_DESC
+	        or lkp_dept_name != DEPT_CODE
+	        or lkp_dept_mgr != DEPT_MGR
+	        or lkp_handling_office_code != OFFICE_ID
+	        or lkp_handling_office_descript != REPORT_OFFICE_NAME
+	        or lkp_handling_office_mgr != Handling_Office_Mgr
+	        or lkp_webconnect_user_id != USER_ID
+	        or lkp_claim_rep_email != Claim_Rep_Email_ID
+	        or lkp_handling_office_mgr_email != Handling_Office_Mgr_Email_ID
+	        or lkp_claim_rep_direct_automatic_pay_lmt != Claim_Rep_DIR_AUT_PMT
+	        or lkp_claim_rep_direct_automatic_reserve_lmt != Claim_Rep_DIR_AUT_RES
+	        or lkp_handling_office_mgr_direct_automatic_pay_lmt != Handling_Office_Mgr_DIR_AUT_PMT
+	        or lkp_handling_office_mgr_direct_automatic_reserve_lmt != Handling_Office_Mgr_DIR_AUT_RES
+	        or rtrim(ltrim(lkp_cost_center)) != rtrim(ltrim(cost_center_number))
+	        or lkp_claim_rep_branch_num != adnm_adjustor_branch_number),
+	        'UPDATE',
+	        'NO CHANGE'
+	    )
 	) AS v_changed_flag,
 	1 AS Crrnt_SnapSht_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	v_changed_flag AS changed_flag,
 	sysdate AS created_date,
 	sysdate AS modified_date,
@@ -500,10 +484,7 @@ EXP_Determine_AK AS (
 	-- *INF*: iif(isnull(claim_rep_ak_id)
 	-- ,NEXTVAL
 	-- ,claim_rep_ak_id)
-	IFF(claim_rep_ak_id IS NULL,
-		NEXTVAL,
-		claim_rep_ak_id
-	) AS out_claim_rep_ak_id,
+	IFF(claim_rep_ak_id IS NULL, NEXTVAL, claim_rep_ak_id) AS out_claim_rep_ak_id,
 	CAJ_EMP_CLIENT_ID,
 	CICL_FULL_NM,
 	CICL_FST_NM,
@@ -621,10 +602,10 @@ EXP_Expire_Rows AS (
 	source_sys_id,
 	-- *INF*: DECODE (TRUE, claim_rep_key = v_PREV_ROW_claim_rep_key and source_sys_id = v_PREV_ROW_source_sys_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		claim_rep_key = v_PREV_ROW_claim_rep_key 
-		AND source_sys_id = v_PREV_ROW_source_sys_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    claim_rep_key = v_PREV_ROW_claim_rep_key and source_sys_id = v_PREV_ROW_source_sys_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	claim_rep_key AS v_PREV_ROW_claim_rep_key,

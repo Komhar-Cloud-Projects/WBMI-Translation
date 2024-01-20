@@ -1,0 +1,47 @@
+{
+    "name": "s_m_FEED_Extract_IVANSDirectBillCommissionStatementExtract",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_FEED_Extract_IVANSDirectBillCommissionStatementExt_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_IVANSDirectBillCommissionStatementExtract AS (\n\tSELECT\n\t\tIVANSDirectBillCommissionStatementExtractId,\n\t\tAuditId,\n\t\tCreatedDate,\n\t\tRunDate,\n\t\tInsuredName,\n\t\tAgencyState,\n\t\tAgencyPayCode,\n\t\tAgencyNumber,\n\t\tPolicySymbol,\n\t\tPolicyNumber,\n\t\tPolicyEffectiveDate,\n\t\tPolicyExpirationDate,\n\t\tPremium,\n\t\tCommissionAmount,\n\t\tCommissionRate,\n\t\tTransactionCode,\n\t\tAccountDate,\n\t\tCustomerNumber,\n\t\tTransactionDate,\n\t\tLineOfBusinessCode\n\tFROM IVANSDirectBillCommissionStatementExtract\n\tWHERE IVANSDirectBillCommissionStatementExtract.RunDate=(DATEADD(MM,DATEDIFF(MM,0,@{pipeline().parameters.RUNDATE}),-1))\n),\nAGG_IVANSDirectBillCommissionStatement AS (\n\tSELECT\n\tPremium AS i_Premium,\n\tCommissionAmount AS i_CommissionAmount,\n\tInsuredName,\n\tAgencyState,\n\tAgencyPayCode,\n\tAgencyNumber,\n\tPolicySymbol,\n\tPolicyNumber,\n\tPolicyEffectiveDate,\n\tPolicyExpirationDate,\n\tCommissionRate,\n\tTransactionCode,\n\tAccountDate,\n\tCustomerNumber,\n\tTransactionDate,\n\tLineOfBusinessCode,\n\t-- *INF*: SUM(i_Premium)\n\tSUM(i_Premium) AS o_Premium,\n\t-- *INF*: SUM(i_CommissionAmount)\n\tSUM(i_CommissionAmount) AS o_CommissionAmount\n\tFROM SQ_IVANSDirectBillCommissionStatementExtract\n\tGROUP BY AgencyState, AgencyPayCode, AgencyNumber, PolicySymbol, PolicyNumber, PolicyEffectiveDate, PolicyExpirationDate, CommissionRate, TransactionCode, TransactionDate\n),\nEXP_TRANS AS (\n\tSELECT\n\tInsuredName AS i_InsuredName,\n\tPolicyEffectiveDate AS i_PolicyEffectiveDate,\n\tPolicyExpirationDate AS i_PolicyExpirationDate,\n\tAccountDate AS i_AccountDate,\n\tTransactionDate AS i_TransactionDate,\n\tAgencyState,\n\tAgencyPayCode,\n\tAgencyNumber,\n\tPolicySymbol,\n\tPolicyNumber,\n\to_Premium AS Premium,\n\to_CommissionAmount AS CommissionAmount,\n\tCommissionRate,\n\tTransactionCode,\n\tCustomerNumber,\n\tLineOfBusinessCode,\n\t-- *INF*: IIF (LineOfBusinessCode = 'PPKGE',\r\n\t--        '1', '2')\r\n\t-- \r\n\t--  --@{pipeline().parameters.RECORD_ID}))\n\tIFF(LineOfBusinessCode = 'PPKGE', '1', '2') AS o_RecordID,\n\t-- *INF*: SUBSTR(i_InsuredName,1,30)\n\tSUBSTR(i_InsuredName, 1, 30) AS o_InsuredName,\n\t-- *INF*: TO_CHAR(GET_DATE_PART(i_PolicyEffectiveDate,'YYYY'))\n\tTO_CHAR(DATE_PART(i_PolicyEffectiveDate, 'YYYY')) AS o_PolicyEffectiveDateYear,\n\t-- *INF*: LPAD(TO_CHAR(GET_DATE_PART(i_PolicyEffectiveDate,'MM')),2,'0')\n\tLPAD(TO_CHAR(DATE_PART(i_PolicyEffectiveDate, 'MM')), 2, '0') AS o_PolicyEffectiveDateMonth,\n\t-- *INF*: LPAD(TO_CHAR(GET_DATE_PART(i_PolicyEffectiveDate,'DD')),2,'0')\n\tLPAD(TO_CHAR(DATE_PART(i_PolicyEffectiveDate, 'DD')), 2, '0') AS o_PolicyEffectiveDateDay,\n\t-- *INF*: TO_CHAR(GET_DATE_PART(i_PolicyExpirationDate,'YYYY'))\n\tTO_CHAR(DATE_PART(i_PolicyExpirationDate, 'YYYY')) AS o_PolicyExpirationDateYear,\n\t-- *INF*: LPAD(TO_CHAR(GET_DATE_PART(i_PolicyExpirationDate,'MM')),2,'0')\n\tLPAD(TO_CHAR(DATE_PART(i_PolicyExpirationDate, 'MM')), 2, '0') AS o_PolicyExpirationDateMonth,\n\t-- *INF*: LPAD(TO_CHAR(GET_DATE_PART(i_PolicyExpirationDate,'DD')),2,'0')\n\tLPAD(TO_CHAR(DATE_PART(i_PolicyExpirationDate, 'DD')), 2, '0') AS o_PolicyExpirationDateDay,\n\t-- *INF*: TO_CHAR(i_AccountDate,'YYYYMM')\n\tTO_CHAR(i_AccountDate, 'YYYYMM') AS o_AccountDate,\n\t-- *INF*: TO_CHAR(i_TransactionDate,'YYYYMMDD')\n\tTO_CHAR(i_TransactionDate, 'YYYYMMDD') AS o_TransactionDate\n\tFROM AGG_IVANSDirectBillCommissionStatement\n),\ndbcs_AADBCS_RECORD AS (\n\tINSERT INTO dbcs_AADBCS_RECORD\n\t(AADBCS_RECORD_ID, AADBCS_INSUREDS_NAME, AADBCS_AGENCY_STATE, AADBCS_AGENCY_PAYCODE, AADBCS_AGENCY_NUMBER, AADBCS_POLICY_SYMBOL, AADBCS_POLICY_NUMBER, AADBCS_EXPIRATION_YYYY, AADBCS_EXPIRATION_MM, AADBCS_PREMIUM, AADBCS_COMMISSION, AADBCS_LOCAL_COMM_RATE, AADBCS_TRANSACTION_CODE, AADBCS_ACCOUNT_CCYYMM, AADBCS_CUSTOMER_NUMBER, AADBCS_POL_EFFECTIVE_YYYY, AADBCS_POL_EFFECTIVE_MM, AADBCS_POL_EFFECTIVE_DD, AADBCS_EXPIRATION_DAY, AADBCS_TRANSACTION_DATE, AADBCS_LOB_CD)\n\tSELECT \n\to_RecordID AS AADBCS_RECORD_ID, \n\to_InsuredName AS AADBCS_INSUREDS_NAME, \n\tAgencyState AS AADBCS_AGENCY_STATE, \n\tAgencyPayCode AS AADBCS_AGENCY_PAYCODE, \n\tAgencyNumber AS AADBCS_AGENCY_NUMBER, \n\tPolicySymbol AS AADBCS_POLICY_SYMBOL, \n\tPolicyNumber AS AADBCS_POLICY_NUMBER, \n\to_PolicyExpirationDateYear AS AADBCS_EXPIRATION_YYYY, \n\to_PolicyExpirationDateMonth AS AADBCS_EXPIRATION_MM, \n\tPremium AS AADBCS_PREMIUM, \n\tCommissionAmount AS AADBCS_COMMISSION, \n\tCommissionRate AS AADBCS_LOCAL_COMM_RATE, \n\tTransactionCode AS AADBCS_TRANSACTION_CODE, \n\to_AccountDate AS AADBCS_ACCOUNT_CCYYMM, \n\tCustomerNumber AS AADBCS_CUSTOMER_NUMBER, \n\to_PolicyEffectiveDateYear AS AADBCS_POL_EFFECTIVE_YYYY, \n\to_PolicyEffectiveDateMonth AS AADBCS_POL_EFFECTIVE_MM, \n\to_PolicyEffectiveDateDay AS AADBCS_POL_EFFECTIVE_DD, \n\to_PolicyExpirationDateDay AS AADBCS_EXPIRATION_DAY, \n\to_TransactionDate AS AADBCS_TRANSACTION_DATE, \n\tLineOfBusinessCode AS AADBCS_LOB_CD\n\tFROM EXP_TRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "RUNDATE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "RECORD_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "BillingDataServices/"
+        },
+        "annotations": []
+    }
+}

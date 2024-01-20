@@ -15,22 +15,17 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_EffectiveDate
+	IFF(
+	    i_EffectiveDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate
 	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ExpirationDate
+	IFF(
+	    i_ExpirationDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'),
+	    i_ExpirationDate
 	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ModifiedDate
+	IFF(
+	    i_ModifiedDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate
 	) AS o_ModifiedDate
 	FROM SQ_InsuranceSegmentPolicyOffering
 ),
@@ -40,20 +35,11 @@ EXP_NumericValues AS (
 	InsuranceSegmentId AS i_InsuranceSegmentId,
 	PolicyOfferingId AS i_PolicyOfferingId,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentPolicyOfferingId),-1,i_InsuranceSegmentPolicyOfferingId)
-	IFF(i_InsuranceSegmentPolicyOfferingId IS NULL,
-		- 1,
-		i_InsuranceSegmentPolicyOfferingId
-	) AS o_InsuranceSegmentPolicyOfferingId,
+	IFF(i_InsuranceSegmentPolicyOfferingId IS NULL, - 1, i_InsuranceSegmentPolicyOfferingId) AS o_InsuranceSegmentPolicyOfferingId,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentId),-1,i_InsuranceSegmentId)
-	IFF(i_InsuranceSegmentId IS NULL,
-		- 1,
-		i_InsuranceSegmentId
-	) AS o_InsuranceSegmentId,
+	IFF(i_InsuranceSegmentId IS NULL, - 1, i_InsuranceSegmentId) AS o_InsuranceSegmentId,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingId),-1,i_PolicyOfferingId)
-	IFF(i_PolicyOfferingId IS NULL,
-		- 1,
-		i_PolicyOfferingId
-	) AS o_PolicyOfferingId
+	IFF(i_PolicyOfferingId IS NULL, - 1, i_PolicyOfferingId) AS o_PolicyOfferingId
 	FROM SQ_InsuranceSegmentPolicyOffering
 ),
 EXP_StringValues AS (

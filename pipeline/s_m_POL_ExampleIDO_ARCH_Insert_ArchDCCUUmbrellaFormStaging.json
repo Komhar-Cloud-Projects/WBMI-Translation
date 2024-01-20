@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCUUmbrellaFormStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCUUmbrellaFormSta_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCUUmbrellaFormStaging AS (\n\tSELECT\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCU_LineId,\n\t\tCU_UmbrellaFormId,\n\t\tSessionId,\n\t\tId,\n\t\tBICoverageProvided,\n\t\tGarageBIAndPDNotApplicable,\n\t\tPDCoverageProvided,\n\t\tPersonalAdvertisingInjuryCoverageProvided\n\tFROM DCCUUmbrellaFormStaging1\n),\nEXP_Metadata AS (\n\tSELECT\n\tExtractDate,\n\tSourceSystemId,\n\tCU_LineId,\n\tCU_UmbrellaFormId,\n\tSessionId,\n\tId,\n\tBICoverageProvided,\n\tGarageBIAndPDNotApplicable,\n\tPDCoverageProvided,\n\tPersonalAdvertisingInjuryCoverageProvided,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t-- *INF*: decode(BICoverageProvided,'T',1,'F',0,NULL)\n\tdecode(\n\t    BICoverageProvided,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_BICoverageProvided,\n\t-- *INF*: decode(GarageBIAndPDNotApplicable,'T',1,'F',0,NULL)\n\tdecode(\n\t    GarageBIAndPDNotApplicable,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_GarageBIAndPDNotApplicable,\n\t-- *INF*: decode(PDCoverageProvided,'T',1,'F',NULL)\n\tdecode(\n\t    PDCoverageProvided,\n\t    'T', 1,\n\t    'F', NULL\n\t) AS o_PDCoverageProvided,\n\t-- *INF*: decode(PersonalAdvertisingInjuryCoverageProvided,'T',1,'F',NULL)\n\tdecode(\n\t    PersonalAdvertisingInjuryCoverageProvided,\n\t    'T', 1,\n\t    'F', NULL\n\t) AS o_PersonalAdvertisingInjuryCoverageProvided\n\tFROM SQ_DCCUUmbrellaFormStaging\n),\nArchDCCUUmbrellaFormStaging1 AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCUUmbrellaFormStaging\n\t(ExtractDate, SourceSystemId, AuditId, CU_LineId, CU_UmbrellaFormId, SessionId, Id, BICoverageProvided, GarageBIAndPDNotApplicable, PDCoverageProvided, PersonalAdvertisingInjuryCoverageProvided)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tCU_LINEID, \n\tCU_UMBRELLAFORMID, \n\tSESSIONID, \n\tID, \n\to_BICoverageProvided AS BICOVERAGEPROVIDED, \n\to_GarageBIAndPDNotApplicable AS GARAGEBIANDPDNOTAPPLICABLE, \n\to_PDCoverageProvided AS PDCOVERAGEPROVIDED, \n\to_PersonalAdvertisingInjuryCoverageProvided AS PERSONALADVERTISINGINJURYCOVERAGEPROVIDED\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

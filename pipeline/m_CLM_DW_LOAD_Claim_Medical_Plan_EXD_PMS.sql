@@ -57,36 +57,21 @@ EXP_Values AS (
 	cms_doc_cntl_num AS cms_doc_cntl_num1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(wbm_plan_ins_type)
 	-- 
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(wbm_plan_ins_type
-	) AS wbm_plan_ins_type1,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(wbm_plan_ins_type) AS wbm_plan_ins_type1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(state_venue)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(state_venue
-	) AS state_venue1,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(state_venue) AS state_venue1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(med_oblig_to_clmt)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(med_oblig_to_clmt
-	) AS med_oblig_to_clmt1,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(med_oblig_to_clmt) AS med_oblig_to_clmt1,
 	-- *INF*: IIF(ISNULL(orm_terminate_dt), TO_DATE('1/1/1800','MM/DD/YYYY'), orm_terminate_dt)
 	-- 
-	IFF(orm_terminate_dt IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		orm_terminate_dt
-	) AS orm_terminate_dt1,
+	IFF(orm_terminate_dt IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), orm_terminate_dt) AS orm_terminate_dt1,
 	-- *INF*: IIF(ISNULL(no_fault_ins_limit),0.00,no_fault_ins_limit)
-	IFF(no_fault_ins_limit IS NULL,
-		0.00,
-		no_fault_ins_limit
-	) AS no_fault_ins_limit1,
+	IFF(no_fault_ins_limit IS NULL, 0.00, no_fault_ins_limit) AS no_fault_ins_limit1,
 	-- *INF*: IIF(ISNULL(exhaust_limit_dt), TO_DATE('1/1/1800','MM/DD/YYYY'), exhaust_limit_dt)
 	-- 
-	IFF(exhaust_limit_dt IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		exhaust_limit_dt
-	) AS exhaust_limit_dt1,
+	IFF(exhaust_limit_dt IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), exhaust_limit_dt) AS exhaust_limit_dt1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(plan_type_deleted)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(plan_type_deleted
-	) AS plan_type_deleted1
+	UDF_DEFAULT_VALUE_FOR_STRINGS(plan_type_deleted) AS plan_type_deleted1
 	FROM SQ_clm_med_plan_type_stage
 	LEFT JOIN LKP_Claim_Medical_Ak_Id
 	ON LKP_Claim_Medical_Ak_Id.injured_party_id = SQ_clm_med_plan_type_stage.injured_party_id
@@ -136,32 +121,31 @@ EXP_Detect_Changes AS (
 	-- lkp_exhaust_lmt_date != exhaust_limit_dt1 OR
 	-- lkp_plan_type_deleted != plan_type_deleted1),
 	--  'UPDATE','NOCHANGE'))
-	IFF(lkp_claim_med_plan_ak_id IS NULL,
-		'NEW',
-		IFF(( lkp_state_venue != state_venue1 
-				OR lkp_med_obligation_to_claimant != med_oblig_to_clmt1 
-				OR lkp_orm_termination_date != orm_terminate_dt1 
-				OR lkp_no_fault_ins_lmt != no_fault_ins_limit1 
-				OR lkp_exhaust_lmt_date != exhaust_limit_dt1 
-				OR lkp_plan_type_deleted != plan_type_deleted1 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    lkp_claim_med_plan_ak_id IS NULL, 'NEW',
+	    IFF(
+	        (lkp_state_venue != state_venue1
+	        or lkp_med_obligation_to_claimant != med_oblig_to_clmt1
+	        or lkp_orm_termination_date !=
+	        orm_terminate_dt1
+	        or lkp_no_fault_ins_lmt != no_fault_ins_limit1
+	        or lkp_exhaust_lmt_date != exhaust_limit_dt1
+	        or lkp_plan_type_deleted != plan_type_deleted1),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_Changed_Flag,
 	1 AS Crrnt_Snpsht_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    v_Changed_Flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS Eff_To_Date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
@@ -211,10 +195,7 @@ EXP_Insert AS (
 	Modified_Date,
 	SEQ_claim_medical_plan.NEXTVAL,
 	-- *INF*: IIF(Changed_Flag='NEW', NEXTVAL, lkp_claim_med_plan_ak_id)
-	IFF(Changed_Flag = 'NEW',
-		NEXTVAL,
-		lkp_claim_med_plan_ak_id
-	) AS claim_med_plan_ak_id_out,
+	IFF(Changed_Flag = 'NEW', NEXTVAL, lkp_claim_med_plan_ak_id) AS claim_med_plan_ak_id_out,
 	claim_med_ak_id,
 	cms_doc_cntl_num1,
 	wbm_plan_ins_type1,
@@ -276,9 +257,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	claim_med_plan_ak_id = v_PREV_ROW_claim_med_plan_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		claim_med_plan_ak_id = v_PREV_ROW_claim_med_plan_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    claim_med_plan_ak_id = v_PREV_ROW_claim_med_plan_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

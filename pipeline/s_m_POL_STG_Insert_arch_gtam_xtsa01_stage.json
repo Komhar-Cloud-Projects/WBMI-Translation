@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_gtam_xtsa01_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_gtam_xtsa01_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_xtsa01_stage1 AS (\n\tSELECT\n\t\tgtam_xtsa01_stage_id,\n\t\ttable_fld,\n\t\tkey_len,\n\t\tfield_label,\n\t\tcode,\n\t\tdata_len,\n\t\tmajor_peril_translation,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_xtsa01_stage\n),\nLKP_arch_gtam_xtsa01_stage AS (\n\tSELECT\n\tarch_gtam_xtsa01_stage_id,\n\tmajor_peril_translation,\n\tfield_label,\n\tcode\n\tFROM (\n\t\tSELECT tl.arch_gtam_xtsa01_stage_id as arch_gtam_xtsa01_stage_id, \r\n\t\ttl.major_peril_translation as major_peril_translation,\r\n\t\t tl.field_label as field_label,\r\n\t\t  tl.code as code\r\n\t\tFROM arch_gtam_xtsa01_stage tl\r\n\t\twhere \ttl.arch_gtam_xtsa01_stage_id In\r\n\t\t\t(Select max(arch_gtam_xtsa01_stage_id) from arch_gtam_xtsa01_stage b\r\n\t\t\tgroup by b.field_label, b.code)\r\n\t\torder by tl.field_label, tl.code--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY field_label,code ORDER BY arch_gtam_xtsa01_stage_id) = 1\n),\nEXP_arch_xtsa01_stage AS (\n\tSELECT\n\tSQ_gtam_xtsa01_stage1.gtam_xtsa01_stage_id,\n\tSQ_gtam_xtsa01_stage1.table_fld,\n\tSQ_gtam_xtsa01_stage1.key_len,\n\tSQ_gtam_xtsa01_stage1.field_label,\n\tSQ_gtam_xtsa01_stage1.code,\n\tSQ_gtam_xtsa01_stage1.data_len,\n\tSQ_gtam_xtsa01_stage1.major_peril_translation,\n\tSQ_gtam_xtsa01_stage1.extract_date AS EXTRACT_DATE,\n\tSQ_gtam_xtsa01_stage1.as_of_date AS AS_OF_DATE,\n\tSQ_gtam_xtsa01_stage1.record_count AS RECORD_COUNT,\n\tSQ_gtam_xtsa01_stage1.source_system_id AS SOURCE_SYSTEM_ID,\n\tLKP_arch_gtam_xtsa01_stage.arch_gtam_xtsa01_stage_id AS LKP_arch_gtam_xtsa01_stage_id,\n\tLKP_arch_gtam_xtsa01_stage.major_peril_translation AS LKP_major_peril_translation,\n\t-- *INF*: iif(isnull(LKP_arch_gtam_xtsa01_stage_id),'NEW',\r\n\t--     iif((\r\n\t-- ltrim(rtrim(LKP_major_peril_translation )) <> ltrim(rtrim(major_peril_translation))), 'UPDATE', 'NOCHANGE'))\n\tIFF(\n\t    LKP_arch_gtam_xtsa01_stage_id IS NULL, 'NEW',\n\t    IFF(\n\t        (ltrim(rtrim(LKP_major_peril_translation)) <> ltrim(rtrim(major_peril_translation))),\n\t        'UPDATE',\n\t        'NOCHANGE'\n\t    )\n\t) AS v_Changed_Flag,\n\tv_Changed_Flag AS Changed_Flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID\n\tFROM SQ_gtam_xtsa01_stage1\n\tLEFT JOIN LKP_arch_gtam_xtsa01_stage\n\tON LKP_arch_gtam_xtsa01_stage.field_label = SQ_gtam_xtsa01_stage1.field_label AND LKP_arch_gtam_xtsa01_stage.code = SQ_gtam_xtsa01_stage1.code\n),\nFIL_Inserts AS (\n\tSELECT\n\tgtam_xtsa01_stage_id, \n\ttable_fld, \n\tkey_len, \n\tfield_label, \n\tcode, \n\tdata_len, \n\tmajor_peril_translation, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tChanged_Flag, \n\tAUDIT_ID\n\tFROM EXP_arch_xtsa01_stage\n\tWHERE Changed_Flag = 'NEW' or Changed_Flag = 'UPDATE'\n),\narch_gtam_xtsa01_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_gtam_xtsa01_stage\n\t(gtam_xtsa01_stage_id, table_fld, key_len, field_label, code, data_len, major_peril_translation, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tGTAM_XTSA01_STAGE_ID, \n\tTABLE_FLD, \n\tKEY_LEN, \n\tFIELD_LABEL, \n\tCODE, \n\tDATA_LEN, \n\tMAJOR_PERIL_TRANSLATION, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID\n\tFROM FIL_Inserts\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

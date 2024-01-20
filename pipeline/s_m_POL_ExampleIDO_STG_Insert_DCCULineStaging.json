@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCCULineStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCCULineStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_CU_Line AS (\n\tWITH cte_DCCULine(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.LineId, \r\n\tX.CU_LineId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.AutoOperatedOver300Miles, \r\n\tX.AutoSubjectToTimeConstraints, \r\n\tX.ClaimsMade, \r\n\tX.Description, \r\n\tX.ForeignSales, \r\n\tX.IncludeBusinessowners, \r\n\tX.IncludeCommercialAuto, \r\n\tX.IncludeEmployersLiability, \r\n\tX.IncludeGeneralLiability, \r\n\tX.InternetSalesPercent, \r\n\tX.LiquorSalesPercent, \r\n\tX.MountedMechanicalEquipment, \r\n\tX.NumberOfSwimmingPools, \r\n\tX.NumberOfYearsInBusiness, \r\n\tX.SpecifiedAdditionalCountries, \r\n\tX.SpecifiedExceptedCountries \r\n\tFROM\r\n\tDC_CU_Line X\r\n\tinner join\r\n\tcte_DCCULine Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tLineId,\n\tCU_LineId,\n\tSessionId,\n\tId,\n\tAutoOperatedOver300Miles,\n\tAutoSubjectToTimeConstraints,\n\tClaimsMade,\n\tDescription,\n\tForeignSales,\n\tIncludeBusinessowners,\n\tIncludeCommercialAuto,\n\tIncludeEmployersLiability,\n\tIncludeGeneralLiability,\n\tInternetSalesPercent,\n\tLiquorSalesPercent,\n\tMountedMechanicalEquipment,\n\tNumberOfSwimmingPools,\n\tNumberOfYearsInBusiness,\n\tSpecifiedAdditionalCountries,\n\tSpecifiedExceptedCountries,\n\t-- *INF*: DECODE(AutoOperatedOver300Miles, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    AutoOperatedOver300Miles,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AutoOperatedOver300Miles,\n\t-- *INF*: DECODE(AutoSubjectToTimeConstraints, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    AutoSubjectToTimeConstraints,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AutoSubjectToTimeConstraints,\n\t-- *INF*: DECODE(ClaimsMade, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    ClaimsMade,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ClaimsMade,\n\t-- *INF*: DECODE(ForeignSales, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    ForeignSales,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ForeignSales,\n\t-- *INF*: DECODE(IncludeBusinessowners, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    IncludeBusinessowners,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncludeBusinessowners,\n\t-- *INF*: DECODE(IncludeCommercialAuto, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    IncludeCommercialAuto,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncludeCommercialAuto,\n\t-- *INF*: DECODE(IncludeEmployersLiability, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    IncludeEmployersLiability,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncludeEmployersLiability,\n\t-- *INF*: DECODE(IncludeGeneralLiability, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    IncludeGeneralLiability,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncludeGeneralLiability,\n\t-- *INF*: DECODE(MountedMechanicalEquipment, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    MountedMechanicalEquipment,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_MountedMechanicalEquipment,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_DC_CU_Line\n),\nDCCULineStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCULineStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCULineStaging\n\t(ExtractDate, SourceSystemId, LineId, CU_LineId, SessionId, Id, AutoOperatedOver300Miles, AutoSubjectToTimeConstraints, ClaimsMade, Description, ForeignSales, IncludeBusinessowners, IncludeCommercialAuto, IncludeEmployersLiability, IncludeGeneralLiability, InternetSalesPercent, LiquorSalesPercent, MountedMechanicalEquipment, NumberOfSwimmingPools, NumberOfYearsInBusiness, SpecifiedAdditionalCountries, SpecifiedExceptedCountries)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tLINEID, \n\tCU_LINEID, \n\tSESSIONID, \n\tID, \n\to_AutoOperatedOver300Miles AS AUTOOPERATEDOVER300MILES, \n\to_AutoSubjectToTimeConstraints AS AUTOSUBJECTTOTIMECONSTRAINTS, \n\to_ClaimsMade AS CLAIMSMADE, \n\tDESCRIPTION, \n\to_ForeignSales AS FOREIGNSALES, \n\to_IncludeBusinessowners AS INCLUDEBUSINESSOWNERS, \n\to_IncludeCommercialAuto AS INCLUDECOMMERCIALAUTO, \n\to_IncludeEmployersLiability AS INCLUDEEMPLOYERSLIABILITY, \n\to_IncludeGeneralLiability AS INCLUDEGENERALLIABILITY, \n\tINTERNETSALESPERCENT, \n\tLIQUORSALESPERCENT, \n\to_MountedMechanicalEquipment AS MOUNTEDMECHANICALEQUIPMENT, \n\tNUMBEROFSWIMMINGPOOLS, \n\tNUMBEROFYEARSINBUSINESS, \n\tSPECIFIEDADDITIONALCOUNTRIES, \n\tSPECIFIEDEXCEPTEDCOUNTRIES\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchPifReins53Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchPifReins53Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_PifReins53Stage AS (\n\tSELECT\n\t\tPifreins53StageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tPifSymbol,\n\t\tPifPolicyNumber,\n\t\tPifModule,\n\t\tREINId,\n\t\tREINSSectionCode,\n\t\tREINSInsuranceLine,\n\t\tREINSLocationNumber,\n\t\tREINSSubLocationNumber,\n\t\tREINSRiskUnitGroup,\n\t\tREINSSeqRskUntGrp,\n\t\tREINSUnitLob,\n\t\tREINSRiskSequence,\n\t\tREINSRiskTypeInd,\n\t\tREINSLayer,\n\t\tREINSCompanyNo,\n\t\tREINSEffYear,\n\t\tREINSEffMonth,\n\t\tREINSEffDay,\n\t\tREINSPercentPremCeded,\n\t\tREINSPercentLossCeded,\n\t\tREINSPercentFacCommNosign,\n\t\tREINSExpYear,\n\t\tREINSExpMonth,\n\t\tREINSExpDay,\n\t\tREINSCessionNo,\n\t\tREINSType,\n\t\tREINSEntYear,\n\t\tREINSEntMonth,\n\t\tREINSEntDay,\n\t\tREINSBrokerNo,\n\t\tREINSExcessAmt,\n\t\tREINSOccurLimit,\n\t\tREINSAggregateLimit,\n\t\tREINSSpecialUse,\n\t\tREINSProportionalCode,\n\t\tREINSPmsFutureUse,\n\t\tREINSCustFutureUse,\n\t\tREINSYr2000CustUse,\n\t\tREINSDupKeySeqNum\n\tFROM PifReins53Stage\n),\nEXP_PifReins53Stage AS (\n\tSELECT\n\tPifreins53StageId,\n\tExtractDate,\n\tSourceSystemid,\n\tPifSymbol,\n\tPifPolicyNumber,\n\tPifModule,\n\tREINId,\n\tREINSSectionCode,\n\tREINSInsuranceLine,\n\tREINSLocationNumber,\n\tREINSSubLocationNumber,\n\tREINSRiskUnitGroup,\n\tREINSSeqRskUntGrp,\n\tREINSUnitLob,\n\tREINSRiskSequence,\n\tREINSRiskTypeInd,\n\tREINSLayer,\n\tREINSCompanyNo,\n\tREINSEffYear,\n\tREINSEffMonth,\n\tREINSEffDay,\n\tREINSPercentPremCeded,\n\tREINSPercentLossCeded,\n\tREINSPercentFacCommNosign,\n\tREINSExpYear,\n\tREINSExpMonth,\n\tREINSExpDay,\n\tREINSCessionNo,\n\tREINSType,\n\tREINSEntYear,\n\tREINSEntMonth,\n\tREINSEntDay,\n\tREINSBrokerNo,\n\tREINSExcessAmt,\n\tREINSOccurLimit,\n\tREINSAggregateLimit,\n\tREINSSpecialUse,\n\tREINSProportionalCode,\n\tREINSPmsFutureUse,\n\tREINSCustFutureUse,\n\tREINSYr2000CustUse,\n\tREINSDupKeySeqNum,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_audit_id\n\tFROM SQ_PifReins53Stage\n),\nArchPifReins53Stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchPifReins53Stage\n\t(ExtractDate, SourceSystemid, AuditId, PifSymbol, PifPolicyNumber, PifModule, REINId, REINSSectionCode, REINSInsuranceLine, REINSLocationNumber, REINSSubLocationNumber, REINSRiskUnitGroup, REINSSeqRskUntGrp, REINSUnitLob, REINSRiskSequence, REINSRiskTypeInd, REINSLayer, REINSCompanyNo, REINSEffYear, REINSEffMonth, REINSEffDay, REINSPercentPremCeded, REINSPercentLossCeded, REINSPercentFacCommNosign, REINSExpYear, REINSExpMonth, REINSExpDay, REINSCessionNo, REINSType, REINSEntYear, REINSEntMonth, REINSEntDay, REINSBrokerNo, REINSExcessAmt, REINSOccurLimit, REINSAggregateLimit, REINSSpecialUse, REINSProportionalCode, REINSPmsFutureUse, REINSCustFutureUse, REINSYr2000CustUse, REINSDupKeySeqNum)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_audit_id AS AUDITID, \n\tPIFSYMBOL, \n\tPIFPOLICYNUMBER, \n\tPIFMODULE, \n\tREINID, \n\tREINSSECTIONCODE, \n\tREINSINSURANCELINE, \n\tREINSLOCATIONNUMBER, \n\tREINSSUBLOCATIONNUMBER, \n\tREINSRISKUNITGROUP, \n\tREINSSEQRSKUNTGRP, \n\tREINSUNITLOB, \n\tREINSRISKSEQUENCE, \n\tREINSRISKTYPEIND, \n\tREINSLAYER, \n\tREINSCOMPANYNO, \n\tREINSEFFYEAR, \n\tREINSEFFMONTH, \n\tREINSEFFDAY, \n\tREINSPERCENTPREMCEDED, \n\tREINSPERCENTLOSSCEDED, \n\tREINSPERCENTFACCOMMNOSIGN, \n\tREINSEXPYEAR, \n\tREINSEXPMONTH, \n\tREINSEXPDAY, \n\tREINSCESSIONNO, \n\tREINSTYPE, \n\tREINSENTYEAR, \n\tREINSENTMONTH, \n\tREINSENTDAY, \n\tREINSBROKERNO, \n\tREINSEXCESSAMT, \n\tREINSOCCURLIMIT, \n\tREINSAGGREGATELIMIT, \n\tREINSSPECIALUSE, \n\tREINSPROPORTIONALCODE, \n\tREINSPMSFUTUREUSE, \n\tREINSCUSTFUTUREUSE, \n\tREINSYR2000CUSTUSE, \n\tREINSDUPKEYSEQNUM\n\tFROM EXP_PifReins53Stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

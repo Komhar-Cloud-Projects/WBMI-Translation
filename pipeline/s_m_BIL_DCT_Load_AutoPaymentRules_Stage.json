@@ -1,0 +1,38 @@
+{
+    "name": "s_m_BIL_DCT_Load_AutoPaymentRules_Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_BIL_DCT_Load_AutoPaymentRules_Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_FIS_APR_Update AS (\n\n-- TODO Manual --\n\n),\nFILTRANS AS (\n\tSELECT\n\tFrequency_code, \n\tEnd_date, \n\tBiller_id, \n\tCatagory, \n\tUnit_code, \n\tService_code, \n\tRecord_type, \n\tAccount_Num, \n\tAcct_Status, \n\tStatus_timestamp, \n\tCust_type, \n\tRule_Status, \n\tSetup_date, \n\tRule_Frequency, \n\tRule_Frequency_ID, \n\tMax_Sched_Amount, \n\tFirst_Occ, \n\tLast_Occ, \n\tUser_Grp, \n\tLogin_ID, \n\tPay_Method, \n\tChannel_of_Creation\n\tFROM SQ_FIS_APR_Update\n\tWHERE IS_NUMBER(SUBSTR(Account_Num,4,2))\n),\nEXPTRANS AS (\n\tSELECT\n\tFrequency_code,\n\tEnd_date,\n\tBiller_id,\n\tCatagory,\n\tUnit_code,\n\tService_code,\n\tRecord_type,\n\tAccount_Num,\n\tAcct_Status,\n\tStatus_timestamp,\n\tCust_type,\n\tRule_Status,\n\tSetup_date,\n\tRule_Frequency,\n\tRule_Frequency_ID,\n\tMax_Sched_Amount,\n\tFirst_Occ,\n\tLast_Occ,\n\tUser_Grp,\n\tLogin_ID,\n\tPay_Method,\n\tChannel_of_Creation,\n\t'N' AS out_ProcessStatusCode,\n\t-- *INF*: IIF(Unit_code='3','PL','CL')\n\tIFF(Unit_code = '3', 'PL', 'CL') AS out_Unit_code,\n\t-- *INF*: IIF(Service_code = '9','PLPP','CLPP')\n\tIFF(Service_code = '9', 'PLPP', 'CLPP') AS out_Service_code,\n\t-- *INF*: TO_INTEGER((SUBSTR (End_date, 0, 4)))\n\tCAST((SUBSTR(End_date, 0, 4)) AS INTEGER) AS out_end_ccyy,\n\t-- *INF*: TO_INTEGER((SUBSTR (End_date, 5, 2)))\n\tCAST((SUBSTR(End_date, 5, 2)) AS INTEGER) AS out_end_mm,\n\t-- *INF*: TO_INTEGER((SUBSTR (End_date,7,2)))\n\tCAST((SUBSTR(End_date, 7, 2)) AS INTEGER) AS out_end_dd,\n\t-- *INF*: MAKE_DATE_TIME(out_end_ccyy, out_end_mm, out_end_dd)\r\n\t-- \r\n\t-- \n\tTIMESTAMP_FROM_PARTS(out_end_ccyy,out_end_mm,out_end_dd,00,00,00) AS out_End_Date,\n\t-- *INF*: TO_INTEGER((SUBSTR (Status_timestamp, 0, 4)))\n\tCAST((SUBSTR(Status_timestamp, 0, 4)) AS INTEGER) AS out_ccyy,\n\t-- *INF*: TO_INTEGER((SUBSTR (Status_timestamp,5, 2)))\n\tCAST((SUBSTR(Status_timestamp, 5, 2)) AS INTEGER) AS out_mm,\n\t-- *INF*: TO_INTEGER((SUBSTR (Status_timestamp, 7, 2)))\n\tCAST((SUBSTR(Status_timestamp, 7, 2)) AS INTEGER) AS out_dd,\n\t-- *INF*: TO_INTEGER((SUBSTR (Status_timestamp, 10, 2)))\n\tCAST((SUBSTR(Status_timestamp, 10, 2)) AS INTEGER) AS out_hh,\n\t-- *INF*: TO_INTEGER((SUBSTR(Status_timestamp, 12, 2)))\n\tCAST((SUBSTR(Status_timestamp, 12, 2)) AS INTEGER) AS out_min,\n\t-- *INF*: TO_INTEGER((SUBSTR (Status_timestamp, 14, 2)))\n\tCAST((SUBSTR(Status_timestamp, 14, 2)) AS INTEGER) AS out_sec,\n\t'0' AS out_nano,\n\t-- *INF*: MAKE_DATE_TIME(out_ccyy, out_mm, out_dd, out_hh, out_min, out_sec)\n\tTIMESTAMP_FROM_PARTS(out_ccyy,out_mm,out_dd,out_hh,out_min,out_sec) AS out_Status_Timestamp,\n\t-- *INF*: TO_INTEGER((SUBSTR (Setup_date, 0, 4)))\n\tCAST((SUBSTR(Setup_date, 0, 4)) AS INTEGER) AS out_set_ccyy,\n\t-- *INF*: TO_INTEGER((SUBSTR (Setup_date, 5, 2)))\n\tCAST((SUBSTR(Setup_date, 5, 2)) AS INTEGER) AS out_set_mm,\n\t-- *INF*: TO_INTEGER((SUBSTR (Setup_date,7, 2)))\n\tCAST((SUBSTR(Setup_date, 7, 2)) AS INTEGER) AS out_set_dd,\n\t-- *INF*: TO_INTEGER((SUBSTR (Setup_date, 10, 2))) \n\tCAST((SUBSTR(Setup_date, 10, 2)) AS INTEGER) AS out_set_hh,\n\t-- *INF*: TO_INTEGER((SUBSTR (Setup_date, 12, 2)))\n\tCAST((SUBSTR(Setup_date, 12, 2)) AS INTEGER) AS out_set_min,\n\t-- *INF*: TO_INTEGER((SUBSTR (Setup_date, 14, 2)))\n\tCAST((SUBSTR(Setup_date, 14, 2)) AS INTEGER) AS out_set_sec,\n\t'0' AS out_set_nano,\n\t-- *INF*: MAKE_DATE_TIME(out_set_ccyy, out_set_mm, out_set_dd, out_set_hh, out_set_min, out_set_sec)\n\tTIMESTAMP_FROM_PARTS(out_set_ccyy,out_set_mm,out_set_dd,out_set_hh,out_set_min,out_set_sec) AS out_Set_Date\n\tFROM FILTRANS\n),\nWB_BIL_AutoPaymentRulesStage AS (\n\tINSERT INTO WB_BIL_AutoPaymentRulesStage\n\t(FrequencyCode, EndDate, BillerId, Catagory, UnitCode, ServiceCode, RecordType, AccountNum, AcctStatus, StatusTimeStamp, CustType, RuleStatus, SetupDate, RuleFrequency, RuleFrequencyId, MaxSchedAm, FirstOcc, LastOcc, UserGrp, LoginId, PayMethod, ChannelOfCreation, ProcessStatusCode)\n\tSELECT \n\tFrequency_code AS FREQUENCYCODE, \n\tout_End_Date AS ENDDATE, \n\tBiller_id AS BILLERID, \n\tCATAGORY, \n\tout_Unit_code AS UNITCODE, \n\tout_Service_code AS SERVICECODE, \n\tRecord_type AS RECORDTYPE, \n\tAccount_Num AS ACCOUNTNUM, \n\tAcct_Status AS ACCTSTATUS, \n\tout_Status_Timestamp AS STATUSTIMESTAMP, \n\tCust_type AS CUSTTYPE, \n\tRule_Status AS RULESTATUS, \n\tout_Set_Date AS SETUPDATE, \n\tRule_Frequency AS RULEFREQUENCY, \n\tRule_Frequency_ID AS RULEFREQUENCYID, \n\tMax_Sched_Amount AS MAXSCHEDAM, \n\tFirst_Occ AS FIRSTOCC, \n\tLast_Occ AS LASTOCC, \n\tUser_Grp AS USERGRP, \n\tLogin_ID AS LOGINID, \n\tPay_Method AS PAYMETHOD, \n\tChannel_of_Creation AS CHANNELOFCREATION, \n\tout_ProcessStatusCode AS PROCESSSTATUSCODE\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "BillingDataServices/"
+        },
+        "annotations": []
+    }
+}

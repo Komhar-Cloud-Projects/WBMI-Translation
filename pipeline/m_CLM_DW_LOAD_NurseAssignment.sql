@@ -22,52 +22,30 @@ EXP_Src_Values AS (
 	SELECT
 	nurse_assignment_id,
 	-- *INF*: iif(isnull(ltrim(rtrim(nurse_assignment_id))),-1,nurse_assignment_id)
-	IFF(ltrim(rtrim(nurse_assignment_id
-			)
-		) IS NULL,
-		- 1,
-		nurse_assignment_id
-	) AS o_nurse_assignment_id,
+	IFF(ltrim(rtrim(nurse_assignment_id)) IS NULL, - 1, nurse_assignment_id) AS o_nurse_assignment_id,
 	clmt_nurse_manage_id,
 	-- *INF*: iif(isnull(ltrim(rtrim(clmt_nurse_manage_id))),-1,clmt_nurse_manage_id)
-	IFF(ltrim(rtrim(clmt_nurse_manage_id
-			)
-		) IS NULL,
-		- 1,
-		clmt_nurse_manage_id
-	) AS o_clmt_nurse_manage_id,
+	IFF(ltrim(rtrim(clmt_nurse_manage_id)) IS NULL, - 1, clmt_nurse_manage_id) AS o_clmt_nurse_manage_id,
 	assigned_nurse_id,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(assigned_nurse_id),'N/A',
 	-- IS_SPACES(assigned_nurse_id),'N/A',
 	-- LENGTH(assigned_nurse_id)=0,'N/A',
 	-- LTRIM(RTRIM(assigned_nurse_id)))
-	DECODE(TRUE,
-		assigned_nurse_id IS NULL, 'N/A',
-		LENGTH(assigned_nurse_id)>0 AND TRIM(assigned_nurse_id)='', 'N/A',
-		LENGTH(assigned_nurse_id
-		) = 0, 'N/A',
-		LTRIM(RTRIM(assigned_nurse_id
-			)
-		)
+	DECODE(
+	    TRUE,
+	    assigned_nurse_id IS NULL, 'N/A',
+	    LENGTH(assigned_nurse_id)>0 AND TRIM(assigned_nurse_id)='', 'N/A',
+	    LENGTH(assigned_nurse_id) = 0, 'N/A',
+	    LTRIM(RTRIM(assigned_nurse_id))
 	) AS o_assigned_nurse_id,
 	open_date,
 	-- *INF*: iif(isnull(ltrim(rtrim(open_date))),to_date('01/01/1800','MM/DD/YYYY'),open_date)
-	IFF(ltrim(rtrim(open_date
-			)
-		) IS NULL,
-		to_date('01/01/1800', 'MM/DD/YYYY'
-		),
-		open_date
-	) AS o_open_date,
+	IFF(ltrim(rtrim(open_date)) IS NULL, TO_TIMESTAMP('01/01/1800', 'MM/DD/YYYY'), open_date) AS o_open_date,
 	closed_date,
 	-- *INF*: iif(isnull(ltrim(rtrim(closed_date))),to_date('12/31/2100','MM/DD/YYYY'),closed_date)
-	IFF(ltrim(rtrim(closed_date
-			)
-		) IS NULL,
-		to_date('12/31/2100', 'MM/DD/YYYY'
-		),
-		closed_date
+	IFF(
+	    ltrim(rtrim(closed_date)) IS NULL, TO_TIMESTAMP('12/31/2100', 'MM/DD/YYYY'), closed_date
 	) AS o_closed_date,
 	assignment_comment,
 	-- *INF*: DECODE(TRUE,
@@ -75,31 +53,19 @@ EXP_Src_Values AS (
 	-- IS_SPACES(assignment_comment),'N/A',
 	-- LENGTH(assignment_comment)=0,'N/A',
 	-- LTRIM(RTRIM(assignment_comment)))
-	DECODE(TRUE,
-		assignment_comment IS NULL, 'N/A',
-		LENGTH(assignment_comment)>0 AND TRIM(assignment_comment)='', 'N/A',
-		LENGTH(assignment_comment
-		) = 0, 'N/A',
-		LTRIM(RTRIM(assignment_comment
-			)
-		)
+	DECODE(
+	    TRUE,
+	    assignment_comment IS NULL, 'N/A',
+	    LENGTH(assignment_comment)>0 AND TRIM(assignment_comment)='', 'N/A',
+	    LENGTH(assignment_comment) = 0, 'N/A',
+	    LTRIM(RTRIM(assignment_comment))
 	) AS o_assignment_comment,
 	work_time_saved_weeks,
 	-- *INF*: iif(isnull(ltrim(rtrim(work_time_saved_weeks))),0,work_time_saved_weeks)
-	IFF(ltrim(rtrim(work_time_saved_weeks
-			)
-		) IS NULL,
-		0,
-		work_time_saved_weeks
-	) AS o_work_time_saved_weeks,
+	IFF(ltrim(rtrim(work_time_saved_weeks)) IS NULL, 0, work_time_saved_weeks) AS o_work_time_saved_weeks,
 	work_time_saved_days,
 	-- *INF*: iif(isnull(ltrim(rtrim(work_time_saved_days))),0,work_time_saved_days)
-	IFF(ltrim(rtrim(work_time_saved_days
-			)
-		) IS NULL,
-		0,
-		work_time_saved_days
-	) AS o_work_time_saved_days
+	IFF(ltrim(rtrim(work_time_saved_days)) IS NULL, 0, work_time_saved_days) AS o_work_time_saved_days
 	FROM SQ_clmt_nurse_assignment_stage
 ),
 LKP_NurseCase AS (
@@ -140,16 +106,10 @@ EXP_Lkp_Default AS (
 	SELECT
 	LKP_claim_party.claim_party_ak_id,
 	-- *INF*: iif(isnull(claim_party_ak_id),-1,claim_party_ak_id)
-	IFF(claim_party_ak_id IS NULL,
-		- 1,
-		claim_party_ak_id
-	) AS o_claim_party_ak_id,
+	IFF(claim_party_ak_id IS NULL, - 1, claim_party_ak_id) AS o_claim_party_ak_id,
 	LKP_NurseCase.NurseCaseAkId,
 	-- *INF*: iif(isnull(NurseCaseAkId),-1,NurseCaseAkId)
-	IFF(NurseCaseAkId IS NULL,
-		- 1,
-		NurseCaseAkId
-	) AS o_NurseCaseAkId
+	IFF(NurseCaseAkId IS NULL, - 1, NurseCaseAkId) AS o_NurseCaseAkId
 	FROM 
 	LEFT JOIN LKP_NurseCase
 	ON LKP_NurseCase.clmt_nurse_manage_id = EXP_Src_Values.o_clmt_nurse_manage_id
@@ -231,65 +191,32 @@ EXP_TargetLkp_Detect_Changes AS (
 	--   'UPDATE', 'NOCHANGE')
 	-- 
 	--    )
-	IFF(Lkp_NurseAssignmentId IS NULL,
-		'NEW',
-		IFF(ltrim(rtrim(Lkp_NurseCaseAkId
-				)
-			) != ltrim(rtrim(NurseCaseAkId
-				)
-			) 
-			OR ltrim(rtrim(Lkp_claim_party_ak_id
-				)
-			) != ltrim(rtrim(claim_party_ak_id
-				)
-			) 
-			OR ltrim(rtrim(Lkp_nurse_assignment_id
-				)
-			) != ltrim(rtrim(nurse_assignment_id
-				)
-			) 
-			OR ltrim(rtrim(Lkp_OpenDate
-				)
-			) != ltrim(rtrim(OpenDate
-				)
-			) 
-			OR ltrim(rtrim(Lkp_ClosedDate
-				)
-			) != ltrim(rtrim(ClosedDate
-				)
-			) 
-			OR ltrim(rtrim(Lkp_Comment
-				)
-			) != ltrim(rtrim(Comment
-				)
-			) 
-			OR ltrim(rtrim(Lkp_TimeSavedWeeks
-				)
-			) != ltrim(rtrim(TimeSavedWeeks
-				)
-			) 
-			OR ltrim(rtrim(Lkp_TimeSavedDays
-				)
-			) != ltrim(rtrim(TimeSavedDays
-				)
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    Lkp_NurseAssignmentId IS NULL, 'NEW',
+	    IFF(
+	        ltrim(rtrim(Lkp_NurseCaseAkId)) != ltrim(rtrim(NurseCaseAkId))
+	        or ltrim(rtrim(Lkp_claim_party_ak_id)) != ltrim(rtrim(claim_party_ak_id))
+	        or ltrim(rtrim(Lkp_nurse_assignment_id)) != ltrim(rtrim(nurse_assignment_id))
+	        or ltrim(rtrim(Lkp_OpenDate)) != ltrim(rtrim(OpenDate))
+	        or ltrim(rtrim(Lkp_ClosedDate)) != ltrim(rtrim(ClosedDate))
+	        or ltrim(rtrim(Lkp_Comment)) != ltrim(rtrim(Comment))
+	        or ltrim(rtrim(Lkp_TimeSavedWeeks)) != ltrim(rtrim(TimeSavedWeeks))
+	        or ltrim(rtrim(Lkp_TimeSavedDays)) != ltrim(rtrim(TimeSavedDays)),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangedFlag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
 	-- *INF*: iif(v_ChangedFlag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_ChangedFlag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_ChangedFlag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
@@ -352,10 +279,7 @@ EXP_AKid_Insert_Target AS (
 	o_TimeSavedWeeks,
 	o_TimeSavedDays,
 	-- *INF*: iif(ChangedFlag = 'NEW', NEXTVAL, Lkp_NurseAssignmentAkId)
-	IFF(ChangedFlag = 'NEW',
-		NEXTVAL,
-		Lkp_NurseAssignmentAkId
-	) AS NurseAssignmentAkId,
+	IFF(ChangedFlag = 'NEW', NEXTVAL, Lkp_NurseAssignmentAkId) AS NurseAssignmentAkId,
 	Lkp_NurseAssignmentAkId,
 	SEQ_NurseAssignment.NEXTVAL
 	FROM FIL_Lkp_Records
@@ -424,9 +348,10 @@ EXP_Lag_ExpirationDate AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	NurseAssignmentAkId= v_PREV_ROW_NurseAssignmentAkId, ADD_TO_DATE(v_PREV_ROW_EffectiveDate,'SS',-1),
 	-- 	orig_ExpirationDate)
-	DECODE(TRUE,
-		NurseAssignmentAkId = v_PREV_ROW_NurseAssignmentAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
-		orig_ExpirationDate
+	DECODE(
+	    TRUE,
+	    NurseAssignmentAkId = v_PREV_ROW_NurseAssignmentAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
+	    orig_ExpirationDate
 	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	SYSDATE AS ModifiedDate,

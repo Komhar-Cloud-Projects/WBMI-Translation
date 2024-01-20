@@ -26,12 +26,7 @@ EXP_Src_Values AS (
 	ClmtNurseManageStageId,
 	clmt_nurse_manage_id,
 	-- *INF*: iif(isnull(ltrim(rtrim(clmt_nurse_manage_id))), -1, clmt_nurse_manage_id)
-	IFF(ltrim(rtrim(clmt_nurse_manage_id
-			)
-		) IS NULL,
-		- 1,
-		clmt_nurse_manage_id
-	) AS o_clmt_nurse_manage_id,
+	IFF(ltrim(rtrim(clmt_nurse_manage_id)) IS NULL, - 1, clmt_nurse_manage_id) AS o_clmt_nurse_manage_id,
 	tch_claim_nbr,
 	tch_client_id,
 	pms_policy_sym,
@@ -41,26 +36,20 @@ EXP_Src_Values AS (
 	pms_loss_occurence,
 	pms_loss_claimant,
 	-- *INF*: to_char(pms_date_of_loss,'MMDDYYYY')
-	to_char(pms_date_of_loss, 'MMDDYYYY'
-	) AS v_pms_date_of_loss,
+	to_char(pms_date_of_loss, 'MMDDYYYY') AS v_pms_date_of_loss,
 	-- *INF*: IIF(length(tch_claim_nbr)>0 ,ltrim(rtrim(tch_claim_nbr)),
 	-- 
 	-- IIF(length(pms_policy_sym)>0,
 	-- ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss ||  pms_loss_occurence)),
 	-- 
 	-- 'N/A'))
-	IFF(length(tch_claim_nbr
-		) > 0,
-		ltrim(rtrim(tch_claim_nbr
-			)
-		),
-		IFF(length(pms_policy_sym
-			) > 0,
-			ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence
-				)
-			),
-			'N/A'
-		)
+	IFF(
+	    length(tch_claim_nbr) > 0, ltrim(rtrim(tch_claim_nbr)),
+	    IFF(
+	        length(pms_policy_sym) > 0,
+	        ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence)),
+	        'N/A'
+	    )
 	) AS o_claim_nbr,
 	-- *INF*: IIF(length(tch_claim_nbr)>0,ltrim(rtrim(tch_client_id)),
 	-- 
@@ -68,28 +57,18 @@ EXP_Src_Values AS (
 	-- ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss ||  pms_loss_occurence || pms_loss_claimant || 'CMT')),
 	-- 
 	-- 'N/A'))
-	IFF(length(tch_claim_nbr
-		) > 0,
-		ltrim(rtrim(tch_client_id
-			)
-		),
-		IFF(length(pms_policy_sym
-			) > 0,
-			ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence || pms_loss_claimant || 'CMT'
-				)
-			),
-			'N/A'
-		)
+	IFF(
+	    length(tch_claim_nbr) > 0, ltrim(rtrim(tch_client_id)),
+	    IFF(
+	        length(pms_policy_sym) > 0,
+	        ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence || pms_loss_claimant || 'CMT')),
+	        'N/A'
+	    )
 	) AS o_client_id,
 	source_system_id,
 	estimated_savings_amount,
 	-- *INF*: IIF(isnull(ltrim(rtrim(estimated_savings_amount))),0,estimated_savings_amount)
-	IFF(ltrim(rtrim(estimated_savings_amount
-			)
-		) IS NULL,
-		0,
-		estimated_savings_amount
-	) AS o_estimated_savings_amount
+	IFF(ltrim(rtrim(estimated_savings_amount)) IS NULL, 0, estimated_savings_amount) AS o_estimated_savings_amount
 	FROM SQ_clmt_nurse_manage_stage
 ),
 LKP_claim_party_occurrence AS (
@@ -127,10 +106,7 @@ EXP_Lkp_Default AS (
 	SELECT
 	claim_party_occurrence_ak_id,
 	-- *INF*: iif(isnull(claim_party_occurrence_ak_id), -1, claim_party_occurrence_ak_id)
-	IFF(claim_party_occurrence_ak_id IS NULL,
-		- 1,
-		claim_party_occurrence_ak_id
-	) AS o_claim_party_occurence_ak_id
+	IFF(claim_party_occurrence_ak_id IS NULL, - 1, claim_party_occurrence_ak_id) AS o_claim_party_occurence_ak_id
 	FROM LKP_claim_party_occurrence
 ),
 LKP_NurseCase AS (
@@ -182,38 +158,25 @@ EXP_TargetLkp_Detect_Changes AS (
 	--         
 	--         'UPDATE', 'NOCHANGE')
 	--    )
-	IFF(Lkp_NurseCaseId IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(Lkp_claim_party_occurrence_ak_id
-				)
-			) != LTRIM(RTRIM(claim_party_occurrence_ak_id
-				)
-			) 
-			OR LTRIM(RTRIM(Lkp_clmt_nurse_manage_id
-				)
-			) != LTRIM(RTRIM(clmt_nurse_manage_id
-				)
-			) 
-			OR LTRIM(RTRIM(Lkp_EstimatedSavingsAmount
-				)
-			) != LTRIM(RTRIM(EstimatedSavingsAmount
-				)
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    Lkp_NurseCaseId IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(Lkp_claim_party_occurrence_ak_id)) != LTRIM(RTRIM(claim_party_occurrence_ak_id))
+	        or LTRIM(RTRIM(Lkp_clmt_nurse_manage_id)) != LTRIM(RTRIM(clmt_nurse_manage_id))
+	        or LTRIM(RTRIM(Lkp_EstimatedSavingsAmount)) != LTRIM(RTRIM(EstimatedSavingsAmount)),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangedFlag,
 	-- *INF*: iif(v_ChangedFlag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_ChangedFlag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_ChangedFlag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	EXP_Lkp_Default.o_claim_party_occurence_ak_id AS claim_party_occurrence_ak_id,
@@ -254,10 +217,7 @@ EXP_AKid_Insert_Target AS (
 	SELECT
 	ChangedFlag,
 	-- *INF*: IIF(ChangedFlag='NEW', NEXTVAL, Lkp_NurseCaseAkId)
-	IFF(ChangedFlag = 'NEW',
-		NEXTVAL,
-		Lkp_NurseCaseAkId
-	) AS NurseCaseAkId,
+	IFF(ChangedFlag = 'NEW', NEXTVAL, Lkp_NurseCaseAkId) AS NurseCaseAkId,
 	EffectiveDate,
 	ExpirationDate,
 	CreatedDate,
@@ -331,9 +291,10 @@ EXP_Lag_ExpirationDate AS (
 	-- *INF*: DECODE(TRUE, 
 	-- NurseCaseAkId= v_PREV_ROW_NurseCaseAkId, ADD_TO_DATE(v_PREV_ROW_EffectiveDate,'SS',-1),
 	-- 	orig_ExpirationDate)
-	DECODE(TRUE,
-		NurseCaseAkId = v_PREV_ROW_NurseCaseAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
-		orig_ExpirationDate
+	DECODE(
+	    TRUE,
+	    NurseCaseAkId = v_PREV_ROW_NurseCaseAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
+	    orig_ExpirationDate
 	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	EffectiveDate AS v_PREV_ROW_EffectiveDate,

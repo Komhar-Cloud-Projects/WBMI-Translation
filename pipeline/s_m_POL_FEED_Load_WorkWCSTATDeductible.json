@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_FEED_Load_WorkWCSTATDeductible",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Load_WorkWCSTATDeductible",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_STATDeductible AS (\n\tSelect \r\n\tdistinct DT.HistoryID,\r\n\tDS.Purpose,\r\n\tDS.SessionId,\r\n\tC.CoverageId,\r\n\tDWS.State,\r\n\tC.Type CoverageType,\r\n\tD.Type DeductibleType,\r\n\tD.Value DeductibleValue,\r\n\tS.Type StatCodeType,\r\n\tS.Value StatCodeValue\r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Policy DP with(nolock)\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Line DL with(nolock)\r\n\ton DP.SessionId=DL.SessionId\r\n\tand DP.PolicyId=DL.PolicyId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session DS with(nolock)\r\n\ton DP.SessionId=DS.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction DT with(nolock)\r\n\ton DS.SessionId=DT.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Coverage C with(nolock)\r\n\ton DP.SessionId=C.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Deductible D with(nolock)\r\n\ton C.SessionId=D.SessionId\r\n\tand C.CoverageId=D.ObjectId\r\n\tand D.ObjectName='DC_Coverage'\r\n\tinner join DC_WC_StateTerm St\r\n\ton ST.SessionId=C.SessionId and C.ObjectID=St.WC_StateTermId and C.ObjectName='DC_WC_StateTerm'\r\n\tinner join DC_StatCode S\r\n\ton S.SessionId=C.SessionId and S.ObjectName='DC_Coverage' and S.ObjectId=C.CoverageId\r\n\tinner join DC_WC_State DWS\r\n\ton DWS.SessionId=S.SessionId and DWS.WC_StateId=St.WC_StateId\r\n\tand DL.Type='WorkersCompensation'\r\n\tand DS.CreateDateTime between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}'\r\n\tand DT.State='Committed'\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\r\n\torder by 1\n),\nEXP_SRC_DataCollect AS (\n\tSELECT\n\tHistoryID,\n\tPurpose,\n\tSessionId,\n\tCoverageId,\n\tState,\n\tCoverageType,\n\tDeductibleType,\n\tDeductibleValue,\n\tStatCodeType,\n\tStatCodeValue\n\tFROM SQ_STATDeductible\n),\nLKP_LatestSession AS (\n\tSELECT\n\tSessionId,\n\tPurpose,\n\tHistoryID\n\tFROM (\n\t\tSelect distinct DT.HistoryID AS HistoryID,\r\n\t\tDS.Purpose AS Purpose,\r\n\t\tMax(DS.Sessionid) AS Sessionid\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction DT with(nolock)\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session DS with(nolock)\r\n\t\ton DT.Sessionid=DS.Sessionid\r\n\t\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Line DL with(nolock)\r\n\t\ton DT.Sessionid=DL.Sessionid\r\n\t\twhere DL.Type='WorkersCompensation'\r\n\t\tand DS.Purpose='Onset'\r\n\t\tand DT.State='Committed'\r\n\t\tand DS.CreateDateTime between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}'\r\n\t\tgroup by DT.HistoryID,DS.Purpose\r\n\t\t--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY SessionId,Purpose,HistoryID ORDER BY SessionId) = 1\n),\nLKP_WorkWCTrackHistory AS (\n\tSELECT\n\tWCTrackHistoryID,\n\tAuditid,\n\tHistoryID,\n\tPurpose\n\tFROM (\n\t\tSELECT \r\n\t\tWorkWCTrackHistory.WCTrackHistoryID as WCTrackHistoryID, \r\n\t\tWorkWCTrackHistory.Auditid as Auditid, \r\n\t\tWorkWCTrackHistory.HistoryID as HistoryID, \r\n\t\tWorkWCTrackHistory.Purpose as Purpose \r\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkWCTrackHistory\r\n\t\torder by WorkWCTrackHistory.HistoryID,WorkWCTrackHistory.Purpose,WorkWCTrackHistory.Auditid ASC\r\n\t\t--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY HistoryID,Purpose ORDER BY WCTrackHistoryID) = 1\n),\nEXP_RecordFlagging AS (\n\tSELECT\n\tLKP_WorkWCTrackHistory.WCTrackHistoryID AS lkp_WCTrackHistoryID,\n\tLKP_WorkWCTrackHistory.Auditid AS lkp_Auditid,\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,\n\t-- *INF*: IIF(lkp_Auditid=@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AND (NOT ISNULL(lkp_SessionId)),'1','0')\n\tIFF(lkp_Auditid = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AND (lkp_SessionId IS NOT NULL), '1', '0') AS FilterFlag,\n\tEXP_SRC_DataCollect.CoverageId,\n\tEXP_SRC_DataCollect.State,\n\tEXP_SRC_DataCollect.CoverageType,\n\tEXP_SRC_DataCollect.DeductibleType,\n\tEXP_SRC_DataCollect.DeductibleValue,\n\tEXP_SRC_DataCollect.StatCodeType,\n\tEXP_SRC_DataCollect.StatCodeValue,\n\tLKP_LatestSession.SessionId AS lkp_SessionId\n\tFROM EXP_SRC_DataCollect\n\tLEFT JOIN LKP_LatestSession\n\tON LKP_LatestSession.SessionId = EXP_SRC_DataCollect.SessionId AND LKP_LatestSession.Purpose = EXP_SRC_DataCollect.Purpose AND LKP_LatestSession.HistoryID = EXP_SRC_DataCollect.HistoryID\n\tLEFT JOIN LKP_WorkWCTrackHistory\n\tON LKP_WorkWCTrackHistory.HistoryID = EXP_SRC_DataCollect.HistoryID AND LKP_WorkWCTrackHistory.Purpose = EXP_SRC_DataCollect.Purpose\n),\nFIL_ExcludeSubmittedRecords AS (\n\tSELECT\n\tlkp_WCTrackHistoryID AS WCTrackHistoryID, \n\tExtractDate, \n\tAuditID, \n\tFilterFlag, \n\tCoverageId, \n\tState, \n\tCoverageType, \n\tDeductibleType, \n\tDeductibleValue, \n\tStatCodeType, \n\tStatCodeValue\n\tFROM EXP_RecordFlagging\n\tWHERE FilterFlag='1'\n),\nWorkWCSTATDeductible AS (\n\tTRUNCATE TABLE WorkWCSTATDeductible;\n\tINSERT INTO WorkWCSTATDeductible\n\t(Auditid, ExtractDate, WCTrackHistoryID, CoverageId, State, CoverageType, DeductibleType, DeductibleValue, StatCodeType, StatCodeValue)\n\tSELECT \n\tAuditID AS AUDITID, \n\tEXTRACTDATE, \n\tWCTRACKHISTORYID, \n\tCOVERAGEID, \n\tSTATE, \n\tCOVERAGETYPE, \n\tDEDUCTIBLETYPE, \n\tDEDUCTIBLEVALUE, \n\tSTATCODETYPE, \n\tSTATCODEVALUE\n\tFROM FIL_ExcludeSubmittedRecords\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

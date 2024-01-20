@@ -22,120 +22,66 @@ EXP_Default AS (
 	-- 
 	-- 
 	-- --IIF(ISNULL(LTRIM(RTRIM(CreatedDate))) OR LENGTH(LTRIM(RTRIM(CreatedDate)))=0, SYSDATE, TO_DATE(LTRIM(RTRIM(CreatedDate)),'MM/DD/YYYY'))
-	SYSDATE AS o_CreatedDate,
+	CURRENT_TIMESTAMP AS o_CreatedDate,
 	-- *INF*: SYSDATE
 	-- 
 	-- 
 	-- 
 	-- --IIF(ISNULL(LTRIM(RTRIM(ModifiedDate))) OR LENGTH(LTRIM(RTRIM(ModifiedDate)))=0, SYSDATE, TO_DATE(LTRIM(RTRIM(ModifiedDate)),'MM/DD/YYYY'))
-	SYSDATE AS o_ModifiedDate,
+	CURRENT_TIMESTAMP AS o_ModifiedDate,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(ModifiedUserId))) OR LENGTH(LTRIM(RTRIM(ModifiedUserId)))=0 OR IS_SPACES(LTRIM(RTRIM(ModifiedUserId))), 'InformS', LTRIM(RTRIM(ModifiedUserId)))
-	IFF(LTRIM(RTRIM(ModifiedUserId
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(ModifiedUserId
-				)
-			)
-		) = 0 
-		OR LENGTH(LTRIM(RTRIM(ModifiedUserId
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(ModifiedUserId
-			)
-		))='',
-		'InformS',
-		LTRIM(RTRIM(ModifiedUserId
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(ModifiedUserId)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(ModifiedUserId))) = 0
+	    or LENGTH(LTRIM(RTRIM(ModifiedUserId)))>0
+	    and TRIM(LTRIM(RTRIM(ModifiedUserId)))='',
+	    'InformS',
+	    LTRIM(RTRIM(ModifiedUserId))
 	) AS o_ModifiedUserId,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(InsuranceLine))) OR LENGTH(LTRIM(RTRIM(InsuranceLine)))=0 OR IS_SPACES(LTRIM(RTRIM(InsuranceLine))), 'InformS', LTRIM(RTRIM(InsuranceLine)))
-	IFF(LTRIM(RTRIM(InsuranceLine
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(InsuranceLine
-				)
-			)
-		) = 0 
-		OR LENGTH(LTRIM(RTRIM(InsuranceLine
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(InsuranceLine
-			)
-		))='',
-		'InformS',
-		LTRIM(RTRIM(InsuranceLine
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(InsuranceLine)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(InsuranceLine))) = 0
+	    or LENGTH(LTRIM(RTRIM(InsuranceLine)))>0
+	    and TRIM(LTRIM(RTRIM(InsuranceLine)))='',
+	    'InformS',
+	    LTRIM(RTRIM(InsuranceLine))
 	) AS o_InsuranceLine,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(CoverageType))) OR LENGTH(LTRIM(RTRIM(CoverageType)))=0 OR IS_SPACES(LTRIM(RTRIM(CoverageType))), 'N/A', LTRIM(RTRIM(CoverageType)))
-	IFF(LTRIM(RTRIM(CoverageType
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(CoverageType
-				)
-			)
-		) = 0 
-		OR LENGTH(LTRIM(RTRIM(CoverageType
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(CoverageType
-			)
-		))='',
-		'N/A',
-		LTRIM(RTRIM(CoverageType
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(CoverageType)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(CoverageType))) = 0
+	    or LENGTH(LTRIM(RTRIM(CoverageType)))>0
+	    and TRIM(LTRIM(RTRIM(CoverageType)))='',
+	    'N/A',
+	    LTRIM(RTRIM(CoverageType))
 	) AS o_CoverageType,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(LimitType))) OR LENGTH(LTRIM(RTRIM(LimitType)))=0 OR IS_SPACES(LTRIM(RTRIM(LimitType))), 'N/A', LTRIM(RTRIM(LimitType)))
-	IFF(LTRIM(RTRIM(LimitType
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(LimitType
-				)
-			)
-		) = 0 
-		OR LENGTH(LTRIM(RTRIM(LimitType
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(LimitType
-			)
-		))='',
-		'N/A',
-		LTRIM(RTRIM(LimitType
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(LimitType)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(LimitType))) = 0
+	    or LENGTH(LTRIM(RTRIM(LimitType)))>0
+	    and TRIM(LTRIM(RTRIM(LimitType)))='',
+	    'N/A',
+	    LTRIM(RTRIM(LimitType))
 	) AS o_LimitType,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(StandardLimitType))) OR LENGTH(LTRIM(RTRIM(StandardLimitType)))=0 OR IS_SPACES(LTRIM(RTRIM(StandardLimitType))), 'N/A', LTRIM(RTRIM(StandardLimitType)))
-	IFF(LTRIM(RTRIM(StandardLimitType
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(StandardLimitType
-				)
-			)
-		) = 0 
-		OR LENGTH(LTRIM(RTRIM(StandardLimitType
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(StandardLimitType
-			)
-		))='',
-		'N/A',
-		LTRIM(RTRIM(StandardLimitType
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(StandardLimitType)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(StandardLimitType))) = 0
+	    or LENGTH(LTRIM(RTRIM(StandardLimitType)))>0
+	    and TRIM(LTRIM(RTRIM(StandardLimitType)))='',
+	    'N/A',
+	    LTRIM(RTRIM(StandardLimitType))
 	) AS o_StandardLimitType,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(LimitLevel))) OR LENGTH(LTRIM(RTRIM(LimitLevel)))=0 OR IS_SPACES(LTRIM(RTRIM(LimitLevel))), 'N/A', LTRIM(RTRIM(LimitLevel)))
-	IFF(LTRIM(RTRIM(LimitLevel
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(LimitLevel
-				)
-			)
-		) = 0 
-		OR LENGTH(LTRIM(RTRIM(LimitLevel
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(LimitLevel
-			)
-		))='',
-		'N/A',
-		LTRIM(RTRIM(LimitLevel
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(LimitLevel)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(LimitLevel))) = 0
+	    or LENGTH(LTRIM(RTRIM(LimitLevel)))>0
+	    and TRIM(LTRIM(RTRIM(LimitLevel)))='',
+	    'N/A',
+	    LTRIM(RTRIM(LimitLevel))
 	) AS o_LimitLevel,
 	AggregateableFlag AS o_AdditiveFlag
 	FROM SQ_SupLimitType_CSV
@@ -152,8 +98,7 @@ AGG_SourceFileChecks AS (
 	o_LimitLevel AS LimitLevel,
 	o_AdditiveFlag AS AdditiveFlag,
 	-- *INF*: COUNT(1)
-	COUNT(1
-	) AS o_Count
+	COUNT(1) AS o_Count
 	FROM EXP_Default
 	GROUP BY InsuranceLine, CoverageType, LimitType
 ),
@@ -200,10 +145,7 @@ EXP_DetectChange AS (
 	AGG_SourceFileChecks.AdditiveFlag,
 	'The source file is not good enough to be loaded into the target table. Please check and correct it. The source rows are - InsuranceLine: ' || InsuranceLine || ', CoverageType: ' || CoverageType || ', LimitType: ' || LimitType AS v_Message,
 	-- *INF*: IIF(i_Count > 1, ABORT(v_Message))
-	IFF(i_Count > 1,
-		ABORT(v_Message
-		)
-	) AS v_ErrorOut,
+	IFF(i_Count > 1, ABORT(v_Message)) AS v_ErrorOut,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(lkp_SupLimitTypeId),'New',
 	-- lkp_ModifiedUserId!=ModifiedUserId OR 
@@ -211,16 +153,14 @@ EXP_DetectChange AS (
 	-- lkp_LimitLevel != LimitLevel OR 
 	-- IIF(lkp_AdditiveFlag='T',1,0) !=AdditiveFlag, 'Update',
 	-- 'NoChange')
-	DECODE(TRUE,
-		lkp_SupLimitTypeId IS NULL, 'New',
-		lkp_ModifiedUserId != ModifiedUserId 
-		OR lkp_StandardLimitType != StandardLimitType 
-		OR lkp_LimitLevel != LimitLevel 
-		OR IFF(lkp_AdditiveFlag = 'T',
-			1,
-			0
-		) != AdditiveFlag, 'Update',
-		'NoChange'
+	DECODE(
+	    TRUE,
+	    lkp_SupLimitTypeId IS NULL, 'New',
+	    lkp_ModifiedUserId != ModifiedUserId OR lkp_StandardLimitType != StandardLimitType OR lkp_LimitLevel != LimitLevel OR 
+	    IFF(
+	        lkp_AdditiveFlag = 'T', 1, 0
+	    ) != AdditiveFlag, 'Update',
+	    'NoChange'
 	) AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag
 	FROM AGG_SourceFileChecks

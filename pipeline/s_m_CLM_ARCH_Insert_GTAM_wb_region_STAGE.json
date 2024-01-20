@@ -1,0 +1,55 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_GTAM_wb_region_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_GTAM_wb_region_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_wb_region_stage AS (\n\tSELECT\n\t\tgtam_wb_region_stage_id,\n\t\tagency_code,\n\t\tbus_unit_ind,\n\t\tuw_mgr_name_routing_station,\n\t\tuw_mgr_region,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_wb_region_stage\n\tWHERE gtam_wb_region_stage.extract_date >= '@{pipeline().parameters.SELECTION_START_TS}' \r\n\tAND gtam_wb_region_stage.extract_date <= '@{pipeline().parameters.SELECTION_END_TS}'\n),\nEXP_arch_GTAM_wb_region_stage AS (\n\tSELECT\n\tgtam_wb_region_stage_id,\n\tagency_code,\n\tbus_unit_ind,\n\tuw_mgr_name_routing_station,\n\tuw_mgr_region,\n\textract_date AS EXTRACT_DATE,\n\tas_of_date AS AS_OF_DATE,\n\trecord_count AS RECORD_COUNT,\n\tsource_system_id AS SOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_gtam_wb_region_stage\n),\narch_gtam_wb_region_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_gtam_wb_region_stage\n\t(gtam_wb_region_stage_id, agency_code, bus_unit_ind, uw_mgr_name_routing_station, uw_mgr_region, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tGTAM_WB_REGION_STAGE_ID, \n\tAGENCY_CODE, \n\tBUS_UNIT_IND, \n\tUW_MGR_NAME_ROUTING_STATION, \n\tUW_MGR_REGION, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_arch_GTAM_wb_region_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

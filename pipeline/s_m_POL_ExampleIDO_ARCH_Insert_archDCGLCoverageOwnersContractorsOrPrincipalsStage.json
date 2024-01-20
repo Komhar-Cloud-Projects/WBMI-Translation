@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCGLCoverageOwnersContractorsOrPrincipalsStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCGLCoverageOwnersC_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCGLCoverageOwnersContractorsOrPrincipalsStaging AS (\n\tSELECT\n\t\tCoverageId,\n\t\tGL_CoverageOwnersContractorsOrPrincipalsId,\n\t\tSessionId,\n\t\tApplyARate,\n\t\tAuditable,\n\t\tDesignatedArchitect,\n\t\tDesignatedConstructionManager,\n\t\tDesignatedConstructionProject,\n\t\tDesignatedOwner,\n\t\tTypeOfBusiness,\n\t\tUnderwriterOverride,\n\t\tExposure,\n\t\tExposureAudited,\n\t\tExposureEstimated,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCGLCoverageOwnersContractorsOrPrincipalsStaging\n),\nEXPTRANS AS (\n\tSELECT\n\tCoverageId,\n\tGL_CoverageOwnersContractorsOrPrincipalsId,\n\tSessionId,\n\tApplyARate AS i_ApplyARate,\n\t-- *INF*: IIF(i_ApplyARate='T','1','0')\n\tIFF(i_ApplyARate = 'T', '1', '0') AS o_ApplyARate,\n\tAuditable AS i_Auditable,\n\t-- *INF*: IIF(i_Auditable='T','1','0')\n\tIFF(i_Auditable = 'T', '1', '0') AS o_Auditable,\n\tDesignatedArchitect,\n\tDesignatedConstructionManager,\n\tDesignatedConstructionProject,\n\tDesignatedOwner,\n\tTypeOfBusiness,\n\tUnderwriterOverride AS i_UnderwriterOverride,\n\t-- *INF*: IIF(i_UnderwriterOverride='T','1','0')\n\tIFF(i_UnderwriterOverride = 'T', '1', '0') AS o_UnderwriterOverride,\n\tExposure,\n\tExposureAudited,\n\tExposureEstimated,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_DCGLCoverageOwnersContractorsOrPrincipalsStaging\n),\narchDCGLCoverageOwnersContractorsOrPrincipalsStaging AS (\n\tINSERT INTO archDCGLCoverageOwnersContractorsOrPrincipalsStaging\n\t(CoverageId, GL_CoverageOwnersContractorsOrPrincipalsId, SessionId, ApplyARate, Auditable, DesignatedArchitect, DesignatedConstructionManager, DesignatedConstructionProject, DesignatedOwner, TypeOfBusiness, UnderwriterOverride, Exposure, ExposureAudited, ExposureEstimated, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tCOVERAGEID, \n\tGL_COVERAGEOWNERSCONTRACTORSORPRINCIPALSID, \n\tSESSIONID, \n\to_ApplyARate AS APPLYARATE, \n\to_Auditable AS AUDITABLE, \n\tDESIGNATEDARCHITECT, \n\tDESIGNATEDCONSTRUCTIONMANAGER, \n\tDESIGNATEDCONSTRUCTIONPROJECT, \n\tDESIGNATEDOWNER, \n\tTYPEOFBUSINESS, \n\to_UnderwriterOverride AS UNDERWRITEROVERRIDE, \n\tEXPOSURE, \n\tEXPOSUREAUDITED, \n\tEXPOSUREESTIMATED, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCRBuildingStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCCRBuildingStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCRBuildingStaging AS (\n\tSELECT\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tLineId,\n\t\tCR_LocationId,\n\t\tCR_BuildingId,\n\t\tSessionId,\n\t\tId,\n\t\tDeleted,\n\t\tAlarmCompanyHasKeys,\n\t\tAlarmType,\n\t\tBulletResistingEnclosure,\n\t\tBulletResistingEnclosureAndAlarm,\n\t\tBurglarAlarmSystem,\n\t\tCentralStation,\n\t\tCentralStationAtleastHourly,\n\t\tCertificateNumber,\n\t\tConnectedWith,\n\t\tConstructionCode,\n\t\tCoveredProperty,\n\t\tDescription,\n\t\tDoorType,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tGradeExtentOfProtection,\n\t\tGuardsOnDuty,\n\t\tHoldupAlarm,\n\t\tInsured,\n\t\tLocalGong,\n\t\tLockedSafe,\n\t\tNameOfCompany,\n\t\tNumberOfGuards,\n\t\tNumberOfProtectiveDevices,\n\t\tNumberOfStories,\n\t\tNumberOfWatchpersons,\n\t\tOutsideCentralStation,\n\t\tOutsideGong,\n\t\tPoliceStation,\n\t\tPrivateWatchPerson,\n\t\tRegisterHourlyOnAClock,\n\t\tRoofCovering,\n\t\tRoofDeckAttachment,\n\t\tRoofGeometry,\n\t\tRoofWallConstruction,\n\t\tSignalACentralStation,\n\t\tSprinkler,\n\t\tSquareFt,\n\t\tULClassification,\n\t\tULIProtectiveBag,\n\t\tUnexpiredCertificate,\n\t\tWindowProtection,\n\t\tWindstormLossMitigation,\n\t\tYearBuilt,\n\t\tCR_LocationXmlId\n\tFROM DCCRBuildingStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tLineId,\n\tCR_LocationId,\n\tCR_BuildingId,\n\tSessionId,\n\tId,\n\tDeleted,\n\tAlarmCompanyHasKeys,\n\tAlarmType,\n\tBulletResistingEnclosure,\n\tBulletResistingEnclosureAndAlarm,\n\tBurglarAlarmSystem,\n\tCentralStation,\n\tCentralStationAtleastHourly,\n\tCertificateNumber,\n\tConnectedWith,\n\tConstructionCode,\n\tCoveredProperty,\n\tDescription,\n\tDoorType,\n\tEffectiveDate,\n\tExpirationDate,\n\tGradeExtentOfProtection,\n\tGuardsOnDuty,\n\tHoldupAlarm,\n\tInsured,\n\tLocalGong,\n\tLockedSafe,\n\tNameOfCompany,\n\tNumberOfGuards,\n\tNumberOfProtectiveDevices,\n\tNumberOfStories,\n\tNumberOfWatchpersons,\n\tOutsideCentralStation,\n\tOutsideGong,\n\tPoliceStation,\n\tPrivateWatchPerson,\n\tRegisterHourlyOnAClock,\n\tRoofCovering,\n\tRoofDeckAttachment,\n\tRoofGeometry,\n\tRoofWallConstruction,\n\tSignalACentralStation,\n\tSprinkler,\n\tSquareFt,\n\tULClassification,\n\tULIProtectiveBag,\n\tUnexpiredCertificate,\n\tWindowProtection,\n\tWindstormLossMitigation,\n\tYearBuilt,\n\tCR_LocationXmlId\n\tFROM SQ_DCCRBuildingStaging\n),\narchDCCRBuildingStaging AS (\n\tINSERT INTO archDCCRBuildingStaging\n\t(ExtractDate, SourceSystemId, AuditId, LineId, CR_LocationId, CR_BuildingId, SessionId, Id, Deleted, AlarmCompanyHasKeys, AlarmType, BulletResistingEnclosure, BulletResistingEnclosureAndAlarm, BurglarAlarmSystem, CentralStation, CentralStationAtleastHourly, CertificateNumber, ConnectedWith, ConstructionCode, CoveredProperty, Description, DoorType, EffectiveDate, ExpirationDate, GradeExtentOfProtection, GuardsOnDuty, HoldupAlarm, Insured, LocalGong, LockedSafe, NameOfCompany, NumberOfGuards, NumberOfProtectiveDevices, NumberOfStories, NumberOfWatchpersons, OutsideCentralStation, OutsideGong, PoliceStation, PrivateWatchPerson, RegisterHourlyOnAClock, RoofCovering, RoofDeckAttachment, RoofGeometry, RoofWallConstruction, SignalACentralStation, Sprinkler, SquareFt, ULClassification, ULIProtectiveBag, UnexpiredCertificate, WindowProtection, WindstormLossMitigation, YearBuilt, CR_LocationXmlId)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tLINEID, \n\tCR_LOCATIONID, \n\tCR_BUILDINGID, \n\tSESSIONID, \n\tID, \n\tDELETED, \n\tALARMCOMPANYHASKEYS, \n\tALARMTYPE, \n\tBULLETRESISTINGENCLOSURE, \n\tBULLETRESISTINGENCLOSUREANDALARM, \n\tBURGLARALARMSYSTEM, \n\tCENTRALSTATION, \n\tCENTRALSTATIONATLEASTHOURLY, \n\tCERTIFICATENUMBER, \n\tCONNECTEDWITH, \n\tCONSTRUCTIONCODE, \n\tCOVEREDPROPERTY, \n\tDESCRIPTION, \n\tDOORTYPE, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tGRADEEXTENTOFPROTECTION, \n\tGUARDSONDUTY, \n\tHOLDUPALARM, \n\tINSURED, \n\tLOCALGONG, \n\tLOCKEDSAFE, \n\tNAMEOFCOMPANY, \n\tNUMBEROFGUARDS, \n\tNUMBEROFPROTECTIVEDEVICES, \n\tNUMBEROFSTORIES, \n\tNUMBEROFWATCHPERSONS, \n\tOUTSIDECENTRALSTATION, \n\tOUTSIDEGONG, \n\tPOLICESTATION, \n\tPRIVATEWATCHPERSON, \n\tREGISTERHOURLYONACLOCK, \n\tROOFCOVERING, \n\tROOFDECKATTACHMENT, \n\tROOFGEOMETRY, \n\tROOFWALLCONSTRUCTION, \n\tSIGNALACENTRALSTATION, \n\tSPRINKLER, \n\tSQUAREFT, \n\tULCLASSIFICATION, \n\tULIPROTECTIVEBAG, \n\tUNEXPIREDCERTIFICATE, \n\tWINDOWPROTECTION, \n\tWINDSTORMLOSSMITIGATION, \n\tYEARBUILT, \n\tCR_LOCATIONXMLID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

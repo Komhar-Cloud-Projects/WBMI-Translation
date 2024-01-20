@@ -524,17 +524,14 @@ EXP_GetValues AS (
 	-- -- Added above logic as part of DAP-879
 	-- 
 	-- --IIF( NOT ISNULL(v_Prev_EffectiveDate) AND i_CoverageGUID != v_Prev_CoverageGUID, TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), v_Prev_EffectiveDate)
-	IFF(v_Prev_EffectiveDate IS NULL 
-		AND ( ( i_CoverageGUID != v_Prev_CoverageGUID 
-				AND i_PolicyAKID = v_Prev_PolicyAKID 
-			) 
-			OR ( i_CoverageGUID != v_Prev_CoverageGUID 
-				AND i_PolicyAKID != v_Prev_PolicyAKID 
-			)NOT  
-		),
-		TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
-		),
-		v_Prev_EffectiveDate
+	IFF(
+	    v_Prev_EffectiveDate IS NULL
+	    and ((i_CoverageGUID != v_Prev_CoverageGUID
+	    and i_PolicyAKID = v_Prev_PolicyAKID)
+	    or (i_CoverageGUID != v_Prev_CoverageGUID
+	    and i_PolicyAKID != v_Prev_PolicyAKNOT ID)),
+	    TO_TIMESTAMP('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'),
+	    v_Prev_EffectiveDate
 	) AS v_EffectiveDate,
 	v_Prev_ExpirationDate AS v_ExpirationDate,
 	v_Prev_PriorCoverageId AS v_PriorCoverageId,
@@ -559,105 +556,54 @@ EXP_GetValues AS (
 	i_InsuranceLine AS v_Prev_InsuranceLine,
 	i_CoverageEffectiveDate AS v_Prev_CoverageEffectiveDate,
 	-- *INF*: IIF(ISNULL(i_IncreasedLimitGroupCode), 'N/A', i_IncreasedLimitGroupCode)
-	IFF(i_IncreasedLimitGroupCode IS NULL,
-		'N/A',
-		i_IncreasedLimitGroupCode
-	) AS v_Prev_IncreasedLimitGroupCode,
+	IFF(i_IncreasedLimitGroupCode IS NULL, 'N/A', i_IncreasedLimitGroupCode) AS v_Prev_IncreasedLimitGroupCode,
 	-- *INF*: IIF(ISNULL(i_StandardIncreasedLimitGroupDescription), 'N/A', i_StandardIncreasedLimitGroupDescription)
-	IFF(i_StandardIncreasedLimitGroupDescription IS NULL,
-		'N/A',
-		i_StandardIncreasedLimitGroupDescription
+	IFF(
+	    i_StandardIncreasedLimitGroupDescription IS NULL, 'N/A',
+	    i_StandardIncreasedLimitGroupDescription
 	) AS v_Prev_IncreasedLimitGroupDescription,
 	-- *INF*: IIF(ISNULL(i_PackageModificationAdjustmentGroupCode), 'N/A', i_PackageModificationAdjustmentGroupCode)
-	IFF(i_PackageModificationAdjustmentGroupCode IS NULL,
-		'N/A',
-		i_PackageModificationAdjustmentGroupCode
+	IFF(
+	    i_PackageModificationAdjustmentGroupCode IS NULL, 'N/A',
+	    i_PackageModificationAdjustmentGroupCode
 	) AS v_Prev_PackageModificationAdjustmentGroupCode,
 	-- *INF*: IIF(ISNULL(i_StandardPackageModificationAsjustmentGroupDescription), 'N/A', i_StandardPackageModificationAsjustmentGroupDescription)
-	IFF(i_StandardPackageModificationAsjustmentGroupDescription IS NULL,
-		'N/A',
-		i_StandardPackageModificationAsjustmentGroupDescription
+	IFF(
+	    i_StandardPackageModificationAsjustmentGroupDescription IS NULL, 'N/A',
+	    i_StandardPackageModificationAsjustmentGroupDescription
 	) AS v_Prev_PackageModificationAdjustmentGroupDescription,
 	-- *INF*: IIF(ISNULL(i_ClassCode), 'N/A', i_ClassCode)
-	IFF(i_ClassCode IS NULL,
-		'N/A',
-		i_ClassCode
-	) AS v_Prev_ClassCode,
+	IFF(i_ClassCode IS NULL, 'N/A', i_ClassCode) AS v_Prev_ClassCode,
 	-- *INF*: IIF(ISNULL(i_SubLocationUnitNumber), '000', i_SubLocationUnitNumber)
-	IFF(i_SubLocationUnitNumber IS NULL,
-		'000',
-		i_SubLocationUnitNumber
-	) AS v_Prev_BuildingNumber,
+	IFF(i_SubLocationUnitNumber IS NULL, '000', i_SubLocationUnitNumber) AS v_Prev_BuildingNumber,
 	-- *INF*: IIF(ISNULL(i_LocationUnitNumber), '0000', i_LocationUnitNumber) 
-	IFF(i_LocationUnitNumber IS NULL,
-		'0000',
-		i_LocationUnitNumber
-	) AS v_Prev_LocationNumber,
+	IFF(i_LocationUnitNumber IS NULL, '0000', i_LocationUnitNumber) AS v_Prev_LocationNumber,
 	-- *INF*: IIF(ISNULL(i_DeductibleAmount), '0', i_DeductibleAmount)
-	IFF(i_DeductibleAmount IS NULL,
-		'0',
-		i_DeductibleAmount
-	) AS v_Prev_DeductibleAmount,
+	IFF(i_DeductibleAmount IS NULL, '0', i_DeductibleAmount) AS v_Prev_DeductibleAmount,
 	-- *INF*: IIF(ISNULL(i_RiskGradeCode), 'N/A', i_RiskGradeCode)
-	IFF(i_RiskGradeCode IS NULL,
-		'N/A',
-		i_RiskGradeCode
-	) AS v_Prev_RiskGradeCode,
+	IFF(i_RiskGradeCode IS NULL, 'N/A', i_RiskGradeCode) AS v_Prev_RiskGradeCode,
 	-- *INF*: IIF(ISNULL(i_PackageModificationAdjustmentFactor), 0, i_PackageModificationAdjustmentFactor)
-	IFF(i_PackageModificationAdjustmentFactor IS NULL,
-		0,
-		i_PackageModificationAdjustmentFactor
-	) AS v_Prev_PackageModificationAdjustmentFactor,
+	IFF(i_PackageModificationAdjustmentFactor IS NULL, 0, i_PackageModificationAdjustmentFactor) AS v_Prev_PackageModificationAdjustmentFactor,
 	-- *INF*: IIF(ISNULL(i_YearBuilt), '0000', i_YearBuilt)
-	IFF(i_YearBuilt IS NULL,
-		'0000',
-		i_YearBuilt
-	) AS v_Prev_YearBuilt,
+	IFF(i_YearBuilt IS NULL, '0000', i_YearBuilt) AS v_Prev_YearBuilt,
 	-- *INF*: IIF(ISNULL(i_ClassCodeOrganizationCode), 'N/A', i_ClassCodeOrganizationCode)
-	IFF(i_ClassCodeOrganizationCode IS NULL,
-		'N/A',
-		i_ClassCodeOrganizationCode
-	) AS v_Prev_ClassCodeOrganizationCode,
+	IFF(i_ClassCodeOrganizationCode IS NULL, 'N/A', i_ClassCodeOrganizationCode) AS v_Prev_ClassCodeOrganizationCode,
 	-- *INF*: IIF(ISNULL(i_IncreasedLimitFactor), 0, i_IncreasedLimitFactor)
-	IFF(i_IncreasedLimitFactor IS NULL,
-		0,
-		i_IncreasedLimitFactor
-	) AS v_Prev_IncreasedLimitFactor,
+	IFF(i_IncreasedLimitFactor IS NULL, 0, i_IncreasedLimitFactor) AS v_Prev_IncreasedLimitFactor,
 	-- *INF*: IIF(ISNULL(i_RatingCity), 'N/A', i_RatingCity)
-	IFF(i_RatingCity IS NULL,
-		'N/A',
-		i_RatingCity
-	) AS v_Prev_RatingCity,
+	IFF(i_RatingCity IS NULL, 'N/A', i_RatingCity) AS v_Prev_RatingCity,
 	-- *INF*: IIF(ISNULL(i_RatingCounty), 'N/A', i_RatingCounty)
-	IFF(i_RatingCounty IS NULL,
-		'N/A',
-		i_RatingCounty
-	) AS v_Prev_RatingCounty,
+	IFF(i_RatingCounty IS NULL, 'N/A', i_RatingCounty) AS v_Prev_RatingCounty,
 	-- *INF*: IIF(ISNULL(i_StateProvinceCode), 'N/A', i_StateProvinceCode)
-	IFF(i_StateProvinceCode IS NULL,
-		'N/A',
-		i_StateProvinceCode
-	) AS v_Prev_RatingStateProvinceCode,
+	IFF(i_StateProvinceCode IS NULL, 'N/A', i_StateProvinceCode) AS v_Prev_RatingStateProvinceCode,
 	-- *INF*: IIF(ISNULL(i_state_code), 'N/A', i_state_code)
-	IFF(i_state_code IS NULL,
-		'N/A',
-		i_state_code
-	) AS v_Prev_RatingStateProvinceAbbreviation,
+	IFF(i_state_code IS NULL, 'N/A', i_state_code) AS v_Prev_RatingStateProvinceAbbreviation,
 	-- *INF*: IIF(ISNULL(i_ZipPostalCode), 'N/A', i_ZipPostalCode)
-	IFF(i_ZipPostalCode IS NULL,
-		'N/A',
-		i_ZipPostalCode
-	) AS v_Prev_RatingPostalCode,
+	IFF(i_ZipPostalCode IS NULL, 'N/A', i_ZipPostalCode) AS v_Prev_RatingPostalCode,
 	-- *INF*: IIF(ISNULL(i_StreetAddress), 'N/A', i_StreetAddress)
-	IFF(i_StreetAddress IS NULL,
-		'N/A',
-		i_StreetAddress
-	) AS v_Prev_RatingAddress,
+	IFF(i_StreetAddress IS NULL, 'N/A', i_StreetAddress) AS v_Prev_RatingAddress,
 	-- *INF*: IIF(ISNULL(i_RiskTerritory), 'N/A', i_RiskTerritory)
-	IFF(i_RiskTerritory IS NULL,
-		'N/A',
-		i_RiskTerritory
-	) AS v_Prev_RatingTerritory,
+	IFF(i_RiskTerritory IS NULL, 'N/A', i_RiskTerritory) AS v_Prev_RatingTerritory,
 	i_PremiumTransactionID AS v_Prev_EDWPremiumTransactionPKId,
 	-- *INF*: IIF((i_CoverageGUID != v_Prev_CoverageGUID and i_PolicyAKID=v_Prev_PolicyAKID) or
 	--  ( i_CoverageGUID != v_Prev_CoverageGUID and i_PolicyAKID!= v_Prev_PolicyAKID), 
@@ -666,103 +612,64 @@ EXP_GetValues AS (
 	-- 
 	-- -- Added above logic as part of DAP-879
 	-- --IIF(i_CoverageGUID != v_Prev_CoverageGUID, TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'), ADD_TO_DATE(v_Prev_EffectiveDate, 'SS', -1))
-	IFF(( i_CoverageGUID != v_Prev_CoverageGUID 
-			AND i_PolicyAKID = v_Prev_PolicyAKID 
-		) 
-		OR ( i_CoverageGUID != v_Prev_CoverageGUID 
-			AND i_PolicyAKID != v_Prev_PolicyAKID 
-		),
-		TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
-		),
-		DATEADD(SECOND,+ 1,v_Prev_EffectiveDate)
+	IFF(
+	    (i_CoverageGUID != v_Prev_CoverageGUID
+	    and i_PolicyAKID = v_Prev_PolicyAKID)
+	    or (i_CoverageGUID != v_Prev_CoverageGUID
+	    and i_PolicyAKID != v_Prev_PolicyAKID),
+	    TO_TIMESTAMP('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'),
+	    DATEADD(SECOND,+ 1,v_Prev_EffectiveDate)
 	) AS v_Prev_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_CoverageGUID), 'N/A', i_CoverageGUID)
-	IFF(i_CoverageGUID IS NULL,
-		'N/A',
-		i_CoverageGUID
-	) AS v_Prev_CoverageGUID,
+	IFF(i_CoverageGUID IS NULL, 'N/A', i_CoverageGUID) AS v_Prev_CoverageGUID,
 	i_PremiumTransactionEffectiveDate AS v_Prev_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_PriorCoverageId),-1,i_PriorCoverageId)
-	IFF(i_PriorCoverageId IS NULL,
-		- 1,
-		i_PriorCoverageId
-	) AS v_Prev_PriorCoverageId,
+	IFF(i_PriorCoverageId IS NULL, - 1, i_PriorCoverageId) AS v_Prev_PriorCoverageId,
 	-- *INF*: IIF(ISNULL(i_IndividualRiskPremiumModification),0,i_IndividualRiskPremiumModification)
-	IFF(i_IndividualRiskPremiumModification IS NULL,
-		0,
-		i_IndividualRiskPremiumModification
-	) AS v_Prev_IndividualRiskPremiumModification,
+	IFF(i_IndividualRiskPremiumModification IS NULL, 0, i_IndividualRiskPremiumModification) AS v_Prev_IndividualRiskPremiumModification,
 	-- *INF*: IIF(ISNULL(i_PremiumTransactionAKID),-1,i_PremiumTransactionAKID)
-	IFF(i_PremiumTransactionAKID IS NULL,
-		- 1,
-		i_PremiumTransactionAKID
-	) AS v_Prev_PremiumTransactionAKID,
+	IFF(i_PremiumTransactionAKID IS NULL, - 1, i_PremiumTransactionAKID) AS v_Prev_PremiumTransactionAKID,
 	-- *INF*: IIF(ISNULL(i_ConstructionCode), 'N/A', i_ConstructionCode)
 	-- 
-	IFF(i_ConstructionCode IS NULL,
-		'N/A',
-		i_ConstructionCode
-	) AS v_Prev_ConstructionCode,
+	IFF(i_ConstructionCode IS NULL, 'N/A', i_ConstructionCode) AS v_Prev_ConstructionCode,
 	-- *INF*: IIF(ISNULL(i_WindCoverageFlag), '0', IIF( i_WindCoverageFlag='True', '1', '0')) 
-	IFF(i_WindCoverageFlag IS NULL,
-		'0',
-		IFF(i_WindCoverageFlag = 'True',
-			'1',
-			'0'
-		)
+	IFF(
+	    i_WindCoverageFlag IS NULL, '0',
+	    IFF(
+	        i_WindCoverageFlag = 'True', '1', '0'
+	    )
 	) AS v_Prev_WindCoverageFlag,
 	i_PolicyAKID AS v_Prev_PolicyAKID,
 	i_SourceSystemId AS v_Prev_SourceSystemId,
 	-- *INF*: IIF(ISNULL(i_RiskUnitGroup), 'N/A', i_RiskUnitGroup)
-	IFF(i_RiskUnitGroup IS NULL,
-		'N/A',
-		i_RiskUnitGroup
-	) AS v_Prev_RiskUnitGroup,
+	IFF(i_RiskUnitGroup IS NULL, 'N/A', i_RiskUnitGroup) AS v_Prev_RiskUnitGroup,
 	-- *INF*: IIF(ISNULL(i_RiskUnit), 'N/A',i_RiskUnit)
-	IFF(i_RiskUnit IS NULL,
-		'N/A',
-		i_RiskUnit
-	) AS v_Prev_RiskUnit,
+	IFF(i_RiskUnit IS NULL, 'N/A', i_RiskUnit) AS v_Prev_RiskUnit,
 	i_ExposureBasis AS v_Prev_ExposureBasis,
 	-- *INF*: DECODE(v_Prev_SourceSystemId,
 	-- 'DCT',v_Prev_ClassCode,
 	-- 'PMS', IIF(v_Prev_RiskUnitGroup='286',v_Prev_RiskUnit,v_Prev_ClassCode),
 	-- 'N/A')
-	DECODE(v_Prev_SourceSystemId,
-		'DCT', v_Prev_ClassCode,
-		'PMS', IFF(v_Prev_RiskUnitGroup = '286',
-			v_Prev_RiskUnit,
-			v_Prev_ClassCode
-		),
-		'N/A'
+	DECODE(
+	    v_Prev_SourceSystemId,
+	    'DCT', v_Prev_ClassCode,
+	    'PMS', IFF(
+	        v_Prev_RiskUnitGroup = '286', v_Prev_RiskUnit, v_Prev_ClassCode
+	    ),
+	    'N/A'
 	) AS v_Prev_Out_ClassCode,
 	i_InsuranceReferenceLineOfBusinessAbbreviation AS v_Prev_LineOfBusinessAbbreviation,
 	i_ProductAbbreviation AS v_Prev_ProductAbbreviation,
 	-- *INF*: IIF(ISNULL(i_CensusBlockGroupCountyCode),'N/A',i_CensusBlockGroupCountyCode)
-	IFF(i_CensusBlockGroupCountyCode IS NULL,
-		'N/A',
-		i_CensusBlockGroupCountyCode
-	) AS v_Prev_CensusBlockGroupCountyCode,
+	IFF(i_CensusBlockGroupCountyCode IS NULL, 'N/A', i_CensusBlockGroupCountyCode) AS v_Prev_CensusBlockGroupCountyCode,
 	-- *INF*: IIF(ISNULL(i_CensusBlockGroupTractCode),'N/A',i_CensusBlockGroupTractCode)
-	IFF(i_CensusBlockGroupTractCode IS NULL,
-		'N/A',
-		i_CensusBlockGroupTractCode
-	) AS v_Prev_CensusBlockGroupTractCode,
+	IFF(i_CensusBlockGroupTractCode IS NULL, 'N/A', i_CensusBlockGroupTractCode) AS v_Prev_CensusBlockGroupTractCode,
 	-- *INF*: IIF(ISNULL(i_CensusBlockGroupBlockGroupCode),'N/A',i_CensusBlockGroupBlockGroupCode)
-	IFF(i_CensusBlockGroupBlockGroupCode IS NULL,
-		'N/A',
-		i_CensusBlockGroupBlockGroupCode
-	) AS v_Prev_CensusBlockGroupBlockGroupCode,
+	IFF(i_CensusBlockGroupBlockGroupCode IS NULL, 'N/A', i_CensusBlockGroupBlockGroupCode) AS v_Prev_CensusBlockGroupBlockGroupCode,
 	-- *INF*: IIF(ISNULL(i_Latitude),0,i_Latitude)
-	IFF(i_Latitude IS NULL,
-		0,
-		i_Latitude
-	) AS v_Prev_Latitude,
+	IFF(i_Latitude IS NULL, 0, i_Latitude) AS v_Prev_Latitude,
 	-- *INF*: IIF(ISNULL(i_Longitude),0,i_Longitude)
-	IFF(i_Longitude IS NULL,
-		0,
-		i_Longitude
-	) AS v_Prev_Longitude,
+	IFF(i_Longitude IS NULL, 0, i_Longitude) AS v_Prev_Longitude,
 	v_Count AS o_Count,
 	v_InsuranceLine AS o_InsuranceLine,
 	v_CoverageEffectiveDate AS o_CoverageEffectiveDate,
@@ -775,8 +682,7 @@ EXP_GetValues AS (
 	v_PackageModificationAdjustmentGroupDescription AS o_PackageModificationAdjustmentGroupDescription,
 	v_Out_ClassCode AS Out_ClassCode,
 	-- *INF*: LPAD(v_ClassCode, 6, '0')
-	LPAD(v_ClassCode, 6, '0'
-	) AS o_ClassCode_lkp,
+	LPAD(v_ClassCode, 6, '0') AS o_ClassCode_lkp,
 	v_BuildingNumber AS o_BuildingNumber,
 	v_LocationNumber AS o_LocationNumber,
 	v_DeductibleAmount AS o_DeductibleAmount,
@@ -946,42 +852,26 @@ EXP_GetAKId AS (
 	EXP_GetValues.o_ExposureBasis AS ExposureBasis,
 	'N/A' AS o_ISOClassGroupDescription,
 	-- *INF*: IIF(ISNULL(i_PriorCarrierName), 'N/A', i_PriorCarrierName)
-	IFF(i_PriorCarrierName IS NULL,
-		'N/A',
-		i_PriorCarrierName
-	) AS o_PriorCarrierName,
+	IFF(i_PriorCarrierName IS NULL, 'N/A', i_PriorCarrierName) AS o_PriorCarrierName,
 	-- *INF*: IIF(ISNULL(i_PriorPolicyKey), 'N/A',i_PriorPolicyKey)
-	IFF(i_PriorPolicyKey IS NULL,
-		'N/A',
-		i_PriorPolicyKey
-	) AS o_PriorPolicyKey,
+	IFF(i_PriorPolicyKey IS NULL, 'N/A', i_PriorPolicyKey) AS o_PriorPolicyKey,
 	LKP_LimitOfInsurance.CoverageLimitValue AS i_CoverageLimitValue,
 	LKP_LimitOfInsurance.CoverageLimitType AS i_CoverageLimitType,
 	-- *INF*: LOWER(LTRIM(RTRIM(i_CoverageLimitType)))
-	LOWER(LTRIM(RTRIM(i_CoverageLimitType
-			)
-		)
-	) AS v_CoverageLimitType,
+	LOWER(LTRIM(RTRIM(i_CoverageLimitType))) AS v_CoverageLimitType,
 	-- *INF*: DECODE(TRUE,
 	-- INSTR(v_CoverageLimitType,'peroccurrence')>0 
 	-- OR INSTR(v_CoverageLimitType,'each')>0 
 	-- OR INSTR(v_CoverageLimitType,'aggregate')>0,'N/A',
 	-- i_CoverageLimitValue
 	-- )
-	DECODE(TRUE,
-		REGEXP_INSTR(v_CoverageLimitType, 'peroccurrence'
-		) > 0 
-		OR REGEXP_INSTR(v_CoverageLimitType, 'each'
-		) > 0 
-		OR REGEXP_INSTR(v_CoverageLimitType, 'aggregate'
-		) > 0, 'N/A',
-		i_CoverageLimitValue
+	DECODE(
+	    TRUE,
+	    REGEXP_INSTR(v_CoverageLimitType, 'peroccurrence') > 0 OR REGEXP_INSTR(v_CoverageLimitType, 'each') > 0 OR REGEXP_INSTR(v_CoverageLimitType, 'aggregate') > 0, 'N/A',
+	    i_CoverageLimitValue
 	) AS v_LimitOfInsurance,
 	-- *INF*: IIF(ISNULL(v_LimitOfInsurance),'N/A',v_LimitOfInsurance)
-	IFF(v_LimitOfInsurance IS NULL,
-		'N/A',
-		v_LimitOfInsurance
-	) AS o_LimitOfInsurance,
+	IFF(v_LimitOfInsurance IS NULL, 'N/A', v_LimitOfInsurance) AS o_LimitOfInsurance,
 	-- *INF*: DECODE(TRUE,
 	-- NOT ISNULL(:LKP.LKP_COVERAGELIMIT(i_PremiumTransactionAKID,'AGGREGATE LIMIT')),:LKP.LKP_COVERAGELIMIT(i_PremiumTransactionAKID,'AGGREGATE LIMIT'),
 	-- 
@@ -994,18 +884,17 @@ EXP_GetAKId AS (
 	-- NOT ISNULL(:LKP.LKP_COVERAGELIMIT(i_PremiumTransactionAKID,'VoluntaryPropertyDamageAggregateLimit')),:LKP.LKP_COVERAGELIMIT(i_PremiumTransactionAKID,'VoluntaryPropertyDamageAggregateLimit'),
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		LKP_COVERAGELIMIT_i_PremiumTransactionAKID_AGGREGATE_LIMIT.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_AGGREGATE_LIMIT.CoverageLimitValue,
-		LKP_COVERAGELIMIT_i_PremiumTransactionAKID_AggregateLimit.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_AggregateLimit.CoverageLimitValue,
-		LKP_COVERAGELIMIT_i_PremiumTransactionAKID_TotalAggregateLimit.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_TotalAggregateLimit.CoverageLimitValue,
-		LKP_COVERAGELIMIT_i_PremiumTransactionAKID_GENERAL_AGGREGATE_LIMIT.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_GENERAL_AGGREGATE_LIMIT.CoverageLimitValue,
-		LKP_COVERAGELIMIT_i_PremiumTransactionAKID_VoluntaryPropertyDamageAggregateLimit.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_VoluntaryPropertyDamageAggregateLimit.CoverageLimitValue,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    LKP_COVERAGELIMIT_i_PremiumTransactionAKID_AGGREGATE_LIMIT.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_AGGREGATE_LIMIT.CoverageLimitValue,
+	    LKP_COVERAGELIMIT_i_PremiumTransactionAKID_AggregateLimit.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_AggregateLimit.CoverageLimitValue,
+	    LKP_COVERAGELIMIT_i_PremiumTransactionAKID_TotalAggregateLimit.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_TotalAggregateLimit.CoverageLimitValue,
+	    LKP_COVERAGELIMIT_i_PremiumTransactionAKID_GENERAL_AGGREGATE_LIMIT.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_GENERAL_AGGREGATE_LIMIT.CoverageLimitValue,
+	    LKP_COVERAGELIMIT_i_PremiumTransactionAKID_VoluntaryPropertyDamageAggregateLimit.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_VoluntaryPropertyDamageAggregateLimit.CoverageLimitValue,
+	    'N/A'
 	) AS v_CoverageAggregateLimit,
 	-- *INF*: LTRIM(RTRIM(v_CoverageAggregateLimit))
-	LTRIM(RTRIM(v_CoverageAggregateLimit
-		)
-	) AS o_CoverageAggregateLimit,
+	LTRIM(RTRIM(v_CoverageAggregateLimit)) AS o_CoverageAggregateLimit,
 	-- *INF*: DECODE(TRUE,
 	-- NOT ISNULL(:LKP.LKP_COVERAGELIMIT(i_PremiumTransactionAKID,'OccurrenceLimit')),:LKP.LKP_COVERAGELIMIT(i_PremiumTransactionAKID,'OccurrenceLimit'),
 	-- 
@@ -1019,29 +908,26 @@ EXP_GetAKId AS (
 	-- 
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		LKP_COVERAGELIMIT_i_PremiumTransactionAKID_OccurrenceLimit.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_OccurrenceLimit.CoverageLimitValue,
-		LKP_COVERAGELIMIT_i_PremiumTransactionAKID_EACH_OCCURRENCE_LIMIT.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_EACH_OCCURRENCE_LIMIT.CoverageLimitValue,
-		LKP_COVERAGELIMIT_i_PremiumTransactionAKID_VoluntaryPropertyDamageOccurrenceLimit.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_VoluntaryPropertyDamageOccurrenceLimit.CoverageLimitValue,
-		LKP_COVERAGELIMIT_i_PremiumTransactionAKID_PerOccurrence.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_PerOccurrence.CoverageLimitValue,
-		LKP_COVERAGELIMIT_i_PremiumTransactionAKID_EachOccurrence.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_EachOccurrence.CoverageLimitValue,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    LKP_COVERAGELIMIT_i_PremiumTransactionAKID_OccurrenceLimit.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_OccurrenceLimit.CoverageLimitValue,
+	    LKP_COVERAGELIMIT_i_PremiumTransactionAKID_EACH_OCCURRENCE_LIMIT.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_EACH_OCCURRENCE_LIMIT.CoverageLimitValue,
+	    LKP_COVERAGELIMIT_i_PremiumTransactionAKID_VoluntaryPropertyDamageOccurrenceLimit.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_VoluntaryPropertyDamageOccurrenceLimit.CoverageLimitValue,
+	    LKP_COVERAGELIMIT_i_PremiumTransactionAKID_PerOccurrence.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_PerOccurrence.CoverageLimitValue,
+	    LKP_COVERAGELIMIT_i_PremiumTransactionAKID_EachOccurrence.CoverageLimitValue IS NOT NULL, LKP_COVERAGELIMIT_i_PremiumTransactionAKID_EachOccurrence.CoverageLimitValue,
+	    'N/A'
 	) AS v_CoveragePerOccurenceLimit,
 	-- *INF*: LTRIM(RTRIM(v_CoveragePerOccurenceLimit))
-	LTRIM(RTRIM(v_CoveragePerOccurenceLimit
-		)
-	) AS o_CoveragePerOccurrenceLimit,
+	LTRIM(RTRIM(v_CoveragePerOccurenceLimit)) AS o_CoveragePerOccurrenceLimit,
 	-- *INF*: IIF(i_SourceSystemId='PMS',:LKP.LKP_COVERAGELIMIT(i_PremiumTransactionAKID,'PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT'),
 	-- :LKP.LKP_COVERAGELIMIT(i_PremiumTransactionAKID,'ProductsAggregateLimit'))
-	IFF(i_SourceSystemId = 'PMS',
-		LKP_COVERAGELIMIT_i_PremiumTransactionAKID_PRODUCTS_COMPLETED_OPERATIONS_AGGREGATE_LIMIT.CoverageLimitValue,
-		LKP_COVERAGELIMIT_i_PremiumTransactionAKID_ProductsAggregateLimit.CoverageLimitValue
+	IFF(
+	    i_SourceSystemId = 'PMS',
+	    LKP_COVERAGELIMIT_i_PremiumTransactionAKID_PRODUCTS_COMPLETED_OPERATIONS_AGGREGATE_LIMIT.CoverageLimitValue,
+	    LKP_COVERAGELIMIT_i_PremiumTransactionAKID_ProductsAggregateLimit.CoverageLimitValue
 	) AS v_CoverageProductAggregateLimit,
 	-- *INF*: IIF(ISNULL(v_CoverageProductAggregateLimit),'N/A',v_CoverageProductAggregateLimit)
-	IFF(v_CoverageProductAggregateLimit IS NULL,
-		'N/A',
-		v_CoverageProductAggregateLimit
-	) AS o_CoverageProductAggregateLimit,
+	IFF(v_CoverageProductAggregateLimit IS NULL, 'N/A', v_CoverageProductAggregateLimit) AS o_CoverageProductAggregateLimit,
 	ConstructionCode AS o_ConstructionCode,
 	WindCoverageFlag AS o_WindCoverageFlag,
 	-- *INF*: DECODE(TRUE,
@@ -1053,18 +939,14 @@ EXP_GetAKId AS (
 	'' AS o_ChangeFlag,
 	EXP_GetValues.o_BaseRate,
 	-- *INF*: IIF(i_SourceSystemId = 'PMS', :LKP.LKP_COVERAGELIMIT(i_PremiumTransactionAKID, 'EachRelatedWrongfulEmploymentPractice'))
-	IFF(i_SourceSystemId = 'PMS',
-		LKP_COVERAGELIMIT_i_PremiumTransactionAKID_EachRelatedWrongfulEmploymentPractice.CoverageLimitValue
+	IFF(
+	    i_SourceSystemId = 'PMS',
+	    LKP_COVERAGELIMIT_i_PremiumTransactionAKID_EachRelatedWrongfulEmploymentPractice.CoverageLimitValue
 	) AS v_CoveragePerClaimLimit,
 	-- *INF*: IIF(ISNULL(v_CoveragePerClaimLimit), 'N/A', v_CoveragePerClaimLimit)
-	IFF(v_CoveragePerClaimLimit IS NULL,
-		'N/A',
-		v_CoveragePerClaimLimit
-	) AS o_CoveragePerClaimLimit,
+	IFF(v_CoveragePerClaimLimit IS NULL, 'N/A', v_CoveragePerClaimLimit) AS o_CoveragePerClaimLimit,
 	-- *INF*: LTRIM(RTRIM(i_CoverageLimitType))
-	LTRIM(RTRIM(i_CoverageLimitType
-		)
-	) AS o_LimitOfInsuranceDescription,
+	LTRIM(RTRIM(i_CoverageLimitType)) AS o_LimitOfInsuranceDescription,
 	EXP_GetValues.o_LineOfBusinessAbbreviation AS i_LineOfBusinessAbbreviation,
 	EXP_GetValues.o_ProductAbbreviation AS i_ProductAbbreviation,
 	-- *INF*: DECODE(TRUE,IN (i_LineOfBusinessAbbreviation,'Bonds - Fidelity', 'Bonds - Surety') , 'BND' ,
@@ -1081,21 +963,22 @@ EXP_GetAKId AS (
 	-- IN (i_LineOfBusinessAbbreviation,'GL') , 'GL' ,
 	-- IN (i_LineOfBusinessAbbreviation,'WC') , 'WC' ,
 	-- 'N/A')
-	DECODE(TRUE,
-		i_LineOfBusinessAbbreviation IN ('Bonds - Fidelity','Bonds - Surety'), 'BND',
-		i_LineOfBusinessAbbreviation IN ('NFP D&O','D&O'), 'DNO',
-		i_LineOfBusinessAbbreviation IN ('CL B&M','CL Mine Sub','CL Prop','Cyber Security','Data Compromise'), 'CF',
-		i_LineOfBusinessAbbreviation IN ('CL IM'), 'IM',
-		i_LineOfBusinessAbbreviation IN ('CL Umb'), 'UMB',
-		i_LineOfBusinessAbbreviation IN ('CL Auto'), 'CA',
-		i_LineOfBusinessAbbreviation IN ('Crime'), 'CR',
-		i_LineOfBusinessAbbreviation IN ('E&O'), 'ENO',
-		i_LineOfBusinessAbbreviation IN ('EPLI'), 'EPLI',
-		i_LineOfBusinessAbbreviation IN ('Garage','Auto Dlrs'), 'GA',
-		i_LineOfBusinessAbbreviation IN ('Excess Liab'), 'EL',
-		i_LineOfBusinessAbbreviation IN ('GL'), 'GL',
-		i_LineOfBusinessAbbreviation IN ('WC'), 'WC',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_LineOfBusinessAbbreviation IN ('Bonds - Fidelity','Bonds - Surety'), 'BND',
+	    i_LineOfBusinessAbbreviation IN ('NFP D&O','D&O'), 'DNO',
+	    i_LineOfBusinessAbbreviation IN ('CL B&M','CL Mine Sub','CL Prop','Cyber Security','Data Compromise'), 'CF',
+	    i_LineOfBusinessAbbreviation IN ('CL IM'), 'IM',
+	    i_LineOfBusinessAbbreviation IN ('CL Umb'), 'UMB',
+	    i_LineOfBusinessAbbreviation IN ('CL Auto'), 'CA',
+	    i_LineOfBusinessAbbreviation IN ('Crime'), 'CR',
+	    i_LineOfBusinessAbbreviation IN ('E&O'), 'ENO',
+	    i_LineOfBusinessAbbreviation IN ('EPLI'), 'EPLI',
+	    i_LineOfBusinessAbbreviation IN ('Garage','Auto Dlrs'), 'GA',
+	    i_LineOfBusinessAbbreviation IN ('Excess Liab'), 'EL',
+	    i_LineOfBusinessAbbreviation IN ('GL'), 'GL',
+	    i_LineOfBusinessAbbreviation IN ('WC'), 'WC',
+	    'N/A'
 	) AS v_LineOfBusinessAbbreviation,
 	-- *INF*: DECODE(TRUE, v_LineOfBusinessAbbreviation='WC',  IIF( NOT ISNULL( :LKP.LKP_SupClassification_LOB(v_LineOfBusinessAbbreviation,substr(ClassCode,1,4),RatingStateProvinceCode)),
 	-- :LKP.LKP_SupClassification_LOB(v_LineOfBusinessAbbreviation,substr(ClassCode,1,4),RatingStateProvinceCode) , :LKP.LKP_SupClassification_LOB(v_LineOfBusinessAbbreviation,substr(ClassCode,1,4),'99')) 
@@ -1128,100 +1011,110 @@ EXP_GetAKId AS (
 	-- ,v_LineOfBusinessAbbreviation='GL',  IIF( NOT ISNULL( :LKP.LKP_SupClassification_LOB(v_LineOfBusinessAbbreviation,ClassCode,RatingStateProvinceCode)),
 	-- :LKP.LKP_SupClassification_LOB(v_LineOfBusinessAbbreviation,ClassCode,RatingStateProvinceCode) , :LKP.LKP_SupClassification_LOB(v_LineOfBusinessAbbreviation,ClassCode,'99'))
 	-- )
-	DECODE(TRUE,
-		v_LineOfBusinessAbbreviation = 'WC', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_RatingStateProvinceCode.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_RatingStateProvinceCode.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'CA', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
-			IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result IS NOT NULL,
-				LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result,
-				IFF(LKP_SUPCLASSIFICATION_LOB__GA_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
-					LKP_SUPCLASSIFICATION_LOB__GA_ClassCode_RatingStateProvinceCode.Result,
-					LKP_SUPCLASSIFICATION_LOB__GA_ClassCode_99.Result
-				)
-			)
-		),
-		v_LineOfBusinessAbbreviation = 'CF', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'BND', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'UMB', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'IM', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'CR', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'DNO', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'ENO', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'EPLI', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'EL', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'GA', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
-			IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result IS NOT NULL,
-				LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result,
-				IFF(LKP_SUPCLASSIFICATION_LOB__CA_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
-					LKP_SUPCLASSIFICATION_LOB__CA_ClassCode_RatingStateProvinceCode.Result,
-					LKP_SUPCLASSIFICATION_LOB__CA_ClassCode_99.Result
-				)
-			)
-		),
-		v_LineOfBusinessAbbreviation = 'GL', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
-		)
+	DECODE(
+	    TRUE,
+	    v_LineOfBusinessAbbreviation = 'WC', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_RatingStateProvinceCode.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_RatingStateProvinceCode.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'CA', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
+	        IFF(
+	            LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result IS NOT NULL,
+	            LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result,
+	            IFF(
+	                LKP_SUPCLASSIFICATION_LOB__GA_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
+	                LKP_SUPCLASSIFICATION_LOB__GA_ClassCode_RatingStateProvinceCode.Result,
+	                LKP_SUPCLASSIFICATION_LOB__GA_ClassCode_99.Result
+	            )
+	        )
+	    ),
+	    v_LineOfBusinessAbbreviation = 'CF', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'BND', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'UMB', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'IM', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'CR', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'DNO', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'ENO', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'EPLI', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'EL', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'GA', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
+	        IFF(
+	            LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result IS NOT NULL,
+	            LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result,
+	            IFF(
+	                LKP_SUPCLASSIFICATION_LOB__CA_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
+	                LKP_SUPCLASSIFICATION_LOB__CA_ClassCode_RatingStateProvinceCode.Result,
+	                LKP_SUPCLASSIFICATION_LOB__CA_ClassCode_99.Result
+	            )
+	        )
+	    ),
+	    v_LineOfBusinessAbbreviation = 'GL', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_99.Result
+	    )
 	) AS v_Result,
 	-- *INF*: DECODE(TRUE, IN( i_ProductAbbreviation,'SMART','BOP') OR IN(i_LineOfBusinessAbbreviation,'SMP','BOP'), 'Not Assigned',  ISNULL(v_Result), 'N/A', SUBSTR(v_Result,1,INSTR(v_Result,'#')-1))
-	DECODE(TRUE,
-		i_ProductAbbreviation IN ('SMART','BOP') 
-		OR i_LineOfBusinessAbbreviation IN ('SMP','BOP'), 'Not Assigned',
-		v_Result IS NULL, 'N/A',
-		SUBSTR(v_Result, 1, REGEXP_INSTR(v_Result, '#'
-			) - 1
-		)
+	DECODE(
+	    TRUE,
+	    i_ProductAbbreviation IN ('SMART','BOP') OR i_LineOfBusinessAbbreviation IN ('SMP','BOP'), 'Not Assigned',
+	    v_Result IS NULL, 'N/A',
+	    SUBSTR(v_Result, 1, REGEXP_INSTR(v_Result, '#') - 1)
 	) AS o_ClassDescription,
 	-- *INF*: DECODE(TRUE, IN( i_ProductAbbreviation,'SMART','BOP') OR IN(i_LineOfBusinessAbbreviation,'SMP','BOP'), 'N/A', ISNULL(v_Result), 'N/A', SUBSTR(v_Result,INSTR(v_Result,'#')+1,length(v_Result)))
-	DECODE(TRUE,
-		i_ProductAbbreviation IN ('SMART','BOP') 
-		OR i_LineOfBusinessAbbreviation IN ('SMP','BOP'), 'N/A',
-		v_Result IS NULL, 'N/A',
-		SUBSTR(v_Result, REGEXP_INSTR(v_Result, '#'
-			) + 1, length(v_Result
-			)
-		)
+	DECODE(
+	    TRUE,
+	    i_ProductAbbreviation IN ('SMART','BOP') OR i_LineOfBusinessAbbreviation IN ('SMP','BOP'), 'N/A',
+	    v_Result IS NULL, 'N/A',
+	    SUBSTR(v_Result, REGEXP_INSTR(v_Result, '#') + 1, length(v_Result))
 	) AS o_OriginatingOrganizationCode,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
-	) AS o_CoverageEffectiveDate,
+	TO_TIMESTAMP('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS o_CoverageEffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
-	) AS o_CoverageExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_CoverageExpirationDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
-	) AS o_CoverageCancellationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_CoverageCancellationDate,
 	EXP_GetValues.o_CensusBlockGroupCountyCode AS CensusBlockGroupCountyCode,
 	EXP_GetValues.o_CensusBlockGroupTractCode AS CensusBlockGroupTractCode,
 	EXP_GetValues.o_CensusBlockGroupBlockGroupCode AS CensusBlockGroupBlockGroupCode,
@@ -1288,14 +1181,12 @@ EXP_GetAKId AS (
 
 	LEFT JOIN LKP_SUPCLASSIFICATION_LOB LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_RatingStateProvinceCode
 	ON LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_RatingStateProvinceCode.LineOfBusinessAbbreviation = v_LineOfBusinessAbbreviation
-	AND LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_RatingStateProvinceCode.ClassCode = substr(ClassCode, 1, 4
-		)
+	AND LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_RatingStateProvinceCode.ClassCode = substr(ClassCode, 1, 4)
 	AND LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_RatingStateProvinceCode.RatingStateCode = RatingStateProvinceCode
 
 	LEFT JOIN LKP_SUPCLASSIFICATION_LOB LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_99
 	ON LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_99.LineOfBusinessAbbreviation = v_LineOfBusinessAbbreviation
-	AND LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_99.ClassCode = substr(ClassCode, 1, 4
-		)
+	AND LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_99.ClassCode = substr(ClassCode, 1, 4)
 	AND LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_ClassCode_1_4_99.RatingStateCode = '99'
 
 	LEFT JOIN LKP_SUPCLASSIFICATION_LOB LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_ClassCode_RatingStateProvinceCode

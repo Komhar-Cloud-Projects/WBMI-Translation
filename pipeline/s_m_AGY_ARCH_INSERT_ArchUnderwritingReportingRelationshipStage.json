@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchUnderwritingReportingRelationshipStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchUnderwritingReportingRelations_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_UnderwritingReportingRelationshipStage AS (\n\tSELECT\n\t\tUnderwritingReportingRelationshipStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAssociateID,\n\t\tWestBendAssociateID,\n\t\tReportToAssociateID,\n\t\tReportToWestBendAssociateID,\n\t\tRelationshipType,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID\n\tFROM UnderwritingReportingRelationshipStage\n),\nLKP_ExistingArchive AS (\n\tSELECT\n\tHashKey,\n\tAssociateID,\n\tReportToAssociateID\n\tFROM (\n\t\tselect\ta.HashKey as HashKey,\r\n\t\t\t\ta.ModifiedDate as ModifiedDate,\r\n\t\t\t\ta.AssociateID as AssociateID,\r\n\t\t\t\ta.ReportToAssociateID as ReportToAssociateID\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchUnderwritingReportingRelationshipStage a\r\n\t\tinner join (\r\n\t\t\t\t\tselect AssociateID, ReportToAssociateID, max(ModifiedDate) as ModifiedDate\r\n\t\t\t\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchUnderwritingReportingRelationshipStage\r\n\t\t\t\t\tgroup by AssociateID, ReportToAssociateID) b\r\n\t\ton  a.AssociateID = b.AssociateID\r\n\t\tand a.ReportToAssociateID = b.ReportToAssociateID\r\n\t\tand a.ModifiedDate = b.ModifiedDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AssociateID,ReportToAssociateID ORDER BY HashKey) = 1\n),\nEXP_AddAuditID AS (\n\tSELECT\n\tSQ_UnderwritingReportingRelationshipStage.UnderwritingReportingRelationshipStageID,\n\tSQ_UnderwritingReportingRelationshipStage.AgencyODSSourceSystemID,\n\tSQ_UnderwritingReportingRelationshipStage.HashKey,\n\tSQ_UnderwritingReportingRelationshipStage.ModifiedUserID,\n\tSQ_UnderwritingReportingRelationshipStage.ModifiedDate,\n\tSQ_UnderwritingReportingRelationshipStage.AssociateID,\n\tSQ_UnderwritingReportingRelationshipStage.WestBendAssociateID,\n\tSQ_UnderwritingReportingRelationshipStage.ReportToAssociateID,\n\tSQ_UnderwritingReportingRelationshipStage.ReportToWestBendAssociateID,\n\tSQ_UnderwritingReportingRelationshipStage.RelationshipType,\n\tSQ_UnderwritingReportingRelationshipStage.ExtractDate,\n\tSQ_UnderwritingReportingRelationshipStage.AsOfDate,\n\tSQ_UnderwritingReportingRelationshipStage.RecordCount,\n\tSQ_UnderwritingReportingRelationshipStage.SourceSystemID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID,\n\tLKP_ExistingArchive.HashKey AS lkp_HashKey,\n\t-- *INF*: Decode(true,\r\n\t-- HashKey = lkp_HashKey, 'IGNORE',\r\n\t-- IsNull(lkp_HashKey), 'INSERT',\r\n\t-- 'UPDATE')\n\tDecode(\n\t    true,\n\t    HashKey = lkp_HashKey, 'IGNORE',\n\t    lkp_HashKey IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag\n\tFROM SQ_UnderwritingReportingRelationshipStage\n\tLEFT JOIN LKP_ExistingArchive\n\tON LKP_ExistingArchive.AssociateID = SQ_UnderwritingReportingRelationshipStage.AssociateID AND LKP_ExistingArchive.ReportToAssociateID = SQ_UnderwritingReportingRelationshipStage.ReportToAssociateID\n),\nFIL_ChangesOnly AS (\n\tSELECT\n\tUnderwritingReportingRelationshipStageID, \n\tAgencyODSSourceSystemID, \n\tHashKey, \n\tModifiedUserID, \n\tModifiedDate, \n\tAssociateID, \n\tWestBendAssociateID, \n\tReportToAssociateID, \n\tReportToWestBendAssociateID, \n\tRelationshipType, \n\tExtractDate, \n\tAsOfDate, \n\tRecordCount, \n\tSourceSystemID, \n\tOUT_AUDIT_ID, \n\to_ChangeFlag\n\tFROM EXP_AddAuditID\n\tWHERE o_ChangeFlag = 'INSERT' OR o_ChangeFlag = 'UPDATE'\n),\nArchUnderwritingReportingRelationshipStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchUnderwritingReportingRelationshipStage\n\t(UnderwritingReportingRelationshipStageID, AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AssociateID, WestBendAssociateID, ReportToAssociateID, ReportToWestBendAssociateID, RelationshipType, ExtractDate, AsOfDate, RecordCount, SourceSystemID, AuditID)\n\tSELECT \n\tUNDERWRITINGREPORTINGRELATIONSHIPSTAGEID, \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tASSOCIATEID, \n\tWESTBENDASSOCIATEID, \n\tREPORTTOASSOCIATEID, \n\tREPORTTOWESTBENDASSOCIATEID, \n\tRELATIONSHIPTYPE, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\tOUT_AUDIT_ID AS AUDITID\n\tFROM FIL_ChangesOnly\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

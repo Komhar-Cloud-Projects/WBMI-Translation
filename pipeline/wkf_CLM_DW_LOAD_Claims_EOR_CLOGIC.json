@@ -408,7 +408,7 @@
             }
         ],
         "folder": {
-            "name": "Claims DataWarehouse/"
+            "name": "ClaimsDataWarehouse/"
         },
         "variables": {
             "Params": {

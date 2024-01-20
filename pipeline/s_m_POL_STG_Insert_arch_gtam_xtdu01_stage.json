@@ -1,0 +1,51 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_gtam_xtdu01_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_gtam_xtdu01_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_xtdu01_stage AS (\n\tSELECT\n\t\tgtam_xtdu01_stage_id,\n\t\tfield_heading,\n\t\txtdu01_code,\n\t\tverbal_description,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_xtdu01_stage\n),\nLKP_arch_gtam_xtud01_stage AS (\n\tSELECT\n\tarch_gtam_xtdu01_stage_id,\n\tverbal_description,\n\txtdu01_code,\n\tfield_heading\n\tFROM (\n\t\tSELECT \r\n\t\tarch_gtam_xtdu01_stage.arch_gtam_xtdu01_stage_id as arch_gtam_xtdu01_stage_id, \r\n\t\tarch_gtam_xtdu01_stage.verbal_description as verbal_description, \r\n\t\tarch_gtam_xtdu01_stage.xtdu01_code as xtdu01_code, \r\n\t\tarch_gtam_xtdu01_stage.field_heading as field_heading \r\n\t\tFROM \r\n\t\tarch_gtam_xtdu01_stage\r\n\t\twhere arch_gtam_xtdu01_stage_id in (\r\n\t\tselect max(arch_gtam_xtdu01_stage_id)\r\n\t\tfrom arch_gtam_xtdu01_stage b\r\n\t\tgroup by \r\n\t\tb.xtdu01_code,\r\n\t\tb.field_heading)\r\n\t\torder by \r\n\t\tarch_gtam_xtdu01_stage.xtdu01_code,\r\n\t\tarch_gtam_xtdu01_stage.field_heading --\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY xtdu01_code,field_heading ORDER BY arch_gtam_xtdu01_stage_id) = 1\n),\nEXP_arch_gtam_xtdu01_stage AS (\n\tSELECT\n\tLKP_arch_gtam_xtud01_stage.arch_gtam_xtdu01_stage_id AS lkp_arch_gtam_xtdu01_stage_id,\n\tLKP_arch_gtam_xtud01_stage.verbal_description AS lkp_verbal_description,\n\tSQ_gtam_xtdu01_stage.gtam_xtdu01_stage_id,\n\tSQ_gtam_xtdu01_stage.field_heading,\n\tSQ_gtam_xtdu01_stage.xtdu01_code,\n\tSQ_gtam_xtdu01_stage.verbal_description,\n\t-- *INF*: iif(isnull(lkp_arch_gtam_xtdu01_stage_id),'NEW',IIF(lkp_verbal_description != verbal_description,'UPDATE','NOCHANGE'))\n\tIFF(\n\t    lkp_arch_gtam_xtdu01_stage_id IS NULL, 'NEW',\n\t    IFF(\n\t        lkp_verbal_description != verbal_description, 'UPDATE', 'NOCHANGE'\n\t    )\n\t) AS v_changed_flag,\n\tv_changed_flag AS changed_flag,\n\tSYSDATE AS extract_date,\n\tSYSDATE AS as_of_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id\n\tFROM SQ_gtam_xtdu01_stage\n\tLEFT JOIN LKP_arch_gtam_xtud01_stage\n\tON LKP_arch_gtam_xtud01_stage.xtdu01_code = SQ_gtam_xtdu01_stage.xtdu01_code AND LKP_arch_gtam_xtud01_stage.field_heading = SQ_gtam_xtdu01_stage.field_heading\n),\nFIL_arch_gtam_xtdu01_stage AS (\n\tSELECT\n\tgtam_xtdu01_stage_id, \n\tfield_heading, \n\txtdu01_code, \n\tverbal_description, \n\tchanged_flag, \n\textract_date, \n\tas_of_date, \n\tsource_system_id, \n\taudit_id\n\tFROM EXP_arch_gtam_xtdu01_stage\n\tWHERE changed_flag='NEW' or changed_flag='UPDATE'\n),\nTGT_arch_gtam_xtdu01_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_gtam_xtdu01_stage\n\t(gtam_xtdu01_stage_id, field_heading, xtdu01_code, verbal_description, extract_date, as_of_date, source_system_id, audit_id)\n\tSELECT \n\tGTAM_XTDU01_STAGE_ID, \n\tFIELD_HEADING, \n\tXTDU01_CODE, \n\tVERBAL_DESCRIPTION, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID\n\tFROM FIL_arch_gtam_xtdu01_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

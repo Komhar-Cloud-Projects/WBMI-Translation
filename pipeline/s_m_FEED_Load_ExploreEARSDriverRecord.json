@@ -1,0 +1,63 @@
+{
+    "name": "s_m_FEED_Load_ExploreEARSDriverRecord",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_FEED_Load_ExploreEARSDriverRecord",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Driver AS (\n\tDeclare @StartTime datetime\r\n\tDeclare @EndTime datetime\r\n\t\r\n\tset @StartTime=@{pipeline().parameters.START_DATE}\r\n\tset @EndTime=@{pipeline().parameters.END_DATE}\r\n\t\r\n\tselect distinct DP.PolicyNumber pol_num,\r\n\tWP.PolicyVersionFormatted pol_mod,\r\n\tDP.ExpirationDate pol_exp_date,\r\n\tWA.Reference AgencyCode,\r\n\tcase when len(ltrim(rtrim(ISNULL(DCD.StateLicensed,'N/A'))))=0 then 'N/A' else ISNULL(DCD.StateLicensed,'N/A') end LicenseState,\r\n\tcase when len(ltrim(rtrim(ISNULL(DCD.DriversLicenseNumber,'N/A'))))=0 then 'N/A' else ISNULL(DCD.DriversLicenseNumber,'N/A') end LicenseNumber,\r\n\tcase when len(ltrim(rtrim(ISNULL(WCD.LastName,'N/A'))))=0 then 'N/A' else ISNULL(SUBSTRING(WCD.LastName,1,25),'N/A') end LastName,\r\n\tcase when len(ltrim(rtrim(ISNULL(WCD.Name,'N/A'))))=0 then 'N/A' else ISNULL(SUBSTRING(WCD.Name,1,20),'N/A') end FirstName,\r\n\tcase when len(ltrim(rtrim(ISNULL(WCD.MiddleInitial,'N/A'))))=0 then 'N/A' else ISNULL(SUBSTRING(WCD.MiddleInitial,1,20),'N/A') end MiddleName,\r\n\tcase when len(ltrim(rtrim(ISNULL(substring(WCD.Gender,1,1),'N/A'))))=0 then 'N/A' else ISNULL(substring(WCD.Gender,1,1),'U') end  GenderCode,\r\n\tWCD.DateOfBirth Birthdate,\r\n\tcase when len(ltrim(rtrim(ISNULL(dl.Address1,'N/A'))))=0 then 'N/A' else ISNULL(dl.Address1,'N/A') end addr_line_1,\r\n\tcase when len(ltrim(rtrim(ISNULL(DL.PostalCode,'N/A'))))=0 then 'N/A' else ISNULL(substring(DL.PostalCode,1,5),'N/A') end zip_postal_code\r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Policy DP\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Policy WP\r\n\ton DP.SessionId=WP.SessionId\r\n\tand DP.PolicyId=WP.PolicyId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction T\r\n\ton DP.SessionId=T.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Line L\r\n\ton DP.SessionId=L.SessionId\r\n\tand DP.PolicyId=L.PolicyId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_CA_Driver DCD\r\n\ton DP.SessionId=DCD.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_CA_Driver WCD\r\n\ton DCD.SessionId=WCD.SessionId\r\n\tand DCD.CA_DriverId=WCD.CA_DriverId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Party DCP\r\n\ton DP.SessionId=DCP.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Location DL\r\n\ton DP.SessionId=DL.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_LocationAssociation DLA\r\n\ton DL.SessionId=DLA.SessionId\r\n\tand DL.LocationId=DLA.LocationId\r\n\tand DLA.LocationAssociationType='Account'\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Agency WA\r\n\ton DCP.SessionId=WA.SessionId\r\n\tand DCP.PartyId=WA.PartyId\r\n\twhere \r\n\tT.HistoryID in (select max(C.HistoryID) HistoryID from DC_Policy A\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Policy B\r\n\ton A.SessionId=B.SessionId\r\n\tand A.PolicyId=B.PolicyId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction C\r\n\ton A.SessionId=C.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session S\r\n\ton A.SessionId=S.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction T\r\n\ton A.SessionId=T.SessionId\r\n\twhere C.State='Committed'\r\n\tand case when S.CreateDateTime<=T.TransactionDate then S.CreateDateTime else T.TransactionDate end<=@StartTime\r\n\tgroup by B.PolicyNumber,B.PolicyVersionFormatted)\r\n\t--and DCD.StateLicensed in ('IA','MI','MN','OH','WI','MO','KS','IL','IN')\r\n\t--and DP.PrimaryRatingState in ('IL','IN','IA','KS','MI','MN','MO','OH','WI')\r\n\tand WCD.ExcludeDriver = 'No' \r\n\tand WCD.MVRStatus in ('Cleared','Returned')\r\n\tand DP.Status not in ('Quote','PolicyDeclined','PolicyClosed','Bound','Application')\r\n\tand wp.Division<>'NSI'\r\n\tand case when DP.Status='Cancelled' and T.EffectiveDate<=@StartTime then 1 else 0 end=0\r\n\tand L.Type='CommercialAuto'\r\n\tand @StartTime between DP.EffectiveDate and DP.ExpirationDate\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Calculate AS (\n\tSELECT\n\tpol_num AS i_pol_num,\n\tpol_mod AS i_pol_mod,\n\tpol_exp_date AS i_pol_exp_date,\n\tAgencyCode AS i_AgencyCode,\n\tLicenseState AS i_LicenseState,\n\tLicenseNumber AS i_LicenseNumber,\n\tLastName AS i_LastName,\n\tFirstName AS i_FirstName,\n\tMiddleName AS i_MiddleName,\n\tGenderCode AS i_GenderCode,\n\tBirthdate AS i_Birthdate,\n\taddr_line_1 AS i_addr_line_1,\n\tzip_postal_code AS i_zip_postal_code,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tSYSDATE AS o_CreatedDate,\n\ti_LicenseState AS o_LicenseState,\n\ti_LicenseNumber AS o_LicenseNumber,\n\ti_LastName AS o_LastName,\n\t-- *INF*: SUBSTR(i_FirstName, 1, 20)\n\tSUBSTR(i_FirstName, 1, 20) AS o_FirstName,\n\ti_MiddleName AS o_MiddleName,\n\t-- *INF*: TO_CHAR(TRUNC(i_Birthdate, 'DD'),'YYYYMMDD')\n\tTO_CHAR(CAST(TRUNC(i_Birthdate, 'DAY') AS TIMESTAMP_NTZ(0)), 'YYYYMMDD') AS o_Birthdate,\n\ti_zip_postal_code AS o_ZipCode,\n\ti_addr_line_1 AS o_StreetAddress,\n\ti_GenderCode AS o_Gender,\n\ti_pol_num||i_pol_mod AS o_PolicyNumber,\n\t-- *INF*: TO_CHAR(TRUNC(i_pol_exp_date, 'DD'),'YYYYMMDD')\n\tTO_CHAR(CAST(TRUNC(i_pol_exp_date, 'DAY') AS TIMESTAMP_NTZ(0)), 'YYYYMMDD') AS o_PolicyExpirationDate,\n\ti_pol_num||i_pol_mod AS o_QuotebackPolicyNumber,\n\ti_AgencyCode AS o_QuotebackAgencyNumber,\n\ti_LicenseNumber AS o_QuotebackDriverLicense,\n\ti_LicenseState AS o_QuotebackState,\n\t'   ' AS o_InsuranceIndicator,\n\t'100000000' AS o_ProductFlags,\n\t'611853' AS o_AccountNumber\n\tFROM SQ_Driver\n),\nExploreEARSDriverRecord AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.ExploreEARSDriverRecord;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ExploreEARSDriverRecord\n\t(AuditId, CreatedDate, LicenseState, LicenseNumber, LastName, FirstName, MiddleName, Birthdate, ZipCode, StreetAddress, Gender, PolicyNumber, PolicyExpirationDate, QuotebackPolicyNumber, QuotebackAgencyNumber, QuotebackDriverLicense, QuotebackState, InsuranceIndicator, ProductFlags, AccountNumber)\n\tSELECT \n\to_AuditId AS AUDITID, \n\to_CreatedDate AS CREATEDDATE, \n\to_LicenseState AS LICENSESTATE, \n\to_LicenseNumber AS LICENSENUMBER, \n\to_LastName AS LASTNAME, \n\to_FirstName AS FIRSTNAME, \n\to_MiddleName AS MIDDLENAME, \n\to_Birthdate AS BIRTHDATE, \n\to_ZipCode AS ZIPCODE, \n\to_StreetAddress AS STREETADDRESS, \n\to_Gender AS GENDER, \n\to_PolicyNumber AS POLICYNUMBER, \n\to_PolicyExpirationDate AS POLICYEXPIRATIONDATE, \n\to_QuotebackPolicyNumber AS QUOTEBACKPOLICYNUMBER, \n\to_QuotebackAgencyNumber AS QUOTEBACKAGENCYNUMBER, \n\to_QuotebackDriverLicense AS QUOTEBACKDRIVERLICENSE, \n\to_QuotebackState AS QUOTEBACKSTATE, \n\to_InsuranceIndicator AS INSURANCEINDICATOR, \n\to_ProductFlags AS PRODUCTFLAGS, \n\to_AccountNumber AS ACCOUNTNUMBER\n\tFROM EXP_Calculate\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "START_DATE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "END_DATE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

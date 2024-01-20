@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCADriverStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCADriverStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCADriverStaging AS (\n\tSELECT\n\t\tWBCADriverStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCA_DriverId,\n\t\tWB_CA_DriverId,\n\t\tSessionId,\n\t\tDateOfBirth,\n\t\tName,\n\t\tMiddleInitial,\n\t\tLastName,\n\t\tGender,\n\t\tMaritalStatus,\n\t\tExcludeDriver,\n\t\tWatchDriver,\n\t\tPermanentDriver,\n\t\tSelectForMVR,\n\t\tTaskFlagCAMVRViolationCategoryNotFound,\n\t\tTaskFlagCAMVRViolationCategoryNotFoundEARS,\n\t\tMVRDate,\n\t\tMVRStatus\n\tFROM WBCADriverStaging\n),\nEXP_handle AS (\n\tSELECT\n\tExtractDate AS i_ExtractDate,\n\tSourceSystemId AS i_SourceSystemId,\n\tCA_DriverId AS i_CA_DriverId,\n\tWB_CA_DriverId AS i_WB_CA_DriverId,\n\tSessionId AS i_SessionId,\n\tDateOfBirth AS i_DateOfBirth,\n\tName AS i_Name,\n\tMiddleInitial AS i_MiddleInitial,\n\tLastName AS i_LastName,\n\tGender AS i_Gender,\n\tMaritalStatus AS i_MaritalStatus,\n\tExcludeDriver AS i_ExcludeDriver,\n\tWatchDriver AS i_WatchDriver,\n\tPermanentDriver AS i_PermanentDriver,\n\tSelectForMVR AS i_SelectForMVR,\n\tTaskFlagCAMVRViolationCategoryNotFound AS i_TaskFlagCAMVRViolationCategoryNotFound,\n\tTaskFlagCAMVRViolationCategoryNotFoundEARS AS i_TaskFlagCAMVRViolationCategoryNotFoundEARS,\n\tMVRDate AS i_MVRDate,\n\tMVRStatus AS i_MVRStatus,\n\ti_ExtractDate AS o_Exctracdate,\n\ti_SourceSystemId AS o_SourceSystemid,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\ti_CA_DriverId AS o_CA_DriverId,\n\ti_WB_CA_DriverId AS o_WB_CA_DriverId,\n\ti_SessionId AS o_SessionId,\n\ti_ExcludeDriver AS o_ExcludeDriver,\n\t-- *INF*: decode(i_WatchDriver,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_WatchDriver,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_WatchDriver,\n\t-- *INF*: decode(i_PermanentDriver,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_PermanentDriver,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PermanentDriver,\n\t-- *INF*: decode(i_SelectForMVR,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_SelectForMVR,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_SelectForMVR,\n\ti_MVRDate AS o_MVRDate,\n\ti_MVRStatus AS o_MVRStatus,\n\t-- *INF*: decode(i_TaskFlagCAMVRViolationCategoryNotFound,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_TaskFlagCAMVRViolationCategoryNotFound,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaskFlagCAMVRViolationCategoryNotFound,\n\t-- *INF*: DECODE(i_TaskFlagCAMVRViolationCategoryNotFoundEARS,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_TaskFlagCAMVRViolationCategoryNotFoundEARS,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaskFlagCAMVRViolationCategoryNotFoundEARS,\n\ti_DateOfBirth AS o_DateOfBirth,\n\ti_Name AS o_Name,\n\ti_MiddleInitial AS o_MiddleInitial,\n\ti_LastName AS o_LastName,\n\ti_Gender AS o_Gender,\n\ti_MaritalStatus AS o_MaritalStatus\n\tFROM SQ_WBCADriverStaging\n),\nArchWBCADriverStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCADriverStaging\n\t(ExtractDate, SourceSystemId, AuditId, CA_DriverId, WB_CA_DriverId, SessionId, ExcludeDriver, WatchDriver, PermanentDriver, DriverUnderwritingInformationSelectForMVR, MVRDate, MVRStatus, SelectForMVR, TaskFlagCAMVRViolationCategoryNotFound, TaskFlagCAMVRViolationCategoryNotFoundEARS, DateOfBirth, Name, MiddleInitial, LastName, Gender, MaritalStatus)\n\tSELECT \n\to_Exctracdate AS EXTRACTDATE, \n\to_SourceSystemid AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\to_CA_DriverId AS CA_DRIVERID, \n\to_WB_CA_DriverId AS WB_CA_DRIVERID, \n\to_SessionId AS SESSIONID, \n\to_ExcludeDriver AS EXCLUDEDRIVER, \n\to_WatchDriver AS WATCHDRIVER, \n\to_PermanentDriver AS PERMANENTDRIVER, \n\to_SelectForMVR AS DRIVERUNDERWRITINGINFORMATIONSELECTFORMVR, \n\to_MVRDate AS MVRDATE, \n\to_MVRStatus AS MVRSTATUS, \n\to_SelectForMVR AS SELECTFORMVR, \n\to_TaskFlagCAMVRViolationCategoryNotFound AS TASKFLAGCAMVRVIOLATIONCATEGORYNOTFOUND, \n\to_TaskFlagCAMVRViolationCategoryNotFoundEARS AS TASKFLAGCAMVRVIOLATIONCATEGORYNOTFOUNDEARS, \n\to_DateOfBirth AS DATEOFBIRTH, \n\to_Name AS NAME, \n\to_MiddleInitial AS MIDDLEINITIAL, \n\to_LastName AS LASTNAME, \n\to_Gender AS GENDER, \n\to_MaritalStatus AS MARITALSTATUS\n\tFROM EXP_handle\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

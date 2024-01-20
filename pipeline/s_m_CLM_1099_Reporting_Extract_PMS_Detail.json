@@ -1,0 +1,63 @@
+{
+    "name": "s_m_CLM_1099_Reporting_Extract_PMS_Detail",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_1099_Reporting_Extract_PMS_Detail",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_1099_Reporting_PMS AS (\n\tSELECT\r\n\tC.SEARCH_TAX_ID,\r\n\tA.DraftAmt AS PAID_AMT,\r\n\tA.TransDate AS TransDate,\r\n\tA.DraftNum as DraftNum,\r\n\tA.Sym as Sym,\r\n\tA.PolicyNum as PolicyNum,\r\n\tA.Module as Module,\r\n\tA.LossDate as LossDate\r\n\t\r\n\tFROM\r\n\tPif4578RecStage A with (nolock) \r\n\t\r\n\tINNER JOIN \r\n\tpms_adjuster_master_stage B with (nolock) \r\n\tON A.AdjustorNo = B.adnm_adjustor_nbr \r\n\t\r\n\tINNER JOIN \r\n\tMaster1099ListMonthlyStage C with (nolock) \r\n\tON B.adnm_taxid_ssn = C.TAX_ID\r\n\t\r\n\tWHERE\r\n\tA.TransDate >= (SELECT      DATEADD(YEAR, DATEDIFF(YEAR, 0,DATEADD(m,-1,getdate())),0)\r\n\t            'First Day of Year using previous month date') \r\n\tAND\r\n\tA.TransDate <= (SELECT DATEADD(s,-1,DATEADD(mm, DATEDIFF(m,0,GETDATE())-@{pipeline().parameters.NO_OF_MONTHS},0))\r\n\tLastDay_PreviousMonth) AND\r\n\tC.REPORTABLE_IND = 'Y' AND\r\n\tA.PAIDRESERVEAMT >0 AND\r\n\tC.Is_Valid='Y' AND \r\n\tB.adnm_taxid_ssn <> ''\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_cleanse_input AS (\n\tSELECT\n\tsearch_tax_id,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(search_tax_id)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(search_tax_id) AS search_tax_id_out,\n\tDraftAmt AS ctx_trs_amt,\n\t-- *INF*: IIF(ISNULL(ctx_trs_amt),0,ctx_trs_amt)\n\tIFF(ctx_trs_amt IS NULL, 0, ctx_trs_amt) AS ctx_trs_amt_out,\n\tDraftNum AS CheckNumber,\n\tTransDate AS PaymentIssueDate,\n\tSym,\n\tPolicyNum,\n\tModule,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(Sym || PolicyNum || Module),'N/A',\r\n\t-- Sym || PolicyNum || Module)\n\tDECODE(\n\t    TRUE,\n\t    Sym || PolicyNum || Module IS NULL, 'N/A',\n\t    Sym || PolicyNum || Module\n\t) AS v_PolicyKey,\n\tv_PolicyKey AS PolicyKey,\n\tLossDate,\n\t-- *INF*: TO_CHAR(GET_DATE_PART(LossDate,'YYYY')) ||\r\n\t-- LPAD(TO_CHAR(GET_DATE_PART(LossDate,'MM')),2,'0') || LPAD(TO_CHAR(GET_DATE_PART(LossDate, 'DD')),2,'0')\n\tTO_CHAR(DATE_PART(LossDate, 'YYYY')) || LPAD(TO_CHAR(DATE_PART(LossDate, 'MM')), 2, '0') || LPAD(TO_CHAR(DATE_PART(LossDate, 'DD')), 2, '0') AS v_LossDate,\n\tv_PolicyKey || v_LossDate AS ClaimNumber,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id\n\tFROM SQ_1099_Reporting_PMS\n),\nLKP_Work1099Reporting AS (\n\tSELECT\n\tWork1099ReportingId,\n\tSearchTaxId,\n\tSourceSystemID\n\tFROM (\n\t\tSELECT Work1099ReportingId as Work1099ReportingId, SearchTaxId as SearchTaxId, Work1099Reporting.SourceSystemID as SourceSystemID FROM @{pipeline().parameters.SOURCE_DATABASE_NAME2}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.Work1099Reporting\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY SearchTaxId,SourceSystemID ORDER BY Work1099ReportingId DESC) = 1\n),\nLKP_claim_occ_key_Loss_desc AS (\n\tSELECT\n\tclaim_loss_descript,\n\tpol_key,\n\tclaim_loss_date\n\tFROM (\n\t\tSELECT distinct\r\n\t\tclaim_occurrence.claim_occurrence_key as claim_occurrence_key, \r\n\t\tclaim_occurrence.claim_loss_descript as claim_loss_descript, claim_occurrence.pol_key as pol_key, claim_occurrence.claim_loss_date as claim_loss_date FROM @{pipeline().parameters.SOURCE_DATABASE_NAME2}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_occurrence\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY pol_key,claim_loss_date ORDER BY claim_loss_descript DESC) = 1\n),\nEXP_output AS (\n\tSELECT\n\t1 AS default_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\tSYSDATE AS default_date,\n\t'PMS' AS source_sys_id,\n\tLKP_Work1099Reporting.Work1099ReportingId,\n\tEXP_cleanse_input.search_tax_id_out AS search_tax_id,\n\tEXP_cleanse_input.ctx_trs_amt_out AS ctx_trs_amt,\n\tEXP_cleanse_input.PolicyKey,\n\tEXP_cleanse_input.LossDate,\n\tEXP_cleanse_input.ClaimNumber,\n\tEXP_cleanse_input.CheckNumber,\n\tEXP_cleanse_input.PaymentIssueDate,\n\tLKP_claim_occ_key_Loss_desc.claim_loss_descript AS LossDescription,\n\t-- *INF*: IIF(ISNULL(LossDescription),'N/A',\r\n\t-- LossDescription)\n\tIFF(LossDescription IS NULL, 'N/A', LossDescription) AS o_LossDescription\n\tFROM EXP_cleanse_input\n\tLEFT JOIN LKP_Work1099Reporting\n\tON LKP_Work1099Reporting.SearchTaxId = EXP_cleanse_input.search_tax_id_out AND LKP_Work1099Reporting.SourceSystemID = EXP_cleanse_input.source_sys_id\n\tLEFT JOIN LKP_claim_occ_key_Loss_desc\n\tON LKP_claim_occ_key_Loss_desc.pol_key = EXP_cleanse_input.PolicyKey AND LKP_claim_occ_key_Loss_desc.claim_loss_date = EXP_cleanse_input.LossDate\n),\nWork1099ReportingDetail AS (\n\tINSERT INTO Work1099ReportingDetail\n\t(Work1099ReportingId, PaidAmount, ClaimNumber, CheckNumber, PaymentIssueDate, LossDate, LossDescription)\n\tSELECT \n\tWORK1099REPORTINGID, \n\tctx_trs_amt AS PAIDAMOUNT, \n\tCLAIMNUMBER, \n\tCHECKNUMBER, \n\tPAYMENTISSUEDATE, \n\tLOSSDATE, \n\to_LossDescription AS LOSSDESCRIPTION\n\tFROM EXP_output\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "NO_OF_MONTHS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_DATABASE_NAME2": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimDataServices/"
+        },
+        "annotations": []
+    }
+}

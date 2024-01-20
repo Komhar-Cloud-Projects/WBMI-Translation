@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_gtam_wbclb_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_gtam_wbclb_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_wbclb_stage AS (\n\tSELECT\n\t\tgtam_wbclb_stage_id,\n\t\tprog_code,\n\t\tprog_description,\n\t\tprog_type,\n\t\tinactive_ind,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_wbclb_stage\n),\nLKP_arch_gtam_wbclb_stage AS (\n\tSELECT\n\tarch_gtam_wbclb_stage_id,\n\tgtam_wbclb_stage_id,\n\tprog_description,\n\tprog_type,\n\tinactive_ind,\n\tin_prog_code,\n\tprog_code\n\tFROM (\n\t\tSELECT arch_gtam_wbclb_stage.arch_gtam_wbclb_stage_id as arch_gtam_wbclb_stage_id, arch_gtam_wbclb_stage.gtam_wbclb_stage_id as gtam_wbclb_stage_id, arch_gtam_wbclb_stage.prog_description as prog_description, arch_gtam_wbclb_stage.prog_type as prog_type, arch_gtam_wbclb_stage.inactive_ind as inactive_ind, arch_gtam_wbclb_stage.prog_code as prog_code FROM arch_gtam_wbclb_stage\r\n\t\twhere \tarch_gtam_wbclb_stage.arch_gtam_wbclb_stage_id In\r\n\t\t\t(Select max(arch_gtam_wbclb_stage_id) from arch_gtam_wbclb_stage b\r\n\t\t\tgroup by b.prog_code)\r\n\t\torder by arch_gtam_wbclb_stage.prog_code--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY prog_code ORDER BY arch_gtam_wbclb_stage_id) = 1\n),\nEXP_arch_wbclb_stage AS (\n\tSELECT\n\tSQ_gtam_wbclb_stage.gtam_wbclb_stage_id,\n\tSQ_gtam_wbclb_stage.prog_code,\n\tSQ_gtam_wbclb_stage.prog_description,\n\tSQ_gtam_wbclb_stage.prog_type,\n\tSQ_gtam_wbclb_stage.inactive_ind,\n\tSQ_gtam_wbclb_stage.extract_date AS EXTRACT_DATE,\n\tSQ_gtam_wbclb_stage.as_of_date AS AS_OF_DATE,\n\tSQ_gtam_wbclb_stage.record_count AS RECORD_COUNT,\n\tSQ_gtam_wbclb_stage.source_system_id AS SOURCE_SYSTEM_ID,\n\tLKP_arch_gtam_wbclb_stage.arch_gtam_wbclb_stage_id AS old_arch_gtam_wbclb_stage_id,\n\tLKP_arch_gtam_wbclb_stage.prog_description AS old_prog_description,\n\tLKP_arch_gtam_wbclb_stage.prog_type AS old_prog_type,\n\tLKP_arch_gtam_wbclb_stage.inactive_ind AS old_inactive_ind,\n\t-- *INF*: iif(isnull(old_arch_gtam_wbclb_stage_id) , 'NEW',\r\n\t--      iif((old_prog_description<>prog_description) OR\r\n\t--           (old_prog_type <> prog_type) OR\r\n\t--           (old_inactive_ind <> inactive_ind), 'UPDATE', 'NOCHANGE'))\r\n\t-- \n\tIFF(\n\t    old_arch_gtam_wbclb_stage_id IS NULL, 'NEW',\n\t    IFF(\n\t        (old_prog_description <> prog_description)\n\t        or (old_prog_type <> prog_type)\n\t        or (old_inactive_ind <> inactive_ind),\n\t        'UPDATE',\n\t        'NOCHANGE'\n\t    )\n\t) AS v_Changed_Flag,\n\tv_Changed_Flag AS Changed_Flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID\n\tFROM SQ_gtam_wbclb_stage\n\tLEFT JOIN LKP_arch_gtam_wbclb_stage\n\tON LKP_arch_gtam_wbclb_stage.prog_code = SQ_gtam_wbclb_stage.prog_code\n),\nFIL_Inserts AS (\n\tSELECT\n\tgtam_wbclb_stage_id, \n\tprog_code, \n\tprog_description, \n\tprog_type, \n\tinactive_ind, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tChanged_Flag, \n\tAUDIT_ID\n\tFROM EXP_arch_wbclb_stage\n\tWHERE Changed_Flag = 'NEW' OR Changed_Flag = 'UPDATE'\n),\narch_gtam_wbclb_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_gtam_wbclb_stage\n\t(gtam_wbclb_stage_id, prog_code, prog_description, prog_type, inactive_ind, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tGTAM_WBCLB_STAGE_ID, \n\tPROG_CODE, \n\tPROG_DESCRIPTION, \n\tPROG_TYPE, \n\tINACTIVE_IND, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID\n\tFROM FIL_Inserts\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

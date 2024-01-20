@@ -1,0 +1,568 @@
+{
+    "name": "wkf_POL_DC_ARCH_archTransactionStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCTransactionStaging",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_archDCTransactionStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCoverageStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCoverageStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBTransactionStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBTransactionStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_archWBGOCStateStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_archWBGOCStateStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCAGarageStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCAGarageStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_archWBIMStateStaging",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_archWBIMStateStaging"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCFRatingGroupSt_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCFRatingGroupStaging"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCFRatingGroupStaging",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageBuild_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageBuildingStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageBuildingStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageEarth_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageEarthQuakeStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageEarthQuakeStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoveragePerso_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoveragePersonalPropertyStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoveragePersonalPropertyStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCFCoverageEarth_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCFCoverageEarthquakeRiskStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCFCoverageEarthquakeRiskStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBPOLBatchRenewal_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBPOLBatchRenewalPolicyStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBPOLBatchRenewalPolicyStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCTransactionRepo_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCTransactionReportEntryStaging"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCTransactionReportEntryStaging",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCAPublicStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCAPublicStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCFCoverageUnman_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCFCoverageUnmannedAircraftStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCFCoverageUnmannedAircraftStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageEmplo_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageEmployeeDishonestyStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageEmployeeDishonestyStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageUnman_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageUnmannedAircraftLimitedStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageUnmannedAircraftLimitedStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageUnman_01",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageUnmannedAircraftPropertyStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageUnmannedAircraftPropertyStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageEmplo_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageEmployeeDishonestyStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageEmployeeDishonestyStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBGLCoverageNS043_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBGLCoverageNS0432Stage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBGLCoverageNS0432Stage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCABusinessInter_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCABusinessInterruptionOptionStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCABusinessInterruptionOptionStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCABusinessInter_01",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCABusinessInterruptionOptionScheduleStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCABusinessInterruptionOptionScheduleStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCABusinessInter_02",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCABusinessInterruptionEndorsementStage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCABusinessInterruptionEndorsementStage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCACoverageUMBIS_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCACoverageUMBIStaging"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCACoverageUMBIStaging",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBGLCoverageNS045_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBGLCoverageNS0453Stage"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBGLCoverageNS0453Stage",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "variables": {}
+    }
+}

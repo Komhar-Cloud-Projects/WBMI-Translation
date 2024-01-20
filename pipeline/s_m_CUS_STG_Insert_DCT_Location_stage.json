@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CUS_STG_Insert_DCT_Location_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CUS_STG_Insert_DCT_Location_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_Location AS (\n\tSELECT DC_Location.LocationId, DC_Location.SessionId, DC_Location.LocationXmlId, DC_Location.Description, DC_Location.Address1, DC_Location.Address2, DC_Location.City, DC_Location.County, DC_Location.StateProv, DC_Location.PostalCode, DC_Location.Country \r\n\tFROM\r\n\tDC_Location\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session on\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Location.SessionId=@{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session.SessionId\r\n\tWHERE\r\n\tDC_Session.CreateDateTime >=  '@{pipeline().parameters.SELECTION_START_TS}' \r\n\tand\r\n\tDC_Session.CreateDateTime <'@{pipeline().parameters.SELECTION_END_TS}'\r\n\tORDER BY\r\n\tDC_Location.SessionId\n),\nExp_Location AS (\n\tSELECT\n\tLocationId,\n\tSessionId,\n\tLocationXmlId,\n\tDescription,\n\tAddress1,\n\tAddress2,\n\tCity,\n\tCounty,\n\tStateProv,\n\tPostalCode,\n\tCountry,\n\tSysdate AS ExtractDate,\n\t'DCT' AS SourceSystemID\n\tFROM SQ_DC_Location\n),\nDCLocationStage AS (\n\tINSERT INTO Shortcut_to_DCLocationStage\n\t(ExtractDate, SourceSystemid, LocationId, SessionId, LocationXmlId, Description, Address1, Address2, City, County, StateProv, PostalCode, Country)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemID AS SOURCESYSTEMID, \n\tLOCATIONID, \n\tSESSIONID, \n\tLOCATIONXMLID, \n\tDESCRIPTION, \n\tADDRESS1, \n\tADDRESS2, \n\tCITY, \n\tCOUNTY, \n\tSTATEPROV, \n\tPOSTALCODE, \n\tCOUNTRY\n\tFROM Exp_Location\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CustomerStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -38,31 +38,26 @@ EXP_Detect_Changes AS (
 	SQ_SalesTerritoryStage.SalesTerritoryCode,
 	SQ_SalesTerritoryStage.SalesTerritoryCodeDescription,
 	-- *INF*: MD5(SalesTerritoryCode || SalesTerritoryCodeDescription)
-	MD5(SalesTerritoryCode || SalesTerritoryCodeDescription
-	) AS v_NewHashKey,
+	MD5(SalesTerritoryCode || SalesTerritoryCodeDescription) AS v_NewHashKey,
 	v_NewHashKey AS o_NewHashKey,
 	-- *INF*: IIF(ISNULL(lkp_SalesTerritoryAKID), 'NEW', IIF((lkp_HashKey <> v_NewHashKey), 'UPDATE', 'NOCHANGE'))
-	IFF(lkp_SalesTerritoryAKID IS NULL,
-		'NEW',
-		IFF(( lkp_HashKey <> v_NewHashKey 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    lkp_SalesTerritoryAKID IS NULL, 'NEW',
+	    IFF(
+	        (lkp_HashKey <> v_NewHashKey), 'UPDATE', 'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	SQ_SalesTerritoryStage.SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate
@@ -103,10 +98,7 @@ EXP_Assign_AKID AS (
 	lkp_SalesTerritoryAKID,
 	SEQ_SalesTerritory_AKID.NEXTVAL,
 	-- *INF*: iif(isnull(lkp_SalesTerritoryAKID),NEXTVAL,lkp_SalesTerritoryAKID)
-	IFF(lkp_SalesTerritoryAKID IS NULL,
-		NEXTVAL,
-		lkp_SalesTerritoryAKID
-	) AS SalesTerritoryAKID,
+	IFF(lkp_SalesTerritoryAKID IS NULL, NEXTVAL, lkp_SalesTerritoryAKID) AS SalesTerritoryAKID,
 	HashKey,
 	SalesTerritoryCode,
 	SalesTerritoryCodeDescription
@@ -159,9 +151,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- SalesTerritoryAKID = v_prev_AKID , ADD_TO_DATE(v_prev_EffectiveFromDate,'SS',-1),
 	-- OriginalEffectiveToDate)
-	DECODE(TRUE,
-		SalesTerritoryAKID = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_EffectiveFromDate),
-		OriginalEffectiveToDate
+	DECODE(
+	    TRUE,
+	    SalesTerritoryAKID = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_EffectiveFromDate),
+	    OriginalEffectiveToDate
 	) AS v_EffectiveToDate,
 	v_EffectiveToDate AS o_EffectiveToDate,
 	SalesTerritoryAKID AS v_prev_AKID,

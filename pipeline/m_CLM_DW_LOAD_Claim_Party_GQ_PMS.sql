@@ -81,13 +81,13 @@ EXP_Lkp_Values AS (
 	-- *INF*: iif(isnull(in_CICL_FULL_NM),'N/A',
 	--    iif(is_spaces(in_CICL_FULL_NM),'N/A',
 	--     rtrim(in_CICL_FULL_NM)))
-	IFF(in_CICL_FULL_NM IS NULL,
-		'N/A',
-		IFF(LENGTH(in_CICL_FULL_NM)>0 AND TRIM(in_CICL_FULL_NM)='',
-			'N/A',
-			rtrim(in_CICL_FULL_NM
-			)
-		)
+	IFF(
+	    in_CICL_FULL_NM IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(in_CICL_FULL_NM)>0
+	    and TRIM(in_CICL_FULL_NM)='', 'N/A',
+	        rtrim(in_CICL_FULL_NM)
+	    )
 	) AS CICL_FULL_NM,
 	'N/A' AS CICL_FST_NM,
 	'N/A' AS CICL_LST_NM,
@@ -107,8 +107,7 @@ EXP_Lkp_Values AS (
 	'N/A' AS CICA_TAX_FED_ID,
 	-- *INF*: TO_DATE('12/31/2100','MM/DD/YYYY')
 	-- 
-	TO_DATE('12/31/2100', 'MM/DD/YYYY'
-	) AS BIRTH_DATE,
+	TO_TIMESTAMP('12/31/2100', 'MM/DD/YYYY') AS BIRTH_DATE,
 	'N/A' AS GENDER
 	FROM EXP_Values
 	LEFT JOIN LKP_PIF_4578_STAGE
@@ -220,124 +219,46 @@ EXP_Detect_Changes AS (
 	-- 	(ltrim(rtrim(ADR_TYP_CD)) <> ltrim(rtrim(lkp_addr_type))) ,
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(lkp_claim_party_id IS NULL,
-		'NEW',
-		IFF(( ltrim(rtrim(CICL_FULL_NM
-					)
-				) <> ltrim(rtrim(lkp_claim_party_full_name
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICL_FST_NM
-					)
-				) <> ltrim(rtrim(lkp_claim_party_first_name
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICL_LST_NM
-					)
-				) <> ltrim(rtrim(lkp_claim_party_last_name
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICL_MDL_NM
-					)
-				) <> ltrim(rtrim(lkp_claim_party_mid_name
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(NM_PFX
-					)
-				) <> ltrim(rtrim(lkp_claim_party_name_prfx
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(NM_SFX
-					)
-				) <> ltrim(rtrim(lkp_claim_party_name_sfx
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICA_ADR
-					)
-				) <> ltrim(rtrim(lkp_claimant_addr
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICA_CTY
-					)
-				) <> ltrim(rtrim(lkp_claimant_city
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICA_CIT_NM
-					)
-				) <> ltrim(rtrim(lkp_claimant_county
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(ST_CD
-					)
-				) <> ltrim(rtrim(lkp_claimant_state
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICA_PST_CD
-					)
-				) <> ltrim(rtrim(lkp_claimant_zip
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICA_TAX_FED_ID
-					)
-				) <> ltrim(rtrim(lkp_tax_fed_id
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(CICA_TAX_SSN_ID
-					)
-				) <> ltrim(rtrim(lkp_tax_ssn_id
-					)
-				) 
-			) 
-			OR ( BIRTH_DATE <> lkp_claim_party_birthdate 
-			) 
-			OR ( ltrim(rtrim(GENDER
-					)
-				) <> ltrim(rtrim(lkp_claim_party_gndr
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(ADR_TYP_CD
-					)
-				) <> ltrim(rtrim(lkp_addr_type
-					)
-				) 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    lkp_claim_party_id IS NULL, 'NEW',
+	    IFF(
+	        (ltrim(rtrim(CICL_FULL_NM)) <> ltrim(rtrim(lkp_claim_party_full_name)))
+	        or (ltrim(rtrim(CICL_FST_NM)) <> ltrim(rtrim(lkp_claim_party_first_name)))
+	        or (ltrim(rtrim(CICL_LST_NM)) <> ltrim(rtrim(lkp_claim_party_last_name)))
+	        or (ltrim(rtrim(CICL_MDL_NM)) <> ltrim(rtrim(lkp_claim_party_mid_name)))
+	        or (ltrim(rtrim(NM_PFX)) <> ltrim(rtrim(lkp_claim_party_name_prfx)))
+	        or (ltrim(rtrim(NM_SFX)) <> ltrim(rtrim(lkp_claim_party_name_sfx)))
+	        or (ltrim(rtrim(CICA_ADR)) <> ltrim(rtrim(lkp_claimant_addr)))
+	        or (ltrim(rtrim(CICA_CTY)) <> ltrim(rtrim(lkp_claimant_city)))
+	        or (ltrim(rtrim(CICA_CIT_NM)) <> ltrim(rtrim(lkp_claimant_county)))
+	        or (ltrim(rtrim(ST_CD)) <> ltrim(rtrim(lkp_claimant_state)))
+	        or (ltrim(rtrim(CICA_PST_CD)) <> ltrim(rtrim(lkp_claimant_zip)))
+	        or (ltrim(rtrim(CICA_TAX_FED_ID)) <> ltrim(rtrim(lkp_tax_fed_id)))
+	        or (ltrim(rtrim(CICA_TAX_SSN_ID)) <> ltrim(rtrim(lkp_tax_ssn_id)))
+	        or (BIRTH_DATE <> lkp_claim_party_birthdate)
+	        or (ltrim(rtrim(GENDER)) <> ltrim(rtrim(lkp_claim_party_gndr)))
+	        or (ltrim(rtrim(ADR_TYP_CD)) <> ltrim(rtrim(lkp_addr_type))),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_Id,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(v_Changed_Flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    v_Changed_Flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS Eff_To_Date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS Created_Date,
 	SYSDATE AS Modified_Date,
 	'N/A' AS Out_Default_String,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS claim_party_ref_eff_from_date
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS claim_party_ref_eff_from_date
 	FROM EXP_Lkp_Values
 	LEFT JOIN LKP_Claim_Party
 	ON LKP_Claim_Party.claim_party_key = EXP_Lkp_Values.CLIENT_ID
@@ -385,10 +306,7 @@ EXP_Determine_AK AS (
 	SELECT
 	lkp_claim_party_ak_id,
 	-- *INF*: IIF(Changed_Flag='NEW', NEXTVAL, lkp_claim_party_ak_id)
-	IFF(Changed_Flag = 'NEW',
-		NEXTVAL,
-		lkp_claim_party_ak_id
-	) AS claim_party_ak_id,
+	IFF(Changed_Flag = 'NEW', NEXTVAL, lkp_claim_party_ak_id) AS claim_party_ak_id,
 	CLIENT_ID,
 	CICL_FULL_NM,
 	CICL_FST_NM,
@@ -418,8 +336,7 @@ EXP_Determine_AK AS (
 	Out_Default_String,
 	claim_party_ref_eff_from_date,
 	-- *INF*: TO_DATE('12/31/2999','MM/DD/YYYY')
-	TO_DATE('12/31/2999', 'MM/DD/YYYY'
-	) AS out_default_high_date,
+	TO_TIMESTAMP('12/31/2999', 'MM/DD/YYYY') AS out_default_high_date,
 	SEQ_claim_party.NEXTVAL
 	FROM FIL_Insert
 ),
@@ -488,9 +405,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	claim_party_key = v_PREV_ROW_party_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		claim_party_key = v_PREV_ROW_party_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    claim_party_key = v_PREV_ROW_party_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_STG_INSERT_AgencyRelationshipStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_STG_INSERT_AgencyRelationshipStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AgencyRelationship_ODS AS (\n\tSELECT\n\t\tAgencyRelationshipID,\n\t\tSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tRelatedAgencyID,\n\t\tRelationshipType,\n\t\tEffectiveDate,\n\t\tExpirationDate\n\tFROM AgencyRelationship_ODS\n),\nLKP_AgencyCode AS (\n\tSELECT\n\tAgencyCode,\n\tAgencyID\n\tFROM (\n\t\tSELECT \n\t\t\tAgencyCode,\n\t\t\tAgencyID\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.Agency\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyID ORDER BY AgencyCode) = 1\n),\nLKP_RelatedToAgencyCode AS (\n\tSELECT\n\tAgencyCode,\n\tAgencyID\n\tFROM (\n\t\tSELECT \n\t\t\tAgencyCode,\n\t\t\tAgencyID\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.Agency\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyID ORDER BY AgencyCode) = 1\n),\nEXP_Add_MetaDataFields AS (\n\tSELECT\n\tSQ_AgencyRelationship_ODS.SourceSystemID,\n\tSQ_AgencyRelationship_ODS.HashKey,\n\tSQ_AgencyRelationship_ODS.ModifiedUserID,\n\tSQ_AgencyRelationship_ODS.ModifiedDate,\n\tSQ_AgencyRelationship_ODS.AgencyID,\n\tSQ_AgencyRelationship_ODS.RelatedAgencyID,\n\tSQ_AgencyRelationship_ODS.RelationshipType,\n\tSQ_AgencyRelationship_ODS.EffectiveDate,\n\tSQ_AgencyRelationship_ODS.ExpirationDate,\n\tLKP_AgencyCode.AgencyCode AS lkp_AgencyCode,\n\tLKP_RelatedToAgencyCode.AgencyCode AS lkp_RelatedToAgencyCode,\n\tsysdate AS Extract_Date,\n\tsysdate AS As_of_Date,\n\t1 AS Record_Count,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS Source_System_ID\n\tFROM SQ_AgencyRelationship_ODS\n\tLEFT JOIN LKP_AgencyCode\n\tON LKP_AgencyCode.AgencyID = SQ_AgencyRelationship_ODS.AgencyID\n\tLEFT JOIN LKP_RelatedToAgencyCode\n\tON LKP_RelatedToAgencyCode.AgencyID = SQ_AgencyRelationship_ODS.RelatedAgencyID\n),\nAgencyRelationshipStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyRelationshipStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyRelationshipStage\n\t(AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, RelatedAgencyID, RelatedToAgencyCode, RelationshipType, EffectiveDate, ExpirationDate, ExtractDate, AsOfDate, RecordCount, SourceSystemID)\n\tSELECT \n\tSourceSystemID AS AGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tlkp_AgencyCode AS AGENCYCODE, \n\tRELATEDAGENCYID, \n\tlkp_RelatedToAgencyCode AS RELATEDTOAGENCYCODE, \n\tRELATIONSHIPTYPE, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tExtract_Date AS EXTRACTDATE, \n\tAs_of_Date AS ASOFDATE, \n\tRecord_Count AS RECORDCOUNT, \n\tSource_System_ID AS SOURCESYSTEMID\n\tFROM EXP_Add_MetaDataFields\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

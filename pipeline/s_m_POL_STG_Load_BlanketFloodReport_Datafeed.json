@@ -1,0 +1,55 @@
+{
+    "name": "s_m_POL_STG_Load_BlanketFloodReport_Datafeed",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Load_BlanketFloodReport_Datafeed",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_BlanketFlood AS (\n\tselect distinct dcp.PolicyNumber as PolicyNumber\r\n\t,wbp.PolicyVersionFormatted as PolicyMod\r\n\t,sc.Value as Subline\r\n\t,t.Type as TransactionType\r\n\t,t.TransactionDate as TransactionDate\r\n\t,t.EffectiveDate as TransactionEffectiveDate\r\n\t,wbp.TotalFloodLimit as TotalFloodLimit\r\n\t,wbp.TotalFloodDeductible as TotalFloodDeductible\r\n\t,cfline.TotalFloodPremium as TotalFloodPremium\r\n\t,cfline.TotalFloodChangePremium as TotalFloodChangePremium\r\n\t,cfline.TotalFloodWrittenPremium as TotalFloodWrittenPremium\r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Policy dcp with(nolock)\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Policy wbp with(nolock) \r\n\ton dcp.PolicyId = wbp.PolicyId\r\n\tand wbp.SessionId = dcp.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_CF_Line cfline with(nolock)\r\n\ton cfline.SessionId = dcp.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction t with(nolock)\r\n\ton t.SessionId = dcp.SessionId\r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_StatCode sc with(nolock)\r\n\ton sc.SessionId = dcp.SessionId\r\n\tand sc.ObjectName = 'DC_Coverage'\r\n\tand sc.Type = 'Subline'\r\n\twhere wbp.WBProduct = 'Commercial Package'\r\n\tand datepart(quarter, t.TransactionDate) = @{pipeline().parameters.PREV_QUARTER}\r\n\tand year(t.TransactionDate) = @{pipeline().parameters.PREV_QUARTER_YEAR}\r\n\tand sc.Value in ('060', '061')\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nSRT_BlanketFlood AS (\n\tSELECT\n\tPolicyNumber, \n\tPolicyMod, \n\tSubline, \n\tTransactionType, \n\tTransactionDate, \n\tTransactionEffectiveDate, \n\tTotalFloodLimit, \n\tTotalFloodDeductible, \n\tTotalFloodPremium, \n\tTotalFloodChangePremium, \n\tTotalFloodWrittenPremium\n\tFROM SQ_BlanketFlood\n\tORDER BY PolicyNumber ASC, PolicyMod ASC, TransactionEffectiveDate ASC\n),\nEXP_BlanketFlood AS (\n\tSELECT\n\tPolicyNumber AS i_PolicyNumber,\n\t-- *INF*: CHR(39) || i_PolicyNumber || CHR(39)\n\tCHR(39) || i_PolicyNumber || CHR(39) AS o_PolicyNumber,\n\tPolicyMod AS i_PolicyMod,\n\t-- *INF*: CHR(39) || i_PolicyMod || CHR(39)\n\tCHR(39) || i_PolicyMod || CHR(39) AS o_PolicyMod,\n\tSubline AS i_Subline,\n\t-- *INF*: CHR(39) || i_Subline || CHR(39)\n\tCHR(39) || i_Subline || CHR(39) AS o_Subline,\n\tTransactionType,\n\tTransactionDate,\n\tTransactionEffectiveDate,\n\tTotalFloodLimit,\n\tTotalFloodDeductible,\n\tTotalFloodPremium,\n\tTotalFloodChangePremium,\n\tTotalFloodWrittenPremium\n\tFROM SRT_BlanketFlood\n),\nBlanketFloodReport_Datafeed AS (\n\tINSERT INTO BlanketFloodReport_Datafeed\n\t(PolicyNumber, PolicyMod, Subline, TransactionType, TransactionDate, TransactionEffectiveDate, TotalFloodLimit, TotalFloodDeductible, TotalFloodPremium, TotalFloodChangePremium, TotalFloodWrittenPremium)\n\tSELECT \n\to_PolicyNumber AS POLICYNUMBER, \n\to_PolicyMod AS POLICYMOD, \n\to_Subline AS SUBLINE, \n\tTRANSACTIONTYPE, \n\tTRANSACTIONDATE, \n\tTRANSACTIONEFFECTIVEDATE, \n\tTOTALFLOODLIMIT, \n\tTOTALFLOODDEDUCTIBLE, \n\tTOTALFLOODPREMIUM, \n\tTOTALFLOODCHANGEPREMIUM, \n\tTOTALFLOODWRITTENPREMIUM\n\tFROM EXP_BlanketFlood\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "PREV_QUARTER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "PREV_QUARTER_YEAR": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

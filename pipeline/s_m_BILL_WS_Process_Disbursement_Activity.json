@@ -1,0 +1,43 @@
+{
+    "name": "s_m_BILL_WS_Process_Disbursement_Activity",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_BILL_WS_Process_Disbursement_Activity",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_BIL_DisbursementActivity AS (\n\tSELECT\n\t\tDisbursementActivityId,\n\t\tModifiedUserId,\n\t\tModifiedDate,\n\t\tDisbursementId,\n\t\tCheckNumber,\n\t\tTransactionDate,\n\t\tDisbursementStatusCode,\n\t\tProcessedStatusCode,\n\t\tErrorDescription\n\tFROM WB_BIL_DisbursementActivity\n),\nEXP_Batch_Web_Service AS (\n\tSELECT\n\tDisbursementActivityId,\n\t-- *INF*: IIF(ISNULL(var_SequenceNumber), 0, var_SequenceNumber + 1)\n\tIFF(var_SequenceNumber IS NULL, 0, var_SequenceNumber + 1) AS var_SequenceNumber,\n\t-- *INF*: IIF(ISNULL(var_BatchNumber),\r\n\t--  1, \r\n\t--  IIF(MOD(var_SequenceNumber, @{pipeline().parameters.DUCKCREEKFACADESERVICE_BATCHSIZE})  != 1,\r\n\t--   var_BatchNumber,\r\n\t--   var_BatchNumber + 1))\n\tIFF(\n\t    var_BatchNumber IS NULL, 1,\n\t    IFF(\n\t        MOD(var_SequenceNumber, @{pipeline().parameters.DUCKCREEKFACADESERVICE_BATCHSIZE}) != 1, var_BatchNumber,\n\t        var_BatchNumber + 1\n\t    )\n\t) AS var_BatchNumber,\n\tvar_SequenceNumber AS out_SequenceNumber,\n\tvar_BatchNumber AS out_BatchNumber\n\tFROM SQ_WB_BIL_DisbursementActivity\n),\nAGG_Batch_Web_Service AS (\n\tSELECT\n\tout_BatchNumber AS BatchNumber\n\tFROM EXP_Batch_Web_Service\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY BatchNumber ORDER BY NULL) = 1\n),\nProcessDisbursementActivity AS (-- ProcessDisbursementActivity\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nFIL_ErrorMessage AS (\n\tSELECT\n\ttns2_ErrorMessage AS ServiceErrorMessage\n\tFROM ProcessDisbursementActivity\n\tWHERE NOT ISNULL(ServiceErrorMessage)\n),\nEXP_RegisterWorkFlowError AS (\n\tSELECT\n\tServiceErrorMessage,\n\t-- *INF*: ERROR(ServiceErrorMessage)\n\tERROR(ServiceErrorMessage) AS WorkFlowError\n\tFROM FIL_ErrorMessage\n),\nServiceError_Not_Used AS (\n\tINSERT INTO ServiceError\n\t(ErrorMessage)\n\tSELECT \n\tServiceErrorMessage AS ERRORMESSAGE\n\tFROM EXP_RegisterWorkFlowError\n),\nServiceError AS (\n\tINSERT INTO ServiceError\n\t(ErrorMessage)\n\tSELECT \n\ttns2_ErrorMessage AS ERRORMESSAGE\n\tFROM ProcessDisbursementActivity\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "DUCKCREEKFACADESERVICE_BATCHSIZE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "BillingDataServices/"
+        },
+        "annotations": []
+    }
+}

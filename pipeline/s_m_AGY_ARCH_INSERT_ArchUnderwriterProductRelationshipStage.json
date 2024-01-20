@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchUnderwriterProductRelationshipStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchUnderwriterProductRelationship_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_UnderwriterProductRelationshipStage AS (\n\tSELECT\n\t\tUnderwriterProductRelationshipStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAssociateID,\n\t\tWestBendAssociateID,\n\t\tStrategicProfitCenterCode,\n\t\tPolicyOfferingCode,\n\t\tProgramCode,\n\t\tPolicyAmountMinimum,\n\t\tPolicyAmountMaximum,\n\t\tAgencyODSRelationshipId,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID,\n\t\tInsuranceSegmentCode,\n\t\tBondCategory\n\tFROM UnderwriterProductRelationshipStage\n),\nLKP_Existing AS (\n\tSELECT\n\tin_AgencyODSRelationshipId,\n\tAgencyODSRelationshipId,\n\tHashKey,\n\tInsuranceSegmentCode,\n\tBondCategory\n\tFROM (\n\t\tselect\ta.ModifiedDate as ModifiedDate,\r\n\t\t\t\ta.HashKey as HashKey,\r\n\t\t\t\ta.AgencyODSRelationshipId as AgencyODSRelationshipId,\r\n\t\t\t\ta.InsuranceSegmentCode as InsuranceSegmentCode,\r\n\t\t\t\ta.BondCategory as BondCategory\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchUnderwriterProductRelationshipStage a\r\n\t\tinner join (\r\n\t\t\t\t\tselect AgencyODSRelationshipId, max(ModifiedDate) as ModifiedDate\r\n\t\t\t\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchUnderwriterProductRelationshipStage\r\n\t\t\t\t\tgroup by AgencyODSRelationshipId) b\r\n\t\ton  a.AgencyODSRelationshipId = b.AgencyODSRelationshipId\r\n\t\tand a.ModifiedDate = b.ModifiedDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyODSRelationshipId ORDER BY in_AgencyODSRelationshipId) = 1\n),\nEXP_AddAuditID AS (\n\tSELECT\n\tSQ_UnderwriterProductRelationshipStage.UnderwriterProductRelationshipStageID,\n\tSQ_UnderwriterProductRelationshipStage.AgencyODSSourceSystemID,\n\tSQ_UnderwriterProductRelationshipStage.HashKey,\n\tSQ_UnderwriterProductRelationshipStage.ModifiedUserID,\n\tSQ_UnderwriterProductRelationshipStage.ModifiedDate,\n\tSQ_UnderwriterProductRelationshipStage.AssociateID,\n\tSQ_UnderwriterProductRelationshipStage.WestBendAssociateID,\n\tSQ_UnderwriterProductRelationshipStage.StrategicProfitCenterCode,\n\tSQ_UnderwriterProductRelationshipStage.PolicyOfferingCode,\n\tSQ_UnderwriterProductRelationshipStage.ProgramCode,\n\tSQ_UnderwriterProductRelationshipStage.PolicyAmountMinimum,\n\tSQ_UnderwriterProductRelationshipStage.PolicyAmountMaximum,\n\tSQ_UnderwriterProductRelationshipStage.AgencyODSRelationshipId,\n\tSQ_UnderwriterProductRelationshipStage.ExtractDate,\n\tSQ_UnderwriterProductRelationshipStage.AsOfDate,\n\tSQ_UnderwriterProductRelationshipStage.RecordCount,\n\tSQ_UnderwriterProductRelationshipStage.SourceSystemID,\n\tSQ_UnderwriterProductRelationshipStage.InsuranceSegmentCode,\n\tSQ_UnderwriterProductRelationshipStage.BondCategory,\n\tLKP_Existing.HashKey AS lkp_HashKey,\n\tLKP_Existing.InsuranceSegmentCode AS lkp_InsuranceSegmentCode,\n\tLKP_Existing.BondCategory AS lkp_BondCategory,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\t-- *INF*: Decode(true,\r\n\t-- HashKey = lkp_HashKey\r\n\t-- AND InsuranceSegmentCode=lkp_InsuranceSegmentCode\r\n\t-- AND BondCategory=lkp_BondCategory, 'IGNORE',\r\n\t-- IsNull(lkp_HashKey), 'INSERT',\r\n\t-- 'UPDATE')\n\tDecode(\n\t    true,\n\t    HashKey = lkp_HashKey AND InsuranceSegmentCode = lkp_InsuranceSegmentCode AND BondCategory = lkp_BondCategory, 'IGNORE',\n\t    lkp_HashKey IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag\n\tFROM SQ_UnderwriterProductRelationshipStage\n\tLEFT JOIN LKP_Existing\n\tON LKP_Existing.AgencyODSRelationshipId = SQ_UnderwriterProductRelationshipStage.AgencyODSRelationshipId\n),\nFIL_ChangesOnly AS (\n\tSELECT\n\tUnderwriterProductRelationshipStageID, \n\tAgencyODSSourceSystemID, \n\tHashKey, \n\tModifiedUserID, \n\tModifiedDate, \n\tAssociateID, \n\tWestBendAssociateID, \n\tStrategicProfitCenterCode, \n\tPolicyOfferingCode, \n\tProgramCode, \n\tPolicyAmountMinimum, \n\tPolicyAmountMaximum, \n\tAgencyODSRelationshipId, \n\tExtractDate, \n\tAsOfDate, \n\tRecordCount, \n\tSourceSystemID, \n\tInsuranceSegmentCode, \n\tBondCategory, \n\to_AuditID, \n\to_ChangeFlag\n\tFROM EXP_AddAuditID\n\tWHERE o_ChangeFlag = 'INSERT' OR o_ChangeFlag = 'UPDATE'\n),\nArchUnderwriterProductRelationshipStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchUnderwriterProductRelationshipStage\n\t(UnderwritingProductRelationshipStageID, AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AssociateID, WestBendAssociateID, StrategicProfitCenterCode, PolicyOfferingCode, ProgramCode, PolicyAmountMinimum, PolicyAmountMaximum, AgencyODSRelationshipId, ExtractDate, AsOfDate, RecordCount, SourceSystemID, AuditID, InsuranceSegmentCode, BondCategory)\n\tSELECT \n\tUnderwriterProductRelationshipStageID AS UNDERWRITINGPRODUCTRELATIONSHIPSTAGEID, \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tASSOCIATEID, \n\tWESTBENDASSOCIATEID, \n\tSTRATEGICPROFITCENTERCODE, \n\tPOLICYOFFERINGCODE, \n\tPROGRAMCODE, \n\tPOLICYAMOUNTMINIMUM, \n\tPOLICYAMOUNTMAXIMUM, \n\tAGENCYODSRELATIONSHIPID, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\to_AuditID AS AUDITID, \n\tINSURANCESEGMENTCODE, \n\tBONDCATEGORY\n\tFROM FIL_ChangesOnly\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

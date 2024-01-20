@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCPartyStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCPartyStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCPartyStaging AS (\n\tSELECT\n\t\tPartyId,\n\t\tSessionId,\n\t\tPartyXmlId,\n\t\tType,\n\t\tOtherType,\n\t\tName,\n\t\tDateOfBirth,\n\t\tGender,\n\t\tFirstName,\n\t\tLastName,\n\t\tMiddleName,\n\t\tMaritalStatus,\n\t\tTitle,\n\t\tReference,\n\t\tContactName,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCPartyStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tPartyId,\n\tSessionId,\n\tPartyXmlId,\n\tType,\n\tOtherType,\n\tName,\n\tDateOfBirth,\n\tGender,\n\tFirstName,\n\tLastName,\n\tMiddleName,\n\tMaritalStatus,\n\tTitle,\n\tReference,\n\tContactName,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCPartyStaging\n),\narchDCPartyStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCPartyStaging\n\t(PartyId, SessionId, PartyXmlId, Type, OtherType, Name, DateOfBirth, Gender, FirstName, LastName, MiddleName, MaritalStatus, Title, Reference, ContactName, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tPARTYID, \n\tSESSIONID, \n\tPARTYXMLID, \n\tTYPE, \n\tOTHERTYPE, \n\tNAME, \n\tDATEOFBIRTH, \n\tGENDER, \n\tFIRSTNAME, \n\tLASTNAME, \n\tMIDDLENAME, \n\tMARITALSTATUS, \n\tTITLE, \n\tREFERENCE, \n\tCONTACTNAME, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

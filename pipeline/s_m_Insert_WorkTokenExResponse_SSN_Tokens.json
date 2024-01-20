@@ -1,0 +1,38 @@
+{
+    "name": "s_m_Insert_WorkTokenExResponse_SSN_Tokens",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Insert_WorkTokenExResponse_SSN_Tokens",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Token_Response_File AS (\n\n-- TODO Manual --\n\n),\nEXP_Input AS (\n\tSELECT\n\tSYSDATE AS Created_Date,\n\tSYSDATE AS Modified_Date,\n\tSSN_ID,\n\tSSN_Tokens\n\tFROM SQ_Token_Response_File\n),\nWorkTokenExResponse AS (\n\tTRUNCATE TABLE worktokenexresponse;\n\tINSERT INTO worktokenexresponse\n\t(CreatedDate, ModifiedDate, SSNId, SSNToken)\n\tSELECT \n\tCreated_Date AS CREATEDDATE, \n\tModified_Date AS MODIFIEDDATE, \n\tSSN_ID AS SSNID, \n\tSSN_Tokens AS SSNTOKEN\n\tFROM EXP_Input\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "HistoricalDataUpdate/"
+        },
+        "annotations": []
+    }
+}

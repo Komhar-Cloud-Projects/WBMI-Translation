@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCAStateStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCAStateStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCAStateStaging AS (\n\tSELECT\n\t\tWBCAStateStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCA_StateId,\n\t\tWB_CA_StateId,\n\t\tSessionId,\n\t\tReinsuranceApplies,\n\t\tPageHasBeenVisited,\n\t\tRejectionDate,\n\t\tAdditionalLimitKS,\n\t\tAdditionalLimitKY,\n\t\tAdditionalLimitMN,\n\t\tPipWorkComp,\n\t\tAdditionalLimitIndicator,\n\t\tLocationSelectForTerritory\n\tFROM WBCAStateStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tCA_StateId,\n\tWB_CA_StateId,\n\tSessionId,\n\tReinsuranceApplies,\n\t-- *INF*: DECODE(ReinsuranceApplies,'T',1,'F',0,NULL)\n\tDECODE(\n\t    ReinsuranceApplies,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS ReinsuranceApplies_out,\n\tPageHasBeenVisited,\n\t-- *INF*: DECODE(PageHasBeenVisited,'T',1,'F',0,NULL)\n\tDECODE(\n\t    PageHasBeenVisited,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS PageHasBeenVisited_out,\n\tRejectionDate,\n\tAdditionalLimitKS,\n\tAdditionalLimitKY,\n\tAdditionalLimitMN,\n\tPipWorkComp,\n\t-- *INF*: DECODE(PipWorkComp,'T',1,'F',0,NULL)\n\tDECODE(\n\t    PipWorkComp,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS PipWorkComp_out,\n\tAdditionalLimitIndicator,\n\t-- *INF*: DECODE(AdditionalLimitIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    AdditionalLimitIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS AdditionalLimitIndicator_out,\n\tLocationSelectForTerritory\n\tFROM SQ_WBCAStateStaging\n),\nArchWBCAStateStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCAStateStaging\n\t(ExtractDate, SourceSystemId, AuditId, CA_StateId, WB_CA_StateId, SessionId, ReinsuranceApplies, PageHasBeenVisited, RejectionDate, AdditionalLimitKS, AdditionalLimitKY, AdditionalLimitMN, PipWorkComp, AdditionalLimitIndicator, LocationSelectForTerritory)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tCA_STATEID, \n\tWB_CA_STATEID, \n\tSESSIONID, \n\tReinsuranceApplies_out AS REINSURANCEAPPLIES, \n\tPageHasBeenVisited_out AS PAGEHASBEENVISITED, \n\tREJECTIONDATE, \n\tADDITIONALLIMITKS, \n\tADDITIONALLIMITKY, \n\tADDITIONALLIMITMN, \n\tPipWorkComp_out AS PIPWORKCOMP, \n\tAdditionalLimitIndicator_out AS ADDITIONALLIMITINDICATOR, \n\tLOCATIONSELECTFORTERRITORY\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

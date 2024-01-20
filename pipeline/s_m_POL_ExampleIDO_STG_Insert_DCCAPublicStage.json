@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCCAPublicStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCCAPublicStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_CA_Public AS (\n\tWITH cte_dccapublic(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CA_RiskId, \r\n\tX.CA_PublicId, \r\n\tX.SessionId,\r\n\tX.Id, \r\n\tX.Auditable, \r\n\tX.CharterRegPlates, \r\n\tX.IndividuallyOwnedLimousine, \r\n\tX.Jitneys, \r\n\tX.MigrantFarmWorkersTransportation, \r\n\tX.MileageAudit, \r\n\tX.MileageEstimate, \r\n\tX.MileageTotal, \r\n\tX.MileageTotalAudit, \r\n\tX.MileageTotalEstimate,\r\n\tX.PublicGroupType, \r\n\tX.PublicType, \r\n\tX.RideSharing, \r\n\tX.RiskPublicInputNYBlackCar, \r\n\tX.SeatingCapacity,\r\n\tX.MechanicalLift\r\n\tFROM\r\n\tDC_CA_Public X\r\n\tinner join\r\n\tcte_dccapublic Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_TRANS AS (\n\tSELECT\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tCA_RiskId,\n\tCA_PublicId,\n\tSessionId,\n\tId,\n\tAuditable,\n\tCharterRegPlates,\n\tIndividuallyOwnedLimousine,\n\tJitneys,\n\tMigrantFarmWorkersTransportation,\n\tMileageAudit,\n\tMileageEstimate,\n\tMileageTotal,\n\tMileageTotalAudit,\n\tMileageTotalEstimate,\n\tPublicGroupType,\n\tPublicType,\n\tRideSharing,\n\tRiskPublicInputNYBlackCar,\n\tSeatingCapacity,\n\tMechanicalLift\n\tFROM SQ_DC_CA_Public\n),\nDCCAPublicStage AS (\n\tTRUNCATE TABLE DCCAPublicStage;\n\tINSERT INTO DCCAPublicStage\n\t(ExtractDate, SourceSystemid, CA_RiskId, CA_PublicId, SessionId, Id, Auditable, CharterRegPlates, IndividuallyOwnedLimousine, Jitneys, MigrantFarmWorkersTransportation, MileageAudit, MileageEstimate, MileageTotal, MileageTotalAudit, MileageTotalEstimate, PublicGroupType, PublicType, RideSharing, RiskPublicInputNYBlackCar, SeatingCapacity, MechanicalLift)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCA_RISKID, \n\tCA_PUBLICID, \n\tSESSIONID, \n\tID, \n\tAUDITABLE, \n\tCHARTERREGPLATES, \n\tINDIVIDUALLYOWNEDLIMOUSINE, \n\tJITNEYS, \n\tMIGRANTFARMWORKERSTRANSPORTATION, \n\tMILEAGEAUDIT, \n\tMILEAGEESTIMATE, \n\tMILEAGETOTAL, \n\tMILEAGETOTALAUDIT, \n\tMILEAGETOTALESTIMATE, \n\tPUBLICGROUPTYPE, \n\tPUBLICTYPE, \n\tRIDESHARING, \n\tRISKPUBLICINPUTNYBLACKCAR, \n\tSEATINGCAPACITY, \n\tMECHANICALLIFT\n\tFROM EXP_TRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

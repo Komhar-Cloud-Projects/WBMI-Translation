@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLAIM_RELATIONSHIP",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLAIM_RELATIONSHIP",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_ClaimRelationshipStage AS (\n\tSELECT\n\t\tClaimRelationshipStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tTchClaimNbr,\n\t\tRelationshipId,\n\t\tCreatedDate,\n\t\tCreatedUserId,\n\t\tModifiedDate,\n\t\tModifiedUserId\n\tFROM ClaimRelationshipStage\n),\nEXP_ClaimRelationshipStage AS (\n\tSELECT\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tClaimRelationshipStageId,\n\tTchClaimNbr,\n\tRelationshipId,\n\tCreatedDate,\n\tCreatedUserId,\n\tModifiedDate,\n\tModifiedUserId\n\tFROM SQ_ClaimRelationshipStage\n),\nArchClaimRelationshipStage AS (\n\tINSERT INTO ArchClaimRelationshipStage\n\t(ExtractDate, SourceSystemId, AuditId, ClaimRelationshipStageId, TchClaimNbr, RelationshipId, CreatedDate, CreatedUserId, ModifiedDate, ModifiedUserId)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tCLAIMRELATIONSHIPSTAGEID, \n\tTCHCLAIMNBR, \n\tRELATIONSHIPID, \n\tCREATEDDATE, \n\tCREATEDUSERID, \n\tMODIFIEDDATE, \n\tMODIFIEDUSERID\n\tFROM EXP_ClaimRelationshipStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

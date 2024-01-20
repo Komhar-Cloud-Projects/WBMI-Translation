@@ -32,10 +32,7 @@ EXP_DetectChanges AS (
 	SQ_PremiumTransaction.RatingTerritoryCode AS i_RatingTerritoryCode,
 	-- *INF*: IIF( ISNULL(lkp_PremiumTransactionID),1,0)
 	-- --1 - Insert; 0-Ignore
-	IFF(lkp_PremiumTransactionID IS NULL,
-		1,
-		0
-	) AS o_Changeflag,
+	IFF(lkp_PremiumTransactionID IS NULL, 1, 0) AS o_Changeflag,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	i_PremiumTransactionAKID AS o_PremiumTransactionAKID,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
@@ -47,61 +44,46 @@ EXP_DetectChanges AS (
 	-- LENGTH(LTRIM(RTRIM(i_CensusBlockGroup)))=10,SUBSTR(i_CensusBlockGroup,1,3),
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_CensusBlockGroup IS NULL, 'N/A',
-		LENGTH(LTRIM(RTRIM(i_CensusBlockGroup
-				)
-			)
-		) = 10, SUBSTR(i_CensusBlockGroup, 1, 3
-		),
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_CensusBlockGroup IS NULL, 'N/A',
+	    LENGTH(LTRIM(RTRIM(i_CensusBlockGroup))) = 10, SUBSTR(i_CensusBlockGroup, 1, 3),
+	    'N/A'
 	) AS o_CensusBlockGroupCountyCode,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_CensusBlockGroup),'N/A',
 	-- LENGTH(LTRIM(RTRIM(i_CensusBlockGroup)))=10,SUBSTR(i_CensusBlockGroup,4,6),
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_CensusBlockGroup IS NULL, 'N/A',
-		LENGTH(LTRIM(RTRIM(i_CensusBlockGroup
-				)
-			)
-		) = 10, SUBSTR(i_CensusBlockGroup, 4, 6
-		),
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_CensusBlockGroup IS NULL, 'N/A',
+	    LENGTH(LTRIM(RTRIM(i_CensusBlockGroup))) = 10, SUBSTR(i_CensusBlockGroup, 4, 6),
+	    'N/A'
 	) AS o_CensusBlockGroupTractCode,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_CensusBlockGroup),'N/A',
 	-- LENGTH(LTRIM(RTRIM(i_CensusBlockGroup)))=10,SUBSTR(i_CensusBlockGroup,10,1),
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_CensusBlockGroup IS NULL, 'N/A',
-		LENGTH(LTRIM(RTRIM(i_CensusBlockGroup
-				)
-			)
-		) = 10, SUBSTR(i_CensusBlockGroup, 10, 1
-		),
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_CensusBlockGroup IS NULL, 'N/A',
+	    LENGTH(LTRIM(RTRIM(i_CensusBlockGroup))) = 10, SUBSTR(i_CensusBlockGroup, 10, 1),
+	    'N/A'
 	) AS o_CensusBlockGroupBlockGroupCode,
 	-- *INF*: IIF(ISNULL(i_Latitude),000.000000,i_Latitude)
-	IFF(i_Latitude IS NULL,
-		000.000000,
-		i_Latitude
-	) AS o_Latitude,
+	IFF(i_Latitude IS NULL, 000.000000, i_Latitude) AS o_Latitude,
 	-- *INF*: IIF(ISNULL(i_Longitude),000.000000,i_Longitude)
-	IFF(i_Longitude IS NULL,
-		000.000000,
-		i_Longitude
-	) AS o_Longitude,
+	IFF(i_Longitude IS NULL, 000.000000, i_Longitude) AS o_Longitude,
 	-- *INF*: IIF(ISNULL(i_RatingTerritoryCode) OR IS_SPACES(i_RatingTerritoryCode) OR LTRIM(RTRIM(i_RatingTerritoryCode))='','N/A',i_RatingTerritoryCode)
-	IFF(i_RatingTerritoryCode IS NULL 
-		OR LENGTH(i_RatingTerritoryCode)>0 AND TRIM(i_RatingTerritoryCode)='' 
-		OR LTRIM(RTRIM(i_RatingTerritoryCode
-			)
-		) = '',
-		'N/A',
-		i_RatingTerritoryCode
+	IFF(
+	    i_RatingTerritoryCode IS NULL
+	    or LENGTH(i_RatingTerritoryCode)>0
+	    and TRIM(i_RatingTerritoryCode)=''
+	    or LTRIM(RTRIM(i_RatingTerritoryCode)) = '',
+	    'N/A',
+	    i_RatingTerritoryCode
 	) AS o_RatingTerritoryCode
 	FROM SQ_PremiumTransaction
 	LEFT JOIN LKP_PremiumTransactionRatingRisk

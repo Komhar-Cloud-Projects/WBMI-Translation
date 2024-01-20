@@ -32,7 +32,7 @@ EXP_Email_Subject AS (
 	checkout_message,
 	-- *INF*: @{pipeline().parameters.EMAIL_SUBJECT} || ' (' || SYSDATE || ')'
 	-- 
-	@{pipeline().parameters.EMAIL_SUBJECT} || ' (' || SYSDATE || ')' AS email_subject
+	@{pipeline().parameters.EMAIL_SUBJECT} || ' (' || CURRENT_TIMESTAMP || ')' AS email_subject
 	FROM SQ_wbmi_checkout
 ),
 AGG_Distinct_Email_Id AS (

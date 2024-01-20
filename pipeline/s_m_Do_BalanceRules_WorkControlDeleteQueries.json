@@ -1,0 +1,38 @@
+{
+    "name": "s_m_Do_BalanceRules_WorkControlDeleteQueries",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Do_BalanceRules_WorkControlDeleteQueries",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkControlDeleteQueries AS (\n\tSELECT\n\t\tWorkControlDeleteQueriesId,\n\t\tCreatedDate,\n\t\tControlDeleteQueries\n\tFROM WorkControlDeleteQueries\n),\nEXP_default AS (\n\tSELECT\n\tWorkControlDeleteQueriesId,\n\tCreatedDate,\n\tControlDeleteQueries\n\tFROM SQ_WorkControlDeleteQueries\n),\nSQL_deleterules AS (-- SQL_deleterules\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nEXP_deletequeries AS (\n\tSELECT\n\tControlDeleteQueries_output AS o_ControlDeleteQueries\n\tFROM SQL_deleterules\n),\nTgt_File_Result AS (\n\tINSERT INTO Tgt_File_Result\n\t(Result)\n\tSELECT \n\to_ControlDeleteQueries AS RESULT\n\tFROM EXP_deletequeries\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

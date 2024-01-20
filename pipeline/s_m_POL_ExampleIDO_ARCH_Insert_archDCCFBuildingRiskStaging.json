@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCFBuildingRiskStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCCFBuildingRiskSta_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCFBuildingRiskStaging AS (\n\tSELECT\n\t\tCF_BuildingRiskId,\n\t\tSessionId,\n\t\tId,\n\t\tMultipleResidential,\n\t\tRiskBldgInputWholesaleOrStorage,\n\t\tSpecialClassRating,\n\t\tSubStandardConversion,\n\t\tSubStandardExposure,\n\t\tSubStandardHeatingCooking,\n\t\tSubStandardPhysicalCondition,\n\t\tSubStandardWiring,\n\t\tYard,\n\t\tSpecialClassLevel1,\n\t\tSpecialClassLevel2,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCF_RiskId,\n\t\tRoofSurfacingCoverageLimitations\n\tFROM DCCFBuildingRiskStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tCF_BuildingRiskId,\n\tSessionId,\n\tId,\n\tMultipleResidential AS i_MultipleResidential,\n\t-- *INF*: DECODE(i_MultipleResidential,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_MultipleResidential,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_MultipleResidential,\n\tRiskBldgInputWholesaleOrStorage AS i_RiskBldgInputWholesaleOrStorage,\n\t-- *INF*: DECODE(i_RiskBldgInputWholesaleOrStorage,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_RiskBldgInputWholesaleOrStorage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_RiskBldgInputWholesaleOrStorage,\n\tSpecialClassRating AS i_SpecialClassRating,\n\t-- *INF*: DECODE(i_SpecialClassRating,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_SpecialClassRating,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_SpecialClassRating,\n\tSubStandardConversion AS i_SubStandardConversion,\n\t-- *INF*: DECODE(i_SubStandardConversion,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_SubStandardConversion,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_SubStandardConversion,\n\tSubStandardExposure AS i_SubStandardExposure,\n\t-- *INF*: DECODE(i_SubStandardExposure,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_SubStandardExposure,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_SubStandardExposure,\n\tSubStandardHeatingCooking AS i_SubStandardHeatingCooking,\n\t-- *INF*: DECODE(i_SubStandardHeatingCooking,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_SubStandardHeatingCooking,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_SubStandardHeatingCooking,\n\tSubStandardPhysicalCondition AS i_SubStandardPhysicalCondition,\n\t-- *INF*: DECODE(i_SubStandardPhysicalCondition,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_SubStandardPhysicalCondition,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_SubStandardPhysicalCondition,\n\tSubStandardWiring AS i_SubStandardWiring,\n\t-- *INF*: DECODE(i_SubStandardWiring,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_SubStandardWiring,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_SubStandardWiring,\n\tYard AS i_Yard,\n\t-- *INF*: DECODE(i_Yard,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_Yard,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Yard,\n\tSpecialClassLevel1,\n\tSpecialClassLevel2,\n\tExtractDate,\n\tSourceSystemId,\n\tCF_RiskId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tRoofSurfacingCoverageLimitations\n\tFROM SQ_DCCFBuildingRiskStaging\n),\narchDCCFBuildingRiskStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCCFBuildingRiskStaging\n\t(CF_RiskId, CF_BuildingRiskId, SessionId, Id, MultipleResidential, RiskBldgInputWholesaleOrStorage, SpecialClassRating, SubStandardConversion, SubStandardExposure, SubStandardHeatingCooking, SubStandardPhysicalCondition, SubStandardWiring, Yard, SpecialClassLevel1, SpecialClassLevel2, ExtractDate, SourceSystemId, AuditId, RoofSurfacingCoverageLimitations)\n\tSELECT \n\tCF_RISKID, \n\tCF_BUILDINGRISKID, \n\tSESSIONID, \n\tID, \n\to_MultipleResidential AS MULTIPLERESIDENTIAL, \n\to_RiskBldgInputWholesaleOrStorage AS RISKBLDGINPUTWHOLESALEORSTORAGE, \n\to_SpecialClassRating AS SPECIALCLASSRATING, \n\to_SubStandardConversion AS SUBSTANDARDCONVERSION, \n\to_SubStandardExposure AS SUBSTANDARDEXPOSURE, \n\to_SubStandardHeatingCooking AS SUBSTANDARDHEATINGCOOKING, \n\to_SubStandardPhysicalCondition AS SUBSTANDARDPHYSICALCONDITION, \n\to_SubStandardWiring AS SUBSTANDARDWIRING, \n\to_Yard AS YARD, \n\tSPECIALCLASSLEVEL1, \n\tSPECIALCLASSLEVEL2, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tROOFSURFACINGCOVERAGELIMITATIONS\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

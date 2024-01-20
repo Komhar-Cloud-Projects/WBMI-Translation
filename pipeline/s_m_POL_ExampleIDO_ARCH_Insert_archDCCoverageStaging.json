@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCoverageStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCCoverageStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCoverageStaging AS (\n\tSELECT\n\t\tObjectId,\n\t\tObjectName,\n\t\tCoverageId,\n\t\tSessionId,\n\t\tId,\n\t\tType,\n\t\tBaseRate,\n\t\tBasePremium,\n\t\tPremium,\n\t\tChange,\n\t\tWritten,\n\t\tPrior,\n\t\tPriorTerm,\n\t\tCancelPremium,\n\t\tExposureBasis,\n\t\tFullEarnedIndicator,\n\t\tLossCostModifier,\n\t\tPremiumFE,\n\t\tDeleted,\n\t\tIndicator,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCCoverageStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tObjectId,\n\tObjectName,\n\tCoverageId,\n\tSessionId,\n\tId,\n\tType,\n\tBaseRate,\n\tBasePremium,\n\tPremium,\n\tChange,\n\tWritten,\n\tPrior,\n\tPriorTerm,\n\tCancelPremium,\n\tExposureBasis,\n\tFullEarnedIndicator,\n\tLossCostModifier,\n\tPremiumFE,\n\tDeleted AS i_Deleted,\n\tIndicator AS i_Indicator,\n\t-- *INF*: DECODE(i_Deleted,'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    i_Deleted,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Deleted,\n\t-- *INF*: DECODE(i_Indicator,'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    i_Indicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Indicator,\n\tExtractDate,\n\tSourceSystemId,\n\t-- *INF*: DECODE(ExposureBasis,'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    ExposureBasis,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ExposureBasis,\n\t-- *INF*: DECODE(FullEarnedIndicator,'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    FullEarnedIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_FullEarnedIndicator,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCoverageStaging\n),\narchDCCoverageStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCCoverageStaging\n\t(ObjectId, ObjectName, CoverageId, SessionId, Id, Type, BaseRate, BasePremium, Premium, Change, Written, Prior, PriorTerm, CancelPremium, ExposureBasis, FullEarnedIndicator, LossCostModifier, PremiumFE, ExtractDate, SourceSystemId, AuditId, Deleted, Indicator)\n\tSELECT \n\tOBJECTID, \n\tOBJECTNAME, \n\tCOVERAGEID, \n\tSESSIONID, \n\tID, \n\tTYPE, \n\tBASERATE, \n\tBASEPREMIUM, \n\tPREMIUM, \n\tCHANGE, \n\tWRITTEN, \n\tPRIOR, \n\tPRIORTERM, \n\tCANCELPREMIUM, \n\to_ExposureBasis AS EXPOSUREBASIS, \n\to_FullEarnedIndicator AS FULLEARNEDINDICATOR, \n\tLOSSCOSTMODIFIER, \n\tPREMIUMFE, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\to_Deleted AS DELETED, \n\to_Indicator AS INDICATOR\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

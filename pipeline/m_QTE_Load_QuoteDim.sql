@@ -146,17 +146,15 @@ EXP_Flags AS (
 	-- QuoteIssueCode='N','New',
 	-- QuoteIssueCode='R','Renewal',
 	-- QuoteIssueCode)
-	DECODE(TRUE,
-		QuoteIssueCode = 'N', 'New',
-		QuoteIssueCode = 'R', 'Renewal',
-		QuoteIssueCode
+	DECODE(
+	    TRUE,
+	    QuoteIssueCode = 'N', 'New',
+	    QuoteIssueCode = 'R', 'Renewal',
+	    QuoteIssueCode
 	) AS o_QuoteIssueCodeDesc,
 	QuoteIssueCodeChangeDate AS QuoteIssueCodeDescChangeDate,
 	-- *INF*: IIF(i_QuoteStatusCode!='Initialized Quote','1','0')
-	IFF(i_QuoteStatusCode != 'Initialized Quote',
-		'1',
-		'0'
-	) AS SubmittedFlag,
+	IFF(i_QuoteStatusCode != 'Initialized Quote', '1', '0') AS SubmittedFlag,
 	-- *INF*: DECODE(TRUE,
 	-- i_QuoteStatusCode='Issued','1',
 	-- i_QuoteStatusCode='Released Quote','1',
@@ -166,67 +164,57 @@ EXP_Flags AS (
 	-- NOT ISNULL(:LKP.LKP_RELEASEDQUOTE(QuoteAKId)),'1',
 	-- i_QuoteStatusCode='Closed' AND NOT ISNULL(:LKP.LKP_BOUND(QuoteAKId)),'1',
 	-- '0')
-	DECODE(TRUE,
-		i_QuoteStatusCode = 'Issued', '1',
-		i_QuoteStatusCode = 'Released Quote', '1',
-		i_QuoteStatusCode = 'Declined', '0',
-		i_QuoteStatusCode = 'Bound', '1',
-		i_QuoteStatusCode = 'Unbound', '1',
-		LKP_RELEASEDQUOTE_QuoteAKId.QuoteStatusCode IS NOT NULL, '1',
-		i_QuoteStatusCode = 'Closed' 
-		AND LKP_BOUND_QuoteAKId.QuoteStatusCode IS NOT NULL, '1',
-		'0'
+	DECODE(
+	    TRUE,
+	    i_QuoteStatusCode = 'Issued', '1',
+	    i_QuoteStatusCode = 'Released Quote', '1',
+	    i_QuoteStatusCode = 'Declined', '0',
+	    i_QuoteStatusCode = 'Bound', '1',
+	    i_QuoteStatusCode = 'Unbound', '1',
+	    LKP_RELEASEDQUOTE_QuoteAKId.QuoteStatusCode IS NOT NULL, '1',
+	    i_QuoteStatusCode = 'Closed' AND LKP_BOUND_QuoteAKId.QuoteStatusCode IS NOT NULL, '1',
+	    '0'
 	) AS ReleasedQuoteFlag,
 	-- *INF*: DECODE(TRUE,
 	-- i_QuoteStatusCode='Bound','1',
 	-- NOT ISNULL(:LKP.LKP_BOUND(QuoteAKId)) AND ISNULL(:LKP.LKP_UNBOUND(QuoteAKId)),'1',
 	-- '0')
-	DECODE(TRUE,
-		i_QuoteStatusCode = 'Bound', '1',
-		LKP_BOUND_QuoteAKId.QuoteStatusCode IS NULL 
-		AND LKP_UNBOUND_QuoteAKId.QuoteStatusCode IS NOT NULL, '1',
-		'0'
+	DECODE(
+	    TRUE,
+	    i_QuoteStatusCode = 'Bound', '1',
+	    LKP_BOUND_QuoteAKId.QuoteStatusCode IS NULL AND LKP_UNBOUND_QuoteAKId.QuoteStatusCode IS NOT NULL, '1',
+	    '0'
 	) AS BoundFlag,
 	-- *INF*: IIF(i_QuoteStatusCode='Issued','1','0')
-	IFF(i_QuoteStatusCode = 'Issued',
-		'1',
-		'0'
-	) AS IssuedFlag,
+	IFF(i_QuoteStatusCode = 'Issued', '1', '0') AS IssuedFlag,
 	-- *INF*: IIF(i_QuoteStatusCode='Declined','1','0')
-	IFF(i_QuoteStatusCode = 'Declined',
-		'1',
-		'0'
-	) AS DeclineFlag,
+	IFF(i_QuoteStatusCode = 'Declined', '1', '0') AS DeclineFlag,
 	-- *INF*: IIF(i_QuoteStatusCode='Closed','1','0')
-	IFF(i_QuoteStatusCode = 'Closed',
-		'1',
-		'0'
-	) AS ClosedFlag,
+	IFF(i_QuoteStatusCode = 'Closed', '1', '0') AS ClosedFlag,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_WBPOLICYSTAGING(QuoteNumber,QuoteVersion)),'0','1')
 	-- --External = 1
 	-- --Internal = 0
-	IFF(LKP_WBPOLICYSTAGING_QuoteNumber_QuoteVersion.PolicyNumber IS NULL,
-		'0',
-		'1'
-	) AS v_ExtnternalInitializedFlag_Liferay,
+	IFF(LKP_WBPOLICYSTAGING_QuoteNumber_QuoteVersion.PolicyNumber IS NULL, '0', '1') AS v_ExtnternalInitializedFlag_Liferay,
 	-- *INF*: DECODE(TRUE,
 	-- :LKP.LKP_INITIALIZEDQUOTE(QuoteAKId)='External','1',
 	-- v_ExtnternalInitializedFlag_Liferay='1','1',
 	-- '0')
-	DECODE(TRUE,
-		LKP_INITIALIZEDQUOTE_QuoteAKId.InternalExternalIndicator = 'External', '1',
-		v_ExtnternalInitializedFlag_Liferay = '1', '1',
-		'0'
+	DECODE(
+	    TRUE,
+	    LKP_INITIALIZEDQUOTE_QuoteAKId.InternalExternalIndicator = 'External', '1',
+	    v_ExtnternalInitializedFlag_Liferay = '1', '1',
+	    '0'
 	) AS ExternalInitializedQuoteFlag,
 	IssuedUWID,
 	IssuedUnderwriter,
 	QuoteChannel,
 	LCSurveyOrderedIndicator,
 	-- *INF*: decode(LCSurveyOrderedIndicator,'T','1','F','0',NULL)
-	decode(LCSurveyOrderedIndicator,
-		'T', '1',
-		'F', '0',
-		NULL
+	decode(
+	    LCSurveyOrderedIndicator,
+	    'T', '1',
+	    'F', '0',
+	    NULL
 	) AS o_LCSurveyOrderedIndicator,
 	LCSurveyOrderedDate,
 	QuoteChannelOrigin,
@@ -287,33 +275,20 @@ EXP_Change AS (
 	EXP_Flags.ExternalInitializedQuoteFlag,
 	EXP_Flags.o_QuoteIssueCodeDesc AS QuoteIssueCodeDesc,
 	-- *INF*: IIF (ISNULL(QuoteIssueCodeDesc),'New',QuoteIssueCodeDesc)
-	IFF(QuoteIssueCodeDesc IS NULL,
-		'New',
-		QuoteIssueCodeDesc
-	) AS v_QuoteIssueCodeDesc,
+	IFF(QuoteIssueCodeDesc IS NULL, 'New', QuoteIssueCodeDesc) AS v_QuoteIssueCodeDesc,
 	v_QuoteIssueCodeDesc AS o_QuoteIssueCodeDesc,
 	EXP_Flags.QuoteIssueCodeDescChangeDate,
 	EXP_Flags.IssuedUWID,
 	-- *INF*: IIF (ISNULL(IssuedUWID) Or IssuedUWID='0','N/A',IssuedUWID)
-	IFF(IssuedUWID IS NULL 
-		OR IssuedUWID = '0',
-		'N/A',
-		IssuedUWID
-	) AS v_IssuedUWID,
+	IFF(IssuedUWID IS NULL Or IssuedUWID = '0', 'N/A', IssuedUWID) AS v_IssuedUWID,
 	v_IssuedUWID AS o_IssuedUWID,
 	EXP_Flags.IssuedUnderwriter,
 	-- *INF*: IIF (ISNULL(IssuedUnderwriter),'N/A',IssuedUnderwriter)
-	IFF(IssuedUnderwriter IS NULL,
-		'N/A',
-		IssuedUnderwriter
-	) AS v_IssuedUnderwriter,
+	IFF(IssuedUnderwriter IS NULL, 'N/A', IssuedUnderwriter) AS v_IssuedUnderwriter,
 	v_IssuedUnderwriter AS o_IssuedUnderwriter,
 	EXP_Flags.QuoteChannel,
 	-- *INF*: IIF (ISNULL(QuoteChannel),'N/A',QuoteChannel)
-	IFF(QuoteChannel IS NULL,
-		'N/A',
-		QuoteChannel
-	) AS v_QuoteChannel,
+	IFF(QuoteChannel IS NULL, 'N/A', QuoteChannel) AS v_QuoteChannel,
 	v_QuoteChannel AS o_QuoteChannel,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	SYSDATE AS o_CreatedDate,
@@ -322,27 +297,26 @@ EXP_Change AS (
 	-- ISNULL(QuoteDimId),1,
 	-- lkp_ChangeAttributes<>SubmittedFlag||ReleasedQuoteFlag||BoundFlag||IssuedFlag||DeclineFlag||ClosedFlag||ExternalInitializedQuoteFlag||v_QuoteIssueCodeDesc||v_IssuedUWID||v_IssuedUnderwriter || v_QuoteChannel,2,
 	-- 0)
-	DECODE(TRUE,
-		QuoteDimId IS NULL, 1,
-		lkp_ChangeAttributes <> SubmittedFlag || ReleasedQuoteFlag || BoundFlag || IssuedFlag || DeclineFlag || ClosedFlag || ExternalInitializedQuoteFlag || v_QuoteIssueCodeDesc || v_IssuedUWID || v_IssuedUnderwriter || v_QuoteChannel, 2,
-		0
+	DECODE(
+	    TRUE,
+	    QuoteDimId IS NULL, 1,
+	    lkp_ChangeAttributes <> SubmittedFlag || ReleasedQuoteFlag || BoundFlag || IssuedFlag || DeclineFlag || ClosedFlag || ExternalInitializedQuoteFlag || v_QuoteIssueCodeDesc || v_IssuedUWID || v_IssuedUnderwriter || v_QuoteChannel, 2,
+	    0
 	) AS o_ChangeFlag,
 	EXP_Flags.o_LCSurveyOrderedIndicator AS LCSurveyOrderedIndicator,
 	EXP_Flags.LCSurveyOrderedDate,
 	EXP_Flags.QuoteChannelOrigin AS i_QuoteChannelOrigin,
 	-- *INF*: IIF (ISNULL(i_QuoteChannelOrigin),'N/A',i_QuoteChannelOrigin)
-	IFF(i_QuoteChannelOrigin IS NULL,
-		'N/A',
-		i_QuoteChannelOrigin
-	) AS v_QuoteChannelOrigin,
+	IFF(i_QuoteChannelOrigin IS NULL, 'N/A', i_QuoteChannelOrigin) AS v_QuoteChannelOrigin,
 	v_QuoteChannelOrigin AS o_QuoteChannelOrigin,
 	EXP_Flags.RolloverPolicyIndicator AS i_RolloverPolicyIndicator,
 	EXP_Flags.RolloverPriorCarrier,
 	-- *INF*: DECODE(i_RolloverPolicyIndicator, 'T',1,'F',0,0)
-	DECODE(i_RolloverPolicyIndicator,
-		'T', 1,
-		'F', 0,
-		0
+	DECODE(
+	    i_RolloverPolicyIndicator,
+	    'T', 1,
+	    'F', 0,
+	    0
 	) AS o_rolloverPolicyIndicator,
 	EXP_Flags.ServCenterSupportCode
 	FROM EXP_Flags

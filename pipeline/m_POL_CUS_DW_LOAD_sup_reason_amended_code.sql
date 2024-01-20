@@ -14,14 +14,13 @@ EXP_values_tl14 AS (
 	-- *INF*: IIF(ISNULL(IN_reason_amended_code) OR IS_SPACES(IN_reason_amended_code) OR LENGTH(IN_reason_amended_code)=0
 	-- ,'N/A'
 	-- ,ltrim(rtrim(IN_reason_amended_code)))
-	IFF(IN_reason_amended_code IS NULL 
-		OR LENGTH(IN_reason_amended_code)>0 AND TRIM(IN_reason_amended_code)='' 
-		OR LENGTH(IN_reason_amended_code
-		) = 0,
-		'N/A',
-		ltrim(rtrim(IN_reason_amended_code
-			)
-		)
+	IFF(
+	    IN_reason_amended_code IS NULL
+	    or LENGTH(IN_reason_amended_code)>0
+	    and TRIM(IN_reason_amended_code)=''
+	    or LENGTH(IN_reason_amended_code) = 0,
+	    'N/A',
+	    ltrim(rtrim(IN_reason_amended_code))
 	) AS reason_amended_code,
 	alpha_descr_of_reason_amended AS IN_alpha_descr_of_reason_amended,
 	-- *INF*: DECODE(TRUE,
@@ -32,17 +31,11 @@ EXP_values_tl14 AS (
 	-- 'N/A',
 	-- ltrim(rtrim(IN_alpha_descr_of_reason_amended))
 	-- )
-	DECODE(TRUE,
-		ltrim(rtrim(IN_reason_amended_code
-			)
-		) = 'O', 'Other',
-		IN_alpha_descr_of_reason_amended IS NULL 
-		OR LENGTH(IN_alpha_descr_of_reason_amended)>0 AND TRIM(IN_alpha_descr_of_reason_amended)='' 
-		OR LENGTH(IN_alpha_descr_of_reason_amended
-		) = 0, 'N/A',
-		ltrim(rtrim(IN_alpha_descr_of_reason_amended
-			)
-		)
+	DECODE(
+	    TRUE,
+	    ltrim(rtrim(IN_reason_amended_code)) = 'O', 'Other',
+	    IN_alpha_descr_of_reason_amended IS NULL OR LENGTH(IN_alpha_descr_of_reason_amended)>0 AND TRIM(IN_alpha_descr_of_reason_amended)='' OR LENGTH(IN_alpha_descr_of_reason_amended) = 0, 'N/A',
+	    ltrim(rtrim(IN_alpha_descr_of_reason_amended))
 	) AS alpha_descr_of_reason_amended
 	FROM SQ_gtam_tl14_stage
 ),
@@ -75,32 +68,24 @@ EXP_Detect_Changes_tl14 AS (
 	-- 	(ltrim(rtrim(alpha_descr_of_reason_amended)) <> ltrim(rtrim(LKP_rsn_amended_code_descript))),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(LKP_sup_rsn_amended_code_id IS NULL,
-		'NEW',
-		IFF(( ltrim(rtrim(alpha_descr_of_reason_amended
-					)
-				) <> ltrim(rtrim(LKP_rsn_amended_code_descript
-					)
-				) 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    LKP_sup_rsn_amended_code_id IS NULL, 'NEW',
+	    IFF(
+	        (ltrim(rtrim(alpha_descr_of_reason_amended)) <> ltrim(rtrim(LKP_rsn_amended_code_descript))),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_ID,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	TO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))
-	IFF(v_Changed_Flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
-			), 'MM/DD/YYYY HH24:MI:SS'
-		)
+	IFF(
+	    v_Changed_Flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    TO_TIMESTAMP(TO_CHAR(CURRENT_TIMESTAMP, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')
 	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS Eff_To_Date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_System_ID,
 	SYSDATE AS Created_Date,
@@ -159,14 +144,13 @@ EXP_values_wbrsnca AS (
 	-- *INF*: IIF(ISNULL(IN_cancellation_reason_code) OR IS_SPACES(IN_cancellation_reason_code) OR LENGTH(IN_cancellation_reason_code)=0
 	-- ,'N/A'
 	-- ,ltrim(rtrim(IN_cancellation_reason_code)))
-	IFF(IN_cancellation_reason_code IS NULL 
-		OR LENGTH(IN_cancellation_reason_code)>0 AND TRIM(IN_cancellation_reason_code)='' 
-		OR LENGTH(IN_cancellation_reason_code
-		) = 0,
-		'N/A',
-		ltrim(rtrim(IN_cancellation_reason_code
-			)
-		)
+	IFF(
+	    IN_cancellation_reason_code IS NULL
+	    or LENGTH(IN_cancellation_reason_code)>0
+	    and TRIM(IN_cancellation_reason_code)=''
+	    or LENGTH(IN_cancellation_reason_code) = 0,
+	    'N/A',
+	    ltrim(rtrim(IN_cancellation_reason_code))
 	) AS cancellation_reason_code_code,
 	cancellation_reason_descript AS IN_cancellation_reason_descript,
 	-- *INF*: DECODE(TRUE,
@@ -177,17 +161,11 @@ EXP_values_wbrsnca AS (
 	-- 'N/A',
 	-- ltrim(rtrim(IN_cancellation_reason_descript))
 	-- )
-	DECODE(TRUE,
-		ltrim(rtrim(IN_cancellation_reason_code
-			)
-		) = 'O', 'Other',
-		IN_cancellation_reason_descript IS NULL 
-		OR LENGTH(IN_cancellation_reason_descript)>0 AND TRIM(IN_cancellation_reason_descript)='' 
-		OR LENGTH(IN_cancellation_reason_descript
-		) = 0, 'N/A',
-		ltrim(rtrim(IN_cancellation_reason_descript
-			)
-		)
+	DECODE(
+	    TRUE,
+	    ltrim(rtrim(IN_cancellation_reason_code)) = 'O', 'Other',
+	    IN_cancellation_reason_descript IS NULL OR LENGTH(IN_cancellation_reason_descript)>0 AND TRIM(IN_cancellation_reason_descript)='' OR LENGTH(IN_cancellation_reason_descript) = 0, 'N/A',
+	    ltrim(rtrim(IN_cancellation_reason_descript))
 	) AS cancellation_reason_descript
 	FROM SQ_gtam_wbrsnca_stage
 ),
@@ -220,32 +198,24 @@ EXP_Detect_Changes_wbrsnca AS (
 	-- 	(ltrim(rtrim(alpha_descr_of_reason_amended)) <> ltrim(rtrim(LKP_rsn_amended_code_descript))),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(LKP_sup_rsn_amended_code_id IS NULL,
-		'NEW',
-		IFF(( ltrim(rtrim(alpha_descr_of_reason_amended
-					)
-				) <> ltrim(rtrim(LKP_rsn_amended_code_descript
-					)
-				) 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    LKP_sup_rsn_amended_code_id IS NULL, 'NEW',
+	    IFF(
+	        (ltrim(rtrim(alpha_descr_of_reason_amended)) <> ltrim(rtrim(LKP_rsn_amended_code_descript))),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_Changed_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_ID,
 	-- *INF*: IIF(v_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	TO_DATE(TO_CHAR(SYSDATE,'MM/DD/YYYY HH24:MI:SS'),'MM/DD/YYYY HH24:MI:SS'))
-	IFF(v_Changed_Flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		TO_DATE(TO_CHAR(SYSDATE, 'MM/DD/YYYY HH24:MI:SS'
-			), 'MM/DD/YYYY HH24:MI:SS'
-		)
+	IFF(
+	    v_Changed_Flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    TO_TIMESTAMP(TO_CHAR(CURRENT_TIMESTAMP, 'MM/DD/YYYY HH24:MI:SS'), 'MM/DD/YYYY HH24:MI:SS')
 	) AS Eff_From_Date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS Eff_To_Date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_To_Date,
 	v_Changed_Flag AS Changed_Flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_System_ID,
 	SYSDATE AS Created_Date,
@@ -308,9 +278,10 @@ EXP_Lag_Eff_dates AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	rsn_amended_code = v_PREV_ROW_rsn_amended_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		rsn_amended_code = v_PREV_ROW_rsn_amended_code, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    rsn_amended_code = v_PREV_ROW_rsn_amended_code, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

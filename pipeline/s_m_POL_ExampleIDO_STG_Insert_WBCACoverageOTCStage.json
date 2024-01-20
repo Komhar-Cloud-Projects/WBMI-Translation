@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBCACoverageOTCStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBCACoverageOTCStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_CA_CoverageOTC AS (\n\tWITH cte_WBCACoverageOTCStage(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CA_CoverageOTCId, \r\n\tX.WB_CA_CoverageOTCId, \r\n\tX.SessionId, \r\n\tX.AntiTheftDeviceDiscountKY,\r\n\tX.AntiTheftDeviceDiscountMN,\r\n\tX.AcceptOTCCoverageSoftMsg,\r\n\tX.ReplacementCost,\r\n\tX.FullSafetyGlassCoverage,\r\n\tX.DeductibleType\r\n\tFROM\r\n\tWB_CA_CoverageOTC X\r\n\tinner join\r\n\tcte_WBCACoverageOTCStage Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tSYSDATE AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tCA_CoverageOTCId,\n\tWB_CA_CoverageOTCId,\n\tSessionId,\n\tAntiTheftDeviceDiscountKY,\n\tAntiTheftDeviceDiscountMN,\n\tAcceptOTCCoverageSoftMsg,\n\tReplacementCost AS i_ReplacementCost,\n\t-- *INF*: DECODE(i_ReplacementCost,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ReplacementCost,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ReplacementCost,\n\tFullSafetyGlassCoverage AS i_FullSafetyGlassCoverage,\n\t-- *INF*: DECODE(i_FullSafetyGlassCoverage,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_FullSafetyGlassCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_FullSafetyGlassCoverage,\n\tDeductibleType\n\tFROM SQ_WB_CA_CoverageOTC\n),\nWBCACoverageOTCStage AS (\n\tTRUNCATE TABLE WBCACoverageOTCStage;\n\tINSERT INTO WBCACoverageOTCStage\n\t(ExtractDate, SourceSystemId, CA_CoverageOTCId, WB_CA_CoverageOTCId, SessionId, AntiTheftDeviceDiscountKY, AntiTheftDeviceDiscountMN, AcceptOTCCoverageSoftMsg, ReplacementCost, FullSafetyGlassCoverage, DeductibleType)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCA_COVERAGEOTCID, \n\tWB_CA_COVERAGEOTCID, \n\tSESSIONID, \n\tANTITHEFTDEVICEDISCOUNTKY, \n\tANTITHEFTDEVICEDISCOUNTMN, \n\tACCEPTOTCCOVERAGESOFTMSG, \n\to_ReplacementCost AS REPLACEMENTCOST, \n\to_FullSafetyGlassCoverage AS FULLSAFETYGLASSCOVERAGE, \n\tDEDUCTIBLETYPE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

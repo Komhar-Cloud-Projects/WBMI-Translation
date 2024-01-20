@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBPOLBatchRenewalPolicyStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBPOLBatchRenewalPo_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBPOLBatchRenewalPolicyStage AS (\n\tSELECT\n\t\tWBPOLBatchRenewalPolicyStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tHistoryId,\n\t\tModifiedUserId,\n\t\tModifiedDate,\n\t\tQuoteId,\n\t\tHistoryIdRenewalPolicyVersion,\n\t\tPolicyQualifiedAutomaticRenewalIndicator,\n\t\tCustomerQualifiedAutomaticRenewalIndicator,\n\t\tCustomerBatchProcessedIndicator,\n\t\tAutoRenewedIndicator,\n\t\tTransactionDate,\n\t\tBusinessDivision,\n\t\tCustomerCarePolicyQualifiedAutomaticRenewalIndicator\n\tFROM WBPOLBatchRenewalPolicyStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tExtractDate,\n\tSourceSystemid AS SourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tHistoryId,\n\tModifiedUserId,\n\tModifiedDate,\n\tQuoteId,\n\tHistoryIdRenewalPolicyVersion,\n\tPolicyQualifiedAutomaticRenewalIndicator AS i_PolicyQualifiedAutomaticRenewalIndicator,\n\t-- *INF*: DECODE(i_PolicyQualifiedAutomaticRenewalIndicator,\r\n\t-- 'T','1',\r\n\t-- 'F','0',\r\n\t-- NULL)\n\tDECODE(\n\t    i_PolicyQualifiedAutomaticRenewalIndicator,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_PolicyQualifiedAutomaticRenewalIndicator,\n\tCustomerQualifiedAutomaticRenewalIndicator AS i_CustomerQualifiedAutomaticRenewalIndicator,\n\t-- *INF*: DECODE(i_CustomerQualifiedAutomaticRenewalIndicator,\r\n\t-- 'T','1',\r\n\t-- 'F','0',\r\n\t-- NULL)\n\tDECODE(\n\t    i_CustomerQualifiedAutomaticRenewalIndicator,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_CustomerQualifiedAutomaticRenewalIndicator,\n\tCustomerBatchProcessedIndicator AS i_CustomerBatchProcessedIndicator,\n\t-- *INF*: DECODE(i_CustomerBatchProcessedIndicator,\r\n\t-- 'T','1',\r\n\t-- 'F','0',\r\n\t-- NULL)\n\tDECODE(\n\t    i_CustomerBatchProcessedIndicator,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_CustomerBatchProcessedIndicator,\n\tAutoRenewedIndicator AS i_AutoRenewedIndicator,\n\t-- *INF*: DECODE(i_AutoRenewedIndicator,\r\n\t-- 'T','1',\r\n\t-- 'F','0',\r\n\t-- NULL)\n\tDECODE(\n\t    i_AutoRenewedIndicator,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_AutoRenewedIndicator,\n\tTransactionDate,\n\tBusinessDivision,\n\tCustomerCarePolicyQualifiedAutomaticRenewalIndicator,\n\t-- *INF*: DECODE(CustomerCarePolicyQualifiedAutomaticRenewalIndicator, 'T','1', 'F','0', NULL)\n\tDECODE(\n\t    CustomerCarePolicyQualifiedAutomaticRenewalIndicator,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_CustomerCarePolicyQualifiedAutomaticRenewalIndicator\n\tFROM SQ_WBPOLBatchRenewalPolicyStage\n),\nArchWBPOLBatchRenewalPolicyStage AS (\n\tINSERT INTO ArchWBPOLBatchRenewalPolicyStage\n\t(ExtractDate, SourceSystemid, AuditId, HistoryId, ModifiedUserId, ModifiedDate, QuoteId, HistoryIdRenewalPolicyVersion, PolicyQualifiedAutomaticRenewalIndicator, CustomerQualifiedAutomaticRenewalIndicator, CustomerBatchProcessedIndicator, AutoRenewedIndicator, TransactionDate, BusinessDivision, CustomerCarePolicyQualifiedAutomaticRenewalIndicator)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemId AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tHISTORYID, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tQUOTEID, \n\tHISTORYIDRENEWALPOLICYVERSION, \n\to_PolicyQualifiedAutomaticRenewalIndicator AS POLICYQUALIFIEDAUTOMATICRENEWALINDICATOR, \n\to_CustomerQualifiedAutomaticRenewalIndicator AS CUSTOMERQUALIFIEDAUTOMATICRENEWALINDICATOR, \n\to_CustomerBatchProcessedIndicator AS CUSTOMERBATCHPROCESSEDINDICATOR, \n\to_AutoRenewedIndicator AS AUTORENEWEDINDICATOR, \n\tTRANSACTIONDATE, \n\tBUSINESSDIVISION, \n\to_CustomerCarePolicyQualifiedAutomaticRenewalIndicator AS CUSTOMERCAREPOLICYQUALIFIEDAUTOMATICRENEWALINDICATOR\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

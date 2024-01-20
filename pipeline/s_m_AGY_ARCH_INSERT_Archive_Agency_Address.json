@@ -1,0 +1,47 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_Archive_Agency_Address",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_Archive_Agency_Address",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_agency_address_Stage AS (\n\tSELECT\n\t\tagency_address_stage_id AS agency_address_id,\n\t\tSTATE_CODE,\n\t\tAGENCY_NUM,\n\t\tADDRESS_TYPE,\n\t\tADDRESS_LINE_1,\n\t\tADDRESS_LINE_2,\n\t\tADDRESS_LINE_3,\n\t\tCITY,\n\t\tPOSTAL_CODE,\n\t\tZIP_PLUS_4,\n\t\tCOUNTY,\n\t\tSTATE_ABBREV,\n\t\tCOUNTRY,\n\t\tAGENCY_CODE,\n\t\tCOUNTY_LOCATION,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM Agency_Address_Stage\n),\nexp_AGY_Insert_Arch_Agy_Addrs AS (\n\tSELECT\n\tagency_address_id,\n\tSTATE_CODE,\n\tAGENCY_NUM,\n\tADDRESS_TYPE,\n\tADDRESS_LINE_1,\n\tADDRESS_LINE_2,\n\tADDRESS_LINE_3,\n\tCITY,\n\tPOSTAL_CODE,\n\tZIP_PLUS_4,\n\tCOUNTY,\n\tSTATE_ABBREV,\n\tCOUNTRY,\n\tAGENCY_CODE,\n\tCOUNTY_LOCATION,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID\n\tFROM SQ_agency_address_Stage\n),\nTGT_arch_agency_address_Stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_agency_address_Stage\n\t(agency_address_stage_id, STATE_CODE, AGENCY_NUM, ADDRESS_TYPE, ADDRESS_LINE_1, ADDRESS_LINE_2, ADDRESS_LINE_3, CITY, POSTAL_CODE, ZIP_PLUS_4, COUNTY, STATE_ABBREV, COUNTRY, AGENCY_CODE, COUNTY_LOCATION, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, audit_id)\n\tSELECT \n\tagency_address_id AS AGENCY_ADDRESS_STAGE_ID, \n\tSTATE_CODE, \n\tAGENCY_NUM, \n\tADDRESS_TYPE, \n\tADDRESS_LINE_1, \n\tADDRESS_LINE_2, \n\tADDRESS_LINE_3, \n\tCITY, \n\tPOSTAL_CODE, \n\tZIP_PLUS_4, \n\tCOUNTY, \n\tSTATE_ABBREV, \n\tCOUNTRY, \n\tAGENCY_CODE, \n\tCOUNTY_LOCATION, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tOUT_AUDIT_ID AS AUDIT_ID\n\tFROM exp_AGY_Insert_Arch_Agy_Addrs\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

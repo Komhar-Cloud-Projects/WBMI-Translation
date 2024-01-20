@@ -1,0 +1,56 @@
+WITH
+SQ_related_agency_Stage AS (
+	SELECT
+		related_agency_stage_id AS related_agency_id,
+		STATE_CODE,
+		AGENCY_NUM,
+		REL_STATE_CODE,
+		REL_AGENCY_NUM,
+		REL_EXP_DATE,
+		REL_RSN_CODE,
+		REL_EFF_DATE,
+		AGENCY_CODE,
+		EXTRACT_DATE,
+		AS_OF_DATE,
+		RECORD_COUNT,
+		SOURCE_SYSTEM_ID
+	FROM Related_agency_Stage
+),
+exp_AGY_insert_Related_Agy AS (
+	SELECT
+	related_agency_id,
+	STATE_CODE,
+	AGENCY_NUM,
+	REL_STATE_CODE,
+	REL_AGENCY_NUM,
+	REL_EXP_DATE,
+	REL_RSN_CODE,
+	REL_EFF_DATE,
+	AGENCY_CODE,
+	EXTRACT_DATE,
+	AS_OF_DATE,
+	RECORD_COUNT,
+	SOURCE_SYSTEM_ID,
+	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID
+	FROM SQ_related_agency_Stage
+),
+TGT_Arch_related_agency_Stage AS (
+	INSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_related_agency_Stage
+	(related_agency_stage_id, STATE_CODE, AGENCY_NUM, REL_STATE_CODE, REL_AGENCY_NUM, REL_EXP_DATE, REL_RSN_CODE, REL_EFF_DATE, AGENCY_CODE, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, audit_id)
+	SELECT 
+	related_agency_id AS RELATED_AGENCY_STAGE_ID, 
+	STATE_CODE, 
+	AGENCY_NUM, 
+	REL_STATE_CODE, 
+	REL_AGENCY_NUM, 
+	REL_EXP_DATE, 
+	REL_RSN_CODE, 
+	REL_EFF_DATE, 
+	AGENCY_CODE, 
+	EXTRACT_DATE, 
+	AS_OF_DATE, 
+	RECORD_COUNT, 
+	SOURCE_SYSTEM_ID, 
+	OUT_AUDIT_ID AS AUDIT_ID
+	FROM exp_AGY_insert_Related_Agy
+),

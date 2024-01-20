@@ -74,34 +74,23 @@ EXPTRANS AS (
 	SQ_claim_total_loss.salvage_amt,
 	SQ_claim_total_loss.claim_total_loss_submit_hist_id,
 	-- *INF*: IIF(ISNULL(claim_total_loss_submit_hist_id), -1, claim_total_loss_submit_hist_id)
-	IFF(claim_total_loss_submit_hist_id IS NULL,
-		- 1,
-		claim_total_loss_submit_hist_id
-	) AS claim_total_loss_submit_hist_id_out,
+	IFF(claim_total_loss_submit_hist_id IS NULL, - 1, claim_total_loss_submit_hist_id) AS claim_total_loss_submit_hist_id_out,
 	SQ_claim_total_loss.claim_total_loss_submit_hist_ak_id,
 	-- *INF*: IIF(ISNULL(claim_total_loss_submit_hist_ak_id), -1, claim_total_loss_submit_hist_ak_id)
-	IFF(claim_total_loss_submit_hist_ak_id IS NULL,
-		- 1,
-		claim_total_loss_submit_hist_ak_id
-	) AS claim_total_loss_submit_hist_ak_id_out,
+	IFF(claim_total_loss_submit_hist_ak_id IS NULL, - 1, claim_total_loss_submit_hist_ak_id) AS claim_total_loss_submit_hist_ak_id_out,
 	SQ_claim_total_loss.submit_to_vendor_date,
 	-- *INF*: IIF(ISNULL(submit_to_vendor_date), TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), submit_to_vendor_date)
-	IFF(submit_to_vendor_date IS NULL,
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		submit_to_vendor_date
+	IFF(
+	    submit_to_vendor_date IS NULL, TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    submit_to_vendor_date
 	) AS submit_to_vendor_date_out,
 	SQ_claim_total_loss.submit_to_vendor_action,
 	-- *INF*: IIF(ISNULL(submit_to_vendor_action), 'N/A', submit_to_vendor_action)
-	IFF(submit_to_vendor_action IS NULL,
-		'N/A',
-		submit_to_vendor_action
-	) AS submit_to_vendor_action_out,
+	IFF(submit_to_vendor_action IS NULL, 'N/A', submit_to_vendor_action) AS submit_to_vendor_action_out,
 	LKP_claimant_coverage_dim.claimant_cov_dim_id,
 	SQ_claim_total_loss.eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	sysdate AS created_modified_Date,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id
@@ -263,9 +252,10 @@ EXP_Source AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	edw_claim_total_loss_ak_id=v_PREV_ROW_edw_claim_total_loss_ak_id , 	ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1)
 	--        ,orig_eff_to_date)
-	DECODE(TRUE,
-		edw_claim_total_loss_ak_id = v_PREV_ROW_edw_claim_total_loss_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    edw_claim_total_loss_ak_id = v_PREV_ROW_edw_claim_total_loss_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS o_eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

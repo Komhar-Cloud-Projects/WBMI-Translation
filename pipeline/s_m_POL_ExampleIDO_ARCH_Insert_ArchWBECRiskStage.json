@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBECRiskStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBECRiskStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBECRiskStage AS (\n\tSELECT\n\t\tWBECRiskStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tLineId,\n\t\tWB_EC_RiskId,\n\t\tSessionId,\n\t\tLocationId\n\tFROM WBECRiskStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBECRiskStageId,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tLineId,\n\tWB_EC_RiskId,\n\tSessionId,\n\tLocationId\n\tFROM SQ_WBECRiskStage\n),\nArchWBECRiskStage AS (\n\tINSERT INTO ArchWBECRiskStage\n\t(ExtractDate, SourceSystemId, AuditId, WBECRiskStageId, LineId, WB_EC_RiskId, SessionId, LocationId)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBECRISKSTAGEID, \n\tLINEID, \n\tWB_EC_RISKID, \n\tSESSIONID, \n\tLOCATIONID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

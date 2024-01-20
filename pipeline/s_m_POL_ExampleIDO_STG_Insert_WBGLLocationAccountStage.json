@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBGLLocationAccountStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBGLLocationAccountStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_GL_LocationAccount AS (\n\tWITH cte_WBGLLocationAccount(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.WB_CL_LocationAccountId, \r\n\tX.WB_GL_LocationAccountId, \r\n\tX.SessionId, \r\n\tX.LiabScheduleModCooperationMedicalSetLiabilityValue, \r\n\tX.LiabScheduleModCooperationMedicalSetCommentValue, \r\n\tX.SetCommentValue, \r\n\tX.LiabScheduleModClassificationSetLiabilityValue, \r\n\tX.LiabScheduleModCooperationSafetySetLiabilityValue, \r\n\tX.LiabScheduleModCooperationSafetySetCommentValue, \r\n\tX.LiabScheduleModEmployeesSetCommentValue, \r\n\tX.LiabScheduleModEmployeesSetLiabilityValue, \r\n\tX.LiabScheduleModEquipmentSetCommentValue, \r\n\tX.LiabScheduleModEquipmentSetLiabilityValue, \r\n\tX.LiabScheduleModLocationInsideSetCommentValue, \r\n\tX.LiabScheduleModLocationInsideSetLiabilityValue, \r\n\tX.LiabScheduleModLocationOutsideSetCommentValue, \r\n\tX.LiabScheduleModLocationOutsideSetLiabilityValue, \r\n\tX.LiabScheduleModPremisesSetCommentValue, \r\n\tX.LiabScheduleModPremisesSetLiabilityValue, \r\n\tX.LiquorPermitNumber, \r\n\tX.OutdoorServiceArea, \r\n\tX.MunicipalAutoRate, \r\n\tX.MunicipalLiabilityRate, \r\n\tX.MunicipalMarineRate, \r\n\tX.MunicipalMinimumRate, \r\n\tX.MunicipalOtherRate, \r\n\tX.MunicipalPropertyRate, \r\n\tX.CountyAutoRate, \r\n\tX.CountyLiabilityRate, \r\n\tX.CountyMarineRate, \r\n\tX.CountyMinimumRate, \r\n\tX.CountyOtherRate, \r\n\tX.CountyPropertyRate, \r\n\tX.GeoTaxConfidence, \r\n\tX.CertifiedOperationsFactor, \r\n\tX.NighttimeOperationsFactor, \r\n\tX.ProgramFactor, \r\n\tX.AssociationFactor, \r\n\tX.MaximumNumberOfChildren, \r\n\tX.HoursOpen, \r\n\tX.OnlyBeforeAndAfterSchoolCare, \r\n\tX.DogCatCoverage, \r\n\tX.DogBreedsPresent, \r\n\tX.OwnAnyBuildings, \r\n\tX.LeaseAnyBuildingsToOthers, \r\n\tX.TotalSquareFeetLeasedToOthers, \r\n\tX.TotalNumberApartments, \r\n\tX.IndependentContractors, \r\n\tX.NumberFullTimeBeauticians, \r\n\tX.NumberPartTimeBeauticians, \r\n\tX.NumberFullTimeElectrologists, \r\n\tX.NumberPartTimeElectrologists, \r\n\tX.NumberFullTimeMassageTherapists, \r\n\tX.NumberPartTimeMassageTherapists, \r\n\tX.NumberBeautyInstructors, \r\n\tX.NumberAquaMassageBeds, \r\n\tX.NumberSuntanBeds, \r\n\tX.NumberAirBrushOrSprayOnBooths, \r\n\tX.NumberHotTubs, \r\n\tX.NumberCircuitWorkout \r\n\tFROM\r\n\tWB_GL_LocationAccount X\r\n\tinner join\r\n\tcte_WBGLLocationAccount Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tSYSDATE AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tWB_CL_LocationAccountId,\n\tWB_GL_LocationAccountId,\n\tSessionId,\n\tLiabScheduleModCooperationMedicalSetLiabilityValue,\n\tLiabScheduleModCooperationMedicalSetCommentValue,\n\tSetCommentValue,\n\tLiabScheduleModClassificationSetLiabilityValue,\n\tLiabScheduleModCooperationSafetySetLiabilityValue,\n\tLiabScheduleModCooperationSafetySetCommentValue,\n\tLiabScheduleModEmployeesSetCommentValue,\n\tLiabScheduleModEmployeesSetLiabilityValue,\n\tLiabScheduleModEquipmentSetCommentValue,\n\tLiabScheduleModEquipmentSetLiabilityValue,\n\tLiabScheduleModLocationInsideSetCommentValue,\n\tLiabScheduleModLocationInsideSetLiabilityValue,\n\tLiabScheduleModLocationOutsideSetCommentValue,\n\tLiabScheduleModLocationOutsideSetLiabilityValue,\n\tLiabScheduleModPremisesSetCommentValue,\n\tLiabScheduleModPremisesSetLiabilityValue,\n\tLiquorPermitNumber,\n\tOutdoorServiceArea,\n\tMunicipalAutoRate,\n\tMunicipalLiabilityRate,\n\tMunicipalMarineRate,\n\tMunicipalMinimumRate,\n\tMunicipalOtherRate,\n\tMunicipalPropertyRate,\n\tCountyAutoRate,\n\tCountyLiabilityRate,\n\tCountyMarineRate,\n\tCountyMinimumRate,\n\tCountyOtherRate,\n\tCountyPropertyRate,\n\tGeoTaxConfidence,\n\tCertifiedOperationsFactor,\n\tNighttimeOperationsFactor,\n\tProgramFactor,\n\tAssociationFactor,\n\tMaximumNumberOfChildren,\n\tHoursOpen,\n\tOnlyBeforeAndAfterSchoolCare AS i_OnlyBeforeAndAfterSchoolCare,\n\t-- *INF*: IIF(i_OnlyBeforeAndAfterSchoolCare='T','1','0')\n\tIFF(i_OnlyBeforeAndAfterSchoolCare = 'T', '1', '0') AS o_OnlyBeforeAndAfterSchoolCare,\n\tDogCatCoverage,\n\tDogBreedsPresent AS i_DogBreedsPresent,\n\t-- *INF*: IIF(i_DogBreedsPresent='T','1','0')\n\tIFF(i_DogBreedsPresent = 'T', '1', '0') AS o_DogBreedsPresent,\n\tOwnAnyBuildings AS i_OwnAnyBuildings,\n\t-- *INF*: IIF(i_OwnAnyBuildings='T','1','0')\n\tIFF(i_OwnAnyBuildings = 'T', '1', '0') AS o_OwnAnyBuildings,\n\tLeaseAnyBuildingsToOthers AS i_LeaseAnyBuildingsToOthers,\n\t-- *INF*: IIF(i_LeaseAnyBuildingsToOthers='T','1','0')\n\tIFF(i_LeaseAnyBuildingsToOthers = 'T', '1', '0') AS o_LeaseAnyBuildingsToOthers,\n\tTotalSquareFeetLeasedToOthers,\n\tTotalNumberApartments,\n\tIndependentContractors AS i_IndependentContractors,\n\t-- *INF*: IIF(i_IndependentContractors='T','1','0')\n\tIFF(i_IndependentContractors = 'T', '1', '0') AS o_IndependentContractors,\n\tNumberFullTimeBeauticians,\n\tNumberPartTimeBeauticians,\n\tNumberFullTimeElectrologists,\n\tNumberPartTimeElectrologists,\n\tNumberFullTimeMassageTherapists,\n\tNumberPartTimeMassageTherapists,\n\tNumberBeautyInstructors,\n\tNumberAquaMassageBeds,\n\tNumberSuntanBeds,\n\tNumberAirBrushOrSprayOnBooths,\n\tNumberHotTubs,\n\tNumberCircuitWorkout\n\tFROM SQ_WB_GL_LocationAccount\n),\nWBGLLocationAccountStage AS (\n\tTRUNCATE TABLE WBGLLocationAccountStage;\n\tINSERT INTO WBGLLocationAccountStage\n\t(ExtractDate, SourceSystemId, WB_CL_LocationAccountId, WB_GL_LocationAccountId, SessionId, LiabScheduleModCooperationMedicalSetLiabilityValue, LiabScheduleModCooperationMedicalSetCommentValue, SetCommentValue, LiabScheduleModClassificationSetLiabilityValue, LiabScheduleModCooperationSafetySetLiabilityValue, LiabScheduleModCooperationSafetySetCommentValue, LiabScheduleModEmployeesSetCommentValue, LiabScheduleModEmployeesSetLiabilityValue, LiabScheduleModEquipmentSetCommentValue, LiabScheduleModEquipmentSetLiabilityValue, LiabScheduleModLocationInsideSetCommentValue, LiabScheduleModLocationInsideSetLiabilityValue, LiabScheduleModLocationOutsideSetCommentValue, LiabScheduleModLocationOutsideSetLiabilityValue, LiabScheduleModPremisesSetCommentValue, LiabScheduleModPremisesSetLiabilityValue, LiquorPermitNumber, MunicipalAutoRate, MunicipalLiabilityRate, MunicipalMarineRate, MunicipalMinimumRate, MunicipalOtherRate, MunicipalPropertyRate, CountyAutoRate, CountyLiabilityRate, CountyMarineRate, CountyMinimumRate, CountyOtherRate, CountyPropertyRate, GeoTaxConfidence, CertifiedOperationsFactor, NighttimeOperationsFactor, ProgramFactor, AssociationFactor, MaximumNumberOfChildren, HoursOpen, OnlyBeforeAndAfterSchoolCare, DogCatCoverage, DogBreedsPresent, OwnAnyBuildings, LeaseAnyBuildingsToOthers, TotalSquareFeetLeasedToOthers, TotalNumberApartments, IndependentContractors, NumberFullTimeBeauticians, NumberPartTimeBeauticians, NumberFullTimeElectrologists, NumberPartTimeElectrologists, NumberFullTimeMassageTherapists, NumberPartTimeMassageTherapists, NumberBeautyInstructors, NumberAquaMassageBeds, NumberSuntanBeds, NumberAirBrushOrSprayOnBooths, NumberHotTubs, NumberCircuitWorkout, OutdoorServiceArea)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tWB_CL_LOCATIONACCOUNTID, \n\tWB_GL_LOCATIONACCOUNTID, \n\tSESSIONID, \n\tLIABSCHEDULEMODCOOPERATIONMEDICALSETLIABILITYVALUE, \n\tLIABSCHEDULEMODCOOPERATIONMEDICALSETCOMMENTVALUE, \n\tSETCOMMENTVALUE, \n\tLIABSCHEDULEMODCLASSIFICATIONSETLIABILITYVALUE, \n\tLIABSCHEDULEMODCOOPERATIONSAFETYSETLIABILITYVALUE, \n\tLIABSCHEDULEMODCOOPERATIONSAFETYSETCOMMENTVALUE, \n\tLIABSCHEDULEMODEMPLOYEESSETCOMMENTVALUE, \n\tLIABSCHEDULEMODEMPLOYEESSETLIABILITYVALUE, \n\tLIABSCHEDULEMODEQUIPMENTSETCOMMENTVALUE, \n\tLIABSCHEDULEMODEQUIPMENTSETLIABILITYVALUE, \n\tLIABSCHEDULEMODLOCATIONINSIDESETCOMMENTVALUE, \n\tLIABSCHEDULEMODLOCATIONINSIDESETLIABILITYVALUE, \n\tLIABSCHEDULEMODLOCATIONOUTSIDESETCOMMENTVALUE, \n\tLIABSCHEDULEMODLOCATIONOUTSIDESETLIABILITYVALUE, \n\tLIABSCHEDULEMODPREMISESSETCOMMENTVALUE, \n\tLIABSCHEDULEMODPREMISESSETLIABILITYVALUE, \n\tLIQUORPERMITNUMBER, \n\tMUNICIPALAUTORATE, \n\tMUNICIPALLIABILITYRATE, \n\tMUNICIPALMARINERATE, \n\tMUNICIPALMINIMUMRATE, \n\tMUNICIPALOTHERRATE, \n\tMUNICIPALPROPERTYRATE, \n\tCOUNTYAUTORATE, \n\tCOUNTYLIABILITYRATE, \n\tCOUNTYMARINERATE, \n\tCOUNTYMINIMUMRATE, \n\tCOUNTYOTHERRATE, \n\tCOUNTYPROPERTYRATE, \n\tGEOTAXCONFIDENCE, \n\tCERTIFIEDOPERATIONSFACTOR, \n\tNIGHTTIMEOPERATIONSFACTOR, \n\tPROGRAMFACTOR, \n\tASSOCIATIONFACTOR, \n\tMAXIMUMNUMBEROFCHILDREN, \n\tHOURSOPEN, \n\to_OnlyBeforeAndAfterSchoolCare AS ONLYBEFOREANDAFTERSCHOOLCARE, \n\tDOGCATCOVERAGE, \n\to_DogBreedsPresent AS DOGBREEDSPRESENT, \n\to_OwnAnyBuildings AS OWNANYBUILDINGS, \n\to_LeaseAnyBuildingsToOthers AS LEASEANYBUILDINGSTOOTHERS, \n\tTOTALSQUAREFEETLEASEDTOOTHERS, \n\tTOTALNUMBERAPARTMENTS, \n\to_IndependentContractors AS INDEPENDENTCONTRACTORS, \n\tNUMBERFULLTIMEBEAUTICIANS, \n\tNUMBERPARTTIMEBEAUTICIANS, \n\tNUMBERFULLTIMEELECTROLOGISTS, \n\tNUMBERPARTTIMEELECTROLOGISTS, \n\tNUMBERFULLTIMEMASSAGETHERAPISTS, \n\tNUMBERPARTTIMEMASSAGETHERAPISTS, \n\tNUMBERBEAUTYINSTRUCTORS, \n\tNUMBERAQUAMASSAGEBEDS, \n\tNUMBERSUNTANBEDS, \n\tNUMBERAIRBRUSHORSPRAYONBOOTHS, \n\tNUMBERHOTTUBS, \n\tNUMBERCIRCUITWORKOUT, \n\tOUTDOORSERVICEAREA\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

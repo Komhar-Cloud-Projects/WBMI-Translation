@@ -1,0 +1,47 @@
+{
+    "name": "s_m_BILL_DCT_Process_Remittance",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_BILL_DCT_Process_Remittance",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_BIL_RemittanceStage AS (\n\tSELECT\n\t\tRemittanceStageId,\n\t\tModifiedUserId,\n\t\tModifiedDate,\n\t\tTransactionId,\n\t\tTransactionType,\n\t\tTransactionData,\n\t\tRemittanceSource,\n\t\tProcessedStatusCode,\n\t\tErrorDescription,\n\t\tPaymentId,\n\t\tReconciliationDate,\n\t\tVendorAccountNumber,\n\t\tInvoiceNumber,\n\t\tCustomerName,\n\t\tEffectiveDate,\n\t\tDateCleared,\n\t\tDateInitiated,\n\t\tBillAmount,\n\t\tPaidAmount,\n\t\tFeeAmount,\n\t\tPaymentMode,\n\t\tTransactionStatus,\n\t\tApprovalCode,\n\t\tAuthorizedBy,\n\t\tOriginalBillAmount,\n\t\tMinimumPayment,\n\t\tDCAccountNumber,\n\t\tPaperProcessingCode,\n\t\tReturnCode\n\tFROM WB_BIL_RemittanceStage\n\tWHERE WB_BIL_RemittanceStage.ProcessedStatusCode = 'N' \r\n\tAND\r\n\t(WB_BIL_RemittanceStage.TransactionType  IN ('Chargeback', 'Failed') OR WB_BIL_RemittanceStage.ReturnCode is not null) \r\n\tAND\r\n\tWB_BIL_RemittanceStage.RemittanceSource in (@{pipeline().parameters.SOURCELIST})\n),\nexp_Prep_4_Stage_2_Service_Processing AS (\n\tSELECT\n\tRemittanceStageId,\n\tModifiedDate,\n\tTransactionId,\n\tTransactionType,\n\tVendorAccountNumber AS Account,\n\tInvoiceNumber,\n\tCustomerName,\n\tEffectiveDate,\n\tDateCleared,\n\tDateInitiated,\n\tPaidAmount,\n\tPaymentMode,\n\tAuthorizedBy,\n\tOriginalBillAmount,\n\tMinimumPayment,\n\tDCAccountNumber,\n\tPaperProcessingCode,\n\tReturnCode,\n\tRemittanceSource\n\tFROM SQ_WB_BIL_RemittanceStage\n),\nrtr_TransactionProcessing AS (\n\tSELECT\n\tRemittanceStageId,\n\tAccount,\n\tInvoiceNumber,\n\tCustomerName,\n\tEffectiveDate,\n\tDateCleared,\n\tDateInitiated,\n\tPaidAmount,\n\tPaymentMode,\n\tAuthorizedBy,\n\tTransactionId,\n\tModifiedDate,\n\tOriginalBillAmount,\n\tMinimumPayment,\n\tDCAccountNumber,\n\tPaperProcessingCode,\n\tTransactionType,\n\tReturnCode,\n\tRemittanceSource\n\tFROM exp_Prep_4_Stage_2_Service_Processing\n),\nrtr_TransactionProcessing_ProcessPayments AS (SELECT * FROM rtr_TransactionProcessing WHERE TransactionType = 'Payment'),\nrtr_TransactionProcessing_ProcessAdverseActions AS (SELECT * FROM rtr_TransactionProcessing WHERE TransactionType = 'Reversal'  OR  TransactionType = 'Failed' OR  NOT ISNULL(ReturnCode)),\nexp_ProcessPayment AS (\n\tSELECT\n\tRemittanceStageId,\n\tAccount,\n\tInvoiceNumber,\n\tCustomerName,\n\tEffectiveDate,\n\tDateCleared,\n\tDateInitiated,\n\tPaidAmount,\n\tPaymentMode,\n\tAuthorizedBy,\n\tTransactionId,\n\tModifiedDate,\n\t'P' AS Out_Alloc_Class_code,\n\t-- *INF*: SYSTIMESTAMP()  ||  'batchNumber'  ||  TO_CHAR( v_batch_number)  \n\tCURRENT_TIMESTAMP() || 'batchNumber' || TO_CHAR(v_batch_number) AS Out_Paymentbatch,\n\t-- *INF*: --iif(IVR and CC, PPCC, PPA) or (Internet and CC, CCP, WPA)\n\t'' AS Out_PaymentMethod,\n\t-- *INF*: IIF(v_SeqNumber = 0,@{pipeline().parameters.BATCHSIZE},v_SeqNumber + 1)\n\tIFF(v_SeqNumber = 0, @{pipeline().parameters.BATCHSIZE}, v_SeqNumber + 1) AS v_SeqNumber,\n\t-- *INF*: TRUNC(v_SeqNumber / @{pipeline().parameters.BATCHSIZE},0)\n\tTRUNC(v_SeqNumber / @{pipeline().parameters.BATCHSIZE},0) AS v_batch_number,\n\tv_SeqNumber AS Out_SeqNumber,\n\tv_batch_number AS Out_batchNumber,\n\tOriginalBillAmount AS OriginalBillAmount1,\n\tMinimumPayment AS MinimumPayment1,\n\tDCAccountNumber AS DCAccountNumber1,\n\tPaperProcessingCode AS PaperProcessingCode1,\n\tRemittanceSource AS RemittanceSource1\n\tFROM rtr_TransactionProcessing_ProcessPayments\n),\nagg_ProcessPayment AS (\n\tSELECT\n\tOut_batchNumber AS Out_batch_number,\n\tOut_Paymentbatch,\n\tOut_SeqNumber\n\tFROM exp_ProcessPayment\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY Out_batch_number ORDER BY NULL) = 1\n),\nProcessPayment AS (-- ProcessPayment\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nfil_Payment_errors AS (\n\tSELECT\n\ttns2_ErrorMessage\n\tFROM ProcessPayment\n\tWHERE NOT ISNULL(tns2_ErrorMessage)\n),\nPayment_Error_file AS (\n\tINSERT INTO Payment_Error_file\n\t(Error_Message)\n\tSELECT \n\ttns2_ErrorMessage AS ERROR_MESSAGE\n\tFROM fil_Payment_errors\n),\nexp_Process_adverseActions AS (\n\tSELECT\n\tRemittanceStageId AS RemittanceStageId3,\n\tReturnCode AS ReturnCode3,\n\tRemittanceSource AS RemittanceSource3,\n\t-- *INF*: CONCAT('Adv Action' , TO_CHAR( v_advAct_batch) ) \n\tCONCAT('Adv Action', TO_CHAR(v_advAct_batch)) AS Out_AdvAct_batch,\n\tv_AdvAct_seq AS Out_AdvAct_sequence,\n\tv_advAct_batch AS Out_AdvAct_BatchNumber,\n\t-- *INF*: IIF(v_AdvAct_seq= 0,@{pipeline().parameters.BATCHSIZE},v_AdvAct_seq + 1)\n\tIFF(v_AdvAct_seq = 0, @{pipeline().parameters.BATCHSIZE}, v_AdvAct_seq + 1) AS v_AdvAct_seq,\n\t-- *INF*: TRUNC(v_AdvAct_seq  / @{pipeline().parameters.BATCHSIZE},0)\n\tTRUNC(v_AdvAct_seq / @{pipeline().parameters.BATCHSIZE},0) AS v_advAct_batch,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- RemittanceSource3 = 'B','NF',\r\n\t-- ReturnCode3)\r\n\t-- -- Directbiller defaults to 'NF' while FIS sends unique return codes for ACH returns\n\tDECODE(\n\t    TRUE,\n\t    RemittanceSource3 = 'B', 'NF',\n\t    ReturnCode3\n\t) AS Out_ReasonCode\n\tFROM rtr_TransactionProcessing_ProcessAdverseActions\n),\nagg_ProcessAdverseAction AS (\n\tSELECT\n\tOut_AdvAct_batch,\n\tOut_AdvAct_sequence,\n\tOut_AdvAct_BatchNumber\n\tFROM exp_Process_adverseActions\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY Out_AdvAct_BatchNumber ORDER BY NULL) = 1\n),\nweb_Process_AdverseAction1 AS (-- web_Process_AdverseAction1\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nfil_ErrorMessage AS (\n\tSELECT\n\ttns2_ErrorMessage\n\tFROM web_Process_AdverseAction1\n\tWHERE NOT ISNULL(tns2_ErrorMessage)\n),\nAdverseAction_Error_File AS (\n\tINSERT INTO AdverseAction_Error_File\n\t(Error_Message)\n\tSELECT \n\ttns2_ErrorMessage AS ERROR_MESSAGE\n\tFROM fil_ErrorMessage\n),\nexp_error_handling AS (\n\tSELECT\n\ttns2_ErrorMessage AS tns2_ErrorMessage1,\n\t-- *INF*: ERROR(tns2_ErrorMessage1)\n\tERROR(tns2_ErrorMessage1) AS v_Workflow_Error\n\tFROM fil_ErrorMessage\n),\nAdverseAction_Error_Handling_File AS (\n\tINSERT INTO AdverseAction_Error_Handling_File\n\t(Error_message)\n\tSELECT \n\ttns2_ErrorMessage1 AS ERROR_MESSAGE\n\tFROM exp_error_handling\n),\nexp_Payment_Error_Handling AS (\n\tSELECT\n\ttns2_ErrorMessage,\n\t-- *INF*: ERROR(tns2_ErrorMessage ) \n\tERROR(tns2_ErrorMessage) AS v_Error_handling_process\n\tFROM fil_Payment_errors\n),\nPayment_Error_Handling_file AS (\n\tINSERT INTO Payment_Error_Handling_file\n\t(Error_Message)\n\tSELECT \n\ttns2_ErrorMessage AS ERROR_MESSAGE\n\tFROM exp_Payment_Error_Handling\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCELIST": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "BATCHSIZE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "BillingDataServices/"
+        },
+        "annotations": []
+    }
+}

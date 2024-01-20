@@ -1,0 +1,47 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_Archive_Agency_Underwriter",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_Archive_Agency_Underwriter",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_agency_underwriter_stage AS (\n\tSELECT\n\t\tagency_uw_stage_id,\n\t\tstate_code,\n\t\tagency_num,\n\t\tinsurance_line,\n\t\tuw_assistant_flag,\n\t\tuw_code,\n\t\tagency_code,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM Agency_underwriter_stage\n),\nexp_AGY_Insert_Arch_Agy_UW AS (\n\tSELECT\n\tagency_uw_stage_id AS agency_uw_id,\n\tstate_code,\n\tagency_num,\n\tinsurance_line,\n\tuw_assistant_flag,\n\tuw_code,\n\tagency_code,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID\n\tFROM SQ_agency_underwriter_stage\n),\nTGT_arch_agency_underwriter_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_agency_underwriter_stage\n\t(agency_uw_stage_id, state_code, agency_num, insurance_line, uw_assistant_flag, uw_code, agency_code, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, audit_id)\n\tSELECT \n\tagency_uw_id AS AGENCY_UW_STAGE_ID, \n\tSTATE_CODE, \n\tAGENCY_NUM, \n\tINSURANCE_LINE, \n\tUW_ASSISTANT_FLAG, \n\tUW_CODE, \n\tAGENCY_CODE, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tOUT_AUDIT_ID AS AUDIT_ID\n\tFROM exp_AGY_Insert_Arch_Agy_UW\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

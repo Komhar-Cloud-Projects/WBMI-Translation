@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLMT_NURSE_REFFERAL_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLMT_NURSE_REFFERAL_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_clmt_nurse_referral_stage AS (\n\tSELECT \r\n\tC.ClmntNurseReferralStageId, \r\n\tC.nurse_referral_id, \r\n\tC.clmt_nurse_manage_id, \r\n\tC.referred_to_nurse_id, \r\n\tC.referral_date, \r\n\tC.created_ts, \r\n\tC.created_user_id, \r\n\tC.modified_ts, \r\n\tC.modified_user_id, \r\n\tC.ExtractDate, \r\n\tC.SourceSystemId\r\n\t \r\n\tFROM\r\n\t clmt_nurse_referral_stage C\r\n\t\r\n\t--WHERE\r\n\t--clmt_nurse_referral_stage.created_ts >= --'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t--OR\r\n\t--clmt_nurse_referral_stage.modified_ts >= --'@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_arch_clmt_nurse_referral_stage AS (\n\tSELECT\n\tClmntNurseReferralStageId,\n\tnurse_referral_id,\n\tclmt_nurse_manage_id,\n\treferred_to_nurse_id,\n\treferral_date,\n\tcreated_ts,\n\tcreated_user_id,\n\tmodified_ts,\n\tmodified_user_id,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_clmt_nurse_referral_stage\n),\narch_clmt_nurse_referral_stage AS (\n\tINSERT INTO arch_clmt_nurse_referral_stage\n\t(ClmntNurseReferralStageId, nurse_referral_id, clmt_nurse_manage_id, referred_to_nurse_id, referral_date, created_ts, created_user_id, modified_ts, modified_user_id, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tCLMNTNURSEREFERRALSTAGEID, \n\tNURSE_REFERRAL_ID, \n\tCLMT_NURSE_MANAGE_ID, \n\tREFERRED_TO_NURSE_ID, \n\tREFERRAL_DATE, \n\tCREATED_TS, \n\tCREATED_USER_ID, \n\tMODIFIED_TS, \n\tMODIFIED_USER_ID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_arch_clmt_nurse_referral_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

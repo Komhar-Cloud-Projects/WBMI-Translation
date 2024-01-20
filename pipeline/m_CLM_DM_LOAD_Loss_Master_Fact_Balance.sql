@@ -464,14 +464,10 @@ Exp_PreviousMonth AS (
 	PR_edw_reins_cov_ak_id AS PR_edw_reins_cov_ak_id3,
 	PR_LossMasterRundate AS PR_LossMasterRundate3,
 	-- *INF*: LAST_DAY(ADD_TO_DATE(PR_LossMasterRundate3,'MM',1))
-	LAST_DAY(DATEADD(MONTH,1,PR_LossMasterRundate3)
-	) AS Out_LossMasterRundate,
+	LAST_DAY(DATEADD(MONTH,1,PR_LossMasterRundate3)) AS Out_LossMasterRundate,
 	PR_pms_trans_code AS PR_pms_trans_code3,
 	-- *INF*: IIF(PR_pms_trans_code3='92','90',PR_pms_trans_code3)
-	IFF(PR_pms_trans_code3 = '92',
-		'90',
-		PR_pms_trans_code3
-	) AS Out_PR_pms_trans_code,
+	IFF(PR_pms_trans_code3 = '92', '90', PR_pms_trans_code3) AS Out_PR_pms_trans_code,
 	PR_claimfinancialtypedimid AS PR_claimfinancialtypedimid3,
 	PR_Trans_Kind_code AS PR_Trans_Kind_code3,
 	PR_Claim_Loss_date AS PR_Claim_Loss_date3,

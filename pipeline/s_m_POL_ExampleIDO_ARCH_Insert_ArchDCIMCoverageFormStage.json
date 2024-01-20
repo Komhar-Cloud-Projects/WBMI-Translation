@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCIMCoverageFormStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCIMCoverageFormStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCIMCoverageFormStage AS (\n\tSELECT\n\t\tDCIMCoverageFormStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tLineId,\n\t\tIM_CoverageFormId,\n\t\tSessionId,\n\t\tId,\n\t\tType,\n\t\tDescription,\n\t\tDeleted\n\tFROM DCIMCoverageFormStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCIMCoverageFormStageId,\n\tExtractDate,\n\tSourceSystemid,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tLineId,\n\tIM_CoverageFormId,\n\tSessionId,\n\tId,\n\tDeleted,\n\tType,\n\tDescription\n\tFROM SQ_DCIMCoverageFormStage\n),\nArchDCIMCoverageFormStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCIMCoverageFormStage\n\t(ExtractDate, SourceSystemid, AuditId, LineId, IM_CoverageFormId, SessionId, Id, Deleted, Type, Description)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tLINEID, \n\tIM_COVERAGEFORMID, \n\tSESSIONID, \n\tID, \n\tDELETED, \n\tTYPE, \n\tDESCRIPTION\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

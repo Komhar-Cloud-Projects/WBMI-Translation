@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLAIM_CLAIMANT_NBR",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLAIM_CLAIMANT_NBR",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_claim_claimant_nbr_stage AS (\n\tSELECT claim_claimant_nbr_stage.claim_claimant_nbr_id, claim_claimant_nbr_stage.ccn_claim_nbr, claim_claimant_nbr_stage.ccn_client_id, claim_claimant_nbr_stage.ccn_object_type_cd, claim_claimant_nbr_stage.ccn_object_seq_nbr, claim_claimant_nbr_stage.ccn_cov_type_cd, claim_claimant_nbr_stage.ccn_cov_seq_nbr, claim_claimant_nbr_stage.ccn_bur_cau_los_cd, claim_claimant_nbr_stage.ccn_claimant_nbr, claim_claimant_nbr_stage.ccn_entry_opr_id, claim_claimant_nbr_stage.ccn_create_ts, claim_claimant_nbr_stage.extract_date, claim_claimant_nbr_stage.as_of_date, claim_claimant_nbr_stage.record_count, claim_claimant_nbr_stage.source_system_id \r\n\tFROM\r\n\t claim_claimant_nbr_stage\r\n\tWHERE\r\n\tclaim_claimant_nbr_stage.ccn_create_ts >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_DEFAULT AS (\n\tSELECT\n\tclaim_claimant_nbr_id,\n\tccn_claim_nbr,\n\tccn_client_id,\n\tccn_object_type_cd,\n\tccn_object_seq_nbr,\n\tccn_cov_type_cd,\n\tccn_cov_seq_nbr,\n\tccn_bur_cau_los_cd,\n\tccn_claimant_nbr,\n\tccn_entry_opr_id,\n\tccn_create_ts,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id\n\tFROM SQ_claim_claimant_nbr_stage\n),\narch_claim_claimant_nbr_stage AS (\n\tINSERT INTO arch_claim_claimant_nbr_stage\n\t(claim_claimant_nbr_id, ccn_claim_nbr, ccn_client_id, ccn_object_type_cd, ccn_object_seq_nbr, ccn_cov_type_cd, ccn_cov_seq_nbr, ccn_bur_cau_los_cd, ccn_claimant_nbr, ccn_entry_opr_id, ccn_create_ts, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCLAIM_CLAIMANT_NBR_ID, \n\tCCN_CLAIM_NBR, \n\tCCN_CLIENT_ID, \n\tCCN_OBJECT_TYPE_CD, \n\tCCN_OBJECT_SEQ_NBR, \n\tCCN_COV_TYPE_CD, \n\tCCN_COV_SEQ_NBR, \n\tCCN_BUR_CAU_LOS_CD, \n\tCCN_CLAIMANT_NBR, \n\tCCN_ENTRY_OPR_ID, \n\tCCN_CREATE_TS, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID\n\tFROM EXP_DEFAULT\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

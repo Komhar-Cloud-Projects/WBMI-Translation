@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCULineStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCCULineStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCULineStaging AS (\n\tSELECT\n\t\tDCCULineStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tLineId,\n\t\tCU_LineId,\n\t\tSessionId,\n\t\tId,\n\t\tAutoOperatedOver300Miles,\n\t\tAutoSubjectToTimeConstraints,\n\t\tClaimsMade,\n\t\tDescription,\n\t\tForeignSales,\n\t\tIncludeBusinessowners,\n\t\tIncludeCommercialAuto,\n\t\tIncludeEmployersLiability,\n\t\tIncludeGeneralLiability,\n\t\tInternetSalesPercent,\n\t\tLiquorSalesPercent,\n\t\tMountedMechanicalEquipment,\n\t\tNumberOfSwimmingPools,\n\t\tNumberOfYearsInBusiness,\n\t\tSpecifiedAdditionalCountries,\n\t\tSpecifiedExceptedCountries\n\tFROM DCCULineStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCCULineStagingId,\n\tExtractDate,\n\tSourceSystemId,\n\tLineId,\n\tCU_LineId,\n\tSessionId,\n\tId,\n\tAutoOperatedOver300Miles,\n\tAutoSubjectToTimeConstraints,\n\tClaimsMade,\n\tDescription,\n\tForeignSales,\n\tIncludeBusinessowners,\n\tIncludeCommercialAuto,\n\tIncludeEmployersLiability,\n\tIncludeGeneralLiability,\n\tInternetSalesPercent,\n\tLiquorSalesPercent,\n\tMountedMechanicalEquipment,\n\tNumberOfSwimmingPools,\n\tNumberOfYearsInBusiness,\n\tSpecifiedAdditionalCountries,\n\tSpecifiedExceptedCountries,\n\t-- *INF*: DECODE(AutoOperatedOver300Miles, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    AutoOperatedOver300Miles,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AutoOperatedOver300Miles,\n\t-- *INF*: DECODE(AutoSubjectToTimeConstraints, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    AutoSubjectToTimeConstraints,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AutoSubjectToTimeConstraints,\n\t-- *INF*: DECODE(ClaimsMade, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    ClaimsMade,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ClaimsMade,\n\t-- *INF*: DECODE(ForeignSales, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    ForeignSales,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ForeignSales,\n\t-- *INF*: DECODE(IncludeBusinessowners, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    IncludeBusinessowners,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncludeBusinessowners,\n\t-- *INF*: DECODE(IncludeCommercialAuto, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    IncludeCommercialAuto,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncludeCommercialAuto,\n\t-- *INF*: DECODE(IncludeEmployersLiability, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    IncludeEmployersLiability,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncludeEmployersLiability,\n\t-- *INF*: DECODE(IncludeGeneralLiability, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    IncludeGeneralLiability,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncludeGeneralLiability,\n\t-- *INF*: DECODE(MountedMechanicalEquipment, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    MountedMechanicalEquipment,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_MountedMechanicalEquipment,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCULineStaging\n),\nArchDCCULineStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCULineStaging\n\t(ExtractDate, SourceSystemId, AuditId, LineId, CU_LineId, SessionId, Id, AutoOperatedOver300Miles, AutoSubjectToTimeConstraints, ClaimsMade, Description, ForeignSales, IncludeBusinessowners, IncludeCommercialAuto, IncludeEmployersLiability, IncludeGeneralLiability, InternetSalesPercent, LiquorSalesPercent, MountedMechanicalEquipment, NumberOfSwimmingPools, NumberOfYearsInBusiness, SpecifiedAdditionalCountries, SpecifiedExceptedCountries)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tLINEID, \n\tCU_LINEID, \n\tSESSIONID, \n\tID, \n\to_AutoOperatedOver300Miles AS AUTOOPERATEDOVER300MILES, \n\to_AutoSubjectToTimeConstraints AS AUTOSUBJECTTOTIMECONSTRAINTS, \n\to_ClaimsMade AS CLAIMSMADE, \n\tDESCRIPTION, \n\to_ForeignSales AS FOREIGNSALES, \n\to_IncludeBusinessowners AS INCLUDEBUSINESSOWNERS, \n\to_IncludeCommercialAuto AS INCLUDECOMMERCIALAUTO, \n\to_IncludeEmployersLiability AS INCLUDEEMPLOYERSLIABILITY, \n\to_IncludeGeneralLiability AS INCLUDEGENERALLIABILITY, \n\tINTERNETSALESPERCENT, \n\tLIQUORSALESPERCENT, \n\to_MountedMechanicalEquipment AS MOUNTEDMECHANICALEQUIPMENT, \n\tNUMBEROFSWIMMINGPOOLS, \n\tNUMBEROFYEARSINBUSINESS, \n\tSPECIFIEDADDITIONALCOUNTRIES, \n\tSPECIFIEDEXCEPTEDCOUNTRIES\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

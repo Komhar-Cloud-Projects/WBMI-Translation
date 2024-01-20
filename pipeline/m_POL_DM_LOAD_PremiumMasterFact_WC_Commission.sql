@@ -73,8 +73,7 @@ AGG_Policy AS (
 	PremiumMasterRunDateID,
 	PremiumMasterPremium,
 	-- *INF*: sum(PremiumMasterPremium)
-	sum(PremiumMasterPremium
-	) AS o_TotalAmountMonthly,
+	sum(PremiumMasterPremium) AS o_TotalAmountMonthly,
 	InsuranceReferenceDimId,
 	SalesDivisionDimId,
 	InsuranceReferenceCoverageDimId,
@@ -138,15 +137,9 @@ EXP_CalculateCommission AS (
 	AGG_Policy.PolicyOfferingAbbreviation,
 	AGG_Policy.InsuranceSegmentAbbreviation,
 	-- *INF*: IIF(ISNULL(i_TotalAmountMonthly),0,i_TotalAmountMonthly)
-	IFF(i_TotalAmountMonthly IS NULL,
-		0,
-		i_TotalAmountMonthly
-	) AS v_TotalAmountMonthly,
+	IFF(i_TotalAmountMonthly IS NULL, 0, i_TotalAmountMonthly) AS v_TotalAmountMonthly,
 	-- *INF*: IIF(ISNULL(i_HistoryAmount),0,i_HistoryAmount)
-	IFF(i_HistoryAmount IS NULL,
-		0,
-		i_HistoryAmount
-	) AS v_HistoryAmount,
+	IFF(i_HistoryAmount IS NULL, 0, i_HistoryAmount) AS v_HistoryAmount,
 	v_TotalAmountMonthly + v_HistoryAmount AS v_TotalAmount,
 	5000 AS v_GraduatedAmount_CL,
 	10000 AS v_GraduatedAmount_Pool,
@@ -173,52 +166,31 @@ EXP_CalculateCommission AS (
 	-- v_TotalAmount>=v_GraduatedAmount_Pool AND v_HistoryAmount > v_GraduatedAmount_Pool AND v_TotalAmount - v_HistoryAmount  <> 0 , 0,
 	-- 0),
 	-- 0)
-	DECODE(TRUE,
-		InsuranceSegmentAbbreviation = 'CL', DECODE(TRUE,
-		v_TotalAmount - v_HistoryAmount = 0, 0,
-		v_TotalAmount > 0 
-			AND v_HistoryAmount = 0 
-			AND v_TotalAmount - v_HistoryAmount <= v_GraduatedAmount_CL, v_TotalAmount,
-		v_TotalAmount > 0 
-			AND v_HistoryAmount = 0 
-			AND v_TotalAmount - v_HistoryAmount > v_GraduatedAmount_CL, v_GraduatedAmount_CL,
-		v_TotalAmount > v_GraduatedAmount_CL 
-			AND v_HistoryAmount <= v_GraduatedAmount_CL 
-			AND v_TotalAmount - v_HistoryAmount > 0, v_GraduatedAmount_CL - v_HistoryAmount,
-		v_TotalAmount <= v_GraduatedAmount_CL 
-			AND v_HistoryAmount <= v_GraduatedAmount_CL 
-			AND v_TotalAmount - v_HistoryAmount <> 0, v_TotalAmount - v_HistoryAmount,
-		v_TotalAmount < v_GraduatedAmount_CL 
-			AND v_HistoryAmount > v_GraduatedAmount_CL 
-			AND v_TotalAmount - v_HistoryAmount < 0, v_TotalAmount - v_GraduatedAmount_CL,
-		v_TotalAmount >= v_GraduatedAmount_CL 
-			AND v_HistoryAmount > v_GraduatedAmount_CL 
-			AND v_TotalAmount - v_HistoryAmount <> 0, 0,
-		0
-		),
-		InsuranceSegmentAbbreviation = 'Pool', DECODE(TRUE,
-		v_TotalAmount - v_HistoryAmount = 0, 0,
-		v_TotalAmount > 0 
-			AND v_HistoryAmount = 0 
-			AND v_TotalAmount - v_HistoryAmount <= v_GraduatedAmount_Pool, v_TotalAmount,
-		v_TotalAmount > 0 
-			AND v_HistoryAmount = 0 
-			AND v_TotalAmount - v_HistoryAmount > v_GraduatedAmount_Pool, v_GraduatedAmount_Pool,
-		v_TotalAmount > v_GraduatedAmount_Pool 
-			AND v_HistoryAmount <= v_GraduatedAmount_Pool 
-			AND v_TotalAmount - v_HistoryAmount > 0, v_GraduatedAmount_Pool - v_HistoryAmount,
-		v_TotalAmount <= v_GraduatedAmount_Pool 
-			AND v_HistoryAmount <= v_GraduatedAmount_Pool 
-			AND v_TotalAmount - v_HistoryAmount <> 0, v_TotalAmount - v_HistoryAmount,
-		v_TotalAmount < v_GraduatedAmount_Pool 
-			AND v_HistoryAmount > v_GraduatedAmount_Pool 
-			AND v_TotalAmount - v_HistoryAmount < 0, v_TotalAmount - v_GraduatedAmount_Pool,
-		v_TotalAmount >= v_GraduatedAmount_Pool 
-			AND v_HistoryAmount > v_GraduatedAmount_Pool 
-			AND v_TotalAmount - v_HistoryAmount <> 0, 0,
-		0
-		),
-		0
+	DECODE(
+	    TRUE,
+	    InsuranceSegmentAbbreviation = 'CL', DECODE(
+	        TRUE,
+	        v_TotalAmount - v_HistoryAmount = 0, 0,
+	        v_TotalAmount > 0 AND v_HistoryAmount = 0 AND v_TotalAmount - v_HistoryAmount <= v_GraduatedAmount_CL, v_TotalAmount,
+	        v_TotalAmount > 0 AND v_HistoryAmount = 0 AND v_TotalAmount - v_HistoryAmount > v_GraduatedAmount_CL, v_GraduatedAmount_CL,
+	        v_TotalAmount > v_GraduatedAmount_CL AND v_HistoryAmount <= v_GraduatedAmount_CL AND v_TotalAmount - v_HistoryAmount > 0, v_GraduatedAmount_CL - v_HistoryAmount,
+	        v_TotalAmount <= v_GraduatedAmount_CL AND v_HistoryAmount <= v_GraduatedAmount_CL AND v_TotalAmount - v_HistoryAmount <> 0, v_TotalAmount - v_HistoryAmount,
+	        v_TotalAmount < v_GraduatedAmount_CL AND v_HistoryAmount > v_GraduatedAmount_CL AND v_TotalAmount - v_HistoryAmount < 0, v_TotalAmount - v_GraduatedAmount_CL,
+	        v_TotalAmount >= v_GraduatedAmount_CL AND v_HistoryAmount > v_GraduatedAmount_CL AND v_TotalAmount - v_HistoryAmount <> 0, 0,
+	        0
+	    ),
+	    InsuranceSegmentAbbreviation = 'Pool', DECODE(
+	        TRUE,
+	        v_TotalAmount - v_HistoryAmount = 0, 0,
+	        v_TotalAmount > 0 AND v_HistoryAmount = 0 AND v_TotalAmount - v_HistoryAmount <= v_GraduatedAmount_Pool, v_TotalAmount,
+	        v_TotalAmount > 0 AND v_HistoryAmount = 0 AND v_TotalAmount - v_HistoryAmount > v_GraduatedAmount_Pool, v_GraduatedAmount_Pool,
+	        v_TotalAmount > v_GraduatedAmount_Pool AND v_HistoryAmount <= v_GraduatedAmount_Pool AND v_TotalAmount - v_HistoryAmount > 0, v_GraduatedAmount_Pool - v_HistoryAmount,
+	        v_TotalAmount <= v_GraduatedAmount_Pool AND v_HistoryAmount <= v_GraduatedAmount_Pool AND v_TotalAmount - v_HistoryAmount <> 0, v_TotalAmount - v_HistoryAmount,
+	        v_TotalAmount < v_GraduatedAmount_Pool AND v_HistoryAmount > v_GraduatedAmount_Pool AND v_TotalAmount - v_HistoryAmount < 0, v_TotalAmount - v_GraduatedAmount_Pool,
+	        v_TotalAmount >= v_GraduatedAmount_Pool AND v_HistoryAmount > v_GraduatedAmount_Pool AND v_TotalAmount - v_HistoryAmount <> 0, 0,
+	        0
+	    ),
+	    0
 	) AS v_PremiumForLevel1,
 	-- *INF*: DECODE(TRUE ,InsuranceSegmentAbbreviation='CL',
 	-- DECODE(TRUE ,v_TotalAmount - v_HistoryAmount=0,0,
@@ -239,68 +211,49 @@ EXP_CalculateCommission AS (
 	-- v_TotalAmount>=v_GraduatedAmount_Pool AND v_HistoryAmount > v_GraduatedAmount_Pool AND v_TotalAmount - v_HistoryAmount  <> 0 , v_TotalAmount - v_HistoryAmount,
 	-- 0),
 	-- 0)
-	DECODE(TRUE,
-		InsuranceSegmentAbbreviation = 'CL', DECODE(TRUE,
-		v_TotalAmount - v_HistoryAmount = 0, 0,
-		v_TotalAmount > 0 
-			AND v_HistoryAmount = 0 
-			AND v_TotalAmount - v_HistoryAmount <= v_GraduatedAmount_CL, 0,
-		v_TotalAmount > 0 
-			AND v_HistoryAmount = 0 
-			AND v_TotalAmount - v_HistoryAmount > v_GraduatedAmount_CL, v_TotalAmount - v_GraduatedAmount_CL,
-		v_TotalAmount > v_GraduatedAmount_CL 
-			AND v_HistoryAmount <= v_GraduatedAmount_CL 
-			AND v_TotalAmount - v_HistoryAmount > 0, v_TotalAmount - v_GraduatedAmount_CL,
-		v_TotalAmount <= v_GraduatedAmount_CL 
-			AND v_HistoryAmount <= v_GraduatedAmount_CL 
-			AND v_TotalAmount - v_HistoryAmount <> 0, 0,
-		v_TotalAmount < v_GraduatedAmount_CL 
-			AND v_HistoryAmount > v_GraduatedAmount_CL 
-			AND v_TotalAmount - v_HistoryAmount < 0, v_GraduatedAmount_CL - v_HistoryAmount,
-		v_TotalAmount >= v_GraduatedAmount_CL 
-			AND v_HistoryAmount > v_GraduatedAmount_CL 
-			AND v_TotalAmount - v_HistoryAmount <> 0, v_TotalAmount - v_HistoryAmount,
-		0
-		),
-		InsuranceSegmentAbbreviation = 'Pool', DECODE(TRUE,
-		v_TotalAmount - v_HistoryAmount = 0, 0,
-		v_TotalAmount > 0 
-			AND v_HistoryAmount = 0 
-			AND v_TotalAmount - v_HistoryAmount <= v_GraduatedAmount_Pool, 0,
-		v_TotalAmount > 0 
-			AND v_HistoryAmount = 0 
-			AND v_TotalAmount - v_HistoryAmount > v_GraduatedAmount_Pool, v_TotalAmount - v_GraduatedAmount_Pool,
-		v_TotalAmount > v_GraduatedAmount_Pool 
-			AND v_HistoryAmount <= v_GraduatedAmount_Pool 
-			AND v_TotalAmount - v_HistoryAmount > 0, v_TotalAmount - v_GraduatedAmount_Pool,
-		v_TotalAmount <= v_GraduatedAmount_Pool 
-			AND v_HistoryAmount <= v_GraduatedAmount_Pool 
-			AND v_TotalAmount - v_HistoryAmount <> 0, 0,
-		v_TotalAmount < v_GraduatedAmount_Pool 
-			AND v_HistoryAmount > v_GraduatedAmount_Pool 
-			AND v_TotalAmount - v_HistoryAmount < 0, v_GraduatedAmount_Pool - v_HistoryAmount,
-		v_TotalAmount >= v_GraduatedAmount_Pool 
-			AND v_HistoryAmount > v_GraduatedAmount_Pool 
-			AND v_TotalAmount - v_HistoryAmount <> 0, v_TotalAmount - v_HistoryAmount,
-		0
-		),
-		0
+	DECODE(
+	    TRUE,
+	    InsuranceSegmentAbbreviation = 'CL', DECODE(
+	        TRUE,
+	        v_TotalAmount - v_HistoryAmount = 0, 0,
+	        v_TotalAmount > 0 AND v_HistoryAmount = 0 AND v_TotalAmount - v_HistoryAmount <= v_GraduatedAmount_CL, 0,
+	        v_TotalAmount > 0 AND v_HistoryAmount = 0 AND v_TotalAmount - v_HistoryAmount > v_GraduatedAmount_CL, v_TotalAmount - v_GraduatedAmount_CL,
+	        v_TotalAmount > v_GraduatedAmount_CL AND v_HistoryAmount <= v_GraduatedAmount_CL AND v_TotalAmount - v_HistoryAmount > 0, v_TotalAmount - v_GraduatedAmount_CL,
+	        v_TotalAmount <= v_GraduatedAmount_CL AND v_HistoryAmount <= v_GraduatedAmount_CL AND v_TotalAmount - v_HistoryAmount <> 0, 0,
+	        v_TotalAmount < v_GraduatedAmount_CL AND v_HistoryAmount > v_GraduatedAmount_CL AND v_TotalAmount - v_HistoryAmount < 0, v_GraduatedAmount_CL - v_HistoryAmount,
+	        v_TotalAmount >= v_GraduatedAmount_CL AND v_HistoryAmount > v_GraduatedAmount_CL AND v_TotalAmount - v_HistoryAmount <> 0, v_TotalAmount - v_HistoryAmount,
+	        0
+	    ),
+	    InsuranceSegmentAbbreviation = 'Pool', DECODE(
+	        TRUE,
+	        v_TotalAmount - v_HistoryAmount = 0, 0,
+	        v_TotalAmount > 0 AND v_HistoryAmount = 0 AND v_TotalAmount - v_HistoryAmount <= v_GraduatedAmount_Pool, 0,
+	        v_TotalAmount > 0 AND v_HistoryAmount = 0 AND v_TotalAmount - v_HistoryAmount > v_GraduatedAmount_Pool, v_TotalAmount - v_GraduatedAmount_Pool,
+	        v_TotalAmount > v_GraduatedAmount_Pool AND v_HistoryAmount <= v_GraduatedAmount_Pool AND v_TotalAmount - v_HistoryAmount > 0, v_TotalAmount - v_GraduatedAmount_Pool,
+	        v_TotalAmount <= v_GraduatedAmount_Pool AND v_HistoryAmount <= v_GraduatedAmount_Pool AND v_TotalAmount - v_HistoryAmount <> 0, 0,
+	        v_TotalAmount < v_GraduatedAmount_Pool AND v_HistoryAmount > v_GraduatedAmount_Pool AND v_TotalAmount - v_HistoryAmount < 0, v_GraduatedAmount_Pool - v_HistoryAmount,
+	        v_TotalAmount >= v_GraduatedAmount_Pool AND v_HistoryAmount > v_GraduatedAmount_Pool AND v_TotalAmount - v_HistoryAmount <> 0, v_TotalAmount - v_HistoryAmount,
+	        0
+	    ),
+	    0
 	) AS v_PremiumForLevel2,
 	-- *INF*: DECODE(TRUE , InsuranceSegmentAbbreviation='CL',v_level1_rate_CL,
 	-- InsuranceSegmentAbbreviation='Pool',v_level1_rate_Pool,
 	-- 0)
-	DECODE(TRUE,
-		InsuranceSegmentAbbreviation = 'CL', v_level1_rate_CL,
-		InsuranceSegmentAbbreviation = 'Pool', v_level1_rate_Pool,
-		0
+	DECODE(
+	    TRUE,
+	    InsuranceSegmentAbbreviation = 'CL', v_level1_rate_CL,
+	    InsuranceSegmentAbbreviation = 'Pool', v_level1_rate_Pool,
+	    0
 	) AS v_CommissionRateLevel1,
 	-- *INF*: DECODE(TRUE , InsuranceSegmentAbbreviation='CL',v_level2_rate_CL,
 	-- InsuranceSegmentAbbreviation='Pool',v_level2_rate_Pool,
 	-- 0)
-	DECODE(TRUE,
-		InsuranceSegmentAbbreviation = 'CL', v_level2_rate_CL,
-		InsuranceSegmentAbbreviation = 'Pool', v_level2_rate_Pool,
-		0
+	DECODE(
+	    TRUE,
+	    InsuranceSegmentAbbreviation = 'CL', v_level2_rate_CL,
+	    InsuranceSegmentAbbreviation = 'Pool', v_level2_rate_Pool,
+	    0
 	) AS v_CommissionRateLevel2,
 	v_PremiumForLevel1 * v_CommissionRateLevel1 AS v_CommissionAmountLevel1,
 	v_PremiumForLevel2 * v_CommissionRateLevel2 AS v_CommissionAmountLevel2,
@@ -315,23 +268,12 @@ EXP_CalculateCommission AS (
 	--                      SET_DATE_PART(last_day(add_to_date(sysdate,'MM',@{pipeline().parameters.NUM_OF_MONTH})), 'HH', 23) 
 	--                                           ,'MI',59)
 	--                                ,'SS',59)
-	DATEADD(SECOND,59-DATE_PART(SECOND,DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},sysdate)
-	)),last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},sysdate)
-	))),DATEADD(HOUR,23-DATE_PART(HOUR,last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},sysdate)
-	)),last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},sysdate)
-	)))),DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},sysdate)
-	)),last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},sysdate)
-	))),DATEADD(HOUR,23-DATE_PART(HOUR,last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},sysdate)
-	)),last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},sysdate)
-	)))) AS v_PremiumMasterBookedDate,
+	DATEADD(SECOND,59-DATE_PART(SECOND,DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},CURRENT_TIMESTAMP))),last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},CURRENT_TIMESTAMP)))),DATEADD(HOUR,23-DATE_PART(HOUR,last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},CURRENT_TIMESTAMP))),last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},CURRENT_TIMESTAMP))))),DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},CURRENT_TIMESTAMP))),last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},CURRENT_TIMESTAMP)))),DATEADD(HOUR,23-DATE_PART(HOUR,last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},CURRENT_TIMESTAMP))),last_day(DATEADD(MONTH,@{pipeline().parameters.NUM_OF_MONTH},CURRENT_TIMESTAMP))))) AS v_PremiumMasterBookedDate,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(v_PremiumMasterBookedDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_v_PremiumMasterBookedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_PremiumMasterBookedDateID,
 	-- *INF*: IIF(NOT ISNULL(v_PremiumMasterBookedDateID),v_PremiumMasterBookedDateID,-1)
 	-- 
-	IFF(v_PremiumMasterBookedDateID IS NOT NULL,
-		v_PremiumMasterBookedDateID,
-		- 1
-	) AS o_PremiumMasterBookedDateID,
+	IFF(v_PremiumMasterBookedDateID IS NOT NULL, v_PremiumMasterBookedDateID, - 1) AS o_PremiumMasterBookedDateID,
 	AGG_Policy.PolicyAuditDimId,
 	AGG_Policy.PremiumTransactionEnteredDateId,
 	AGG_Policy.pol_key,
@@ -340,9 +282,7 @@ EXP_CalculateCommission AS (
 	LEFT JOIN LKP_GetHistoryAmount
 	ON LKP_GetHistoryAmount.pol_key = AGG_Policy.pol_key
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_v_PremiumMasterBookedDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_v_PremiumMasterBookedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(v_PremiumMasterBookedDate, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_v_PremiumMasterBookedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(v_PremiumMasterBookedDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 ),
 RTRTRANS AS (
@@ -572,10 +512,11 @@ EXP_format AS (
 	pol_key1,
 	DeclaredEventFlag,
 	-- *INF*: DECODE(DeclaredEventFlag, 'T', 1, 'F', 0,Null)
-	DECODE(DeclaredEventFlag,
-		'T', 1,
-		'F', 0,
-		Null
+	DECODE(
+	    DeclaredEventFlag,
+	    'T', 1,
+	    'F', 0,
+	    Null
 	) AS o_DeclaredEventFlag
 	FROM Union_Level1_Level2
 ),

@@ -16,39 +16,32 @@ EXP_DefaultData AS (
 	CoverageSummaryId AS i_CoverageSummaryId,
 	SYSDATE AS o_CurrentDate,
 	-- *INF*: IIF(ISNULL(i_CoverageGroupId) OR LENGTH(i_CoverageGroupId)=0, Error('Missing Coverage Group Id'), i_CoverageGroupId)
-	IFF(i_CoverageGroupId IS NULL 
-		OR LENGTH(i_CoverageGroupId
-		) = 0,
-		Error('Missing Coverage Group Id'
-		),
-		i_CoverageGroupId
+	IFF(
+	    i_CoverageGroupId IS NULL OR LENGTH(i_CoverageGroupId) = 0,
+	    Error('Missing Coverage Group Id'),
+	    i_CoverageGroupId
 	) AS o_CoverageGroupId,
 	-- *INF*: IIF(ISNULL(i_CoverageGroupCode) OR LENGTH(i_CoverageGroupCode)=0 OR IS_SPACES(i_CoverageGroupCode), 'N/A', LTRIM(RTRIM(i_CoverageGroupCode)))
-	IFF(i_CoverageGroupCode IS NULL 
-		OR LENGTH(i_CoverageGroupCode
-		) = 0 
-		OR LENGTH(i_CoverageGroupCode)>0 AND TRIM(i_CoverageGroupCode)='',
-		'N/A',
-		LTRIM(RTRIM(i_CoverageGroupCode
-			)
-		)
+	IFF(
+	    i_CoverageGroupCode IS NULL
+	    or LENGTH(i_CoverageGroupCode) = 0
+	    or LENGTH(i_CoverageGroupCode)>0
+	    and TRIM(i_CoverageGroupCode)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_CoverageGroupCode))
 	) AS o_CoverageGroupCode,
 	-- *INF*: IIF(ISNULL(i_CoverageGroupDescription) OR LENGTH(i_CoverageGroupDescription)=0 OR IS_SPACES(i_CoverageGroupDescription), 'N/A', LTRIM(RTRIM(i_CoverageGroupDescription)))
-	IFF(i_CoverageGroupDescription IS NULL 
-		OR LENGTH(i_CoverageGroupDescription
-		) = 0 
-		OR LENGTH(i_CoverageGroupDescription)>0 AND TRIM(i_CoverageGroupDescription)='',
-		'N/A',
-		LTRIM(RTRIM(i_CoverageGroupDescription
-			)
-		)
+	IFF(
+	    i_CoverageGroupDescription IS NULL
+	    or LENGTH(i_CoverageGroupDescription) = 0
+	    or LENGTH(i_CoverageGroupDescription)>0
+	    and TRIM(i_CoverageGroupDescription)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_CoverageGroupDescription))
 	) AS o_CoverageGroupDescription,
 	-- *INF*: IIF(ISNULL(i_CoverageSummaryId) OR LENGTH(i_CoverageSummaryId)=0, -99, i_CoverageSummaryId)
-	IFF(i_CoverageSummaryId IS NULL 
-		OR LENGTH(i_CoverageSummaryId
-		) = 0,
-		- 99,
-		i_CoverageSummaryId
+	IFF(
+	    i_CoverageSummaryId IS NULL OR LENGTH(i_CoverageSummaryId) = 0, - 99, i_CoverageSummaryId
 	) AS o_CoverageSummaryId
 	FROM SQ_CoverageGroup
 ),
@@ -98,12 +91,13 @@ EXP_Detect_Change AS (
 	-- lkp_CoverageGroupCode <> CoverageGroupCode, 'Update',
 	-- lkp_CoverageGroupDescription<>CoverageGroupDescription, 'Update',
 	-- 'Ignore')
-	DECODE(TRUE,
-		lkp_CoverageGroupId IS NULL, 'Insert',
-		lkp_ExistingCoverageSummaryId <> lkp_CurrentCoverageSummaryId, 'Update',
-		lkp_CoverageGroupCode <> CoverageGroupCode, 'Update',
-		lkp_CoverageGroupDescription <> CoverageGroupDescription, 'Update',
-		'Ignore'
+	DECODE(
+	    TRUE,
+	    lkp_CoverageGroupId IS NULL, 'Insert',
+	    lkp_ExistingCoverageSummaryId <> lkp_CurrentCoverageSummaryId, 'Update',
+	    lkp_CoverageGroupCode <> CoverageGroupCode, 'Update',
+	    lkp_CoverageGroupDescription <> CoverageGroupDescription, 'Update',
+	    'Ignore'
 	) AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag
 	FROM EXP_DefaultData

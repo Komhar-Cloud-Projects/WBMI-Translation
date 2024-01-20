@@ -155,10 +155,7 @@ EXP_RatingPlanDerivation AS (
 	LKP_RatingPlan_DCT.RatingPlanAKId AS DCT_RatingPlanAKId,
 	LKP_RatingPlan_DCT.RatingPlanCode AS DCT_RatingPlanCode,
 	-- *INF*: IIF(ISNULL(PMS_RatingPlanCode),DCT_RatingPlanCode,PMS_RatingPlanCode)
-	IFF(PMS_RatingPlanCode IS NULL,
-		DCT_RatingPlanCode,
-		PMS_RatingPlanCode
-	) AS o_RatingPlanCode
+	IFF(PMS_RatingPlanCode IS NULL, DCT_RatingPlanCode, PMS_RatingPlanCode) AS o_RatingPlanCode
 	FROM 
 	LEFT JOIN LKP_RatingPlan_DCT
 	ON LKP_RatingPlan_DCT.PolicyAKID = i_PolicyAKID

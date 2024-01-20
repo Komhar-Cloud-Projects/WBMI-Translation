@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_1099_Reporting_Extract_PMS",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_1099_Reporting_Extract_PMS",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_1099_Reporting_PMS AS (\n\tSELECT\r\n\tDISTINCT\r\n\tC.IRS_NAME,\r\n\tC.ADDRESS_LINE_1,\r\n\tC.ADDRESS_LINE_2,\r\n\tC.CITY,\r\n\tC.STATE_CODE,\r\n\tC.ZIP_CODE,\r\n\tC.SEARCH_TAX_ID,\r\n\tC.TAX_ID_TYPE,\r\n\tC.TAX_ID,\r\n\tC.COUNTRY_CODE,\r\n\tC.VENDOR_TYPE_CD,\r\n\tSUM(A.DraftAmt) AS PAID_AMT\r\n\tFROM\r\n\tPif4578RecStage A with (nolock) \r\n\t\r\n\tINNER JOIN \r\n\tpms_adjuster_master_stage B with (nolock) \r\n\tON A.AdjustorNo = B.adnm_adjustor_nbr \r\n\t\r\n\tINNER JOIN \r\n\tMaster1099ListMonthlyStage C with (nolock) \r\n\tON B.adnm_taxid_ssn = C.TAX_ID\r\n\t\r\n\tWHERE\r\n\tA.TransDate >= (SELECT      DATEADD(YEAR, DATEDIFF(YEAR, 0,DATEADD(m,-1,getdate())),0)\r\n\t            'First Day of Year using previous month date') \r\n\tAND\r\n\tA.TransDate <= (SELECT DATEADD(s,-1,DATEADD(mm, DATEDIFF(m,0,GETDATE())-@{pipeline().parameters.NO_OF_MONTHS},0))\r\n\tLastDay_PreviousMonth) AND\r\n\tC.REPORTABLE_IND = 'Y' AND\r\n\tA.PAIDRESERVEAMT >0 AND\r\n\tC.Is_Valid='Y' AND \r\n\tB.adnm_taxid_ssn <> ''\r\n\t\r\n\tGROUP BY\r\n\tC.IRS_NAME,\r\n\tC.ADDRESS_LINE_1,\r\n\tC.ADDRESS_LINE_2,\r\n\tC.CITY,\r\n\tC.STATE_CODE,\r\n\tC.ZIP_CODE,\r\n\tC.SEARCH_TAX_ID,\r\n\tC.TAX_ID_TYPE,\r\n\tC.TAX_ID,\r\n\tC.COUNTRY_CODE,\r\n\tC.VENDOR_TYPE_CD\n),\nEXP_cleanse_input AS (\n\tSELECT\n\tirs_name,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(irs_name)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(irs_name) AS irs_name_out,\n\taddress_line_1,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(address_line_1)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(address_line_1) AS address_line_1_out,\n\taddress_line_2,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(address_line_2)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(address_line_2) AS address_line_2_out,\n\tcity,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(city)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(city) AS city_out,\n\tstate_code,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(state_code)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(state_code) AS state_code_out,\n\tzip_code,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(zip_code)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(zip_code) AS zip_code_out,\n\tsearch_tax_id,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(search_tax_id)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(search_tax_id) AS search_tax_id_out,\n\ttax_id_type,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(tax_id_type)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(tax_id_type) AS tax_id_type_out,\n\ttax_id,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(tax_id)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(tax_id) AS tax_id_out,\n\tcountry_code,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(country_code)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(country_code) AS country_code_out,\n\tvendor_type_cd,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(vendor_type_cd)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(vendor_type_cd) AS vendor_type_cd_out,\n\tDraftAmt AS ctx_trs_amt,\n\t-- *INF*: IIF(ISNULL(ctx_trs_amt),0,ctx_trs_amt)\n\tIFF(ctx_trs_amt IS NULL, 0, ctx_trs_amt) AS ctx_trs_amt_out\n\tFROM SQ_1099_Reporting_PMS\n),\nEXP_output AS (\n\tSELECT\n\t1 AS default_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\tSYSDATE AS default_date,\n\t'PMS' AS source_sys_id,\n\tirs_name_out AS irs_name,\n\taddress_line_1_out AS address_line_1,\n\taddress_line_2_out AS address_line_2,\n\tcity_out AS city,\n\tstate_code_out AS state_code,\n\tzip_code_out AS zip_code,\n\tsearch_tax_id_out AS search_tax_id,\n\ttax_id_type_out AS tax_id_type,\n\ttax_id_out AS tax_id,\n\tcountry_code_out AS country_code,\n\tvendor_type_cd_out AS vendor_type_cd,\n\tctx_trs_amt_out AS ctx_trs_amt\n\tFROM EXP_cleanse_input\n),\nWork1099Reporting AS (\n\tTRUNCATE TABLE Work1099Reporting;\n\tINSERT INTO Work1099Reporting\n\t(CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, SourceSystemID, CreatedDate, ModifiedDate, IRSName, AddressLine1, AddressLine2, City, StateCode, ZipCode, CountryCode, SearchTaxId, TaxIdType, TaxId, VendorTypeCode, PaidAmount)\n\tSELECT \n\tdefault_id AS CURRENTSNAPSHOTFLAG, \n\taudit_id AS AUDITID, \n\tdefault_date AS EFFECTIVEDATE, \n\tdefault_date AS EXPIRATIONDATE, \n\tsource_sys_id AS SOURCESYSTEMID, \n\tdefault_date AS CREATEDDATE, \n\tdefault_date AS MODIFIEDDATE, \n\tirs_name AS IRSNAME, \n\taddress_line_1 AS ADDRESSLINE1, \n\taddress_line_2 AS ADDRESSLINE2, \n\tcity AS CITY, \n\tstate_code AS STATECODE, \n\tzip_code AS ZIPCODE, \n\tcountry_code AS COUNTRYCODE, \n\tsearch_tax_id AS SEARCHTAXID, \n\ttax_id_type AS TAXIDTYPE, \n\ttax_id AS TAXID, \n\tvendor_type_cd AS VENDORTYPECODE, \n\tctx_trs_amt AS PAIDAMOUNT\n\tFROM EXP_output\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "NO_OF_MONTHS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimDataServices/"
+        },
+        "annotations": []
+    }
+}

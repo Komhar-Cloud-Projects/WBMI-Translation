@@ -1,0 +1,38 @@
+{
+    "name": "s_m_CLM_GENERATE_CMS_TIN_Reference_File",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_GENERATE_CMS_TIN_Reference_File",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nLKP_sup_cms_tin_office AS (\n\tSELECT\n\tcms_rre_id,\n\tdummy_integer\n\tFROM (\n\t\tSELECT \r\n\t\tcount(*) as cms_rre_id, \r\n\t\t1 as dummy_integer \r\n\t\tFROM sup_cms_tin_office\r\n\t\tWHERE crrnt_snpsht_flag = 1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY dummy_integer ORDER BY cms_rre_id) = 1\n),\nSQ_TIN_Reference_File_Header AS (\n\tSELECT\n\t\tsup_cms_tin_office_id,\n\t\tcrrnt_snpsht_flag,\n\t\taudit_id,\n\t\teff_from_date,\n\t\teff_to_date,\n\t\tsource_sys_id,\n\t\tcreated_date,\n\t\tmodified_date,\n\t\tcms_rre_id,\n\t\toffice_tin_num,\n\t\toffice_code,\n\t\toffice_name,\n\t\toffice_mail_address1,\n\t\toffice_mail_address2,\n\t\toffice_mail_city,\n\t\toffice_mail_state,\n\t\toffice_mail_zip,\n\t\toffice_mail_zip4\n\tFROM sup_cms_tin_office2\n\tWHERE crrnt_snpsht_flag=1\n),\nEXP_Header AS (\n\tSELECT\n\t'NGTH' AS Record_Identifier,\n\tcms_rre_id,\n\t-- *INF*: lpad(rtrim(cms_rre_id),9,'0')\n\tlpad(rtrim(cms_rre_id), 9, '0') AS cms_rre_id1,\n\t'NGHPTIN' AS Reporting_File_Type,\n\t-- *INF*: TO_CHAR(SYSDATE,'YYYYMMDD')\n\tTO_CHAR(CURRENT_TIMESTAMP, 'YYYYMMDD') AS File_Submission_date,\n\t'' AS Default_String\n\tFROM SQ_TIN_Reference_File_Header\n),\nCMS_TIN_Reference_File_Header AS (\n\tINSERT INTO CMS_TIN_Reference_File_HeaderTrailer\n\t(Record_Identifier, Reporter_Id, Reporting_File_Type, File_Submission_Date)\n\tSELECT \n\tRECORD_IDENTIFIER, \n\tcms_rre_id1 AS REPORTER_ID, \n\tREPORTING_FILE_TYPE, \n\tFile_Submission_date AS FILE_SUBMISSION_DATE\n\tFROM EXP_Header\n),\nSQ_sup_cms_tin_office AS (\n\tSELECT\n\t\tsup_cms_tin_office_id,\n\t\tcrrnt_snpsht_flag,\n\t\taudit_id,\n\t\teff_from_date,\n\t\teff_to_date,\n\t\tsource_sys_id,\n\t\tcreated_date,\n\t\tmodified_date,\n\t\tcms_rre_id,\n\t\toffice_tin_num,\n\t\toffice_code,\n\t\toffice_name,\n\t\toffice_mail_address1,\n\t\toffice_mail_address2,\n\t\toffice_mail_city,\n\t\toffice_mail_state,\n\t\toffice_mail_zip,\n\t\toffice_mail_zip4\n\tFROM sup_cms_tin_office\n\tWHERE crrnt_snpsht_flag=1\n),\nEXP_Source AS (\n\tSELECT\n\t'NGTD' AS Record_identifier,\n\tcms_rre_id,\n\t-- *INF*: lpad(rtrim(cms_rre_id),9,'0')\n\tlpad(rtrim(cms_rre_id), 9, '0') AS cms_rre_id1,\n\toffice_tin_num,\n\toffice_code,\n\toffice_name,\n\toffice_mail_address1,\n\toffice_mail_address2,\n\toffice_mail_city,\n\toffice_mail_state,\n\toffice_mail_zip,\n\toffice_mail_zip4\n\tFROM SQ_sup_cms_tin_office\n),\nEXP_Target AS (\n\tSELECT\n\tRecord_identifier,\n\tcms_rre_id1 AS cms_rre_id,\n\toffice_tin_num,\n\toffice_code,\n\toffice_name,\n\toffice_mail_address1,\n\toffice_mail_address2,\n\toffice_mail_city,\n\toffice_mail_state,\n\toffice_mail_zip,\n\toffice_mail_zip4,\n\t-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(cms_rre_id)\n\tUDF_DEFAULT_VALUE_TO_BLANKS(cms_rre_id) AS cms_rre_id1,\n\t-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(office_tin_num)\n\tUDF_DEFAULT_VALUE_TO_BLANKS(office_tin_num) AS office_tin_num1,\n\t-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(office_code)\n\tUDF_DEFAULT_VALUE_TO_BLANKS(office_code) AS office_code1,\n\t-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(office_name)\n\tUDF_DEFAULT_VALUE_TO_BLANKS(office_name) AS office_name1,\n\t-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(office_mail_address1)\n\tUDF_DEFAULT_VALUE_TO_BLANKS(office_mail_address1) AS office_mail_address11,\n\t-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(office_mail_address2)\n\tUDF_DEFAULT_VALUE_TO_BLANKS(office_mail_address2) AS office_mail_address21,\n\t-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(office_mail_city)\n\tUDF_DEFAULT_VALUE_TO_BLANKS(office_mail_city) AS office_mail_city1,\n\t-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(office_mail_state)\n\tUDF_DEFAULT_VALUE_TO_BLANKS(office_mail_state) AS office_mail_state1,\n\t-- *INF*: :UDF.DEFAULT_VALUE_TO_BLANKS(office_mail_zip)\n\tUDF_DEFAULT_VALUE_TO_BLANKS(office_mail_zip) AS office_mail_zip1,\n\t-- *INF*: IIF(ISNULL(office_mail_zip4) OR office_mail_zip4='N/A','0000',office_mail_zip4)\r\n\t-- \n\tIFF(office_mail_zip4 IS NULL OR office_mail_zip4 = 'N/A', '0000', office_mail_zip4) AS office_mail_zip41,\n\t'' AS Default_String\n\tFROM EXP_Source\n),\nCMS_TIN_Reference_File_Detail AS (\n\tINSERT INTO CMS_TIN_Reference_File_Detail\n\t(Record_Identifier, Reporter_Id, TIN, Office_Code, Mailing_Name, Mailing_Address_Line1, Mailing_Address_Line112, City, State, Zip, Zip4, Reserved)\n\tSELECT \n\tRecord_identifier AS RECORD_IDENTIFIER, \n\tcms_rre_id1 AS REPORTER_ID, \n\toffice_tin_num1 AS TIN, \n\toffice_code1 AS OFFICE_CODE, \n\toffice_name1 AS MAILING_NAME, \n\toffice_mail_address11 AS MAILING_ADDRESS_LINE1, \n\toffice_mail_address21 AS MAILING_ADDRESS_LINE112, \n\toffice_mail_city1 AS CITY, \n\toffice_mail_state1 AS STATE, \n\toffice_mail_zip1 AS ZIP, \n\toffice_mail_zip41 AS ZIP4, \n\tDefault_String AS RESERVED\n\tFROM EXP_Target\n),\nSQ_TIN_Reference_File_Trailer AS (\n\tSELECT\n\t\tsup_cms_tin_office_id,\n\t\tcrrnt_snpsht_flag,\n\t\taudit_id,\n\t\teff_from_date,\n\t\teff_to_date,\n\t\tsource_sys_id,\n\t\tcreated_date,\n\t\tmodified_date,\n\t\tcms_rre_id,\n\t\toffice_tin_num,\n\t\toffice_code,\n\t\toffice_name,\n\t\toffice_mail_address1,\n\t\toffice_mail_address2,\n\t\toffice_mail_city,\n\t\toffice_mail_state,\n\t\toffice_mail_zip,\n\t\toffice_mail_zip4\n\tFROM sup_cms_tin_office1\n\tWHERE crrnt_snpsht_flag=1\n),\nEXP_Trailer AS (\n\tSELECT\n\t'NGTT' AS Record_Identifier,\n\tcms_rre_id,\n\t-- *INF*: lpad(rtrim(cms_rre_id),9,'0')\n\tlpad(rtrim(cms_rre_id), 9, '0') AS cms_rre_id1,\n\t'NGHPTIN' AS Reporting_File_Type,\n\t-- *INF*: TO_CHAR(SYSDATE,'YYYYMMDD')\n\tTO_CHAR(CURRENT_TIMESTAMP, 'YYYYMMDD') AS File_Submission_date,\n\t-- *INF*: :LKP.LKP_sup_cms_tin_office(1)\n\tLKP_SUP_CMS_TIN_OFFICE_1.cms_rre_id AS v_File_Record_Count,\n\t-- *INF*: LPAD(v_File_Record_Count,7,'0')\n\tLPAD(v_File_Record_Count, 7, '0') AS File_Record_Count,\n\t'' AS Default_String\n\tFROM SQ_TIN_Reference_File_Trailer\n\tLEFT JOIN LKP_SUP_CMS_TIN_OFFICE LKP_SUP_CMS_TIN_OFFICE_1\n\tON LKP_SUP_CMS_TIN_OFFICE_1.dummy_integer = 1\n\n),\nCMS_TIN_Reference_File_Trailer AS (\n\tINSERT INTO CMS_TIN_Reference_File_HeaderTrailer\n\t(Record_Identifier, Reporter_Id, Reporting_File_Type, File_Submission_Date, File_Record_Count)\n\tSELECT \n\tRECORD_IDENTIFIER, \n\tcms_rre_id1 AS REPORTER_ID, \n\tREPORTING_FILE_TYPE, \n\tFile_Submission_date AS FILE_SUBMISSION_DATE, \n\tFILE_RECORD_COUNT\n\tFROM EXP_Trailer\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "ClaimDataServices/"
+        },
+        "annotations": []
+    }
+}

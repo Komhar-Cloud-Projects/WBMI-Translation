@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_FEED_Load_WCPOLS_25_Record",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Load_WCPOLS_25_Record",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WCPols00Record AS (\n\tSELECT\r\n\t\tWCTrackHistoryID,\r\n\t\tLinkData,\r\n\t     AuditId\r\n\t\tFROM dbo.WCPols00Record\r\n\tWHERE 1=1\r\n\tAND AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tORDER BY WCTrackHistoryID\n),\nSQ_WorkWCForms_Record25 AS (\n\tSELECT distinct\r\n\t\tST.WCTrackHistoryID\r\n\t\t,F.FormName\r\n\t\t,PT.Name\r\n\t\t,Pol.TransactionEffectiveDate\r\n\t\t,PD.Value ExcludedWorkplace\r\n\t\r\n\tFROM dbo.WorkWCStateTerm ST\r\n\t\r\n\tINNER JOIN dbo.WorkWCForms F\r\n\t\tON ST.WCTrackHistoryID = F.WCTrackHistoryID\r\n\tAND F.FormName like 'WC000302%'AND (F.OnPolicy=1 or F.[Add]=1) AND (F.Remove is NULL or F.Remove=0)\r\n\t\r\n\tINNER JOIN dbo.WorkWCParty PT\r\n\t\tON PT.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\t\tAND PT.PartyAssociationType = 'Account'\r\n\t\r\n\tINNER JOIN dbo.WorkWCLine L\r\n\t\tON L.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\r\n\tINNER JOIN dbo.WorkWCTrackHistory TH\r\n\t\tON TH.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicy Pol\r\n\t\tON Pol.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails PD\r\n\t\tON PD.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND PD.Attribute='ExcludedWorkplace' AND PD.Value IS NOT NULL\r\n\t\t\r\n\tWHERE 1 = 1\r\n\tAND PD.Attribute='ExcludedWorkplace' AND PD.Value IS NOT NULL\r\n\tAND ST.AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t@{pipeline().parameters.WHERE_CLAUSE_25}\r\n\t\r\n\tORDER BY ST.WCTrackHistoryID\n),\nJNR_25_Record AS (SELECT\n\tSQ_WCPols00Record.WCTrackHistoryID, \n\tSQ_WCPols00Record.AuditId, \n\tSQ_WCPols00Record.LinkData, \n\tSQ_WorkWCForms_Record25.WCTrackHistoryID AS WCTrackHistoryID1, \n\tSQ_WorkWCForms_Record25.FormName, \n\tSQ_WorkWCForms_Record25.Name, \n\tSQ_WorkWCForms_Record25.TransactionEffectiveDate, \n\tSQ_WorkWCForms_Record25.ExcludedWorkplace\n\tFROM SQ_WCPols00Record\n\tINNER JOIN SQ_WorkWCForms_Record25\n\tON SQ_WorkWCForms_Record25.WCTrackHistoryID = SQ_WCPols00Record.WCTrackHistoryID\n),\nmplt_Parse_FormNameField AS (WITH\n\tINPUT_FormName AS (\n\t\t\n\t),\n\tEXPTRANS AS (\n\t\tSELECT\n\t\tParsedNameOfForm,\n\t\tFormNameFromSource,\n\t\t-- *INF*: REVERSE(FormNameFromSource)\n\t\tREVERSE(FormNameFromSource) AS vReversedFromNameFromSource,\n\t\t-- *INF*: REVERSE(substr(vReversedFromNameFromSource,1,4))\n\t\tREVERSE(substr(vReversedFromNameFromSource, 1, 4)) AS vFormEdition,\n\t\t-- *INF*: DECODE(TRUE,\r\n\t\t-- substr(vReversedFromNameFromSource,5,1) >='A' and substr(vReversedFromNameFromSource,5,1) <='Z', substr(vReversedFromNameFromSource,5,1),\r\n\t\t-- ' '\r\n\t\t-- )\r\n\t\t-- \r\n\t\t-- -- check if within A and Z, if not then space\n\t\tDECODE(\n\t\t    TRUE,\n\t\t    substr(vReversedFromNameFromSource, 5, 1) >= 'A' and substr(vReversedFromNameFromSource, 5, 1) <= 'Z', substr(vReversedFromNameFromSource, 5, 1),\n\t\t    ' '\n\t\t) AS vBureauCode,\n\t\tvFormEdition AS oFormEdition,\n\t\tvBureauCode AS oBureauCode\n\t\tFROM INPUT_FormName\n\t),\n\tOUTPUT_FormName AS (\n\t\tSELECT\n\t\tParsedNameOfForm, \n\t\tFormNameFromSource, \n\t\toFormEdition AS FormEdition, \n\t\toBureauCode AS BureauCode\n\t\tFROM EXPTRANS\n\t),\n),\nEXP_25_Record AS (\n\tSELECT\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\tJNR_25_Record.AuditId,\n\tJNR_25_Record.WCTrackHistoryID,\n\tJNR_25_Record.LinkData,\n\t'25' AS RecordTypeCode,\n\t'WC000302' AS o_EndorsementNumber,\n\tmplt_Parse_FormNameField.BureauCode,\n\tmplt_Parse_FormNameField.FormEdition,\n\tJNR_25_Record.ExcludedWorkplace AS Value,\n\t-- *INF*: LTRIM(RTRIM(SUBSTR(Value,1,120)))\n\tLTRIM(RTRIM(SUBSTR(Value, 1, 120))) AS o_Value,\n\tWCTrackHistoryID AS v_CurrentRecord,\n\t-- *INF*: IIF(v_PrevRecord=v_CurrentRecord,v_RecordCount+1,1)\n\tIFF(v_PrevRecord = v_CurrentRecord, v_RecordCount + 1, 1) AS v_RecordCount,\n\tWCTrackHistoryID AS v_PrevRecord,\n\t-- *INF*: TO_CHAR(v_RecordCount)\n\tTO_CHAR(v_RecordCount) AS o_EndorsementSequenceNumber,\n\tJNR_25_Record.FormName,\n\tJNR_25_Record.Name,\n\tJNR_25_Record.TransactionEffectiveDate,\n\t-- *INF*: TO_CHAR(TransactionEffectiveDate,'YYMMDD')\n\tTO_CHAR(TransactionEffectiveDate, 'YYMMDD') AS o_TransactionEffectiveDate\n\tFROM JNR_25_Record\n\t -- Manually join with mplt_Parse_FormNameField\n),\nWCPols25Record AS (\n\tINSERT INTO WCPols25Record\n\t(ExtractDate, AuditId, WCTrackHistoryID, LinkData, RecordTypeCode, EndorsementNumber, BureauVersionIdentifierEditionIdentifier, CarrierVersionIdentifier, AddressNotCovered, EndorsementSequenceNumber, NameOfInsured, EndorsementEffectiveDate)\n\tSELECT \n\tEXTRACTDATE, \n\tAUDITID, \n\tWCTRACKHISTORYID, \n\tLINKDATA, \n\tRECORDTYPECODE, \n\to_EndorsementNumber AS ENDORSEMENTNUMBER, \n\tBureauCode AS BUREAUVERSIONIDENTIFIEREDITIONIDENTIFIER, \n\tFormEdition AS CARRIERVERSIONIDENTIFIER, \n\to_Value AS ADDRESSNOTCOVERED, \n\to_EndorsementSequenceNumber AS ENDORSEMENTSEQUENCENUMBER, \n\tName AS NAMEOFINSURED, \n\to_TransactionEffectiveDate AS ENDORSEMENTEFFECTIVEDATE\n\tFROM EXP_25_Record\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE_25": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

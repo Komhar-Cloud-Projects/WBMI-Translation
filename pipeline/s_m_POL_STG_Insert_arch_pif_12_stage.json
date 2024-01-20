@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_pif_12_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_pif_12_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_pif_12_stage AS (\n\tSELECT\n\t\tpif_12_stage_id,\n\t\tpif_symbol AS PIF_SYMBOL,\n\t\tpif_policy_number AS PIF_POLICY_NUMBER,\n\t\tpif_module AS PIF_MODULE,\n\t\tdescription_rec_length AS DESCRIPTION_REC_LENGTH,\n\t\tdescription_action_code AS DESCRIPTION_ACTION_CODE,\n\t\tdescription_file_id AS DESCRIPTION_FILE_ID,\n\t\tdescription_id AS DESCRIPTION_ID,\n\t\tuse_code AS USE_CODE,\n\t\tuse_location AS USE_LOCATION,\n\t\tdescription_sequence AS DESCRIPTION_SEQUENCE,\n\t\tdescription_sort_name AS DESCRIPTION_SORT_NAME,\n\t\tdescription_time AS DESCRIPTION_TIME,\n\t\tdescription_line_1 AS DESCRIPTION_LINE_1,\n\t\tdescription_line_2 AS DESCRIPTION_LINE_2,\n\t\tdescription_line_3 AS DESCRIPTION_LINE_3,\n\t\tdescription_line_4 AS DESCRIPTION_LINE_4,\n\t\tdescription_name_code AS DESCRIPTION_NAME_CODE,\n\t\tdesc_uk_postal_code AS DESC_UK_POSTAL_CODE,\n\t\tdesc_misc_adj_zip_code AS DESC_MISC_ADJ_ZIP_CODE,\n\t\tdesc_misc_adj_tax_id AS DESC_MISC_ADJ_TAX_ID,\n\t\tdesc_ars_pay_plan AS DESC_ARS_PAY_PLAN,\n\t\tdesc_ars_dun_plan AS DESC_ARS_DUN_PLAN,\n\t\tdesc_ars_sundry_plan AS DESC_ARS_SUNDRY_PLAN,\n\t\tdesc_ars_transfer_ind AS DESC_ARS_TRANSFER_IND,\n\t\tdesc_rn_ars_pay_plan AS DESC_RN_ARS_PAY_PLAN,\n\t\tdesc_rn_ars_dun_plan AS DESC_RN_ARS_DUN_PLAN,\n\t\tdesc_rn_ars_sundry_plan AS DESC_RN_ARS_SUNDRY_PLAN,\n\t\tdesc_rn_ars_account_number AS DESC_RN_ARS_ACCOUNT_NUMBER,\n\t\tdesc_rn_ars_sub_acct_num AS DESC_RN_ARS_SUB_ACCT_NUM,\n\t\tdesc_rn_ars_billing_entity AS DESC_RN_ARS_BILLING_ENTITY,\n\t\tdesc_rn_ars_billing_type AS DESC_RN_ARS_BILLING_TYPE,\n\t\tdesc_rn_ars_additional_id AS DESC_RN_ARS_ADDITIONAL_ID,\n\t\tdesc_rn_ars_billing_class AS DESC_RN_ARS_BILLING_CLASS,\n\t\tdesc_ars_prior_can_amt AS DESC_ARS_PRIOR_CAN_AMT,\n\t\tdesc_ars_prior_exp_can_amt AS DESC_ARS_PRIOR_EXP_CAN_AMT,\n\t\tdesc_rn_ars_future_use AS DESC_RN_ARS_FUTURE_USE,\n\t\tdescription_loan_number AS DESCRIPTION_LOAN_NUMBER,\n\t\tdesc_lp_id_number AS DESC_LP_ID_NUMBER,\n\t\tdesc_zip_ind AS DESC_ZIP_IND,\n\t\tdesc_endorsement_date AS DESC_ENDORSEMENT_DATE,\n\t\tdesc_date_stamp AS DESC_DATE_STAMP,\n\t\tdesc_time_stamp AS DESC_TIME_STAMP,\n\t\tdesc_ais_indicator AS DESC_AIS_INDICATOR,\n\t\tdesc_lgl_addr_change_id,\n\t\tdesc_mortgagee_change_sw,\n\t\tdesc_cust_future_use AS DESC_CUST_FUTURE_USE,\n\t\tdesc_watercraft_seq,\n\t\tdesc_yr2000_cust_use AS DESC_YR2000_CUST_USE,\n\t\tdesc_dup_key_seq_num AS DESC_DUP_KEY_SEQ_NUM,\n\t\tlogical_flag,\n\t\textract_date AS EXTRACT_DATE,\n\t\tas_of_date AS AS_OF_DATE,\n\t\trecord_count AS RECORD_COUNT,\n\t\tsource_system_id AS SOURCE_SYSTEM_ID,\n\t\tinf_action,\n\t\tinf_timestamp\n\tFROM pif_12_stage\n),\nEXP_arch_pif_12_stage AS (\n\tSELECT\n\tpif_12_stage_id,\n\tPIF_SYMBOL,\n\tPIF_POLICY_NUMBER,\n\tPIF_MODULE,\n\tDESCRIPTION_REC_LENGTH,\n\tDESCRIPTION_ACTION_CODE,\n\tDESCRIPTION_FILE_ID,\n\tDESCRIPTION_ID,\n\tUSE_CODE,\n\tUSE_LOCATION,\n\tDESCRIPTION_SEQUENCE,\n\tDESCRIPTION_SORT_NAME,\n\tDESCRIPTION_TIME,\n\tDESCRIPTION_LINE_1,\n\tDESCRIPTION_LINE_2,\n\tDESCRIPTION_LINE_3,\n\tDESCRIPTION_LINE_4,\n\tDESCRIPTION_NAME_CODE,\n\tDESC_UK_POSTAL_CODE,\n\tDESC_MISC_ADJ_ZIP_CODE,\n\tDESC_MISC_ADJ_TAX_ID,\n\tDESC_ARS_PAY_PLAN,\n\tDESC_ARS_DUN_PLAN,\n\tDESC_ARS_SUNDRY_PLAN,\n\tDESC_ARS_TRANSFER_IND,\n\tDESC_RN_ARS_PAY_PLAN,\n\tDESC_RN_ARS_DUN_PLAN,\n\tDESC_RN_ARS_SUNDRY_PLAN,\n\tDESC_RN_ARS_ACCOUNT_NUMBER,\n\tDESC_RN_ARS_SUB_ACCT_NUM,\n\tDESC_RN_ARS_BILLING_ENTITY,\n\tDESC_RN_ARS_BILLING_TYPE,\n\tDESC_RN_ARS_ADDITIONAL_ID,\n\tDESC_RN_ARS_BILLING_CLASS,\n\tDESC_ARS_PRIOR_CAN_AMT,\n\tDESC_ARS_PRIOR_EXP_CAN_AMT,\n\tDESC_RN_ARS_FUTURE_USE,\n\tDESCRIPTION_LOAN_NUMBER,\n\tDESC_LP_ID_NUMBER,\n\tDESC_ZIP_IND,\n\tDESC_ENDORSEMENT_DATE,\n\tDESC_DATE_STAMP,\n\tDESC_TIME_STAMP,\n\tDESC_AIS_INDICATOR,\n\tdesc_lgl_addr_change_id,\n\tdesc_mortgagee_change_sw,\n\tDESC_CUST_FUTURE_USE,\n\tdesc_watercraft_seq,\n\tDESC_YR2000_CUST_USE,\n\tDESC_DUP_KEY_SEQ_NUM,\n\tlogical_flag,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID,\n\tinf_action,\n\tinf_timestamp\n\tFROM SQ_pif_12_stage\n),\narch_pif_12_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_pif_12_stage\n\t(pif_12_stage_id, pif_symbol, pif_policy_number, pif_module, description_rec_length, description_action_code, description_file_id, description_id, use_code, use_location, description_sequence, description_sort_name, description_time, description_line_1, description_line_2, description_line_3, description_line_4, description_name_code, desc_uk_postal_code, desc_misc_adj_zip_code, desc_misc_adj_tax_id, desc_ars_pay_plan, desc_ars_dun_plan, desc_ars_sundry_plan, desc_ars_transfer_ind, desc_rn_ars_pay_plan, desc_rn_ars_dun_plan, desc_rn_ars_sundry_plan, desc_rn_ars_account_number, desc_rn_ars_sub_acct_num, desc_rn_ars_billing_entity, desc_rn_ars_billing_type, desc_rn_ars_additional_id, desc_rn_ars_billing_class, desc_ars_prior_can_amt, desc_ars_prior_exp_can_amt, desc_rn_ars_future_use, description_loan_number, desc_lp_id_number, desc_zip_ind, desc_endorsement_date, desc_date_stamp, desc_time_stamp, desc_ais_indicator, desc_lgl_addr_change_id, desc_mortgagee_change_sw, desc_cust_future_use, desc_watercraft_seq, desc_yr2000_cust_use, desc_dup_key_seq_num, logical_flag, extract_date, as_of_date, record_count, source_system_id, audit_id, inf_action, inf_timestamp)\n\tSELECT \n\tPIF_12_STAGE_ID, \n\tPIF_SYMBOL AS PIF_SYMBOL, \n\tPIF_POLICY_NUMBER AS PIF_POLICY_NUMBER, \n\tPIF_MODULE AS PIF_MODULE, \n\tDESCRIPTION_REC_LENGTH AS DESCRIPTION_REC_LENGTH, \n\tDESCRIPTION_ACTION_CODE AS DESCRIPTION_ACTION_CODE, \n\tDESCRIPTION_FILE_ID AS DESCRIPTION_FILE_ID, \n\tDESCRIPTION_ID AS DESCRIPTION_ID, \n\tUSE_CODE AS USE_CODE, \n\tUSE_LOCATION AS USE_LOCATION, \n\tDESCRIPTION_SEQUENCE AS DESCRIPTION_SEQUENCE, \n\tDESCRIPTION_SORT_NAME AS DESCRIPTION_SORT_NAME, \n\tDESCRIPTION_TIME AS DESCRIPTION_TIME, \n\tDESCRIPTION_LINE_1 AS DESCRIPTION_LINE_1, \n\tDESCRIPTION_LINE_2 AS DESCRIPTION_LINE_2, \n\tDESCRIPTION_LINE_3 AS DESCRIPTION_LINE_3, \n\tDESCRIPTION_LINE_4 AS DESCRIPTION_LINE_4, \n\tDESCRIPTION_NAME_CODE AS DESCRIPTION_NAME_CODE, \n\tDESC_UK_POSTAL_CODE AS DESC_UK_POSTAL_CODE, \n\tDESC_MISC_ADJ_ZIP_CODE AS DESC_MISC_ADJ_ZIP_CODE, \n\tDESC_MISC_ADJ_TAX_ID AS DESC_MISC_ADJ_TAX_ID, \n\tDESC_ARS_PAY_PLAN AS DESC_ARS_PAY_PLAN, \n\tDESC_ARS_DUN_PLAN AS DESC_ARS_DUN_PLAN, \n\tDESC_ARS_SUNDRY_PLAN AS DESC_ARS_SUNDRY_PLAN, \n\tDESC_ARS_TRANSFER_IND AS DESC_ARS_TRANSFER_IND, \n\tDESC_RN_ARS_PAY_PLAN AS DESC_RN_ARS_PAY_PLAN, \n\tDESC_RN_ARS_DUN_PLAN AS DESC_RN_ARS_DUN_PLAN, \n\tDESC_RN_ARS_SUNDRY_PLAN AS DESC_RN_ARS_SUNDRY_PLAN, \n\tDESC_RN_ARS_ACCOUNT_NUMBER AS DESC_RN_ARS_ACCOUNT_NUMBER, \n\tDESC_RN_ARS_SUB_ACCT_NUM AS DESC_RN_ARS_SUB_ACCT_NUM, \n\tDESC_RN_ARS_BILLING_ENTITY AS DESC_RN_ARS_BILLING_ENTITY, \n\tDESC_RN_ARS_BILLING_TYPE AS DESC_RN_ARS_BILLING_TYPE, \n\tDESC_RN_ARS_ADDITIONAL_ID AS DESC_RN_ARS_ADDITIONAL_ID, \n\tDESC_RN_ARS_BILLING_CLASS AS DESC_RN_ARS_BILLING_CLASS, \n\tDESC_ARS_PRIOR_CAN_AMT AS DESC_ARS_PRIOR_CAN_AMT, \n\tDESC_ARS_PRIOR_EXP_CAN_AMT AS DESC_ARS_PRIOR_EXP_CAN_AMT, \n\tDESC_RN_ARS_FUTURE_USE AS DESC_RN_ARS_FUTURE_USE, \n\tDESCRIPTION_LOAN_NUMBER AS DESCRIPTION_LOAN_NUMBER, \n\tDESC_LP_ID_NUMBER AS DESC_LP_ID_NUMBER, \n\tDESC_ZIP_IND AS DESC_ZIP_IND, \n\tDESC_ENDORSEMENT_DATE AS DESC_ENDORSEMENT_DATE, \n\tDESC_DATE_STAMP AS DESC_DATE_STAMP, \n\tDESC_TIME_STAMP AS DESC_TIME_STAMP, \n\tDESC_AIS_INDICATOR AS DESC_AIS_INDICATOR, \n\tDESC_LGL_ADDR_CHANGE_ID, \n\tDESC_MORTGAGEE_CHANGE_SW, \n\tDESC_CUST_FUTURE_USE AS DESC_CUST_FUTURE_USE, \n\tDESC_WATERCRAFT_SEQ, \n\tDESC_YR2000_CUST_USE AS DESC_YR2000_CUST_USE, \n\tDESC_DUP_KEY_SEQ_NUM AS DESC_DUP_KEY_SEQ_NUM, \n\tLOGICAL_FLAG, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID, \n\tINF_ACTION, \n\tINF_TIMESTAMP\n\tFROM EXP_arch_pif_12_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

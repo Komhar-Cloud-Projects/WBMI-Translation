@@ -48,16 +48,13 @@ EXPTRANS AS (
 	PolicyNumber AS i_PolicyNumber,
 	PolicyVersion AS i_PolicyVersion,
 	-- *INF*: i_PolicyNumber|| IIF(ISNULL(ltrim(rtrim(i_PolicyVersion))) or Length(ltrim(rtrim(i_PolicyVersion)))=0 or IS_SPACES(i_PolicyVersion),'00',i_PolicyVersion)
-	i_PolicyNumber || IFF(ltrim(rtrim(i_PolicyVersion
-			)
-		) IS NULL 
-		OR Length(ltrim(rtrim(i_PolicyVersion
-				)
-			)
-		) = 0 
-		OR LENGTH(i_PolicyVersion)>0 AND TRIM(i_PolicyVersion)='',
-		'00',
-		i_PolicyVersion
+	i_PolicyNumber || IFF(
+	    ltrim(rtrim(i_PolicyVersion)) IS NULL
+	    or Length(ltrim(rtrim(i_PolicyVersion))) = 0
+	    or LENGTH(i_PolicyVersion)>0
+	    and TRIM(i_PolicyVersion)='',
+	    '00',
+	    i_PolicyVersion
 	) AS o_contract_key
 	FROM SQ_WorkDCTPLParty
 ),
@@ -112,46 +109,34 @@ EXP_Detect_Changes AS (
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	LKP_contract_customer_key.contract_cust_ak_id AS ContractCustomerAKID,
 	LKP_SupEmailTypeCode.SupEmailTypeCodeId AS i_SupEmailTypeCodeId,
 	-- *INF*: IIF(ISNULL(i_SupEmailTypeCodeId), -1, i_SupEmailTypeCodeId)
-	IFF(i_SupEmailTypeCodeId IS NULL,
-		- 1,
-		i_SupEmailTypeCodeId
-	) AS o_SupEmailTypeCodeId,
+	IFF(i_SupEmailTypeCodeId IS NULL, - 1, i_SupEmailTypeCodeId) AS o_SupEmailTypeCodeId,
 	LKP_SupEmailPriorityCode.SupEmailPriorityCodeId AS i_SupEmailPriorityCodeId,
 	-- *INF*: IIF(ISNULL(i_SupEmailPriorityCodeId)-1,i_SupEmailPriorityCodeId)
-	IFF(i_SupEmailPriorityCodeId IS NULL - 1,
-		i_SupEmailPriorityCodeId
-	) AS o_SupEmailPriorityCodeId,
+	IFF(i_SupEmailPriorityCodeId IS NULL - 1, i_SupEmailPriorityCodeId) AS o_SupEmailPriorityCodeId,
 	SQ_WorkDCTPLParty.Email,
 	-- *INF*: IIF(lkp_ContractCustomerEmailAKID=-1 OR ISNULL(lkp_ContractCustomerEmailAddressID),NEXTVAL,lkp_ContractCustomerEmailAKID)
-	IFF(lkp_ContractCustomerEmailAKID = - 1 
-		OR lkp_ContractCustomerEmailAddressID IS NULL,
-		NEXTVAL,
-		lkp_ContractCustomerEmailAKID
+	IFF(
+	    lkp_ContractCustomerEmailAKID = - 1 OR lkp_ContractCustomerEmailAddressID IS NULL, NEXTVAL,
+	    lkp_ContractCustomerEmailAKID
 	) AS o_ContractCustomerEmailAKID,
 	-- *INF*: DECODE(TRUE,
 	-- ContractCustomerAKID=-1 or lkp_ContractCustomerEmailAddressID=-1 , 'NEW', 
 	-- LTRIM(RTRIM(Email)) <> LTRIM(RTRIM(lkp_CustomerEmailAddress)),'UPDATE', 
 	-- 'NOCHANGE')
-	DECODE(TRUE,
-		ContractCustomerAKID = - 1 
-		OR lkp_ContractCustomerEmailAddressID = - 1, 'NEW',
-		LTRIM(RTRIM(Email
-			)
-		) <> LTRIM(RTRIM(lkp_CustomerEmailAddress
-			)
-		), 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    ContractCustomerAKID = - 1 or lkp_ContractCustomerEmailAddressID = - 1, 'NEW',
+	    LTRIM(RTRIM(Email)) <> LTRIM(RTRIM(lkp_CustomerEmailAddress)), 'UPDATE',
+	    'NOCHANGE'
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag
 	FROM SQ_WorkDCTPLParty

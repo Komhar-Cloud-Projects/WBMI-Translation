@@ -57,9 +57,10 @@ EXP_MetaData AS (
 	StateProvinceCode AS i_StateCode,
 	EffectiveDate AS i_PTExpDate,
 	-- *INF*: IIF( NOT ISNULL(:LKP.LKP_SupClassificationCrime(i_ClassCode,i_StateCode) ) , :LKP.LKP_SupClassificationCrime(i_ClassCode, i_StateCode) , 'N/A')
-	IFF(LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_i_StateCode.IndustryGroup IS NOT NULL,
-		LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_i_StateCode.IndustryGroup,
-		'N/A'
+	IFF(
+	    LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_i_StateCode.IndustryGroup IS NOT NULL,
+	    LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_i_StateCode.IndustryGroup,
+	    'N/A'
 	) AS v_lkp_result,
 	-- *INF*: IIF( v_lkp_result ='N/A', 
 	-- IIF( NOT ISNULL(:LKP.LKP_SupClassificationCrime(i_ClassCode,'99') ) , :LKP.LKP_SupClassificationCrime(i_ClassCode, '99') , 'N/A')
@@ -67,18 +68,18 @@ EXP_MetaData AS (
 	-- --IIF( NOT ISNULL(:LKP.LKP_SupClassificationCrime(i_ClassCode,'99') ) , :LKP.LKP_SupClassificationCrime(i_ClassCode, '99') , 'N/A'), 
 	-- 
 	-- 
-	IFF(v_lkp_result = 'N/A',
-		IFF(LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_99.IndustryGroup IS NOT NULL,
-			LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_99.IndustryGroup,
-			'N/A'
-		),
-		v_lkp_result
+	IFF(
+	    v_lkp_result = 'N/A',
+	    IFF(
+	        LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_99.IndustryGroup IS NOT NULL,
+	        LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_99.IndustryGroup,
+	        'N/A'
+	    ),
+	    v_lkp_result
 	) AS v_lkp_result_99,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	-- *INF*: LTRIM(RTRIM( v_lkp_result_99))
-	LTRIM(RTRIM(v_lkp_result_99
-		)
-	) AS o_IndustryGroup
+	LTRIM(RTRIM(v_lkp_result_99)) AS o_IndustryGroup
 	FROM SQ_CoverageDetailCrime
 	LEFT JOIN LKP_SUPCLASSIFICATIONCRIME LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_i_StateCode
 	ON LKP_SUPCLASSIFICATIONCRIME_i_ClassCode_i_StateCode.ClassCode = i_ClassCode

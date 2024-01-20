@@ -1,0 +1,55 @@
+{
+    "name": "s_m_POL_FEED_WorkCatastropheExposureBuilding_DCT_Update",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_WorkCatastropheExposureBuilding_DCT_Update",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CatastropheExposureBuilding_Prototype AS (\n\tSELECT distinct W.WorkCatastropheExposureBuildingId, S.PolicyBlanketDeductible\r\n\tFROM @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkCatastropheExposureBuilding W\r\n\tinner join (select PolicyKey, BusinessType FROM @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkCatastropheExposureTransaction WHERE CoverageGroupDescription like '%blanket%' ) WCET on W.PolicyKey=WCET.PolicyKey and w.BusinessType=WCET.BusinessType\r\n\tINNER JOIN (SELECT PolicyKey,BusinessType, MAX(LocationDeductible)    as PolicyBlanketDeductible FROM @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkCatastropheExposureBuilding  WHERE AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AND  BusinessType in ('Commercial Property','SMARTbusiness') GROUP BY  PolicyKey,BusinessType ) S\r\n\tON W.PolicyKey=S.PolicyKey and w.BusinessType=S.BusinessType\n),\nEXP_PBD AS (\n\tSELECT\n\tWorkCatastropheExposureBuildingId,\n\tPolicyBlanketDeductible,\n\tSYSDATE AS o_ModifiedDate\n\tFROM SQ_CatastropheExposureBuilding_Prototype\n),\nUPD_Update AS (\n\tSELECT\n\tWorkCatastropheExposureBuildingId, \n\tPolicyBlanketDeductible, \n\to_ModifiedDate AS ModifiedDate\n\tFROM EXP_PBD\n),\nWorkCatastropheExposureBuilding AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkCatastropheExposureBuilding AS T\n\tUSING UPD_Update AS S\n\tON T.WorkCatastropheExposureBuildingId = S.WorkCatastropheExposureBuildingId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ModifiedDate = S.ModifiedDate, T.PolicyBlanketDeductible = S.PolicyBlanketDeductible\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "TARGET_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

@@ -477,7 +477,7 @@
             }
         ],
         "folder": {
-            "name": "Claims DataMart/"
+            "name": "ClaimsDataMart/"
         },
         "variables": {
             "Params": {

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLMT_NURSE_ASSIGNMENT_IMPACT_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLMT_NURSE_ASSIGNMENT_IMPACT_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_nurse_assignment_impact_stage AS (\n\tSELECT \r\n\tN.NurseAssignmentImpactStageId, \r\n\tN.nurse_assignment_id, \r\n\tN.impact_type, \r\n\tN.impact_category, \r\n\tN.savings_amount, \r\n\tN.impact_comment, \r\n\tN.created_ts, \r\n\tN.created_user_id, \r\n\tN.modified_ts, \r\n\tN.modified_user_id, \r\n\tN.ExtractDate, \r\n\tN.SourceSystemId\r\n\t \r\n\tFROM\r\n\t nurse_assignment_impact_stage N\r\n\t\r\n\t--Where\r\n\t--nurse_assignment_impact_stage.created_ts >= --'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t--OR\r\n\t--nurse_assignment_impact_stage.modified_ts >= --'@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_arch_nurse_assignment_impact_stage AS (\n\tSELECT\n\tNurseAssignmentImpactStageId,\n\tnurse_assignment_id,\n\timpact_type,\n\timpact_category,\n\tsavings_amount,\n\timpact_comment,\n\tcreated_ts,\n\tcreated_user_id,\n\tmodified_ts,\n\tmodified_user_id,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_nurse_assignment_impact_stage\n),\narch_nurse_assignment_impact_stage AS (\n\tINSERT INTO arch_nurse_assignment_impact_stage\n\t(NurseAssignmentImpactStageId, nurse_assignment_id, impact_type, impact_category, savings_amount, impact_comment, created_ts, created_user_id, modified_ts, modified_user_id, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tNURSEASSIGNMENTIMPACTSTAGEID, \n\tNURSE_ASSIGNMENT_ID, \n\tIMPACT_TYPE, \n\tIMPACT_CATEGORY, \n\tSAVINGS_AMOUNT, \n\tIMPACT_COMMENT, \n\tCREATED_TS, \n\tCREATED_USER_ID, \n\tMODIFIED_TS, \n\tMODIFIED_USER_ID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_arch_nurse_assignment_impact_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

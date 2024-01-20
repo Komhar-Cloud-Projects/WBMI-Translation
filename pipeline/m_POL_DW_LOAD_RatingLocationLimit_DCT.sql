@@ -72,21 +72,23 @@ EXP_Default AS (
 	TransactionEnteredDate,
 	RatingLocationLimitValue,
 	-- *INF*: IIF(PolicyKey=v_prev_PolicyKey AND InsuranceLine=v_prev_InsuranceLine AND RatingLocationKey=v_prev_RatingLocationKey AND RatingLocationLimitType=v_prev_RatingLocationLimitType,1,0)
-	IFF(PolicyKey = v_prev_PolicyKey 
-		AND InsuranceLine = v_prev_InsuranceLine 
-		AND RatingLocationKey = v_prev_RatingLocationKey 
-		AND RatingLocationLimitType = v_prev_RatingLocationLimitType,
-		1,
-		0
+	IFF(
+	    PolicyKey = v_prev_PolicyKey
+	    and InsuranceLine = v_prev_InsuranceLine
+	    and RatingLocationKey = v_prev_RatingLocationKey
+	    and RatingLocationLimitType = v_prev_RatingLocationLimitType,
+	    1,
+	    0
 	) AS v_SameGroupFlag,
 	-- *INF*: DECODE(TRUE,
 	-- v_SameGroupFlag=0,1,
 	-- RatingLocationLimitValue!=v_prev_RatingLocationLimitValue,1,
 	-- 0)
-	DECODE(TRUE,
-		v_SameGroupFlag = 0, 1,
-		RatingLocationLimitValue != v_prev_RatingLocationLimitValue, 1,
-		0
+	DECODE(
+	    TRUE,
+	    v_SameGroupFlag = 0, 1,
+	    RatingLocationLimitValue != v_prev_RatingLocationLimitValue, 1,
+	    0
 	) AS v_Filter,
 	PolicyKey AS v_prev_PolicyKey,
 	InsuranceLine AS v_prev_InsuranceLine,
@@ -163,8 +165,7 @@ EXP_Change AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	TransactionEnteredDate AS EffectiveDate,
 	-- *INF*: TO_DATE('21001231235959','YYYYMMDDHH24MISS')
-	TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS') AS ExpirationDate,
 	'DCT' AS SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
@@ -175,32 +176,35 @@ EXP_Change AS (
 	FIL_NoChange.TransactionEnteredDate,
 	FIL_NoChange.RatingLocationLimitValue,
 	-- *INF*: IIF(PolicyAKId=v_prev_PolicyAKId AND v_prev_InsuranceLine=InsuranceLine AND RatingLocationKey=v_prev_RatingLocationKey AND RatingLocationLimitType=v_prev_RatingLocationLimitType,1,0)
-	IFF(PolicyAKId = v_prev_PolicyAKId 
-		AND v_prev_InsuranceLine = InsuranceLine 
-		AND RatingLocationKey = v_prev_RatingLocationKey 
-		AND RatingLocationLimitType = v_prev_RatingLocationLimitType,
-		1,
-		0
+	IFF(
+	    PolicyAKId = v_prev_PolicyAKId
+	    and v_prev_InsuranceLine = InsuranceLine
+	    and RatingLocationKey = v_prev_RatingLocationKey
+	    and RatingLocationLimitType = v_prev_RatingLocationLimitType,
+	    1,
+	    0
 	) AS v_SameGroupFlag,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(PolicyAKId),0,
 	-- ISNULL(lkp_RatingLocationLimitAKId),1,
 	-- RatingLocationLimitValue!=lkp_RatingLocationLimitValue,1,
 	-- 0)
-	DECODE(TRUE,
-		PolicyAKId IS NULL, 0,
-		lkp_RatingLocationLimitAKId IS NULL, 1,
-		RatingLocationLimitValue != lkp_RatingLocationLimitValue, 1,
-		0
+	DECODE(
+	    TRUE,
+	    PolicyAKId IS NULL, 0,
+	    lkp_RatingLocationLimitAKId IS NULL, 1,
+	    RatingLocationLimitValue != lkp_RatingLocationLimitValue, 1,
+	    0
 	) AS v_Filter,
 	-- *INF*: DECODE(TRUE,
 	-- v_SameGroupFlag=1,v_RatingLocationLimitAKId,
 	-- NOT ISNULL(lkp_RatingLocationLimitAKId),lkp_RatingLocationLimitAKId,
 	-- NEXTVAL)
-	DECODE(TRUE,
-		v_SameGroupFlag = 1, v_RatingLocationLimitAKId,
-		lkp_RatingLocationLimitAKId IS NOT NULL, lkp_RatingLocationLimitAKId,
-		NEXTVAL
+	DECODE(
+	    TRUE,
+	    v_SameGroupFlag = 1, v_RatingLocationLimitAKId,
+	    lkp_RatingLocationLimitAKId IS NOT NULL, lkp_RatingLocationLimitAKId,
+	    NEXTVAL
 	) AS v_RatingLocationLimitAKId,
 	PolicyAKId AS v_prev_PolicyAKId,
 	InsuranceLine AS v_prev_InsuranceLine,
@@ -279,9 +283,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- RatingLocationLimitAKId = v_PrevRatingLocationLimitAKID ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),ExpirationDate)
-	DECODE(TRUE,
-		RatingLocationLimitAKId = v_PrevRatingLocationLimitAKID, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		ExpirationDate
+	DECODE(
+	    TRUE,
+	    RatingLocationLimitAKId = v_PrevRatingLocationLimitAKID, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    ExpirationDate
 	) AS v_eff_to_date,
 	RatingLocationLimitAKId AS v_PrevRatingLocationLimitAKID,
 	EffectiveDate AS v_prev_eff_from_date,

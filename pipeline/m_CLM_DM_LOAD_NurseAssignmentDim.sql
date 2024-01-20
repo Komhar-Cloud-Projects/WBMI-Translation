@@ -23,41 +23,31 @@ EXP_Src_Values_Default AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
 	EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	SourceSystemId,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	NurseAssignmentAkId AS IN_NurseAssignmentAkId,
 	-- *INF*: iif(isnull(IN_NurseAssignmentAkId), -1, IN_NurseAssignmentAkId)
-	IFF(IN_NurseAssignmentAkId IS NULL,
-		- 1,
-		IN_NurseAssignmentAkId
-	) AS v_NurseAssignmentAkId,
+	IFF(IN_NurseAssignmentAkId IS NULL, - 1, IN_NurseAssignmentAkId) AS v_NurseAssignmentAkId,
 	v_NurseAssignmentAkId AS EdwNurseAssignmentAkId,
 	claim_party_ak_id AS IN_claim_party_ak_id,
 	-- *INF*: iif(isnull(IN_claim_party_ak_id), -1,IN_claim_party_ak_id)
-	IFF(IN_claim_party_ak_id IS NULL,
-		- 1,
-		IN_claim_party_ak_id
-	) AS v_claim_party_ak_id,
+	IFF(IN_claim_party_ak_id IS NULL, - 1, IN_claim_party_ak_id) AS v_claim_party_ak_id,
 	v_claim_party_ak_id AS claim_party_ak_id,
 	OpenDate AS IN_OpenDate,
 	-- *INF*: iif(isnull(IN_OpenDate),to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),IN_OpenDate)
-	IFF(IN_OpenDate IS NULL,
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		IN_OpenDate
+	IFF(
+	    IN_OpenDate IS NULL, TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    IN_OpenDate
 	) AS v_OpenDate,
 	v_OpenDate AS OpenDate,
 	ClosedDate AS IN_ClosedDate,
 	-- *INF*: iif(isnull(ltrim(rtrim(IN_ClosedDate))),to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS'),IN_ClosedDate)
-	IFF(ltrim(rtrim(IN_ClosedDate
-			)
-		) IS NULL,
-		to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		IN_ClosedDate
+	IFF(
+	    ltrim(rtrim(IN_ClosedDate)) IS NULL,
+	    TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'),
+	    IN_ClosedDate
 	) AS v_ClosedDate,
 	v_ClosedDate AS ClosedDate
 	FROM SQ_NurseAssignment
@@ -114,14 +104,12 @@ EXP_Lkp_Records AS (
 	-- IS_SPACES(IN_NurseFullName),'N/A',
 	-- LENGTH(IN_NurseFullName)=0,'N/A',
 	-- LTRIM(RTRIM(IN_NurseFullName)))
-	DECODE(TRUE,
-		IN_NurseFullName IS NULL, 'N/A',
-		LENGTH(IN_NurseFullName)>0 AND TRIM(IN_NurseFullName)='', 'N/A',
-		LENGTH(IN_NurseFullName
-		) = 0, 'N/A',
-		LTRIM(RTRIM(IN_NurseFullName
-			)
-		)
+	DECODE(
+	    TRUE,
+	    IN_NurseFullName IS NULL, 'N/A',
+	    LENGTH(IN_NurseFullName)>0 AND TRIM(IN_NurseFullName)='', 'N/A',
+	    LENGTH(IN_NurseFullName) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_NurseFullName))
 	) AS NurseFullName,
 	LKP_claim_party.claim_party_first_name AS IN_NurseFirstName,
 	-- *INF*: DECODE(TRUE,
@@ -129,14 +117,12 @@ EXP_Lkp_Records AS (
 	-- IS_SPACES(IN_NurseFirstName),'N/A',
 	-- LENGTH(IN_NurseFirstName)=0,'N/A',
 	-- LTRIM(RTRIM(IN_NurseFirstName)))
-	DECODE(TRUE,
-		IN_NurseFirstName IS NULL, 'N/A',
-		LENGTH(IN_NurseFirstName)>0 AND TRIM(IN_NurseFirstName)='', 'N/A',
-		LENGTH(IN_NurseFirstName
-		) = 0, 'N/A',
-		LTRIM(RTRIM(IN_NurseFirstName
-			)
-		)
+	DECODE(
+	    TRUE,
+	    IN_NurseFirstName IS NULL, 'N/A',
+	    LENGTH(IN_NurseFirstName)>0 AND TRIM(IN_NurseFirstName)='', 'N/A',
+	    LENGTH(IN_NurseFirstName) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_NurseFirstName))
 	) AS NurseFirstName,
 	LKP_claim_party.claim_party_last_name AS IN_NurseLastName,
 	-- *INF*: DECODE(TRUE,
@@ -144,14 +130,12 @@ EXP_Lkp_Records AS (
 	-- IS_SPACES(IN_NurseLastName),'N/A',
 	-- LENGTH(IN_NurseLastName)=0,'N/A',
 	-- LTRIM(RTRIM(IN_NurseLastName)))
-	DECODE(TRUE,
-		IN_NurseLastName IS NULL, 'N/A',
-		LENGTH(IN_NurseLastName)>0 AND TRIM(IN_NurseLastName)='', 'N/A',
-		LENGTH(IN_NurseLastName
-		) = 0, 'N/A',
-		LTRIM(RTRIM(IN_NurseLastName
-			)
-		)
+	DECODE(
+	    TRUE,
+	    IN_NurseLastName IS NULL, 'N/A',
+	    LENGTH(IN_NurseLastName)>0 AND TRIM(IN_NurseLastName)='', 'N/A',
+	    LENGTH(IN_NurseLastName) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_NurseLastName))
 	) AS NurseLastName,
 	LKP_claim_party.claim_party_mid_name AS IN_NurseMiddleName,
 	-- *INF*: DECODE(TRUE,
@@ -159,14 +143,12 @@ EXP_Lkp_Records AS (
 	-- IS_SPACES(IN_NurseMiddleName),'N/A',
 	-- LENGTH(IN_NurseMiddleName)=0,'N/A',
 	-- LTRIM(RTRIM(IN_NurseMiddleName)))
-	DECODE(TRUE,
-		IN_NurseMiddleName IS NULL, 'N/A',
-		LENGTH(IN_NurseMiddleName)>0 AND TRIM(IN_NurseMiddleName)='', 'N/A',
-		LENGTH(IN_NurseMiddleName
-		) = 0, 'N/A',
-		LTRIM(RTRIM(IN_NurseMiddleName
-			)
-		)
+	DECODE(
+	    TRUE,
+	    IN_NurseMiddleName IS NULL, 'N/A',
+	    LENGTH(IN_NurseMiddleName)>0 AND TRIM(IN_NurseMiddleName)='', 'N/A',
+	    LENGTH(IN_NurseMiddleName) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_NurseMiddleName))
 	) AS NurseMiddleName,
 	LKP_claim_party.claim_party_name_prfx AS IN_NurseNamePrefix,
 	-- *INF*: DECODE(TRUE,
@@ -174,14 +156,12 @@ EXP_Lkp_Records AS (
 	-- IS_SPACES(IN_NurseNamePrefix),'N/A',
 	-- LENGTH(IN_NurseNamePrefix)=0,'N/A',
 	-- LTRIM(RTRIM(IN_NurseNamePrefix)))
-	DECODE(TRUE,
-		IN_NurseNamePrefix IS NULL, 'N/A',
-		LENGTH(IN_NurseNamePrefix)>0 AND TRIM(IN_NurseNamePrefix)='', 'N/A',
-		LENGTH(IN_NurseNamePrefix
-		) = 0, 'N/A',
-		LTRIM(RTRIM(IN_NurseNamePrefix
-			)
-		)
+	DECODE(
+	    TRUE,
+	    IN_NurseNamePrefix IS NULL, 'N/A',
+	    LENGTH(IN_NurseNamePrefix)>0 AND TRIM(IN_NurseNamePrefix)='', 'N/A',
+	    LENGTH(IN_NurseNamePrefix) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_NurseNamePrefix))
 	) AS NurseNamePrefix,
 	LKP_claim_party.claim_party_name_sfx AS IN_NurseNameSuffix,
 	-- *INF*: DECODE(TRUE,
@@ -189,14 +169,12 @@ EXP_Lkp_Records AS (
 	-- IS_SPACES(IN_NurseNameSuffix),'N/A',
 	-- LENGTH(IN_NurseNameSuffix)=0,'N/A',
 	-- LTRIM(RTRIM(IN_NurseNameSuffix)))
-	DECODE(TRUE,
-		IN_NurseNameSuffix IS NULL, 'N/A',
-		LENGTH(IN_NurseNameSuffix)>0 AND TRIM(IN_NurseNameSuffix)='', 'N/A',
-		LENGTH(IN_NurseNameSuffix
-		) = 0, 'N/A',
-		LTRIM(RTRIM(IN_NurseNameSuffix
-			)
-		)
+	DECODE(
+	    TRUE,
+	    IN_NurseNameSuffix IS NULL, 'N/A',
+	    LENGTH(IN_NurseNameSuffix)>0 AND TRIM(IN_NurseNameSuffix)='', 'N/A',
+	    LENGTH(IN_NurseNameSuffix) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_NurseNameSuffix))
 	) AS NurseNameSuffix
 	FROM 
 	LEFT JOIN LKP_NurseAssignmentDim
@@ -339,9 +317,10 @@ EXP_Lag_ExpirationDate AS (
 	-- EdwNurseAssignmentAkId = v_PREV_ROW_EdwNurseAssignmentAkId,
 	--  add_to_date(v_PREV_ROW_EffectiveDate,'SS', -1),
 	-- orig_ExpirationDate)
-	decode(true,
-		EdwNurseAssignmentAkId = v_PREV_ROW_EdwNurseAssignmentAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
-		orig_ExpirationDate
+	decode(
+	    true,
+	    EdwNurseAssignmentAkId = v_PREV_ROW_EdwNurseAssignmentAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
+	    orig_ExpirationDate
 	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	sysdate AS ModifiedDate,

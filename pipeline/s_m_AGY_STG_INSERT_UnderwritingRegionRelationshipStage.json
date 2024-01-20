@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_STG_INSERT_UnderwritingRegionRelationshipStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_UnderwritingRegionRelationship_ODS AS (\n\tSELECT\n\t\tUnderwritingRegionRelationshipID,\n\t\tSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAssociateID,\n\t\tUnderwritingRegionID\n\tFROM UnderwritingRegionRelationship_ODS\n),\nLKP_UnderwritingRegionCode AS (\n\tSELECT\n\tUnderwritingRegionCode,\n\tUnderwritingRegionID\n\tFROM (\n\t\tSELECT \n\t\t\tUnderwritingRegionCode,\n\t\t\tUnderwritingRegionID\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.UnderwritingRegion\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY UnderwritingRegionID ORDER BY UnderwritingRegionCode) = 1\n),\nLKP_WestBendAssociateID AS (\n\tSELECT\n\tin_AssociateID,\n\tWestBendAssociateID,\n\tAssociateID\n\tFROM (\n\t\tSELECT \n\t\t\tin_AssociateID,\n\t\t\tWestBendAssociateID,\n\t\t\tAssociateID\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.Associate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AssociateID ORDER BY in_AssociateID) = 1\n),\nEXP_Add_MetaDataFields AS (\n\tSELECT\n\tSQ_UnderwritingRegionRelationship_ODS.UnderwritingRegionRelationshipID,\n\tSQ_UnderwritingRegionRelationship_ODS.SourceSystemID,\n\tSQ_UnderwritingRegionRelationship_ODS.HashKey,\n\tSQ_UnderwritingRegionRelationship_ODS.ModifiedUserID,\n\tSQ_UnderwritingRegionRelationship_ODS.ModifiedDate,\n\tSQ_UnderwritingRegionRelationship_ODS.AssociateID,\n\tSQ_UnderwritingRegionRelationship_ODS.UnderwritingRegionID,\n\tLKP_WestBendAssociateID.WestBendAssociateID AS lkp_WestBendAssociateID,\n\tLKP_UnderwritingRegionCode.UnderwritingRegionCode,\n\tsysdate AS Extract_Date,\n\tSysdate AS As_of_Date,\n\t1 AS Record_Count,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS Source_System_ID\n\tFROM SQ_UnderwritingRegionRelationship_ODS\n\tLEFT JOIN LKP_UnderwritingRegionCode\n\tON LKP_UnderwritingRegionCode.UnderwritingRegionID = SQ_UnderwritingRegionRelationship_ODS.UnderwritingRegionID\n\tLEFT JOIN LKP_WestBendAssociateID\n\tON LKP_WestBendAssociateID.AssociateID = SQ_UnderwritingRegionRelationship_ODS.AssociateID\n),\nUnderwritingRegionRelationshipStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwritingRegionRelationshipStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.UnderwritingRegionRelationshipStage\n\t(AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AssociateID, WestBendAssociateID, UnderwritingRegionID, UnderwritingRegionCode, ExtractDate, AsOfDate, RecordCount, SourceSystemID)\n\tSELECT \n\tSourceSystemID AS AGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tASSOCIATEID, \n\tlkp_WestBendAssociateID AS WESTBENDASSOCIATEID, \n\tUNDERWRITINGREGIONID, \n\tUNDERWRITINGREGIONCODE, \n\tExtract_Date AS EXTRACTDATE, \n\tAs_of_Date AS ASOFDATE, \n\tRecord_Count AS RECORDCOUNT, \n\tSource_System_ID AS SOURCESYSTEMID\n\tFROM EXP_Add_MetaDataFields\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

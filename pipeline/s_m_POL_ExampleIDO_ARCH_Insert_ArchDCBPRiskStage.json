@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPRiskStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCBPRiskStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBPRiskStage AS (\n\tSELECT\n\t\tDCBPRiskStageId,\n\t\tLineId,\n\t\tBPRiskId,\n\t\tSessionId,\n\t\tId,\n\t\tDeleted,\n\t\tBeautyHairSalon,\n\t\tBuildingDescription,\n\t\tComputerFraudAndFundsTransfer,\n\t\tContractorsOneOrMoreResidences,\n\t\tDemolitionCost,\n\t\tDescription,\n\t\tEarthquakeRiskType,\n\t\tEmployeeDishonesty,\n\t\tEndSpoilageSelected,\n\t\tIsOrdinanceOrLaw,\n\t\tOccupancyOccupied,\n\t\tOccupancyPercentage,\n\t\tRatingBasis,\n\t\tRatingBasisBuilding,\n\t\tRatingBasisPersonalProperty,\n\t\tSinkhole,\n\t\tUsePredominantClassCode,\n\t\tWindHailExclusionType,\n\t\tBPBuildingXmlId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tBPBuildingID\n\tFROM DCBPRiskStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCBPRiskStageId,\n\tLineId,\n\tBPRiskId,\n\tSessionId,\n\tId,\n\tDeleted AS i_Deleted,\n\t-- *INF*: IIF(i_Deleted='T','1','0')\n\tIFF(i_Deleted = 'T', '1', '0') AS o_Deleted,\n\tBeautyHairSalon,\n\tBuildingDescription,\n\tComputerFraudAndFundsTransfer AS i_ComputerFraudAndFundsTransfer,\n\t-- *INF*: IIF(i_ComputerFraudAndFundsTransfer='T','1','0')\n\tIFF(i_ComputerFraudAndFundsTransfer = 'T', '1', '0') AS o_ComputerFraudAndFundsTransfer,\n\tContractorsOneOrMoreResidences AS i_ContractorsOneOrMoreResidences,\n\t-- *INF*: IIF(i_ContractorsOneOrMoreResidences='T','1','0')\n\tIFF(i_ContractorsOneOrMoreResidences = 'T', '1', '0') AS o_ContractorsOneOrMoreResidences,\n\tDemolitionCost,\n\tDescription,\n\tEarthquakeRiskType,\n\tEmployeeDishonesty AS i_EmployeeDishonesty,\n\t-- *INF*: IIF(i_EmployeeDishonesty='T','1','0')\n\tIFF(i_EmployeeDishonesty = 'T', '1', '0') AS o_EmployeeDishonesty,\n\tEndSpoilageSelected AS i_EndSpoilageSelected,\n\t-- *INF*: IIF(i_EndSpoilageSelected='T','1','0')\n\tIFF(i_EndSpoilageSelected = 'T', '1', '0') AS o_EndSpoilageSelected,\n\tIsOrdinanceOrLaw AS i_IsOrdinanceOrLaw,\n\t-- *INF*: IIF(i_IsOrdinanceOrLaw='T','1','0')\n\tIFF(i_IsOrdinanceOrLaw = 'T', '1', '0') AS o_IsOrdinanceOrLaw,\n\tOccupancyOccupied,\n\tOccupancyPercentage,\n\tRatingBasis,\n\tRatingBasisBuilding,\n\tRatingBasisPersonalProperty,\n\tSinkhole AS i_Sinkhole,\n\t-- *INF*: IIF(i_Sinkhole='T','1','0')\n\tIFF(i_Sinkhole = 'T', '1', '0') AS o_Sinkhole,\n\tUsePredominantClassCode AS i_UsePredominantClassCode,\n\t-- *INF*: IIF(i_UsePredominantClassCode='T','1','0')\n\tIFF(i_UsePredominantClassCode = 'T', '1', '0') AS o_UsePredominantClassCode,\n\tWindHailExclusionType,\n\tBPBuildingXmlId,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tBPBuildingID\n\tFROM SQ_DCBPRiskStage\n),\nArchDCBPRiskStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCBPRiskStage\n\t(DCBPRiskStageId, LineId, BPRiskId, SessionId, Id, Deleted, BeautyHairSalon, BuildingDescription, ComputerFraudAndFundsTransfer, ContractorsOneOrMoreResidences, DemolitionCost, Description, EarthquakeRiskType, EmployeeDishonesty, EndSpoilageSelected, IsOrdinanceOrLaw, OccupancyOccupied, OccupancyPercentage, RatingBasis, RatingBasisBuilding, RatingBasisPersonalProperty, Sinkhole, UsePredominantClassCode, WindHailExclusionType, BPBuildingXmlId, ExtractDate, SourceSystemId, AuditId, BPBuildingID)\n\tSELECT \n\tDCBPRISKSTAGEID, \n\tLINEID, \n\tBPRISKID, \n\tSESSIONID, \n\tID, \n\to_Deleted AS DELETED, \n\tBEAUTYHAIRSALON, \n\tBUILDINGDESCRIPTION, \n\to_ComputerFraudAndFundsTransfer AS COMPUTERFRAUDANDFUNDSTRANSFER, \n\to_ContractorsOneOrMoreResidences AS CONTRACTORSONEORMORERESIDENCES, \n\tDEMOLITIONCOST, \n\tDESCRIPTION, \n\tEARTHQUAKERISKTYPE, \n\to_EmployeeDishonesty AS EMPLOYEEDISHONESTY, \n\to_EndSpoilageSelected AS ENDSPOILAGESELECTED, \n\to_IsOrdinanceOrLaw AS ISORDINANCEORLAW, \n\tOCCUPANCYOCCUPIED, \n\tOCCUPANCYPERCENTAGE, \n\tRATINGBASIS, \n\tRATINGBASISBUILDING, \n\tRATINGBASISPERSONALPROPERTY, \n\to_Sinkhole AS SINKHOLE, \n\to_UsePredominantClassCode AS USEPREDOMINANTCLASSCODE, \n\tWINDHAILEXCLUSIONTYPE, \n\tBPBUILDINGXMLID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tBPBUILDINGID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

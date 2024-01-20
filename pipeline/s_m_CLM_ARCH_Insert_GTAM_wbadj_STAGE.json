@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_GTAM_wbadj_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_GTAM_wbadj_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_wbadj_stage AS (\n\tSELECT\n\t\tgtam_wbadj_stage_id,\n\t\ttable_fld,\n\t\tkey_len,\n\t\tAdjuster_Code,\n\t\tdata_len,\n\t\tAdjuster_Initial_Code,\n\t\tAdjuster_Name,\n\t\tCost_Center_Number,\n\t\tTelephone_Number,\n\t\tExtension_Number,\n\t\tFax_Number,\n\t\tEmail_Address,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_wbadj_stage\n),\nEXP_arch_GTAM_wbadj_stage AS (\n\tSELECT\n\tgtam_wbadj_stage_id AS wbadj_stage_ID,\n\ttable_fld AS TABLE_FLD,\n\tkey_len AS KEY_LEN,\n\tAdjuster_Code AS ADJUSTER_CODE,\n\tdata_len AS DATA_LEN,\n\tAdjuster_Initial_Code,\n\tAdjuster_Name,\n\tCost_Center_Number,\n\tTelephone_Number,\n\tExtension_Number,\n\tFax_Number,\n\tEmail_Address,\n\textract_date AS EXTRACT_DATE,\n\tas_of_date AS AS_OF_DATE,\n\trecord_count AS RECORD_COUNT,\n\tsource_system_id AS SOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_gtam_wbadj_stage\n),\narch_gtam_wbadj_stage AS (\n\tINSERT INTO arch_gtam_wbadj_stage\n\t(gtam_wbadj_stage_id, table_fld, key_len, Adjuster_Code, data_len, Adjuster_Initial_Code, Adjuster_Name, Cost_Center_Number, Telephone_Number, Extension_Number, Fax_Number, Email_Address, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\twbadj_stage_ID AS GTAM_WBADJ_STAGE_ID, \n\tTABLE_FLD AS TABLE_FLD, \n\tKEY_LEN AS KEY_LEN, \n\tADJUSTER_CODE AS ADJUSTER_CODE, \n\tDATA_LEN AS DATA_LEN, \n\tADJUSTER_INITIAL_CODE, \n\tADJUSTER_NAME, \n\tCOST_CENTER_NUMBER, \n\tTELEPHONE_NUMBER, \n\tEXTENSION_NUMBER, \n\tFAX_NUMBER, \n\tEMAIL_ADDRESS, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_arch_GTAM_wbadj_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

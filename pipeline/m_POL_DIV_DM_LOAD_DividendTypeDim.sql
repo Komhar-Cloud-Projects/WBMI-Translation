@@ -27,13 +27,7 @@ AGG_REMOVE_DUPLICATE AS (
 	DividendPlan,
 	DividendType,
 	-- *INF*: IIF(ISNULL(DividendType) OR LTRIM(RTRIM(DividendType))<>'N/A','Dividend','CFA')
-	IFF(DividendType IS NULL 
-		OR LTRIM(RTRIM(DividendType
-			)
-		) <> 'N/A',
-		'Dividend',
-		'CFA'
-	) AS DividendCategory
+	IFF(DividendType IS NULL OR LTRIM(RTRIM(DividendType)) <> 'N/A', 'Dividend', 'CFA') AS DividendCategory
 	FROM SQ_Dividend
 	GROUP BY DividendPlan, DividendType
 ),
@@ -62,10 +56,11 @@ EXP_Metadata AS (
 	-- ISNULL(lkp_DividendTypeDimId), 'NEW', 
 	-- lkp_DividendCategory <>DividendCategory,'UPDATE',
 	-- 'NOCHANGE')
-	DECODE(TRUE,
-		lkp_DividendTypeDimId IS NULL, 'NEW',
-		lkp_DividendCategory <> DividendCategory, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    lkp_DividendTypeDimId IS NULL, 'NEW',
+	    lkp_DividendCategory <> DividendCategory, 'UPDATE',
+	    'NOCHANGE'
 	) AS Change_Flag,
 	AGG_REMOVE_DUPLICATE.DividendPlan,
 	AGG_REMOVE_DUPLICATE.DividendType,
@@ -73,11 +68,9 @@ EXP_Metadata AS (
 	1 AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_ExpirationDate,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate
 	FROM AGG_REMOVE_DUPLICATE

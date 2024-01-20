@@ -17,24 +17,19 @@ EXP_Src_Value AS (
 	SELECT
 	clmt_surgery_detail_id,
 	-- *INF*: iif(isnull(clmt_surgery_detail_id),-1, clmt_surgery_detail_id)
-	IFF(clmt_surgery_detail_id IS NULL,
-		- 1,
-		clmt_surgery_detail_id
-	) AS o_clmt_surgery_detail_id,
+	IFF(clmt_surgery_detail_id IS NULL, - 1, clmt_surgery_detail_id) AS o_clmt_surgery_detail_id,
 	surgery_type_cd,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(surgery_type_cd),'N/A',
 	-- IS_SPACES(surgery_type_cd),'N/A',
 	-- LENGTH(surgery_type_cd)=0,'N/A',
 	-- LTRIM(RTRIM(surgery_type_cd)))
-	DECODE(TRUE,
-		surgery_type_cd IS NULL, 'N/A',
-		LENGTH(surgery_type_cd)>0 AND TRIM(surgery_type_cd)='', 'N/A',
-		LENGTH(surgery_type_cd
-		) = 0, 'N/A',
-		LTRIM(RTRIM(surgery_type_cd
-			)
-		)
+	DECODE(
+	    TRUE,
+	    surgery_type_cd IS NULL, 'N/A',
+	    LENGTH(surgery_type_cd)>0 AND TRIM(surgery_type_cd)='', 'N/A',
+	    LENGTH(surgery_type_cd) = 0, 'N/A',
+	    LTRIM(RTRIM(surgery_type_cd))
 	) AS o_surgery_type_cd,
 	source_system_id
 	FROM SQ_clmt_surgery_detail_stage
@@ -103,26 +98,20 @@ EXP_pms_exceed AS (
 	LKP_pms_clmt_surgery_relation_stage.pms_loss_occurence,
 	LKP_pms_clmt_surgery_relation_stage.pms_loss_claimant,
 	-- *INF*: to_char(pms_date_of_loss,'MMDDYYYY')
-	to_char(pms_date_of_loss, 'MMDDYYYY'
-	) AS v_pms_date_of_loss,
+	to_char(pms_date_of_loss, 'MMDDYYYY') AS v_pms_date_of_loss,
 	-- *INF*: IIF(length(tch_claim_nbr)>0 ,ltrim(rtrim(tch_claim_nbr)),
 	-- 
 	-- IIF(length(pms_policy_sym)>0,
 	-- ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss ||  pms_loss_occurence)),
 	-- 
 	-- 'N/A'))
-	IFF(length(tch_claim_nbr
-		) > 0,
-		ltrim(rtrim(tch_claim_nbr
-			)
-		),
-		IFF(length(pms_policy_sym
-			) > 0,
-			ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence
-				)
-			),
-			'N/A'
-		)
+	IFF(
+	    length(tch_claim_nbr) > 0, ltrim(rtrim(tch_claim_nbr)),
+	    IFF(
+	        length(pms_policy_sym) > 0,
+	        ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence)),
+	        'N/A'
+	    )
 	) AS o_tch_claim_nbr,
 	-- *INF*: IIF(length(tch_claim_nbr)>0,ltrim(rtrim(tch_client_id)),
 	-- 
@@ -130,18 +119,13 @@ EXP_pms_exceed AS (
 	-- ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss ||  pms_loss_occurence || pms_loss_claimant || 'CMT')),
 	-- 
 	-- 'N/A'))
-	IFF(length(tch_claim_nbr
-		) > 0,
-		ltrim(rtrim(tch_client_id
-			)
-		),
-		IFF(length(pms_policy_sym
-			) > 0,
-			ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence || pms_loss_claimant || 'CMT'
-				)
-			),
-			'N/A'
-		)
+	IFF(
+	    length(tch_claim_nbr) > 0, ltrim(rtrim(tch_client_id)),
+	    IFF(
+	        length(pms_policy_sym) > 0,
+	        ltrim(rtrim(pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence || pms_loss_claimant || 'CMT')),
+	        'N/A'
+	    )
 	) AS o_tch_client_id
 	FROM 
 	LEFT JOIN LKP_exceed_clmt_surgery_relation_stage
@@ -184,16 +168,10 @@ EXP_Lkp_Defualt AS (
 	SELECT
 	LKP_claim_party_occurrence.claim_party_occurrence_ak_id,
 	-- *INF*: iif(isnull(claim_party_occurrence_ak_id), -1,claim_party_occurrence_ak_id)
-	IFF(claim_party_occurrence_ak_id IS NULL,
-		- 1,
-		claim_party_occurrence_ak_id
-	) AS o_claim_party_occurrence_ak_id,
+	IFF(claim_party_occurrence_ak_id IS NULL, - 1, claim_party_occurrence_ak_id) AS o_claim_party_occurrence_ak_id,
 	LKP_SupSurgeryType.SupSurgeryTypeId,
 	-- *INF*: iif(isnull(SupSurgeryTypeId), -1, SupSurgeryTypeId)
-	IFF(SupSurgeryTypeId IS NULL,
-		- 1,
-		SupSurgeryTypeId
-	) AS o_SupSurgeryTypeId
+	IFF(SupSurgeryTypeId IS NULL, - 1, SupSurgeryTypeId) AS o_SupSurgeryTypeId
 	FROM 
 	LEFT JOIN LKP_SupSurgeryType
 	ON LKP_SupSurgeryType.SurgeryTypeCode = EXP_Src_Value.o_surgery_type_cd
@@ -247,40 +225,27 @@ EXP_TargetLkp_Detect_Changes AS (
 	--         'UPDATE', 'NOCHANGE')
 	-- 
 	--    )
-	IFF(Lkp_ClaimantSurgeryDetailId IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(Lkp_claim_party_occurrence_ak_Id
-				)
-			) != LTRIM(RTRIM(claim_party_occurrence_ak_Id
-				)
-			) 
-			OR LTRIM(RTRIM(Lkp_SupSurgeryTypeId
-				)
-			) != LTRIM(RTRIM(SupSurgeryTypeId
-				)
-			) 
-			OR LTRIM(RTRIM(Lkp_clmt_surgery_detail_id
-				)
-			) != LTRIM(RTRIM(clmt_surgery_detail_id
-				)
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    Lkp_ClaimantSurgeryDetailId IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(Lkp_claim_party_occurrence_ak_Id)) != LTRIM(RTRIM(claim_party_occurrence_ak_Id))
+	        or LTRIM(RTRIM(Lkp_SupSurgeryTypeId)) != LTRIM(RTRIM(SupSurgeryTypeId))
+	        or LTRIM(RTRIM(Lkp_clmt_surgery_detail_id)) != LTRIM(RTRIM(clmt_surgery_detail_id)),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangedFlag,
 	EXP_Lkp_Defualt.o_claim_party_occurrence_ak_id AS claim_party_occurrence_ak_Id,
 	EXP_Lkp_Defualt.o_SupSurgeryTypeId AS SupSurgeryTypeId,
 	-- *INF*: iif(v_ChangedFlag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_ChangedFlag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_ChangedFlag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	EXP_Src_Value.source_system_id AS SourceSystemId,
@@ -320,10 +285,7 @@ EXP_AKid_Insert_Target AS (
 	ChangedFlag,
 	SEQ_ClaimantSugeryDetail.NEXTVAL,
 	-- *INF*: IIF(ChangedFlag='NEW', NEXTVAL, Lkp_ClaimantSurgeryDetailAkId)
-	IFF(ChangedFlag = 'NEW',
-		NEXTVAL,
-		Lkp_ClaimantSurgeryDetailAkId
-	) AS o_ClaimantSurgeryDetailAkId,
+	IFF(ChangedFlag = 'NEW', NEXTVAL, Lkp_ClaimantSurgeryDetailAkId) AS o_ClaimantSurgeryDetailAkId,
 	claim_party_occurrence_ak_Id,
 	SupSurgeryTypeId,
 	EffectiveDate,
@@ -396,9 +358,10 @@ EXP_Lap_ExpirationDate AS (
 	-- *INF*: DECODE(TRUE, 
 	-- ClaimantSurgeryDetailAkId= v_PREV_ROW_ClaimantSurgeryDetailAkId, ADD_TO_DATE(v_PREV_ROW_EffectiveDate,'SS',-1),
 	-- 	orig_ExpirationDate)
-	DECODE(TRUE,
-		ClaimantSurgeryDetailAkId = v_PREV_ROW_ClaimantSurgeryDetailAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
-		orig_ExpirationDate
+	DECODE(
+	    TRUE,
+	    ClaimantSurgeryDetailAkId = v_PREV_ROW_ClaimantSurgeryDetailAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
+	    orig_ExpirationDate
 	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	EffectiveDate AS v_PREV_ROW_EffectiveDate,

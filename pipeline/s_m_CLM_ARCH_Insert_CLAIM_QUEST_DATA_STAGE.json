@@ -1,0 +1,55 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLAIM_QUEST_DATA_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLAIM_QUEST_DATA_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_claim_quest_data_stage AS (\n\tSELECT \r\n\t\tcqds.claim_quest_data_stage_id, \r\n\t\tcqds.cqd_id, \r\n\t\tcqds.claim_nbr, \r\n\t\tcqds.claimant_id, \r\n\t\tcqds.app_context_name, \r\n\t\tcqds.question_guid, \r\n\t\tcqds.quest_logical_name, \r\n\t\tcqds.prompt, \r\n\t\tcqds.optn_set_item_guid, \r\n\t\tcqds.optn_set_item_val, \r\n\t\tcqds.optn_text, \r\n\t\tcqds.created_user_id, \r\n\t\tcqds.created_date, \r\n\t\tcqds.modified_user_id, \r\n\t\tcqds.modified_date, \t \r\n\t\tcqds.extract_date, \r\n\t\tcqds.as_of_date, \r\n\t\tcqds.record_count, \r\n\t\tcqds.source_system_id\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_quest_data_stage AS cqds WITH (NOLOCK)\r\n\tWHERE cqds.CREATED_DATE >= '@{pipeline().parameters.SELECTION_START_TS}'\r\n\t OR cqds.MODIFIED_DATE >= '@{pipeline().parameters.SELECTION_END_TS}'\n),\nEXP_SOURCE AS (\n\tSELECT\n\tclaim_quest_data_stage_id,\n\tcqd_id,\n\tclaim_nbr,\n\tclaimant_id,\n\tapp_context_name,\n\tquestion_guid,\n\tquest_logical_name,\n\tprompt,\n\toptn_set_item_guid,\n\toptn_set_item_val,\n\toptn_text,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tmodified_date,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id\n\tFROM SQ_claim_quest_data_stage\n),\narch_claim_quest_data_stage AS (\n\tINSERT INTO arch_claim_quest_data_stage\n\t(claim_quest_data_stage_id, cqd_id, claim_nbr, claimant_id, app_context_name, question_guid, quest_logical_name, prompt, optn_set_item_guid, optn_set_item_val, optn_text, created_user_id, created_date, modified_user_id, modified_date, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCLAIM_QUEST_DATA_STAGE_ID, \n\tCQD_ID, \n\tCLAIM_NBR, \n\tCLAIMANT_ID, \n\tAPP_CONTEXT_NAME, \n\tQUESTION_GUID, \n\tQUEST_LOGICAL_NAME, \n\tPROMPT, \n\tOPTN_SET_ITEM_GUID, \n\tOPTN_SET_ITEM_VAL, \n\tOPTN_TEXT, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID\n\tFROM EXP_SOURCE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

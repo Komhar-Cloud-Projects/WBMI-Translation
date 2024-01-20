@@ -32,47 +32,19 @@
         "parameters": {
             "WBMI_AUDIT_CONTROL_RUN_ID": {
                 "type": "string",
-                "defaultValue": "246535"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "905690"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7604838"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "08/30/2023 22:04:54"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/31/2023 11:42:10"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_InsuranceReference_Policy"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
-            "TARGET_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
+                "defaultValue": "Default Value"
             },
             "SOURCE_SYSTEM_ID": {
                 "type": "string",
-                "defaultValue": "InsRef"
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Common DataWarehouse/"
+            "name": "CommonDataWarehouse/"
         },
         "annotations": []
     }

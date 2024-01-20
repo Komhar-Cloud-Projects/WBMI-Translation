@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageBusinessIncomeExtendedPeriodStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCBPCoverageBusines_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBPCoverageBusinessIncomeExtendedPeriodStage AS (\n\tSELECT\n\t\tDCBPCoverageBusinessIncomeExtendedPeriodStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCoverageId,\n\t\tBP_CoverageBusinessIncomeExtendedPeriodId,\n\t\tSessionId,\n\t\tDays\n\tFROM DCBPCoverageBusinessIncomeExtendedPeriodStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCBPCoverageBusinessIncomeExtendedPeriodStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCoverageId,\n\tBP_CoverageBusinessIncomeExtendedPeriodId,\n\tSessionId,\n\tDays,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCBPCoverageBusinessIncomeExtendedPeriodStage\n),\nArchDCBPCoverageBusinessIncomeExtendedPeriodStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCBPCoverageBusinessIncomeExtendedPeriodStage\n\t(ExtractDate, SourceSystemId, AuditId, DCBPCoverageBusinessIncomeExtendedPeriodStageId, CoverageId, BP_CoverageBusinessIncomeExtendedPeriodId, SessionId, Days)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCBPCOVERAGEBUSINESSINCOMEEXTENDEDPERIODSTAGEID, \n\tCOVERAGEID, \n\tBP_COVERAGEBUSINESSINCOMEEXTENDEDPERIODID, \n\tSESSIONID, \n\tDAYS\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

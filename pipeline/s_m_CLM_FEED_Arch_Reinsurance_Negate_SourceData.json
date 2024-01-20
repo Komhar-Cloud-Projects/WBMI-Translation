@@ -1,0 +1,38 @@
+{
+    "name": "s_m_CLM_FEED_Arch_Reinsurance_Negate_SourceData",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_FEED_Arch_Reinsurance_Negate_SourceData",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SapiensReinsuranceClaimNegate AS (\n\tSELECT\n\t\tSapiensReinsuranceClaimRestateId,\n\t\tAuditId,\n\t\tCreatedDate,\n\t\tModifiedDate,\n\t\tClaimNumber,\n\t\tPreviousLossDate,\n\t\tCurrentLossDate,\n\t\tPreviousCatastropheCode,\n\t\tCurrentCatastropheCode,\n\t\tNegateDate,\n\t\tSourceSequenceNumber,\n\t\tTransactionNumber,\n\t\tPreviousClaimRelationshipId,\n\t\tCurrentClaimRelationshipId,\n\t\tPreviousPolicyKey,\n\t\tCurrentPolicyKey,\n\t\tNegateFlag\n\tFROM SapiensReinsuranceClaimRestate\n),\nEXP_Collect AS (\n\tSELECT\n\tSapiensReinsuranceClaimRestateId,\n\tAuditId,\n\tCreatedDate,\n\tModifiedDate,\n\tClaimNumber,\n\tPreviousLossDate,\n\tCurrentLossDate,\n\tPreviousCatastropheCode,\n\tCurrentCatastropheCode,\n\tNegateDate,\n\tSourceSequenceNumber,\n\tTransactionNumber,\n\tPreviousClaimRelationshipId,\n\tCurrentClaimRelationshipId,\n\tPreviousPolicyKey,\n\tCurrentPolicyKey,\n\tNegateFlag\n\tFROM SQ_SapiensReinsuranceClaimNegate\n),\nArchSapiensReinsuranceClaimRestate AS (\n\tINSERT INTO ArchSapiensReinsuranceClaimRestate\n\t(AuditId, CreatedDate, ModifiedDate, SapiensReinsuranceClaimRestateId, ClaimNumber, PreviousLossDate, CurrentLossDate, PreviousCatastropheCode, CurrentCatastropheCode, NegateDate, SourceSequenceNumber, TransactionNumber, PreviousClaimRelationshipId, CurrentClaimRelationshipId, PreviousPolicyKey, CurrentPolicyKey, NegateFlag)\n\tSELECT \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tSAPIENSREINSURANCECLAIMRESTATEID, \n\tCLAIMNUMBER, \n\tPREVIOUSLOSSDATE, \n\tCURRENTLOSSDATE, \n\tPREVIOUSCATASTROPHECODE, \n\tCURRENTCATASTROPHECODE, \n\tNEGATEDATE, \n\tSOURCESEQUENCENUMBER, \n\tTRANSACTIONNUMBER, \n\tPREVIOUSCLAIMRELATIONSHIPID, \n\tCURRENTCLAIMRELATIONSHIPID, \n\tPREVIOUSPOLICYKEY, \n\tCURRENTPOLICYKEY, \n\tNEGATEFLAG\n\tFROM EXP_Collect\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_Task",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_Task",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_TaskStage AS (\n\tselect TaskStageId, ExtractDate, SourceSystemId, TaskId, CreatedDate, CreatedUserId, CreatedUserName, ModifiedDate, ModifiedUserId, ModifiedUserName, AssignedUserId, DueDate, Title, SupTaskTypeId, SupTaskStatusId, SupTaskStatusReasonId, PercentageComplete, Description, ExtendedData, AssignedUserName, Rush, QueueId, ArrivalDate, Viewed, ClaimantName, ClaimLossDate, ClaimRepName, DocumentScanDate, DocumentBatchName, DocumentScanUser, ClaimId, MultipleWorkItems \r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.TaskStage with (nolock) \r\n\twhere CreatedDate >= '@{pipeline().parameters.SELECTION_START_TS}' \r\n\tor ModifiedDate >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXPTRANS AS (\n\tSELECT\n\tExtractDate,\n\tSourceSystemId,\n\tTaskStageId,\n\tTaskId,\n\tCreatedDate,\n\tCreatedUserId,\n\tCreatedUserName,\n\tModifiedDate,\n\tModifiedUserId,\n\tModifiedUserName,\n\tAssignedUserId,\n\tDueDate,\n\tTitle,\n\tSupTaskTypeId,\n\tSupTaskStatusId,\n\tSupTaskStatusReasonId,\n\tPercentageComplete,\n\tDescription,\n\tExtendedData,\n\tAssignedUserName,\n\tRush,\n\tQueueId,\n\tArrivalDate,\n\tViewed,\n\tClaimantName,\n\tClaimLossDate,\n\tClaimRepName,\n\tDocumentScanDate,\n\tDocumentBatchName,\n\tDocumentScanUser,\n\tClaimId,\n\tMultipleWorkItems,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_TaskStage\n),\nArchTaskStage AS (\n\tINSERT INTO ArchTaskStage\n\t(ExtractDate, SourceSystemId, AuditId, TaskStageId, TaskId, CreatedDate, CreatedUserId, CreatedUserName, ModifiedDate, ModifiedUserId, ModifiedUserName, AssignedUserId, DueDate, Title, SupTaskTypeId, SupTaskStatusId, SupTaskStatusReasonId, PercentageComplete, Description, ExtendedData, AssignedUserName, Rush, QueueId, ArrivalDate, Viewed, ClaimantName, ClaimLossDate, ClaimRepName, DocumentScanDate, DocumentBatchName, DocumentScanUser, ClaimId, MultipleWorkItems)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tTASKSTAGEID, \n\tTASKID, \n\tCREATEDDATE, \n\tCREATEDUSERID, \n\tCREATEDUSERNAME, \n\tMODIFIEDDATE, \n\tMODIFIEDUSERID, \n\tMODIFIEDUSERNAME, \n\tASSIGNEDUSERID, \n\tDUEDATE, \n\tTITLE, \n\tSUPTASKTYPEID, \n\tSUPTASKSTATUSID, \n\tSUPTASKSTATUSREASONID, \n\tPERCENTAGECOMPLETE, \n\tDESCRIPTION, \n\tEXTENDEDDATA, \n\tASSIGNEDUSERNAME, \n\tRUSH, \n\tQUEUEID, \n\tARRIVALDATE, \n\tVIEWED, \n\tCLAIMANTNAME, \n\tCLAIMLOSSDATE, \n\tCLAIMREPNAME, \n\tDOCUMENTSCANDATE, \n\tDOCUMENTBATCHNAME, \n\tDOCUMENTSCANUSER, \n\tCLAIMID, \n\tMULTIPLEWORKITEMS\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

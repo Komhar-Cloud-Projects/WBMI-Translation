@@ -1,0 +1,109 @@
+WITH
+SQ_WB_CU_UmbrellaBusinessOwners AS (
+	WITH cte_WBCUUmbrellaBusinessOwners(Sessionid) as
+	(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' 
+	AND Autoshred<> '1' 
+	 UNION 
+	 select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')
+	SELECT 
+	X.CU_UmbrellaBusinessOwnersId, 
+	X.WB_CU_UmbrellaBusinessOwnersId, 
+	X.SessionId, 
+	X.Deleted, 
+	X.OtherDescription, 
+	X.FirstMillionBasePremium, 
+	X.FirstMillionModifiedPremium, 
+	X.ScheduledModification, 
+	X.UmbrellaBusinessOwnersScheduledModificationLocationInComment, 
+	X.UmbrellaBusinessOwnersScheduledModificationLocationInModification, 
+	X.UmbrellaBusinessOwnersScheduledModificationLocationOutComment, 
+	X.UmbrellaBusinessOwnersScheduledModificationLocationOutModification, 
+	X.UmbrellaBusinessOwnersScheduledModificationPremisesComment, 
+	X.UmbrellaBusinessOwnersScheduledModificationPremisesModification, 
+	X.UmbrellaBusinessOwnersScheduledModificationEquipmentComment, 
+	X.UmbrellaBusinessOwnersScheduledModificationEquipmentModification, 
+	X.UmbrellaBusinessOwnersScheduledModificationManagementComment, 
+	X.UmbrellaBusinessOwnersScheduledModificationManagementModification, 
+	X.UmbrellaBusinessOwnersScheduledModificationEmployeesComment, 
+	X.UmbrellaBusinessOwnersScheduledModificationEmployeesModification, 
+	X.UmbrellaBusinessOwnersScheduledModificationCooperationMedicalComment, 
+	X.UmbrellaBusinessOwnersScheduledModificationCooperationMedicalModification, 
+	X.UmbrellaBusinessOwnersScheduledModificationCooperationSafetyComment, 
+	X.UmbrellaBusinessOwnersScheduledModificationCooperationSafetyModification, 
+	X.ModificationTotal, 
+	X.ModificationTotalForBusinessOwnersDetailPage, 
+	X.IDField 
+	FROM
+	WB_CU_UmbrellaBusinessOwners X
+	inner join
+	cte_WBCUUmbrellaBusinessOwners Y on X.Sessionid = Y.Sessionid
+	@{pipeline().parameters.WHERE_CLAUSE}
+),
+EXP_Metadata AS (
+	SELECT
+	sysdate AS o_ExtractDate,
+	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
+	CU_UmbrellaBusinessOwnersId,
+	WB_CU_UmbrellaBusinessOwnersId,
+	SessionId,
+	Deleted,
+	OtherDescription,
+	FirstMillionBasePremium,
+	FirstMillionModifiedPremium,
+	ScheduledModification,
+	UmbrellaBusinessOwnersScheduledModificationLocationInComment,
+	UmbrellaBusinessOwnersScheduledModificationLocationInModification,
+	UmbrellaBusinessOwnersScheduledModificationLocationOutComment,
+	UmbrellaBusinessOwnersScheduledModificationLocationOutModification,
+	UmbrellaBusinessOwnersScheduledModificationPremisesComment,
+	UmbrellaBusinessOwnersScheduledModificationPremisesModification,
+	UmbrellaBusinessOwnersScheduledModificationEquipmentComment,
+	UmbrellaBusinessOwnersScheduledModificationEquipmentModification,
+	UmbrellaBusinessOwnersScheduledModificationManagementComment,
+	UmbrellaBusinessOwnersScheduledModificationManagementModification,
+	UmbrellaBusinessOwnersScheduledModificationEmployeesComment,
+	UmbrellaBusinessOwnersScheduledModificationEmployeesModification,
+	UmbrellaBusinessOwnersScheduledModificationCooperationMedicalComment,
+	UmbrellaBusinessOwnersScheduledModificationCooperationMedicalModification,
+	UmbrellaBusinessOwnersScheduledModificationCooperationSafetyComment,
+	UmbrellaBusinessOwnersScheduledModificationCooperationSafetyModification,
+	ModificationTotal,
+	ModificationTotalForBusinessOwnersDetailPage,
+	IDField
+	FROM SQ_WB_CU_UmbrellaBusinessOwners
+),
+WBCUUmbrellaBusinessOwnersStaging AS (
+	TRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCUUmbrellaBusinessOwnersStaging;
+	INSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCUUmbrellaBusinessOwnersStaging
+	(ExtractDate, SourceSystemId, CU_UmbrellaBusinessOwnersId, WB_CU_UmbrellaBusinessOwnersId, SessionId, OtherDescription, FirstMillionBasePremium, FirstMillionModifiedPremium, ScheduledModification, UmbrellaBusinessOwnersScheduledModificationLocationInComment, UmbrellaBusinessOwnersScheduledModificationLocationInModification, UmbrellaBusinessOwnersScheduledModificationLocationOutComment, UmbrellaBusinessOwnersScheduledModificationLocationOutModification, UmbrellaBusinessOwnersScheduledModificationPremisesComment, UmbrellaBusinessOwnersScheduledModificationPremisesModification, UmbrellaBusinessOwnersScheduledModificationEquipmentComment, UmbrellaBusinessOwnersScheduledModificationEquipmentModification, UmbrellaBusinessOwnersScheduledModificationManagementComment, UmbrellaBusinessOwnersScheduledModificationManagementModification, UmbrellaBusinessOwnersScheduledModificationEmployeesComment, UmbrellaBusinessOwnersScheduledModificationEmployeesModification, UmbrellaBusinessOwnersScheduledModificationCooperationMedicalComment, UmbrellaBusinessOwnersScheduledModificationCooperationMedicalModification, UmbrellaBusinessOwnersScheduledModificationCooperationSafetyComment, UmbrellaBusinessOwnersScheduledModificationCooperationSafetyModification, ModificationTotal, ModificationTotalForBusinessOwnersDetailPage, IDField)
+	SELECT 
+	o_ExtractDate AS EXTRACTDATE, 
+	o_SourceSystemId AS SOURCESYSTEMID, 
+	CU_UMBRELLABUSINESSOWNERSID, 
+	WB_CU_UMBRELLABUSINESSOWNERSID, 
+	SESSIONID, 
+	OTHERDESCRIPTION, 
+	FIRSTMILLIONBASEPREMIUM, 
+	FIRSTMILLIONMODIFIEDPREMIUM, 
+	SCHEDULEDMODIFICATION, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONLOCATIONINCOMMENT, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONLOCATIONINMODIFICATION, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONLOCATIONOUTCOMMENT, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONLOCATIONOUTMODIFICATION, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONPREMISESCOMMENT, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONPREMISESMODIFICATION, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONEQUIPMENTCOMMENT, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONEQUIPMENTMODIFICATION, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONMANAGEMENTCOMMENT, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONMANAGEMENTMODIFICATION, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONEMPLOYEESCOMMENT, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONEMPLOYEESMODIFICATION, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONCOOPERATIONMEDICALCOMMENT, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONCOOPERATIONMEDICALMODIFICATION, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONCOOPERATIONSAFETYCOMMENT, 
+	UMBRELLABUSINESSOWNERSSCHEDULEDMODIFICATIONCOOPERATIONSAFETYMODIFICATION, 
+	MODIFICATIONTOTAL, 
+	MODIFICATIONTOTALFORBUSINESSOWNERSDETAILPAGE, 
+	IDFIELD
+	FROM EXP_Metadata
+),

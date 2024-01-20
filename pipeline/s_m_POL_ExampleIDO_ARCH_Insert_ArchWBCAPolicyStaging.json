@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCAPolicyStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCAPolicyStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCAPolicyStaging AS (\n\tSELECT\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tWB_CL_PolicyId,\n\t\tWB_CA_PolicyId,\n\t\tSessionId,\n\t\tPlusPakAuto,\n\t\tPlusPakGarage,\n\t\tReinsuranceLiabilityLimit,\n\t\tReinsuranceLiabilityPremium,\n\t\tReinsurancePremiumMessage,\n\t\tReinsuranceIndicatorMessage,\n\t\tTaskFlagCAFormSelectedWB1409,\n\t\tTaskFlagHistoricVehicleRegistration,\n\t\tTaskFlagCAFormSelectedWB1525,\n\t\tTaskFlagCAFormSelectedWB1396,\n\t\tTaskFlagCAOTCCoverageOnAntiqueAuto,\n\t\tTaskFlagCADriverFinancialResponsibility,\n\t\tTaskFlagCADriverLicenseNumber\n\tFROM WBCAPolicyStaging3\n),\nEXP_Metadata AS (\n\tSELECT\n\tExtractDate AS i_ExtractDate,\n\tSourceSystemId AS i_SourceSystemId,\n\tWB_CL_PolicyId AS i_WB_CL_PolicyId,\n\tWB_CA_PolicyId AS i_WB_CA_PolicyId,\n\tSessionId AS i_SessionId,\n\tPlusPakAuto AS i_PlusPakAuto,\n\tPlusPakGarage AS i_PlusPakGarage,\n\tReinsuranceLiabilityLimit AS i_ReinsuranceLiabilityLimit,\n\tReinsuranceLiabilityPremium AS i_ReinsuranceLiabilityPremium,\n\tReinsurancePremiumMessage AS i_ReinsurancePremiumMessage,\n\tReinsuranceIndicatorMessage AS i_ReinsuranceIndicatorMessage,\n\tTaskFlagCAFormSelectedWB1409 AS i_TaskFlagCAFormSelectedWB1409,\n\tTaskFlagHistoricVehicleRegistration AS i_TaskFlagHistoricVehicleRegistration,\n\tTaskFlagCAFormSelectedWB1525 AS i_TaskFlagCAFormSelectedWB1525,\n\tTaskFlagCAFormSelectedWB1396 AS i_TaskFlagCAFormSelectedWB1396,\n\tTaskFlagCAOTCCoverageOnAntiqueAuto AS i_TaskFlagCAOTCCoverageOnAntiqueAuto,\n\tTaskFlagCADriverFinancialResponsibility AS i_TaskFlagCADriverFinancialResponsibility,\n\tTaskFlagCADriverLicenseNumber AS i_TaskFlagCADriverLicenseNumber,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\ti_ExtractDate AS o_ExtractDate,\n\ti_SourceSystemId AS o_SourceSystemId,\n\ti_WB_CL_PolicyId AS o_WB_CL_PolicyId,\n\ti_WB_CA_PolicyId AS o_WB_CA_PolicyId,\n\ti_SessionId AS o_SessionId,\n\t-- *INF*: decode(i_PlusPakAuto,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_PlusPakAuto,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PlusPakAuto,\n\t-- *INF*: decode(i_PlusPakGarage,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_PlusPakGarage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PlusPakGarage,\n\ti_ReinsuranceLiabilityLimit AS o_ReinsuranceLiabilityLimit,\n\ti_ReinsuranceLiabilityPremium AS o_ReinsuranceLiabilityPremium,\n\ti_ReinsurancePremiumMessage AS o_ReinsurancePremiumMessage,\n\ti_ReinsuranceIndicatorMessage AS o_ReinsuranceIndicatorMessage,\n\ti_PolicyId AS o_PolicyId,\n\t-- *INF*: decode(i_TaskFlagCAFormSelectedWB1409,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_TaskFlagCAFormSelectedWB1409,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaskFlagCAFormSelectedWB1409,\n\t-- *INF*: decode(i_IsSymbol10Selected,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_IsSymbol10Selected,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IsSymbol10Selected,\n\t-- *INF*: decode(i_TaskFlagHistoricVehicleRegistration,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_TaskFlagHistoricVehicleRegistration,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaskFlagHistoricVehicleRegistration,\n\t-- *INF*: DECODE(i_TaskFlagCAFormSelectedWB1525,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_TaskFlagCAFormSelectedWB1525,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaskFlagCAFormSelectedWB1525,\n\t-- *INF*: decode(i_TaskFlagCAFormSelectedWB1396,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_TaskFlagCAFormSelectedWB1396,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaskFlagCAFormSelectedWB1396,\n\t-- *INF*: decode(i_TaskFlagCAOTCCoverageOnAntiqueAuto,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_TaskFlagCAOTCCoverageOnAntiqueAuto,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaskFlagCAOTCCoverageOnAntiqueAuto,\n\t-- *INF*: decode(i_TaskFlagCADriverFinancialResponsibility,'T',1,'F',0,NULL)\n\tdecode(\n\t    i_TaskFlagCADriverFinancialResponsibility,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaskFlagCADriverFinancialResponsibility,\n\t-- *INF*: decode(i_TaskFlagCADriverLicenseNumber,'T',1,'F',0,null)\n\tdecode(\n\t    i_TaskFlagCADriverLicenseNumber,\n\t    'T', 1,\n\t    'F', 0,\n\t    null\n\t) AS o_TaskFlagCADriverLicenseNumber\n\tFROM SQ_WBCAPolicyStaging\n),\nSEQTRANS AS (\n\tCREATE SEQUENCE SEQTRANS\n\tSTART = 0\n\tINCREMENT = 1;\n),\nArchWBCAPolicyStaging3 AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCAPolicyStaging\n\t(ArchWBCAPolicyStagingId, ExtractDate, SourceSystemId, AuditId, WB_CL_PolicyId, WB_CA_PolicyId, SessionId, TaskFlagCAFormSelectedWB1409, TaskFlagHistoricVehicleRegistration, TaskFlagCAFormSelectedWB1525, TaskFlagCAFormSelectedWB1396, TaskFlagCAOTCCoverageOnAntiqueAuto, TaskFlagCADriverFinancialResponsibility, TaskFlagCADriverLicenseNumber, PlusPakAuto, PlusPakGarage, ReinsuranceLiabilityLimit, ReinsuranceLiabilityPremium, ReinsurancePremiumMessage, ReinsuranceIndicatorMessage)\n\tSELECT \n\tSEQTRANS.NEXTVAL AS ARCHWBCAPOLICYSTAGINGID, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\to_WB_CL_PolicyId AS WB_CL_POLICYID, \n\to_WB_CA_PolicyId AS WB_CA_POLICYID, \n\to_SessionId AS SESSIONID, \n\to_TaskFlagCAFormSelectedWB1409 AS TASKFLAGCAFORMSELECTEDWB1409, \n\to_TaskFlagHistoricVehicleRegistration AS TASKFLAGHISTORICVEHICLEREGISTRATION, \n\to_TaskFlagCAFormSelectedWB1525 AS TASKFLAGCAFORMSELECTEDWB1525, \n\to_TaskFlagCAFormSelectedWB1396 AS TASKFLAGCAFORMSELECTEDWB1396, \n\to_TaskFlagCAOTCCoverageOnAntiqueAuto AS TASKFLAGCAOTCCOVERAGEONANTIQUEAUTO, \n\to_TaskFlagCADriverFinancialResponsibility AS TASKFLAGCADRIVERFINANCIALRESPONSIBILITY, \n\to_TaskFlagCADriverLicenseNumber AS TASKFLAGCADRIVERLICENSENUMBER, \n\to_PlusPakAuto AS PLUSPAKAUTO, \n\to_PlusPakGarage AS PLUSPAKGARAGE, \n\to_ReinsuranceLiabilityLimit AS REINSURANCELIABILITYLIMIT, \n\to_ReinsuranceLiabilityPremium AS REINSURANCELIABILITYPREMIUM, \n\to_ReinsurancePremiumMessage AS REINSURANCEPREMIUMMESSAGE, \n\to_ReinsuranceIndicatorMessage AS REINSURANCEINDICATORMESSAGE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

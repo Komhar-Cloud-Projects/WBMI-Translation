@@ -117,42 +117,28 @@ EXP_GetMetaData AS (
 	SpecialClassGroupCode AS i_SpecialClassGroupCode,
 	SpecialClassGroupDescription AS i_SpecialClassGroupDescription,
 	-- *INF*: IIF(ISNULL(i_SpecialClassGroupCode), 'N/A', i_SpecialClassGroupCode)
-	IFF(i_SpecialClassGroupCode IS NULL,
-		'N/A',
-		i_SpecialClassGroupCode
-	) AS o_SpecialClassGroupCode,
+	IFF(i_SpecialClassGroupCode IS NULL, 'N/A', i_SpecialClassGroupCode) AS o_SpecialClassGroupCode,
 	-- *INF*: IIF(ISNULL(i_SpecialClassGroupDescription), 'N/A', i_SpecialClassGroupDescription)
-	IFF(i_SpecialClassGroupDescription IS NULL,
-		'N/A',
-		i_SpecialClassGroupDescription
-	) AS o_SpecialClassGroupDescription,
+	IFF(i_SpecialClassGroupDescription IS NULL, 'N/A', i_SpecialClassGroupDescription) AS o_SpecialClassGroupDescription,
 	i_IsoFireProtectionCode AS o_IsoFireProtectionCode,
 	PremiumTransactionID AS i_PremiumTransactionID,
 	CoverageType AS i_CoverageType,
 	-- *INF*: IIF(LTRIM(RTRIM(i_CoverageType)) = 'DataCompromise',:LKP.LKP_COVERAGELIMIT(i_PremiumTransactionID,'ResponseExpense'),'N/A')
-	IFF(LTRIM(RTRIM(i_CoverageType
-			)
-		) = 'DataCompromise',
-		LKP_COVERAGELIMIT_i_PremiumTransactionID_ResponseExpense.CoverageLimitValue,
-		'N/A'
+	IFF(
+	    LTRIM(RTRIM(i_CoverageType)) = 'DataCompromise',
+	    LKP_COVERAGELIMIT_i_PremiumTransactionID_ResponseExpense.CoverageLimitValue,
+	    'N/A'
 	) AS v_ResponseExpenseLimit,
 	-- *INF*: IIF(ISNULL(v_ResponseExpenseLimit),'N/A',v_ResponseExpenseLimit)
-	IFF(v_ResponseExpenseLimit IS NULL,
-		'N/A',
-		v_ResponseExpenseLimit
-	) AS o_ResponseExpenseLimit,
+	IFF(v_ResponseExpenseLimit IS NULL, 'N/A', v_ResponseExpenseLimit) AS o_ResponseExpenseLimit,
 	-- *INF*: IIF(LTRIM(RTRIM(i_CoverageType)) = 'DataCompromise',:LKP.LKP_COVERAGELIMIT(i_PremiumTransactionID,'DefenseAndLiability'),'N/A')
-	IFF(LTRIM(RTRIM(i_CoverageType
-			)
-		) = 'DataCompromise',
-		LKP_COVERAGELIMIT_i_PremiumTransactionID_DefenseAndLiability.CoverageLimitValue,
-		'N/A'
+	IFF(
+	    LTRIM(RTRIM(i_CoverageType)) = 'DataCompromise',
+	    LKP_COVERAGELIMIT_i_PremiumTransactionID_DefenseAndLiability.CoverageLimitValue,
+	    'N/A'
 	) AS v_DefenseAndLiabilityLimit,
 	-- *INF*: IIF(ISNULL(v_DefenseAndLiabilityLimit),'N/A',v_DefenseAndLiabilityLimit)
-	IFF(v_DefenseAndLiabilityLimit IS NULL,
-		'N/A',
-		v_DefenseAndLiabilityLimit
-	) AS o_DefenseAndLiabilityLimit,
+	IFF(v_DefenseAndLiabilityLimit IS NULL, 'N/A', v_DefenseAndLiabilityLimit) AS o_DefenseAndLiabilityLimit,
 	SprinklerFlag,
 	ISOCommercialPropertyCauseofLossGroup,
 	ISOCommercialPropertyRatingGroupCode,
@@ -258,42 +244,30 @@ EXP_DetectChanges AS (
 	EXP_GetMetaData.CommercialPropertySpecialClass AS i_CommercialPropertySpecialClass,
 	EXP_GetMetaData.SourceSystemID AS i_SourceSystemID,
 	-- *INF*: IIF(isnull(i_ISOCommercialPropertyCauseofLossGroup),'N/A',i_ISOCommercialPropertyCauseofLossGroup)
-	IFF(i_ISOCommercialPropertyCauseofLossGroup IS NULL,
-		'N/A',
-		i_ISOCommercialPropertyCauseofLossGroup
+	IFF(
+	    i_ISOCommercialPropertyCauseofLossGroup IS NULL, 'N/A',
+	    i_ISOCommercialPropertyCauseofLossGroup
 	) AS v_ISOCommercialPropertyCauseofLossGroup,
 	-- *INF*: IIF(isnull(i_ISOCommercialPropertyRatingGroupCode),'N/A',i_ISOCommercialPropertyRatingGroupCode)
-	IFF(i_ISOCommercialPropertyRatingGroupCode IS NULL,
-		'N/A',
-		i_ISOCommercialPropertyRatingGroupCode
+	IFF(
+	    i_ISOCommercialPropertyRatingGroupCode IS NULL, 'N/A',
+	    i_ISOCommercialPropertyRatingGroupCode
 	) AS v_ISOCommercialPropertyRatingGroupCode,
 	-- *INF*: IIF(isnull(i_ISOCPRatingGroupDescription),'N/A',i_ISOCPRatingGroupDescription)
-	IFF(i_ISOCPRatingGroupDescription IS NULL,
-		'N/A',
-		i_ISOCPRatingGroupDescription
-	) AS v_ISOGeneralLiabilityClassGroupDescription,
+	IFF(i_ISOCPRatingGroupDescription IS NULL, 'N/A', i_ISOCPRatingGroupDescription) AS v_ISOGeneralLiabilityClassGroupDescription,
 	-- *INF*: IIF(isnull(i_ISOSpecialCauseOfLossCategoryCode),'N/A',i_ISOSpecialCauseOfLossCategoryCode)
-	IFF(i_ISOSpecialCauseOfLossCategoryCode IS NULL,
-		'N/A',
-		i_ISOSpecialCauseOfLossCategoryCode
-	) AS v_ISOSpecialCauseOfLossCategoryCode,
+	IFF(i_ISOSpecialCauseOfLossCategoryCode IS NULL, 'N/A', i_ISOSpecialCauseOfLossCategoryCode) AS v_ISOSpecialCauseOfLossCategoryCode,
 	-- *INF*: DECODE(TRUE,
 	-- i_ISOCommercialPropertyCauseofLossGroup='SCL' and not isnull(:LKP.LKP_SupISOSpecialCauseOfLossCategory(i_ISOSpecialCauseOfLossCategoryCode)),:LKP.LKP_SupISOSpecialCauseOfLossCategory(i_ISOSpecialCauseOfLossCategoryCode),'N/A')
-	DECODE(TRUE,
-		i_ISOCommercialPropertyCauseofLossGroup = 'SCL' 
-		AND LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORY_i_ISOSpecialCauseOfLossCategoryCode.ISOSpecialCauseOfLossCategoryDescription IS NOT NULL, LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORY_i_ISOSpecialCauseOfLossCategoryCode.ISOSpecialCauseOfLossCategoryDescription,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_ISOCommercialPropertyCauseofLossGroup = 'SCL' and LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORY_i_ISOSpecialCauseOfLossCategoryCode.ISOSpecialCauseOfLossCategoryDescription IS NOT NULL, LKP_SUPISOSPECIALCAUSEOFLOSSCATEGORY_i_ISOSpecialCauseOfLossCategoryCode.ISOSpecialCauseOfLossCategoryDescription,
+	    'N/A'
 	) AS v_ISOSpecialCauseOfLossCategoryDescription,
 	-- *INF*: IIF(isnull(i_RateType),'N/A',i_RateType)
-	IFF(i_RateType IS NULL,
-		'N/A',
-		i_RateType
-	) AS v_RateType,
+	IFF(i_RateType IS NULL, 'N/A', i_RateType) AS v_RateType,
 	-- *INF*: IIF(isnull(i_CommercialPropertySpecialClass),'N/A',i_CommercialPropertySpecialClass)
-	IFF(i_CommercialPropertySpecialClass IS NULL,
-		'N/A',
-		i_CommercialPropertySpecialClass
-	) AS v_CommercialPropertySpecialClass,
+	IFF(i_CommercialPropertySpecialClass IS NULL, 'N/A', i_CommercialPropertySpecialClass) AS v_CommercialPropertySpecialClass,
 	v_ISOCommercialPropertyCauseofLossGroup AS o_ISOCommercialPropertyCauseofLossGroup,
 	v_ISOCommercialPropertyRatingGroupCode AS o_ISOCommercialPropertyRatingGroupCode,
 	v_ISOGeneralLiabilityClassGroupDescription AS o_ISOGeneralLiabilityClassGroupDescription,
@@ -315,26 +289,11 @@ EXP_DetectChanges AS (
 	-- , 'UPDATE',
 	-- 'NOCHANGE'
 	-- )
-	DECODE(TRUE,
-		lkp_CoverageDetailDimId IS NULL, 'INSERT',
-		lkp_CoverageGuid <> CoverageGuid 
-		OR lkp_MultiLocationCreditFactor <> MultiLocationCreditFactor 
-		OR lkp_PreferredPropertyCreditFactor <> PreferredPropertyFactor 
-		OR lkp_SpecialClassGroupCode <> SpecialClassGroupCode 
-		OR lkp_SpecialClassGroupDescription <> SpecialClassGroupDescription 
-		OR lkp_IsoFireProtectionCode <> IsoFireProtectionCode 
-		OR lkp_EffectiveDate <> EffectiveDate 
-		OR lkp_ExpirationDate <> ExpirationDate 
-		OR lkp_ResponseExpenseLimit <> ResponseExpenseLimit 
-		OR lkp_DefenseAndLiabilityLimit <> DefenseAndLiabilityLimit 
-		OR lkp_ISOCommercialPropertyCauseofLossGroup <> v_ISOCommercialPropertyCauseofLossGroup 
-		OR lkp_ISOCommercialPropertyRatingGroupCode <> v_ISOCommercialPropertyRatingGroupCode 
-		OR lkp_ISOCommercialPropertyRatingGroupDescription <> lkp_ISOCommercialPropertyRatingGroupDescription 
-		OR lkp_ISOSpecialCauseOfLossCategoryCode <> v_ISOSpecialCauseOfLossCategoryCode 
-		OR lkp_ISOSpecialCauseOfLossCategoryDescription <> v_ISOSpecialCauseOfLossCategoryDescription 
-		OR lkp_RateType <> v_RateType 
-		OR lkp_CommercialPropertySpecialClass <> v_CommercialPropertySpecialClass, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    lkp_CoverageDetailDimId IS NULL, 'INSERT',
+	    lkp_CoverageGuid <> CoverageGuid or lkp_MultiLocationCreditFactor <> MultiLocationCreditFactor or lkp_PreferredPropertyCreditFactor <> PreferredPropertyFactor or lkp_SpecialClassGroupCode <> SpecialClassGroupCode or lkp_SpecialClassGroupDescription <> SpecialClassGroupDescription or lkp_IsoFireProtectionCode <> IsoFireProtectionCode OR lkp_EffectiveDate <> EffectiveDate OR lkp_ExpirationDate <> ExpirationDate OR lkp_ResponseExpenseLimit <> ResponseExpenseLimit OR lkp_DefenseAndLiabilityLimit <> DefenseAndLiabilityLimit OR lkp_ISOCommercialPropertyCauseofLossGroup <> v_ISOCommercialPropertyCauseofLossGroup OR lkp_ISOCommercialPropertyRatingGroupCode <> v_ISOCommercialPropertyRatingGroupCode OR lkp_ISOCommercialPropertyRatingGroupDescription <> lkp_ISOCommercialPropertyRatingGroupDescription OR lkp_ISOSpecialCauseOfLossCategoryCode <> v_ISOSpecialCauseOfLossCategoryCode OR lkp_ISOSpecialCauseOfLossCategoryDescription <> v_ISOSpecialCauseOfLossCategoryDescription OR lkp_RateType <> v_RateType OR lkp_CommercialPropertySpecialClass <> v_CommercialPropertySpecialClass, 'UPDATE',
+	    'NOCHANGE'
 	) AS o_ChangeFlag
 	FROM EXP_GetMetaData
 	LEFT JOIN LKP_CoverageDetailCommercialPropertyDim

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchAgencySilverCircleTierStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchAgencySilverCircleTierStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AgencySilverCircleTierStaging AS (\n\tSELECT\n\t\tAgencySilverCircleTierStageId,\n\t\tAgencyCode,\n\t\tSilverCircleYear,\n\t\tSilverCircleLevelDescription,\n\t\tHashKey,\n\t\tModifiedUserId,\n\t\tModifiedDate,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM AgencySilverCircleTierStaging\n),\nEXP_Input_Output AS (\n\tSELECT\n\tAgencySilverCircleTierStageId AS SilverCircleAgencyStageId,\n\tAgencyCode,\n\tSilverCircleYear,\n\tSilverCircleLevelDescription,\n\tHashKey,\n\tModifiedUserId,\n\tModifiedDate,\n\tExtractDate,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS SourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_AgencySilverCircleTierStaging\n),\narchAgencySilverCircleTierStaging AS (\n\tINSERT INTO archAgencySilverCircleTierStaging\n\t(AgencySilverCircleTierStageId, AgencyCode, SilverCircleYear, SilverCircleLevelDescription, HashKey, ModifiedUserId, ModifiedDate, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tSilverCircleAgencyStageId AS AGENCYSILVERCIRCLETIERSTAGEID, \n\tAGENCYCODE, \n\tSILVERCIRCLEYEAR, \n\tSILVERCIRCLELEVELDESCRIPTION, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID\n\tFROM EXP_Input_Output\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

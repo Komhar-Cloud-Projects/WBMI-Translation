@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_SUP_REPORT_OFFICE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_SUP_REPORT_OFFICE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SUP_REPORT_OFFICE_STAGE AS (\n\tSELECT\n\t\tSUP_REPORT_OFFICE_ID,\n\t\tREPORT_OFFICE_CODE,\n\t\tEFF_DATE,\n\t\tCLAIM_MANAGER_CODE,\n\t\tREPORT_OFFICE_NAME,\n\t\tEXP_DATE,\n\t\tSTAFWARE_TEAM_CODE,\n\t\tMODIFIED_DATE,\n\t\tMODIFIED_USER_ID,\n\t\tINSIDE_FIELD_IND,\n\t\tDIRECTOR_CODE,\n\t\tREPORT_OFFICE_NBR,\n\t\tDEPT_CODE,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM SUP_REPORT_OFFICE_STAGE\n),\nEXP_SUP_REPORT_OFFICE_STAGE AS (\n\tSELECT\n\tSUP_REPORT_OFFICE_ID,\n\tREPORT_OFFICE_CODE,\n\tEFF_DATE,\n\tCLAIM_MANAGER_CODE,\n\tREPORT_OFFICE_NAME,\n\tEXP_DATE,\n\tSTAFWARE_TEAM_CODE,\n\tMODIFIED_DATE,\n\tMODIFIED_USER_ID,\n\tINSIDE_FIELD_IND,\n\tDIRECTOR_CODE,\n\tREPORT_OFFICE_NBR,\n\tDEPT_CODE,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_SUP_REPORT_OFFICE_STAGE\n),\nARCH_SUP_REPORT_OFFICE_STAGE AS (\n\tINSERT INTO ARCH_SUP_REPORT_OFFICE_STAGE\n\t(SUP_REPORT_OFFICE_ID, REPORT_OFFICE_CODE, EFF_DATE, CLAIM_MANAGER_CODE, REPORT_OFFICE_NAME, EXP_DATE, STAFWARE_TEAM_CODE, MODIFIED_DATE, MODIFIED_USER_ID, INSIDE_FIELD_IND, DIRECTOR_CODE, REPORT_OFFICE_NBR, DEPT_CODE, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, AUDIT_ID)\n\tSELECT \n\tSUP_REPORT_OFFICE_ID, \n\tREPORT_OFFICE_CODE, \n\tEFF_DATE, \n\tCLAIM_MANAGER_CODE, \n\tREPORT_OFFICE_NAME, \n\tEXP_DATE, \n\tSTAFWARE_TEAM_CODE, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tINSIDE_FIELD_IND, \n\tDIRECTOR_CODE, \n\tREPORT_OFFICE_NBR, \n\tDEPT_CODE, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_SUP_REPORT_OFFICE_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

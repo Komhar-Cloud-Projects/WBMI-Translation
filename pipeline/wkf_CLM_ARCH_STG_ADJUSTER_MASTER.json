@@ -1,0 +1,67 @@
+{
+    "name": "wkf_CLM_ARCH_STG_ADJUSTER_MASTER",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_PMS_ADJUSTER_MASTER_STAGE",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_PMS_ADJUSTER_MASTER_STAGE"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_PMS_REINSURANCE_MASTER_STAGE",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_PMS_ADJUSTER_MASTER_STAGE",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_PMS_REINSURANCE_MASTER_STAGE"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "variables": {}
+    }
+}

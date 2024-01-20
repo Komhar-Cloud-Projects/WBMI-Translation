@@ -1,0 +1,151 @@
+{
+    "name": "wkf_BILL_DCT_Process_Conv_Sweep_PL_Remittance",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "cmd_CreatNull_PLSweep",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "cmd_CreateRemittanceList",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "cmd_CreatNull_PLSweep",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "cmd_MovePLSweepRemittanceFiles",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "cmd_CreateRemittanceList",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "cmd_DeletePLSWeepRemittanceListFiles",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_BILL_DCT_Load_Conv_Sweep_FIS_Remittance_Stage",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "cmd_DeletePLSweepRemittanceFiles",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "cmd_DeletePLSWeepRemittanceListFiles",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_BILL_DCT_Load_Conv_Sweep_FIS_Remittance_Stage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "cmd_MovePLSweepRemittanceFiles",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_BILL_DCT_Load_Conv_Sweep_FIS Remittance_Stage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "BillingDataServices/"
+        },
+        "variables": {}
+    }
+}

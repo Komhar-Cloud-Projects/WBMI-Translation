@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCWCStateStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCWCStateStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCWCStateStaging AS (\n\tSELECT\n\t\tLineId,\n\t\tWC_StateId,\n\t\tSessionId,\n\t\tId,\n\t\tAnniversaryRating,\n\t\tCarrierType,\n\t\tEffectiveDate,\n\t\tNonRatableIncreasedLimits,\n\t\tNormalAnniversaryRatingDate,\n\t\tState,\n\t\tWorkplaceSafetyProgramNonEstablishedSurchargeIndicator,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tManualPremium,\n\t\tModifiedPremium,\n\t\tSubjectPremium,\n\t\tTotalEstimatedPremium,\n\t\tTotalStatePremium,\n\t\tUSLandHManualPremium\n\tFROM DCWCStateStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tLineId AS i_LineId,\n\tWC_StateId AS i_WC_StateId,\n\tSessionId AS i_SessionId,\n\tId AS i_Id,\n\tAnniversaryRating AS i_AnniversaryRating,\n\tCarrierType AS i_CarrierType,\n\tEffectiveDate AS i_EffectiveDate,\n\tNonRatableIncreasedLimits AS i_NonRatableIncreasedLimits,\n\tNormalAnniversaryRatingDate AS i_NormalAnniversaryRatingDate,\n\tState AS i_State,\n\tWorkplaceSafetyProgramNonEstablishedSurchargeIndicator AS i_WorkplaceSafetyProgramNonEstablishedSurchargeIndicator,\n\tExtractDate AS i_ExtractDate,\n\tSourceSystemId AS i_SourceSystemId,\n\ti_LineId AS o_LineId,\n\ti_WC_StateId AS o_WC_StateId,\n\ti_SessionId AS o_SessionId,\n\ti_Id AS o_Id,\n\t-- *INF*: DECODE(i_AnniversaryRating  ,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_AnniversaryRating,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AnniversaryRating,\n\ti_CarrierType AS o_CarrierType,\n\ti_EffectiveDate AS o_EffectiveDate,\n\ti_NonRatableIncreasedLimits AS o_NonRatableIncreasedLimits,\n\ti_NormalAnniversaryRatingDate AS o_NormalAnniversaryRatingDate,\n\ti_State AS o_State,\n\t-- *INF*: DECODE(i_WorkplaceSafetyProgramNonEstablishedSurchargeIndicator  ,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_WorkplaceSafetyProgramNonEstablishedSurchargeIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_WorkplaceSafetyProgramNonEstablishedSurchargeIndicator,\n\ti_ExtractDate AS o_ExtractDate,\n\ti_SourceSystemId AS o_SourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tManualPremium,\n\tModifiedPremium,\n\tSubjectPremium,\n\tTotalEstimatedPremium,\n\tTotalStatePremium,\n\tUSLandHManualPremium\n\tFROM SQ_DCWCStateStaging\n),\narchDCWCStateStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCWCStateStaging\n\t(LineId, WC_StateId, SessionId, Id, AnniversaryRating, CarrierType, EffectiveDate, NonRatableIncreasedLimits, NormalAnniversaryRatingDate, State, WorkplaceSafetyProgramNonEstablishedSurchargeIndicator, ExtractDate, SourceSystemId, AuditId, ManualPremium, ModifiedPremium, SubjectPremium, TotalEstimatedPremium, TotalStatePremium, USLandHManualPremium)\n\tSELECT \n\to_LineId AS LINEID, \n\to_WC_StateId AS WC_STATEID, \n\to_SessionId AS SESSIONID, \n\to_Id AS ID, \n\to_AnniversaryRating AS ANNIVERSARYRATING, \n\to_CarrierType AS CARRIERTYPE, \n\to_EffectiveDate AS EFFECTIVEDATE, \n\to_NonRatableIncreasedLimits AS NONRATABLEINCREASEDLIMITS, \n\to_NormalAnniversaryRatingDate AS NORMALANNIVERSARYRATINGDATE, \n\to_State AS STATE, \n\to_WorkplaceSafetyProgramNonEstablishedSurchargeIndicator AS WORKPLACESAFETYPROGRAMNONESTABLISHEDSURCHARGEINDICATOR, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tMANUALPREMIUM, \n\tMODIFIEDPREMIUM, \n\tSUBJECTPREMIUM, \n\tTOTALESTIMATEDPREMIUM, \n\tTOTALSTATEPREMIUM, \n\tUSLANDHMANUALPREMIUM\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

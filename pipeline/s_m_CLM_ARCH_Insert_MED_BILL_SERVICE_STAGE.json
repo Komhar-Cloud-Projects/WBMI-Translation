@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_MED_BILL_SERVICE_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_MED_BILL_SERVICE_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_med_bill_service_stage AS (\n\tSELECT\n\t\tmed_bill_service_stage_id,\n\t\tmed_bill_serv_id,\n\t\tmed_bill_id,\n\t\tserv_seq_num,\n\t\tserv_from_date,\n\t\tserv_to_date,\n\t\tserv_place_code,\n\t\tserv_type_code,\n\t\tadjusted_code1,\n\t\tadjusted_code2,\n\t\tmod_proc_code1,\n\t\tmod_proc_descript1,\n\t\tmod_proc_code2,\n\t\tmod_proc_descript2,\n\t\tserv_minutes,\n\t\tserv_units,\n\t\tdrug_qty_dispensed,\n\t\tdrug_qty_allowed,\n\t\tdrug_awp,\n\t\tproc_drug_rev_ind,\n\t\tproc_drug_rev_code,\n\t\tproc_drug_rev_des,\n\t\tserv_charge,\n\t\tserv_red,\n\t\tserv_network_red,\n\t\tserv_recom_pay,\n\t\tserv_review_cmnt,\n\t\tdiagnose_cross_ref,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM med_bill_service_stage\n),\nEXP_arch_med_bill_service_stage AS (\n\tSELECT\n\tmed_bill_service_stage_id,\n\tmed_bill_serv_id,\n\tmed_bill_id,\n\tserv_seq_num,\n\tserv_from_date,\n\tserv_to_date,\n\tserv_place_code,\n\tserv_type_code,\n\tadjusted_code1,\n\tadjusted_code2,\n\tmod_proc_code1,\n\tmod_proc_descript1,\n\tmod_proc_code2,\n\tmod_proc_descript2,\n\tserv_minutes,\n\tserv_units,\n\tdrug_qty_dispensed,\n\tdrug_qty_allowed,\n\tdrug_awp,\n\tproc_drug_rev_ind,\n\tproc_drug_rev_code,\n\tproc_drug_rev_des,\n\tserv_charge,\n\tserv_red,\n\tserv_network_red,\n\tserv_recom_pay,\n\tserv_review_cmnt,\n\tdiagnose_cross_ref,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_med_bill_service_stage\n),\narch_med_bill_service_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_med_bill_service_stage\n\t(med_bill_service_stage_id, med_bill_serv_id, med_bill_id, serv_seq_num, serv_from_date, serv_to_date, serv_place_code, serv_type_code, adjusted_code1, adjusted_code2, mod_proc_code1, mod_proc_descript1, mod_proc_code2, mod_proc_descript2, serv_minutes, serv_units, drug_qty_dispensed, drug_qty_allowed, drug_awp, proc_drug_rev_ind, proc_drug_rev_code, proc_drug_rev_des, serv_charge, serv_red, serv_network_red, serv_recom_pay, serv_review_cmnt, diagnose_cross_ref, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tMED_BILL_SERVICE_STAGE_ID, \n\tMED_BILL_SERV_ID, \n\tMED_BILL_ID, \n\tSERV_SEQ_NUM, \n\tSERV_FROM_DATE, \n\tSERV_TO_DATE, \n\tSERV_PLACE_CODE, \n\tSERV_TYPE_CODE, \n\tADJUSTED_CODE1, \n\tADJUSTED_CODE2, \n\tMOD_PROC_CODE1, \n\tMOD_PROC_DESCRIPT1, \n\tMOD_PROC_CODE2, \n\tMOD_PROC_DESCRIPT2, \n\tSERV_MINUTES, \n\tSERV_UNITS, \n\tDRUG_QTY_DISPENSED, \n\tDRUG_QTY_ALLOWED, \n\tDRUG_AWP, \n\tPROC_DRUG_REV_IND, \n\tPROC_DRUG_REV_CODE, \n\tPROC_DRUG_REV_DES, \n\tSERV_CHARGE, \n\tSERV_RED, \n\tSERV_NETWORK_RED, \n\tSERV_RECOM_PAY, \n\tSERV_REVIEW_CMNT, \n\tDIAGNOSE_CROSS_REF, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_arch_med_bill_service_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

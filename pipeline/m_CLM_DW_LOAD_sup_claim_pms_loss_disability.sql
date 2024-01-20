@@ -21,16 +21,10 @@ EXP_Default_Values AS (
 	SELECT
 	loss_disability_code,
 	-- *INF*: IIF(ISNULL(loss_disability_code), 'N/A', loss_disability_code)
-	IFF(loss_disability_code IS NULL,
-		'N/A',
-		loss_disability_code
-	) AS loss_disability_code_OUT,
+	IFF(loss_disability_code IS NULL, 'N/A', loss_disability_code) AS loss_disability_code_OUT,
 	loss_disability_literal,
 	-- *INF*: IIF(ISNULL(loss_disability_literal), 'N/A', loss_disability_literal)
-	IFF(loss_disability_literal IS NULL,
-		'N/A',
-		loss_disability_literal
-	) AS loss_disability_literal_OUT
+	IFF(loss_disability_literal IS NULL, 'N/A', loss_disability_literal) AS loss_disability_literal_OUT
 	FROM SQ_gtam_tc26_stage
 ),
 LKP_sup_claim_pms_loss_disability AS (
@@ -52,26 +46,23 @@ EXP_detect_changes AS (
 	EXP_Default_Values.loss_disability_literal_OUT,
 	-- *INF*: IIF(ISNULL(old_sup_claim_pms_loss_disability_id), 'NEW', IIF(old_loss_disability_descript!= loss_disability_literal_OUT, 'UPDATE', 'NOCHANGE'))
 	-- 
-	IFF(old_sup_claim_pms_loss_disability_id IS NULL,
-		'NEW',
-		IFF(old_loss_disability_descript != loss_disability_literal_OUT,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    old_sup_claim_pms_loss_disability_id IS NULL, 'NEW',
+	    IFF(
+	        old_loss_disability_descript != loss_disability_literal_OUT, 'UPDATE', 'NOCHANGE'
+	    )
 	) AS v_CHANGED_FLAG,
 	v_CHANGED_FLAG AS CHANGED_FLAG,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_CHANGED_FLAG='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_CHANGED_FLAG = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_CHANGED_FLAG = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id
@@ -141,9 +132,10 @@ EXP_lag_eff_from_date AS (
 	-- 	loss_disability_code = v_Prev_row_loss_disability_code, ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	-- 	
-	DECODE(TRUE,
-		loss_disability_code = v_Prev_row_loss_disability_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    loss_disability_code = v_Prev_row_loss_disability_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	loss_disability_code AS v_Prev_row_loss_disability_code,

@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_STG_Insert_AdmMbrSecurityStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Insert_AdmMbrSecurityStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_adm_mbr_security AS (\n\tSELECT\n\t\tmember_id,\n\t\tgroup_security_id,\n\t\tmodified_date,\n\t\tmodified_user_id\n\tFROM adm_mbr_security\n),\nEXPTRANS AS (\n\tSELECT\n\tmember_id,\n\tgroup_security_id,\n\tmodified_date,\n\tmodified_user_id,\n\tSYSDATE AS ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId\n\tFROM SQ_adm_mbr_security\n),\nAdmMbrSecurityStage AS (\n\tTRUNCATE TABLE AdmMbrSecurityStage;\n\tINSERT INTO AdmMbrSecurityStage\n\t(MemberId, GroupSecurityId, ModifiedDate, ModifiedUserId, ExtractDate, SourceSystemId)\n\tSELECT \n\tmember_id AS MEMBERID, \n\tgroup_security_id AS GROUPSECURITYID, \n\tmodified_date AS MODIFIEDDATE, \n\tmodified_user_id AS MODIFIEDUSERID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,38 @@
+{
+    "name": "s_m_CLM_FEED_Arch_Reinsurance_SourceData",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_FEED_Arch_Reinsurance_SourceData",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SapiensReinsuranceClaim AS (\n\tSELECT\n\t\tSapiensReinsuranceClaimId,\n\t\tAuditId,\n\t\tCreatedDate,\n\t\tModifiedDate,\n\t\tClaimNumber,\n\t\tPolicyKey,\n\t\tProductCode,\n\t\tAccountingProductCode,\n\t\tStrategicProfitCenterAbbreviation,\n\t\tASLCode,\n\t\tSubASLCode,\n\t\tInsuranceReferenceLineOfBusinessCode,\n\t\tRiskStateCode,\n\t\tSubClaim,\n\t\tFinancialTypeCode,\n\t\tFinancialTypeCodeDescription,\n\t\tCauseOfLoss,\n\t\tClaimantNumber,\n\t\tClaimantFullName,\n\t\tClaimLossDate,\n\t\tClaimReportedDate,\n\t\tClaimCatastropheCode,\n\t\tClaimCatastropheStartDate,\n\t\tClaimCatastropheEndDate,\n\t\tClaimTransactionDate,\n\t\tTransactionCode,\n\t\tTransactionCodeDescription,\n\t\tTransactionType,\n\t\tTransactionAmount,\n\t\tTransactionHistoryAmount,\n\t\tSourceSequenceNumber,\n\t\tTransactionNumber,\n\t\tWorkersCompensationMedicalLossPaid,\n\t\tWorkersCompensationMedicalExpensePaid,\n\t\tWorkersCompensationIndemnityExpensePaid,\n\t\tWorkersCompensationIndemnityLossPaid,\n\t\tPropertyCasualtyExpensePaid,\n\t\tPropertyCasualtyLossPaid,\n\t\tWorkersCompensationMedicalLossOutstanding,\n\t\tWorkersCompensationMedicalExpenseOutstanding,\n\t\tWorkersCompensationIndemnityExpenseOutstanding,\n\t\tWorkersCompensationIndemnityLossOutstanding,\n\t\tPropertyCasualtyExpenseOutstanding,\n\t\tPropertyCasualtyLossOutstanding,\n\t\tClaimTransactionPKId,\n\t\tContainsOutstandingReserveAmountFlag,\n\t\tReinsuranceUmbrellaLayer,\n\t\tClaimRelationshipId,\n\t\tClaimTransactionCategory,\n\t\tSourceSystemID\n\tFROM SapiensReinsuranceClaim\n),\nEXPTRANS AS (\n\tSELECT\n\tSapiensReinsuranceClaimId,\n\tAuditId,\n\tCreatedDate,\n\tModifiedDate,\n\tClaimNumber,\n\tPolicyKey,\n\tProductCode,\n\tAccountingProductCode,\n\tStrategicProfitCenterAbbreviation,\n\tASLCode,\n\tSubASLCode,\n\tInsuranceReferenceLineOfBusinessCode,\n\tRiskStateCode,\n\tSubClaim,\n\tFinancialTypeCode,\n\tFinancialTypeCodeDescription,\n\tCauseOfLoss,\n\tClaimantNumber,\n\tClaimantFullName,\n\tClaimLossDate,\n\tClaimReportedDate,\n\tClaimCatastropheCode,\n\tClaimCatastropheStartDate,\n\tClaimCatastropheEndDate,\n\tClaimTransactionDate,\n\tTransactionCode,\n\tTransactionCodeDescription,\n\tTransactionType,\n\tTransactionAmount,\n\tTransactionHistoryAmount,\n\tSourceSequenceNumber,\n\tTransactionNumber,\n\tWorkersCompensationMedicalLossPaid,\n\tWorkersCompensationMedicalExpensePaid,\n\tWorkersCompensationIndemnityExpensePaid,\n\tWorkersCompensationIndemnityLossPaid,\n\tPropertyCasualtyExpensePaid,\n\tPropertyCasualtyLossPaid,\n\tWorkersCompensationMedicalLossOutstanding,\n\tWorkersCompensationMedicalExpenseOutstanding,\n\tWorkersCompensationIndemnityExpenseOutstanding,\n\tWorkersCompensationIndemnityLossOutstanding,\n\tPropertyCasualtyExpenseOutstanding,\n\tPropertyCasualtyLossOutstanding,\n\tClaimTransactionPKId,\n\tContainsOutstandingReserveAmountFlag,\n\tReinsuranceUmbrellaLayer,\n\tClaimRelationshipId,\n\tClaimTransactionCategory,\n\tSourceSystemID\n\tFROM SQ_SapiensReinsuranceClaim\n),\nArchSapiensReinsuranceClaim AS (\n\tINSERT INTO ArchSapiensReinsuranceClaim\n\t(AuditId, CreatedDate, ModifiedDate, SapiensReinsuranceClaimId, ClaimNumber, PolicyKey, ProductCode, AccountingProductCode, StrategicProfitCenterAbbreviation, ASLCode, SubASLCode, InsuranceReferenceLineOfBusinessCode, RiskStateCode, SubClaim, FinancialTypeCode, FinancialTypeCodeDescription, CauseOfLoss, ClaimantNumber, ClaimantFullName, ClaimLossDate, ClaimReportedDate, ClaimCatastropheCode, ClaimCatastropheStartDate, ClaimCatastropheEndDate, ClaimTransactionDate, TransactionCode, TransactionCodeDescription, TransactionType, TransactionAmount, TransactionHistoryAmount, SourceSequenceNumber, TransactionNumber, WorkersCompensationMedicalLossPaid, WorkersCompensationMedicalExpensePaid, WorkersCompensationIndemnityExpensePaid, WorkersCompensationIndemnityLossPaid, PropertyCasualtyExpensePaid, PropertyCasualtyLossPaid, WorkersCompensationMedicalLossOutstanding, WorkersCompensationMedicalExpenseOutstanding, WorkersCompensationIndemnityExpenseOutstanding, WorkersCompensationIndemnityLossOutstanding, PropertyCasualtyExpenseOutstanding, PropertyCasualtyLossOutstanding, ClaimTransactionPKId, ContainsOutstandingReserveAmountFlag, ReinsuranceUmbrellaLayer, ClaimRelationshipId, ClaimTransactionCategory, SourceSystemID)\n\tSELECT \n\tAUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tSAPIENSREINSURANCECLAIMID, \n\tCLAIMNUMBER, \n\tPOLICYKEY, \n\tPRODUCTCODE, \n\tACCOUNTINGPRODUCTCODE, \n\tSTRATEGICPROFITCENTERABBREVIATION, \n\tASLCODE, \n\tSUBASLCODE, \n\tINSURANCEREFERENCELINEOFBUSINESSCODE, \n\tRISKSTATECODE, \n\tSUBCLAIM, \n\tFINANCIALTYPECODE, \n\tFINANCIALTYPECODEDESCRIPTION, \n\tCAUSEOFLOSS, \n\tCLAIMANTNUMBER, \n\tCLAIMANTFULLNAME, \n\tCLAIMLOSSDATE, \n\tCLAIMREPORTEDDATE, \n\tCLAIMCATASTROPHECODE, \n\tCLAIMCATASTROPHESTARTDATE, \n\tCLAIMCATASTROPHEENDDATE, \n\tCLAIMTRANSACTIONDATE, \n\tTRANSACTIONCODE, \n\tTRANSACTIONCODEDESCRIPTION, \n\tTRANSACTIONTYPE, \n\tTRANSACTIONAMOUNT, \n\tTRANSACTIONHISTORYAMOUNT, \n\tSOURCESEQUENCENUMBER, \n\tTRANSACTIONNUMBER, \n\tWORKERSCOMPENSATIONMEDICALLOSSPAID, \n\tWORKERSCOMPENSATIONMEDICALEXPENSEPAID, \n\tWORKERSCOMPENSATIONINDEMNITYEXPENSEPAID, \n\tWORKERSCOMPENSATIONINDEMNITYLOSSPAID, \n\tPROPERTYCASUALTYEXPENSEPAID, \n\tPROPERTYCASUALTYLOSSPAID, \n\tWORKERSCOMPENSATIONMEDICALLOSSOUTSTANDING, \n\tWORKERSCOMPENSATIONMEDICALEXPENSEOUTSTANDING, \n\tWORKERSCOMPENSATIONINDEMNITYEXPENSEOUTSTANDING, \n\tWORKERSCOMPENSATIONINDEMNITYLOSSOUTSTANDING, \n\tPROPERTYCASUALTYEXPENSEOUTSTANDING, \n\tPROPERTYCASUALTYLOSSOUTSTANDING, \n\tCLAIMTRANSACTIONPKID, \n\tCONTAINSOUTSTANDINGRESERVEAMOUNTFLAG, \n\tREINSURANCEUMBRELLALAYER, \n\tCLAIMRELATIONSHIPID, \n\tCLAIMTRANSACTIONCATEGORY, \n\tSOURCESYSTEMID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

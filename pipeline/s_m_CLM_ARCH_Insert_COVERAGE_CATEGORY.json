@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_COVERAGE_CATEGORY",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_COVERAGE_CATEGORY",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_coverage_category_stage AS (\n\tSELECT \r\n\tc.cov_ctgry_stage_id, \r\n\tc.cov_category_code, \r\n\tc.cov_category_descript, \r\n\tc.modified_date, \r\n\tc.modified_user_id, \r\n\tc.extract_date, \r\n\tc.source_sys_id \r\n\tFROM\r\n\t @{pipeline().parameters.SOURCE_TABLE_OWNER}.coverage_category_stage  c\r\n\tWHERE NOT EXISTS\r\n\t(SELECT 'X'\r\n\tFROM  @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_coverage_category_stage a\r\n\tWHERE a.cov_category_code = c.cov_category_code\r\n\tAND  a.cov_category_descript = c.cov_category_descript)\n),\nEXP_COVERAGE_CATEGORY AS (\n\tSELECT\n\tcov_ctgry_stage_id,\n\tcov_category_code,\n\tcov_category_descript,\n\tmodified_date,\n\tmodified_user_id,\n\textract_date AS EXTRACT_DATE,\n\tsource_sys_id AS SOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_coverage_category_stage\n),\narch_coverage_category_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_coverage_category_stage\n\t(cov_ctgry_stage_id, cov_category_code, cov_category_descript, modified_date, modified_user_id, extract_date, source_sys_id, audit_id)\n\tSELECT \n\tCOV_CTGRY_STAGE_ID, \n\tCOV_CATEGORY_CODE, \n\tCOV_CATEGORY_DESCRIPT, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYS_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_COVERAGE_CATEGORY\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

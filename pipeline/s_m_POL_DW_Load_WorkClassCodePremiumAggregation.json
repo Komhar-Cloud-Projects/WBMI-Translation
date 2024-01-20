@@ -30,42 +30,6 @@
             }
         ],
         "parameters": {
-            "WBMI_AUDIT_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "244834"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "893408"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7543475"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "07/01/2023 09:08:21"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/01/2023 23:13:55"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_CLAIM"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_CLAIM"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
-            "TARGET_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
             "WHERE_CLAUSE_PMS": {
                 "type": "string",
                 "defaultValue": "Default Value"
@@ -73,10 +37,14 @@
             "WHERE_CLAUSE_DCT": {
                 "type": "string",
                 "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Policy DataWarehouse/"
+            "name": "PolicyDataWarehouse/"
         },
         "annotations": []
     }

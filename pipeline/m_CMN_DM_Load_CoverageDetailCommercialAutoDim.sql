@@ -204,99 +204,52 @@ EXP_MetaData AS (
 	CoveredByWorkersCompensationFlag AS i_CoveredByWorkersCompensationFlag,
 	HistoricVehicleIndicator AS i_HistoricVehicleIndicator,
 	-- *INF*: IIF(i_CompositeRatedFlag='T',1,0)
-	IFF(i_CompositeRatedFlag = 'T',
-		1,
-		0
-	) AS o_CompositeRatedFlag,
+	IFF(i_CompositeRatedFlag = 'T', 1, 0) AS o_CompositeRatedFlag,
 	i_CoverageDetailDimId AS o_CoverageDetailDimId,
 	i_EffectiveDate AS o_EffectiveDate,
 	i_ExpirationDate AS o_ExpirationDate,
 	-- *INF*: RTRIM(LTRIM(i_CoverageGuid))
-	RTRIM(LTRIM(i_CoverageGuid
-		)
-	) AS o_CoverageGuid,
+	RTRIM(LTRIM(i_CoverageGuid)) AS o_CoverageGuid,
 	-- *INF*: RTRIM(LTRIM(i_VehicleType))
-	RTRIM(LTRIM(i_VehicleType
-		)
-	) AS o_VehicleType,
+	RTRIM(LTRIM(i_VehicleType)) AS o_VehicleType,
 	-- *INF*: RTRIM(LTRIM(i_RadiusOfOperation))
-	RTRIM(LTRIM(i_RadiusOfOperation
-		)
-	) AS o_RadiusOfOperation,
+	RTRIM(LTRIM(i_RadiusOfOperation)) AS o_RadiusOfOperation,
 	-- *INF*: RTRIM(LTRIM(i_SecondaryVehicleType))
-	RTRIM(LTRIM(i_SecondaryVehicleType
-		)
-	) AS o_SecondaryVehicleType,
+	RTRIM(LTRIM(i_SecondaryVehicleType)) AS o_SecondaryVehicleType,
 	-- *INF*: RTRIM(LTRIM(i_UsedInDumpingIndicator))
-	RTRIM(LTRIM(i_UsedInDumpingIndicator
-		)
-	) AS o_UsedInDumpingIndicator,
+	RTRIM(LTRIM(i_UsedInDumpingIndicator)) AS o_UsedInDumpingIndicator,
 	-- *INF*: RTRIM(LTRIM(i_SourceSystemID))
-	RTRIM(LTRIM(i_SourceSystemID
-		)
-	) AS o_SourceSystemID,
+	RTRIM(LTRIM(i_SourceSystemID)) AS o_SourceSystemID,
 	-- *INF*: RTRIM(LTRIM(i_CoverageType))
-	RTRIM(LTRIM(i_CoverageType
-		)
-	) AS o_CoverageType,
+	RTRIM(LTRIM(i_CoverageType)) AS o_CoverageType,
 	i_PremiumTransactionAKID AS o_PremiumTransactionAKId,
 	-- *INF*: iif(isnull(i_VehicleTypeSize) or length(i_VehicleTypeSize)=0,'N/A',i_VehicleTypeSize)
-	IFF(i_VehicleTypeSize IS NULL 
-		OR length(i_VehicleTypeSize
-		) = 0,
-		'N/A',
-		i_VehicleTypeSize
-	) AS o_VehicleTypeSize,
+	IFF(i_VehicleTypeSize IS NULL or length(i_VehicleTypeSize) = 0, 'N/A', i_VehicleTypeSize) AS o_VehicleTypeSize,
 	-- *INF*: iif(isnull(i_BusinessUseClass) or length(i_BusinessUseClass)=0,'N/A',i_BusinessUseClass)
-	IFF(i_BusinessUseClass IS NULL 
-		OR length(i_BusinessUseClass
-		) = 0,
-		'N/A',
-		i_BusinessUseClass
-	) AS o_BusinessUseClass,
+	IFF(i_BusinessUseClass IS NULL or length(i_BusinessUseClass) = 0, 'N/A', i_BusinessUseClass) AS o_BusinessUseClass,
 	-- *INF*: iif(isnull(i_SecondaryClass) or length(i_SecondaryClass)=0,'N/A',i_SecondaryClass)
-	IFF(i_SecondaryClass IS NULL 
-		OR length(i_SecondaryClass
-		) = 0,
-		'N/A',
-		i_SecondaryClass
-	) AS o_SecondaryClass,
+	IFF(i_SecondaryClass IS NULL or length(i_SecondaryClass) = 0, 'N/A', i_SecondaryClass) AS o_SecondaryClass,
 	-- *INF*: iif(isnull(i_FleetType) or length(i_FleetType)=0,'N/A',i_FleetType)
-	IFF(i_FleetType IS NULL 
-		OR length(i_FleetType
-		) = 0,
-		'N/A',
-		i_FleetType
-	) AS o_FleetType,
+	IFF(i_FleetType IS NULL or length(i_FleetType) = 0, 'N/A', i_FleetType) AS o_FleetType,
 	-- *INF*: iif(isnull(i_SecondaryClassGroup) or length(i_SecondaryClassGroup)=0,'N/A',i_SecondaryClassGroup)
-	IFF(i_SecondaryClassGroup IS NULL 
-		OR length(i_SecondaryClassGroup
-		) = 0,
-		'N/A',
-		i_SecondaryClassGroup
+	IFF(
+	    i_SecondaryClassGroup IS NULL or length(i_SecondaryClassGroup) = 0, 'N/A',
+	    i_SecondaryClassGroup
 	) AS o_SecondaryClassGroup,
 	i_VIN AS o_VIN,
 	i_VehicleNumber AS o_VehicleNumber,
 	-- *INF*: RTRIM(LTRIM(i_CoordinationOfBenefits))
-	RTRIM(LTRIM(i_CoordinationOfBenefits
-		)
-	) AS o_CoordinationOfBenefits,
+	RTRIM(LTRIM(i_CoordinationOfBenefits)) AS o_CoordinationOfBenefits,
 	-- *INF*: RTRIM(LTRIM(i_MedicalExpensesOption))
-	RTRIM(LTRIM(i_MedicalExpensesOption
-		)
-	) AS o_MedicalExpensesOption,
+	RTRIM(LTRIM(i_MedicalExpensesOption)) AS o_MedicalExpensesOption,
 	-- *INF*: IIF(i_CoveredByWorkersCompensationFlag = 'T',1,0)
-	IFF(i_CoveredByWorkersCompensationFlag = 'T',
-		1,
-		0
-	) AS o_CoveredByWorkersCompensationFlag,
+	IFF(i_CoveredByWorkersCompensationFlag = 'T', 1, 0) AS o_CoveredByWorkersCompensationFlag,
 	-- *INF*: IIF(ISNULL(i_HistoricVehicleIndicator),0,IIF(i_HistoricVehicleIndicator= 'T',1,0))
-	IFF(i_HistoricVehicleIndicator IS NULL,
-		0,
-		IFF(i_HistoricVehicleIndicator = 'T',
-			1,
-			0
-		)
+	IFF(
+	    i_HistoricVehicleIndicator IS NULL, 0,
+	    IFF(
+	        i_HistoricVehicleIndicator = 'T', 1, 0
+	    )
 	) AS o_HistoricVehicleIndicator
 	FROM SQ_CoverageDetailCommercialAuto
 ),
@@ -363,109 +316,101 @@ EXP_Business_Logic AS (
 	-- *INF*: :LKP.LKP_COVERAGEDEDUCTIBLEVALUE(i_PremiumTransactionAKId, 'SingleLimitDeductible')
 	LKP_COVERAGEDEDUCTIBLEVALUE_i_PremiumTransactionAKId_SingleLimitDeductible.CoverageDeductibleValue AS v_raw_CoverageDeductibleValuee_SingleLimitDeductible,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageLimitValue_CombinedSingleLimit), 'N/A', v_raw_CoverageLimitValue_CombinedSingleLimit)
-	IFF(v_raw_CoverageLimitValue_CombinedSingleLimit IS NULL,
-		'N/A',
-		v_raw_CoverageLimitValue_CombinedSingleLimit
+	IFF(
+	    v_raw_CoverageLimitValue_CombinedSingleLimit IS NULL, 'N/A',
+	    v_raw_CoverageLimitValue_CombinedSingleLimit
 	) AS v_CoverageLimitValue_CombinedSingleLimit,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageLimitValue_MedicalPaymentLimit), 'N/A', v_raw_CoverageLimitValue_MedicalPaymentLimit)
-	IFF(v_raw_CoverageLimitValue_MedicalPaymentLimit IS NULL,
-		'N/A',
-		v_raw_CoverageLimitValue_MedicalPaymentLimit
+	IFF(
+	    v_raw_CoverageLimitValue_MedicalPaymentLimit IS NULL, 'N/A',
+	    v_raw_CoverageLimitValue_MedicalPaymentLimit
 	) AS v_CoverageLimitValue_MedicalPaymentLimit,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageLimitValue_MedicalLimit), 'N/A', v_raw_CoverageLimitValue_MedicalLimit)
-	IFF(v_raw_CoverageLimitValue_MedicalLimit IS NULL,
-		'N/A',
-		v_raw_CoverageLimitValue_MedicalLimit
+	IFF(
+	    v_raw_CoverageLimitValue_MedicalLimit IS NULL, 'N/A', v_raw_CoverageLimitValue_MedicalLimit
 	) AS v_CoverageLimitValue_MedicalLimit,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageLimitValue_UninsuredMotoristSingleLimit), 'N/A', v_raw_CoverageLimitValue_UninsuredMotoristSingleLimit)
-	IFF(v_raw_CoverageLimitValue_UninsuredMotoristSingleLimit IS NULL,
-		'N/A',
-		v_raw_CoverageLimitValue_UninsuredMotoristSingleLimit
+	IFF(
+	    v_raw_CoverageLimitValue_UninsuredMotoristSingleLimit IS NULL, 'N/A',
+	    v_raw_CoverageLimitValue_UninsuredMotoristSingleLimit
 	) AS v_CoverageLimitValue_UninsuredMotoristSingleLimit,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageLimitValue_UnderinsuredMotoristSingleLimit), 'N/A', v_raw_CoverageLimitValue_UnderinsuredMotoristSingleLimit)
-	IFF(v_raw_CoverageLimitValue_UnderinsuredMotoristSingleLimit IS NULL,
-		'N/A',
-		v_raw_CoverageLimitValue_UnderinsuredMotoristSingleLimit
+	IFF(
+	    v_raw_CoverageLimitValue_UnderinsuredMotoristSingleLimit IS NULL, 'N/A',
+	    v_raw_CoverageLimitValue_UnderinsuredMotoristSingleLimit
 	) AS v_CoverageLimitValue_UnderinsuredMotoristSingleLimit,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageLimitValue_ValueEstimate), 'N/A', v_raw_CoverageLimitValue_ValueEstimate)
-	IFF(v_raw_CoverageLimitValue_ValueEstimate IS NULL,
-		'N/A',
-		v_raw_CoverageLimitValue_ValueEstimate
+	IFF(
+	    v_raw_CoverageLimitValue_ValueEstimate IS NULL, 'N/A',
+	    v_raw_CoverageLimitValue_ValueEstimate
 	) AS v_CoverageLimitValue_ValueEstimate,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageLimitValue_Value), 'N/A', v_raw_CoverageLimitValue_Value)
-	IFF(v_raw_CoverageLimitValue_Value IS NULL,
-		'N/A',
-		v_raw_CoverageLimitValue_Value
-	) AS v_CoverageLimitValue_Value,
+	IFF(v_raw_CoverageLimitValue_Value IS NULL, 'N/A', v_raw_CoverageLimitValue_Value) AS v_CoverageLimitValue_Value,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageLimitValue_PersonalInjuryProtectionLimit), 'N/A', v_raw_CoverageLimitValue_PersonalInjuryProtectionLimit)
-	IFF(v_raw_CoverageLimitValue_PersonalInjuryProtectionLimit IS NULL,
-		'N/A',
-		v_raw_CoverageLimitValue_PersonalInjuryProtectionLimit
+	IFF(
+	    v_raw_CoverageLimitValue_PersonalInjuryProtectionLimit IS NULL, 'N/A',
+	    v_raw_CoverageLimitValue_PersonalInjuryProtectionLimit
 	) AS v_CoverageLimitValue_PersonalInjuryProtectionLimit,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageLimitValue_PersonalInjuryProtectionLimitWithStacking), 'N/A', v_raw_CoverageLimitValue_PersonalInjuryProtectionLimitWithStacking)
-	IFF(v_raw_CoverageLimitValue_PersonalInjuryProtectionLimitWithStacking IS NULL,
-		'N/A',
-		v_raw_CoverageLimitValue_PersonalInjuryProtectionLimitWithStacking
+	IFF(
+	    v_raw_CoverageLimitValue_PersonalInjuryProtectionLimitWithStacking IS NULL, 'N/A',
+	    v_raw_CoverageLimitValue_PersonalInjuryProtectionLimitWithStacking
 	) AS v_CoverageLimitValue_PersonalInjuryProtectionLimitWithStacking,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageLimitValue_PersonalInjuryProtectionLimitWithoutStacking), 'N/A', v_raw_CoverageLimitValue_PersonalInjuryProtectionLimitWithoutStacking)
-	IFF(v_raw_CoverageLimitValue_PersonalInjuryProtectionLimitWithoutStacking IS NULL,
-		'N/A',
-		v_raw_CoverageLimitValue_PersonalInjuryProtectionLimitWithoutStacking
+	IFF(
+	    v_raw_CoverageLimitValue_PersonalInjuryProtectionLimitWithoutStacking IS NULL, 'N/A',
+	    v_raw_CoverageLimitValue_PersonalInjuryProtectionLimitWithoutStacking
 	) AS v_CoverageLimitValue_PersonalInjuryProtectionLimitWithoutStacking,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageLimitValue_PersonaInjuryProtectionBasicLimt), 'N/A', v_raw_CoverageLimitValue_PersonaInjuryProtectionBasicLimt)
-	IFF(v_raw_CoverageLimitValue_PersonaInjuryProtectionBasicLimt IS NULL,
-		'N/A',
-		v_raw_CoverageLimitValue_PersonaInjuryProtectionBasicLimt
+	IFF(
+	    v_raw_CoverageLimitValue_PersonaInjuryProtectionBasicLimt IS NULL, 'N/A',
+	    v_raw_CoverageLimitValue_PersonaInjuryProtectionBasicLimt
 	) AS v_CoverageLimitValue_PersonaInjuryProtectionBasicLimt,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageLimitValue_PersonaInjuryProtectionExcessLimt), 'N/A', v_raw_CoverageLimitValue_PersonaInjuryProtectionExcessLimt)
-	IFF(v_raw_CoverageLimitValue_PersonaInjuryProtectionExcessLimt IS NULL,
-		'N/A',
-		v_raw_CoverageLimitValue_PersonaInjuryProtectionExcessLimt
+	IFF(
+	    v_raw_CoverageLimitValue_PersonaInjuryProtectionExcessLimt IS NULL, 'N/A',
+	    v_raw_CoverageLimitValue_PersonaInjuryProtectionExcessLimt
 	) AS v_CoverageLimitValue_PersonaInjuryProtectionExcessLimt,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageDeductibleValue_ComprehensiveDeductible), 'N/A', v_raw_CoverageDeductibleValue_ComprehensiveDeductible)
-	IFF(v_raw_CoverageDeductibleValue_ComprehensiveDeductible IS NULL,
-		'N/A',
-		v_raw_CoverageDeductibleValue_ComprehensiveDeductible
+	IFF(
+	    v_raw_CoverageDeductibleValue_ComprehensiveDeductible IS NULL, 'N/A',
+	    v_raw_CoverageDeductibleValue_ComprehensiveDeductible
 	) AS v_CoverageDeductibleValue_ComprehensiveDeductible,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageDeductibleValue_Standard), 'N/A', v_raw_CoverageDeductibleValue_Standard)
-	IFF(v_raw_CoverageDeductibleValue_Standard IS NULL,
-		'N/A',
-		v_raw_CoverageDeductibleValue_Standard
+	IFF(
+	    v_raw_CoverageDeductibleValue_Standard IS NULL, 'N/A',
+	    v_raw_CoverageDeductibleValue_Standard
 	) AS v_CoverageDeductibleValue_Standard,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageDeductibleValue_GlassBuyBack), 'N/A', v_raw_CoverageDeductibleValue_GlassBuyBack)
-	IFF(v_raw_CoverageDeductibleValue_GlassBuyBack IS NULL,
-		'N/A',
-		v_raw_CoverageDeductibleValue_GlassBuyBack
+	IFF(
+	    v_raw_CoverageDeductibleValue_GlassBuyBack IS NULL, 'N/A',
+	    v_raw_CoverageDeductibleValue_GlassBuyBack
 	) AS v_CoverageDeductibleValue_GlassBuyBack,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageDeductibleValue_CollisionDeductible), 'N/A', v_raw_CoverageDeductibleValue_CollisionDeductible)
-	IFF(v_raw_CoverageDeductibleValue_CollisionDeductible IS NULL,
-		'N/A',
-		v_raw_CoverageDeductibleValue_CollisionDeductible
+	IFF(
+	    v_raw_CoverageDeductibleValue_CollisionDeductible IS NULL, 'N/A',
+	    v_raw_CoverageDeductibleValue_CollisionDeductible
 	) AS v_CoverageDeductibleValue_CollisionDeductible,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageDeductibleValue_Limited), 'N/A', v_raw_CoverageDeductibleValue_Limited)
-	IFF(v_raw_CoverageDeductibleValue_Limited IS NULL,
-		'N/A',
-		v_raw_CoverageDeductibleValue_Limited
+	IFF(
+	    v_raw_CoverageDeductibleValue_Limited IS NULL, 'N/A', v_raw_CoverageDeductibleValue_Limited
 	) AS v_CoverageDeductibleValue_Limited,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageDeductibleValue_PropertyDamage), 'N/A', v_raw_CoverageDeductibleValue_PropertyDamage)
-	IFF(v_raw_CoverageDeductibleValue_PropertyDamage IS NULL,
-		'N/A',
-		v_raw_CoverageDeductibleValue_PropertyDamage
+	IFF(
+	    v_raw_CoverageDeductibleValue_PropertyDamage IS NULL, 'N/A',
+	    v_raw_CoverageDeductibleValue_PropertyDamage
 	) AS v_CoverageDeductibleValue_PropertyDamage,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageDeductibleValue_CSL), 'N/A', v_raw_CoverageDeductibleValue_CSL)
-	IFF(v_raw_CoverageDeductibleValue_CSL IS NULL,
-		'N/A',
-		v_raw_CoverageDeductibleValue_CSL
-	) AS v_CoverageDeductibleValue_CSL,
+	IFF(v_raw_CoverageDeductibleValue_CSL IS NULL, 'N/A', v_raw_CoverageDeductibleValue_CSL) AS v_CoverageDeductibleValue_CSL,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageDeductibleValue_PersonalInjuryProtectionDeductible), 'N/A', v_raw_CoverageDeductibleValue_PersonalInjuryProtectionDeductible)
-	IFF(v_raw_CoverageDeductibleValue_PersonalInjuryProtectionDeductible IS NULL,
-		'N/A',
-		v_raw_CoverageDeductibleValue_PersonalInjuryProtectionDeductible
+	IFF(
+	    v_raw_CoverageDeductibleValue_PersonalInjuryProtectionDeductible IS NULL, 'N/A',
+	    v_raw_CoverageDeductibleValue_PersonalInjuryProtectionDeductible
 	) AS v_CoverageDeductibleValue_PersonalInjuryProtectionDeuctible,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageDeductibleValue_ManagedCareDeductible), 'N/A', v_raw_CoverageDeductibleValue_ManagedCareDeductible)
-	IFF(v_raw_CoverageDeductibleValue_ManagedCareDeductible IS NULL,
-		'N/A',
-		v_raw_CoverageDeductibleValue_ManagedCareDeductible
+	IFF(
+	    v_raw_CoverageDeductibleValue_ManagedCareDeductible IS NULL, 'N/A',
+	    v_raw_CoverageDeductibleValue_ManagedCareDeductible
 	) AS v_CoverageDeductibleValue_ManagedCareDeductible,
 	VehicleYear,
 	StatedAmount,
@@ -483,20 +428,18 @@ EXP_Business_Logic AS (
 	-- v_CoverageLimitValue_MedicalLimit,
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', v_CoverageLimitValue_MedicalPaymentLimit,
-		i_SourceSystemID = 'DCT', v_CoverageLimitValue_MedicalLimit,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', v_CoverageLimitValue_MedicalPaymentLimit,
+	    i_SourceSystemID = 'DCT', v_CoverageLimitValue_MedicalLimit,
+	    'N/A'
 	) AS o_MedicalPaymentLimit,
 	-- *INF*: IIF(
 	-- i_SourceSystemID='PMS',
 	-- v_CoverageLimitValue_UninsuredMotoristSingleLimit,
 	-- 'N/A'
 	-- )
-	IFF(i_SourceSystemID = 'PMS',
-		v_CoverageLimitValue_UninsuredMotoristSingleLimit,
-		'N/A'
-	) AS o_UninsuredMotoristSingleLimit,
+	IFF(i_SourceSystemID = 'PMS', v_CoverageLimitValue_UninsuredMotoristSingleLimit, 'N/A') AS o_UninsuredMotoristSingleLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',
 	-- v_CoverageLimitValue_UnderinsuredMotoristSingleLimit,
@@ -504,14 +447,14 @@ EXP_Business_Logic AS (
 	-- IIF(v_CoverageLimitValue_ValueEstimate='N/A', v_CoverageLimitValue_Value, v_CoverageLimitValue_ValueEstimate),
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', v_CoverageLimitValue_UnderinsuredMotoristSingleLimit,
-		i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'UIM', IFF(v_CoverageLimitValue_ValueEstimate = 'N/A',
-			v_CoverageLimitValue_Value,
-			v_CoverageLimitValue_ValueEstimate
-		),
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', v_CoverageLimitValue_UnderinsuredMotoristSingleLimit,
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'UIM', IFF(
+	        v_CoverageLimitValue_ValueEstimate = 'N/A', v_CoverageLimitValue_Value,
+	        v_CoverageLimitValue_ValueEstimate
+	    ),
+	    'N/A'
 	) AS o_UnderinsuredMotoristSingleLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS' AND MajorPerilCode='130' ,
@@ -541,24 +484,25 @@ EXP_Business_Logic AS (
 	-- --IIF(v_CoverageLimitValue_ValueEstimate='N/A', v_CoverageLimitValue_Value, v_CoverageLimitValue_ValueEstimate),
 	-- --'N/A'
 	-- --) 
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS' 
-		AND MajorPerilCode = '130', DECODE(TRUE,
-		v_CoverageLimitValue_PersonaInjuryProtectionBasicLimt <> 'N/A', v_CoverageLimitValue_PersonaInjuryProtectionBasicLimt,
-		'N/A'
-		),
-		i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'PIP', DECODE(TRUE,
-		v_CoverageLimitValue_PersonaInjuryProtectionBasicLimt <> 'N/A', v_CoverageLimitValue_PersonaInjuryProtectionBasicLimt,
-		'N/A'
-		),
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS' AND MajorPerilCode = '130', DECODE(
+	        TRUE,
+	        v_CoverageLimitValue_PersonaInjuryProtectionBasicLimt <> 'N/A', v_CoverageLimitValue_PersonaInjuryProtectionBasicLimt,
+	        'N/A'
+	    ),
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'PIP', DECODE(
+	        TRUE,
+	        v_CoverageLimitValue_PersonaInjuryProtectionBasicLimt <> 'N/A', v_CoverageLimitValue_PersonaInjuryProtectionBasicLimt,
+	        'N/A'
+	    ),
+	    'N/A'
 	) AS o_PersonalInjuryProtectionLimit,
 	'N/A' AS o_PhysicalDamageLiabilityDeductible,
 	-- *INF*: IIF(ISNULL(v_raw_CoverageDeductibleValuee_SingleLimitDeductible),'N/A',v_raw_CoverageDeductibleValuee_SingleLimitDeductible)
-	IFF(v_raw_CoverageDeductibleValuee_SingleLimitDeductible IS NULL,
-		'N/A',
-		v_raw_CoverageDeductibleValuee_SingleLimitDeductible
+	IFF(
+	    v_raw_CoverageDeductibleValuee_SingleLimitDeductible IS NULL, 'N/A',
+	    v_raw_CoverageDeductibleValuee_SingleLimitDeductible
 	) AS o_SingleLimitDeductible,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',
@@ -567,11 +511,11 @@ EXP_Business_Logic AS (
 	-- v_CoverageDeductibleValue_Standard,
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', v_CoverageDeductibleValue_ComprehensiveDeductible,
-		i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'OTC', v_CoverageDeductibleValue_Standard,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', v_CoverageDeductibleValue_ComprehensiveDeductible,
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'OTC', v_CoverageDeductibleValue_Standard,
+	    'N/A'
 	) AS o_ComprehensiveDeductible,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='DCT' AND i_CoverageType='Collision',
@@ -579,12 +523,11 @@ EXP_Business_Logic AS (
 	-- i_SourceSystemID='PMS' AND NOT ISNULL(v_raw_CoverageDeductibleValuee_ComprehensiveFullGlassCoverageDeductible),v_raw_CoverageDeductibleValuee_ComprehensiveFullGlassCoverageDeductible,
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'Collision', v_CoverageDeductibleValue_GlassBuyBack,
-		i_SourceSystemID = 'PMS' 
-		AND v_raw_CoverageDeductibleValuee_ComprehensiveFullGlassCoverageDeductible IS NOT NULL, v_raw_CoverageDeductibleValuee_ComprehensiveFullGlassCoverageDeductible,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'Collision', v_CoverageDeductibleValue_GlassBuyBack,
+	    i_SourceSystemID = 'PMS' AND v_raw_CoverageDeductibleValuee_ComprehensiveFullGlassCoverageDeductible IS NOT NULL, v_raw_CoverageDeductibleValuee_ComprehensiveFullGlassCoverageDeductible,
+	    'N/A'
 	) AS o_ComprehensiveFullGlassCoverageDeductible,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',
@@ -598,15 +541,16 @@ EXP_Business_Logic AS (
 	--  v_CoverageDeductibleValue_Limited),
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', v_CoverageDeductibleValue_CollisionDeductible,
-		i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'Collision', DECODE(TRUE,
-		v_CoverageDeductibleValue_Standard <> 'N/A', v_CoverageDeductibleValue_Standard,
-		v_CoverageDeductibleValue_GlassBuyBack <> 'N/A', v_CoverageDeductibleValue_GlassBuyBack,
-		v_CoverageDeductibleValue_Limited
-		),
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', v_CoverageDeductibleValue_CollisionDeductible,
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'Collision', DECODE(
+	        TRUE,
+	        v_CoverageDeductibleValue_Standard <> 'N/A', v_CoverageDeductibleValue_Standard,
+	        v_CoverageDeductibleValue_GlassBuyBack <> 'N/A', v_CoverageDeductibleValue_GlassBuyBack,
+	        v_CoverageDeductibleValue_Limited
+	    ),
+	    'N/A'
 	) AS o_CollisionDeductible,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='DCT' AND i_CoverageType='Collision',
@@ -619,28 +563,28 @@ EXP_Business_Logic AS (
 	-- i_SourceSystemID='PMS' AND  NOT ISNULL(v_raw_CoverageDeductibleValuee_LimitedCollisionDeductible),v_raw_CoverageDeductibleValuee_LimitedCollisionDeductible,
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'Collision', DECODE(TRUE,
-		v_CoverageDeductibleValue_Standard <> 'N/A', v_CoverageDeductibleValue_Standard,
-		v_CoverageDeductibleValue_GlassBuyBack <> 'N/A', v_CoverageDeductibleValue_GlassBuyBack,
-		v_CoverageDeductibleValue_Limited
-		),
-		i_SourceSystemID = 'PMS' 
-		AND v_raw_CoverageDeductibleValuee_LimitedCollisionDeductible IS NOT NULL, v_raw_CoverageDeductibleValuee_LimitedCollisionDeductible,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'Collision', DECODE(
+	        TRUE,
+	        v_CoverageDeductibleValue_Standard <> 'N/A', v_CoverageDeductibleValue_Standard,
+	        v_CoverageDeductibleValue_GlassBuyBack <> 'N/A', v_CoverageDeductibleValue_GlassBuyBack,
+	        v_CoverageDeductibleValue_Limited
+	    ),
+	    i_SourceSystemID = 'PMS' AND v_raw_CoverageDeductibleValuee_LimitedCollisionDeductible IS NOT NULL, v_raw_CoverageDeductibleValuee_LimitedCollisionDeductible,
+	    'N/A'
 	) AS o_LimitedCollisionDeductible,
 	-- *INF*: IIF(i_SourceSystemID='DCT' AND i_CoverageType='DriveOtherCarLiability',
 	-- IIF(v_CoverageDeductibleValue_PropertyDamage='N/A', v_CoverageDeductibleValue_CSL, v_CoverageDeductibleValue_PropertyDamage),
 	-- 'N/A'
 	-- )
-	IFF(i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'DriveOtherCarLiability',
-		IFF(v_CoverageDeductibleValue_PropertyDamage = 'N/A',
-			v_CoverageDeductibleValue_CSL,
-			v_CoverageDeductibleValue_PropertyDamage
-		),
-		'N/A'
+	IFF(
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'DriveOtherCarLiability',
+	    IFF(
+	        v_CoverageDeductibleValue_PropertyDamage = 'N/A', v_CoverageDeductibleValue_CSL,
+	        v_CoverageDeductibleValue_PropertyDamage
+	    ),
+	    'N/A'
 	) AS o_PropertyDamageLiabilityDeductible,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS' AND NOT ISNULL(v_raw_CoverageDeductibleValuee_BroadenedCollisionDeductible),
@@ -654,49 +598,48 @@ EXP_Business_Logic AS (
 	--  v_CoverageDeductibleValue_Limited),
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS' 
-		AND v_raw_CoverageDeductibleValuee_BroadenedCollisionDeductible IS NOT NULL, v_raw_CoverageDeductibleValuee_BroadenedCollisionDeductible,
-		i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'Collision', DECODE(TRUE,
-		v_CoverageDeductibleValue_Standard <> 'N/A', v_CoverageDeductibleValue_Standard,
-		v_CoverageDeductibleValue_GlassBuyBack <> 'N/A', v_CoverageDeductibleValue_GlassBuyBack,
-		v_CoverageDeductibleValue_Limited
-		),
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS' AND v_raw_CoverageDeductibleValuee_BroadenedCollisionDeductible IS NOT NULL, v_raw_CoverageDeductibleValuee_BroadenedCollisionDeductible,
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'Collision', DECODE(
+	        TRUE,
+	        v_CoverageDeductibleValue_Standard <> 'N/A', v_CoverageDeductibleValue_Standard,
+	        v_CoverageDeductibleValue_GlassBuyBack <> 'N/A', v_CoverageDeductibleValue_GlassBuyBack,
+	        v_CoverageDeductibleValue_Limited
+	    ),
+	    'N/A'
 	) AS o_BroadenedCollisionDeductible,
 	-- *INF*: IIF(i_SourceSystemID='DCT' AND i_CoverageType='UMBI',
 	-- IIF(v_CoverageLimitValue_ValueEstimate='N/A', v_CoverageLimitValue_Value, v_CoverageLimitValue_ValueEstimate),
 	-- 'N/A'
 	-- )
-	IFF(i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'UMBI',
-		IFF(v_CoverageLimitValue_ValueEstimate = 'N/A',
-			v_CoverageLimitValue_Value,
-			v_CoverageLimitValue_ValueEstimate
-		),
-		'N/A'
+	IFF(
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'UMBI',
+	    IFF(
+	        v_CoverageLimitValue_ValueEstimate = 'N/A', v_CoverageLimitValue_Value,
+	        v_CoverageLimitValue_ValueEstimate
+	    ),
+	    'N/A'
 	) AS o_UnderinsuredMotoristBodilyInjuryLimit,
 	-- *INF*: IIF(i_SourceSystemID='DCT' AND i_CoverageType='UIMPD',
 	-- v_CoverageLimitValue_ValueEstimate,
 	-- 'N/A'
 	-- )
-	IFF(i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'UIMPD',
-		v_CoverageLimitValue_ValueEstimate,
-		'N/A'
+	IFF(
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'UIMPD', v_CoverageLimitValue_ValueEstimate,
+	    'N/A'
 	) AS o_UnderinsuredMotoristPropertyDamageLimit,
 	-- *INF*: IIF(i_SourceSystemID='DCT' AND i_CoverageType='UMBI',
 	-- IIF(v_CoverageLimitValue_ValueEstimate='N/A', v_CoverageLimitValue_Value, v_CoverageLimitValue_ValueEstimate),
 	-- 'N/A'
 	-- )
-	IFF(i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'UMBI',
-		IFF(v_CoverageLimitValue_ValueEstimate = 'N/A',
-			v_CoverageLimitValue_Value,
-			v_CoverageLimitValue_ValueEstimate
-		),
-		'N/A'
+	IFF(
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'UMBI',
+	    IFF(
+	        v_CoverageLimitValue_ValueEstimate = 'N/A', v_CoverageLimitValue_Value,
+	        v_CoverageLimitValue_ValueEstimate
+	    ),
+	    'N/A'
 	) AS o_UninsuredMotoristBodilyInjuryLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',
@@ -705,20 +648,19 @@ EXP_Business_Logic AS (
 	-- v_CoverageLimitValue_ValueEstimate,
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', v_CoverageLimitValue_UninsuredMotoristSingleLimit,
-		i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'UMPD', v_CoverageLimitValue_ValueEstimate,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', v_CoverageLimitValue_UninsuredMotoristSingleLimit,
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'UMPD', v_CoverageLimitValue_ValueEstimate,
+	    'N/A'
 	) AS o_UninsuredMotoristPropertyDamageLimit,
 	-- *INF*: IIF(i_SourceSystemID='DCT' AND i_CoverageType='UMPD',
 	-- v_CoverageDeductibleValue_Standard,
 	-- 'N/A'
 	-- )
-	IFF(i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'UMPD',
-		v_CoverageDeductibleValue_Standard,
-		'N/A'
+	IFF(
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'UMPD', v_CoverageDeductibleValue_Standard,
+	    'N/A'
 	) AS o_UninsuredMotoristPropertyDamageDeductible,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',
@@ -727,11 +669,11 @@ EXP_Business_Logic AS (
 	-- v_CoverageLimitValue_ValueEstimate,
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', v_CoverageLimitValue_PersonalInjuryProtectionLimit,
-		i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'PropertyProtection', v_CoverageLimitValue_ValueEstimate,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', v_CoverageLimitValue_PersonalInjuryProtectionLimit,
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'PropertyProtection', v_CoverageLimitValue_ValueEstimate,
+	    'N/A'
 	) AS o_PropertyProtectionLimit,
 	'N/A' AS o_PersonalInjuryProtectionWithoutStackingLimit,
 	'N/A' AS o_PersonalInjuryProtectionWithStackingLimit,
@@ -742,38 +684,41 @@ EXP_Business_Logic AS (
 	-- IIF(v_CoverageDeductibleValue_Standard='N/A', v_CoverageDeductibleValue_ManagedCareDeductible, v_CoverageDeductibleValue_Standard),
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', v_CoverageDeductibleValue_PersonalInjuryProtectionDeuctible,
-		i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'PIP', IFF(v_CoverageDeductibleValue_Standard = 'N/A',
-			v_CoverageDeductibleValue_ManagedCareDeductible,
-			v_CoverageDeductibleValue_Standard
-		),
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', v_CoverageDeductibleValue_PersonalInjuryProtectionDeuctible,
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'PIP', IFF(
+	        v_CoverageDeductibleValue_Standard = 'N/A',
+	        v_CoverageDeductibleValue_ManagedCareDeductible,
+	        v_CoverageDeductibleValue_Standard
+	    ),
+	    'N/A'
 	) AS o_PersonalInjuryProtectionDeductible,
 	-- *INF*: IIF(i_SourceSystemID='DCT' AND i_CoverageType='PIP',
 	-- IIF(v_CoverageDeductibleValue_Standard='N/A', v_CoverageDeductibleValue_ManagedCareDeductible, v_CoverageDeductibleValue_Standard),
 	-- 'N/A'
 	-- )
-	IFF(i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'PIP',
-		IFF(v_CoverageDeductibleValue_Standard = 'N/A',
-			v_CoverageDeductibleValue_ManagedCareDeductible,
-			v_CoverageDeductibleValue_Standard
-		),
-		'N/A'
+	IFF(
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'PIP',
+	    IFF(
+	        v_CoverageDeductibleValue_Standard = 'N/A',
+	        v_CoverageDeductibleValue_ManagedCareDeductible,
+	        v_CoverageDeductibleValue_Standard
+	    ),
+	    'N/A'
 	) AS o_PersonalInjuryProtectionWithoutStackingDeductible,
 	-- *INF*: IIF(i_SourceSystemID='DCT' AND i_CoverageType='PIP',
 	-- IIF(v_CoverageDeductibleValue_Standard='N/A', v_CoverageDeductibleValue_ManagedCareDeductible, v_CoverageDeductibleValue_Standard),
 	-- 'N/A'
 	-- )
-	IFF(i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'PIP',
-		IFF(v_CoverageDeductibleValue_Standard = 'N/A',
-			v_CoverageDeductibleValue_ManagedCareDeductible,
-			v_CoverageDeductibleValue_Standard
-		),
-		'N/A'
+	IFF(
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'PIP',
+	    IFF(
+	        v_CoverageDeductibleValue_Standard = 'N/A',
+	        v_CoverageDeductibleValue_ManagedCareDeductible,
+	        v_CoverageDeductibleValue_Standard
+	    ),
+	    'N/A'
 	) AS o_PersonalInjuryProtectionWithStackingDeductible,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS' AND MajorPerilCode='130' ,
@@ -786,18 +731,19 @@ EXP_Business_Logic AS (
 	-- 'N/A'),
 	-- 'N/A'
 	-- ) 
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS' 
-		AND MajorPerilCode = '130', DECODE(TRUE,
-		v_CoverageLimitValue_PersonaInjuryProtectionExcessLimt <> 'N/A', v_CoverageLimitValue_PersonaInjuryProtectionExcessLimt,
-		'N/A'
-		),
-		i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'PIP', DECODE(TRUE,
-		v_CoverageLimitValue_PersonaInjuryProtectionExcessLimt <> 'N/A', v_CoverageLimitValue_PersonaInjuryProtectionExcessLimt,
-		'N/A'
-		),
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS' AND MajorPerilCode = '130', DECODE(
+	        TRUE,
+	        v_CoverageLimitValue_PersonaInjuryProtectionExcessLimt <> 'N/A', v_CoverageLimitValue_PersonaInjuryProtectionExcessLimt,
+	        'N/A'
+	    ),
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'PIP', DECODE(
+	        TRUE,
+	        v_CoverageLimitValue_PersonaInjuryProtectionExcessLimt <> 'N/A', v_CoverageLimitValue_PersonaInjuryProtectionExcessLimt,
+	        'N/A'
+	    ),
+	    'N/A'
 	) AS o_PersonalInjuryProtectionExcessLimit,
 	o_UsedInDumpingIndicator AS UsedInDumpingIndicator,
 	o_VehicleTypeSize AS VehicleTypeSize,
@@ -1073,61 +1019,62 @@ EXP_Tgt AS (
 	-- lkp_HistoricVehicleIndicator=HistoricVehicleIndicator
 	--  
 	-- ,'UNCHANGED','UPDATE'))
-	IFF(LKP_CoverageDetailDimId IS NULL,
-		'NEW',
-		IFF(lkp_CoverageGuid = CoverageGuid 
-			AND lkp_VehicleGroupCode = VehicleType 
-			AND lkp_RadiusOfOperation = RadiusOfOperation 
-			AND lkp_SecondaryVehicleType = SecondaryVehicleType 
-			AND lkp_CombinedSingleLimit = CombinedSingleLimit 
-			AND lkp_BodilyInjurySplitLimit = BodilyInjurySplitLimit 
-			AND lkp_PhysicalDamageSplitLimit = PhysicalDamageSplitLimit 
-			AND lkp_MedicalPaymentLimit = MedicalPaymentLimit 
-			AND lkp_UninsuredMotoristSingleLimit = UninsuredMotoristSingleLimit 
-			AND lkp_UnderinsuredMotoristSingleLimit = UnderinsuredMotoristSingleLimit 
-			AND lkp_PersonalInjuryProtectionLimit = PersonalInjuryProtectionLimit 
-			AND lkp_PhysicalDamageLiabilityDeductible = PhysicalDamageLiabilityDeductible 
-			AND lkp_SingleLimitDeductible = SingleLimitDeductible 
-			AND lkp_ComprehensiveDeductible = ComprehensiveDeductible 
-			AND lkp_ComprehensiveFullGlassCoverageDeductible = ComprehensiveFullGlassCoverageDeductible 
-			AND lkp_CollisionDeductible = CollisionDeductible 
-			AND lkp_LimitedCollisionDeductible = LimitedCollisionDeductible 
-			AND lkp_PropertyDamageLiabilityDeductible = PropertyDamageLiabilityDeductible 
-			AND lkp_BroadenedCollisionDeductible = BroadenedCollisionDeductible 
-			AND lkp_UnderinsuredMotoristBodilyInjuryLimit = UnderinsuredMotoristBodilyInjuryLimit 
-			AND lkp_UnderinsuredMotoristPropertyDamageLimit = UnderinsuredMotoristPropertyDamageLimit 
-			AND lkp_UninsuredMotoristBodilyInjuryLimit = UninsuredMotoristBodilyInjuryLimit 
-			AND lkp_UninsuredMotoristPropertyDamageLimit = UninsuredMotoristPropertyDamageLimit 
-			AND lkp_UninsuredMotoristPropertyDamageDeductible = UninsuredMotoristPropertyDamageDeductible 
-			AND lkp_PropertyProtectionLimit = PropertyProtectionLimit 
-			AND lkp_PersonalInjuryProtectionDeductible = PersonalInjuryProtectionDeductible 
-			AND lkp_UsedInDumpingIndicator = UsedInDumpingIndicator 
-			AND lkp_VehicleYear = VehicleYear 
-			AND lkp_StatedAmount = StatedAmount 
-			AND lkp_CostNew = CostNew 
-			AND lkp_VehicleDeleteDate = VehicleDeleteDate 
-			AND IFF(lkp_CompositeRatedFlag = 'T',
-				1,
-				0
-			) = CompositeRatedFlag 
-			AND lkp_PersonalInjuryProtectionExcessLimit = PersonalInjuryProtectionExcessLimit 
-			AND lkp_VehicleTypeSize = VehicleTypeSize 
-			AND lkp_BusinessUseClass = BusinessUseClass 
-			AND lkp_SecondaryClass = SecondaryClass 
-			AND lkp_FleetType = FleetType 
-			AND lkp_SecondaryClassGroup = SecondaryClassGroup 
-			AND lkp_VIN = VIN 
-			AND lkp_VehicleNumber = VehicleNumber 
-			AND lkp_CoordinationOfBenefits = CoordinationOfBenefits 
-			AND IFF(lkp_CoveredByWorkersCompensationFlag = 'T',
-				1,
-				0
-			) = CoveredByWorkersCompensationFlag 
-			AND lkp_MedicalExpensesOption = MedicalExpensesOption 
-			AND lkp_HistoricVehicleIndicator = HistoricVehicleIndicator,
-			'UNCHANGED',
-			'UPDATE'
-		)
+	IFF(
+	    LKP_CoverageDetailDimId IS NULL, 'NEW',
+	    IFF(
+	        lkp_CoverageGuid = CoverageGuid
+	        and lkp_VehicleGroupCode = VehicleType
+	        and lkp_RadiusOfOperation = RadiusOfOperation
+	        and lkp_SecondaryVehicleType = SecondaryVehicleType
+	        and lkp_CombinedSingleLimit = CombinedSingleLimit
+	        and lkp_BodilyInjurySplitLimit = BodilyInjurySplitLimit
+	        and lkp_PhysicalDamageSplitLimit = PhysicalDamageSplitLimit
+	        and lkp_MedicalPaymentLimit = MedicalPaymentLimit
+	        and lkp_UninsuredMotoristSingleLimit = UninsuredMotoristSingleLimit
+	        and lkp_UnderinsuredMotoristSingleLimit = UnderinsuredMotoristSingleLimit
+	        and lkp_PersonalInjuryProtectionLimit = PersonalInjuryProtectionLimit
+	        and lkp_PhysicalDamageLiabilityDeductible = PhysicalDamageLiabilityDeductible
+	        and lkp_SingleLimitDeductible = SingleLimitDeductible
+	        and lkp_ComprehensiveDeductible = ComprehensiveDeductible
+	        and lkp_ComprehensiveFullGlassCoverageDeductible = ComprehensiveFullGlassCoverageDeductible
+	        and lkp_CollisionDeductible = CollisionDeductible
+	        and lkp_LimitedCollisionDeductible = LimitedCollisionDeductible
+	        and lkp_PropertyDamageLiabilityDeductible = PropertyDamageLiabilityDeductible
+	        and lkp_BroadenedCollisionDeductible = BroadenedCollisionDeductible
+	        and lkp_UnderinsuredMotoristBodilyInjuryLimit = UnderinsuredMotoristBodilyInjuryLimit
+	        and lkp_UnderinsuredMotoristPropertyDamageLimit = UnderinsuredMotoristPropertyDamageLimit
+	        and lkp_UninsuredMotoristBodilyInjuryLimit = UninsuredMotoristBodilyInjuryLimit
+	        and lkp_UninsuredMotoristPropertyDamageLimit = UninsuredMotoristPropertyDamageLimit
+	        and lkp_UninsuredMotoristPropertyDamageDeductible = UninsuredMotoristPropertyDamageDeductible
+	        and lkp_PropertyProtectionLimit = PropertyProtectionLimit
+	        and lkp_PersonalInjuryProtectionDeductible = PersonalInjuryProtectionDeductible
+	        and lkp_UsedInDumpingIndicator = UsedInDumpingIndicator
+	        and lkp_VehicleYear = VehicleYear
+	        and lkp_StatedAmount = StatedAmount
+	        and lkp_CostNew = CostNew
+	        and lkp_VehicleDeleteDate = VehicleDeleteDate
+	        and 
+	        IFF(
+	            lkp_CompositeRatedFlag = 'T', 1, 0
+	        ) = CompositeRatedFlag
+	        and lkp_PersonalInjuryProtectionExcessLimit = PersonalInjuryProtectionExcessLimit
+	        and lkp_VehicleTypeSize = VehicleTypeSize
+	        and lkp_BusinessUseClass = BusinessUseClass
+	        and lkp_SecondaryClass = SecondaryClass
+	        and lkp_FleetType = FleetType
+	        and lkp_SecondaryClassGroup = SecondaryClassGroup
+	        and lkp_VIN = VIN
+	        and lkp_VehicleNumber = VehicleNumber
+	        and lkp_CoordinationOfBenefits = CoordinationOfBenefits
+	        and 
+	        IFF(
+	            lkp_CoveredByWorkersCompensationFlag = 'T', 1, 0
+	        ) = CoveredByWorkersCompensationFlag
+	        and lkp_MedicalExpensesOption = MedicalExpensesOption
+	        and lkp_HistoricVehicleIndicator = HistoricVehicleIndicator,
+	        'UNCHANGED',
+	        'UPDATE'
+	    )
 	) AS ChangeFlag,
 	EXP_Business_Logic.VIN,
 	EXP_Business_Logic.VehicleNumber,

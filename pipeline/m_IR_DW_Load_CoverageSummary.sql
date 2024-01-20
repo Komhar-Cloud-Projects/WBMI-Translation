@@ -9,13 +9,9 @@ EXP_Trim_Values AS (
 	CoverageSummaryCode AS i_CoverageSummaryCode,
 	CoverageSummaryDescription AS i_CoverageSummaryDescription,
 	-- *INF*: LTRIM(RTRIM(i_CoverageSummaryCode))
-	LTRIM(RTRIM(i_CoverageSummaryCode
-		)
-	) AS o_CoverageSummaryCode,
+	LTRIM(RTRIM(i_CoverageSummaryCode)) AS o_CoverageSummaryCode,
 	-- *INF*: LTRIM(RTRIM(i_CoverageSummaryDescription))
-	LTRIM(RTRIM(i_CoverageSummaryDescription
-		)
-	) AS o_CoverageSummaryDescription
+	LTRIM(RTRIM(i_CoverageSummaryDescription)) AS o_CoverageSummaryDescription
 	FROM SQ_CSV_ConformedCoverage
 ),
 AGG_Remove_Duplicate AS (
@@ -53,10 +49,11 @@ EXP_Detect_Changes AS (
 	-- *INF*: DECODE(TRUE,ISNULL(CoverageSummaryId),1,
 	-- lkp_CoverageSummaryDescription<>i_CoverageSummaryDescription,2,
 	-- 0)
-	DECODE(TRUE,
-		CoverageSummaryId IS NULL, 1,
-		lkp_CoverageSummaryDescription <> i_CoverageSummaryDescription, 2,
-		0
+	DECODE(
+	    TRUE,
+	    CoverageSummaryId IS NULL, 1,
+	    lkp_CoverageSummaryDescription <> i_CoverageSummaryDescription, 2,
+	    0
 	) AS o_change_flag
 	FROM AGG_Remove_Duplicate
 	LEFT JOIN LKP_CoverageSummary

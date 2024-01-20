@@ -1,0 +1,55 @@
+{
+    "name": "s_m_POL_WS_Insert_WB_ProcessedData",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_WS_Insert_WB_ProcessedData",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTInBalancePolicy AS (\n\tSelect distinct A.WorkDCTInBalancePolicyId,A.HistoryID,A.Purpose \r\n\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkDCTInBalancePolicy A \r\n\tinner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkDCTPolicy B\r\n\ton A.SessionID=B.SessionId \r\n\twhere A.ExtractDate>'@{pipeline().parameters.SELECTION_END_TS}'\r\n\tand A.AccountingDate is NOT NULL\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_MetaData AS (\n\tSELECT\n\tPK_Cntr+1 AS PK_Cntr,\n\t-- *INF*: CEIL(PK_Cntr / @{pipeline().parameters.WEB_BATCH_SIZE})\n\tCEIL(PK_Cntr / @{pipeline().parameters.WEB_BATCH_SIZE}) AS XPK_n3_Envelope,\n\tSYSDATE AS tns_CreateDate,\n\t'EDW' AS tns_ProcessName,\n\tWorkDCTInBalancePolicyId,\n\tHistoryID,\n\tPurpose\n\tFROM SQ_WorkDCTInBalancePolicy\n),\nLoadProcessedData AS (-- LoadProcessedData\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nWB_ProccessedData_DummyTarget AS (\n\tINSERT INTO WB_ProccessedData_DummyTarget\n\t(DummyKey)\n\tSELECT \n\tXPK_n3_Envelope0 AS DUMMYKEY\n\tFROM LoadProcessedData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WEB_BATCH_SIZE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

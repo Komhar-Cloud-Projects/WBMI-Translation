@@ -270,34 +270,19 @@ EXP_Source_Data_Collect AS (
 	cvr_pol_nbr,
 	cvr_pol_mod_nbr,
 	-- *INF*: IIF(ISNULL(cvr_policy_key),'',LTRIM(RTRIM(cvr_policy_key)))
-	IFF(cvr_policy_key IS NULL,
-		'',
-		LTRIM(RTRIM(cvr_policy_key
-			)
-		)
-	) AS v_Pol_key,
+	IFF(cvr_policy_key IS NULL, '', LTRIM(RTRIM(cvr_policy_key))) AS v_Pol_key,
 	-- *INF*: IIF(ISNULL(cvr_pol_nbr),'',LTRIM(RTRIM(cvr_pol_nbr)))
-	IFF(cvr_pol_nbr IS NULL,
-		'',
-		LTRIM(RTRIM(cvr_pol_nbr
-			)
-		)
-	) AS v_PolicyNumber,
+	IFF(cvr_pol_nbr IS NULL, '', LTRIM(RTRIM(cvr_pol_nbr))) AS v_PolicyNumber,
 	-- *INF*: IIF(ISNULL(cvr_pol_mod_nbr),'00',LTRIM(RTRIM(cvr_pol_mod_nbr)))
-	IFF(cvr_pol_mod_nbr IS NULL,
-		'00',
-		LTRIM(RTRIM(cvr_pol_mod_nbr
-			)
-		)
-	) AS v_PolicyVersion,
+	IFF(cvr_pol_mod_nbr IS NULL, '00', LTRIM(RTRIM(cvr_pol_mod_nbr))) AS v_PolicyVersion,
 	-- *INF*: IIF(v_Pol_key='',
 	-- IIF(v_PolicyNumber='','',v_PolicyNumber||v_PolicyVersion),v_Pol_key)
-	IFF(v_Pol_key = '',
-		IFF(v_PolicyNumber = '',
-			'',
-			v_PolicyNumber || v_PolicyVersion
-		),
-		v_Pol_key
+	IFF(
+	    v_Pol_key = '',
+	    IFF(
+	        v_PolicyNumber = '', '', v_PolicyNumber || v_PolicyVersion
+	    ),
+	    v_Pol_key
 	) AS v_PolicyKey,
 	-- *INF*: :LKP.LKP_POLICY(v_PolicyKey)
 	LKP_POLICY_v_PolicyKey.pol_ak_id AS v_lkp_PolicyAkid,
@@ -308,14 +293,14 @@ EXP_Source_Data_Collect AS (
 	pol_eff_date AS Pol_eff_date,
 	pol_exp_date AS Pol_exp_date,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_INSURANCESEGMENT('1')),-1,:LKP.LKP_INSURANCESEGMENT('1'))
-	IFF(LKP_INSURANCESEGMENT__1.InsuranceSegmentAKId IS NULL,
-		- 1,
-		LKP_INSURANCESEGMENT__1.InsuranceSegmentAKId
+	IFF(
+	    LKP_INSURANCESEGMENT__1.InsuranceSegmentAKId IS NULL, - 1,
+	    LKP_INSURANCESEGMENT__1.InsuranceSegmentAKId
 	) AS o_InsuranceSegmentAkid,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_STRATEGICPROFITCENTERAKID('1')),-1,:LKP.LKP_STRATEGICPROFITCENTERAKID('1'))
-	IFF(LKP_STRATEGICPROFITCENTERAKID__1.StrategicProfitCenterAKId IS NULL,
-		- 1,
-		LKP_STRATEGICPROFITCENTERAKID__1.StrategicProfitCenterAKId
+	IFF(
+	    LKP_STRATEGICPROFITCENTERAKID__1.StrategicProfitCenterAKId IS NULL, - 1,
+	    LKP_STRATEGICPROFITCENTERAKID__1.StrategicProfitCenterAKId
 	) AS o_StrategicProfitAkid
 	FROM SQ_claim_coverage_stage
 	LEFT JOIN LKP_POLICY LKP_POLICY_v_PolicyKey
@@ -351,11 +336,9 @@ EXP_DefaultingValues AS (
 	1 AS crrnt_snpsht_flag,
 	999 AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
@@ -377,8 +360,7 @@ EXP_DefaultingValues AS (
 	'N/A' AS pol_co_line_code,
 	'0' AS pol_cancellation_ind,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS pol_cancellation_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS pol_cancellation_date,
 	'N/A' AS pol_cancellation_rsn_code,
 	'N/A' AS state_of_domicile_code,
 	'N/A' AS wbconnect_upload_code,
@@ -405,14 +387,11 @@ EXP_DefaultingValues AS (
 	0 AS renl_disc,
 	0 AS renl_safe_driver_disc_count,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59 ','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS'
-	) AS nonrenewal_flag_date,
+	TO_TIMESTAMP('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS') AS nonrenewal_flag_date,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59 ','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS'
-	) AS audit_complt_date,
+	TO_TIMESTAMP('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS') AS audit_complt_date,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59 ','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS'
-	) AS orig_acct_date,
+	TO_TIMESTAMP('2100-12-31 23:59:59 ', 'YYYY-MM-DD HH24:MI:SS') AS orig_acct_date,
 	SYSDATE AS pol_enter_date,
 	'N/A' AS excess_claim_code,
 	'N/A' AS pol_status_on_pif,

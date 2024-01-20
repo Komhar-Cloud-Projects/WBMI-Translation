@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchSalesTerritoryRelationshipStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchSalesTerritoryRelationshipStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SalesTerritoryRelationshipStage AS (\n\tSELECT\n\t\tSalesTerritoryRelationshipStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tAgencyCode,\n\t\tSalesTerritoryID,\n\t\tSalesTerritoryCode,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID\n\tFROM SalesTerritoryRelationshipStage\n),\nLKP_ExistingArchive AS (\n\tSELECT\n\tHashKey,\n\tSalesTerritoryID,\n\tAgencyID\n\tFROM (\n\t\tselect\ta.ModifiedDate as ModifiedDate,\r\n\t\t\t\ta.HashKey as HashKey,\r\n\t\t\t\ta.SalesTerritoryID as SalesTerritoryID,\r\n\t\t\t\ta.AgencyID as AgencyID\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchSalesTerritoryRelationshipStage a\r\n\t\tinner join (\r\n\t\t\t\t\tselect SalesTerritoryID, AgencyID, max(ModifiedDate) as ModifiedDate\r\n\t\t\t\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchSalesTerritoryRelationshipStage\r\n\t\t\t\t\tgroup by SalesTerritoryID, AgencyID) b\r\n\t\ton  a.SalesTerritoryID = b.SalesTerritoryID\r\n\t\tand a.AgencyID = b.AgencyID\r\n\t\tand a.ModifiedDate = b.ModifiedDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY SalesTerritoryID,AgencyID ORDER BY HashKey) = 1\n),\nEXP_AddAuditID AS (\n\tSELECT\n\tSQ_SalesTerritoryRelationshipStage.SalesTerritoryRelationshipStageID,\n\tSQ_SalesTerritoryRelationshipStage.AgencyODSSourceSystemID,\n\tSQ_SalesTerritoryRelationshipStage.HashKey,\n\tSQ_SalesTerritoryRelationshipStage.ModifiedUserID,\n\tSQ_SalesTerritoryRelationshipStage.ModifiedDate,\n\tSQ_SalesTerritoryRelationshipStage.AgencyID,\n\tSQ_SalesTerritoryRelationshipStage.AgencyCode,\n\tSQ_SalesTerritoryRelationshipStage.SalesTerritoryID,\n\tSQ_SalesTerritoryRelationshipStage.SalesTerritoryCode,\n\tSQ_SalesTerritoryRelationshipStage.ExtractDate,\n\tSQ_SalesTerritoryRelationshipStage.AsOfDate,\n\tSQ_SalesTerritoryRelationshipStage.RecordCount,\n\tSQ_SalesTerritoryRelationshipStage.SourceSystemID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID,\n\tLKP_ExistingArchive.HashKey AS lkp_HashKey,\n\t-- *INF*: Decode(true,\r\n\t-- HashKey = lkp_HashKey, 'IGNORE',\r\n\t-- IsNull(lkp_HashKey), 'INSERT',\r\n\t-- 'UPDATE')\n\tDecode(\n\t    true,\n\t    HashKey = lkp_HashKey, 'IGNORE',\n\t    lkp_HashKey IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag\n\tFROM SQ_SalesTerritoryRelationshipStage\n\tLEFT JOIN LKP_ExistingArchive\n\tON LKP_ExistingArchive.SalesTerritoryID = SQ_SalesTerritoryRelationshipStage.SalesTerritoryID AND LKP_ExistingArchive.AgencyID = SQ_SalesTerritoryRelationshipStage.AgencyID\n),\nFIL_ChangesOnly AS (\n\tSELECT\n\tSalesTerritoryRelationshipStageID, \n\tAgencyODSSourceSystemID, \n\tHashKey, \n\tModifiedUserID, \n\tModifiedDate, \n\tAgencyID, \n\tAgencyCode, \n\tSalesTerritoryID, \n\tSalesTerritoryCode, \n\tExtractDate, \n\tAsOfDate, \n\tRecordCount, \n\tSourceSystemID, \n\tOUT_AUDIT_ID, \n\to_ChangeFlag\n\tFROM EXP_AddAuditID\n\tWHERE o_ChangeFlag = 'INSERT' OR o_ChangeFlag = 'UPDATE'\n),\nArchSalesTerritoryRelationshipStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchSalesTerritoryRelationshipStage\n\t(SalesTerritoryRelationshipStageID, AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, SalesTerritoryID, SalesTerritoryCode, ExtractDate, AsOfDate, RecordCount, SourceSystemID, AuditID)\n\tSELECT \n\tSALESTERRITORYRELATIONSHIPSTAGEID, \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tAGENCYCODE, \n\tSALESTERRITORYID, \n\tSALESTERRITORYCODE, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\tOUT_AUDIT_ID AS AUDITID\n\tFROM FIL_ChangesOnly\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

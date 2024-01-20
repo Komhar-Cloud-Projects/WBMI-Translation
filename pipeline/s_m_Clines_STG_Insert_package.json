@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Clines_STG_Insert_package",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Clines_STG_Insert_package",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_package AS (\n\tSELECT\n\t\tpkg_id,\n\t\tcust_id,\n\t\tcreated_user_id,\n\t\tcreated_date,\n\t\tmodified_user_id,\n\t\tmodified_date,\n\t\taccting_status_chc_id,\n\t\taccting_submitted_by_userid,\n\t\taccting_submitted_date,\n\t\tuw_status_chc_id,\n\t\tuw_submitted_by_userid,\n\t\tuw_submitted_date,\n\t\tagent_correspondence,\n\t\tstaffware_pkg_id\n\tFROM package\n),\nEXP_Values AS (\n\tSELECT\n\tpkg_id,\n\tcust_id,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tmodified_date,\n\taccting_status_chc_id,\n\taccting_submitted_by_userid,\n\taccting_submitted_date,\n\tuw_status_chc_id,\n\tuw_submitted_by_userid,\n\tuw_submitted_date,\n\tagent_correspondence,\n\tstaffware_pkg_id,\n\tSYSDATE AS extract_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id\n\tFROM SQ_package\n),\npackage_cl_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.package_cl_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.package_cl_stage\n\t(pkg_id, cust_id, created_user_id, created_date, modified_user_id, modified_date, accting_status_chc_id, accting_submitted_by_userid, accting_submitted_date, uw_status_chc_id, uw_submitted_by_userid, uw_submitted_date, agent_correspondence, staffware_pkg_id, extract_date, source_system_id)\n\tSELECT \n\tPKG_ID, \n\tCUST_ID, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tACCTING_STATUS_CHC_ID, \n\tACCTING_SUBMITTED_BY_USERID, \n\tACCTING_SUBMITTED_DATE, \n\tUW_STATUS_CHC_ID, \n\tUW_SUBMITTED_BY_USERID, \n\tUW_SUBMITTED_DATE, \n\tAGENT_CORRESPONDENCE, \n\tSTAFFWARE_PKG_ID, \n\tEXTRACT_DATE, \n\tSOURCE_SYSTEM_ID\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CommonStaging/"
+        },
+        "annotations": []
+    }
+}

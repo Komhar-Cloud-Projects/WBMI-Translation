@@ -16,22 +16,17 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_EffectiveDate
+	IFF(
+	    i_EffectiveDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate
 	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ExpirationDate
+	IFF(
+	    i_ExpirationDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'),
+	    i_ExpirationDate
 	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ModifiedDate
+	IFF(
+	    i_ModifiedDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate
 	) AS o_ModifiedDate
 	FROM SQ_Program
 ),
@@ -40,15 +35,9 @@ EXP_NumericValues AS (
 	ProgramId AS i_ProgramId,
 	ProgramAKId AS i_ProgramAKId,
 	-- *INF*: IIF(ISNULL(i_ProgramId),-1,i_ProgramId)
-	IFF(i_ProgramId IS NULL,
-		- 1,
-		i_ProgramId
-	) AS o_ProgramId,
+	IFF(i_ProgramId IS NULL, - 1, i_ProgramId) AS o_ProgramId,
 	-- *INF*: IIF(ISNULL(i_ProgramAKId),-1,i_ProgramAKId)
-	IFF(i_ProgramAKId IS NULL,
-		- 1,
-		i_ProgramAKId
-	) AS o_ProgramAKId
+	IFF(i_ProgramAKId IS NULL, - 1, i_ProgramAKId) AS o_ProgramAKId
 	FROM SQ_Program
 ),
 EXP_StringValues AS (
@@ -57,33 +46,27 @@ EXP_StringValues AS (
 	ProgramCode AS i_ProgramCode,
 	ProgramDescription AS i_ProgramDescription,
 	-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)
-	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'
-		),
-		1,
-		0
-	) AS o_CurrentSnapshotFlag,
+	IFF(TRUNC(i_ExpirationDate) = TO_TIMESTAMP('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_ProgramCode) OR LENGTH(i_ProgramCode)=0 OR IS_SPACES(i_ProgramCode),'N/A',LTRIM(RTRIM(i_ProgramCode)))
-	IFF(i_ProgramCode IS NULL 
-		OR LENGTH(i_ProgramCode
-		) = 0 
-		OR LENGTH(i_ProgramCode)>0 AND TRIM(i_ProgramCode)='',
-		'N/A',
-		LTRIM(RTRIM(i_ProgramCode
-			)
-		)
+	IFF(
+	    i_ProgramCode IS NULL
+	    or LENGTH(i_ProgramCode) = 0
+	    or LENGTH(i_ProgramCode)>0
+	    and TRIM(i_ProgramCode)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_ProgramCode))
 	) AS o_ProgramCode,
 	-- *INF*: IIF(ISNULL(i_ProgramDescription) OR LENGTH(i_ProgramDescription)=0 OR IS_SPACES(i_ProgramDescription),'N/A',LTRIM(RTRIM(i_ProgramDescription)))
-	IFF(i_ProgramDescription IS NULL 
-		OR LENGTH(i_ProgramDescription
-		) = 0 
-		OR LENGTH(i_ProgramDescription)>0 AND TRIM(i_ProgramDescription)='',
-		'N/A',
-		LTRIM(RTRIM(i_ProgramDescription
-			)
-		)
+	IFF(
+	    i_ProgramDescription IS NULL
+	    or LENGTH(i_ProgramDescription) = 0
+	    or LENGTH(i_ProgramDescription)>0
+	    and TRIM(i_ProgramDescription)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_ProgramDescription))
 	) AS o_ProgramDescription
 	FROM SQ_Program
 ),

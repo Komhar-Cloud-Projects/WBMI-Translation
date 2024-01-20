@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCFReinsuranceLocationStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCFReinsuranceLoca_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCFReinsuranceLocationStage AS (\n\tSELECT\n\t\tWBCFReinsuranceLocationStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tWBCFReinsuranceId,\n\t\tWBCFReinsuranceLocationId,\n\t\tSessionId,\n\t\tBuildingNumber,\n\t\tOccupancy,\n\t\tConstruction,\n\t\tStories,\n\t\tProtectionClass,\n\t\tYearBuilt,\n\t\tAdditionalBuildingNumbers,\n\t\tSprinklered,\n\t\tSprinkleredPercentage,\n\t\tLocationNumber,\n\t\tLocationAddress\n\tFROM WBCFReinsuranceLocationStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBCFReinsuranceLocationStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tWBCFReinsuranceId,\n\tWBCFReinsuranceLocationId,\n\tSessionId,\n\tBuildingNumber,\n\tOccupancy,\n\tConstruction,\n\tStories,\n\tProtectionClass,\n\tYearBuilt,\n\tAdditionalBuildingNumbers,\n\tSprinklered,\n\t-- *INF*: DECODE(Sprinklered, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    Sprinklered,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Sprinklered,\n\tSprinkleredPercentage,\n\tLocationNumber,\n\tLocationAddress,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_WBCFReinsuranceLocationStage\n),\nArchWBCFReinsuranceLocationStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCFReinsuranceLocationStage\n\t(ExtractDate, SourceSystemId, AuditId, WBCFReinsuranceLocationStageId, WBCFReinsuranceId, WBCFReinsuranceLocationId, SessionId, BuildingNumber, Occupancy, Construction, Stories, ProtectionClass, YearBuilt, AdditionalBuildingNumbers, Sprinklered, SprinkleredPercentage, LocationNumber, LocationAddress)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tWBCFREINSURANCELOCATIONSTAGEID, \n\tWBCFREINSURANCEID, \n\tWBCFREINSURANCELOCATIONID, \n\tSESSIONID, \n\tBUILDINGNUMBER, \n\tOCCUPANCY, \n\tCONSTRUCTION, \n\tSTORIES, \n\tPROTECTIONCLASS, \n\tYEARBUILT, \n\tADDITIONALBUILDINGNUMBERS, \n\to_Sprinklered AS SPRINKLERED, \n\tSPRINKLEREDPERCENTAGE, \n\tLOCATIONNUMBER, \n\tLOCATIONADDRESS\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

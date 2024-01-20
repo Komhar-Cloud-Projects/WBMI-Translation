@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archWBGOCRiskStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archWBGOCRiskStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBGOCRiskStage AS (\n\tSELECT\n\t\tWBGOCRiskStageId,\n\t\tLineId,\n\t\tWBGOCRiskId,\n\t\tSessionId,\n\t\tLocationId,\n\t\tHoleInOneDescription,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM WBGOCRiskStage1\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBGOCRiskStageId,\n\tLineId,\n\tWBGOCRiskId,\n\tSessionId,\n\tLocationId,\n\tHoleInOneDescription,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBGOCRiskStage\n),\nArchWBGOCRiskStage AS (\n\tINSERT INTO ArchWBGOCRiskStage\n\t(ExtractDate, SourceSystemId, AuditId, WBGOCRiskStageId, LineId, WBGOCRiskId, SessionId, LocationId, HoleInOneDescription)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBGOCRISKSTAGEID, \n\tLINEID, \n\tWBGOCRISKID, \n\tSESSIONID, \n\tLOCATIONID, \n\tHOLEINONEDESCRIPTION\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

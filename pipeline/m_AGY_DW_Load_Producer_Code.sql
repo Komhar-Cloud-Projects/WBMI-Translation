@@ -34,58 +34,50 @@ EXP_EDW_Convert_Agency_Key_Id_for_Producer_code AS (
 	PRODUCER_DESCRIPT AS IN_PRODUCER_DESCRIPT,
 	AGENCY_CODE AS IN_AGENCY_CODE,
 	-- *INF*: iif(isnull(IN_STATE_CODE),'N/A',iif(IS_SPACES(IN_STATE_CODE),'N/A',IN_STATE_CODE))
-	IFF(IN_STATE_CODE IS NULL,
-		'N/A',
-		IFF(LENGTH(IN_STATE_CODE)>0 AND TRIM(IN_STATE_CODE)='',
-			'N/A',
-			IN_STATE_CODE
-		)
+	IFF(
+	    IN_STATE_CODE IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(IN_STATE_CODE)>0 AND TRIM(IN_STATE_CODE)='', 'N/A', IN_STATE_CODE
+	    )
 	) AS STATE_CODE,
 	-- *INF*: iif(isnull(IN_AGENCY_NUM),'N/A',iif(IS_SPACES(IN_AGENCY_NUM),'N/A',IN_AGENCY_NUM))
-	IFF(IN_AGENCY_NUM IS NULL,
-		'N/A',
-		IFF(LENGTH(IN_AGENCY_NUM)>0 AND TRIM(IN_AGENCY_NUM)='',
-			'N/A',
-			IN_AGENCY_NUM
-		)
+	IFF(
+	    IN_AGENCY_NUM IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(IN_AGENCY_NUM)>0 AND TRIM(IN_AGENCY_NUM)='', 'N/A', IN_AGENCY_NUM
+	    )
 	) AS AGENCY_NUM,
 	-- *INF*: TO_CHAR(IN_PRODUCER_CODE)
-	TO_CHAR(IN_PRODUCER_CODE
-	) AS v_producer_code,
+	TO_CHAR(IN_PRODUCER_CODE) AS v_producer_code,
 	-- *INF*: rpad(v_producer_code,3)
-	rpad(v_producer_code, 3
-	) AS v_producer_code_pad,
+	rpad(v_producer_code, 3) AS v_producer_code_pad,
 	-- *INF*: iif(isnull(v_producer_code),'N/A',iif(IS_SPACES(v_producer_code),'N/A',v_producer_code))
-	IFF(v_producer_code IS NULL,
-		'N/A',
-		IFF(LENGTH(v_producer_code)>0 AND TRIM(v_producer_code)='',
-			'N/A',
-			v_producer_code
-		)
+	IFF(
+	    v_producer_code IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(v_producer_code)>0 AND TRIM(v_producer_code)='', 'N/A', v_producer_code
+	    )
 	) AS PRODUCER_CODE,
 	v_producer_code_pad AS producer_code_out,
 	-- *INF*: iif(isnull(IN_PRODUCER_DESCRIPT),'Not Available',iif(IS_SPACES(IN_PRODUCER_DESCRIPT),'Not Available',
 	-- iif(length(IN_PRODUCER_DESCRIPT)=0,'Not Available',ltrim(rtrim(IN_PRODUCER_DESCRIPT)))))
-	IFF(IN_PRODUCER_DESCRIPT IS NULL,
-		'Not Available',
-		IFF(LENGTH(IN_PRODUCER_DESCRIPT)>0 AND TRIM(IN_PRODUCER_DESCRIPT)='',
-			'Not Available',
-			IFF(length(IN_PRODUCER_DESCRIPT
-				) = 0,
-				'Not Available',
-				ltrim(rtrim(IN_PRODUCER_DESCRIPT
-					)
-				)
-			)
-		)
+	IFF(
+	    IN_PRODUCER_DESCRIPT IS NULL, 'Not Available',
+	    IFF(
+	        LENGTH(IN_PRODUCER_DESCRIPT)>0
+	    and TRIM(IN_PRODUCER_DESCRIPT)='', 'Not Available',
+	        IFF(
+	            length(IN_PRODUCER_DESCRIPT) = 0, 'Not Available',
+	            ltrim(rtrim(IN_PRODUCER_DESCRIPT))
+	        )
+	    )
 	) AS PRODUCER_DESCRIPT,
 	-- *INF*: iif(isnull(IN_AGENCY_CODE),'N/A',iif(IS_SPACES(IN_AGENCY_CODE),'N/A',IN_AGENCY_CODE))
-	IFF(IN_AGENCY_CODE IS NULL,
-		'N/A',
-		IFF(LENGTH(IN_AGENCY_CODE)>0 AND TRIM(IN_AGENCY_CODE)='',
-			'N/A',
-			IN_AGENCY_CODE
-		)
+	IFF(
+	    IN_AGENCY_CODE IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(IN_AGENCY_CODE)>0 AND TRIM(IN_AGENCY_CODE)='', 'N/A', IN_AGENCY_CODE
+	    )
 	) AS AGENCY_CODE,
 	IN_STATE_CODE || IN_AGENCY_NUM AS v_agency_key,
 	STATE_CODE || AGENCY_NUM AS OUT_Agency_Key,
@@ -152,15 +144,14 @@ EXP_Detect_Changes AS (
 	-- 	'NOCHANGE'))
 	-- 
 	-- 
-	IFF(old_producer_code_id IS NULL,
-		'NEW',
-		IFF(( PRODUCER_DESCRIPT <> OLD_PRODUCER_DESCRIPT 
-			) 
-			OR ( OUT_AGENCY_ak_ID <> OLD_OUT_AGENCY_ak_ID 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    old_producer_code_id IS NULL, 'NEW',
+	    IFF(
+	        (PRODUCER_DESCRIPT <> OLD_PRODUCER_DESCRIPT)
+	    or (OUT_AGENCY_ak_ID <> OLD_OUT_AGENCY_ak_ID),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	1 AS Crrnt_SnapSht_Flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_id,
@@ -168,14 +159,12 @@ EXP_Detect_Changes AS (
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
 	-- 
 	-- --sysdate normally has a time value.  We don't want the time value as our effectivity runs from day to day starting at midnight
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS Eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS Eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS Eff_to_date,
 	EXP_EDW_Convert_Agency_Key_Id_for_Producer_code.SOURCE_SYSTEM_ID,
 	sysdate AS Created_date,
 	sysdate AS Modified_date,
@@ -184,10 +173,7 @@ EXP_Detect_Changes AS (
 	-- *INF*: IIF(v_changed_flag='NEW',
 	-- NEXTVAL,
 	-- prdcr_code_ak_id)
-	IFF(v_changed_flag = 'NEW',
-		NEXTVAL,
-		prdcr_code_ak_id
-	) AS out_prdcr_code_ak_id
+	IFF(v_changed_flag = 'NEW', NEXTVAL, prdcr_code_ak_id) AS out_prdcr_code_ak_id
 	FROM EXP_EDW_Convert_Agency_Key_Id_for_Producer_code
 	LEFT JOIN LKP_Producer_code
 	ON LKP_Producer_code.producer_code = EXP_EDW_Convert_Agency_Key_Id_for_Producer_code.producer_code_out AND LKP_Producer_code.agency_key = EXP_EDW_Convert_Agency_Key_Id_for_Producer_code.OUT_Agency_Key AND LKP_Producer_code.emp_id = EXP_EDW_Convert_Agency_Key_Id_for_Producer_code.IN_EMP_ID
@@ -270,11 +256,10 @@ EXP_UPD_Producer_Code AS (
 	eff_to_date AS orig_eff_to_date,
 	-- *INF*: DECODE(TRUE, producer_code = v_PREV_ROW_producer_code and agency_key = v_PREV_ROW_agency_key and emp_id = v_prev_row_emp_id  , ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		producer_code = v_PREV_ROW_producer_code 
-		AND agency_key = v_PREV_ROW_agency_key 
-		AND emp_id = v_prev_row_emp_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    producer_code = v_PREV_ROW_producer_code and agency_key = v_PREV_ROW_agency_key and emp_id = v_prev_row_emp_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

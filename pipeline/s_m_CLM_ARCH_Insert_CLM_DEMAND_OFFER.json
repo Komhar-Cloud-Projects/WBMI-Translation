@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLM_DEMAND_OFFER",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLM_DEMAND_OFFER",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_clm_demand_offer_stage AS (\n\tSELECT\n\t\tclm_demand_offer_stage_id,\n\t\ttch_claim_nbr,\n\t\ttch_client_id,\n\t\tcreate_ts,\n\t\tdemand_offer_dt,\n\t\tdemand_amt,\n\t\toffer_amt,\n\t\tcreate_user_id,\n\t\tdamage_desc,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM clm_demand_offer_stage\n),\nEXPTRANS AS (\n\tSELECT\n\tclm_demand_offer_stage_id,\n\ttch_claim_nbr,\n\ttch_client_id,\n\tcreate_ts,\n\tdemand_offer_dt,\n\tdemand_amt,\n\toffer_amt,\n\tcreate_user_id,\n\tdamage_desc,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID\n\tFROM SQ_clm_demand_offer_stage\n),\narch_clm_demand_offer_stage AS (\n\tINSERT INTO arch_clm_demand_offer_stage\n\t(clm_demand_offer_stage_id, tch_claim_nbr, tch_client_id, create_ts, demand_offer_dt, demand_amt, offer_amt, create_user_id, damage_desc, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCLM_DEMAND_OFFER_STAGE_ID, \n\tTCH_CLAIM_NBR, \n\tTCH_CLIENT_ID, \n\tCREATE_TS, \n\tDEMAND_OFFER_DT, \n\tDEMAND_AMT, \n\tOFFER_AMT, \n\tCREATE_USER_ID, \n\tDAMAGE_DESC, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

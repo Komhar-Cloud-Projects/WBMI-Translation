@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBCFReinsuranceLocationStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBCFReinsuranceLocationS_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_CF_ReinsuranceLocation AS (\n\tWITH cte_WBCFReinsuranceLocation(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.WB_CF_ReinsuranceId, \r\n\tX.WB_CF_ReinsuranceLocationId, \r\n\tX.SessionId, \r\n\tX.BuildingNumber, \r\n\tX.Occupancy, \r\n\tX.Construction, \r\n\tX.Stories, \r\n\tX.ProtectionClass, \r\n\tX.YearBuilt, \r\n\tX.AdditionalBuildingNumbers, \r\n\tX.Sprinklered, \r\n\tX.SprinkleredPercentage, \r\n\tX.LocationNumber, \r\n\tX.LocationAddress \r\n\tFROM\r\n\tWB_CF_ReinsuranceLocation X\r\n\tinner join\r\n\tcte_WBCFReinsuranceLocation Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tWB_CF_ReinsuranceId,\n\tWB_CF_ReinsuranceLocationId,\n\tSessionId,\n\tBuildingNumber,\n\tOccupancy,\n\tConstruction,\n\tStories,\n\tProtectionClass,\n\tYearBuilt,\n\tAdditionalBuildingNumbers,\n\tSprinklered AS i_Sprinklered,\n\t-- *INF*: DECODE(i_Sprinklered, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    i_Sprinklered,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS Sprinklered,\n\tSprinkleredPercentage,\n\tLocationNumber,\n\tLocationAddress,\n\tsysdate AS ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId\n\tFROM SQ_WB_CF_ReinsuranceLocation\n),\nWBCFReinsuranceLocationStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCFReinsuranceLocationStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCFReinsuranceLocationStage\n\t(ExtractDate, SourceSystemId, WBCFReinsuranceId, WBCFReinsuranceLocationId, SessionId, BuildingNumber, Occupancy, Construction, Stories, ProtectionClass, YearBuilt, AdditionalBuildingNumbers, Sprinklered, SprinkleredPercentage, LocationNumber, LocationAddress)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tWB_CF_ReinsuranceId AS WBCFREINSURANCEID, \n\tWB_CF_ReinsuranceLocationId AS WBCFREINSURANCELOCATIONID, \n\tSESSIONID, \n\tBUILDINGNUMBER, \n\tOCCUPANCY, \n\tCONSTRUCTION, \n\tSTORIES, \n\tPROTECTIONCLASS, \n\tYEARBUILT, \n\tADDITIONALBUILDINGNUMBERS, \n\tSPRINKLERED, \n\tSPRINKLEREDPERCENTAGE, \n\tLOCATIONNUMBER, \n\tLOCATIONADDRESS\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,38 @@
+{
+    "name": "s_m_CLM_STG_Insert_SupTaskStatus",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Insert_SupTaskStatus",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SupTaskStatus AS (\n\tSELECT\n\t\tSupTaskStatusId,\n\t\tCreatedDate,\n\t\tCreatedUserId,\n\t\tModifiedDate,\n\t\tModifiedUserId,\n\t\tCode,\n\t\tDescription,\n\t\tSortOrder,\n\t\tCategoryName\n\tFROM SupTaskStatus\n),\nEXP_Collect AS (\n\tSELECT\n\tSYSDATE AS ExtractDate,\n\t'EXCEED AND PMS' AS SourceSystemId,\n\tSupTaskStatusId,\n\tCreatedDate,\n\tCreatedUserId,\n\tModifiedDate,\n\tModifiedUserId,\n\tCode,\n\tDescription,\n\tSortOrder,\n\tCategoryName\n\tFROM SQ_SupTaskStatus\n),\nSupTaskStatusStage AS (\n\tTRUNCATE TABLE SupTaskStatusStage;\n\tINSERT INTO SupTaskStatusStage\n\t(ExtractDate, SourceSystemId, SupTaskStatusId, CreatedDate, CreatedUserId, ModifiedDate, ModifiedUserId, Code, Description, SortOrder, CategoryName)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tSUPTASKSTATUSID, \n\tCREATEDDATE, \n\tCREATEDUSERID, \n\tMODIFIEDDATE, \n\tMODIFIEDUSERID, \n\tCODE, \n\tDESCRIPTION, \n\tSORTORDER, \n\tCATEGORYNAME\n\tFROM EXP_Collect\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

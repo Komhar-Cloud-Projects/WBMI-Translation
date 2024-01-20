@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_DCTtoWBStaging_ArchAutoPhysicalDamageInvoice",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DCTtoWBStaging_ArchAutoPhysicalDamageInvoice",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AutoPhysicalDamageInvoice AS (\n\t-- CreatedDate from <= previous year and BillMonth is NULL\r\n\tselect i1.AutoPhysicalDamageInvoiceId,\r\n\t\ti1.CreatedDate,\r\n\t\ti1.ModifiedDate,\r\n\t\ti1.ProcessStatus,\r\n\t\ti1.ProcessedEFT,\r\n\t\ti1.InvoiceType,\r\n\t\ti1.InvoiceNumber,\r\n\t\ti1.BillDate,\r\n\t\ti1.ClaimNumber,\r\n\t\ti1.ValReq,\r\n\t\ti1.VIN,\r\n\t\ti1.PolicyNumber,\r\n\t\ti1.VehicleOwner,\r\n\t\ti1.AppraiserName,\r\n\t\ti1.AdjusterName,\r\n\t\ti1.LossType,\r\n\t\ti1.LossDate,\r\n\t\ti1.LossState,\r\n\t\ti1.BillItemDescription,\r\n\t\ti1.BilledAmount,\r\n\t\ti1.Tax,\r\n\t\ti1.TotalAmount,\r\n\t\ti1.PaidByDraftKey,\r\n\t\tLEFT(i1.ErrorDescription, 8000) AS ErrorDescription,\r\n\t\ti1.BillMonth \r\n\tFROM AutoPhysicalDamageInvoice i1\r\n\tWHERE (DATEDIFF(yyyy, i1.CreatedDate, getDate()) >= @{pipeline().parameters.NUM_YEARS} and i1.BillMonth is NULL)\r\n\t @{pipeline().parameters.WHERE_CLAUSE} \r\n\tUNION ALL\r\n\t-- All rows for BillMonths that have MAX(CreatedDate) from <= previous year, and no incomplete rows (i.e. ProcessStatus in ('P','F','A'))\r\n\tselect i2.AutoPhysicalDamageInvoiceId,\r\n\t\ti2.CreatedDate,\r\n\t\ti2.ModifiedDate,\r\n\t\ti2.ProcessStatus,\r\n\t\ti2.ProcessedEFT,\r\n\t\ti2.InvoiceType,\r\n\t\ti2.InvoiceNumber,\r\n\t\ti2.BillDate,\r\n\t\ti2.ClaimNumber,\r\n\t\ti2.ValReq,\r\n\t\ti2.VIN,\r\n\t\ti2.PolicyNumber,\r\n\t\ti2.VehicleOwner,\r\n\t\ti2.AppraiserName,\r\n\t\ti2.AdjusterName,\r\n\t\ti2.LossType,\r\n\t\ti2.LossDate,\r\n\t\ti2.LossState,\r\n\t\ti2.BillItemDescription,\r\n\t\ti2.BilledAmount,\r\n\t\ti2.Tax,\r\n\t\ti2.TotalAmount,\r\n\t\ti2.PaidByDraftKey,\r\n\t\tLEFT(i2.ErrorDescription, 8000) AS ErrorDescription,\r\n\t\ti2.BillMonth \r\n\tFROM AutoPhysicalDamageInvoice i2\r\n\tWHERE i2.BillMonth in (\r\n\t\tselect candidateMonth.BillMonth\r\n\t\tfrom AutoPhysicalDamageInvoice candidateMonth\r\n\t\twhere candidateMonth.BillMonth is not NULL\r\n\t\t\tand not exists (select 1\r\n\t\t\t\tfrom AutoPhysicalDamageInvoice incompleteMonth\r\n\t\t\t\twhere incompleteMonth.BillMonth = candidateMonth.BillMonth\r\n\t\t\t\t\tand incompleteMonth.ProcessStatus in ('P','F','A'))\r\n\t\tgroup by candidateMonth.BillMonth\r\n\t\thaving DATEDIFF(yyyy, MAX(candidateMonth.CreatedDate), getDate()) >= @{pipeline().parameters.NUM_YEARS}\r\n\t\t)\r\n\t @{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_AutoPhysicalDamageInvoice AS (\n\tSELECT\n\tAutoPhysicalDamageInvoiceId,\n\tCreatedDate,\n\tModifiedDate,\n\tProcessStatus,\n\tProcessedEFT,\n\tInvoiceType,\n\tInvoiceNumber,\n\tBillDate,\n\tClaimNumber,\n\tValReq,\n\tVIN,\n\tPolicyNumber,\n\tVehicleOwner,\n\tAppraiserName,\n\tAdjusterName,\n\tLossType,\n\tLossDate,\n\tLossState,\n\tBillItemDescription,\n\tBilledAmount,\n\tTax,\n\tTotalAmount,\n\tPaidByDraftKey,\n\tErrorDescription,\n\tBillMonth\n\tFROM SQ_AutoPhysicalDamageInvoice\n),\nArchAutoPhysicalDamageInvoice AS (\n\tINSERT INTO ArchAutoPhysicalDamageInvoice\n\t(AutoPhysicalDamageInvoiceId, CreatedDate, ModifiedDate, ProcessStatus, ProcessedEFT, InvoiceType, InvoiceNumber, BillDate, ClaimNumber, ValReq, VIN, PolicyNumber, VehicleOwner, AppraiserName, AdjusterName, LossType, LossDate, LossState, BillItemDescription, BilledAmount, Tax, TotalAmount, PaidByDraftKey, ErrorDescription, BillMonth)\n\tSELECT \n\tAUTOPHYSICALDAMAGEINVOICEID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tPROCESSSTATUS, \n\tPROCESSEDEFT, \n\tINVOICETYPE, \n\tINVOICENUMBER, \n\tBILLDATE, \n\tCLAIMNUMBER, \n\tVALREQ, \n\tVIN, \n\tPOLICYNUMBER, \n\tVEHICLEOWNER, \n\tAPPRAISERNAME, \n\tADJUSTERNAME, \n\tLOSSTYPE, \n\tLOSSDATE, \n\tLOSSSTATE, \n\tBILLITEMDESCRIPTION, \n\tBILLEDAMOUNT, \n\tTAX, \n\tTOTALAMOUNT, \n\tPAIDBYDRAFTKEY, \n\tERRORDESCRIPTION, \n\tBILLMONTH\n\tFROM EXP_AutoPhysicalDamageInvoice\n),\nSQ_AutoPhysicalDamageInvoice_Delete AS (\n\t-- CreatedDate from <=last year and BillMonth is NULL\r\n\tselect i1.AutoPhysicalDamageInvoiceId \r\n\tFROM AutoPhysicalDamageInvoice i1\r\n\tWHERE (DATEDIFF(yyyy, i1.CreatedDate, getDate()) >= @{pipeline().parameters.NUM_YEARS} and i1.BillMonth is NULL)\r\n\t @{pipeline().parameters.WHERE_CLAUSE} \r\n\tUNION ALL\r\n\t-- All rows for BillMonths that have MAX(CreatedDate) from <= previous year, and no incomplete rows (i.e. ProcessStatus in ('P','F','A'))\r\n\tselect i2.AutoPhysicalDamageInvoiceId \r\n\tFROM AutoPhysicalDamageInvoice i2\r\n\tWHERE i2.BillMonth in (\r\n\t\tselect candidateMonth.BillMonth\r\n\t\tfrom AutoPhysicalDamageInvoice candidateMonth\r\n\t\twhere candidateMonth.BillMonth is not NULL\r\n\t\t\tand not exists (select 1\r\n\t\t\t\tfrom AutoPhysicalDamageInvoice incompleteMonth\r\n\t\t\t\twhere incompleteMonth.BillMonth = candidateMonth.BillMonth\r\n\t\t\t\t\tand incompleteMonth.ProcessStatus in ('P','F','A'))\r\n\t\tgroup by candidateMonth.BillMonth\r\n\t\thaving DATEDIFF(yyyy, MAX(candidateMonth.CreatedDate), getDate()) >= @{pipeline().parameters.NUM_YEARS}\r\n\t\t)\r\n\t @{pipeline().parameters.WHERE_CLAUSE}\n),\nEXPTRANS AS (\n\tSELECT\n\tAutoPhysicalDamageInvoiceId\n\tFROM SQ_AutoPhysicalDamageInvoice_Delete\n),\nUPDTRANS AS (\n\tSELECT\n\tAutoPhysicalDamageInvoiceId\n\tFROM EXPTRANS\n),\nAutoPhysicalDamageInvoice_Delete AS (\n\tDELETE FROM AutoPhysicalDamageInvoice\n\tWHERE (AutoPhysicalDamageInvoiceId) IN (SELECT  AUTOPHYSICALDAMAGEINVOICEID FROM UPDTRANS)\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "NUM_YEARS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimDataServices/"
+        },
+        "annotations": []
+    }
+}

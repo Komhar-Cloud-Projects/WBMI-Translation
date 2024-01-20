@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLAIM_DRAFT_CLIENT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLAIM_DRAFT_CLIENT",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLAIM_DRAFT_CLIENT_STAGE1 AS (\n\tSELECT\n\t\tclaim_draft_client_id AS CLAIM_DRAFT_CLIENT_ID,\n\t\tcdc_draft_nbr AS CDC_DRAFT_NBR,\n\t\tcdc_seq_nbr AS CDC_SEQ_NBR,\n\t\tcdc_payee_nm_id AS CDC_PAYEE_NM_ID,\n\t\tcdc_name_type_ind AS CDC_NAME_TYPE_IND,\n\t\tcdc_tax_id_nbr AS CDC_TAX_ID_NBR,\n\t\tcdc_report_to_irs AS CDC_REPORT_TO_IRS,\n\t\tcdc_tax_id_type_cd AS CDC_TAX_ID_TYPE_CD,\n\t\tcdc_cct_clt_seq AS CDC_CCT_CLT_SEQ,\n\t\tcdc_entry_opr_id AS CDC_ENTRY_OPR_ID,\n\t\tcdc_update_opr_id AS CDC_UPDATE_OPR_ID,\n\t\tcdc_upd_ts AS CDC_UPD_TS,\n\t\tcdc_pmsd_ts AS CDC_PMSD_TS,\n\t\tcdc_claim_nbr AS CDC_CLAIM_NBR,\n\t\tcdc_create_ts AS CDC_CREATE_TS,\n\t\textract_date AS EXTRACT_DATE,\n\t\tas_of_date AS AS_OF_DATE,\n\t\trecord_count AS RECORD_COUNT,\n\t\tsource_system_id AS SOURCE_SYSTEM_ID,\n\t\tcdc_pye_nm_cmt_id\n\tFROM CLAIM_DRAFT_CLIENT_STAGE\n),\nEXP_CLAIM_DRAFT_CLIENT_STAGE AS (\n\tSELECT\n\tCLAIM_DRAFT_CLIENT_ID,\n\tCDC_DRAFT_NBR,\n\tCDC_SEQ_NBR,\n\tCDC_PAYEE_NM_ID,\n\tCDC_NAME_TYPE_IND,\n\tCDC_TAX_ID_NBR,\n\tCDC_REPORT_TO_IRS,\n\tCDC_TAX_ID_TYPE_CD,\n\tCDC_CCT_CLT_SEQ,\n\tCDC_ENTRY_OPR_ID,\n\tCDC_UPDATE_OPR_ID,\n\tCDC_UPD_TS,\n\tCDC_PMSD_TS,\n\tCDC_CLAIM_NBR,\n\tCDC_CREATE_TS,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP,\n\tcdc_pye_nm_cmt_id\n\tFROM SQ_CLAIM_DRAFT_CLIENT_STAGE1\n),\nARCH_CLAIM_DRAFT_CLIENT_STAGE AS (\n\tINSERT INTO ARCH_CLAIM_DRAFT_CLIENT_STAGE\n\t(claim_draft_client_id, cdc_draft_nbr, cdc_seq_nbr, cdc_payee_nm_id, cdc_name_type_ind, cdc_tax_id_nbr, cdc_report_to_irs, cdc_tax_id_type_cd, cdc_cct_clt_seq, cdc_entry_opr_id, cdc_update_opr_id, cdc_upd_ts, cdc_pmsd_ts, cdc_claim_nbr, cdc_create_ts, extract_date, as_of_date, record_count, source_system_id, audit_id, cdc_pye_nm_cmt_id)\n\tSELECT \n\tCLAIM_DRAFT_CLIENT_ID AS CLAIM_DRAFT_CLIENT_ID, \n\tCDC_DRAFT_NBR AS CDC_DRAFT_NBR, \n\tCDC_SEQ_NBR AS CDC_SEQ_NBR, \n\tCDC_PAYEE_NM_ID AS CDC_PAYEE_NM_ID, \n\tCDC_NAME_TYPE_IND AS CDC_NAME_TYPE_IND, \n\tCDC_TAX_ID_NBR AS CDC_TAX_ID_NBR, \n\tCDC_REPORT_TO_IRS AS CDC_REPORT_TO_IRS, \n\tCDC_TAX_ID_TYPE_CD AS CDC_TAX_ID_TYPE_CD, \n\tCDC_CCT_CLT_SEQ AS CDC_CCT_CLT_SEQ, \n\tCDC_ENTRY_OPR_ID AS CDC_ENTRY_OPR_ID, \n\tCDC_UPDATE_OPR_ID AS CDC_UPDATE_OPR_ID, \n\tCDC_UPD_TS AS CDC_UPD_TS, \n\tCDC_PMSD_TS AS CDC_PMSD_TS, \n\tCDC_CLAIM_NBR AS CDC_CLAIM_NBR, \n\tCDC_CREATE_TS AS CDC_CREATE_TS, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID, \n\tCDC_PYE_NM_CMT_ID\n\tFROM EXP_CLAIM_DRAFT_CLIENT_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -24,243 +24,168 @@ EXP_GetValues AS (
 	v_Text1_Cur AS v_Text1_Prev,
 	v_Text2_Cur AS v_Text2_Prev,
 	-- *INF*: LTRIM(RTRIM(i_Text1))
-	LTRIM(RTRIM(i_Text1
-		)
-	) AS v_Text1_Cur,
+	LTRIM(RTRIM(i_Text1)) AS v_Text1_Cur,
 	-- *INF*: LTRIM(RTRIM(i_Text2))
-	LTRIM(RTRIM(i_Text2
-		)
-	) AS v_Text2_Cur,
+	LTRIM(RTRIM(i_Text2)) AS v_Text2_Cur,
 	-- *INF*: LTRIM(RTRIM(SUBSTR(v_Text1_Prev,INSTR(v_Text1_Prev,'@')+1,INSTR(v_Text1_Prev,'')-INSTR(v_Text1_Prev,'@')-1)))
-	LTRIM(RTRIM(SUBSTR(v_Text1_Prev, REGEXP_INSTR(v_Text1_Prev, '@'
-				) + 1, REGEXP_INSTR(v_Text1_Prev, ''
-				) - REGEXP_INSTR(v_Text1_Prev, '@'
-				) - 1
-			)
-		)
-	) AS v_UnderlyingInsurer_1_Prev,
+	LTRIM(RTRIM(SUBSTR(v_Text1_Prev, REGEXP_INSTR(v_Text1_Prev, '@') + 1, REGEXP_INSTR(v_Text1_Prev, '') - REGEXP_INSTR(v_Text1_Prev, '@') - 1))) AS v_UnderlyingInsurer_1_Prev,
 	-- *INF*: LTRIM(RTRIM(SUBSTR(v_Text1_Cur,INSTR(v_Text1_Cur,'@')+1,INSTR(v_Text1_Cur,'')-INSTR(v_Text1_Cur,'@')-1)))
-	LTRIM(RTRIM(SUBSTR(v_Text1_Cur, REGEXP_INSTR(v_Text1_Cur, '@'
-				) + 1, REGEXP_INSTR(v_Text1_Cur, ''
-				) - REGEXP_INSTR(v_Text1_Cur, '@'
-				) - 1
-			)
-		)
-	) AS v_UnderlyingInsurer_1_Cur,
+	LTRIM(RTRIM(SUBSTR(v_Text1_Cur, REGEXP_INSTR(v_Text1_Cur, '@') + 1, REGEXP_INSTR(v_Text1_Cur, '') - REGEXP_INSTR(v_Text1_Cur, '@') - 1))) AS v_UnderlyingInsurer_1_Cur,
 	-- *INF*: LTRIM(RTRIM(SUBSTR(v_Text2_Prev,INSTR(v_Text2_Prev,'@')+1,INSTR(v_Text2_Prev,'')-INSTR(v_Text2_Prev,'@')-1)))
-	LTRIM(RTRIM(SUBSTR(v_Text2_Prev, REGEXP_INSTR(v_Text2_Prev, '@'
-				) + 1, REGEXP_INSTR(v_Text2_Prev, ''
-				) - REGEXP_INSTR(v_Text2_Prev, '@'
-				) - 1
-			)
-		)
-	) AS v_UnderlyingInsurer_2_Prev,
+	LTRIM(RTRIM(SUBSTR(v_Text2_Prev, REGEXP_INSTR(v_Text2_Prev, '@') + 1, REGEXP_INSTR(v_Text2_Prev, '') - REGEXP_INSTR(v_Text2_Prev, '@') - 1))) AS v_UnderlyingInsurer_2_Prev,
 	-- *INF*: LTRIM(RTRIM(SUBSTR(v_Text2_Cur,INSTR(v_Text2_Cur,'@')+1,INSTR(v_Text2_Cur,'')-INSTR(v_Text2_Cur,'@')-1)))
-	LTRIM(RTRIM(SUBSTR(v_Text2_Cur, REGEXP_INSTR(v_Text2_Cur, '@'
-				) + 1, REGEXP_INSTR(v_Text2_Cur, ''
-				) - REGEXP_INSTR(v_Text2_Cur, '@'
-				) - 1
-			)
-		)
-	) AS v_UnderlyingInsurer_2_Cur,
+	LTRIM(RTRIM(SUBSTR(v_Text2_Cur, REGEXP_INSTR(v_Text2_Cur, '@') + 1, REGEXP_INSTR(v_Text2_Cur, '') - REGEXP_INSTR(v_Text2_Cur, '@') - 1))) AS v_UnderlyingInsurer_2_Cur,
 	-- *INF*: LTRIM(RTRIM(SUBSTR(v_Text1_Prev,INSTR(v_Text1_Prev,'@')+1,INSTR(v_Text1_Prev,'')-INSTR(v_Text1_Prev,'@')-1)))
-	LTRIM(RTRIM(SUBSTR(v_Text1_Prev, REGEXP_INSTR(v_Text1_Prev, '@'
-				) + 1, REGEXP_INSTR(v_Text1_Prev, ''
-				) - REGEXP_INSTR(v_Text1_Prev, '@'
-				) - 1
-			)
-		)
-	) AS v_UnderlyingPolicyKey_1_Prev,
+	LTRIM(RTRIM(SUBSTR(v_Text1_Prev, REGEXP_INSTR(v_Text1_Prev, '@') + 1, REGEXP_INSTR(v_Text1_Prev, '') - REGEXP_INSTR(v_Text1_Prev, '@') - 1))) AS v_UnderlyingPolicyKey_1_Prev,
 	-- *INF*: LTRIM(RTRIM(SUBSTR(v_Text1_Cur,INSTR(v_Text1_Cur,'@')+1,INSTR(v_Text1_Cur,'')-INSTR(v_Text1_Cur,'@')-1)))
-	LTRIM(RTRIM(SUBSTR(v_Text1_Cur, REGEXP_INSTR(v_Text1_Cur, '@'
-				) + 1, REGEXP_INSTR(v_Text1_Cur, ''
-				) - REGEXP_INSTR(v_Text1_Cur, '@'
-				) - 1
-			)
-		)
-	) AS v_UnderlyingPolicyKey_1_Cur,
+	LTRIM(RTRIM(SUBSTR(v_Text1_Cur, REGEXP_INSTR(v_Text1_Cur, '@') + 1, REGEXP_INSTR(v_Text1_Cur, '') - REGEXP_INSTR(v_Text1_Cur, '@') - 1))) AS v_UnderlyingPolicyKey_1_Cur,
 	-- *INF*: LTRIM(RTRIM(SUBSTR(v_Text2_Prev,INSTR(v_Text2_Prev,'@')+1,INSTR(v_Text2_Prev,'')-INSTR(v_Text2_Prev,'@')-1)))
-	LTRIM(RTRIM(SUBSTR(v_Text2_Prev, REGEXP_INSTR(v_Text2_Prev, '@'
-				) + 1, REGEXP_INSTR(v_Text2_Prev, ''
-				) - REGEXP_INSTR(v_Text2_Prev, '@'
-				) - 1
-			)
-		)
-	) AS v_UnderlyingPolicyKey_2_Prev,
+	LTRIM(RTRIM(SUBSTR(v_Text2_Prev, REGEXP_INSTR(v_Text2_Prev, '@') + 1, REGEXP_INSTR(v_Text2_Prev, '') - REGEXP_INSTR(v_Text2_Prev, '@') - 1))) AS v_UnderlyingPolicyKey_2_Prev,
 	-- *INF*: LTRIM(RTRIM(SUBSTR(v_Text2_Cur,INSTR(v_Text2_Cur,'@')+1,INSTR(v_Text2_Cur,'')-INSTR(v_Text2_Cur,'@')-1)))
-	LTRIM(RTRIM(SUBSTR(v_Text2_Cur, REGEXP_INSTR(v_Text2_Cur, '@'
-				) + 1, REGEXP_INSTR(v_Text2_Cur, ''
-				) - REGEXP_INSTR(v_Text2_Cur, '@'
-				) - 1
-			)
-		)
-	) AS v_UnderlyingPolicyKey_2_Cur,
+	LTRIM(RTRIM(SUBSTR(v_Text2_Cur, REGEXP_INSTR(v_Text2_Cur, '@') + 1, REGEXP_INSTR(v_Text2_Cur, '') - REGEXP_INSTR(v_Text2_Cur, '@') - 1))) AS v_UnderlyingPolicyKey_2_Cur,
 	-- *INF*: DECODE(TRUE,
 	-- INSTR(v_Text1_Prev,'EMPLOYERS' || CHR(39) || ' LIABILITY INSURANCE')>0,1,
 	-- INSTR(v_Text2_Prev,'EMPLOYERS' || CHR(39) || ' LIABILITY INSURANCE')>0,2,
 	-- 0)
-	DECODE(TRUE,
-		REGEXP_INSTR(v_Text1_Prev, 'EMPLOYERS' || CHR(39
-			) || ' LIABILITY INSURANCE'
-		) > 0, 1,
-		REGEXP_INSTR(v_Text2_Prev, 'EMPLOYERS' || CHR(39
-			) || ' LIABILITY INSURANCE'
-		) > 0, 2,
-		0
+	DECODE(
+	    TRUE,
+	    REGEXP_INSTR(v_Text1_Prev, 'EMPLOYERS' || CHR(39) || ' LIABILITY INSURANCE') > 0, 1,
+	    REGEXP_INSTR(v_Text2_Prev, 'EMPLOYERS' || CHR(39) || ' LIABILITY INSURANCE') > 0, 2,
+	    0
 	) AS v_EPLI_Indicator,
 	-- *INF*: DECODE(TRUE,
 	-- v_EPLI_Indicator=1,v_UnderlyingInsurer_2_Prev,
 	-- v_EPLI_Indicator=2,v_UnderlyingInsurer_1_Cur,
 	-- v_EPLI_Indicator=0,''
 	-- )
-	DECODE(TRUE,
-		v_EPLI_Indicator = 1, v_UnderlyingInsurer_2_Prev,
-		v_EPLI_Indicator = 2, v_UnderlyingInsurer_1_Cur,
-		v_EPLI_Indicator = 0, ''
+	DECODE(
+	    TRUE,
+	    v_EPLI_Indicator = 1, v_UnderlyingInsurer_2_Prev,
+	    v_EPLI_Indicator = 2, v_UnderlyingInsurer_1_Cur,
+	    v_EPLI_Indicator = 0, ''
 	) AS o_EPLI_Company_Name,
 	-- *INF*: DECODE(TRUE,
 	-- v_EPLI_Indicator=1,v_UnderlyingPolicyKey_1_Cur,
 	-- v_EPLI_Indicator=2,v_UnderlyingPolicyKey_2_Cur,
 	-- v_EPLI_Indicator=0,''
 	-- )
-	DECODE(TRUE,
-		v_EPLI_Indicator = 1, v_UnderlyingPolicyKey_1_Cur,
-		v_EPLI_Indicator = 2, v_UnderlyingPolicyKey_2_Cur,
-		v_EPLI_Indicator = 0, ''
+	DECODE(
+	    TRUE,
+	    v_EPLI_Indicator = 1, v_UnderlyingPolicyKey_1_Cur,
+	    v_EPLI_Indicator = 2, v_UnderlyingPolicyKey_2_Cur,
+	    v_EPLI_Indicator = 0, ''
 	) AS o_EPLI_PolicyKey,
 	-- *INF*: DECODE(TRUE,
 	-- INSTR(v_Text1_Prev,'BUSINESSOWNERS LIABILITY')>0,1,
 	-- INSTR(v_Text2_Prev,'BUSINESSOWNERS LIABILITY')>0,2,
 	-- 0)
-	DECODE(TRUE,
-		REGEXP_INSTR(v_Text1_Prev, 'BUSINESSOWNERS LIABILITY'
-		) > 0, 1,
-		REGEXP_INSTR(v_Text2_Prev, 'BUSINESSOWNERS LIABILITY'
-		) > 0, 2,
-		0
+	DECODE(
+	    TRUE,
+	    REGEXP_INSTR(v_Text1_Prev, 'BUSINESSOWNERS LIABILITY') > 0, 1,
+	    REGEXP_INSTR(v_Text2_Prev, 'BUSINESSOWNERS LIABILITY') > 0, 2,
+	    0
 	) AS v_Business_Indicator,
 	-- *INF*: DECODE(TRUE,
 	-- v_Business_Indicator=1,v_UnderlyingInsurer_2_Prev,
 	-- v_Business_Indicator=2,v_UnderlyingInsurer_1_Cur,
 	-- v_Business_Indicator=0,''
 	-- )
-	DECODE(TRUE,
-		v_Business_Indicator = 1, v_UnderlyingInsurer_2_Prev,
-		v_Business_Indicator = 2, v_UnderlyingInsurer_1_Cur,
-		v_Business_Indicator = 0, ''
+	DECODE(
+	    TRUE,
+	    v_Business_Indicator = 1, v_UnderlyingInsurer_2_Prev,
+	    v_Business_Indicator = 2, v_UnderlyingInsurer_1_Cur,
+	    v_Business_Indicator = 0, ''
 	) AS v_Business_Company_Name,
 	-- *INF*: DECODE(TRUE,
 	-- v_Business_Indicator=1,v_UnderlyingPolicyKey_1_Cur,
 	-- v_Business_Indicator=2,v_UnderlyingPolicyKey_2_Cur,
 	-- v_Business_Indicator=0,''
 	-- )
-	DECODE(TRUE,
-		v_Business_Indicator = 1, v_UnderlyingPolicyKey_1_Cur,
-		v_Business_Indicator = 2, v_UnderlyingPolicyKey_2_Cur,
-		v_Business_Indicator = 0, ''
+	DECODE(
+	    TRUE,
+	    v_Business_Indicator = 1, v_UnderlyingPolicyKey_1_Cur,
+	    v_Business_Indicator = 2, v_UnderlyingPolicyKey_2_Cur,
+	    v_Business_Indicator = 0, ''
 	) AS v_Business_PolicyKey,
 	-- *INF*: IIF(IN(SUBSTR(v_Business_PolicyKey,1,2),'BO','NA','NB'),'',v_Business_Company_Name)
-	IFF(SUBSTR(v_Business_PolicyKey, 1, 2
-		) IN ('BO','NA','NB'),
-		'',
-		v_Business_Company_Name
-	) AS o_BusinessOwners_Company_Name,
+	IFF(SUBSTR(v_Business_PolicyKey, 1, 2) IN ('BO','NA','NB'), '', v_Business_Company_Name) AS o_BusinessOwners_Company_Name,
 	-- *INF*: IIF(IN(SUBSTR(v_Business_PolicyKey,1,2),'BO','NA','NB'),'',v_Business_PolicyKey)
-	IFF(SUBSTR(v_Business_PolicyKey, 1, 2
-		) IN ('BO','NA','NB'),
-		'',
-		v_Business_PolicyKey
-	) AS o_BusinessOwners_PolicyKey,
+	IFF(SUBSTR(v_Business_PolicyKey, 1, 2) IN ('BO','NA','NB'), '', v_Business_PolicyKey) AS o_BusinessOwners_PolicyKey,
 	-- *INF*: DECODE(TRUE,
 	-- INSTR(v_Text1_Prev,'GENERAL LIABILITY INSURANCE')>0,1,
 	-- INSTR(v_Text2_Prev,'GENERAL LIABILITY INSURANCE')>0,2,
 	-- 0)
-	DECODE(TRUE,
-		REGEXP_INSTR(v_Text1_Prev, 'GENERAL LIABILITY INSURANCE'
-		) > 0, 1,
-		REGEXP_INSTR(v_Text2_Prev, 'GENERAL LIABILITY INSURANCE'
-		) > 0, 2,
-		0
+	DECODE(
+	    TRUE,
+	    REGEXP_INSTR(v_Text1_Prev, 'GENERAL LIABILITY INSURANCE') > 0, 1,
+	    REGEXP_INSTR(v_Text2_Prev, 'GENERAL LIABILITY INSURANCE') > 0, 2,
+	    0
 	) AS v_GL_Indicator,
 	-- *INF*: DECODE(TRUE,
 	-- v_GL_Indicator=1,v_UnderlyingInsurer_2_Prev,
 	-- v_GL_Indicator=2,v_UnderlyingInsurer_1_Cur,
 	-- v_GL_Indicator=0,''
 	-- )
-	DECODE(TRUE,
-		v_GL_Indicator = 1, v_UnderlyingInsurer_2_Prev,
-		v_GL_Indicator = 2, v_UnderlyingInsurer_1_Cur,
-		v_GL_Indicator = 0, ''
+	DECODE(
+	    TRUE,
+	    v_GL_Indicator = 1, v_UnderlyingInsurer_2_Prev,
+	    v_GL_Indicator = 2, v_UnderlyingInsurer_1_Cur,
+	    v_GL_Indicator = 0, ''
 	) AS o_GL_Company_Name,
 	-- *INF*: DECODE(TRUE,
 	-- v_GL_Indicator=1,v_UnderlyingPolicyKey_1_Cur,
 	-- v_GL_Indicator=2,v_UnderlyingPolicyKey_2_Cur,
 	-- v_GL_Indicator=0,''
 	-- )
-	DECODE(TRUE,
-		v_GL_Indicator = 1, v_UnderlyingPolicyKey_1_Cur,
-		v_GL_Indicator = 2, v_UnderlyingPolicyKey_2_Cur,
-		v_GL_Indicator = 0, ''
+	DECODE(
+	    TRUE,
+	    v_GL_Indicator = 1, v_UnderlyingPolicyKey_1_Cur,
+	    v_GL_Indicator = 2, v_UnderlyingPolicyKey_2_Cur,
+	    v_GL_Indicator = 0, ''
 	) AS o_GL_PolicyKey,
 	-- *INF*: DECODE(TRUE,
 	-- INSTR(v_Text1_Prev,'AUTOMOBILE LIABILITY INSURANCE')>0,1,
 	-- INSTR(v_Text2_Prev,'AUTOMOBILE LIABILITY INSURANCE')>0,2,
 	-- 0)
-	DECODE(TRUE,
-		REGEXP_INSTR(v_Text1_Prev, 'AUTOMOBILE LIABILITY INSURANCE'
-		) > 0, 1,
-		REGEXP_INSTR(v_Text2_Prev, 'AUTOMOBILE LIABILITY INSURANCE'
-		) > 0, 2,
-		0
+	DECODE(
+	    TRUE,
+	    REGEXP_INSTR(v_Text1_Prev, 'AUTOMOBILE LIABILITY INSURANCE') > 0, 1,
+	    REGEXP_INSTR(v_Text2_Prev, 'AUTOMOBILE LIABILITY INSURANCE') > 0, 2,
+	    0
 	) AS v_CA_Indicator,
 	-- *INF*: DECODE(TRUE,
 	-- v_CA_Indicator=1,v_UnderlyingInsurer_2_Prev,
 	-- v_CA_Indicator=2,v_UnderlyingInsurer_1_Cur,
 	-- v_CA_Indicator=0,''
 	-- )
-	DECODE(TRUE,
-		v_CA_Indicator = 1, v_UnderlyingInsurer_2_Prev,
-		v_CA_Indicator = 2, v_UnderlyingInsurer_1_Cur,
-		v_CA_Indicator = 0, ''
+	DECODE(
+	    TRUE,
+	    v_CA_Indicator = 1, v_UnderlyingInsurer_2_Prev,
+	    v_CA_Indicator = 2, v_UnderlyingInsurer_1_Cur,
+	    v_CA_Indicator = 0, ''
 	) AS o_CA_Company_Name,
 	-- *INF*: DECODE(TRUE,
 	-- v_CA_Indicator=1,v_UnderlyingPolicyKey_1_Cur,
 	-- v_CA_Indicator=2,v_UnderlyingPolicyKey_2_Cur,
 	-- v_CA_Indicator=0,''
 	-- )
-	DECODE(TRUE,
-		v_CA_Indicator = 1, v_UnderlyingPolicyKey_1_Cur,
-		v_CA_Indicator = 2, v_UnderlyingPolicyKey_2_Cur,
-		v_CA_Indicator = 0, ''
+	DECODE(
+	    TRUE,
+	    v_CA_Indicator = 1, v_UnderlyingPolicyKey_1_Cur,
+	    v_CA_Indicator = 2, v_UnderlyingPolicyKey_2_Cur,
+	    v_CA_Indicator = 0, ''
 	) AS o_CA_PolicyKey,
 	-- *INF*: IIF(SUBSTR(v_Business_PolicyKey,1,2)='BO',v_Business_Company_Name,'')
-	IFF(SUBSTR(v_Business_PolicyKey, 1, 2
-		) = 'BO',
-		v_Business_Company_Name,
-		''
-	) AS o_SMARTBusiness_Company_Name,
+	IFF(SUBSTR(v_Business_PolicyKey, 1, 2) = 'BO', v_Business_Company_Name, '') AS o_SMARTBusiness_Company_Name,
 	-- *INF*: IIF(SUBSTR(v_Business_PolicyKey,1,2)='BO',v_Business_PolicyKey,'')
-	IFF(SUBSTR(v_Business_PolicyKey, 1, 2
-		) = 'BO',
-		v_Business_PolicyKey,
-		''
-	) AS o_SMARTBusiness_PolicyKey,
+	IFF(SUBSTR(v_Business_PolicyKey, 1, 2) = 'BO', v_Business_PolicyKey, '') AS o_SMARTBusiness_PolicyKey,
 	-- *INF*: IIF(IN(SUBSTR(v_Business_PolicyKey,1,2),'NA','NB'),v_Business_Company_Name,'')
-	IFF(SUBSTR(v_Business_PolicyKey, 1, 2
-		) IN ('NA','NB'),
-		v_Business_Company_Name,
-		''
-	) AS o_SBOP_Company_Name,
+	IFF(SUBSTR(v_Business_PolicyKey, 1, 2) IN ('NA','NB'), v_Business_Company_Name, '') AS o_SBOP_Company_Name,
 	-- *INF*: IIF(IN(SUBSTR(v_Business_PolicyKey,1,2),'NA','NB'),v_Business_PolicyKey,'')
-	IFF(SUBSTR(v_Business_PolicyKey, 1, 2
-		) IN ('NA','NB'),
-		v_Business_PolicyKey,
-		''
-	) AS o_SBOP_PolicyKey,
+	IFF(SUBSTR(v_Business_PolicyKey, 1, 2) IN ('NA','NB'), v_Business_PolicyKey, '') AS o_SBOP_PolicyKey,
 	'N/A' AS o_UmbrellaCoverageScope,
 	-- *INF*: TO_DATE('20140101','yyyymmdd')
-	TO_DATE('20140101', 'yyyymmdd'
-	) AS o_RetroactiveDate
+	TO_TIMESTAMP('20140101', 'yyyymmdd') AS o_RetroactiveDate
 	FROM SQ_PifDept1553Stage
 ),
 SQ_EDW AS (
@@ -319,52 +244,40 @@ AGG_Umbrella AS (
 	MajorPerilSequenceNumber,
 	EPLI_Company_Name AS i_EPLI_Company_Name,
 	-- *INF*: MAX(i_EPLI_Company_Name)
-	MAX(i_EPLI_Company_Name
-	) AS o_EPLI_Company_Name,
+	MAX(i_EPLI_Company_Name) AS o_EPLI_Company_Name,
 	EPLI_PolicyKey AS i_EPLI_PolicyKey,
 	-- *INF*: MAX(i_EPLI_PolicyKey)
-	MAX(i_EPLI_PolicyKey
-	) AS o_EPLI_PolicyKey,
+	MAX(i_EPLI_PolicyKey) AS o_EPLI_PolicyKey,
 	BusinessOwner_Company_Name AS i_BusinessOwners_Company_Name,
 	-- *INF*: MAX(i_BusinessOwners_Company_Name)
-	MAX(i_BusinessOwners_Company_Name
-	) AS o_BusinessOwners_Company_Name,
+	MAX(i_BusinessOwners_Company_Name) AS o_BusinessOwners_Company_Name,
 	BusinessOwner_PolicyKey AS i_BusinessOwners_PolicyKey,
 	-- *INF*: MAX(i_BusinessOwners_PolicyKey)
-	MAX(i_BusinessOwners_PolicyKey
-	) AS o_BusinessOwners_PolicyKey,
+	MAX(i_BusinessOwners_PolicyKey) AS o_BusinessOwners_PolicyKey,
 	GL_Company_Name AS i_GL_Company_Name,
 	-- *INF*: MAX(i_GL_Company_Name)
-	MAX(i_GL_Company_Name
-	) AS o_GL_Company_Name,
+	MAX(i_GL_Company_Name) AS o_GL_Company_Name,
 	GL_PolicyKey AS i_GL_PolicyKey,
 	-- *INF*: MAX(i_GL_PolicyKey)
-	MAX(i_GL_PolicyKey
-	) AS o_GL_PolicyKey,
+	MAX(i_GL_PolicyKey) AS o_GL_PolicyKey,
 	CA_Company_Name AS i_CA_Company_Name,
 	-- *INF*: MAX(i_CA_Company_Name)
-	MAX(i_CA_Company_Name
-	) AS o_CA_Company_Name,
+	MAX(i_CA_Company_Name) AS o_CA_Company_Name,
 	CA_PolicyKey AS i_CA_PolicyKey,
 	-- *INF*: MAX(i_CA_PolicyKey)
-	MAX(i_CA_PolicyKey
-	) AS o_CA_PolicyKey,
+	MAX(i_CA_PolicyKey) AS o_CA_PolicyKey,
 	SMARTBusiness_Company_Name AS i_SMARTBusiness_Company_Name,
 	-- *INF*: MAX(i_SMARTBusiness_Company_Name)
-	MAX(i_SMARTBusiness_Company_Name
-	) AS o_SMARTBusiness_Company_Name,
+	MAX(i_SMARTBusiness_Company_Name) AS o_SMARTBusiness_Company_Name,
 	SMARTBusiness_PolicyKey AS i_SMARTBusiness_PolicyKey,
 	-- *INF*: MAX(i_SMARTBusiness_PolicyKey)
-	MAX(i_SMARTBusiness_PolicyKey
-	) AS o_SMARTBusiness_PolicyKey,
+	MAX(i_SMARTBusiness_PolicyKey) AS o_SMARTBusiness_PolicyKey,
 	SBOP_Company_Name AS i_SBOP_Company_Name,
 	-- *INF*: MAX(i_SBOP_Company_Name)
-	MAX(i_SBOP_Company_Name
-	) AS o_SBOP_Company_Name,
+	MAX(i_SBOP_Company_Name) AS o_SBOP_Company_Name,
 	SBOP_PolicyKey AS i_SBOP_PolicyKey,
 	-- *INF*: MAX(i_SBOP_PolicyKey)
-	MAX(i_SBOP_PolicyKey
-	) AS o_SBOP_PolicyKey,
+	MAX(i_SBOP_PolicyKey) AS o_SBOP_PolicyKey,
 	UmbrellaCoverageScope,
 	RetroactiveDate
 	FROM JNR_Umbrella
@@ -376,11 +289,9 @@ EXP_DefaultValue AS (
 	1 AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800/01/01 00:00:00','YYYY/MM/DD HH24:MI:SS')
-	TO_DATE('1800/01/01 00:00:00', 'YYYY/MM/DD HH24:MI:SS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('1800/01/01 00:00:00', 'YYYY/MM/DD HH24:MI:SS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100/12/31 23:59:59','YYYY/MM/DD HH24:MI:SS')
-	TO_DATE('2100/12/31 23:59:59', 'YYYY/MM/DD HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('2100/12/31 23:59:59', 'YYYY/MM/DD HH24:MI:SS') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -388,95 +299,67 @@ EXP_DefaultValue AS (
 	MajorPerilSequenceNumber,
 	o_EPLI_Company_Name AS i_EPLI_Company_Name,
 	-- *INF*: IIF(i_EPLI_Company_Name='' OR i_EPLI_PolicyKey='','N/A',i_EPLI_Company_Name)
-	IFF(i_EPLI_Company_Name = '' 
-		OR i_EPLI_PolicyKey = '',
-		'N/A',
-		i_EPLI_Company_Name
-	) AS o_EPLI_Company_Name,
+	IFF(i_EPLI_Company_Name = '' OR i_EPLI_PolicyKey = '', 'N/A', i_EPLI_Company_Name) AS o_EPLI_Company_Name,
 	o_EPLI_PolicyKey AS i_EPLI_PolicyKey,
 	-- *INF*: IIF(i_EPLI_PolicyKey='' OR i_EPLI_Company_Name='','N/A',REPLACESTR(0,i_EPLI_PolicyKey,' ',''))
-	IFF(i_EPLI_PolicyKey = '' 
-		OR i_EPLI_Company_Name = '',
-		'N/A',
-		REGEXP_REPLACE(i_EPLI_PolicyKey,' ','','i')
+	IFF(
+	    i_EPLI_PolicyKey = '' OR i_EPLI_Company_Name = '', 'N/A',
+	    REGEXP_REPLACE(i_EPLI_PolicyKey,' ','','i')
 	) AS o_EPLI_PolicyKey,
 	o_BusinessOwners_Company_Name AS i_BO_Company_Name,
 	-- *INF*: IIF(i_BO_Company_Name='' OR i_BO_PolicyKey='','N/A',i_BO_Company_Name)
-	IFF(i_BO_Company_Name = '' 
-		OR i_BO_PolicyKey = '',
-		'N/A',
-		i_BO_Company_Name
-	) AS o_BO_Company_Name,
+	IFF(i_BO_Company_Name = '' OR i_BO_PolicyKey = '', 'N/A', i_BO_Company_Name) AS o_BO_Company_Name,
 	o_BusinessOwners_PolicyKey AS i_BO_PolicyKey,
 	-- *INF*: IIF(i_BO_PolicyKey='' OR i_BO_Company_Name='','N/A',REPLACESTR(0,i_BO_PolicyKey,' ',''))
-	IFF(i_BO_PolicyKey = '' 
-		OR i_BO_Company_Name = '',
-		'N/A',
-		REGEXP_REPLACE(i_BO_PolicyKey,' ','','i')
+	IFF(
+	    i_BO_PolicyKey = '' OR i_BO_Company_Name = '', 'N/A',
+	    REGEXP_REPLACE(i_BO_PolicyKey,' ','','i')
 	) AS o_BO_PolicyKey,
 	o_GL_Company_Name AS i_GL_Company_Name,
 	-- *INF*: IIF(i_GL_Company_Name='' OR i_GL_PolicyKey='','N/A',i_GL_Company_Name)
-	IFF(i_GL_Company_Name = '' 
-		OR i_GL_PolicyKey = '',
-		'N/A',
-		i_GL_Company_Name
-	) AS o_GL_Company_Name,
+	IFF(i_GL_Company_Name = '' OR i_GL_PolicyKey = '', 'N/A', i_GL_Company_Name) AS o_GL_Company_Name,
 	o_GL_PolicyKey AS i_GL_PolicyKey,
 	-- *INF*: IIF(i_GL_PolicyKey='' OR i_GL_Company_Name='','N/A',REPLACESTR(0,i_GL_PolicyKey,' ',''))
-	IFF(i_GL_PolicyKey = '' 
-		OR i_GL_Company_Name = '',
-		'N/A',
-		REGEXP_REPLACE(i_GL_PolicyKey,' ','','i')
+	IFF(
+	    i_GL_PolicyKey = '' OR i_GL_Company_Name = '', 'N/A',
+	    REGEXP_REPLACE(i_GL_PolicyKey,' ','','i')
 	) AS o_GL_PolicyKey,
 	o_CA_Company_Name AS i_CA_Company_Name,
 	-- *INF*: IIF(i_CA_Company_Name='' OR i_CA_PolicyKey='','N/A',i_CA_Company_Name)
-	IFF(i_CA_Company_Name = '' 
-		OR i_CA_PolicyKey = '',
-		'N/A',
-		i_CA_Company_Name
-	) AS o_CA_Company_Name,
+	IFF(i_CA_Company_Name = '' OR i_CA_PolicyKey = '', 'N/A', i_CA_Company_Name) AS o_CA_Company_Name,
 	o_CA_PolicyKey AS i_CA_PolicyKey,
 	-- *INF*: IIF(i_CA_PolicyKey='' OR i_CA_Company_Name='','N/A',REPLACESTR(0,i_CA_PolicyKey,' ',''))
-	IFF(i_CA_PolicyKey = '' 
-		OR i_CA_Company_Name = '',
-		'N/A',
-		REGEXP_REPLACE(i_CA_PolicyKey,' ','','i')
+	IFF(
+	    i_CA_PolicyKey = '' OR i_CA_Company_Name = '', 'N/A',
+	    REGEXP_REPLACE(i_CA_PolicyKey,' ','','i')
 	) AS o_CA_PolicyKey,
 	o_SMARTBusiness_Company_Name AS i_SMARTBusiness_Company_Name,
 	-- *INF*: IIF(i_SMARTBusiness_Company_Name='' OR i_SMARTBusiness_PolicyKey='','N/A',i_SMARTBusiness_Company_Name)
-	IFF(i_SMARTBusiness_Company_Name = '' 
-		OR i_SMARTBusiness_PolicyKey = '',
-		'N/A',
-		i_SMARTBusiness_Company_Name
+	IFF(
+	    i_SMARTBusiness_Company_Name = '' OR i_SMARTBusiness_PolicyKey = '', 'N/A',
+	    i_SMARTBusiness_Company_Name
 	) AS o_SMARTBusiness_Company_Name,
 	o_SMARTBusiness_PolicyKey AS i_SMARTBusiness_PolicyKey,
 	-- *INF*: IIF(i_SMARTBusiness_PolicyKey='' OR i_SMARTBusiness_Company_Name='','N/A',REPLACESTR(0,i_SMARTBusiness_PolicyKey,' ',''))
-	IFF(i_SMARTBusiness_PolicyKey = '' 
-		OR i_SMARTBusiness_Company_Name = '',
-		'N/A',
-		REGEXP_REPLACE(i_SMARTBusiness_PolicyKey,' ','','i')
+	IFF(
+	    i_SMARTBusiness_PolicyKey = '' OR i_SMARTBusiness_Company_Name = '', 'N/A',
+	    REGEXP_REPLACE(i_SMARTBusiness_PolicyKey,' ','','i')
 	) AS o_SMARTBusiness_PolicyKey,
 	o_SBOP_Company_Name AS i_SBOP_Company_Name,
 	-- *INF*: IIF(i_SBOP_Company_Name='' OR i_SBOP_PolicyKey='','N/A',i_SBOP_Company_Name)
-	IFF(i_SBOP_Company_Name = '' 
-		OR i_SBOP_PolicyKey = '',
-		'N/A',
-		i_SBOP_Company_Name
-	) AS o_SBOP_Company_Name,
+	IFF(i_SBOP_Company_Name = '' OR i_SBOP_PolicyKey = '', 'N/A', i_SBOP_Company_Name) AS o_SBOP_Company_Name,
 	o_SBOP_PolicyKey AS i_SBOP_PolicyKey,
 	-- *INF*: IIF(i_SBOP_PolicyKey='' OR i_SBOP_Company_Name='','N/A',REPLACESTR(0,i_SBOP_PolicyKey,' ',''))
-	IFF(i_SBOP_PolicyKey = '' 
-		OR i_SBOP_Company_Name = '',
-		'N/A',
-		REGEXP_REPLACE(i_SBOP_PolicyKey,' ','','i')
+	IFF(
+	    i_SBOP_PolicyKey = '' OR i_SBOP_Company_Name = '', 'N/A',
+	    REGEXP_REPLACE(i_SBOP_PolicyKey,' ','','i')
 	) AS o_SBOP_PolicyKey,
 	UmbrellaCoverageScope,
 	RetroactiveDate,
 	-- *INF*: IIF(ISNULL(MajorPerilSequenceNumber) or MajorPerilSequenceNumber='N/A', -1, TO_INTEGER(MajorPerilSequenceNumber))
-	IFF(MajorPerilSequenceNumber IS NULL 
-		OR MajorPerilSequenceNumber = 'N/A',
-		- 1,
-		CAST(MajorPerilSequenceNumber AS INTEGER)
+	IFF(
+	    MajorPerilSequenceNumber IS NULL or MajorPerilSequenceNumber = 'N/A', - 1,
+	    CAST(MajorPerilSequenceNumber AS INTEGER)
 	) AS v_UmbrellaLayer,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	v_UmbrellaLayer AS o_UmbrellaLayer
@@ -538,13 +421,11 @@ EXP_DetectChange AS (
 	-- 'No Change'
 	-- ) 
 	-- 
-	DECODE(TRUE,
-		lkp_PremiumTransactionID IS NULL, 'New',
-		lkp_CoverageGuid <> CoverageGuid 
-		OR lkp_UmbrellaCoverageScope <> UmbrellaCoverageScope 
-		OR lkp_RetroactiveDate != RetroactiveDate 
-		OR lkp_UmbrellaLayer <> UmbrellaLayer, 'Update',
-		'No Change'
+	DECODE(
+	    TRUE,
+	    lkp_PremiumTransactionID IS NULL, 'New',
+	    lkp_CoverageGuid <> CoverageGuid or lkp_UmbrellaCoverageScope <> UmbrellaCoverageScope OR lkp_RetroactiveDate != RetroactiveDate or lkp_UmbrellaLayer <> UmbrellaLayer, 'Update',
+	    'No Change'
 	) AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag,
 	EXP_DefaultValue.RetroactiveDate,

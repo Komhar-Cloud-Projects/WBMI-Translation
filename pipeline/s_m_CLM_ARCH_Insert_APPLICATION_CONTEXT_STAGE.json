@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_APPLICATION_CONTEXT_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_APPLICATION_CONTEXT_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_application_context_stage AS (\n\tSELECT \r\n\t\tac.application_context_stage_id, \r\n\t\tac.app_context_guid, \r\n\t\tac.app_guid, \r\n\t\tac.app_context_ent_name, \r\n\t\tac.display_name, \r\n\t\tac.created_user_id, \r\n\t\tac.created_date, \r\n\t\tac.modified_user_id, \r\n\t\tac.modified_date, \r\n\t\tac.extract_date, \r\n\t\tac.as_of_date, \r\n\t\tac.record_count, \r\n\t\tac.source_system_id\r\n\tFROM   @{pipeline().parameters.SOURCE_TABLE_OWNER}.application_context_stage ac WITH (NOLOCK)\n),\nEXP_SOURCE AS (\n\tSELECT\n\tapplication_context_stage_id,\n\tapp_context_guid,\n\tapp_guid,\n\tapp_context_ent_name,\n\tdisplay_name,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tmodified_date,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id\n\tFROM SQ_application_context_stage\n),\narch_application_context_stage_INS AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_application_context_stage\n\t(application_context_stage_id, app_context_guid, app_guid, app_context_ent_name, display_name, created_user_id, created_date, modified_user_id, modified_date, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tAPPLICATION_CONTEXT_STAGE_ID, \n\tAPP_CONTEXT_GUID, \n\tAPP_GUID, \n\tAPP_CONTEXT_ENT_NAME, \n\tDISPLAY_NAME, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID\n\tFROM EXP_SOURCE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

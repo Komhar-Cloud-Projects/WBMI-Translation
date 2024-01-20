@@ -1,0 +1,750 @@
+{
+    "name": "wkf_CLM_ARCH_STG_EXD_1",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_ADJUSTER_TAB",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_CLM_OCCURENCE_NBR",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_ADJUSTER_TAB"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CLAIM_ADJUSTER",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CLAIM_ADJUSTER"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CLAIM_OBJECT_CLT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CLAIM_OBJECT_CLT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CLAIM_TAB",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CLAIM_TAB"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CLAIM_TRANSACTION",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_CLAIM_OBJECT_CLT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CLAIM_TRANSACTION"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CLM_OCCURENCE_NBR",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CLM_OCCURENCE_NBR"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CLIENT_TAB",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CLIENT_TAB"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CLM_COMMENTS",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CLM_COMMENTS"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_WC_WORK_HISTORY",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_CLAIM_TAB",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_WC_WORK_HISTORY"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_WORKERS_CPS_LOSS",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_WC_WORK_HISTORY",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_WORKERS_CPS_LOSS"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CHK",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CHK"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CLAIM_DRAFT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CLAIM_DRAFT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CLM_LOG_NOTES",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CLM_LOG_NOTES"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sp-PreBatch_ClaimsStaging_ARCH_EXD_DISABLED",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[dbo].[Proc_PreBatch]",
+                    "storedProcedureParameters": {
+                        "BatchName": {
+                            "value": {
+                                "value": "@activity('spt-Get_Audit_Batch_values').output.resultSets[0].rows[0]['batch_name']",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CLM_SUBROGATION",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CLM_SUBROGATION"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CMS_CLT_RELATION",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_CMS_PMS_RELATION",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CMS_CLT_RELATION"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CMS_PMS_RELATION",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_CLAIM_MEDICAL",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CMS_PMS_RELATION"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CMS_RELATION_IND",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_CMS_CONTROL_TAB",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CMS_RELATION_IND"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CMS_TIN_OFFICES",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_CMS_RELATION_IND",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CMS_TIN_OFFICES"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CMS_CONTROL_TAB",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CMS_CONTROL_TAB"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CLM_MED_PLAN_TYPE",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CLM_MED_PLAN_TYPE"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CLAIM_MEDICAL",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_CLM_MED_PLAN_TYPE",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CLAIM_MEDICAL"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CLMNT_IMPAIRMENT",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_WORKERS_CPS_LOSS",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CLMNT_IMPAIRMENT"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_ClaimsSurvey",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_CLAIM_ADJUSTER",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_ClaimsSurvey"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_SupManualClassStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_CLMNT_IMPAIRMENT",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_SupManualClassStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_CLAIM_RELATIONSHIP",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "sv-Set Params",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_CLAIM_RELATIONSHIP"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_ClaimClientStage",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_CLAIM_RELATIONSHIP",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_ClaimClientStage"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_InsurPayPayment",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_CHK",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_InsurPayPayment"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_InsurPayPaymentApproval",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_InsurPayPayment",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_InsurPayPaymentApproval"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_CLM_ARCH_Insert_SupPaymentWorkflow",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_CLM_ARCH_Insert_InsurPayPaymentApproval",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_CLM_ARCH_Insert_SupPaymentWorkflow"
+                    },
+                    "parameters": {}
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "spt-Get Pipeline Parameters",
+                "type": "Script",
+                "dependsOn": [
+                    {
+                        "activity": "sp-PreBatch_ClaimsStaging_ARCH_EXD_DISABLED",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SQL_SRVR_SQL06",
+                    "type": "LinkedServiceReference",
+                    "parameters": {
+                        "ServerName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_NM_SQL06",
+                            "type": "Expression"
+                        },
+                        "DatabaseName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_DB_NM_INFORMATICAAUDITCONTROL",
+                            "type": "Expression"
+                        },
+                        "UserName": {
+                            "value": "@pipeline().globalParameters.gp_SQL_SRVR_USER_NM_SQL06",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": {
+                                "value": "@concat('EXEC Proc_Pipeline_Parameters @workflow_name = ''', pipeline().Pipeline, '''')",
+                                "type": "Expression"
+                            }
+                        }
+                    ],
+                    "scriptBlockExecutionTimeout": "02:00:00"
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "sv-Set Params",
+                "type": "SetVariable",
+                "dependsOn": [
+                    {
+                        "activity": "spt-Get Pipeline Parameters",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "variableName": "Params",
+                    "value": {
+                        "value": "@activity('spt-Get Pipeline Parameters').output.resultSets[0].rows[0]['json_value']",
+                        "type": "Expression"
+                    }
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "variables": {
+            "Params": {
+                "type": "String"
+            }
+        }
+    }
+}

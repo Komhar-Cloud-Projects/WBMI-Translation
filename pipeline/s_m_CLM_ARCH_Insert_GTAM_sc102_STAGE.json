@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_GTAM_sc102_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_GTAM_sc102_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_GTAM_sc102_stage AS (\n\tSELECT\n\t\tSC102_stage_ID,\n\t\tTABLE_FLD,\n\t\tKEY_LEN,\n\t\tLOCATION,\n\t\tMASTER_COMPANY_NUMBER,\n\t\tRESERVE_CATEGORY,\n\t\tDATA_LEN,\n\t\tRESERVE_CATEGORY_DESCRIPTION,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM GTAM_sc102_stage\n),\nEXP_arch_GTAM_sc102_stage AS (\n\tSELECT\n\tSC102_stage_ID,\n\tTABLE_FLD,\n\tKEY_LEN,\n\tLOCATION,\n\tMASTER_COMPANY_NUMBER,\n\tRESERVE_CATEGORY,\n\tDATA_LEN,\n\tRESERVE_CATEGORY_DESCRIPTION,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_GTAM_sc102_stage\n),\narch_GTAM_sc102_stage AS (\n\tINSERT INTO arch_GTAM_sc102_stage\n\t(SC102_stage_ID, TABLE_FLD, KEY_LEN, LOCATION, MASTER_COMPANY_NUMBER, RESERVE_CATEGORY, DATA_LEN, RESERVE_CATEGORY_DESCRIPTION, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, audit_id)\n\tSELECT \n\tSC102_STAGE_ID, \n\tTABLE_FLD, \n\tKEY_LEN, \n\tLOCATION, \n\tMASTER_COMPANY_NUMBER, \n\tRESERVE_CATEGORY, \n\tDATA_LEN, \n\tRESERVE_CATEGORY_DESCRIPTION, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_arch_GTAM_sc102_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

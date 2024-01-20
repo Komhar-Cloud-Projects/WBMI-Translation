@@ -1,0 +1,59 @@
+{
+    "name": "s_m_POL_STG_Load_AutoFilingReport",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Load_AutoFilingReport",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AutoFiling AS (\n\tWITH AutoFilingsList (HistoryID, PolicyNumber, PolicyVersionFormatted)\r\n\tAS\r\n\t(SELECT MAX(trans.HistoryID), pol.PolicyNumber, wpol.PolicyVersionFormatted\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction trans WITH(NOLOCK)\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Policy pol WITH(NOLOCK) on trans.sessionid = pol.sessionid\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Policy wpol WITH(NOLOCK) on wpol.policyid = pol.PolicyId\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.wb_cl_policy wcpol WITH(NOLOCK) on wcpol.wb_policyid = wpol.WB_PolicyId\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_CL_Filing wcfiling WITH(NOLOCK) on wcfiling.WB_CL_PolicyId = wcpol.WB_CL_PolicyId\r\n\tWHERE trans.TransactionDate between @{pipeline().parameters.START_DATE} and @{pipeline().parameters.END_DATE}\r\n\tand trans.State = 'Committed' \r\n\tand trans.type not in ('VoidDividend','RevisedDividend','RetrospectiveCalculation', 'FinalAudit', 'Dividend', 'Reporting', 'VoidFinalAudit', 'RevisedFinalAudit')\r\n\tand wcfiling.FilingType is not null\r\n\tGROUP BY pol.policynumber, wpol.PolicyVersionFormatted\r\n\t)\r\n\t\r\n\tSELECT wpty.CustomerNum\r\n\t,pol.PolicyNumber\r\n\t,wpol.PolicyVersionFormatted as Mod\r\n\t,wpol.Division\r\n\t,pol.PrimaryRatingState\r\n\t,pol.EffectiveDate\r\n\t,pol.ExpirationDate\r\n\t,agn.Reference as AgencyNumber\r\n\t,pty.Name as AgencyName\r\n\t,pty1.Name as InsuredName\r\n\t,cast(case when pol.expirationdate < @{pipeline().parameters.POL_EXP} and pol.Status not in ('Cancelled','NonRenewed') then 'Expired' else pol.Status end as varchar) as PolicyStatus\r\n\t,wcfiling.USDOTNumber\r\n\t,wcfiling.FilingName\r\n\t,wcfiling.FilingType\r\n\t,cast(case when wcfiling.MC90Only = '1' then 'Y' else 'N' end as varchar) as MC90Only\r\n\t,cast(case when wcfiling.FormType is not null then wcfiling.FormType else 'N/A' end as varchar) as FormType\r\n\t,cast (case when wcfiling.IntrastateFormEEX = '1' then 'Y' else 'N' end as varchar) as IntrastateFormEEX\r\n\t,cast (case when wcfiling.IntrastateFormH = '1' then 'Y' else 'N' end as varchar) as IntrastateFormH\r\n\t,cast (case when wcfiling.IntrastateFormHHaulingStates is null or wcfiling.IntrastateFormHHaulingStates = '0'  then 'N/A' else wcfiling.IntrastateFormHHaulingStates end as varchar) as HaulingStates\r\n\t,cast (case when wcfiling.InterstateBMC91X = '1' then 'Y' else 'N' end as varchar) as InterstateBMC91X\r\n\t,cast (case when wcfiling.InterstateBMC34 = '1' then 'Y' else 'N' end as varchar) as InterstateBMC34\r\n\t,cast (case when wcfiling.WIHumanServices = '1' then 'Y' else 'N' end as varchar) as HumanServices\r\n\t,cast (case when wcfiling.WISchoolBuss = '1' then 'Y' else 'N' end as varchar) as SchoolBus\r\n\t,cast (case when wcfiling.OHHaulingPermit = '1' then 'Y' else 'N' end as varchar) as OHHaulingPermit\r\n\t,wcfiling.status as FilingStatus\r\n\t,wcfiling.effective as FilingEffectiveDate\r\n\t,cast (case when wcfiling.Deleted = '1' then 'Y' else 'N' end as varchar) as DeletedFilingPage\r\n\tFROM AutoFilingsList AFL\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction trn WITH(NOLOCK) on trn.historyid = AFL.HistoryID\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Policy pol WITH(NOLOCK) on trn.sessionid = pol.sessionid\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Policy wpol WITH(NOLOCK) on wpol.sessionid = trn.sessionid\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_CL_Filing wcfiling WITH(NOLOCK) on wcfiling.sessionid = trn.sessionid\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Agency agn WITH(NOLOCK) on agn.sessionid = trn.sessionid\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Party pty WITH(NOLOCK) on pty.sessionid = trn.sessionid and pty.partyid = agn.partyid\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Party pty1 WITH(NOLOCK) on pty1.sessionid = trn.sessionid\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_Party wpty WITH(NOLOCK) on wpty.sessionid = pol.sessionid\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_PartyAssociation ptya WITH(NOLOCK) on ptya.partyid = pty1.partyid and ptya.PartyAssociationType = 'Account'\r\n\tWHERE trn.State = 'Committed'\r\n\tand trn.type not in ('VoidDividend','RevisedDividend','RetrospectiveCalculation', 'FinalAudit', 'Dividend', 'Reporting', 'VoidFinalAudit', 'RevisedFinalAudit')\r\n\tand trn.TransactionDate between @{pipeline().parameters.START_DATE} and @{pipeline().parameters.END_DATE}\r\n\tand wcfiling.FilingType is not null\r\n\tand wpty.customernum is not null\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\r\n\tGROUP BY wpty.CustomerNum\r\n\t,pol.PolicyNumber\r\n\t,wpol.PolicyVersionFormatted\r\n\t,wpol.Division\r\n\t,pol.primaryratingstate\r\n\t,pol.effectivedate\r\n\t,pol.expirationdate\r\n\t,agn.Reference\r\n\t,pty.Name\r\n\t,pty1.Name\r\n\t,pol.Status\r\n\t,wcfiling.USDOTNumber\r\n\t,wcfiling.FilingName\r\n\t,wcfiling.FilingType\r\n\t,wcfiling.MC90Only\r\n\t,wcfiling.FormType\r\n\t,wcfiling.IntrastateFormEEX\r\n\t,wcfiling.IntrastateFormH\r\n\t,wcfiling.IntrastateFormHHaulingStates\r\n\t,wcfiling.InterstateBMC91X\r\n\t,wcfiling.InterstateBMC34\r\n\t,wcfiling.WIHumanServices\r\n\t,wcfiling.WISchoolBuss\r\n\t,wcfiling.OHHaulingPermit\r\n\t,wcfiling.Status\r\n\t,wcfiling.Effective\r\n\t,wcfiling.Deleted\r\n\tORDER BY 1, 2, 3, 4\n),\nEXP_AutoFiling AS (\n\tSELECT\n\tCustomerNum,\n\tPolicyNumber,\n\tPolicyVersionFormatted AS Mod,\n\tDivision,\n\tPrimaryRatingState,\n\tEffectiveDate,\n\tExpirationDate,\n\tReference AS AgencyNumber,\n\tName AS i_AgencyName,\n\t-- *INF*: chr(34)  || i_AgencyName || chr(34)\n\tchr(34) || i_AgencyName || chr(34) AS o_AgencyName,\n\tInsuredName AS i_InsuredName,\n\t-- *INF*: chr(34)  || i_InsuredName || chr(34)\n\tchr(34) || i_InsuredName || chr(34) AS o_InsuredName,\n\tPolicyStatus,\n\tUSDOTNumber,\n\tFilingName AS i_FilingName,\n\t-- *INF*: chr(34) || i_FilingName || chr(34)\n\tchr(34) || i_FilingName || chr(34) AS o_FilingName,\n\tFilingType,\n\tMC90Only,\n\tFormType,\n\tIntrastateFormEEX,\n\tIntrastateFormH,\n\tIntrastateFormHHaulingStates AS i_HaulingStates,\n\t'\"' || i_HaulingStates || '\"' AS o_HaulingStates,\n\tInterstateBMC91X,\n\tInterstateBMC34,\n\tWIHumanServices AS HumanServices,\n\tWISchoolBuss AS SchoolBus,\n\tOHHaulingPermit,\n\tStatus AS FilingStatus,\n\tEffective AS FilingEffectiveDate,\n\tDeleted AS DeletedFilingPage\n\tFROM SQ_AutoFiling\n),\nAutoFilingReport AS (\n\tINSERT INTO AutoFilingReport\n\t(CustomerNum, PolicyNumber, Mod, Division, PrimaryRatingState, EffectiveDate, ExpirationDate, AgencyNumber, AgencyName, InsuredName, PolicyStatus, USDOTNumber, FilingName, FilingType, MC90Only, FormType, IntrastateFormEEX, IntrastateFormH, HaulingStates, InterstateBMC91X, InterstateBMC34, HumanServices, SchoolBus, OHHaulingPermit, FilingStatus, FilingEffectiveDate, DeletedFilingPage)\n\tSELECT \n\tCUSTOMERNUM, \n\tPOLICYNUMBER, \n\tMOD, \n\tDIVISION, \n\tPRIMARYRATINGSTATE, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tAGENCYNUMBER, \n\to_AgencyName AS AGENCYNAME, \n\to_InsuredName AS INSUREDNAME, \n\tPOLICYSTATUS, \n\tUSDOTNUMBER, \n\to_FilingName AS FILINGNAME, \n\tFILINGTYPE, \n\tMC90ONLY, \n\tFORMTYPE, \n\tINTRASTATEFORMEEX, \n\tINTRASTATEFORMH, \n\to_HaulingStates AS HAULINGSTATES, \n\tINTERSTATEBMC91X, \n\tINTERSTATEBMC34, \n\tHUMANSERVICES, \n\tSCHOOLBUS, \n\tOHHAULINGPERMIT, \n\tFILINGSTATUS, \n\tFILINGEFFECTIVEDATE, \n\tDELETEDFILINGPAGE\n\tFROM EXP_AutoFiling\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "START_DATE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "END_DATE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "POL_EXP": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

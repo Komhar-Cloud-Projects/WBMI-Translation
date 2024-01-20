@@ -105,35 +105,16 @@ EXP_GetValues AS (
 	SYSDATE AS o_CreateDate,
 	SYSDATE AS o_ModifiedDate,
 	-- *INF*: LTRIM(RTRIM(i_Pmd4tFormNo))
-	LTRIM(RTRIM(i_Pmd4tFormNo
-		)
-	) AS o_FormNum,
+	LTRIM(RTRIM(i_Pmd4tFormNo)) AS o_FormNum,
 	-- *INF*: TO_DATE(TO_CHAR(i_Pmd4tYearTransaction) || LPAD(TO_CHAR(i_Pmd4tMonthTransaction),2,'0') || LPAD(TO_CHAR(i_Pmd4tDayTransaction),2,'0'),'YYYYMMDD')
-	TO_DATE(TO_CHAR(i_Pmd4tYearTransaction
-		) || LPAD(TO_CHAR(i_Pmd4tMonthTransaction
-			), 2, '0'
-		) || LPAD(TO_CHAR(i_Pmd4tDayTransaction
-			), 2, '0'
-		), 'YYYYMMDD'
-	) AS v_FormTransactionDate,
+	TO_TIMESTAMP(TO_CHAR(i_Pmd4tYearTransaction) || LPAD(TO_CHAR(i_Pmd4tMonthTransaction), 2, '0') || LPAD(TO_CHAR(i_Pmd4tDayTransaction), 2, '0'), 'YYYYMMDD') AS v_FormTransactionDate,
 	-- *INF*: IIF(ISNULL(i_Pmd4tFormMonth) OR ISNULL(i_Pmd4tFormYear) OR i_Pmd4tFormMonth=0, NULL,TO_DATE(LPAD(TO_CHAR(i_Pmd4tFormMonth),2,'0') || '01' || LPAD(TO_CHAR(i_Pmd4tFormYear),2,'0'),'MMDDRR'))
-	IFF(i_Pmd4tFormMonth IS NULL 
-		OR i_Pmd4tFormYear IS NULL 
-		OR i_Pmd4tFormMonth = 0,
-		NULL,
-		TO_DATE(LPAD(TO_CHAR(i_Pmd4tFormMonth
-				), 2, '0'
-			) || '01' || LPAD(TO_CHAR(i_Pmd4tFormYear
-				), 2, '0'
-			), 'MMDDRR'
-		)
+	IFF(
+	    i_Pmd4tFormMonth IS NULL OR i_Pmd4tFormYear IS NULL OR i_Pmd4tFormMonth = 0, NULL,
+	    TO_TIMESTAMP(LPAD(TO_CHAR(i_Pmd4tFormMonth), 2, '0') || '01' || LPAD(TO_CHAR(i_Pmd4tFormYear), 2, '0'), 'MMDDRR')
 	) AS v_FormDate,
 	-- *INF*: IIF(ISNULL(v_FormDate),TO_DATE('18000101','YYYYMMDD'),v_FormDate)
-	IFF(v_FormDate IS NULL,
-		TO_DATE('18000101', 'YYYYMMDD'
-		),
-		v_FormDate
-	) AS o_FormEditionDate,
+	IFF(v_FormDate IS NULL, TO_TIMESTAMP('18000101', 'YYYYMMDD'), v_FormDate) AS o_FormEditionDate,
 	i_PolicyCoverageID AS o_PolicyCoverageID
 	FROM AGG_PolicyCoverageForm
 ),

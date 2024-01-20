@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CUS_STG_Insert_DCT_Policy_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CUS_STG_Insert_DCT_Policy_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_Policy AS (\n\tSELECT DC_Policy.PolicyId, DC_Policy.SessionId, DC_Policy.Id, DC_Policy.EffectiveDate, DC_Policy.ExpirationDate, DC_Policy.LineOfBusiness, DC_Policy.Term, DC_Policy.PrimaryRatingState, DC_Policy.Product, DC_Policy.HonorRates, DC_Policy.AuditPeriod, DC_Policy.SICCode, DC_Policy.SICCodeDesc, DC_Policy.NAICSCode, DC_Policy.NAICSCodeDesc, DC_Policy.QuoteNumber, DC_Policy.TermFactor, DC_Policy.CancellationDate, DC_Policy.Description, DC_Policy.PolicyNumber, DC_Policy.Status, DC_Policy.TransactionDate, DC_Policy.TransactionDateTime, DC_Policy.PreviousPolicyNumber, DC_Policy.InceptionDate, DC_Policy.PolicyTermID, DC_Policy.AccountID, DC_Policy.TaxesSurcharges, DC_Policy.Auditable \r\n\tFROM\r\n\tDC_Policy\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session on\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Policy.SessionId=@{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session.SessionId\r\n\tWHERE\r\n\tDC_Session.CreateDateTime >=  '@{pipeline().parameters.SELECTION_START_TS}'\r\n\tand \r\n\tDC_Session.CreateDateTime <  '@{pipeline().parameters.SELECTION_END_TS}'\r\n\tORDER BY\r\n\tDC_Policy.SessionId\n),\nExp_Policy AS (\n\tSELECT\n\tPolicyId,\n\tSessionId,\n\tId,\n\tEffectiveDate,\n\tExpirationDate,\n\tLineOfBusiness,\n\tTerm,\n\tPrimaryRatingState,\n\tProduct,\n\tHonorRates,\n\tAuditPeriod,\n\tSICCode,\n\tSICCodeDesc,\n\tNAICSCode,\n\tNAICSCodeDesc,\n\tQuoteNumber,\n\tTermFactor,\n\tCancellationDate,\n\tDescription,\n\tPolicyNumber,\n\tStatus,\n\tTransactionDate,\n\tTransactionDateTime,\n\tPreviousPolicyNumber,\n\tInceptionDate,\n\tPolicyTermID,\n\tAccountID,\n\tTaxesSurcharges,\n\tAuditable,\n\tSysdate AS ExtractDate,\n\t'DCT' AS SourceSystemID\n\tFROM SQ_DC_Policy\n),\nDCPolicyStage AS (\n\tINSERT INTO Shortcut_to_DCPolicyStage\n\t(ExtractDate, SourceSystemid, PolicyId, SessionId, Id, EffectiveDate, ExpirationDate, LineOfBusiness, Term, PrimaryRatingState, Product, HonorRates, AuditPeriod, SICCode, SICCodeDesc, NAICSCode, NAICSCodeDesc, QuoteNumber, TermFactor, CancellationDate, Description, PolicyNumber, Status, TransactionDate, TransactionDateTime, PreviousPolicyNumber, InceptionDate, PolicyTermID, AccountID, TaxesSurcharges, Auditable)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemID AS SOURCESYSTEMID, \n\tPOLICYID, \n\tSESSIONID, \n\tID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tLINEOFBUSINESS, \n\tTERM, \n\tPRIMARYRATINGSTATE, \n\tPRODUCT, \n\tHONORRATES, \n\tAUDITPERIOD, \n\tSICCODE, \n\tSICCODEDESC, \n\tNAICSCODE, \n\tNAICSCODEDESC, \n\tQUOTENUMBER, \n\tTERMFACTOR, \n\tCANCELLATIONDATE, \n\tDESCRIPTION, \n\tPOLICYNUMBER, \n\tSTATUS, \n\tTRANSACTIONDATE, \n\tTRANSACTIONDATETIME, \n\tPREVIOUSPOLICYNUMBER, \n\tINCEPTIONDATE, \n\tPOLICYTERMID, \n\tACCOUNTID, \n\tTAXESSURCHARGES, \n\tAUDITABLE\n\tFROM Exp_Policy\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CustomerStaging/"
+        },
+        "annotations": []
+    }
+}

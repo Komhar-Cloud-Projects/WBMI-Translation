@@ -70,10 +70,7 @@ EXP_GetValues AS (
 	SQ_Dividend.AgencyAKId,
 	SQ_Dividend.InsuranceSegmentCode,
 	-- *INF*: IIF(ISNULL(i_PolicyAuditDimId),-1,i_PolicyAuditDimId)
-	IFF(i_PolicyAuditDimId IS NULL,
-		- 1,
-		i_PolicyAuditDimId
-	) AS o_PolicyAuditDimId,
+	IFF(i_PolicyAuditDimId IS NULL, - 1, i_PolicyAuditDimId) AS o_PolicyAuditDimId,
 	SQ_Dividend.SourceSystemId
 	FROM SQ_Dividend
 	LEFT JOIN LKP_PolicyAuditDim
@@ -327,50 +324,23 @@ EXP_GetDimIds AS (
 	EXP_GetValues.o_PolicyAuditDimId AS PolicyAuditDimId,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	-- *INF*: IIF(ISNULL(i_InsuranceReferenceDimId), -1, i_InsuranceReferenceDimId)
-	IFF(i_InsuranceReferenceDimId IS NULL,
-		- 1,
-		i_InsuranceReferenceDimId
-	) AS o_StrategicProfitCenterDimId,
+	IFF(i_InsuranceReferenceDimId IS NULL, - 1, i_InsuranceReferenceDimId) AS o_StrategicProfitCenterDimId,
 	-- *INF*: IIF(ISNULL(i_AgencyDimID), -1, i_AgencyDimID)
-	IFF(i_AgencyDimID IS NULL,
-		- 1,
-		i_AgencyDimID
-	) AS o_AgencyDimId,
+	IFF(i_AgencyDimID IS NULL, - 1, i_AgencyDimID) AS o_AgencyDimId,
 	-- *INF*: IIF(ISNULL(i_SalesDivisionDimId),-1,i_SalesDivisionDimId)
-	IFF(i_SalesDivisionDimId IS NULL,
-		- 1,
-		i_SalesDivisionDimId
-	) AS o_SalesDivisionDimId,
+	IFF(i_SalesDivisionDimId IS NULL, - 1, i_SalesDivisionDimId) AS o_SalesDivisionDimId,
 	-- *INF*: IIF(ISNULL(i_pol_dim_id), -1, i_pol_dim_id)
-	IFF(i_pol_dim_id IS NULL,
-		- 1,
-		i_pol_dim_id
-	) AS o_PolicyDimId,
+	IFF(i_pol_dim_id IS NULL, - 1, i_pol_dim_id) AS o_PolicyDimId,
 	-- *INF*: IIF(ISNULL(i_contract_cust_dim_id), -1, i_contract_cust_dim_id)
-	IFF(i_contract_cust_dim_id IS NULL,
-		- 1,
-		i_contract_cust_dim_id
-	) AS o_ContractCustomerDimId,
+	IFF(i_contract_cust_dim_id IS NULL, - 1, i_contract_cust_dim_id) AS o_ContractCustomerDimId,
 	-- *INF*: IIF(ISNULL(i_DividendTypeDimId),-1,i_DividendTypeDimId)
-	IFF(i_DividendTypeDimId IS NULL,
-		- 1,
-		i_DividendTypeDimId
-	) AS o_DividendTypeDimId,
+	IFF(i_DividendTypeDimId IS NULL, - 1, i_DividendTypeDimId) AS o_DividendTypeDimId,
 	-- *INF*: IIF(ISNULL(i_StateDimId),-1,i_StateDimId)
-	IFF(i_StateDimId IS NULL,
-		- 1,
-		i_StateDimId
-	) AS o_StateDimId,
+	IFF(i_StateDimId IS NULL, - 1, i_StateDimId) AS o_StateDimId,
 	-- *INF*: IIF(ISNULL(i_DividendTransactionEnteredDateId),-1,i_DividendTransactionEnteredDateId)
-	IFF(i_DividendTransactionEnteredDateId IS NULL,
-		- 1,
-		i_DividendTransactionEnteredDateId
-	) AS o_DividendTransactionEnteredDateId,
+	IFF(i_DividendTransactionEnteredDateId IS NULL, - 1, i_DividendTransactionEnteredDateId) AS o_DividendTransactionEnteredDateId,
 	-- *INF*: IIF(ISNULL(i_DividendRunDateId),-1,i_DividendRunDateId)
-	IFF(i_DividendRunDateId IS NULL,
-		- 1,
-		i_DividendRunDateId
-	) AS o_DividendRunDateId,
+	IFF(i_DividendRunDateId IS NULL, - 1, i_DividendRunDateId) AS o_DividendRunDateId,
 	DividendPayableAmount AS o_DividendPayableAmount,
 	EXP_GetValues.PolicyAKId,
 	EXP_GetValues.SourceSystemId

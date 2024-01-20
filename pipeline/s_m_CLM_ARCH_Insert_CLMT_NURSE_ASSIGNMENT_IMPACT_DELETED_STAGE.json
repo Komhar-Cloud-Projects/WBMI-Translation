@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLMT_NURSE_ASSIGNMENT_IMPACT_DELETED_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLMT_NURSE_ASSIGNMENT_IMPACT_DELET_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_nurse_assignment_impact_deleted_stage AS (\n\tSELECT \r\n\tN.nurse_assignment_impact_deleted_stage_id, \r\n\tN.nurse_assignment_id, \r\n\tN.impact_type, \r\n\tN.impact_category, \r\n\tN.ExtractDate, \r\n\tN.SourceSystemId \r\n\t\r\n\tFROM\r\n\t nurse_assignment_impact_deleted_stage N\n),\nEXP_arch_nurse_assignment_impact_deleted_stage AS (\n\tSELECT\n\tnurse_assignment_impact_deleted_stage_id,\n\tnurse_assignment_id,\n\timpact_type,\n\timpact_category,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_nurse_assignment_impact_deleted_stage\n),\narch_nurse_assignment_impact_deleted_stage AS (\n\tINSERT INTO arch_nurse_assignment_impact_deleted_stage\n\t(NurseAssignmentImpactDeletedStageId, nurse_assignment_id, impact_type, impact_category, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tnurse_assignment_impact_deleted_stage_id AS NURSEASSIGNMENTIMPACTDELETEDSTAGEID, \n\tNURSE_ASSIGNMENT_ID, \n\tIMPACT_TYPE, \n\tIMPACT_CATEGORY, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_arch_nurse_assignment_impact_deleted_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

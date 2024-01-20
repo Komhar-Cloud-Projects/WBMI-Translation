@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCWCRiskStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCWCRiskStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCWCRiskStaging AS (\n\tSELECT\n\t\tLineId,\n\t\tWC_RiskId,\n\t\tSessionId,\n\t\tWC_LocationId,\n\t\tId,\n\t\tTermType,\n\t\tDescription,\n\t\tEffectiveDate,\n\t\tExposure,\n\t\tExposureAudited,\n\t\tExposureBasis,\n\t\tExposureEstimated,\n\t\tFirePopulation,\n\t\tNumberOfActiveVolunteers,\n\t\tNumberOfSalariedFiremen,\n\t\tRiskAircraftIndicator,\n\t\tTermExposureBasis,\n\t\tNCCIDescription,\n\t\tWC_LocationXmlId,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCWCRiskStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tLineId,\n\tWC_RiskId,\n\tSessionId,\n\tWC_LocationId,\n\tId,\n\tTermType,\n\tDescription,\n\tEffectiveDate,\n\tExposure,\n\tExposureAudited,\n\tExposureBasis,\n\tExposureEstimated,\n\tFirePopulation,\n\tNumberOfActiveVolunteers,\n\tNumberOfSalariedFiremen,\n\tRiskAircraftIndicator AS i_RiskAircraftIndicator,\n\t-- *INF*: DECODE(i_RiskAircraftIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_RiskAircraftIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_RiskAircraftIndicator,\n\tTermExposureBasis,\n\tNCCIDescription,\n\tWC_LocationXmlId,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCWCRiskStaging\n),\narchDCWCRiskStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCWCRiskStaging\n\t(LineId, WC_LocationId, WC_RiskId, SessionId, Id, TermType, Description, EffectiveDate, Exposure, ExposureAudited, ExposureBasis, ExposureEstimated, FirePopulation, NumberOfActiveVolunteers, NumberOfSalariedFiremen, RiskAircraftIndicator, TermExposureBasis, NCCIDescription, WC_LocationXmlId, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tLINEID, \n\tWC_LOCATIONID, \n\tWC_RISKID, \n\tSESSIONID, \n\tID, \n\tTERMTYPE, \n\tDESCRIPTION, \n\tEFFECTIVEDATE, \n\tEXPOSURE, \n\tEXPOSUREAUDITED, \n\tEXPOSUREBASIS, \n\tEXPOSUREESTIMATED, \n\tFIREPOPULATION, \n\tNUMBEROFACTIVEVOLUNTEERS, \n\tNUMBEROFSALARIEDFIREMEN, \n\to_RiskAircraftIndicator AS RISKAIRCRAFTINDICATOR, \n\tTERMEXPOSUREBASIS, \n\tNCCIDESCRIPTION, \n\tWC_LOCATIONXMLID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -90,25 +90,16 @@ EXP_Default AS (
 	CTX_FIN_TYPE_CD,
 	CTX_TRS_TYPE_CD,
 	-- *INF*: TO_CHAR(CTX_TRS_TYPE_CD)
-	TO_CHAR(CTX_TRS_TYPE_CD
-	) AS out_CTX_TRS_TYPE_CD,
+	TO_CHAR(CTX_TRS_TYPE_CD) AS out_CTX_TRS_TYPE_CD,
 	CTX_TRS_CAT_CD,
 	-- *INF*: IIF((ISNULL(CTX_TRS_CAT_CD) OR IS_SPACES(CTX_TRS_CAT_CD)), 'N/A',ltrim(rtrim(CTX_TRS_CAT_CD)))
-	IFF(( CTX_TRS_CAT_CD IS NULL 
-			OR LENGTH(CTX_TRS_CAT_CD)>0 AND TRIM(CTX_TRS_CAT_CD)='' 
-		),
-		'N/A',
-		ltrim(rtrim(CTX_TRS_CAT_CD
-			)
-		)
+	IFF(
+	    (CTX_TRS_CAT_CD IS NULL OR LENGTH(CTX_TRS_CAT_CD)>0 AND TRIM(CTX_TRS_CAT_CD)=''), 'N/A',
+	    ltrim(rtrim(CTX_TRS_CAT_CD))
 	) AS OP_CTX_TRS_CAT_CD,
 	CTX_CREATE_TS AS IN_CTX_CREATE_TS,
 	-- *INF*: IIF(ISNULL(IN_CTX_CREATE_TS),TO_DATE('1/1/1800','MM/DD/YYYY'),IN_CTX_CREATE_TS)
-	IFF(IN_CTX_CREATE_TS IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		IN_CTX_CREATE_TS
-	) AS CTX_CREATE_TS
+	IFF(IN_CTX_CREATE_TS IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), IN_CTX_CREATE_TS) AS CTX_CREATE_TS
 	FROM EXP_Default1
 ),
 LKP_Sup_Convert_S3p_Claim_Transaction_Code AS (
@@ -135,20 +126,11 @@ EXP_Chk_Null_Lkp AS (
 	EXP_Default.out_CTX_TRS_TYPE_CD,
 	EXP_Default.OP_CTX_TRS_CAT_CD,
 	-- *INF*: IIF(ISNULL(edw_financial_type_code),CTX_FIN_TYPE_CD,edw_financial_type_code)
-	IFF(edw_financial_type_code IS NULL,
-		CTX_FIN_TYPE_CD,
-		edw_financial_type_code
-	) AS op_edw_financial_type_code,
+	IFF(edw_financial_type_code IS NULL, CTX_FIN_TYPE_CD, edw_financial_type_code) AS op_edw_financial_type_code,
 	-- *INF*: IIF(ISNULL(edw_trans_code),out_CTX_TRS_TYPE_CD,edw_trans_code)
-	IFF(edw_trans_code IS NULL,
-		out_CTX_TRS_TYPE_CD,
-		edw_trans_code
-	) AS op_edw_trans_code,
+	IFF(edw_trans_code IS NULL, out_CTX_TRS_TYPE_CD, edw_trans_code) AS op_edw_trans_code,
 	-- *INF*: IIF(ISNULL(edw_trans_ctgry_code),OP_CTX_TRS_CAT_CD,edw_trans_ctgry_code)
-	IFF(edw_trans_ctgry_code IS NULL,
-		OP_CTX_TRS_CAT_CD,
-		edw_trans_ctgry_code
-	) AS op_edw_trans_ctgry_code
+	IFF(edw_trans_ctgry_code IS NULL, OP_CTX_TRS_CAT_CD, edw_trans_ctgry_code) AS op_edw_trans_ctgry_code
 	FROM EXP_Default
 	LEFT JOIN LKP_Sup_Convert_S3p_Claim_Transaction_Code
 	ON LKP_Sup_Convert_S3p_Claim_Transaction_Code.s3p_financial_type_code = EXP_Default.CTX_FIN_TYPE_CD AND LKP_Sup_Convert_S3p_Claim_Transaction_Code.s3p_trans_code = EXP_Default.out_CTX_TRS_TYPE_CD AND LKP_Sup_Convert_S3p_Claim_Transaction_Code.s3p_trans_ctgry_code = EXP_Default.OP_CTX_TRS_CAT_CD
@@ -257,92 +239,63 @@ EXP_Source AS (
 	LKP_Claim_Party_Occurrence_AK_ID.claim_party_occurrence_ak_id,
 	EXP_Default1.CTX_BUR_CAUSE_LOSS,
 	-- *INF*: SUBSTR(CTX_BUR_CAUSE_LOSS,1,2)
-	SUBSTR(CTX_BUR_CAUSE_LOSS, 1, 2
-	) AS V_CAUSE_LOSS,
+	SUBSTR(CTX_BUR_CAUSE_LOSS, 1, 2) AS V_CAUSE_LOSS,
 	V_CAUSE_LOSS AS OP_CAUSE_LOSS,
 	-- *INF*: SUBSTR(CTX_BUR_CAUSE_LOSS,3,1)
-	SUBSTR(CTX_BUR_CAUSE_LOSS, 3, 1
-	) AS V_RESERVE_CAT,
+	SUBSTR(CTX_BUR_CAUSE_LOSS, 3, 1) AS V_RESERVE_CAT,
 	V_RESERVE_CAT AS OP_RESERVE_CAT,
 	-- *INF*: IIF(CTX_OBJECT_TYPE_CD = 'WCC' AND SUBSTR(CTX_BUR_CAUSE_LOSS, 1,2) = '06','06','05')
-	IFF(CTX_OBJECT_TYPE_CD = 'WCC' 
-		AND SUBSTR(CTX_BUR_CAUSE_LOSS, 1, 2
-		) = '06',
-		'06',
-		'05'
-	) AS TYPE_DISABILITY_OP,
+	IFF(CTX_OBJECT_TYPE_CD = 'WCC' AND SUBSTR(CTX_BUR_CAUSE_LOSS, 1, 2) = '06', '06', '05') AS TYPE_DISABILITY_OP,
 	EXP_Default1.CTX_DRAFT_NBR,
 	-- *INF*: IIF(ISNULL(CTX_DRAFT_NBR) OR IS_SPACES(CTX_DRAFT_NBR) ,'N/A', CTX_DRAFT_NBR)
-	IFF(CTX_DRAFT_NBR IS NULL 
-		OR LENGTH(CTX_DRAFT_NBR)>0 AND TRIM(CTX_DRAFT_NBR)='',
-		'N/A',
-		CTX_DRAFT_NBR
+	IFF(
+	    CTX_DRAFT_NBR IS NULL OR LENGTH(CTX_DRAFT_NBR)>0 AND TRIM(CTX_DRAFT_NBR)='', 'N/A',
+	    CTX_DRAFT_NBR
 	) AS OP_CTX_DRAFT_NBR,
 	-- *INF*: IIF (NOT ISNULL(:LKP.LKP_CLM_OFFSET_HONOR_STAGE(CTX_DRAFT_NBR)), 'O','N/A')
-	IFF(LKP_CLM_OFFSET_HONOR_STAGE_CTX_DRAFT_NBR.COH_DRAFT_NBR IS NOT NULL,
-		'O',
-		'N/A'
-	) AS OP_OFFSET_ONSET_IND,
+	IFF(LKP_CLM_OFFSET_HONOR_STAGE_CTX_DRAFT_NBR.COH_DRAFT_NBR IS NOT NULL, 'O', 'N/A') AS OP_OFFSET_ONSET_IND,
 	EXP_Chk_Null_Lkp.op_edw_financial_type_code AS CTX_FIN_TYPE_CD,
 	EXP_Chk_Null_Lkp.op_edw_trans_code AS CTX_TRS_TYPE_CD,
 	-- *INF*: RTRIM(LTRIM(TO_CHAR(CTX_TRS_TYPE_CD)))
-	RTRIM(LTRIM(TO_CHAR(CTX_TRS_TYPE_CD
-			)
-		)
-	) AS out_CTX_TRS_TYPE_CD,
+	RTRIM(LTRIM(TO_CHAR(CTX_TRS_TYPE_CD))) AS out_CTX_TRS_TYPE_CD,
 	-- *INF*: IIF(CTX_TRS_TYPE_CD = 91 OR CTX_TRS_TYPE_CD = 92, 90, CTX_TRS_TYPE_CD)
-	IFF(CTX_TRS_TYPE_CD = 91 
-		OR CTX_TRS_TYPE_CD = 92,
-		90,
-		CTX_TRS_TYPE_CD
-	) AS OP_CTX_TRS_TYPE_CD,
+	IFF(CTX_TRS_TYPE_CD = 91 OR CTX_TRS_TYPE_CD = 92, 90, CTX_TRS_TYPE_CD) AS OP_CTX_TRS_TYPE_CD,
 	EXP_Default1.CTX_SORT_TS,
 	EXP_Default1.CTX_UPD_TS,
 	-- *INF*: IIF(ISNULL(CTX_UPD_TS), TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),CTX_UPD_TS)
-	IFF(CTX_UPD_TS IS NULL,
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		CTX_UPD_TS
+	IFF(
+	    CTX_UPD_TS IS NULL, TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'), CTX_UPD_TS
 	) AS OP_CTX_UPD_TS,
 	EXP_Default1.CTX_TRS_AMT,
 	-- *INF*: IIF(ISNULL(CTX_TRS_AMT),0,CTX_TRS_AMT)
-	IFF(CTX_TRS_AMT IS NULL,
-		0,
-		CTX_TRS_AMT
-	) AS OP_CTX_TRS_AMT,
+	IFF(CTX_TRS_AMT IS NULL, 0, CTX_TRS_AMT) AS OP_CTX_TRS_AMT,
 	EXP_Default1.CTX_TRS_HST_AMT,
 	-- *INF*: IIF(ISNULL(CTX_TRS_HST_AMT),0,CTX_TRS_HST_AMT)
-	IFF(CTX_TRS_HST_AMT IS NULL,
-		0,
-		CTX_TRS_HST_AMT
-	) AS OP_CTX_TRS_HST_AMT,
+	IFF(CTX_TRS_HST_AMT IS NULL, 0, CTX_TRS_HST_AMT) AS OP_CTX_TRS_HST_AMT,
 	EXP_Default1.CTX_TRANS_REASON,
 	-- *INF*: IIF(ISNULL(CTX_TRANS_REASON) OR IS_SPACES(CTX_TRANS_REASON),'N/A',CTX_TRANS_REASON)
-	IFF(CTX_TRANS_REASON IS NULL 
-		OR LENGTH(CTX_TRANS_REASON)>0 AND TRIM(CTX_TRANS_REASON)='',
-		'N/A',
-		CTX_TRANS_REASON
+	IFF(
+	    CTX_TRANS_REASON IS NULL OR LENGTH(CTX_TRANS_REASON)>0 AND TRIM(CTX_TRANS_REASON)='', 'N/A',
+	    CTX_TRANS_REASON
 	) AS OP_CTX_TRANS_REASON,
 	EXP_Default1.CTX_SINGLE_CHK_IND,
 	-- *INF*: IIF(ISNULL(CTX_SINGLE_CHK_IND) OR IS_SPACES(CTX_SINGLE_CHK_IND),'N/A',CTX_SINGLE_CHK_IND)
-	IFF(CTX_SINGLE_CHK_IND IS NULL 
-		OR LENGTH(CTX_SINGLE_CHK_IND)>0 AND TRIM(CTX_SINGLE_CHK_IND)='',
-		'N/A',
-		CTX_SINGLE_CHK_IND
+	IFF(
+	    CTX_SINGLE_CHK_IND IS NULL OR LENGTH(CTX_SINGLE_CHK_IND)>0 AND TRIM(CTX_SINGLE_CHK_IND)='',
+	    'N/A',
+	    CTX_SINGLE_CHK_IND
 	) AS OP_CTX_SINGLE_CHK_IND,
 	EXP_Default1.CTX_OFS_REI_IND,
 	-- *INF*: IIF(ISNULL(CTX_OFS_REI_IND) OR IS_SPACES(CTX_OFS_REI_IND),'N/A',CTX_OFS_REI_IND)
-	IFF(CTX_OFS_REI_IND IS NULL 
-		OR LENGTH(CTX_OFS_REI_IND)>0 AND TRIM(CTX_OFS_REI_IND)='',
-		'N/A',
-		CTX_OFS_REI_IND
+	IFF(
+	    CTX_OFS_REI_IND IS NULL OR LENGTH(CTX_OFS_REI_IND)>0 AND TRIM(CTX_OFS_REI_IND)='', 'N/A',
+	    CTX_OFS_REI_IND
 	) AS OP_CTX_OFS_REI_IND,
 	EXP_Default1.CTX_ENTRY_OPR_ID,
 	-- *INF*: IIF(ISNULL(CTX_ENTRY_OPR_ID) OR IS_SPACES(CTX_ENTRY_OPR_ID),'N/A',CTX_ENTRY_OPR_ID)
-	IFF(CTX_ENTRY_OPR_ID IS NULL 
-		OR LENGTH(CTX_ENTRY_OPR_ID)>0 AND TRIM(CTX_ENTRY_OPR_ID)='',
-		'N/A',
-		CTX_ENTRY_OPR_ID
+	IFF(
+	    CTX_ENTRY_OPR_ID IS NULL OR LENGTH(CTX_ENTRY_OPR_ID)>0 AND TRIM(CTX_ENTRY_OPR_ID)='', 'N/A',
+	    CTX_ENTRY_OPR_ID
 	) AS OP_CTX_ENTRY_OPR_ID,
 	LKP_Claim_Party_Occurrence_AK_ID.offset_onset_ind AS claim_occurrence_type_code,
 	claim_occurrence_ak_id AS CLAIM_AK_ID_VAR,
@@ -350,9 +303,7 @@ EXP_Source AS (
 	-- *INF*: LTRIM(RTRIM(CTX_CLIENT_ID))
 	-- 
 	-- ---IIF(NOT ISNULL(CLAIM_AK_ID_VAR), :LKP.LKP_CLAIM_PARTY(LTRIM(RTRIM(CTX_CLIENT_ID))), NULL)
-	LTRIM(RTRIM(CTX_CLIENT_ID
-		)
-	) AS CLAIM_PARTY_KEY,
+	LTRIM(RTRIM(CTX_CLIENT_ID)) AS CLAIM_PARTY_KEY,
 	-- *INF*: ---IIF(NOT ISNULL(CLAIM_AK_ID_VAR), :LKP.LKP_CLAIM_PARTY(LTRIM(RTRIM(CTX_CLIENT_ID))), NULL)
 	'' AS PARTY_AK_ID_VAR,
 	-- *INF*: --IIF((NOT ISNULL(CLAIM_AK_ID_VAR) AND NOT ISNULL(PARTY_AK_ID_VAR)), :LKP.LKP_CLAIM_PARTY_OCCURENCE(CLAIM_AK_ID_VAR, PARTY_AK_ID_VAR), NULL)
@@ -368,29 +319,21 @@ EXP_Source AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS reprocess_date,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS reprocess_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	EXP_Default1.CTX_BASE_TRS_TYPE,
 	-- *INF*: IIF(ISNULL(CTX_BASE_TRS_TYPE) ,'N/A',TO_CHAR(CTX_BASE_TRS_TYPE))
-	IFF(CTX_BASE_TRS_TYPE IS NULL,
-		'N/A',
-		TO_CHAR(CTX_BASE_TRS_TYPE
-		)
-	) AS OP_CTX_BASE_TRS_TYPE,
+	IFF(CTX_BASE_TRS_TYPE IS NULL, 'N/A', TO_CHAR(CTX_BASE_TRS_TYPE)) AS OP_CTX_BASE_TRS_TYPE,
 	EXP_Chk_Null_Lkp.op_edw_trans_ctgry_code AS CTX_TRS_CAT_CD,
 	-- *INF*: IIF(ISNULL(CTX_TRS_CAT_CD) OR IS_SPACES(CTX_TRS_CAT_CD),'N/A',CTX_TRS_CAT_CD)
-	IFF(CTX_TRS_CAT_CD IS NULL 
-		OR LENGTH(CTX_TRS_CAT_CD)>0 AND TRIM(CTX_TRS_CAT_CD)='',
-		'N/A',
-		CTX_TRS_CAT_CD
+	IFF(
+	    CTX_TRS_CAT_CD IS NULL OR LENGTH(CTX_TRS_CAT_CD)>0 AND TRIM(CTX_TRS_CAT_CD)='', 'N/A',
+	    CTX_TRS_CAT_CD
 	) AS OP_CTX_TRS_CAT_CD,
 	EXP_Default1.CTX_CLAIM_NBR,
 	LKP_Clm_Cov_Pkg_Stage.CCP_MNL_ENTRY_IND AS IP_CCP_MNL_ENTRY_IND,
@@ -405,72 +348,57 @@ EXP_Source AS (
 	-- -- Changed the logic on 08/19/2010
 	-- 
 	-- --LTRIM(RTRIM(IIF(IP_CCP_MNL_ENTRY_IND = '1' OR claim_occurrence_type_code = --'COM',IP_CCP_SAR_ID,COB_SAR_ID_VAR)))
-	IFF(claim_occurrence_type_code = 'WCC',
-		'45',
-		IP_CCP_SAR_ID
-	) AS COVERAGE_SAR_ID_VAR,
+	IFF(claim_occurrence_type_code = 'WCC', '45', IP_CCP_SAR_ID) AS COVERAGE_SAR_ID_VAR,
 	-- *INF*: IIF(ISNULL(COVERAGE_SAR_ID_VAR) OR 
 	-- IS_SPACES(COVERAGE_SAR_ID_VAR),'N/A',COVERAGE_SAR_ID_VAR)
-	IFF(COVERAGE_SAR_ID_VAR IS NULL 
-		OR LENGTH(COVERAGE_SAR_ID_VAR)>0 AND TRIM(COVERAGE_SAR_ID_VAR)='',
-		'N/A',
-		COVERAGE_SAR_ID_VAR
+	IFF(
+	    COVERAGE_SAR_ID_VAR IS NULL OR LENGTH(COVERAGE_SAR_ID_VAR)>0 AND TRIM(COVERAGE_SAR_ID_VAR)='',
+	    'N/A',
+	    COVERAGE_SAR_ID_VAR
 	) AS OP_SAR_ID,
 	'N/A' AS OP_PMS_LOSS_TRANS_CODE,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS OP_NULL_PMS_DATES,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS OP_NULL_PMS_DATES,
 	EXP_Default.CTX_TRS_TYPE_CD AS CTX_ORIG_TRS_TYPE_CD,
 	EXP_Default1.CLAIM_TRANSACTION_ID,
 	LKP_Claim_Payment.claim_pay_ak_id AS in_claim_pay_ak_id,
 	-- *INF*: IIF(ISNULL(in_claim_pay_ak_id), -1, in_claim_pay_ak_id)
-	IFF(in_claim_pay_ak_id IS NULL,
-		- 1,
-		in_claim_pay_ak_id
-	) AS claim_pay_ak_id,
+	IFF(in_claim_pay_ak_id IS NULL, - 1, in_claim_pay_ak_id) AS claim_pay_ak_id,
 	0 AS err_flag,
 	LKP_Claim_1099_Master_List_connected.irs_tax_id AS IN_LKP_IRS_TAX_ID,
 	LKP_Claim_1099_Master_List_connected.tax_id AS IN_LKP_TAX_ID,
 	LKP_Claim_1099_Master_List_connected.claim_master_1099_list_ak_id AS IN_LKP_MASTER_1099_AK_ID,
 	-- *INF*: iif(isnull(IN_LKP_TAX_ID)  OR length(IN_LKP_TAX_ID)= 0 OR IS_SPACES(IN_LKP_TAX_ID), '000000000',ltrim(rtrim(IN_LKP_TAX_ID)))
-	IFF(IN_LKP_TAX_ID IS NULL 
-		OR length(IN_LKP_TAX_ID
-		) = 0 
-		OR LENGTH(IN_LKP_TAX_ID)>0 AND TRIM(IN_LKP_TAX_ID)='',
-		'000000000',
-		ltrim(rtrim(IN_LKP_TAX_ID
-			)
-		)
+	IFF(
+	    IN_LKP_TAX_ID IS NULL
+	    or length(IN_LKP_TAX_ID) = 0
+	    or LENGTH(IN_LKP_TAX_ID)>0
+	    and TRIM(IN_LKP_TAX_ID)='',
+	    '000000000',
+	    ltrim(rtrim(IN_LKP_TAX_ID))
 	) AS V_TAX_ID,
 	-- *INF*: iif(isnull(IN_LKP_IRS_TAX_ID)  OR length(IN_LKP_IRS_TAX_ID)= 0 OR IS_SPACES(IN_LKP_IRS_TAX_ID), '000000000',ltrim(rtrim(IN_LKP_IRS_TAX_ID)))
-	IFF(IN_LKP_IRS_TAX_ID IS NULL 
-		OR length(IN_LKP_IRS_TAX_ID
-		) = 0 
-		OR LENGTH(IN_LKP_IRS_TAX_ID)>0 AND TRIM(IN_LKP_IRS_TAX_ID)='',
-		'000000000',
-		ltrim(rtrim(IN_LKP_IRS_TAX_ID
-			)
-		)
+	IFF(
+	    IN_LKP_IRS_TAX_ID IS NULL
+	    or length(IN_LKP_IRS_TAX_ID) = 0
+	    or LENGTH(IN_LKP_IRS_TAX_ID)>0
+	    and TRIM(IN_LKP_IRS_TAX_ID)='',
+	    '000000000',
+	    ltrim(rtrim(IN_LKP_IRS_TAX_ID))
 	) AS v_IRS_TAX_ID,
 	-- *INF*: IIF(V_TAX_ID='000000000',-1,IIF(ISNULL(IN_LKP_MASTER_1099_AK_ID),-1,IN_LKP_MASTER_1099_AK_ID))
-	IFF(V_TAX_ID = '000000000',
-		- 1,
-		IFF(IN_LKP_MASTER_1099_AK_ID IS NULL,
-			- 1,
-			IN_LKP_MASTER_1099_AK_ID
-		)
+	IFF(
+	    V_TAX_ID = '000000000', - 1,
+	    IFF(
+	        IN_LKP_MASTER_1099_AK_ID IS NULL, - 1, IN_LKP_MASTER_1099_AK_ID
+	    )
 	) AS V_1099_AK_ID,
 	V_TAX_ID AS out_tax_id,
 	V_1099_AK_ID AS out_claim_master_1099_list_ak_id,
 	EXP_Default.CTX_CREATE_TS,
 	-- *INF*: (CTX_FIN_TYPE_CD || TO_CHAR(CTX_ORIG_TRS_TYPE_CD) 
 	-- || IIF(CTX_TRS_CAT_CD = 'N/A','',CTX_TRS_CAT_CD))
-	( CTX_FIN_TYPE_CD || TO_CHAR(CTX_ORIG_TRS_TYPE_CD
-		) || IFF(CTX_TRS_CAT_CD = 'N/A',
-			'',
-			CTX_TRS_CAT_CD
-		) 
-	) AS v_Exceed_Trans_Code_to_PMS_Code,
+	(CTX_FIN_TYPE_CD || TO_CHAR(CTX_ORIG_TRS_TYPE_CD) || IFF(CTX_TRS_CAT_CD = 'N/A', '', CTX_TRS_CAT_CD)) AS v_Exceed_Trans_Code_to_PMS_Code,
 	-- *INF*: :LKP.LKP_CLAIM_SUPPORT_01_EXCEED_PMS_TRANS_CODE(LTRIM(RTRIM(
 	-- v_Exceed_Trans_Code_to_PMS_Code)))
 	-- 
@@ -479,10 +407,7 @@ EXP_Source AS (
 	--  ---transactions backfeed to PMS system. We need transaction code for Loss Master data 
 	LKP_CLAIM_SUPPORT_01_EXCEED_PMS_TRANS_CODE_LTRIM_RTRIM_v_Exceed_Trans_Code_to_PMS_Code.cs01_code_des AS Lkp_Exceed_Trans_Code_to_PMS,
 	-- *INF*: IIF(ISNULL(Lkp_Exceed_Trans_Code_to_PMS),'N/A',Lkp_Exceed_Trans_Code_to_PMS)
-	IFF(Lkp_Exceed_Trans_Code_to_PMS IS NULL,
-		'N/A',
-		Lkp_Exceed_Trans_Code_to_PMS
-	) AS PMS_Trans_Code,
+	IFF(Lkp_Exceed_Trans_Code_to_PMS IS NULL, 'N/A', Lkp_Exceed_Trans_Code_to_PMS) AS PMS_Trans_Code,
 	'N/A' AS trans_Offset_Onset_Ind,
 	LKP_Claim_Party_Occurrence_AK_ID.pms_pol_lob_code
 	FROM EXP_Chk_Null_Lkp
@@ -500,9 +425,7 @@ EXP_Source AS (
 	ON LKP_CLM_OFFSET_HONOR_STAGE_CTX_DRAFT_NBR.COH_DRAFT_NBR = CTX_DRAFT_NBR
 
 	LEFT JOIN LKP_CLAIM_SUPPORT_01_EXCEED_PMS_TRANS_CODE LKP_CLAIM_SUPPORT_01_EXCEED_PMS_TRANS_CODE_LTRIM_RTRIM_v_Exceed_Trans_Code_to_PMS_Code
-	ON LKP_CLAIM_SUPPORT_01_EXCEED_PMS_TRANS_CODE_LTRIM_RTRIM_v_Exceed_Trans_Code_to_PMS_Code.cs01_code = LTRIM(RTRIM(v_Exceed_Trans_Code_to_PMS_Code
-	)
-)
+	ON LKP_CLAIM_SUPPORT_01_EXCEED_PMS_TRANS_CODE_LTRIM_RTRIM_v_Exceed_Trans_Code_to_PMS_Code.cs01_code = LTRIM(RTRIM(v_Exceed_Trans_Code_to_PMS_Code))
 
 ),
 LKP_Claimant_Coverage_Detail_AK_ID AS (
@@ -632,10 +555,7 @@ EXP_Values_Eval AS (
 	LKP_Claim_Transaction.claim_master_1099_list_ak_id AS lkp_claim_master_1099_list_ak_id,
 	LKP_Claimant_Coverage_Detail_AK_ID.claimant_cov_det_ak_id AS i_claimant_cov_det_ak_id,
 	-- *INF*: IIF(ISNULL(i_claimant_cov_det_ak_id),-1,i_claimant_cov_det_ak_id)
-	IFF(i_claimant_cov_det_ak_id IS NULL,
-		- 1,
-		i_claimant_cov_det_ak_id
-	) AS o_claimant_cov_det_ak_id,
+	IFF(i_claimant_cov_det_ak_id IS NULL, - 1, i_claimant_cov_det_ak_id) AS o_claimant_cov_det_ak_id,
 	EXP_Source.OP_CAUSE_LOSS,
 	EXP_Source.OP_RESERVE_CAT,
 	EXP_Source.TYPE_DISABILITY_OP,
@@ -667,12 +587,11 @@ EXP_Values_Eval AS (
 	-- ---6/10/2011  Added the logic as with updates to Transaction record, some time we may get value of 'N/A' for 
 	-- ---OP_SAR_ID so we need to use the old value from lookup (lkp_sar_id).
 	-- 
-	IFF(claim_trans_id IS NOT NULL,
-		IFF(OP_SAR_ID = 'N/A',
-			lkp_sar_id,
-			OP_SAR_ID
-		),
-		OP_SAR_ID
+	IFF(
+	    claim_trans_id IS NOT NULL, IFF(
+	        OP_SAR_ID = 'N/A', lkp_sar_id, OP_SAR_ID
+	    ),
+	    OP_SAR_ID
 	) AS SAR_ID_Out,
 	EXP_Source.OP_PMS_LOSS_TRANS_CODE,
 	EXP_Source.OP_NULL_PMS_DATES,
@@ -692,14 +611,12 @@ EXP_Values_Eval AS (
 	-- 
 	-- -- If tax_id is valid then overwrite whatever value we have in the lookup.  
 	-- --If not, and the lookup value is valid use the lookup, else use the default tax id value which defaults to '000000000'
-	IFF(tax_id IS NULL 
-		OR tax_id = '000000000',
-		IFF(lkp_tax_id IS NULL 
-			OR lkp_tax_id = '000000000',
-			tax_id,
-			lkp_tax_id
-		),
-		tax_id
+	IFF(
+	    tax_id IS NULL or tax_id = '000000000',
+	    IFF(
+	        lkp_tax_id IS NULL or lkp_tax_id = '000000000', tax_id, lkp_tax_id
+	    ),
+	    tax_id
 	) AS v_tax_id,
 	-- *INF*: IIF(
 	-- 	isnull(claim_master_1099_list_ak_id) or claim_master_1099_list_ak_id=-1,		
@@ -712,14 +629,15 @@ EXP_Values_Eval AS (
 	-- 	)
 	-- 
 	-- -- if source value is null or -1 use the lookup value if it is not equal to -1, else use the source value which defaults to -1 or a real value.
-	IFF(claim_master_1099_list_ak_id IS NULL 
-		OR claim_master_1099_list_ak_id = - 1,
-		IFF(lkp_claim_master_1099_list_ak_id IS NULL 
-			OR lkp_claim_master_1099_list_ak_id = - 1,
-			claim_master_1099_list_ak_id,
-			lkp_claim_master_1099_list_ak_id
-		),
-		claim_master_1099_list_ak_id
+	IFF(
+	    claim_master_1099_list_ak_id IS NULL or claim_master_1099_list_ak_id = - 1,
+	    IFF(
+	        lkp_claim_master_1099_list_ak_id IS NULL
+	    or lkp_claim_master_1099_list_ak_id = - 1,
+	        claim_master_1099_list_ak_id,
+	        lkp_claim_master_1099_list_ak_id
+	    ),
+	    claim_master_1099_list_ak_id
 	) AS v_claim_master_1099_list_ak_id,
 	EXP_Source.out_tax_id AS tax_id,
 	EXP_Source.out_claim_master_1099_list_ak_id AS claim_master_1099_list_ak_id,
@@ -731,42 +649,24 @@ EXP_Values_Eval AS (
 	EXP_Source.out_CTX_TRS_TYPE_CD,
 	LKP_Sup_Claim_Reserve_Category.sup_claim_reserve_ctgry_id AS LKP_sup_claim_reserve_ctgry_id,
 	-- *INF*: IIF(ISNULL(LKP_sup_claim_reserve_ctgry_id),-1,LKP_sup_claim_reserve_ctgry_id)
-	IFF(LKP_sup_claim_reserve_ctgry_id IS NULL,
-		- 1,
-		LKP_sup_claim_reserve_ctgry_id
-	) AS o_SupReserveCategoryCodeID,
+	IFF(LKP_sup_claim_reserve_ctgry_id IS NULL, - 1, LKP_sup_claim_reserve_ctgry_id) AS o_SupReserveCategoryCodeID,
 	LKP_Sup_Claim_Financial_Code.sup_claim_financial_code_id AS LKP_sup_claim_financial_code_id,
 	-- *INF*: IIF(ISNULL(LKP_sup_claim_financial_code_id),-1,LKP_sup_claim_financial_code_id)
-	IFF(LKP_sup_claim_financial_code_id IS NULL,
-		- 1,
-		LKP_sup_claim_financial_code_id
-	) AS o_FinancialTypeCodeID,
+	IFF(LKP_sup_claim_financial_code_id IS NULL, - 1, LKP_sup_claim_financial_code_id) AS o_FinancialTypeCodeID,
 	-- *INF*: :LKP.LKP_SUP_CLAIM_TRANSACTION_CODE(LTRIM(RTRIM(TO_CHAR(CTX_ORIG_TRS_TYPE_CD))))
 	LKP_SUP_CLAIM_TRANSACTION_CODE_LTRIM_RTRIM_TO_CHAR_CTX_ORIG_TRS_TYPE_CD.sup_claim_trans_code_id AS LKP_S3PTransactionCodeID,
 	-- *INF*: :LKP.LKP_SUP_CLAIM_TRANSACTION_CODE(out_CTX_TRS_TYPE_CD)
 	LKP_SUP_CLAIM_TRANSACTION_CODE_out_CTX_TRS_TYPE_CD.sup_claim_trans_code_id AS LKP_TransactionCodeID,
 	-- *INF*: IIF(ISNULL(LKP_S3PTransactionCodeID),-1,LKP_S3PTransactionCodeID)
-	IFF(LKP_S3PTransactionCodeID IS NULL,
-		- 1,
-		LKP_S3PTransactionCodeID
-	) AS o_S3PTransactionCodeID,
+	IFF(LKP_S3PTransactionCodeID IS NULL, - 1, LKP_S3PTransactionCodeID) AS o_S3PTransactionCodeID,
 	-- *INF*: IIF(ISNULL(LKP_TransactionCodeID),-1,LKP_TransactionCodeID)
-	IFF(LKP_TransactionCodeID IS NULL,
-		- 1,
-		LKP_TransactionCodeID
-	) AS o_TransactionCodeID,
+	IFF(LKP_TransactionCodeID IS NULL, - 1, LKP_TransactionCodeID) AS o_TransactionCodeID,
 	LKP_Sup_Claim_Transaction_Category.sup_claim_trans_catetory_id AS LKP_sup_claim_trans_catetory_id,
 	-- *INF*: IIF(ISNULL(LKP_sup_claim_trans_catetory_id),-1,LKP_sup_claim_trans_catetory_id)
-	IFF(LKP_sup_claim_trans_catetory_id IS NULL,
-		- 1,
-		LKP_sup_claim_trans_catetory_id
-	) AS o_SupTransactionCategoryCodeID,
+	IFF(LKP_sup_claim_trans_catetory_id IS NULL, - 1, LKP_sup_claim_trans_catetory_id) AS o_SupTransactionCategoryCodeID,
 	LKP_Sup_CauseOfLoss.CauseOfLossId AS LKP_CauseOfLossId,
 	-- *INF*: IIF(ISNULL(LKP_CauseOfLossId),-1,LKP_CauseOfLossId)
-	IFF(LKP_CauseOfLossId IS NULL,
-		- 1,
-		LKP_CauseOfLossId
-	) AS o_CauseOfLossID,
+	IFF(LKP_CauseOfLossId IS NULL, - 1, LKP_CauseOfLossId) AS o_CauseOfLossID,
 	-1 AS o_PMSTransactionCodeID
 	FROM EXP_Source
 	LEFT JOIN LKP_Claim_Transaction
@@ -782,10 +682,7 @@ EXP_Values_Eval AS (
 	LEFT JOIN LKP_Sup_Claim_Transaction_Category
 	ON LKP_Sup_Claim_Transaction_Category.trans_ctgry_code = EXP_Source.OP_CTX_TRS_CAT_CD
 	LEFT JOIN LKP_SUP_CLAIM_TRANSACTION_CODE LKP_SUP_CLAIM_TRANSACTION_CODE_LTRIM_RTRIM_TO_CHAR_CTX_ORIG_TRS_TYPE_CD
-	ON LKP_SUP_CLAIM_TRANSACTION_CODE_LTRIM_RTRIM_TO_CHAR_CTX_ORIG_TRS_TYPE_CD.trans_code = LTRIM(RTRIM(TO_CHAR(CTX_ORIG_TRS_TYPE_CD
-		)
-	)
-)
+	ON LKP_SUP_CLAIM_TRANSACTION_CODE_LTRIM_RTRIM_TO_CHAR_CTX_ORIG_TRS_TYPE_CD.trans_code = LTRIM(RTRIM(TO_CHAR(CTX_ORIG_TRS_TYPE_CD)))
 
 	LEFT JOIN LKP_SUP_CLAIM_TRANSACTION_CODE LKP_SUP_CLAIM_TRANSACTION_CODE_out_CTX_TRS_TYPE_CD
 	ON LKP_SUP_CLAIM_TRANSACTION_CODE_out_CTX_TRS_TYPE_CD.trans_code = out_CTX_TRS_TYPE_CD
@@ -1007,10 +904,7 @@ EXP_Values AS (
 	-- *INF*: IIF(NOT ISNULL(LKP_claim_trans_id),'92','90')
 	-- 
 	-- ---- From the lookup if we get a matching condition like for the combination of Cov_det_ak_id,cause_of_loss,reserve_ctgry there is 92 and 66 then we update the pms_trans_code of EXCEED transaction to 92 otherwise it will be 90
-	IFF(LKP_claim_trans_id IS NOT NULL,
-		'92',
-		'90'
-	) AS New_PMS_trans_code_92,
+	IFF(LKP_claim_trans_id IS NOT NULL, '92', '90') AS New_PMS_trans_code_92,
 	LKP_Claim_Transaction_EXD_66.claim_trans_ak_id
 	FROM EXP_Default_1
 	LEFT JOIN LKP_Claim_Transaction_EXD_66

@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_gtam_wbprg_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_gtam_wbprg_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_wbprg_stage AS (\n\tSELECT\n\t\tgtam_wbprg_stage_id,\n\t\tprog_id,\n\t\texp_date,\n\t\tprog_name,\n\t\textract_date,\n\t\tas_of_date,\n\t\trcrd_count,\n\t\tsource_sys_id\n\tFROM gtam_wbprg_stage\n),\nEXPTRANS AS (\n\tSELECT\n\tgtam_wbprg_stage_id,\n\tprog_id,\n\texp_date,\n\tprog_name,\n\textract_date,\n\tas_of_date,\n\trcrd_count,\n\tsource_sys_id,\n\t@{pipeline().parameters.AUDIT_ID} AS audit_id\n\tFROM SQ_gtam_wbprg_stage\n),\narch_gtam_wbprg_stage AS (\n\tINSERT INTO arch_gtam_wbprg_stage\n\t(gtam_wbprg_stage_id, prog_id, exp_date, prog_name, extract_date, as_of_date, source_sys_id, audit_id)\n\tSELECT \n\tGTAM_WBPRG_STAGE_ID, \n\tPROG_ID, \n\tEXP_DATE, \n\tPROG_NAME, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tSOURCE_SYS_ID, \n\tAUDIT_ID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "AUDIT_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

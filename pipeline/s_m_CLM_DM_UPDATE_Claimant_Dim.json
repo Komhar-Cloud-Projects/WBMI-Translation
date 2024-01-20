@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_claimant_dim AS (\n\tSELECT \r\n\tCLAIMANT_DIM.CLAIMANT_DIM_ID, \r\n\tCLAIMANT_DIM.EDW_CLAIM_PARTY_OCCURRENCE_AK_ID ,\r\n\tCLAIMANT_DIM.EFF_FROM_DATE, \r\n\tCLAIMANT_DIM.EFF_TO_DATE\r\n\t\r\n\tFROM\r\n\tDBO.CLAIMANT_DIM CLAIMANT_DIM\r\n\t\r\n\tWHERE \r\n\tEFF_FROM_DATE <> EFF_TO_DATE AND \r\n\tEDW_CLAIM_PARTY_OCCURRENCE_AK_ID IN\r\n\t\r\n\t(SELECT EDW_CLAIM_PARTY_OCCURRENCE_AK_ID \r\n\tFROM DBO.CLAIMANT_DIM CLAIMANT_DIM2\r\n\tWHERE CRRNT_SNPSHT_FLAG = 1  \r\n\tGROUP BY CLAIMANT_DIM2.EDW_CLAIM_PARTY_OCCURRENCE_AK_ID HAVING COUNT(*) > 1)\r\n\t\r\n\tORDER BY CLAIMANT_DIM.EDW_CLAIM_PARTY_OCCURRENCE_AK_ID,CLAIMANT_DIM.EFF_FROM_DATE DESC,\r\n\tCLAIMANT_DIM.edw_wc_claimant_work_hist_pk_id DESC\n),\nEXP_Lag_eff_from_date1 AS (\n\tSELECT\n\tclaimant_dim_id,\n\tedw_claim_party_occurrence_ak_id,\n\teff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- \tedw_claim_party_occurrence_ak_id = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),\r\n\t-- \torig_eff_to_date)\n\tDECODE(TRUE,\n\t\tedw_claim_party_occurrence_ak_id = v_PREV_ROW_occurrence_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),\n\t\torig_eff_to_date\n\t) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\teff_from_date AS v_PREV_ROW_eff_from_date,\n\tedw_claim_party_occurrence_ak_id AS v_PREV_ROW_occurrence_key,\n\tSYSDATE AS modified_date,\n\t0 AS crrnt_snpsht_flag\n\tFROM SQ_claimant_dim\n),\nFIL_rows AS (\n\tSELECT\n\tclaimant_dim_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tmodified_date, \n\tcrrnt_snpsht_flag\n\tFROM EXP_Lag_eff_from_date1\n\tWHERE orig_eff_to_date <> eff_to_date\n),\nUPD_EFF_TO_DATE AS (\n\tSELECT\n\tclaimant_dim_id, \n\teff_to_date, \n\tmodified_date, \n\tcrrnt_snpsht_flag\n\tFROM FIL_rows\n),\nclaimant_dim_expire AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.claimant_dim AS T\n\tUSING UPD_EFF_TO_DATE AS S\n\tON T.claimant_dim_id = S.claimant_dim_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_date\n),\nSQ_claimant_dim_Update_Claimant_Num AS (\n\tSELECT \r\n\tCD.claimant_dim_id as claimant_dim_id,\r\n\tCPO.claim_party_occurrence_id as edw_claim_party_occurrence_pk_id ,\r\n\tCPO.claimant_num as claimant_gndr,\r\n\tCD.claimant_num as claimant_num\r\n\tFROM \r\n\t@{pipeline().parameters.SOURCE_DATABASE}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_party_occurrence CPO, \r\n\t@{pipeline().parameters.TARGET_DATABASE}.@{pipeline().parameters.TARGET_TABLE_OWNER}.claimant_dim CD\r\n\tWHERE \r\n\tCD.edw_claim_party_occurrence_pk_id = CPO.claim_party_occurrence_id\r\n\tAND CPO.crrnt_snpsht_flag=1\r\n\t--AND CD.crrnt_snpsht_flag=1\r\n\tAND CPO.claimant_num <> CD.claimant_num\r\n\tAND CPO.source_sys_id='EXCEED'\n),\nEXP_Values AS (\n\tSELECT\n\tclaimant_dim_id,\n\tedw_claim_party_occurrence_pk_id,\n\tclaimant_gndr AS edw_claimant_num,\n\tclaimant_num\n\tFROM SQ_claimant_dim_Update_Claimant_Num\n),\nUPD_Update_Claimant_Num AS (\n\tSELECT\n\tclaimant_dim_id, \n\tedw_claimant_num\n\tFROM EXP_Values\n),\nclaimant_dim_Update_Claimant_Num AS (\n\tMERGE INTO claimant_dim AS T\n\tUSING UPD_Update_Claimant_Num AS S\n\tON T.claimant_dim_id = S.claimant_dim_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.claimant_num = S.edw_claimant_num\n),\nSQ_claimant_dim_Update_claim_medical_fields AS (\n\tSELECT \r\n\tCD.claimant_dim_id as claimant_dim_id,\r\n\tCM.claim_med_id as edw_claim_med_pk_id,\r\n\tCM.medicare_eligibility as medicare_eligibility\r\n\tFROM \r\n\t@{pipeline().parameters.TARGET_DATABASE}.@{pipeline().parameters.TARGET_TABLE_OWNER}.claimant_dim CD,\r\n\t@{pipeline().parameters.SOURCE_DATABASE}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_medical CM\r\n\tWHERE \r\n\tCD.edw_claim_party_occurrence_ak_id = CM.claim_party_occurrence_ak_id\r\n\tAND CM.crrnt_snpsht_flag=1\r\n\tAND CD.crrnt_snpsht_flag=1\r\n\tAND CD.medicare_eligibility <> CM.medicare_eligibility\r\n\tAND CD.edw_claim_med_pk_id <> CM.claim_med_id\n),\nEXPTRANS AS (\n\tSELECT\n\tclaimant_dim_id,\n\tedw_claim_med_pk_id,\n\tmedicare_eligibility\n\tFROM SQ_claimant_dim_Update_claim_medical_fields\n),\nUPDTRANS AS (\n\tSELECT\n\tclaimant_dim_id, \n\tedw_claim_med_pk_id, \n\tmedicare_eligibility\n\tFROM EXPTRANS\n),\nclaimant_dim_UPDate_claim_medical_Target AS (\n\tMERGE INTO claimant_dim AS T\n\tUSING UPDTRANS AS S\n\tON T.claimant_dim_id = S.claimant_dim_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.edw_claim_med_pk_id = S.edw_claim_med_pk_id, T.medicare_eligibility = S.medicare_eligibility\n),"
+                            "text": "WITH\nSQ_claimant_dim AS (\n\tSELECT \r\n\tCLAIMANT_DIM.CLAIMANT_DIM_ID, \r\n\tCLAIMANT_DIM.EDW_CLAIM_PARTY_OCCURRENCE_AK_ID ,\r\n\tCLAIMANT_DIM.EFF_FROM_DATE, \r\n\tCLAIMANT_DIM.EFF_TO_DATE\r\n\t\r\n\tFROM\r\n\tDBO.CLAIMANT_DIM CLAIMANT_DIM\r\n\t\r\n\tWHERE \r\n\tEFF_FROM_DATE <> EFF_TO_DATE AND \r\n\tEDW_CLAIM_PARTY_OCCURRENCE_AK_ID IN\r\n\t\r\n\t(SELECT EDW_CLAIM_PARTY_OCCURRENCE_AK_ID \r\n\tFROM DBO.CLAIMANT_DIM CLAIMANT_DIM2\r\n\tWHERE CRRNT_SNPSHT_FLAG = 1  \r\n\tGROUP BY CLAIMANT_DIM2.EDW_CLAIM_PARTY_OCCURRENCE_AK_ID HAVING COUNT(*) > 1)\r\n\t\r\n\tORDER BY CLAIMANT_DIM.EDW_CLAIM_PARTY_OCCURRENCE_AK_ID,CLAIMANT_DIM.EFF_FROM_DATE DESC,\r\n\tCLAIMANT_DIM.edw_wc_claimant_work_hist_pk_id DESC\n),\nEXP_Lag_eff_from_date1 AS (\n\tSELECT\n\tclaimant_dim_id,\n\tedw_claim_party_occurrence_ak_id,\n\teff_from_date,\n\teff_to_date AS orig_eff_to_date,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- \tedw_claim_party_occurrence_ak_id = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),\r\n\t-- \torig_eff_to_date)\n\tDECODE(\n\t    TRUE,\n\t    edw_claim_party_occurrence_ak_id = v_PREV_ROW_occurrence_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),\n\t    orig_eff_to_date\n\t) AS v_eff_to_date,\n\tv_eff_to_date AS eff_to_date,\n\teff_from_date AS v_PREV_ROW_eff_from_date,\n\tedw_claim_party_occurrence_ak_id AS v_PREV_ROW_occurrence_key,\n\tSYSDATE AS modified_date,\n\t0 AS crrnt_snpsht_flag\n\tFROM SQ_claimant_dim\n),\nFIL_rows AS (\n\tSELECT\n\tclaimant_dim_id, \n\torig_eff_to_date, \n\teff_to_date, \n\tmodified_date, \n\tcrrnt_snpsht_flag\n\tFROM EXP_Lag_eff_from_date1\n\tWHERE orig_eff_to_date <> eff_to_date\n),\nUPD_EFF_TO_DATE AS (\n\tSELECT\n\tclaimant_dim_id, \n\teff_to_date, \n\tmodified_date, \n\tcrrnt_snpsht_flag\n\tFROM FIL_rows\n),\nclaimant_dim_expire AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.claimant_dim AS T\n\tUSING UPD_EFF_TO_DATE AS S\n\tON T.claimant_dim_id = S.claimant_dim_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.crrnt_snpsht_flag = S.crrnt_snpsht_flag, T.eff_to_date = S.eff_to_date, T.modified_date = S.modified_date\n),\nSQ_claimant_dim_Update_Claimant_Num AS (\n\tSELECT \r\n\tCD.claimant_dim_id as claimant_dim_id,\r\n\tCPO.claim_party_occurrence_id as edw_claim_party_occurrence_pk_id ,\r\n\tCPO.claimant_num as claimant_gndr,\r\n\tCD.claimant_num as claimant_num\r\n\tFROM \r\n\t@{pipeline().parameters.SOURCE_DATABASE}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_party_occurrence CPO, \r\n\t@{pipeline().parameters.TARGET_DATABASE}.@{pipeline().parameters.TARGET_TABLE_OWNER}.claimant_dim CD\r\n\tWHERE \r\n\tCD.edw_claim_party_occurrence_pk_id = CPO.claim_party_occurrence_id\r\n\tAND CPO.crrnt_snpsht_flag=1\r\n\t--AND CD.crrnt_snpsht_flag=1\r\n\tAND CPO.claimant_num <> CD.claimant_num\r\n\tAND CPO.source_sys_id='EXCEED'\n),\nEXP_Values AS (\n\tSELECT\n\tclaimant_dim_id,\n\tedw_claim_party_occurrence_pk_id,\n\tclaimant_gndr AS edw_claimant_num,\n\tclaimant_num\n\tFROM SQ_claimant_dim_Update_Claimant_Num\n),\nUPD_Update_Claimant_Num AS (\n\tSELECT\n\tclaimant_dim_id, \n\tedw_claimant_num\n\tFROM EXP_Values\n),\nclaimant_dim_Update_Claimant_Num AS (\n\tMERGE INTO claimant_dim AS T\n\tUSING UPD_Update_Claimant_Num AS S\n\tON T.claimant_dim_id = S.claimant_dim_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.claimant_num = S.edw_claimant_num\n),\nSQ_claimant_dim_Update_claim_medical_fields AS (\n\tSELECT \r\n\tCD.claimant_dim_id as claimant_dim_id,\r\n\tCM.claim_med_id as edw_claim_med_pk_id,\r\n\tCM.medicare_eligibility as medicare_eligibility\r\n\tFROM \r\n\t@{pipeline().parameters.TARGET_DATABASE}.@{pipeline().parameters.TARGET_TABLE_OWNER}.claimant_dim CD,\r\n\t@{pipeline().parameters.SOURCE_DATABASE}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.claim_medical CM\r\n\tWHERE \r\n\tCD.edw_claim_party_occurrence_ak_id = CM.claim_party_occurrence_ak_id\r\n\tAND CM.crrnt_snpsht_flag=1\r\n\tAND CD.crrnt_snpsht_flag=1\r\n\tAND CD.medicare_eligibility <> CM.medicare_eligibility\r\n\tAND CD.edw_claim_med_pk_id <> CM.claim_med_id\n),\nEXPTRANS AS (\n\tSELECT\n\tclaimant_dim_id,\n\tedw_claim_med_pk_id,\n\tmedicare_eligibility\n\tFROM SQ_claimant_dim_Update_claim_medical_fields\n),\nUPDTRANS AS (\n\tSELECT\n\tclaimant_dim_id, \n\tedw_claim_med_pk_id, \n\tmedicare_eligibility\n\tFROM EXPTRANS\n),\nclaimant_dim_UPDate_claim_medical_Target AS (\n\tMERGE INTO claimant_dim AS T\n\tUSING UPDTRANS AS S\n\tON T.claimant_dim_id = S.claimant_dim_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.edw_claim_med_pk_id = S.edw_claim_med_pk_id, T.medicare_eligibility = S.medicare_eligibility\n),"
                         }
                     ]
                 },
@@ -30,57 +30,25 @@
             }
         ],
         "parameters": {
-            "WBMI_AUDIT_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "246509"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "905529"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7604490"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "08/30/2023 02:30:45"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/31/2023 02:35:48"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_WC_Data_Mart_Claim"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_WC_Data_Mart_Claim"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
             "TARGET_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": "DBO"
-            },
-            "SOURCE_SYSTEM_ID": {
-                "type": "string",
-                "defaultValue": "EXCEED AND PMS"
+                "defaultValue": "Default Value"
             },
             "SOURCE_DATABASE": {
                 "type": "string",
-                "defaultValue": "RPT_EDM"
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
             },
             "TARGET_DATABASE": {
                 "type": "string",
-                "defaultValue": "WC_DATA_MART"
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Claims DataMart/"
+            "name": "ClaimsDataMart/"
         },
         "annotations": []
     }

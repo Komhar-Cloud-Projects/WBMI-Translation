@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_STG_INSERT_SalesTerritoryRelationshipStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_STG_INSERT_SalesTerritoryRelationshipStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SalesTerritoryRelationship_ODS AS (\n\tSELECT\n\t\tSalesTerritoryRelationshipID,\n\t\tSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tSalesTerritoryID\n\tFROM SalesTerritoryRelationship_ODS\n),\nLKP_AgencyCode AS (\n\tSELECT\n\tAgencyCode,\n\tAgencyID\n\tFROM (\n\t\tSELECT \n\t\t\tAgencyCode,\n\t\t\tAgencyID\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.Agency\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyID ORDER BY AgencyCode) = 1\n),\nLKP_SalesTerritoryCode AS (\n\tSELECT\n\tSalesTerritoryCode,\n\tSalesTerritoryID\n\tFROM (\n\t\tSELECT \n\t\t\tSalesTerritoryCode,\n\t\t\tSalesTerritoryID\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.SalesTerritory\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY SalesTerritoryID ORDER BY SalesTerritoryCode) = 1\n),\nEXP_Add_MetaDataFields AS (\n\tSELECT\n\tSQ_SalesTerritoryRelationship_ODS.SalesTerritoryRelationshipID,\n\tSQ_SalesTerritoryRelationship_ODS.SourceSystemID,\n\tSQ_SalesTerritoryRelationship_ODS.HashKey,\n\tSQ_SalesTerritoryRelationship_ODS.ModifiedUserID,\n\tSQ_SalesTerritoryRelationship_ODS.ModifiedDate,\n\tSQ_SalesTerritoryRelationship_ODS.AgencyID,\n\tSQ_SalesTerritoryRelationship_ODS.SalesTerritoryID,\n\tLKP_AgencyCode.AgencyCode AS lkp_AgencyCode,\n\tLKP_SalesTerritoryCode.SalesTerritoryCode AS lkp_SalesTerritoryCode,\n\tsysdate AS Extract_Date,\n\tsysdate AS As_of_Date,\n\t1 AS Record_Count,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS Source_System_ID\n\tFROM SQ_SalesTerritoryRelationship_ODS\n\tLEFT JOIN LKP_AgencyCode\n\tON LKP_AgencyCode.AgencyID = SQ_SalesTerritoryRelationship_ODS.AgencyID\n\tLEFT JOIN LKP_SalesTerritoryCode\n\tON LKP_SalesTerritoryCode.SalesTerritoryID = SQ_SalesTerritoryRelationship_ODS.SalesTerritoryID\n),\nSalesTerritoryRelationshipStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.SalesTerritoryRelationshipStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.SalesTerritoryRelationshipStage\n\t(AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, SalesTerritoryID, SalesTerritoryCode, ExtractDate, AsOfDate, RecordCount, SourceSystemID)\n\tSELECT \n\tSourceSystemID AS AGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tlkp_AgencyCode AS AGENCYCODE, \n\tSALESTERRITORYID, \n\tlkp_SalesTerritoryCode AS SALESTERRITORYCODE, \n\tExtract_Date AS EXTRACTDATE, \n\tAs_of_Date AS ASOFDATE, \n\tRecord_Count AS RECORDCOUNT, \n\tSource_System_ID AS SOURCESYSTEMID\n\tFROM EXP_Add_MetaDataFields\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

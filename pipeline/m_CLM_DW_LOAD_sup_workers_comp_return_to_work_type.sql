@@ -16,16 +16,10 @@ EXP_Default_Values AS (
 	SELECT
 	return_code,
 	-- *INF*: iif(isnull(return_code),'N/A',return_code)
-	IFF(return_code IS NULL,
-		'N/A',
-		return_code
-	) AS return_code_OUT,
+	IFF(return_code IS NULL, 'N/A', return_code) AS return_code_OUT,
 	return_desc,
 	-- *INF*: iif(isnull(return_desc),'N/A',return_desc)
-	IFF(return_desc IS NULL,
-		'N/A',
-		return_desc
-	) AS return_descript_OUT
+	IFF(return_desc IS NULL, 'N/A', return_desc) AS return_descript_OUT
 	FROM SQ_sup_return_type_stage
 ),
 LKP_sup_workers_comp_return_to_work_type AS (
@@ -49,31 +43,25 @@ EXP_Detect_Changes AS (
 	EXP_Default_Values.return_code_OUT,
 	EXP_Default_Values.return_descript_OUT,
 	-- *INF*: IIF(ISNULL(OLD_sup_wc_return_to_work_type_id), 'NEW', IIF(LTRIM(RTRIM(OLD_return_to_work_descript)) != (LTRIM(RTRIM(return_descript_OUT))), 'UPDATE', 'NOCHANGE'))
-	IFF(OLD_sup_wc_return_to_work_type_id IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(OLD_return_to_work_descript
-				)
-			) != ( LTRIM(RTRIM(return_descript_OUT
-					)
-				) 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    OLD_sup_wc_return_to_work_type_id IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(OLD_return_to_work_descript)) != (LTRIM(RTRIM(return_descript_OUT))),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS V_changed_flag,
 	V_changed_flag AS CHANGED_FLAG,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(V_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(V_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    V_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id
@@ -137,9 +125,10 @@ EXP_Lag_Eff_From_Date AS (
 	-- 	return_to_work_code= v_prev_row_return_to_work_code, ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	-- 	
-	DECODE(TRUE,
-		return_to_work_code = v_prev_row_return_to_work_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    return_to_work_code = v_prev_row_return_to_work_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	return_to_work_code AS v_prev_row_return_to_work_code,

@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_WS_Update_AccountingDate",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_WS_Update_AccountingDate",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTInBalancePolicy AS (\n\tSELECT\n\t\tWorkDCTInBalancePolicyId,\n\t\tHistoryID,\n\t\tAccountingDate\n\tFROM WorkDCTInBalancePolicy\n\tWHERE ProcessedFlag=0 @{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_DefaultValues AS (\n\tSELECT\n\tWorkDCTInBalancePolicyId,\n\tHistoryID,\n\t'Carrier_BasicTransaction_Rules_2_1_0' AS ManuScriptID,\n\t'ActiveTransaction.AccountingDate' AS FieldID,\n\t-- *INF*: '/session/data/policyAdmin/transactions/transaction[HistoryID=' || TO_CHAR(HistoryID) || ']'\n\t'/session/data/policyAdmin/transactions/transaction[HistoryID=' || TO_CHAR(HistoryID) || ']' AS ContextXpath,\n\tAccountingDate,\n\t-- *INF*: TO_CHAR(AccountingDate,'MM/YYYY')\n\tTO_CHAR(AccountingDate, 'MM/YYYY') AS o_AccountingDate\n\tFROM SQ_WorkDCTInBalancePolicy\n),\nRepairAccountingDate AS (-- RepairAccountingDate\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nEXPTRANS AS (\n\tSELECT\n\tREF_PassThoughPKId,\n\tfaultstring,\n\t1 AS ProcessedFlag,\n\tXPK_n2_Envelope0\n\tFROM RepairAccountingDate\n),\nFILTRANS AS (\n\tSELECT\n\tREF_PassThoughPKId, \n\tfaultstring, \n\tProcessedFlag\n\tFROM EXPTRANS\n\tWHERE ISNULL(faultstring)\n),\nUPD_AccountingDate AS (\n\tSELECT\n\tREF_PassThoughPKId AS REF_PassThroughPKId, \n\tProcessedFlag\n\tFROM FILTRANS\n),\nTGT_WorkDCTInBalancePolicy_UPDATE AS (\n\tMERGE INTO WorkDCTInBalancePolicy AS T\n\tUSING UPD_AccountingDate AS S\n\tON T.WorkDCTInBalancePolicyId = S.REF_PassThroughPKId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ProcessedFlag = S.ProcessedFlag\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

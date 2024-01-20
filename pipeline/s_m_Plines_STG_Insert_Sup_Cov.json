@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Plines_STG_Insert_Sup_Cov",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Plines_STG_Insert_Sup_Cov",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_sup_cov AS (\n\tSELECT\n\t\tcode,\n\t\tcov_part_type_code,\n\t\teff_date,\n\t\texp_date,\n\t\tpmsc_code,\n\t\tpmsc_base,\n\t\tdescript,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\tmaster_cov_type\n\tFROM sup_cov\n),\nEXP_COV AS (\n\tSELECT\n\tcode,\n\tcov_part_type_code,\n\teff_date,\n\texp_date,\n\tpmsc_code,\n\tpmsc_base,\n\tdescript,\n\tmodified_date,\n\tmodified_user_id,\n\tmaster_cov_type,\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t'' AS RECORD_COUNT,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID\n\tFROM SQ_sup_cov\n),\nsup_cov_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_cov_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_cov_stage\n\t(code, cov_part_type_code, eff_date, exp_date, pmsc_code, pmsc_base, descript, modified_date, modified_user_id, master_cov_type, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tCODE, \n\tCOV_PART_TYPE_CODE, \n\tEFF_DATE, \n\tEXP_DATE, \n\tPMSC_CODE, \n\tPMSC_BASE, \n\tDESCRIPT, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tMASTER_COV_TYPE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_COV\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CommonStaging/"
+        },
+        "annotations": []
+    }
+}

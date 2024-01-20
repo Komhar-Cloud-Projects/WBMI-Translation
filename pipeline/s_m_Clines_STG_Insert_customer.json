@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Clines_STG_Insert_customer",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Clines_STG_Insert_customer",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_customer AS (\n\tSELECT\n\t\tcust_id,\n\t\tprdcr_id,\n\t\tagency_code,\n\t\tassoc_chc_id,\n\t\tlgl_ent_chc_id,\n\t\tname,\n\t\tlgl_name,\n\t\tmain_ph_num,\n\t\tmain_bus_email_addr,\n\t\tmain_bus_web_site_url,\n\t\taddr_line_1,\n\t\taddr_line_2,\n\t\tcontact_info,\n\t\tcontact_ph_num,\n\t\tother_lgl_ent_descript,\n\t\tcity,\n\t\tstate_or_prov_chc_id,\n\t\tcounty,\n\t\tpostal_code,\n\t\tagency_cust_num,\n\t\tpms_cust_num,\n\t\tcreated_user_id,\n\t\tcreated_date,\n\t\tmodified_user_id,\n\t\tmodified_date,\n\t\tyrs_in_bus,\n\t\tnon_wbmi_prior_cov_flag,\n\t\twbmi_prior_cov_flag,\n\t\tpol_cncld_dclnd_flag,\n\t\tprior_losses_flag,\n\t\tpaper_loss_smr_faxed_or_mailed_flag,\n\t\tadd_supporting_documentation_flag,\n\t\thidden_flag,\n\t\tserv_center_flag,\n\t\tnamed_insd,\n\t\tdoing_bus_as,\n\t\tfein,\n\t\tproducer_code,\n\t\trollover_bus_flag,\n\t\treview_cust_flag,\n\t\treview_cust_user_id,\n\t\treview_cust_date\n\tFROM customer\n),\nEXP_Values AS (\n\tSELECT\n\tcust_id,\n\tprdcr_id,\n\tagency_code,\n\tassoc_chc_id,\n\tlgl_ent_chc_id,\n\tname,\n\tlgl_name,\n\tmain_ph_num,\n\tmain_bus_email_addr,\n\tmain_bus_web_site_url,\n\taddr_line_1,\n\taddr_line_2,\n\tcontact_info,\n\tcontact_ph_num,\n\tother_lgl_ent_descript,\n\tcity,\n\tstate_or_prov_chc_id,\n\tcounty,\n\tpostal_code,\n\tagency_cust_num,\n\tpms_cust_num,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tmodified_date,\n\tyrs_in_bus,\n\tnon_wbmi_prior_cov_flag,\n\twbmi_prior_cov_flag,\n\tpol_cncld_dclnd_flag,\n\tprior_losses_flag,\n\tpaper_loss_smr_faxed_or_mailed_flag,\n\tadd_supporting_documentation_flag,\n\thidden_flag,\n\tserv_center_flag,\n\tnamed_insd,\n\tdoing_bus_as,\n\tfein,\n\tproducer_code,\n\trollover_bus_flag,\n\treview_cust_flag,\n\treview_cust_user_id,\n\treview_cust_date,\n\tSYSDATE AS extract_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id\n\tFROM SQ_customer\n),\ncustomer_cl_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.customer_cl_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.customer_cl_stage\n\t(cust_id, prdcr_id, agency_code, assoc_chc_id, lgl_ent_chc_id, name, lgl_name, main_ph_num, main_bus_email_addr, main_bus_web_site_url, addr_line_1, addr_line_2, contact_info, contact_ph_num, other_lgl_ent_descript, city, state_or_prov_chc_id, county, postal_code, agency_cust_num, pms_cust_num, created_user_id, created_date, modified_user_id, modified_date, yrs_in_bus, non_wbmi_prior_cov_flag, wbmi_prior_cov_flag, pol_cncld_dclnd_flag, prior_losses_flag, paper_loss_smr_faxed_or_mailed_flag, add_supporting_documentation_flag, hidden_flag, serv_center_flag, named_insd, doing_bus_as, fein, producer_code, rollover_bus_flag, review_cust_flag, review_cust_user_id, review_cust_date, extract_date, source_system_id)\n\tSELECT \n\tCUST_ID, \n\tPRDCR_ID, \n\tAGENCY_CODE, \n\tASSOC_CHC_ID, \n\tLGL_ENT_CHC_ID, \n\tNAME, \n\tLGL_NAME, \n\tMAIN_PH_NUM, \n\tMAIN_BUS_EMAIL_ADDR, \n\tMAIN_BUS_WEB_SITE_URL, \n\tADDR_LINE_1, \n\tADDR_LINE_2, \n\tCONTACT_INFO, \n\tCONTACT_PH_NUM, \n\tOTHER_LGL_ENT_DESCRIPT, \n\tCITY, \n\tSTATE_OR_PROV_CHC_ID, \n\tCOUNTY, \n\tPOSTAL_CODE, \n\tAGENCY_CUST_NUM, \n\tPMS_CUST_NUM, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tYRS_IN_BUS, \n\tNON_WBMI_PRIOR_COV_FLAG, \n\tWBMI_PRIOR_COV_FLAG, \n\tPOL_CNCLD_DCLND_FLAG, \n\tPRIOR_LOSSES_FLAG, \n\tPAPER_LOSS_SMR_FAXED_OR_MAILED_FLAG, \n\tADD_SUPPORTING_DOCUMENTATION_FLAG, \n\tHIDDEN_FLAG, \n\tSERV_CENTER_FLAG, \n\tNAMED_INSD, \n\tDOING_BUS_AS, \n\tFEIN, \n\tPRODUCER_CODE, \n\tROLLOVER_BUS_FLAG, \n\tREVIEW_CUST_FLAG, \n\tREVIEW_CUST_USER_ID, \n\tREVIEW_CUST_DATE, \n\tEXTRACT_DATE, \n\tSOURCE_SYSTEM_ID\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CommonStaging/"
+        },
+        "annotations": []
+    }
+}

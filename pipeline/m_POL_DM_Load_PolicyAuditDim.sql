@@ -28,10 +28,11 @@ EXP_PassThrough AS (
 	SELECT
 	CurrentSnapshotFlag AS i_CurrentSnapshotFlag,
 	-- *INF*: DECODE(i_CurrentSnapshotFlag,'T','1','F','0','0')
-	DECODE(i_CurrentSnapshotFlag,
-		'T', '1',
-		'F', '0',
-		'0'
+	DECODE(
+	    i_CurrentSnapshotFlag,
+	    'T', '1',
+	    'F', '0',
+	    '0'
 	) AS o_CurrentSnapshotFlag,
 	EffectiveDate,
 	ExpirationDate,
@@ -43,39 +44,44 @@ EXP_PassThrough AS (
 	AuditContactStateAbbreviation,
 	PermanentOverrideFlag AS i_PermanentOverrideFlag,
 	-- *INF*: DECODE(i_PermanentOverrideFlag,'T','1','F','0','0')
-	DECODE(i_PermanentOverrideFlag,
-		'T', '1',
-		'F', '0',
-		'0'
+	DECODE(
+	    i_PermanentOverrideFlag,
+	    'T', '1',
+	    'F', '0',
+	    '0'
 	) AS o_PermanentOverrideFlag,
 	PolicyPeriodOverrideFlag AS i_PolicyPeriodOverrideFlag,
 	-- *INF*: DECODE(i_PolicyPeriodOverrideFlag,'T','1','F','0','0')
-	DECODE(i_PolicyPeriodOverrideFlag,
-		'T', '1',
-		'F', '0',
-		'0'
+	DECODE(
+	    i_PolicyPeriodOverrideFlag,
+	    'T', '1',
+	    'F', '0',
+	    '0'
 	) AS o_PolicyPeriodOverrideFlag,
 	FrontingPolicyFlag AS i_FrontingPolicyFlag,
 	-- *INF*: DECODE(i_FrontingPolicyFlag,'T','1','F','0','0')
-	DECODE(i_FrontingPolicyFlag,
-		'T', '1',
-		'F', '0',
-		'0'
+	DECODE(
+	    i_FrontingPolicyFlag,
+	    'T', '1',
+	    'F', '0',
+	    '0'
 	) AS o_FrontingPolicyFlag,
 	AuditCloseOutFlag AS i_AuditCloseOutFlag,
 	-- *INF*: DECODE(i_AuditCloseOutFlag,'T','1','F','0','0')
-	DECODE(i_AuditCloseOutFlag,
-		'T', '1',
-		'F', '0',
-		'0'
+	DECODE(
+	    i_AuditCloseOutFlag,
+	    'T', '1',
+	    'F', '0',
+	    '0'
 	) AS o_AuditCloseOutFlag,
 	AuditStatus,
 	AuditableFlag AS i_AuditableFlag,
 	-- *INF*: DECODE(i_AuditableFlag,'T','1','F','0','0')
-	DECODE(i_AuditableFlag,
-		'T', '1',
-		'F', '0',
-		'0'
+	DECODE(
+	    i_AuditableFlag,
+	    'T', '1',
+	    'F', '0',
+	    '0'
 	) AS o_AuditableFlag,
 	AssignedAuditorOverideFlag AS i_AssignedAuditorOverideFlag,
 	-- *INF*: i_AssignedAuditorOverideFlag
@@ -88,17 +94,19 @@ EXP_PassThrough AS (
 	AuditablePremium,
 	IsAuditableFlag AS i_IsAuditableFlag,
 	-- *INF*: DECODE(i_IsAuditableFlag,'T','1','F','0','0')
-	DECODE(i_IsAuditableFlag,
-		'T', '1',
-		'F', '0',
-		'0'
+	DECODE(
+	    i_IsAuditableFlag,
+	    'T', '1',
+	    'F', '0',
+	    '0'
 	) AS o_IsAuditableFlag,
 	NoncomplianceofWCPoolAudit AS i_NoncomplianceofWCPoolAudit,
 	-- *INF*: DECODE(i_NoncomplianceofWCPoolAudit,'T','1','F','0','0')
-	DECODE(i_NoncomplianceofWCPoolAudit,
-		'T', '1',
-		'F', '0',
-		'0'
+	DECODE(
+	    i_NoncomplianceofWCPoolAudit,
+	    'T', '1',
+	    'F', '0',
+	    '0'
 	) AS o_NoncomplianceofWCPoolAudit
 	FROM SQ_PolicyAudit
 ),
@@ -133,10 +141,7 @@ EXPTRANS AS (
 	SELECT
 	LKP_PolicyAuditDim.PolicyAuditDimId,
 	-- *INF*: IIF(ISNULL(PolicyAuditDimId),1,0)
-	IFF(PolicyAuditDimId IS NULL,
-		1,
-		0
-	) AS v_ChangeFlag,
+	IFF(PolicyAuditDimId IS NULL, 1, 0) AS v_ChangeFlag,
 	EXP_PassThrough.o_CurrentSnapshotFlag AS CurrentSnapshotFlag,
 	EXP_PassThrough.EffectiveDate,
 	EXP_PassThrough.ExpirationDate,
@@ -148,10 +153,7 @@ EXPTRANS AS (
 	EXP_PassThrough.AuditContactStateAbbreviation,
 	LKP_sup_state.state_descript AS i_AuditContactStateDescription,
 	-- *INF*: IIF(NOT ISNULL(i_AuditContactStateDescription),i_AuditContactStateDescription,'N/A')
-	IFF(i_AuditContactStateDescription IS NOT NULL,
-		i_AuditContactStateDescription,
-		'N/A'
-	) AS o_AuditContactStateDescription,
+	IFF(i_AuditContactStateDescription IS NOT NULL, i_AuditContactStateDescription, 'N/A') AS o_AuditContactStateDescription,
 	EXP_PassThrough.o_PermanentOverrideFlag AS PermanentOverrideFlag,
 	EXP_PassThrough.o_PolicyPeriodOverrideFlag AS PolicyPeriodOverrideFlag,
 	EXP_PassThrough.o_FrontingPolicyFlag AS FrontingPolicyFlag,

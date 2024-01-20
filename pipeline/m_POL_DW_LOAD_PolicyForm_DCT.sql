@@ -36,43 +36,25 @@ EXP_Default AS (
 	Add,
 	Remove,
 	-- *INF*: LTRIM(RTRIM(FormName))
-	LTRIM(RTRIM(FormName
-		)
-	) AS v_FormNumber,
+	LTRIM(RTRIM(FormName)) AS v_FormNumber,
 	-- *INF*: REG_REPLACE(v_FormNumber,'[^0-9]','')
-	REG_REPLACE(v_FormNumber, '[^0-9]', ''
-	) AS v_FormNumberRemoveChar,
+	REGEXP_REPLACE(v_FormNumber, '[^0-9]', '') AS v_FormNumberRemoveChar,
 	-- *INF*: SUBSTR(LTRIM(RTRIM(v_FormNumberRemoveChar)),
 	-- LENGTH(LTRIM(RTRIM(v_FormNumberRemoveChar)))-3,
 	-- 4)
-	SUBSTR(LTRIM(RTRIM(v_FormNumberRemoveChar
-			)
-		), LENGTH(LTRIM(RTRIM(v_FormNumberRemoveChar
-				)
-			)
-		) - 3, 4
-	) AS v_FormEditionDate,
+	SUBSTR(LTRIM(RTRIM(v_FormNumberRemoveChar)), LENGTH(LTRIM(RTRIM(v_FormNumberRemoveChar))) - 3, 4) AS v_FormEditionDate,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	sysdate AS o_CreatedDate,
 	sysdate AS o_ModifiedDate,
 	-- *INF*: LTRIM(RTRIM(PolicyNumber)) || LTRIM(RTRIM(PolicyVersionFormatted))
-	LTRIM(RTRIM(PolicyNumber
-		)
-	) || LTRIM(RTRIM(PolicyVersionFormatted
-		)
-	) AS o_pol_key,
+	LTRIM(RTRIM(PolicyNumber)) || LTRIM(RTRIM(PolicyVersionFormatted)) AS o_pol_key,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(Caption)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(Caption
-	) AS o_FormName,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(Caption) AS o_FormName,
 	-- *INF*: LTRIM(RTRIM(FormName))
-	LTRIM(RTRIM(FormName
-		)
-	) AS o_FormNumber,
+	LTRIM(RTRIM(FormName)) AS o_FormNumber,
 	-- *INF*: TO_DATE(LPAD(v_FormEditionDate,4,'0'),'MMRR')
-	TO_DATE(LPAD(v_FormEditionDate, 4, '0'
-		), 'MMRR'
-	) AS o_FormEditionDate,
+	TO_TIMESTAMP(LPAD(v_FormEditionDate, 4, '0'), 'MMRR') AS o_FormEditionDate,
 	-- *INF*: DECODE(TRUE,
 	-- Add='1',
 	-- 			DECODE(TRUE,			
@@ -95,30 +77,28 @@ EXP_Default AS (
 	-- 			),
 	-- '0'
 	-- )
-	DECODE(TRUE,
-		Add = '1', DECODE(TRUE,
-		Remove = '1', '0',
-		'1'
-		),
-		Add IS NULL, DECODE(TRUE,
-		OnPolicy IS NULL 
-			AND Remove IS NULL, NULL,
-		OnPolicy = '1' 
-			AND Remove IS NULL, '1',
-		'0'
-		),
-		Add = '0', DECODE(TRUE,
-		OnPolicy IS NULL 
-			AND Remove IS NULL, NULL,
-		OnPolicy = '1' 
-			AND Remove = '1', '0',
-		OnPolicy = '1' 
-			AND Remove IS NULL, '1',
-		OnPolicy = '1' 
-			AND Remove = '0', '1',
-		'0'
-		),
-		'0'
+	DECODE(
+	    TRUE,
+	    Add = '1', DECODE(
+	        TRUE,
+	        Remove = '1', '0',
+	        '1'
+	    ),
+	    Add IS NULL, DECODE(
+	        TRUE,
+	        OnPolicy IS NULL AND Remove IS NULL, NULL,
+	        OnPolicy = '1' AND Remove IS NULL, '1',
+	        '0'
+	    ),
+	    Add = '0', DECODE(
+	        TRUE,
+	        OnPolicy IS NULL AND Remove IS NULL, NULL,
+	        OnPolicy = '1' AND Remove = '1', '0',
+	        OnPolicy = '1' AND Remove IS NULL, '1',
+	        OnPolicy = '1' AND Remove = '0', '1',
+	        '0'
+	    ),
+	    '0'
 	) AS o_AddRemoveFlag
 	FROM SQ_DCPolicyStaging
 ),
@@ -182,15 +162,17 @@ EXP_No_NULL AS (
 	EXP_Default.o_ModifiedDate AS ModifiedDate,
 	LKP_Policy.pol_ak_id AS in_PolicyAKID,
 	-- *INF*: DECODE(TRUE,ISNULL(in_PolicyAKID),-1,in_PolicyAKID)
-	DECODE(TRUE,
-		in_PolicyAKID IS NULL, - 1,
-		in_PolicyAKID
+	DECODE(
+	    TRUE,
+	    in_PolicyAKID IS NULL, - 1,
+	    in_PolicyAKID
 	) AS o_PolicyAKID,
 	LKP_Form.FormId AS in_FormID,
 	-- *INF*: DECODE(TRUE,ISNULL(in_FormID),-1,in_FormID)
-	DECODE(TRUE,
-		in_FormID IS NULL, - 1,
-		in_FormID
+	DECODE(
+	    TRUE,
+	    in_FormID IS NULL, - 1,
+	    in_FormID
 	) AS o_FormID,
 	EXP_Default.TransactionDate,
 	EXP_Default.EffectiveDate,

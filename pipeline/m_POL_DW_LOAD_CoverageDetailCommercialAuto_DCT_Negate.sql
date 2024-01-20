@@ -76,10 +76,7 @@ Exp_CoverageDetailGeneralLiability AS (
 	MedicalExpensesOption,
 	CoveredByWorkersCompensationFlag AS CoveredByWorkComp,
 	-- *INF*: IIF(CoveredByWorkComp = 'T',1,0)
-	IFF(CoveredByWorkComp = 'T',
-		1,
-		0
-	) AS o_CoveredByWorkComp,
+	IFF(CoveredByWorkComp = 'T', 1, 0) AS o_CoveredByWorkComp,
 	SubjectToNoFault,
 	AdditionalLimitKS,
 	AdditionalLimitKY,
@@ -87,22 +84,13 @@ Exp_CoverageDetailGeneralLiability AS (
 	RatingZoneCode,
 	ReplacementCost,
 	-- *INF*: IIF(ReplacementCost = 'T',1,0)
-	IFF(ReplacementCost = 'T',
-		1,
-		0
-	) AS o_ReplacementCost,
+	IFF(ReplacementCost = 'T', 1, 0) AS o_ReplacementCost,
 	FullGlassIndicator,
 	-- *INF*: IIF(FullGlassIndicator = 'T',1,0)
-	IFF(FullGlassIndicator = 'T',
-		1,
-		0
-	) AS o_FullGlassIndicator,
+	IFF(FullGlassIndicator = 'T', 1, 0) AS o_FullGlassIndicator,
 	HistoricVehicleIndicator,
 	-- *INF*: IIF(HistoricVehicleIndicator= 'T',1,0)
-	IFF(HistoricVehicleIndicator = 'T',
-		1,
-		0
-	) AS o_HistoricVehicleIndicator
+	IFF(HistoricVehicleIndicator = 'T', 1, 0) AS o_HistoricVehicleIndicator
 	FROM SQ_CoverageDetailCommercialAuto
 ),
 EXP_CoverageDetailCommercialAuto AS (
@@ -213,10 +201,7 @@ EXP_DetectChanges AS (
 	LKP_CoverageDetailCommercialAuto.SecondaryVehicleType AS lkp_SecondaryVehicleType,
 	LKP_CoverageDetailCommercialAuto.UsedInDumpingIndicator AS lkp_UsedInDumpingIndicator,
 	-- *INF*: IIF(lkp_UsedInDumpingIndicator='T',1,0)
-	IFF(lkp_UsedInDumpingIndicator = 'T',
-		1,
-		0
-	) AS v_UsedInDumpingIndicator,
+	IFF(lkp_UsedInDumpingIndicator = 'T', 1, 0) AS v_UsedInDumpingIndicator,
 	LKP_CoverageDetailCommercialAuto.VehicleYear AS lkp_VehicleYear,
 	LKP_CoverageDetailCommercialAuto.StatedAmount AS lkp_StatedAmount,
 	LKP_CoverageDetailCommercialAuto.CostNew AS lkp_CostNew,
@@ -227,10 +212,7 @@ EXP_DetectChanges AS (
 	LKP_CoverageDetailCommercialAuto.VehicleNumber AS lkp_VehicleNumber,
 	LKP_CoverageDetailCommercialAuto.CompositeRatedFlag AS lkp_CompositeRatedFlag,
 	-- *INF*: IIF(lkp_CompositeRatedFlag='T',1,0)
-	IFF(lkp_CompositeRatedFlag = 'T',
-		1,
-		0
-	) AS v_CompositeRatedFlag,
+	IFF(lkp_CompositeRatedFlag = 'T', 1, 0) AS v_CompositeRatedFlag,
 	LKP_CoverageDetailCommercialAuto.TerminalZoneCode AS lkp_TerminalZoneCode,
 	LKP_CoverageDetailCommercialAuto.VehicleType AS lkp_VehicleType,
 	LKP_CoverageDetailCommercialAuto.PIPBureaucoverageCode AS lkp_PIPBureaucoverageCode,
@@ -245,11 +227,9 @@ EXP_DetectChanges AS (
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -278,10 +258,7 @@ EXP_DetectChanges AS (
 	EXP_CoverageDetailCommercialAuto.SecondaryClassGroup,
 	EXP_CoverageDetailCommercialAuto.IncludeUIM,
 	-- *INF*: IIF(ISNULL(lkp_PremiumTransactionID),'NEW','UPDATE')
-	IFF(lkp_PremiumTransactionID IS NULL,
-		'NEW',
-		'UPDATE'
-	) AS ChangeFlag,
+	IFF(lkp_PremiumTransactionID IS NULL, 'NEW', 'UPDATE') AS ChangeFlag,
 	EXP_CoverageDetailCommercialAuto.CoordinationOfBenefits,
 	EXP_CoverageDetailCommercialAuto.MedicalExpensesOption,
 	EXP_CoverageDetailCommercialAuto.CoveredByWorkComp,

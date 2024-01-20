@@ -96,54 +96,38 @@ EXP_Calc AS (
 	-- *INF*: :LKP.LKP_ITEMAMOUNT(pol_num,PremiumTransactionEffectiveDate)
 	LKP_ITEMAMOUNT_pol_num_PremiumTransactionEffectiveDate.ItemAmount AS lkp_ItemAmount,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_SPLITPOLICY(pol_num)),'0', :LKP.LKP_SPLITPOLICY(pol_num))
-	IFF(LKP_SPLITPOLICY_pol_num.PolicyNumber IS NULL,
-		'0',
-		LKP_SPLITPOLICY_pol_num.PolicyNumber
-	) AS v_IsSplit,
+	IFF(LKP_SPLITPOLICY_pol_num.PolicyNumber IS NULL, '0', LKP_SPLITPOLICY_pol_num.PolicyNumber) AS v_IsSplit,
 	-- *INF*: DECODE(TRUE, 
 	-- lkp_ItemAmount=0,0,
 	-- ISNULL(lkp_AuthorizedAmount) or ISNULL(lkp_ItemAmount),AgencyActualCommissionRate,lkp_AuthorizedAmount/lkp_ItemAmount)
-	DECODE(TRUE,
-		lkp_ItemAmount = 0, 0,
-		lkp_AuthorizedAmount IS NULL 
-		OR lkp_ItemAmount IS NULL, AgencyActualCommissionRate,
-		lkp_AuthorizedAmount / lkp_ItemAmount
+	DECODE(
+	    TRUE,
+	    lkp_ItemAmount = 0, 0,
+	    lkp_AuthorizedAmount IS NULL or lkp_ItemAmount IS NULL, AgencyActualCommissionRate,
+	    lkp_AuthorizedAmount / lkp_ItemAmount
 	) AS v_CommissionRate,
 	-- *INF*: :LKP.LKP_TRANSACTIONEFFECTIVEDATE_SPLIT(PremiumTransactionAKID)
 	LKP_TRANSACTIONEFFECTIVEDATE_SPLIT_PremiumTransactionAKID.TransactionEffectiveDate AS v_EffectiveDate_Split,
 	-- *INF*: IIF(v_IsSplit<> '0',
 	-- :LKP.LKP_GRADUATEDCOMMISSION(pol_num,v_EffectiveDate_Split),0
 	-- )
-	IFF(v_IsSplit <> '0',
-		LKP_GRADUATEDCOMMISSION_pol_num_v_EffectiveDate_Split.AuthorizedAmount,
-		0
+	IFF(
+	    v_IsSplit <> '0', LKP_GRADUATEDCOMMISSION_pol_num_v_EffectiveDate_Split.AuthorizedAmount, 0
 	) AS v_AuthorizedAmount_Split,
 	-- *INF*: IIF(v_IsSplit<>'0',
 	-- :LKP.LKP_ITEMAMOUNT(pol_num,v_EffectiveDate_Split),0)
-	IFF(v_IsSplit <> '0',
-		LKP_ITEMAMOUNT_pol_num_v_EffectiveDate_Split.ItemAmount,
-		0
-	) AS v_ItemAmount_Split,
+	IFF(v_IsSplit <> '0', LKP_ITEMAMOUNT_pol_num_v_EffectiveDate_Split.ItemAmount, 0) AS v_ItemAmount_Split,
 	-- *INF*: DECODE(TRUE,
 	-- v_IsSplit<>'0' and (v_AuthorizedAmount_Split =0 or v_ItemAmount_Split=0),0, 
 	-- v_IsSplit<>'0' and v_AuthorizedAmount_Split <>0 and v_ItemAmount_Split<>0 and NOT ISNULL(v_AuthorizedAmount_Split) and NOT ISNULL(v_ItemAmount_Split), v_AuthorizedAmount_Split/v_ItemAmount_Split, v_CommissionRate)
-	DECODE(TRUE,
-		v_IsSplit <> '0' 
-		AND ( v_AuthorizedAmount_Split = 0 
-			OR v_ItemAmount_Split = 0 
-		), 0,
-		v_IsSplit <> '0' 
-		AND v_AuthorizedAmount_Split <> 0 
-		AND v_ItemAmount_Split <> 0 
-		AND v_AuthorizedAmount_Split IS NULL 
-		AND v_ItemAmount_Split IS NOT NOT NULL, v_AuthorizedAmount_Split / v_ItemAmount_Split,
-		v_CommissionRate
+	DECODE(
+	    TRUE,
+	    v_IsSplit <> '0' and (v_AuthorizedAmount_Split = 0 or v_ItemAmount_Split = 0), 0,
+	    v_IsSplit <> '0' and v_AuthorizedAmount_Split <> 0 and v_ItemAmount_Split <> 0 and v_AuthorizedAmount_Split IS NULL and v_ItemAmount_Split IS NOT NOT NULL, v_AuthorizedAmount_Split / v_ItemAmount_Split,
+	    v_CommissionRate
 	) AS v_CommissionRate_Split,
 	-- *INF*: IIF(v_IsSplit<>'0', v_CommissionRate_Split,v_CommissionRate)
-	IFF(v_IsSplit <> '0',
-		v_CommissionRate_Split,
-		v_CommissionRate
-	) AS v_CommissionRate1,
+	IFF(v_IsSplit <> '0', v_CommissionRate_Split, v_CommissionRate) AS v_CommissionRate1,
 	-- *INF*: IIF(v_CommissionRate1<-1  or v_CommissionRate1>1,0.05111,v_CommissionRate1)
 	-- 
 	-- 
@@ -163,11 +147,7 @@ EXP_Calc AS (
 	-- 
 	-- 
 	-- 
-	IFF(v_CommissionRate1 < - 1 
-		OR v_CommissionRate1 > 1,
-		0.05111,
-		v_CommissionRate1
-	) AS o_AgencyCommissionRate,
+	IFF(v_CommissionRate1 < - 1 or v_CommissionRate1 > 1, 0.05111, v_CommissionRate1) AS o_AgencyCommissionRate,
 	PremiumTransactionCreatedDate AS i_PremiumTransactionCreatedDate,
 	-- *INF*: TRUNC(i_PremiumTransactionCreatedDate)
 	TRUNC(i_PremiumTransactionCreatedDate) AS o_PremiumTransactionCreatedDate

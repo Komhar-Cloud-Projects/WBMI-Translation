@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBGlRiskStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBGlRiskStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WbGlRiskStage AS (\n\tSELECT\n\t\tWbGlRiskStageId,\n\t\tGlRiskId,\n\t\tWbGlRiskId,\n\t\tSessionId,\n\t\tXCUCoverage,\n\t\tExcludeExplosionCollapse1UndergroundAll,\n\t\tExcludeExplosionCollapse2AndOrUnderground,\n\t\tIncludeExplosion,\n\t\tIncludeCollapse,\n\t\tIncludeUnderground,\n\t\tExcludeExplosionCollapse3AndOrUndergroundSpecOps,\n\t\tExcludeCollapse,\n\t\tExcludeExplosion,\n\t\tExcludeUnderground,\n\t\tWestBendAuditable,\n\t\tILFTableAssignmentCode,\n\t\tProductsCompletedOpsTableAssignmentCode,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM WbGlRiskStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWbGlRiskStageId AS i_WbGlRiskStagingId,\n\tGlRiskId AS i_GlRiskId,\n\tWbGlRiskId AS i_WbGlRiskId,\n\tSessionId AS i_SessionId,\n\tXCUCoverage AS i_XCUCoverage,\n\tExcludeExplosionCollapse1UndergroundAll AS i_ExcludeExplosionCollapse1UndergroundAll,\n\tExcludeExplosionCollapse2AndOrUnderground AS i_ExcludeExplosionCollapse2AndOrUnderground,\n\tIncludeExplosion AS i_IncludeExplosion,\n\tIncludeCollapse AS i_IncludeCollapse,\n\tIncludeUnderground AS i_IncludeUnderground,\n\tExcludeExplosionCollapse3AndOrUndergroundSpecOps AS i_ExcludeExplosionCollapse3AndOrUndergroundSpecOps,\n\tExcludeCollapse AS i_ExcludeCollapse,\n\tExcludeExplosion AS i_ExcludeExplosion,\n\tExcludeUnderground AS i_ExcludeUnderground,\n\tWestBendAuditable AS i_WestBendAuditable,\n\tILFTableAssignmentCode AS i_ILFTableAssignmentCode,\n\tProductsCompletedOpsTableAssignmentCode AS i_ProductsCompletedOpsTableAssignmentCode,\n\tExtractDate AS i_ExtractDate,\n\tSourceSystemId AS i_SourceSystemId,\n\ti_WbGlRiskStagingId AS o_WbGlRiskStagingId,\n\ti_GlRiskId AS o_GlRiskId,\n\ti_WbGlRiskId AS o_WbGlRiskId,\n\ti_SessionId AS o_SessionId,\n\t-- *INF*: DECODE(i_XCUCoverage,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_XCUCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_XCUCoverage,\n\t-- *INF*: DECODE(i_ExcludeExplosionCollapse1UndergroundAll,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ExcludeExplosionCollapse1UndergroundAll,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ExcludeExplosionCollapse1UndergroundAll,\n\t-- *INF*: DECODE(i_ExcludeExplosionCollapse2AndOrUnderground,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ExcludeExplosionCollapse2AndOrUnderground,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ExcludeExplosionCollapse2AndOrUnderground,\n\t-- *INF*: DECODE(i_IncludeExplosion,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_IncludeExplosion,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncludeExplosion,\n\t-- *INF*: DECODE(i_IncludeCollapse,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_IncludeCollapse,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncludeCollapse,\n\t-- *INF*: DECODE(i_IncludeUnderground,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_IncludeUnderground,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncludeUnderground,\n\t-- *INF*: DECODE(i_ExcludeExplosionCollapse3AndOrUndergroundSpecOps,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ExcludeExplosionCollapse3AndOrUndergroundSpecOps,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ExcludeExplosionCollapse3AndOrUndergroundSpecOps,\n\t-- *INF*: DECODE(i_ExcludeCollapse,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ExcludeCollapse,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ExcludeCollapse,\n\t-- *INF*: DECODE(i_ExcludeExplosion,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ExcludeExplosion,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ExcludeExplosion,\n\t-- *INF*: DECODE(i_ExcludeUnderground,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ExcludeUnderground,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ExcludeUnderground,\n\t-- *INF*: DECODE(i_WestBendAuditable,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_WestBendAuditable,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_WestBendAuditable,\n\ti_ILFTableAssignmentCode AS o_ILFTableAssignmentCode,\n\ti_ProductsCompletedOpsTableAssignmentCode AS o_ProductsCompletedOpsTableAssignmentCode,\n\ti_ExtractDate AS o_ExtractDate,\n\ti_SourceSystemId AS o_SourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WbGlRiskStage\n),\nArchWBGlRiskStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBGlRiskStage\n\t(WbGlRiskStageId, GlRiskId, WbGlRiskId, SessionId, XCUCoverage, ExcludeExplosionCollapse1UndergroundAll, ExcludeExplosionCollapse2AndOrUnderground, IncludeExplosion, IncludeCollapse, IncludeUnderground, ExcludeExplosionCollapse3AndOrUndergroundSpecOps, ExcludeCollapse, ExcludeExplosion, ExcludeUnderground, WestBendAuditable, ILFTableAssignmentCode, ProductsCompletedOpsTableAssignmentCode, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\to_WbGlRiskStagingId AS WBGLRISKSTAGEID, \n\to_GlRiskId AS GLRISKID, \n\to_WbGlRiskId AS WBGLRISKID, \n\to_SessionId AS SESSIONID, \n\to_XCUCoverage AS XCUCOVERAGE, \n\to_ExcludeExplosionCollapse1UndergroundAll AS EXCLUDEEXPLOSIONCOLLAPSE1UNDERGROUNDALL, \n\to_ExcludeExplosionCollapse2AndOrUnderground AS EXCLUDEEXPLOSIONCOLLAPSE2ANDORUNDERGROUND, \n\to_IncludeExplosion AS INCLUDEEXPLOSION, \n\to_IncludeCollapse AS INCLUDECOLLAPSE, \n\to_IncludeUnderground AS INCLUDEUNDERGROUND, \n\to_ExcludeExplosionCollapse3AndOrUndergroundSpecOps AS EXCLUDEEXPLOSIONCOLLAPSE3ANDORUNDERGROUNDSPECOPS, \n\to_ExcludeCollapse AS EXCLUDECOLLAPSE, \n\to_ExcludeExplosion AS EXCLUDEEXPLOSION, \n\to_ExcludeUnderground AS EXCLUDEUNDERGROUND, \n\to_WestBendAuditable AS WESTBENDAUDITABLE, \n\to_ILFTableAssignmentCode AS ILFTABLEASSIGNMENTCODE, \n\to_ProductsCompletedOpsTableAssignmentCode AS PRODUCTSCOMPLETEDOPSTABLEASSIGNMENTCODE, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

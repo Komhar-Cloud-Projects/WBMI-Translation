@@ -160,15 +160,12 @@ Exp_PassThrough AS (
 	total_direct_loss_recovery_incurred,
 	Loss_Year,
 	-- *INF*: SUBSTR(Loss_Year,1,4)
-	SUBSTR(Loss_Year, 1, 4
-	) AS o_Loss_Year,
+	SUBSTR(Loss_Year, 1, 4) AS o_Loss_Year,
 	-- *INF*: SUBSTR(Loss_Year,5,2)
-	SUBSTR(Loss_Year, 5, 2
-	) AS o_Loss_Month,
+	SUBSTR(Loss_Year, 5, 2) AS o_Loss_Month,
 	Rundate,
 	-- *INF*: GET_DATE_PART(Rundate,'YYYY')
-	DATE_PART(Rundate, 'YYYY'
-	) AS o_Run_Year
+	DATE_PART(Rundate, 'YYYY') AS o_Run_Year
 	FROM SQ_claim_loss_transaction_fact_Occurrence
 ),
 LKP_CLOSED_CLAIMS AS (
@@ -251,10 +248,7 @@ EXP_LegalPrimaryagency AS (
 	EXP_GetValues_Occurrence.AgencyCode AS IN_AgencyCode,
 	LKP_V3_PrimaryAgencyDimID_CO.LegalPrimaryAgencyCode,
 	-- *INF*: iif(isnull(LegalPrimaryAgencyCode),IN_AgencyCode,LegalPrimaryAgencyCode)
-	IFF(LegalPrimaryAgencyCode IS NULL,
-		IN_AgencyCode,
-		LegalPrimaryAgencyCode
-	) AS o_LegalPrimaryAgencyCode
+	IFF(LegalPrimaryAgencyCode IS NULL, IN_AgencyCode, LegalPrimaryAgencyCode) AS o_LegalPrimaryAgencyCode
 	FROM EXP_GetValues_Occurrence
 	LEFT JOIN LKP_V3_PrimaryAgencyDimID_CO
 	ON LKP_V3_PrimaryAgencyDimID_CO.Agencycode = EXP_GetValues_Occurrence.AgencyCode AND LKP_V3_PrimaryAgencyDimID_CO.eff_from_date <= EXP_GetValues_Occurrence.Rundate AND LKP_V3_PrimaryAgencyDimID_CO.eff_to_date >= EXP_GetValues_Occurrence.Rundate
@@ -290,10 +284,7 @@ EXP_LegalPrimaryagency1 AS (
 	EXP_GetValues_Occurrence.AgencyCode AS IN_AgencyCode,
 	LKP_V3_PrimaryAgency_Primary.LegalPrimaryAgencyCode,
 	-- *INF*: iif(isnull(LegalPrimaryAgencyCode),IN_AgencyCode,LegalPrimaryAgencyCode)
-	IFF(LegalPrimaryAgencyCode IS NULL,
-		IN_AgencyCode,
-		LegalPrimaryAgencyCode
-	) AS o_LegalPrimaryAgencyCode
+	IFF(LegalPrimaryAgencyCode IS NULL, IN_AgencyCode, LegalPrimaryAgencyCode) AS o_LegalPrimaryAgencyCode
 	FROM EXP_GetValues_Occurrence
 	LEFT JOIN LKP_V3_PrimaryAgency_Primary
 	ON LKP_V3_PrimaryAgency_Primary.Agencycode = EXP_LegalPrimaryagency.o_LegalPrimaryAgencyCode AND LKP_V3_PrimaryAgency_Primary.eff_from_date <= EXP_GetValues_Occurrence.Rundate AND LKP_V3_PrimaryAgency_Primary.eff_to_date >= EXP_GetValues_Occurrence.Rundate
@@ -511,22 +502,13 @@ EXP_CalValues_Occurrence AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	LKP_V3_PrimaryAgencyDimID_Primary.SalesDivisionDimId AS IN_SalesDivisionDimID,
 	-- *INF*: IIF(ISNULL(IN_SalesDivisionDimID),-1,IN_SalesDivisionDimID)
-	IFF(IN_SalesDivisionDimID IS NULL,
-		- 1,
-		IN_SalesDivisionDimID
-	) AS SalesDivisionDimID,
+	IFF(IN_SalesDivisionDimID IS NULL, - 1, IN_SalesDivisionDimID) AS SalesDivisionDimID,
 	mplt_PolicyDimID_StopLossCOFact.agency_dim_id AS i_agency_dim_id,
 	-- *INF*: IIF(ISNULL(i_agency_dim_id), -1, i_agency_dim_id)
-	IFF(i_agency_dim_id IS NULL,
-		- 1,
-		i_agency_dim_id
-	) AS o_agency_dim_id,
+	IFF(i_agency_dim_id IS NULL, - 1, i_agency_dim_id) AS o_agency_dim_id,
 	mplt_PolicyDimID_StopLossCOFact.contract_cust_dim_id AS i_contract_cust_dim_id,
 	-- *INF*: IIF(ISNULL(i_contract_cust_dim_id), -1, i_contract_cust_dim_id)
-	IFF(i_contract_cust_dim_id IS NULL,
-		- 1,
-		i_contract_cust_dim_id
-	) AS o_contract_cust_dim_id,
+	IFF(i_contract_cust_dim_id IS NULL, - 1, i_contract_cust_dim_id) AS o_contract_cust_dim_id,
 	mplt_PolicyDimID_StopLossCOFact.pol_dim_id,
 	LKP_claim_occurrence_dim.claim_occurrence_dim_id,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(i_RunDate,'HH',0),'MI',0),'SS',0))
@@ -553,35 +535,34 @@ EXP_CalValues_Occurrence AS (
 	-- IN_LOSS_YEAR>='2022' AND lkp_AgencyPreviousYearDirectWrittenPremium>20000000,1000000,
 	-- lkp_StopLossLimit))
 	-- --The above decode statement has been implemented to catch the stoplosslimit as per the mainframe code WB11002B
-	Decode(TRUE,
-		AgencyCode IN ('12176','13176'), DECODE(TRUE,
-		IN_LOSS_YEAR < '1995', 100000,
-		IN_LOSS_YEAR = '1995', 125000,
-		IN_LOSS_YEAR IN ('1996','1997'), 200000,
-		IN_LOSS_YEAR IN ('1998','1999','2000','2001'), 400000,
-		IN_LOSS_YEAR > '2001', 1000000
-		),
-		AgencyCode IN ('12651','13651'), DECODE(TRUE,
-		IN_LOSS_YEAR < '1995', 100000,
-		IN_LOSS_YEAR = '1995', 125000,
-		IN_LOSS_YEAR IN ('1996','1997','1998','1999','2000','2001','2002','2003'), 200000,
-		IN_LOSS_YEAR = '2005' 
-			AND IN_LOSS_MONTH IN ('04','05','06','07','08','09','10','11','12'), 500000,
-		lkp_StopLossLimit
-		),
-		Decode(TRUE,
-		IN_LOSS_YEAR < '1995', 100000,
-		IN_LOSS_YEAR = '1995', 125000,
-		IN_LOSS_YEAR IN ('1996','1997','1998','1999','2000','2001','2002','2003'), 200000,
-		IN_LOSS_YEAR >= '2015' 
-			AND lkp_AgencyPreviousYearDirectWrittenPremium <= 20000000, 500000,
-		IN_LOSS_YEAR >= '2015' 
-			AND IN_LOSS_YEAR < '2022' 
-			AND lkp_AgencyPreviousYearDirectWrittenPremium > 20000000, 500000,
-		IN_LOSS_YEAR >= '2022' 
-			AND lkp_AgencyPreviousYearDirectWrittenPremium > 20000000, 1000000,
-		lkp_StopLossLimit
-		)
+	Decode(
+	    TRUE,
+	    AgencyCode IN ('12176','13176'), DECODE(
+	        TRUE,
+	        IN_LOSS_YEAR < '1995', 100000,
+	        IN_LOSS_YEAR = '1995', 125000,
+	        IN_LOSS_YEAR IN ('1996','1997'), 200000,
+	        IN_LOSS_YEAR IN ('1998','1999','2000','2001'), 400000,
+	        IN_LOSS_YEAR > '2001', 1000000
+	    ),
+	    AgencyCode IN ('12651','13651'), DECODE(
+	        TRUE,
+	        IN_LOSS_YEAR < '1995', 100000,
+	        IN_LOSS_YEAR = '1995', 125000,
+	        IN_LOSS_YEAR IN ('1996','1997','1998','1999','2000','2001','2002','2003'), 200000,
+	        IN_LOSS_YEAR = '2005' and IN_LOSS_MONTH IN ('04','05','06','07','08','09','10','11','12'), 500000,
+	        lkp_StopLossLimit
+	    ),
+	    Decode(
+	        TRUE,
+	        IN_LOSS_YEAR < '1995', 100000,
+	        IN_LOSS_YEAR = '1995', 125000,
+	        IN_LOSS_YEAR IN ('1996','1997','1998','1999','2000','2001','2002','2003'), 200000,
+	        IN_LOSS_YEAR >= '2015' AND lkp_AgencyPreviousYearDirectWrittenPremium <= 20000000, 500000,
+	        IN_LOSS_YEAR >= '2015' AND IN_LOSS_YEAR < '2022' AND lkp_AgencyPreviousYearDirectWrittenPremium > 20000000, 500000,
+	        IN_LOSS_YEAR >= '2022' AND lkp_AgencyPreviousYearDirectWrittenPremium > 20000000, 1000000,
+	        lkp_StopLossLimit
+	    )
 	) AS V_Stop_LOSS_LIMIT,
 	-- *INF*: Decode(TRUE,IN(AgencyCode,'12176','13176'),
 	-- DECODE(TRUE,IN_LOSS_YEAR<'1995',100000,
@@ -601,75 +582,61 @@ EXP_CalValues_Occurrence AS (
 	-- IN_LOSS_YEAR>='2015' AND IN_LOSS_YEAR < '2022' AND lkp_AgencyPreviousYearDirectWrittenPremium>20000000,500000,
 	-- IN_LOSS_YEAR>='2022' AND lkp_AgencyPreviousYearDirectWrittenPremium>20000000,1000000,
 	-- lkp_StopLossLimit))
-	Decode(TRUE,
-		AgencyCode IN ('12176','13176'), DECODE(TRUE,
-		IN_LOSS_YEAR < '1995', 100000,
-		IN_LOSS_YEAR = '1995', 125000,
-		IN_LOSS_YEAR IN ('1996','1997'), 200000,
-		IN_LOSS_YEAR IN ('1998','1999','2000','2001'), 400000,
-		IN_LOSS_YEAR > '2001', 1000000
-		),
-		AgencyCode IN ('12651','13651'), DECODE(TRUE,
-		IN_LOSS_YEAR < '1995', 100000,
-		IN_LOSS_YEAR = '1995', 125000,
-		IN_LOSS_YEAR IN ('1996','1997','1998','1999','2000','2001','2002','2003'), 200000,
-		IN_LOSS_YEAR = '2005' 
-			AND IN_LOSS_MONTH IN ('04','05','06','07','08','09','10','11','12'), 500000,
-		lkp_StopLossLimit
-		),
-		Decode(TRUE,
-		IN_LOSS_YEAR < '1995', 100000,
-		IN_LOSS_YEAR = '1995', 125000,
-		IN_LOSS_YEAR IN ('1996','1997','1998','1999','2000','2001','2002','2003'), 200000,
-		IN_LOSS_YEAR >= '2015' 
-			AND lkp_AgencyPreviousYearDirectWrittenPremium <= 20000000, 500000,
-		IN_LOSS_YEAR >= '2015' 
-			AND IN_LOSS_YEAR < '2022' 
-			AND lkp_AgencyPreviousYearDirectWrittenPremium > 20000000, 500000,
-		IN_LOSS_YEAR >= '2022' 
-			AND lkp_AgencyPreviousYearDirectWrittenPremium > 20000000, 1000000,
-		lkp_StopLossLimit
-		)
+	Decode(
+	    TRUE,
+	    AgencyCode IN ('12176','13176'), DECODE(
+	        TRUE,
+	        IN_LOSS_YEAR < '1995', 100000,
+	        IN_LOSS_YEAR = '1995', 125000,
+	        IN_LOSS_YEAR IN ('1996','1997'), 200000,
+	        IN_LOSS_YEAR IN ('1998','1999','2000','2001'), 400000,
+	        IN_LOSS_YEAR > '2001', 1000000
+	    ),
+	    AgencyCode IN ('12651','13651'), DECODE(
+	        TRUE,
+	        IN_LOSS_YEAR < '1995', 100000,
+	        IN_LOSS_YEAR = '1995', 125000,
+	        IN_LOSS_YEAR IN ('1996','1997','1998','1999','2000','2001','2002','2003'), 200000,
+	        IN_LOSS_YEAR = '2005' and IN_LOSS_MONTH IN ('04','05','06','07','08','09','10','11','12'), 500000,
+	        lkp_StopLossLimit
+	    ),
+	    Decode(
+	        TRUE,
+	        IN_LOSS_YEAR < '1995', 100000,
+	        IN_LOSS_YEAR = '1995', 125000,
+	        IN_LOSS_YEAR IN ('1996','1997','1998','1999','2000','2001','2002','2003'), 200000,
+	        IN_LOSS_YEAR >= '2015' AND lkp_AgencyPreviousYearDirectWrittenPremium <= 20000000, 500000,
+	        IN_LOSS_YEAR >= '2015' AND IN_LOSS_YEAR < '2022' AND lkp_AgencyPreviousYearDirectWrittenPremium > 20000000, 500000,
+	        IN_LOSS_YEAR >= '2022' AND lkp_AgencyPreviousYearDirectWrittenPremium > 20000000, 1000000,
+	        lkp_StopLossLimit
+	    )
 	) AS v_Stop_Loss_Limit2,
 	-- *INF*: IIF(ISNULL(V_Stop_LOSS_LIMIT) or V_Stop_LOSS_LIMIT=0.0,200000,V_Stop_LOSS_LIMIT)
 	-- 
 	-- --As per the Cobol code, if a given Agency does not have stop loss limit then we assign 200000 as the default stop loss limit.
-	IFF(V_Stop_LOSS_LIMIT IS NULL 
-		OR V_Stop_LOSS_LIMIT = 0.0,
-		200000,
-		V_Stop_LOSS_LIMIT
-	) AS V_Final_Stop_Loss_Limit,
+	IFF(V_Stop_LOSS_LIMIT IS NULL or V_Stop_LOSS_LIMIT = 0.0, 200000, V_Stop_LOSS_LIMIT) AS V_Final_Stop_Loss_Limit,
 	-- *INF*: IIF(ISNULL(v_Stop_Loss_Limit2) or v_Stop_Loss_Limit2=0.0,200000,v_Stop_Loss_Limit2)
-	IFF(v_Stop_Loss_Limit2 IS NULL 
-		OR v_Stop_Loss_Limit2 = 0.0,
-		200000,
-		v_Stop_Loss_Limit2
-	) AS V_Final_Stop_Loss_Limit2,
+	IFF(v_Stop_Loss_Limit2 IS NULL or v_Stop_Loss_Limit2 = 0.0, 200000, v_Stop_Loss_Limit2) AS V_Final_Stop_Loss_Limit2,
 	V_Final_Stop_Loss_Limit AS o_StopLossLimit,
 	-- *INF*: IIF(TotalDirectIncurredLoss<=V_Final_Stop_Loss_Limit , 0.0 , TotalDirectIncurredLoss-V_Final_Stop_Loss_Limit)
-	IFF(TotalDirectIncurredLoss <= V_Final_Stop_Loss_Limit,
-		0.0,
-		TotalDirectIncurredLoss - V_Final_Stop_Loss_Limit
+	IFF(
+	    TotalDirectIncurredLoss <= V_Final_Stop_Loss_Limit, 0.0,
+	    TotalDirectIncurredLoss - V_Final_Stop_Loss_Limit
 	) AS V_StopLossAdjustmentAmount,
 	-- *INF*: IIF(V_StopLossAdjustmentAmount>0.0,V_StopLossAdjustmentAmount,0.0)
-	IFF(V_StopLossAdjustmentAmount > 0.0,
-		V_StopLossAdjustmentAmount,
-		0.0
-	) AS o_StopLossAdjustmentAmount,
+	IFF(V_StopLossAdjustmentAmount > 0.0, V_StopLossAdjustmentAmount, 0.0) AS o_StopLossAdjustmentAmount,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_STOPLOSSADJUSTMENTCLAIMOCCURRENCEFACT_PREVIOUSINSTANCE(EDWAgencyAKID,edw_pol_ak_id,edw_claim_occurrence_ak_id)),0.0,:LKP.LKP_STOPLOSSADJUSTMENTCLAIMOCCURRENCEFACT_PREVIOUSINSTANCE(EDWAgencyAKID,edw_pol_ak_id,edw_claim_occurrence_ak_id))
-	IFF(LKP_STOPLOSSADJUSTMENTCLAIMOCCURRENCEFACT_PREVIOUSINSTANCE_EDWAgencyAKID_edw_pol_ak_id_edw_claim_occurrence_ak_id.StopLossAdjustmentAmount IS NULL,
-		0.0,
-		LKP_STOPLOSSADJUSTMENTCLAIMOCCURRENCEFACT_PREVIOUSINSTANCE_EDWAgencyAKID_edw_pol_ak_id_edw_claim_occurrence_ak_id.StopLossAdjustmentAmount
+	IFF(
+	    LKP_STOPLOSSADJUSTMENTCLAIMOCCURRENCEFACT_PREVIOUSINSTANCE_EDWAgencyAKID_edw_pol_ak_id_edw_claim_occurrence_ak_id.StopLossAdjustmentAmount IS NULL,
+	    0.0,
+	    LKP_STOPLOSSADJUSTMENTCLAIMOCCURRENCEFACT_PREVIOUSINSTANCE_EDWAgencyAKID_edw_pol_ak_id_edw_claim_occurrence_ak_id.StopLossAdjustmentAmount
 	) AS Lkp_Previous_StopLossAdjustmentAmount,
 	V_StopLossAdjustmentAmount-Lkp_Previous_StopLossAdjustmentAmount AS O_ChangeInStopLossAdjustmentAmount,
 	EXP_GetValues_Occurrence.edw_pol_ak_id,
 	EXP_GetValues_Occurrence.edw_claim_occurrence_ak_id,
 	LKP_V3_PrimaryAgencyDimID_Primary.agency_dim_id AS IN_PrimaryAgencyDimId,
 	-- *INF*: IIF(ISNULL(IN_PrimaryAgencyDimId),-1,IN_PrimaryAgencyDimId)
-	IFF(IN_PrimaryAgencyDimId IS NULL,
-		- 1,
-		IN_PrimaryAgencyDimId
-	) AS PrimaryAgencyDimId
+	IFF(IN_PrimaryAgencyDimId IS NULL, - 1, IN_PrimaryAgencyDimId) AS PrimaryAgencyDimId
 	FROM EXP_GetValues_Occurrence
 	 -- Manually join with EXP_LegalPrimaryagency1
 	 -- Manually join with mplt_PolicyDimID_StopLossCOFact

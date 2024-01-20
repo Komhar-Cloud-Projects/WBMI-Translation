@@ -83,8 +83,7 @@ EXP_Default_Archive AS (
 	sar_rsn_amend_two AS arch_sar_rsn_amend_two,
 	sar_rsn_amend_three AS arch_sar_rsn_amend_three,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(arch_sar_rsn_amend_one  ||  arch_sar_rsn_amend_two || arch_sar_rsn_amend_three)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(arch_sar_rsn_amend_one || arch_sar_rsn_amend_two || arch_sar_rsn_amend_three
-	) AS o_ReasonAmendedCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(arch_sar_rsn_amend_one || arch_sar_rsn_amend_two || arch_sar_rsn_amend_three) AS o_ReasonAmendedCode,
 	sar_special_use AS arch_sar_special_use,
 	sar_type_bureau AS arch_sar_type_bureau
 	FROM SQ_arch_pif_4514_stage

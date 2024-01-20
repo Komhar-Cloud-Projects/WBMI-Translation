@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Clines_STG_Insert_sup_quote_status",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Clines_STG_Insert_sup_quote_status",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_sup_quote_status AS (\n\tSELECT\n\t\tquote_status_id,\n\t\tquote_status,\n\t\tcreated_user_id,\n\t\tcreated_date,\n\t\tmodified_user_id,\n\t\tmodified_date,\n\t\teff_date,\n\t\texp_date\n\tFROM sup_quote_status\n),\nEXP_Values AS (\n\tSELECT\n\tquote_status_id,\n\tquote_status,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tmodified_date,\n\teff_date,\n\texp_date,\n\tSYSDATE AS extract_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id\n\tFROM SQ_sup_quote_status\n),\nsup_quote_status_cl_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_quote_status_cl_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_quote_status_cl_stage\n\t(quote_status_id, quote_status, created_user_id, created_date, modified_user_id, modified_date, eff_date, exp_date, extract_date, source_system_id)\n\tSELECT \n\tQUOTE_STATUS_ID, \n\tQUOTE_STATUS, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tEFF_DATE, \n\tEXP_DATE, \n\tEXTRACT_DATE, \n\tSOURCE_SYSTEM_ID\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CommonStaging/"
+        },
+        "annotations": []
+    }
+}

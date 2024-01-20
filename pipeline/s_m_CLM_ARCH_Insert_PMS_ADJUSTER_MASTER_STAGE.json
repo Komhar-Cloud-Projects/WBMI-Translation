@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_PMS_ADJUSTER_MASTER_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_PMS_ADJUSTER_MASTER_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_pms_adjuster_master_stage1 AS (\n\tSELECT\n\t\tadjuster_master_stage_id,\n\t\tadnm_adjustor_nbr,\n\t\tadnm_taxid_ssn,\n\t\tadnm_name,\n\t\tadnm_commnt1,\n\t\tadnm_address,\n\t\tadnm_commnt2,\n\t\tadnm_city_state,\n\t\tadnm_commnt3,\n\t\tadnm_police_charge,\n\t\tadnm_tax_indicator,\n\t\tadnm_zip_code,\n\t\tadnm_area_code,\n\t\tadnm_prefix,\n\t\tadnm_last_four,\n\t\tadnm_type_adjustor,\n\t\tadnm_adjustor_branch_number,\n\t\tadnm_adjustor_kind,\n\t\tadnm_fx_area_code,\n\t\tadnm_fx_prefix,\n\t\tadnm_fx_last_four,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM pms_adjuster_master_stage\n),\nEXP_CLAIM_TAB_STAGE AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP,\n\tadjuster_master_stage_id,\n\tadnm_adjustor_nbr,\n\tadnm_taxid_ssn,\n\tadnm_name,\n\tadnm_commnt1,\n\tadnm_address,\n\tadnm_commnt2,\n\tadnm_city_state,\n\tadnm_commnt3,\n\tadnm_police_charge,\n\tadnm_tax_indicator,\n\tadnm_zip_code,\n\tadnm_area_code,\n\tadnm_prefix,\n\tadnm_last_four,\n\tadnm_type_adjustor,\n\tadnm_adjustor_branch_number,\n\tadnm_adjustor_kind,\n\tadnm_fx_area_code,\n\tadnm_fx_prefix,\n\tadnm_fx_last_four,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id\n\tFROM SQ_pms_adjuster_master_stage1\n),\narch_pms_adjuster_master_stage AS (\n\tINSERT INTO arch_pms_adjuster_master_stage\n\t(adjuster_master_stage_id, adnm_adjustor_nbr, adnm_taxid_ssn, adnm_name, adnm_commnt1, adnm_address, adnm_commnt2, adnm_city_state, adnm_commnt3, adnm_police_charge, adnm_tax_indicator, adnm_zip_code, adnm_area_code, adnm_prefix, adnm_last_four, adnm_type_adjustor, adnm_adjustor_branch_number, adnm_adjustor_kind, adnm_fx_area_code, adnm_fx_prefix, adnm_fx_last_four, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tADJUSTER_MASTER_STAGE_ID, \n\tADNM_ADJUSTOR_NBR, \n\tADNM_TAXID_SSN, \n\tADNM_NAME, \n\tADNM_COMMNT1, \n\tADNM_ADDRESS, \n\tADNM_COMMNT2, \n\tADNM_CITY_STATE, \n\tADNM_COMMNT3, \n\tADNM_POLICE_CHARGE, \n\tADNM_TAX_INDICATOR, \n\tADNM_ZIP_CODE, \n\tADNM_AREA_CODE, \n\tADNM_PREFIX, \n\tADNM_LAST_FOUR, \n\tADNM_TYPE_ADJUSTOR, \n\tADNM_ADJUSTOR_BRANCH_NUMBER, \n\tADNM_ADJUSTOR_KIND, \n\tADNM_FX_AREA_CODE, \n\tADNM_FX_PREFIX, \n\tADNM_FX_LAST_FOUR, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_CLAIM_TAB_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

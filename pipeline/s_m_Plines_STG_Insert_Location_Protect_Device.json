@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Plines_STG_Insert_Location_Protect_Device",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Plines_STG_Insert_Location_Protect_Device",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_location_protect_device AS (\n\tSELECT\n\t\tloc_seq,\n\t\tprotect_device_type_code,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\tendorsement_view_code\n\tFROM location_protect_device\n),\nEXP_LOCATION_PROTECT_DEVICE AS (\n\tSELECT\n\tloc_seq,\n\tprotect_device_type_code,\n\tmodified_date,\n\tmodified_user_id,\n\tendorsement_view_code,\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t'' AS RECORD_COUNT,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID\n\tFROM SQ_location_protect_device\n),\nlocation_protect_device_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.location_protect_device_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.location_protect_device_stage\n\t(loc_seq, protect_device_type_code, modified_date, modified_user_id, endorsement_view_code, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tLOC_SEQ, \n\tPROTECT_DEVICE_TYPE_CODE, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tENDORSEMENT_VIEW_CODE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_LOCATION_PROTECT_DEVICE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CommonStaging/"
+        },
+        "annotations": []
+    }
+}

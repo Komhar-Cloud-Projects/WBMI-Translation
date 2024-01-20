@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBPriorInsuranceStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBPriorInsuranceStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBPriorInsuranceStage AS (\n\tSELECT\n\t\tWBPriorInsuranceStageId,\n\t\tPriorInsuranceId,\n\t\tWBPriorInsuranceId,\n\t\tSessionId,\n\t\tCarrierNameOther,\n\t\tExperienceMod,\n\t\tLineOfBusiness,\n\t\tNoPriorInsurance2,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM WBPriorInsuranceStage\n),\nEXP_ArchWBPriorInsuranceStage AS (\n\tSELECT\n\tWBPriorInsuranceStageId,\n\tPriorInsuranceId,\n\tWBPriorInsuranceId,\n\tSessionId,\n\tCarrierNameOther,\n\tExperienceMod,\n\tLineOfBusiness,\n\tNoPriorInsurance2 AS i_NoPriorInsurance2,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- i_NoPriorInsurance2='T',1,\r\n\t-- i_NoPriorInsurance2='F',0)\n\tDECODE(\n\t    TRUE,\n\t    i_NoPriorInsurance2 = 'T', 1,\n\t    i_NoPriorInsurance2 = 'F', 0\n\t) AS o_NoPriorInsurance2,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBPriorInsuranceStage\n),\nArchWBPriorInsuranceStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBPriorInsuranceStage\n\t(WBPriorInsuranceStageId, PriorInsuranceId, WBPriorInsuranceId, SessionId, CarrierNameOther, ExperienceMod, LineOfBusiness, NoPriorInsurance2, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tWBPRIORINSURANCESTAGEID, \n\tPRIORINSURANCEID, \n\tWBPRIORINSURANCEID, \n\tSESSIONID, \n\tCARRIERNAMEOTHER, \n\tEXPERIENCEMOD, \n\tLINEOFBUSINESS, \n\to_NoPriorInsurance2 AS NOPRIORINSURANCE2, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_ArchWBPriorInsuranceStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

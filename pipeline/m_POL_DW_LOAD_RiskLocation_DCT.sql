@@ -127,26 +127,20 @@ Mplt_RiskLocation_Key AS (WITH
 		LineType,
 		CoverageGUID,
 		-- *INF*: rtrim(ltrim(IIF(ISNULL(PolicyNumber) or IS_SPACES(PolicyNumber) or LENGTH(PolicyNumber)=0, 'N/A', LTRIM(RTRIM(PolicyNumber)))))
-		rtrim(ltrim(IFF(PolicyNumber IS NULL 
-					OR LENGTH(PolicyNumber)>0 AND TRIM(PolicyNumber)='' 
-					OR LENGTH(PolicyNumber
-					) = 0,
-					'N/A',
-					LTRIM(RTRIM(PolicyNumber
-						)
-					)
-				)
-			)
-		) AS v_PolicyNumber,
+		rtrim(ltrim(
+		        IFF(
+		            PolicyNumber IS NULL
+		            or LENGTH(PolicyNumber)>0
+		            and TRIM(PolicyNumber)=''
+		            or LENGTH(PolicyNumber) = 0,
+		            'N/A',
+		            LTRIM(RTRIM(PolicyNumber))
+		        ))) AS v_PolicyNumber,
 		-- *INF*: rtrim(ltrim(IIF(ISNULL(PolicyVersion), '00', LPAD(TO_CHAR(PolicyVersion),2,'0'))))
-		rtrim(ltrim(IFF(PolicyVersion IS NULL,
-					'00',
-					LPAD(TO_CHAR(PolicyVersion
-						), 2, '0'
-					)
-				)
-			)
-		) AS v_PolicyVersion,
+		rtrim(ltrim(
+		        IFF(
+		            PolicyVersion IS NULL, '00', LPAD(TO_CHAR(PolicyVersion), 2, '0')
+		        ))) AS v_PolicyVersion,
 		v_PolicyNumber AS o_PolicyNumber,
 		v_PolicyVersion AS o_PolicyVersion,
 		v_PolicyNumber||v_PolicyVersion AS o_PolicyKey
@@ -192,10 +186,7 @@ Mplt_RiskLocation_Key AS (WITH
 		EXP_Source_Data.o_PolicyKey,
 		LKP_policy.pol_ak_id AS i_pol_ak_id,
 		-- *INF*: iif(isnull(i_pol_ak_id),-1,i_pol_ak_id)
-		IFF(i_pol_ak_id IS NULL,
-			- 1,
-			i_pol_ak_id
-		) AS o_Pol_AK_ID
+		IFF(i_pol_ak_id IS NULL, - 1, i_pol_ak_id) AS o_Pol_AK_ID
 		FROM EXP_Source_Data
 		LEFT JOIN LKP_policy
 		ON LKP_policy.pol_key = EXP_Source_Data.o_PolicyKey
@@ -250,36 +241,29 @@ Mplt_RiskLocation_Key AS (WITH
 		PolicyKey,
 		Pol_AK_ID,
 		-- *INF*: IIF(ISNULL(StateProvince) or IS_SPACES(StateProvince)  or LENGTH(StateProvince)=0,'N/A',LTRIM(RTRIM(StateProvince)))
-		IFF(StateProvince IS NULL 
-			OR LENGTH(StateProvince)>0 AND TRIM(StateProvince)='' 
-			OR LENGTH(StateProvince
-			) = 0,
-			'N/A',
-			LTRIM(RTRIM(StateProvince
-				)
-			)
+		IFF(
+		    StateProvince IS NULL
+		    or LENGTH(StateProvince)>0
+		    and TRIM(StateProvince)=''
+		    or LENGTH(StateProvince) = 0,
+		    'N/A',
+		    LTRIM(RTRIM(StateProvince))
 		) AS v_StateProvince,
 		v_StateProvince AS o_StateProvince,
 		-- *INF*: IIF(ISNULL(LineType) or IS_SPACES(LineType) or LENGTH(LineType)=0,'N/A',LTRIM(RTRIM(LineType)))
-		IFF(LineType IS NULL 
-			OR LENGTH(LineType)>0 AND TRIM(LineType)='' 
-			OR LENGTH(LineType
-			) = 0,
-			'N/A',
-			LTRIM(RTRIM(LineType
-				)
-			)
+		IFF(
+		    LineType IS NULL or LENGTH(LineType)>0 AND TRIM(LineType)='' or LENGTH(LineType) = 0, 'N/A',
+		    LTRIM(RTRIM(LineType))
 		) AS v_LineType,
 		v_LineType AS o_LineType,
 		-- *INF*: IIF(ISNULL(LocationXmlId) OR IS_SPACES(LocationXmlId) OR LENGTH(LocationXmlId)=0,'N/A',LTRIM(RTRIM(LocationXmlId)))
-		IFF(LocationXmlId IS NULL 
-			OR LENGTH(LocationXmlId)>0 AND TRIM(LocationXmlId)='' 
-			OR LENGTH(LocationXmlId
-			) = 0,
-			'N/A',
-			LTRIM(RTRIM(LocationXmlId
-				)
-			)
+		IFF(
+		    LocationXmlId IS NULL
+		    or LENGTH(LocationXmlId)>0
+		    and TRIM(LocationXmlId)=''
+		    or LENGTH(LocationXmlId) = 0,
+		    'N/A',
+		    LTRIM(RTRIM(LocationXmlId))
 		) AS v_LocationXmlId,
 		v_LocationXmlId AS o_LocationXmlId,
 		Pol_AK_ID||'~'||v_LocationXmlId AS o_RiskLocationKey
@@ -308,36 +292,29 @@ Mplt_RiskLocation_Key AS (WITH
 		PolicyKey,
 		Pol_AK_ID,
 		-- *INF*: IIF(ISNULL(LocationXmlId) OR IS_SPACES(LocationXmlId) OR LENGTH(LocationXmlId)=0,'N/A',LTRIM(RTRIM(LocationXmlId)))
-		IFF(LocationXmlId IS NULL 
-			OR LENGTH(LocationXmlId)>0 AND TRIM(LocationXmlId)='' 
-			OR LENGTH(LocationXmlId
-			) = 0,
-			'N/A',
-			LTRIM(RTRIM(LocationXmlId
-				)
-			)
+		IFF(
+		    LocationXmlId IS NULL
+		    or LENGTH(LocationXmlId)>0
+		    and TRIM(LocationXmlId)=''
+		    or LENGTH(LocationXmlId) = 0,
+		    'N/A',
+		    LTRIM(RTRIM(LocationXmlId))
 		) AS v_LocationXmlId,
 		v_LocationXmlId AS o_LocationXmlId,
 		-- *INF*: IIF(ISNULL(StateProvince) or IS_SPACES(StateProvince)  or LENGTH(StateProvince)=0,'N/A',LTRIM(RTRIM(StateProvince)))
-		IFF(StateProvince IS NULL 
-			OR LENGTH(StateProvince)>0 AND TRIM(StateProvince)='' 
-			OR LENGTH(StateProvince
-			) = 0,
-			'N/A',
-			LTRIM(RTRIM(StateProvince
-				)
-			)
+		IFF(
+		    StateProvince IS NULL
+		    or LENGTH(StateProvince)>0
+		    and TRIM(StateProvince)=''
+		    or LENGTH(StateProvince) = 0,
+		    'N/A',
+		    LTRIM(RTRIM(StateProvince))
 		) AS v_StateProvince,
 		v_StateProvince AS o_StateProvince,
 		-- *INF*: IIF(ISNULL(LineType) or IS_SPACES(LineType) or LENGTH(LineType)=0,'N/A',LTRIM(RTRIM(LineType)))
-		IFF(LineType IS NULL 
-			OR LENGTH(LineType)>0 AND TRIM(LineType)='' 
-			OR LENGTH(LineType
-			) = 0,
-			'N/A',
-			LTRIM(RTRIM(LineType
-				)
-			)
+		IFF(
+		    LineType IS NULL or LENGTH(LineType)>0 AND TRIM(LineType)='' or LENGTH(LineType) = 0, 'N/A',
+		    LTRIM(RTRIM(LineType))
 		) AS v_LineType,
 		v_LineType AS o_LineType,
 		Pol_AK_ID||'~'||'PrimaryLocation'||'~'||v_StateProvince||'~'||v_LineType AS RiskLocationKey
@@ -366,36 +343,29 @@ Mplt_RiskLocation_Key AS (WITH
 		PolicyKey,
 		Pol_AK_ID,
 		-- *INF*: IIF(ISNULL(LocationXmlId) OR IS_SPACES(LocationXmlId) OR LENGTH(LocationXmlId)=0,'N/A',LTRIM(RTRIM(LocationXmlId)))
-		IFF(LocationXmlId IS NULL 
-			OR LENGTH(LocationXmlId)>0 AND TRIM(LocationXmlId)='' 
-			OR LENGTH(LocationXmlId
-			) = 0,
-			'N/A',
-			LTRIM(RTRIM(LocationXmlId
-				)
-			)
+		IFF(
+		    LocationXmlId IS NULL
+		    or LENGTH(LocationXmlId)>0
+		    and TRIM(LocationXmlId)=''
+		    or LENGTH(LocationXmlId) = 0,
+		    'N/A',
+		    LTRIM(RTRIM(LocationXmlId))
 		) AS v_LocationXmlId,
 		v_LocationXmlId AS o_LocationXmlId,
 		-- *INF*: IIF(ISNULL(StateProvince) or IS_SPACES(StateProvince)  or LENGTH(StateProvince)=0,'N/A',LTRIM(RTRIM(StateProvince)))
-		IFF(StateProvince IS NULL 
-			OR LENGTH(StateProvince)>0 AND TRIM(StateProvince)='' 
-			OR LENGTH(StateProvince
-			) = 0,
-			'N/A',
-			LTRIM(RTRIM(StateProvince
-				)
-			)
+		IFF(
+		    StateProvince IS NULL
+		    or LENGTH(StateProvince)>0
+		    and TRIM(StateProvince)=''
+		    or LENGTH(StateProvince) = 0,
+		    'N/A',
+		    LTRIM(RTRIM(StateProvince))
 		) AS v_StateProvince,
 		v_StateProvince AS o_StateProvince,
 		-- *INF*: IIF(ISNULL(LineType) or IS_SPACES(LineType) or LENGTH(LineType)=0,'N/A',LTRIM(RTRIM(LineType)))
-		IFF(LineType IS NULL 
-			OR LENGTH(LineType)>0 AND TRIM(LineType)='' 
-			OR LENGTH(LineType
-			) = 0,
-			'N/A',
-			LTRIM(RTRIM(LineType
-				)
-			)
+		IFF(
+		    LineType IS NULL or LENGTH(LineType)>0 AND TRIM(LineType)='' or LENGTH(LineType) = 0, 'N/A',
+		    LTRIM(RTRIM(LineType))
 		) AS v_LineType,
 		v_LineType AS o_LineType,
 		Pol_AK_ID||'~'||'PrimaryLocation'||'~'||v_LineType AS RiskLocationKey
@@ -461,37 +431,33 @@ Mplt_RiskLocation_Key AS (WITH
 		Un_Risk_State_Line_Object.RiskLocationKey,
 		Un_Risk_State_Line_Object.LineType,
 		-- *INF*: IIF(ISNULL(LocationNumber) or IS_SPACES(LocationNumber) or LENGTH(LocationNumber)=0,'0000', LPAD(LTRIM(RTRIM (LocationNumber)), 4, '0'))
-		IFF(LocationNumber IS NULL 
-			OR LENGTH(LocationNumber)>0 AND TRIM(LocationNumber)='' 
-			OR LENGTH(LocationNumber
-			) = 0,
-			'0000',
-			LPAD(LTRIM(RTRIM(LocationNumber
-					)
-				), 4, '0'
-			)
+		IFF(
+		    LocationNumber IS NULL
+		    or LENGTH(LocationNumber)>0
+		    and TRIM(LocationNumber)=''
+		    or LENGTH(LocationNumber) = 0,
+		    '0000',
+		    LPAD(LTRIM(RTRIM(LocationNumber)), 4, '0')
 		) AS v_LocationNumber,
 		-- *INF*: IIF(ISNULL(Territory) or IS_SPACES(Territory)  or LENGTH(Territory)=0,'N/A',LTRIM(RTRIM(Territory)))
-		IFF(Territory IS NULL 
-			OR LENGTH(Territory)>0 AND TRIM(Territory)='' 
-			OR LENGTH(Territory
-			) = 0,
-			'N/A',
-			LTRIM(RTRIM(Territory
-				)
-			)
+		IFF(
+		    Territory IS NULL or LENGTH(Territory)>0 AND TRIM(Territory)='' or LENGTH(Territory) = 0,
+		    'N/A',
+		    LTRIM(RTRIM(Territory))
 		) AS v_Territory,
 		-- *INF*: :LKP.LKP_RISKLOCATION_RISKLOCATIONKEY_LOCNUM_TERRITORY(RiskLocationKey,v_LocationNumber,v_Territory)
 		LKP_RISKLOCATION_RISKLOCATIONKEY_LOCNUM_TERRITORY_RiskLocationKey_v_LocationNumber_v_Territory.RiskLocationAKID AS v_RiskLocationAKID_RiskKey_Location_Territory,
 		-- *INF*: IIF(ISNULL(v_RiskLocationAKID_RiskKey_Location_Territory),:LKP.LKP_RISKLOCATION_RISKLOCATIONKEY_LOCNUM(RiskLocationKey,v_LocationNumber),v_RiskLocationAKID_RiskKey_Location_Territory)
-		IFF(v_RiskLocationAKID_RiskKey_Location_Territory IS NULL,
-			LKP_RISKLOCATION_RISKLOCATIONKEY_LOCNUM_RiskLocationKey_v_LocationNumber.RiskLocationAKID,
-			v_RiskLocationAKID_RiskKey_Location_Territory
+		IFF(
+		    v_RiskLocationAKID_RiskKey_Location_Territory IS NULL,
+		    LKP_RISKLOCATION_RISKLOCATIONKEY_LOCNUM_RiskLocationKey_v_LocationNumber.RiskLocationAKID,
+		    v_RiskLocationAKID_RiskKey_Location_Territory
 		) AS v_RiskLocationAKID_RiskKey_Location,
 		-- *INF*: IIF(ISNULL(v_RiskLocationAKID_RiskKey_Location),:LKP.LKP_RISKLOCATION_RISKLOCATIONKEY(RiskLocationKey),v_RiskLocationAKID_RiskKey_Location)
-		IFF(v_RiskLocationAKID_RiskKey_Location IS NULL,
-			LKP_RISKLOCATION_RISKLOCATIONKEY_RiskLocationKey.RiskLocationAKID,
-			v_RiskLocationAKID_RiskKey_Location
+		IFF(
+		    v_RiskLocationAKID_RiskKey_Location IS NULL,
+		    LKP_RISKLOCATION_RISKLOCATIONKEY_RiskLocationKey.RiskLocationAKID,
+		    v_RiskLocationAKID_RiskKey_Location
 		) AS v_RiskLocationAKID_RiskKey,
 		-- *INF*: DECODE ( TRUE, 
 		-- ---Condition to check for Locations which are not associated with any of the coverageguid
@@ -501,24 +467,17 @@ Mplt_RiskLocation_Key AS (WITH
 		-- --Condition to check risklocationakid for new location which is coming with new coverage.
 		-- ISNULL(lkp_RiskLocationAKID),v_RiskLocationAKID_RiskKey,
 		-- lkp_RiskLocationAKID)
-		DECODE(TRUE,
-			CoverageGUID IS NULL, v_RiskLocationAKID_RiskKey,
-			NOT ParentCoverageObjectName IN ('DC_BP_Location','DC_BP_Risk','DC_CA_Risk','DC_CF_Risk','DC_GL_Risk','DC_IM_Risk','DC_WC_Risk','DCBPLocation','WB_GOC_Risk','WB_HIO_Risk') 
-			AND RiskLocationKey = Pol_AK_ID || '~' || LocationXmlId 
-			AND ( lkp_RiskLocationKey != RiskLocationKey 
-			), v_RiskLocationAKID_RiskKey,
-			lkp_RiskLocationAKID IS NULL, v_RiskLocationAKID_RiskKey,
-			lkp_RiskLocationAKID
+		DECODE(
+		    TRUE,
+		    CoverageGUID IS NULL, v_RiskLocationAKID_RiskKey,
+		    NOT ParentCoverageObjectName IN ('DC_BP_Location','DC_BP_Risk','DC_CA_Risk','DC_CF_Risk','DC_GL_Risk','DC_IM_Risk','DC_WC_Risk','DCBPLocation','WB_GOC_Risk','WB_HIO_Risk') AND RiskLocationKey = Pol_AK_ID || '~' || LocationXmlId AND (lkp_RiskLocationKey != RiskLocationKey), v_RiskLocationAKID_RiskKey,
+		    lkp_RiskLocationAKID IS NULL, v_RiskLocationAKID_RiskKey,
+		    lkp_RiskLocationAKID
 		) AS v_RiskLocationAKID,
 		v_RiskLocationAKID AS o_RiskLocationAKID,
 		-- *INF*: iif(isnull(to_char(v_RiskLocationAKID)),RiskLocationKey,to_char(v_RiskLocationAKID))
 		-- -- This column is created to group by in mapping based on Exsiting RisklocationAKID or New RiskLocationKey
-		IFF(to_char(v_RiskLocationAKID
-			) IS NULL,
-			RiskLocationKey,
-			to_char(v_RiskLocationAKID
-			)
-		) AS RiskLocation_Group
+		IFF(to_char(v_RiskLocationAKID) IS NULL, RiskLocationKey, to_char(v_RiskLocationAKID)) AS RiskLocation_Group
 		FROM Un_Risk_State_Line_Object
 		LEFT JOIN LKP_RatingCoverage_RiskLocation
 		ON LKP_RatingCoverage_RiskLocation.PolicyAKID = Un_Risk_State_Line_Object.Pol_AK_ID AND LKP_RatingCoverage_RiskLocation.CoverageGUID = Un_Risk_State_Line_Object.CoverageGUID
@@ -648,88 +607,68 @@ AGG_Remove_Duplicate AS (
 	i_SessionId AS o_SessionID,
 	i_PartyId AS o_PartyId,
 	-- *INF*: IIF(ISNULL(i_CustomerNumber) or IS_SPACES(i_CustomerNumber) or LENGTH(i_CustomerNumber)=0, 'N/A', LTRIM(RTRIM(i_CustomerNumber)))
-	IFF(i_CustomerNumber IS NULL 
-		OR LENGTH(i_CustomerNumber)>0 AND TRIM(i_CustomerNumber)='' 
-		OR LENGTH(i_CustomerNumber
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_CustomerNumber
-			)
-		)
+	IFF(
+	    i_CustomerNumber IS NULL
+	    or LENGTH(i_CustomerNumber)>0
+	    and TRIM(i_CustomerNumber)=''
+	    or LENGTH(i_CustomerNumber) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_CustomerNumber))
 	) AS o_CustomerNumber,
 	-- *INF*: IIF(ISNULL(i_Id) or IS_SPACES(i_Id) or LENGTH(i_Id)=0, 'N/A', LTRIM(RTRIM(i_Id)))
-	IFF(i_Id IS NULL 
-		OR LENGTH(i_Id)>0 AND TRIM(i_Id)='' 
-		OR LENGTH(i_Id
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_Id
-			)
-		)
+	IFF(
+	    i_Id IS NULL or LENGTH(i_Id)>0 AND TRIM(i_Id)='' or LENGTH(i_Id) = 0, 'N/A',
+	    LTRIM(RTRIM(i_Id))
 	) AS o_Id,
 	-- *INF*: IIF(ISNULL(i_PolicyNumber) or IS_SPACES(i_PolicyNumber) or LENGTH(i_PolicyNumber)=0, 'N/A', LTRIM(RTRIM(i_PolicyNumber)))
-	IFF(i_PolicyNumber IS NULL 
-		OR LENGTH(i_PolicyNumber)>0 AND TRIM(i_PolicyNumber)='' 
-		OR LENGTH(i_PolicyNumber
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_PolicyNumber
-			)
-		)
+	IFF(
+	    i_PolicyNumber IS NULL
+	    or LENGTH(i_PolicyNumber)>0
+	    and TRIM(i_PolicyNumber)=''
+	    or LENGTH(i_PolicyNumber) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_PolicyNumber))
 	) AS o_PolicyNumber,
 	-- *INF*: IIF(ISNULL(i_PolicyVersion), '00', LPAD(TO_CHAR(i_PolicyVersion),2,'0'))
-	IFF(i_PolicyVersion IS NULL,
-		'00',
-		LPAD(TO_CHAR(i_PolicyVersion
-			), 2, '0'
-		)
-	) AS o_PolicyVersion,
+	IFF(i_PolicyVersion IS NULL, '00', LPAD(TO_CHAR(i_PolicyVersion), 2, '0')) AS o_PolicyVersion,
 	-- *INF*: IIF(ISNULL(i_LocationNumber) or IS_SPACES(i_LocationNumber) or LENGTH(i_LocationNumber)=0,'0000', LPAD(LTRIM(RTRIM (i_LocationNumber)), 4, '0'))
-	IFF(i_LocationNumber IS NULL 
-		OR LENGTH(i_LocationNumber)>0 AND TRIM(i_LocationNumber)='' 
-		OR LENGTH(i_LocationNumber
-		) = 0,
-		'0000',
-		LPAD(LTRIM(RTRIM(i_LocationNumber
-				)
-			), 4, '0'
-		)
+	IFF(
+	    i_LocationNumber IS NULL
+	    or LENGTH(i_LocationNumber)>0
+	    and TRIM(i_LocationNumber)=''
+	    or LENGTH(i_LocationNumber) = 0,
+	    '0000',
+	    LPAD(LTRIM(RTRIM(i_LocationNumber)), 4, '0')
 	) AS o_LocationNumber,
 	-- *INF*: IIF(ISNULL(i_Territory) or IS_SPACES(i_Territory)  or LENGTH(i_Territory)=0,'N/A',LTRIM(RTRIM(i_Territory)))
-	IFF(i_Territory IS NULL 
-		OR LENGTH(i_Territory)>0 AND TRIM(i_Territory)='' 
-		OR LENGTH(i_Territory
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_Territory
-			)
-		)
+	IFF(
+	    i_Territory IS NULL
+	    or LENGTH(i_Territory)>0
+	    and TRIM(i_Territory)=''
+	    or LENGTH(i_Territory) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_Territory))
 	) AS o_Territory,
 	i_LocationXmlId AS o_LocationXmlId,
 	i_StateProv AS o_StateProv,
 	i_PostalCode AS o_PostalCode,
 	-- *INF*: IIF(ISNULL(i_CityTaxCode) or IS_SPACES(i_CityTaxCode) or LENGTH(i_CityTaxCode)=0, 'N/A', LTRIM(RTRIM(i_CityTaxCode)))
-	IFF(i_CityTaxCode IS NULL 
-		OR LENGTH(i_CityTaxCode)>0 AND TRIM(i_CityTaxCode)='' 
-		OR LENGTH(i_CityTaxCode
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_CityTaxCode
-			)
-		)
+	IFF(
+	    i_CityTaxCode IS NULL
+	    or LENGTH(i_CityTaxCode)>0
+	    and TRIM(i_CityTaxCode)=''
+	    or LENGTH(i_CityTaxCode) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_CityTaxCode))
 	) AS o_CityTaxCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_KYTaxFactorAppliedIndicator)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_KYTaxFactorAppliedIndicator
-	) AS o_KYTaxFactorAppliedIndicator,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_KYTaxFactorAppliedIndicator) AS o_KYTaxFactorAppliedIndicator,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_GeoTaxCountyDistrictCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_GeoTaxCountyDistrictCode
-	) AS o_GeoTaxCountyDistrictCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_GeoTaxCountyDistrictCode) AS o_GeoTaxCountyDistrictCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_GeoTaxCityDistrictCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_GeoTaxCityDistrictCode
-	) AS o_GeoTaxCityDistrictCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_GeoTaxCityDistrictCode) AS o_GeoTaxCityDistrictCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_TerritoryIllinoisFireTaxLocationCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_TerritoryIllinoisFireTaxLocationCode
-	) AS o_TerritoryIllinoisFireTaxLocationCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_TerritoryIllinoisFireTaxLocationCode) AS o_TerritoryIllinoisFireTaxLocationCode,
 	RiskLocationKey AS o_RiskLocationKey,
 	o_RiskLocationnAKID AS o_RiskLocationAKID,
 	RiskLocation_Group AS RiskLocation_GroupKey
@@ -783,21 +722,17 @@ EXP_Values AS (
 	AGG_Remove_Duplicate.o_TerritoryIllinoisFireTaxLocationCode AS i_TerritoryIllinoisFireTaxLocationCode,
 	AGG_Remove_Duplicate.pol_ak_id AS i_pol_ak_id,
 	-- *INF*: IIF(ISNULL(i_StateProv) or IS_SPACES(i_StateProv)  or LENGTH(i_StateProv)=0,'N/A',LTRIM(RTRIM(i_StateProv)))
-	IFF(i_StateProv IS NULL 
-		OR LENGTH(i_StateProv)>0 AND TRIM(i_StateProv)='' 
-		OR LENGTH(i_StateProv
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_StateProv
-			)
-		)
+	IFF(
+	    i_StateProv IS NULL
+	    or LENGTH(i_StateProv)>0
+	    and TRIM(i_StateProv)=''
+	    or LENGTH(i_StateProv) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_StateProv))
 	) AS v_StateProv,
 	0 AS o_logicalIndicator,
 	-- *INF*: IIF(ISNULL(i_pol_ak_id), -1, i_pol_ak_id)
-	IFF(i_pol_ak_id IS NULL,
-		- 1,
-		i_pol_ak_id
-	) AS v_pol_ak_id,
+	IFF(i_pol_ak_id IS NULL, - 1, i_pol_ak_id) AS v_pol_ak_id,
 	-- *INF*: v_pol_ak_id
 	-- 
 	-- -- change policykey with PolAKID as per UID Change
@@ -809,30 +744,25 @@ EXP_Values AS (
 	-- 
 	-- 
 	-- 
-	IFF(i_LocationNumber = '0000',
-		'N',
-		'Y'
-	) AS o_locationIndicator,
+	IFF(i_LocationNumber = '0000', 'N', 'Y') AS o_locationIndicator,
 	-- *INF*: IIF(ISNULL(i_Territory) or IS_SPACES(i_Territory)  or LENGTH(i_Territory)=0,'N/A',LTRIM(RTRIM(i_Territory)))
-	IFF(i_Territory IS NULL 
-		OR LENGTH(i_Territory)>0 AND TRIM(i_Territory)='' 
-		OR LENGTH(i_Territory
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_Territory
-			)
-		)
+	IFF(
+	    i_Territory IS NULL
+	    or LENGTH(i_Territory)>0
+	    and TRIM(i_Territory)=''
+	    or LENGTH(i_Territory) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_Territory))
 	) AS o_Territory,
 	v_StateProv AS o_StateProv,
 	-- *INF*: IIF(ISNULL(i_PostalCode) or IS_SPACES(i_PostalCode)  or LENGTH(i_PostalCode)=0,'N/A',LTRIM(RTRIM(i_PostalCode)))
-	IFF(i_PostalCode IS NULL 
-		OR LENGTH(i_PostalCode)>0 AND TRIM(i_PostalCode)='' 
-		OR LENGTH(i_PostalCode
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_PostalCode
-			)
-		)
+	IFF(
+	    i_PostalCode IS NULL
+	    or LENGTH(i_PostalCode)>0
+	    and TRIM(i_PostalCode)=''
+	    or LENGTH(i_PostalCode) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_PostalCode))
 	) AS o_PostalCode,
 	-- *INF*: DECODE(TRUE,
 	-- --IL
@@ -842,52 +772,34 @@ EXP_Values AS (
 	-- i_KYTaxFactorAppliedIndicator='County',i_GeoTaxCountyDistrictCode,
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_StateProv = 'IL' 
-		AND i_TerritoryIllinoisFireTaxLocationCode <> 'N/A', i_TerritoryIllinoisFireTaxLocationCode,
-		i_KYTaxFactorAppliedIndicator = 'City', i_GeoTaxCityDistrictCode,
-		i_KYTaxFactorAppliedIndicator = 'County', i_GeoTaxCountyDistrictCode,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_StateProv = 'IL' and i_TerritoryIllinoisFireTaxLocationCode <> 'N/A', i_TerritoryIllinoisFireTaxLocationCode,
+	    i_KYTaxFactorAppliedIndicator = 'City', i_GeoTaxCityDistrictCode,
+	    i_KYTaxFactorAppliedIndicator = 'County', i_GeoTaxCountyDistrictCode,
+	    'N/A'
 	) AS o_TaxLocation,
 	-- *INF*: IIF(ISNULL(i_City) OR IS_SPACES(i_City) OR LENGTH(i_City)=0,'N/A',LTRIM(RTRIM(i_City)))
-	IFF(i_City IS NULL 
-		OR LENGTH(i_City)>0 AND TRIM(i_City)='' 
-		OR LENGTH(i_City
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_City
-			)
-		)
+	IFF(
+	    i_City IS NULL OR LENGTH(i_City)>0 AND TRIM(i_City)='' OR LENGTH(i_City) = 0, 'N/A',
+	    LTRIM(RTRIM(i_City))
 	) AS o_RatingCity,
 	-- *INF*: IIF(ISNULL(i_County) OR IS_SPACES(i_County) OR LENGTH(i_County)=0,'N/A',LTRIM(RTRIM(i_County)))
-	IFF(i_County IS NULL 
-		OR LENGTH(i_County)>0 AND TRIM(i_County)='' 
-		OR LENGTH(i_County
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_County
-			)
-		)
+	IFF(
+	    i_County IS NULL OR LENGTH(i_County)>0 AND TRIM(i_County)='' OR LENGTH(i_County) = 0, 'N/A',
+	    LTRIM(RTRIM(i_County))
 	) AS v_RatingCounty,
 	-- *INF*: LTRIM(RTRIM(REPLACESTR(0,v_RatingCounty,'county','')))
-	LTRIM(RTRIM(REGEXP_REPLACE(v_RatingCounty,'county','','i')
-		)
-	) AS o_RatingCounty,
+	LTRIM(RTRIM(REGEXP_REPLACE(v_RatingCounty,'county','','i'))) AS o_RatingCounty,
 	i_CityTaxCode AS o_TaxCode,
 	-- *INF*: IIF(ISNULL(i_Address1) OR IS_SPACES(i_Address1) OR LENGTH(i_Address1)=0,'N/A',LTRIM(RTRIM(i_Address1)))
-	IFF(i_Address1 IS NULL 
-		OR LENGTH(i_Address1)>0 AND TRIM(i_Address1)='' 
-		OR LENGTH(i_Address1
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_Address1
-			)
-		)
+	IFF(
+	    i_Address1 IS NULL OR LENGTH(i_Address1)>0 AND TRIM(i_Address1)='' OR LENGTH(i_Address1) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_Address1))
 	) AS o_Address1,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_ExperienceModRiskIDDefault,1,9))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_ExperienceModRiskIDDefault, 1, 9
-		)
-	) AS o_IntrastateRiskID,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(SUBSTR(i_ExperienceModRiskIDDefault, 1, 9)) AS o_IntrastateRiskID,
 	AGG_Remove_Duplicate.o_RiskLocationKey,
 	AGG_Remove_Duplicate.o_RiskLocationAKID
 	FROM AGG_Remove_Duplicate
@@ -1009,80 +921,38 @@ EXP_Detect_Changes AS (
 	EXP_Values.o_Address1 AS i_Address1,
 	LKP_ISOFireProtectStage.City AS i_ISOFireProtectCity,
 	-- *INF*: IIF(i_state_abbrev='12' and NOT ISNULL(i_ISOFireProtectCity),i_ISOFireProtectCity,'N/A')
-	IFF(i_state_abbrev = '12' 
-		AND i_ISOFireProtectCity IS NOT NULL,
-		i_ISOFireProtectCity,
-		'N/A'
-	) AS v_ISOFireProtectCity,
+	IFF(i_state_abbrev = '12' and i_ISOFireProtectCity IS NOT NULL, i_ISOFireProtectCity, 'N/A') AS v_ISOFireProtectCity,
 	-- *INF*: IIF(ISNULL(i_state_abbrev), 'N/A', i_state_abbrev)
-	IFF(i_state_abbrev IS NULL,
-		'N/A',
-		i_state_abbrev
-	) AS v_StateProvinceCode,
+	IFF(i_state_abbrev IS NULL, 'N/A', i_state_abbrev) AS v_StateProvinceCode,
 	-- *INF*: MD5(i_Address1||i_RatingCity||v_StateProvinceCode||i_ZipPostalCode)
-	MD5(i_Address1 || i_RatingCity || v_StateProvinceCode || i_ZipPostalCode
-	) AS v_RiskLocationHashKey,
+	MD5(i_Address1 || i_RatingCity || v_StateProvinceCode || i_ZipPostalCode) AS v_RiskLocationHashKey,
 	-- *INF*:   IIF(ISNULL(lkp_RiskLocationAKID), 'NEW', 
 	-- IIF(
 	-- LTRIM(RTRIM(lkp_LocationIndicator)) != LTRIM(RTRIM(i_LocationIndicator)) OR LTRIM(RTRIM(lkp_LocationUnitNumber)) != LTRIM(RTRIM(i_LocationUnitNumber)) OR LTRIM(RTRIM(lkp_RiskTerritory)) != LTRIM(RTRIM(i_RiskTerritory)) OR
 	-- LTRIM(RTRIM(lkp_TaxLocation)) != LTRIM(RTRIM(i_TaxLocation)) OR lkp_sup_state_id != i_sup_state_id OR LTRIM(RTRIM(lkp_KYTaxCode)) != LTRIM(RTRIM(i_TaxCode)) OR LTRIM(RTRIM(lkp_RiskLocationHashKey)) != LTRIM(RTRIM(v_RiskLocationHashKey))  OR LTRIM(RTRIM(lkp_IntrastateRiskId)) != LTRIM(RTRIM(IntrastateRiskID)) OR LTRIM(RTRIM(lkp_ISOFireProtectCity)) != LTRIM(RTRIM(v_ISOFireProtectCity)) ,
 	-- 'UPDATE', 'NOCHANGE'))
-	IFF(lkp_RiskLocationAKID IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(lkp_LocationIndicator
-				)
-			) != LTRIM(RTRIM(i_LocationIndicator
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_LocationUnitNumber
-				)
-			) != LTRIM(RTRIM(i_LocationUnitNumber
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_RiskTerritory
-				)
-			) != LTRIM(RTRIM(i_RiskTerritory
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_TaxLocation
-				)
-			) != LTRIM(RTRIM(i_TaxLocation
-				)
-			) 
-			OR lkp_sup_state_id != i_sup_state_id 
-			OR LTRIM(RTRIM(lkp_KYTaxCode
-				)
-			) != LTRIM(RTRIM(i_TaxCode
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_RiskLocationHashKey
-				)
-			) != LTRIM(RTRIM(v_RiskLocationHashKey
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_IntrastateRiskId
-				)
-			) != LTRIM(RTRIM(IntrastateRiskID
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_ISOFireProtectCity
-				)
-			) != LTRIM(RTRIM(v_ISOFireProtectCity
-				)
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    lkp_RiskLocationAKID IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(lkp_LocationIndicator)) != LTRIM(RTRIM(i_LocationIndicator))
+	        or LTRIM(RTRIM(lkp_LocationUnitNumber)) != LTRIM(RTRIM(i_LocationUnitNumber))
+	        or LTRIM(RTRIM(lkp_RiskTerritory)) != LTRIM(RTRIM(i_RiskTerritory))
+	        or LTRIM(RTRIM(lkp_TaxLocation)) != LTRIM(RTRIM(i_TaxLocation))
+	        or lkp_sup_state_id != i_sup_state_id
+	        or LTRIM(RTRIM(lkp_KYTaxCode)) != LTRIM(RTRIM(i_TaxCode))
+	        or LTRIM(RTRIM(lkp_RiskLocationHashKey)) != LTRIM(RTRIM(v_RiskLocationHashKey))
+	        or LTRIM(RTRIM(lkp_IntrastateRiskId)) != LTRIM(RTRIM(IntrastateRiskID))
+	        or LTRIM(RTRIM(lkp_ISOFireProtectCity)) != LTRIM(RTRIM(v_ISOFireProtectCity)),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_Changed_Flag,
 	v_Changed_Flag AS o_Changed_Flag,
 	lkp_RiskLocationAKID AS o_RiskLocationAKID,
 	i_LogicalIndicator AS o_LogicalIndicator,
 	EXP_Values.o_Pol_Key AS o_PolicyAKID,
 	-- *INF*: IIF(ISNULL(lkp_RiskLocationAKID),i_RiskLocationKey,lkp_RiskLocationKey)
-	IFF(lkp_RiskLocationAKID IS NULL,
-		i_RiskLocationKey,
-		lkp_RiskLocationKey
-	) AS o_RiskLocationKey,
+	IFF(lkp_RiskLocationAKID IS NULL, i_RiskLocationKey, lkp_RiskLocationKey) AS o_RiskLocationKey,
 	i_LocationUnitNumber AS o_LocationUnitNumber,
 	i_LocationIndicator AS o_LocationIndicator,
 	i_RiskTerritory AS o_RiskTerritory,
@@ -1154,10 +1024,9 @@ EXP_Detemine_AK_ID AS (
 	TaxCode,
 	-- *INF*: IIF(i_Changed_Flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(i_Changed_Flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    i_Changed_Flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS v_EffectiveDate,
 	RiskLocationHashKey,
 	Address1,
@@ -1167,16 +1036,12 @@ EXP_Detemine_AK_ID AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	v_EffectiveDate AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	-- *INF*: IIF(ISNULL(i_RiskLocationAKID),NEXTVAL,i_RiskLocationAKID)
-	IFF(i_RiskLocationAKID IS NULL,
-		NEXTVAL,
-		i_RiskLocationAKID
-	) AS RiskLocationAKID,
+	IFF(i_RiskLocationAKID IS NULL, NEXTVAL, i_RiskLocationAKID) AS RiskLocationAKID,
 	'N/A' AS o_ISOFireProtectCounty
 	FROM FIL_Insert
 ),
@@ -1244,9 +1109,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- i_RiskLocationAKID = v_PrevRiskLocationAKID ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
-	DECODE(TRUE,
-		i_RiskLocationAKID = v_PrevRiskLocationAKID, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    i_RiskLocationAKID = v_PrevRiskLocationAKID, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	i_RiskLocationAKID AS v_PrevRiskLocationAKID,
 	i_eff_from_date AS v_prev_eff_from_date,

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCGLLocationStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCGLLocationStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCGLLocationStaging AS (\n\tSELECT\n\t\tGL_LocationId,\n\t\tSessionId,\n\t\tId,\n\t\tExcludeCoverageCMedicalPayments,\n\t\tTerrorismTerritory,\n\t\tTerritory,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tDescription,\n\t\tNumber\n\tFROM DCGLLocationStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tGL_LocationId,\n\tSessionId,\n\tId,\n\tExcludeCoverageCMedicalPayments,\n\tTerrorismTerritory,\n\tTerritory,\n\tExtractDate,\n\tSourceSystemId,\n\t-- *INF*: DECODE(ExcludeCoverageCMedicalPayments,'T',1,'F',0,NULL)\n\tDECODE(\n\t    ExcludeCoverageCMedicalPayments,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ExcludeCoverageCMedicalPayments,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tDescription,\n\tNumber\n\tFROM SQ_DCGLLocationStaging\n),\narchDCGLLocationStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCGLLocationStaging\n\t(GL_LocationId, SessionId, Id, ExcludeCoverageCMedicalPayments, TerrorismTerritory, Territory, ExtractDate, SourceSystemId, AuditId, Description, Number)\n\tSELECT \n\tGL_LOCATIONID, \n\tSESSIONID, \n\tID, \n\to_ExcludeCoverageCMedicalPayments AS EXCLUDECOVERAGECMEDICALPAYMENTS, \n\tTERRORISMTERRITORY, \n\tTERRITORY, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDESCRIPTION, \n\tNUMBER\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

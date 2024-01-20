@@ -1,0 +1,38 @@
+{
+    "name": "s_m_CLM_FEED_Reinsurance_WorkSapiensValidCover",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_FEED_Reinsurance_WorkSapiensValidCover",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_RIVCATV AS (\n\tselect \r\n\t'ACP' as Cover,\r\n\tRTRIM(DEPENDENCY_LVL_1) as Value,  \r\n\tNULL as ASL, \r\n\tNULL as SAS \r\n\tfrom RIAPPLDB.RI.RIVCATV with (nolock) \r\n\twhere CATEGORY_CODE = 'ACP' and VAL_STATUS = 'ACT'\r\n\tunion\r\n\tselect \r\n\t'LOB' as Cover, \r\n\tRTRIM(DEPENDENCY_LVL_1) as Value, \r\n\tNULL as ASL, \r\n\tNULL as SAS \r\n\tfrom RIAPPLDB.RI.RIVCATV with (nolock) \r\n\twhere CATEGORY_CODE = 'LOB' and VAL_STATUS = 'ACT'\r\n\tunion\r\n\tselect \r\n\t'PCN' as Cover, \r\n\tRTRIM(DEPENDENCY_LVL_1) as Value,\r\n\tNULL as ASL, \r\n\tNULL as SAS \r\n\tfrom RIAPPLDB.RI.RIVCATV with (nolock) \r\n\twhere CATEGORY_CODE = 'PCN' and VAL_STATUS = 'ACT'\r\n\tunion\r\n\tselect \r\n\t'PDT' as Cover, \r\n\tRTRIM(DEPENDENCY_LVL_1) as Value, \r\n\tnull as ASL, \r\n\tNULL as SAS \r\n\tfrom RIAPPLDB.RI.RIVCATV with (nolock) \r\n\twhere CATEGORY_CODE = 'PDT' and VAL_STATUS = 'ACT'\r\n\tunion\r\n\tselect \r\n\t'RKS' as Cover, \r\n\tRTRIM(DEPENDENCY_LVL_1) as Value, \r\n\tNULL as ASL, \r\n\tNULL as SAS \r\n\tfrom RIAPPLDB.RI.RIVCATV with (nolock) \r\n\twhere CATEGORY_CODE = 'RKS' and VAL_STATUS = 'ACT'\r\n\tunion\r\n\tselect \r\n\t'ASL' as Cover, \r\n\tRTRIM(DEPENDENCY_LVL_1) as Value, \r\n\tNULL as ASL, \r\n\tNULL as SAS \r\n\tfrom RIAPPLDB.RI.RIVCATV with (nolock) \r\n\twhere CATEGORY_CODE = 'ASL' and VAL_STATUS = 'ACT'\r\n\tunion\r\n\tselect \r\n\t'SAS' as cover,\r\n\tA.SASValue as Value,\r\n\tB.ASLVal as ASL,\r\n\tnull as SAS\r\n\tfrom\r\n\t(select \r\n\tRTRIM(DEPENDENCY_LVL_2) as SASValue, \r\n\tDEPENDENCY_LVL_1 as ASLValue \r\n\tfrom RIAPPLDB.RI.RIVCATV with (nolock) \r\n\twhere CATEGORY_CODE = 'SAS' and VAL_STATUS = 'ACT') A\r\n\tleft join\r\n\t(select \r\n\tDEPENDENCY_LVL_1 as ASLVal \r\n\tfrom RIAPPLDB.RI.RIVCATV with (nolock) \r\n\twhere CATEGORY_CODE = 'ASL' and VAL_STATUS = 'ACT') B\r\n\ton B.ASLVal = A.ASLValue\r\n\tunion\r\n\tselect \r\n\t'SNA' as cover,\r\n\tA.SNAValue as Value,\r\n\tB.ASLVal as ASL,\r\n\tB.SASVal as SAS\r\n\tfrom\r\n\t(select \r\n\tRTRIM(DEPENDENCY_LVL_3) as SNAValue, \r\n\tDEPENDENCY_LVL_2 as SASValue, \r\n\tDEPENDENCY_LVL_1 as ASLValue \r\n\tfrom RIAPPLDB.RI.RIVCATV with (nolock) \r\n\twhere CATEGORY_CODE = 'SNA' and VAL_STATUS = 'ACT') A\r\n\tleft join\r\n\t(select \r\n\tRTRIM(DEPENDENCY_LVL_2) as SASVal, \r\n\tDEPENDENCY_LVL_1 as ASLVal \r\n\tfrom RIAPPLDB.RI.RIVCATV with (nolock) \r\n\twhere CATEGORY_CODE = 'SAS' and VAL_STATUS = 'ACT') B\r\n\ton B.SASVal = A.SASValue\n),\nEXPTRANS AS (\n\tSELECT\n\tSYSDATE AS Default,\n\tCover,\n\tValue,\n\tASL,\n\t-- *INF*: LTRIM(RTRIM(ASL))\n\tLTRIM(RTRIM(ASL)) AS o_ASL,\n\tSAS,\n\t-- *INF*: LTRIM(RTRIM(SAS))\n\tLTRIM(RTRIM(SAS)) AS o_SAS\n\tFROM SQ_RIVCATV\n),\nWorkSapiensValidCover AS (\n\tTRUNCATE TABLE WorkSapiensValidCover;\n\tINSERT INTO WorkSapiensValidCover\n\t(CreatedDate, ModifiedDate, Cover, Value, ASL, SAS)\n\tSELECT \n\tDefault AS CREATEDDATE, \n\tDefault AS MODIFIEDDATE, \n\tCOVER, \n\tVALUE, \n\to_ASL AS ASL, \n\to_SAS AS SAS\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

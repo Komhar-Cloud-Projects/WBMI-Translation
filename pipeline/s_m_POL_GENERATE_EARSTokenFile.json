@@ -1,0 +1,51 @@
+{
+    "name": "s_m_POL_GENERATE_EARSTokenFile",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_GENERATE_EARSTokenFile",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_ExploreEARSDriverRecord AS (\n\tSELECT\n\t\tLicenseNumber\n\tFROM ExploreEARSDriverRecord\n),\nSQ_ExploreEARSDriverRecord_QB AS (\n\tSELECT\n\t\tQuotebackDriverLicense\n\tFROM ExploreEARSDriverRecord_QB\n),\nUnion AS (\n\tSELECT LicenseNumber\n\tFROM SQ_ExploreEARSDriverRecord\n\tUNION\n\tSELECT QuotebackDriverLicense AS LicenseNumber\n\tFROM SQ_ExploreEARSDriverRecord_QB\n),\nSRTTRANS AS (\n\tSELECT\n\tLicenseNumber\n\tFROM Union\n\tORDER BY LicenseNumber ASC\n),\nEXP_Values AS (\n\tSELECT\n\tLicenseNumber AS i_LicenseNumber,\n\t-- *INF*: UPPER(LTRIM(RTRIM(i_LicenseNumber)))\n\tUPPER(LTRIM(RTRIM(i_LicenseNumber))) AS o_LicenseNumber,\n\t@{pipeline().parameters.FUNCTION} AS Function,\n\t'DriversLicense' AS Scheme,\n\t'EARS' AS Requestedby,\n\t'EARS' AS Application,\n\t'EARS' AS Caller,\n\t-- *INF*: --'DataMart_DL_Detokenized.csv'\r\n\t-- @{pipeline().parameters.FILE_NAME}\r\n\t-- --CHR(39)||@{pipeline().parameters.FILE_NAME}||'.csv'||CHR(39)\n\t@{pipeline().parameters.FILE_NAME} AS File_Name,\n\t-- *INF*: IIF(v_SeqNumber = 0, @{pipeline().parameters.BATCHSIZE} ,v_SeqNumber + 1)\n\tIFF(v_SeqNumber = 0, @{pipeline().parameters.BATCHSIZE}, v_SeqNumber + 1) AS v_SeqNumber,\n\t-- *INF*: TRUNC(v_SeqNumber / @{pipeline().parameters.BATCHSIZE},0)\n\tTRUNC(v_SeqNumber / @{pipeline().parameters.BATCHSIZE},0) AS v_BatchNumber,\n\tv_SeqNumber AS o_SeqNumber,\n\tv_BatchNumber AS o_BatchNumber\n\tFROM SRTTRANS\n),\nAGG_Values AS (\n\tSELECT\n\to_BatchNumber,\n\to_SeqNumber,\n\to_LicenseNumber,\n\tFunction,\n\tScheme,\n\tRequestedby,\n\tApplication,\n\tCaller,\n\tFile_Name\n\tFROM EXP_Values\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY o_BatchNumber ORDER BY NULL) = 1\n),\nTokenize_WebServiceCall AS (-- Tokenize_WebServiceCall\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nFILTRANS AS (\n\tSELECT\n\ttns_ResponseData0 AS TokenResponse\n\tFROM Tokenize_WebServiceCall\n\tWHERE FALSE\n),\nEARS_DummyFile_FF AS (\n\tINSERT INTO EARS_DummyFile_FF\n\t(EARS_DummyResponse)\n\tSELECT \n\tTokenResponse AS EARS_DUMMYRESPONSE\n\tFROM FILTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "FUNCTION": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "FILE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "BATCHSIZE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

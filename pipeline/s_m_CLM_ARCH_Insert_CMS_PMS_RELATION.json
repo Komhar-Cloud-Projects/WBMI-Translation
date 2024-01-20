@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CMS_PMS_RELATION",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CMS_PMS_RELATION",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_source AS (\n\tSELECT\n\t\tcms_pms_relation_stage_id,\n\t\tinjured_party_id,\n\t\tcms_party_type,\n\t\tcms_relation_ind,\n\t\tis_individual,\n\t\tlast_name,\n\t\tfirst_name,\n\t\ttin,\n\t\taddress1,\n\t\taddress2,\n\t\tcity,\n\t\tstate,\n\t\tzip_code,\n\t\tzip4,\n\t\tphone,\n\t\tphone_ext,\n\t\tcreated_ts,\n\t\tcreated_user_id,\n\t\tmodified_ts,\n\t\tmodified_user_id,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM cms_pms_relation_stage\n\tWHERE CREATED_TS >= '@{pipeline().parameters.SELECTION_START_TS}'  OR MODIFIED_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_values AS (\n\tSELECT\n\tcms_pms_relation_stage_id,\n\tinjured_party_id,\n\tcms_party_type,\n\tcms_relation_ind,\n\tis_individual,\n\tlast_name,\n\tfirst_name,\n\ttin,\n\taddress1,\n\taddress2,\n\tcity,\n\tstate,\n\tzip_code,\n\tzip4,\n\tphone,\n\tphone_ext,\n\tcreated_ts,\n\tcreated_user_id,\n\tmodified_ts,\n\tmodified_user_id,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID\n\tFROM SQ_source\n),\narch_cms_pms_relation_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_cms_pms_relation_stage\n\t(cms_pms_relation_stage_id, injured_party_id, cms_party_type, cms_relation_ind, is_individual, last_name, first_name, tin, address1, address2, city, state, zip_code, zip4, phone, phone_ext, created_ts, created_user_id, modified_ts, modified_user_id, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCMS_PMS_RELATION_STAGE_ID, \n\tINJURED_PARTY_ID, \n\tCMS_PARTY_TYPE, \n\tCMS_RELATION_IND, \n\tIS_INDIVIDUAL, \n\tLAST_NAME, \n\tFIRST_NAME, \n\tTIN, \n\tADDRESS1, \n\tADDRESS2, \n\tCITY, \n\tSTATE, \n\tZIP_CODE, \n\tZIP4, \n\tPHONE, \n\tPHONE_EXT, \n\tCREATED_TS, \n\tCREATED_USER_ID, \n\tMODIFIED_TS, \n\tMODIFIED_USER_ID, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID\n\tFROM EXP_values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

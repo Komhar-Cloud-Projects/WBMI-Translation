@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_STG_Generate_SSN_Tokens_PMS_ADJUSTER_MASTER_STAGE_V1",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Generate_SSN_Tokens_PMS_ADJUSTER_MASTER_ST_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_ADJMSTR_AJNUMM53___Header AS (\n\n-- TODO Manual --\n\n),\nEXP_Input AS (\n\tSELECT\n\tADNM_TAXID_SSN AS IN_ADNM_TAXID_SSN,\n\t-- *INF*: (LTRIM(RTRIM(IN_ADNM_TAXID_SSN)))\n\t(LTRIM(RTRIM(IN_ADNM_TAXID_SSN))) AS OUT_ADNM_TAXID_SSN\n\tFROM SQ_ADJMSTR_AJNUMM53___Header\n),\nmplt_SSN_Check AS (WITH\n\tINPUT AS (\n\t\t\n\t),\n\tEXP_SSN_FEIN_TAXID AS (\n\t\tSELECT\n\t\tIN_id AS id,\n\t\tIN_ssn_fein_id AS ssn_fein_taxid,\n\t\t-- *INF*: LTRIM(RTRIM(ssn_fein_taxid))\n\t\tLTRIM(RTRIM(ssn_fein_taxid)) AS V_ssn_fein_taxid,\n\t\t-- *INF*: IIF( SUBSTR(V_ssn_fein_taxid,3,1)='-' OR SUBSTR(V_ssn_fein_taxid,2,1)='-' OR  (SUBSTR(V_ssn_fein_taxid,1,3)='000' AND (LENGTH(V_ssn_fein_taxid)=9 ) ) OR   (TO_INTEGER(SUBSTR(V_ssn_fein_taxid,1,3))>=750 AND (LENGTH(V_ssn_fein_taxid)=9 ) )OR ISNULL(V_ssn_fein_taxid) OR (V_ssn_fein_taxid='N/A') OR REG_MATCH(V_ssn_fein_taxid,'[*]*') OR(REG_MATCH(V_ssn_fein_taxid,'[\\da-zA-Z]+') AND (LENGTH(V_ssn_fein_taxid)=11 OR LENGTH(V_ssn_fein_taxid)=10) )\r\n\t\t--  OR ((SUBSTR(V_ssn_fein_taxid,4,1)='-')  AND  (LENGTH(V_ssn_fein_taxid) != 11 )) OR (LENGTH(V_ssn_fein_taxid)<=5 ) OR  (LENGTH(V_ssn_fein_taxid)>11 ) ,'FEIN','NONFEIN')\r\n\t\t-- \r\n\t\t--  \r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \n\t\tIFF(\n\t\t    SUBSTR(V_ssn_fein_taxid, 3, 1) = '-'\n\t\t    or SUBSTR(V_ssn_fein_taxid, 2, 1) = '-'\n\t\t    or (SUBSTR(V_ssn_fein_taxid, 1, 3) = '000'\n\t\t    and (LENGTH(V_ssn_fein_taxid) = 9))\n\t\t    or (CAST(SUBSTR(V_ssn_fein_taxid, 1, 3) AS INTEGER) >= 750\n\t\t    and (LENGTH(V_ssn_fein_taxid) = 9))\n\t\t    or V_ssn_fein_taxid IS NULL\n\t\t    or (V_ssn_fein_taxid = 'N/A')\n\t\t    or REGEXP_LIKE(V_ssn_fein_taxid, '[*]*')\n\t\t    or (REGEXP_LIKE(V_ssn_fein_taxid, '[\\da-zA-Z]+')\n\t\t    and (LENGTH(V_ssn_fein_taxid) = 11\n\t\t    or LENGTH(V_ssn_fein_taxid) = 10))\n\t\t    or ((SUBSTR(V_ssn_fein_taxid, 4, 1) = '-')\n\t\t    and (LENGTH(V_ssn_fein_taxid) != 11))\n\t\t    or (LENGTH(V_ssn_fein_taxid) <= 5)\n\t\t    or (LENGTH(V_ssn_fein_taxid) > 11),\n\t\t    'FEIN',\n\t\t    'NONFEIN'\n\t\t) AS V_flag,\n\t\tV_flag AS flag,\n\t\t-- *INF*: IIF(LENGTH(V_ssn_fein_taxid)>=7 AND LENGTH(V_ssn_fein_taxid)<=8,LPAD(V_ssn_fein_taxid,9,'0'),V_ssn_fein_taxid)\r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \n\t\tIFF(\n\t\t    LENGTH(V_ssn_fein_taxid) >= 7 AND LENGTH(V_ssn_fein_taxid) <= 8,\n\t\t    LPAD(V_ssn_fein_taxid, 9, '0'),\n\t\t    V_ssn_fein_taxid\n\t\t) AS V_taxid,\n\t\t-- *INF*: IIF(REG_MATCH(V_taxid,'[0-9-]*') ,V_taxid,'X')\r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \n\t\tIFF(REGEXP_LIKE(V_taxid, '[0-9-]*'), V_taxid, 'X') AS V_valid_taxid,\n\t\tV_valid_taxid AS flag_TaxId,\n\t\t-- *INF*: IIF(LENGTH(V_valid_taxid)=9  AND (REG_MATCH(V_valid_taxid,'^[0-9]*$'))  ,(SUBSTR(V_valid_taxid, 1, 3) ||'-'||SUBSTR(V_valid_taxid, 4, 2)||'-'||SUBSTR(V_valid_taxid, 6, 4)) ,V_valid_taxid)\r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \r\n\t\t-- \n\t\tIFF(\n\t\t    LENGTH(V_valid_taxid) = 9 AND (REGEXP_LIKE(V_valid_taxid, '^[0-9]*$')),\n\t\t    (SUBSTR(V_valid_taxid, 1, 3) || '-' || SUBSTR(V_valid_taxid, 4, 2) || '-' || SUBSTR(V_valid_taxid, 6, 4)),\n\t\t    V_valid_taxid\n\t\t) AS OUT_taxid\n\t\tFROM INPUT\n\t),\n\tRTR_SSN_FEIN_TAXID AS (\n\t\tSELECT\n\t\tid,\n\t\tflag,\n\t\tssn_fein_taxid AS fein_taxid,\n\t\tOUT_taxid AS ssn,\n\t\tflag_TaxId\n\t\tFROM EXP_SSN_FEIN_TAXID\n\t),\n\tRTR_SSN_FEIN_TAXID_FEIN AS (SELECT * FROM RTR_SSN_FEIN_TAXID WHERE flag = 'FEIN'),\n\tRTR_SSN_FEIN_TAXID_SSN AS (SELECT * FROM RTR_SSN_FEIN_TAXID WHERE flag='NONFEIN'  AND flag_TaxId != 'X'),\n\tAGGTRANS AS (\n\t\tSELECT\n\t\tid AS Id,\n\t\tssn AS SSN\n\t\tFROM RTR_SSN_FEIN_TAXID_SSN\n\t\tQUALIFY ROW_NUMBER() OVER (PARTITION BY Id ORDER BY NULL) = 1\n\t),\n\tOUTPUT AS (\n\t\tSELECT\n\t\tId AS OUT_id, \n\t\tSSN AS OUT_valid_ssn\n\t\tFROM AGGTRANS\n\t),\n),\nEXP_Values AS (\n\tSELECT\n\tOUT_id AS ID,\n\t'Tokenize' AS Function,\n\t'SSN' AS Scheme,\n\tOUT_valid_ssn AS SSN_FEIN_TAXID,\n\t'BATCHCYCLEJOB' AS Requestedby,\n\t'Claims' AS Application,\n\t'PMS_ADJUSTER_MASTER' AS Caller,\n\t'pms_adjuster_master_stage.csv' AS File_Name,\n\t-- *INF*: IIF(v_SeqNumber = 0,@{pipeline().parameters.BATCHSIZE},v_SeqNumber + 1)\n\tIFF(v_SeqNumber = 0, @{pipeline().parameters.BATCHSIZE}, v_SeqNumber + 1) AS v_SeqNumber,\n\t-- *INF*: TRUNC(v_SeqNumber / @{pipeline().parameters.BATCHSIZE},0)\n\tTRUNC(v_SeqNumber / @{pipeline().parameters.BATCHSIZE},0) AS v_batch_number,\n\tv_SeqNumber AS Out_SeqNumber,\n\tv_batch_number AS Out_batchNumber\n\tFROM mplt_SSN_Check\n),\nAGGTRANS AS (\n\tSELECT\n\tOut_batchNumber,\n\tOut_SeqNumber,\n\tID,\n\tFunction,\n\tScheme,\n\tRequestedby,\n\tApplication,\n\tCaller,\n\tFile_Name,\n\tSSN_FEIN_TAXID\n\tFROM EXP_Values\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY Out_batchNumber ORDER BY NULL) = 1\n),\nTokenize_WebServiceCall AS (-- Tokenize_WebServiceCall\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nFILTRANS AS (\n\tSELECT\n\ttns_ResponseData0 AS TokenResponse\n\tFROM Tokenize_WebServiceCall\n\tWHERE FALSE\n),\nCLM_STG_Insert_PMS_ADJUSTER_MASTER_STAGE_TOKENS_FILE_V1 AS (\n\tINSERT INTO CLM_STG_Insert_PMS_ADJUSTER_MASTER_STAGE_TOKENS_FILE\n\t(ADNM_TAXID_SSN_ID, ADNM_TAXID_SSN_TOKENS)\n\tSELECT \n\tTokenResponse AS ADNM_TAXID_SSN_ID, \n\tTokenResponse AS ADNM_TAXID_SSN_TOKENS\n\tFROM FILTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "BATCHSIZE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

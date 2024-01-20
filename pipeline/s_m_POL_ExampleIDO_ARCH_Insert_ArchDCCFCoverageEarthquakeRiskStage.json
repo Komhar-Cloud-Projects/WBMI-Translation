@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCFCoverageEarthquakeRiskStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCFCoverageEarthqu_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCFCoverageEarthquakeRiskStage AS (\n\tSELECT\n\t\tDCCFCoverageEarthquakeRiskStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCoverageId,\n\t\tCF_CoverageEarthquakeRiskId,\n\t\tSessionId,\n\t\tAdditionalEarthquake,\n\t\tARate,\n\t\tBaseRate,\n\t\tLimitedEarthquake,\n\t\tNetRate,\n\t\tNetRateEE,\n\t\tPrem,\n\t\tPremiumRatingGroup,\n\t\tSteelFrame\n\tFROM DCCFCoverageEarthquakeRiskStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCCFCoverageEarthquakeRiskStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCoverageId,\n\tCF_CoverageEarthquakeRiskId,\n\tSessionId,\n\tAdditionalEarthquake AS i_AdditionalEarthquake,\n\t-- *INF*: DECODE(i_AdditionalEarthquake,'T','1','F','0')\n\tDECODE(\n\t    i_AdditionalEarthquake,\n\t    'T', '1',\n\t    'F', '0'\n\t) AS o_AdditionalEarthquake,\n\tARate,\n\tBaseRate,\n\tLimitedEarthquake AS i_LimitedEarthquake,\n\t-- *INF*: DECODE(i_LimitedEarthquake,'T','1','F','0')\n\tDECODE(\n\t    i_LimitedEarthquake,\n\t    'T', '1',\n\t    'F', '0'\n\t) AS o_LimitedEarthquake,\n\tNetRate,\n\tNetRateEE,\n\tPrem,\n\tPremiumRatingGroup,\n\tSteelFrame AS i_SteelFrame,\n\t-- *INF*: DECODE(i_SteelFrame,'T','1','F','0')\n\tDECODE(\n\t    i_SteelFrame,\n\t    'T', '1',\n\t    'F', '0'\n\t) AS o_SteelFrame,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCFCoverageEarthquakeRiskStage\n),\nArchDCCFCoverageEarthquakeRiskStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCFCoverageEarthquakeRiskStage\n\t(ExtractDate, SourceSystemId, AuditId, DCCFCoverageEarthquakeRiskStageId, CoverageId, CF_CoverageEarthquakeRiskId, SessionId, AdditionalEarthquake, ARate, BaseRate, LimitedEarthquake, NetRate, NetRateEE, Prem, PremiumRatingGroup, SteelFrame)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCCFCOVERAGEEARTHQUAKERISKSTAGEID, \n\tCOVERAGEID, \n\tCF_COVERAGEEARTHQUAKERISKID, \n\tSESSIONID, \n\to_AdditionalEarthquake AS ADDITIONALEARTHQUAKE, \n\tARATE, \n\tBASERATE, \n\to_LimitedEarthquake AS LIMITEDEARTHQUAKE, \n\tNETRATE, \n\tNETRATEEE, \n\tPREM, \n\tPREMIUMRATINGGROUP, \n\to_SteelFrame AS STEELFRAME\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

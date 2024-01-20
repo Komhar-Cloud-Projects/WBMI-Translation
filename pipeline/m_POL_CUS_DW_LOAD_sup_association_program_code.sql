@@ -29,42 +29,36 @@ EXP_values AS (
 	-- 
 	-- -- these are missing values which must be output to a flat file and sent to Jody by email.
 	-- -- this will be inplemented in later iterations
-	IFF(in_sup_assoc_program_type_id IS NULL,
-		1,
-		0
-	) AS sup_assoc_program_type_id,
+	IFF(in_sup_assoc_program_type_id IS NULL, 1, 0) AS sup_assoc_program_type_id,
 	prog_code AS in_prog_code,
 	-- *INF*: iif(isnull(in_prog_code) or IS_SPACES(in_prog_code) or LENGTH(in_prog_code)=0,'N/A',LTRIM(RTRIM(in_prog_code)))
-	IFF(in_prog_code IS NULL 
-		OR LENGTH(in_prog_code)>0 AND TRIM(in_prog_code)='' 
-		OR LENGTH(in_prog_code
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_prog_code
-			)
-		)
+	IFF(
+	    in_prog_code IS NULL
+	    or LENGTH(in_prog_code)>0
+	    and TRIM(in_prog_code)=''
+	    or LENGTH(in_prog_code) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_prog_code))
 	) AS assoc_prog_code,
 	prog_description AS in_prog_description,
 	-- *INF*: iif(isnull(in_prog_description) or IS_SPACES(in_prog_description) or LENGTH(in_prog_description)=0,'N/A',LTRIM(RTRIM(in_prog_description)))
-	IFF(in_prog_description IS NULL 
-		OR LENGTH(in_prog_description)>0 AND TRIM(in_prog_description)='' 
-		OR LENGTH(in_prog_description
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_prog_description
-			)
-		)
+	IFF(
+	    in_prog_description IS NULL
+	    or LENGTH(in_prog_description)>0
+	    and TRIM(in_prog_description)=''
+	    or LENGTH(in_prog_description) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_prog_description))
 	) AS assoc_prog_code_descript,
 	prog_type AS in_assoc_program_type,
 	-- *INF*: iif(isnull(in_assoc_program_type) or IS_SPACES(in_assoc_program_type) or LENGTH(in_assoc_program_type)=0,'N/A',LTRIM(RTRIM(in_assoc_program_type)))
-	IFF(in_assoc_program_type IS NULL 
-		OR LENGTH(in_assoc_program_type)>0 AND TRIM(in_assoc_program_type)='' 
-		OR LENGTH(in_assoc_program_type
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_assoc_program_type
-			)
-		)
+	IFF(
+	    in_assoc_program_type IS NULL
+	    or LENGTH(in_assoc_program_type)>0
+	    and TRIM(in_assoc_program_type)=''
+	    or LENGTH(in_assoc_program_type) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_assoc_program_type))
 	) AS assoc_prog_type
 	FROM SQ_gtam_wbclb_stage
 ),
@@ -105,35 +99,26 @@ EXP_Detect_Changes AS (
 	-- 
 	-- --iif(isnull(lkp_sup_assoc_program_code_id),'NEW',IIF(
 	-- --LTRIM(RTRIM(lkp_prog_description)) != LTRIM(RTRIM(prog_description)) ,'UPDATE','NOCHANGE'))
-	IFF(lkp_sup_assoc_program_code_id IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(lkp_prog_description
-				)
-			) != LTRIM(RTRIM(assoc_prog_code_descript
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_assoc_program_type
-				)
-			) != LTRIM(RTRIM(assoc_prog_type
-				)
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    lkp_sup_assoc_program_code_id IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(lkp_prog_description)) != LTRIM(RTRIM(assoc_prog_code_descript))
+	        or LTRIM(RTRIM(lkp_assoc_program_type)) != LTRIM(RTRIM(assoc_prog_type)),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -190,12 +175,10 @@ EXP_wbprg_values AS (
 	gtam_wbprg_stage_id,
 	prog_id,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(prog_id)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(prog_id
-	) AS prog_code,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(prog_id) AS prog_code,
 	prog_name,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(prog_name)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(prog_name
-	) AS prog_code_description
+	UDF_DEFAULT_VALUE_FOR_STRINGS(prog_name) AS prog_code_description
 	FROM SQ_gtam_wbprg_stage
 ),
 LKP_sup_association_program_code1 AS (
@@ -236,33 +219,26 @@ EXP_Detect_Changes1 AS (
 	-- 
 	-- --iif(isnull(lkp_sup_assoc_program_code_id),'NEW',IIF(
 	-- --LTRIM(RTRIM(lkp_prog_description)) != LTRIM(RTRIM(prog_description)) ,'UPDATE','NOCHANGE'))
-	IFF(lkp_sup_assoc_program_code_id IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(lkp_prog_description
-				)
-			) != LTRIM(RTRIM(assoc_prog_code_descript
-				)
-			) 
-			OR LTRIM(RTRIM(lkp_assoc_program_type
-				)
-			) != v_assoc_prog_type,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    lkp_sup_assoc_program_code_id IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(lkp_prog_description)) != LTRIM(RTRIM(assoc_prog_code_descript))
+	        or LTRIM(RTRIM(lkp_assoc_program_type)) != v_assoc_prog_type,
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -333,9 +309,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- assoc_prog_code = v_prev_prog_code,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
-	DECODE(TRUE,
-		assoc_prog_code = v_prev_prog_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    assoc_prog_code = v_prev_prog_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	assoc_prog_code AS v_prev_prog_code,

@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_STG_Update_PIF_42GJ_CMT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Update_PIF_42GJ_CMT",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nlkp_42gj_stage AS (\n\tSELECT\n\tpif_42gj_stage_id,\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module,\n\tipfc4j_loss_year,\n\tipfc4j_loss_month,\n\tipfc4j_loss_day,\n\tipfc4j_loss_occurence,\n\tipfc4j_loss_claimant,\n\tipfc4j_use_code\n\tFROM (\n\t\tSELECT \n\t\t\tpif_42gj_stage_id,\n\t\t\tpif_symbol,\n\t\t\tpif_policy_number,\n\t\t\tpif_module,\n\t\t\tipfc4j_loss_year,\n\t\t\tipfc4j_loss_month,\n\t\t\tipfc4j_loss_day,\n\t\t\tipfc4j_loss_occurence,\n\t\t\tipfc4j_loss_claimant,\n\t\t\tipfc4j_use_code\n\t\tFROM pif_42gj_stage\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY pif_symbol,pif_policy_number,pif_module,ipfc4j_loss_year,ipfc4j_loss_month,ipfc4j_loss_day,ipfc4j_loss_occurence,ipfc4j_loss_claimant,ipfc4j_use_code ORDER BY pif_42gj_stage_id) = 1\n),\nSQ_CLM_STG_Update_42GJ AS (\n\tSELECT pif_4578_stage.pif_symbol, pif_4578_stage.pif_policy_number, pif_4578_stage.pif_module, pif_4578_stage.loss_year, pif_4578_stage.loss_month, pif_4578_stage.loss_day, pif_4578_stage.loss_occurence, pif_4578_stage.loss_claimant, MAX(pif_4578_stage.logical_flag) , pif_4578_stage.source_system_id \r\n\tFROM\r\n\tpif_4578_stage \r\n\tGROUP BY pif_4578_stage.pif_symbol, pif_4578_stage.pif_policy_number, pif_4578_stage.pif_module, pif_4578_stage.loss_year, pif_4578_stage.loss_month, pif_4578_stage.loss_day, pif_4578_stage.loss_occurence, pif_4578_stage.loss_claimant, pif_4578_stage.source_system_id\n),\nEXP_CLM_STG_Update_42GJ AS (\n\tSELECT\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module,\n\tloss_year,\n\tloss_month,\n\tloss_day,\n\tloss_occurence,\n\tloss_claimant,\n\t-- *INF*: :LKP.LKP_42GJ_STAGE(pif_symbol,pif_policy_number,pif_module,loss_year,loss_month,loss_day,loss_occurence,loss_claimant,'CMT')\n\tLKP_42GJ_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant_CMT.pif_42gj_stage_id AS pif_42gj_stage_id,\n\tlogical_flag,\n\t-- *INF*: DECODE(logical_flag,\r\n\t-- '0','1',\r\n\t-- '-1','2',\r\n\t-- '-2','3',\r\n\t-- '-3','4')\n\tDECODE(\n\t    logical_flag,\n\t    '0', '1',\n\t    '-1', '2',\n\t    '-2', '3',\n\t    '-3', '4'\n\t) AS logical_flag_insert,\n\tsource_system_id\n\tFROM SQ_CLM_STG_Update_42GJ\n\tLEFT JOIN LKP_42GJ_STAGE LKP_42GJ_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant_CMT\n\tON LKP_42GJ_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant_CMT.pif_symbol = pif_symbol\n\tAND LKP_42GJ_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant_CMT.pif_policy_number = pif_policy_number\n\tAND LKP_42GJ_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant_CMT.pif_module = pif_module\n\tAND LKP_42GJ_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant_CMT.ipfc4j_loss_year = loss_year\n\tAND LKP_42GJ_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant_CMT.ipfc4j_loss_month = loss_month\n\tAND LKP_42GJ_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant_CMT.ipfc4j_loss_day = loss_day\n\tAND LKP_42GJ_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant_CMT.ipfc4j_loss_occurence = loss_occurence\n\tAND LKP_42GJ_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant_CMT.ipfc4j_loss_claimant = loss_claimant\n\tAND LKP_42GJ_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant_CMT.ipfc4j_use_code = 'CMT'\n\n),\nRTR_CLM_STG_Update AS (\n\tSELECT\n\tpif_42gj_stage_id,\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module,\n\tloss_year,\n\tloss_month,\n\tloss_day,\n\tloss_occurence,\n\tloss_claimant,\n\tlogical_flag,\n\tlogical_flag_insert,\n\tsource_system_id\n\tFROM EXP_CLM_STG_Update_42GJ\n),\nRTR_CLM_STG_Update_INSERT AS (SELECT * FROM RTR_CLM_STG_Update WHERE ISNULL(pif_42gj_stage_id)),\nRTR_CLM_STG_Update_UPDATE AS (SELECT * FROM RTR_CLM_STG_Update WHERE NOT ISNULL(pif_42gj_stage_id)),\nEXP_CLM_STG_Insert AS (\n\tSELECT\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module,\n\tloss_year,\n\tloss_month,\n\tloss_day,\n\tloss_occurence,\n\tloss_claimant,\n\t'CMT' AS ipfc4j_use_code,\n\tlogical_flag_insert AS logical_flag_op_insert,\n\tsysdate AS extract_date,\n\tsysdate AS as_of_date,\n\tsource_system_id\n\tFROM RTR_CLM_STG_Update_INSERT\n),\nUPD_CLM_STG_Insert AS (\n\tSELECT\n\tpif_symbol, \n\tpif_policy_number, \n\tpif_module, \n\tloss_year, \n\tloss_month, \n\tloss_day, \n\tloss_occurence, \n\tloss_claimant, \n\tipfc4j_use_code, \n\tlogical_flag_op_insert, \n\textract_date, \n\tas_of_date, \n\tsource_system_id\n\tFROM EXP_CLM_STG_Insert\n),\nPIF_42GJ_stage_Insert AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.PIF_42GJ_stage\n\t(pif_symbol, pif_policy_number, pif_module, ipfc4j_loss_year, ipfc4j_loss_month, ipfc4j_loss_day, ipfc4j_loss_occurence, ipfc4j_loss_claimant, ipfc4j_use_code, logical_flag, extract_date, as_of_date, source_system_id)\n\tSELECT \n\tPIF_SYMBOL, \n\tPIF_POLICY_NUMBER, \n\tPIF_MODULE, \n\tloss_year AS IPFC4J_LOSS_YEAR, \n\tloss_month AS IPFC4J_LOSS_MONTH, \n\tloss_day AS IPFC4J_LOSS_DAY, \n\tloss_occurence AS IPFC4J_LOSS_OCCURENCE, \n\tloss_claimant AS IPFC4J_LOSS_CLAIMANT, \n\tIPFC4J_USE_CODE, \n\tlogical_flag_op_insert AS LOGICAL_FLAG, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tSOURCE_SYSTEM_ID\n\tFROM UPD_CLM_STG_Insert\n),\nEXP_CLM_STG_Update AS (\n\tSELECT\n\tpif_42gj_stage_id AS pif_42gj_stage_id3,\n\tlogical_flag\n\tFROM RTR_CLM_STG_Update_UPDATE\n),\nUPD_CLM_STG_Update AS (\n\tSELECT\n\tpif_42gj_stage_id3, \n\tlogical_flag\n\tFROM EXP_CLM_STG_Update\n),\nPIF_42GJ_stage_Update AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.PIF_42GJ_stage AS T\n\tUSING UPD_CLM_STG_Update AS S\n\tON T.pif_42gj_stage_id = S.pif_42gj_stage_id3\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.logical_flag = S.logical_flag\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

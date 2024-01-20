@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCUUmbrellaCommercialAutoStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCCUUmbrellaCommerc_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCUUmbrellaCommercialAutoStaging AS (\n\tSELECT\n\t\tDCCUUmbrellaCommercialAutoStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tLineId,\n\t\tCU_UmbrellaCommercialAutoId,\n\t\tSessionId,\n\t\tId,\n\t\tDescription,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tExtraHeavyVehicleCount,\n\t\tExtraHeavyVehicleCountAudited,\n\t\tExtraHeavyVehicleCountEstimated,\n\t\tHeavyVehicleCount,\n\t\tHeavyVehicleCountAudited,\n\t\tHeavyVehicleCountEstimated,\n\t\tLightVehicleCount,\n\t\tLightVehicleCountAudited,\n\t\tLightVehicleCountEstimated,\n\t\tMediumVehicleCount,\n\t\tMediumVehicleCountAudited,\n\t\tMediumVehicleCountEstimated,\n\t\tPolicyNumber,\n\t\tPolicyType,\n\t\tPrivatePassengerVehicleCount,\n\t\tPrivatePassengerVehicleCountAudited,\n\t\tPrivatePassengerVehicleCountEstimated,\n\t\tTerrorismCA,\n\t\tTerrorismSelectCA2386,\n\t\tTerrorismSelectCA2387\n\tFROM DCCUUmbrellaCommercialAutoStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCCUUmbrellaCommercialAutoStagingId,\n\tExtractDate,\n\tSourceSystemId,\n\tLineId,\n\tCU_UmbrellaCommercialAutoId,\n\tSessionId,\n\tId,\n\tDescription,\n\tEffectiveDate,\n\tExpirationDate,\n\tExtraHeavyVehicleCount,\n\tExtraHeavyVehicleCountAudited,\n\tExtraHeavyVehicleCountEstimated,\n\tHeavyVehicleCount,\n\tHeavyVehicleCountAudited,\n\tHeavyVehicleCountEstimated,\n\tLightVehicleCount,\n\tLightVehicleCountAudited,\n\tLightVehicleCountEstimated,\n\tMediumVehicleCount,\n\tMediumVehicleCountAudited,\n\tMediumVehicleCountEstimated,\n\tPolicyNumber,\n\tPolicyType,\n\tPrivatePassengerVehicleCount,\n\tPrivatePassengerVehicleCountAudited,\n\tPrivatePassengerVehicleCountEstimated,\n\tTerrorismCA,\n\tTerrorismSelectCA2386,\n\tTerrorismSelectCA2387,\n\t-- *INF*: DECODE(TerrorismCA, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    TerrorismCA,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TerrorismCA,\n\t-- *INF*: DECODE(TerrorismSelectCA2386, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    TerrorismSelectCA2386,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TerrorismSelectCA2386,\n\t-- *INF*: DECODE(TerrorismSelectCA2387, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    TerrorismSelectCA2387,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TerrorismSelectCA2387,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCUUmbrellaCommercialAutoStaging\n),\nArchDCCUUmbrellaCommercialAutoStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCUUmbrellaCommercialAutoStaging\n\t(ExtractDate, SourceSystemId, AuditId, LineId, CU_UmbrellaCommercialAutoId, SessionId, Id, Description, EffectiveDate, ExpirationDate, ExtraHeavyVehicleCount, ExtraHeavyVehicleCountAudited, ExtraHeavyVehicleCountEstimated, HeavyVehicleCount, HeavyVehicleCountAudited, HeavyVehicleCountEstimated, LightVehicleCount, LightVehicleCountAudited, LightVehicleCountEstimated, MediumVehicleCount, MediumVehicleCountAudited, MediumVehicleCountEstimated, PolicyNumber, PolicyType, PrivatePassengerVehicleCount, PrivatePassengerVehicleCountAudited, PrivatePassengerVehicleCountEstimated, TerrorismCA, TerrorismSelectCA2386, TerrorismSelectCA2387)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tLINEID, \n\tCU_UMBRELLACOMMERCIALAUTOID, \n\tSESSIONID, \n\tID, \n\tDESCRIPTION, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tEXTRAHEAVYVEHICLECOUNT, \n\tEXTRAHEAVYVEHICLECOUNTAUDITED, \n\tEXTRAHEAVYVEHICLECOUNTESTIMATED, \n\tHEAVYVEHICLECOUNT, \n\tHEAVYVEHICLECOUNTAUDITED, \n\tHEAVYVEHICLECOUNTESTIMATED, \n\tLIGHTVEHICLECOUNT, \n\tLIGHTVEHICLECOUNTAUDITED, \n\tLIGHTVEHICLECOUNTESTIMATED, \n\tMEDIUMVEHICLECOUNT, \n\tMEDIUMVEHICLECOUNTAUDITED, \n\tMEDIUMVEHICLECOUNTESTIMATED, \n\tPOLICYNUMBER, \n\tPOLICYTYPE, \n\tPRIVATEPASSENGERVEHICLECOUNT, \n\tPRIVATEPASSENGERVEHICLECOUNTAUDITED, \n\tPRIVATEPASSENGERVEHICLECOUNTESTIMATED, \n\to_TerrorismCA AS TERRORISMCA, \n\to_TerrorismSelectCA2386 AS TERRORISMSELECTCA2386, \n\to_TerrorismSelectCA2387 AS TERRORISMSELECTCA2387\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_SUP_BENEFIT_TYPE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_SUP_BENEFIT_TYPE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SUP_BENEFIT_TYPE_STAGE AS (\n\tSELECT\n\t\tsup_benefit_type_id AS SUP_BENEFIT_TYPE_ID,\n\t\tcode AS CODE,\n\t\tdescript AS DESCRIPT,\n\t\tmodified_date AS MODIFIED_DATE,\n\t\tmodified_user_id AS MODIFIED_USER_ID,\n\t\tfin_type_cd,\n\t\tcause_of_loss,\n\t\tfilter_type,\n\t\textract_date AS EXTRACT_DATE,\n\t\tas_of_date AS AS_OF_DATE,\n\t\trecord_count AS RECORD_COUNT,\n\t\tsource_system_id AS SOURCE_SYSTEM_ID\n\tFROM SUP_BENEFIT_TYPE_STAGE\n),\nEXP_SUP_BENEFIT_TYPE_STAGE AS (\n\tSELECT\n\tSUP_BENEFIT_TYPE_ID,\n\tCODE,\n\tDESCRIPT,\n\tMODIFIED_DATE,\n\tMODIFIED_USER_ID,\n\tfin_type_cd,\n\tcause_of_loss,\n\tfilter_type,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_SUP_BENEFIT_TYPE_STAGE\n),\nARCH_SUP_BENEFIT_TYPE_STAGE AS (\n\tINSERT INTO ARCH_SUP_BENEFIT_TYPE_STAGE\n\t(sup_benefit_type_id, code, descript, modified_date, modified_user_id, fin_type_cd, cause_of_loss, filter_type, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tSUP_BENEFIT_TYPE_ID AS SUP_BENEFIT_TYPE_ID, \n\tCODE AS CODE, \n\tDESCRIPT AS DESCRIPT, \n\tMODIFIED_DATE AS MODIFIED_DATE, \n\tMODIFIED_USER_ID AS MODIFIED_USER_ID, \n\tFIN_TYPE_CD, \n\tCAUSE_OF_LOSS, \n\tFILTER_TYPE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_SUP_BENEFIT_TYPE_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

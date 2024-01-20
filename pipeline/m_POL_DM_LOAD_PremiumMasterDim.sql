@@ -43,8 +43,7 @@ EXP_Source AS (
 	PremiumMasterRateDeparture,
 	PremiumMasterBureauInceptionDate,
 	-- *INF*: TO_CHAR(PremiumMasterBureauInceptionDate,'YYYY')
-	TO_CHAR(PremiumMasterBureauInceptionDate, 'YYYY'
-	) AS PremiumMasterBureauInceptionDate_out,
+	TO_CHAR(PremiumMasterBureauInceptionDate, 'YYYY') AS PremiumMasterBureauInceptionDate_out,
 	PremiumMasterCountersignAgencyType,
 	PremiumMasterCountersignAgencyCode,
 	PremiumMasterCountersignAgencyState,
@@ -64,14 +63,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterPolicyExpirationYear),'N/A',
 		-- LENGTH(PremiumMasterPolicyExpirationYear)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterPolicyExpirationYear)))
-		DECODE(TRUE,
-			PremiumMasterPolicyExpirationYear IS NULL, 'N/A',
-			LENGTH(PremiumMasterPolicyExpirationYear)>0 AND TRIM(PremiumMasterPolicyExpirationYear)='', 'N/A',
-			LENGTH(PremiumMasterPolicyExpirationYear
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterPolicyExpirationYear
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterPolicyExpirationYear IS NULL, 'N/A',
+		    LENGTH(PremiumMasterPolicyExpirationYear)>0 AND TRIM(PremiumMasterPolicyExpirationYear)='', 'N/A',
+		    LENGTH(PremiumMasterPolicyExpirationYear) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterPolicyExpirationYear))
 		) AS v_PremiumMasterPolicyExpirationYear,
 		v_PremiumMasterPolicyExpirationYear AS PremiumMasterPolicyExpirationYear_out,
 		PremiumMasterPolicyTerm,
@@ -80,14 +77,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterPolicyTerm),'N/A',
 		-- LENGTH(PremiumMasterPolicyTerm)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterPolicyTerm)))
-		DECODE(TRUE,
-			PremiumMasterPolicyTerm IS NULL, 'N/A',
-			LENGTH(PremiumMasterPolicyTerm)>0 AND TRIM(PremiumMasterPolicyTerm)='', 'N/A',
-			LENGTH(PremiumMasterPolicyTerm
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterPolicyTerm
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterPolicyTerm IS NULL, 'N/A',
+		    LENGTH(PremiumMasterPolicyTerm)>0 AND TRIM(PremiumMasterPolicyTerm)='', 'N/A',
+		    LENGTH(PremiumMasterPolicyTerm) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterPolicyTerm))
 		) AS v_PremiumMasterPolicyTerm,
 		v_PremiumMasterPolicyTerm AS PremiumMasterPolicyTerm_out,
 		PremiumMasterBureauPolicyType,
@@ -96,14 +91,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterBureauPolicyType),'N/A',
 		-- LENGTH(PremiumMasterBureauPolicyType)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterBureauPolicyType)))
-		DECODE(TRUE,
-			PremiumMasterBureauPolicyType IS NULL, 'N/A',
-			LENGTH(PremiumMasterBureauPolicyType)>0 AND TRIM(PremiumMasterBureauPolicyType)='', 'N/A',
-			LENGTH(PremiumMasterBureauPolicyType
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterBureauPolicyType
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterBureauPolicyType IS NULL, 'N/A',
+		    LENGTH(PremiumMasterBureauPolicyType)>0 AND TRIM(PremiumMasterBureauPolicyType)='', 'N/A',
+		    LENGTH(PremiumMasterBureauPolicyType) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterBureauPolicyType))
 		) AS v_PremiumMasterBureauPolicyType,
 		v_PremiumMasterBureauPolicyType AS PremiumMasterBureauPolicyType_out,
 		PremiumMasterAuditCode,
@@ -112,14 +105,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterAuditCode),'N/A',
 		-- LENGTH(PremiumMasterAuditCode)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterAuditCode)))
-		DECODE(TRUE,
-			PremiumMasterAuditCode IS NULL, 'N/A',
-			LENGTH(PremiumMasterAuditCode)>0 AND TRIM(PremiumMasterAuditCode)='', 'N/A',
-			LENGTH(PremiumMasterAuditCode
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterAuditCode
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterAuditCode IS NULL, 'N/A',
+		    LENGTH(PremiumMasterAuditCode)>0 AND TRIM(PremiumMasterAuditCode)='', 'N/A',
+		    LENGTH(PremiumMasterAuditCode) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterAuditCode))
 		) AS v_PremiumMasterAuditCode,
 		v_PremiumMasterAuditCode AS PremiumMasterAuditCode_out,
 		PremiumMasterTypeBureauCode,
@@ -128,14 +119,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterTypeBureauCode),'N/A',
 		-- LENGTH(PremiumMasterTypeBureauCode)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterTypeBureauCode)))
-		DECODE(TRUE,
-			PremiumMasterTypeBureauCode IS NULL, 'N/A',
-			LENGTH(PremiumMasterTypeBureauCode)>0 AND TRIM(PremiumMasterTypeBureauCode)='', 'N/A',
-			LENGTH(PremiumMasterTypeBureauCode
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterTypeBureauCode
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterTypeBureauCode IS NULL, 'N/A',
+		    LENGTH(PremiumMasterTypeBureauCode)>0 AND TRIM(PremiumMasterTypeBureauCode)='', 'N/A',
+		    LENGTH(PremiumMasterTypeBureauCode) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterTypeBureauCode))
 		) AS v_PremiumMasterTypeBureauCode,
 		v_PremiumMasterTypeBureauCode AS PremiumMasterTypeBureauCode_out,
 		PremiumMasterBureauStatisticalLine,
@@ -144,14 +133,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterBureauStatisticalLine),'N/A',
 		-- LENGTH(PremiumMasterBureauStatisticalLine)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterBureauStatisticalLine)))
-		DECODE(TRUE,
-			PremiumMasterBureauStatisticalLine IS NULL, 'N/A',
-			LENGTH(PremiumMasterBureauStatisticalLine)>0 AND TRIM(PremiumMasterBureauStatisticalLine)='', 'N/A',
-			LENGTH(PremiumMasterBureauStatisticalLine
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterBureauStatisticalLine
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterBureauStatisticalLine IS NULL, 'N/A',
+		    LENGTH(PremiumMasterBureauStatisticalLine)>0 AND TRIM(PremiumMasterBureauStatisticalLine)='', 'N/A',
+		    LENGTH(PremiumMasterBureauStatisticalLine) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterBureauStatisticalLine))
 		) AS v_PremiumMasterBureauStatisticalLine,
 		v_PremiumMasterBureauStatisticalLine AS PremiumMasterBureauStatisticalLine_out,
 		PremiumMasterProductLine,
@@ -160,14 +147,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterProductLine),'N/A',
 		-- LENGTH(PremiumMasterProductLine)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterProductLine)))
-		DECODE(TRUE,
-			PremiumMasterProductLine IS NULL, 'N/A',
-			LENGTH(PremiumMasterProductLine)>0 AND TRIM(PremiumMasterProductLine)='', 'N/A',
-			LENGTH(PremiumMasterProductLine
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterProductLine
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterProductLine IS NULL, 'N/A',
+		    LENGTH(PremiumMasterProductLine)>0 AND TRIM(PremiumMasterProductLine)='', 'N/A',
+		    LENGTH(PremiumMasterProductLine) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterProductLine))
 		) AS v_PremiumMasterProductLine,
 		v_PremiumMasterProductLine AS PremiumMasterProductLine_out,
 		PremiumMasterClassCode,
@@ -176,14 +161,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterClassCode),'N/A',
 		-- LENGTH(PremiumMasterClassCode)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterClassCode)))
-		DECODE(TRUE,
-			PremiumMasterClassCode IS NULL, 'N/A',
-			LENGTH(PremiumMasterClassCode)>0 AND TRIM(PremiumMasterClassCode)='', 'N/A',
-			LENGTH(PremiumMasterClassCode
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterClassCode
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterClassCode IS NULL, 'N/A',
+		    LENGTH(PremiumMasterClassCode)>0 AND TRIM(PremiumMasterClassCode)='', 'N/A',
+		    LENGTH(PremiumMasterClassCode) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterClassCode))
 		) AS v_PremiumMasterClassCode,
 		v_PremiumMasterClassCode AS PremiumMasterClassCode_out,
 		PremiumMasterExposure,
@@ -193,14 +176,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterSubLine),'N/A',
 		-- LENGTH(PremiumMasterSubLine)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterSubLine)))
-		DECODE(TRUE,
-			PremiumMasterSubLine IS NULL, 'N/A',
-			LENGTH(PremiumMasterSubLine)>0 AND TRIM(PremiumMasterSubLine)='', 'N/A',
-			LENGTH(PremiumMasterSubLine
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterSubLine
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterSubLine IS NULL, 'N/A',
+		    LENGTH(PremiumMasterSubLine)>0 AND TRIM(PremiumMasterSubLine)='', 'N/A',
+		    LENGTH(PremiumMasterSubLine) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterSubLine))
 		) AS v_PremiumMasterSubLine,
 		v_PremiumMasterSubLine AS PremiumMasterSubLine_out,
 		PremiumMasterStatisticalCode1,
@@ -209,23 +190,22 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterStatisticalCode1),'N/A',
 		-- LENGTH(PremiumMasterStatisticalCode1)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterStatisticalCode1)))
-		DECODE(TRUE,
-			PremiumMasterStatisticalCode1 IS NULL, 'N/A',
-			LENGTH(PremiumMasterStatisticalCode1)>0 AND TRIM(PremiumMasterStatisticalCode1)='', 'N/A',
-			LENGTH(PremiumMasterStatisticalCode1
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterStatisticalCode1
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterStatisticalCode1 IS NULL, 'N/A',
+		    LENGTH(PremiumMasterStatisticalCode1)>0 AND TRIM(PremiumMasterStatisticalCode1)='', 'N/A',
+		    LENGTH(PremiumMasterStatisticalCode1) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterStatisticalCode1))
 		) AS v_PremiumMasterStatisticalCode1,
 		-- *INF*: IIF(ISNULL(PremiumMasterStatisticalCode1) OR IS_SPACES(PremiumMasterStatisticalCode1) OR LENGTH(PremiumMasterStatisticalCode1)=0,'N/A',
 		-- PremiumMasterStatisticalCode1)
-		IFF(PremiumMasterStatisticalCode1 IS NULL 
-			OR LENGTH(PremiumMasterStatisticalCode1)>0 AND TRIM(PremiumMasterStatisticalCode1)='' 
-			OR LENGTH(PremiumMasterStatisticalCode1
-			) = 0,
-			'N/A',
-			PremiumMasterStatisticalCode1
+		IFF(
+		    PremiumMasterStatisticalCode1 IS NULL
+		    or LENGTH(PremiumMasterStatisticalCode1)>0
+		    and TRIM(PremiumMasterStatisticalCode1)=''
+		    or LENGTH(PremiumMasterStatisticalCode1) = 0,
+		    'N/A',
+		    PremiumMasterStatisticalCode1
 		) AS PremiumMasterStatisticalCode1_out,
 		PremiumMasterStatisticalCode2,
 		-- *INF*: DECODE(TRUE,
@@ -233,23 +213,22 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterStatisticalCode2),'N/A',
 		-- LENGTH(PremiumMasterStatisticalCode2)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterStatisticalCode2)))
-		DECODE(TRUE,
-			PremiumMasterStatisticalCode2 IS NULL, 'N/A',
-			LENGTH(PremiumMasterStatisticalCode2)>0 AND TRIM(PremiumMasterStatisticalCode2)='', 'N/A',
-			LENGTH(PremiumMasterStatisticalCode2
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterStatisticalCode2
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterStatisticalCode2 IS NULL, 'N/A',
+		    LENGTH(PremiumMasterStatisticalCode2)>0 AND TRIM(PremiumMasterStatisticalCode2)='', 'N/A',
+		    LENGTH(PremiumMasterStatisticalCode2) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterStatisticalCode2))
 		) AS v_PremiumMasterStatisticalCode2,
 		-- *INF*: IIF(ISNULL(PremiumMasterStatisticalCode2) OR IS_SPACES(PremiumMasterStatisticalCode2) OR LENGTH(PremiumMasterStatisticalCode2)=0,'N/A',
 		-- PremiumMasterStatisticalCode2)
-		IFF(PremiumMasterStatisticalCode2 IS NULL 
-			OR LENGTH(PremiumMasterStatisticalCode2)>0 AND TRIM(PremiumMasterStatisticalCode2)='' 
-			OR LENGTH(PremiumMasterStatisticalCode2
-			) = 0,
-			'N/A',
-			PremiumMasterStatisticalCode2
+		IFF(
+		    PremiumMasterStatisticalCode2 IS NULL
+		    or LENGTH(PremiumMasterStatisticalCode2)>0
+		    and TRIM(PremiumMasterStatisticalCode2)=''
+		    or LENGTH(PremiumMasterStatisticalCode2) = 0,
+		    'N/A',
+		    PremiumMasterStatisticalCode2
 		) AS PremiumMasterStatisticalCode2_out,
 		PremiumMasterStatisticalCode3,
 		-- *INF*: DECODE(TRUE,
@@ -257,23 +236,22 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterStatisticalCode3),'N/A',
 		-- LENGTH(PremiumMasterStatisticalCode3)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterStatisticalCode3)))
-		DECODE(TRUE,
-			PremiumMasterStatisticalCode3 IS NULL, 'N/A',
-			LENGTH(PremiumMasterStatisticalCode3)>0 AND TRIM(PremiumMasterStatisticalCode3)='', 'N/A',
-			LENGTH(PremiumMasterStatisticalCode3
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterStatisticalCode3
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterStatisticalCode3 IS NULL, 'N/A',
+		    LENGTH(PremiumMasterStatisticalCode3)>0 AND TRIM(PremiumMasterStatisticalCode3)='', 'N/A',
+		    LENGTH(PremiumMasterStatisticalCode3) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterStatisticalCode3))
 		) AS v_PremiumMasterStatisticalCode3,
 		-- *INF*: IIF(ISNULL(PremiumMasterStatisticalCode3) OR IS_SPACES(PremiumMasterStatisticalCode3) OR LENGTH(PremiumMasterStatisticalCode3)=0,'N/A',
 		-- PremiumMasterStatisticalCode3)
-		IFF(PremiumMasterStatisticalCode3 IS NULL 
-			OR LENGTH(PremiumMasterStatisticalCode3)>0 AND TRIM(PremiumMasterStatisticalCode3)='' 
-			OR LENGTH(PremiumMasterStatisticalCode3
-			) = 0,
-			'N/A',
-			PremiumMasterStatisticalCode3
+		IFF(
+		    PremiumMasterStatisticalCode3 IS NULL
+		    or LENGTH(PremiumMasterStatisticalCode3)>0
+		    and TRIM(PremiumMasterStatisticalCode3)=''
+		    or LENGTH(PremiumMasterStatisticalCode3) = 0,
+		    'N/A',
+		    PremiumMasterStatisticalCode3
 		) AS PremiumMasterStatisticalCode3_out,
 		PremiumMasterRateModifier,
 		-- *INF*: DECODE(TRUE,
@@ -281,14 +259,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterRateModifier),'N/A',
 		-- LENGTH(PremiumMasterRateModifier)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterRateModifier)))
-		DECODE(TRUE,
-			PremiumMasterRateModifier IS NULL, 'N/A',
-			LENGTH(PremiumMasterRateModifier)>0 AND TRIM(PremiumMasterRateModifier)='', 'N/A',
-			LENGTH(PremiumMasterRateModifier
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterRateModifier
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterRateModifier IS NULL, 'N/A',
+		    LENGTH(PremiumMasterRateModifier)>0 AND TRIM(PremiumMasterRateModifier)='', 'N/A',
+		    LENGTH(PremiumMasterRateModifier) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterRateModifier))
 		) AS v_PremiumMasterRateModifier,
 		v_PremiumMasterRateModifier AS PremiumMasterRateModifier_out,
 		PremiumMasterRateDeparture,
@@ -297,14 +273,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterRateDeparture),'N/A',
 		-- LENGTH(PremiumMasterRateDeparture)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterRateDeparture)))
-		DECODE(TRUE,
-			PremiumMasterRateDeparture IS NULL, 'N/A',
-			LENGTH(PremiumMasterRateDeparture)>0 AND TRIM(PremiumMasterRateDeparture)='', 'N/A',
-			LENGTH(PremiumMasterRateDeparture
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterRateDeparture
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterRateDeparture IS NULL, 'N/A',
+		    LENGTH(PremiumMasterRateDeparture)>0 AND TRIM(PremiumMasterRateDeparture)='', 'N/A',
+		    LENGTH(PremiumMasterRateDeparture) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterRateDeparture))
 		) AS v_PremiumMasterRateDeparture,
 		v_PremiumMasterRateDeparture AS PremiumMasterRateDeparture_out,
 		PremiumMasterBureauInceptionDate,
@@ -313,14 +287,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterBureauInceptionDate),'N/A',
 		-- LENGTH(PremiumMasterBureauInceptionDate)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterBureauInceptionDate)))
-		DECODE(TRUE,
-			PremiumMasterBureauInceptionDate IS NULL, 'N/A',
-			LENGTH(PremiumMasterBureauInceptionDate)>0 AND TRIM(PremiumMasterBureauInceptionDate)='', 'N/A',
-			LENGTH(PremiumMasterBureauInceptionDate
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterBureauInceptionDate
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterBureauInceptionDate IS NULL, 'N/A',
+		    LENGTH(PremiumMasterBureauInceptionDate)>0 AND TRIM(PremiumMasterBureauInceptionDate)='', 'N/A',
+		    LENGTH(PremiumMasterBureauInceptionDate) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterBureauInceptionDate))
 		) AS v_PremiumMasterBureauInceptionDate,
 		v_PremiumMasterBureauInceptionDate AS PremiumMasterBureauInceptionDate_out,
 		PremiumMasterCountersignAgencyType,
@@ -329,14 +301,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterCountersignAgencyType),'N/A',
 		-- LENGTH(PremiumMasterCountersignAgencyType)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterCountersignAgencyType)))
-		DECODE(TRUE,
-			PremiumMasterCountersignAgencyType IS NULL, 'N/A',
-			LENGTH(PremiumMasterCountersignAgencyType)>0 AND TRIM(PremiumMasterCountersignAgencyType)='', 'N/A',
-			LENGTH(PremiumMasterCountersignAgencyType
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterCountersignAgencyType
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterCountersignAgencyType IS NULL, 'N/A',
+		    LENGTH(PremiumMasterCountersignAgencyType)>0 AND TRIM(PremiumMasterCountersignAgencyType)='', 'N/A',
+		    LENGTH(PremiumMasterCountersignAgencyType) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterCountersignAgencyType))
 		) AS v_PremiumMasterCountersignAgencyType,
 		v_PremiumMasterCountersignAgencyType AS PremiumMasterCountersignAgencyType_out,
 		PremiumMasterCountersignAgencyCode,
@@ -345,14 +315,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterCountersignAgencyCode),'N/A',
 		-- LENGTH(PremiumMasterCountersignAgencyCode)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterCountersignAgencyCode)))
-		DECODE(TRUE,
-			PremiumMasterCountersignAgencyCode IS NULL, 'N/A',
-			LENGTH(PremiumMasterCountersignAgencyCode)>0 AND TRIM(PremiumMasterCountersignAgencyCode)='', 'N/A',
-			LENGTH(PremiumMasterCountersignAgencyCode
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterCountersignAgencyCode
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterCountersignAgencyCode IS NULL, 'N/A',
+		    LENGTH(PremiumMasterCountersignAgencyCode)>0 AND TRIM(PremiumMasterCountersignAgencyCode)='', 'N/A',
+		    LENGTH(PremiumMasterCountersignAgencyCode) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterCountersignAgencyCode))
 		) AS v_PremiumMasterCountersignAgencyCode,
 		v_PremiumMasterCountersignAgencyCode AS PremiumMasterCountersignAgencyCode_out,
 		PremiumMasterCountersignAgencyState,
@@ -361,14 +329,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterCountersignAgencyState),'N/A',
 		-- LENGTH(PremiumMasterCountersignAgencyState)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterCountersignAgencyState)))
-		DECODE(TRUE,
-			PremiumMasterCountersignAgencyState IS NULL, 'N/A',
-			LENGTH(PremiumMasterCountersignAgencyState)>0 AND TRIM(PremiumMasterCountersignAgencyState)='', 'N/A',
-			LENGTH(PremiumMasterCountersignAgencyState
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterCountersignAgencyState
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterCountersignAgencyState IS NULL, 'N/A',
+		    LENGTH(PremiumMasterCountersignAgencyState)>0 AND TRIM(PremiumMasterCountersignAgencyState)='', 'N/A',
+		    LENGTH(PremiumMasterCountersignAgencyState) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterCountersignAgencyState))
 		) AS v_PremiumMasterCountersignAgencyState,
 		v_PremiumMasterCountersignAgencyState AS PremiumMasterCountersignAgencyState_out,
 		PremiumMasterCountersignAgencyRate,
@@ -377,14 +343,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterCountersignAgencyRate),'N/A',
 		-- LENGTH(PremiumMasterCountersignAgencyRate)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterCountersignAgencyRate)))
-		DECODE(TRUE,
-			PremiumMasterCountersignAgencyRate IS NULL, 'N/A',
-			LENGTH(PremiumMasterCountersignAgencyRate)>0 AND TRIM(PremiumMasterCountersignAgencyRate)='', 'N/A',
-			LENGTH(PremiumMasterCountersignAgencyRate
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterCountersignAgencyRate
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterCountersignAgencyRate IS NULL, 'N/A',
+		    LENGTH(PremiumMasterCountersignAgencyRate)>0 AND TRIM(PremiumMasterCountersignAgencyRate)='', 'N/A',
+		    LENGTH(PremiumMasterCountersignAgencyRate) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterCountersignAgencyRate))
 		) AS v_PremiumMasterCountersignAgencyRate,
 		v_PremiumMasterCountersignAgencyRate AS PremiumMasterCountersignAgencyRate_out,
 		PremiumMasterRenewalIndicator,
@@ -393,14 +357,12 @@ mplt_PremiumMasterDimID AS (WITH
 		-- IS_SPACES(PremiumMasterRenewalIndicator),'N/A',
 		-- LENGTH(PremiumMasterRenewalIndicator)=0,'N/A',
 		-- LTRIM(RTRIM(PremiumMasterRenewalIndicator)))
-		DECODE(TRUE,
-			PremiumMasterRenewalIndicator IS NULL, 'N/A',
-			LENGTH(PremiumMasterRenewalIndicator)>0 AND TRIM(PremiumMasterRenewalIndicator)='', 'N/A',
-			LENGTH(PremiumMasterRenewalIndicator
-			) = 0, 'N/A',
-			LTRIM(RTRIM(PremiumMasterRenewalIndicator
-				)
-			)
+		DECODE(
+		    TRUE,
+		    PremiumMasterRenewalIndicator IS NULL, 'N/A',
+		    LENGTH(PremiumMasterRenewalIndicator)>0 AND TRIM(PremiumMasterRenewalIndicator)='', 'N/A',
+		    LENGTH(PremiumMasterRenewalIndicator) = 0, 'N/A',
+		    LTRIM(RTRIM(PremiumMasterRenewalIndicator))
 		) AS v_PremiumMasterRenewalIndicator,
 		v_PremiumMasterRenewalIndicator AS PremiumMasterRenewalIndicator_out,
 		-- *INF*: MD5(
@@ -427,28 +389,7 @@ mplt_PremiumMasterDimID AS (WITH
 		-- TO_CHAR(v_PremiumMasterRenewalIndicator) 
 		-- 
 		-- )
-		MD5(TO_CHAR(v_PremiumMasterPolicyExpirationYear
-			) || TO_CHAR(v_PremiumMasterPolicyTerm
-			) || TO_CHAR(v_PremiumMasterBureauPolicyType
-			) || TO_CHAR(v_PremiumMasterAuditCode
-			) || TO_CHAR(v_PremiumMasterTypeBureauCode
-			) || TO_CHAR(v_PremiumMasterBureauStatisticalLine
-			) || TO_CHAR(v_PremiumMasterProductLine
-			) || TO_CHAR(v_PremiumMasterClassCode
-			) || TO_CHAR(v_PremiumMasterSubLine
-			) || TO_CHAR(v_PremiumMasterStatisticalCode1
-			) || TO_CHAR(v_PremiumMasterStatisticalCode2
-			) || TO_CHAR(v_PremiumMasterStatisticalCode3
-			) || TO_CHAR(v_PremiumMasterRateModifier
-			) || TO_CHAR(v_PremiumMasterRateDeparture
-			) || TO_CHAR(v_PremiumMasterBureauInceptionDate
-			) || TO_CHAR(v_PremiumMasterCountersignAgencyType
-			) || TO_CHAR(v_PremiumMasterCountersignAgencyCode
-			) || TO_CHAR(v_PremiumMasterCountersignAgencyState
-			) || TO_CHAR(v_PremiumMasterCountersignAgencyRate
-			) || TO_CHAR(v_PremiumMasterRenewalIndicator
-			)
-		) AS v_PremiumMasterDimHashkey,
+		MD5(TO_CHAR(v_PremiumMasterPolicyExpirationYear) || TO_CHAR(v_PremiumMasterPolicyTerm) || TO_CHAR(v_PremiumMasterBureauPolicyType) || TO_CHAR(v_PremiumMasterAuditCode) || TO_CHAR(v_PremiumMasterTypeBureauCode) || TO_CHAR(v_PremiumMasterBureauStatisticalLine) || TO_CHAR(v_PremiumMasterProductLine) || TO_CHAR(v_PremiumMasterClassCode) || TO_CHAR(v_PremiumMasterSubLine) || TO_CHAR(v_PremiumMasterStatisticalCode1) || TO_CHAR(v_PremiumMasterStatisticalCode2) || TO_CHAR(v_PremiumMasterStatisticalCode3) || TO_CHAR(v_PremiumMasterRateModifier) || TO_CHAR(v_PremiumMasterRateDeparture) || TO_CHAR(v_PremiumMasterBureauInceptionDate) || TO_CHAR(v_PremiumMasterCountersignAgencyType) || TO_CHAR(v_PremiumMasterCountersignAgencyCode) || TO_CHAR(v_PremiumMasterCountersignAgencyState) || TO_CHAR(v_PremiumMasterCountersignAgencyRate) || TO_CHAR(v_PremiumMasterRenewalIndicator)) AS v_PremiumMasterDimHashkey,
 		v_PremiumMasterDimHashkey AS PremiumMasterDimHashkey_out
 		FROM INPUT
 	),
@@ -616,11 +557,9 @@ EXP_Target AS (
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS EffectiveDate,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	PremiumMasterDimHashkey,

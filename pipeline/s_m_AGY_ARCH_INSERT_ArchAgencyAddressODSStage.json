@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchAgencyAddressODSStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchAgencyAddressODSStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AgencyAddressODSStage AS (\n\tSELECT\n\t\tAgencyAddressODSStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tAgencyCode,\n\t\tAddressType,\n\t\tAddressLine1,\n\t\tAddressLine2,\n\t\tAddressLine3,\n\t\tCity,\n\t\tZipCode,\n\t\tCountyCode,\n\t\tCountyName,\n\t\tStateAbbreviation,\n\t\tCountryAbbreviation,\n\t\tLatitude,\n\t\tLongitude,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID\n\tFROM AgencyAddressODSStage\n),\nLKP_ExistingArchive AS (\n\tSELECT\n\tHashKey,\n\tin_AgencyID,\n\tin_AddressType,\n\tAgencyID,\n\tAddressType,\n\tModifiedDate\n\tFROM (\n\t\tselect\ta.ModifiedDate as ModifiedDate,\r\n\t\t\t\ta.HashKey as HashKey,\r\n\t\t\t\ta.AgencyID as AgencyID, \r\n\t\t\t\ta.AddressType as AddressType\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchAgencyAddressODSStage a\r\n\t\tinner join (\r\n\t\t\t\t\tselect AgencyID, AddressType, max(ModifiedDate) as ModifiedDate\r\n\t\t\t\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchAgencyAddressODSStage \r\n\t\t\t\t\tgroup by AgencyID, AddressType) b\r\n\t\ton a.AgencyID = b.AgencyID\r\n\t\tand a.AddressType = b.AddressType\r\n\t\tand a.ModifiedDate = b.ModifiedDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyID,AddressType ORDER BY HashKey) = 1\n),\nEXP_AddAuditID AS (\n\tSELECT\n\tSQ_AgencyAddressODSStage.AgencyAddressODSStageID,\n\tSQ_AgencyAddressODSStage.AgencyODSSourceSystemID,\n\tSQ_AgencyAddressODSStage.HashKey,\n\tSQ_AgencyAddressODSStage.ModifiedUserID,\n\tSQ_AgencyAddressODSStage.ModifiedDate,\n\tSQ_AgencyAddressODSStage.AgencyID,\n\tSQ_AgencyAddressODSStage.AgencyCode,\n\tSQ_AgencyAddressODSStage.AddressType,\n\tSQ_AgencyAddressODSStage.AddressLine1,\n\tSQ_AgencyAddressODSStage.AddressLine2,\n\tSQ_AgencyAddressODSStage.AddressLine3,\n\tSQ_AgencyAddressODSStage.City,\n\tSQ_AgencyAddressODSStage.ZipCode,\n\tSQ_AgencyAddressODSStage.CountyCode,\n\tSQ_AgencyAddressODSStage.CountyName,\n\tSQ_AgencyAddressODSStage.StateAbbreviation,\n\tSQ_AgencyAddressODSStage.CountryAbbreviation,\n\tSQ_AgencyAddressODSStage.Latitude,\n\tSQ_AgencyAddressODSStage.Longitude,\n\tSQ_AgencyAddressODSStage.ExtractDate,\n\tSQ_AgencyAddressODSStage.AsOfDate,\n\tSQ_AgencyAddressODSStage.RecordCount,\n\tSQ_AgencyAddressODSStage.SourceSystemID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\tLKP_ExistingArchive.HashKey AS lkp_HashKey,\n\t-- *INF*: Decode(true,\r\n\t-- HashKey = lkp_HashKey, 'IGNORE',\r\n\t-- IsNull(lkp_HashKey), 'INSERT',\r\n\t-- 'UPDATE')\n\tDecode(\n\t    true,\n\t    HashKey = lkp_HashKey, 'IGNORE',\n\t    lkp_HashKey IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag\n\tFROM SQ_AgencyAddressODSStage\n\tLEFT JOIN LKP_ExistingArchive\n\tON LKP_ExistingArchive.AgencyID = SQ_AgencyAddressODSStage.AgencyID AND LKP_ExistingArchive.AddressType = SQ_AgencyAddressODSStage.AddressType\n),\nFIL_ChangesOnly AS (\n\tSELECT\n\tAgencyAddressODSStageID, \n\tAgencyODSSourceSystemID, \n\tHashKey, \n\tModifiedUserID, \n\tModifiedDate, \n\tAgencyID, \n\tAgencyCode, \n\tAddressType, \n\tAddressLine1, \n\tAddressLine2, \n\tAddressLine3, \n\tCity, \n\tZipCode, \n\tCountyCode, \n\tCountyName, \n\tStateAbbreviation, \n\tCountryAbbreviation, \n\tLatitude, \n\tLongitude, \n\tExtractDate, \n\tAsOfDate, \n\tRecordCount, \n\tSourceSystemID, \n\to_AuditID AS OUT_AUDIT_ID, \n\to_ChangeFlag\n\tFROM EXP_AddAuditID\n\tWHERE o_ChangeFlag = 'INSERT' OR o_ChangeFlag = 'UPDATE'\n),\nArchAgencyAddressODSStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchAgencyAddressODSStage\n\t(AgencyAddressODSStageID, AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, AddressType, AddressLine1, AddressLine2, AddressLine3, City, ZipCode, CountyCode, CountyName, StateAbbreviation, CountryAbbreviation, Latitude, Longitude, ExtractDate, AsOfDate, RecordCount, SourceSystemID, AuditID)\n\tSELECT \n\tAGENCYADDRESSODSSTAGEID, \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tAGENCYCODE, \n\tADDRESSTYPE, \n\tADDRESSLINE1, \n\tADDRESSLINE2, \n\tADDRESSLINE3, \n\tCITY, \n\tZIPCODE, \n\tCOUNTYCODE, \n\tCOUNTYNAME, \n\tSTATEABBREVIATION, \n\tCOUNTRYABBREVIATION, \n\tLATITUDE, \n\tLONGITUDE, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\tOUT_AUDIT_ID AS AUDITID\n\tFROM FIL_ChangesOnly\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

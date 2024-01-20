@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchAgencyODSStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchAgencyODSStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AgencyODSStage AS (\n\tSELECT\n\t\tAgencyODSStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tAgencyCode,\n\t\tLegalName,\n\t\tDoingBusinessAsName,\n\t\tPrimaryPhoneNumber,\n\t\tPrimaryFaxNumber,\n\t\tPrimaryEmailAddress,\n\t\tStatusCode,\n\t\tStatusDescription,\n\t\tAppointedDate,\n\t\tTerminatedDate,\n\t\tCustomerCareStatus,\n\t\tFederalTaxID,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID,\n\t\tProfitSharingGuaranteeFlag,\n\t\tLicensedIndicator,\n\t\tAbbreviatedName,\n\t\tAssignedStateCode,\n\t\tClosedDate\n\tFROM AgencyODSStage\n),\nLKP_ExistingArchive AS (\n\tSELECT\n\tHashKey,\n\tClosedDate,\n\tAgencyCode\n\tFROM (\n\t\tselect \ta.HashKey as HashKey, \r\n\t\t\t\t\ta.ModifiedDate as ModifiedDate,  \r\n\t\t\t\t\ta.AgencyCode as AgencyCode,\r\n\t\t\t\t\ta.ClosedDate as ClosedDate,\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchAgencyODSStage a\r\n\t\tinner join (\t\r\n\t\t\t\t\tselect AgencyCode, MAX(ModifiedDate) as ModifiedDate\r\n\t\t\t\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchAgencyODSStage\r\n\t\t\t\t\tgroup by AgencyCode) b\r\n\t\ton a.AgencyCode = b.AgencyCode\r\n\t\tand a.ModifiedDate = b.ModifiedDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyCode ORDER BY HashKey) = 1\n),\nEXP_CheckForChange AS (\n\tSELECT\n\tSQ_AgencyODSStage.AgencyODSStageID,\n\tSQ_AgencyODSStage.AgencyODSSourceSystemID,\n\tSQ_AgencyODSStage.HashKey,\n\tSQ_AgencyODSStage.ModifiedUserID,\n\tSQ_AgencyODSStage.ModifiedDate,\n\tSQ_AgencyODSStage.AgencyID,\n\tSQ_AgencyODSStage.AgencyCode,\n\tSQ_AgencyODSStage.LegalName,\n\tSQ_AgencyODSStage.DoingBusinessAsName,\n\tSQ_AgencyODSStage.PrimaryPhoneNumber,\n\tSQ_AgencyODSStage.PrimaryFaxNumber,\n\tSQ_AgencyODSStage.PrimaryEmailAddress,\n\tSQ_AgencyODSStage.StatusCode,\n\tSQ_AgencyODSStage.StatusDescription,\n\tSQ_AgencyODSStage.AppointedDate,\n\tSQ_AgencyODSStage.TerminatedDate,\n\tSQ_AgencyODSStage.CustomerCareStatus,\n\tSQ_AgencyODSStage.ExtractDate,\n\tSQ_AgencyODSStage.AsOfDate,\n\tSQ_AgencyODSStage.RecordCount,\n\tSQ_AgencyODSStage.SourceSystemID,\n\tSQ_AgencyODSStage.FederalTaxID,\n\tSQ_AgencyODSStage.ProfitSharingGuaranteeFlag,\n\tSQ_AgencyODSStage.LicensedIndicator,\n\tSQ_AgencyODSStage.AbbreviatedName,\n\tSQ_AgencyODSStage.AssignedStateCode,\n\tLKP_ExistingArchive.HashKey AS lkp_HashKey,\n\tLKP_ExistingArchive.ClosedDate AS lkp_ClosedDate,\n\tSQ_AgencyODSStage.ClosedDate,\n\t-- *INF*: Decode(true,\r\n\t-- HashKey = lkp_HashKey and lkp_ClosedDate=ClosedDate, 'IGNORE',\r\n\t-- IsNull(lkp_HashKey), 'INSERT',\r\n\t-- 'UPDATE')\n\tDecode(\n\t    true,\n\t    HashKey = lkp_HashKey and lkp_ClosedDate = ClosedDate, 'IGNORE',\n\t    lkp_HashKey IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID\n\tFROM SQ_AgencyODSStage\n\tLEFT JOIN LKP_ExistingArchive\n\tON LKP_ExistingArchive.AgencyCode = SQ_AgencyODSStage.AgencyCode\n),\nFIL_InsertChangeRecordsOnly AS (\n\tSELECT\n\tAgencyODSStageID, \n\tAgencyODSSourceSystemID, \n\tHashKey, \n\tModifiedUserID, \n\tModifiedDate, \n\tAgencyID, \n\tAgencyCode, \n\tLegalName, \n\tDoingBusinessAsName, \n\tPrimaryPhoneNumber, \n\tPrimaryFaxNumber, \n\tPrimaryEmailAddress, \n\tStatusCode, \n\tStatusDescription, \n\tAppointedDate, \n\tTerminatedDate, \n\tCustomerCareStatus, \n\tFederalTaxID, \n\tExtractDate, \n\tAsOfDate, \n\tRecordCount, \n\tSourceSystemID, \n\tOUT_AUDIT_ID, \n\to_ChangeFlag, \n\tProfitSharingGuaranteeFlag, \n\tLicensedIndicator, \n\tAbbreviatedName, \n\tAssignedStateCode, \n\tClosedDate\n\tFROM EXP_CheckForChange\n\tWHERE o_ChangeFlag = 'INSERT' OR o_ChangeFlag = 'UPDATE'\n),\nArchAgencyODSStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchAgencyODSStage\n\t(AgencyODSStageID, AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, LegalName, DoingBusinessAsName, PrimaryPhoneNumber, PrimaryFaxNumber, PrimaryEmailAddress, StatusCode, StatusDescription, AppointedDate, TerminatedDate, CustomerCareStatus, FederalTaxID, ExtractDate, AsOfDate, RecordCount, SourceSystemID, AuditID, ProfitSharingGuaranteeFlag, LicensedIndicator, AbbreviatedName, AssignedStateCode, ClosedDate)\n\tSELECT \n\tAGENCYODSSTAGEID, \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tAGENCYCODE, \n\tLEGALNAME, \n\tDOINGBUSINESSASNAME, \n\tPRIMARYPHONENUMBER, \n\tPRIMARYFAXNUMBER, \n\tPRIMARYEMAILADDRESS, \n\tSTATUSCODE, \n\tSTATUSDESCRIPTION, \n\tAPPOINTEDDATE, \n\tTERMINATEDDATE, \n\tCUSTOMERCARESTATUS, \n\tFEDERALTAXID, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\tOUT_AUDIT_ID AS AUDITID, \n\tPROFITSHARINGGUARANTEEFLAG, \n\tLICENSEDINDICATOR, \n\tABBREVIATEDNAME, \n\tASSIGNEDSTATECODE, \n\tCLOSEDDATE\n\tFROM FIL_InsertChangeRecordsOnly\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

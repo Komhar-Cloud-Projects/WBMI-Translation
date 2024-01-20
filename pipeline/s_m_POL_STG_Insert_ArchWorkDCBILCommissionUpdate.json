@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchWorkDCBILCommissionUpdate",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchWorkDCBILCommissionUpdate",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCBILCommissionUpdate AS (\n\tSELECT\n\t\tWorkDCBILCommissionUpdateId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tPolicyReference,\n\t\tAuthorizationDate,\n\t\tAuthorizedAmount,\n\t\tTierAmount,\n\t\tUpdateType\n\tFROM WorkDCBILCommissionUpdate\n),\nEXp_Default AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\tWorkDCBILCommissionUpdateId,\n\tExtractDate,\n\tSourceSystemId,\n\tPolicyReference,\n\tAuthorizationDate,\n\tAuthorizedAmount,\n\tTierAmount,\n\tUpdateType\n\tFROM SQ_WorkDCBILCommissionUpdate\n),\nArchWorkDCBILCommissionUpdate AS (\n\tINSERT INTO ArchWorkDCBILCommissionUpdate\n\t(ExtractDate, SourceSystemId, AuditId, WorkDCBILCommissionUpdateId, PolicyReference, AuthorizationDate, AuthorizedAmount, TierAmount, UpdateType)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\taudit_id AS AUDITID, \n\tWORKDCBILCOMMISSIONUPDATEID, \n\tPOLICYREFERENCE, \n\tAUTHORIZATIONDATE, \n\tAUTHORIZEDAMOUNT, \n\tTIERAMOUNT, \n\tUPDATETYPE\n\tFROM EXp_Default\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

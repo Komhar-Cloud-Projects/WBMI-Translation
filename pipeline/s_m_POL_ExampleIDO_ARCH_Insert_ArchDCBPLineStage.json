@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPLineStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCBPLineStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBPLineStage AS (\n\tSELECT\n\t\tDCBPLineStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tLineId,\n\t\tBP_LineId,\n\t\tSessionId,\n\t\tId,\n\t\tBusinessIncomeAndExtraExpense,\n\t\tCommissionPercentage,\n\t\tDescription,\n\t\tDescriptionOverride,\n\t\tDesignatedLocation,\n\t\tEarthquake,\n\t\tEarthquakeAggregateLimit,\n\t\tFloodCoverage,\n\t\tFungiCoverage,\n\t\tFungiLiability,\n\t\tIsFinalReport,\n\t\tIsReportable,\n\t\tPropertyDamageDeductibleEndorsement\n\tFROM DCBPLineStage\n),\nEXP_DCBPLineStage AS (\n\tSELECT\n\tDCBPLineStageId,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tLineId,\n\tBP_LineId,\n\tSessionId,\n\tId,\n\tBusinessIncomeAndExtraExpense AS i_BusinessIncomeAndExtraExpense,\n\t-- *INF*: IIF(i_BusinessIncomeAndExtraExpense='T','1','0')\n\tIFF(i_BusinessIncomeAndExtraExpense = 'T', '1', '0') AS o_BusinessIncomeAndExtraExpense,\n\tCommissionPercentage,\n\tDescription,\n\tDescriptionOverride,\n\tDesignatedLocation AS i_DesignatedLocation,\n\t-- *INF*: IIF(i_DesignatedLocation='T','1','0')\n\tIFF(i_DesignatedLocation = 'T', '1', '0') AS o_DesignatedLocation,\n\tEarthquake AS i_Earthquake,\n\t-- *INF*: IIF(i_Earthquake='T','1','0')\n\tIFF(i_Earthquake = 'T', '1', '0') AS o_Earthquake,\n\tEarthquakeAggregateLimit AS i_EarthquakeAggregateLimit,\n\t-- *INF*: IIF(i_EarthquakeAggregateLimit='T','1','0')\n\tIFF(i_EarthquakeAggregateLimit = 'T', '1', '0') AS o_EarthquakeAggregateLimit,\n\tFloodCoverage AS i_FloodCoverage,\n\t-- *INF*: IIF(i_FloodCoverage='T','1','0')\n\tIFF(i_FloodCoverage = 'T', '1', '0') AS o_FloodCoverage,\n\tFungiCoverage AS i_FungiCoverage,\n\t-- *INF*: IIF(i_FungiCoverage='T','1','0')\n\tIFF(i_FungiCoverage = 'T', '1', '0') AS o_FungiCoverage,\n\tFungiLiability,\n\tIsFinalReport AS i_IsFinalReport,\n\t-- *INF*: IIF(i_IsFinalReport='T','1','0')\n\tIFF(i_IsFinalReport = 'T', '1', '0') AS o_IsFinalReport,\n\tIsReportable AS i_IsReportable,\n\t-- *INF*: IIF(i_IsReportable='T','1','0')\n\tIFF(i_IsReportable = 'T', '1', '0') AS o_IsReportable,\n\tPropertyDamageDeductibleEndorsement\n\tFROM SQ_DCBPLineStage\n),\nArchDCBPLineStage AS (\n\tINSERT INTO ArchDCBPLineStage\n\t(ExtractDate, SourceSystemId, AuditId, DCBPLineStageId, LineId, BP_LineId, SessionId, Id, BusinessIncomeAndExtraExpense, CommissionPercentage, Description, DescriptionOverride, DesignatedLocation, Earthquake, EarthquakeAggregateLimit, FloodCoverage, FungiCoverage, FungiLiability, IsFinalReport, IsReportable, PropertyDamageDeductibleEndorsement)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCBPLINESTAGEID, \n\tLINEID, \n\tBP_LINEID, \n\tSESSIONID, \n\tID, \n\to_BusinessIncomeAndExtraExpense AS BUSINESSINCOMEANDEXTRAEXPENSE, \n\tCOMMISSIONPERCENTAGE, \n\tDESCRIPTION, \n\tDESCRIPTIONOVERRIDE, \n\to_DesignatedLocation AS DESIGNATEDLOCATION, \n\to_Earthquake AS EARTHQUAKE, \n\to_EarthquakeAggregateLimit AS EARTHQUAKEAGGREGATELIMIT, \n\to_FloodCoverage AS FLOODCOVERAGE, \n\to_FungiCoverage AS FUNGICOVERAGE, \n\tFUNGILIABILITY, \n\to_IsFinalReport AS ISFINALREPORT, \n\to_IsReportable AS ISREPORTABLE, \n\tPROPERTYDAMAGEDEDUCTIBLEENDORSEMENT\n\tFROM EXP_DCBPLineStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

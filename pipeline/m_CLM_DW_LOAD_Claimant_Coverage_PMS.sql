@@ -15,12 +15,12 @@ EXP_Source AS (
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(IPFCX6_INSURANCE_LINE))
 	-- )
-	IFF(LENGTH(IPFCX6_INSURANCE_LINE)>0 AND TRIM(IPFCX6_INSURANCE_LINE)='' 
-		OR IPFCX6_INSURANCE_LINE IS NULL,
-		'N/A',
-		LTRIM(RTRIM(IPFCX6_INSURANCE_LINE
-			)
-		)
+	IFF(
+	    LENGTH(IPFCX6_INSURANCE_LINE)>0
+	    and TRIM(IPFCX6_INSURANCE_LINE)=''
+	    or IPFCX6_INSURANCE_LINE IS NULL,
+	    'N/A',
+	    LTRIM(RTRIM(IPFCX6_INSURANCE_LINE))
 	) AS out_INSURANCE_LINE,
 	IPFCX6_LOCATION_NUMBER,
 	-- *INF*: IIF(ISNULL(IPFCX6_LOCATION_NUMBER),'0000',LPAD(TO_CHAR(IPFCX6_LOCATION_NUMBER),4,'0'))
@@ -30,12 +30,7 @@ EXP_Source AS (
 	-- 
 	-- 
 	-- 
-	IFF(IPFCX6_LOCATION_NUMBER IS NULL,
-		'0000',
-		LPAD(TO_CHAR(IPFCX6_LOCATION_NUMBER
-			), 4, '0'
-		)
-	) AS out_LOCATION_NUMBER,
+	IFF(IPFCX6_LOCATION_NUMBER IS NULL, '0000', LPAD(TO_CHAR(IPFCX6_LOCATION_NUMBER), 4, '0')) AS out_LOCATION_NUMBER,
 	IPFCX6_SUB_LOCATION_NUMBER,
 	-- *INF*: IIF(ISNULL(IPFCX6_SUB_LOCATION_NUMBER),'000',TO_CHAR(IPFCX6_SUB_LOCATION_NUMBER))
 	-- 
@@ -45,11 +40,7 @@ EXP_Source AS (
 	-- 
 	-- ---DECODE(TRUE,ISNULL(IPFCX6_SUB_LOCATION_NUMBER),'000',
 	-- ---            LENGTH(TO_CHAR(IPFCX6_SUB_LOCATION_NUMBER))=1,'00' || TO_CHAR(IPFCX6_LOCATION_NUMBER)                 )
-	IFF(IPFCX6_SUB_LOCATION_NUMBER IS NULL,
-		'000',
-		TO_CHAR(IPFCX6_SUB_LOCATION_NUMBER
-		)
-	) AS V_SUB_LOCATION_NUMBER,
+	IFF(IPFCX6_SUB_LOCATION_NUMBER IS NULL, '000', TO_CHAR(IPFCX6_SUB_LOCATION_NUMBER)) AS V_SUB_LOCATION_NUMBER,
 	-- *INF*: IIF(V_SUB_LOCATION_NUMBER ='000',V_SUB_LOCATION_NUMBER,
 	--          LPAD(V_SUB_LOCATION_NUMBER,3,'0'))
 	-- 
@@ -57,10 +48,8 @@ EXP_Source AS (
 	--    --    LENGTH(V_SUB_LOCATION_NUMBER)=1,'00' || V_SUB_LOCATION_NUMBER,
 	--       ---LENGTH(V_SUB_LOCATION_NUMBER)=2,'0' || V_SUB_LOCATION_NUMBER,
 	-- ---      LENGTH(V_SUB_LOCATION_NUMBER)=3, V_SUB_LOCATION_NUMBER)
-	IFF(V_SUB_LOCATION_NUMBER = '000',
-		V_SUB_LOCATION_NUMBER,
-		LPAD(V_SUB_LOCATION_NUMBER, 3, '0'
-		)
+	IFF(
+	    V_SUB_LOCATION_NUMBER = '000', V_SUB_LOCATION_NUMBER, LPAD(V_SUB_LOCATION_NUMBER, 3, '0')
 	) AS out_SUB_LOCATION_NUMBER,
 	IPFCX6_RISK_UNIT_GROUP,
 	IPFCX6_CLASS_CODE_GROUP,
@@ -75,125 +64,102 @@ EXP_Source AS (
 	-- --IIF(ISNULL(IPFCX6_CLASS_CODE_GROUP)
 	-- --,'00'
 	-- --,TO_CHAR(IPFCX6_CLASS_CODE_GROUP))
-	DECODE(TRUE,
-		IPFCX6_CLASS_CODE_GROUP IS NULL, '00',
-		IPFCX6_CLASS_CODE_GROUP < 10, '0' || TO_CHAR(IPFCX6_CLASS_CODE_GROUP
-		),
-		TO_CHAR(IPFCX6_CLASS_CODE_GROUP
-		)
+	DECODE(
+	    TRUE,
+	    IPFCX6_CLASS_CODE_GROUP IS NULL, '00',
+	    IPFCX6_CLASS_CODE_GROUP < 10, '0' || TO_CHAR(IPFCX6_CLASS_CODE_GROUP),
+	    TO_CHAR(IPFCX6_CLASS_CODE_GROUP)
 	) AS out_CLASS_CODE_GROUP,
 	IPFCX6_CLASS_CODE_MEMBER,
 	-- *INF*: IIF(ISNULL(IPFCX6_CLASS_CODE_MEMBER)
 	-- ,'0'
 	-- ,TO_CHAR(IPFCX6_CLASS_CODE_MEMBER))
-	IFF(IPFCX6_CLASS_CODE_MEMBER IS NULL,
-		'0',
-		TO_CHAR(IPFCX6_CLASS_CODE_MEMBER
-		)
-	) AS out_CLASS_CODE_MEMBER,
+	IFF(IPFCX6_CLASS_CODE_MEMBER IS NULL, '0', TO_CHAR(IPFCX6_CLASS_CODE_MEMBER)) AS out_CLASS_CODE_MEMBER,
 	-- *INF*: IIF(IS_SPACES(IPFCX6_RISK_UNIT_GROUP) OR ISNULL(IPFCX6_RISK_UNIT_GROUP)
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(IPFCX6_RISK_UNIT_GROUP))
 	-- )
-	IFF(LENGTH(IPFCX6_RISK_UNIT_GROUP)>0 AND TRIM(IPFCX6_RISK_UNIT_GROUP)='' 
-		OR IPFCX6_RISK_UNIT_GROUP IS NULL,
-		'N/A',
-		LTRIM(RTRIM(IPFCX6_RISK_UNIT_GROUP
-			)
-		)
+	IFF(
+	    LENGTH(IPFCX6_RISK_UNIT_GROUP)>0
+	    and TRIM(IPFCX6_RISK_UNIT_GROUP)=''
+	    or IPFCX6_RISK_UNIT_GROUP IS NULL,
+	    'N/A',
+	    LTRIM(RTRIM(IPFCX6_RISK_UNIT_GROUP))
 	) AS out_RISK_UNIT_GROUP,
 	-- *INF*: IIF(IS_SPACES(TO_CHAR(IPFCX6_CLASS_CODE_GROUP )|| TO_CHAR(IPFCX6_CLASS_CODE_MEMBER)) OR ISNULL(TO_CHAR(IPFCX6_CLASS_CODE_GROUP )|| TO_CHAR(IPFCX6_CLASS_CODE_MEMBER))
 	-- ,'N/A'
 	-- ,TO_CHAR(IPFCX6_CLASS_CODE_GROUP )|| TO_CHAR(IPFCX6_CLASS_CODE_MEMBER))
 	-- 
 	-- 
-	IFF(LENGTH(TO_CHAR(IPFCX6_CLASS_CODE_GROUP
-		) || TO_CHAR(IPFCX6_CLASS_CODE_MEMBER
-		))>0 AND TRIM(TO_CHAR(IPFCX6_CLASS_CODE_GROUP
-		) || TO_CHAR(IPFCX6_CLASS_CODE_MEMBER
-		))='' 
-		OR TO_CHAR(IPFCX6_CLASS_CODE_GROUP
-		) || TO_CHAR(IPFCX6_CLASS_CODE_MEMBER
-		) IS NULL,
-		'N/A',
-		TO_CHAR(IPFCX6_CLASS_CODE_GROUP
-		) || TO_CHAR(IPFCX6_CLASS_CODE_MEMBER
-		)
+	IFF(
+	    LENGTH(TO_CHAR(IPFCX6_CLASS_CODE_GROUP) || TO_CHAR(IPFCX6_CLASS_CODE_MEMBER))>0
+	    and TRIM(TO_CHAR(IPFCX6_CLASS_CODE_GROUP) || TO_CHAR(IPFCX6_CLASS_CODE_MEMBER))=''
+	    or TO_CHAR(IPFCX6_CLASS_CODE_GROUP) || TO_CHAR(IPFCX6_CLASS_CODE_MEMBER) IS NULL,
+	    'N/A',
+	    TO_CHAR(IPFCX6_CLASS_CODE_GROUP) || TO_CHAR(IPFCX6_CLASS_CODE_MEMBER)
 	) AS V_RISK_UNIT_GRP_SEQ,
 	-- *INF*: LPAD(RTRIM(V_RISK_UNIT_GRP_SEQ),3,'0')
-	LPAD(RTRIM(V_RISK_UNIT_GRP_SEQ
-		), 3, '0'
-	) AS RISK_UNIT_GRP_SEQ,
+	LPAD(RTRIM(V_RISK_UNIT_GRP_SEQ), 3, '0') AS RISK_UNIT_GRP_SEQ,
 	IPFCX6_LOSS_UNIT,
 	-- *INF*: IIF(IS_SPACES(IPFCX6_LOSS_UNIT) OR ISNULL(IPFCX6_LOSS_UNIT)
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(IPFCX6_LOSS_UNIT))
 	-- )
-	IFF(LENGTH(IPFCX6_LOSS_UNIT)>0 AND TRIM(IPFCX6_LOSS_UNIT)='' 
-		OR IPFCX6_LOSS_UNIT IS NULL,
-		'N/A',
-		LTRIM(RTRIM(IPFCX6_LOSS_UNIT
-			)
-		)
+	IFF(
+	    LENGTH(IPFCX6_LOSS_UNIT)>0 AND TRIM(IPFCX6_LOSS_UNIT)='' OR IPFCX6_LOSS_UNIT IS NULL, 'N/A',
+	    LTRIM(RTRIM(IPFCX6_LOSS_UNIT))
 	) AS out_LOSS_UNIT,
 	IPFCX6_RISK_SEQUENCE,
 	-- *INF*: IIF(ISNULL(IPFCX6_RISK_SEQUENCE)
 	-- ,'0'
 	-- ,TO_CHAR(IPFCX6_RISK_SEQUENCE))
-	IFF(IPFCX6_RISK_SEQUENCE IS NULL,
-		'0',
-		TO_CHAR(IPFCX6_RISK_SEQUENCE
-		)
-	) AS out_RISK_SEQUENCE,
+	IFF(IPFCX6_RISK_SEQUENCE IS NULL, '0', TO_CHAR(IPFCX6_RISK_SEQUENCE)) AS out_RISK_SEQUENCE,
 	IPFCX6_RISK_TYPE_IND,
 	-- *INF*: IIF(IS_SPACES(IPFCX6_RISK_TYPE_IND) OR ISNULL(IPFCX6_RISK_TYPE_IND) OR LENGTH(IPFCX6_RISK_TYPE_IND)=0
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(IPFCX6_RISK_TYPE_IND))
 	-- )
-	IFF(LENGTH(IPFCX6_RISK_TYPE_IND)>0 AND TRIM(IPFCX6_RISK_TYPE_IND)='' 
-		OR IPFCX6_RISK_TYPE_IND IS NULL 
-		OR LENGTH(IPFCX6_RISK_TYPE_IND
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(IPFCX6_RISK_TYPE_IND
-			)
-		)
+	IFF(
+	    LENGTH(IPFCX6_RISK_TYPE_IND)>0
+	    and TRIM(IPFCX6_RISK_TYPE_IND)=''
+	    or IPFCX6_RISK_TYPE_IND IS NULL
+	    or LENGTH(IPFCX6_RISK_TYPE_IND) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(IPFCX6_RISK_TYPE_IND))
 	) AS out_RISK_TYPE_IND,
 	IPFCX6_TYPE_EXPOSURE,
 	-- *INF*: IIF(IS_SPACES(IPFCX6_TYPE_EXPOSURE) OR ISNULL(IPFCX6_TYPE_EXPOSURE)
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(IPFCX6_TYPE_EXPOSURE))
 	-- )
-	IFF(LENGTH(IPFCX6_TYPE_EXPOSURE)>0 AND TRIM(IPFCX6_TYPE_EXPOSURE)='' 
-		OR IPFCX6_TYPE_EXPOSURE IS NULL,
-		'N/A',
-		LTRIM(RTRIM(IPFCX6_TYPE_EXPOSURE
-			)
-		)
+	IFF(
+	    LENGTH(IPFCX6_TYPE_EXPOSURE)>0
+	    and TRIM(IPFCX6_TYPE_EXPOSURE)=''
+	    or IPFCX6_TYPE_EXPOSURE IS NULL,
+	    'N/A',
+	    LTRIM(RTRIM(IPFCX6_TYPE_EXPOSURE))
 	) AS out_TYPE_EXPOSURE,
 	IPFCX6_MAJOR_PERIL,
 	-- *INF*: IIF(IS_SPACES(IPFCX6_MAJOR_PERIL) OR ISNULL(IPFCX6_MAJOR_PERIL)
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(IPFCX6_MAJOR_PERIL))
 	-- )
-	IFF(LENGTH(IPFCX6_MAJOR_PERIL)>0 AND TRIM(IPFCX6_MAJOR_PERIL)='' 
-		OR IPFCX6_MAJOR_PERIL IS NULL,
-		'N/A',
-		LTRIM(RTRIM(IPFCX6_MAJOR_PERIL
-			)
-		)
+	IFF(
+	    LENGTH(IPFCX6_MAJOR_PERIL)>0 AND TRIM(IPFCX6_MAJOR_PERIL)='' OR IPFCX6_MAJOR_PERIL IS NULL,
+	    'N/A',
+	    LTRIM(RTRIM(IPFCX6_MAJOR_PERIL))
 	) AS out_MAJOR_PERIL,
 	IPFCX6_SEQUENCE_TYPE_EXPOSURE,
 	-- *INF*: IIF(IS_SPACES(IPFCX6_SEQUENCE_TYPE_EXPOSURE) OR ISNULL(IPFCX6_SEQUENCE_TYPE_EXPOSURE)
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(IPFCX6_SEQUENCE_TYPE_EXPOSURE))
 	-- )
-	IFF(LENGTH(IPFCX6_SEQUENCE_TYPE_EXPOSURE)>0 AND TRIM(IPFCX6_SEQUENCE_TYPE_EXPOSURE)='' 
-		OR IPFCX6_SEQUENCE_TYPE_EXPOSURE IS NULL,
-		'N/A',
-		LTRIM(RTRIM(IPFCX6_SEQUENCE_TYPE_EXPOSURE
-			)
-		)
+	IFF(
+	    LENGTH(IPFCX6_SEQUENCE_TYPE_EXPOSURE)>0
+	    and TRIM(IPFCX6_SEQUENCE_TYPE_EXPOSURE)=''
+	    or IPFCX6_SEQUENCE_TYPE_EXPOSURE IS NULL,
+	    'N/A',
+	    LTRIM(RTRIM(IPFCX6_SEQUENCE_TYPE_EXPOSURE))
 	) AS out_SEQUENCE_TYPE_EXPOSURE,
 	IPFCX6_YEAR_ITEM_EFFECTIVE,
 	IPFCX6_YEAR_ITEM_EFFECTIVE AS out_IPFCX6_YEAR_ITEM_EFFECTIVE,
@@ -203,144 +169,100 @@ EXP_Source AS (
 	IPFCX6_DAY_ITEM_EFFECTIVE AS out_IPFCX6_DAY_ITEM_EFFECTIVE,
 	IPFCX6_YEAR_OF_LOSS,
 	-- *INF*: TO_CHAR(IPFCX6_YEAR_OF_LOSS)
-	TO_CHAR(IPFCX6_YEAR_OF_LOSS
-	) AS v_IPFCX6_YEAR_OF_LOSS,
+	TO_CHAR(IPFCX6_YEAR_OF_LOSS) AS v_IPFCX6_YEAR_OF_LOSS,
 	IPFCX6_MONTH_OF_LOSS,
 	-- *INF*: TO_CHAR(IPFCX6_MONTH_OF_LOSS)
-	TO_CHAR(IPFCX6_MONTH_OF_LOSS
-	) AS v_IPFCX6_MONTH_OF_LOSS,
+	TO_CHAR(IPFCX6_MONTH_OF_LOSS) AS v_IPFCX6_MONTH_OF_LOSS,
 	IPFCX6_DAY_OF_LOSS,
 	-- *INF*: TO_CHAR(IPFCX6_DAY_OF_LOSS)
-	TO_CHAR(IPFCX6_DAY_OF_LOSS
-	) AS v_IPFCX6_DAY_OF_LOSS,
+	TO_CHAR(IPFCX6_DAY_OF_LOSS) AS v_IPFCX6_DAY_OF_LOSS,
 	IPFCX6_LOSS_OCC_FDIGIT,
 	IPFCX6_USR_LOSS_OCCURENCE,
 	-- *INF*: IIF(LENGTH(IPFCX6_USR_LOSS_OCCURENCE) = 1, '0'||LTRIM(RTRIM(IPFCX6_USR_LOSS_OCCURENCE)), LTRIM(RTRIM(TO_CHAR(IPFCX6_USR_LOSS_OCCURENCE))))
-	IFF(LENGTH(IPFCX6_USR_LOSS_OCCURENCE
-		) = 1,
-		'0' || LTRIM(RTRIM(IPFCX6_USR_LOSS_OCCURENCE
-			)
-		),
-		LTRIM(RTRIM(TO_CHAR(IPFCX6_USR_LOSS_OCCURENCE
-				)
-			)
-		)
+	IFF(
+	    LENGTH(IPFCX6_USR_LOSS_OCCURENCE) = 1, '0' || LTRIM(RTRIM(IPFCX6_USR_LOSS_OCCURENCE)),
+	    LTRIM(RTRIM(TO_CHAR(IPFCX6_USR_LOSS_OCCURENCE)))
 	) AS LOSS_OCCURENCE_VAR_LEN,
 	-- *INF*: LTRIM(RTRIM(IPFCX6_LOSS_OCC_FDIGIT)) || LTRIM(RTRIM(LOSS_OCCURENCE_VAR_LEN))
-	LTRIM(RTRIM(IPFCX6_LOSS_OCC_FDIGIT
-		)
-	) || LTRIM(RTRIM(LOSS_OCCURENCE_VAR_LEN
-		)
-	) AS LOSS_OCCURENCE,
+	LTRIM(RTRIM(IPFCX6_LOSS_OCC_FDIGIT)) || LTRIM(RTRIM(LOSS_OCCURENCE_VAR_LEN)) AS LOSS_OCCURENCE,
 	IPFCX6_LOSS_CLAIMANT,
 	IPFCX6_MEMBER,
 	-- *INF*: IIF(IS_SPACES(IPFCX6_MEMBER) OR ISNULL(IPFCX6_MEMBER)
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(IPFCX6_MEMBER))
 	-- )
-	IFF(LENGTH(IPFCX6_MEMBER)>0 AND TRIM(IPFCX6_MEMBER)='' 
-		OR IPFCX6_MEMBER IS NULL,
-		'N/A',
-		LTRIM(RTRIM(IPFCX6_MEMBER
-			)
-		)
+	IFF(
+	    LENGTH(IPFCX6_MEMBER)>0 AND TRIM(IPFCX6_MEMBER)='' OR IPFCX6_MEMBER IS NULL, 'N/A',
+	    LTRIM(RTRIM(IPFCX6_MEMBER))
 	) AS out_MEMBER,
 	IPFCX6_LOSS_DISABILITY,
 	-- *INF*: IIF(IS_SPACES(IPFCX6_LOSS_DISABILITY) OR ISNULL(IPFCX6_LOSS_DISABILITY)
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(IPFCX6_LOSS_DISABILITY))
 	-- )
-	IFF(LENGTH(IPFCX6_LOSS_DISABILITY)>0 AND TRIM(IPFCX6_LOSS_DISABILITY)='' 
-		OR IPFCX6_LOSS_DISABILITY IS NULL,
-		'N/A',
-		LTRIM(RTRIM(IPFCX6_LOSS_DISABILITY
-			)
-		)
+	IFF(
+	    LENGTH(IPFCX6_LOSS_DISABILITY)>0
+	    and TRIM(IPFCX6_LOSS_DISABILITY)=''
+	    or IPFCX6_LOSS_DISABILITY IS NULL,
+	    'N/A',
+	    LTRIM(RTRIM(IPFCX6_LOSS_DISABILITY))
 	) AS out_LOSS_DISABILITY,
 	IPFCX6_RESERVE_CATEGORY,
 	-- *INF*: IIF(IS_SPACES(IPFCX6_RESERVE_CATEGORY) OR ISNULL(IPFCX6_RESERVE_CATEGORY)
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(IPFCX6_RESERVE_CATEGORY))
 	-- )
-	IFF(LENGTH(IPFCX6_RESERVE_CATEGORY)>0 AND TRIM(IPFCX6_RESERVE_CATEGORY)='' 
-		OR IPFCX6_RESERVE_CATEGORY IS NULL,
-		'N/A',
-		LTRIM(RTRIM(IPFCX6_RESERVE_CATEGORY
-			)
-		)
+	IFF(
+	    LENGTH(IPFCX6_RESERVE_CATEGORY)>0
+	    and TRIM(IPFCX6_RESERVE_CATEGORY)=''
+	    or IPFCX6_RESERVE_CATEGORY IS NULL,
+	    'N/A',
+	    LTRIM(RTRIM(IPFCX6_RESERVE_CATEGORY))
 	) AS out_RESERVE_CATEGORY,
 	IPFCX6_LOSS_CAUSE,
 	-- *INF*: DECODE(TRUE,IS_SPACES(IPFCX6_LOSS_CAUSE)  OR ISNULL(IPFCX6_LOSS_CAUSE),'N/A',IPFCX6_MAJOR_PERIL = '032' and IPFCX6_LOSS_CAUSE = '07', '06',LTRIM(RTRIM(IPFCX6_LOSS_CAUSE)))
 	-- 
 	-- 
-	DECODE(TRUE,
-		LENGTH(IPFCX6_LOSS_CAUSE)>0 AND TRIM(IPFCX6_LOSS_CAUSE)='' 
-		OR IPFCX6_LOSS_CAUSE IS NULL, 'N/A',
-		IPFCX6_MAJOR_PERIL = '032' 
-		AND IPFCX6_LOSS_CAUSE = '07', '06',
-		LTRIM(RTRIM(IPFCX6_LOSS_CAUSE
-			)
-		)
+	DECODE(
+	    TRUE,
+	    LENGTH(IPFCX6_LOSS_CAUSE)>0 AND TRIM(IPFCX6_LOSS_CAUSE)='' OR IPFCX6_LOSS_CAUSE IS NULL, 'N/A',
+	    IPFCX6_MAJOR_PERIL = '032' and IPFCX6_LOSS_CAUSE = '07', '06',
+	    LTRIM(RTRIM(IPFCX6_LOSS_CAUSE))
 	) AS out_LOSS_CAUSE,
 	IPFCX6_OFFSET_ONSET_IND,
 	-- *INF*: IIF(IS_SPACES(IPFCX6_OFFSET_ONSET_IND) OR ISNULL(IPFCX6_OFFSET_ONSET_IND)
 	-- ,'N/A'
 	-- ,LTRIM(RTRIM(IPFCX6_OFFSET_ONSET_IND))
 	-- )
-	IFF(LENGTH(IPFCX6_OFFSET_ONSET_IND)>0 AND TRIM(IPFCX6_OFFSET_ONSET_IND)='' 
-		OR IPFCX6_OFFSET_ONSET_IND IS NULL,
-		'N/A',
-		LTRIM(RTRIM(IPFCX6_OFFSET_ONSET_IND
-			)
-		)
+	IFF(
+	    LENGTH(IPFCX6_OFFSET_ONSET_IND)>0
+	    and TRIM(IPFCX6_OFFSET_ONSET_IND)=''
+	    or IPFCX6_OFFSET_ONSET_IND IS NULL,
+	    'N/A',
+	    LTRIM(RTRIM(IPFCX6_OFFSET_ONSET_IND))
 	) AS out_OFFSET_ONSET_IND,
 	-- *INF*: IIF ( LENGTH(v_IPFCX6_MONTH_OF_LOSS) = 1, '0' || LTRIM(RTRIM(v_IPFCX6_MONTH_OF_LOSS)), LTRIM(RTRIM(v_IPFCX6_MONTH_OF_LOSS)))
 	-- ||  
 	-- IIF ( LENGTH(v_IPFCX6_DAY_OF_LOSS) = 1, '0' || LTRIM(RTRIM(v_IPFCX6_DAY_OF_LOSS)), LTRIM(RTRIM(v_IPFCX6_DAY_OF_LOSS)) )
 	-- ||  
 	-- LTRIM(RTRIM(v_IPFCX6_YEAR_OF_LOSS))
-	IFF(LENGTH(v_IPFCX6_MONTH_OF_LOSS
-		) = 1,
-		'0' || LTRIM(RTRIM(v_IPFCX6_MONTH_OF_LOSS
-			)
-		),
-		LTRIM(RTRIM(v_IPFCX6_MONTH_OF_LOSS
-			)
-		)
-	) || IFF(LENGTH(v_IPFCX6_DAY_OF_LOSS
-		) = 1,
-		'0' || LTRIM(RTRIM(v_IPFCX6_DAY_OF_LOSS
-			)
-		),
-		LTRIM(RTRIM(v_IPFCX6_DAY_OF_LOSS
-			)
-		)
-	) || LTRIM(RTRIM(v_IPFCX6_YEAR_OF_LOSS
-		)
-	) AS v_loss_date,
+	IFF(
+	    LENGTH(v_IPFCX6_MONTH_OF_LOSS) = 1, '0' || LTRIM(RTRIM(v_IPFCX6_MONTH_OF_LOSS)),
+	    LTRIM(RTRIM(v_IPFCX6_MONTH_OF_LOSS))
+	) || IFF(
+	    LENGTH(v_IPFCX6_DAY_OF_LOSS) = 1, '0' || LTRIM(RTRIM(v_IPFCX6_DAY_OF_LOSS)),
+	    LTRIM(RTRIM(v_IPFCX6_DAY_OF_LOSS))
+	) || LTRIM(RTRIM(v_IPFCX6_YEAR_OF_LOSS)) AS v_loss_date,
 	-- *INF*: LTRIM(RTRIM(PIF_SYMBOL)) || LTRIM(RTRIM(PIF_POLICY_NUMBER)) || LTRIM(RTRIM(PIF_MODULE)) || v_loss_date || LOSS_OCCURENCE
 	-- 
-	LTRIM(RTRIM(PIF_SYMBOL
-		)
-	) || LTRIM(RTRIM(PIF_POLICY_NUMBER
-		)
-	) || LTRIM(RTRIM(PIF_MODULE
-		)
-	) || v_loss_date || LOSS_OCCURENCE AS Claim_Occurrence_Key,
+	LTRIM(RTRIM(PIF_SYMBOL)) || LTRIM(RTRIM(PIF_POLICY_NUMBER)) || LTRIM(RTRIM(PIF_MODULE)) || v_loss_date || LOSS_OCCURENCE AS Claim_Occurrence_Key,
 	Claim_Occurrence_Key AS out_Claim_Occurrence_key,
 	-- *INF*: Claim_Occurrence_Key || LTRIM(RTRIM(IPFCX6_LOSS_CLAIMANT)) || 'CMT'
-	Claim_Occurrence_Key || LTRIM(RTRIM(IPFCX6_LOSS_CLAIMANT
-		)
-	) || 'CMT' AS Claimant_Key,
+	Claim_Occurrence_Key || LTRIM(RTRIM(IPFCX6_LOSS_CLAIMANT)) || 'CMT' AS Claimant_Key,
 	-- *INF*: to_date(to_char(IPFCX6_YEAR_ITEM_EFFECTIVE) || '-' || to_char(IPFCX6_MONTH_ITEM_EFFECTIVE) || '-' || to_char(IPFCX6_DAY_ITEM_EFFECTIVE),'YYYY-MM-DD')
-	to_date(to_char(IPFCX6_YEAR_ITEM_EFFECTIVE
-		) || '-' || to_char(IPFCX6_MONTH_ITEM_EFFECTIVE
-		) || '-' || to_char(IPFCX6_DAY_ITEM_EFFECTIVE
-		), 'YYYY-MM-DD'
-	) AS Claimant_Coverage_Eff_Date,
+	TO_TIMESTAMP(to_char(IPFCX6_YEAR_ITEM_EFFECTIVE) || '-' || to_char(IPFCX6_MONTH_ITEM_EFFECTIVE) || '-' || to_char(IPFCX6_DAY_ITEM_EFFECTIVE), 'YYYY-MM-DD') AS Claimant_Coverage_Eff_Date,
 	-- *INF*: to_date('2100-12-31', 'YYYY-MM-DD')
-	to_date('2100-12-31', 'YYYY-MM-DD'
-	) AS Claimant_Coverage_Expiration_Date,
+	TO_TIMESTAMP('2100-12-31', 'YYYY-MM-DD') AS Claimant_Coverage_Expiration_Date,
 	logical_flag
 	FROM SQ_PIF_42X6_stage
 ),
@@ -675,13 +597,14 @@ EXP_Detect_Changes AS (
 	-- ,'UPDATE'
 	-- ,'NOCHANGE')
 	-- )
-	IFF(claimant_cov_det_ak_id IS NULL,
-		'NEW',
-		IFF(old_claimant_cov_eff_date != Claimant_Coverage_Eff_Date 
-			OR old_risk_type_ind != SOURCE_RISK_TYPE_IND,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    claimant_cov_det_ak_id IS NULL, 'NEW',
+	    IFF(
+	        old_claimant_cov_eff_date != Claimant_Coverage_Eff_Date
+	        or old_risk_type_ind != SOURCE_RISK_TYPE_IND,
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_Changed_Flag,
 	EXP_Source.logical_flag,
 	1 AS crrnt_snpsht_flag,
@@ -690,52 +613,32 @@ EXP_Detect_Changes AS (
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS Source_System_Id,
 	-- *INF*: iif(v_Changed_Flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_Changed_Flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_Changed_Flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	sysdate AS created_date,
 	LKP_sup_insurance_line.sup_ins_line_id,
 	-- *INF*: IIF(ISNULL(sup_ins_line_id), -1, sup_ins_line_id)
-	IFF(sup_ins_line_id IS NULL,
-		- 1,
-		sup_ins_line_id
-	) AS out_sup_ins_line_id,
+	IFF(sup_ins_line_id IS NULL, - 1, sup_ins_line_id) AS out_sup_ins_line_id,
 	LKP_sup_risk_unit_group.sup_risk_unit_grp_id,
 	-- *INF*: IIF(ISNULL(sup_risk_unit_grp_id), -1, sup_risk_unit_grp_id)
-	IFF(sup_risk_unit_grp_id IS NULL,
-		- 1,
-		sup_risk_unit_grp_id
-	) AS out_sup_risk_unit_grp_id,
+	IFF(sup_risk_unit_grp_id IS NULL, - 1, sup_risk_unit_grp_id) AS out_sup_risk_unit_grp_id,
 	LKP_sup_risk_unit.sup_risk_unit_id,
 	-- *INF*: IIF(ISNULL(sup_risk_unit_id), -1, sup_risk_unit_id)
-	IFF(sup_risk_unit_id IS NULL,
-		- 1,
-		sup_risk_unit_id
-	) AS out_sup_risk_unit_id,
+	IFF(sup_risk_unit_id IS NULL, - 1, sup_risk_unit_id) AS out_sup_risk_unit_id,
 	LKP_sup_major_peril.sup_major_peril_id,
 	-- *INF*: IIF(ISNULL(sup_major_peril_id), -1, sup_major_peril_id)
-	IFF(sup_major_peril_id IS NULL,
-		- 1,
-		sup_major_peril_id
-	) AS out_sup_major_peril_id,
+	IFF(sup_major_peril_id IS NULL, - 1, sup_major_peril_id) AS out_sup_major_peril_id,
 	LKP_sup_CauseOfLoss.CauseOfLossId,
 	-- *INF*: IIF(ISNULL(CauseOfLossId), -1, CauseOfLossId)
-	IFF(CauseOfLossId IS NULL,
-		- 1,
-		CauseOfLossId
-	) AS out_CauseOfLossId,
+	IFF(CauseOfLossId IS NULL, - 1, CauseOfLossId) AS out_CauseOfLossId,
 	LKP_Coverage.type_bureau_code AS TypeBureauCode,
 	LKP_sup_type_bureau_code.sup_type_bureau_code_id,
 	-- *INF*: IIF(ISNULL(sup_type_bureau_code_id), -1, sup_type_bureau_code_id)
-	IFF(sup_type_bureau_code_id IS NULL,
-		- 1,
-		sup_type_bureau_code_id
-	) AS out_sup_type_bureau_code_id,
+	IFF(sup_type_bureau_code_id IS NULL, - 1, sup_type_bureau_code_id) AS out_sup_type_bureau_code_id,
 	-1 AS SupVehicleRegistrationStateID,
 	'PMS' AS policy_src_id,
 	'N/A' AS CoverageForm,
@@ -756,23 +659,17 @@ EXP_Detect_Changes AS (
 	-- SOURCE_RISK_UNIT_SEQ_NUM || SOURCE_RISK_TYPE_IND,
 	-- SOURCE_RISK_UNIT_SEQ_NUM
 	-- )
-	DECODE(TRUE,
-		SOURCE_RISK_UNIT_SEQ_NUM = '0' 
-		AND SOURCE_INS_LINE = 'WC', '00',
-		SOURCE_RISK_UNIT_SEQ_NUM IN ('0','1') 
-		AND SOURCE_INS_LINE <> 'WC' 
-		AND SOURCE_RISK_TYPE_IND = 'N/A', 'N/A',
-		SOURCE_RISK_UNIT_SEQ_NUM IN ('0','1','2','3','4','8') 
-		AND SOURCE_INS_LINE = 'GL', SOURCE_RISK_UNIT_SEQ_NUM || SOURCE_RISK_TYPE_IND,
-		SOURCE_RISK_UNIT_SEQ_NUM
+	DECODE(
+	    TRUE,
+	    SOURCE_RISK_UNIT_SEQ_NUM = '0' AND SOURCE_INS_LINE = 'WC', '00',
+	    SOURCE_RISK_UNIT_SEQ_NUM IN ('0','1') AND SOURCE_INS_LINE <> 'WC' AND SOURCE_RISK_TYPE_IND = 'N/A', 'N/A',
+	    SOURCE_RISK_UNIT_SEQ_NUM IN ('0','1','2','3','4','8') AND SOURCE_INS_LINE = 'GL', SOURCE_RISK_UNIT_SEQ_NUM || SOURCE_RISK_TYPE_IND,
+	    SOURCE_RISK_UNIT_SEQ_NUM
 	) AS o_RiskUnitSequenceNumber_AKId,
 	'N/A' AS o_pms_type_bureau_code,
 	LKP_InusuranceSegment.InsuranceSegmentCode AS i_InsuranceSegmentCode,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentCode),'N/A',i_InsuranceSegmentCode)
-	IFF(i_InsuranceSegmentCode IS NULL,
-		'N/A',
-		i_InsuranceSegmentCode
-	) AS o_InsuranceSegmentCode
+	IFF(i_InsuranceSegmentCode IS NULL, 'N/A', i_InsuranceSegmentCode) AS o_InsuranceSegmentCode
 	FROM EXP_Source
 	LEFT JOIN LKP_Claimant_Coverage_EDW
 	ON LKP_Claimant_Coverage_EDW.claim_party_occurrence_ak_id = LKP_Claim_Party_Occurrence_AK_ID.claim_party_occurrence_ak_id AND LKP_Claimant_Coverage_EDW.ins_line = EXP_Source.out_INSURANCE_LINE AND LKP_Claimant_Coverage_EDW.loc_unit_num = EXP_Source.out_LOCATION_NUMBER AND LKP_Claimant_Coverage_EDW.sub_loc_unit_num = EXP_Source.out_SUB_LOCATION_NUMBER AND LKP_Claimant_Coverage_EDW.risk_unit_grp = EXP_Source.out_RISK_UNIT_GROUP AND LKP_Claimant_Coverage_EDW.risk_unit_grp_seq_num = EXP_Source.RISK_UNIT_GRP_SEQ AND LKP_Claimant_Coverage_EDW.risk_unit = EXP_Source.out_LOSS_UNIT AND LKP_Claimant_Coverage_EDW.risk_unit_seq_num = EXP_Source.out_RISK_SEQUENCE AND LKP_Claimant_Coverage_EDW.major_peril_code = EXP_Source.out_MAJOR_PERIL AND LKP_Claimant_Coverage_EDW.major_peril_seq = EXP_Source.out_SEQUENCE_TYPE_EXPOSURE AND LKP_Claimant_Coverage_EDW.pms_loss_disability = EXP_Source.out_LOSS_DISABILITY AND LKP_Claimant_Coverage_EDW.reserve_ctgry = EXP_Source.out_RESERVE_CATEGORY AND LKP_Claimant_Coverage_EDW.cause_of_loss = EXP_Source.out_LOSS_CAUSE AND LKP_Claimant_Coverage_EDW.pms_mbr = EXP_Source.out_MEMBER AND LKP_Claimant_Coverage_EDW.pms_type_exposure = EXP_Source.out_TYPE_EXPOSURE
@@ -954,10 +851,7 @@ Exp_Determine_AK AS (
 	-- *INF*: iif(isnull(claimant_cov_det_ak_id)
 	-- ,NEXTVAL
 	-- ,claimant_cov_det_ak_id)
-	IFF(claimant_cov_det_ak_id IS NULL,
-		NEXTVAL,
-		claimant_cov_det_ak_id
-	) AS out_Claimant_cov_Det_AK_id,
+	IFF(claimant_cov_det_ak_id IS NULL, NEXTVAL, claimant_cov_det_ak_id) AS out_Claimant_cov_Det_AK_id,
 	FIL_Insert.claim_party_occurrence_ak_id1,
 	FIL_Insert.out_INS_LINE,
 	FIL_Insert.out_LOCATION_NUMBER,
@@ -994,10 +888,7 @@ Exp_Determine_AK AS (
 	FIL_Insert.CauseOfLossId,
 	FIL_Insert.TypeBureauCode,
 	-- *INF*: IIF(ISNULL(TypeBureauCode), 'N/A', TypeBureauCode)
-	IFF(TypeBureauCode IS NULL,
-		'N/A',
-		TypeBureauCode
-	) AS out_TypeBureauCode,
+	IFF(TypeBureauCode IS NULL, 'N/A', TypeBureauCode) AS out_TypeBureauCode,
 	FIL_Insert.out_sup_type_bureau_code_id,
 	FIL_Insert.SupVehicleRegistrationStateID,
 	FIL_Insert.policy_src_id,
@@ -1014,50 +905,28 @@ Exp_Determine_AK AS (
 	LKP_StatisticalCoverageForPMSExceed.StatisticalCoverageAKID AS i_StatisticalCoverageAKID,
 	LKP_StatisticalCoverageForPMSExceed.CoverageGuid AS i_CoverageGuid,
 	-- *INF*: IIF(ISNULL(i_CoverageGuid),'N/A',i_CoverageGuid)
-	IFF(i_CoverageGuid IS NULL,
-		'N/A',
-		i_CoverageGuid
-	) AS o_CoverageGUID,
+	IFF(i_CoverageGuid IS NULL, 'N/A', i_CoverageGuid) AS o_CoverageGUID,
 	-- *INF*: IIF(ISNULL(i_InsuranceReferenceLineOfBusinessAKId), -1, i_InsuranceReferenceLineOfBusinessAKId)
-	IFF(i_InsuranceReferenceLineOfBusinessAKId IS NULL,
-		- 1,
-		i_InsuranceReferenceLineOfBusinessAKId
+	IFF(
+	    i_InsuranceReferenceLineOfBusinessAKId IS NULL, - 1, i_InsuranceReferenceLineOfBusinessAKId
 	) AS o_InsuranceReferenceLineOfBusinessAKId,
 	-- *INF*: IIF(ISNULL(i_ProductAKId), -1,i_ProductAKId)
-	IFF(i_ProductAKId IS NULL,
-		- 1,
-		i_ProductAKId
-	) AS o_ProductAKId,
+	IFF(i_ProductAKId IS NULL, - 1, i_ProductAKId) AS o_ProductAKId,
 	-- *INF*: IIF(ISNULL(i_StatisticalCoverageAKID), -1, i_StatisticalCoverageAKID)
-	IFF(i_StatisticalCoverageAKID IS NULL,
-		- 1,
-		i_StatisticalCoverageAKID
-	) AS o_StatisticalCoverageAKID,
+	IFF(i_StatisticalCoverageAKID IS NULL, - 1, i_StatisticalCoverageAKID) AS o_StatisticalCoverageAKID,
 	Lkp_SupTypeOfLossRules.TypeOfLoss AS i_TypeOfLoss,
 	Lkp_SupTypeOfLossRules.ClaimTypeCategory AS i_ClaimTypeCategory,
 	Lkp_SupTypeOfLossRules.ClaimTypeGroup AS i_ClaimTypeGroup,
 	Lkp_SupTypeOfLossRules.SubrogationEligibleIndicator AS i_SubrogationEligibleIndicator,
 	-- *INF*: IIF(ISNULL(i_TypeOfLoss) ,'N/A',i_TypeOfLoss)
 	-- --IIF(ISNULL(i_TypeOfLoss)    OR   i_TypeOfLoss = 'Unassigned'       ,'N/A',i_TypeOfLoss)
-	IFF(i_TypeOfLoss IS NULL,
-		'N/A',
-		i_TypeOfLoss
-	) AS o_TypeOfLoss,
+	IFF(i_TypeOfLoss IS NULL, 'N/A', i_TypeOfLoss) AS o_TypeOfLoss,
 	-- *INF*: IIF(ISNULL(i_ClaimTypeCategory),'N/A',i_ClaimTypeCategory)
-	IFF(i_ClaimTypeCategory IS NULL,
-		'N/A',
-		i_ClaimTypeCategory
-	) AS o_ClaimTypeCategory,
+	IFF(i_ClaimTypeCategory IS NULL, 'N/A', i_ClaimTypeCategory) AS o_ClaimTypeCategory,
 	-- *INF*: IIF(ISNULL(i_ClaimTypeGroup),'N/A',i_ClaimTypeGroup)
-	IFF(i_ClaimTypeGroup IS NULL,
-		'N/A',
-		i_ClaimTypeGroup
-	) AS o_ClaimTypeGroup,
+	IFF(i_ClaimTypeGroup IS NULL, 'N/A', i_ClaimTypeGroup) AS o_ClaimTypeGroup,
 	-- *INF*: IIF(ISNULL(i_SubrogationEligibleIndicator),'N/A',i_SubrogationEligibleIndicator)
-	IFF(i_SubrogationEligibleIndicator IS NULL,
-		'N/A',
-		i_SubrogationEligibleIndicator
-	) AS o_SubrogationEligibleIndicator
+	IFF(i_SubrogationEligibleIndicator IS NULL, 'N/A', i_SubrogationEligibleIndicator) AS o_SubrogationEligibleIndicator
 	FROM FIL_Insert
 	LEFT JOIN LKP_StatisticalCoverageForPMSExceed
 	ON LKP_StatisticalCoverageForPMSExceed.PolicyAKID = FIL_Insert.pol_key_ak_id AND LKP_StatisticalCoverageForPMSExceed.InsuranceLine = FIL_Insert.out_INS_LINE AND LKP_StatisticalCoverageForPMSExceed.LocationNumber = FIL_Insert.out_LOCATION_NUMBER AND LKP_StatisticalCoverageForPMSExceed.MajorPerilCode = FIL_Insert.out_MAJOR_PERIL_CODE AND LKP_StatisticalCoverageForPMSExceed.MajorPerilSequenceNumber = FIL_Insert.out_MAJOR_PERIL_SEQ AND LKP_StatisticalCoverageForPMSExceed.RiskUnit = FIL_Insert.out_RISK_UNIT AND LKP_StatisticalCoverageForPMSExceed.RiskUnitSequenceNumber = FIL_Insert.RiskUnitSequenceNumber_AKId AND LKP_StatisticalCoverageForPMSExceed.RiskUnitGroup = FIL_Insert.out_RISK_UNIT_GROUP AND LKP_StatisticalCoverageForPMSExceed.RiskUnitGroupSequenceNumber = FIL_Insert.out_RISK_UNIT_GRP_SEQ AND LKP_StatisticalCoverageForPMSExceed.SubLocationUnitNumber = FIL_Insert.out_SUB_LOCATION_NUMBER AND LKP_StatisticalCoverageForPMSExceed.TypeBureauCode = FIL_Insert.TypeBureauCode AND LKP_StatisticalCoverageForPMSExceed.MaxPolicyCovEffDate = FIL_Insert.Claimant_Coverage_Eff_Date
@@ -1221,24 +1090,10 @@ EXP_Expire_Rows AS (
 	-- source_sys_id = v_PREV_ROW_source_sys_id
 	-- , ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1)
 	-- ,orig_eff_to_date)
-	DECODE(TRUE,
-		claim_party_occurrence_ak_id = v_PREV_ROW_claim_party_occurrence_ak_id 
-		AND loc_unit_num = v_PREV_ROW_loc_unit_num 
-		AND sub_loc_unit_num = v_PREV_ROW_sub_loc_unit_num 
-		AND ins_line = v_PREV_ROW_ins_line 
-		AND risk_unit_grp = v_PREV_ROW_risk_unit_grp 
-		AND risk_unit_grp_seq_num = v_PREV_ROW_risk_unit_grp_seq_num 
-		AND risk_unit = v_PREV_ROW_risk_unit 
-		AND risk_unit_seq_num = v_PREV_ROW_risk_unit_seq_num 
-		AND major_peril_code = v_PREV_ROW_major_peril_code 
-		AND major_peril_seq = v_PREV_ROW_major_peril_seq 
-		AND pms_loss_disability = v_PREV_ROW_pms_loss_disability 
-		AND pms_reserve_ctgry = v_PREV_ROW_pms_reserve_ctgry 
-		AND pms_loss_cause = v_PREV_ROW_pms_loss_cause 
-		AND pms_mbr = v_PREV_ROW_pms_mbr 
-		AND pms_type_exposure = v_PREV_ROW_type_exposure 
-		AND source_sys_id = v_PREV_ROW_source_sys_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    claim_party_occurrence_ak_id = v_PREV_ROW_claim_party_occurrence_ak_id and loc_unit_num = v_PREV_ROW_loc_unit_num and sub_loc_unit_num = v_PREV_ROW_sub_loc_unit_num and ins_line = v_PREV_ROW_ins_line and risk_unit_grp = v_PREV_ROW_risk_unit_grp and risk_unit_grp_seq_num = v_PREV_ROW_risk_unit_grp_seq_num and risk_unit = v_PREV_ROW_risk_unit and risk_unit_seq_num = v_PREV_ROW_risk_unit_seq_num and major_peril_code = v_PREV_ROW_major_peril_code and major_peril_seq = v_PREV_ROW_major_peril_seq and pms_loss_disability = v_PREV_ROW_pms_loss_disability and pms_reserve_ctgry = v_PREV_ROW_pms_reserve_ctgry and pms_loss_cause = v_PREV_ROW_pms_loss_cause and pms_mbr = v_PREV_ROW_pms_mbr and pms_type_exposure = v_PREV_ROW_type_exposure and source_sys_id = v_PREV_ROW_source_sys_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	claim_party_occurrence_ak_id AS v_PREV_ROW_claim_party_occurrence_ak_id,

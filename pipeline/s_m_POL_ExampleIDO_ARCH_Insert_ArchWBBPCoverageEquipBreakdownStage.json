@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageEquipBreakdownStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageEquipBr_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBBPCoverageEquipBreakdownStage AS (\n\tSELECT\n\t\tWBBPCoverageEquipBreakdownStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCoverageId,\n\t\tWB_BP_CoverageEquipBreakdownId,\n\t\tSessionId,\n\t\tCovEquipmentBreakdownIndicator,\n\t\tPrintingPresses,\n\t\tSheetFedFiveColorAgeOfOldestPress,\n\t\tSheetFedFiveColorCaption,\n\t\tSheetFedFiveColorNumberOfPresses,\n\t\tSheetFedFourColorAgeOfOldestPress,\n\t\tSheetFedFourColorCaption,\n\t\tSheetFedFourColorNumberOfPresses,\n\t\tSheetFedMoreThanFiveColorAgeOfOldestPress,\n\t\tSheetFedMoreThanFiveColorCaption,\n\t\tSheetFedMoreThanFiveColorNumberOfPresses,\n\t\tSheetFedThreeColorAgeOfOldestPress,\n\t\tSheetFedThreeColorCaption,\n\t\tSheetFedThreeColorNumberOfPresses,\n\t\tSheetFedTwoColorAgeOfOldestPress,\n\t\tSheetFedTwoColorCaption,\n\t\tSheetFedTwoColorNumberOfPresses,\n\t\tSheetFedOneColorAgeOfOldestPress,\n\t\tSheetFedOneColorCaption,\n\t\tSheetFedOneColorNumberOfPresses,\n\t\tWebFedAgeOfOldestPress,\n\t\tWebFedCaption,\n\t\tWebFedNumberOfPresses,\n\t\tTypeOfPress,\n\t\tNumberOfPresses,\n\t\tAgeOfOldestPressInYears,\n\t\tMedicalEquipment,\n\t\tMinimumDeductibleDirectCoveragesMedical,\n\t\tMinimumDeductibleIndirectCoveragesMedical,\n\t\tMedicalEquipmentGreaterThanOneMillion,\n\t\tEquipBreakdownSetPrintingProcessValue,\n\t\tBillingLOB,\n\t\tCommissionPlanID,\n\t\tIsBillingSubline,\n\t\tParentBillingLOB,\n\t\tPurePremium,\n\t\tTransactionCommissionType,\n\t\tTransactionCommissionValue,\n\t\tTransactionFinalCommissionValue\n\tFROM WBBPCoverageEquipBreakdownStage\n),\nEXP_Metadata AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tWBBPCoverageEquipBreakdownStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCoverageId,\n\tWB_BP_CoverageEquipBreakdownId,\n\tSessionId,\n\tCovEquipmentBreakdownIndicator,\n\t-- *INF*: DECODE(CovEquipmentBreakdownIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    CovEquipmentBreakdownIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_CovEquipmentBreakdownIndicator,\n\tPrintingPresses,\n\t-- *INF*: DECODE(PrintingPresses,'T',1,'F',0,NULL)\n\tDECODE(\n\t    PrintingPresses,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PrintingPresses,\n\tSheetFedFiveColorAgeOfOldestPress,\n\tSheetFedFiveColorCaption,\n\tSheetFedFiveColorNumberOfPresses,\n\tSheetFedFourColorAgeOfOldestPress,\n\tSheetFedFourColorCaption,\n\tSheetFedFourColorNumberOfPresses,\n\tSheetFedMoreThanFiveColorAgeOfOldestPress,\n\tSheetFedMoreThanFiveColorCaption,\n\tSheetFedMoreThanFiveColorNumberOfPresses,\n\tSheetFedThreeColorAgeOfOldestPress,\n\tSheetFedThreeColorCaption,\n\tSheetFedThreeColorNumberOfPresses,\n\tSheetFedTwoColorAgeOfOldestPress,\n\tSheetFedTwoColorCaption,\n\tSheetFedTwoColorNumberOfPresses,\n\tSheetFedOneColorAgeOfOldestPress,\n\tSheetFedOneColorCaption,\n\tSheetFedOneColorNumberOfPresses,\n\tWebFedAgeOfOldestPress,\n\tWebFedCaption,\n\tWebFedNumberOfPresses,\n\tTypeOfPress,\n\tNumberOfPresses,\n\tAgeOfOldestPressInYears,\n\tMedicalEquipment,\n\t-- *INF*: DECODE(MedicalEquipment,'T',1,'F',0,NULL)\n\tDECODE(\n\t    MedicalEquipment,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_MedicalEquipment,\n\tMinimumDeductibleDirectCoveragesMedical,\n\tMinimumDeductibleIndirectCoveragesMedical,\n\tMedicalEquipmentGreaterThanOneMillion,\n\t-- *INF*: DECODE(MedicalEquipmentGreaterThanOneMillion,'T',1,'F',0,NULL)\n\tDECODE(\n\t    MedicalEquipmentGreaterThanOneMillion,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_MedicalEquipmentGreaterThanOneMillion,\n\tEquipBreakdownSetPrintingProcessValue,\n\t-- *INF*: DECODE(EquipBreakdownSetPrintingProcessValue,'T',1,'F',0,NULL)\n\tDECODE(\n\t    EquipBreakdownSetPrintingProcessValue,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_EquipBreakdownSetPrintingProcessValue,\n\tBillingLOB,\n\tCommissionPlanID,\n\tIsBillingSubline,\n\t-- *INF*: DECODE(IsBillingSubline,'T',1,'F',0,NULL)\n\tDECODE(\n\t    IsBillingSubline,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IsBillingSubline,\n\tParentBillingLOB,\n\tPurePremium,\n\tTransactionCommissionType,\n\tTransactionCommissionValue,\n\tTransactionFinalCommissionValue\n\tFROM SQ_WBBPCoverageEquipBreakdownStage\n),\nArchWBBPCoverageEquipBreakdownStage AS (\n\tINSERT INTO ArchWBBPCoverageEquipBreakdownStage\n\t(ExtractDate, SourceSystemId, AuditId, WBBPCoverageEquipBreakdownStageId, CoverageId, WB_BP_CoverageEquipBreakdownId, SessionId, CovEquipmentBreakdownIndicator, PrintingPresses, SheetFedFiveColorAgeOfOldestPress, SheetFedFiveColorCaption, SheetFedFiveColorNumberOfPresses, SheetFedFourColorAgeOfOldestPress, SheetFedFourColorCaption, SheetFedFourColorNumberOfPresses, SheetFedMoreThanFiveColorAgeOfOldestPress, SheetFedMoreThanFiveColorCaption, SheetFedMoreThanFiveColorNumberOfPresses, SheetFedThreeColorAgeOfOldestPress, SheetFedThreeColorCaption, SheetFedThreeColorNumberOfPresses, SheetFedTwoColorAgeOfOldestPress, SheetFedTwoColorCaption, SheetFedTwoColorNumberOfPresses, SheetFedOneColorAgeOfOldestPress, SheetFedOneColorCaption, SheetFedOneColorNumberOfPresses, WebFedAgeOfOldestPress, WebFedCaption, WebFedNumberOfPresses, TypeOfPress, NumberOfPresses, AgeOfOldestPressInYears, MedicalEquipment, MinimumDeductibleDirectCoveragesMedical, MinimumDeductibleIndirectCoveragesMedical, MedicalEquipmentGreaterThanOneMillion, EquipBreakdownSetPrintingProcessValue, BillingLOB, CommissionPlanID, IsBillingSubline, ParentBillingLOB, PurePremium, TransactionCommissionType, TransactionCommissionValue, TransactionFinalCommissionValue)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBBPCOVERAGEEQUIPBREAKDOWNSTAGEID, \n\tCOVERAGEID, \n\tWB_BP_COVERAGEEQUIPBREAKDOWNID, \n\tSESSIONID, \n\to_CovEquipmentBreakdownIndicator AS COVEQUIPMENTBREAKDOWNINDICATOR, \n\to_PrintingPresses AS PRINTINGPRESSES, \n\tSHEETFEDFIVECOLORAGEOFOLDESTPRESS, \n\tSHEETFEDFIVECOLORCAPTION, \n\tSHEETFEDFIVECOLORNUMBEROFPRESSES, \n\tSHEETFEDFOURCOLORAGEOFOLDESTPRESS, \n\tSHEETFEDFOURCOLORCAPTION, \n\tSHEETFEDFOURCOLORNUMBEROFPRESSES, \n\tSHEETFEDMORETHANFIVECOLORAGEOFOLDESTPRESS, \n\tSHEETFEDMORETHANFIVECOLORCAPTION, \n\tSHEETFEDMORETHANFIVECOLORNUMBEROFPRESSES, \n\tSHEETFEDTHREECOLORAGEOFOLDESTPRESS, \n\tSHEETFEDTHREECOLORCAPTION, \n\tSHEETFEDTHREECOLORNUMBEROFPRESSES, \n\tSHEETFEDTWOCOLORAGEOFOLDESTPRESS, \n\tSHEETFEDTWOCOLORCAPTION, \n\tSHEETFEDTWOCOLORNUMBEROFPRESSES, \n\tSHEETFEDONECOLORAGEOFOLDESTPRESS, \n\tSHEETFEDONECOLORCAPTION, \n\tSHEETFEDONECOLORNUMBEROFPRESSES, \n\tWEBFEDAGEOFOLDESTPRESS, \n\tWEBFEDCAPTION, \n\tWEBFEDNUMBEROFPRESSES, \n\tTYPEOFPRESS, \n\tNUMBEROFPRESSES, \n\tAGEOFOLDESTPRESSINYEARS, \n\to_MedicalEquipment AS MEDICALEQUIPMENT, \n\tMINIMUMDEDUCTIBLEDIRECTCOVERAGESMEDICAL, \n\tMINIMUMDEDUCTIBLEINDIRECTCOVERAGESMEDICAL, \n\to_MedicalEquipmentGreaterThanOneMillion AS MEDICALEQUIPMENTGREATERTHANONEMILLION, \n\to_EquipBreakdownSetPrintingProcessValue AS EQUIPBREAKDOWNSETPRINTINGPROCESSVALUE, \n\tBILLINGLOB, \n\tCOMMISSIONPLANID, \n\to_IsBillingSubline AS ISBILLINGSUBLINE, \n\tPARENTBILLINGLOB, \n\tPUREPREMIUM, \n\tTRANSACTIONCOMMISSIONTYPE, \n\tTRANSACTIONCOMMISSIONVALUE, \n\tTRANSACTIONFINALCOMMISSIONVALUE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

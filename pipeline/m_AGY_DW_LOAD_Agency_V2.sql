@@ -65,73 +65,38 @@ EXP_CleanupData AS (
 	SQ_AgencyODSStage.AgencyCode,
 	SQ_AgencyODSStage.LegalName,
 	-- *INF*: IIF(IsNull(LegalName), 'N/A', LegalName)
-	IFF(LegalName IS NULL,
-		'N/A',
-		LegalName
-	) AS o_LegalName,
+	IFF(LegalName IS NULL, 'N/A', LegalName) AS o_LegalName,
 	SQ_AgencyODSStage.DoingBusinessAsName,
 	-- *INF*: IIF(IsNull(DoingBusinessAsName), 'N/A', DoingBusinessAsName)
-	IFF(DoingBusinessAsName IS NULL,
-		'N/A',
-		DoingBusinessAsName
-	) AS o_DoingBusinessAsName,
+	IFF(DoingBusinessAsName IS NULL, 'N/A', DoingBusinessAsName) AS o_DoingBusinessAsName,
 	SQ_AgencyODSStage.PrimaryPhoneNumber,
 	-- *INF*: IIF(IsNull(PrimaryPhoneNumber), '000-000-0000', PrimaryPhoneNumber)
-	IFF(PrimaryPhoneNumber IS NULL,
-		'000-000-0000',
-		PrimaryPhoneNumber
-	) AS o_PrimaryPhoneNumber,
+	IFF(PrimaryPhoneNumber IS NULL, '000-000-0000', PrimaryPhoneNumber) AS o_PrimaryPhoneNumber,
 	SQ_AgencyODSStage.PrimaryFaxNumber,
 	-- *INF*: IIF(IsNull(PrimaryFaxNumber), '000-000-0000', PrimaryFaxNumber)
-	IFF(PrimaryFaxNumber IS NULL,
-		'000-000-0000',
-		PrimaryFaxNumber
-	) AS o_PrimaryFaxNumber,
+	IFF(PrimaryFaxNumber IS NULL, '000-000-0000', PrimaryFaxNumber) AS o_PrimaryFaxNumber,
 	SQ_AgencyODSStage.PrimaryEmailAddress,
 	-- *INF*: IIF(IsNull(PrimaryEmailAddress), 'N/A', PrimaryEmailAddress)
-	IFF(PrimaryEmailAddress IS NULL,
-		'N/A',
-		PrimaryEmailAddress
-	) AS o_PrimaryEmailAddress,
+	IFF(PrimaryEmailAddress IS NULL, 'N/A', PrimaryEmailAddress) AS o_PrimaryEmailAddress,
 	SQ_AgencyODSStage.StatusCode,
 	-- *INF*: IIF(IsNull(StatusCode), '?', StatusCode)
-	IFF(StatusCode IS NULL,
-		'?',
-		StatusCode
-	) AS o_StatusCode,
+	IFF(StatusCode IS NULL, '?', StatusCode) AS o_StatusCode,
 	SQ_AgencyODSStage.StatusDescription,
 	-- *INF*: IIF(IsNull(StatusDescription), 'N/A', StatusDescription)
-	IFF(StatusDescription IS NULL,
-		'N/A',
-		StatusDescription
-	) AS o_StatusDescription,
+	IFF(StatusDescription IS NULL, 'N/A', StatusDescription) AS o_StatusDescription,
 	SQ_AgencyODSStage.AppointedDate,
 	-- *INF*: IIF(IsNull(AppointedDate), to_date('1900-01-01', 'YYYY-MM-DD'), AppointedDate)
-	IFF(AppointedDate IS NULL,
-		to_date('1900-01-01', 'YYYY-MM-DD'
-		),
-		AppointedDate
-	) AS o_AppointedDate,
+	IFF(AppointedDate IS NULL, TO_TIMESTAMP('1900-01-01', 'YYYY-MM-DD'), AppointedDate) AS o_AppointedDate,
 	SQ_AgencyODSStage.TerminatedDate,
 	-- *INF*: IIF(IsNull(TerminatedDate), to_date('2999-12-31', 'YYYY-MM-DD'), TerminatedDate)
-	IFF(TerminatedDate IS NULL,
-		to_date('2999-12-31', 'YYYY-MM-DD'
-		),
-		TerminatedDate
-	) AS o_TerminatedDate,
+	IFF(TerminatedDate IS NULL, TO_TIMESTAMP('2999-12-31', 'YYYY-MM-DD'), TerminatedDate) AS o_TerminatedDate,
 	SQ_AgencyODSStage.SourceSystemID,
 	SQ_AgencyODSStage.CustomerCareStatus,
 	-- *INF*: IIF(IsNull(CustomerCareStatus), 'N/A', CustomerCareStatus)
-	IFF(CustomerCareStatus IS NULL,
-		'N/A',
-		CustomerCareStatus
-	) AS o_CustomerCareStatus,
+	IFF(CustomerCareStatus IS NULL, 'N/A', CustomerCareStatus) AS o_CustomerCareStatus,
 	SQ_AgencyODSStage.FederalTaxID,
 	-- *INF*: IIF(IsNull(FederalTaxID), 'N/A', FederalTaxID)
-	IFF(FederalTaxID IS NULL,
-		'N/A',
-		FederalTaxID
-	) AS o_FederalTaxID,
+	IFF(FederalTaxID IS NULL, 'N/A', FederalTaxID) AS o_FederalTaxID,
 	LKP_SalesTerritoryRelationship.SalesTerritoryCode AS lkp_SalesTerritoryCode,
 	LKP_RSMRelationship.WestBendAssociateID AS lkp_WestBendAssociateID,
 	SQ_AgencyODSStage.ProfitSharingGuaranteeFlag,
@@ -192,40 +157,22 @@ EXP_GetAKIDs AS (
 	EXP_CleanupData.o_FederalTaxID AS FederalTaxID,
 	LKP_SalesTerritoryAKID.SalesTerritoryAKID AS lkp_SalesTerritoryAKID,
 	-- *INF*: IIF(IsNull(lkp_SalesTerritoryAKID), -1, lkp_SalesTerritoryAKID)
-	IFF(lkp_SalesTerritoryAKID IS NULL,
-		- 1,
-		lkp_SalesTerritoryAKID
-	) AS o_SalesTerritoryAKID,
+	IFF(lkp_SalesTerritoryAKID IS NULL, - 1, lkp_SalesTerritoryAKID) AS o_SalesTerritoryAKID,
 	LKP_RegionalSalesManager.RegionalSalesManagerAKID AS lkp_RegionalSalesManagerAKID,
 	-- *INF*: IIF(IsNull(lkp_RegionalSalesManagerAKID), -1, lkp_RegionalSalesManagerAKID)
-	IFF(lkp_RegionalSalesManagerAKID IS NULL,
-		- 1,
-		lkp_RegionalSalesManagerAKID
-	) AS o_RegionalSalesManagerAKID,
+	IFF(lkp_RegionalSalesManagerAKID IS NULL, - 1, lkp_RegionalSalesManagerAKID) AS o_RegionalSalesManagerAKID,
 	EXP_CleanupData.ProfitSharingGuaranteeFlag AS in_ProfitSharingGuaranteeFlag,
 	-- *INF*: IIF(ISNULL(in_ProfitSharingGuaranteeFlag),'0',in_ProfitSharingGuaranteeFlag)
-	IFF(in_ProfitSharingGuaranteeFlag IS NULL,
-		'0',
-		in_ProfitSharingGuaranteeFlag
-	) AS out_ProfitSharingGuaranteeFlag,
+	IFF(in_ProfitSharingGuaranteeFlag IS NULL, '0', in_ProfitSharingGuaranteeFlag) AS out_ProfitSharingGuaranteeFlag,
 	EXP_CleanupData.LicensedIndicator AS in_LicensedIndicator,
 	-- *INF*: IIF(ISNULL(in_LicensedIndicator),'0',in_LicensedIndicator)
-	IFF(in_LicensedIndicator IS NULL,
-		'0',
-		in_LicensedIndicator
-	) AS out_LicensedIndicator,
+	IFF(in_LicensedIndicator IS NULL, '0', in_LicensedIndicator) AS out_LicensedIndicator,
 	EXP_CleanupData.AbbreviatedName AS in_AbbreviatedName,
 	-- *INF*: IIF(ISNULL(in_AbbreviatedName),'N/A',in_AbbreviatedName)
-	IFF(in_AbbreviatedName IS NULL,
-		'N/A',
-		in_AbbreviatedName
-	) AS out_AbbreviatedName,
+	IFF(in_AbbreviatedName IS NULL, 'N/A', in_AbbreviatedName) AS out_AbbreviatedName,
 	EXP_CleanupData.AssignedStateCode AS in_AssignedStateCode,
 	-- *INF*: IIF(ISNULL(in_AssignedStateCode),'N/A',in_AssignedStateCode)
-	IFF(in_AssignedStateCode IS NULL,
-		'N/A',
-		in_AssignedStateCode
-	) AS out_AssignedStateCode,
+	IFF(in_AssignedStateCode IS NULL, 'N/A', in_AssignedStateCode) AS out_AssignedStateCode,
 	EXP_CleanupData.ClosedDate
 	FROM EXP_CleanupData
 	LEFT JOIN LKP_RegionalSalesManager
@@ -275,42 +222,30 @@ EXP_Detect_Changes AS (
 	EXP_GetAKIDs.out_AssignedStateCode AS AssignedStateCode,
 	-- *INF*: MD5(to_char(SalesTerritoryAKID) || '&' ||  to_char(RegionalSalesManagerAKID) || '&' ||  LegalName || '&' ||  DoingBusinessAsName || '&' ||  StatusCode || '&' ||  StatusDescription || '&' ||  to_char(AppointedDate) || '&' ||  to_char(TerminatedDate) || '&' ||  CustomerCareStatus || '&' ||  PrimaryPhoneNumber || '&' ||  PrimaryFaxNumber || '&' ||  PrimaryEmailAddress || '&' ||  FederalTaxID || '&' || to_char(ProfitSharingGuaranteeFlag) || '&' ||  to_char(LicensedIndicator) || '&' ||   AbbreviatedName || '&' ||   to_char(AssignedStateCode))
 	-- 
-	MD5(to_char(SalesTerritoryAKID
-		) || '&' || to_char(RegionalSalesManagerAKID
-		) || '&' || LegalName || '&' || DoingBusinessAsName || '&' || StatusCode || '&' || StatusDescription || '&' || to_char(AppointedDate
-		) || '&' || to_char(TerminatedDate
-		) || '&' || CustomerCareStatus || '&' || PrimaryPhoneNumber || '&' || PrimaryFaxNumber || '&' || PrimaryEmailAddress || '&' || FederalTaxID || '&' || to_char(ProfitSharingGuaranteeFlag
-		) || '&' || to_char(LicensedIndicator
-		) || '&' || AbbreviatedName || '&' || to_char(AssignedStateCode
-		)
-	) AS v_NewHashKey,
+	MD5(to_char(SalesTerritoryAKID) || '&' || to_char(RegionalSalesManagerAKID) || '&' || LegalName || '&' || DoingBusinessAsName || '&' || StatusCode || '&' || StatusDescription || '&' || to_char(AppointedDate) || '&' || to_char(TerminatedDate) || '&' || CustomerCareStatus || '&' || PrimaryPhoneNumber || '&' || PrimaryFaxNumber || '&' || PrimaryEmailAddress || '&' || FederalTaxID || '&' || to_char(ProfitSharingGuaranteeFlag) || '&' || to_char(LicensedIndicator) || '&' || AbbreviatedName || '&' || to_char(AssignedStateCode)) AS v_NewHashKey,
 	EXP_GetAKIDs.ClosedDate,
 	v_NewHashKey AS o_NewHashKey,
 	-- *INF*: IIF(IsNull(lkp_AgencyAKID), 'NEW', 
 	-- IIF((lkp_HashKey <> v_NewHashKey or lkp_ClosedDate<>ClosedDate), 'UPDATE' ,
 	-- 'NOCHANGE'))
-	IFF(lkp_AgencyAKID IS NULL,
-		'NEW',
-		IFF(( lkp_HashKey <> v_NewHashKey 
-				OR lkp_ClosedDate <> ClosedDate 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    lkp_AgencyAKID IS NULL, 'NEW',
+	    IFF(
+	        (lkp_HashKey <> v_NewHashKey
+	    or lkp_ClosedDate <> ClosedDate), 'UPDATE', 'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS EffectiveFromDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS EffectiveToDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveToDate,
 	EXP_GetAKIDs.SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate
@@ -370,10 +305,7 @@ EXP_Assign_AKID AS (
 	lkp_AgencyAKID,
 	SEQ_V2Agency_AKID.NEXTVAL,
 	-- *INF*: iif(isnull(lkp_AgencyAKID),NEXTVAL,lkp_AgencyAKID)
-	IFF(lkp_AgencyAKID IS NULL,
-		NEXTVAL,
-		lkp_AgencyAKID
-	) AS o_AgencyAKID,
+	IFF(lkp_AgencyAKID IS NULL, NEXTVAL, lkp_AgencyAKID) AS o_AgencyAKID,
 	SalesTerritoryAKID,
 	RegionalSalesManagerAKID,
 	AgencyCode,
@@ -459,9 +391,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- AgencyAKID = v_prev_AKID , ADD_TO_DATE(v_prev_EffectiveFromDate,'SS',-1),
 	-- OriginalEffectiveToDate)
-	DECODE(TRUE,
-		AgencyAKID = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_EffectiveFromDate),
-		OriginalEffectiveToDate
+	DECODE(
+	    TRUE,
+	    AgencyAKID = v_prev_AKID, DATEADD(SECOND,- 1,v_prev_EffectiveFromDate),
+	    OriginalEffectiveToDate
 	) AS v_EffectiveToDate,
 	v_EffectiveToDate AS o_EffectiveToDate,
 	AgencyAKID AS v_prev_AKID,

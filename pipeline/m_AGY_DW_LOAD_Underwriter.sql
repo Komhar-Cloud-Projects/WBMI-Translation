@@ -26,66 +26,61 @@ EXP_defaultvalues AS (
 	uw_extension AS in_uw_extension,
 	routing_station AS in_routing_station,
 	-- *INF*: iif(isnull(in_uw_code),'N/A',iif(IS_SPACES(in_uw_code),'N/A',in_uw_code))
-	IFF(in_uw_code IS NULL,
-		'N/A',
-		IFF(LENGTH(in_uw_code)>0 AND TRIM(in_uw_code)='',
-			'N/A',
-			in_uw_code
-		)
+	IFF(
+	    in_uw_code IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(in_uw_code)>0 AND TRIM(in_uw_code)='', 'N/A', in_uw_code
+	    )
 	) AS uw_code,
 	-- *INF*: iif(isnull(in_uw_first_name),'N/A',iif(IS_SPACES(in_uw_first_name),'N/A',ltrim(rtrim(in_uw_first_name))))
-	IFF(in_uw_first_name IS NULL,
-		'N/A',
-		IFF(LENGTH(in_uw_first_name)>0 AND TRIM(in_uw_first_name)='',
-			'N/A',
-			ltrim(rtrim(in_uw_first_name
-				)
-			)
-		)
+	IFF(
+	    in_uw_first_name IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(in_uw_first_name)>0
+	    and TRIM(in_uw_first_name)='', 'N/A',
+	        ltrim(rtrim(in_uw_first_name))
+	    )
 	) AS uw_first_name,
 	-- *INF*: iif(isnull(in_uw_middle_name),'N/A',iif(IS_SPACES(in_uw_middle_name),'N/A',ltrim(rtrim(in_uw_middle_name))))
-	IFF(in_uw_middle_name IS NULL,
-		'N/A',
-		IFF(LENGTH(in_uw_middle_name)>0 AND TRIM(in_uw_middle_name)='',
-			'N/A',
-			ltrim(rtrim(in_uw_middle_name
-				)
-			)
-		)
+	IFF(
+	    in_uw_middle_name IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(in_uw_middle_name)>0
+	    and TRIM(in_uw_middle_name)='', 'N/A',
+	        ltrim(rtrim(in_uw_middle_name))
+	    )
 	) AS uw_middle_name,
 	-- *INF*: iif(isnull(in_uw_last_name),'N/A',iif(IS_SPACES(in_uw_last_name),'N/A',ltrim(rtrim(in_uw_last_name))))
-	IFF(in_uw_last_name IS NULL,
-		'N/A',
-		IFF(LENGTH(in_uw_last_name)>0 AND TRIM(in_uw_last_name)='',
-			'N/A',
-			ltrim(rtrim(in_uw_last_name
-				)
-			)
-		)
+	IFF(
+	    in_uw_last_name IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(in_uw_last_name)>0
+	    and TRIM(in_uw_last_name)='', 'N/A',
+	        ltrim(rtrim(in_uw_last_name))
+	    )
 	) AS uw_last_name,
 	-- *INF*: iif(isnull(in_uw_suffix),'N/A',iif(IS_SPACES(in_uw_suffix),'N/A',in_uw_suffix))
-	IFF(in_uw_suffix IS NULL,
-		'N/A',
-		IFF(LENGTH(in_uw_suffix)>0 AND TRIM(in_uw_suffix)='',
-			'N/A',
-			in_uw_suffix
-		)
+	IFF(
+	    in_uw_suffix IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(in_uw_suffix)>0 AND TRIM(in_uw_suffix)='', 'N/A', in_uw_suffix
+	    )
 	) AS uw_suffix,
 	-- *INF*: iif(isnull(in_uw_extension),'N/A ',iif(IS_SPACES(in_uw_extension),'N/A ',in_uw_extension))
-	IFF(in_uw_extension IS NULL,
-		'N/A ',
-		IFF(LENGTH(in_uw_extension)>0 AND TRIM(in_uw_extension)='',
-			'N/A ',
-			in_uw_extension
-		)
+	IFF(
+	    in_uw_extension IS NULL, 'N/A ',
+	    IFF(
+	        LENGTH(in_uw_extension)>0 AND TRIM(in_uw_extension)='', 'N/A ', in_uw_extension
+	    )
 	) AS uw_extension,
 	-- *INF*: iif(isnull(in_routing_station),'N/A',iif(IS_SPACES(in_routing_station),'N/A',in_routing_station))
-	IFF(in_routing_station IS NULL,
-		'N/A',
-		IFF(LENGTH(in_routing_station)>0 AND TRIM(in_routing_station)='',
-			'N/A',
-			in_routing_station
-		)
+	IFF(
+	    in_routing_station IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(in_routing_station)>0
+	    and TRIM(in_routing_station)='', 'N/A',
+	        in_routing_station
+	    )
 	) AS routing_station,
 	SOURCE_SYSTEM_ID
 	FROM SQ_underwriter_stage
@@ -155,23 +150,18 @@ EXP_DetectChanges AS (
 	-- 	(routing_station<> routing_station_old ),
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(uw_id_old IS NULL,
-		'NEW',
-		IFF(( uw_first_name <> uw_first_name_old 
-			) 
-			OR ( uw_middle_name <> uw_mid_name_old 
-			) 
-			OR ( uw_last_name <> uw_last_name_old 
-			) 
-			OR ( uw_suffix <> uw_sfx_old 
-			) 
-			OR ( uw_extension <> uw_extension_old 
-			) 
-			OR ( routing_station <> routing_station_old 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    uw_id_old IS NULL, 'NEW',
+	    IFF(
+	        (uw_first_name <> uw_first_name_old)
+	        or (uw_middle_name <> uw_mid_name_old)
+	        or (uw_last_name <> uw_last_name_old)
+	        or (uw_suffix <> uw_sfx_old)
+	        or (uw_extension <> uw_extension_old)
+	        or (routing_station <> routing_station_old),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
@@ -183,10 +173,9 @@ EXP_DetectChanges AS (
 	-- 
 	-- 
 	-- 
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
 	-- 
@@ -194,8 +183,7 @@ EXP_DetectChanges AS (
 	-- 
 	-- 
 	-- 
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	sysdate AS created_date,
 	sysdate AS modified_date,
 	EXP_defaultvalues.SOURCE_SYSTEM_ID,
@@ -203,10 +191,7 @@ EXP_DetectChanges AS (
 	-- *INF*: IIF(v_changed_flag='NEW',
 	-- NEXTVAL,
 	-- uw_ak_id)
-	IFF(v_changed_flag = 'NEW',
-		NEXTVAL,
-		uw_ak_id
-	) AS out_uw_AK_ID
+	IFF(v_changed_flag = 'NEW', NEXTVAL, uw_ak_id) AS out_uw_AK_ID
 	FROM EXP_defaultvalues
 	LEFT JOIN LKP_Underwriter
 	ON LKP_Underwriter.uw_code = EXP_defaultvalues.uw_code
@@ -290,9 +275,10 @@ EXP_Lag_eff_from_date AS (
 	-- 	uw_code = v_PREV_ROW_uw_code, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	-- 	
-	DECODE(TRUE,
-		uw_code = v_PREV_ROW_uw_code, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    uw_code = v_PREV_ROW_uw_code, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

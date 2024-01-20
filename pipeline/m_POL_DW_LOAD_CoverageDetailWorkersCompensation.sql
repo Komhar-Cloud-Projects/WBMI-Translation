@@ -23,11 +23,9 @@ EXP_DefaultValue AS (
 	i_CurrentSnapshotFlag AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -40,15 +38,14 @@ EXP_DefaultValue AS (
 	-- SUBSTR(i_BureauCode5,2,1)='M','1',
 	-- '0'
 	-- )
-	Decode(TRUE,
-		i_BureauCode5 IS NULL, '0',
-		LENGTH(i_BureauCode5)>0 AND TRIM(i_BureauCode5)='', '0',
-		i_BureauCode5 = '', '0',
-		SUBSTR(i_BureauCode5, 1, 1
-		) = 'A', '1',
-		SUBSTR(i_BureauCode5, 2, 1
-		) = 'M', '1',
-		'0'
+	Decode(
+	    TRUE,
+	    i_BureauCode5 IS NULL, '0',
+	    LENGTH(i_BureauCode5)>0 AND TRIM(i_BureauCode5)='', '0',
+	    i_BureauCode5 = '', '0',
+	    SUBSTR(i_BureauCode5, 1, 1) = 'A', '1',
+	    SUBSTR(i_BureauCode5, 2, 1) = 'M', '1',
+	    '0'
 	) AS o_AdmiraltyActFlag,
 	-- *INF*: Decode(TRUE,
 	-- ISNULL(i_BureauCode5),'0',
@@ -57,15 +54,14 @@ EXP_DefaultValue AS (
 	-- SUBSTR(i_BureauCode5,1,1)='L','1',
 	-- SUBSTR(i_BureauCode5,2,1)='M','1',
 	-- '0')
-	Decode(TRUE,
-		i_BureauCode5 IS NULL, '0',
-		LENGTH(i_BureauCode5)>0 AND TRIM(i_BureauCode5)='', '0',
-		i_BureauCode5 = '', '0',
-		SUBSTR(i_BureauCode5, 1, 1
-		) = 'L', '1',
-		SUBSTR(i_BureauCode5, 2, 1
-		) = 'M', '1',
-		'0'
+	Decode(
+	    TRUE,
+	    i_BureauCode5 IS NULL, '0',
+	    LENGTH(i_BureauCode5)>0 AND TRIM(i_BureauCode5)='', '0',
+	    i_BureauCode5 = '', '0',
+	    SUBSTR(i_BureauCode5, 1, 1) = 'L', '1',
+	    SUBSTR(i_BureauCode5, 2, 1) = 'M', '1',
+	    '0'
 	) AS o_FederalEmployersLiabilityActFlag,
 	-- *INF*: Decode(TRUE,
 	-- ISNULL(i_BureauCode5),'0',
@@ -75,15 +71,14 @@ EXP_DefaultValue AS (
 	-- SUBSTR(i_BureauCode5,1,1)='U','1',
 	-- '0'
 	-- )
-	Decode(TRUE,
-		i_BureauCode5 IS NULL, '0',
-		LENGTH(i_BureauCode5)>0 AND TRIM(i_BureauCode5)='', '0',
-		i_BureauCode5 = '', '0',
-		SUBSTR(i_BureauCode5, 1, 1
-		) = 'F', '1',
-		SUBSTR(i_BureauCode5, 1, 1
-		) = 'U', '1',
-		'0'
+	Decode(
+	    TRUE,
+	    i_BureauCode5 IS NULL, '0',
+	    LENGTH(i_BureauCode5)>0 AND TRIM(i_BureauCode5)='', '0',
+	    i_BureauCode5 = '', '0',
+	    SUBSTR(i_BureauCode5, 1, 1) = 'F', '1',
+	    SUBSTR(i_BureauCode5, 1, 1) = 'U', '1',
+	    '0'
 	) AS o_USLongshoreandHarborWorkersCompensationActFlag
 	FROM SQ_Pif43LXZWCStage
 ),
@@ -123,20 +118,11 @@ EXP_DetectChange AS (
 	EXP_DefaultValue.o_ModifiedDate AS ModifiedDate,
 	EXP_DefaultValue.o_CoverageGuid AS CoverageGuid,
 	-- *INF*: IIF(lkp_AdmiraltyActFlag='T','1','0')
-	IFF(lkp_AdmiraltyActFlag = 'T',
-		'1',
-		'0'
-	) AS v_AdmiraltyActFlag,
+	IFF(lkp_AdmiraltyActFlag = 'T', '1', '0') AS v_AdmiraltyActFlag,
 	-- *INF*: IIF(lkp_FederalEmployersLiabilityActFlag='T','1','0')
-	IFF(lkp_FederalEmployersLiabilityActFlag = 'T',
-		'1',
-		'0'
-	) AS v_FederalEmployersLiabilityActFlag,
+	IFF(lkp_FederalEmployersLiabilityActFlag = 'T', '1', '0') AS v_FederalEmployersLiabilityActFlag,
 	-- *INF*: IIF(lkp_USLongShoreAndHarborWorkersCompensationActFlag='T','1','0')
-	IFF(lkp_USLongShoreAndHarborWorkersCompensationActFlag = 'T',
-		'1',
-		'0'
-	) AS v_USLongShoreAndHarborWorkersCompensationActFlag,
+	IFF(lkp_USLongShoreAndHarborWorkersCompensationActFlag = 'T', '1', '0') AS v_USLongShoreAndHarborWorkersCompensationActFlag,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(lkp_PremiumTransactionID), 'New', 
 	-- (lkp_CoverageGuid<>CoverageGuid
@@ -146,14 +132,11 @@ EXP_DetectChange AS (
 	-- 'No Change'
 	-- ) 
 	-- 
-	DECODE(TRUE,
-		lkp_PremiumTransactionID IS NULL, 'New',
-		( lkp_CoverageGuid <> CoverageGuid 
-			OR v_AdmiraltyActFlag <> AdmiraltyActFlag 
-			OR v_FederalEmployersLiabilityActFlag <> FederalEmployersLiabilityActFlag 
-			OR v_USLongShoreAndHarborWorkersCompensationActFlag <> USLongshoreandHarborWorkersCompensationActFlag 
-		), 'Update',
-		'No Change'
+	DECODE(
+	    TRUE,
+	    lkp_PremiumTransactionID IS NULL, 'New',
+	    (lkp_CoverageGuid <> CoverageGuid OR v_AdmiraltyActFlag <> AdmiraltyActFlag OR v_FederalEmployersLiabilityActFlag <> FederalEmployersLiabilityActFlag OR v_USLongShoreAndHarborWorkersCompensationActFlag <> USLongshoreandHarborWorkersCompensationActFlag), 'Update',
+	    'No Change'
 	) AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag,
 	'0' AS o_ConsentToRateFlag,
@@ -163,11 +146,9 @@ EXP_DetectChange AS (
 	EXP_DefaultValue.o_USLongshoreandHarborWorkersCompensationActFlag AS USLongshoreandHarborWorkersCompensationActFlag,
 	'N/A' AS TermType,
 	-- *INF*: TO_DATE('01/01/1800','MM/DD/YYYY')
-	TO_DATE('01/01/1800', 'MM/DD/YYYY'
-	) AS Term_Start_Date,
+	TO_TIMESTAMP('01/01/1800', 'MM/DD/YYYY') AS Term_Start_Date,
 	-- *INF*: TO_DATE('12/31/2100','MM/DD/YYYY')
-	TO_DATE('12/31/2100', 'MM/DD/YYYY'
-	) AS Term_End_Date,
+	TO_TIMESTAMP('12/31/2100', 'MM/DD/YYYY') AS Term_End_Date,
 	0 AS ARDIndicatorFlag,
 	0 AS ExperienceRatedFlag,
 	'00' AS DeductibleType,

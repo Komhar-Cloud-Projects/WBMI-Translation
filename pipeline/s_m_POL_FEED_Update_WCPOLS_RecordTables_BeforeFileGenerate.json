@@ -1,0 +1,51 @@
+{
+    "name": "s_m_POL_FEED_Update_WCPOLS_RecordTables_BeforeFileGenerate",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Update_WCPOLS_RecordTables_BeforeFileGene_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SupWCPOLS_StateCode AS (\n\tWITH cte_StateCodeUpdates as\r\n\t(SELECT A.SourcesystemID, \r\n\tA.WCPOLSCode, \r\n\tA.SourceCode, \r\n\tA.TableName, \r\n\tA.ProcessName \r\n\tFROM\r\n\tdbo.SUPWCPOLS A with (nolock)\r\n\tinner join (\r\n\tselect SourcesystemID,TableName,ProcessName,SourceCode from dbo.SupWCPOLS with (nolock)\r\n\twhere SourceCode not in ('NotusedbyWB','logic based')\r\n\tgroup by SourcesystemID,TableName,ProcessName,SourceCode\r\n\thaving count(1)>1) B\r\n\ton A.SourcesystemID=B.SourcesystemID\r\n\tand A.TableName=B.TableName\r\n\tand A.ProcessName=B.ProcessName\r\n\tand A.SourceCode=B.SourceCode\r\n\twhere \r\n\tPATINDEX('%StateCode%',A.ProcessName) > 0 AND\r\n\t(('@{pipeline().parameters.FILENAME}'='NCCI' and A.NCCIRequiredFlag=1) OR\r\n\t('@{pipeline().parameters.FILENAME}'='WI' and A.WIRequiredFlag=1) OR\r\n\t('@{pipeline().parameters.FILENAME}'='MI' and A.MIRequiredFlag=1) OR\r\n\t('@{pipeline().parameters.FILENAME}'='MN' and A.MNRequiredFlag=1))\r\n\t)\r\n\t\r\n\tSELECT \r\n\tdistinct B.SourcesystemID,\r\n\tB.WCPOLSCode,\r\n\tB.SourceCode,\r\n\tB.TableName,\r\n\tB.ProcessName,\r\n\tCOLUMN_NAME StateCodeField\r\n\tFROM \r\n\tINFORMATION_SCHEMA.COLUMNS A with (nolock)\r\n\tinner join cte_StateCodeUpdates B\r\n\ton A.TABLE_NAME=B.TableName\r\n\tWHERE \r\n\tEXISTS (select 1 from WCPols03Record where ForeignAddressIndicator='Y' and AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} and AddressState=B.SourceCode) AND\r\n\tCOLUMN_NAME like '%StateCode%' AND \r\n\tCOLUMN_NAME !='StateCodeLink' \r\n\torder by 4,5,6\n),\nEXP_SrcDataCollect_StateCode AS (\n\tSELECT\n\tSourcesystemID,\n\tWCPOLSCode,\n\tSourceCode,\n\tTableName,\n\tProcessName,\n\tStateCodeField,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID\n\tFROM SQ_SupWCPOLS_StateCode\n),\nEXP_SqlStateCodeOutput AS (\n\tSELECT\n\t@{pipeline().parameters.FILENAME}||'_1'||'.txt' AS FileName,\n\tSourcesystemID AS SourcesystemID_output,\n\tWCPOLSCode AS WCPOLSCode_output,\n\tSourceCode AS SourceCode_output,\n\tTableName AS TableName_output,\n\tProcessName AS ProcessName_output,\n\tStateCodeField,\n\tAuditID,\n\t-- *INF*: 'UPDATE A SET A.'||StateCodeField||'=' || CHR(39) ||WCPOLSCode_output || CHR(39) ||' FROM dbo.' || TableName_output ||'  A INNER JOIN dbo.SupWCPOLS B ON A.'|| StateCodeField ||'=B.WCPOLSCode INNER JOIN WCPols03Record C on A.WCTrackHistoryID=C.WCTrackHistoryID and C.ForeignAddressIndicator= '|| CHR(39) ||'Y' || CHR(39) || ' and C.AddressState=B.SourceCode  WHERE B.SourcesystemID=' ||CHR(39) ||  SourcesystemID_output || CHR(39)  ||' AND B.TableName=' ||CHR(39) ||  TableName_output || CHR(39) ||' AND B.ProcessName='|| CHR(39) || ProcessName_output ||CHR(39) || ' AND B.SourceCode='|| CHR(39) || SourceCode_output || CHR(39) || \r\n\t-- ' AND C.AuditId=' || AuditID\r\n\t-- \r\n\t-- -- based on UPDATE A\r\n\t-- --SET A.~StateCodeField~=?WCPOLSCode?\r\n\t-- --FROM dbo.~TableName~ A\r\n\t-- --INNER JOIN dbo.SupWCPOLS B\r\n\t-- --ON A.~StateCodeField~=B.WCPOLSCode\r\n\t-- --WHERE B.SourcesystemID=?SourcesystemID?\r\n\t-- --AND B.TableName=?TableName?\r\n\t-- --AND B.ProcessName=?ProcessName?\r\n\t-- --AND B.SourceCode=?SourceCode?\r\n\t-- -- integrate a foreign address field indicator since US and CA address codes overlap\r\n\t-- --inner join WCPols03Record C on A.WCTrackHistoryID=C.WCTrackHistoryID and C.ForeignAddressIndicator='Y'\n\t'UPDATE A SET A.' || StateCodeField || '=' || CHR(39) || WCPOLSCode_output || CHR(39) || ' FROM dbo.' || TableName_output || '  A INNER JOIN dbo.SupWCPOLS B ON A.' || StateCodeField || '=B.WCPOLSCode INNER JOIN WCPols03Record C on A.WCTrackHistoryID=C.WCTrackHistoryID and C.ForeignAddressIndicator= ' || CHR(39) || 'Y' || CHR(39) || ' and C.AddressState=B.SourceCode  WHERE B.SourcesystemID=' || CHR(39) || SourcesystemID_output || CHR(39) || ' AND B.TableName=' || CHR(39) || TableName_output || CHR(39) || ' AND B.ProcessName=' || CHR(39) || ProcessName_output || CHR(39) || ' AND B.SourceCode=' || CHR(39) || SourceCode_output || CHR(39) || ' AND C.AuditId=' || AuditID AS SqlUpdate\n\tFROM EXP_SrcDataCollect_StateCode\n),\nFIL_RemoveIfNoStateCodeFieldsApplicable AS (\n\tSELECT\n\tSourcesystemID_output AS SourcesystemID, \n\tWCPOLSCode_output AS WCPOLSCode, \n\tSourceCode_output AS SourceCode, \n\tTableName_output AS TableName, \n\tProcessName_output AS ProcessName, \n\tStateCodeField, \n\tSqlUpdate\n\tFROM EXP_SqlStateCodeOutput\n\tWHERE NOT ISNULL(StateCodeField) AND (ISNULL(SQLError) OR length(rtrim(ltrim(SQLError)))=0)\n),\nSRT_SortUpdateStateCommands AS (\n\tSELECT\n\tTableName, \n\tProcessName, \n\tSourceCode, \n\tWCPOLSCode, \n\tSourcesystemID, \n\tStateCodeField, \n\tSqlUpdate\n\tFROM FIL_RemoveIfNoStateCodeFieldsApplicable\n\tORDER BY TableName ASC, ProcessName ASC, SourceCode ASC, WCPOLSCode ASC\n),\nSQL_UpdateStateCodeFields AS (-- SQL_UpdateStateCodeFields\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nEXP_checkForError AS (\n\tSELECT\n\tSQLError,\n\t@{pipeline().parameters.FILENAME}||'_2'||'.txt' AS FileName,\n\tNumRowsAffected,\n\tSqlUpdate_output,\n\t-- *INF*: SqlUpdate_output  || ' ----- Rows Affected:    '  ||   TO_CHAR(NumRowsAffected)\n\tSqlUpdate_output || ' ----- Rows Affected:    ' || TO_CHAR(NumRowsAffected) AS SqlResults,\n\t@{pipeline().parameters.FILENAME}||'_StateLog'||'.txt' AS FileName_StateLog\n\tFROM SQL_UpdateStateCodeFields\n),\nFIL_SQLError2 AS (\n\tSELECT\n\tSQLError, \n\tFileName\n\tFROM EXP_checkForError\n\tWHERE NOT ISNULL(SQLError)\n),\nSQLError2 AS (\n\tINSERT INTO SQLError\n\t(SQLError, FileName)\n\tSELECT \n\tSQLERROR, \n\tFILENAME\n\tFROM FIL_SQLError2\n),\nSQLError3 AS (\n\tINSERT INTO SQLError\n\t(SQLError, FileName)\n\tSELECT \n\tSqlResults AS SQLERROR, \n\tFileName_StateLog AS FILENAME\n\tFROM EXP_checkForError\n),\nSQ_SupWCPOLS_regular AS (\n\tSELECT A.SourcesystemID, \r\n\tA.WCPOLSCode, \r\n\tA.SourceCode, \r\n\tA.TableName, \r\n\tA.ProcessName \r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.SUPWCPOLS A with (nolock)\r\n\tinner join (\r\n\tselect SourcesystemID,TableName,ProcessName,SourceCode from @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupWCPOLS with (nolock)\r\n\twhere SourceCode not in ('NotusedbyWB','logic based')\r\n\tgroup by SourcesystemID,TableName,ProcessName,SourceCode\r\n\thaving count(1)>1) B\r\n\ton A.SourcesystemID=B.SourcesystemID\r\n\tand A.TableName=B.TableName\r\n\tand A.ProcessName=B.ProcessName\r\n\tand A.SourceCode=B.SourceCode\r\n\twhere \r\n\tPATINDEX('%StateCode%',A.ProcessName) < 1 AND\r\n\t(('@{pipeline().parameters.FILENAME}'='NCCI' and A.NCCIRequiredFlag=1) OR\r\n\t('@{pipeline().parameters.FILENAME}'='WI' and A.WIRequiredFlag=1) OR\r\n\t('@{pipeline().parameters.FILENAME}'='MI' and A.MIRequiredFlag=1) OR\r\n\t('@{pipeline().parameters.FILENAME}'='MN' and A.MNRequiredFlag=1))\n),\nEXP_SrcDataCollect_regular AS (\n\tSELECT\n\tSourcesystemID,\n\tWCPOLSCode,\n\tSourceCode,\n\tTableName,\n\tProcessName,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID\n\tFROM SQ_SupWCPOLS_regular\n),\nSQL AS (-- SQL\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nEXP_SQLError AS (\n\tSELECT\n\tSQLError,\n\t@{pipeline().parameters.FILENAME}||'.txt' AS FileName\n\tFROM SQL\n),\nFIL_SqlError AS (\n\tSELECT\n\tSQLError, \n\tFileName\n\tFROM EXP_SQLError\n\tWHERE NOT ISNULL(SQLError)\n),\nSQLError AS (\n\tINSERT INTO SQLError\n\t(SQLError, FileName)\n\tSELECT \n\tSQLERROR, \n\tFILENAME\n\tFROM FIL_SqlError\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "FILENAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

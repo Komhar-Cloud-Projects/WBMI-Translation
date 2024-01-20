@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_pif_43ixzwc_mod_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_pif_43ixzwc_mod_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif43IXZWCModStage AS (\n\tSELECT\n\t\tPif43IXZWCModStageId,\n\t\tPifSymbol,\n\t\tPifPolicyNumber,\n\t\tPifModule,\n\t\tPmdi4w1RecLength,\n\t\tPmdi4w1ActionCode,\n\t\tPmdi4w1FileId,\n\t\tPmdi4w1SegmentId,\n\t\tPmdi4w1SegmentStatus,\n\t\tPmdi4w1YearTransaction,\n\t\tPmdi4w1MonthTransaction,\n\t\tPmdi4w1DayTransaction,\n\t\tPmdi4w1SegmentLevelCode,\n\t\tPmdi4w1SegmentPartCode,\n\t\tPmdi4w1SubPartCode,\n\t\tPmdi4w1InsuranceLine,\n\t\tPmdi4w1WcRatingState,\n\t\tPmdi4w1LocationNumber,\n\t\tPmdi4w1ClassOrderCode,\n\t\tPmdi4w1ClassOrderSeq,\n\t\tPmdi4w1ReportingClassCode,\n\t\tPmdi4w1ReportingClassSeq,\n\t\tPmdi4w1SplitRateSeq,\n\t\tPmdi4w1YearItemEffective,\n\t\tPmdi4w1MonthItemEffective,\n\t\tPmdi4w1DayItemEffective,\n\t\tPmdi4w1AuditNumber,\n\t\tPmdi4w1AuditNumSeq,\n\t\tPmdi4w1YearProcess,\n\t\tPmdi4w1MonthProcess,\n\t\tPmdi4w1DayProcess,\n\t\tPmdi4w1YearItemExpire,\n\t\tPmdi4w1MonthItemExpire,\n\t\tPmdi4w1DayItemExpire,\n\t\tPmdi4w1GeneratedSegInd,\n\t\tPmdi4w1ModifierDesc,\n\t\tPmdi4w1ModifierRate,\n\t\tPmdi4w1ModFactorMdInd,\n\t\tPmdi4w1ModifierPremium,\n\t\tPmdi4w1ModPremMgInd,\n\t\tPmdi4w1ModifierType1,\n\t\tPmdi4w1ModifierType2,\n\t\tPmdi4w1ModifierPremBasis,\n\t\tPmdi4w1ModBasisMgInd,\n\t\tPmdi4w1ModifierMinPrem,\n\t\tPmdi4w1ModMinPremMgInd,\n\t\tPmdi4w1DepositPremium,\n\t\tPmdi4w1ModifierUslhFac,\n\t\tPmdi4w1AuditSegBuiltInd,\n\t\tPmdi4w1YearRatingExpire,\n\t\tPmdi4w1MonthRatingExpire,\n\t\tPmdi4w1DayRatingExpire,\n\t\tPmdi4w1CoviiLimitId,\n\t\tPmdi4w1YearModAnnivRate,\n\t\tPmdi4w1MonthModAnnivRate,\n\t\tPmdi4w1DayModAnnivRate,\n\t\tPmdi4w1VarDeductibleAmt,\n\t\tPmdi4w1VarAggrDeductAmt,\n\t\tPmdi4w1CaEmodAtIncept,\n\t\tPmdi4w1PmsFutureUse,\n\t\tPmdi4w1CustomerFutureUse,\n\t\tPmdi4w1Yr2000CustUse,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemId\n\tFROM Pif43IXZWCModStage\n),\nEXP_Pif43IXZWCModStage AS (\n\tSELECT\n\tPif43IXZWCModStageId,\n\tPifSymbol,\n\tPifPolicyNumber,\n\tPifModule,\n\tPmdi4w1RecLength,\n\tPmdi4w1ActionCode,\n\tPmdi4w1FileId,\n\tPmdi4w1SegmentId,\n\tPmdi4w1SegmentStatus,\n\tPmdi4w1YearTransaction,\n\tPmdi4w1MonthTransaction,\n\tPmdi4w1DayTransaction,\n\tPmdi4w1SegmentLevelCode,\n\tPmdi4w1SegmentPartCode,\n\tPmdi4w1SubPartCode,\n\tPmdi4w1InsuranceLine,\n\tPmdi4w1WcRatingState,\n\tPmdi4w1LocationNumber,\n\tPmdi4w1ClassOrderCode,\n\tPmdi4w1ClassOrderSeq,\n\tPmdi4w1ReportingClassCode,\n\tPmdi4w1ReportingClassSeq,\n\tPmdi4w1SplitRateSeq,\n\tPmdi4w1YearItemEffective,\n\tPmdi4w1MonthItemEffective,\n\tPmdi4w1DayItemEffective,\n\tPmdi4w1AuditNumber,\n\tPmdi4w1AuditNumSeq,\n\tPmdi4w1YearProcess,\n\tPmdi4w1MonthProcess,\n\tPmdi4w1DayProcess,\n\tPmdi4w1YearItemExpire,\n\tPmdi4w1MonthItemExpire,\n\tPmdi4w1DayItemExpire,\n\tPmdi4w1GeneratedSegInd,\n\tPmdi4w1ModifierDesc,\n\tPmdi4w1ModifierRate,\n\tPmdi4w1ModFactorMdInd,\n\tPmdi4w1ModifierPremium,\n\tPmdi4w1ModPremMgInd,\n\tPmdi4w1ModifierType1,\n\tPmdi4w1ModifierType2,\n\tPmdi4w1ModifierPremBasis,\n\tPmdi4w1ModBasisMgInd,\n\tPmdi4w1ModifierMinPrem,\n\tPmdi4w1ModMinPremMgInd,\n\tPmdi4w1DepositPremium,\n\tPmdi4w1ModifierUslhFac,\n\tPmdi4w1AuditSegBuiltInd,\n\tPmdi4w1YearRatingExpire,\n\tPmdi4w1MonthRatingExpire,\n\tPmdi4w1DayRatingExpire,\n\tPmdi4w1CoviiLimitId,\n\tPmdi4w1YearModAnnivRate,\n\tPmdi4w1MonthModAnnivRate,\n\tPmdi4w1DayModAnnivRate,\n\tPmdi4w1VarDeductibleAmt,\n\tPmdi4w1VarAggrDeductAmt,\n\tPmdi4w1CaEmodAtIncept,\n\tPmdi4w1PmsFutureUse,\n\tPmdi4w1CustomerFutureUse,\n\tPmdi4w1Yr2000CustUse,\n\tExtractDate,\n\tAsOfDate,\n\tRecordCount,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_Pif43IXZWCModStage\n),\nArchPif43IXZWCModStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchPif43IXZWCModStage\n\t(Pif43IXZWCModStageId, PifSymbol, PifPolicyNumber, PifModule, Pmdi4w1RecLength, Pmdi4w1ActionCode, Pmdi4w1FileId, Pmdi4w1SegmentId, Pmdi4w1SegmentStatus, Pmdi4w1YearTransaction, Pmdi4w1MonthTransaction, Pmdi4w1DayTransaction, Pmdi4w1SegmentLevelCode, Pmdi4w1SegmentPartCode, Pmdi4w1SubPartCode, Pmdi4w1InsuranceLine, Pmdi4w1WcRatingState, Pmdi4w1LocationNumber, Pmdi4w1ClassOrderCode, Pmdi4w1ClassOrderSeq, Pmdi4w1ReportingClassCode, Pmdi4w1ReportingClassSeq, Pmdi4w1SplitRateSeq, Pmdi4w1YearItemEffective, Pmdi4w1MonthItemEffective, Pmdi4w1DayItemEffective, Pmdi4w1AuditNumber, Pmdi4w1AuditNumSeq, Pmdi4w1YearProcess, Pmdi4w1MonthProcess, Pmdi4w1DayProcess, Pmdi4w1YearItemExpire, Pmdi4w1MonthItemExpire, Pmdi4w1DayItemExpire, Pmdi4w1GeneratedSegInd, Pmdi4w1ModifierDesc, Pmdi4w1ModifierRate, Pmdi4w1ModFactorMdInd, Pmdi4w1ModifierPremium, Pmdi4w1ModPremMgInd, Pmdi4w1ModifierType1, Pmdi4w1ModifierType2, Pmdi4w1ModifierPremBasis, Pmdi4w1ModBasisMgInd, Pmdi4w1ModifierMinPrem, Pmdi4w1ModMinPremMgInd, Pmdi4w1DepositPremium, Pmdi4w1ModifierUslhFac, Pmdi4w1AuditSegBuiltInd, Pmdi4w1YearRatingExpire, Pmdi4w1MonthRatingExpire, Pmdi4w1DayRatingExpire, Pmdi4w1CoviiLimitId, Pmdi4w1YearModAnnivRate, Pmdi4w1MonthModAnnivRate, Pmdi4w1DayModAnnivRate, Pmdi4w1VarDeductibleAmt, Pmdi4w1VarAggrDeductAmt, Pmdi4w1CaEmodAtIncept, Pmdi4w1PmsFutureUse, Pmdi4w1CustomerFutureUse, Pmdi4w1Yr2000CustUse, ExtractDate, AsOfDate, RecordCount, SourceSystemId, AuditId)\n\tSELECT \n\tPIF43IXZWCMODSTAGEID, \n\tPIFSYMBOL, \n\tPIFPOLICYNUMBER, \n\tPIFMODULE, \n\tPMDI4W1RECLENGTH, \n\tPMDI4W1ACTIONCODE, \n\tPMDI4W1FILEID, \n\tPMDI4W1SEGMENTID, \n\tPMDI4W1SEGMENTSTATUS, \n\tPMDI4W1YEARTRANSACTION, \n\tPMDI4W1MONTHTRANSACTION, \n\tPMDI4W1DAYTRANSACTION, \n\tPMDI4W1SEGMENTLEVELCODE, \n\tPMDI4W1SEGMENTPARTCODE, \n\tPMDI4W1SUBPARTCODE, \n\tPMDI4W1INSURANCELINE, \n\tPMDI4W1WCRATINGSTATE, \n\tPMDI4W1LOCATIONNUMBER, \n\tPMDI4W1CLASSORDERCODE, \n\tPMDI4W1CLASSORDERSEQ, \n\tPMDI4W1REPORTINGCLASSCODE, \n\tPMDI4W1REPORTINGCLASSSEQ, \n\tPMDI4W1SPLITRATESEQ, \n\tPMDI4W1YEARITEMEFFECTIVE, \n\tPMDI4W1MONTHITEMEFFECTIVE, \n\tPMDI4W1DAYITEMEFFECTIVE, \n\tPMDI4W1AUDITNUMBER, \n\tPMDI4W1AUDITNUMSEQ, \n\tPMDI4W1YEARPROCESS, \n\tPMDI4W1MONTHPROCESS, \n\tPMDI4W1DAYPROCESS, \n\tPMDI4W1YEARITEMEXPIRE, \n\tPMDI4W1MONTHITEMEXPIRE, \n\tPMDI4W1DAYITEMEXPIRE, \n\tPMDI4W1GENERATEDSEGIND, \n\tPMDI4W1MODIFIERDESC, \n\tPMDI4W1MODIFIERRATE, \n\tPMDI4W1MODFACTORMDIND, \n\tPMDI4W1MODIFIERPREMIUM, \n\tPMDI4W1MODPREMMGIND, \n\tPMDI4W1MODIFIERTYPE1, \n\tPMDI4W1MODIFIERTYPE2, \n\tPMDI4W1MODIFIERPREMBASIS, \n\tPMDI4W1MODBASISMGIND, \n\tPMDI4W1MODIFIERMINPREM, \n\tPMDI4W1MODMINPREMMGIND, \n\tPMDI4W1DEPOSITPREMIUM, \n\tPMDI4W1MODIFIERUSLHFAC, \n\tPMDI4W1AUDITSEGBUILTIND, \n\tPMDI4W1YEARRATINGEXPIRE, \n\tPMDI4W1MONTHRATINGEXPIRE, \n\tPMDI4W1DAYRATINGEXPIRE, \n\tPMDI4W1COVIILIMITID, \n\tPMDI4W1YEARMODANNIVRATE, \n\tPMDI4W1MONTHMODANNIVRATE, \n\tPMDI4W1DAYMODANNIVRATE, \n\tPMDI4W1VARDEDUCTIBLEAMT, \n\tPMDI4W1VARAGGRDEDUCTAMT, \n\tPMDI4W1CAEMODATINCEPT, \n\tPMDI4W1PMSFUTUREUSE, \n\tPMDI4W1CUSTOMERFUTUREUSE, \n\tPMDI4W1YR2000CUSTUSE, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\tAUDITID\n\tFROM EXP_Pif43IXZWCModStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

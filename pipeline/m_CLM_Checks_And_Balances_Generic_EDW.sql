@@ -211,8 +211,7 @@ EXP_Email_Subject1 AS (
 	email_address,
 	checkout_message,
 	-- *INF*: Abort('There are issues with the EDW data')
-	Abort('There are issues with the EDW data'
-	) AS error
+	Abort('There are issues with the EDW data') AS error
 	FROM SQ_wbmi_checkout1
 ),
 FIL_STOP_PROCESSING AS (

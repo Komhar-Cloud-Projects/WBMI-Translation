@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_pif_43nxcr_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_pif_43nxcr_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_PIF43NXCRStage AS (\n\tSELECT\n\t\tPIF43NXCRStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tPifSymbol,\n\t\tPifPolicyNumber,\n\t\tPifPolicyModule,\n\t\tPMDNXC1RecLength,\n\t\tPMDNXC1ActionCode,\n\t\tPMDNXC1FileID,\n\t\tPMDNXC1SegmentID,\n\t\tPMDNXC1SegmentStatus,\n\t\tPMDNXC1YearTransaction,\n\t\tPMDNXC1MonthTransaction,\n\t\tPMDNXC1DayTransaction,\n\t\tPMDNXC1SegmentLevelCode,\n\t\tPMDNXC1SegmentPartCode,\n\t\tPMDNXC1SubPartCode,\n\t\tPMDNXC1InsuranceLine,\n\t\tPMDNXC1LocationNumber,\n\t\tPMDNXC1SubLocationNumber,\n\t\tPMDNXC1YearItemEffective,\n\t\tPMDNXC1MonthItemEffective,\n\t\tPMDNXC1DayItemEffective,\n\t\tPMDNXC1VariableKey,\n\t\tPMDNXC1YearProcess,\n\t\tPMDNXC1MonthProcess,\n\t\tPMDNXC1DayProcess,\n\t\tPMDNXC1StateCode,\n\t\tPMDNXC1RatePlan,\n\t\tPMDNXC1InitialPremises,\n\t\tPMDNXC1TerritoryCode,\n\t\tPMDNXC1CspClassCode,\n\t\tPMDNXC1ClassDescCode,\n\t\tPMDNXC1ClassDescSource,\n\t\tPMDNXC1PmaCode,\n\t\tPMDNXC1BlanketInd,\n\t\tPMDNXC1PropertyCovered,\n\t\tPMDNXC1ClassLimit,\n\t\tPMDNXC1SafeClass,\n\t\tPMDNXC1PersonsOnDuty,\n\t\tPMDNXC1NumberOfRooms,\n\t\tPMDNXC1NumberRentedBoxes,\n\t\tPMDNXC1PaExtentProtect,\n\t\tPMDNXC1PaConnectWith,\n\t\tPMDNXC1PaGradeOfAlarm,\n\t\tPMDNXC1PaKeys,\n\t\tPMDNXC1SvExtentProtect,\n\t\tPMDNXC1SvConnectWith,\n\t\tPMDNXC1SvGradeOfAlarm,\n\t\tPMDNXC1SvKeys,\n\t\tPMDNXC1ScheduleMod,\n\t\tPMDNXC1ExperienceMod,\n\t\tPMDNXC1ComRedMod,\n\t\tPMDNXC1OtherMod,\n\t\tPMDNXC1GrossRevenue,\n\t\tPMDNXC1RateGroupC,\n\t\tPMDNXC1RateGroupDR,\n\t\tPMDNXC1RateGroupDS,\n\t\tPMDNXC1RateGroupE,\n\t\tPMDNXC1RateGroupH,\n\t\tPMDNXC1RateGroupSBF,\n\t\tPMDNXC1RateGroupSBR,\n\t\tPMDNXC1CompanyNumber,\n\t\tPMDNXC1PaFloor,\n\t\tPMDNXC1ClassDescription,\n\t\tPMDNXC1ExpenseMod,\n\t\tPMDNXC1DecChangeFlag,\n\t\tPMDNXC1NumAddlLocs,\n\t\tPMDNXC1NumPerAccts,\n\t\tPMDNXC1PersonalAcctLimit,\n\t\tPMDNXC1PcoNum,\n\t\tPMDNXC1StatCode,\n\t\tPMDNXC1CoverageCode,\n\t\tPMDNXC1BusinessClass,\n\t\tPMDNXC1ErisaInd,\n\t\tPMDNXC1PmsFutureUse,\n\t\tPMDNXC1CustomerUser,\n\t\tPMDNXC1Yr2000CustUse\n\tFROM PIF43NXCRStage\n),\nEXP_VALUES AS (\n\tSELECT\n\tPIF43NXCRStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tPifSymbol,\n\tPifPolicyNumber,\n\tPifPolicyModule,\n\tPMDNXC1RecLength,\n\tPMDNXC1ActionCode,\n\tPMDNXC1FileID,\n\tPMDNXC1SegmentID,\n\tPMDNXC1SegmentStatus,\n\tPMDNXC1YearTransaction,\n\tPMDNXC1MonthTransaction,\n\tPMDNXC1DayTransaction,\n\tPMDNXC1SegmentLevelCode,\n\tPMDNXC1SegmentPartCode,\n\tPMDNXC1SubPartCode,\n\tPMDNXC1InsuranceLine,\n\tPMDNXC1LocationNumber,\n\tPMDNXC1SubLocationNumber,\n\tPMDNXC1YearItemEffective,\n\tPMDNXC1MonthItemEffective,\n\tPMDNXC1DayItemEffective,\n\tPMDNXC1VariableKey,\n\tPMDNXC1YearProcess,\n\tPMDNXC1MonthProcess,\n\tPMDNXC1DayProcess,\n\tPMDNXC1StateCode,\n\tPMDNXC1RatePlan,\n\tPMDNXC1InitialPremises,\n\tPMDNXC1TerritoryCode,\n\tPMDNXC1CspClassCode,\n\tPMDNXC1ClassDescCode,\n\tPMDNXC1ClassDescSource,\n\tPMDNXC1PmaCode,\n\tPMDNXC1BlanketInd,\n\tPMDNXC1PropertyCovered,\n\tPMDNXC1ClassLimit,\n\tPMDNXC1SafeClass,\n\tPMDNXC1PersonsOnDuty,\n\tPMDNXC1NumberOfRooms,\n\tPMDNXC1NumberRentedBoxes,\n\tPMDNXC1PaExtentProtect,\n\tPMDNXC1PaConnectWith,\n\tPMDNXC1PaGradeOfAlarm,\n\tPMDNXC1PaKeys,\n\tPMDNXC1SvExtentProtect,\n\tPMDNXC1SvConnectWith,\n\tPMDNXC1SvGradeOfAlarm,\n\tPMDNXC1SvKeys,\n\tPMDNXC1ScheduleMod,\n\tPMDNXC1ExperienceMod,\n\tPMDNXC1ComRedMod,\n\tPMDNXC1OtherMod,\n\tPMDNXC1GrossRevenue,\n\tPMDNXC1RateGroupC,\n\tPMDNXC1RateGroupDR,\n\tPMDNXC1RateGroupDS,\n\tPMDNXC1RateGroupE,\n\tPMDNXC1RateGroupH,\n\tPMDNXC1RateGroupSBF,\n\tPMDNXC1RateGroupSBR,\n\tPMDNXC1CompanyNumber,\n\tPMDNXC1PaFloor,\n\tPMDNXC1ClassDescription,\n\tPMDNXC1ExpenseMod,\n\tPMDNXC1DecChangeFlag,\n\tPMDNXC1NumAddlLocs,\n\tPMDNXC1NumPerAccts,\n\tPMDNXC1PersonalAcctLimit,\n\tPMDNXC1PcoNum,\n\tPMDNXC1StatCode,\n\tPMDNXC1CoverageCode,\n\tPMDNXC1BusinessClass,\n\tPMDNXC1ErisaInd,\n\tPMDNXC1PmsFutureUse,\n\tPMDNXC1CustomerUser,\n\tPMDNXC1Yr2000CustUse,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_PIF43NXCRStage\n),\nArchPIF43NXCRStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchPIF43NXCRStage\n\t(PIF43NXCRStageId, ExtractDate, SourceSystemId, AuditId, PifSymbol, PifPolicyNumber, PifPolicyModule, PMDNXC1RecLength, PMDNXC1ActionCode, PMDNXC1FileID, PMDNXC1SegmentID, PMDNXC1SegmentStatus, PMDNXC1YearTransaction, PMDNXC1MonthTransaction, PMDNXC1DayTransaction, PMDNXC1SegmentLevelCode, PMDNXC1SegmentPartCode, PMDNXC1SubPartCode, PMDNXC1InsuranceLine, PMDNXC1LocationNumber, PMDNXC1SubLocationNumber, PMDNXC1YearItemEffective, PMDNXC1MonthItemEffective, PMDNXC1DayItemEffective, PMDNXC1VariableKey, PMDNXC1YearProcess, PMDNXC1MonthProcess, PMDNXC1DayProcess, PMDNXC1StateCode, PMDNXC1RatePlan, PMDNXC1InitialPremises, PMDNXC1TerritoryCode, PMDNXC1CspClassCode, PMDNXC1ClassDescCode, PMDNXC1ClassDescSource, PMDNXC1PmaCode, PMDNXC1BlanketInd, PMDNXC1PropertyCovered, PMDNXC1ClassLimit, PMDNXC1SafeClass, PMDNXC1PersonsOnDuty, PMDNXC1NumberOfRooms, PMDNXC1NumberRentedBoxes, PMDNXC1PaExtentProtect, PMDNXC1PaConnectWith, PMDNXC1PaGradeOfAlarm, PMDNXC1PaKeys, PMDNXC1SvExtentProtect, PMDNXC1SvConnectWith, PMDNXC1SvGradeOfAlarm, PMDNXC1SvKeys, PMDNXC1ScheduleMod, PMDNXC1ExperienceMod, PMDNXC1ComRedMod, PMDNXC1OtherMod, PMDNXC1GrossRevenue, PMDNXC1RateGroupC, PMDNXC1RateGroupDR, PMDNXC1RateGroupDS, PMDNXC1RateGroupE, PMDNXC1RateGroupH, PMDNXC1RateGroupSBF, PMDNXC1RateGroupSBR, PMDNXC1CompanyNumber, PMDNXC1PaFloor, PMDNXC1ClassDescription, PMDNXC1ExpenseMod, PMDNXC1DecChangeFlag, PMDNXC1NumAddlLocs, PMDNXC1NumPerAccts, PMDNXC1PersonalAcctLimit, PMDNXC1PcoNum, PMDNXC1StatCode, PMDNXC1CoverageCode, PMDNXC1BusinessClass, PMDNXC1ErisaInd, PMDNXC1PmsFutureUse, PMDNXC1CustomerUser, PMDNXC1Yr2000CustUse)\n\tSELECT \n\tPIF43NXCRSTAGEID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tPIFSYMBOL, \n\tPIFPOLICYNUMBER, \n\tPIFPOLICYMODULE, \n\tPMDNXC1RECLENGTH, \n\tPMDNXC1ACTIONCODE, \n\tPMDNXC1FILEID, \n\tPMDNXC1SEGMENTID, \n\tPMDNXC1SEGMENTSTATUS, \n\tPMDNXC1YEARTRANSACTION, \n\tPMDNXC1MONTHTRANSACTION, \n\tPMDNXC1DAYTRANSACTION, \n\tPMDNXC1SEGMENTLEVELCODE, \n\tPMDNXC1SEGMENTPARTCODE, \n\tPMDNXC1SUBPARTCODE, \n\tPMDNXC1INSURANCELINE, \n\tPMDNXC1LOCATIONNUMBER, \n\tPMDNXC1SUBLOCATIONNUMBER, \n\tPMDNXC1YEARITEMEFFECTIVE, \n\tPMDNXC1MONTHITEMEFFECTIVE, \n\tPMDNXC1DAYITEMEFFECTIVE, \n\tPMDNXC1VARIABLEKEY, \n\tPMDNXC1YEARPROCESS, \n\tPMDNXC1MONTHPROCESS, \n\tPMDNXC1DAYPROCESS, \n\tPMDNXC1STATECODE, \n\tPMDNXC1RATEPLAN, \n\tPMDNXC1INITIALPREMISES, \n\tPMDNXC1TERRITORYCODE, \n\tPMDNXC1CSPCLASSCODE, \n\tPMDNXC1CLASSDESCCODE, \n\tPMDNXC1CLASSDESCSOURCE, \n\tPMDNXC1PMACODE, \n\tPMDNXC1BLANKETIND, \n\tPMDNXC1PROPERTYCOVERED, \n\tPMDNXC1CLASSLIMIT, \n\tPMDNXC1SAFECLASS, \n\tPMDNXC1PERSONSONDUTY, \n\tPMDNXC1NUMBEROFROOMS, \n\tPMDNXC1NUMBERRENTEDBOXES, \n\tPMDNXC1PAEXTENTPROTECT, \n\tPMDNXC1PACONNECTWITH, \n\tPMDNXC1PAGRADEOFALARM, \n\tPMDNXC1PAKEYS, \n\tPMDNXC1SVEXTENTPROTECT, \n\tPMDNXC1SVCONNECTWITH, \n\tPMDNXC1SVGRADEOFALARM, \n\tPMDNXC1SVKEYS, \n\tPMDNXC1SCHEDULEMOD, \n\tPMDNXC1EXPERIENCEMOD, \n\tPMDNXC1COMREDMOD, \n\tPMDNXC1OTHERMOD, \n\tPMDNXC1GROSSREVENUE, \n\tPMDNXC1RATEGROUPC, \n\tPMDNXC1RATEGROUPDR, \n\tPMDNXC1RATEGROUPDS, \n\tPMDNXC1RATEGROUPE, \n\tPMDNXC1RATEGROUPH, \n\tPMDNXC1RATEGROUPSBF, \n\tPMDNXC1RATEGROUPSBR, \n\tPMDNXC1COMPANYNUMBER, \n\tPMDNXC1PAFLOOR, \n\tPMDNXC1CLASSDESCRIPTION, \n\tPMDNXC1EXPENSEMOD, \n\tPMDNXC1DECCHANGEFLAG, \n\tPMDNXC1NUMADDLLOCS, \n\tPMDNXC1NUMPERACCTS, \n\tPMDNXC1PERSONALACCTLIMIT, \n\tPMDNXC1PCONUM, \n\tPMDNXC1STATCODE, \n\tPMDNXC1COVERAGECODE, \n\tPMDNXC1BUSINESSCLASS, \n\tPMDNXC1ERISAIND, \n\tPMDNXC1PMSFUTUREUSE, \n\tPMDNXC1CUSTOMERUSER, \n\tPMDNXC1YR2000CUSTUSE\n\tFROM EXP_VALUES\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

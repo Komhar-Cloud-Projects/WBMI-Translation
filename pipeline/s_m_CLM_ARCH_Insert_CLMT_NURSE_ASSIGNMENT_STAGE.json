@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLMT_NURSE_ASSIGNMENT_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLMT_NURSE_ASSIGNMENT_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_clmt_nurse_assignment_stage AS (\n\tSELECT clmt_nurse_assignment_stage.ClmtNurseAssignmentStageId, clmt_nurse_assignment_stage.nurse_assignment_id, clmt_nurse_assignment_stage.clmt_nurse_manage_id, clmt_nurse_assignment_stage.assigned_nurse_id, clmt_nurse_assignment_stage.open_date, clmt_nurse_assignment_stage.closed_date, clmt_nurse_assignment_stage.assignment_comment, clmt_nurse_assignment_stage.work_time_saved_weeks, clmt_nurse_assignment_stage.work_time_saved_days, clmt_nurse_assignment_stage.created_ts, clmt_nurse_assignment_stage.created_user_id, clmt_nurse_assignment_stage.modified_ts, clmt_nurse_assignment_stage.modified_user_id, clmt_nurse_assignment_stage.ExtractDate, clmt_nurse_assignment_stage.SourceSystemId \r\n\t\r\n\tFROM\r\n\t clmt_nurse_assignment_stage\r\n\t\r\n\t--WHERE\r\n\t--clmt_nurse_assignment_stage.created_ts >= --'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t--OR\r\n\t--clmt_nurse_assignment_stage.modified_ts >= --'@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_arch_clmt_nurse_assignment_stage AS (\n\tSELECT\n\tClmtNurseAssignmentStageId,\n\tnurse_assignment_id,\n\tclmt_nurse_manage_id,\n\tassigned_nurse_id,\n\topen_date,\n\tclosed_date,\n\tassignment_comment,\n\twork_time_saved_weeks,\n\twork_time_saved_days,\n\tcreated_ts,\n\tcreated_user_id,\n\tmodified_ts,\n\tmodified_user_id,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_clmt_nurse_assignment_stage\n),\narch_clmt_nurse_assignment_stage AS (\n\tINSERT INTO arch_clmt_nurse_assignment_stage\n\t(ClmtNurseAssignmentStageId, nurse_assignment_id, clmt_nurse_manage_id, assigned_nurse_id, open_date, closed_date, assignment_comment, work_time_saved_weeks, work_time_saved_days, created_ts, created_user_id, modified_ts, modified_user_id, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tCLMTNURSEASSIGNMENTSTAGEID, \n\tNURSE_ASSIGNMENT_ID, \n\tCLMT_NURSE_MANAGE_ID, \n\tASSIGNED_NURSE_ID, \n\tOPEN_DATE, \n\tCLOSED_DATE, \n\tASSIGNMENT_COMMENT, \n\tWORK_TIME_SAVED_WEEKS, \n\tWORK_TIME_SAVED_DAYS, \n\tCREATED_TS, \n\tCREATED_USER_ID, \n\tMODIFIED_TS, \n\tMODIFIED_USER_ID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_arch_clmt_nurse_assignment_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

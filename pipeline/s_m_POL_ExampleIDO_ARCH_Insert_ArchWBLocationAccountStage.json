@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBLocationAccountStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBLocationAccountStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBLocationAccountStage AS (\n\tSELECT\n\t\tWBLocationAccountStageId,\n\t\tExtractDate,\n\t\tSourceSystemId AS SourceSyStemId,\n\t\tLocationId,\n\t\tWBLocationAccountId,\n\t\tSessionId,\n\t\tLatitude,\n\t\tLongitude,\n\t\tZipCodeAddOn,\n\t\tZipCodeBase,\n\t\tGeocodeStatus,\n\t\tAddressOverridden,\n\t\tLastVerified,\n\t\tOverriddenDate,\n\t\tAddressStandardizationCompleted,\n\t\tCountry,\n\t\tCityTaxCode,\n\t\tCountyTaxCode,\n\t\tCityTaxPercent,\n\t\tCountyTaxPercent,\n\t\tTaxCodeReturned,\n\t\tTaxCityOverride,\n\t\tTaxCountyOverride,\n\t\tGeoTaxCityName,\n\t\tGeoTaxCountyName,\n\t\tGeoTaxCityTaxCode,\n\t\tGeoTaxCityTaxPercent,\n\t\tGeoTaxCountyTaxCode,\n\t\tGeoTaxCountyTaxPercent,\n\t\tCleared,\n\t\tGeoTaxCountyDistrictCode,\n\t\tGeoTaxCityDistrictCode,\n\t\tClearedDateTimeStamp,\n\t\tGeoTaxConfidence,\n\t\tTerritoryCodeAuto,\n\t\tTerritoryCodeCrime,\n\t\tTerritoryCodeEarthQuake,\n\t\tTerritoryCodeGL,\n\t\tTerritoryCodeProperty,\n\t\tTerritoryCounty,\n\t\tTerritoryProtectionClass,\n\t\tTaxCity,\n\t\tTaxCounty,\n\t\tTerritoryIllinoisFireTaxLocationCode,\n\t\tCBG\n\tFROM WBLocationAccountStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBLocationAccountStageId,\n\tExtractDate,\n\tSourceSyStemId,\n\tLocationId,\n\tWBLocationAccountId,\n\tSessionId,\n\tLatitude,\n\tLongitude,\n\tZipCodeAddOn,\n\tZipCodeBase,\n\tGeocodeStatus,\n\tAddressOverridden,\n\t-- *INF*: DECODE(AddressOverridden, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    AddressOverridden,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AddressOverridden,\n\tLastVerified,\n\tOverriddenDate,\n\tAddressStandardizationCompleted,\n\tCountry,\n\tCityTaxCode,\n\tCountyTaxCode,\n\tCityTaxPercent,\n\tCountyTaxPercent,\n\tTaxCodeReturned,\n\t-- *INF*: DECODE(TaxCodeReturned, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    TaxCodeReturned,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaxCodeReturned,\n\tTaxCityOverride,\n\t-- *INF*: DECODE(TaxCityOverride, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    TaxCityOverride,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaxCityOverride,\n\tTaxCountyOverride,\n\t-- *INF*: DECODE(TaxCountyOverride, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    TaxCountyOverride,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_TaxCountyOverride,\n\tGeoTaxCityName,\n\tGeoTaxCountyName,\n\tGeoTaxCityTaxCode,\n\tGeoTaxCityTaxPercent,\n\tGeoTaxCountyTaxCode,\n\tGeoTaxCountyTaxPercent,\n\tCleared,\n\t-- *INF*: DECODE(Cleared, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    Cleared,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Cleared,\n\tGeoTaxCountyDistrictCode,\n\tGeoTaxCityDistrictCode,\n\tClearedDateTimeStamp,\n\tGeoTaxConfidence,\n\tTerritoryCodeAuto,\n\tTerritoryCodeCrime,\n\tTerritoryCodeEarthQuake,\n\tTerritoryCodeGL,\n\tTerritoryCodeProperty,\n\tTerritoryCounty,\n\tTerritoryProtectionClass,\n\tTaxCity,\n\tTaxCounty,\n\tTerritoryIllinoisFireTaxLocationCode,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tCBG\n\tFROM SQ_WBLocationAccountStage\n),\nArchWBLocationAccountStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBLocationAccountStage\n\t(WBLocationAccountStageId, LocationId, WBLocationAccountId, SessionId, TaxCity, TaxCounty, Latitude, Longitude, ZipCodeAddOn, ZipCodeBase, Country, CityTaxCode, CountyTaxCode, CityTaxPercent, CountyTaxPercent, TaxCodeReturned, TaxCityOverride, TaxCountyOverride, GeocodeStatus, AddressOverridden, LastVerified, OverriddenDate, GeoTaxCityName, GeoTaxCountyName, GeoTaxCityTaxCode, GeoTaxCityTaxPercent, GeoTaxCountyTaxCode, GeoTaxCountyTaxPercent, Cleared, GeoTaxCountyDistrictCode, GeoTaxCityDistrictCode, ClearedDateTimeStamp, AddressStandardizationCompleted, GeoTaxConfidence, TerritoryCodeAuto, TerritoryCodeCrime, TerritoryCodeEarthQuake, TerritoryCodeGL, TerritoryCodeProperty, TerritoryCounty, TerritoryProtectionClass, ExtractDate, SourceSystemId, AuditId, TerritoryIllinoisFireTaxLocationCode, CBG)\n\tSELECT \n\tWBLOCATIONACCOUNTSTAGEID, \n\tLOCATIONID, \n\tWBLOCATIONACCOUNTID, \n\tSESSIONID, \n\tTAXCITY, \n\tTAXCOUNTY, \n\tLATITUDE, \n\tLONGITUDE, \n\tZIPCODEADDON, \n\tZIPCODEBASE, \n\tCOUNTRY, \n\tCITYTAXCODE, \n\tCOUNTYTAXCODE, \n\tCITYTAXPERCENT, \n\tCOUNTYTAXPERCENT, \n\to_TaxCodeReturned AS TAXCODERETURNED, \n\to_TaxCityOverride AS TAXCITYOVERRIDE, \n\to_TaxCountyOverride AS TAXCOUNTYOVERRIDE, \n\tGEOCODESTATUS, \n\to_AddressOverridden AS ADDRESSOVERRIDDEN, \n\tLASTVERIFIED, \n\tOVERRIDDENDATE, \n\tGEOTAXCITYNAME, \n\tGEOTAXCOUNTYNAME, \n\tGEOTAXCITYTAXCODE, \n\tGEOTAXCITYTAXPERCENT, \n\tGEOTAXCOUNTYTAXCODE, \n\tGEOTAXCOUNTYTAXPERCENT, \n\to_Cleared AS CLEARED, \n\tGEOTAXCOUNTYDISTRICTCODE, \n\tGEOTAXCITYDISTRICTCODE, \n\tCLEAREDDATETIMESTAMP, \n\tADDRESSSTANDARDIZATIONCOMPLETED, \n\tGEOTAXCONFIDENCE, \n\tTERRITORYCODEAUTO, \n\tTERRITORYCODECRIME, \n\tTERRITORYCODEEARTHQUAKE, \n\tTERRITORYCODEGL, \n\tTERRITORYCODEPROPERTY, \n\tTERRITORYCOUNTY, \n\tTERRITORYPROTECTIONCLASS, \n\tEXTRACTDATE, \n\tSourceSyStemId AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tTERRITORYILLINOISFIRETAXLOCATIONCODE, \n\tCBG\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

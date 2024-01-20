@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_STG_Insert_Task",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Insert_Task",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Task AS (\n\tSELECT T.TaskId, T.CreatedDate, T.CreatedUserId, T.CreatedUserName, T.ModifiedDate, T.ModifiedUserId, T.ModifiedUserName, T.AssignedUserId, T.DueDate, T.Title, T.SupTaskTypeId, T.SupTaskStatusId, T.SupTaskStatusReasonId, T.PercentageComplete, T.Description, T.ExtendedData, T.AssignedUserName, T.Rush, T.QueueId, T.ArrivalDate, T.Viewed, T.ClaimantName, T.ClaimLossDate, T.ClaimRepName, T.DocumentScanDate, T.DocumentBatchName, T.DocumentScanUser, T.ClaimId, T.MultipleWorkItems \r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.Task T\r\n\tjoin @{pipeline().parameters.SOURCE_TABLE_OWNER}.TaskEntity TE on T.TaskId = TE.TaskId and TE.EntityType = 'Claim'\r\n\tjoin @{pipeline().parameters.SOURCE_TABLE_OWNER}.SupTaskType STT on T.SupTaskTypeId = STT.SupTaskTypeId and STT.Description = 'Diary Task'\n),\nEXPTRANS AS (\n\tSELECT\n\tSYSDATE AS ExtractDate,\n\t-- *INF*: IIF(LENGTH(RTRIM(ClaimId)) = 20,\r\n\t-- 'EXCEED',\r\n\t-- 'PMS')\n\tIFF(LENGTH(RTRIM(ClaimId)) = 20, 'EXCEED', 'PMS') AS v_SourceSystemId,\n\tv_SourceSystemId AS SourceSystemId,\n\tTaskId,\n\tCreatedDate,\n\tCreatedUserId,\n\tCreatedUserName,\n\tModifiedDate,\n\tModifiedUserId,\n\tModifiedUserName,\n\tAssignedUserId,\n\tDueDate,\n\tTitle,\n\tSupTaskTypeId,\n\tSupTaskStatusId,\n\tSupTaskStatusReasonId,\n\tPercentageComplete,\n\tDescription,\n\tExtendedData,\n\tAssignedUserName,\n\tRush,\n\tQueueId,\n\tArrivalDate,\n\tViewed,\n\tClaimantName,\n\tClaimLossDate,\n\tClaimRepName,\n\tDocumentScanDate,\n\tDocumentBatchName,\n\tDocumentScanUser,\n\tClaimId,\n\tMultipleWorkItems\n\tFROM SQ_Task\n),\nTaskStage AS (\n\tTRUNCATE TABLE TaskStage;\n\tINSERT INTO TaskStage\n\t(ExtractDate, SourceSystemId, TaskId, CreatedDate, CreatedUserId, CreatedUserName, ModifiedDate, ModifiedUserId, ModifiedUserName, AssignedUserId, DueDate, Title, SupTaskTypeId, SupTaskStatusId, SupTaskStatusReasonId, PercentageComplete, Description, ExtendedData, AssignedUserName, Rush, QueueId, ArrivalDate, Viewed, ClaimantName, ClaimLossDate, ClaimRepName, DocumentScanDate, DocumentBatchName, DocumentScanUser, ClaimId, MultipleWorkItems)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tTASKID, \n\tCREATEDDATE, \n\tCREATEDUSERID, \n\tCREATEDUSERNAME, \n\tMODIFIEDDATE, \n\tMODIFIEDUSERID, \n\tMODIFIEDUSERNAME, \n\tASSIGNEDUSERID, \n\tDUEDATE, \n\tTITLE, \n\tSUPTASKTYPEID, \n\tSUPTASKSTATUSID, \n\tSUPTASKSTATUSREASONID, \n\tPERCENTAGECOMPLETE, \n\tDESCRIPTION, \n\tEXTENDEDDATA, \n\tASSIGNEDUSERNAME, \n\tRUSH, \n\tQUEUEID, \n\tARRIVALDATE, \n\tVIEWED, \n\tCLAIMANTNAME, \n\tCLAIMLOSSDATE, \n\tCLAIMREPNAME, \n\tDOCUMENTSCANDATE, \n\tDOCUMENTBATCHNAME, \n\tDOCUMENTSCANUSER, \n\tCLAIMID, \n\tMULTIPLEWORKITEMS\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

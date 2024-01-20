@@ -847,13 +847,8 @@ EXP_CMT_CLMT AS (
 	SELECT
 	claim_party_role_code,
 	-- *INF*: IIF(ltrim(rtrim(claim_party_role_code))='CMT','CLMT',ltrim(rtrim(claim_party_role_code)))
-	IFF(ltrim(rtrim(claim_party_role_code
-			)
-		) = 'CMT',
-		'CLMT',
-		ltrim(rtrim(claim_party_role_code
-			)
-		)
+	IFF(
+	    ltrim(rtrim(claim_party_role_code)) = 'CMT', 'CLMT', ltrim(rtrim(claim_party_role_code))
 	) AS claim_party_role_code_out
 	FROM JNR_claimant_dim_sources
 ),
@@ -1055,71 +1050,56 @@ EXP_claimant_dim AS (
 	JNR_claimant_dim_sources.claim_party_occurrence_id AS in_edw_claim_party_occurrence_pk_id,
 	-- *INF*: iif(isnull(in_edw_claim_party_occurrence_pk_id),
 	-- -1,in_edw_claim_party_occurrence_pk_id)
-	IFF(in_edw_claim_party_occurrence_pk_id IS NULL,
-		- 1,
-		in_edw_claim_party_occurrence_pk_id
-	) AS edw_claim_party_occurrence_pk_id_out,
+	IFF(in_edw_claim_party_occurrence_pk_id IS NULL, - 1, in_edw_claim_party_occurrence_pk_id) AS edw_claim_party_occurrence_pk_id_out,
 	JNR_claimant_dim_sources.claim_party_id AS in_edw_claim_party_pk_id,
 	-- *INF*: iif(isnull(in_edw_claim_party_pk_id),-1,in_edw_claim_party_pk_id)
-	IFF(in_edw_claim_party_pk_id IS NULL,
-		- 1,
-		in_edw_claim_party_pk_id
-	) AS edw_claim_party_pk_id_out,
+	IFF(in_edw_claim_party_pk_id IS NULL, - 1, in_edw_claim_party_pk_id) AS edw_claim_party_pk_id_out,
 	JNR_claimant_dim_sources.claimant_calculation_id AS in_edw_claimant_calculation_pk_id,
 	-- *INF*: iif(isnull(in_edw_claimant_calculation_pk_id),-1,in_edw_claimant_calculation_pk_id)
-	IFF(in_edw_claimant_calculation_pk_id IS NULL,
-		- 1,
-		in_edw_claimant_calculation_pk_id
-	) AS edw_claimant_calculation_pk_id_out,
+	IFF(in_edw_claimant_calculation_pk_id IS NULL, - 1, in_edw_claimant_calculation_pk_id) AS edw_claimant_calculation_pk_id_out,
 	JNR_claimant_dim_sources.claimant_reserve_calculation_id_D AS in_edw_claimant_reserve_calculation_direct_loss_pk_id,
 	-- *INF*: iif(isnull(in_edw_claimant_reserve_calculation_direct_loss_pk_id),-1,in_edw_claimant_reserve_calculation_direct_loss_pk_id)
-	IFF(in_edw_claimant_reserve_calculation_direct_loss_pk_id IS NULL,
-		- 1,
-		in_edw_claimant_reserve_calculation_direct_loss_pk_id
+	IFF(
+	    in_edw_claimant_reserve_calculation_direct_loss_pk_id IS NULL, - 1,
+	    in_edw_claimant_reserve_calculation_direct_loss_pk_id
 	) AS edw_claimant_reserve_calculation_direct_loss_pk_id_out,
 	JNR_claimant_dim_sources.claimant_reserve_calculation_id_E AS in_edw_claimant_reserve_calculation_exp_pk_id,
 	-- *INF*: iif(isnull(in_edw_claimant_reserve_calculation_exp_pk_id),-1,in_edw_claimant_reserve_calculation_exp_pk_id)
-	IFF(in_edw_claimant_reserve_calculation_exp_pk_id IS NULL,
-		- 1,
-		in_edw_claimant_reserve_calculation_exp_pk_id
+	IFF(
+	    in_edw_claimant_reserve_calculation_exp_pk_id IS NULL, - 1,
+	    in_edw_claimant_reserve_calculation_exp_pk_id
 	) AS edw_claimant_reserve_calculation_exp_pk_id_out,
 	JNR_claimant_dim_sources.claimant_reserve_calculation_id_B AS in_edw_claimant_reserve_calculation_subrogation_pk_id,
 	-- *INF*: iif(isnull(in_edw_claimant_reserve_calculation_subrogation_pk_id),-1,in_edw_claimant_reserve_calculation_subrogation_pk_id)
-	IFF(in_edw_claimant_reserve_calculation_subrogation_pk_id IS NULL,
-		- 1,
-		in_edw_claimant_reserve_calculation_subrogation_pk_id
+	IFF(
+	    in_edw_claimant_reserve_calculation_subrogation_pk_id IS NULL, - 1,
+	    in_edw_claimant_reserve_calculation_subrogation_pk_id
 	) AS edw_claimant_reserve_calculation_subrogation_pk_id_out,
 	JNR_claimant_dim_sources.claimant_reserve_calculation_id_S AS in_edw_claimant_reserve_calculation_salvage_pk_id,
 	-- *INF*: iif(isnull(in_edw_claimant_reserve_calculation_salvage_pk_id),-1,in_edw_claimant_reserve_calculation_salvage_pk_id)
-	IFF(in_edw_claimant_reserve_calculation_salvage_pk_id IS NULL,
-		- 1,
-		in_edw_claimant_reserve_calculation_salvage_pk_id
+	IFF(
+	    in_edw_claimant_reserve_calculation_salvage_pk_id IS NULL, - 1,
+	    in_edw_claimant_reserve_calculation_salvage_pk_id
 	) AS edw_claimant_reserve_calculation_salvage_pk_id_out,
 	JNR_claimant_dim_sources.claimant_reserve_calculation_id_R AS in_edw_claimant_reserve_calculation_other_recovery_pk_id,
 	-- *INF*: iif(isnull(in_edw_claimant_reserve_calculation_other_recovery_pk_id)
 	-- ,-1,in_edw_claimant_reserve_calculation_other_recovery_pk_id)
-	IFF(in_edw_claimant_reserve_calculation_other_recovery_pk_id IS NULL,
-		- 1,
-		in_edw_claimant_reserve_calculation_other_recovery_pk_id
+	IFF(
+	    in_edw_claimant_reserve_calculation_other_recovery_pk_id IS NULL, - 1,
+	    in_edw_claimant_reserve_calculation_other_recovery_pk_id
 	) AS edw_claimant_reserve_calculation_other_recovery_pk_id_out,
 	JNR_claimant_dim_sources.wc_claimant_det_id1 AS in_wc_claimant_det_pk_id,
 	-- *INF*: iif(isnull(in_wc_claimant_det_pk_id),-1,in_wc_claimant_det_pk_id)
-	IFF(in_wc_claimant_det_pk_id IS NULL,
-		- 1,
-		in_wc_claimant_det_pk_id
-	) AS wc_claimant_det_pk_id_out,
+	IFF(in_wc_claimant_det_pk_id IS NULL, - 1, in_wc_claimant_det_pk_id) AS wc_claimant_det_pk_id_out,
 	JNR_claimant_dim_sources.claim_party_occurrence_ak_id AS edw_claim_party_occurrence_ak_id,
 	JNR_claimant_dim_sources.claim_case_ak_id AS in_edw_claim_case_ak_id,
 	JNR_claimant_dim_sources.claimant_date_type,
 	-- *INF*: iif(isnull(claimant_date_type) OR claimant_date_type ='N/A'
 	-- ,'N/A',
 	-- rtrim(substr(claimant_date_type,2)))
-	IFF(claimant_date_type IS NULL 
-		OR claimant_date_type = 'N/A',
-		'N/A',
-		rtrim(substr(claimant_date_type, 2
-			)
-		)
+	IFF(
+	    claimant_date_type IS NULL OR claimant_date_type = 'N/A', 'N/A',
+	    rtrim(substr(claimant_date_type, 2))
 	) AS v_claimant_date_type_out,
 	v_claimant_date_type_out AS claimant_date_type_out,
 	JNR_claimant_dim_sources.claimant_date,
@@ -1127,87 +1107,61 @@ EXP_claimant_dim AS (
 	-- *INF*: iif(isnull(in_claimant_direct_loss_status_code) OR in_claimant_direct_loss_status_code ='N/A'
 	-- ,'N/A',
 	-- rtrim(substr(in_claimant_direct_loss_status_code,2)))
-	IFF(in_claimant_direct_loss_status_code IS NULL 
-		OR in_claimant_direct_loss_status_code = 'N/A',
-		'N/A',
-		rtrim(substr(in_claimant_direct_loss_status_code, 2
-			)
-		)
+	IFF(
+	    in_claimant_direct_loss_status_code IS NULL OR in_claimant_direct_loss_status_code = 'N/A',
+	    'N/A',
+	    rtrim(substr(in_claimant_direct_loss_status_code, 2))
 	) AS claimant_direct_loss_status_code_out,
 	JNR_claimant_dim_sources.claimant_exp_status_code AS in_claimant_exp_status_code,
 	-- *INF*: iif(isnull(in_claimant_exp_status_code) OR in_claimant_exp_status_code='N/A'
 	-- ,'N/A',
 	-- rtrim(substr(in_claimant_exp_status_code,2)))
-	IFF(in_claimant_exp_status_code IS NULL 
-		OR in_claimant_exp_status_code = 'N/A',
-		'N/A',
-		rtrim(substr(in_claimant_exp_status_code, 2
-			)
-		)
+	IFF(
+	    in_claimant_exp_status_code IS NULL OR in_claimant_exp_status_code = 'N/A', 'N/A',
+	    rtrim(substr(in_claimant_exp_status_code, 2))
 	) AS claimant_exp_status_code_out,
 	JNR_claimant_dim_sources.claimant_subrogation_status_code AS in_claimant_subrogation_status_code,
 	-- *INF*: iif(isnull(in_claimant_subrogation_status_code) OR in_claimant_subrogation_status_code = 'N/A'
 	-- ,'N/A',
 	-- rtrim(substr(in_claimant_subrogation_status_code,2)))
-	IFF(in_claimant_subrogation_status_code IS NULL 
-		OR in_claimant_subrogation_status_code = 'N/A',
-		'N/A',
-		rtrim(substr(in_claimant_subrogation_status_code, 2
-			)
-		)
+	IFF(
+	    in_claimant_subrogation_status_code IS NULL OR in_claimant_subrogation_status_code = 'N/A',
+	    'N/A',
+	    rtrim(substr(in_claimant_subrogation_status_code, 2))
 	) AS claimant_subrogation_status_code_out,
 	JNR_claimant_dim_sources.claimant_salvage_status_code AS in_claimant_salvage_status_code,
 	-- *INF*: iif(isnull(in_claimant_salvage_status_code) OR in_claimant_salvage_status_code = 'N/A'
 	-- ,'N/A'
 	-- ,rtrim(substr(in_claimant_salvage_status_code,2)))
-	IFF(in_claimant_salvage_status_code IS NULL 
-		OR in_claimant_salvage_status_code = 'N/A',
-		'N/A',
-		rtrim(substr(in_claimant_salvage_status_code, 2
-			)
-		)
+	IFF(
+	    in_claimant_salvage_status_code IS NULL OR in_claimant_salvage_status_code = 'N/A', 'N/A',
+	    rtrim(substr(in_claimant_salvage_status_code, 2))
 	) AS claimant_salvage_status_code_out,
 	JNR_claimant_dim_sources.claimant_other_recovery_status_code AS in_claimant_other_recovery_status_code,
 	-- *INF*: iif(isnull(in_claimant_other_recovery_status_code) OR in_claimant_other_recovery_status_code='N/A'
 	-- ,'N/A',
 	-- rtrim(substr(in_claimant_other_recovery_status_code,2)))
-	IFF(in_claimant_other_recovery_status_code IS NULL 
-		OR in_claimant_other_recovery_status_code = 'N/A',
-		'N/A',
-		rtrim(substr(in_claimant_other_recovery_status_code, 2
-			)
-		)
+	IFF(
+	    in_claimant_other_recovery_status_code IS NULL
+	    or in_claimant_other_recovery_status_code = 'N/A',
+	    'N/A',
+	    rtrim(substr(in_claimant_other_recovery_status_code, 2))
 	) AS claimant_other_recovery_status_code_out,
 	JNR_claimant_dim_sources.claimant_reopen_ind AS in_claimant_reopen_ind,
 	-- *INF*: iif(isnull(in_claimant_reopen_ind),'N/A',in_claimant_reopen_ind)
-	IFF(in_claimant_reopen_ind IS NULL,
-		'N/A',
-		in_claimant_reopen_ind
-	) AS claimant_reopen_ind_out,
+	IFF(in_claimant_reopen_ind IS NULL, 'N/A', in_claimant_reopen_ind) AS claimant_reopen_ind_out,
 	JNR_claimant_dim_sources.claimant_financial_ind AS in_claimant_financial_ind,
 	-- *INF*: iif(isnull(in_claimant_financial_ind),'N/A',in_claimant_financial_ind)
-	IFF(in_claimant_financial_ind IS NULL,
-		'N/A',
-		in_claimant_financial_ind
-	) AS claimant_financial_ind_out,
+	IFF(in_claimant_financial_ind IS NULL, 'N/A', in_claimant_financial_ind) AS claimant_financial_ind_out,
 	JNR_claimant_dim_sources.claimant_supplemental_ind AS in_claimant_supplemental_ind,
 	-- *INF*: iif(isnull(in_claimant_supplemental_ind),'N/A',in_claimant_supplemental_ind)
-	IFF(in_claimant_supplemental_ind IS NULL,
-		'N/A',
-		in_claimant_supplemental_ind
-	) AS claimant_supplemental_ind_out,
+	IFF(in_claimant_supplemental_ind IS NULL, 'N/A', in_claimant_supplemental_ind) AS claimant_supplemental_ind_out,
 	JNR_claimant_dim_sources.claimant_recovery_ind AS in_claimant_recovery_ind,
 	-- *INF*: iif(isnull(in_claimant_recovery_ind),'N/A',in_claimant_recovery_ind)
-	IFF(in_claimant_recovery_ind IS NULL,
-		'N/A',
-		in_claimant_recovery_ind
-	) AS claimant_recovery_ind_out,
+	IFF(in_claimant_recovery_ind IS NULL, 'N/A', in_claimant_recovery_ind) AS claimant_recovery_ind_out,
 	JNR_claimant_dim_sources.claimant_notice_only_ind AS in_claimant_notice_only_claim_ind,
 	-- *INF*: iif(isnull(in_claimant_notice_only_claim_ind),'N/A',in_claimant_notice_only_claim_ind)
-	IFF(in_claimant_notice_only_claim_ind IS NULL,
-		'N/A',
-		in_claimant_notice_only_claim_ind
-	) AS claimant_notice_only_claim_ind_out,
+	IFF(in_claimant_notice_only_claim_ind IS NULL, 'N/A', in_claimant_notice_only_claim_ind) AS claimant_notice_only_claim_ind_out,
 	-- *INF*: IIF(ISNULL(v_claimant_date_type_out),TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),IIF(v_claimant_date_type_out = 'OPEN',claimant_date,TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')))
 	-- 
 	-- 
@@ -1220,14 +1174,13 @@ EXP_claimant_dim AS (
 	-- 
 	-- 
 	-- 
-	IFF(v_claimant_date_type_out IS NULL,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		IFF(v_claimant_date_type_out = 'OPEN',
-			claimant_date,
-			TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-			)
-		)
+	IFF(
+	    v_claimant_date_type_out IS NULL,
+	    TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    IFF(
+	        v_claimant_date_type_out = 'OPEN', claimant_date,
+	        TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
+	    )
 	) AS v_claimant_open_date,
 	v_claimant_open_date AS claimant_open_date,
 	-- *INF*: IIF(ISNULL(v_claimant_date_type_out),TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),IIF(v_claimant_date_type_out = 'CLOSED',claimant_date,TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')))
@@ -1244,14 +1197,13 @@ EXP_claimant_dim AS (
 	-- 
 	-- 
 	-- 
-	IFF(v_claimant_date_type_out IS NULL,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		IFF(v_claimant_date_type_out = 'CLOSED',
-			claimant_date,
-			TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-			)
-		)
+	IFF(
+	    v_claimant_date_type_out IS NULL,
+	    TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    IFF(
+	        v_claimant_date_type_out = 'CLOSED', claimant_date,
+	        TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
+	    )
 	) AS v_claimant_close_date,
 	v_claimant_close_date AS claimant_close_date,
 	-- *INF*: IIF(ISNULL(v_claimant_date_type_out),TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),IIF(v_claimant_date_type_out = 'REOPEN',claimant_date,TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')))
@@ -1263,14 +1215,13 @@ EXP_claimant_dim AS (
 	-- --(v_claimant_date_type_out != 'N/A' OR v_claimant_date_type_out != 'REOPEN' ) AND (edw_claim_party_occurrence_ak_id = --v_prev_row_claim_party_occurrence_ak_id), v_prev_row_claimant_reopen_date)
 	-- 
 	-- 
-	IFF(v_claimant_date_type_out IS NULL,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		IFF(v_claimant_date_type_out = 'REOPEN',
-			claimant_date,
-			TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-			)
-		)
+	IFF(
+	    v_claimant_date_type_out IS NULL,
+	    TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    IFF(
+	        v_claimant_date_type_out = 'REOPEN', claimant_date,
+	        TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
+	    )
 	) AS v_claimant_reopen_date,
 	v_claimant_reopen_date AS claimant_reopen_date,
 	-- *INF*: IIF(ISNULL(v_claimant_date_type_out),TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),IIF(v_claimant_date_type_out = 'CLOSEDAFTERREOPEN',claimant_date,TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')))
@@ -1283,14 +1234,13 @@ EXP_claimant_dim AS (
 	-- 
 	-- 
 	-- 
-	IFF(v_claimant_date_type_out IS NULL,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		IFF(v_claimant_date_type_out = 'CLOSEDAFTERREOPEN',
-			claimant_date,
-			TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-			)
-		)
+	IFF(
+	    v_claimant_date_type_out IS NULL,
+	    TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    IFF(
+	        v_claimant_date_type_out = 'CLOSEDAFTERREOPEN', claimant_date,
+	        TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
+	    )
 	) AS v_claimant_closed_after_reopen_date,
 	v_claimant_closed_after_reopen_date AS claimant_closed_after_reopen_date,
 	-- *INF*: IIF(ISNULL(v_claimant_date_type_out),TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS'),IIF(v_claimant_date_type_out = 'NOTICEONLY',claimant_date,TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')))
@@ -1304,14 +1254,13 @@ EXP_claimant_dim AS (
 	-- 
 	-- 
 	-- 
-	IFF(v_claimant_date_type_out IS NULL,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		IFF(v_claimant_date_type_out = 'NOTICEONLY',
-			claimant_date,
-			TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-			)
-		)
+	IFF(
+	    v_claimant_date_type_out IS NULL,
+	    TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    IFF(
+	        v_claimant_date_type_out = 'NOTICEONLY', claimant_date,
+	        TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
+	    )
 	) AS v_claimant_noticeonly_date,
 	v_claimant_noticeonly_date AS claimant_noticeonly_date,
 	edw_claim_party_occurrence_ak_id AS v_prev_row_claim_party_occurrence_ak_id,
@@ -1338,898 +1287,489 @@ EXP_claimant_dim AS (
 	-- *INF*: IIF(ltrim(rtrim(in_claim_party_role_code))='CMT','CLMT',ltrim(rtrim(in_claim_party_role_code)))
 	-- 
 	-- 
-	IFF(ltrim(rtrim(in_claim_party_role_code
-			)
-		) = 'CMT',
-		'CLMT',
-		ltrim(rtrim(in_claim_party_role_code
-			)
-		)
+	IFF(
+	    ltrim(rtrim(in_claim_party_role_code)) = 'CMT', 'CLMT',
+	    ltrim(rtrim(in_claim_party_role_code))
 	) AS claim_party_role_code_out,
 	LKP_sup_claim_party_role_code.claim_party_role_descript AS in_claim_party_role_code_descript,
 	-- *INF*: IIF(ISNULL(in_claim_party_role_code_descript), 'N/A', in_claim_party_role_code_descript)
-	IFF(in_claim_party_role_code_descript IS NULL,
-		'N/A',
-		in_claim_party_role_code_descript
-	) AS out_claim_party_role_code_descript,
+	IFF(in_claim_party_role_code_descript IS NULL, 'N/A', in_claim_party_role_code_descript) AS out_claim_party_role_code_descript,
 	JNR_claimant_dim_sources.claimant_num AS in_claimant_num,
 	-- *INF*: IIF(ISNULL(in_claimant_num), 'N/A', in_claimant_num)
-	IFF(in_claimant_num IS NULL,
-		'N/A',
-		in_claimant_num
-	) AS out_claimant_num,
+	IFF(in_claimant_num IS NULL, 'N/A', in_claimant_num) AS out_claimant_num,
 	JNR_claimant_dim_sources.denial_date AS in_denial_date,
 	-- *INF*: IIF(ISNULL(in_denial_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_denial_date)
-	IFF(in_denial_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_denial_date
-	) AS denial_date_out,
+	IFF(in_denial_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), in_denial_date) AS denial_date_out,
 	JNR_claimant_dim_sources.jurisdiction_state_code AS in_jurisdiction_state_code,
 	-- *INF*: iif(isnull(in_jurisdiction_state_code),'N/A',in_jurisdiction_state_code)
-	IFF(in_jurisdiction_state_code IS NULL,
-		'N/A',
-		in_jurisdiction_state_code
-	) AS jurisdiction_state_code_out,
+	IFF(in_jurisdiction_state_code IS NULL, 'N/A', in_jurisdiction_state_code) AS jurisdiction_state_code_out,
 	-- *INF*: :LKP.LKP_SUP_STATE(ltrim(rtrim(in_jurisdiction_state_code)))
 	LKP_SUP_STATE_ltrim_rtrim_in_jurisdiction_state_code.state_descript AS IN_jurisdiction_state_descript,
 	-- *INF*: iif(isnull(IN_jurisdiction_state_descript),'N/A',IN_jurisdiction_state_descript)
-	IFF(IN_jurisdiction_state_descript IS NULL,
-		'N/A',
-		IN_jurisdiction_state_descript
-	) AS jurisdiction_state_descript_OUT,
+	IFF(IN_jurisdiction_state_descript IS NULL, 'N/A', IN_jurisdiction_state_descript) AS jurisdiction_state_descript_OUT,
 	JNR_claimant_dim_sources.emplyr_notified_date AS in_emplyr_notified_date,
 	-- *INF*: IIF(ISNULL(in_emplyr_notified_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_emplyr_notified_date)
-	IFF(in_emplyr_notified_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_emplyr_notified_date
+	IFF(
+	    in_emplyr_notified_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'),
+	    in_emplyr_notified_date
 	) AS emplyr_notified_date_out,
 	JNR_claimant_dim_sources.rpted_to_carrier_date AS in_rpted_to_carrier_date,
 	-- *INF*: IIF(ISNULL(in_rpted_to_carrier_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_rpted_to_carrier_date)
-	IFF(in_rpted_to_carrier_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_rpted_to_carrier_date
+	IFF(
+	    in_rpted_to_carrier_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'),
+	    in_rpted_to_carrier_date
 	) AS rpted_to_carrier_date_out,
 	JNR_claimant_dim_sources.jurisdiction_claim_num AS in_jurisdiction_claim_num,
 	-- *INF*: iif(isnull(in_jurisdiction_claim_num),'N/A',in_jurisdiction_claim_num)
-	IFF(in_jurisdiction_claim_num IS NULL,
-		'N/A',
-		in_jurisdiction_claim_num
-	) AS jurisdiction_claim_num_out,
+	IFF(in_jurisdiction_claim_num IS NULL, 'N/A', in_jurisdiction_claim_num) AS jurisdiction_claim_num_out,
 	JNR_claimant_dim_sources.care_directed_ind AS in_care_directed_ind,
 	-- *INF*: iif(isnull(in_care_directed_ind),'N/A',in_care_directed_ind)
-	IFF(in_care_directed_ind IS NULL,
-		'N/A',
-		in_care_directed_ind
-	) AS care_directed_ind_out,
+	IFF(in_care_directed_ind IS NULL, 'N/A', in_care_directed_ind) AS care_directed_ind_out,
 	JNR_claimant_dim_sources.care_directed_by AS in_care_directed_by,
 	-- *INF*: iif(isnull(in_care_directed_by),'N/A',in_care_directed_by)
-	IFF(in_care_directed_by IS NULL,
-		'N/A',
-		in_care_directed_by
-	) AS care_directed_by_out,
+	IFF(in_care_directed_by IS NULL, 'N/A', in_care_directed_by) AS care_directed_by_out,
 	LKP_sup_workers_comp_care_directed_by.wc_care_directed_by_descript AS IN_wc_care_directed_by_descript,
 	-- *INF*: iif(isnull(IN_wc_care_directed_by_descript),'N/A',IN_wc_care_directed_by_descript)
-	IFF(IN_wc_care_directed_by_descript IS NULL,
-		'N/A',
-		IN_wc_care_directed_by_descript
-	) AS wc_care_directed_by_descript_OUT,
+	IFF(IN_wc_care_directed_by_descript IS NULL, 'N/A', IN_wc_care_directed_by_descript) AS wc_care_directed_by_descript_OUT,
 	JNR_claimant_dim_sources.hired_state_code AS in_hired_state_code,
 	-- *INF*: iif(isnull(in_hired_state_code),'N/A',in_hired_state_code)
-	IFF(in_hired_state_code IS NULL,
-		'N/A',
-		in_hired_state_code
-	) AS hired_state_code_out,
+	IFF(in_hired_state_code IS NULL, 'N/A', in_hired_state_code) AS hired_state_code_out,
 	-- *INF*: :LKP.LKP_SUP_STATE(ltrim(rtrim(in_hired_state_code)))
 	LKP_SUP_STATE_ltrim_rtrim_in_hired_state_code.state_descript AS IN_hired_state_descript,
 	-- *INF*: iif(isnull(IN_hired_state_descript),'N/A',IN_hired_state_descript)
-	IFF(IN_hired_state_descript IS NULL,
-		'N/A',
-		IN_hired_state_descript
-	) AS hired_state_descript_OUT,
+	IFF(IN_hired_state_descript IS NULL, 'N/A', IN_hired_state_descript) AS hired_state_descript_OUT,
 	JNR_claimant_dim_sources.hired_date AS in_hired_date,
 	-- *INF*: IIF(ISNULL(in_hired_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_hired_date)
-	IFF(in_hired_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_hired_date
-	) AS hired_date_out,
+	IFF(in_hired_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), in_hired_date) AS hired_date_out,
 	JNR_claimant_dim_sources.tax_filing_status AS in_tax_filing_status,
 	-- *INF*: iif(isnull(in_tax_filing_status),'N/A',in_tax_filing_status)
-	IFF(in_tax_filing_status IS NULL,
-		'N/A',
-		in_tax_filing_status
-	) AS tax_filing_status_out,
+	IFF(in_tax_filing_status IS NULL, 'N/A', in_tax_filing_status) AS tax_filing_status_out,
 	LKP_sup_tax_filing_status.tax_filing_status_descript AS IN_tax_filing_status_descript,
 	-- *INF*: iif(isnull(IN_tax_filing_status_descript),'N/A',IN_tax_filing_status_descript)
-	IFF(IN_tax_filing_status_descript IS NULL,
-		'N/A',
-		IN_tax_filing_status_descript
-	) AS tax_filing_status_descript_OUT,
+	IFF(IN_tax_filing_status_descript IS NULL, 'N/A', IN_tax_filing_status_descript) AS tax_filing_status_descript_OUT,
 	JNR_claimant_dim_sources.occuptn_code AS in_occuptn_code,
 	-- *INF*: iif(isnull(in_occuptn_code),'N/A',in_occuptn_code)
-	IFF(in_occuptn_code IS NULL,
-		'N/A',
-		in_occuptn_code
-	) AS occuptn_code_out,
+	IFF(in_occuptn_code IS NULL, 'N/A', in_occuptn_code) AS occuptn_code_out,
 	LKP_sup_workers_comp_occupation.occuptn_descript AS IN_occuptn_descript,
 	-- *INF*: iif(isnull(IN_occuptn_descript),'N/A',IN_occuptn_descript)
-	IFF(IN_occuptn_descript IS NULL,
-		'N/A',
-		IN_occuptn_descript
-	) AS occuptn_descript_OUT,
+	IFF(IN_occuptn_descript IS NULL, 'N/A', IN_occuptn_descript) AS occuptn_descript_OUT,
 	JNR_claimant_dim_sources.emplymnt_status_code,
 	-- *INF*: iif(isnull(emplymnt_status_code),'N/A',emplymnt_status_code)
-	IFF(emplymnt_status_code IS NULL,
-		'N/A',
-		emplymnt_status_code
-	) AS employement_status_code_out,
+	IFF(emplymnt_status_code IS NULL, 'N/A', emplymnt_status_code) AS employement_status_code_out,
 	LKP_sup_workers_comp_employment_status.wc_emplymnt_descript AS IN_wc_emplymnt_descript,
 	-- *INF*: iif(isnull(IN_wc_emplymnt_descript),'N/A',IN_wc_emplymnt_descript)
-	IFF(IN_wc_emplymnt_descript IS NULL,
-		'N/A',
-		IN_wc_emplymnt_descript
-	) AS wc_emplymnt_descript_OUT,
+	IFF(IN_wc_emplymnt_descript IS NULL, 'N/A', IN_wc_emplymnt_descript) AS wc_emplymnt_descript_OUT,
 	JNR_claimant_dim_sources.len_of_time_in_crrnt_job,
 	-- *INF*: iif(isnull(len_of_time_in_crrnt_job),'N/A',len_of_time_in_crrnt_job)
-	IFF(len_of_time_in_crrnt_job IS NULL,
-		'N/A',
-		len_of_time_in_crrnt_job
-	) AS len_of_time_in_crrnt_job_out,
+	IFF(len_of_time_in_crrnt_job IS NULL, 'N/A', len_of_time_in_crrnt_job) AS len_of_time_in_crrnt_job_out,
 	JNR_claimant_dim_sources.emp_dept_name AS in_emp_dept_name,
 	-- *INF*: iif(isnull(in_emp_dept_name),'N/A',in_emp_dept_name)
-	IFF(in_emp_dept_name IS NULL,
-		'N/A',
-		in_emp_dept_name
-	) AS emp_dept_name_out,
+	IFF(in_emp_dept_name IS NULL, 'N/A', in_emp_dept_name) AS emp_dept_name_out,
 	JNR_claimant_dim_sources.emp_shift_num AS in_emp_shift_num,
 	-- *INF*: iif(isnull(in_emp_shift_num),'N/A',in_emp_shift_num)
-	IFF(in_emp_shift_num IS NULL,
-		'N/A',
-		in_emp_shift_num
-	) AS emp_shift_num_out,
+	IFF(in_emp_shift_num IS NULL, 'N/A', in_emp_shift_num) AS emp_shift_num_out,
 	JNR_claimant_dim_sources.marital_status AS in_marital_status,
 	-- *INF*: iif(isnull(in_marital_status),'N/A',in_marital_status)
-	IFF(in_marital_status IS NULL,
-		'N/A',
-		in_marital_status
-	) AS marital_status_out,
+	IFF(in_marital_status IS NULL, 'N/A', in_marital_status) AS marital_status_out,
 	LKP_sup_marital_status.marital_status_descript AS IN_marital_status_descript,
 	-- *INF*: iif(isnull(IN_marital_status_descript),'N/A',IN_marital_status_descript)
-	IFF(IN_marital_status_descript IS NULL,
-		'N/A',
-		IN_marital_status_descript
-	) AS marital_status_descript_OUT,
+	IFF(IN_marital_status_descript IS NULL, 'N/A', IN_marital_status_descript) AS marital_status_descript_OUT,
 	JNR_claimant_dim_sources.num_of_dependents AS in_num_of_dependents,
 	-- *INF*: iif(isnull(in_num_of_dependents),0,in_num_of_dependents)
-	IFF(in_num_of_dependents IS NULL,
-		0,
-		in_num_of_dependents
-	) AS num_of_dependents_out,
+	IFF(in_num_of_dependents IS NULL, 0, in_num_of_dependents) AS num_of_dependents_out,
 	JNR_claimant_dim_sources.num_of_dependent_children AS in_num_of_dependent_children,
 	-- *INF*: iif(isnull(in_num_of_dependent_children),0,in_num_of_dependent_children)
-	IFF(in_num_of_dependent_children IS NULL,
-		0,
-		in_num_of_dependent_children
-	) AS num_of_dependent_children_out,
+	IFF(in_num_of_dependent_children IS NULL, 0, in_num_of_dependent_children) AS num_of_dependent_children_out,
 	JNR_claimant_dim_sources.num_of_other_dependents AS in_num_of_other_dependents,
 	-- *INF*: iif(isnull(in_num_of_other_dependents),0,in_num_of_other_dependents)
-	IFF(in_num_of_other_dependents IS NULL,
-		0,
-		in_num_of_other_dependents
-	) AS num_of_other_dependents_out,
+	IFF(in_num_of_other_dependents IS NULL, 0, in_num_of_other_dependents) AS num_of_other_dependents_out,
 	JNR_claimant_dim_sources.num_of_exemptions AS in_num_of_exemptions,
 	-- *INF*: iif(isnull(in_num_of_exemptions),0,in_num_of_exemptions)
-	IFF(in_num_of_exemptions IS NULL,
-		0,
-		in_num_of_exemptions
-	) AS num_of_exemptions_out,
+	IFF(in_num_of_exemptions IS NULL, 0, in_num_of_exemptions) AS num_of_exemptions_out,
 	JNR_claimant_dim_sources.exemption_type AS in_exemption_type,
 	-- *INF*: iif(isnull(in_exemption_type),'N/A',in_exemption_type)
-	IFF(in_exemption_type IS NULL,
-		'N/A',
-		in_exemption_type
-	) AS exemption_type_out,
+	IFF(in_exemption_type IS NULL, 'N/A', in_exemption_type) AS exemption_type_out,
 	LKP_sup_workers_comp_exemption_type.wc_exemption_type_descript AS IN_wc_exemption_type_descript,
 	-- *INF*: iif(isnull(IN_wc_exemption_type_descript),'N/A',IN_wc_exemption_type_descript)
-	IFF(IN_wc_exemption_type_descript IS NULL,
-		'N/A',
-		IN_wc_exemption_type_descript
-	) AS wc_exemption_type_descript_OUT,
+	IFF(IN_wc_exemption_type_descript IS NULL, 'N/A', IN_wc_exemption_type_descript) AS wc_exemption_type_descript_OUT,
 	JNR_claimant_dim_sources.emp_blind_ind AS in_emp_blind_ind,
 	-- *INF*: iif(isnull(in_emp_blind_ind),'N/A',in_emp_blind_ind)
-	IFF(in_emp_blind_ind IS NULL,
-		'N/A',
-		in_emp_blind_ind
-	) AS emp_blind_ind_out,
+	IFF(in_emp_blind_ind IS NULL, 'N/A', in_emp_blind_ind) AS emp_blind_ind_out,
 	JNR_claimant_dim_sources.emp_over_65_ind AS in_emp_over_65_ind,
 	-- *INF*: iif(isnull(in_emp_over_65_ind),'N/A',in_emp_over_65_ind)
-	IFF(in_emp_over_65_ind IS NULL,
-		'N/A',
-		in_emp_over_65_ind
-	) AS emp_over_65_ind_out,
+	IFF(in_emp_over_65_ind IS NULL, 'N/A', in_emp_over_65_ind) AS emp_over_65_ind_out,
 	JNR_claimant_dim_sources.spouse_blind_ind AS in_spouse_blind_ind,
 	-- *INF*: iif(isnull(in_spouse_blind_ind),'N/A',in_spouse_blind_ind)
-	IFF(in_spouse_blind_ind IS NULL,
-		'N/A',
-		in_spouse_blind_ind
-	) AS spouse_blind_ind_out,
+	IFF(in_spouse_blind_ind IS NULL, 'N/A', in_spouse_blind_ind) AS spouse_blind_ind_out,
 	JNR_claimant_dim_sources.spouse_over_65_ind AS in_spouse_over_65_ind,
 	-- *INF*: iif(isnull(in_spouse_over_65_ind),'N/A',in_spouse_over_65_ind)
-	IFF(in_spouse_over_65_ind IS NULL,
-		'N/A',
-		in_spouse_over_65_ind
-	) AS spouse_over_65_ind_out,
+	IFF(in_spouse_over_65_ind IS NULL, 'N/A', in_spouse_over_65_ind) AS spouse_over_65_ind_out,
 	JNR_claimant_dim_sources.education_lvl AS in_education_lvl,
 	-- *INF*: iif(isnull(in_education_lvl),'N/A',in_education_lvl)
-	IFF(in_education_lvl IS NULL,
-		'N/A',
-		in_education_lvl
-	) AS education_lvl_out,
+	IFF(in_education_lvl IS NULL, 'N/A', in_education_lvl) AS education_lvl_out,
 	JNR_claimant_dim_sources.med_auth_ind AS in_med_auth_ind,
 	-- *INF*: iif(isnull(in_med_auth_ind),'N/A',in_med_auth_ind)
-	IFF(in_med_auth_ind IS NULL,
-		'N/A',
-		in_med_auth_ind
-	) AS med_auth_ind_out,
+	IFF(in_med_auth_ind IS NULL, 'N/A', in_med_auth_ind) AS med_auth_ind_out,
 	JNR_claimant_dim_sources.auth_to_release_ssn_ind AS in_auth_to_release_ssn_ind,
 	-- *INF*: iif(isnull(in_auth_to_release_ssn_ind),'N/A',in_auth_to_release_ssn_ind)
-	IFF(in_auth_to_release_ssn_ind IS NULL,
-		'N/A',
-		in_auth_to_release_ssn_ind
-	) AS auth_to_release_ssn_ind_out,
+	IFF(in_auth_to_release_ssn_ind IS NULL, 'N/A', in_auth_to_release_ssn_ind) AS auth_to_release_ssn_ind_out,
 	JNR_claimant_dim_sources.emp_id_num AS in_emp_id_num,
 	-- *INF*: iif(isnull(in_emp_id_num),'N/A',in_emp_id_num)
-	IFF(in_emp_id_num IS NULL,
-		'N/A',
-		in_emp_id_num
-	) AS emp_id_num_out,
+	IFF(in_emp_id_num IS NULL, 'N/A', in_emp_id_num) AS emp_id_num_out,
 	JNR_claimant_dim_sources.emp_id_type AS in_emp_id_type,
 	-- *INF*: iif(isnull(in_emp_id_type),'N/A',in_emp_id_type)
-	IFF(in_emp_id_type IS NULL,
-		'N/A',
-		in_emp_id_type
-	) AS emp_id_type_out,
+	IFF(in_emp_id_type IS NULL, 'N/A', in_emp_id_type) AS emp_id_type_out,
 	LKP_sup_workers_comp_employee_identification_type.emp_id_type_descript AS IN_emp_id_type_descript,
 	-- *INF*: iif(isnull(IN_emp_id_type_descript),'N/A',IN_emp_id_type_descript)
-	IFF(IN_emp_id_type_descript IS NULL,
-		'N/A',
-		IN_emp_id_type_descript
-	) AS emp_id_type_descript_OUT,
+	IFF(IN_emp_id_type_descript IS NULL, 'N/A', IN_emp_id_type_descript) AS emp_id_type_descript_OUT,
 	JNR_claimant_dim_sources.emp_part_time_hour_week,
 	-- *INF*: iif(isnull(emp_part_time_hour_week),0,emp_part_time_hour_week)
-	IFF(emp_part_time_hour_week IS NULL,
-		0,
-		emp_part_time_hour_week
-	) AS emp_part_time_hour_week_out,
+	IFF(emp_part_time_hour_week IS NULL, 0, emp_part_time_hour_week) AS emp_part_time_hour_week_out,
 	JNR_claimant_dim_sources.emp_dept_num AS in_emp_dept_num,
 	-- *INF*: iif(isnull(in_emp_dept_num),'N/A',in_emp_dept_num)
-	IFF(in_emp_dept_num IS NULL,
-		'N/A',
-		in_emp_dept_num
-	) AS emp_dept_num_out,
+	IFF(in_emp_dept_num IS NULL, 'N/A', in_emp_dept_num) AS emp_dept_num_out,
 	JNR_claimant_dim_sources.emp_part_time_hourly_week_rate_amt AS in_emp_part_time_hourly_week_rate_amt,
 	-- *INF*: iif(isnull(in_emp_part_time_hourly_week_rate_amt),0,in_emp_part_time_hourly_week_rate_amt)
-	IFF(in_emp_part_time_hourly_week_rate_amt IS NULL,
-		0,
-		in_emp_part_time_hourly_week_rate_amt
-	) AS emp_part_time_hourly_week_rate_amt_out,
+	IFF(in_emp_part_time_hourly_week_rate_amt IS NULL, 0, in_emp_part_time_hourly_week_rate_amt) AS emp_part_time_hourly_week_rate_amt_out,
 	JNR_claimant_dim_sources.wage_rate_amt AS in_wage_rate_amt,
 	-- *INF*: iif(isnull(in_wage_rate_amt),0,in_wage_rate_amt)
-	IFF(in_wage_rate_amt IS NULL,
-		0,
-		in_wage_rate_amt
-	) AS wage_rate_amt_out,
+	IFF(in_wage_rate_amt IS NULL, 0, in_wage_rate_amt) AS wage_rate_amt_out,
 	JNR_claimant_dim_sources.wage_period_code AS in_wage_period_code,
 	-- *INF*: iif(isnull(in_wage_period_code),'N/A',in_wage_period_code)
-	IFF(in_wage_period_code IS NULL,
-		'N/A',
-		in_wage_period_code
-	) AS wage_period_code_out,
+	IFF(in_wage_period_code IS NULL, 'N/A', in_wage_period_code) AS wage_period_code_out,
 	LKP_sup_workers_comp_wage_period.wage_period_descript AS IN_wage_period_descript,
 	-- *INF*: iif(isnull(IN_wage_period_descript),'N/A',IN_wage_period_descript)
-	IFF(IN_wage_period_descript IS NULL,
-		'N/A',
-		IN_wage_period_descript
-	) AS wage_period_descript_OUT,
+	IFF(IN_wage_period_descript IS NULL, 'N/A', IN_wage_period_descript) AS wage_period_descript_OUT,
 	JNR_claimant_dim_sources.wage_eff_date AS in_wage_eff_date,
 	-- *INF*: IIF(ISNULL(in_wage_eff_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_wage_eff_date)
-	IFF(in_wage_eff_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_wage_eff_date
-	) AS wage_eff_date_out,
+	IFF(in_wage_eff_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), in_wage_eff_date) AS wage_eff_date_out,
 	JNR_claimant_dim_sources.weeks_worked AS in_weeks_worked,
 	-- *INF*: iif(isnull(in_weeks_worked),0,in_weeks_worked)
-	IFF(in_weeks_worked IS NULL,
-		0,
-		in_weeks_worked
-	) AS weeks_worked_out,
+	IFF(in_weeks_worked IS NULL, 0, in_weeks_worked) AS weeks_worked_out,
 	JNR_claimant_dim_sources.gross_amt_type AS in_gross_amt_type,
 	-- *INF*: iif(isnull(in_gross_amt_type),'N/A',in_gross_amt_type)
-	IFF(in_gross_amt_type IS NULL,
-		'N/A',
-		in_gross_amt_type
-	) AS gross_amt_type_out,
+	IFF(in_gross_amt_type IS NULL, 'N/A', in_gross_amt_type) AS gross_amt_type_out,
 	LKP_sup_workers_comp_wage_gross_amount_type.wage_gross_amt_type_descript AS IN_wage_gross_amt_type_descript,
 	-- *INF*: iif(isnull(IN_wage_gross_amt_type_descript),'N/A',IN_wage_gross_amt_type_descript)
-	IFF(IN_wage_gross_amt_type_descript IS NULL,
-		'N/A',
-		IN_wage_gross_amt_type_descript
-	) AS wage_gross_amt_type_descript_OUT,
+	IFF(IN_wage_gross_amt_type_descript IS NULL, 'N/A', IN_wage_gross_amt_type_descript) AS wage_gross_amt_type_descript_OUT,
 	JNR_claimant_dim_sources.gross_wage_amt_excluding_tips AS in_gross_wage_amt_excluding_tips,
 	-- *INF*: iif(isnull(in_gross_wage_amt_excluding_tips),0,in_gross_wage_amt_excluding_tips)
-	IFF(in_gross_wage_amt_excluding_tips IS NULL,
-		0,
-		in_gross_wage_amt_excluding_tips
-	) AS gross_wage_amt_excluding_tips_out,
+	IFF(in_gross_wage_amt_excluding_tips IS NULL, 0, in_gross_wage_amt_excluding_tips) AS gross_wage_amt_excluding_tips_out,
 	JNR_claimant_dim_sources.piece_work_num_of_weeks_excluding_overtime AS in_piece_work_num_of_weeks_excluding_overtime,
 	-- *INF*: iif(isnull(in_piece_work_num_of_weeks_excluding_overtime),0,in_piece_work_num_of_weeks_excluding_overtime)
-	IFF(in_piece_work_num_of_weeks_excluding_overtime IS NULL,
-		0,
-		in_piece_work_num_of_weeks_excluding_overtime
+	IFF(
+	    in_piece_work_num_of_weeks_excluding_overtime IS NULL, 0,
+	    in_piece_work_num_of_weeks_excluding_overtime
 	) AS piece_work_num_of_weeks_excluding_overtime_out,
 	JNR_claimant_dim_sources.emp_rec_meals AS in_emp_rec_meals,
 	-- *INF*: iif(isnull(in_emp_rec_meals),0,in_emp_rec_meals)
-	IFF(in_emp_rec_meals IS NULL,
-		0,
-		in_emp_rec_meals
-	) AS emp_rec_meals_out,
+	IFF(in_emp_rec_meals IS NULL, 0, in_emp_rec_meals) AS emp_rec_meals_out,
 	JNR_claimant_dim_sources.emp_rec_room AS in_emp_rec_room,
 	-- *INF*: iif(isnull(in_emp_rec_room),0,in_emp_rec_room)
-	IFF(in_emp_rec_room IS NULL,
-		0,
-		in_emp_rec_room
-	) AS emp_rec_room_out,
+	IFF(in_emp_rec_room IS NULL, 0, in_emp_rec_room) AS emp_rec_room_out,
 	JNR_claimant_dim_sources.emp_rec_tips AS in_emp_rec_tips,
 	-- *INF*: iif(isnull(in_emp_rec_tips),0,in_emp_rec_tips)
-	IFF(in_emp_rec_tips IS NULL,
-		0,
-		in_emp_rec_tips
-	) AS emp_rec_tips_out,
+	IFF(in_emp_rec_tips IS NULL, 0, in_emp_rec_tips) AS emp_rec_tips_out,
 	JNR_claimant_dim_sources.overtime_amt AS in_overtime_amt,
 	-- *INF*: iif(isnull(in_overtime_amt),0,in_overtime_amt)
-	IFF(in_overtime_amt IS NULL,
-		0,
-		in_overtime_amt
-	) AS overtime_amt_out,
+	IFF(in_overtime_amt IS NULL, 0, in_overtime_amt) AS overtime_amt_out,
 	JNR_claimant_dim_sources.overtime_after_hour_in_a_week AS in_overtime_after_hour_in_a_week,
 	-- *INF*: iif(isnull(in_overtime_after_hour_in_a_week),0,in_overtime_after_hour_in_a_week)
-	IFF(in_overtime_after_hour_in_a_week IS NULL,
-		0,
-		in_overtime_after_hour_in_a_week
-	) AS overtime_after_hour_in_a_week_out,
+	IFF(in_overtime_after_hour_in_a_week IS NULL, 0, in_overtime_after_hour_in_a_week) AS overtime_after_hour_in_a_week_out,
 	JNR_claimant_dim_sources.overtime_after_hour_in_a_day AS in_overtime_after_hour_in_a_day,
 	-- *INF*: iif(isnull(in_overtime_after_hour_in_a_day),0,in_overtime_after_hour_in_a_day)
-	IFF(in_overtime_after_hour_in_a_day IS NULL,
-		0,
-		in_overtime_after_hour_in_a_day
-	) AS overtime_after_hour_in_a_day_out,
+	IFF(in_overtime_after_hour_in_a_day IS NULL, 0, in_overtime_after_hour_in_a_day) AS overtime_after_hour_in_a_day_out,
 	JNR_claimant_dim_sources.full_pay_inj_day_ind AS in_full_pay_inj_day_ind,
 	-- *INF*: iif(isnull(in_full_pay_inj_day_ind),'N/A',in_full_pay_inj_day_ind)
-	IFF(in_full_pay_inj_day_ind IS NULL,
-		'N/A',
-		in_full_pay_inj_day_ind
-	) AS full_pay_inj_day_ind_out,
+	IFF(in_full_pay_inj_day_ind IS NULL, 'N/A', in_full_pay_inj_day_ind) AS full_pay_inj_day_ind_out,
 	JNR_claimant_dim_sources.salary_paid_ind AS in_salary_paid_ind,
 	-- *INF*: iif(isnull(in_salary_paid_ind),'N/A',in_salary_paid_ind)
-	IFF(in_salary_paid_ind IS NULL,
-		'N/A',
-		in_salary_paid_ind
-	) AS salary_paid_ind_out,
+	IFF(in_salary_paid_ind IS NULL, 'N/A', in_salary_paid_ind) AS salary_paid_ind_out,
 	JNR_claimant_dim_sources.avg_full_time_days_week AS in_avg_full_time_days_week,
 	-- *INF*: iif(isnull(in_avg_full_time_days_week),0,in_avg_full_time_days_week)
-	IFF(in_avg_full_time_days_week IS NULL,
-		0,
-		in_avg_full_time_days_week
-	) AS avg_full_time_days_week_out,
+	IFF(in_avg_full_time_days_week IS NULL, 0, in_avg_full_time_days_week) AS avg_full_time_days_week_out,
 	JNR_claimant_dim_sources.avg_full_time_hours_day AS in_avg_full_time_hours_day,
 	-- *INF*: iif(isnull(in_avg_full_time_hours_day),0,in_avg_full_time_hours_day)
-	IFF(in_avg_full_time_hours_day IS NULL,
-		0,
-		in_avg_full_time_hours_day
-	) AS avg_full_time_hours_day_out,
+	IFF(in_avg_full_time_hours_day IS NULL, 0, in_avg_full_time_hours_day) AS avg_full_time_hours_day_out,
 	JNR_claimant_dim_sources.avg_full_time_hours_week AS in_avg_full_time_hours_week,
 	-- *INF*: iif(isnull(in_avg_full_time_hours_week),0,in_avg_full_time_hours_week)
-	IFF(in_avg_full_time_hours_week IS NULL,
-		0,
-		in_avg_full_time_hours_week
-	) AS avg_full_time_hours_week_out,
+	IFF(in_avg_full_time_hours_week IS NULL, 0, in_avg_full_time_hours_week) AS avg_full_time_hours_week_out,
 	JNR_claimant_dim_sources.avg_wkly_wage AS in_avg_wkly_wage,
 	-- *INF*: iif(isnull(in_avg_wkly_wage),0,in_avg_wkly_wage)
-	IFF(in_avg_wkly_wage IS NULL,
-		0,
-		in_avg_wkly_wage
-	) AS avg_wkly_wage_out,
+	IFF(in_avg_wkly_wage IS NULL, 0, in_avg_wkly_wage) AS avg_wkly_wage_out,
 	JNR_claimant_dim_sources.num_of_full_time_emplymnt_same_job AS in_num_of_full_time_emplymnt_same_job,
 	-- *INF*: iif(isnull(in_num_of_full_time_emplymnt_same_job),0,in_num_of_full_time_emplymnt_same_job)
-	IFF(in_num_of_full_time_emplymnt_same_job IS NULL,
-		0,
-		in_num_of_full_time_emplymnt_same_job
-	) AS num_of_full_time_emplymnt_same_job_out,
+	IFF(in_num_of_full_time_emplymnt_same_job IS NULL, 0, in_num_of_full_time_emplymnt_same_job) AS num_of_full_time_emplymnt_same_job_out,
 	JNR_claimant_dim_sources.num_of_part_time_emplymnt_same_job AS in_num_of_part_time_emplymnt_same_job,
 	-- *INF*: iif(isnull(in_num_of_part_time_emplymnt_same_job),0,in_num_of_part_time_emplymnt_same_job)
-	IFF(in_num_of_part_time_emplymnt_same_job IS NULL,
-		0,
-		in_num_of_part_time_emplymnt_same_job
-	) AS num_of_part_time_emplymnt_same_job_out,
+	IFF(in_num_of_part_time_emplymnt_same_job IS NULL, 0, in_num_of_part_time_emplymnt_same_job) AS num_of_part_time_emplymnt_same_job_out,
 	JNR_claimant_dim_sources.ttd_rate AS in_ttd_rate,
 	-- *INF*: iif(isnull(in_ttd_rate),0,in_ttd_rate)
-	IFF(in_ttd_rate IS NULL,
-		0,
-		in_ttd_rate
-	) AS ttd_rate_out,
+	IFF(in_ttd_rate IS NULL, 0, in_ttd_rate) AS ttd_rate_out,
 	JNR_claimant_dim_sources.ppd_rate AS in_ppd_rate,
 	-- *INF*: iif(isnull(in_ppd_rate),0,in_ppd_rate)
-	IFF(in_ppd_rate IS NULL,
-		0,
-		in_ppd_rate
-	) AS ppd_rate_out,
+	IFF(in_ppd_rate IS NULL, 0, in_ppd_rate) AS ppd_rate_out,
 	JNR_claimant_dim_sources.ptd_rate AS in_ptd_rate,
 	-- *INF*: iif(isnull(in_ptd_rate),0,in_ptd_rate)
-	IFF(in_ptd_rate IS NULL,
-		0,
-		in_ptd_rate
-	) AS ptd_rate_out,
+	IFF(in_ptd_rate IS NULL, 0, in_ptd_rate) AS ptd_rate_out,
 	JNR_claimant_dim_sources.dtd_rate AS in_dtd_rate,
 	-- *INF*: iif(isnull(in_dtd_rate),0,in_dtd_rate)
-	IFF(in_dtd_rate IS NULL,
-		0,
-		in_dtd_rate
-	) AS dtd_rate_out,
+	IFF(in_dtd_rate IS NULL, 0, in_dtd_rate) AS dtd_rate_out,
 	JNR_claimant_dim_sources.wkly_attorney_fee AS in_wkly_attorney_fee,
 	-- *INF*: iif(isnull(in_wkly_attorney_fee),0,in_wkly_attorney_fee)
-	IFF(in_wkly_attorney_fee IS NULL,
-		0,
-		in_wkly_attorney_fee
-	) AS wkly_attorney_fee_out,
+	IFF(in_wkly_attorney_fee IS NULL, 0, in_wkly_attorney_fee) AS wkly_attorney_fee_out,
 	JNR_claimant_dim_sources.first_rpt_inj_date AS in_first_rpt_inj_date,
 	-- *INF*: IIF(ISNULL(in_first_rpt_inj_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_first_rpt_inj_date)
-	IFF(in_first_rpt_inj_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_first_rpt_inj_date
+	IFF(
+	    in_first_rpt_inj_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), in_first_rpt_inj_date
 	) AS first_rpt_inj_date_out,
 	JNR_claimant_dim_sources.supplementary_rpt_inj_date AS in_supplementary_rpt_inj_date,
 	-- *INF*: IIF(ISNULL(in_supplementary_rpt_inj_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_supplementary_rpt_inj_date)
-	IFF(in_supplementary_rpt_inj_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_supplementary_rpt_inj_date
+	IFF(
+	    in_supplementary_rpt_inj_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'),
+	    in_supplementary_rpt_inj_date
 	) AS supplementary_rpt_inj_date_out,
 	JNR_claimant_dim_sources.fringe_bnft_discontinued_amt AS in_fringe_bnft_discontinued_amt,
 	-- *INF*: iif(isnull(in_fringe_bnft_discontinued_amt),0,in_fringe_bnft_discontinued_amt)
-	IFF(in_fringe_bnft_discontinued_amt IS NULL,
-		0,
-		in_fringe_bnft_discontinued_amt
-	) AS fringe_bnft_discontinued_amt_out,
+	IFF(in_fringe_bnft_discontinued_amt IS NULL, 0, in_fringe_bnft_discontinued_amt) AS fringe_bnft_discontinued_amt_out,
 	JNR_claimant_dim_sources.emp_start_time AS in_emp_start_time,
 	-- *INF*: IIF(ISNULL(in_emp_start_time),'00:00:00',in_emp_start_time)
-	IFF(in_emp_start_time IS NULL,
-		'00:00:00',
-		in_emp_start_time
-	) AS emp_start_time_out,
+	IFF(in_emp_start_time IS NULL, '00:00:00', in_emp_start_time) AS emp_start_time_out,
 	JNR_claimant_dim_sources.emp_hour_day AS in_emp_hour_day,
 	-- *INF*: iif(isnull(in_emp_hour_day),0,in_emp_hour_day)
-	IFF(in_emp_hour_day IS NULL,
-		0,
-		in_emp_hour_day
-	) AS emp_hour_day_out,
+	IFF(in_emp_hour_day IS NULL, 0, in_emp_hour_day) AS emp_hour_day_out,
 	JNR_claimant_dim_sources.emp_hour_week AS in_emp_hour_week,
 	-- *INF*: iif(isnull(in_emp_hour_week),0,in_emp_hour_week)
-	IFF(in_emp_hour_week IS NULL,
-		0,
-		in_emp_hour_week
-	) AS emp_hour_week_out,
+	IFF(in_emp_hour_week IS NULL, 0, in_emp_hour_week) AS emp_hour_week_out,
 	JNR_claimant_dim_sources.emp_day_week AS in_emp_day_week,
 	-- *INF*: iif(isnull(in_emp_day_week),0,in_emp_day_week)
-	IFF(in_emp_day_week IS NULL,
-		0,
-		in_emp_day_week
-	) AS emp_day_week_out,
+	IFF(in_emp_day_week IS NULL, 0, in_emp_day_week) AS emp_day_week_out,
 	JNR_claimant_dim_sources.inj_work_day_begin_time AS in_inj_work_day_begin_time,
 	-- *INF*: IIF(ISNULL(in_inj_work_day_begin_time),TO_DATE('1/1/1800','MM/DD/YYYY'),in_inj_work_day_begin_time)
-	IFF(in_inj_work_day_begin_time IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_inj_work_day_begin_time
+	IFF(
+	    in_inj_work_day_begin_time IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'),
+	    in_inj_work_day_begin_time
 	) AS inj_work_day_begin_time_out,
 	JNR_claimant_dim_sources.disability_date AS in_disability_date,
 	-- *INF*: IIF(ISNULL(in_disability_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_disability_date)
-	IFF(in_disability_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_disability_date
-	) AS disability_date_out,
+	IFF(in_disability_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), in_disability_date) AS disability_date_out,
 	JNR_claimant_dim_sources.phys_restriction_ind AS in_phys_restriction_ind,
 	-- *INF*: iif(isnull(in_phys_restriction_ind),'N/A',in_phys_restriction_ind)
-	IFF(in_phys_restriction_ind IS NULL,
-		'N/A',
-		in_phys_restriction_ind
-	) AS phys_restriction_ind_out,
+	IFF(in_phys_restriction_ind IS NULL, 'N/A', in_phys_restriction_ind) AS phys_restriction_ind_out,
 	JNR_claimant_dim_sources.pre_exst_disability_ind AS in_pre_exst_disability_ind,
 	-- *INF*: iif(isnull(in_pre_exst_disability_ind),'N/A',in_pre_exst_disability_ind)
-	IFF(in_pre_exst_disability_ind IS NULL,
-		'N/A',
-		in_pre_exst_disability_ind
-	) AS pre_exst_disability_ind_out,
+	IFF(in_pre_exst_disability_ind IS NULL, 'N/A', in_pre_exst_disability_ind) AS pre_exst_disability_ind_out,
 	JNR_claimant_dim_sources.premises_code AS in_premises_code,
 	-- *INF*: iif(isnull(in_premises_code),'N/A',in_premises_code)
-	IFF(in_premises_code IS NULL,
-		'N/A',
-		in_premises_code
-	) AS premises_code_out,
+	IFF(in_premises_code IS NULL, 'N/A', in_premises_code) AS premises_code_out,
 	LKP_sup_workers_comp_premises_type.premises_descript AS IN_premises_descript,
 	-- *INF*: iif(isnull(IN_premises_descript),'N/A',IN_premises_descript)
-	IFF(IN_premises_descript IS NULL,
-		'N/A',
-		IN_premises_descript
-	) AS premises_descript_OUT,
+	IFF(IN_premises_descript IS NULL, 'N/A', IN_premises_descript) AS premises_descript_OUT,
 	JNR_claimant_dim_sources.work_process_descript AS in_work_process_descript,
 	-- *INF*: iif(isnull(in_work_process_descript),'N/A',in_work_process_descript)
-	IFF(in_work_process_descript IS NULL,
-		'N/A',
-		in_work_process_descript
-	) AS work_process_descript_out,
+	IFF(in_work_process_descript IS NULL, 'N/A', in_work_process_descript) AS work_process_descript_out,
 	JNR_claimant_dim_sources.task_descript AS in_task_descript,
 	-- *INF*: iif(isnull(in_task_descript),'N/A',in_task_descript)
-	IFF(in_task_descript IS NULL,
-		'N/A',
-		in_task_descript
-	) AS task_descript_out,
+	IFF(in_task_descript IS NULL, 'N/A', in_task_descript) AS task_descript_out,
 	JNR_claimant_dim_sources.body_part_code AS in_body_part_code,
 	-- *INF*: iif(isnull(in_body_part_code),'N/A',in_body_part_code)
-	IFF(in_body_part_code IS NULL,
-		'N/A',
-		in_body_part_code
-	) AS body_part_code_out,
+	IFF(in_body_part_code IS NULL, 'N/A', in_body_part_code) AS body_part_code_out,
 	LKP_sup_workers_comp_body_part.body_part_descript AS IN_body_part_descript,
 	-- *INF*: iif(isnull(IN_body_part_descript),'N/A',IN_body_part_descript)
-	IFF(IN_body_part_descript IS NULL,
-		'N/A',
-		IN_body_part_descript
-	) AS body_part_descript_OUT,
+	IFF(IN_body_part_descript IS NULL, 'N/A', IN_body_part_descript) AS body_part_descript_OUT,
 	JNR_claimant_dim_sources.nature_inj_code AS in_nature_inj_code,
 	-- *INF*: iif(isnull(in_nature_inj_code),'N/A',in_nature_inj_code)
-	IFF(in_nature_inj_code IS NULL,
-		'N/A',
-		in_nature_inj_code
-	) AS nature_inj_code_out,
+	IFF(in_nature_inj_code IS NULL, 'N/A', in_nature_inj_code) AS nature_inj_code_out,
 	LKP_sup_workers_comp_nature_of_injury.nature_of_inj_descript AS IN_nature_of_inj_descript,
 	-- *INF*: iif(isnull(IN_nature_of_inj_descript),'N/A',IN_nature_of_inj_descript)
-	IFF(IN_nature_of_inj_descript IS NULL,
-		'N/A',
-		IN_nature_of_inj_descript
-	) AS nature_of_inj_descript_OUT,
+	IFF(IN_nature_of_inj_descript IS NULL, 'N/A', IN_nature_of_inj_descript) AS nature_of_inj_descript_OUT,
 	JNR_claimant_dim_sources.cause_inj_code AS in_cause_inj_code,
 	-- *INF*: iif(isnull(in_cause_inj_code),'N/A',in_cause_inj_code)
-	IFF(in_cause_inj_code IS NULL,
-		'N/A',
-		in_cause_inj_code
-	) AS cause_inj_code_out,
+	IFF(in_cause_inj_code IS NULL, 'N/A', in_cause_inj_code) AS cause_inj_code_out,
 	LKP_sup_workers_comp_cause_of_injury.cause_of_inj_descript AS IN_cause_of_inj_descript,
 	-- *INF*: iif(isnull(IN_cause_of_inj_descript),'N/A',IN_cause_of_inj_descript)
-	IFF(IN_cause_of_inj_descript IS NULL,
-		'N/A',
-		IN_cause_of_inj_descript
-	) AS cause_of_inj_descript_OUT,
+	IFF(IN_cause_of_inj_descript IS NULL, 'N/A', IN_cause_of_inj_descript) AS cause_of_inj_descript_OUT,
 	JNR_claimant_dim_sources.safeguard_not_used_ind AS in_safeguard_not_used_ind,
 	-- *INF*: iif(isnull(in_safeguard_not_used_ind),'N/A',in_safeguard_not_used_ind)
-	IFF(in_safeguard_not_used_ind IS NULL,
-		'N/A',
-		in_safeguard_not_used_ind
-	) AS safeguard_not_used_ind_out,
+	IFF(in_safeguard_not_used_ind IS NULL, 'N/A', in_safeguard_not_used_ind) AS safeguard_not_used_ind_out,
 	JNR_claimant_dim_sources.inj_substance_abuse_ind AS in_inj_substance_abuse_ind,
 	-- *INF*: iif(isnull(in_inj_substance_abuse_ind),'N/A',in_inj_substance_abuse_ind)
-	IFF(in_inj_substance_abuse_ind IS NULL,
-		'N/A',
-		in_inj_substance_abuse_ind
-	) AS inj_substance_abuse_ind_out,
+	IFF(in_inj_substance_abuse_ind IS NULL, 'N/A', in_inj_substance_abuse_ind) AS inj_substance_abuse_ind_out,
 	JNR_claimant_dim_sources.sfty_device_not_used_ind AS in_sfty_device_not_used_ind,
 	-- *INF*: iif(isnull(in_sfty_device_not_used_ind),'N/A',in_sfty_device_not_used_ind)
-	IFF(in_sfty_device_not_used_ind IS NULL,
-		'N/A',
-		in_sfty_device_not_used_ind
-	) AS sfty_device_not_used_ind_out,
+	IFF(in_sfty_device_not_used_ind IS NULL, 'N/A', in_sfty_device_not_used_ind) AS sfty_device_not_used_ind_out,
 	JNR_claimant_dim_sources.inj_rules_not_obeyed_ind AS in_inj_rules_not_obeyed_ind,
 	-- *INF*: iif(isnull(in_inj_rules_not_obeyed_ind),'N/A',in_inj_rules_not_obeyed_ind)
-	IFF(in_inj_rules_not_obeyed_ind IS NULL,
-		'N/A',
-		in_inj_rules_not_obeyed_ind
-	) AS inj_rules_not_obeyed_ind_out,
+	IFF(in_inj_rules_not_obeyed_ind IS NULL, 'N/A', in_inj_rules_not_obeyed_ind) AS inj_rules_not_obeyed_ind_out,
 	JNR_claimant_dim_sources.inj_result_occuptnal_inj_ind AS in_inj_result_occuptnal_inj_ind,
 	-- *INF*: iif(isnull(in_inj_result_occuptnal_inj_ind),'N/A',in_inj_result_occuptnal_inj_ind)
-	IFF(in_inj_result_occuptnal_inj_ind IS NULL,
-		'N/A',
-		in_inj_result_occuptnal_inj_ind
-	) AS inj_result_occuptnal_inj_ind_out,
+	IFF(in_inj_result_occuptnal_inj_ind IS NULL, 'N/A', in_inj_result_occuptnal_inj_ind) AS inj_result_occuptnal_inj_ind_out,
 	JNR_claimant_dim_sources.inj_result_occuptnal_disease_ndicator AS in_inj_result_occuptnal_disease_ndicator,
 	-- *INF*: iif(isnull(in_inj_result_occuptnal_disease_ndicator),'N/A',in_inj_result_occuptnal_disease_ndicator)
-	IFF(in_inj_result_occuptnal_disease_ndicator IS NULL,
-		'N/A',
-		in_inj_result_occuptnal_disease_ndicator
+	IFF(
+	    in_inj_result_occuptnal_disease_ndicator IS NULL, 'N/A',
+	    in_inj_result_occuptnal_disease_ndicator
 	) AS inj_result_occuptnal_disease_ndicator_out,
 	JNR_claimant_dim_sources.inj_result_death_ind AS in_inj_result_death_ind,
 	-- *INF*: iif(isnull(in_inj_result_death_ind),'N/A',in_inj_result_death_ind)
-	IFF(in_inj_result_death_ind IS NULL,
-		'N/A',
-		in_inj_result_death_ind
-	) AS inj_result_death_ind_out,
+	IFF(in_inj_result_death_ind IS NULL, 'N/A', in_inj_result_death_ind) AS inj_result_death_ind_out,
 	JNR_claimant_dim_sources.unsafe_act_descript AS in_unsafe_act_descript,
 	-- *INF*: iif(isnull(in_unsafe_act_descript),'N/A',in_unsafe_act_descript)
-	IFF(in_unsafe_act_descript IS NULL,
-		'N/A',
-		in_unsafe_act_descript
-	) AS unsafe_act_descript_out,
+	IFF(in_unsafe_act_descript IS NULL, 'N/A', in_unsafe_act_descript) AS unsafe_act_descript_out,
 	JNR_claimant_dim_sources.responsible_for_inj_descript AS in_responsible_for_inj_descript,
 	-- *INF*: iif(isnull(in_responsible_for_inj_descript),'N/A',in_responsible_for_inj_descript)
-	IFF(in_responsible_for_inj_descript IS NULL,
-		'N/A',
-		in_responsible_for_inj_descript
-	) AS responsible_for_inj_descript_out,
+	IFF(in_responsible_for_inj_descript IS NULL, 'N/A', in_responsible_for_inj_descript) AS responsible_for_inj_descript_out,
 	JNR_claimant_dim_sources.hazard_condition_descript AS in_hazard_condition_descript,
 	-- *INF*: iif(isnull(in_hazard_condition_descript),'N/A',in_hazard_condition_descript)
-	IFF(in_hazard_condition_descript IS NULL,
-		'N/A',
-		in_hazard_condition_descript
-	) AS hazard_condition_descript_out,
+	IFF(in_hazard_condition_descript IS NULL, 'N/A', in_hazard_condition_descript) AS hazard_condition_descript_out,
 	LKP_Workers_Comp_Claimant_Work_History.emp_last_day_worked AS in_emp_last_day_worked,
 	-- *INF*: IIF(ISNULL(in_emp_last_day_worked),TO_DATE('1/1/1800','MM/DD/YYYY'),in_emp_last_day_worked)
-	IFF(in_emp_last_day_worked IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_emp_last_day_worked
+	IFF(
+	    in_emp_last_day_worked IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'),
+	    in_emp_last_day_worked
 	) AS emp_last_day_worked_out,
 	JNR_claimant_dim_sources.death_date AS in_death_date,
 	-- *INF*: IIF(ISNULL(in_death_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_death_date)
-	IFF(in_death_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_death_date
-	) AS death_date_out,
+	IFF(in_death_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), in_death_date) AS death_date_out,
 	LKP_Workers_Comp_Claimant_Work_History.return_to_work_date AS in_return_to_work_date,
 	-- *INF*: IIF(ISNULL(in_return_to_work_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_return_to_work_date)
-	IFF(in_return_to_work_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_return_to_work_date
+	IFF(
+	    in_return_to_work_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'),
+	    in_return_to_work_date
 	) AS return_to_work_date_out,
 	LKP_Workers_Comp_Claimant_Work_History.return_to_work_type AS in_return_to_work_type,
 	-- *INF*: iif(isnull(RTRIM(in_return_to_work_type)),'N/A',RTRIM(in_return_to_work_type))
-	IFF(RTRIM(in_return_to_work_type
-		) IS NULL,
-		'N/A',
-		RTRIM(in_return_to_work_type
-		)
-	) AS return_to_work_type_out,
+	IFF(RTRIM(in_return_to_work_type) IS NULL, 'N/A', RTRIM(in_return_to_work_type)) AS return_to_work_type_out,
 	LKP_sup_workers_comp_return_to_work_type.return_to_work_descript AS IN_return_to_work_descript,
 	-- *INF*: iif(isnull(IN_return_to_work_descript),'N/A',IN_return_to_work_descript)
-	IFF(IN_return_to_work_descript IS NULL,
-		'N/A',
-		IN_return_to_work_descript
-	) AS return_to_work_descript_OUT,
+	IFF(IN_return_to_work_descript IS NULL, 'N/A', IN_return_to_work_descript) AS return_to_work_descript_OUT,
 	LKP_Workers_Comp_Claimant_Work_History.return_to_work_with_same_emplyr_ind AS in_return_to_work_with_same_emplyr_ind,
 	-- *INF*: iif(isnull(in_return_to_work_with_same_emplyr_ind),'N/A',in_return_to_work_with_same_emplyr_ind)
-	IFF(in_return_to_work_with_same_emplyr_ind IS NULL,
-		'N/A',
-		in_return_to_work_with_same_emplyr_ind
+	IFF(
+	    in_return_to_work_with_same_emplyr_ind IS NULL, 'N/A',
+	    in_return_to_work_with_same_emplyr_ind
 	) AS return_to_work_with_same_emplyr_ind_out,
 	JNR_claimant_dim_sources.emplyr_nature_bus_descript AS in_emplyr_nature_bus_descript,
 	-- *INF*: iif(isnull(in_emplyr_nature_bus_descript),'N/A',in_emplyr_nature_bus_descript)
-	IFF(in_emplyr_nature_bus_descript IS NULL,
-		'N/A',
-		in_emplyr_nature_bus_descript
-	) AS emplyr_nature_bus_descript_out,
+	IFF(in_emplyr_nature_bus_descript IS NULL, 'N/A', in_emplyr_nature_bus_descript) AS emplyr_nature_bus_descript_out,
 	JNR_claimant_dim_sources.emplyr_type_code AS in_emplyr_type_code,
 	-- *INF*: iif(isnull(in_emplyr_type_code),'N/A',in_emplyr_type_code)
-	IFF(in_emplyr_type_code IS NULL,
-		'N/A',
-		in_emplyr_type_code
-	) AS emplyr_type_code_out,
+	IFF(in_emplyr_type_code IS NULL, 'N/A', in_emplyr_type_code) AS emplyr_type_code_out,
 	LKP_sup_workers_comp_employer_type.emplyr_type_descript AS IN_emplyr_type_descript,
 	-- *INF*: iif(isnull(IN_emplyr_type_descript),'N/A',IN_emplyr_type_descript)
-	IFF(IN_emplyr_type_descript IS NULL,
-		'N/A',
-		IN_emplyr_type_descript
-	) AS emplyr_type_descript_OUT,
+	IFF(IN_emplyr_type_descript IS NULL, 'N/A', IN_emplyr_type_descript) AS emplyr_type_descript_OUT,
 	JNR_claimant_dim_sources.insd_type_code AS in_insd_type_code,
 	-- *INF*: iif(isnull(in_insd_type_code),'N/A',in_insd_type_code)
-	IFF(in_insd_type_code IS NULL,
-		'N/A',
-		in_insd_type_code
-	) AS insd_type_code_out,
+	IFF(in_insd_type_code IS NULL, 'N/A', in_insd_type_code) AS insd_type_code_out,
 	LKP_sup_insured_type.insd_type_descript AS IN_insd_type_descript,
 	-- *INF*: iif(isnull(IN_insd_type_descript),'N/A',IN_insd_type_descript)
-	IFF(IN_insd_type_descript IS NULL,
-		'N/A',
-		IN_insd_type_descript
-	) AS insd_type_descript_OUT,
+	IFF(IN_insd_type_descript IS NULL, 'N/A', IN_insd_type_descript) AS insd_type_descript_OUT,
 	JNR_claimant_dim_sources.subrogation_statute_exp_date AS in_subrogation_statute_exp_date,
 	-- *INF*: IIF(ISNULL(in_subrogation_statute_exp_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_subrogation_statute_exp_date)
-	IFF(in_subrogation_statute_exp_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_subrogation_statute_exp_date
+	IFF(
+	    in_subrogation_statute_exp_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'),
+	    in_subrogation_statute_exp_date
 	) AS subrogation_statute_exp_date_out,
 	JNR_claimant_dim_sources.managed_care_org_type AS in_managed_care_org_type,
 	-- *INF*: iif(isnull(in_managed_care_org_type),'N/A',in_managed_care_org_type)
-	IFF(in_managed_care_org_type IS NULL,
-		'N/A',
-		in_managed_care_org_type
-	) AS managed_care_org_type_out,
+	IFF(in_managed_care_org_type IS NULL, 'N/A', in_managed_care_org_type) AS managed_care_org_type_out,
 	LKP_sup_workers_comp_managed_care_organization_type.managed_care_org_type_descript AS IN_managed_care_org_type_descript,
 	-- *INF*: iif(isnull(IN_managed_care_org_type_descript),'N/A',IN_managed_care_org_type_descript)
-	IFF(IN_managed_care_org_type_descript IS NULL,
-		'N/A',
-		IN_managed_care_org_type_descript
-	) AS managed_care_org_type_descript_OUT,
+	IFF(IN_managed_care_org_type_descript IS NULL, 'N/A', IN_managed_care_org_type_descript) AS managed_care_org_type_descript_OUT,
 	JNR_claimant_dim_sources.subrogation_code AS in_subrogation_code,
 	-- *INF*: iif(isnull(in_subrogation_code),'N/A',in_subrogation_code)
-	IFF(in_subrogation_code IS NULL,
-		'N/A',
-		in_subrogation_code
-	) AS subrogation_code_out,
+	IFF(in_subrogation_code IS NULL, 'N/A', in_subrogation_code) AS subrogation_code_out,
 	JNR_claimant_dim_sources.loss_condition AS in_loss_condition,
 	-- *INF*: iif(isnull(in_loss_condition),'N/A',in_loss_condition)
-	IFF(in_loss_condition IS NULL,
-		'N/A',
-		in_loss_condition
-	) AS loss_condition_out,
+	IFF(in_loss_condition IS NULL, 'N/A', in_loss_condition) AS loss_condition_out,
 	LKP_sup_workers_comp_loss_condition.loss_condition_descript AS IN_loss_condition_descript,
 	-- *INF*: iif(isnull(IN_loss_condition_descript),'N/A',IN_loss_condition_descript)
-	IFF(IN_loss_condition_descript IS NULL,
-		'N/A',
-		IN_loss_condition_descript
-	) AS loss_condition_descript_OUT,
+	IFF(IN_loss_condition_descript IS NULL, 'N/A', IN_loss_condition_descript) AS loss_condition_descript_OUT,
 	JNR_claimant_dim_sources.attorney_or_au_rep_ind AS in_attorney_or_au_rep_ind,
 	-- *INF*: iif(isnull(in_attorney_or_au_rep_ind),'N/A',in_attorney_or_au_rep_ind)
-	IFF(in_attorney_or_au_rep_ind IS NULL,
-		'N/A',
-		in_attorney_or_au_rep_ind
-	) AS attorney_or_au_rep_ind_out,
+	IFF(in_attorney_or_au_rep_ind IS NULL, 'N/A', in_attorney_or_au_rep_ind) AS attorney_or_au_rep_ind_out,
 	JNR_claimant_dim_sources.hospital_cost AS in_hospital_cost,
 	-- *INF*: iif(isnull(in_hospital_cost),0,in_hospital_cost)
-	IFF(in_hospital_cost IS NULL,
-		0,
-		in_hospital_cost
-	) AS hospital_cost_out,
+	IFF(in_hospital_cost IS NULL, 0, in_hospital_cost) AS hospital_cost_out,
 	JNR_claimant_dim_sources.doctor_cost AS in_doctor_cost,
 	-- *INF*: iif(isnull(in_doctor_cost),0,in_doctor_cost)
-	IFF(in_doctor_cost IS NULL,
-		0,
-		in_doctor_cost
-	) AS doctor_cost_out,
+	IFF(in_doctor_cost IS NULL, 0, in_doctor_cost) AS doctor_cost_out,
 	JNR_claimant_dim_sources.other_med_cost AS in_other_med_cost,
 	-- *INF*: iif(isnull(in_other_med_cost),0,in_other_med_cost)
-	IFF(in_other_med_cost IS NULL,
-		0,
-		in_other_med_cost
-	) AS other_med_cost_out,
+	IFF(in_other_med_cost IS NULL, 0, in_other_med_cost) AS other_med_cost_out,
 	JNR_claimant_dim_sources.controverted_case_code AS in_controverted_case_code,
 	-- *INF*: iif(isnull(in_controverted_case_code),'N/A',in_controverted_case_code)
-	IFF(in_controverted_case_code IS NULL,
-		'N/A',
-		in_controverted_case_code
-	) AS v_controverted_case_code1,
+	IFF(in_controverted_case_code IS NULL, 'N/A', in_controverted_case_code) AS v_controverted_case_code1,
 	-- *INF*: :LKP.LKP_CLAIM_ANSWER_QUES(edw_claim_party_occurrence_ak_id,'NcciDciWasClaimCompensabilityDisputed', 'Claim.GeneralCase.Questions')
 	-- 
 	-- 
 	-- 
 	LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_NcciDciWasClaimCompensabilityDisputed_Claim_GeneralCase_Questions.optn_text AS v_controverted_case_code2,
 	-- *INF*: iif(isnull(v_controverted_case_code2),'N/A',v_controverted_case_code2)
-	IFF(v_controverted_case_code2 IS NULL,
-		'N/A',
-		v_controverted_case_code2
-	) AS v_controverted_case_code3,
+	IFF(v_controverted_case_code2 IS NULL, 'N/A', v_controverted_case_code2) AS v_controverted_case_code3,
 	v_controverted_case_code3 AS controverted_case_code_out,
 	JNR_claimant_dim_sources.surgery_ind AS in_surgery_ind,
 	-- *INF*: iif(isnull(in_surgery_ind),'N/A',in_surgery_ind)
-	IFF(in_surgery_ind IS NULL,
-		'N/A',
-		in_surgery_ind
-	) AS surgery_ind_out,
+	IFF(in_surgery_ind IS NULL, 'N/A', in_surgery_ind) AS surgery_ind_out,
 	JNR_claimant_dim_sources.emplyr_loc_descript AS in_emplyr_loc_descript,
 	-- *INF*: iif(isnull(in_emplyr_loc_descript),'N/A',in_emplyr_loc_descript)
-	IFF(in_emplyr_loc_descript IS NULL,
-		'N/A',
-		in_emplyr_loc_descript
-	) AS emplyr_loc_descript_out,
+	IFF(in_emplyr_loc_descript IS NULL, 'N/A', in_emplyr_loc_descript) AS emplyr_loc_descript_out,
 	JNR_claimant_dim_sources.inj_loc_comment AS in_inj_loc_comment,
 	-- *INF*: iif(isnull(in_inj_loc_comment),'N/A',in_inj_loc_comment)
-	IFF(in_inj_loc_comment IS NULL,
-		'N/A',
-		in_inj_loc_comment
-	) AS inj_loc_comment_out,
+	IFF(in_inj_loc_comment IS NULL, 'N/A', in_inj_loc_comment) AS inj_loc_comment_out,
 	JNR_claimant_dim_sources.claim_ctgry_code AS in_claim_ctgry_code,
 	-- *INF*: iif(isnull(in_claim_ctgry_code),'N/A',in_claim_ctgry_code)
-	IFF(in_claim_ctgry_code IS NULL,
-		'N/A',
-		in_claim_ctgry_code
-	) AS claim_ctgry_code_out,
+	IFF(in_claim_ctgry_code IS NULL, 'N/A', in_claim_ctgry_code) AS claim_ctgry_code_out,
 	LKP_SUP_WC_CLAIM_CATG.claim_ctgry_code_descript,
 	JNR_claimant_dim_sources.act_status_code AS in_act_status_code,
 	-- *INF*: iif(isnull(in_act_status_code),'N/A',in_act_status_code)
-	IFF(in_act_status_code IS NULL,
-		'N/A',
-		in_act_status_code
-	) AS act_status_code_out,
+	IFF(in_act_status_code IS NULL, 'N/A', in_act_status_code) AS act_status_code_out,
 	LKP_SUP_WC_ACTIVITY_STATUS.act_status_code_descript,
 	JNR_claimant_dim_sources.investigate_ind AS in_investigate_ind,
 	-- *INF*: iif(isnull(in_investigate_ind),'N/A',in_investigate_ind)
-	IFF(in_investigate_ind IS NULL,
-		'N/A',
-		in_investigate_ind
-	) AS investigate_ind_out,
+	IFF(in_investigate_ind IS NULL, 'N/A', in_investigate_ind) AS investigate_ind_out,
 	JNR_claimant_dim_sources.sic_code,
 	-- *INF*: iif(isnull(sic_code),'N/A',sic_code)
-	IFF(sic_code IS NULL,
-		'N/A',
-		sic_code
-	) AS sic_code_out,
+	IFF(sic_code IS NULL, 'N/A', sic_code) AS sic_code_out,
 	LKP_SUP_WC_SIC_CODE.sic_code_descript,
 	JNR_claimant_dim_sources.hospitalized_ind AS in_hospitalized_ind,
 	-- *INF*: iif(isnull(in_hospitalized_ind),'N/A',in_hospitalized_ind)
-	IFF(in_hospitalized_ind IS NULL,
-		'N/A',
-		in_hospitalized_ind
-	) AS hospitalized_ind_out,
+	IFF(in_hospitalized_ind IS NULL, 'N/A', in_hospitalized_ind) AS hospitalized_ind_out,
 	JNR_claimant_dim_sources.wage_method_code AS in_wage_method_code,
 	-- *INF*: iif(isnull(in_wage_method_code),'N/A',in_wage_method_code)
-	IFF(in_wage_method_code IS NULL,
-		'N/A',
-		in_wage_method_code
-	) AS wage_method_code_out,
+	IFF(in_wage_method_code IS NULL, 'N/A', in_wage_method_code) AS wage_method_code_out,
 	LKP_SUP_WC_WAGE_METHOD.wage_method_code_descript,
 	JNR_claimant_dim_sources.pms_occuptn_descript AS in_pms_occuptn_descript,
 	-- *INF*: iif(isnull(in_pms_occuptn_descript),'N/A',in_pms_occuptn_descript)
-	IFF(in_pms_occuptn_descript IS NULL,
-		'N/A',
-		in_pms_occuptn_descript
-	) AS pms_occuptn_descript_out,
+	IFF(in_pms_occuptn_descript IS NULL, 'N/A', in_pms_occuptn_descript) AS pms_occuptn_descript_out,
 	JNR_claimant_dim_sources.pms_type_disability AS in_pms_type_disability,
 	-- *INF*: iif(isnull(in_pms_type_disability),'N/A',in_pms_type_disability)
-	IFF(in_pms_type_disability IS NULL,
-		'N/A',
-		in_pms_type_disability
-	) AS pms_type_disability_out,
+	IFF(in_pms_type_disability IS NULL, 'N/A', in_pms_type_disability) AS pms_type_disability_out,
 	JNR_claimant_dim_sources.ncci_type_cov AS in_ncci_type_cov,
 	-- *INF*: iif(isnull(in_ncci_type_cov),'N/A',in_ncci_type_cov)
-	IFF(in_ncci_type_cov IS NULL,
-		'N/A',
-		in_ncci_type_cov
-	) AS ncci_type_cov_out,
+	IFF(in_ncci_type_cov IS NULL, 'N/A', in_ncci_type_cov) AS ncci_type_cov_out,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	JNR_claimant_dim_sources.eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	sysdate AS created_date,
 	sysdate AS modified_date,
 	'N/A' AS Default,
 	LKP_Workers_Comp_Claimant_Work_History.wc_claimant_work_hist_id AS in_wc_claimant_work_hist_pk_id,
 	-- *INF*: iif(isnull(in_wc_claimant_work_hist_pk_id),
 	-- -1,in_wc_claimant_work_hist_pk_id)
-	IFF(in_wc_claimant_work_hist_pk_id IS NULL,
-		- 1,
-		in_wc_claimant_work_hist_pk_id
-	) AS wc_claimant_work_hist_pk_id_out,
+	IFF(in_wc_claimant_work_hist_pk_id IS NULL, - 1, in_wc_claimant_work_hist_pk_id) AS wc_claimant_work_hist_pk_id_out,
 	JNR_claimant_dim_sources.wc_claimant_num AS in_wc_claimant_num,
 	-- *INF*: iif(isnull(in_wc_claimant_num),'N/A',in_wc_claimant_num)
 	-- 
 	--  
-	IFF(in_wc_claimant_num IS NULL,
-		'N/A',
-		in_wc_claimant_num
-	) AS wc_claimant_num_out,
+	IFF(in_wc_claimant_num IS NULL, 'N/A', in_wc_claimant_num) AS wc_claimant_num_out,
 	JNR_claimant_dim_sources.max_med_improvement_date AS in_max_med_improvement_date,
 	-- *INF*: IIF(ISNULL(in_max_med_improvement_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_max_med_improvement_date)
-	IFF(in_max_med_improvement_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_max_med_improvement_date
+	IFF(
+	    in_max_med_improvement_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'),
+	    in_max_med_improvement_date
 	) AS max_med_improvement_date,
 	-- *INF*: :LKP.LKP_CLAIM_ANSWER_ANS(edw_claim_party_occurrence_ak_id,'NcciDciLossType', 'Claim.GeneralCase.Questions')
 	-- 
@@ -2243,104 +1783,80 @@ EXP_claimant_dim AS (
 	-- IIF(ISNULL(v_type_of_loss_code),'N/A',v_type_of_loss_code)
 	-- 
 	-- ---IIF(ISNULL( :LKP.LKP_CLAIM_ANSWER_ANS(edw_claim_party_occurrence_ak_id,'Claims Workers Compensation','Claim.GeneralCase.Questions' , 'NcciDciLossType') ),'N/A')
-	IFF(v_type_of_loss_code IS NULL,
-		'N/A',
-		v_type_of_loss_code
-	) AS type_of_loss_code,
+	IFF(v_type_of_loss_code IS NULL, 'N/A', v_type_of_loss_code) AS type_of_loss_code,
 	-- *INF*: :LKP.LKP_CLAIM_ANSWER_QUES(edw_claim_party_occurrence_ak_id,'NcciDciLossType', 'Claim.GeneralCase.Questions')
 	-- 
 	LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_NcciDciLossType_Claim_GeneralCase_Questions.optn_text AS v_type_of_loss_code_descript,
 	-- *INF*: IIF(ISNULL(v_type_of_loss_code_descript ),'N/A',v_type_of_loss_code_descript )
-	IFF(v_type_of_loss_code_descript IS NULL,
-		'N/A',
-		v_type_of_loss_code_descript
-	) AS type_of_loss_code_descript,
+	IFF(v_type_of_loss_code_descript IS NULL, 'N/A', v_type_of_loss_code_descript) AS type_of_loss_code_descript,
 	-- *INF*: :LKP.LKP_CLAIM_ANSWER_ANS(edw_claim_party_occurrence_ak_id,'NcciDciMethodofDeterminingAww','Claimant.GeneralCase.Questions')
 	-- 
 	-- 
 	LKP_CLAIM_ANSWER_ANS_edw_claim_party_occurrence_ak_id_NcciDciMethodofDeterminingAww_Claimant_GeneralCase_Questions.optn_set_item_val AS v_pre_injury_avg_wkly_wage_code,
 	-- *INF*: IIF(ISNULL( v_pre_injury_avg_wkly_wage_code ),'N/A', v_pre_injury_avg_wkly_wage_code)
-	IFF(v_pre_injury_avg_wkly_wage_code IS NULL,
-		'N/A',
-		v_pre_injury_avg_wkly_wage_code
-	) AS pre_injury_avg_wkly_wage_code,
+	IFF(v_pre_injury_avg_wkly_wage_code IS NULL, 'N/A', v_pre_injury_avg_wkly_wage_code) AS pre_injury_avg_wkly_wage_code,
 	-- *INF*: :LKP.LKP_CLAIM_ANSWER_QUES(edw_claim_party_occurrence_ak_id,'NcciDciMethodofDeterminingAww','Claimant.GeneralCase.Questions')
 	--  
 	LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_NcciDciMethodofDeterminingAww_Claimant_GeneralCase_Questions.optn_text AS v_pre_injury_avg_wkly_wage_code_descript,
 	-- *INF*: IIF(ISNULL( v_pre_injury_avg_wkly_wage_code_descript),'N/A',v_pre_injury_avg_wkly_wage_code_descript)
-	IFF(v_pre_injury_avg_wkly_wage_code_descript IS NULL,
-		'N/A',
-		v_pre_injury_avg_wkly_wage_code_descript
+	IFF(
+	    v_pre_injury_avg_wkly_wage_code_descript IS NULL, 'N/A',
+	    v_pre_injury_avg_wkly_wage_code_descript
 	) AS pre_injury_avg_wkly_wage_code_descript,
 	-- *INF*:  :LKP.LKP_CLAIM_ANSWER_QUES(edw_claim_party_occurrence_ak_id,'NcciDciPostInjuryWeeklyWageAmount','Claimant.GeneralCase.Questions')
 	LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_NcciDciPostInjuryWeeklyWageAmount_Claimant_GeneralCase_Questions.optn_text AS v_post_inj_wkly_wage_amt,
 	-- *INF*: IIF(ISNULL( TO_DECIMAL(v_post_inj_wkly_wage_amt,2)),0, TO_DECIMAL(v_post_inj_wkly_wage_amt,2))
 	--  
-	IFF(CAST(v_post_inj_wkly_wage_amt AS FLOAT) IS NULL,
-		0,
-		CAST(v_post_inj_wkly_wage_amt AS FLOAT)
+	IFF(
+	    CAST(v_post_inj_wkly_wage_amt AS FLOAT) IS NULL, 0, CAST(v_post_inj_wkly_wage_amt AS FLOAT)
 	) AS post_inj_wkly_wage_amt,
 	-- *INF*: :LKP.LKP_CLAIM_ANSWER_QUES(edw_claim_party_occurrence_ak_id,'NcciDciBAWDisabilityPercentage' ,'Claim.GeneralCase.Questions')
 	LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_NcciDciBAWDisabilityPercentage_Claim_GeneralCase_Questions.optn_text AS v_impairment_disability_percentage1,
 	-- *INF*: IIF(ISNULL( v_impairment_disability_percentage1),:LKP.LKP_CLAIM_ANSWER_QUES(edw_claim_party_occurrence_ak_id,'NcciDciBodyPartDisabilityPercentage' ,'Claim.GeneralCase.Questions') , v_impairment_disability_percentage1)
-	IFF(v_impairment_disability_percentage1 IS NULL,
-		LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_NcciDciBodyPartDisabilityPercentage_Claim_GeneralCase_Questions.optn_text,
-		v_impairment_disability_percentage1
+	IFF(
+	    v_impairment_disability_percentage1 IS NULL,
+	    LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_NcciDciBodyPartDisabilityPercentage_Claim_GeneralCase_Questions.optn_text,
+	    v_impairment_disability_percentage1
 	) AS v_impairment_disability_percentage2,
 	-- *INF*: IIF(ISNULL(TO_DECIMAL(v_impairment_disability_percentage2,2)),0,TO_DECIMAL(v_impairment_disability_percentage2,2))
-	IFF(CAST(v_impairment_disability_percentage2 AS FLOAT) IS NULL,
-		0,
-		CAST(v_impairment_disability_percentage2 AS FLOAT)
+	IFF(
+	    CAST(v_impairment_disability_percentage2 AS FLOAT) IS NULL, 0,
+	    CAST(v_impairment_disability_percentage2 AS FLOAT)
 	) AS v_impairment_disability_percentage3,
 	-- *INF*: IIF((v_impairment_disability_percentage3 > 100),100,v_impairment_disability_percentage3 )
-	IFF(( v_impairment_disability_percentage3 > 100 
-		),
-		100,
-		v_impairment_disability_percentage3
-	) AS v_impairment_disability_percentage4,
+	IFF((v_impairment_disability_percentage3 > 100), 100, v_impairment_disability_percentage3) AS v_impairment_disability_percentage4,
 	v_impairment_disability_percentage4 AS impairment_disability_percentage,
 	-- *INF*:   :LKP.LKP_CLAIM_ANSWER_ANS(edw_claim_party_occurrence_ak_id,'NcciDciImpairmentPercentageBasis','Claim.GeneralCase.Questions')
 	--  
 	LKP_CLAIM_ANSWER_ANS_edw_claim_party_occurrence_ak_id_NcciDciImpairmentPercentageBasis_Claim_GeneralCase_Questions.optn_set_item_val AS v_impairment_disability_percentage_basis_code,
 	-- *INF*: IIF(ISNULL( v_impairment_disability_percentage_basis_code),'N/A', v_impairment_disability_percentage_basis_code)
-	IFF(v_impairment_disability_percentage_basis_code IS NULL,
-		'N/A',
-		v_impairment_disability_percentage_basis_code
+	IFF(
+	    v_impairment_disability_percentage_basis_code IS NULL, 'N/A',
+	    v_impairment_disability_percentage_basis_code
 	) AS impairment_disability_percentage_basis_code,
 	-- *INF*:   :LKP.LKP_CLAIM_ANSWER_QUES(edw_claim_party_occurrence_ak_id,'NcciDciImpairmentPercentageBasis','Claim.GeneralCase.Questions')
 	LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_NcciDciImpairmentPercentageBasis_Claim_GeneralCase_Questions.optn_text AS v_impairment_disability_percentage_basis_code_descript,
 	-- *INF*: IIF(ISNULL( v_impairment_disability_percentage_basis_code_descript ),'N/A',v_impairment_disability_percentage_basis_code_descript )
-	IFF(v_impairment_disability_percentage_basis_code_descript IS NULL,
-		'N/A',
-		v_impairment_disability_percentage_basis_code_descript
+	IFF(
+	    v_impairment_disability_percentage_basis_code_descript IS NULL, 'N/A',
+	    v_impairment_disability_percentage_basis_code_descript
 	) AS impairment_disability_percentage_basis_code_descript,
 	-- *INF*:   :LKP.LKP_CLAIM_ANSWER_QUES(edw_claim_party_occurrence_ak_id,'NcciDciWereMedicalPaymentsExtinguished','Claim.GeneralCase.Questions')
 	--  
 	LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_NcciDciWereMedicalPaymentsExtinguished_Claim_GeneralCase_Questions.optn_text AS v_med_extinguishment_ind,
 	-- *INF*: IIF(ISNULL( v_med_extinguishment_ind ),'N/A',v_med_extinguishment_ind)
-	IFF(v_med_extinguishment_ind IS NULL,
-		'N/A',
-		v_med_extinguishment_ind
-	) AS med_extinguishment_ind,
+	IFF(v_med_extinguishment_ind IS NULL, 'N/A', v_med_extinguishment_ind) AS med_extinguishment_ind,
 	-- *INF*:   :LKP.LKP_CLAIM_ANSWER_QUES(edw_claim_party_occurrence_ak_id,'CurrentWorkStatus','Claimant.Disability.Questions')
 	-- 
 	-- 
 	--  
 	LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_CurrentWorkStatus_Claimant_Disability_Questions.optn_text AS v_current_work_status,
 	-- *INF*: IIF(ISNULL( v_current_work_status ),'N/A',v_current_work_status)
-	IFF(v_current_work_status IS NULL,
-		'N/A',
-		v_current_work_status
-	) AS current_work_status,
+	IFF(v_current_work_status IS NULL, 'N/A', v_current_work_status) AS current_work_status,
 	-- *INF*: iif(isnull(in_jurisdiction_state_code),'N/A',in_jurisdiction_state_code)
-	IFF(in_jurisdiction_state_code IS NULL,
-		'N/A',
-		in_jurisdiction_state_code
-	) AS v_state,
+	IFF(in_jurisdiction_state_code IS NULL, 'N/A', in_jurisdiction_state_code) AS v_state,
 	-- *INF*: TO_DATE(TO_CHAR(sysdate,'YYYY-MM-DD'), 'YYYY-MM-DD')
-	TO_DATE(TO_CHAR(sysdate, 'YYYY-MM-DD'
-		), 'YYYY-MM-DD'
-	) AS v_sysdate,
+	TO_TIMESTAMP(TO_CHAR(CURRENT_TIMESTAMP, 'YYYY-MM-DD'), 'YYYY-MM-DD') AS v_sysdate,
 	-- *INF*: :LKP.LKP_CLAIM_ANSWER_QUES(edw_claim_party_occurrence_ak_id,'RestrictionDateBegin1', 'Claimant.Disability.Questions')
 	-- 
 	LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_RestrictionDateBegin1_Claimant_Disability_Questions.optn_text AS v_restriction_begin_date1_str,
@@ -2359,34 +1875,29 @@ EXP_claimant_dim AS (
 	-- *INF*: IIF(ISNULL(v_restriction_begin_date1_str), v_sysdate, TO_DATE ( v_restriction_begin_date1_str,'YYYY-MM-DD'))
 	-- 
 	--  
-	IFF(v_restriction_begin_date1_str IS NULL,
-		v_sysdate,
-		TO_DATE(v_restriction_begin_date1_str, 'YYYY-MM-DD'
-		)
+	IFF(
+	    v_restriction_begin_date1_str IS NULL, v_sysdate,
+	    TO_TIMESTAMP(v_restriction_begin_date1_str, 'YYYY-MM-DD')
 	) AS v_restriction_begin_date1,
 	-- *INF*: IIF(ISNULL(v_restriction_begin_date2_str), v_sysdate, TO_DATE ( v_restriction_begin_date2_str,'YYYY-MM-DD'))
-	IFF(v_restriction_begin_date2_str IS NULL,
-		v_sysdate,
-		TO_DATE(v_restriction_begin_date2_str, 'YYYY-MM-DD'
-		)
+	IFF(
+	    v_restriction_begin_date2_str IS NULL, v_sysdate,
+	    TO_TIMESTAMP(v_restriction_begin_date2_str, 'YYYY-MM-DD')
 	) AS v_restriction_begin_date2,
 	-- *INF*: IIF(ISNULL(v_restriction_begin_date3_str), v_sysdate, TO_DATE ( v_restriction_begin_date3_str,'YYYY-MM-DD'))
-	IFF(v_restriction_begin_date3_str IS NULL,
-		v_sysdate,
-		TO_DATE(v_restriction_begin_date3_str, 'YYYY-MM-DD'
-		)
+	IFF(
+	    v_restriction_begin_date3_str IS NULL, v_sysdate,
+	    TO_TIMESTAMP(v_restriction_begin_date3_str, 'YYYY-MM-DD')
 	) AS v_restriction_begin_date3,
 	-- *INF*: IIF(ISNULL(v_restriction_begin_date4_str), v_sysdate, TO_DATE ( v_restriction_begin_date4_str,'YYYY-MM-DD'))
-	IFF(v_restriction_begin_date4_str IS NULL,
-		v_sysdate,
-		TO_DATE(v_restriction_begin_date4_str, 'YYYY-MM-DD'
-		)
+	IFF(
+	    v_restriction_begin_date4_str IS NULL, v_sysdate,
+	    TO_TIMESTAMP(v_restriction_begin_date4_str, 'YYYY-MM-DD')
 	) AS v_restriction_begin_date4,
 	-- *INF*: IIF(ISNULL(v_restriction_begin_date5_str), v_sysdate, TO_DATE ( v_restriction_begin_date5_str,'YYYY-MM-DD'))
-	IFF(v_restriction_begin_date5_str IS NULL,
-		v_sysdate,
-		TO_DATE(v_restriction_begin_date5_str, 'YYYY-MM-DD'
-		)
+	IFF(
+	    v_restriction_begin_date5_str IS NULL, v_sysdate,
+	    TO_TIMESTAMP(v_restriction_begin_date5_str, 'YYYY-MM-DD')
 	) AS v_restriction_begin_date5,
 	-- *INF*: :LKP.LKP_CLAIM_ANSWER_QUES
 	-- (edw_claim_party_occurrence_ak_id,'RestrictionDateEnd1',  'Claimant.Disability.Questions')
@@ -2406,34 +1917,29 @@ EXP_claimant_dim AS (
 	-- (edw_claim_party_occurrence_ak_id,'RestrictionDateEnd5', 'Claimant.Disability.Questions')
 	LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_RestrictionDateEnd5_Claimant_Disability_Questions.optn_text AS v_restriction_end_date5_str,
 	-- *INF*: IIF(ISNULL(v_restriction_end_date1_str), v_sysdate, TO_DATE ( v_restriction_end_date1_str,'YYYY-MM-DD'))
-	IFF(v_restriction_end_date1_str IS NULL,
-		v_sysdate,
-		TO_DATE(v_restriction_end_date1_str, 'YYYY-MM-DD'
-		)
+	IFF(
+	    v_restriction_end_date1_str IS NULL, v_sysdate,
+	    TO_TIMESTAMP(v_restriction_end_date1_str, 'YYYY-MM-DD')
 	) AS v_restriction_end_date1,
 	-- *INF*: IIF(ISNULL(v_restriction_end_date2_str), v_sysdate, TO_DATE ( v_restriction_end_date2_str,'YYYY-MM-DD'))
-	IFF(v_restriction_end_date2_str IS NULL,
-		v_sysdate,
-		TO_DATE(v_restriction_end_date2_str, 'YYYY-MM-DD'
-		)
+	IFF(
+	    v_restriction_end_date2_str IS NULL, v_sysdate,
+	    TO_TIMESTAMP(v_restriction_end_date2_str, 'YYYY-MM-DD')
 	) AS v_restriction_end_date2,
 	-- *INF*: IIF(ISNULL(v_restriction_end_date3_str), v_sysdate, TO_DATE ( v_restriction_end_date3_str,'YYYY-MM-DD'))
-	IFF(v_restriction_end_date3_str IS NULL,
-		v_sysdate,
-		TO_DATE(v_restriction_end_date3_str, 'YYYY-MM-DD'
-		)
+	IFF(
+	    v_restriction_end_date3_str IS NULL, v_sysdate,
+	    TO_TIMESTAMP(v_restriction_end_date3_str, 'YYYY-MM-DD')
 	) AS v_restriction_end_date3,
 	-- *INF*: IIF(ISNULL(v_restriction_end_date4_str), v_sysdate, TO_DATE ( v_restriction_end_date4_str,'YYYY-MM-DD'))
-	IFF(v_restriction_end_date4_str IS NULL,
-		v_sysdate,
-		TO_DATE(v_restriction_end_date4_str, 'YYYY-MM-DD'
-		)
+	IFF(
+	    v_restriction_end_date4_str IS NULL, v_sysdate,
+	    TO_TIMESTAMP(v_restriction_end_date4_str, 'YYYY-MM-DD')
 	) AS v_restriction_end_date4,
 	-- *INF*: IIF(ISNULL(v_restriction_end_date5_str), v_sysdate, TO_DATE ( v_restriction_end_date5_str,'YYYY-MM-DD'))
-	IFF(v_restriction_end_date5_str IS NULL,
-		v_sysdate,
-		TO_DATE(v_restriction_end_date5_str, 'YYYY-MM-DD'
-		)
+	IFF(
+	    v_restriction_end_date5_str IS NULL, v_sysdate,
+	    TO_TIMESTAMP(v_restriction_end_date5_str, 'YYYY-MM-DD')
 	) AS v_restriction_end_date5,
 	-- *INF*: :LKP.LKP_CLAIM_ANSWER_QUES
 	-- (edw_claim_party_occurrence_ak_id,'RestrictionAccommodated1',  'Claimant.Disability.Questions')
@@ -2468,41 +1974,27 @@ EXP_claimant_dim AS (
 	-- *INF*: IIF(ISNULL(v_daily_benefit_rate1_str),0,TO_DECIMAL( v_daily_benefit_rate1_str))
 	-- 
 	--  
-	IFF(v_daily_benefit_rate1_str IS NULL,
-		0,
-		CAST(v_daily_benefit_rate1_str AS FLOAT)
-	) AS v_daily_benefit_rate1,
+	IFF(v_daily_benefit_rate1_str IS NULL, 0, CAST(v_daily_benefit_rate1_str AS FLOAT)) AS v_daily_benefit_rate1,
 	-- *INF*: IIF(ISNULL(v_daily_benefit_rate2_str),0,  
 	-- TO_DECIMAL( v_daily_benefit_rate2_str))
-	IFF(v_daily_benefit_rate2_str IS NULL,
-		0,
-		CAST(v_daily_benefit_rate2_str AS FLOAT)
-	) AS v_daily_benefit_rate2,
+	IFF(v_daily_benefit_rate2_str IS NULL, 0, CAST(v_daily_benefit_rate2_str AS FLOAT)) AS v_daily_benefit_rate2,
 	-- *INF*: IIF(ISNULL(v_daily_benefit_rate3_str),0,  
 	-- TO_DECIMAL( v_daily_benefit_rate3_str))
-	IFF(v_daily_benefit_rate3_str IS NULL,
-		0,
-		CAST(v_daily_benefit_rate3_str AS FLOAT)
-	) AS v_daily_benefit_rate3,
+	IFF(v_daily_benefit_rate3_str IS NULL, 0, CAST(v_daily_benefit_rate3_str AS FLOAT)) AS v_daily_benefit_rate3,
 	-- *INF*: IIF(ISNULL(v_daily_benefit_rate4_str),0,  
 	-- TO_DECIMAL( v_daily_benefit_rate4_str))
-	IFF(v_daily_benefit_rate4_str IS NULL,
-		0,
-		CAST(v_daily_benefit_rate4_str AS FLOAT)
-	) AS v_daily_benefit_rate4,
+	IFF(v_daily_benefit_rate4_str IS NULL, 0, CAST(v_daily_benefit_rate4_str AS FLOAT)) AS v_daily_benefit_rate4,
 	-- *INF*: IIF(ISNULL(v_daily_benefit_rate5_str),0,  
 	-- TO_DECIMAL( v_daily_benefit_rate5_str))
-	IFF(v_daily_benefit_rate5_str IS NULL,
-		0,
-		CAST(v_daily_benefit_rate5_str AS FLOAT)
-	) AS v_daily_benefit_rate5,
+	IFF(v_daily_benefit_rate5_str IS NULL, 0, CAST(v_daily_benefit_rate5_str AS FLOAT)) AS v_daily_benefit_rate5,
 	-- *INF*: DECODE(v_state, 'WI',6,'MN',5,7)
 	-- 
 	-- --- This determines the number of days in the week when determining work days by state.
-	DECODE(v_state,
-		'WI', 6,
-		'MN', 5,
-		7
+	DECODE(
+	    v_state,
+	    'WI', 6,
+	    'MN', 5,
+	    7
 	) AS v_work_day_flag,
 	-- *INF*: DECODE(v_work_day_flag,
 	-- 6, :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX(v_restriction_begin_date1  )   ,
@@ -2510,91 +2002,101 @@ EXP_claimant_dim AS (
 	--  ,0)
 	-- 
 	-- 
-	DECODE(v_work_day_flag,
-		6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_begin_date1.six_day_week_count,
-		5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_begin_date1.five_day_week_count,
-		0
+	DECODE(
+	    v_work_day_flag,
+	    6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_begin_date1.six_day_week_count,
+	    5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_begin_date1.five_day_week_count,
+	    0
 	) AS v_start_day1_5_6_day_wk,
 	-- *INF*: DECODE(v_work_day_flag,
 	-- 6, :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX(v_restriction_begin_date2  )   ,
 	-- 5,      :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE(v_restriction_begin_date2  )   
 	--  ,0)
-	DECODE(v_work_day_flag,
-		6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_begin_date2.six_day_week_count,
-		5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_begin_date2.five_day_week_count,
-		0
+	DECODE(
+	    v_work_day_flag,
+	    6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_begin_date2.six_day_week_count,
+	    5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_begin_date2.five_day_week_count,
+	    0
 	) AS v_start_day2_5_6_day_wk,
 	-- *INF*: DECODE(v_work_day_flag,
 	-- 6, :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX(v_restriction_begin_date3  )   ,
 	-- 5,      :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE(v_restriction_begin_date3  )   
 	--  ,0)
-	DECODE(v_work_day_flag,
-		6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_begin_date3.six_day_week_count,
-		5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_begin_date3.five_day_week_count,
-		0
+	DECODE(
+	    v_work_day_flag,
+	    6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_begin_date3.six_day_week_count,
+	    5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_begin_date3.five_day_week_count,
+	    0
 	) AS v_start_day3_5_6_day_wk,
 	-- *INF*: DECODE(v_work_day_flag,
 	-- 6, :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX(v_restriction_begin_date4  )   ,
 	-- 5,      :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE(v_restriction_begin_date4  )   
 	--  ,0)
-	DECODE(v_work_day_flag,
-		6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_begin_date4.six_day_week_count,
-		5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_begin_date4.five_day_week_count,
-		0
+	DECODE(
+	    v_work_day_flag,
+	    6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_begin_date4.six_day_week_count,
+	    5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_begin_date4.five_day_week_count,
+	    0
 	) AS v_start_day4_5_6_day_wk,
 	-- *INF*: DECODE(v_work_day_flag,
 	-- 6, :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX(v_restriction_begin_date5  )   ,
 	-- 5,      :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE(v_restriction_begin_date5  )   
 	--  ,0)
-	DECODE(v_work_day_flag,
-		6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_begin_date5.six_day_week_count,
-		5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_begin_date5.five_day_week_count,
-		0
+	DECODE(
+	    v_work_day_flag,
+	    6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_begin_date5.six_day_week_count,
+	    5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_begin_date5.five_day_week_count,
+	    0
 	) AS v_start_day5_5_6_day_wk,
 	-- *INF*: DECODE(v_work_day_flag,
 	-- 6, :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX(v_restriction_end_date1  )   ,
 	-- 5,      :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE(v_restriction_end_date1  )   
 	--  ,0)
-	DECODE(v_work_day_flag,
-		6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_end_date1.six_day_week_count,
-		5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_end_date1.five_day_week_count,
-		0
+	DECODE(
+	    v_work_day_flag,
+	    6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_end_date1.six_day_week_count,
+	    5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_end_date1.five_day_week_count,
+	    0
 	) AS v_end_day1_5_6_day_wk,
 	-- *INF*: DECODE(v_work_day_flag,
 	-- 6, :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX(v_restriction_end_date2  )   ,
 	-- 5,      :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE(v_restriction_end_date2  )   
 	--  ,0)
-	DECODE(v_work_day_flag,
-		6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_end_date2.six_day_week_count,
-		5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_end_date2.five_day_week_count,
-		0
+	DECODE(
+	    v_work_day_flag,
+	    6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_end_date2.six_day_week_count,
+	    5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_end_date2.five_day_week_count,
+	    0
 	) AS v_end_day2_5_6_day_wk,
 	-- *INF*: DECODE(v_work_day_flag,
 	-- 6, :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX(v_restriction_end_date3  )   ,
 	-- 5,      :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE(v_restriction_end_date3  )   
 	--  ,0)
-	DECODE(v_work_day_flag,
-		6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_end_date3.six_day_week_count,
-		5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_end_date3.five_day_week_count,
-		0
+	DECODE(
+	    v_work_day_flag,
+	    6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_end_date3.six_day_week_count,
+	    5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_end_date3.five_day_week_count,
+	    0
 	) AS v_end_day3_5_6_day_wk,
 	-- *INF*: DECODE(v_work_day_flag,
 	-- 6, :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX(v_restriction_end_date4  )   ,
 	-- 5,      :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE(v_restriction_end_date4  )   
 	--  ,0)
-	DECODE(v_work_day_flag,
-		6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_end_date4.six_day_week_count,
-		5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_end_date4.five_day_week_count,
-		0
+	DECODE(
+	    v_work_day_flag,
+	    6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_end_date4.six_day_week_count,
+	    5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_end_date4.five_day_week_count,
+	    0
 	) AS v_end_day4_5_6_day_wk,
 	-- *INF*: DECODE(v_work_day_flag,
 	-- 6, :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX(v_restriction_end_date5  )   ,
 	-- 5,      :LKP.LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE(v_restriction_end_date5  )   
 	--  ,0)
-	DECODE(v_work_day_flag,
-		6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_end_date5.six_day_week_count,
-		5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_end_date5.five_day_week_count,
-		0
+	DECODE(
+	    v_work_day_flag,
+	    6, LKP_WORK_JURISDICTIONAL_WORKING_DAY_SIX_v_restriction_end_date5.six_day_week_count,
+	    5, LKP_WORK_JURISDICTIONAL_WORKING_DAY_FIVE_v_restriction_end_date5.five_day_week_count,
+	    0
 	) AS v_end_day5_5_6_day_wk,
 	-- *INF*: IIF(v_restriction_accommodated1 = 'No' AND v_restriction_begin_date1 <> v_sysdate, 
 	-- IIF( v_work_day_flag = 7,DATE_DIFF(v_restriction_end_date1 ,v_restriction_begin_date1,'DD'), v_end_day1_5_6_day_wk - v_start_day1_5_6_day_wk) , 0)
@@ -2606,13 +2108,13 @@ EXP_claimant_dim AS (
 	-- ---         ELSE (this is a 5 or 6 day week)  Get the difference between the two lookup values to get the difference in dates
 	-- ---                       for a 5 or 6 day week.
 	-- 
-	IFF(v_restriction_accommodated1 = 'No' 
-		AND v_restriction_begin_date1 <> v_sysdate,
-		IFF(v_work_day_flag = 7,
-			DATEDIFF(DAY,v_restriction_end_date1,v_restriction_begin_date1),
-			v_end_day1_5_6_day_wk - v_start_day1_5_6_day_wk
-		),
-		0
+	IFF(
+	    v_restriction_accommodated1 = 'No' AND v_restriction_begin_date1 <> v_sysdate,
+	    IFF(
+	        v_work_day_flag = 7, DATEDIFF(DAY,v_restriction_end_date1,v_restriction_begin_date1),
+	        v_end_day1_5_6_day_wk - v_start_day1_5_6_day_wk
+	    ),
+	    0
 	) AS v_neg_accom_period1,
 	-- *INF*: IIF(v_restriction_accommodated2 = 'No' AND v_restriction_begin_date2 <> v_sysdate, 
 	-- IIF( v_work_day_flag = 7,DATE_DIFF(v_restriction_end_date2 ,v_restriction_begin_date2,'DD'), v_end_day2_5_6_day_wk - v_start_day2_5_6_day_wk) , 0)
@@ -2624,13 +2126,13 @@ EXP_claimant_dim AS (
 	-- ---         THEN  get the date difference for record 2 of 5 USING the date_diff function
 	-- ---         ELSE (this is a 5 or 6 day week)  Get the difference between the two lookup values to get the difference in dates
 	-- ---                       for a 5 or 6 day week.
-	IFF(v_restriction_accommodated2 = 'No' 
-		AND v_restriction_begin_date2 <> v_sysdate,
-		IFF(v_work_day_flag = 7,
-			DATEDIFF(DAY,v_restriction_end_date2,v_restriction_begin_date2),
-			v_end_day2_5_6_day_wk - v_start_day2_5_6_day_wk
-		),
-		0
+	IFF(
+	    v_restriction_accommodated2 = 'No' AND v_restriction_begin_date2 <> v_sysdate,
+	    IFF(
+	        v_work_day_flag = 7, DATEDIFF(DAY,v_restriction_end_date2,v_restriction_begin_date2),
+	        v_end_day2_5_6_day_wk - v_start_day2_5_6_day_wk
+	    ),
+	    0
 	) AS v_neg_accom_period2,
 	-- *INF*: IIF(v_restriction_accommodated3 = 'No' AND v_restriction_begin_date3 <> v_sysdate, 
 	-- IIF( v_work_day_flag = 7,DATE_DIFF(v_restriction_end_date3 ,v_restriction_begin_date3,'DD'), v_end_day3_5_6_day_wk - v_start_day3_5_6_day_wk) , 0)
@@ -2641,13 +2143,13 @@ EXP_claimant_dim AS (
 	-- ---         THEN  get the date difference for record 3 of 5 USING the date_diff function
 	-- ---         ELSE (this is a 5 or 6 day week)  Get the difference between the two lookup values to get the difference in dates
 	-- ---                       for a 5 or 6 day week.
-	IFF(v_restriction_accommodated3 = 'No' 
-		AND v_restriction_begin_date3 <> v_sysdate,
-		IFF(v_work_day_flag = 7,
-			DATEDIFF(DAY,v_restriction_end_date3,v_restriction_begin_date3),
-			v_end_day3_5_6_day_wk - v_start_day3_5_6_day_wk
-		),
-		0
+	IFF(
+	    v_restriction_accommodated3 = 'No' AND v_restriction_begin_date3 <> v_sysdate,
+	    IFF(
+	        v_work_day_flag = 7, DATEDIFF(DAY,v_restriction_end_date3,v_restriction_begin_date3),
+	        v_end_day3_5_6_day_wk - v_start_day3_5_6_day_wk
+	    ),
+	    0
 	) AS v_neg_accom_period3,
 	-- *INF*: IIF(v_restriction_accommodated4 = 'No' AND v_restriction_begin_date4 <> v_sysdate, 
 	-- IIF( v_work_day_flag = 7,DATE_DIFF(v_restriction_end_date4 ,v_restriction_begin_date4,'DD'), v_end_day4_5_6_day_wk - v_start_day4_5_6_day_wk) , 0)
@@ -2658,13 +2160,13 @@ EXP_claimant_dim AS (
 	-- ---         THEN  get the date difference for record 4 of 5 USING the date_diff function
 	-- ---         ELSE (this is a 5 or 6 day week)  Get the difference between the two lookup values to get the difference in dates
 	-- ---                       for a 5 or 6 day week.
-	IFF(v_restriction_accommodated4 = 'No' 
-		AND v_restriction_begin_date4 <> v_sysdate,
-		IFF(v_work_day_flag = 7,
-			DATEDIFF(DAY,v_restriction_end_date4,v_restriction_begin_date4),
-			v_end_day4_5_6_day_wk - v_start_day4_5_6_day_wk
-		),
-		0
+	IFF(
+	    v_restriction_accommodated4 = 'No' AND v_restriction_begin_date4 <> v_sysdate,
+	    IFF(
+	        v_work_day_flag = 7, DATEDIFF(DAY,v_restriction_end_date4,v_restriction_begin_date4),
+	        v_end_day4_5_6_day_wk - v_start_day4_5_6_day_wk
+	    ),
+	    0
 	) AS v_neg_accom_period4,
 	-- *INF*: IIF(v_restriction_accommodated5 = 'No' AND v_restriction_begin_date5 <> v_sysdate, 
 	-- IIF( v_work_day_flag = 7,DATE_DIFF(v_restriction_end_date5 ,v_restriction_begin_date5,'DD'), v_end_day5_5_6_day_wk - v_start_day5_5_6_day_wk) , 0)
@@ -2675,13 +2177,13 @@ EXP_claimant_dim AS (
 	-- ---         THEN  get the date difference for record 5 of 5 USING the date_diff function
 	-- ---         ELSE (this is a 5 or 6 day week)  Get the difference between the two lookup values to get the difference in dates
 	-- ---                       for a 5 or 6 day week.
-	IFF(v_restriction_accommodated5 = 'No' 
-		AND v_restriction_begin_date5 <> v_sysdate,
-		IFF(v_work_day_flag = 7,
-			DATEDIFF(DAY,v_restriction_end_date5,v_restriction_begin_date5),
-			v_end_day5_5_6_day_wk - v_start_day5_5_6_day_wk
-		),
-		0
+	IFF(
+	    v_restriction_accommodated5 = 'No' AND v_restriction_begin_date5 <> v_sysdate,
+	    IFF(
+	        v_work_day_flag = 7, DATEDIFF(DAY,v_restriction_end_date5,v_restriction_begin_date5),
+	        v_end_day5_5_6_day_wk - v_start_day5_5_6_day_wk
+	    ),
+	    0
 	) AS v_neg_accom_period5,
 	-- *INF*: IIF(v_restriction_accommodated1 = 'Yes' AND v_restriction_begin_date1 <> v_sysdate, 
 	-- IIF( v_work_day_flag = 7,DATE_DIFF(v_restriction_end_date1 ,v_restriction_begin_date1,'DD'), v_end_day1_5_6_day_wk - v_start_day1_5_6_day_wk) , 0)
@@ -2692,13 +2194,13 @@ EXP_claimant_dim AS (
 	-- ---         THEN  get the date difference for record 1 of 5 USING the date_diff function
 	-- ---         ELSE (this is a 5 or 6 day week)  Get the difference between the two lookup values to get the difference in dates
 	-- ---                       for a 5 or 6 day week.
-	IFF(v_restriction_accommodated1 = 'Yes' 
-		AND v_restriction_begin_date1 <> v_sysdate,
-		IFF(v_work_day_flag = 7,
-			DATEDIFF(DAY,v_restriction_end_date1,v_restriction_begin_date1),
-			v_end_day1_5_6_day_wk - v_start_day1_5_6_day_wk
-		),
-		0
+	IFF(
+	    v_restriction_accommodated1 = 'Yes' AND v_restriction_begin_date1 <> v_sysdate,
+	    IFF(
+	        v_work_day_flag = 7, DATEDIFF(DAY,v_restriction_end_date1,v_restriction_begin_date1),
+	        v_end_day1_5_6_day_wk - v_start_day1_5_6_day_wk
+	    ),
+	    0
 	) AS v_pos_accom_period1,
 	-- *INF*: IIF(v_restriction_accommodated2 = 'Yes' AND v_restriction_begin_date2 <> v_sysdate, 
 	-- IIF( v_work_day_flag = 7,DATE_DIFF(v_restriction_end_date2 ,v_restriction_begin_date2,'DD'), v_end_day2_5_6_day_wk - v_start_day2_5_6_day_wk) , 0)
@@ -2709,13 +2211,13 @@ EXP_claimant_dim AS (
 	-- ---         THEN  get the date difference for record 2 of 5 USING the date_diff function
 	-- ---         ELSE (this is a 5 or 6 day week)  Get the difference between the two lookup values to get the difference in dates
 	-- ---                       for a 5 or 6 day week.
-	IFF(v_restriction_accommodated2 = 'Yes' 
-		AND v_restriction_begin_date2 <> v_sysdate,
-		IFF(v_work_day_flag = 7,
-			DATEDIFF(DAY,v_restriction_end_date2,v_restriction_begin_date2),
-			v_end_day2_5_6_day_wk - v_start_day2_5_6_day_wk
-		),
-		0
+	IFF(
+	    v_restriction_accommodated2 = 'Yes' AND v_restriction_begin_date2 <> v_sysdate,
+	    IFF(
+	        v_work_day_flag = 7, DATEDIFF(DAY,v_restriction_end_date2,v_restriction_begin_date2),
+	        v_end_day2_5_6_day_wk - v_start_day2_5_6_day_wk
+	    ),
+	    0
 	) AS v_pos_accom_period2,
 	-- *INF*: IIF(v_restriction_accommodated3 = 'Yes' AND v_restriction_begin_date3 <> v_sysdate, 
 	-- IIF( v_work_day_flag = 7,DATE_DIFF(v_restriction_end_date3 ,v_restriction_begin_date3,'DD'), v_end_day3_5_6_day_wk - v_start_day3_5_6_day_wk) , 0)
@@ -2727,13 +2229,13 @@ EXP_claimant_dim AS (
 	-- ---         THEN  get the date difference for record 3 of 5 USING the date_diff function
 	-- ---         ELSE (this is a 5 or 6 day week)  Get the difference between the two lookup values to get the difference in dates
 	-- ---                       for a 5 or 6 day week.
-	IFF(v_restriction_accommodated3 = 'Yes' 
-		AND v_restriction_begin_date3 <> v_sysdate,
-		IFF(v_work_day_flag = 7,
-			DATEDIFF(DAY,v_restriction_end_date3,v_restriction_begin_date3),
-			v_end_day3_5_6_day_wk - v_start_day3_5_6_day_wk
-		),
-		0
+	IFF(
+	    v_restriction_accommodated3 = 'Yes' AND v_restriction_begin_date3 <> v_sysdate,
+	    IFF(
+	        v_work_day_flag = 7, DATEDIFF(DAY,v_restriction_end_date3,v_restriction_begin_date3),
+	        v_end_day3_5_6_day_wk - v_start_day3_5_6_day_wk
+	    ),
+	    0
 	) AS v_pos_accom_period3,
 	-- *INF*: IIF(v_restriction_accommodated4 = 'Yes' AND v_restriction_begin_date4 <> v_sysdate, 
 	-- IIF( v_work_day_flag = 7,DATE_DIFF(v_restriction_end_date4 ,v_restriction_begin_date4,'DD'), v_end_day4_5_6_day_wk - v_start_day4_5_6_day_wk) , 0)
@@ -2745,13 +2247,13 @@ EXP_claimant_dim AS (
 	-- ---         THEN  get the date difference for record 4 of 5 USING the date_diff function
 	-- ---         ELSE (this is a 5 or 6 day week)  Get the difference between the two lookup values to get the difference in dates
 	-- ---                       for a 5 or 6 day week.
-	IFF(v_restriction_accommodated4 = 'Yes' 
-		AND v_restriction_begin_date4 <> v_sysdate,
-		IFF(v_work_day_flag = 7,
-			DATEDIFF(DAY,v_restriction_end_date4,v_restriction_begin_date4),
-			v_end_day4_5_6_day_wk - v_start_day4_5_6_day_wk
-		),
-		0
+	IFF(
+	    v_restriction_accommodated4 = 'Yes' AND v_restriction_begin_date4 <> v_sysdate,
+	    IFF(
+	        v_work_day_flag = 7, DATEDIFF(DAY,v_restriction_end_date4,v_restriction_begin_date4),
+	        v_end_day4_5_6_day_wk - v_start_day4_5_6_day_wk
+	    ),
+	    0
 	) AS v_pos_accom_period4,
 	-- *INF*: IIF(v_restriction_accommodated5 = 'Yes' AND v_restriction_begin_date5 <> v_sysdate, 
 	-- IIF( v_work_day_flag = 7,DATE_DIFF(v_restriction_end_date5 ,v_restriction_begin_date5,'DD'), v_end_day5_5_6_day_wk - v_start_day5_5_6_day_wk) , 0)
@@ -2763,58 +2265,56 @@ EXP_claimant_dim AS (
 	-- ---         THEN  get the date difference for record 5 of 5 USING the date_diff function
 	-- ---         ELSE (this is a 5 or 6 day week)  Get the difference between the two lookup values to get the difference in dates
 	-- ---                       for a 5 or 6 day week.
-	IFF(v_restriction_accommodated5 = 'Yes' 
-		AND v_restriction_begin_date5 <> v_sysdate,
-		IFF(v_work_day_flag = 7,
-			DATEDIFF(DAY,v_restriction_end_date5,v_restriction_begin_date5),
-			v_end_day5_5_6_day_wk - v_start_day5_5_6_day_wk
-		),
-		0
+	IFF(
+	    v_restriction_accommodated5 = 'Yes' AND v_restriction_begin_date5 <> v_sysdate,
+	    IFF(
+	        v_work_day_flag = 7, DATEDIFF(DAY,v_restriction_end_date5,v_restriction_begin_date5),
+	        v_end_day5_5_6_day_wk - v_start_day5_5_6_day_wk
+	    ),
+	    0
 	) AS v_pos_accom_period5,
 	-- *INF*: ( v_pos_accom_period1 +
 	-- v_pos_accom_period2 + 
 	-- v_pos_accom_period3 +
 	-- v_pos_accom_period4 +
 	-- v_pos_accom_period5 ) 
-	( v_pos_accom_period1 + v_pos_accom_period2 + v_pos_accom_period3 + v_pos_accom_period4 + v_pos_accom_period5 
-	) AS o_pos_accom_period,
+	(v_pos_accom_period1 + v_pos_accom_period2 + v_pos_accom_period3 + v_pos_accom_period4 + v_pos_accom_period5) AS o_pos_accom_period,
 	-- *INF*: ( v_neg_accom_period1 +
 	-- v_neg_accom_period2 + 
 	-- v_neg_accom_period3 +
 	-- v_neg_accom_period4 +
 	-- v_neg_accom_period5 ) * -1
-	( v_neg_accom_period1 + v_neg_accom_period2 + v_neg_accom_period3 + v_neg_accom_period4 + v_neg_accom_period5 
-	) * - 1 AS o_neg_accom_period,
+	(v_neg_accom_period1 + v_neg_accom_period2 + v_neg_accom_period3 + v_neg_accom_period4 + v_neg_accom_period5) * - 1 AS o_neg_accom_period,
 	-- *INF*: IIF(v_restriction_accommodated1 = 'No' AND v_restriction_begin_date1 <> v_sysdate, 
 	--  v_daily_benefit_rate1 * v_neg_accom_period1 , 0)
 	-- 
 	-- 
 	-- ---- IF Accommodate1 is equal to 'No' and this is a valid record from the CLAIM_ANSWER table then calculate
 	-- ---- the negative impact in dollars for this entry(1 of up to 5).
-	IFF(v_restriction_accommodated1 = 'No' 
-		AND v_restriction_begin_date1 <> v_sysdate,
-		v_daily_benefit_rate1 * v_neg_accom_period1,
-		0
+	IFF(
+	    v_restriction_accommodated1 = 'No' AND v_restriction_begin_date1 <> v_sysdate,
+	    v_daily_benefit_rate1 * v_neg_accom_period1,
+	    0
 	) AS v_neg_impact1,
 	-- *INF*: IIF(v_restriction_accommodated2 = 'No' AND v_restriction_begin_date2 <> v_sysdate, 
 	--  v_daily_benefit_rate2 * v_neg_accom_period2 , 0)
 	-- 
 	-- ---- IF Accommodate2 is equal to 'No' and this is a valid record from the CLAIM_ANSWER table then calculate
 	-- ---- the negative impact in dollars for this entry(2 of up to 5).
-	IFF(v_restriction_accommodated2 = 'No' 
-		AND v_restriction_begin_date2 <> v_sysdate,
-		v_daily_benefit_rate2 * v_neg_accom_period2,
-		0
+	IFF(
+	    v_restriction_accommodated2 = 'No' AND v_restriction_begin_date2 <> v_sysdate,
+	    v_daily_benefit_rate2 * v_neg_accom_period2,
+	    0
 	) AS v_neg_impact2,
 	-- *INF*: IIF(v_restriction_accommodated3 = 'No' AND v_restriction_begin_date3 <> v_sysdate, 
 	--  v_daily_benefit_rate3 * v_neg_accom_period3 , 0)
 	-- 
 	-- ---- IF Accommodate3 is equal to 'No' and this is a valid record from the CLAIM_ANSWER table then calculate
 	-- ---- the negative impact in dollars for this entry(3 of up to 5).
-	IFF(v_restriction_accommodated3 = 'No' 
-		AND v_restriction_begin_date3 <> v_sysdate,
-		v_daily_benefit_rate3 * v_neg_accom_period3,
-		0
+	IFF(
+	    v_restriction_accommodated3 = 'No' AND v_restriction_begin_date3 <> v_sysdate,
+	    v_daily_benefit_rate3 * v_neg_accom_period3,
+	    0
 	) AS v_neg_impact3,
 	-- *INF*: IIF(v_restriction_accommodated4 = 'No' AND v_restriction_begin_date4 <> v_sysdate, 
 	--  v_daily_benefit_rate4 * v_neg_accom_period4 , 0)
@@ -2822,10 +2322,10 @@ EXP_claimant_dim AS (
 	-- 
 	-- ---- IF Accommodate3 is equal to 'No' and this is a valid record from the CLAIM_ANSWER table then calculate
 	-- ---- the negative impact in dollars for this entry(3 of up to 5).
-	IFF(v_restriction_accommodated4 = 'No' 
-		AND v_restriction_begin_date4 <> v_sysdate,
-		v_daily_benefit_rate4 * v_neg_accom_period4,
-		0
+	IFF(
+	    v_restriction_accommodated4 = 'No' AND v_restriction_begin_date4 <> v_sysdate,
+	    v_daily_benefit_rate4 * v_neg_accom_period4,
+	    0
 	) AS v_neg_impact4,
 	-- *INF*: IIF(v_restriction_accommodated5 = 'No' AND v_restriction_begin_date5 <> v_sysdate, 
 	--  v_daily_benefit_rate5 * v_neg_accom_period5 , 0)
@@ -2833,10 +2333,10 @@ EXP_claimant_dim AS (
 	-- 
 	-- ---- IF Accommodate5 is equal to 'No' and this is a valid record from the CLAIM_ANSWER table then calculate
 	-- ---- the negative impact in dollars for this entry(5 of up to 5).
-	IFF(v_restriction_accommodated5 = 'No' 
-		AND v_restriction_begin_date5 <> v_sysdate,
-		v_daily_benefit_rate5 * v_neg_accom_period5,
-		0
+	IFF(
+	    v_restriction_accommodated5 = 'No' AND v_restriction_begin_date5 <> v_sysdate,
+	    v_daily_benefit_rate5 * v_neg_accom_period5,
+	    0
 	) AS v_neg_impact5,
 	-- *INF*: IIF(v_restriction_accommodated1 = 'Yes' AND v_restriction_begin_date1 <> v_sysdate, 
 	--  v_daily_benefit_rate1 * v_pos_accom_period1 , 0)
@@ -2844,10 +2344,10 @@ EXP_claimant_dim AS (
 	-- 
 	-- ---- IF Accommodate1 is equal to 'Yes' and this is a valid record from the CLAIM_ANSWER table then calculate
 	-- ---- the negative impact in dollars for this entry(1 of up to 5).
-	IFF(v_restriction_accommodated1 = 'Yes' 
-		AND v_restriction_begin_date1 <> v_sysdate,
-		v_daily_benefit_rate1 * v_pos_accom_period1,
-		0
+	IFF(
+	    v_restriction_accommodated1 = 'Yes' AND v_restriction_begin_date1 <> v_sysdate,
+	    v_daily_benefit_rate1 * v_pos_accom_period1,
+	    0
 	) AS v_pos_impact1,
 	-- *INF*: IIF(v_restriction_accommodated2 = 'Yes' AND v_restriction_begin_date2 <> v_sysdate, 
 	--  v_daily_benefit_rate2 * v_pos_accom_period2 , 0)
@@ -2856,10 +2356,10 @@ EXP_claimant_dim AS (
 	-- 
 	-- ---- IF Accommodate1 is equal to 'Yes' and this is a valid record from the CLAIM_ANSWER table then calculate
 	-- ---- the negative impact in dollars for this entry(2 of up to 5).
-	IFF(v_restriction_accommodated2 = 'Yes' 
-		AND v_restriction_begin_date2 <> v_sysdate,
-		v_daily_benefit_rate2 * v_pos_accom_period2,
-		0
+	IFF(
+	    v_restriction_accommodated2 = 'Yes' AND v_restriction_begin_date2 <> v_sysdate,
+	    v_daily_benefit_rate2 * v_pos_accom_period2,
+	    0
 	) AS v_pos_impact2,
 	-- *INF*: IIF(v_restriction_accommodated3 = 'Yes' AND v_restriction_begin_date3 <> v_sysdate, 
 	--  v_daily_benefit_rate3 * v_pos_accom_period3 , 0)
@@ -2868,10 +2368,10 @@ EXP_claimant_dim AS (
 	-- 
 	-- ---- IF Accommodate3 is equal to 'Yes' and this is a valid record from the CLAIM_ANSWER table then calculate
 	-- ---- the negative impact in dollars for this entry(1 of up to 5).
-	IFF(v_restriction_accommodated3 = 'Yes' 
-		AND v_restriction_begin_date3 <> v_sysdate,
-		v_daily_benefit_rate3 * v_pos_accom_period3,
-		0
+	IFF(
+	    v_restriction_accommodated3 = 'Yes' AND v_restriction_begin_date3 <> v_sysdate,
+	    v_daily_benefit_rate3 * v_pos_accom_period3,
+	    0
 	) AS v_pos_impact3,
 	-- *INF*: IIF(v_restriction_accommodated4 = 'Yes' AND v_restriction_begin_date4 <> v_sysdate, 
 	--  v_daily_benefit_rate4 * v_pos_accom_period4 , 0)
@@ -2880,20 +2380,20 @@ EXP_claimant_dim AS (
 	-- 
 	-- ---- IF Accommodate4 is equal to 'Yes' and this is a valid record from the CLAIM_ANSWER table then calculate
 	-- ---- the negative impact in dollars for this entry(4 of up to 5).
-	IFF(v_restriction_accommodated4 = 'Yes' 
-		AND v_restriction_begin_date4 <> v_sysdate,
-		v_daily_benefit_rate4 * v_pos_accom_period4,
-		0
+	IFF(
+	    v_restriction_accommodated4 = 'Yes' AND v_restriction_begin_date4 <> v_sysdate,
+	    v_daily_benefit_rate4 * v_pos_accom_period4,
+	    0
 	) AS v_pos_impact4,
 	-- *INF*: IIF(v_restriction_accommodated5 = 'Yes' AND v_restriction_begin_date5 <> v_sysdate, 
 	--  v_daily_benefit_rate5 * v_pos_accom_period5 , 0)
 	-- 
 	-- ---- IF Accommodate5 is equal to 'Yes' and this is a valid record from the CLAIM_ANSWER table then calculate
 	-- ---- the negative impact in dollars for this entry(5 of up to 5).
-	IFF(v_restriction_accommodated5 = 'Yes' 
-		AND v_restriction_begin_date5 <> v_sysdate,
-		v_daily_benefit_rate5 * v_pos_accom_period5,
-		0
+	IFF(
+	    v_restriction_accommodated5 = 'Yes' AND v_restriction_begin_date5 <> v_sysdate,
+	    v_daily_benefit_rate5 * v_pos_accom_period5,
+	    0
 	) AS v_pos_impact5,
 	v_pos_impact1 +
 v_pos_impact2 +
@@ -2905,30 +2405,23 @@ v_pos_impact5 AS o_pos_impact,
 	-- v_neg_impact3 +
 	-- v_neg_impact4 +
 	-- v_neg_impact5) *  -1
-	( v_neg_impact1 + v_neg_impact2 + v_neg_impact3 + v_neg_impact4 + v_neg_impact5 
-	) * - 1 AS o_neg_impact,
+	(v_neg_impact1 + v_neg_impact2 + v_neg_impact3 + v_neg_impact4 + v_neg_impact5) * - 1 AS o_neg_impact,
 	-1 AS claim_med_id_out,
 	'N/A' AS medicare_eligibility_out,
 	-- *INF*: :LKP.LKP_CLAIM_ANSWER_QUES
 	-- (edw_claim_party_occurrence_ak_id,'InjuredWorkerLostTime',  'Claimant.Disability.Questions')
 	LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_InjuredWorkerLostTime_Claimant_Disability_Questions.optn_text AS v_InjuredWorkerLostTime,
 	-- *INF*: IIF(isnull(v_InjuredWorkerLostTime),-1,TO_INTEGER(v_InjuredWorkerLostTime))
-	IFF(v_InjuredWorkerLostTime IS NULL,
-		- 1,
-		CAST(v_InjuredWorkerLostTime AS INTEGER)
-	) AS InjuredWorkerLostTime,
+	IFF(v_InjuredWorkerLostTime IS NULL, - 1, CAST(v_InjuredWorkerLostTime AS INTEGER)) AS InjuredWorkerLostTime,
 	JNR_claimant_dim_sources.AutomaticAdjudicationClaimIndicator AS in_AutomaticAdjudicationClaimIndicator,
 	-- *INF*: iif(isnull(in_AutomaticAdjudicationClaimIndicator),'N/A',in_AutomaticAdjudicationClaimIndicator)
-	IFF(in_AutomaticAdjudicationClaimIndicator IS NULL,
-		'N/A',
-		in_AutomaticAdjudicationClaimIndicator
+	IFF(
+	    in_AutomaticAdjudicationClaimIndicator IS NULL, 'N/A',
+	    in_AutomaticAdjudicationClaimIndicator
 	) AS AutomaticAdjudicationClaimIndicator,
 	LKP_SupCompensableClaimCode.CompensableClaimDescription AS in_CompensableClaimDescription,
 	-- *INF*: iif(isnull(in_CompensableClaimDescription),'N/A',in_CompensableClaimDescription)
-	IFF(in_CompensableClaimDescription IS NULL,
-		'N/A',
-		in_CompensableClaimDescription
-	) AS CompensableClaimDescription
+	IFF(in_CompensableClaimDescription IS NULL, 'N/A', in_CompensableClaimDescription) AS CompensableClaimDescription
 	FROM JNR_claimant_dim_sources
 	LEFT JOIN LKP_SUP_WC_ACTIVITY_STATUS
 	ON LKP_SUP_WC_ACTIVITY_STATUS.act_status_code = JNR_claimant_dim_sources.act_status_code
@@ -2981,14 +2474,10 @@ v_pos_impact5 AS o_pos_impact,
 	LEFT JOIN LKP_sup_workers_comp_wage_period
 	ON LKP_sup_workers_comp_wage_period.wage_period_code = JNR_claimant_dim_sources.wage_period_code
 	LEFT JOIN LKP_SUP_STATE LKP_SUP_STATE_ltrim_rtrim_in_jurisdiction_state_code
-	ON LKP_SUP_STATE_ltrim_rtrim_in_jurisdiction_state_code.state_code = ltrim(rtrim(in_jurisdiction_state_code
-	)
-)
+	ON LKP_SUP_STATE_ltrim_rtrim_in_jurisdiction_state_code.state_code = ltrim(rtrim(in_jurisdiction_state_code))
 
 	LEFT JOIN LKP_SUP_STATE LKP_SUP_STATE_ltrim_rtrim_in_hired_state_code
-	ON LKP_SUP_STATE_ltrim_rtrim_in_hired_state_code.state_code = ltrim(rtrim(in_hired_state_code
-	)
-)
+	ON LKP_SUP_STATE_ltrim_rtrim_in_hired_state_code.state_code = ltrim(rtrim(in_hired_state_code))
 
 	LEFT JOIN LKP_CLAIM_ANSWER_QUES LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_NcciDciWasClaimCompensabilityDisputed_Claim_GeneralCase_Questions
 	ON LKP_CLAIM_ANSWER_QUES_edw_claim_party_occurrence_ak_id_NcciDciWasClaimCompensabilityDisputed_Claim_GeneralCase_Questions.claim_party_occurrence_ak_id = edw_claim_party_occurrence_ak_id
@@ -3304,104 +2793,14 @@ EXP_CHECK_VALIDITY AS (
 	-- //If NR Status is Open/Openedinerror/Openwithnofinancial and all fin types are N/A then DONT filter
 	-- //If NR Status is Closed and if none of the other fin type status is closed, then filter the row
 	-- //----------------------------------------------------------------------------------------------------
-	DECODE(TRUE,
-		SUBSTR(claimant_date_type_out, 1, 6
-		) = 'CLOSED' 
-		AND ( claimant_direct_loss_status_code_out = 'OPEN' 
-			OR claimant_exp_status_code_out = 'OPEN' 
-			OR claimant_subrogation_status_code_out = 'OPEN' 
-			OR claimant_salvage_status_code_out = 'OPEN' 
-			OR claimant_other_recovery_status_code_out = 'OPEN' 
-			OR claimant_direct_loss_status_code_out = 'REOPEN' 
-			OR claimant_exp_status_code_out = 'REOPEN' 
-			OR claimant_subrogation_status_code_out = 'REOPEN' 
-			OR claimant_salvage_status_code_out = 'REOPEN' 
-			OR claimant_other_recovery_status_code_out = 'REOPEN' 
-		), 'INVALID',
-		( SUBSTR(claimant_date_type_out, 1, 4
-			) = 'OPEN' 
-			OR SUBSTR(claimant_date_type_out, 1, 6
-			) = 'REOPEN' 
-			OR SUBSTR(claimant_date_type_out, 1, 6
-			) = 'CLOSED' 
-		) 
-		AND ( SUBSTR(claimant_direct_loss_status_code_out, 1, 6
-			) = 'N/A' 
-			AND SUBSTR(claimant_exp_status_code_out, 1, 6
-			) = 'N/A' 
-			AND SUBSTR(claimant_subrogation_status_code_out, 1, 6
-			) = 'N/A' 
-			AND SUBSTR(claimant_salvage_status_code_out, 1, 6
-			) = 'N/A' 
-			AND SUBSTR(claimant_other_recovery_status_code_out, 1, 6
-			) = 'N/A' 
-		), 'VALID',
-		( SUBSTR(claimant_date_type_out, 1, 4
-			) = 'OPEN' 
-			OR SUBSTR(claimant_date_type_out, 1, 6
-			) = 'REOPEN' 
-		) 
-		AND ( ( SUBSTR(claimant_direct_loss_status_code_out, 1, 6
-				) = 'CLOSED' 
-				OR claimant_direct_loss_status_code_out = 'N/A' 
-				OR claimant_direct_loss_status_code_out = 'NOTICEONLY' 
-			) 
-			AND ( SUBSTR(claimant_exp_status_code_out, 1, 6
-				) = 'CLOSED' 
-				OR claimant_exp_status_code_out = 'N/A' 
-				OR claimant_exp_status_code_out = 'NOTICEONLY' 
-			) 
-			AND ( SUBSTR(claimant_subrogation_status_code_out, 1, 6
-				) = 'CLOSED' 
-				OR claimant_subrogation_status_code_out = 'N/A' 
-				OR claimant_subrogation_status_code_out = 'NOTICEONLY' 
-			) 
-			AND ( SUBSTR(claimant_salvage_status_code_out, 1, 6
-				) = 'CLOSED' 
-				OR claimant_salvage_status_code_out = 'N/A' 
-				OR claimant_salvage_status_code_out = 'NOTICEONLY' 
-			) 
-			AND ( SUBSTR(claimant_other_recovery_status_code_out, 1, 6
-				) = 'CLOSED' 
-				OR claimant_other_recovery_status_code_out = 'N/A' 
-				OR claimant_other_recovery_status_code_out = 'NOTICEONLY' 
-			) 
-		), 'INVALID',
-		claimant_date_type_out = 'NOTICEONLY' 
-		AND ( claimant_direct_loss_status_code_out = 'OPEN' 
-			OR claimant_direct_loss_status_code_out = 'REOPEN' 
-			OR SUBSTR(claimant_direct_loss_status_code_out, 1, 6
-			) = 'CLOSED' 
-			OR claimant_exp_status_code_out = 'OPEN' 
-			OR claimant_exp_status_code_out = 'REOPEN' 
-			OR SUBSTR(claimant_exp_status_code_out, 1, 6
-			) = 'CLOSED' 
-			OR claimant_subrogation_status_code_out = 'OPEN' 
-			OR claimant_subrogation_status_code_out = 'REOPEN' 
-			OR SUBSTR(claimant_subrogation_status_code_out, 1, 6
-			) = 'CLOSED' 
-			OR claimant_salvage_status_code_out = 'OPEN' 
-			OR claimant_salvage_status_code_out = 'REOPEN' 
-			OR SUBSTR(claimant_salvage_status_code_out, 1, 6
-			) = 'CLOSED' 
-			OR claimant_other_recovery_status_code_out = 'OPEN' 
-			OR claimant_other_recovery_status_code_out = 'REOPEN' 
-			OR SUBSTR(claimant_other_recovery_status_code_out, 1, 6
-			) = 'CLOSED' 
-		), 'INVALID',
-		SUBSTR(claimant_date_type_out, 1, 6
-		) = 'CLOSED' 
-		AND SUBSTR(claimant_direct_loss_status_code_out, 1, 6
-		) <> 'CLOSED' 
-		AND SUBSTR(claimant_exp_status_code_out, 1, 6
-		) <> 'CLOSED' 
-		AND SUBSTR(claimant_salvage_status_code_out, 1, 6
-		) <> 'CLOSED' 
-		AND SUBSTR(claimant_subrogation_status_code_out, 1, 6
-		) <> 'CLOSED' 
-		AND SUBSTR(claimant_other_recovery_status_code_out, 1, 6
-		) <> 'CLOSED', 'INVALID',
-		'VALID'
+	DECODE(
+	    TRUE,
+	    SUBSTR(claimant_date_type_out, 1, 6) = 'CLOSED' AND (claimant_direct_loss_status_code_out = 'OPEN' OR claimant_exp_status_code_out = 'OPEN' OR claimant_subrogation_status_code_out = 'OPEN' OR claimant_salvage_status_code_out = 'OPEN' OR claimant_other_recovery_status_code_out = 'OPEN' OR claimant_direct_loss_status_code_out = 'REOPEN' OR claimant_exp_status_code_out = 'REOPEN' OR claimant_subrogation_status_code_out = 'REOPEN' OR claimant_salvage_status_code_out = 'REOPEN' OR claimant_other_recovery_status_code_out = 'REOPEN'), 'INVALID',
+	    (SUBSTR(claimant_date_type_out, 1, 4) = 'OPEN' OR SUBSTR(claimant_date_type_out, 1, 6) = 'REOPEN' OR SUBSTR(claimant_date_type_out, 1, 6) = 'CLOSED') AND (SUBSTR(claimant_direct_loss_status_code_out, 1, 6) = 'N/A' AND SUBSTR(claimant_exp_status_code_out, 1, 6) = 'N/A' AND SUBSTR(claimant_subrogation_status_code_out, 1, 6) = 'N/A' AND SUBSTR(claimant_salvage_status_code_out, 1, 6) = 'N/A' AND SUBSTR(claimant_other_recovery_status_code_out, 1, 6) = 'N/A'), 'VALID',
+	    (SUBSTR(claimant_date_type_out, 1, 4) = 'OPEN' OR SUBSTR(claimant_date_type_out, 1, 6) = 'REOPEN') AND ((SUBSTR(claimant_direct_loss_status_code_out, 1, 6) = 'CLOSED' OR claimant_direct_loss_status_code_out = 'N/A' OR claimant_direct_loss_status_code_out = 'NOTICEONLY') AND (SUBSTR(claimant_exp_status_code_out, 1, 6) = 'CLOSED' OR claimant_exp_status_code_out = 'N/A' OR claimant_exp_status_code_out = 'NOTICEONLY') AND (SUBSTR(claimant_subrogation_status_code_out, 1, 6) = 'CLOSED' OR claimant_subrogation_status_code_out = 'N/A' OR claimant_subrogation_status_code_out = 'NOTICEONLY') AND (SUBSTR(claimant_salvage_status_code_out, 1, 6) = 'CLOSED' OR claimant_salvage_status_code_out = 'N/A' OR claimant_salvage_status_code_out = 'NOTICEONLY') AND (SUBSTR(claimant_other_recovery_status_code_out, 1, 6) = 'CLOSED' OR claimant_other_recovery_status_code_out = 'N/A' OR claimant_other_recovery_status_code_out = 'NOTICEONLY')), 'INVALID',
+	    claimant_date_type_out = 'NOTICEONLY' AND (claimant_direct_loss_status_code_out = 'OPEN' OR claimant_direct_loss_status_code_out = 'REOPEN' OR SUBSTR(claimant_direct_loss_status_code_out, 1, 6) = 'CLOSED' OR claimant_exp_status_code_out = 'OPEN' OR claimant_exp_status_code_out = 'REOPEN' OR SUBSTR(claimant_exp_status_code_out, 1, 6) = 'CLOSED' OR claimant_subrogation_status_code_out = 'OPEN' OR claimant_subrogation_status_code_out = 'REOPEN' OR SUBSTR(claimant_subrogation_status_code_out, 1, 6) = 'CLOSED' OR claimant_salvage_status_code_out = 'OPEN' OR claimant_salvage_status_code_out = 'REOPEN' OR SUBSTR(claimant_salvage_status_code_out, 1, 6) = 'CLOSED' OR claimant_other_recovery_status_code_out = 'OPEN' OR claimant_other_recovery_status_code_out = 'REOPEN' OR SUBSTR(claimant_other_recovery_status_code_out, 1, 6) = 'CLOSED'), 'INVALID',
+	    SUBSTR(claimant_date_type_out, 1, 6) = 'CLOSED' AND SUBSTR(claimant_direct_loss_status_code_out, 1, 6) <> 'CLOSED' AND SUBSTR(claimant_exp_status_code_out, 1, 6) <> 'CLOSED' AND SUBSTR(claimant_salvage_status_code_out, 1, 6) <> 'CLOSED' AND SUBSTR(claimant_subrogation_status_code_out, 1, 6) <> 'CLOSED' AND SUBSTR(claimant_other_recovery_status_code_out, 1, 6) <> 'CLOSED', 'INVALID',
+	    'VALID'
 	) AS ROW_VALID
 	FROM EXP_claimant_dim
 ),

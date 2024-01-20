@@ -147,21 +147,22 @@ EXP_ClassDesc AS (
 	-- IN (i_LineOfBusinessAbbreviation,'GL') , 'GL' ,
 	-- IN (i_LineOfBusinessAbbreviation,'WC') , 'WC' ,
 	-- 'N/A')
-	DECODE(TRUE,
-		i_LineOfBusinessAbbreviation IN ('Bonds - Fidelity','Bonds - Surety'), 'BND',
-		i_LineOfBusinessAbbreviation IN ('NFP D&O','D&O'), 'DNO',
-		i_LineOfBusinessAbbreviation IN ('CL B&M','CL Mine Sub','CL Prop','Cyber Security','Data Compromise'), 'CF',
-		i_LineOfBusinessAbbreviation IN ('CL IM'), 'IM',
-		i_LineOfBusinessAbbreviation IN ('CL Umb'), 'UMB',
-		i_LineOfBusinessAbbreviation IN ('CL Auto'), 'CA',
-		i_LineOfBusinessAbbreviation IN ('Crime'), 'CR',
-		i_LineOfBusinessAbbreviation IN ('E&O'), 'ENO',
-		i_LineOfBusinessAbbreviation IN ('EPLI'), 'EPLI',
-		i_LineOfBusinessAbbreviation IN ('Garage'), 'GA',
-		i_LineOfBusinessAbbreviation IN ('Excess Liab'), 'EL',
-		i_LineOfBusinessAbbreviation IN ('GL'), 'GL',
-		i_LineOfBusinessAbbreviation IN ('WC'), 'WC',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_LineOfBusinessAbbreviation IN ('Bonds - Fidelity','Bonds - Surety'), 'BND',
+	    i_LineOfBusinessAbbreviation IN ('NFP D&O','D&O'), 'DNO',
+	    i_LineOfBusinessAbbreviation IN ('CL B&M','CL Mine Sub','CL Prop','Cyber Security','Data Compromise'), 'CF',
+	    i_LineOfBusinessAbbreviation IN ('CL IM'), 'IM',
+	    i_LineOfBusinessAbbreviation IN ('CL Umb'), 'UMB',
+	    i_LineOfBusinessAbbreviation IN ('CL Auto'), 'CA',
+	    i_LineOfBusinessAbbreviation IN ('Crime'), 'CR',
+	    i_LineOfBusinessAbbreviation IN ('E&O'), 'ENO',
+	    i_LineOfBusinessAbbreviation IN ('EPLI'), 'EPLI',
+	    i_LineOfBusinessAbbreviation IN ('Garage'), 'GA',
+	    i_LineOfBusinessAbbreviation IN ('Excess Liab'), 'EL',
+	    i_LineOfBusinessAbbreviation IN ('GL'), 'GL',
+	    i_LineOfBusinessAbbreviation IN ('WC'), 'WC',
+	    'N/A'
 	) AS v_LineOfBusinessAbbreviation,
 	-- *INF*: DECODE(TRUE, v_LineOfBusinessAbbreviation='WC',  IIF( NOT ISNULL( :LKP.LKP_SupClassification_LOB(v_LineOfBusinessAbbreviation,substr(i_ClassCode,1,4),i_RatingState)),
 	-- :LKP.LKP_SupClassification_LOB(v_LineOfBusinessAbbreviation,substr(i_ClassCode,1,4),i_RatingState) , :LKP.LKP_SupClassification_LOB(v_LineOfBusinessAbbreviation,substr(i_ClassCode,1,4),'99')) 
@@ -194,82 +195,98 @@ EXP_ClassDesc AS (
 	-- ,v_LineOfBusinessAbbreviation='GL',  IIF( NOT ISNULL( :LKP.LKP_SupClassification_LOB(v_LineOfBusinessAbbreviation,i_ClassCode,i_RatingState)),
 	-- :LKP.LKP_SupClassification_LOB(v_LineOfBusinessAbbreviation,i_ClassCode,i_RatingState) , :LKP.LKP_SupClassification_LOB(v_LineOfBusinessAbbreviation,i_ClassCode,'99'))
 	-- )
-	DECODE(TRUE,
-		v_LineOfBusinessAbbreviation = 'WC', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_i_RatingState.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_i_RatingState.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'CA', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
-			IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result IS NOT NULL,
-				LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result,
-				IFF(LKP_SUPCLASSIFICATION_LOB__GA_i_ClassCode_i_RatingState.Result IS NOT NULL,
-					LKP_SUPCLASSIFICATION_LOB__GA_i_ClassCode_i_RatingState.Result,
-					LKP_SUPCLASSIFICATION_LOB__GA_i_ClassCode_99.Result
-				)
-			)
-		),
-		v_LineOfBusinessAbbreviation = 'CF', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'BND', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'UMB', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'IM', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'CR', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'DNO', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'ENO', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'EPLI', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'EL', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
-		),
-		v_LineOfBusinessAbbreviation = 'GA', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
-			IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result IS NOT NULL,
-				LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result,
-				IFF(LKP_SUPCLASSIFICATION_LOB__CA_i_ClassCode_i_RatingState.Result IS NOT NULL,
-					LKP_SUPCLASSIFICATION_LOB__CA_i_ClassCode_i_RatingState.Result,
-					LKP_SUPCLASSIFICATION_LOB__CA_i_ClassCode_99.Result
-				)
-			)
-		),
-		v_LineOfBusinessAbbreviation = 'GL', IFF(LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
-			LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
-		)
+	DECODE(
+	    TRUE,
+	    v_LineOfBusinessAbbreviation = 'WC', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_i_RatingState.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_i_RatingState.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'CA', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
+	        IFF(
+	            LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result IS NOT NULL,
+	            LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result,
+	            IFF(
+	                LKP_SUPCLASSIFICATION_LOB__GA_i_ClassCode_i_RatingState.Result IS NOT NULL,
+	                LKP_SUPCLASSIFICATION_LOB__GA_i_ClassCode_i_RatingState.Result,
+	                LKP_SUPCLASSIFICATION_LOB__GA_i_ClassCode_99.Result
+	            )
+	        )
+	    ),
+	    v_LineOfBusinessAbbreviation = 'CF', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'BND', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'UMB', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'IM', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'CR', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'DNO', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'ENO', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'EPLI', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'EL', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
+	    ),
+	    v_LineOfBusinessAbbreviation = 'GA', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
+	        IFF(
+	            LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result IS NOT NULL,
+	            LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result,
+	            IFF(
+	                LKP_SUPCLASSIFICATION_LOB__CA_i_ClassCode_i_RatingState.Result IS NOT NULL,
+	                LKP_SUPCLASSIFICATION_LOB__CA_i_ClassCode_i_RatingState.Result,
+	                LKP_SUPCLASSIFICATION_LOB__CA_i_ClassCode_99.Result
+	            )
+	        )
+	    ),
+	    v_LineOfBusinessAbbreviation = 'GL', IFF(
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result IS NOT NULL,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState.Result,
+	        LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_99.Result
+	    )
 	) AS v_Result,
 	-- *INF*: DECODE(TRUE, IN( i_ProductAbbreviation,'SMART','BOP') OR IN(i_LineOfBusinessAbbreviation,'SMP','BOP') , 'Not Assigned',
 	--  ISNULL(v_Result), 'N/A',
 	-- SUBSTR(v_Result,1,INSTR(v_Result,'#')-1))
-	DECODE(TRUE,
-		i_ProductAbbreviation IN ('SMART','BOP') 
-		OR i_LineOfBusinessAbbreviation IN ('SMP','BOP'), 'Not Assigned',
-		v_Result IS NULL, 'N/A',
-		SUBSTR(v_Result, 1, REGEXP_INSTR(v_Result, '#'
-			) - 1
-		)
+	DECODE(
+	    TRUE,
+	    i_ProductAbbreviation IN ('SMART','BOP') OR i_LineOfBusinessAbbreviation IN ('SMP','BOP'), 'Not Assigned',
+	    v_Result IS NULL, 'N/A',
+	    SUBSTR(v_Result, 1, REGEXP_INSTR(v_Result, '#') - 1)
 	) AS ClassDescription,
 	-- *INF*: DECODE(TRUE, IN( i_ProductAbbreviation,'SMART','BOP') OR IN(i_LineOfBusinessAbbreviation,'SMP','BOP'), 'N/A',
 	-- ISNULL(v_Result), 'N/A',
@@ -277,26 +294,21 @@ EXP_ClassDesc AS (
 	-- 
 	-- 
 	-- 
-	DECODE(TRUE,
-		i_ProductAbbreviation IN ('SMART','BOP') 
-		OR i_LineOfBusinessAbbreviation IN ('SMP','BOP'), 'N/A',
-		v_Result IS NULL, 'N/A',
-		SUBSTR(v_Result, REGEXP_INSTR(v_Result, '#'
-			) + 1, length(v_Result
-			)
-		)
+	DECODE(
+	    TRUE,
+	    i_ProductAbbreviation IN ('SMART','BOP') OR i_LineOfBusinessAbbreviation IN ('SMP','BOP'), 'N/A',
+	    v_Result IS NULL, 'N/A',
+	    SUBSTR(v_Result, REGEXP_INSTR(v_Result, '#') + 1, length(v_Result))
 	) AS ClassCodeOrganizationCode
 	FROM SQ_CoverageDetailDim
 	LEFT JOIN LKP_SUPCLASSIFICATION_LOB LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_i_RatingState
 	ON LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_i_RatingState.LineOfBusinessAbbreviation = v_LineOfBusinessAbbreviation
-	AND LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_i_RatingState.ClassCode = substr(i_ClassCode, 1, 4
-		)
+	AND LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_i_RatingState.ClassCode = substr(i_ClassCode, 1, 4)
 	AND LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_i_RatingState.RatingStateCode = i_RatingState
 
 	LEFT JOIN LKP_SUPCLASSIFICATION_LOB LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_99
 	ON LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_99.LineOfBusinessAbbreviation = v_LineOfBusinessAbbreviation
-	AND LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_99.ClassCode = substr(i_ClassCode, 1, 4
-		)
+	AND LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_99.ClassCode = substr(i_ClassCode, 1, 4)
 	AND LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_substr_i_ClassCode_1_4_99.RatingStateCode = '99'
 
 	LEFT JOIN LKP_SUPCLASSIFICATION_LOB LKP_SUPCLASSIFICATION_LOB_v_LineOfBusinessAbbreviation_i_ClassCode_i_RatingState

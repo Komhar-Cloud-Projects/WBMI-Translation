@@ -173,33 +173,38 @@ EXP_Get_Values AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_ID,
 	LKP_FormDim.FormDimId AS FormDimID,
 	-- *INF*: DECODE(TRUE, IsNull(FormDimID),-1,FormDimID)
-	DECODE(TRUE,
-		FormDimID IS NULL, - 1,
-		FormDimID
+	DECODE(
+	    TRUE,
+	    FormDimID IS NULL, - 1,
+	    FormDimID
 	) AS o_FormDimID,
 	LKP_policy_dim.pol_dim_id AS PolicyDimID,
 	-- *INF*: DECODE(TRUE, IsNull(PolicyDimID),-1,PolicyDimID)
-	DECODE(TRUE,
-		PolicyDimID IS NULL, - 1,
-		PolicyDimID
+	DECODE(
+	    TRUE,
+	    PolicyDimID IS NULL, - 1,
+	    PolicyDimID
 	) AS o_PolicyDimID,
 	LKP_contract_customer_dim.contract_cust_dim_id AS ContractCustomerDimID,
 	-- *INF*: DECODE(TRUE, IsNull(ContractCustomerDimID),-1,ContractCustomerDimID)
-	DECODE(TRUE,
-		ContractCustomerDimID IS NULL, - 1,
-		ContractCustomerDimID
+	DECODE(
+	    TRUE,
+	    ContractCustomerDimID IS NULL, - 1,
+	    ContractCustomerDimID
 	) AS o_ContractCustomerDimID,
 	LKP_AgencyDim.AgencyDimID,
 	-- *INF*: DECODE(TRUE, IsNull(AgencyDimID),-1,AgencyDimID)
-	DECODE(TRUE,
-		AgencyDimID IS NULL, - 1,
-		AgencyDimID
+	DECODE(
+	    TRUE,
+	    AgencyDimID IS NULL, - 1,
+	    AgencyDimID
 	) AS o_AgencyDimID,
 	LKP_InsuranceReferenceDimId.InsuranceReferenceDimId,
 	-- *INF*: DECODE(TRUE, IsNull(InsuranceReferenceDimId),-1,InsuranceReferenceDimId)
-	DECODE(TRUE,
-		InsuranceReferenceDimId IS NULL, - 1,
-		InsuranceReferenceDimId
+	DECODE(
+	    TRUE,
+	    InsuranceReferenceDimId IS NULL, - 1,
+	    InsuranceReferenceDimId
 	) AS o_InsuranceReferenceDimId,
 	EXP_Std_Values.o_TransactionCreatedDate AS TransactionDateID,
 	EXP_Std_Values.o_TransactionEffectiveDate AS TransactionEffectiveDateID,

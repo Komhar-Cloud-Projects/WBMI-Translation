@@ -1,0 +1,47 @@
+{
+    "name": "s_m_HC_STG_Insert_Offering_Hctr",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_HC_STG_Insert_Offering_Hctr",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_offering AS (\n\tSELECT\n\t\toffering_id,\n\t\tbus_dvsn_prdct_id,\n\t\tstrtgc_bus_unit_dvsn_prog_id,\n\t\toffering_descript,\n\t\tpol_pco,\n\t\tprog_code,\n\t\tcreated_user_id,\n\t\tcreated_date,\n\t\tmodified_user_id,\n\t\tmodified_date\n\tFROM offering\n),\nEXP_OFFERING_HCTR AS (\n\tSELECT\n\toffering_id,\n\tbus_dvsn_prdct_id,\n\tstrtgc_bus_unit_dvsn_prog_id,\n\toffering_descript,\n\tpol_pco,\n\tprog_code,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tmodified_date,\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,\n\t'' AS RECORD_COUNT_OP\n\tFROM SQ_offering\n),\noffering_hctr_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.offering_hctr_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.offering_hctr_stage\n\t(offering_id, bus_dvsn_prdct_id, strtgc_bus_unit_dvsn_prog_id, offering_descript, pol_pco, prog_code, created_user_id, created_date, modified_user_id, modified_date, extract_date, source_system_id)\n\tSELECT \n\tOFFERING_ID, \n\tBUS_DVSN_PRDCT_ID, \n\tSTRTGC_BUS_UNIT_DVSN_PROG_ID, \n\tOFFERING_DESCRIPT, \n\tPOL_PCO, \n\tPROG_CODE, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_OFFERING_HCTR\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CommonStaging/"
+        },
+        "annotations": []
+    }
+}
