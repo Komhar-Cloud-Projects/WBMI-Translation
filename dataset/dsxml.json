@@ -1,0 +1,20 @@
+{
+	"name": "dsxml",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_BLOB_SAS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Xml",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "test_webservice",
+				"folderPath": "test",
+				"container": "wbmi-container"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

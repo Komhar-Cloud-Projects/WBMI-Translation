@@ -1,0 +1,62 @@
+{
+	"name": "Wkf_Do_Post_Audit_PolicyDataWarehouse",
+	"properties": {
+		"activities": [
+			{
+				"name": "Start",
+				"type": "Script",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query"
+						}
+					]
+				}
+			},
+			{
+				"name": "s_m_Do_PostAudit_PolicyCustDWH",
+				"type": "Script",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query"
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "PolicyDataWarehouse/"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-01-20T16:22:49Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
