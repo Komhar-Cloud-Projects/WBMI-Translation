@@ -1,6 +1,6 @@
 WITH
 SQ_AgencyODSStage AS (
-	SELECT
+	 SELECT
 		AgencyODSStageID,
 		AgencyODSSourceSystemID,
 		HashKey,
