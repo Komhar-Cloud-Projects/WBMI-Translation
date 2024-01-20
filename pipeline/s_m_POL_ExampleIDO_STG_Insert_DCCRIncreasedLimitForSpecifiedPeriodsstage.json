@@ -1,67 +1,70 @@
 {
-    "name": "s_m_POL_ExampleIDO_STG_Insert_DCCRIncreasedLimitForSpecifiedPeriodsstage ",
-    "properties": {
-        "activities": [
-            {
-                "name": "m_POL_ExampleIDO_STG_Insert_DCCRIncreasedLimitForSpe_00",
-                "type": "Script",
-                "dependsOn": [],
-                "policy": {
-                    "retry": 0,
-                    "retryIntervalInSeconds": 30,
-                    "secureOutput": false,
-                    "secureInput": false
-                },
-                "userProperties": [],
-                "linkedServiceName": {
-                    "referenceName": "ls_SNOWFLAKE_WBMI",
-                    "type": "LinkedServiceReference"
-                },
-                "typeProperties": {
-                    "scripts": [
-                        {
-                            "type": "Query",
-                            "text": "WITH\nSQ_DC_CR_IncreasedLimitForSpecifiedPeriods AS (\n\tWITH cte_DCCRIncreasedLimitForSpecifiedPeriods(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CR_EndorsementId, \r\n\tX.CR_BuildingId, \r\n\tX.CR_IncreasedLimitForSpecifiedPeriodsId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.CR_BuildingXmlId, \r\n\tX.IncreaseLimitForSpecifiedPeriodsEffectiveDate, \r\n\tX.IncreaseLimitForSpecifiedPeriodsExpirationDate, \r\n\tX.IncreaseLimitForSpecifiedPeriodsNumberOfPremises, \r\n\tX.Deleted \r\n\tFROM\r\n\tDC_CR_IncreasedLimitForSpecifiedPeriods X\r\n\tinner join\r\n\tcte_DCCRIncreasedLimitForSpecifiedPeriods Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tCR_EndorsementId,\n\tCR_BuildingId,\n\tCR_IncreasedLimitForSpecifiedPeriodsId,\n\tSessionId,\n\tId,\n\tCR_BuildingXmlId,\n\tIncreaseLimitForSpecifiedPeriodsEffectiveDate,\n\tIncreaseLimitForSpecifiedPeriodsExpirationDate,\n\tIncreaseLimitForSpecifiedPeriodsNumberOfPremises,\n\tDeleted,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_DC_CR_IncreasedLimitForSpecifiedPeriods\n),\nDCCRIncreasedLimitForSpecifiedPeriodsStage1 AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCRIncreasedLimitForSpecifiedPeriodsStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCRIncreasedLimitForSpecifiedPeriodsStage\n\t(CREndorsementId, CRBuildingId, CRIncreasedLimitForSpecifiedPeriodsId, SessionId, Id, Deleted, CRBuildingXmlId, IncreaseLimitForSpecifiedPeriodsEffectiveDate, IncreaseLimitForSpecifiedPeriodsExpirationDate, IncreaseLimitForSpecifiedPeriodsNumberOfPremises, ExtractDate, SourceSystemId)\n\tSELECT \n\tCR_EndorsementId AS CRENDORSEMENTID, \n\tCR_BuildingId AS CRBUILDINGID, \n\tCR_IncreasedLimitForSpecifiedPeriodsId AS CRINCREASEDLIMITFORSPECIFIEDPERIODSID, \n\tSESSIONID, \n\tID, \n\tDELETED, \n\tCR_BuildingXmlId AS CRBUILDINGXMLID, \n\tINCREASELIMITFORSPECIFIEDPERIODSEFFECTIVEDATE, \n\tINCREASELIMITFORSPECIFIEDPERIODSEXPIRATIONDATE, \n\tINCREASELIMITFORSPECIFIEDPERIODSNUMBEROFPREMISES, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID\n\tFROM EXP_Metadata\n),"
-                        }
-                    ]
-                },
-                "state": "Inactive",
-                "onInactiveMarkAs": "Succeeded"
-            }
-        ],
-        "parameters": {
-            "SOURCE_DATABASE_WB": {
-                "type": "string",
-                "defaultValue": "Default Value"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "Default Value"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "Default Value"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "Default Value"
-            },
-            "WHERE_CLAUSE": {
-                "type": "string",
-                "defaultValue": "Default Value"
-            },
-            "SOURCE_SYSTEM_ID": {
-                "type": "string",
-                "defaultValue": "Default Value"
-            },
-            "TARGET_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "Default Value"
-            }
-        },
-        "folder": {
-            "name": "PolicyStaging/"
-        },
-        "annotations": []
-    }
+	"name": "s_m_POL_ExampleIDO_STG_Insert_DCCRIncreasedLimitForSpecifiedPeriodsstage",
+	"properties": {
+		"activities": [
+			{
+				"name": "m_POL_ExampleIDO_STG_Insert_DCCRIncreasedLimitForSpe_00",
+				"type": "Script",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "ls_SNOWFLAKE_WBMI",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": {
+								"value": "WITH\nSQ_DC_CR_IncreasedLimitForSpecifiedPeriods AS (\n\tWITH cte_DCCRIncreasedLimitForSpecifiedPeriods(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CR_EndorsementId, \r\n\tX.CR_BuildingId, \r\n\tX.CR_IncreasedLimitForSpecifiedPeriodsId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.CR_BuildingXmlId, \r\n\tX.IncreaseLimitForSpecifiedPeriodsEffectiveDate, \r\n\tX.IncreaseLimitForSpecifiedPeriodsExpirationDate, \r\n\tX.IncreaseLimitForSpecifiedPeriodsNumberOfPremises, \r\n\tX.Deleted \r\n\tFROM\r\n\tDC_CR_IncreasedLimitForSpecifiedPeriods X\r\n\tinner join\r\n\tcte_DCCRIncreasedLimitForSpecifiedPeriods Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tCR_EndorsementId,\n\tCR_BuildingId,\n\tCR_IncreasedLimitForSpecifiedPeriodsId,\n\tSessionId,\n\tId,\n\tCR_BuildingXmlId,\n\tIncreaseLimitForSpecifiedPeriodsEffectiveDate,\n\tIncreaseLimitForSpecifiedPeriodsExpirationDate,\n\tIncreaseLimitForSpecifiedPeriodsNumberOfPremises,\n\tDeleted,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_DC_CR_IncreasedLimitForSpecifiedPeriods\n),\nDCCRIncreasedLimitForSpecifiedPeriodsStage1 AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCRIncreasedLimitForSpecifiedPeriodsStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCRIncreasedLimitForSpecifiedPeriodsStage\n\t(CREndorsementId, CRBuildingId, CRIncreasedLimitForSpecifiedPeriodsId, SessionId, Id, Deleted, CRBuildingXmlId, IncreaseLimitForSpecifiedPeriodsEffectiveDate, IncreaseLimitForSpecifiedPeriodsExpirationDate, IncreaseLimitForSpecifiedPeriodsNumberOfPremises, ExtractDate, SourceSystemId)\n\tSELECT \n\tCR_EndorsementId AS CRENDORSEMENTID, \n\tCR_BuildingId AS CRBUILDINGID, \n\tCR_IncreasedLimitForSpecifiedPeriodsId AS CRINCREASEDLIMITFORSPECIFIEDPERIODSID, \n\tSESSIONID, \n\tID, \n\tDELETED, \n\tCR_BuildingXmlId AS CRBUILDINGXMLID, \n\tINCREASELIMITFORSPECIFIEDPERIODSEFFECTIVEDATE, \n\tINCREASELIMITFORSPECIFIEDPERIODSEXPIRATIONDATE, \n\tINCREASELIMITFORSPECIFIEDPERIODSNUMBEROFPREMISES, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID\n\tFROM EXP_Metadata\n),",
+								"type": "Expression"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"SOURCE_DATABASE_WB": {
+				"type": "string",
+				"defaultValue": "Default Value"
+			},
+			"SOURCE_TABLE_OWNER": {
+				"type": "string",
+				"defaultValue": "Default Value"
+			},
+			"SELECTION_START_TS": {
+				"type": "string",
+				"defaultValue": "Default Value"
+			},
+			"SELECTION_END_TS": {
+				"type": "string",
+				"defaultValue": "Default Value"
+			},
+			"WHERE_CLAUSE": {
+				"type": "string",
+				"defaultValue": "Default Value"
+			},
+			"SOURCE_SYSTEM_ID": {
+				"type": "string",
+				"defaultValue": "Default Value"
+			},
+			"TARGET_TABLE_OWNER": {
+				"type": "string",
+				"defaultValue": "Default Value"
+			}
+		},
+		"folder": {
+			"name": "PolicyStaging/"
+		},
+		"annotations": []
+	}
 }
