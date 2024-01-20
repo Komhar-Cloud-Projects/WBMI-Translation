@@ -124,16 +124,11 @@ EXP_Clean_Up_Input AS (
 	DFT_MICRP_ECD_NBR AS in_DFT_MICRP_ECD_NBR,
 	DFT_DRAFT_NBR AS in_DFT_DRAFT_NBR,
 	-- *INF*: UPPER(:UDF.DEFAULT_VALUE_TO_BLANKS(in_DFT_MICRP_ECD_NBR))
-	UPPER(:UDF.DEFAULT_VALUE_TO_BLANKS(in_DFT_MICRP_ECD_NBR
-		)
-	) AS o_DFT_MICRP_ECD_NBR,
+	UPPER(UDF_DEFAULT_VALUE_TO_BLANKS(in_DFT_MICRP_ECD_NBR)) AS o_DFT_MICRP_ECD_NBR,
 	-- *INF*: IIF(ISNULL(in_DFT_DRAFT_NBR) OR IS_SPACES(in_DFT_DRAFT_NBR), 'N/A',LTRIM(RTRIM(in_DFT_DRAFT_NBR)))
-	IFF(in_DFT_DRAFT_NBR IS NULL 
-		OR LENGTH(in_DFT_DRAFT_NBR)>0 AND TRIM(in_DFT_DRAFT_NBR)='',
-		'N/A',
-		LTRIM(RTRIM(in_DFT_DRAFT_NBR
-			)
-		)
+	IFF(
+	    in_DFT_DRAFT_NBR IS NULL OR LENGTH(in_DFT_DRAFT_NBR)>0 AND TRIM(in_DFT_DRAFT_NBR)='', 'N/A',
+	    LTRIM(RTRIM(in_DFT_DRAFT_NBR))
 	) AS o_DFT_DRAFT_NBR
 	FROM SQ_CLAIM_DRAFT_STAGE
 ),
@@ -238,12 +233,7 @@ EXP_VALUES AS (
 	LKP_CLM_OFFSET_HONOR_STAGE.COH_UPD_TS AS IN_COH_UPD_TS,
 	LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE.CDC_REPORT_TO_IRS,
 	-- *INF*: IIF(ISNULL(RTRIM(CDC_REPORT_TO_IRS)),'N/A',RTRIM(CDC_REPORT_TO_IRS))
-	IFF(RTRIM(CDC_REPORT_TO_IRS
-		) IS NULL,
-		'N/A',
-		RTRIM(CDC_REPORT_TO_IRS
-		)
-	) AS out_CDC_REPORT_TO_IRS,
+	IFF(RTRIM(CDC_REPORT_TO_IRS) IS NULL, 'N/A', RTRIM(CDC_REPORT_TO_IRS)) AS out_CDC_REPORT_TO_IRS,
 	-- *INF*: :LKP.LKP_CLM_COMMENTS_STAGE(IN_DFT_CLAIM_NBR, DFT_PAY_TO_NM_CMT_ID)
 	LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_DFT_PAY_TO_NM_CMT_ID.TCC_COMMENT_TXT AS VAR_Payee_Phrase_Description,
 	-- *INF*: :LKP.LKP_CLM_COMMENTS_STAGE(IN_DFT_CLAIM_NBR,DFT_MMO_PHR_CMT_ID )
@@ -254,192 +244,140 @@ EXP_VALUES AS (
 	-- 
 	LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_DFT_MMO_PHR_CMT_ID.TCC_COMMENT_TXT AS VAR_Memo_Pharse_Description,
 	-- *INF*: IIF(ISNULL(IN_DFT_DBS_DT), TO_DATE('1/1/1800','MM/DD/YYYY'),IN_DFT_DBS_DT)
-	IFF(IN_DFT_DBS_DT IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		IN_DFT_DBS_DT
-	) AS OUT_DFT_DBS_DT,
+	IFF(IN_DFT_DBS_DT IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), IN_DFT_DBS_DT) AS OUT_DFT_DBS_DT,
 	EXP_Clean_Up_Input.o_DFT_DRAFT_NBR AS DFT_DRAFT_NBR,
 	-- *INF*: IIF(ISNULL(VAR_Payee_Phrase_Description) OR RTRIM(VAR_Payee_Phrase_Description) = '',
 	-- 	'N/A',
 	-- 	LTRIM(RTRIM(VAR_Payee_Phrase_Description)))
-	IFF(VAR_Payee_Phrase_Description IS NULL 
-		OR RTRIM(VAR_Payee_Phrase_Description
-		) = '',
-		'N/A',
-		LTRIM(RTRIM(VAR_Payee_Phrase_Description
-			)
-		)
+	IFF(
+	    VAR_Payee_Phrase_Description IS NULL OR RTRIM(VAR_Payee_Phrase_Description) = '', 'N/A',
+	    LTRIM(RTRIM(VAR_Payee_Phrase_Description))
 	) AS OUT_Payee_Phrase_Description,
 	-- *INF*: IIF(ISNULL(VAR_Memo_Pharse_Description),'N/A',LTRIM(RTRIM(VAR_Memo_Pharse_Description)))
-	IFF(VAR_Memo_Pharse_Description IS NULL,
-		'N/A',
-		LTRIM(RTRIM(VAR_Memo_Pharse_Description
-			)
-		)
-	) AS OUT_Memo_Pharse_Description,
+	IFF(VAR_Memo_Pharse_Description IS NULL, 'N/A', LTRIM(RTRIM(VAR_Memo_Pharse_Description))) AS OUT_Memo_Pharse_Description,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_CLIENT_TAB_STAGE(IN_DFT_DRAFT_NBR) )OR IS_SPACES(:LKP.LKP_CLIENT_TAB_STAGE(IN_DFT_DRAFT_NBR)), 'N/A',LTRIM(RTRIM(:LKP.LKP_CLIENT_TAB_STAGE(IN_DFT_DRAFT_NBR))))
-	IFF(LKP_CLIENT_TAB_STAGE_IN_DFT_DRAFT_NBR.CLM_METHOD_RPTD IS NULL 
-		OR LENGTH(LKP_CLIENT_TAB_STAGE_IN_DFT_DRAFT_NBR.CLM_METHOD_RPTD)>0 AND TRIM(LKP_CLIENT_TAB_STAGE_IN_DFT_DRAFT_NBR.CLM_METHOD_RPTD)='',
-		'N/A',
-		LTRIM(RTRIM(LKP_CLIENT_TAB_STAGE_IN_DFT_DRAFT_NBR.CLM_METHOD_RPTD
-			)
-		)
+	IFF(
+	    LKP_CLIENT_TAB_STAGE_IN_DFT_DRAFT_NBR.CLM_METHOD_RPTD IS NULL
+	    or LENGTH(LKP_CLIENT_TAB_STAGE_IN_DFT_DRAFT_NBR.CLM_METHOD_RPTD)>0
+	    and TRIM(LKP_CLIENT_TAB_STAGE_IN_DFT_DRAFT_NBR.CLM_METHOD_RPTD)='',
+	    'N/A',
+	    LTRIM(RTRIM(LKP_CLIENT_TAB_STAGE_IN_DFT_DRAFT_NBR.CLM_METHOD_RPTD))
 	) AS OUT_CLM_METHOD_RPTD,
 	-- *INF*: IIF(ISNULL(IN_DFT_MICRP_ECD_NBR) OR IS_SPACES(IN_DFT_MICRP_ECD_NBR),'N/A',LTRIM(RTRIM(IN_DFT_MICRP_ECD_NBR)))
-	IFF(IN_DFT_MICRP_ECD_NBR IS NULL 
-		OR LENGTH(IN_DFT_MICRP_ECD_NBR)>0 AND TRIM(IN_DFT_MICRP_ECD_NBR)='',
-		'N/A',
-		LTRIM(RTRIM(IN_DFT_MICRP_ECD_NBR
-			)
-		)
+	IFF(
+	    IN_DFT_MICRP_ECD_NBR IS NULL
+	    or LENGTH(IN_DFT_MICRP_ECD_NBR)>0
+	    and TRIM(IN_DFT_MICRP_ECD_NBR)='',
+	    'N/A',
+	    LTRIM(RTRIM(IN_DFT_MICRP_ECD_NBR))
 	) AS OUT_DFT_MICRP_ECD_NBR,
 	-- *INF*: IIF(ISNULL(IN_DFT_TRS_AMT),  0, IN_DFT_TRS_AMT)
-	IFF(IN_DFT_TRS_AMT IS NULL,
-		0,
-		IN_DFT_TRS_AMT
-	) AS OUT_DFT_TRS_AMT,
+	IFF(IN_DFT_TRS_AMT IS NULL, 0, IN_DFT_TRS_AMT) AS OUT_DFT_TRS_AMT,
 	-- *INF*: IIF(ISNULL(IN_DFT_CREATE_TS),TO_DATE('1/1/1800','MM/DD/YYYY') , IN_DFT_CREATE_TS)
-	IFF(IN_DFT_CREATE_TS IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		IN_DFT_CREATE_TS
-	) AS OUT_DFT_CREATE_TS,
+	IFF(IN_DFT_CREATE_TS IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), IN_DFT_CREATE_TS) AS OUT_DFT_CREATE_TS,
 	-- *INF*: IIF(ISNULL(IN_COH_NEW_DRAFT_NBR)  OR IS_SPACES(IN_COH_NEW_DRAFT_NBR), 'N/A', LTRIM(RTRIM(IN_COH_NEW_DRAFT_NBR)))
-	IFF(IN_COH_NEW_DRAFT_NBR IS NULL 
-		OR LENGTH(IN_COH_NEW_DRAFT_NBR)>0 AND TRIM(IN_COH_NEW_DRAFT_NBR)='',
-		'N/A',
-		LTRIM(RTRIM(IN_COH_NEW_DRAFT_NBR
-			)
-		)
+	IFF(
+	    IN_COH_NEW_DRAFT_NBR IS NULL
+	    or LENGTH(IN_COH_NEW_DRAFT_NBR)>0
+	    and TRIM(IN_COH_NEW_DRAFT_NBR)='',
+	    'N/A',
+	    LTRIM(RTRIM(IN_COH_NEW_DRAFT_NBR))
 	) AS OUT_COH_NEW_DRAFT_NBR,
 	-- *INF*: IIF(ISNULL(IN_COH_DELETE_IND) OR IS_SPACES(IN_COH_DELETE_IND),'N/A',LTRIM(RTRIM(IN_COH_DELETE_IND)))
-	IFF(IN_COH_DELETE_IND IS NULL 
-		OR LENGTH(IN_COH_DELETE_IND)>0 AND TRIM(IN_COH_DELETE_IND)='',
-		'N/A',
-		LTRIM(RTRIM(IN_COH_DELETE_IND
-			)
-		)
+	IFF(
+	    IN_COH_DELETE_IND IS NULL OR LENGTH(IN_COH_DELETE_IND)>0 AND TRIM(IN_COH_DELETE_IND)='',
+	    'N/A',
+	    LTRIM(RTRIM(IN_COH_DELETE_IND))
 	) AS OUT_COH_DELETE_IND,
 	-- *INF*: IIF(ISNULL(IN_COH_NEW_CLAIM_NBR) OR IS_SPACES(IN_COH_NEW_CLAIM_NBR),'N/A', LTRIM(RTRIM(IN_COH_NEW_CLAIM_NBR)))
-	IFF(IN_COH_NEW_CLAIM_NBR IS NULL 
-		OR LENGTH(IN_COH_NEW_CLAIM_NBR)>0 AND TRIM(IN_COH_NEW_CLAIM_NBR)='',
-		'N/A',
-		LTRIM(RTRIM(IN_COH_NEW_CLAIM_NBR
-			)
-		)
+	IFF(
+	    IN_COH_NEW_CLAIM_NBR IS NULL
+	    or LENGTH(IN_COH_NEW_CLAIM_NBR)>0
+	    and TRIM(IN_COH_NEW_CLAIM_NBR)='',
+	    'N/A',
+	    LTRIM(RTRIM(IN_COH_NEW_CLAIM_NBR))
 	) AS OUT_COH_NEW_CLAIM_NBR,
 	-- *INF*: IIF(ISNULL(IN_DFT_BANK_NBR) OR IS_SPACES(IN_DFT_BANK_NBR),'04',LTRIM(RTRIM(IN_DFT_BANK_NBR)))
 	-- 
 	-- --12/3/2010 : backfeed program puts 04 in this field. It is the bank number which is equal to M&I bank. Per Kristen  Mueller - "My book says it can be entered or updated on the PUCT screen.  I had to talk to Carol about something else and this is all she knows also.  It appears we could change it if we changed banks but never have yet."
-	IFF(IN_DFT_BANK_NBR IS NULL 
-		OR LENGTH(IN_DFT_BANK_NBR)>0 AND TRIM(IN_DFT_BANK_NBR)='',
-		'04',
-		LTRIM(RTRIM(IN_DFT_BANK_NBR
-			)
-		)
+	IFF(
+	    IN_DFT_BANK_NBR IS NULL OR LENGTH(IN_DFT_BANK_NBR)>0 AND TRIM(IN_DFT_BANK_NBR)='', '04',
+	    LTRIM(RTRIM(IN_DFT_BANK_NBR))
 	) AS OUT_DFT_BANK_NBR,
 	-- *INF*: IIF(ISNULL(IN_DFT_CK_DRAFT_IND) OR IS_SPACES(IN_DFT_CK_DRAFT_IND), 'N/A', LTRIM(RTRIM(IN_DFT_CK_DRAFT_IND)))
-	IFF(IN_DFT_CK_DRAFT_IND IS NULL 
-		OR LENGTH(IN_DFT_CK_DRAFT_IND)>0 AND TRIM(IN_DFT_CK_DRAFT_IND)='',
-		'N/A',
-		LTRIM(RTRIM(IN_DFT_CK_DRAFT_IND
-			)
-		)
+	IFF(
+	    IN_DFT_CK_DRAFT_IND IS NULL OR LENGTH(IN_DFT_CK_DRAFT_IND)>0 AND TRIM(IN_DFT_CK_DRAFT_IND)='',
+	    'N/A',
+	    LTRIM(RTRIM(IN_DFT_CK_DRAFT_IND))
 	) AS OUT_DFT_CK_DRAFT_IND,
 	-- *INF*: IIF(ISNULL(IN_DFT_DFT_CK_TYP_CD) OR IS_SPACES(IN_DFT_DFT_CK_TYP_CD),'N/A',LTRIM(RTRIM(IN_DFT_DFT_CK_TYP_CD)))
-	IFF(IN_DFT_DFT_CK_TYP_CD IS NULL 
-		OR LENGTH(IN_DFT_DFT_CK_TYP_CD)>0 AND TRIM(IN_DFT_DFT_CK_TYP_CD)='',
-		'N/A',
-		LTRIM(RTRIM(IN_DFT_DFT_CK_TYP_CD
-			)
-		)
+	IFF(
+	    IN_DFT_DFT_CK_TYP_CD IS NULL
+	    or LENGTH(IN_DFT_DFT_CK_TYP_CD)>0
+	    and TRIM(IN_DFT_DFT_CK_TYP_CD)='',
+	    'N/A',
+	    LTRIM(RTRIM(IN_DFT_DFT_CK_TYP_CD))
 	) AS OUT_DFT_DFT_CK_TYP_CD,
 	-- *INF*: IIF(ISNULL(IN_DFT_DBS_STATUS_CD) OR IS_SPACES(IN_DFT_DBS_STATUS_CD),'N/A',LTRIM(RTRIM(IN_DFT_DBS_STATUS_CD)))
-	IFF(IN_DFT_DBS_STATUS_CD IS NULL 
-		OR LENGTH(IN_DFT_DBS_STATUS_CD)>0 AND TRIM(IN_DFT_DBS_STATUS_CD)='',
-		'N/A',
-		LTRIM(RTRIM(IN_DFT_DBS_STATUS_CD
-			)
-		)
+	IFF(
+	    IN_DFT_DBS_STATUS_CD IS NULL
+	    or LENGTH(IN_DFT_DBS_STATUS_CD)>0
+	    and TRIM(IN_DFT_DBS_STATUS_CD)='',
+	    'N/A',
+	    LTRIM(RTRIM(IN_DFT_DBS_STATUS_CD))
 	) AS OUT_DFT_DBS_STATUS_CD,
 	'N/A' AS OUT_REPORTED_TO_IRS_IND,
 	-- *INF*: IIF(ISNULL(IN_COH_CREATE_TS),TO_DATE('1/1/1800','MM/DD/YYYY') , IN_COH_CREATE_TS)
-	IFF(IN_COH_CREATE_TS IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		IN_COH_CREATE_TS
-	) AS OUT_COH_CREATE_TS,
+	IFF(IN_COH_CREATE_TS IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), IN_COH_CREATE_TS) AS OUT_COH_CREATE_TS,
 	-- *INF*: IIF(ISNULL(IN_COH_UPD_TS),TO_DATE('1/1/1800','MM/DD/YYYY') , IN_COH_UPD_TS)
-	IFF(IN_COH_UPD_TS IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		IN_COH_UPD_TS
-	) AS OUT_COH_UPD_TS,
+	IFF(IN_COH_UPD_TS IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), IN_COH_UPD_TS) AS OUT_COH_UPD_TS,
 	-- *INF*: TO_DATE('1/1/1800','MM/DD/YYYY')
-	TO_DATE('1/1/1800', 'MM/DD/YYYY'
-	) AS OUT_PAY_CASHED_DATE,
+	TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY') AS OUT_PAY_CASHED_DATE,
 	SQ_CLAIM_DRAFT_STAGE.DFT_ENTRY_OPR_ID,
 	-- *INF*: IIF(ISNULL(DFT_ENTRY_OPR_ID) OR IS_SPACES(DFT_ENTRY_OPR_ID),'N/A',LTRIM(RTRIM(DFT_ENTRY_OPR_ID)))
 	-- 
-	IFF(DFT_ENTRY_OPR_ID IS NULL 
-		OR LENGTH(DFT_ENTRY_OPR_ID)>0 AND TRIM(DFT_ENTRY_OPR_ID)='',
-		'N/A',
-		LTRIM(RTRIM(DFT_ENTRY_OPR_ID
-			)
-		)
+	IFF(
+	    DFT_ENTRY_OPR_ID IS NULL OR LENGTH(DFT_ENTRY_OPR_ID)>0 AND TRIM(DFT_ENTRY_OPR_ID)='', 'N/A',
+	    LTRIM(RTRIM(DFT_ENTRY_OPR_ID))
 	) AS OUT_DFT_ENTRY_OPR_ID,
 	LKP_OPER_ROLE_CODE.CAJ_ADJUSTER_TYPE,
 	SQ_CLAIM_DRAFT_STAGE.DFT_DSB_LOC_CD,
 	-- *INF*: IIF(ISNULL(DFT_DSB_LOC_CD) OR IS_SPACES(DFT_DSB_LOC_CD),'N/A',LTRIM(RTRIM(DFT_DSB_LOC_CD)))
 	-- 
-	IFF(DFT_DSB_LOC_CD IS NULL 
-		OR LENGTH(DFT_DSB_LOC_CD)>0 AND TRIM(DFT_DSB_LOC_CD)='',
-		'N/A',
-		LTRIM(RTRIM(DFT_DSB_LOC_CD
-			)
-		)
+	IFF(
+	    DFT_DSB_LOC_CD IS NULL OR LENGTH(DFT_DSB_LOC_CD)>0 AND TRIM(DFT_DSB_LOC_CD)='', 'N/A',
+	    LTRIM(RTRIM(DFT_DSB_LOC_CD))
 	) AS OUT_DFT_DSB_LOC_CD,
 	SQ_CLAIM_DRAFT_STAGE.DFT_MAIL_TO_ADR_1,
 	SQ_CLAIM_DRAFT_STAGE.DFT_MAIL_TO_ADR_2,
 	-- *INF*: IIF(ISNULL(RTRIM(DFT_MAIL_TO_ADR_1) || RTRIM(DFT_MAIL_TO_ADR_2)),'N/A',RTRIM(DFT_MAIL_TO_ADR_1) || RTRIM(DFT_MAIL_TO_ADR_2))
-	IFF(RTRIM(DFT_MAIL_TO_ADR_1
-		) || RTRIM(DFT_MAIL_TO_ADR_2
-		) IS NULL,
-		'N/A',
-		RTRIM(DFT_MAIL_TO_ADR_1
-		) || RTRIM(DFT_MAIL_TO_ADR_2
-		)
+	IFF(
+	    RTRIM(DFT_MAIL_TO_ADR_1) || RTRIM(DFT_MAIL_TO_ADR_2) IS NULL, 'N/A',
+	    RTRIM(DFT_MAIL_TO_ADR_1) || RTRIM(DFT_MAIL_TO_ADR_2)
 	) AS MAIL_TO_ADR,
 	SQ_CLAIM_DRAFT_STAGE.DFT_CITY_NM,
 	-- *INF*: IIF(ISNULL(DFT_CITY_NM) OR IS_SPACES(DFT_CITY_NM),'N/A',LTRIM(RTRIM(DFT_CITY_NM)))
-	IFF(DFT_CITY_NM IS NULL 
-		OR LENGTH(DFT_CITY_NM)>0 AND TRIM(DFT_CITY_NM)='',
-		'N/A',
-		LTRIM(RTRIM(DFT_CITY_NM
-			)
-		)
+	IFF(
+	    DFT_CITY_NM IS NULL OR LENGTH(DFT_CITY_NM)>0 AND TRIM(DFT_CITY_NM)='', 'N/A',
+	    LTRIM(RTRIM(DFT_CITY_NM))
 	) AS OUT_CITY_NM,
 	SQ_CLAIM_DRAFT_STAGE.DFT_MAIL_TO_ST_CD,
 	-- *INF*: IIF(ISNULL(DFT_MAIL_TO_ST_CD) OR IS_SPACES(DFT_MAIL_TO_ST_CD),'N/A',LTRIM(RTRIM(DFT_MAIL_TO_ST_CD)))
 	-- 
-	IFF(DFT_MAIL_TO_ST_CD IS NULL 
-		OR LENGTH(DFT_MAIL_TO_ST_CD)>0 AND TRIM(DFT_MAIL_TO_ST_CD)='',
-		'N/A',
-		LTRIM(RTRIM(DFT_MAIL_TO_ST_CD
-			)
-		)
+	IFF(
+	    DFT_MAIL_TO_ST_CD IS NULL OR LENGTH(DFT_MAIL_TO_ST_CD)>0 AND TRIM(DFT_MAIL_TO_ST_CD)='',
+	    'N/A',
+	    LTRIM(RTRIM(DFT_MAIL_TO_ST_CD))
 	) AS OUT_MAIL_TO_ST_CD,
 	SQ_CLAIM_DRAFT_STAGE.DFT_MAIL_TO_ZIP_CD,
 	-- *INF*: IIF(
 	-- ISNULL(DFT_MAIL_TO_ZIP_CD) OR IS_SPACES(DFT_MAIL_TO_ZIP_CD),'N/A',
 	-- RTRIM(DFT_MAIL_TO_ZIP_CD)
 	-- )
-	IFF(DFT_MAIL_TO_ZIP_CD IS NULL 
-		OR LENGTH(DFT_MAIL_TO_ZIP_CD)>0 AND TRIM(DFT_MAIL_TO_ZIP_CD)='',
-		'N/A',
-		RTRIM(DFT_MAIL_TO_ZIP_CD
-		)
+	IFF(
+	    DFT_MAIL_TO_ZIP_CD IS NULL OR LENGTH(DFT_MAIL_TO_ZIP_CD)>0 AND TRIM(DFT_MAIL_TO_ZIP_CD)='',
+	    'N/A',
+	    RTRIM(DFT_MAIL_TO_ZIP_CD)
 	) AS OUT_MAIL_TO_ZIP_CD,
 	LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE.CDC_PYE_NM_CMT_ID AS IN_CDC_PAYEE_NM_CMT_ID_primary_payee,
 	LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE.CDC_PAYEE_NM_ID AS IN_CDC_PAYEE_NM_ID_primary_payee,
@@ -449,200 +387,153 @@ EXP_VALUES AS (
 	-- *INF*: IIF(ISNULL(v_mail_to_name) OR RTRIM(v_mail_to_name) = '',
 	-- 	'N/A',
 	-- 	v_mail_to_name)
-	IFF(v_mail_to_name IS NULL 
-		OR RTRIM(v_mail_to_name
-		) = '',
-		'N/A',
-		v_mail_to_name
-	) AS mail_to_name,
+	IFF(v_mail_to_name IS NULL OR RTRIM(v_mail_to_name) = '', 'N/A', v_mail_to_name) AS mail_to_name,
 	-- *INF*: :LKP.LKP_CLM_COMMENTS_STAGE(IN_DFT_CLAIM_NBR, IN_CDC_PAYEE_NM_CMT_ID_primary_payee)
 	LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_IN_CDC_PAYEE_NM_CMT_ID_primary_payee.TCC_COMMENT_TXT AS v_original_prim_payee_name,
 	-- *INF*: IIF(ISNULL(v_original_prim_payee_name) OR RTRIM(v_original_prim_payee_name) = '',
 	-- 		:LKP.LKP_CLAIM_PARTY_FULL_NAME(IN_CDC_PAYEE_NM_ID_primary_payee),
 	-- 	v_original_prim_payee_name)
-	IFF(v_original_prim_payee_name IS NULL 
-		OR RTRIM(v_original_prim_payee_name
-		) = '',
-		LKP_CLAIM_PARTY_FULL_NAME_IN_CDC_PAYEE_NM_ID_primary_payee.claim_party_full_name,
-		v_original_prim_payee_name
+	IFF(
+	    v_original_prim_payee_name IS NULL OR RTRIM(v_original_prim_payee_name) = '',
+	    LKP_CLAIM_PARTY_FULL_NAME_IN_CDC_PAYEE_NM_ID_primary_payee.claim_party_full_name,
+	    v_original_prim_payee_name
 	) AS v_prim_payee_name,
 	-- *INF*: IIF(ISNULL(v_prim_payee_name) OR RTRIM(v_prim_payee_name) = '',
 	-- 		'N/A',
 	-- 	v_prim_payee_name)
-	IFF(v_prim_payee_name IS NULL 
-		OR RTRIM(v_prim_payee_name
-		) = '',
-		'N/A',
-		v_prim_payee_name
-	) AS prim_payee_name,
+	IFF(v_prim_payee_name IS NULL OR RTRIM(v_prim_payee_name) = '', 'N/A', v_prim_payee_name) AS prim_payee_name,
 	-- *INF*: :LKP.LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_NM_CMT_ID(IN_DFT_DRAFT_NBR, 2)
 	LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_NM_CMT_ID_IN_DFT_DRAFT_NBR_2.cdc_pye_nm_cmt_id AS v_CDC_PYE_NM_CMT_ID_add_payee_1,
 	-- *INF*: IIF(v_CDC_PYE_NM_CMT_ID_add_payee_1 < 0,
 	-- 	NULL,
 	-- 	:LKP.LKP_CLM_COMMENTS_STAGE(IN_DFT_CLAIM_NBR, v_CDC_PYE_NM_CMT_ID_add_payee_1)
 	-- 	)
-	IFF(v_CDC_PYE_NM_CMT_ID_add_payee_1 < 0,
-		NULL,
-		LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_v_CDC_PYE_NM_CMT_ID_add_payee_1.TCC_COMMENT_TXT
+	IFF(
+	    v_CDC_PYE_NM_CMT_ID_add_payee_1 < 0, NULL,
+	    LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_v_CDC_PYE_NM_CMT_ID_add_payee_1.TCC_COMMENT_TXT
 	) AS v_original_additional_payee_name_1,
 	-- *INF*: IIF(ISNULL(v_original_additional_payee_name_1) OR RTRIM(v_original_additional_payee_name_1) = '',
 	-- 		:LKP.LKP_CLAIM_PARTY_FULL_NAME(:LKP.LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE(IN_DFT_DRAFT_NBR, 2)),
 	-- 	v_original_additional_payee_name_1)
-	IFF(v_original_additional_payee_name_1 IS NULL 
-		OR RTRIM(v_original_additional_payee_name_1
-		) = '',
-		LKP_CLAIM_PARTY_FULL_NAME_LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_IN_DFT_DRAFT_NBR_2.claim_party_full_name,
-		v_original_additional_payee_name_1
+	IFF(
+	    v_original_additional_payee_name_1 IS NULL OR RTRIM(v_original_additional_payee_name_1) = '',
+	    LKP_CLAIM_PARTY_FULL_NAME_LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_IN_DFT_DRAFT_NBR_2.claim_party_full_name,
+	    v_original_additional_payee_name_1
 	) AS v_add_payee_name_1,
 	-- *INF*: IIF(ISNULL(v_add_payee_name_1) OR RTRIM(v_add_payee_name_1) = '',
 	-- 		'N/A',
 	-- 	v_add_payee_name_1)
-	IFF(v_add_payee_name_1 IS NULL 
-		OR RTRIM(v_add_payee_name_1
-		) = '',
-		'N/A',
-		v_add_payee_name_1
-	) AS add_payee_name_1,
+	IFF(v_add_payee_name_1 IS NULL OR RTRIM(v_add_payee_name_1) = '', 'N/A', v_add_payee_name_1) AS add_payee_name_1,
 	-- *INF*: :LKP.LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_NM_CMT_ID(IN_DFT_DRAFT_NBR, 3)
 	LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_NM_CMT_ID_IN_DFT_DRAFT_NBR_3.cdc_pye_nm_cmt_id AS v_CDC_PYE_NM_CMT_ID_add_payee_2,
 	-- *INF*: IIF(v_CDC_PYE_NM_CMT_ID_add_payee_2 < 0,
 	-- 	NULL,
 	-- 	:LKP.LKP_CLM_COMMENTS_STAGE(IN_DFT_CLAIM_NBR, v_CDC_PYE_NM_CMT_ID_add_payee_2)
 	-- 	)
-	IFF(v_CDC_PYE_NM_CMT_ID_add_payee_2 < 0,
-		NULL,
-		LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_v_CDC_PYE_NM_CMT_ID_add_payee_2.TCC_COMMENT_TXT
+	IFF(
+	    v_CDC_PYE_NM_CMT_ID_add_payee_2 < 0, NULL,
+	    LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_v_CDC_PYE_NM_CMT_ID_add_payee_2.TCC_COMMENT_TXT
 	) AS v_original_additional_payee_name_2,
 	-- *INF*: IIF(ISNULL(v_original_additional_payee_name_2) OR RTRIM(v_original_additional_payee_name_2) = '',
 	-- 		:LKP.LKP_CLAIM_PARTY_FULL_NAME(:LKP.LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE(IN_DFT_DRAFT_NBR, 3)),
 	-- 	v_original_additional_payee_name_2)
-	IFF(v_original_additional_payee_name_2 IS NULL 
-		OR RTRIM(v_original_additional_payee_name_2
-		) = '',
-		LKP_CLAIM_PARTY_FULL_NAME_LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_IN_DFT_DRAFT_NBR_3.claim_party_full_name,
-		v_original_additional_payee_name_2
+	IFF(
+	    v_original_additional_payee_name_2 IS NULL OR RTRIM(v_original_additional_payee_name_2) = '',
+	    LKP_CLAIM_PARTY_FULL_NAME_LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_IN_DFT_DRAFT_NBR_3.claim_party_full_name,
+	    v_original_additional_payee_name_2
 	) AS v_add_payee_name_2,
 	-- *INF*: IIF(ISNULL(v_add_payee_name_2) OR RTRIM(v_add_payee_name_2) = '',
 	-- 		'N/A',
 	-- 	v_add_payee_name_2)
-	IFF(v_add_payee_name_2 IS NULL 
-		OR RTRIM(v_add_payee_name_2
-		) = '',
-		'N/A',
-		v_add_payee_name_2
-	) AS add_payee_name_2,
+	IFF(v_add_payee_name_2 IS NULL OR RTRIM(v_add_payee_name_2) = '', 'N/A', v_add_payee_name_2) AS add_payee_name_2,
 	-- *INF*: :LKP.LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_NM_CMT_ID(IN_DFT_DRAFT_NBR, 4)
 	LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_NM_CMT_ID_IN_DFT_DRAFT_NBR_4.cdc_pye_nm_cmt_id AS v_CDC_PYE_NM_CMT_ID_add_payee_3,
 	-- *INF*: IIF(v_CDC_PYE_NM_CMT_ID_add_payee_3 < 0,
 	-- 	NULL,
 	-- 	:LKP.LKP_CLM_COMMENTS_STAGE(IN_DFT_CLAIM_NBR, v_CDC_PYE_NM_CMT_ID_add_payee_3)
 	-- 	)
-	IFF(v_CDC_PYE_NM_CMT_ID_add_payee_3 < 0,
-		NULL,
-		LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_v_CDC_PYE_NM_CMT_ID_add_payee_3.TCC_COMMENT_TXT
+	IFF(
+	    v_CDC_PYE_NM_CMT_ID_add_payee_3 < 0, NULL,
+	    LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_v_CDC_PYE_NM_CMT_ID_add_payee_3.TCC_COMMENT_TXT
 	) AS v_original_additional_payee_name_3,
 	-- *INF*: IIF(ISNULL(v_original_additional_payee_name_3) OR RTRIM(v_original_additional_payee_name_3) = '',
 	-- 		:LKP.LKP_CLAIM_PARTY_FULL_NAME(:LKP.LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE(IN_DFT_DRAFT_NBR, 4)),
 	-- 	v_original_additional_payee_name_3)
-	IFF(v_original_additional_payee_name_3 IS NULL 
-		OR RTRIM(v_original_additional_payee_name_3
-		) = '',
-		LKP_CLAIM_PARTY_FULL_NAME_LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_IN_DFT_DRAFT_NBR_4.claim_party_full_name,
-		v_original_additional_payee_name_3
+	IFF(
+	    v_original_additional_payee_name_3 IS NULL OR RTRIM(v_original_additional_payee_name_3) = '',
+	    LKP_CLAIM_PARTY_FULL_NAME_LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_IN_DFT_DRAFT_NBR_4.claim_party_full_name,
+	    v_original_additional_payee_name_3
 	) AS v_add_payee_name_3,
 	-- *INF*: IIF(ISNULL(v_add_payee_name_3) OR RTRIM(v_add_payee_name_3) = '',
 	-- 		'N/A',
 	-- 	v_add_payee_name_3)
-	IFF(v_add_payee_name_3 IS NULL 
-		OR RTRIM(v_add_payee_name_3
-		) = '',
-		'N/A',
-		v_add_payee_name_3
-	) AS add_payee_name_3,
+	IFF(v_add_payee_name_3 IS NULL OR RTRIM(v_add_payee_name_3) = '', 'N/A', v_add_payee_name_3) AS add_payee_name_3,
 	-- *INF*: :LKP.LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_NM_CMT_ID(IN_DFT_DRAFT_NBR, 5)
 	LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_NM_CMT_ID_IN_DFT_DRAFT_NBR_5.cdc_pye_nm_cmt_id AS v_CDC_PYE_NM_CMT_ID_add_payee_4,
 	-- *INF*: IIF(v_CDC_PYE_NM_CMT_ID_add_payee_4 < 0,
 	-- 	NULL,
 	-- 	:LKP.LKP_CLM_COMMENTS_STAGE(IN_DFT_CLAIM_NBR, v_CDC_PYE_NM_CMT_ID_add_payee_4)
 	-- 	)
-	IFF(v_CDC_PYE_NM_CMT_ID_add_payee_4 < 0,
-		NULL,
-		LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_v_CDC_PYE_NM_CMT_ID_add_payee_4.TCC_COMMENT_TXT
+	IFF(
+	    v_CDC_PYE_NM_CMT_ID_add_payee_4 < 0, NULL,
+	    LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_v_CDC_PYE_NM_CMT_ID_add_payee_4.TCC_COMMENT_TXT
 	) AS v_original_additional_payee_name_4,
 	-- *INF*: IIF(ISNULL(v_original_additional_payee_name_4) OR RTRIM(v_original_additional_payee_name_4) = '',
 	-- 		:LKP.LKP_CLAIM_PARTY_FULL_NAME(:LKP.LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE(IN_DFT_DRAFT_NBR, 5)),
 	-- 	v_original_additional_payee_name_4)
-	IFF(v_original_additional_payee_name_4 IS NULL 
-		OR RTRIM(v_original_additional_payee_name_4
-		) = '',
-		LKP_CLAIM_PARTY_FULL_NAME_LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_IN_DFT_DRAFT_NBR_5.claim_party_full_name,
-		v_original_additional_payee_name_4
+	IFF(
+	    v_original_additional_payee_name_4 IS NULL OR RTRIM(v_original_additional_payee_name_4) = '',
+	    LKP_CLAIM_PARTY_FULL_NAME_LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_IN_DFT_DRAFT_NBR_5.claim_party_full_name,
+	    v_original_additional_payee_name_4
 	) AS v_add_payee_name_4,
 	-- *INF*: IIF(ISNULL(v_add_payee_name_4) OR RTRIM(v_add_payee_name_4) = '',
 	-- 		'N/A',
 	-- 	v_add_payee_name_4)
-	IFF(v_add_payee_name_4 IS NULL 
-		OR RTRIM(v_add_payee_name_4
-		) = '',
-		'N/A',
-		v_add_payee_name_4
-	) AS add_payee_name_4,
+	IFF(v_add_payee_name_4 IS NULL OR RTRIM(v_add_payee_name_4) = '', 'N/A', v_add_payee_name_4) AS add_payee_name_4,
 	-- *INF*: :LKP.LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_NM_CMT_ID(IN_DFT_DRAFT_NBR, 6)
 	LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_NM_CMT_ID_IN_DFT_DRAFT_NBR_6.cdc_pye_nm_cmt_id AS v_CDC_PYE_NM_CMT_ID_add_payee_5,
 	-- *INF*: IIF(v_CDC_PYE_NM_CMT_ID_add_payee_5 < 0,
 	-- 	NULL,
 	-- 	:LKP.LKP_CLM_COMMENTS_STAGE(IN_DFT_CLAIM_NBR, v_CDC_PYE_NM_CMT_ID_add_payee_5)
 	-- 	)
-	IFF(v_CDC_PYE_NM_CMT_ID_add_payee_5 < 0,
-		NULL,
-		LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_v_CDC_PYE_NM_CMT_ID_add_payee_5.TCC_COMMENT_TXT
+	IFF(
+	    v_CDC_PYE_NM_CMT_ID_add_payee_5 < 0, NULL,
+	    LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_v_CDC_PYE_NM_CMT_ID_add_payee_5.TCC_COMMENT_TXT
 	) AS v_original_additional_payee_name_5,
 	-- *INF*: IIF(ISNULL(v_original_additional_payee_name_5) OR RTRIM(v_original_additional_payee_name_5) = '',
 	-- 		:LKP.LKP_CLAIM_PARTY_FULL_NAME(:LKP.LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE(IN_DFT_DRAFT_NBR, 6)),
 	-- 	v_original_additional_payee_name_5)
-	IFF(v_original_additional_payee_name_5 IS NULL 
-		OR RTRIM(v_original_additional_payee_name_5
-		) = '',
-		LKP_CLAIM_PARTY_FULL_NAME_LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_IN_DFT_DRAFT_NBR_6.claim_party_full_name,
-		v_original_additional_payee_name_5
+	IFF(
+	    v_original_additional_payee_name_5 IS NULL OR RTRIM(v_original_additional_payee_name_5) = '',
+	    LKP_CLAIM_PARTY_FULL_NAME_LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_IN_DFT_DRAFT_NBR_6.claim_party_full_name,
+	    v_original_additional_payee_name_5
 	) AS v_add_payee_name_5,
 	-- *INF*: IIF(ISNULL(v_add_payee_name_5) OR RTRIM(v_add_payee_name_5) = '',
 	-- 		'N/A',
 	-- 	v_add_payee_name_5)
-	IFF(v_add_payee_name_5 IS NULL 
-		OR RTRIM(v_add_payee_name_5
-		) = '',
-		'N/A',
-		v_add_payee_name_5
-	) AS add_payee_name_5,
+	IFF(v_add_payee_name_5 IS NULL OR RTRIM(v_add_payee_name_5) = '', 'N/A', v_add_payee_name_5) AS add_payee_name_5,
 	-- *INF*: :LKP.LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_NM_CMT_ID(IN_DFT_DRAFT_NBR, 7)
 	LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_NM_CMT_ID_IN_DFT_DRAFT_NBR_7.cdc_pye_nm_cmt_id AS v_CDC_PYE_NM_CMT_ID_add_payee_6,
 	-- *INF*: IIF(v_CDC_PYE_NM_CMT_ID_add_payee_6 < 0,
 	-- 	NULL,
 	-- 	:LKP.LKP_CLM_COMMENTS_STAGE(IN_DFT_CLAIM_NBR, v_CDC_PYE_NM_CMT_ID_add_payee_6)
 	-- 	)
-	IFF(v_CDC_PYE_NM_CMT_ID_add_payee_6 < 0,
-		NULL,
-		LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_v_CDC_PYE_NM_CMT_ID_add_payee_6.TCC_COMMENT_TXT
+	IFF(
+	    v_CDC_PYE_NM_CMT_ID_add_payee_6 < 0, NULL,
+	    LKP_CLM_COMMENTS_STAGE_IN_DFT_CLAIM_NBR_v_CDC_PYE_NM_CMT_ID_add_payee_6.TCC_COMMENT_TXT
 	) AS v_original_additional_payee_name_6,
 	-- *INF*: IIF(ISNULL(v_original_additional_payee_name_6) OR RTRIM(v_original_additional_payee_name_6) = '',
 	-- 		:LKP.LKP_CLAIM_PARTY_FULL_NAME(:LKP.LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE(IN_DFT_DRAFT_NBR, 7)),
 	-- 	v_original_additional_payee_name_6)
-	IFF(v_original_additional_payee_name_6 IS NULL 
-		OR RTRIM(v_original_additional_payee_name_6
-		) = '',
-		LKP_CLAIM_PARTY_FULL_NAME_LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_IN_DFT_DRAFT_NBR_7.claim_party_full_name,
-		v_original_additional_payee_name_6
+	IFF(
+	    v_original_additional_payee_name_6 IS NULL OR RTRIM(v_original_additional_payee_name_6) = '',
+	    LKP_CLAIM_PARTY_FULL_NAME_LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE_OTHER_PAYEE_IN_DFT_DRAFT_NBR_7.claim_party_full_name,
+	    v_original_additional_payee_name_6
 	) AS v_add_payee_name_6,
 	-- *INF*: IIF(ISNULL(v_add_payee_name_6) OR RTRIM(v_add_payee_name_6) = '',
 	-- 		'N/A',
 	-- 	v_add_payee_name_6)
-	IFF(v_add_payee_name_6 IS NULL 
-		OR RTRIM(v_add_payee_name_6
-		) = '',
-		'N/A',
-		v_add_payee_name_6
-	) AS add_payee_name_6,
+	IFF(v_add_payee_name_6 IS NULL OR RTRIM(v_add_payee_name_6) = '', 'N/A', v_add_payee_name_6) AS add_payee_name_6,
 	SQ_CLAIM_DRAFT_STAGE.DFT_PAY_TO_NM_CMT_ID,
 	SQ_CLAIM_DRAFT_STAGE.DFT_MAIL_TO_NM_CMT_ID,
 	SQ_CLAIM_DRAFT_STAGE.PAYMENT_SYSTEM,
@@ -652,10 +543,7 @@ EXP_VALUES AS (
 	-- *INF*: :LKP.LKP_SUP_PAYMENT_SYSTEM(PAYMENT_SYSTEM)
 	LKP_SUP_PAYMENT_SYSTEM_PAYMENT_SYSTEM.sup_payment_system_id AS v_sup_payment_system_id,
 	-- *INF*: IIF(ISNULL(v_sup_payment_system_id), -1, v_sup_payment_system_id)
-	IFF(v_sup_payment_system_id IS NULL,
-		- 1,
-		v_sup_payment_system_id
-	) AS o_sup_payment_system_id,
+	IFF(v_sup_payment_system_id IS NULL, - 1, v_sup_payment_system_id) AS o_sup_payment_system_id,
 	-- *INF*: DECODE(PAYMENT_SYSTEM,
 	-- 	'Manual Draft',
 	-- 		DECODE(TRUE,
@@ -700,66 +588,53 @@ EXP_VALUES AS (
 	-- 		'N/A'
 	-- 		),
 	-- 	'N/A')
-	DECODE(PAYMENT_SYSTEM,
-		'Manual Draft', DECODE(TRUE,
-		LENGTH(RTRIM(IN_DFT_MICRP_ECD_NBR
-				)
-			) < 3 
-			OR RTRIM(IN_DFT_MICRP_ECD_NBR
-			) = 'N/A', 'Check',
-		UPPER(SUBSTR(IN_DFT_MICRP_ECD_NBR, 1, 3
-				)
-			) = 'EFT', 'EFT',
-		:UDF.DEFAULT_VALUE_TO_BLANKS(in_MatchingInsurPayCheckNumber
-			) <> '', 'InsurPay',
-		'Check'
-		),
-		'PayPilot', DECODE(TRUE,
-		LENGTH(RTRIM(IN_DFT_MICRP_ECD_NBR
-				)
-			) < 3, 'Check',
-		UPPER(SUBSTR(IN_DFT_MICRP_ECD_NBR, 1, 3
-				)
-			) = 'EFT', 'EFT',
-		'Check'
-		),
-		'InsurPay', IFF(LENGTH(RTRIM(IN_DFT_MICRP_ECD_NBR
-				)
-			) >= 2,
-			DECODE(UPPER(SUBSTR(IN_DFT_MICRP_ECD_NBR, 1, 2
-					)
-				),
-		'CK', 'Check',
-		'EF', 'EFT',
-		'VP', 'Virtual Payment',
-		'DC', 'Debit Card',
-		'PC', 'Digital Prepaid',
-		'CT', 'CAT Card',
-		'PP', 'PayPal',
-		'VN', 'Venmo',
-		'TE', 'Electronic',
-		'N/A'
-			),
-			'N/A'
-		),
-		'N/A'
+	DECODE(
+	    PAYMENT_SYSTEM,
+	    'Manual Draft', DECODE(
+	        TRUE,
+	        LENGTH(RTRIM(IN_DFT_MICRP_ECD_NBR)) < 3 OR RTRIM(IN_DFT_MICRP_ECD_NBR) = 'N/A', 'Check',
+	        UPPER(SUBSTR(IN_DFT_MICRP_ECD_NBR, 1, 3)) = 'EFT', 'EFT',
+	        UDF_DEFAULT_VALUE_TO_BLANKS(in_MatchingInsurPayCheckNumber) <> '', 'InsurPay',
+	        'Check'
+	    ),
+	    'PayPilot', DECODE(
+	        TRUE,
+	        LENGTH(RTRIM(IN_DFT_MICRP_ECD_NBR)) < 3, 'Check',
+	        UPPER(SUBSTR(IN_DFT_MICRP_ECD_NBR, 1, 3)) = 'EFT', 'EFT',
+	        'Check'
+	    ),
+	    'InsurPay', IFF(
+	        LENGTH(RTRIM(IN_DFT_MICRP_ECD_NBR)) >= 2,
+	        DECODE(
+	            UPPER(SUBSTR(IN_DFT_MICRP_ECD_NBR, 1, 2)),
+	            'CK', 'Check',
+	            'EF', 'EFT',
+	            'VP', 'Virtual Payment',
+	            'DC', 'Debit Card',
+	            'PC', 'Digital Prepaid',
+	            'CT', 'CAT Card',
+	            'PP', 'PayPal',
+	            'VN', 'Venmo',
+	            'TE', 'Electronic',
+	            'N/A'
+	        ),
+	        'N/A'
+	    ),
+	    'N/A'
 	) AS v_payment_method,
 	-- *INF*: IIF(PAYMENT_SYSTEM = 'InsurPay' AND (NOT ISNULL(lkp_sup_payment_method_id)) AND lkp_sup_payment_method_id != -1,
 	-- 		lkp_sup_payment_method_id,
 	-- 	:LKP.LKP_SUP_PAYMENT_METHOD(v_payment_method)
 	-- 	)
-	IFF(PAYMENT_SYSTEM = 'InsurPay' 
-		AND ( lkp_sup_payment_method_id IS NOT NULL 
-		) 
-		AND lkp_sup_payment_method_id != - 1,
-		lkp_sup_payment_method_id,
-		LKP_SUP_PAYMENT_METHOD_v_payment_method.sup_payment_method_id
+	IFF(
+	    PAYMENT_SYSTEM = 'InsurPay'
+	    and (lkp_sup_payment_method_id IS NOT NULL)
+	    and lkp_sup_payment_method_id != - 1,
+	    lkp_sup_payment_method_id,
+	    LKP_SUP_PAYMENT_METHOD_v_payment_method.sup_payment_method_id
 	) AS v_sup_payment_method_id,
 	-- *INF*: IIF(ISNULL(v_sup_payment_method_id), -1, v_sup_payment_method_id)
-	IFF(v_sup_payment_method_id IS NULL,
-		- 1,
-		v_sup_payment_method_id
-	) AS o_sup_payment_method_id
+	IFF(v_sup_payment_method_id IS NULL, - 1, v_sup_payment_method_id) AS o_sup_payment_method_id
 	FROM EXP_Clean_Up_Input
 	 -- Manually join with SQ_CLAIM_DRAFT_STAGE
 	LEFT JOIN LKP_ARCH_CLAIM_DRAFT_CLIENT_STAGE
@@ -926,19 +801,16 @@ EXP_Determine_AK AS (
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	sysdate AS created_dt,
 	'N/A' AS NA,
 	mail_to_name,
 	-1 AS default_int,
 	-- *INF*: TO_DATE('01/01/1800','MM/DD/YYYY')
-	TO_DATE('01/01/1800', 'MM/DD/YYYY'
-	) AS default_date,
+	TO_TIMESTAMP('01/01/1800', 'MM/DD/YYYY') AS default_date,
 	prim_payee_name,
 	add_payee_name_1,
 	add_payee_name_2,
@@ -1204,11 +1076,10 @@ EXP_Default_Values AS (
 	-- 
 	-- 
 	-- 
-	decode(true,
-		pay_cashed_dt = TO_DATE('12/28/1800', 'MM/DD/YYYY'
-		), TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		pay_cashed_dt
+	decode(
+	    true,
+	    pay_cashed_dt = TO_TIMESTAMP('12/28/1800', 'MM/DD/YYYY'), TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'),
+	    pay_cashed_dt
 	) AS pay_cashed_dt_source,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID,
 	sysdate AS modified_dt
@@ -1268,22 +1139,20 @@ EXP_sup_payment_method_id AS (
 	-- 	IIF(CertifiedRequested='T',
 	-- 		'Certified',
 	-- 		'N/A'))
-	IFF(ExpediteRequested = 'T',
-		'Expedited',
-		IFF(CertifiedRequested = 'T',
-			'Certified',
-			'N/A'
-		)
+	IFF(
+	    ExpediteRequested = 'T', 'Expedited',
+	    IFF(
+	        CertifiedRequested = 'T', 'Certified', 'N/A'
+	    )
 	) AS v_special_processing,
 	v_special_processing AS o_special_processing,
 	AttachedDocumentCount,
 	CheckNumber,
 	-- *INF*: IIF(ISNULL(CheckNumber)  OR CheckNumber = '' OR IS_SPACES(CheckNumber),'N/A',CheckNumber)
-	IFF(CheckNumber IS NULL 
-		OR CheckNumber = '' 
-		OR LENGTH(CheckNumber)>0 AND TRIM(CheckNumber)='',
-		'N/A',
-		CheckNumber
+	IFF(
+	    CheckNumber IS NULL OR CheckNumber = '' OR LENGTH(CheckNumber)>0 AND TRIM(CheckNumber)='',
+	    'N/A',
+	    CheckNumber
 	) AS v_CheckNumber,
 	-- *INF*: DECODE(TRUE,
 	-- 	ISNULL(PaymentMethod) OR LENGTH(RTRIM(PaymentMethod)) = 0,
@@ -1311,35 +1180,27 @@ EXP_sup_payment_method_id AS (
 	-- -- when other --
 	-- 	SUBSTR(PaymentMethod,1,35)
 	-- )
-	DECODE(TRUE,
-		PaymentMethod IS NULL 
-		OR LENGTH(RTRIM(PaymentMethod
-			)
-		) = 0, 'N/A',
-		PaymentMethod IN ('Electronic','Electronic to Lienholder'), 'Electronic to Lienholder',
-		PaymentMethod IN ('Let_Customer_Pickup','Let Customer Pickup'), 'Pending Payee Will Select',
-		PaymentMethod IN ('Generate_Barcode','Generate Barcode'), 'Pending Mobile App Select',
-		v_CheckNumber = 'N/A', 'Pending Payee Will Select',
-		PaymentMethod IN ('Direct_Deposit','Direct Deposit'), 'EFT',
-		PaymentMethod IN ('Debit_Card','Debit Card'), 'Debit Card',
-		PaymentMethod IN ('Prepaid_Card','Prepaid Card'), IFF(SUBSTR(v_CheckNumber, 1, 2
-			) = 'CT',
-			'CAT Card',
-			'Digital Prepaid'
-		),
-		PaymentMethod IN ('Virtual Prepaid Card','Virtual Prepaid card'), 'Digital Prepaid',
-		PaymentMethod IN ('Instant Prepaid Card','Instant Prepaid card'), 'CAT Card',
-		PaymentMethod IN ('Virtual_Card','Virtual Card'), 'Virtual Payment',
-		SUBSTR(PaymentMethod, 1, 35
-		)
+	DECODE(
+	    TRUE,
+	    PaymentMethod IS NULL OR LENGTH(RTRIM(PaymentMethod)) = 0, 'N/A',
+	    PaymentMethod IN ('Electronic','Electronic to Lienholder'), 'Electronic to Lienholder',
+	    PaymentMethod IN ('Let_Customer_Pickup','Let Customer Pickup'), 'Pending Payee Will Select',
+	    PaymentMethod IN ('Generate_Barcode','Generate Barcode'), 'Pending Mobile App Select',
+	    v_CheckNumber = 'N/A', 'Pending Payee Will Select',
+	    PaymentMethod IN ('Direct_Deposit','Direct Deposit'), 'EFT',
+	    PaymentMethod IN ('Debit_Card','Debit Card'), 'Debit Card',
+	    PaymentMethod IN ('Prepaid_Card','Prepaid Card'), IFF(
+	        SUBSTR(v_CheckNumber, 1, 2) = 'CT', 'CAT Card', 'Digital Prepaid'
+	    ),
+	    PaymentMethod IN ('Virtual Prepaid Card','Virtual Prepaid card'), 'Digital Prepaid',
+	    PaymentMethod IN ('Instant Prepaid Card','Instant Prepaid card'), 'CAT Card',
+	    PaymentMethod IN ('Virtual_Card','Virtual Card'), 'Virtual Payment',
+	    SUBSTR(PaymentMethod, 1, 35)
 	) AS v_payment_method,
 	-- *INF*: :LKP.LKP_SUP_PAYMENT_METHOD(v_payment_method)
 	LKP_SUP_PAYMENT_METHOD_v_payment_method.sup_payment_method_id AS v_sup_payment_method_id,
 	-- *INF*: IIF(ISNULL(v_sup_payment_method_id), -1, v_sup_payment_method_id)
-	IFF(v_sup_payment_method_id IS NULL,
-		- 1,
-		v_sup_payment_method_id
-	) AS o_sup_payment_method_id
+	IFF(v_sup_payment_method_id IS NULL, - 1, v_sup_payment_method_id) AS o_sup_payment_method_id
 	FROM SQ_InsurPayPaymentStage
 	LEFT JOIN LKP_SUP_PAYMENT_METHOD LKP_SUP_PAYMENT_METHOD_v_payment_method
 	ON LKP_SUP_PAYMENT_METHOD_v_payment_method.payment_method = v_payment_method
@@ -1387,10 +1248,8 @@ EXP_Default_Values_InsurPay AS (
 	-- *INF*: IIF(ISNULL(in_PaymentCashedDate),
 	-- TO_DATE('1/1/1800','MM/DD/YYYY'),
 	-- in_PaymentCashedDate)
-	IFF(in_PaymentCashedDate IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_PaymentCashedDate
+	IFF(
+	    in_PaymentCashedDate IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), in_PaymentCashedDate
 	) AS o_PaymentCashedDate,
 	EXP_sup_payment_method_id.o_sup_payment_method_id AS sup_payment_method_id_source,
 	LKP_claim_payment_InsurPay.claim_pay_id,
@@ -1404,23 +1263,16 @@ EXP_Default_Values_InsurPay AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	EXP_sup_payment_method_id.PaymentType AS in_PaymentType,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_PaymentType)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_PaymentType
-	) AS o_PaymentType,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_PaymentType) AS o_PaymentType,
 	LKP_sup_claim_payment_workflow.sup_claim_payment_workflow_id AS in_sup_claim_payment_workflow_id,
 	-- *INF*: IIF(ISNULL(in_sup_claim_payment_workflow_id),
 	--     -1,
 	-- in_sup_claim_payment_workflow_id)
-	IFF(in_sup_claim_payment_workflow_id IS NULL,
-		- 1,
-		in_sup_claim_payment_workflow_id
-	) AS o_sup_claim_payment_workflow_id1,
+	IFF(in_sup_claim_payment_workflow_id IS NULL, - 1, in_sup_claim_payment_workflow_id) AS o_sup_claim_payment_workflow_id1,
 	EXP_sup_payment_method_id.o_special_processing AS special_processing,
 	EXP_sup_payment_method_id.AttachedDocumentCount AS in_attached_document_count,
 	-- *INF*: iif(isnull(in_attached_document_count),0,in_attached_document_count)
-	IFF(in_attached_document_count IS NULL,
-		0,
-		in_attached_document_count
-	) AS o_attached_document_count
+	IFF(in_attached_document_count IS NULL, 0, in_attached_document_count) AS o_attached_document_count
 	FROM EXP_sup_payment_method_id
 	LEFT JOIN LKP_claim_payment_InsurPay
 	ON LKP_claim_payment_InsurPay.claim_pay_num = EXP_sup_payment_method_id.ExceedDraftNumber
@@ -1520,32 +1372,27 @@ EXP_Default_Values_InsurPay_Approval AS (
 	-- *INF*: IIF(:UDF.DEFAULT_VALUE_FOR_STRINGS(in_ApprovalStatus) = 'Denied',
 	-- 		'Declined',
 	-- 	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_ApprovalStatus))
-	IFF(:UDF.DEFAULT_VALUE_FOR_STRINGS(in_ApprovalStatus
-		) = 'Denied',
-		'Declined',
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(in_ApprovalStatus
-		)
+	IFF(
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(in_ApprovalStatus) = 'Denied', 'Declined',
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(in_ApprovalStatus)
 	) AS v_ApprovalStatus,
 	v_ApprovalStatus AS o_ApprovalStatus,
 	EXP_source_approval.ApprovalByUserId AS in_ApprovalByUserId,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_ApprovalByUserId)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_ApprovalByUserId
-	) AS v_ApprovalByUserId,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_ApprovalByUserId) AS v_ApprovalByUserId,
 	v_ApprovalByUserId AS o_ApprovalByUserId,
 	EXP_source_approval.ApprovalDate AS in_ApprovalDate,
 	-- *INF*: IIF(ISNULL(in_ApprovalDate),
 	--     TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	--     in_ApprovalDate)
-	IFF(in_ApprovalDate IS NULL,
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		in_ApprovalDate
+	IFF(
+	    in_ApprovalDate IS NULL, TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    in_ApprovalDate
 	) AS v_ApprovalDate,
 	v_ApprovalDate AS o_ApprovalDate,
 	EXP_source_approval.DenialReason AS in_DenialReason,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_DenialReason)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_DenialReason
-	) AS v_DenialReason,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_DenialReason) AS v_DenialReason,
 	v_DenialReason AS o_DenialReason
 	FROM EXP_source_approval
 	LEFT JOIN LKP_ArchInsurPayPaymentStage

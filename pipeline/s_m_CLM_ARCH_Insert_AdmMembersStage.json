@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_AdmMembersStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_AdmMembersStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AdmMembersStage AS (\n\tSELECT\n\t\tAdmMembersStageId,\n\t\tMemberId,\n\t\tUserID,\n\t\tDateLastLogin,\n\t\tCreatedDate,\n\t\tModifiedDate,\n\t\tModifiedUserId,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM AdmMembersStage\n),\nEXPTRANS AS (\n\tSELECT\n\tAdmMembersStageId,\n\tMemberId,\n\tUserID,\n\tDateLastLogin,\n\tCreatedDate,\n\tModifiedDate,\n\tModifiedUserId,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_AdmMembersStage\n),\nArchAdmMembersStage AS (\n\tINSERT INTO ArchAdmMembersStage\n\t(AdmMembersStageId, MemberId, UserID, DateLastLogin, CreatedDate, ModifiedDate, ModifiedUserId, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tADMMEMBERSSTAGEID, \n\tMEMBERID, \n\tUSERID, \n\tDATELASTLOGIN, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tMODIFIEDUSERID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

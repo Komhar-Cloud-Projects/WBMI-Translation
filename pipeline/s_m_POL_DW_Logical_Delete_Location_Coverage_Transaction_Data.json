@@ -30,81 +30,33 @@
             }
         ],
         "parameters": {
-            "WBMI_AUDIT_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "246483"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "905516"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7604215"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "08/30/2023 01:21:59"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/31/2023 01:54:57"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_WC_Stage_Policy"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Policy"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
-            "TARGET_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
-            "SOURCE_DATABASE_NAME": {
-                "type": "string",
-                "defaultValue": "WC_STAGE"
-            },
             "TARGET_DATABASE_NAME": {
                 "type": "string",
-                "defaultValue": "RPT_EDM"
-            },
-            "JOIN_CONDITION": {
-                "type": "string",
-                "defaultValue": "INNER JOIN"
+                "defaultValue": "Default Value"
             },
             "TARGET_TABLE_OWNER_V2": {
                 "type": "string",
-                "defaultValue": "V2"
+                "defaultValue": "Default Value"
             },
-            "SOURCE_TABLE_NAME_4514": {
+            "TARGET_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": "pif_4514_stage"
-            },
-            "SOURCE_SYSTEM_ID": {
-                "type": "string",
-                "defaultValue": "PMS"
-            },
-            "WHERE_CLAUSE": {
-                "type": "string",
-                "defaultValue": "AND 1=1"
-            },
-            "WHERE_CLAUSE_EDW": {
-                "type": "string",
-                "defaultValue": "1=1"
+                "defaultValue": "Default Value"
             },
             "POLICY_STATUS": {
                 "type": "string",
-                "defaultValue": "'RISKLOCATIONLEVELCHANGE','COVERAGEDETAILLEVELCHANGE'"
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Policy DataWarehouse/"
+            "name": "PolicyDataWarehouse/"
         },
         "annotations": []
     }

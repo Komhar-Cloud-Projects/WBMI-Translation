@@ -1,0 +1,59 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCCACoverageCollisionStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCCACoverageCollisionSta_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_CA_CoverageCollision AS (\n\tWITH cte_DCCACoverageCollision(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.dbo.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from DC_Session A Inner join DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\t\r\n\tSELECT \r\n\tX.CoverageId, \r\n\tX.CA_CoverageCollisionId, \r\n\tX.SessionId, \r\n\tX.AcceptCollisionCoverage, \r\n\tX.AutoDealersTotalCollisionRatingUnits, \r\n\tX.BroadenedCollision, \r\n\tX.CollisionType, \r\n\tX.LimitedFullCoverageCollision, \r\n\tX.NumberNamedDrivers, \r\n\tX.NumberOfSafetyFeatures, \r\n\tX.UnderwriterOverride, \r\n\tX.ExperienceRatingBasicLimitPremium, \r\n\tX.ExperienceRatingBasicLimitPremiumGarage \r\n\tFROM\r\n\t DC_CA_CoverageCollision X\r\n\tInner join\r\n\tcte_DCCACoverageCollision Y\r\n\ton X.sessionid=Y.sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXPTRANS AS (\n\tSELECT\n\tCoverageId,\n\tCA_CoverageCollisionId,\n\tSessionId,\n\tAcceptCollisionCoverage,\n\tAutoDealersTotalCollisionRatingUnits,\n\tBroadenedCollision,\n\tCollisionType,\n\tLimitedFullCoverageCollision,\n\tNumberNamedDrivers,\n\tNumberOfSafetyFeatures,\n\tUnderwriterOverride,\n\tExperienceRatingBasicLimitPremium,\n\tExperienceRatingBasicLimitPremiumGarage,\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID\n\tFROM SQ_DC_CA_CoverageCollision\n),\nDCCACoverageCollisionStaging AS (\n\tTRUNCATE TABLE DCCACoverageCollisionStaging;\n\tINSERT INTO DCCACoverageCollisionStaging\n\t(CoverageId, CA_CoverageCollisionId, SessionId, AcceptCollisionCoverage, AutoDealersTotalCollisionRatingUnits, BroadenedCollision, CollisionType, LimitedFullCoverageCollision, NumberNamedDrivers, NumberOfSafetyFeatures, UnderwriterOverride, ExperienceRatingBasicLimitPremium, ExperienceRatingBasicLimitPremiumGarage, ExtractDate, SourceSystemId)\n\tSELECT \n\tCOVERAGEID, \n\tCA_COVERAGECOLLISIONID, \n\tSESSIONID, \n\tACCEPTCOLLISIONCOVERAGE, \n\tAUTODEALERSTOTALCOLLISIONRATINGUNITS, \n\tBROADENEDCOLLISION, \n\tCOLLISIONTYPE, \n\tLIMITEDFULLCOVERAGECOLLISION, \n\tNUMBERNAMEDDRIVERS, \n\tNUMBEROFSAFETYFEATURES, \n\tUNDERWRITEROVERRIDE, \n\tEXPERIENCERATINGBASICLIMITPREMIUM, \n\tEXPERIENCERATINGBASICLIMITPREMIUMGARAGE, \n\tEXTRACTDATE, \n\tSourceSystemID AS SOURCESYSTEMID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

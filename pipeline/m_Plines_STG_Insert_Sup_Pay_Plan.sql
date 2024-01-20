@@ -1,0 +1,51 @@
+WITH
+SQ_sup_pay_plan AS (
+	SELECT
+		code,
+		lob_type_code,
+		eff_date,
+		policy_term_type_code,
+		exp_date,
+		bill_class,
+		descript,
+		modified_date,
+		modified_user_id
+	FROM sup_pay_plan
+),
+EXP_SUP_PAY_PLAN AS (
+	SELECT
+	code,
+	lob_type_code,
+	eff_date,
+	policy_term_type_code,
+	exp_date,
+	bill_class,
+	descript,
+	modified_date,
+	modified_user_id,
+	SYSDATE AS EXTRACT_DATE,
+	SYSDATE AS AS_OF_DATE,
+	'' AS RECORD_COUNT,
+	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID
+	FROM SQ_sup_pay_plan
+),
+sup_pay_plan_stage AS (
+	TRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_pay_plan_stage;
+	INSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_pay_plan_stage
+	(code, lob_type_code, eff_date, policy_term_type_code, exp_date, bill_class, descript, modified_date, modified_user_id, extract_date, as_of_date, record_count, source_system_id)
+	SELECT 
+	CODE, 
+	LOB_TYPE_CODE, 
+	EFF_DATE, 
+	POLICY_TERM_TYPE_CODE, 
+	EXP_DATE, 
+	BILL_CLASS, 
+	DESCRIPT, 
+	MODIFIED_DATE, 
+	MODIFIED_USER_ID, 
+	EXTRACT_DATE AS EXTRACT_DATE, 
+	AS_OF_DATE AS AS_OF_DATE, 
+	RECORD_COUNT AS RECORD_COUNT, 
+	SOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID
+	FROM EXP_SUP_PAY_PLAN
+),

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCFTimeElementStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCCFTimeElementStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCFTimeElementStaging AS (\n\tSELECT\n\t\tCF_TimeElementId,\n\t\tSessionId,\n\t\tId,\n\t\tCoverageForm,\n\t\tCoinsurancePercentage,\n\t\tRiskType,\n\t\tBuildingStatus,\n\t\tCivilAuthority,\n\t\tTimePeriodSelect,\n\t\tCombinedOperations,\n\t\tCombination,\n\t\tCoinsurancePercentageSuspended,\n\t\tOrdinanceOfLaw,\n\t\tLossAdjustment,\n\t\tRadioTelevisionAntennas,\n\t\tFieldActExclusion,\n\t\tCommunicationSupply,\n\t\tOverheadCommunicationLines,\n\t\tOverheadPowerTransmissionLines,\n\t\tPowerSupply,\n\t\tWaterSupplySelect,\n\t\tUtilServicesInfoPublicUtilitySelect,\n\t\tUtilServicesIndicator,\n\t\tARate,\n\t\tLossPaymentLimitType,\n\t\tDependentPropertiesSelect,\n\t\tSquareFtForNonManufacturing,\n\t\tSquareFtForManufacturingOrMining,\n\t\tSquareFtForRental,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCF_RiskId\n\tFROM DCCFTimeElementStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tCF_TimeElementId,\n\tSessionId,\n\tId,\n\tCoverageForm,\n\tCoinsurancePercentage,\n\tRiskType,\n\tBuildingStatus,\n\tCivilAuthority,\n\tTimePeriodSelect,\n\tCombinedOperations,\n\tCombination,\n\tCoinsurancePercentageSuspended,\n\tOrdinanceOfLaw,\n\tLossAdjustment,\n\tRadioTelevisionAntennas,\n\tFieldActExclusion,\n\tCommunicationSupply,\n\tOverheadCommunicationLines,\n\tOverheadPowerTransmissionLines,\n\tPowerSupply,\n\tWaterSupplySelect,\n\tUtilServicesInfoPublicUtilitySelect,\n\tUtilServicesIndicator,\n\t-- *INF*: DECODE(OrdinanceOfLaw, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    OrdinanceOfLaw,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_OrdinanceOfLaw,\n\t-- *INF*: DECODE(LossAdjustment, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    LossAdjustment,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_LossAdjustment,\n\t-- *INF*: DECODE(RadioTelevisionAntennas, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    RadioTelevisionAntennas,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_RadioTelevisionAntennas,\n\t-- *INF*: DECODE(FieldActExclusion, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    FieldActExclusion,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_FieldActExclusion,\n\t-- *INF*: DECODE(CommunicationSupply, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    CommunicationSupply,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_CommunicationSupply,\n\t-- *INF*: DECODE(OverheadCommunicationLines, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    OverheadCommunicationLines,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_OverheadCommunicationLines,\n\t-- *INF*: DECODE(OverheadPowerTransmissionLines, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    OverheadPowerTransmissionLines,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_OverheadPowerTransmissionLines,\n\t-- *INF*: DECODE(PowerSupply, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    PowerSupply,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PowerSupply,\n\t-- *INF*: DECODE(WaterSupplySelect, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    WaterSupplySelect,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_WaterSupplySelect,\n\t-- *INF*: DECODE(UtilServicesInfoPublicUtilitySelect, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    UtilServicesInfoPublicUtilitySelect,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_UtilServicesInfoPublicUtilitySelect,\n\t-- *INF*: DECODE(UtilServicesIndicator, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    UtilServicesIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_UtilServicesIndicator,\n\tARate,\n\tLossPaymentLimitType,\n\tDependentPropertiesSelect,\n\t-- *INF*: DECODE(DependentPropertiesSelect, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    DependentPropertiesSelect,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_DependentPropertiesSelect,\n\tSquareFtForNonManufacturing,\n\tSquareFtForManufacturingOrMining,\n\tSquareFtForRental,\n\tExtractDate,\n\tSourceSystemId,\n\tCF_RiskId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCFTimeElementStaging\n),\narchDCCFTimeElementStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCCFTimeElementStaging\n\t(CF_RiskId, CF_TimeElementId, SessionId, Id, CoverageForm, CoinsurancePercentage, RiskType, BuildingStatus, CivilAuthority, TimePeriodSelect, CombinedOperations, Combination, CoinsurancePercentageSuspended, OrdinanceOfLaw, LossAdjustment, RadioTelevisionAntennas, FieldActExclusion, CommunicationSupply, OverheadCommunicationLines, OverheadPowerTransmissionLines, PowerSupply, WaterSupplySelect, UtilServicesInfoPublicUtilitySelect, UtilServicesIndicator, ARate, LossPaymentLimitType, DependentPropertiesSelect, SquareFtForNonManufacturing, SquareFtForManufacturingOrMining, SquareFtForRental, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tCF_RISKID, \n\tCF_TIMEELEMENTID, \n\tSESSIONID, \n\tID, \n\tCOVERAGEFORM, \n\tCOINSURANCEPERCENTAGE, \n\tRISKTYPE, \n\tBUILDINGSTATUS, \n\tCIVILAUTHORITY, \n\tTIMEPERIODSELECT, \n\tCOMBINEDOPERATIONS, \n\tCOMBINATION, \n\tCOINSURANCEPERCENTAGESUSPENDED, \n\to_OrdinanceOfLaw AS ORDINANCEOFLAW, \n\to_LossAdjustment AS LOSSADJUSTMENT, \n\to_RadioTelevisionAntennas AS RADIOTELEVISIONANTENNAS, \n\to_FieldActExclusion AS FIELDACTEXCLUSION, \n\to_CommunicationSupply AS COMMUNICATIONSUPPLY, \n\to_OverheadCommunicationLines AS OVERHEADCOMMUNICATIONLINES, \n\to_OverheadPowerTransmissionLines AS OVERHEADPOWERTRANSMISSIONLINES, \n\to_PowerSupply AS POWERSUPPLY, \n\to_WaterSupplySelect AS WATERSUPPLYSELECT, \n\to_UtilServicesInfoPublicUtilitySelect AS UTILSERVICESINFOPUBLICUTILITYSELECT, \n\to_UtilServicesIndicator AS UTILSERVICESINDICATOR, \n\tARATE, \n\tLOSSPAYMENTLIMITTYPE, \n\to_DependentPropertiesSelect AS DEPENDENTPROPERTIESSELECT, \n\tSQUAREFTFORNONMANUFACTURING, \n\tSQUAREFTFORMANUFACTURINGORMINING, \n\tSQUAREFTFORRENTAL, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

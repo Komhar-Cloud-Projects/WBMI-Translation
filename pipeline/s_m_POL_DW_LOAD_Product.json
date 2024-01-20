@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_Product AS (\n\tSELECT\n\t\tProductId,\n\t\tModifiedDate,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tProductAKId,\n\t\tProductCode,\n\t\tProductAbbreviation,\n\t\tProductDescription\n\tFROM Product\n),\nEXP_DateValues AS (\n\tSELECT\n\tModifiedDate AS i_ModifiedDate,\n\tEffectiveDate AS i_EffectiveDate,\n\tExpirationDate AS i_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)\n\tIFF(i_EffectiveDate IS NULL,\n\t\tTO_DATE('21001231235959', 'YYYYMMDDHH24MISS'\n\t\t),\n\t\ti_EffectiveDate\n\t) AS o_EffectiveDate,\n\t-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)\n\tIFF(i_ExpirationDate IS NULL,\n\t\tTO_DATE('21001231235959', 'YYYYMMDDHH24MISS'\n\t\t),\n\t\ti_ExpirationDate\n\t) AS o_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)\n\tIFF(i_ModifiedDate IS NULL,\n\t\tTO_DATE('21001231235959', 'YYYYMMDDHH24MISS'\n\t\t),\n\t\ti_ModifiedDate\n\t) AS o_ModifiedDate\n\tFROM SQ_Product\n),\nEXP_NumericValues AS (\n\tSELECT\n\tProductId AS i_ProductId,\n\tProductAKId AS i_ProductAKId,\n\t-- *INF*: IIF(ISNULL(i_ProductId),-1,i_ProductId)\n\tIFF(i_ProductId IS NULL,\n\t\t- 1,\n\t\ti_ProductId\n\t) AS o_ProductId,\n\t-- *INF*: IIF(ISNULL(i_ProductAKId),-1,i_ProductAKId)\n\tIFF(i_ProductAKId IS NULL,\n\t\t- 1,\n\t\ti_ProductAKId\n\t) AS o_ProductAKId\n\tFROM SQ_Product\n),\nEXP_StringValues AS (\n\tSELECT\n\tExpirationDate AS i_ExpirationDate,\n\tProductCode AS i_ProductCode,\n\tProductAbbreviation AS i_ProductAbbreviation,\n\tProductDescription AS i_ProductDescription,\n\t-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)\n\tIFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'\n\t\t),\n\t\t1,\n\t\t0\n\t) AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tSYSDATE AS o_CreatedDate,\n\t-- *INF*: IIF(ISNULL(i_ProductCode) OR LENGTH(i_ProductCode)=0 OR IS_SPACES(i_ProductCode),'N/A',LTRIM(RTRIM(i_ProductCode)))\n\tIFF(i_ProductCode IS NULL \n\t\tOR LENGTH(i_ProductCode\n\t\t) = 0 \n\t\tOR LENGTH(i_ProductCode)>0 AND TRIM(i_ProductCode)='',\n\t\t'N/A',\n\t\tLTRIM(RTRIM(i_ProductCode\n\t\t\t)\n\t\t)\n\t) AS o_ProductCode,\n\t-- *INF*: IIF(ISNULL(i_ProductAbbreviation) OR LENGTH(i_ProductAbbreviation)=0 OR IS_SPACES(i_ProductAbbreviation),'N/A',LTRIM(RTRIM(i_ProductAbbreviation)))\n\tIFF(i_ProductAbbreviation IS NULL \n\t\tOR LENGTH(i_ProductAbbreviation\n\t\t) = 0 \n\t\tOR LENGTH(i_ProductAbbreviation)>0 AND TRIM(i_ProductAbbreviation)='',\n\t\t'N/A',\n\t\tLTRIM(RTRIM(i_ProductAbbreviation\n\t\t\t)\n\t\t)\n\t) AS o_ProductAbbreviation,\n\t-- *INF*: IIF(ISNULL(i_ProductDescription) OR LENGTH(i_ProductDescription)=0 OR IS_SPACES(i_ProductDescription),'N/A',LTRIM(RTRIM(i_ProductDescription)))\n\tIFF(i_ProductDescription IS NULL \n\t\tOR LENGTH(i_ProductDescription\n\t\t) = 0 \n\t\tOR LENGTH(i_ProductDescription)>0 AND TRIM(i_ProductDescription)='',\n\t\t'N/A',\n\t\tLTRIM(RTRIM(i_ProductDescription\n\t\t\t)\n\t\t)\n\t) AS o_ProductDescription\n\tFROM SQ_Product\n),\nTGT_Product_UpdateElseInsert AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.Product AS T\n\tUSING EXP_StringValues AS S\n\tON T.ProductId = S.o_ProductId\n\tWHEN MATCHED THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.o_CurrentSnapshotFlag, T.AuditId = S.o_AuditId, T.EffectiveDate = S.o_EffectiveDate, T.ExpirationDate = S.o_ExpirationDate, T.SourceSystemId = S.o_SourceSystemId, T.CreatedDate = S.o_CreatedDate, T.ModifiedDate = S.o_ModifiedDate, T.ProductAKId = S.o_ProductAKId, T.ProductCode = S.o_ProductCode, T.ProductAbbreviation = S.o_ProductAbbreviation, T.ProductDescription = S.o_ProductDescription\n\tWHEN NOT MATCHED THEN\n\tINSERT (ProductId, CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, ProductAKId, ProductCode, ProductAbbreviation, ProductDescription)\n\tVALUES (\n\tEXP_NumericValues.o_ProductId AS PRODUCTID, \n\tEXP_StringValues.o_CurrentSnapshotFlag AS CURRENTSNAPSHOTFLAG, \n\tEXP_StringValues.o_AuditId AS AUDITID, \n\tEXP_DateValues.o_EffectiveDate AS EFFECTIVEDATE, \n\tEXP_DateValues.o_ExpirationDate AS EXPIRATIONDATE, \n\tEXP_StringValues.o_SourceSystemId AS SOURCESYSTEMID, \n\tEXP_StringValues.o_CreatedDate AS CREATEDDATE, \n\tEXP_DateValues.o_ModifiedDate AS MODIFIEDDATE, \n\tEXP_NumericValues.o_ProductAKId AS PRODUCTAKID, \n\tEXP_StringValues.o_ProductCode AS PRODUCTCODE, \n\tEXP_StringValues.o_ProductAbbreviation AS PRODUCTABBREVIATION, \n\tEXP_StringValues.o_ProductDescription AS PRODUCTDESCRIPTION)\n),"
+                            "text": "WITH\nSQ_Product AS (\n\tSELECT\n\t\tProductId,\n\t\tModifiedDate,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tProductAKId,\n\t\tProductCode,\n\t\tProductAbbreviation,\n\t\tProductDescription\n\tFROM Product\n),\nEXP_DateValues AS (\n\tSELECT\n\tModifiedDate AS i_ModifiedDate,\n\tEffectiveDate AS i_EffectiveDate,\n\tExpirationDate AS i_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)\n\tIFF(\n\t    i_EffectiveDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate\n\t) AS o_EffectiveDate,\n\t-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)\n\tIFF(\n\t    i_ExpirationDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'),\n\t    i_ExpirationDate\n\t) AS o_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)\n\tIFF(\n\t    i_ModifiedDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate\n\t) AS o_ModifiedDate\n\tFROM SQ_Product\n),\nEXP_NumericValues AS (\n\tSELECT\n\tProductId AS i_ProductId,\n\tProductAKId AS i_ProductAKId,\n\t-- *INF*: IIF(ISNULL(i_ProductId),-1,i_ProductId)\n\tIFF(i_ProductId IS NULL, - 1, i_ProductId) AS o_ProductId,\n\t-- *INF*: IIF(ISNULL(i_ProductAKId),-1,i_ProductAKId)\n\tIFF(i_ProductAKId IS NULL, - 1, i_ProductAKId) AS o_ProductAKId\n\tFROM SQ_Product\n),\nEXP_StringValues AS (\n\tSELECT\n\tExpirationDate AS i_ExpirationDate,\n\tProductCode AS i_ProductCode,\n\tProductAbbreviation AS i_ProductAbbreviation,\n\tProductDescription AS i_ProductDescription,\n\t-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)\n\tIFF(TRUNC(i_ExpirationDate) = TO_TIMESTAMP('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tSYSDATE AS o_CreatedDate,\n\t-- *INF*: IIF(ISNULL(i_ProductCode) OR LENGTH(i_ProductCode)=0 OR IS_SPACES(i_ProductCode),'N/A',LTRIM(RTRIM(i_ProductCode)))\n\tIFF(\n\t    i_ProductCode IS NULL\n\t    or LENGTH(i_ProductCode) = 0\n\t    or LENGTH(i_ProductCode)>0\n\t    and TRIM(i_ProductCode)='',\n\t    'N/A',\n\t    LTRIM(RTRIM(i_ProductCode))\n\t) AS o_ProductCode,\n\t-- *INF*: IIF(ISNULL(i_ProductAbbreviation) OR LENGTH(i_ProductAbbreviation)=0 OR IS_SPACES(i_ProductAbbreviation),'N/A',LTRIM(RTRIM(i_ProductAbbreviation)))\n\tIFF(\n\t    i_ProductAbbreviation IS NULL\n\t    or LENGTH(i_ProductAbbreviation) = 0\n\t    or LENGTH(i_ProductAbbreviation)>0\n\t    and TRIM(i_ProductAbbreviation)='',\n\t    'N/A',\n\t    LTRIM(RTRIM(i_ProductAbbreviation))\n\t) AS o_ProductAbbreviation,\n\t-- *INF*: IIF(ISNULL(i_ProductDescription) OR LENGTH(i_ProductDescription)=0 OR IS_SPACES(i_ProductDescription),'N/A',LTRIM(RTRIM(i_ProductDescription)))\n\tIFF(\n\t    i_ProductDescription IS NULL\n\t    or LENGTH(i_ProductDescription) = 0\n\t    or LENGTH(i_ProductDescription)>0\n\t    and TRIM(i_ProductDescription)='',\n\t    'N/A',\n\t    LTRIM(RTRIM(i_ProductDescription))\n\t) AS o_ProductDescription\n\tFROM SQ_Product\n),\nTGT_Product_UpdateElseInsert AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.Product AS T\n\tUSING EXP_StringValues AS S\n\tON T.ProductId = S.o_ProductId\n\tWHEN MATCHED THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.o_CurrentSnapshotFlag, T.AuditId = S.o_AuditId, T.EffectiveDate = S.o_EffectiveDate, T.ExpirationDate = S.o_ExpirationDate, T.SourceSystemId = S.o_SourceSystemId, T.CreatedDate = S.o_CreatedDate, T.ModifiedDate = S.o_ModifiedDate, T.ProductAKId = S.o_ProductAKId, T.ProductCode = S.o_ProductCode, T.ProductAbbreviation = S.o_ProductAbbreviation, T.ProductDescription = S.o_ProductDescription\n\tWHEN NOT MATCHED THEN\n\tINSERT (ProductId, CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, ProductAKId, ProductCode, ProductAbbreviation, ProductDescription)\n\tVALUES (\n\tEXP_NumericValues.o_ProductId AS PRODUCTID, \n\tEXP_StringValues.o_CurrentSnapshotFlag AS CURRENTSNAPSHOTFLAG, \n\tEXP_StringValues.o_AuditId AS AUDITID, \n\tEXP_DateValues.o_EffectiveDate AS EFFECTIVEDATE, \n\tEXP_DateValues.o_ExpirationDate AS EXPIRATIONDATE, \n\tEXP_StringValues.o_SourceSystemId AS SOURCESYSTEMID, \n\tEXP_StringValues.o_CreatedDate AS CREATEDDATE, \n\tEXP_DateValues.o_ModifiedDate AS MODIFIEDDATE, \n\tEXP_NumericValues.o_ProductAKId AS PRODUCTAKID, \n\tEXP_StringValues.o_ProductCode AS PRODUCTCODE, \n\tEXP_StringValues.o_ProductAbbreviation AS PRODUCTABBREVIATION, \n\tEXP_StringValues.o_ProductDescription AS PRODUCTDESCRIPTION)\n),"
                         }
                     ]
                 },
@@ -32,47 +32,19 @@
         "parameters": {
             "WBMI_AUDIT_CONTROL_RUN_ID": {
                 "type": "string",
-                "defaultValue": "246483"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "905450"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7602751"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "08/29/2023 22:00:17"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/30/2023 22:00:17"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_InsuranceReference_Policy"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
-            "TARGET_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
+                "defaultValue": "Default Value"
             },
             "SOURCE_SYSTEM_ID": {
                 "type": "string",
-                "defaultValue": "InsRef"
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Policy DataWarehouse/"
+            "name": "PolicyDataWarehouse/"
         },
         "annotations": []
     }

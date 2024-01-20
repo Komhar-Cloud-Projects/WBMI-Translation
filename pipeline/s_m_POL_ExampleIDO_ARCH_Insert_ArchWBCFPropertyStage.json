@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCFPropertyStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCFPropertyStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCFPropertyStage AS (\n\tSELECT\n\t\tWBCFPropertyStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCF_PropertyId,\n\t\tWB_CF_PropertyId,\n\t\tSessionId,\n\t\tKansasPropertyCredit,\n\t\tAgreedValue,\n\t\tRateStatus,\n\t\tRiskID,\n\t\tRateEffectiveDate,\n\t\tRCP,\n\t\tSprinklerProtectionDevice,\n\t\tOtherSprinklerProtectionDevice,\n\t\tHydrostaticWaterPressure,\n\t\tBG1SpecificRateSelectString,\n\t\tCoinsurancePercentageEmployeeTools,\n\t\tRCB,\n\t\tAttachedSignSelect,\n\t\tAttachedSignConstruction,\n\t\tAttachedSignDescription,\n\t\tPricePerSquareFoot,\n\t\tControllingIteratorIndicator,\n\t\tSprinklerCreditFactor,\n\t\tControllingIteratorIndicatorForLocation,\n\t\tOccupancyCategory,\n\t\tAgreedValueIndicator\n\tFROM WBCFPropertyStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBCFPropertyStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCF_PropertyId,\n\tWB_CF_PropertyId,\n\tSessionId,\n\tKansasPropertyCredit AS i_KansasPropertyCredit,\n\t-- *INF*: DECODE(i_KansasPropertyCredit, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_KansasPropertyCredit,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_KansasPropertyCredit,\n\tAgreedValue AS i_AgreedValue,\n\t-- *INF*: DECODE(i_AgreedValue, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_AgreedValue,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_AgreedValue,\n\tRateStatus,\n\tRiskID,\n\tRateEffectiveDate,\n\tRCP,\n\tSprinklerProtectionDevice,\n\tOtherSprinklerProtectionDevice,\n\tHydrostaticWaterPressure AS i_HydrostaticWaterPressure,\n\t-- *INF*: DECODE(i_HydrostaticWaterPressure, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_HydrostaticWaterPressure,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_HydrostaticWaterPressure,\n\tBG1SpecificRateSelectString,\n\tCoinsurancePercentageEmployeeTools,\n\tRCB,\n\tAttachedSignSelect AS i_AttachedSignSelect,\n\t-- *INF*: DECODE(i_AttachedSignSelect,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_AttachedSignSelect,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AttachedSignSelect,\n\tAttachedSignConstruction,\n\tAttachedSignDescription,\n\tPricePerSquareFoot,\n\tControllingIteratorIndicator AS i_ControllingIteratorIndicator,\n\t-- *INF*: DECODE(i_ControllingIteratorIndicator, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ControllingIteratorIndicator,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ControllingIteratorIndicator,\n\tSprinklerCreditFactor,\n\tControllingIteratorIndicatorForLocation AS i_ControllingIteratorIndicatorForLocation,\n\t-- *INF*: DECODE(i_ControllingIteratorIndicatorForLocation, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ControllingIteratorIndicatorForLocation,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ControllingIteratorIndicatorForLocation,\n\tOccupancyCategory,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tAgreedValueIndicator AS i_AgreedValueIndicator,\n\t-- *INF*: DECODE(i_AgreedValueIndicator, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_AgreedValueIndicator,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_AgreedValueIndicator\n\tFROM SQ_WBCFPropertyStage\n),\nArchWBCFPropertyStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCFPropertyStage\n\t(ExtractDate, SourceSystemId, AuditId, WBCFPropertyStageId, CF_PropertyId, WB_CF_PropertyId, SessionId, KansasPropertyCredit, AgreedValue, RateStatus, RiskID, RateEffectiveDate, RCP, SprinklerProtectionDevice, OtherSprinklerProtectionDevice, HydrostaticWaterPressure, BG1SpecificRateSelectString, CoinsurancePercentageEmployeeTools, RCB, AttachedSignSelect, AttachedSignConstruction, AttachedSignDescription, PricePerSquareFoot, ControllingIteratorIndicator, SprinklerCreditFactor, ControllingIteratorIndicatorForLocation, OccupancyCategory, AgreedValueIndicator)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBCFPROPERTYSTAGEID, \n\tCF_PROPERTYID, \n\tWB_CF_PROPERTYID, \n\tSESSIONID, \n\to_KansasPropertyCredit AS KANSASPROPERTYCREDIT, \n\to_AgreedValue AS AGREEDVALUE, \n\tRATESTATUS, \n\tRISKID, \n\tRATEEFFECTIVEDATE, \n\tRCP, \n\tSPRINKLERPROTECTIONDEVICE, \n\tOTHERSPRINKLERPROTECTIONDEVICE, \n\to_HydrostaticWaterPressure AS HYDROSTATICWATERPRESSURE, \n\tBG1SPECIFICRATESELECTSTRING, \n\tCOINSURANCEPERCENTAGEEMPLOYEETOOLS, \n\tRCB, \n\to_AttachedSignSelect AS ATTACHEDSIGNSELECT, \n\tATTACHEDSIGNCONSTRUCTION, \n\tATTACHEDSIGNDESCRIPTION, \n\tPRICEPERSQUAREFOOT, \n\to_ControllingIteratorIndicator AS CONTROLLINGITERATORINDICATOR, \n\tSPRINKLERCREDITFACTOR, \n\to_ControllingIteratorIndicatorForLocation AS CONTROLLINGITERATORINDICATORFORLOCATION, \n\tOCCUPANCYCATEGORY, \n\to_AgreedValueIndicator AS AGREEDVALUEINDICATOR\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

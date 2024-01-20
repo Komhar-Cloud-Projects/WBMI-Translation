@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchRegionalSalesManagerRelationshipStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchRegionalSalesManagerRelationsh_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_RegionalSalesManagerRelationshipStage AS (\n\tSELECT\n\t\tRegionalSalesManagerRelationshipStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tAgencyCode,\n\t\tAssociateID,\n\t\tWestBendAssociateID,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID\n\tFROM RegionalSalesManagerRelationshipStage\n),\nLKP_ExistingArchive AS (\n\tSELECT\n\tHashKey,\n\tAgencyID,\n\tAssociateID\n\tFROM (\n\t\tselect\ta.HashKey as HashKey,\r\n\t\t\t\ta.ModifiedDate as ModifiedDate,\r\n\t\t\t\ta.AgencyID as AgencyID,\r\n\t\t\t\ta.AssociateID as AssociateID\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchRegionalSalesManagerRelationshipStage a\r\n\t\tinner join (\r\n\t\t\t\t\tselect AgencyID, AssociateID, max(ModifiedDate) as ModifiedDate\r\n\t\t\t\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchRegionalSalesManagerRelationshipStage\r\n\t\t\t\t\tgroup by AgencyID, AssociateID) b\r\n\t\ton  a.AgencyID = b.AgencyID\r\n\t\tand a.AssociateID = b.AssociateID\r\n\t\tand a.ModifiedDate = b.ModifiedDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyID,AssociateID ORDER BY HashKey) = 1\n),\nEXP_AddAuditID AS (\n\tSELECT\n\tSQ_RegionalSalesManagerRelationshipStage.RegionalSalesManagerRelationshipStageID,\n\tSQ_RegionalSalesManagerRelationshipStage.AgencyODSSourceSystemID,\n\tSQ_RegionalSalesManagerRelationshipStage.HashKey,\n\tSQ_RegionalSalesManagerRelationshipStage.ModifiedUserID,\n\tSQ_RegionalSalesManagerRelationshipStage.ModifiedDate,\n\tSQ_RegionalSalesManagerRelationshipStage.AgencyID,\n\tSQ_RegionalSalesManagerRelationshipStage.AgencyCode,\n\tSQ_RegionalSalesManagerRelationshipStage.AssociateID,\n\tSQ_RegionalSalesManagerRelationshipStage.WestBendAssociateID,\n\tSQ_RegionalSalesManagerRelationshipStage.ExtractDate,\n\tSQ_RegionalSalesManagerRelationshipStage.AsOfDate,\n\tSQ_RegionalSalesManagerRelationshipStage.RecordCount,\n\tSQ_RegionalSalesManagerRelationshipStage.SourceSystemID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID,\n\tLKP_ExistingArchive.HashKey AS lkp_HashKey,\n\t-- *INF*: Decode(true,\r\n\t-- HashKey = lkp_HashKey, 'IGNORE',\r\n\t-- IsNull(lkp_HashKey), 'INSERT',\r\n\t-- 'UPDATE')\n\tDecode(\n\t    true,\n\t    HashKey = lkp_HashKey, 'IGNORE',\n\t    lkp_HashKey IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag\n\tFROM SQ_RegionalSalesManagerRelationshipStage\n\tLEFT JOIN LKP_ExistingArchive\n\tON LKP_ExistingArchive.AgencyID = SQ_RegionalSalesManagerRelationshipStage.AgencyID AND LKP_ExistingArchive.AssociateID = SQ_RegionalSalesManagerRelationshipStage.AssociateID\n),\nFIL_ChangesOnly AS (\n\tSELECT\n\tRegionalSalesManagerRelationshipStageID, \n\tAgencyODSSourceSystemID, \n\tHashKey, \n\tModifiedUserID, \n\tModifiedDate, \n\tAgencyID, \n\tAgencyCode, \n\tAssociateID, \n\tWestBendAssociateID, \n\tExtractDate, \n\tAsOfDate, \n\tRecordCount, \n\tSourceSystemID, \n\tOUT_AUDIT_ID, \n\to_ChangeFlag\n\tFROM EXP_AddAuditID\n\tWHERE o_ChangeFlag = 'INSERT' OR o_ChangeFlag = 'UPDATE'\n),\nArchRegionalSalesManagerRelationshipStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchRegionalSalesManagerRelationshipStage\n\t(RegionalSalesManagerRelationshipStageID, AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, AssociateID, WestBendAssociateID, ExtractDate, AsOfDate, RecordCount, SourceSystemID, AuditID)\n\tSELECT \n\tREGIONALSALESMANAGERRELATIONSHIPSTAGEID, \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tAGENCYCODE, \n\tASSOCIATEID, \n\tWESTBENDASSOCIATEID, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\tOUT_AUDIT_ID AS AUDITID\n\tFROM FIL_ChangesOnly\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCCABusinessInterruptionOptionStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCCABusinessInterruption_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_CA_BusinessInterruptionOption AS (\n\tWITH cte_DCCABusIntOpt(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CA_BusinessInterruptionEndorsementId, \r\n\tX.CA_BusinessInterruptionOptionId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.Deleted,\r\n\tX.OptionType,\r\n\tX.OptionDescription,\r\n\tX.TotalExposureOptionB\r\n\tFROM\r\n\tDC_CA_BusinessInterruptionOption X\r\n\tinner join\r\n\tcte_DCCABusIntOpt Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_MetaData AS (\n\tSELECT\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tCA_BusinessInterruptionEndorsementId,\n\tCA_BusinessInterruptionOptionId,\n\tSessionId,\n\tId,\n\tDeleted,\n\tOptionType,\n\tOptionDescription,\n\tTotalExposureOptionB\n\tFROM SQ_DC_CA_BusinessInterruptionOption\n),\nDCCABusinessInterruptionOptionStage AS (\n\tTRUNCATE TABLE DCCABusinessInterruptionOptionStage;\n\tINSERT INTO DCCABusinessInterruptionOptionStage\n\t(ExtractDate, SourceSystemid, CA_BusinessInterruptionEndorsementId, CA_BusinessInterruptionOptionId, SessionId, Id, Deleted, OptionType, OptionDescription, TotalExposureOptionB)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCA_BUSINESSINTERRUPTIONENDORSEMENTID, \n\tCA_BUSINESSINTERRUPTIONOPTIONID, \n\tSESSIONID, \n\tID, \n\tDELETED, \n\tOPTIONTYPE, \n\tOPTIONDESCRIPTION, \n\tTOTALEXPOSUREOPTIONB\n\tFROM EXP_MetaData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageDataCompromiseStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBBPCoverageDataCom_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBBPCoverageDataCompromiseStage AS (\n\tSELECT\n\t\tWBBPCoverageDataCompromiseStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCoverageId,\n\t\tWB_BP_CoverageDataCompromiseId,\n\t\tSessionId,\n\t\tResponseExpensesTotalPremium,\n\t\tDefenseAndLiabilityTotalPremium,\n\t\tEachSuitDataCompromiseStaticText,\n\t\tBillingLOB,\n\t\tCommissionPlanID,\n\t\tIsBillingSubline,\n\t\tParentBillingLOB,\n\t\tPurePremium,\n\t\tTransactionCommissionType,\n\t\tTransactionCommissionValue,\n\t\tTransactionFinalCommissionValue,\n\t\tWB_CL_CoverageDataCompromiseId\n\tFROM WBBPCoverageDataCompromiseStage\n),\nEXP_Metadata AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tWBBPCoverageDataCompromiseStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCoverageId,\n\tWB_BP_CoverageDataCompromiseId,\n\tSessionId,\n\tResponseExpensesTotalPremium,\n\tDefenseAndLiabilityTotalPremium,\n\tEachSuitDataCompromiseStaticText,\n\tBillingLOB,\n\tCommissionPlanID,\n\tIsBillingSubline,\n\t-- *INF*: DECODE(IsBillingSubline, 'T',1,'F',0,NULL)\n\tDECODE(\n\t    IsBillingSubline,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IsBillingSubline,\n\tParentBillingLOB,\n\tPurePremium,\n\tTransactionCommissionType,\n\tTransactionCommissionValue,\n\tTransactionFinalCommissionValue,\n\tWB_CL_CoverageDataCompromiseId\n\tFROM SQ_WBBPCoverageDataCompromiseStage\n),\nArchWBBPCoverageDataCompromiseStage AS (\n\tINSERT INTO ArchWBBPCoverageDataCompromiseStage\n\t(ExtractDate, SourceSystemId, AuditId, WBBPCoverageDataCompromiseStageId, CoverageId, WB_BP_CoverageDataCompromiseId, SessionId, ResponseExpensesTotalPremium, DefenseAndLiabilityTotalPremium, EachSuitDataCompromiseStaticText, BillingLOB, CommissionPlanID, IsBillingSubline, ParentBillingLOB, PurePremium, TransactionCommissionType, TransactionCommissionValue, TransactionFinalCommissionValue, WB_CL_CoverageDataCompromiseId)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBBPCOVERAGEDATACOMPROMISESTAGEID, \n\tCOVERAGEID, \n\tWB_BP_COVERAGEDATACOMPROMISEID, \n\tSESSIONID, \n\tRESPONSEEXPENSESTOTALPREMIUM, \n\tDEFENSEANDLIABILITYTOTALPREMIUM, \n\tEACHSUITDATACOMPROMISESTATICTEXT, \n\tBILLINGLOB, \n\tCOMMISSIONPLANID, \n\to_IsBillingSubline AS ISBILLINGSUBLINE, \n\tPARENTBILLINGLOB, \n\tPUREPREMIUM, \n\tTRANSACTIONCOMMISSIONTYPE, \n\tTRANSACTIONCOMMISSIONVALUE, \n\tTRANSACTIONFINALCOMMISSIONVALUE, \n\tWB_CL_COVERAGEDATACOMPROMISEID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

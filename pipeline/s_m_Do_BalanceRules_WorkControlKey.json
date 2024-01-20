@@ -1,0 +1,51 @@
+{
+    "name": "s_m_Do_BalanceRules_WorkControlKey",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Do_BalanceRules_WorkControlKey",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkControlRules AS (\n\tSELECT\n\t\tWorkControlRulesId,\n\t\tCreatedDate,\n\t\tModifiedDate,\n\t\tUserName,\n\t\tControlRules,\n\t\tComments\n\tFROM WorkControlRules\n\tWHERE WorkControlRules.CreatedDate >= '@{pipeline().parameters.SELECTION_START_TS}' and WorkControlRules.CreatedDate=(select max(CreatedDate) from @{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkControlRules)\n),\nEXP_values AS (\n\tSELECT\n\tWorkControlRulesId,\n\tCreatedDate,\n\tModifiedDate,\n\tUserName,\n\tControlRules,\n\tComments\n\tFROM SQ_WorkControlRules\n),\nSQL_control_rules AS (-- SQL_control_rules\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nEXP_date AS (\n\tSELECT\n\tCreatedDate_output,\n\tModifiedDate_output,\n\to_controlkeyvalue AS ControlKeyValue,\n\tout_key AS keytype,\n\tComments_output AS Comments\n\tFROM SQL_control_rules\n),\nFLT_ControlRules AS (\n\tSELECT\n\tCreatedDate_output AS createdDate, \n\tModifiedDate_output AS modifiedDate, \n\tControlKeyValue, \n\tkeytype, \n\tComments\n\tFROM EXP_date\n\tWHERE not isnull(ControlKeyValue )\n),\nTGT_WorkControlKey AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkControlKey;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkControlKey\n\t(CreatedDate, ModifiedDate, ControlKeyValue, KeyType, Comments)\n\tSELECT \n\tcreatedDate AS CREATEDDATE, \n\tmodifiedDate AS MODIFIEDDATE, \n\tCONTROLKEYVALUE, \n\tkeytype AS KEYTYPE, \n\tCOMMENTS\n\tFROM FLT_ControlRules\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

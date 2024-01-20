@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCABusinessInterruptionEndorsementStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCABusinessInterru_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCABusinessInterruptionEndorsementStage AS (\n\tSELECT\n\t\tDCCABusinessInterruptionEndorsementStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tLineId,\n\t\tCA_BusinessInterruptionEndorsementId,\n\t\tSessionId,\n\t\tId,\n\t\tDeleted,\n\t\tCollisionCoverage,\n\t\tDescriptionOfBusinessActivities,\n\t\tDurationOfWaitingPeriod,\n\t\tExtendedAdditionalCoverage,\n\t\tExtraExpenseCoverage,\n\t\tFormSelection,\n\t\tOTCCausesOfLoss\n\tFROM DCCABusinessInterruptionEndorsementStage\n),\nEXP_MetaData AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tDCCABusinessInterruptionEndorsementStageId,\n\tExtractDate,\n\tSourceSystemid,\n\tLineId,\n\tCA_BusinessInterruptionEndorsementId,\n\tSessionId,\n\tId,\n\tDeleted,\n\tCollisionCoverage,\n\tDescriptionOfBusinessActivities,\n\tDurationOfWaitingPeriod,\n\tExtendedAdditionalCoverage,\n\tExtraExpenseCoverage,\n\tFormSelection,\n\tOTCCausesOfLoss\n\tFROM SQ_DCCABusinessInterruptionEndorsementStage\n),\nArchDCCABusinessInterruptionEndorsementStage AS (\n\tINSERT INTO ArchDCCABusinessInterruptionEndorsementStage\n\t(ExtractDate, SourceSystemId, AuditId, DCCABusinessInterruptionEndorsementStageId, LineId, CA_BusinessInterruptionEndorsementId, SessionId, Id, Deleted, CollisionCoverage, DescriptionOfBusinessActivities, DurationOfWaitingPeriod, ExtendedAdditionalCoverage, ExtraExpenseCoverage, FormSelection, OTCCausesOfLoss)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemid AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCCABUSINESSINTERRUPTIONENDORSEMENTSTAGEID, \n\tLINEID, \n\tCA_BUSINESSINTERRUPTIONENDORSEMENTID, \n\tSESSIONID, \n\tID, \n\tDELETED, \n\tCOLLISIONCOVERAGE, \n\tDESCRIPTIONOFBUSINESSACTIVITIES, \n\tDURATIONOFWAITINGPERIOD, \n\tEXTENDEDADDITIONALCOVERAGE, \n\tEXTRAEXPENSECOVERAGE, \n\tFORMSELECTION, \n\tOTCCAUSESOFLOSS\n\tFROM EXP_MetaData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

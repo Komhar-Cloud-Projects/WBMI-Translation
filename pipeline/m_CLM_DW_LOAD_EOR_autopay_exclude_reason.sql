@@ -9,12 +9,7 @@ EXP_LKP AS (
 	med_bill_id,
 	autopay_excl_rsn_code,
 	-- *INF*: IIF(ISNULL(RTRIM(LTRIM(autopay_excl_rsn_code))),'N/A',autopay_excl_rsn_code)
-	IFF(RTRIM(LTRIM(autopay_excl_rsn_code
-			)
-		) IS NULL,
-		'N/A',
-		autopay_excl_rsn_code
-	) AS reason_code_out
+	IFF(RTRIM(LTRIM(autopay_excl_rsn_code)) IS NULL, 'N/A', autopay_excl_rsn_code) AS reason_code_out
 	FROM SQ_eor_excl_reason_stage
 ),
 LKP_MEDICAL_BILL AS (
@@ -60,16 +55,11 @@ EXP_AUDIT_FIELDS AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif( ISNULL(LKP_eor_autopay_excl_rsn_ak_id), 'INSERT', 'NOINSERT')
 	-- 	 
-	IFF(LKP_eor_autopay_excl_rsn_ak_id IS NULL,
-		'INSERT',
-		'NOINSERT'
-	) AS CHANGE_FLAG,
+	IFF(LKP_eor_autopay_excl_rsn_ak_id IS NULL, 'INSERT', 'NOINSERT') AS CHANGE_FLAG,
 	-- *INF*: to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,
 	SYSDATE AS CREATE_MOD_DATE
 	FROM EXP_LKP2
@@ -140,9 +130,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	eor_autopay_excl_rsn_ak_id = v_PREV_ROW_eor_autopay_excl_rsn_ak_id, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		eor_autopay_excl_rsn_ak_id = v_PREV_ROW_eor_autopay_excl_rsn_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    eor_autopay_excl_rsn_ak_id = v_PREV_ROW_eor_autopay_excl_rsn_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

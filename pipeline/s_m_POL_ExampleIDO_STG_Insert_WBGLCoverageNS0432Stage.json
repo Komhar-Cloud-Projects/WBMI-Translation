@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBGLCoverageNS0432Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBGLCoverageNS0432Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_GL_CoverageNS0432 AS (\n\tWITH cte_WBGLCovNS032(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.CoverageId, \r\n\tX.WB_GL_CoverageNS0432Id, \r\n\tX.SessionId, \r\n\tX.BodilyInjuryAndPropertyDamageLimitedCoverage, \r\n\tX.PersonalAndAdvertisingInjuryLimitedCoverage\r\n\tFROM\r\n\t WB_GL_CoverageNS0432 X\r\n\tinner join\r\n\tcte_WBGLCovNS032 Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_MetaData AS (\n\tSELECT\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tCoverageId,\n\tWB_GL_CoverageNS0432Id,\n\tSessionId,\n\tBodilyInjuryAndPropertyDamageLimitedCoverage AS i_BodilyInjuryAndPropertyDamageLimitedCoverage,\n\t-- *INF*: DECODE(i_BodilyInjuryAndPropertyDamageLimitedCoverage,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_BodilyInjuryAndPropertyDamageLimitedCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_BodilyInjuryAndPropertyDamageLimitedCoverage,\n\tPersonalAndAdvertisingInjuryLimitedCoverage AS i_PersonalAndAdvertisingInjuryLimitedCoverage,\n\t-- *INF*: DECODE(i_PersonalAndAdvertisingInjuryLimitedCoverage,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_PersonalAndAdvertisingInjuryLimitedCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PersonalAndAdvertisingInjuryLimitedCoverage\n\tFROM SQ_WB_GL_CoverageNS0432\n),\nWBGLCoverageNS0432Stage AS (\n\tTRUNCATE TABLE WBGLCoverageNS0432Stage;\n\tINSERT INTO WBGLCoverageNS0432Stage\n\t(ExtractDate, SourceSystemid, CoverageId, WB_GL_CoverageNS0432Id, SessionId, BodilyInjuryAndPropertyDamageLimitedCoverage, PersonalAndAdvertisingInjuryLimitedCoverage)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tCOVERAGEID, \n\tWB_GL_COVERAGENS0432ID, \n\tSESSIONID, \n\to_BodilyInjuryAndPropertyDamageLimitedCoverage AS BODILYINJURYANDPROPERTYDAMAGELIMITEDCOVERAGE, \n\to_PersonalAndAdvertisingInjuryLimitedCoverage AS PERSONALANDADVERTISINGINJURYLIMITEDCOVERAGE\n\tFROM EXP_MetaData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

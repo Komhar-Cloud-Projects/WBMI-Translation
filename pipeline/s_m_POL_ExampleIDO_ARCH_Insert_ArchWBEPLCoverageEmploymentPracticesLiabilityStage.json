@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBEPLCoverageEmploymentPracticesLiabilityStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBEPLCoverageEmploy_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBEPLCoverageEmploymentPracticesLiabilityStage AS (\n\tSELECT\n\t\tWBEPLCoverageEmploymentPracticesLiabilityStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCoverageId,\n\t\tWB_EPL_CoverageEmploymentPracticesLiabilityId,\n\t\tSessionId,\n\t\tNumberOfFulltimeEmployees,\n\t\tNumberOfParttimeEmployees,\n\t\tNumberOfTempSeasonalLeasedEmployees,\n\t\tNumberOfIndependentContractors,\n\t\tNumberOfVolunteers,\n\t\tNumberOfEmployeesLabel,\n\t\tIncludeIndependentContractorsCoverage,\n\t\tIncludeVolunteersAsAdditonalInsureds,\n\t\tBusinessType,\n\t\tBusinessClassification,\n\t\tHigherLimitsRequired,\n\t\tReinsurancePremium,\n\t\tDefenseCosts,\n\t\tThirdPartyLiability,\n\t\tDAndOQuote,\n\t\tRetroactiveDate,\n\t\tPriorRetroactiveDate,\n\t\tPriorAggregateLimit,\n\t\tTotalNumberOfEmployees,\n\t\tSICFactor,\n\t\tHigherLimitMinimumValue\n\tFROM WBEPLCoverageEmploymentPracticesLiabilityStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBEPLCoverageEmploymentPracticesLiabilityStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCoverageId,\n\tWB_EPL_CoverageEmploymentPracticesLiabilityId,\n\tSessionId,\n\tNumberOfFulltimeEmployees,\n\tNumberOfParttimeEmployees,\n\tNumberOfTempSeasonalLeasedEmployees,\n\tNumberOfIndependentContractors,\n\tNumberOfVolunteers,\n\tNumberOfEmployeesLabel,\n\tIncludeIndependentContractorsCoverage AS i_IncludeIndependentContractorsCoverage,\n\tIncludeVolunteersAsAdditonalInsureds AS i_IncludeVolunteersAsAdditonalInsureds,\n\t-- *INF*: DECODE(i_IncludeIndependentContractorsCoverage,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_IncludeIndependentContractorsCoverage,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncludeIndependentContractorsCoverage,\n\t-- *INF*: DECODE(i_IncludeVolunteersAsAdditonalInsureds,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_IncludeVolunteersAsAdditonalInsureds,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncludeVolunteersAsAdditonalInsureds,\n\tBusinessType,\n\tBusinessClassification,\n\tHigherLimitsRequired AS i_HigherLimitsRequired,\n\t-- *INF*: DECODE(i_HigherLimitsRequired,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_HigherLimitsRequired,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_HigherLimitsRequired,\n\tReinsurancePremium,\n\tDefenseCosts,\n\tThirdPartyLiability,\n\tDAndOQuote AS i_DAndOQuote,\n\t-- *INF*: DECODE(i_DAndOQuote,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_DAndOQuote,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_DAndOQuote,\n\tRetroactiveDate,\n\tPriorRetroactiveDate,\n\tPriorAggregateLimit,\n\tTotalNumberOfEmployees,\n\tSICFactor,\n\tHigherLimitMinimumValue,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBEPLCoverageEmploymentPracticesLiabilityStage\n),\nArchWBEPLCoverageEmploymentPracticesLiabilityStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBEPLCoverageEmploymentPracticesLiabilityStage\n\t(ExtractDate, SourceSystemId, AuditId, WBEPLCoverageEmploymentPracticesLiabilityStageId, CoverageId, WB_EPL_CoverageEmploymentPracticesLiabilityId, SessionId, NumberOfFulltimeEmployees, NumberOfParttimeEmployees, NumberOfTempSeasonalLeasedEmployees, NumberOfIndependentContractors, NumberOfVolunteers, NumberOfEmployeesLabel, IncludeIndependentContractorsCoverage, IncludeVolunteersAsAdditonalInsureds, BusinessType, BusinessClassification, HigherLimitsRequired, ReinsurancePremium, DefenseCosts, ThirdPartyLiability, DAndOQuote, RetroactiveDate, PriorRetroactiveDate, PriorAggregateLimit, TotalNumberOfEmployees, SICFactor, HigherLimitMinimumValue)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBEPLCOVERAGEEMPLOYMENTPRACTICESLIABILITYSTAGEID, \n\tCOVERAGEID, \n\tWB_EPL_COVERAGEEMPLOYMENTPRACTICESLIABILITYID, \n\tSESSIONID, \n\tNUMBEROFFULLTIMEEMPLOYEES, \n\tNUMBEROFPARTTIMEEMPLOYEES, \n\tNUMBEROFTEMPSEASONALLEASEDEMPLOYEES, \n\tNUMBEROFINDEPENDENTCONTRACTORS, \n\tNUMBEROFVOLUNTEERS, \n\tNUMBEROFEMPLOYEESLABEL, \n\to_IncludeIndependentContractorsCoverage AS INCLUDEINDEPENDENTCONTRACTORSCOVERAGE, \n\to_IncludeVolunteersAsAdditonalInsureds AS INCLUDEVOLUNTEERSASADDITONALINSUREDS, \n\tBUSINESSTYPE, \n\tBUSINESSCLASSIFICATION, \n\to_HigherLimitsRequired AS HIGHERLIMITSREQUIRED, \n\tREINSURANCEPREMIUM, \n\tDEFENSECOSTS, \n\tTHIRDPARTYLIABILITY, \n\to_DAndOQuote AS DANDOQUOTE, \n\tRETROACTIVEDATE, \n\tPRIORRETROACTIVEDATE, \n\tPRIORAGGREGATELIMIT, \n\tTOTALNUMBEROFEMPLOYEES, \n\tSICFACTOR, \n\tHIGHERLIMITMINIMUMVALUE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

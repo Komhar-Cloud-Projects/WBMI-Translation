@@ -1,0 +1,38 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchPif14Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchPif14Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif14Stage AS (\n\tSELECT\n\t\tPif14StageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tAuditId,\n\t\tFrrPifsymbol,\n\t\tFrrPifpolicynumber,\n\t\tFrrPifmodule,\n\t\tFrrRecordid,\n\t\tFrrUnit,\n\t\tFrrAmendment,\n\t\tFrrLastchange,\n\t\tFrrLocationstate,\n\t\tFrrTerritory,\n\t\tFrrForm,\n\t\tFrrNumberoffampos,\n\t\tFrrOccupancy,\n\t\tFrrConstruction,\n\t\tFrrProtectionclass,\n\t\tFrrDeductibletype,\n\t\tFrrDeductible,\n\t\tFrrHydrant,\n\t\tFrrFirestation,\n\t\tFrrInsidecity,\n\t\tFrrBuildingamount,\n\t\tFrrBuildingpremium,\n\t\tFrrContentsAmount,\n\t\tFrrContentsPremium,\n\t\tFrrECAECcoverage,\n\t\tFrrVandalismMaliciousmis,\n\t\tFrrStoriesorWoodstove,\n\t\tFrrInflationguard,\n\t\tFrrValueup,\n\t\tFrrMoneyendorsement,\n\t\tFrrYearofconstruction,\n\t\tFrrAgentscommission,\n\t\tFrrZipcode,\n\t\tFrrOriginalratebook,\n\t\tFrrTaxlocation,\n\t\tFrrCurrReplacementcost,\n\t\tFrrCurrReplaceCostdate,\n\t\tFrrReplacementCost,\n\t\tFrrInspectionYear,\n\t\tFrrLastValueChange,\n\t\tFrrInspectionReport,\n\t\tFrrReplaceCostmethod,\n\t\tFrrHistoryOption,\n\t\tFrrNewPremium,\n\t\tFrrOldPremium,\n\t\tFrrWindstormAssumption,\n\t\tFrrCommercialIndicator,\n\t\tFrrRatebook,\n\t\tFrrLastchangefactor,\n\t\tPif14MarketValuepos1,\n\t\tPif14Filler1,\n\t\tFrrSpecialuse2,\n\t\tFrrECConstruction,\n\t\tFrrWndstmconstruction,\n\t\tFrrCoinsurancecode,\n\t\tFrrApprovedroofind,\n\t\tFrrLiability,\n\t\tFrrMedpay,\n\t\tFrrLiabilitypremium,\n\t\tFrrRatinggrouplit,\n\t\tFrrFoundationtype,\n\t\tFrrFinishbaseper,\n\t\tPif14Filler2,\n\t\tFrrExistinscreditdate,\n\t\tFrrCondo,\n\t\tFrrZipind,\n\t\tFrrBuildLimchangeind,\n\t\tFrrDedLimchangeind,\n\t\tFrrReplCostchangeind,\n\t\tFrrCustFutureuse,\n\t\tFrrYr2000Custuse,\n\t\tFrrDupKeySeqnum\n\tFROM Pif14Stage\n),\nEXP_MetaData AS (\n\tSELECT\n\tPif14StageId,\n\tExtractDate,\n\tSourceSystemId,\n\tAuditId,\n\tFrrPifsymbol,\n\tFrrPifpolicynumber,\n\tFrrPifmodule,\n\tFrrRecordid,\n\tFrrUnit,\n\tFrrAmendment,\n\tFrrLastchange,\n\tFrrLocationstate,\n\tFrrTerritory,\n\tFrrForm,\n\tFrrNumberoffampos,\n\tFrrOccupancy,\n\tFrrConstruction,\n\tFrrProtectionclass,\n\tFrrDeductibletype,\n\tFrrDeductible,\n\tFrrHydrant,\n\tFrrFirestation,\n\tFrrInsidecity,\n\tFrrBuildingamount,\n\tFrrBuildingpremium,\n\tFrrContentsAmount,\n\tFrrContentsPremium,\n\tFrrECAECcoverage,\n\tFrrVandalismMaliciousmis,\n\tFrrStoriesorWoodstove,\n\tFrrInflationguard,\n\tFrrValueup,\n\tFrrMoneyendorsement,\n\tFrrYearofconstruction,\n\tFrrAgentscommission,\n\tFrrZipcode,\n\tFrrOriginalratebook,\n\tFrrTaxlocation,\n\tFrrCurrReplacementcost,\n\tFrrCurrReplaceCostdate,\n\tFrrReplacementCost,\n\tFrrInspectionYear,\n\tFrrLastValueChange,\n\tFrrInspectionReport,\n\tFrrReplaceCostmethod,\n\tFrrHistoryOption,\n\tFrrNewPremium,\n\tFrrOldPremium,\n\tFrrWindstormAssumption,\n\tFrrCommercialIndicator,\n\tFrrRatebook,\n\tFrrLastchangefactor,\n\tPif14MarketValuepos1,\n\tPif14Filler1,\n\tFrrSpecialuse2,\n\tFrrECConstruction,\n\tFrrWndstmconstruction,\n\tFrrCoinsurancecode,\n\tFrrApprovedroofind,\n\tFrrLiability,\n\tFrrMedpay,\n\tFrrLiabilitypremium,\n\tFrrRatinggrouplit,\n\tFrrFoundationtype,\n\tFrrFinishbaseper,\n\tPif14Filler2,\n\tFrrExistinscreditdate,\n\tFrrCondo,\n\tFrrZipind,\n\tFrrBuildLimchangeind,\n\tFrrDedLimchangeind,\n\tFrrReplCostchangeind,\n\tFrrCustFutureuse,\n\tFrrYr2000Custuse,\n\tFrrDupKeySeqnum\n\tFROM SQ_Pif14Stage\n),\nArchPif14Stage AS (\n\tINSERT INTO ArchPif14Stage\n\t(Pif14StageId, ExtractDate, SourceSystemId, AuditId, FrrPifsymbol, FrrPifpolicynumber, FrrPifmodule, FrrRecordid, FrrUnit, FrrAmendment, FrrLastchange, FrrLocationstate, FrrTerritory, FrrForm, FrrNumberoffampos, FrrOccupancy, FrrConstruction, FrrProtectionclass, FrrDeductibletype, FrrDeductible, FrrHydrant, FrrFirestation, FrrInsidecity, FrrBuildingamount, FrrBuildingpremium, FrrContentsAmount, FrrContentsPremium, FrrECAECcoverage, FrrVandalismMaliciousmis, FrrStoriesorWoodstove, FrrInflationguard, FrrValueup, FrrMoneyendorsement, FrrYearofconstruction, FrrAgentscommission, FrrZipcode, FrrOriginalratebook, FrrTaxlocation, FrrCurrReplacementcost, FrrCurrReplaceCostdate, FrrReplacementCost, FrrInspectionYear, FrrLastValueChange, FrrInspectionReport, FrrReplaceCostmethod, FrrHistoryOption, FrrNewPremium, FrrOldPremium, FrrWindstormAssumption, FrrCommercialIndicator, FrrRatebook, FrrLastchangefactor, ArchPif14MarketValuepos1, Pif14Filler1, FrrSpecialuse2, FrrECConstruction, FrrWndstmconstruction, FrrCoinsurancecode, FrrApprovedroofind, FrrLiability, FrrMedpay, FrrLiabilitypremium, FrrRatinggrouplit, FrrFoundationtype, FrrFinishbaseper, Pif14Filler2, FrrExistinscreditdate, FrrCondo, FrrZipind, FrrBuildLimchangeind, FrrDedLimchangeind, FrrReplCostchangeind, FrrCustFutureuse, FrrYr2000Custuse, FrrDupKeySeqnum)\n\tSELECT \n\tPIF14STAGEID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tFRRPIFSYMBOL, \n\tFRRPIFPOLICYNUMBER, \n\tFRRPIFMODULE, \n\tFRRRECORDID, \n\tFRRUNIT, \n\tFRRAMENDMENT, \n\tFRRLASTCHANGE, \n\tFRRLOCATIONSTATE, \n\tFRRTERRITORY, \n\tFRRFORM, \n\tFRRNUMBEROFFAMPOS, \n\tFRROCCUPANCY, \n\tFRRCONSTRUCTION, \n\tFRRPROTECTIONCLASS, \n\tFRRDEDUCTIBLETYPE, \n\tFRRDEDUCTIBLE, \n\tFRRHYDRANT, \n\tFRRFIRESTATION, \n\tFRRINSIDECITY, \n\tFRRBUILDINGAMOUNT, \n\tFRRBUILDINGPREMIUM, \n\tFRRCONTENTSAMOUNT, \n\tFRRCONTENTSPREMIUM, \n\tFRRECAECCOVERAGE, \n\tFRRVANDALISMMALICIOUSMIS, \n\tFRRSTORIESORWOODSTOVE, \n\tFRRINFLATIONGUARD, \n\tFRRVALUEUP, \n\tFRRMONEYENDORSEMENT, \n\tFRRYEAROFCONSTRUCTION, \n\tFRRAGENTSCOMMISSION, \n\tFRRZIPCODE, \n\tFRRORIGINALRATEBOOK, \n\tFRRTAXLOCATION, \n\tFRRCURRREPLACEMENTCOST, \n\tFRRCURRREPLACECOSTDATE, \n\tFRRREPLACEMENTCOST, \n\tFRRINSPECTIONYEAR, \n\tFRRLASTVALUECHANGE, \n\tFRRINSPECTIONREPORT, \n\tFRRREPLACECOSTMETHOD, \n\tFRRHISTORYOPTION, \n\tFRRNEWPREMIUM, \n\tFRROLDPREMIUM, \n\tFRRWINDSTORMASSUMPTION, \n\tFRRCOMMERCIALINDICATOR, \n\tFRRRATEBOOK, \n\tFRRLASTCHANGEFACTOR, \n\tPif14MarketValuepos1 AS ARCHPIF14MARKETVALUEPOS1, \n\tPIF14FILLER1, \n\tFRRSPECIALUSE2, \n\tFRRECCONSTRUCTION, \n\tFRRWNDSTMCONSTRUCTION, \n\tFRRCOINSURANCECODE, \n\tFRRAPPROVEDROOFIND, \n\tFRRLIABILITY, \n\tFRRMEDPAY, \n\tFRRLIABILITYPREMIUM, \n\tFRRRATINGGROUPLIT, \n\tFRRFOUNDATIONTYPE, \n\tFRRFINISHBASEPER, \n\tPIF14FILLER2, \n\tFRREXISTINSCREDITDATE, \n\tFRRCONDO, \n\tFRRZIPIND, \n\tFRRBUILDLIMCHANGEIND, \n\tFRRDEDLIMCHANGEIND, \n\tFRRREPLCOSTCHANGEIND, \n\tFRRCUSTFUTUREUSE, \n\tFRRYR2000CUSTUSE, \n\tFRRDUPKEYSEQNUM\n\tFROM EXP_MetaData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

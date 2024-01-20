@@ -17,16 +17,13 @@ EXP_default AS (
 	-- *INF*: LTRIM(RTRIM(autopay_excl_rsn_code))
 	-- 
 	-- 
-	LTRIM(RTRIM(autopay_excl_rsn_code
-		)
-	) AS v_autopay_excl_rsn_code,
+	LTRIM(RTRIM(autopay_excl_rsn_code)) AS v_autopay_excl_rsn_code,
 	v_autopay_excl_rsn_code AS autopay_excl_rsn_code_out,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59' , 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	eor_autopay_excl_rsn_id,
@@ -210,9 +207,10 @@ EXP_Lag_eff_from_date AS (
 	--       edw_eor_autopay_excl_rsn_ak_id = v_PREV_ROW_edw_eor_autopay_excl_rsn_ak_id    
 	--        , ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		edw_eor_autopay_excl_rsn_ak_id = v_PREV_ROW_edw_eor_autopay_excl_rsn_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    edw_eor_autopay_excl_rsn_ak_id = v_PREV_ROW_edw_eor_autopay_excl_rsn_ak_id, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

@@ -1,0 +1,38 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchPIF08UStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchPIF08UStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif08UStage AS (\n\tSELECT\n\t\tPif08UStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tAuditId,\n\t\tUndfuPifsymbol,\n\t\tUndfuPifpolicynumber,\n\t\tUndfuPifmodule,\n\t\tUndfuRecordid,\n\t\tUndfuSegmentNumber,\n\t\tUndfuUnitNumber,\n\t\tUndfuChangeDate,\n\t\tUndfuState,\n\t\tUndfuBizonPremises,\n\t\tUndfuWiringyear,\n\t\tUndfuPlumbingYear,\n\t\tUndfuHeatingYear,\n\t\tUndfuRoofYear,\n\t\tUndfuRoomersBoarders,\n\t\tUndfuTrampoline,\n\t\tUndfuDaycare,\n\t\tUndfuElectricalgt100,\n\t\tUndfuEIFS,\n\t\tUndfuAsbestos,\n\t\tUndfuLeadPaint,\n\t\tUndfuExoticAnimal,\n\t\tUndfuPiersPosts,\n\t\tUndfuInsOwnsProp,\n\t\tUndfuAnnualRentAgree,\n\t\tUndfuReqRentersIns,\n\t\tUndfuHeatingSystem,\n\t\tUndfuSupplHeat,\n\t\tUndfuPoolFence,\n\t\tUndfuFlatRoof,\n\t\tUndfuRoofMaterial,\n\t\tUndfuElectrical,\n\t\tUndfuRowhouse,\n\t\tUndfuRowhouseUnits,\n\t\tUndfuFireplace,\n\t\tUndfuUnderRenovation,\n\t\tUndfuMobilePermanent,\n\t\tUndfuMobileAnchored,\n\t\tUndfuLogHomeIntricate,\n\t\tUndfuLogHomeBolts,\n\t\tUndfuLogHomeframe,\n\t\tUndfuCustfutureuse\n\tFROM Pif08UStage\n),\nEXPTRANS AS (\n\tSELECT\n\tPif08UStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tAuditId,\n\tUndfuPifsymbol,\n\tUndfuPifpolicynumber,\n\tUndfuPifmodule,\n\tUndfuRecordid,\n\tUndfuSegmentNumber,\n\tUndfuUnitNumber,\n\tUndfuChangeDate,\n\tUndfuState,\n\tUndfuBizonPremises,\n\tUndfuWiringyear,\n\tUndfuPlumbingYear,\n\tUndfuHeatingYear,\n\tUndfuRoofYear,\n\tUndfuRoomersBoarders,\n\tUndfuTrampoline,\n\tUndfuDaycare,\n\tUndfuElectricalgt100,\n\tUndfuEIFS,\n\tUndfuAsbestos,\n\tUndfuLeadPaint,\n\tUndfuExoticAnimal,\n\tUndfuPiersPosts,\n\tUndfuInsOwnsProp,\n\tUndfuAnnualRentAgree,\n\tUndfuReqRentersIns,\n\tUndfuHeatingSystem,\n\tUndfuSupplHeat,\n\tUndfuPoolFence,\n\tUndfuFlatRoof,\n\tUndfuRoofMaterial,\n\tUndfuElectrical,\n\tUndfuRowhouse,\n\tUndfuRowhouseUnits,\n\tUndfuFireplace,\n\tUndfuUnderRenovation,\n\tUndfuMobilePermanent,\n\tUndfuMobileAnchored,\n\tUndfuLogHomeIntricate,\n\tUndfuLogHomeBolts,\n\tUndfuLogHomeframe,\n\tUndfuCustfutureuse\n\tFROM SQ_Pif08UStage\n),\nArchPif08UStage AS (\n\tINSERT INTO ArchPif08UStage\n\t(Pif08UStageId, ExtractDate, SourceSystemId, AuditId, UndfuPifsymbol, UndfuPifpolicynumber, UndfuPifmodule, UndfuRecordid, UndfuSegmentNumber, UndfuUnitNumber, UndfuChangeDate, UndfuState, UndfuBizonPremises, UndfuWiringyear, UndfuPlumbingYear, UndfuHeatingYear, UndfuRoofYear, UndfuRoomersBoarders, UndfuTrampoline, UndfuDaycare, UndfuElectricalgt100, UndfuEIFS, UndfuAsbestos, UndfuLeadPaint, UndfuExoticAnimal, UndfuPiersPosts, UndfuInsOwnsProp, UndfuAnnualRentAgree, UndfuReqRentersIns, UndfuHeatingSystem, UndfuSupplHeat, UndfuPoolFence, UndfuFlatRoof, UndfuRoofMaterial, UndfuElectrical, UndfuRowhouse, UndfuRowhouseUnits, UndfuFireplace, UndfuUnderRenovation, UndfuMobilePermanent, UndfuMobileAnchored, UndfuLogHomeIntricate, UndfuLogHomeBolts, UndfuLogHomeframe, UndfuCustfutureuse)\n\tSELECT \n\tPIF08USTAGEID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tUNDFUPIFSYMBOL, \n\tUNDFUPIFPOLICYNUMBER, \n\tUNDFUPIFMODULE, \n\tUNDFURECORDID, \n\tUNDFUSEGMENTNUMBER, \n\tUNDFUUNITNUMBER, \n\tUNDFUCHANGEDATE, \n\tUNDFUSTATE, \n\tUNDFUBIZONPREMISES, \n\tUNDFUWIRINGYEAR, \n\tUNDFUPLUMBINGYEAR, \n\tUNDFUHEATINGYEAR, \n\tUNDFUROOFYEAR, \n\tUNDFUROOMERSBOARDERS, \n\tUNDFUTRAMPOLINE, \n\tUNDFUDAYCARE, \n\tUNDFUELECTRICALGT100, \n\tUNDFUEIFS, \n\tUNDFUASBESTOS, \n\tUNDFULEADPAINT, \n\tUNDFUEXOTICANIMAL, \n\tUNDFUPIERSPOSTS, \n\tUNDFUINSOWNSPROP, \n\tUNDFUANNUALRENTAGREE, \n\tUNDFUREQRENTERSINS, \n\tUNDFUHEATINGSYSTEM, \n\tUNDFUSUPPLHEAT, \n\tUNDFUPOOLFENCE, \n\tUNDFUFLATROOF, \n\tUNDFUROOFMATERIAL, \n\tUNDFUELECTRICAL, \n\tUNDFUROWHOUSE, \n\tUNDFUROWHOUSEUNITS, \n\tUNDFUFIREPLACE, \n\tUNDFUUNDERRENOVATION, \n\tUNDFUMOBILEPERMANENT, \n\tUNDFUMOBILEANCHORED, \n\tUNDFULOGHOMEINTRICATE, \n\tUNDFULOGHOMEBOLTS, \n\tUNDFULOGHOMEFRAME, \n\tUNDFUCUSTFUTUREUSE\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

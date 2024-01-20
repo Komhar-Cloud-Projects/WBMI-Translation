@@ -21,39 +21,30 @@ EXP_Values AS (
 	i_QuoteAKId AS o_QuoteAKId,
 	-- *INF*: IIF(ISNULL(i_QuoteNumber) or IS_SPACES(i_QuoteNumber)  or LENGTH(i_QuoteNumber)=0,'N/A',LTRIM(RTRIM(i_QuoteNumber)))
 	-- 
-	IFF(i_QuoteNumber IS NULL 
-		OR LENGTH(i_QuoteNumber)>0 AND TRIM(i_QuoteNumber)='' 
-		OR LENGTH(i_QuoteNumber
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_QuoteNumber
-			)
-		)
+	IFF(
+	    i_QuoteNumber IS NULL
+	    or LENGTH(i_QuoteNumber)>0
+	    and TRIM(i_QuoteNumber)=''
+	    or LENGTH(i_QuoteNumber) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_QuoteNumber))
 	) AS o_QuoteNumber,
 	-- *INF*: IIF(ISNULL(i_ReasonCode) or IS_SPACES(i_ReasonCode)  or LENGTH(i_ReasonCode)=0,'N/A',LTRIM(RTRIM(i_ReasonCode)))
 	-- 
-	IFF(i_ReasonCode IS NULL 
-		OR LENGTH(i_ReasonCode)>0 AND TRIM(i_ReasonCode)='' 
-		OR LENGTH(i_ReasonCode
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_ReasonCode
-			)
-		)
+	IFF(
+	    i_ReasonCode IS NULL
+	    or LENGTH(i_ReasonCode)>0
+	    and TRIM(i_ReasonCode)=''
+	    or LENGTH(i_ReasonCode) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_ReasonCode))
 	) AS o_ReasonCode,
 	-- *INF*: LTRIM(RTRIM(i_OtherReasonComment))
-	LTRIM(RTRIM(i_OtherReasonComment
-		)
-	) AS o_OtherReasonComment,
+	LTRIM(RTRIM(i_OtherReasonComment)) AS o_OtherReasonComment,
 	-- *INF*: IIF(ISNULL(i_ReasonCode),'N/A',LTRIM(RTRIM(i_ReasonCode)))
 	-- 
 	-- 
-	IFF(i_ReasonCode IS NULL,
-		'N/A',
-		LTRIM(RTRIM(i_ReasonCode
-			)
-		)
-	) AS o_StandardReasonCode
+	IFF(i_ReasonCode IS NULL, 'N/A', LTRIM(RTRIM(i_ReasonCode))) AS o_StandardReasonCode
 	FROM SQ_Join_Quote_QuoteStatus
 ),
 LKP_DeclinedQuoteDim AS (
@@ -99,33 +90,26 @@ EXP_ExistingChecking AS (
 	-- ISNULL(lkp_DeclinedQuoteDimId), 'Insert',
 	-- 'Update'
 	-- )
-	DECODE(TRUE,
-		lkp_DeclinedQuoteDimId IS NULL, 'Insert',
-		'Update'
+	DECODE(
+	    TRUE,
+	    lkp_DeclinedQuoteDimId IS NULL, 'Insert',
+	    'Update'
 	) AS v_ChangeFlag,
 	v_ChangeFlag AS ChangeFlag,
 	1 AS CurrentSnapshotFalg,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
-	) AS EffectiveDate,
+	TO_TIMESTAMP('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS ExpirationDate,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	i_QuoteNumber AS QuoteNumber,
 	i_StandardReasonCode AS StandardReasonCode,
 	-- *INF*: IIF(NOT ISNULL(i_StandardReasonDescription),i_StandardReasonDescription,'N/A')
-	IFF(i_StandardReasonDescription IS NOT NULL,
-		i_StandardReasonDescription,
-		'N/A'
-	) AS StandardReasonDescription,
+	IFF(i_StandardReasonDescription IS NOT NULL, i_StandardReasonDescription, 'N/A') AS StandardReasonDescription,
 	-- *INF*: IIF(i_ReasonCode='8', i_OtherReasonComment, 'N/A')
-	IFF(i_ReasonCode = '8',
-		i_OtherReasonComment,
-		'N/A'
-	) AS Comments,
+	IFF(i_ReasonCode = '8', i_OtherReasonComment, 'N/A') AS Comments,
 	i_QuoteAKId AS EDWQuoteAKID,
 	i_QuoteId AS EDWQuotePKID
 	FROM EXP_Values

@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchAssociateStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchAssociateStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AssociateStage AS (\n\tSELECT\n\t\tAssociateStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tWestBendAssociateID,\n\t\tAssociateRole,\n\t\tRoleSpecificUserCode,\n\t\tDisplayName,\n\t\tLastName,\n\t\tFirstName,\n\t\tMiddleName,\n\t\tSuffix,\n\t\tEmailAddress,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID,\n\t\tUserId,\n\t\tStrategicProfitCenterCode,\n\t\tStrategicProfitCenterDescription\n\tFROM AssociateStage\n),\nLKP_ExistingArchive AS (\n\tSELECT\n\tin_WestBendAssociateID,\n\tWestBendAssociateID,\n\tHashKey,\n\tModifiedDate\n\tFROM (\n\t\tselect\ta.HashKey as HashKey,\r\n\t\t  \t\ta.ModifiedDate as ModifiedDate,\r\n\t\t\t\ta.WestBendAssociateID as WestBendAssociateID\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchAssociateStage a\r\n\t\tinner join (\r\n\t\t\t\t\tselect WestBendAssociateID, max(ModifiedDate) as ModifiedDate\r\n\t\t\t\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchAssociateStage \r\n\t\t\t\t\tgroup by WestBendAssociateID) b\r\n\t\ton  a.WestBendAssociateID = b.WestBendAssociateID\r\n\t\tand a.ModifiedDate = b.ModifiedDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY WestBendAssociateID ORDER BY in_WestBendAssociateID) = 1\n),\nEXP_AddAuditID AS (\n\tSELECT\n\tSQ_AssociateStage.AssociateStageID,\n\tSQ_AssociateStage.AgencyODSSourceSystemID,\n\tSQ_AssociateStage.HashKey,\n\tSQ_AssociateStage.ModifiedUserID,\n\tSQ_AssociateStage.ModifiedDate,\n\tSQ_AssociateStage.WestBendAssociateID,\n\tSQ_AssociateStage.AssociateRole,\n\tSQ_AssociateStage.RoleSpecificUserCode,\n\tSQ_AssociateStage.DisplayName,\n\tSQ_AssociateStage.LastName,\n\tSQ_AssociateStage.FirstName,\n\tSQ_AssociateStage.MiddleName,\n\tSQ_AssociateStage.Suffix,\n\tSQ_AssociateStage.EmailAddress,\n\tSQ_AssociateStage.ExtractDate,\n\tSQ_AssociateStage.AsOfDate,\n\tSQ_AssociateStage.RecordCount,\n\tSQ_AssociateStage.SourceSystemID,\n\tSQ_AssociateStage.UserId,\n\tSQ_AssociateStage.StrategicProfitCenterCode,\n\tSQ_AssociateStage.StrategicProfitCenterDescription,\n\tLKP_ExistingArchive.HashKey AS lkp_HashKey,\n\t-- *INF*: Decode(true,\r\n\t-- HashKey = lkp_HashKey, 'IGNORE',\r\n\t-- IsNull(lkp_HashKey), 'INSERT',\r\n\t-- 'UPDATE')\n\tDecode(\n\t    true,\n\t    HashKey = lkp_HashKey, 'IGNORE',\n\t    lkp_HashKey IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID\n\tFROM SQ_AssociateStage\n\tLEFT JOIN LKP_ExistingArchive\n\tON LKP_ExistingArchive.WestBendAssociateID = SQ_AssociateStage.WestBendAssociateID\n),\nFIL_ChangesOnly AS (\n\tSELECT\n\tAssociateStageID, \n\tAgencyODSSourceSystemID, \n\tHashKey, \n\tModifiedUserID, \n\tModifiedDate, \n\tWestBendAssociateID, \n\tAssociateRole, \n\tRoleSpecificUserCode, \n\tDisplayName, \n\tLastName, \n\tFirstName, \n\tMiddleName, \n\tSuffix, \n\tEmailAddress, \n\tExtractDate, \n\tAsOfDate, \n\tRecordCount, \n\tSourceSystemID, \n\tUserId, \n\tOUT_AUDIT_ID, \n\tStrategicProfitCenterCode, \n\tStrategicProfitCenterDescription, \n\to_ChangeFlag\n\tFROM EXP_AddAuditID\n\tWHERE o_ChangeFlag = 'INSERT' OR o_ChangeFlag = 'UPDATE'\n),\nArchAssociateStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchAssociateStage\n\t(AssociateStageID, AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, WestBendAssociateID, AssociateRole, RoleSpecificUserCode, DisplayName, LastName, FirstName, MiddleName, Suffix, EmailAddress, ExtractDate, AsOfDate, RecordCount, SourceSystemID, AuditID, UserId, StrategicProfitCenterCode, StrategicProfitCenterDescription)\n\tSELECT \n\tASSOCIATESTAGEID, \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tWESTBENDASSOCIATEID, \n\tASSOCIATEROLE, \n\tROLESPECIFICUSERCODE, \n\tDISPLAYNAME, \n\tLASTNAME, \n\tFIRSTNAME, \n\tMIDDLENAME, \n\tSUFFIX, \n\tEMAILADDRESS, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\tOUT_AUDIT_ID AS AUDITID, \n\tUSERID, \n\tSTRATEGICPROFITCENTERCODE, \n\tSTRATEGICPROFITCENTERDESCRIPTION\n\tFROM FIL_ChangesOnly\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

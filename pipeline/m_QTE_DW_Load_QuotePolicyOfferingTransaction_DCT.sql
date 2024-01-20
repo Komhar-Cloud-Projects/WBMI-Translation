@@ -67,55 +67,39 @@ EXP_GetValues AS (
 	LType AS i_LType,
 	Written AS i_Written,
 	-- *INF*: LTRIM(RTRIM(i_QuoteKey))
-	LTRIM(RTRIM(i_QuoteKey
-		)
-	) AS o_QuoteKey,
+	LTRIM(RTRIM(i_QuoteKey)) AS o_QuoteKey,
 	i_StatusDate AS o_StatusDate,
 	-- *INF*: IIF(ISNULL(i_Division) OR IS_SPACES(i_Division) OR LENGTH(i_Division)=0, 'N/A', LTRIM(RTRIM(i_Division)))
-	IFF(i_Division IS NULL 
-		OR LENGTH(i_Division)>0 AND TRIM(i_Division)='' 
-		OR LENGTH(i_Division
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_Division
-			)
-		)
+	IFF(
+	    i_Division IS NULL OR LENGTH(i_Division)>0 AND TRIM(i_Division)='' OR LENGTH(i_Division) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_Division))
 	) AS o_Division,
 	-- *INF*: IIF(ISNULL(i_WBProduct) OR IS_SPACES(i_WBProduct) OR LENGTH(i_WBProduct)=0, 'N/A', LTRIM(RTRIM(i_WBProduct)))
-	IFF(i_WBProduct IS NULL 
-		OR LENGTH(i_WBProduct)>0 AND TRIM(i_WBProduct)='' 
-		OR LENGTH(i_WBProduct
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_WBProduct
-			)
-		)
+	IFF(
+	    i_WBProduct IS NULL
+	    or LENGTH(i_WBProduct)>0
+	    and TRIM(i_WBProduct)=''
+	    or LENGTH(i_WBProduct) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_WBProduct))
 	) AS o_WBProduct,
 	-- *INF*: IIF(ISNULL(i_WBProductType) OR IS_SPACES(i_WBProductType) OR LENGTH(i_WBProductType)=0, 'N/A', LTRIM(RTRIM(i_WBProductType)))
-	IFF(i_WBProductType IS NULL 
-		OR LENGTH(i_WBProductType)>0 AND TRIM(i_WBProductType)='' 
-		OR LENGTH(i_WBProductType
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_WBProductType
-			)
-		)
+	IFF(
+	    i_WBProductType IS NULL
+	    or LENGTH(i_WBProductType)>0
+	    and TRIM(i_WBProductType)=''
+	    or LENGTH(i_WBProductType) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_WBProductType))
 	) AS o_WBProductType,
 	-- *INF*: IIF(ISNULL(i_LType) OR IS_SPACES(i_LType) OR LENGTH(i_LType)=0, 'N/A', LTRIM(RTRIM(i_LType)))
-	IFF(i_LType IS NULL 
-		OR LENGTH(i_LType)>0 AND TRIM(i_LType)='' 
-		OR LENGTH(i_LType
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_LType
-			)
-		)
+	IFF(
+	    i_LType IS NULL OR LENGTH(i_LType)>0 AND TRIM(i_LType)='' OR LENGTH(i_LType) = 0, 'N/A',
+	    LTRIM(RTRIM(i_LType))
 	) AS o_LType,
 	-- *INF*: IIF(ISNULL(i_Written),0,i_Written)
-	IFF(i_Written IS NULL,
-		0,
-		i_Written
-	) AS o_WrittenPremium
+	IFF(i_Written IS NULL, 0, i_Written) AS o_WrittenPremium
 	FROM AGG_RemoveDuplicates
 ),
 LKP_Quote AS (
@@ -146,10 +130,7 @@ EXP_NewFlag AS (
 	EXP_GetValues.o_StatusDate AS StatusDate,
 	EXP_GetValues.o_WrittenPremium AS WrittenPremium,
 	-- *INF*: IIF(ISNULL(i_QuoteAKId),-1,i_QuoteAKId)
-	IFF(i_QuoteAKId IS NULL,
-		- 1,
-		i_QuoteAKId
-	) AS o_QuoteAKId
+	IFF(i_QuoteAKId IS NULL, - 1, i_QuoteAKId) AS o_QuoteAKId
 	FROM EXP_GetValues
 	LEFT JOIN LKP_Quote
 	ON LKP_Quote.StatusDate = EXP_GetValues.o_StatusDate AND LKP_Quote.QuoteKey = EXP_GetValues.o_QuoteKey
@@ -158,8 +139,7 @@ AGG_SumPremium AS (
 	SELECT
 	WrittenPremium AS i_WrittenPremium,
 	-- *INF*: SUM(i_WrittenPremium)
-	SUM(i_WrittenPremium
-	) AS WrittenPremium,
+	SUM(i_WrittenPremium) AS WrittenPremium,
 	o_QuoteAKId AS QuoteAKId,
 	StatusDate,
 	i_QuoteId
@@ -209,19 +189,16 @@ EXP_GetSupportIds AS (
 	StatusDate AS i_StatusDate,
 	i_QuoteId,
 	-- *INF*: IIF(i_QuoteAKId=v_prev_QuoteAKId,v_NEXTVAL,i_NEXTVAL)
-	IFF(i_QuoteAKId = v_prev_QuoteAKId,
-		v_NEXTVAL,
-		i_NEXTVAL
-	) AS v_NEXTVAL,
+	IFF(i_QuoteAKId = v_prev_QuoteAKId, v_NEXTVAL, i_NEXTVAL) AS v_NEXTVAL,
 	i_QuoteAKId AS v_prev_QuoteAKId,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	-- *INF*: iif(isnull(lkp_QuotePolicyOfferingTransactionAKID),i_NEXTVAL,lkp_QuotePolicyOfferingTransactionAKID)
-	IFF(lkp_QuotePolicyOfferingTransactionAKID IS NULL,
-		i_NEXTVAL,
-		lkp_QuotePolicyOfferingTransactionAKID
+	IFF(
+	    lkp_QuotePolicyOfferingTransactionAKID IS NULL, i_NEXTVAL,
+	    lkp_QuotePolicyOfferingTransactionAKID
 	) AS o_QuotePolicyOfferingTransactionAKID,
 	i_QuoteId AS o_QuoteId,
 	i_QuoteAKId AS o_QuoteAKId,
@@ -293,10 +270,7 @@ EXP_Default AS (
 	EXP_Source_Columns.QuotePremium,
 	LKP_HistoryStage_update.WrittenPremium,
 	-- *INF*: IIF(ISNULL(WrittenPremium), 0.0, WrittenPremium)
-	IFF(WrittenPremium IS NULL,
-		0.0,
-		WrittenPremium
-	) AS o_WrittenPremium
+	IFF(WrittenPremium IS NULL, 0.0, WrittenPremium) AS o_WrittenPremium
 	FROM EXP_Source_Columns
 	LEFT JOIN LKP_HistoryStage_update
 	ON LKP_HistoryStage_update.PolicyNumber = EXP_Source_Columns.QuoteNumber AND LKP_HistoryStage_update.PolicyEffectiveDate = EXP_Source_Columns.QuoteEffectiveDate AND LKP_HistoryStage_update.ExpirationDate = EXP_Source_Columns.QuoteExpirationDate

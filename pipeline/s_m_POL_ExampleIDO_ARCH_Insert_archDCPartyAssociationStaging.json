@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCPartyAssociationStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCPartyAssociationS_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCPartyAssociationStaging AS (\n\tSELECT\n\t\tObjectId,\n\t\tObjectName,\n\t\tPartyId,\n\t\tPartyAssociationId,\n\t\tSessionId,\n\t\tPartyXmlId,\n\t\tPartyAssociationType,\n\t\tPartyAssociationStatus,\n\t\tPartyReference,\n\t\tDescription,\n\t\tEntityType,\n\t\tEntityOtherType,\n\t\tFederalEmployeeIDNumber,\n\t\tCompanyNumber,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCPartyAssociationStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tObjectId,\n\tObjectName,\n\tPartyId,\n\tPartyAssociationId,\n\tSessionId,\n\tPartyXmlId,\n\tPartyAssociationType,\n\tPartyAssociationStatus,\n\tPartyReference,\n\tDescription,\n\tEntityType,\n\tEntityOtherType,\n\tFederalEmployeeIDNumber,\n\tCompanyNumber,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCPartyAssociationStaging\n),\narchDCPartyAssociationStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCPartyAssociationStaging\n\t(ObjectId, ObjectName, PartyId, PartyAssociationId, SessionId, PartyXmlId, PartyAssociationType, PartyAssociationStatus, PartyReference, Description, EntityType, EntityOtherType, FederalEmployeeIDNumber, CompanyNumber, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tOBJECTID, \n\tOBJECTNAME, \n\tPARTYID, \n\tPARTYASSOCIATIONID, \n\tSESSIONID, \n\tPARTYXMLID, \n\tPARTYASSOCIATIONTYPE, \n\tPARTYASSOCIATIONSTATUS, \n\tPARTYREFERENCE, \n\tDESCRIPTION, \n\tENTITYTYPE, \n\tENTITYOTHERTYPE, \n\tFEDERALEMPLOYEEIDNUMBER, \n\tCOMPANYNUMBER, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

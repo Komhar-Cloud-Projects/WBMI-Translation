@@ -28,30 +28,19 @@ EXP_SQ_Claim_Representative_Occurrence_PMS_fix AS (
 	claim_rep_occurrence_ak_id,
 	claim_rep_ak_id,
 	-- *INF*: SUBSTR(claim_occurrence_key,1,3)
-	SUBSTR(claim_occurrence_key, 1, 3
-	) AS pif_symbol,
+	SUBSTR(claim_occurrence_key, 1, 3) AS pif_symbol,
 	-- *INF*: SUBSTR(claim_occurrence_key,4,7)
-	SUBSTR(claim_occurrence_key, 4, 7
-	) AS pif_policy_number,
+	SUBSTR(claim_occurrence_key, 4, 7) AS pif_policy_number,
 	-- *INF*: SUBSTR(claim_occurrence_key,11,2)
-	SUBSTR(claim_occurrence_key, 11, 2
-	) AS pif_module,
+	SUBSTR(claim_occurrence_key, 11, 2) AS pif_module,
 	-- *INF*: TO_CHAR(SUBSTR(claim_occurrence_key,13,2))
-	TO_CHAR(SUBSTR(claim_occurrence_key, 13, 2
-		)
-	) AS loss_month,
+	TO_CHAR(SUBSTR(claim_occurrence_key, 13, 2)) AS loss_month,
 	-- *INF*: TO_CHAR(SUBSTR(claim_occurrence_key,15,2))
-	TO_CHAR(SUBSTR(claim_occurrence_key, 15, 2
-		)
-	) AS loss_day,
+	TO_CHAR(SUBSTR(claim_occurrence_key, 15, 2)) AS loss_day,
 	-- *INF*: TO_CHAR(SUBSTR(claim_occurrence_key,17,4))
-	TO_CHAR(SUBSTR(claim_occurrence_key, 17, 4
-		)
-	) AS loss_year,
+	TO_CHAR(SUBSTR(claim_occurrence_key, 17, 4)) AS loss_year,
 	-- *INF*: TO_CHAR(SUBSTR(claim_occurrence_key,21,3))
-	TO_CHAR(SUBSTR(claim_occurrence_key, 21, 3
-		)
-	) AS loss_occurence
+	TO_CHAR(SUBSTR(claim_occurrence_key, 21, 3)) AS loss_occurence
 	FROM SQ_Claim_Representative_Occurrence_PMS_fix
 ),
 LKP_pif_4578_stage AS (
@@ -80,13 +69,11 @@ EXP_Claim_Representative_Occurrence_PMS_fix AS (
 	LKP_pif_4578_stage.loss_adjustor_no,
 	LKP_pif_4578_stage.loss_examiner,
 	-- *INF*: ltrim(rtrim(loss_examiner))
-	ltrim(rtrim(loss_examiner
-		)
-	) AS V_LOSS_EXAMINER_NO,
+	ltrim(rtrim(loss_examiner)) AS V_LOSS_EXAMINER_NO,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_CLAIM_REP(V_LOSS_EXAMINER_NO)),-1,:LKP.LKP_CLAIM_REP(V_LOSS_EXAMINER_NO))
-	IFF(LKP_CLAIM_REP_V_LOSS_EXAMINER_NO.claim_rep_ak_id IS NULL,
-		- 1,
-		LKP_CLAIM_REP_V_LOSS_EXAMINER_NO.claim_rep_ak_id
+	IFF(
+	    LKP_CLAIM_REP_V_LOSS_EXAMINER_NO.claim_rep_ak_id IS NULL, - 1,
+	    LKP_CLAIM_REP_V_LOSS_EXAMINER_NO.claim_rep_ak_id
 	) AS CLAIM_REP_AK_ID_OP
 	FROM EXP_SQ_Claim_Representative_Occurrence_PMS_fix
 	LEFT JOIN LKP_pif_4578_stage

@@ -31,28 +31,21 @@ EXP_Src_Data_Collect AS (
 	PolicyNumber AS i_PolicyNumber,
 	PolicyVersion AS i_PolicyVersion,
 	-- *INF*: i_PolicyNumber|| IIF(ISNULL(ltrim(rtrim(i_PolicyVersion))) or Length(ltrim(rtrim(i_PolicyVersion)))=0 or IS_SPACES(i_PolicyVersion),'00',i_PolicyVersion)
-	i_PolicyNumber || IFF(ltrim(rtrim(i_PolicyVersion
-			)
-		) IS NULL 
-		OR Length(ltrim(rtrim(i_PolicyVersion
-				)
-			)
-		) = 0 
-		OR LENGTH(i_PolicyVersion)>0 AND TRIM(i_PolicyVersion)='',
-		'00',
-		i_PolicyVersion
+	i_PolicyNumber || IFF(
+	    ltrim(rtrim(i_PolicyVersion)) IS NULL
+	    or Length(ltrim(rtrim(i_PolicyVersion))) = 0
+	    or LENGTH(i_PolicyVersion)>0
+	    and TRIM(i_PolicyVersion)='',
+	    '00',
+	    i_PolicyVersion
 	) AS o_contract_key,
 	'MAILING' AS o_addr_type,
 	'0000' AS o_loc_unit_num,
 	-- *INF*: IIF(ISNULL(i_country) or IS_SPACES(i_country)  or LENGTH(i_country)=0,'N/A',LTRIM(RTRIM(i_country)))
-	IFF(i_country IS NULL 
-		OR LENGTH(i_country)>0 AND TRIM(i_country)='' 
-		OR LENGTH(i_country
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_country
-			)
-		)
+	IFF(
+	    i_country IS NULL or LENGTH(i_country)>0 AND TRIM(i_country)='' or LENGTH(i_country) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_country))
 	) AS o_Country,
 	'N\A' AS o_no_match_flag,
 	'N\A' AS o_delivery_confirmation_flag,
@@ -175,85 +168,33 @@ EXP_Detect_Changes AS (
 	-- 
 	-- 
 	-- --iif(NewLookupRow=1,'NEW',IIF(NewLookupRow=2,'UPDATE','NOCHANGE'))
-	IFF(cust_addr_ak_id IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(i_addr_line_1
-				)
-			) != LTRIM(RTRIM(addr_line_1
-				)
-			) 
-			OR LTRIM(RTRIM(i_addr_line_2
-				)
-			) != LTRIM(RTRIM(addr_line_2
-				)
-			) 
-			OR LTRIM(RTRIM(i_addr_line_3
-				)
-			) != LTRIM(RTRIM(addr_line_3
-				)
-			) 
-			OR LTRIM(RTRIM(i_city
-				)
-			) != LTRIM(RTRIM(city
-				)
-			) 
-			OR LTRIM(RTRIM(i_state
-				)
-			) != LTRIM(RTRIM(state
-				)
-			) 
-			OR LTRIM(RTRIM(i_zip_code
-				)
-			) != LTRIM(RTRIM(zip_postal_code
-				)
-			) 
-			OR LTRIM(RTRIM(i_zip_postal_code_extension
-				)
-			) != LTRIM(RTRIM(zip_postal_code_extension
-				)
-			) 
-			OR LTRIM(RTRIM(i_loc_unit_num
-				)
-			) != LTRIM(RTRIM(loc_unit_num
-				)
-			) 
-			OR LTRIM(RTRIM(i_county
-				)
-			) != LTRIM(RTRIM(county_parish_name
-				)
-			) 
-			OR LTRIM(RTRIM(i_country
-				)
-			) != LTRIM(RTRIM(country
-				)
-			) 
-			OR LTRIM(RTRIM(i_no_match_flag
-				)
-			) != LTRIM(RTRIM(no_match_flag
-				)
-			) 
-			OR LTRIM(RTRIM(i_delivery_confirmation_flag
-				)
-			) != LTRIM(RTRIM(delivery_confirmation_flag
-				)
-			) 
-			OR LTRIM(RTRIM(i_group1_match_code
-				)
-			) != LTRIM(RTRIM(group1_match_code
-				)
-			) 
-			OR i_latitude != latitude 
-			OR i_longitude != longitude,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    cust_addr_ak_id IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(i_addr_line_1)) != LTRIM(RTRIM(addr_line_1))
+	        or LTRIM(RTRIM(i_addr_line_2)) != LTRIM(RTRIM(addr_line_2))
+	        or LTRIM(RTRIM(i_addr_line_3)) != LTRIM(RTRIM(addr_line_3))
+	        or LTRIM(RTRIM(i_city)) != LTRIM(RTRIM(city))
+	        or LTRIM(RTRIM(i_state)) != LTRIM(RTRIM(state))
+	        or LTRIM(RTRIM(i_zip_code)) != LTRIM(RTRIM(zip_postal_code))
+	        or LTRIM(RTRIM(i_zip_postal_code_extension)) != LTRIM(RTRIM(zip_postal_code_extension))
+	        or LTRIM(RTRIM(i_loc_unit_num)) != LTRIM(RTRIM(loc_unit_num))
+	        or LTRIM(RTRIM(i_county)) != LTRIM(RTRIM(county_parish_name))
+	        or LTRIM(RTRIM(i_country)) != LTRIM(RTRIM(country))
+	        or LTRIM(RTRIM(i_no_match_flag)) != LTRIM(RTRIM(no_match_flag))
+	        or LTRIM(RTRIM(i_delivery_confirmation_flag)) != LTRIM(RTRIM(delivery_confirmation_flag))
+	        or LTRIM(RTRIM(i_group1_match_code)) != LTRIM(RTRIM(group1_match_code))
+	        or i_latitude != latitude
+	        or i_longitude != longitude,
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	-- *INF*: IIF(v_changed_flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_changed_flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS v_eff_from_date,
 	LKP_contract_customer_address.contract_cust_addr_ak_id AS cust_addr_ak_id,
 	EXP_Src_Data_Collect.o_addr_type AS addr_type,
@@ -278,8 +219,7 @@ EXP_Detect_Changes AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	v_eff_from_date AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -354,10 +294,7 @@ EXP_Customer_address_ak_id AS (
 	created_date,
 	modified_date,
 	-- *INF*: IIF(ISNULL(i_cust_addr_ak_id),NEXTVAL,i_cust_addr_ak_id)
-	IFF(i_cust_addr_ak_id IS NULL,
-		NEXTVAL,
-		i_cust_addr_ak_id
-	) AS cust_addr_ak_id
+	IFF(i_cust_addr_ak_id IS NULL, NEXTVAL, i_cust_addr_ak_id) AS cust_addr_ak_id
 	FROM FIL_Insert
 ),
 TGT_contract_customer_address_INSERT AS (
@@ -416,9 +353,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- i_cust_addr_ak_id = v_prev_cust_addr_ak_id ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
-	DECODE(TRUE,
-		i_cust_addr_ak_id = v_prev_cust_addr_ak_id, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    i_cust_addr_ak_id = v_prev_cust_addr_ak_id, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	i_cust_addr_ak_id AS v_prev_cust_addr_ak_id,
 	i_eff_from_date AS v_prev_eff_from_date,

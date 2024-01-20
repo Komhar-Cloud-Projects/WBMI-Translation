@@ -21,8 +21,7 @@ EXP_Values AS (
 	pms_loss_claimant,
 	cms_party_type,
 	-- *INF*: replaceChr(0,to_char(pms_date_of_loss),'/','')
-	REGEXP_REPLACE(to_char(pms_date_of_loss
-	),'/','','i') AS v_pms_date_of_loss,
+	REGEXP_REPLACE(to_char(pms_date_of_loss),'/','','i') AS v_pms_date_of_loss,
 	pms_policy_sym || pms_policy_num || pms_policy_mod || v_pms_date_of_loss || pms_loss_occurence || pms_loss_claimant || cms_party_type AS claim_party_key,
 	last_name AS claim_party_last_name,
 	first_name AS claim_party_first_name,
@@ -31,104 +30,82 @@ EXP_Values AS (
 	'N/A' AS claim_party_name_sfx,
 	claim_party_first_name || ' ' ||  claim_party_last_name AS v_claim_party_full_name,
 	-- *INF*: IIF(ISNULL(v_claim_party_full_name) or IS_SPACES(v_claim_party_full_name) or LENGTH(v_claim_party_full_name) = 0,'N/A',LTRIM(RTRIM(v_claim_party_full_name)))
-	IFF(v_claim_party_full_name IS NULL 
-		OR LENGTH(v_claim_party_full_name)>0 AND TRIM(v_claim_party_full_name)='' 
-		OR LENGTH(v_claim_party_full_name
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(v_claim_party_full_name
-			)
-		)
+	IFF(
+	    v_claim_party_full_name IS NULL
+	    or LENGTH(v_claim_party_full_name)>0
+	    and TRIM(v_claim_party_full_name)=''
+	    or LENGTH(v_claim_party_full_name) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(v_claim_party_full_name))
 	) AS claim_party_full_name,
 	address1,
 	address2,
 	address1 || ' ' ||  address2 AS v_claim_party_address,
 	-- *INF*: IIF(ISNULL(v_claim_party_address) or IS_SPACES(v_claim_party_address) or LENGTH(v_claim_party_address) = 0 ,'N/A',LTRIM(RTRIM(v_claim_party_address)))
-	IFF(v_claim_party_address IS NULL 
-		OR LENGTH(v_claim_party_address)>0 AND TRIM(v_claim_party_address)='' 
-		OR LENGTH(v_claim_party_address
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(v_claim_party_address
-			)
-		)
+	IFF(
+	    v_claim_party_address IS NULL
+	    or LENGTH(v_claim_party_address)>0
+	    and TRIM(v_claim_party_address)=''
+	    or LENGTH(v_claim_party_address) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(v_claim_party_address))
 	) AS claim_party_address,
 	city,
 	-- *INF*: IIF(ISNULL(city) or IS_SPACES(city) or LENGTH(city) = 0 ,'N/A',LTRIM(RTRIM(city)))
-	IFF(city IS NULL 
-		OR LENGTH(city)>0 AND TRIM(city)='' 
-		OR LENGTH(city
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(city
-			)
-		)
+	IFF(
+	    city IS NULL or LENGTH(city)>0 AND TRIM(city)='' or LENGTH(city) = 0, 'N/A',
+	    LTRIM(RTRIM(city))
 	) AS claim_party_city,
 	'N/A' AS claim_party_county,
 	state,
 	-- *INF*: IIF(ISNULL(state) or IS_SPACES(state) or LENGTH(state) = 0 ,'N/A',LTRIM(RTRIM(state)))
-	IFF(state IS NULL 
-		OR LENGTH(state)>0 AND TRIM(state)='' 
-		OR LENGTH(state
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(state
-			)
-		)
+	IFF(
+	    state IS NULL or LENGTH(state)>0 AND TRIM(state)='' or LENGTH(state) = 0, 'N/A',
+	    LTRIM(RTRIM(state))
 	) AS claim_party_state,
 	zip_code,
 	zip4,
 	zip_code || '-' || zip4 AS v_claim_party_zip_code,
 	-- *INF*: IIF(ISNULL(v_claim_party_zip_code) or IS_SPACES(v_claim_party_zip_code) or LENGTH(v_claim_party_zip_code) = 0 or v_claim_party_zip_code = '-'
 	--  ,'N/A',LTRIM(RTRIM(v_claim_party_zip_code)))
-	IFF(v_claim_party_zip_code IS NULL 
-		OR LENGTH(v_claim_party_zip_code)>0 AND TRIM(v_claim_party_zip_code)='' 
-		OR LENGTH(v_claim_party_zip_code
-		) = 0 
-		OR v_claim_party_zip_code = '-',
-		'N/A',
-		LTRIM(RTRIM(v_claim_party_zip_code
-			)
-		)
+	IFF(
+	    v_claim_party_zip_code IS NULL
+	    or LENGTH(v_claim_party_zip_code)>0
+	    and TRIM(v_claim_party_zip_code)=''
+	    or LENGTH(v_claim_party_zip_code) = 0
+	    or v_claim_party_zip_code = '-',
+	    'N/A',
+	    LTRIM(RTRIM(v_claim_party_zip_code))
 	) AS claim_party_zip_code,
 	'N/A' AS addr_type,
 	tin,
 	-- *INF*: IIF(ISNULL(tin) or IS_SPACES(tin) or LENGTH(tin) = 0 ,'N/A',LTRIM(RTRIM(tin)))
-	IFF(tin IS NULL 
-		OR LENGTH(tin)>0 AND TRIM(tin)='' 
-		OR LENGTH(tin
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(tin
-			)
-		)
+	IFF(
+	    tin IS NULL or LENGTH(tin)>0 AND TRIM(tin)='' or LENGTH(tin) = 0, 'N/A', LTRIM(RTRIM(tin))
 	) AS claim_party_taxid_ssn,
 	'N/A' AS tax_fed_id,
 	-- *INF*: TO_DATE('12/31/2100','MM/DD/YYYY')
-	TO_DATE('12/31/2100', 'MM/DD/YYYY'
-	) AS claim_party_birthdate,
+	TO_TIMESTAMP('12/31/2100', 'MM/DD/YYYY') AS claim_party_birthdate,
 	'N/A' AS claim_party_gndr,
 	phone AS in_phone_num,
 	-- *INF*: IIF(ISNULL(in_phone_num) or IS_SPACES(in_phone_num) or LENGTH(in_phone_num) = 0 ,'N/A',LTRIM(RTRIM(in_phone_num)))
-	IFF(in_phone_num IS NULL 
-		OR LENGTH(in_phone_num)>0 AND TRIM(in_phone_num)='' 
-		OR LENGTH(in_phone_num
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_phone_num
-			)
-		)
+	IFF(
+	    in_phone_num IS NULL
+	    or LENGTH(in_phone_num)>0
+	    and TRIM(in_phone_num)=''
+	    or LENGTH(in_phone_num) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_phone_num))
 	) AS phone_num,
 	phone_ext AS in_phone_ext,
 	-- *INF*: IIF(ISNULL(in_phone_ext) or IS_SPACES(in_phone_ext) or LENGTH(in_phone_ext) = 0 ,'N/A',LTRIM(RTRIM(in_phone_ext)))
-	IFF(in_phone_ext IS NULL 
-		OR LENGTH(in_phone_ext)>0 AND TRIM(in_phone_ext)='' 
-		OR LENGTH(in_phone_ext
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_phone_ext
-			)
-		)
+	IFF(
+	    in_phone_ext IS NULL
+	    or LENGTH(in_phone_ext)>0
+	    and TRIM(in_phone_ext)=''
+	    or LENGTH(in_phone_ext) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_phone_ext))
 	) AS phone_ext,
 	'N/A' AS phone_type
 	FROM SQ_cms_pms_relation_stage
@@ -246,77 +223,23 @@ EXP_Detect_Changes AS (
 	-- 	(ltrim(rtrim(adnm_taxid_ssn)) <> ltrim(rtrim(Old_tax_ssn_id))) ,
 	-- 	'UPDATE',
 	-- 	'NOCHANGE'))
-	IFF(Old_claim_party_id IS NULL,
-		'NEW',
-		IFF(( ltrim(rtrim(claim_party_full_name
-					)
-				) <> ltrim(rtrim(Old_claim_party_full_name
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(claim_party_last_name
-					)
-				) <> ltrim(rtrim(Old_claim_party_last_name
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(claim_party_first_name
-					)
-				) <> ltrim(rtrim(Old_claim_party_first_name
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(claim_party_address
-					)
-				) <> ltrim(rtrim(Old_claim_party_addr
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(claim_party_city
-					)
-				) <> ltrim(rtrim(Old_claim_party_city
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(claim_party_state
-					)
-				) <> ltrim(rtrim(Old_claim_party_state
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(claim_party_zip_code
-					)
-				) <> ltrim(rtrim(Old_claim_party_zip
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(phone_num
-					)
-				) <> ltrim(rtrim(Old_phone_num
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(phone_ext
-					)
-				) <> ltrim(rtrim(Old_phone_ext
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(phone_type
-					)
-				) <> ltrim(rtrim(Old_phone_type
-					)
-				) 
-			) 
-			OR ( ltrim(rtrim(adnm_taxid_ssn
-					)
-				) <> ltrim(rtrim(Old_tax_ssn_id
-					)
-				) 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    Old_claim_party_id IS NULL, 'NEW',
+	    IFF(
+	        (ltrim(rtrim(claim_party_full_name)) <> ltrim(rtrim(Old_claim_party_full_name)))
+	        or (ltrim(rtrim(claim_party_last_name)) <> ltrim(rtrim(Old_claim_party_last_name)))
+	        or (ltrim(rtrim(claim_party_first_name)) <> ltrim(rtrim(Old_claim_party_first_name)))
+	        or (ltrim(rtrim(claim_party_address)) <> ltrim(rtrim(Old_claim_party_addr)))
+	        or (ltrim(rtrim(claim_party_city)) <> ltrim(rtrim(Old_claim_party_city)))
+	        or (ltrim(rtrim(claim_party_state)) <> ltrim(rtrim(Old_claim_party_state)))
+	        or (ltrim(rtrim(claim_party_zip_code)) <> ltrim(rtrim(Old_claim_party_zip)))
+	        or (ltrim(rtrim(phone_num)) <> ltrim(rtrim(Old_phone_num)))
+	        or (ltrim(rtrim(phone_ext)) <> ltrim(rtrim(Old_phone_ext)))
+	        or (ltrim(rtrim(phone_type)) <> ltrim(rtrim(Old_phone_type)))
+	        or (ltrim(rtrim(adnm_taxid_ssn)) <> ltrim(rtrim(Old_tax_ssn_id))),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS V_changed_flag,
 	'0' AS logical_flag,
 	1 AS crrnt_snpsht_flag,
@@ -324,22 +247,19 @@ EXP_Detect_Changes AS (
 	-- *INF*: IIF(V_changed_flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),
 	-- 	SYSDATE)
-	IFF(V_changed_flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    V_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	V_changed_flag AS Changed_flag,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	'N/A' AS Default_String,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS claim_party_ref_eff_from_date
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS claim_party_ref_eff_from_date
 	FROM EXP_Values
 	LEFT JOIN LKP_Target
 	ON LKP_Target.claim_party_key = EXP_Values.claim_party_key
@@ -390,10 +310,7 @@ EXP_Determine_AK AS (
 	SELECT
 	Old_claim_party_ak_id,
 	-- *INF*: IIF(Changed_flag='NEW', NEXTVAL, Old_claim_party_ak_id)
-	IFF(Changed_flag = 'NEW',
-		NEXTVAL,
-		Old_claim_party_ak_id
-	) AS claim_party_ak_id,
+	IFF(Changed_flag = 'NEW', NEXTVAL, Old_claim_party_ak_id) AS claim_party_ak_id,
 	claim_party_key,
 	claim_party_full_name,
 	claim_party_first_name,
@@ -426,8 +343,7 @@ EXP_Determine_AK AS (
 	Default_String,
 	claim_party_ref_eff_from_date,
 	-- *INF*: TO_DATE('12/31/2999','MM/DD/YYYY')
-	TO_DATE('12/31/2999', 'MM/DD/YYYY'
-	) AS out_default_high_date,
+	TO_TIMESTAMP('12/31/2999', 'MM/DD/YYYY') AS out_default_high_date,
 	SEQ_claim_party.NEXTVAL
 	FROM FIL_Insert
 ),
@@ -495,9 +411,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	claim_party_key = v_PREV_ROW_party_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		claim_party_key = v_PREV_ROW_party_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    claim_party_key = v_PREV_ROW_party_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

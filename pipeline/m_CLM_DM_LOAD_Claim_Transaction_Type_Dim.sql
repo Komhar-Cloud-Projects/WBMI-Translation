@@ -142,48 +142,33 @@ EXP_get_values AS (
 	SRT_Remove_Duplicate_Rows.trans_ctgry_code AS IN_trans_ctgry_code,
 	LKP_sup_claim_transaction_category.trans_ctgry_descript AS lkp_trans_ctgry_descript_IN,
 	-- *INF*: IIF(ISNULL(lkp_trans_ctgry_descript_IN), 'N/A', lkp_trans_ctgry_descript_IN)
-	IFF(lkp_trans_ctgry_descript_IN IS NULL,
-		'N/A',
-		lkp_trans_ctgry_descript_IN
-	) AS lkp_trans_ctgry_descript_OUT,
+	IFF(lkp_trans_ctgry_descript_IN IS NULL, 'N/A', lkp_trans_ctgry_descript_IN) AS lkp_trans_ctgry_descript_OUT,
 	SRT_Remove_Duplicate_Rows.trans_code AS IN_trans_code,
 	-- *INF*: :LKP.LKP_SUP_CLAIM_TRANSACTION_CODE(IN_trans_code)
 	LKP_SUP_CLAIM_TRANSACTION_CODE_IN_trans_code.trans_descript AS lkp_trans_descript_IN,
 	-- *INF*: IIF(ISNULL(lkp_trans_descript_IN), 'N/A', lkp_trans_descript_IN)
-	IFF(lkp_trans_descript_IN IS NULL,
-		'N/A',
-		lkp_trans_descript_IN
-	) AS lkp_trans_code_descript_OUT,
+	IFF(lkp_trans_descript_IN IS NULL, 'N/A', lkp_trans_descript_IN) AS lkp_trans_code_descript_OUT,
 	SRT_Remove_Duplicate_Rows.trans_base_type_code AS IN_trans_base_type_code,
 	-- *INF*: :LKP.LKP_SUP_CLAIM_TRANSACTION_CODE(IN_trans_base_type_code)
 	LKP_SUP_CLAIM_TRANSACTION_CODE_IN_trans_base_type_code.trans_descript AS lkp_trans_base_type_code_descript_IN,
 	-- *INF*: IIF(ISNULL(lkp_trans_base_type_code_descript_IN), 'N/A', lkp_trans_base_type_code_descript_IN)
-	IFF(lkp_trans_base_type_code_descript_IN IS NULL,
-		'N/A',
-		lkp_trans_base_type_code_descript_IN
+	IFF(
+	    lkp_trans_base_type_code_descript_IN IS NULL, 'N/A', lkp_trans_base_type_code_descript_IN
 	) AS lkp_trans_base_type_code_descript_OUT,
 	SRT_Remove_Duplicate_Rows.trans_rsn AS IN_trans_rsn,
 	LKP_sup_transaction_reason.trans_rsn_descript AS lkp_trans_rsn_descript_IN,
 	-- *INF*: IIF(ISNULL(lkp_trans_rsn_descript_IN), 'N/A', lkp_trans_rsn_descript_IN)
-	IFF(lkp_trans_rsn_descript_IN IS NULL,
-		'N/A',
-		lkp_trans_rsn_descript_IN
-	) AS lkp_trans_rsn_descript_OUT,
+	IFF(lkp_trans_rsn_descript_IN IS NULL, 'N/A', lkp_trans_rsn_descript_IN) AS lkp_trans_rsn_descript_OUT,
 	SRT_Remove_Duplicate_Rows.type_disability AS IN_type_disability_code,
 	LKP_sup_claim_type_disability.type_disability_descript AS lkp_type_disability_descript_IN,
 	-- *INF*: iif(isnull(lkp_type_disability_descript_IN),'N/A',lkp_type_disability_descript_IN)
-	IFF(lkp_type_disability_descript_IN IS NULL,
-		'N/A',
-		lkp_type_disability_descript_IN
-	) AS lkp_type_disability_descript_OUT,
+	IFF(lkp_type_disability_descript_IN IS NULL, 'N/A', lkp_type_disability_descript_IN) AS lkp_type_disability_descript_OUT,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	SRT_Remove_Duplicate_Rows.trans_kind_code,
@@ -191,9 +176,10 @@ EXP_get_values AS (
 	-- 	'D', 'Direct',
 	-- 	'C', 'Ceded')
 	-- 
-	DECODE(trans_kind_code,
-		'D', 'Direct',
-		'C', 'Ceded'
+	DECODE(
+	    trans_kind_code,
+	    'D', 'Direct',
+	    'C', 'Ceded'
 	) AS trans_kind_desc,
 	SRT_Remove_Duplicate_Rows.offset_onset_ind,
 	SRT_Remove_Duplicate_Rows.s3p_trans_code,
@@ -201,10 +187,7 @@ EXP_get_values AS (
 	-- *INF*: :LKP.LKP_SUP_CLAIM_TRANSACTION_CODE(pms_trans_code)
 	LKP_SUP_CLAIM_TRANSACTION_CODE_pms_trans_code.trans_descript AS v_pms_trans_code_descript,
 	-- *INF*: IIF(ISNULL(v_pms_trans_code_descript), 'N/A', v_pms_trans_code_descript)
-	IFF(v_pms_trans_code_descript IS NULL,
-		'N/A',
-		v_pms_trans_code_descript
-	) AS pms_trans_code_descript,
+	IFF(v_pms_trans_code_descript IS NULL, 'N/A', v_pms_trans_code_descript) AS pms_trans_code_descript,
 	'N/A' AS Default_NA
 	FROM SRT_Remove_Duplicate_Rows
 	LEFT JOIN LKP_Claim_transaction_type_dim

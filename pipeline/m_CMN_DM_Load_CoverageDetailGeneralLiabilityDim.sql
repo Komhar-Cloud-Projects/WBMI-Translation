@@ -146,50 +146,25 @@ EXP_GetMetaData AS (
 	SQ_CoverageDetailGeneralLiabilityDim.ISOGeneralLiabilityClassGroupCode AS i_ISOGeneralLiabilityClassGroupCode,
 	LKP_SupISOClassGroup.ISOGeneralLiabilityClassGroupDescription AS i_ISOGeneralLiabilityClassGroupDescription,
 	-- *INF*: IIF(ISNULL(i_RetroactiveDate), TO_DATE('2100-12-31', 'YYYY-MM-DD'), i_RetroactiveDate)
-	IFF(i_RetroactiveDate IS NULL,
-		TO_DATE('2100-12-31', 'YYYY-MM-DD'
-		),
-		i_RetroactiveDate
-	) AS v_RetroactiveDate,
+	IFF(i_RetroactiveDate IS NULL, TO_TIMESTAMP('2100-12-31', 'YYYY-MM-DD'), i_RetroactiveDate) AS v_RetroactiveDate,
 	-- *INF*: IIF(ISNULL(i_PolicyPerOccurenceLimit), 'N/A', i_PolicyPerOccurenceLimit)
-	IFF(i_PolicyPerOccurenceLimit IS NULL,
-		'N/A',
-		i_PolicyPerOccurenceLimit
-	) AS v_PolicyPerOccurenceLimit,
+	IFF(i_PolicyPerOccurenceLimit IS NULL, 'N/A', i_PolicyPerOccurenceLimit) AS v_PolicyPerOccurenceLimit,
 	-- *INF*: IIF(ISNULL(i_PolicyAggregateLimit), 'N/A', i_PolicyAggregateLimit)
-	IFF(i_PolicyAggregateLimit IS NULL,
-		'N/A',
-		i_PolicyAggregateLimit
-	) AS v_PolicyAggregateLimit,
+	IFF(i_PolicyAggregateLimit IS NULL, 'N/A', i_PolicyAggregateLimit) AS v_PolicyAggregateLimit,
 	-- *INF*: IIF(ISNULL(i_PolicyProductAggregateLimit), 'N/A', i_PolicyProductAggregateLimit)
-	IFF(i_PolicyProductAggregateLimit IS NULL,
-		'N/A',
-		i_PolicyProductAggregateLimit
-	) AS v_PolicyProductAggregateLimit,
+	IFF(i_PolicyProductAggregateLimit IS NULL, 'N/A', i_PolicyProductAggregateLimit) AS v_PolicyProductAggregateLimit,
 	-- *INF*: IIF(ISNULL(i_PolicyPerClaimLimit), 'N/A', i_PolicyPerClaimLimit)
-	IFF(i_PolicyPerClaimLimit IS NULL,
-		'N/A',
-		i_PolicyPerClaimLimit
-	) AS v_PolicyPerClaimLimit,
+	IFF(i_PolicyPerClaimLimit IS NULL, 'N/A', i_PolicyPerClaimLimit) AS v_PolicyPerClaimLimit,
 	-- *INF*: IIF(ISNULL(i_LiabilityFormCode), 'N/A', i_LiabilityFormCode)
-	IFF(i_LiabilityFormCode IS NULL,
-		'N/A',
-		i_LiabilityFormCode
-	) AS v_LiabilityFormCode,
+	IFF(i_LiabilityFormCode IS NULL, 'N/A', i_LiabilityFormCode) AS v_LiabilityFormCode,
 	-- *INF*: IIF(ISNULL(i_ISOGeneralLiabilityClassSummary), 'N/A', i_ISOGeneralLiabilityClassSummary)
-	IFF(i_ISOGeneralLiabilityClassSummary IS NULL,
-		'N/A',
-		i_ISOGeneralLiabilityClassSummary
-	) AS v_ISOGeneralLiabilityClassSummary,
+	IFF(i_ISOGeneralLiabilityClassSummary IS NULL, 'N/A', i_ISOGeneralLiabilityClassSummary) AS v_ISOGeneralLiabilityClassSummary,
 	-- *INF*: IIF(ISNULL(i_ISOGeneralLiabilityClassGroupCode), 'N/A', i_ISOGeneralLiabilityClassGroupCode)
-	IFF(i_ISOGeneralLiabilityClassGroupCode IS NULL,
-		'N/A',
-		i_ISOGeneralLiabilityClassGroupCode
-	) AS v_ISOGeneralLiabilityClassGroupCode,
+	IFF(i_ISOGeneralLiabilityClassGroupCode IS NULL, 'N/A', i_ISOGeneralLiabilityClassGroupCode) AS v_ISOGeneralLiabilityClassGroupCode,
 	-- *INF*: IIF(ISNULL(i_ISOGeneralLiabilityClassGroupDescription), 'N/A', i_ISOGeneralLiabilityClassGroupDescription)
-	IFF(i_ISOGeneralLiabilityClassGroupDescription IS NULL,
-		'N/A',
-		i_ISOGeneralLiabilityClassGroupDescription
+	IFF(
+	    i_ISOGeneralLiabilityClassGroupDescription IS NULL, 'N/A',
+	    i_ISOGeneralLiabilityClassGroupDescription
 	) AS v_ISOGeneralLiabilityClassGroupDescription,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(i_CoverageDetailDimId_GL), 'NEW', 
@@ -201,19 +176,11 @@ EXP_GetMetaData AS (
 	-- OR i_LiabilityFormCode_GL != v_LiabilityFormCode
 	-- OR i_ClassSummary_GL != v_ISOGeneralLiabilityClassSummary
 	-- OR i_ClassGroupCode_GL != v_ISOGeneralLiabilityClassGroupCode, 'UPDATE', 'NOCHANGE')
-	DECODE(TRUE,
-		i_CoverageDetailDimId_GL IS NULL, 'NEW',
-		i_RetroactiveDate_GL != v_RetroactiveDate 
-		OR i_PerOccurenceLimit_GL != v_PolicyPerOccurenceLimit 
-		OR i_AggregateLimit_GL != v_PolicyAggregateLimit 
-		OR i_ProductAggregateLimit_GL != v_PolicyProductAggregateLimit 
-		OR i_EffectiveDate_GL != i_EffectiveDate 
-		OR i_ExpirationDate_GL != i_ExpirationDate 
-		OR i_PolicyPerClaimLimit_GL != v_PolicyPerClaimLimit 
-		OR i_LiabilityFormCode_GL != v_LiabilityFormCode 
-		OR i_ClassSummary_GL != v_ISOGeneralLiabilityClassSummary 
-		OR i_ClassGroupCode_GL != v_ISOGeneralLiabilityClassGroupCode, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    i_CoverageDetailDimId_GL IS NULL, 'NEW',
+	    i_RetroactiveDate_GL != v_RetroactiveDate OR i_PerOccurenceLimit_GL != v_PolicyPerOccurenceLimit OR i_AggregateLimit_GL != v_PolicyAggregateLimit OR i_ProductAggregateLimit_GL != v_PolicyProductAggregateLimit OR i_EffectiveDate_GL != i_EffectiveDate OR i_ExpirationDate_GL != i_ExpirationDate OR i_PolicyPerClaimLimit_GL != v_PolicyPerClaimLimit OR i_LiabilityFormCode_GL != v_LiabilityFormCode OR i_ClassSummary_GL != v_ISOGeneralLiabilityClassSummary OR i_ClassGroupCode_GL != v_ISOGeneralLiabilityClassGroupCode, 'UPDATE',
+	    'NOCHANGE'
 	) AS o_ChangeFlag,
 	i_CoverageDetailDimId AS o_CoverageDetailDimId,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,

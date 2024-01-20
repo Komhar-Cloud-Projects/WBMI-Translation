@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleData_STG_Insert_DCPLTPlanStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleData_STG_Insert_DCPLTPlanStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_PLT_Plan AS (\n\tSELECT DC_PLT_Plan.PlanId, DC_PLT_Plan.AgencyId, DC_PLT_Plan.LineOfBusinessCode, DC_PLT_Plan.MasterCompanyCode, \r\n\tDC_PLT_Plan.PlanActivationDate, DC_PLT_Plan.PlanExpirationDate, DC_PLT_Plan.PolicyInceptionDate, \r\n\tDC_PLT_Plan.ProductCode, DC_PLT_Plan.StateCode, DC_PLT_Plan.UserKey1, DC_PLT_Plan.UserKey2, DC_PLT_Plan.UserKey3, \r\n\tDC_PLT_Plan.UserKey4, DC_PLT_Plan.UserKey5, DC_PLT_Plan.PlanClassCode, \r\n\tDC_PLT_Plan.PlanTypeCode, null as PlanData, DC_PLT_Plan.LastUpdatedTimestamp, DC_PLT_Plan.LastUpdatedUserId \r\n\tFROM DC_PLT_Plan with(nolock)\n),\nEXP_Metadata AS (\n\tSELECT\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tPlanId,\n\tAgencyId,\n\tLineOfBusinessCode,\n\tMasterCompanyCode,\n\tPlanActivationDate,\n\tPlanExpirationDate,\n\tPolicyInceptionDate,\n\tProductCode,\n\tStateCode,\n\tUserKey1,\n\tUserKey2,\n\tUserKey3,\n\tUserKey4,\n\tUserKey5,\n\tPlanClassCode,\n\tPlanTypeCode,\n\tPlanData,\n\tLastUpdatedTimestamp,\n\tLastUpdatedUserId\n\tFROM SQ_DC_PLT_Plan\n),\nDCPLTPlanStage AS (\n\tTRUNCATE TABLE DCPLTPlanStage;\n\tINSERT INTO DCPLTPlanStage\n\t(ExtractDate, SourceSystemId, PlanId, AgencyId, LineOfBusinessCode, MasterCompanyCode, PlanActivationDate, PlanExpirationDate, PolicyInceptionDate, ProductCode, StateCode, UserKey1, UserKey2, UserKey3, UserKey4, UserKey5, PlanClassCode, PlanTypeCode, PlanData, LastUpdatedTimestamp, LastUpdatedUserId)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tPLANID, \n\tAGENCYID, \n\tLINEOFBUSINESSCODE, \n\tMASTERCOMPANYCODE, \n\tPLANACTIVATIONDATE, \n\tPLANEXPIRATIONDATE, \n\tPOLICYINCEPTIONDATE, \n\tPRODUCTCODE, \n\tSTATECODE, \n\tUSERKEY1, \n\tUSERKEY2, \n\tUSERKEY3, \n\tUSERKEY4, \n\tUSERKEY5, \n\tPLANCLASSCODE, \n\tPLANTYPECODE, \n\tPLANDATA, \n\tLASTUPDATEDTIMESTAMP, \n\tLASTUPDATEDUSERID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

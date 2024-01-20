@@ -57,39 +57,17 @@ EXP_GetValues AS (
 	DividendPlan AS i_DividendPlan,
 	i_pol_ak_id AS o_PolicyAKId,
 	-- *INF*: IIF(ISNULL(i_Pif43IXUnmodWbmDividendPaid), 0.00,ROUND(i_Pif43IXUnmodWbmDividendPaid,2))
-	IFF(i_Pif43IXUnmodWbmDividendPaid IS NULL,
-		0.00,
-		ROUND(i_Pif43IXUnmodWbmDividendPaid, 2
-		)
-	) AS o_DividendAmount,
+	IFF(i_Pif43IXUnmodWbmDividendPaid IS NULL, 0.00, ROUND(i_Pif43IXUnmodWbmDividendPaid, 2)) AS o_DividendAmount,
 	-- *INF*: TO_DATE(TO_CHAR(TO_INTEGER(i_Pif43IXUnmodYearTransaction))||LPAD(TO_CHAR(TO_INTEGER(i_Pif43IXUnmodMonthTransaction)),2,'0')||LPAD(TO_CHAR(TO_INTEGER(i_Pif43IXUnmodDayTransaction)),2,'0'),'YYYYMMDD' )
-	TO_DATE(TO_CHAR(CAST(i_Pif43IXUnmodYearTransaction AS INTEGER)
-		) || LPAD(TO_CHAR(CAST(i_Pif43IXUnmodMonthTransaction AS INTEGER)
-			), 2, '0'
-		) || LPAD(TO_CHAR(CAST(i_Pif43IXUnmodDayTransaction AS INTEGER)
-			), 2, '0'
-		), 'YYYYMMDD'
-	) AS o_DividendTransactionEnteredDate,
+	TO_TIMESTAMP(TO_CHAR(CAST(i_Pif43IXUnmodYearTransaction AS INTEGER)) || LPAD(TO_CHAR(CAST(i_Pif43IXUnmodMonthTransaction AS INTEGER)), 2, '0') || LPAD(TO_CHAR(CAST(i_Pif43IXUnmodDayTransaction AS INTEGER)), 2, '0'), 'YYYYMMDD') AS o_DividendTransactionEnteredDate,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_PMSStateCode)))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_PMSStateCode
-			)
-		)
-	) AS o_StateCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_PMSStateCode))) AS o_StateCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_DividendPlan)))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_DividendPlan
-			)
-		)
-	) AS o_DividendPlan,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_DividendPlan))) AS o_DividendPlan,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_DividendType)))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_DividendType
-			)
-		)
-	) AS o_DividendType,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(i_DividendType))) AS o_DividendType,
 	-- *INF*: IIF(ISNULL(i_SupDividendTypeID),-1,i_SupDividendTypeID)
-	IFF(i_SupDividendTypeID IS NULL,
-		- 1,
-		i_SupDividendTypeID
-	) AS o_SupDividendTypeId
+	IFF(i_SupDividendTypeID IS NULL, - 1, i_SupDividendTypeID) AS o_SupDividendTypeId
 	FROM SQ_Pif43IXUnmodStage
 ),
 LKP_sup_state AS (
@@ -116,10 +94,7 @@ EXP_sup_state_id AS (
 	EXP_GetValues.o_SupDividendTypeId AS SupDividendTypeId,
 	LKP_sup_state.sup_state_id AS lkp_sup_state_id,
 	-- *INF*: IIF(ISNULL(lkp_sup_state_id),-1,lkp_sup_state_id)
-	IFF(lkp_sup_state_id IS NULL,
-		- 1,
-		lkp_sup_state_id
-	) AS o_sup_state_id
+	IFF(lkp_sup_state_id IS NULL, - 1, lkp_sup_state_id) AS o_sup_state_id
 	FROM EXP_GetValues
 	LEFT JOIN LKP_sup_state
 	ON LKP_sup_state.state_abbrev = EXP_GetValues.o_StateCode
@@ -129,9 +104,7 @@ AGG_SUMAMT AS (
 	PolicyAKId,
 	DividendAmount,
 	-- *INF*: ROUND(SUM(DividendAmount),2)
-	ROUND(SUM(DividendAmount
-		), 2
-	) AS sum_DividendAmount,
+	ROUND(SUM(DividendAmount), 2) AS sum_DividendAmount,
 	DividendTransactionEnteredDate,
 	StateCode,
 	DividendPlan,
@@ -220,24 +193,18 @@ EXP_MetaData AS (
 	-- lkp_SupDividendTypeId<>SupDividendTypeId OR
 	-- lkp_DividendPaidAmount<>v_DividendPaidAmount,'UPDATE',
 	-- 'NOCHANGE')
-	DECODE(TRUE,
-		lkp_DividendId IS NULL, 'NEW',
-		lkp_DividendPayableAmount <> DividendPayableAmount 
-		OR lkp_DividendPlan <> DividendPlan 
-		OR lkp_DividendType <> DividendType 
-		OR lkp_SupStateId <> sup_state_id 
-		OR lkp_SupDividendTypeId <> SupDividendTypeId 
-		OR lkp_DividendPaidAmount <> v_DividendPaidAmount, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    lkp_DividendId IS NULL, 'NEW',
+	    lkp_DividendPayableAmount <> DividendPayableAmount OR lkp_DividendPlan <> DividendPlan OR lkp_DividendType <> DividendType OR lkp_SupStateId <> sup_state_id OR lkp_SupDividendTypeId <> SupDividendTypeId OR lkp_DividendPaidAmount <> v_DividendPaidAmount, 'UPDATE',
+	    'NOCHANGE'
 	) AS o_ChangeFlag,
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,

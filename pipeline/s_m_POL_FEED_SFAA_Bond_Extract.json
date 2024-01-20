@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_FEED_SFAA_Bond_Extract",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_SFAA_Bond_Extract",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SFAA_TL_SC AS (\n\n-- TODO Manual --\n\n),\nEXP_GetLastRecord AS (\n\tSELECT\n\tRecord,\n\t-- *INF*: SUBSTR(LTRIM(RTRIM(Record)),1,2)\n\tSUBSTR(LTRIM(RTRIM(Record)), 1, 2) AS FilterFlag\n\tFROM SQ_SFAA_TL_SC\n),\nFIL_LastRecord AS (\n\tSELECT\n\tRecord, \n\tFilterFlag\n\tFROM EXP_GetLastRecord\n\tWHERE FilterFlag='SC'\n),\nRTRTRANS AS (\n\tSELECT\n\tRecord\n\tFROM FIL_LastRecord\n),\nRTRTRANS_Transmittal AS (SELECT * FROM RTRTRANS WHERE TRUE),\nRTRTRANS_SubmissionControl AS (SELECT * FROM RTRTRANS WHERE TRUE),\nEXP_SC AS (\n\tSELECT\n\tRecord AS i_Record,\n\t'SC' AS v_SC_1_2,\n\t-- *INF*: SUBSTR(i_Record,3,2)\n\tSUBSTR(i_Record, 3, 2) AS v_ModuleIdentification_3_4,\n\t-- *INF*: SUBSTR(i_Record,5,4)\n\tSUBSTR(i_Record, 5, 4) AS v_TRGroup_5_8,\n\t-- *INF*: SUBSTR(i_Record,9,1)\n\tSUBSTR(i_Record, 9, 1) AS v_AccountingMonth_9,\n\t-- *INF*: SUBSTR(i_Record,10,1)\n\tSUBSTR(i_Record, 10, 1) AS v_AccountingYear_10,\n\t-- *INF*: SUBSTR(i_Record,11,1)\n\tSUBSTR(i_Record, 11, 1) AS v_TypeofStatistic_11,\n\t-- *INF*: SUBSTR(i_Record,12,1)\n\tSUBSTR(i_Record, 12, 1) AS v_TypeofSubmission_12,\n\t-- *INF*: SUBSTR(i_Record,13,2)\n\tSUBSTR(i_Record, 13, 2) AS v_CountofSubmission_13_14,\n\t-- *INF*: SUBSTR(i_Record,15,10)\n\tSUBSTR(i_Record, 15, 10) AS v_DollarAmount_15_24,\n\t-- *INF*: SUBSTR(i_Record,25,9)\n\tSUBSTR(i_Record, 25, 9) AS v_RecordCount_25_33,\n\t-- *INF*: RPAD(' ', 47, ' ')\n\tRPAD(' ', 47, ' ') AS v_Filler_34_80,\n\tv_SC_1_2\r\n || v_ModuleIdentification_3_4\r\n || v_TRGroup_5_8\r\n || v_AccountingMonth_9\r\n || v_AccountingYear_10\r\n || v_TypeofStatistic_11\r\n || v_TypeofSubmission_12\r\n || v_CountofSubmission_13_14\r\n || v_DollarAmount_15_24\r\n || v_RecordCount_25_33\r\n || v_Filler_34_80 AS o_TLRecord,\n\t2 AS o_OrdInd\n\tFROM RTRTRANS_SubmissionControl\n),\nEXP_TL AS (\n\tSELECT\n\tRecord AS i_Record,\n\t'TL' AS v_TL_1_2,\n\t'6115' AS v_TRGroup_3_6,\n\t'04' AS v_StatisticalPlan_7_8,\n\t-- *INF*: DECODE(SUBSTR(LTRIM(RTRIM(i_Record)),9,1),\r\n\t-- '1','01',\r\n\t-- '2','02',\r\n\t-- '3','03',\r\n\t-- '4','04',\r\n\t-- '5','05',\r\n\t-- '6','06',\r\n\t-- '7','07',\r\n\t-- '8','08',\r\n\t-- '9','09',\r\n\t-- 'O','10',\r\n\t-- '_','11',\r\n\t-- '&','12'\r\n\t-- )\n\tDECODE(\n\t    SUBSTR(LTRIM(RTRIM(i_Record)), 9, 1),\n\t    '1', '01',\n\t    '2', '02',\n\t    '3', '03',\n\t    '4', '04',\n\t    '5', '05',\n\t    '6', '06',\n\t    '7', '07',\n\t    '8', '08',\n\t    '9', '09',\n\t    'O', '10',\n\t    '_', '11',\n\t    '&', '12'\n\t) AS v_AccountingMonth_9_10,\n\t-- *INF*: TO_CHAR(TO_DATE(SUBSTR(i_Record,10,1),'Y'),'RR')\n\tTO_CHAR(TO_TIMESTAMP(SUBSTR(i_Record, 10, 1), 'Y'), 'RR') AS v_AccountingYear_11_12,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- \r\n\t-- TO_INTEGER(TO_CHAR(SYSDATE,'YYYY')) - 1 = TO_INTEGER(TO_CHAR(TO_DATE(SUBSTR(i_Record,10,1),'Y'),'YYYY')),v_AccountingYear_11_12,\r\n\t-- \r\n\t-- TO_INTEGER(TO_CHAR(TO_DATE(SUBSTR(i_Record,10,1),'Y'),'YYYY')) - (TO_INTEGER(TO_CHAR(SYSDATE,'YYYY'))-1) =10, TO_CHAR(ADD_TO_DATE(TO_DATE(SUBSTR(i_Record,10,1),'Y'),'YYYY',-10),'RR'),\r\n\t-- \r\n\t-- v_AccountingYear_11_12\r\n\t-- )\r\n\t-- \r\n\t-- \n\tDECODE(\n\t    TRUE,\n\t    CAST(TO_CHAR(CURRENT_TIMESTAMP, 'YYYY') AS INTEGER) - 1 = CAST(TO_CHAR(TO_TIMESTAMP(SUBSTR(i_Record, 10, 1), 'Y'), 'YYYY') AS INTEGER), v_AccountingYear_11_12,\n\t    CAST(TO_CHAR(TO_TIMESTAMP(SUBSTR(i_Record, 10, 1), 'Y'), 'YYYY') AS INTEGER) - (CAST(TO_CHAR(CURRENT_TIMESTAMP, 'YYYY') AS INTEGER) - 1) = 10, TO_CHAR(DATEADD(YEAR,- 10,TO_TIMESTAMP(SUBSTR(i_Record, 10, 1), 'Y')), 'RR'),\n\t    v_AccountingYear_11_12\n\t) AS v_AccountingYear_11_12_Mod,\n\t-- *INF*: SUBSTR(i_Record,11,1)\n\tSUBSTR(i_Record, 11, 1) AS v_TypeofStatistic_13,\n\t-- *INF*: SUBSTR(i_Record,12,1)\n\tSUBSTR(i_Record, 12, 1) AS v_TypeofSubmission_14,\n\t-- *INF*: SUBSTR(i_Record,13,2)\n\tSUBSTR(i_Record, 13, 2) AS v_CountofSubmission_15_16,\n\t' ' AS v_FinalPartialIndicator_17,\n\t' ' AS v_TypeofSubmissiontobeCorrected_18,\n\t'  ' AS v_CountofSubmissiontobeCorrected_19_20,\n\t-- *INF*: RPAD(' ', 60, ' ')\n\tRPAD(' ', 60, ' ') AS v_Filler_21_80,\n\tv_TL_1_2\r\n || v_TRGroup_3_6\r\n || v_StatisticalPlan_7_8\r\n || v_AccountingMonth_9_10\r\n || v_AccountingYear_11_12_Mod\r\n || v_TypeofStatistic_13\r\n || v_TypeofSubmission_14\r\n || v_CountofSubmission_15_16\r\n || v_FinalPartialIndicator_17\r\n || v_TypeofSubmissiontobeCorrected_18\r\n || v_CountofSubmissiontobeCorrected_19_20\r\n || v_Filler_21_80 AS o_TLRecord,\n\t1 AS o_OrderInd,\n\t-- *INF*: @{pipeline().parameters.FILENAME_PREFIX} || '_' || TO_CHAR(TO_DATE(v_AccountingYear_11_12_Mod,'YY'),'YYYY') || '.txt'\n\t@{pipeline().parameters.FILENAME_PREFIX} || '_' || TO_CHAR(TO_TIMESTAMP(v_AccountingYear_11_12_Mod, 'YY'), 'YYYY') || '.txt' AS FileName,\n\t-- *INF*: IIF(\r\n\t-- TO_INTEGER(TO_CHAR(SYSDATE,'YYYY')) - 1 <> TO_INTEGER(TO_CHAR(TO_DATE(v_AccountingYear_11_12_Mod,'YY'),'YYYY')),ABORT('the mainframe source files are not available for the most recent accounting year'),'pass')\n\tIFF(\n\t    CAST(TO_CHAR(CURRENT_TIMESTAMP, 'YYYY') AS INTEGER) - 1 <> CAST(TO_CHAR(TO_TIMESTAMP(v_AccountingYear_11_12_Mod, 'YY'), 'YYYY') AS INTEGER),\n\t    ABORT('the mainframe source files are not available for the most recent accounting year'),\n\t    'pass'\n\t) AS v_DataCheck\n\tFROM RTRTRANS_Transmittal\n),\nSQ_SFAA_Extract AS (\n\n-- TODO Manual --\n\n),\nEXP_Content AS (\n\tSELECT\n\tRecord,\n\t3 AS o_OrderInd,\n\t-- *INF*: SUBSTR(LTRIM(RTRIM(Record)),1,2)\n\tSUBSTR(LTRIM(RTRIM(Record)), 1, 2) AS FilterFlag\n\tFROM SQ_SFAA_Extract\n),\nFIL_DataRecords AS (\n\tSELECT\n\tRecord, \n\to_OrderInd, \n\tFilterFlag\n\tFROM EXP_Content\n\tWHERE FilterFlag<>'SC'\n),\nUnion AS (\n\tSELECT o_TLRecord AS Record, o_OrderInd AS OrderInd, FileName\n\tFROM EXP_TL\n\tUNION\n\tSELECT o_TLRecord AS Record, o_OrdInd AS OrderInd\n\tFROM EXP_SC\n\tUNION\n\tSELECT Record, o_OrderInd AS OrderInd\n\tFROM FIL_DataRecords\n),\nEXPTRANS AS (\n\tSELECT\n\tRecord,\n\tOrderInd,\n\tFileName\n\tFROM Union\n),\nSRTTRANS AS (\n\tSELECT\n\tRecord, \n\tOrderInd, \n\tFileName\n\tFROM EXPTRANS\n\tORDER BY OrderInd ASC\n),\nTGT_SFAA_Extract AS (\n\tINSERT INTO SFAA_Extract\n\t(Record, FileName)\n\tSELECT \n\tRECORD, \n\tFILENAME\n\tFROM SRTTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "FILENAME_PREFIX": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

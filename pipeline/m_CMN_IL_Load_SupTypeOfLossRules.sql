@@ -44,37 +44,21 @@ EXP_Trim_Values AS (
 	ClaimTypeGroup AS i_ClaimTypeGroup,
 	SubrogationEligibleIndicator AS i_SubrogationEligibleIndicator,
 	-- *INF*: LTRIM(RTRIM(i_InsuranceSegmentCode))
-	LTRIM(RTRIM(i_InsuranceSegmentCode
-		)
-	) AS o_InsuranceSegmentCode,
+	LTRIM(RTRIM(i_InsuranceSegmentCode)) AS o_InsuranceSegmentCode,
 	-- *INF*: LTRIM(RTRIM(i_MajorPerilCode))
-	LTRIM(RTRIM(i_MajorPerilCode
-		)
-	) AS o_MajorPerilCode,
+	LTRIM(RTRIM(i_MajorPerilCode)) AS o_MajorPerilCode,
 	-- *INF*: LTRIM(RTRIM(i_CauseOfLoss))
-	LTRIM(RTRIM(i_CauseOfLoss
-		)
-	) AS o_CauseOfLoss,
+	LTRIM(RTRIM(i_CauseOfLoss)) AS o_CauseOfLoss,
 	-- *INF*: Ltrim(Rtrim(i_CauseOfLossName))
-	Ltrim(Rtrim(i_CauseOfLossName
-		)
-	) AS o_CauseOfLossName,
+	Ltrim(Rtrim(i_CauseOfLossName)) AS o_CauseOfLossName,
 	-- *INF*: LTRIM(RTRIM(i_TypeOfLoss))
-	LTRIM(RTRIM(i_TypeOfLoss
-		)
-	) AS o_TypeOfLoss,
+	LTRIM(RTRIM(i_TypeOfLoss)) AS o_TypeOfLoss,
 	-- *INF*: LTRIM(RTRIM(i_ClaimTypeCategory))
-	LTRIM(RTRIM(i_ClaimTypeCategory
-		)
-	) AS o_ClaimTypeCategory,
+	LTRIM(RTRIM(i_ClaimTypeCategory)) AS o_ClaimTypeCategory,
 	-- *INF*: LTRIM(RTRIM(i_ClaimTypeGroup))
-	LTRIM(RTRIM(i_ClaimTypeGroup
-		)
-	) AS o_ClaimTypeGroup,
+	LTRIM(RTRIM(i_ClaimTypeGroup)) AS o_ClaimTypeGroup,
 	-- *INF*: LTRIM(RTRIM(i_SubrogationEligibleIndicator))
-	LTRIM(RTRIM(i_SubrogationEligibleIndicator
-		)
-	) AS o_SubrogationEligibleIndicator,
+	LTRIM(RTRIM(i_SubrogationEligibleIndicator)) AS o_SubrogationEligibleIndicator,
 	sysdate AS ModifiedDate
 	FROM SQ_SupTypeOfLossRules
 ),
@@ -122,54 +106,27 @@ EXP_Detect_Changes AS (
 	EXP_Trim_Values.o_SubrogationEligibleIndicator AS i_SubrogationEligibleIndicator,
 	EXP_Trim_Values.ModifiedDate AS i_ModifiedDate,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentCode),'N/A',i_InsuranceSegmentCode)
-	IFF(i_InsuranceSegmentCode IS NULL,
-		'N/A',
-		i_InsuranceSegmentCode
-	) AS o_InsuranceSegmentCode,
+	IFF(i_InsuranceSegmentCode IS NULL, 'N/A', i_InsuranceSegmentCode) AS o_InsuranceSegmentCode,
 	-- *INF*: IIF(ISNULL(i_MajorPerilCode),'N/A',i_MajorPerilCode)
-	IFF(i_MajorPerilCode IS NULL,
-		'N/A',
-		i_MajorPerilCode
-	) AS o_MajorPerilCode,
+	IFF(i_MajorPerilCode IS NULL, 'N/A', i_MajorPerilCode) AS o_MajorPerilCode,
 	-- *INF*: IIF(ISNULL(i_CauseOfLoss),'N/A',i_CauseOfLoss)
-	IFF(i_CauseOfLoss IS NULL,
-		'N/A',
-		i_CauseOfLoss
-	) AS o_CauseOfLoss,
+	IFF(i_CauseOfLoss IS NULL, 'N/A', i_CauseOfLoss) AS o_CauseOfLoss,
 	-- *INF*: IIF(ISNULL(i_CauseOfLossName),'N/A',i_CauseOfLossName)
-	IFF(i_CauseOfLossName IS NULL,
-		'N/A',
-		i_CauseOfLossName
-	) AS o_CauseOfLossName,
+	IFF(i_CauseOfLossName IS NULL, 'N/A', i_CauseOfLossName) AS o_CauseOfLossName,
 	-- *INF*: IIF(ISNULL(i_TypeOfLoss),'N/A',i_TypeOfLoss)
-	IFF(i_TypeOfLoss IS NULL,
-		'N/A',
-		i_TypeOfLoss
-	) AS o_TypeOfLoss,
+	IFF(i_TypeOfLoss IS NULL, 'N/A', i_TypeOfLoss) AS o_TypeOfLoss,
 	-- *INF*: IIF(ISNULL(i_ClaimTypeCategory),'N/A',i_ClaimTypeCategory)
-	IFF(i_ClaimTypeCategory IS NULL,
-		'N/A',
-		i_ClaimTypeCategory
-	) AS o_ClaimTypeCategory,
+	IFF(i_ClaimTypeCategory IS NULL, 'N/A', i_ClaimTypeCategory) AS o_ClaimTypeCategory,
 	-- *INF*: IIF(ISNULL(i_ClaimTypeGroup),'N/A',i_ClaimTypeGroup)
-	IFF(i_ClaimTypeGroup IS NULL,
-		'N/A',
-		i_ClaimTypeGroup
-	) AS o_ClaimTypeGroup,
+	IFF(i_ClaimTypeGroup IS NULL, 'N/A', i_ClaimTypeGroup) AS o_ClaimTypeGroup,
 	-- *INF*: IIF(ISNULL(i_SubrogationEligibleIndicator),'N/A',i_SubrogationEligibleIndicator)
-	IFF(i_SubrogationEligibleIndicator IS NULL,
-		'N/A',
-		i_SubrogationEligibleIndicator
-	) AS o_SubrogationEligibleIndicator,
+	IFF(i_SubrogationEligibleIndicator IS NULL, 'N/A', i_SubrogationEligibleIndicator) AS o_SubrogationEligibleIndicator,
 	v_change_flag AS o_change_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
 	sysdate AS CreatedDate,
 	i_ModifiedDate AS o_ModifiedDate,
 	-- *INF*: IIF( v_change_flag=1,i_EffectiveDate , sysdate   )
-	IFF(v_change_flag = 1,
-		i_EffectiveDate,
-		sysdate
-	) AS o_EffectiveDate,
+	IFF(v_change_flag = 1, i_EffectiveDate, CURRENT_TIMESTAMP) AS o_EffectiveDate,
 	i_ExpirationDate AS o_ExpirationDate,
 	'InsRef' AS SourceSystemId,
 	1 AS changedflag_insert,
@@ -178,23 +135,14 @@ EXP_Detect_Changes AS (
 	-- (  ISNULL(SupTypeOfLossRulesId) = 0  AND ((lkp_TypeOfLoss<>i_TypeOfLoss) OR (lkp_ClaimTypeCategory<>i_ClaimTypeCategory) OR (lkp_ClaimTypeGroup<>i_ClaimTypeGroup) OR (lkp_SubrogationEligibleIndicator<>i_SubrogationEligibleIndicator) )  )
 	-- ,0,
 	-- 2)
-	DECODE(TRUE,
-		SupTypeOfLossRulesId IS NULL, 1,
-		( SupTypeOfLossRulesId IS NULL = 0 
-			AND ( ( lkp_TypeOfLoss <> i_TypeOfLoss 
-				) 
-				OR ( lkp_ClaimTypeCategory <> i_ClaimTypeCategory 
-				) 
-				OR ( lkp_ClaimTypeGroup <> i_ClaimTypeGroup 
-				) 
-				OR ( lkp_SubrogationEligibleIndicator <> i_SubrogationEligibleIndicator 
-				) 
-			) 
-		), 0,
-		2
+	DECODE(
+	    TRUE,
+	    SupTypeOfLossRulesId IS NULL, 1,
+	    (SupTypeOfLossRulesId IS NULL = 0 AND ((lkp_TypeOfLoss <> i_TypeOfLoss) OR (lkp_ClaimTypeCategory <> i_ClaimTypeCategory) OR (lkp_ClaimTypeGroup <> i_ClaimTypeGroup) OR (lkp_SubrogationEligibleIndicator <> i_SubrogationEligibleIndicator))), 0,
+	    2
 	) AS v_change_flag,
 	-- *INF*: ADD_TO_DATE(sysdate,'D',-1)
-	DATEADD(DAY,- 1,sysdate) AS o_ExpirationDate_update
+	DATEADD(DAY,- 1,CURRENT_TIMESTAMP) AS o_ExpirationDate_update
 	FROM EXP_Trim_Values
 	LEFT JOIN Lkp_SupTypeOfLossRules
 	ON Lkp_SupTypeOfLossRules.InsuranceSegmentCode = EXP_Trim_Values.o_InsuranceSegmentCode AND Lkp_SupTypeOfLossRules.MajorPerilCode = EXP_Trim_Values.o_MajorPerilCode AND Lkp_SupTypeOfLossRules.CauseOfLoss = EXP_Trim_Values.o_CauseOfLoss

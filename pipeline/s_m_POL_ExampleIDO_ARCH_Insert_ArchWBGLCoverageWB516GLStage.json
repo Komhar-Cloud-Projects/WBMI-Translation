@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBGLCoverageWB516GLStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBGLCoverageWB516GL_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBGLCoverageWB516GLStage AS (\n\tSELECT\n\t\tWBGLCoverageWB516GLStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCoverageId,\n\t\tWB_GL_CoverageWB516GLId,\n\t\tSessionId,\n\t\tDeductible,\n\t\tRetroactiveDate,\n\t\tNumberOfEmployees,\n\t\tBillingLOB,\n\t\tCommissionPlanId,\n\t\tIsBillingSubline,\n\t\tParentBillingLOB,\n\t\tPurePremium,\n\t\tTransactionCommissionType,\n\t\tTransactionCommissionValue,\n\t\tTransactionFinalCommissionValue\n\tFROM WBGLCoverageWB516GLStage\n),\nEXP_Metadata AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tWBGLCoverageWB516GLStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCoverageId,\n\tWB_GL_CoverageWB516GLId,\n\tSessionId,\n\tDeductible,\n\tRetroactiveDate,\n\tNumberOfEmployees,\n\tBillingLOB,\n\tCommissionPlanId,\n\tIsBillingSubline,\n\tParentBillingLOB,\n\tPurePremium,\n\tTransactionCommissionType,\n\tTransactionCommissionValue,\n\tTransactionFinalCommissionValue\n\tFROM SQ_WBGLCoverageWB516GLStage\n),\nArchWBGLCoverageWB516GLStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBGLCoverageWB516GLStage\n\t(ExtractDate, SourceSystemId, AuditId, WBGLCoverageWB516GLStageId, CoverageId, WB_GL_CoverageWB516GLId, SessionId, Deductible, RetroactiveDate, NumberOfEmployees, BillingLOB, CommissionPlanId, IsBillingSubline, ParentBillingLOB, PurePremium, TransactionCommissionType, TransactionCommissionValue, TransactionFinalCommissionValue)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBGLCOVERAGEWB516GLSTAGEID, \n\tCOVERAGEID, \n\tWB_GL_COVERAGEWB516GLID, \n\tSESSIONID, \n\tDEDUCTIBLE, \n\tRETROACTIVEDATE, \n\tNUMBEROFEMPLOYEES, \n\tBILLINGLOB, \n\tCOMMISSIONPLANID, \n\tISBILLINGSUBLINE, \n\tPARENTBILLINGLOB, \n\tPUREPREMIUM, \n\tTRANSACTIONCOMMISSIONTYPE, \n\tTRANSACTIONCOMMISSIONVALUE, \n\tTRANSACTIONFINALCOMMISSIONVALUE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

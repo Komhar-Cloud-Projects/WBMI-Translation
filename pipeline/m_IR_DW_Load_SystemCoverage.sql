@@ -30,121 +30,69 @@ EXP_Trim_Values AS (
 	LossHistoryDescription AS i_LossHistoryDescription,
 	ISOMajorCrimeGroup AS i_ISOMajorCrimeGroup,
 	-- *INF*: LTRIM(RTRIM(i_CoverageSummaryCode))
-	LTRIM(RTRIM(i_CoverageSummaryCode
-		)
-	) AS o_CoverageSummaryCode,
+	LTRIM(RTRIM(i_CoverageSummaryCode)) AS o_CoverageSummaryCode,
 	-- *INF*: LTRIM(RTRIM(i_CoverageGroupCode))
-	LTRIM(RTRIM(i_CoverageGroupCode
-		)
-	) AS o_CoverageGroupCode,
+	LTRIM(RTRIM(i_CoverageGroupCode)) AS o_CoverageGroupCode,
 	-- *INF*: LTRIM(RTRIM(i_CoverageCode))
-	LTRIM(RTRIM(i_CoverageCode
-		)
-	) AS o_CoverageCode,
+	LTRIM(RTRIM(i_CoverageCode)) AS o_CoverageCode,
 	-- *INF*: LTRIM(RTRIM(i_RatedCoverageCode))
-	LTRIM(RTRIM(i_RatedCoverageCode
-		)
-	) AS o_RatedCoverageCode,
+	LTRIM(RTRIM(i_RatedCoverageCode)) AS o_RatedCoverageCode,
 	-- *INF*: LTRIM(RTRIM(i_RatedCoverageDescription))
 	-- 
-	LTRIM(RTRIM(i_RatedCoverageDescription
-		)
-	) AS o_RatedCoverageDescription,
+	LTRIM(RTRIM(i_RatedCoverageDescription)) AS o_RatedCoverageDescription,
 	-- *INF*: LTRIM(RTRIM(i_InsuranceLineCode))
-	LTRIM(RTRIM(i_InsuranceLineCode
-		)
-	) AS o_InsuranceLineCode,
+	LTRIM(RTRIM(i_InsuranceLineCode)) AS o_InsuranceLineCode,
 	-- *INF*: LTRIM(RTRIM(i_InsuranceLineDescription))
-	LTRIM(RTRIM(i_InsuranceLineDescription
-		)
-	) AS o_InsuranceLineDescription,
+	LTRIM(RTRIM(i_InsuranceLineDescription)) AS o_InsuranceLineDescription,
 	-- *INF*: LTRIM(RTRIM(i_SourceSystemId))
-	LTRIM(RTRIM(i_SourceSystemId
-		)
-	) AS o_SourceSystemId,
+	LTRIM(RTRIM(i_SourceSystemId)) AS o_SourceSystemId,
 	-- *INF*: LTRIM(RTRIM(i_DctRiskTypeCode))
-	LTRIM(RTRIM(i_DctRiskTypeCode
-		)
-	) AS o_DctRiskTypeCode,
+	LTRIM(RTRIM(i_DctRiskTypeCode)) AS o_DctRiskTypeCode,
 	-- *INF*: LTRIM(RTRIM(i_DctCoverageTypeCode))
-	LTRIM(RTRIM(i_DctCoverageTypeCode
-		)
-	) AS o_DctCoverageTypeCode,
+	LTRIM(RTRIM(i_DctCoverageTypeCode)) AS o_DctCoverageTypeCode,
 	-- *INF*: LTRIM(RTRIM(i_PmsRiskUnitGroupCode))
-	LTRIM(RTRIM(i_PmsRiskUnitGroupCode
-		)
-	) AS o_PmsRiskUnitGroupCode,
+	LTRIM(RTRIM(i_PmsRiskUnitGroupCode)) AS o_PmsRiskUnitGroupCode,
 	-- *INF*: LTRIM(RTRIM(i_PmsRiskUnitGroupDescription))
-	LTRIM(RTRIM(i_PmsRiskUnitGroupDescription
-		)
-	) AS o_PmsRiskUnitGroupDescription,
+	LTRIM(RTRIM(i_PmsRiskUnitGroupDescription)) AS o_PmsRiskUnitGroupDescription,
 	-- *INF*: LTRIM(RTRIM(i_PmsRiskUnitCode))
-	LTRIM(RTRIM(i_PmsRiskUnitCode
-		)
-	) AS o_PmsRiskUnitCode,
+	LTRIM(RTRIM(i_PmsRiskUnitCode)) AS o_PmsRiskUnitCode,
 	-- *INF*: LTRIM(RTRIM(i_PmsRiskUnitDescription))
-	LTRIM(RTRIM(i_PmsRiskUnitDescription
-		)
-	) AS o_PmsRiskUnitDescription,
+	LTRIM(RTRIM(i_PmsRiskUnitDescription)) AS o_PmsRiskUnitDescription,
 	-- *INF*: LTRIM(RTRIM(i_PmsMajorPerilCode))
-	LTRIM(RTRIM(i_PmsMajorPerilCode
-		)
-	) AS o_PmsMajorPerilCode,
+	LTRIM(RTRIM(i_PmsMajorPerilCode)) AS o_PmsMajorPerilCode,
 	-- *INF*: LTRIM(RTRIM(i_PmsMajorPerilDescription))
-	LTRIM(RTRIM(i_PmsMajorPerilDescription
-		)
-	) AS o_PmsMajorPerilDescription,
+	LTRIM(RTRIM(i_PmsMajorPerilDescription)) AS o_PmsMajorPerilDescription,
 	-- *INF*: LTRIM(RTRIM(i_PmsProductTypeCode))
-	LTRIM(RTRIM(i_PmsProductTypeCode
-		)
-	) AS o_PmsProductTypeCode,
+	LTRIM(RTRIM(i_PmsProductTypeCode)) AS o_PmsProductTypeCode,
 	-- *INF*: LTRIM(RTRIM(i_DctPerilGroup))
-	LTRIM(RTRIM(i_DctPerilGroup
-		)
-	) AS o_DctPerilGroup,
+	LTRIM(RTRIM(i_DctPerilGroup)) AS o_DctPerilGroup,
 	-- *INF*: LTRIM(RTRIM(i_DctSubCoverageTypeCode))
-	LTRIM(RTRIM(i_DctSubCoverageTypeCode
-		)
-	) AS o_DctSubCoverageTypeCode,
+	LTRIM(RTRIM(i_DctSubCoverageTypeCode)) AS o_DctSubCoverageTypeCode,
 	-- *INF*: LTRIM(RTRIM(i_DctCoverageVersion))
-	LTRIM(RTRIM(i_DctCoverageVersion
-		)
-	) AS o_DctCoverageVersion,
+	LTRIM(RTRIM(i_DctCoverageVersion)) AS o_DctCoverageVersion,
 	-- *INF*: IIF(ISNULL(i_LossHistoryCode),'N/A',
 	-- IIF(LENGTH(i_LossHistoryCode)>=2,
 	-- LTRIM(RTRIM(i_LossHistoryCode)),
 	-- LTRIM(RTRIM(LPAD(i_LossHistoryCode,2,'0')))
 	-- )
 	-- )
-	IFF(i_LossHistoryCode IS NULL,
-		'N/A',
-		IFF(LENGTH(i_LossHistoryCode
-			) >= 2,
-			LTRIM(RTRIM(i_LossHistoryCode
-				)
-			),
-			LTRIM(RTRIM(LPAD(i_LossHistoryCode, 2, '0'
-					)
-				)
-			)
-		)
+	IFF(
+	    i_LossHistoryCode IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(i_LossHistoryCode) >= 2, LTRIM(RTRIM(i_LossHistoryCode)),
+	        LTRIM(RTRIM(LPAD(i_LossHistoryCode, 2, '0')))
+	    )
 	) AS o_LossHistoryCode,
 	-- *INF*: IIF(ISNULL(i_LossHistoryDescription),'N/A',LTRIM(RTRIM(i_LossHistoryDescription)))
-	IFF(i_LossHistoryDescription IS NULL,
-		'N/A',
-		LTRIM(RTRIM(i_LossHistoryDescription
-			)
-		)
-	) AS o_LossHistoryDescription,
+	IFF(i_LossHistoryDescription IS NULL, 'N/A', LTRIM(RTRIM(i_LossHistoryDescription))) AS o_LossHistoryDescription,
 	-- *INF*: IIF(ISNULL(i_ISOMajorCrimeGroup) OR IS_SPACES(i_ISOMajorCrimeGroup) OR LENGTH(i_ISOMajorCrimeGroup)=0,'N/A',LTRIM(RTRIM(i_ISOMajorCrimeGroup)))
-	IFF(i_ISOMajorCrimeGroup IS NULL 
-		OR LENGTH(i_ISOMajorCrimeGroup)>0 AND TRIM(i_ISOMajorCrimeGroup)='' 
-		OR LENGTH(i_ISOMajorCrimeGroup
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_ISOMajorCrimeGroup
-			)
-		)
+	IFF(
+	    i_ISOMajorCrimeGroup IS NULL
+	    or LENGTH(i_ISOMajorCrimeGroup)>0
+	    and TRIM(i_ISOMajorCrimeGroup)=''
+	    or LENGTH(i_ISOMajorCrimeGroup) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_ISOMajorCrimeGroup))
 	) AS o_ISOMajorCrimeGroup
 	FROM SQ_CSV_ConformedCoverage
 ),
@@ -311,18 +259,11 @@ EXP_Detect_Changes AS (
 	-- lkp_PmsRiskUnitDescription<>PmsRiskUnitDescription OR
 	-- lkp_PmsMajorPerilDescription<>PmsMajorPerilDescription OR lkp_LossHistoryCode<>LossHistoryCode OR lkp_LossHistoryDescription<>LossHistoryDescription OR 
 	-- lkp_ISOMajorCrimeGroup<>ISOMajorCrimeGroup,2,0)
-	DECODE(TRUE,
-		lkp_SystemCoverageId IS NULL, 1,
-		lkp_ConformedCoverageId <> ConformedCoverageId 
-		OR lkp_InsuranceLineDescription <> InsuranceLineDescription 
-		OR lkp_SourceSystemId <> SourceSystemId 
-		OR lkp_PmsRiskUnitGroupDescription <> PmsRiskUnitGroupDescription 
-		OR lkp_PmsRiskUnitDescription <> PmsRiskUnitDescription 
-		OR lkp_PmsMajorPerilDescription <> PmsMajorPerilDescription 
-		OR lkp_LossHistoryCode <> LossHistoryCode 
-		OR lkp_LossHistoryDescription <> LossHistoryDescription 
-		OR lkp_ISOMajorCrimeGroup <> ISOMajorCrimeGroup, 2,
-		0
+	DECODE(
+	    TRUE,
+	    lkp_SystemCoverageId IS NULL, 1,
+	    lkp_ConformedCoverageId <> ConformedCoverageId OR lkp_InsuranceLineDescription <> InsuranceLineDescription OR lkp_SourceSystemId <> SourceSystemId OR lkp_PmsRiskUnitGroupDescription <> PmsRiskUnitGroupDescription OR lkp_PmsRiskUnitDescription <> PmsRiskUnitDescription OR lkp_PmsMajorPerilDescription <> PmsMajorPerilDescription OR lkp_LossHistoryCode <> LossHistoryCode OR lkp_LossHistoryDescription <> LossHistoryDescription OR lkp_ISOMajorCrimeGroup <> ISOMajorCrimeGroup, 2,
+	    0
 	) AS o_change_flag
 	FROM AGG_Remove_Duplicate
 	LEFT JOIN LKP_ConformedCoverage

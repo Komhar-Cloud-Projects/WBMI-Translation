@@ -26,26 +26,19 @@ EXP_DefaultValues AS (
 	ClassGroupDescription AS i_ClassGroupDescription,
 	RatingBasis AS i_RatingBasis,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_LineOfBusinessAbbreviation)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_LineOfBusinessAbbreviation
-	) AS o_LineOfBusinessAbbreviation,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_LineOfBusinessAbbreviation) AS o_LineOfBusinessAbbreviation,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_StateCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_StateCode
-	) AS o_StateCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_StateCode) AS o_StateCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_OriginatingOrganizationCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_OriginatingOrganizationCode
-	) AS o_OriginatingOrganizationCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_OriginatingOrganizationCode) AS o_OriginatingOrganizationCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassCode)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassCode
-	) AS o_ClassCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_ClassCode) AS o_ClassCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassDescription
-	) AS o_ClassDescription,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_ClassDescription) AS o_ClassDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_RatingBasis)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_RatingBasis
-	) AS o_RatingBasis,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_RatingBasis) AS o_RatingBasis,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassGroupDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_ClassGroupDescription
-	) AS o_ClassGroupDescription
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_ClassGroupDescription) AS o_ClassGroupDescription
 	FROM AGG_RemoveDuplicate
 ),
 LKP_SupClassification AS (
@@ -87,11 +80,9 @@ EXP_UpdateOrInsert AS (
 	EXP_DefaultValues.o_RatingBasis AS RatingBasis,
 	EXP_DefaultValues.o_ClassGroupDescription AS ClassGroupDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_RatingBasis)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_RatingBasis
-	) AS v_lkp_RatingBasis,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(lkp_RatingBasis) AS v_lkp_RatingBasis,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_ClassGroupDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(lkp_ClassGroupDescription
-	) AS v_lkp_ClassGroupDescription,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(lkp_ClassGroupDescription) AS v_lkp_ClassGroupDescription,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -103,13 +94,11 @@ EXP_UpdateOrInsert AS (
 	-- OR v_lkp_ClassGroupDescription != ClassGroupDescription,'UPDATE',
 	-- 'IGNORE'
 	-- )
-	DECODE(TRUE,
-		lkp_SupClassificationId IS NULL, 'INSERT',
-		lkp_OriginatingOrganizationCode != OriginatingOrganizationCode 
-		OR lkp_ClassDescription != ClassDescription 
-		OR v_lkp_RatingBasis != RatingBasis 
-		OR v_lkp_ClassGroupDescription != ClassGroupDescription, 'UPDATE',
-		'IGNORE'
+	DECODE(
+	    TRUE,
+	    lkp_SupClassificationId IS NULL, 'INSERT',
+	    lkp_OriginatingOrganizationCode != OriginatingOrganizationCode OR lkp_ClassDescription != ClassDescription OR v_lkp_RatingBasis != RatingBasis OR v_lkp_ClassGroupDescription != ClassGroupDescription, 'UPDATE',
+	    'IGNORE'
 	) AS o_ChangeFlag
 	FROM EXP_DefaultValues
 	LEFT JOIN LKP_SupClassification

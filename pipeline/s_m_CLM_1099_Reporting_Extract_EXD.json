@@ -1,0 +1,59 @@
+{
+    "name": "s_m_CLM_1099_Reporting_Extract_EXD",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_1099_Reporting_Extract_EXD",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_1099_Reporting_EXD AS (\n\tSELECT DISTINCT CML.irs_name,\r\n\t\tCML.address_line_1,\r\n\t\tCML.address_line_2,\r\n\t\tCML.city,\r\n\t\tCML.state_code,\r\n\t\tCML.zip_code,\r\n\t\tCML.search_tax_id,\r\n\t\tCML.tax_id_type,\r\n\t\tCML.tax_id,\r\n\t\tCML.country_code,\r\n\t\tCML.vendor_type_cd,\r\n\t\tSUM(CT.ctx_trs_amt) AS Paid_Amt\r\n\tFROM claim_transaction_full_extract_stage CT WITH (NOLOCK)\r\n\tINNER JOIN ClaimDraftMonthlyStage CDM WITH (NOLOCK) ON CT.ctx_draft_nbr = CDM.dft_draft_nbr\r\n\t\tAND CT.ctx_claim_nbr = CDM.dft_claim_nbr\r\n\tINNER JOIN Master1099ListMonthlyStage CML WITH (NOLOCK) ON CDM.dft_tax_id_nbr = CML.search_tax_id\r\n\t\tAND CDM.dft_tax_id_type_cd = CML.tax_id_type\r\n\tWHERE\r\n\t\t-- CT.ctx_trs_dt between '2013-01-01' and '2013-05-31' -- make year begin, year end (current or prior?)\r\n\t     --  use (-1) for @{pipeline().parameters.NO_OF_MONTHS} to include current month, otherwise 0 will provide previous month\r\n\t\t(CT.ctx_trs_dt >= ( SELECT DATEADD(YEAR, DATEDIFF(YEAR, 0, DATEADD(m, - 1, getdate())), 0) 'First Day of Year using previous month date' )\r\n\t\t   AND CT.ctx_trs_dt <= ( SELECT DATEADD(s, -1, DATEADD(mm, DATEDIFF(m, 0, GETDATE()) - @{pipeline().parameters.NO_OF_MONTHS}, 0)) LastDay_PreviousMonth ))\r\n\t\tAND CT.source_system_id = 'EXCEED'\r\n\t\tAND CML.reportable_ind = 'Y'\r\n\t\tAND CML.is_valid = 'Y'\r\n\t\tAND CDM.dft_dbs_status_cd IN ('P', 'D', 'U')\r\n\t\tAND NOT EXISTS (SELECT 1\r\n\t\t\tFROM @{pipeline().parameters.DATABASE_NAME_IL}.dbo.claim_payment cpa\r\n\t\t\tJOIN @{pipeline().parameters.DATABASE_NAME_IL}.dbo.sup_payment_method pm on pm.sup_payment_method_id = cpa.sup_payment_method_id\r\n\t\t\t\tand pm.payment_method IN ('Virtual Payment','Debit Card','Digital Prepaid','CAT Card','PayPal','Venmo','Electronic to Lienholders')\r\n\t\t\tWHERE cpa.claim_pay_num = CDM.dft_draft_nbr) \r\n\t @{pipeline().parameters.WHERE_CLAUSE} \r\n\tGROUP BY CML.irs_name,\r\n\t\tCML.address_line_1,\r\n\t\tCML.address_line_2,\r\n\t\tCML.city,\r\n\t\tCML.state_code,\r\n\t\tCML.zip_code,\r\n\t\tCML.search_tax_id,\r\n\t\tCML.tax_id_type,\r\n\t\tCML.tax_id,\r\n\t\tCML.country_code,\r\n\t\tCML.vendor_type_cd\n),\nEXP_cleanse_input AS (\n\tSELECT\n\tirs_name,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(irs_name)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(irs_name) AS irs_name_out,\n\taddress_line_1,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(address_line_1)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(address_line_1) AS address_line_1_out,\n\taddress_line_2,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(address_line_2)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(address_line_2) AS address_line_2_out,\n\tcity,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(city)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(city) AS city_out,\n\tstate_code,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(state_code)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(state_code) AS state_code_out,\n\tzip_code,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(zip_code)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(zip_code) AS zip_code_out,\n\tsearch_tax_id,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(search_tax_id)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(search_tax_id) AS search_tax_id_out,\n\ttax_id_type,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(tax_id_type)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(tax_id_type) AS tax_id_type_out,\n\ttax_id,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(tax_id)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(tax_id) AS tax_id_out,\n\tcountry_code,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(country_code)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(country_code) AS country_code_out,\n\tvendor_type_cd,\n\t-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(vendor_type_cd)\n\tUDF_DEFAULT_VALUE_FOR_STRINGS(vendor_type_cd) AS vendor_type_cd_out,\n\tctx_trs_amt,\n\t-- *INF*: IIF(ISNULL(ctx_trs_amt),0,ctx_trs_amt)\n\tIFF(ctx_trs_amt IS NULL, 0, ctx_trs_amt) AS ctx_trs_amt_out\n\tFROM SQ_1099_Reporting_EXD\n),\nEXP_output AS (\n\tSELECT\n\t1 AS default_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\tSYSDATE AS default_date,\n\t'EXCEED' AS source_sys_id,\n\tirs_name_out AS irs_name,\n\taddress_line_1_out AS address_line_1,\n\taddress_line_2_out AS address_line_2,\n\tcity_out AS city,\n\tstate_code_out AS state_code,\n\tzip_code_out AS zip_code,\n\tsearch_tax_id_out AS search_tax_id,\n\ttax_id_type_out AS tax_id_type,\n\ttax_id_out AS tax_id,\n\tcountry_code_out AS country_code,\n\tvendor_type_cd_out AS vendor_type_cd,\n\tctx_trs_amt_out AS ctx_trs_amt\n\tFROM EXP_cleanse_input\n),\nWork1099Reporting AS (\n\tINSERT INTO Work1099Reporting\n\t(CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, SourceSystemID, CreatedDate, ModifiedDate, IRSName, AddressLine1, AddressLine2, City, StateCode, ZipCode, CountryCode, SearchTaxId, TaxIdType, TaxId, VendorTypeCode, PaidAmount)\n\tSELECT \n\tdefault_id AS CURRENTSNAPSHOTFLAG, \n\taudit_id AS AUDITID, \n\tdefault_date AS EFFECTIVEDATE, \n\tdefault_date AS EXPIRATIONDATE, \n\tsource_sys_id AS SOURCESYSTEMID, \n\tdefault_date AS CREATEDDATE, \n\tdefault_date AS MODIFIEDDATE, \n\tirs_name AS IRSNAME, \n\taddress_line_1 AS ADDRESSLINE1, \n\taddress_line_2 AS ADDRESSLINE2, \n\tcity AS CITY, \n\tstate_code AS STATECODE, \n\tzip_code AS ZIPCODE, \n\tcountry_code AS COUNTRYCODE, \n\tsearch_tax_id AS SEARCHTAXID, \n\ttax_id_type AS TAXIDTYPE, \n\ttax_id AS TAXID, \n\tvendor_type_cd AS VENDORTYPECODE, \n\tctx_trs_amt AS PAIDAMOUNT\n\tFROM EXP_output\n),\nSQ_vendor_dba_1099_stage AS (\n\tselect  \r\n\trtrim(A.tax_id) as tax_id, \r\n\trtrim(A.vendor_type_cd) as vendor_type_cd \r\n\tfrom  (\r\n\tselect \r\n\tvendor_type_cd, tax_id, ROW_NUMBER() over (partition by tax_id order by modified_ts desc  ) as rn\r\n\tfrom dbo.vendor_dba_1099_stage \r\n\t\twhere \r\n\t\tdelete_flag='N' and \r\n\t\ttax_id is not null and\r\n\t\tvendor_type_cd is not null\r\n\t\tand tax_id != '00-0000000'\r\n\t) A\r\n\twhere rn=1\r\n\torder by 1\n),\nEXP_VendorDBA1099_Input AS (\n\tSELECT\n\ttax_id,\n\tvendor_type_cd\n\tFROM SQ_vendor_dba_1099_stage\n),\nSQ_Work1099Reporting AS (\n\tSELECT \r\n\tWork1099Reporting.Work1099ReportingId, \r\n\trtrim(Work1099Reporting.TaxId) as TaxId\r\n\tFROM\r\n\tWork1099Reporting\r\n\tWhere\r\n\tVendorTypeCode='N/A'\r\n\t@{pipeline().parameters.WHERE}\r\n\torder by 2\n),\nEXP_work1099Reporting_Input AS (\n\tSELECT\n\tWork1099ReportingId,\n\tTaxId\n\tFROM SQ_Work1099Reporting\n),\nJNR_work1099Reporting_VendorDBA AS (SELECT\n\tEXP_VendorDBA1099_Input.tax_id, \n\tEXP_VendorDBA1099_Input.vendor_type_cd, \n\tEXP_work1099Reporting_Input.Work1099ReportingId, \n\tEXP_work1099Reporting_Input.TaxId\n\tFROM EXP_VendorDBA1099_Input\n\tINNER JOIN EXP_work1099Reporting_Input\n\tON EXP_work1099Reporting_Input.TaxId = EXP_VendorDBA1099_Input.tax_id\n),\nEXP_Join_output AS (\n\tSELECT\n\tvendor_type_cd,\n\tWork1099ReportingId\n\tFROM JNR_work1099Reporting_VendorDBA\n),\nSRT_Work1099ReportingId AS (\n\tSELECT\n\tWork1099ReportingId, \n\tvendor_type_cd\n\tFROM EXP_Join_output\n\tORDER BY Work1099ReportingId ASC\n),\nUPD_Update_work1099Reporting AS (\n\tSELECT\n\tWork1099ReportingId, \n\tvendor_type_cd\n\tFROM SRT_Work1099ReportingId\n),\nEXP_Output_Update AS (\n\tSELECT\n\tWork1099ReportingId,\n\tSYSDATE AS modifieddate,\n\tvendor_type_cd\n\tFROM UPD_Update_work1099Reporting\n),\nWork1099Reporting_Update AS (\n\tINSERT INTO Work1099Reporting\n\t(Work1099ReportingId, ModifiedDate, VendorTypeCode)\n\tSELECT \n\tWORK1099REPORTINGID, \n\tmodifieddate AS MODIFIEDDATE, \n\tvendor_type_cd AS VENDORTYPECODE\n\tFROM EXP_Output_Update\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "NO_OF_MONTHS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "DATABASE_NAME_IL": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimDataServices/"
+        },
+        "annotations": []
+    }
+}

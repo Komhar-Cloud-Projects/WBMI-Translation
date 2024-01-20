@@ -1,0 +1,47 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_Archive_Territory",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_Archive_Territory",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Territory_stage AS (\n\tSELECT\n\t\tterritory_stage_id AS territory_STAGE_id,\n\t\tRSM_ID,\n\t\tTERRITORY_CODE,\n\t\tUW_MGR_ID,\n\t\tSTATE_CODE,\n\t\tTERRITORY_SYMBOL,\n\t\tTERRITORY_NAME,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM Territory_Stage\n),\nexp_AGY_ARCH_Territory AS (\n\tSELECT\n\tterritory_STAGE_id,\n\tRSM_ID,\n\tTERRITORY_CODE,\n\tUW_MGR_ID,\n\tSTATE_CODE,\n\tTERRITORY_SYMBOL,\n\tTERRITORY_NAME,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID\n\tFROM SQ_Territory_stage\n),\nTGT_Arch_territory_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_territory_stage\n\t(territory_stage_id, RSM_ID, TERRITORY_CODE, UW_MGR_ID, STATE_CODE, TERRITORY_SYMBOL, TERRITORY_NAME, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, audit_id)\n\tSELECT \n\tterritory_STAGE_id AS TERRITORY_STAGE_ID, \n\tRSM_ID, \n\tTERRITORY_CODE, \n\tUW_MGR_ID, \n\tSTATE_CODE, \n\tTERRITORY_SYMBOL, \n\tTERRITORY_NAME, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tOUT_AUDIT_ID AS AUDIT_ID\n\tFROM exp_AGY_ARCH_Territory\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

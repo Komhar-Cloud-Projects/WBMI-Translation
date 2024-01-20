@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBCUPolicyStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBCUPolicyStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_CU_Policy AS (\n\tWITH cte_WBCUPolicy(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.WB_CL_PolicyId, \r\n\tX.WB_CU_PolicyId, \r\n\tX.SessionId, \r\n\tX.ReinsuranceLiabilityLimit, \r\n\tX.ReinsuranceLiabilityPremium, \r\n\tX.TaskFlagFormSelectedWB1351, \r\n\tX.TaskFlagFormSelectedWB1525UM, \r\n\tX.TaskFlagFormSelectedWB1533UM \r\n\tFROM\r\n\tWB_CU_Policy X\r\n\tinner join\r\n\tcte_WBCUPolicy Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tWB_CL_PolicyId,\n\tWB_CU_PolicyId,\n\tSessionId,\n\tReinsuranceLiabilityLimit,\n\tReinsuranceLiabilityPremium,\n\tTaskFlagFormSelectedWB1351,\n\t-- *INF*: DECODE(TaskFlagFormSelectedWB1351,'T',1,'F',0,NULL)\n\tDECODE(\n\t    TaskFlagFormSelectedWB1351,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS TaskFlagFormSelectedWB1351_out,\n\tTaskFlagFormSelectedWB1525UM,\n\t-- *INF*: DECODE(TaskFlagFormSelectedWB1525UM,'T',1,'F',0,NULL)\n\tDECODE(\n\t    TaskFlagFormSelectedWB1525UM,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS TaskFlagFormSelectedWB1525UM_out,\n\tTaskFlagFormSelectedWB1533UM,\n\t-- *INF*: DECODE(TaskFlagFormSelectedWB1533UM,'T',1,'F',0,NULL)\n\tDECODE(\n\t    TaskFlagFormSelectedWB1533UM,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS TaskFlagFormSelectedWB1533UM_out\n\tFROM SQ_WB_CU_Policy\n),\nWBCUPolicyStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCUPolicyStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCUPolicyStaging\n\t(ExtractDate, SourceSystemId, WB_CL_PolicyId, WB_CU_PolicyId, SessionId, ReinsuranceLiabilityLimit, ReinsuranceLiabilityPremium, TaskFlagFormSelectedWB1351, TaskFlagFormSelectedWB1525UM, TaskFlagFormSelectedWB1533UM)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tWB_CL_POLICYID, \n\tWB_CU_POLICYID, \n\tSESSIONID, \n\tREINSURANCELIABILITYLIMIT, \n\tREINSURANCELIABILITYPREMIUM, \n\tTaskFlagFormSelectedWB1351_out AS TASKFLAGFORMSELECTEDWB1351, \n\tTaskFlagFormSelectedWB1525UM_out AS TASKFLAGFORMSELECTEDWB1525UM, \n\tTaskFlagFormSelectedWB1533UM_out AS TASKFLAGFORMSELECTEDWB1533UM\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

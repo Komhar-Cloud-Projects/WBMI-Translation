@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCWCStateStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCWCStateStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_WC_State AS (\n\tWITH cte_DCWCState(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.LineId, \r\n\tX.WC_StateId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.AnniversaryRating, \r\n\tX.CarrierType, \r\n\tX.EffectiveDate, \r\n\tX.NonRatableIncreasedLimits, \r\n\tX.NormalAnniversaryRatingDate, \r\n\tX.State, \r\n\tX.WorkplaceSafetyProgramNonEstablishedSurchargeIndicator,\r\n\tX.ManualPremium,\r\n\tX.ModifiedPremium,\r\n\tX.SubjectPremium,\r\n\tX.TotalEstimatedPremium,\r\n\tX.TotalStatePremium,\r\n\tX.USLandHManualPremium\t  \r\n\tFROM\r\n\tDC_WC_State X\r\n\tinner join\r\n\tcte_DCWCState Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tLineId AS i_LineId,\n\tWC_StateId AS i_WC_StateId,\n\tSessionId AS i_SessionId,\n\tId AS i_Id,\n\tAnniversaryRating AS i_AnniversaryRating,\n\tCarrierType AS i_CarrierType,\n\tEffectiveDate AS i_EffectiveDate,\n\tNonRatableIncreasedLimits AS i_NonRatableIncreasedLimits,\n\tNormalAnniversaryRatingDate AS i_NormalAnniversaryRatingDate,\n\tState AS i_State,\n\tWorkplaceSafetyProgramNonEstablishedSurchargeIndicator AS i_WorkplaceSafetyProgramNonEstablishedSurchargeIndicator,\n\ti_LineId AS o_LineId,\n\ti_WC_StateId AS o_WC_StateId,\n\ti_SessionId AS o_SessionId,\n\ti_Id AS o_Id,\n\t-- *INF*: DECODE(i_AnniversaryRating ,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_AnniversaryRating,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AnniversaryRating,\n\ti_CarrierType AS o_CarrierType,\n\ti_EffectiveDate AS o_EffectiveDate,\n\ti_NonRatableIncreasedLimits AS o_NonRatableIncreasedLimits,\n\ti_NormalAnniversaryRatingDate AS o_NormalAnniversaryRatingDate,\n\ti_State AS o_State,\n\t-- *INF*: DECODE(i_WorkplaceSafetyProgramNonEstablishedSurchargeIndicator ,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_WorkplaceSafetyProgramNonEstablishedSurchargeIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_WorkplaceSafetyProgramNonEstablishedSurchargeIndicator,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tManualPremium,\n\tModifiedPremium,\n\tSubjectPremium,\n\tTotalEstimatedPremium,\n\tTotalStatePremium,\n\tUSLandHManualPremium\n\tFROM SQ_DC_WC_State\n),\nDCWCStateStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCWCStateStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCWCStateStaging\n\t(LineId, WC_StateId, SessionId, Id, AnniversaryRating, CarrierType, EffectiveDate, NonRatableIncreasedLimits, NormalAnniversaryRatingDate, State, WorkplaceSafetyProgramNonEstablishedSurchargeIndicator, ExtractDate, SourceSystemId, ManualPremium, ModifiedPremium, SubjectPremium, TotalEstimatedPremium, TotalStatePremium, USLandHManualPremium)\n\tSELECT \n\to_LineId AS LINEID, \n\to_WC_StateId AS WC_STATEID, \n\to_SessionId AS SESSIONID, \n\to_Id AS ID, \n\to_AnniversaryRating AS ANNIVERSARYRATING, \n\to_CarrierType AS CARRIERTYPE, \n\to_EffectiveDate AS EFFECTIVEDATE, \n\to_NonRatableIncreasedLimits AS NONRATABLEINCREASEDLIMITS, \n\to_NormalAnniversaryRatingDate AS NORMALANNIVERSARYRATINGDATE, \n\to_State AS STATE, \n\to_WorkplaceSafetyProgramNonEstablishedSurchargeIndicator AS WORKPLACESAFETYPROGRAMNONESTABLISHEDSURCHARGEINDICATOR, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tMANUALPREMIUM, \n\tMODIFIEDPREMIUM, \n\tSUBJECTPREMIUM, \n\tTOTALESTIMATEDPREMIUM, \n\tTOTALSTATEPREMIUM, \n\tUSLANDHMANUALPREMIUM\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

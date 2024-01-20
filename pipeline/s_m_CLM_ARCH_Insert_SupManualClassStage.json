@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_SupManualClassStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_SupManualClassStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SupManualClassStage AS (\n\tSELECT SupManualClassStage.SupManualClassStageId, SupManualClassStage.ExtractDate, SupManualClassStage.SourceSystemid, SupManualClassStage.ManualClassCode, SupManualClassStage.ManualClassDesc, SupManualClassStage.ModifiedDate, SupManualClassStage.ModifiedUserId \r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.SupManualClassStage SupManualClassStage\r\n\twhere SupManualClassStage.ModifiedDate>= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_ArchSupManualClassStage AS (\n\tSELECT\n\tSupManualClassStageId,\n\tExtractDate,\n\tSourceSystemid,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_ID_OP,\n\tManualClassCode,\n\tManualClassDesc,\n\tModifiedDate,\n\tModifiedUserId\n\tFROM SQ_SupManualClassStage\n),\nArchSupManualClassStage AS (\n\tINSERT INTO ArchSupManualClassStage\n\t(ExtractDate, SourceSystemId, AuditId, SupManualClassStageId, ManualClassCode, ManualClassDesc, ModifiedDate, ModifiedUserId)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemid AS SOURCESYSTEMID, \n\tAudit_ID_OP AS AUDITID, \n\tSUPMANUALCLASSSTAGEID, \n\tMANUALCLASSCODE, \n\tMANUALCLASSDESC, \n\tMODIFIEDDATE, \n\tMODIFIEDUSERID\n\tFROM EXP_ArchSupManualClassStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

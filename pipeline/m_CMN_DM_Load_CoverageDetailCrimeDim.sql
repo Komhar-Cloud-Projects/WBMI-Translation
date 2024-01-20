@@ -53,11 +53,11 @@ EXP_CalValues AS (
 	-- OR i_CoverageGUID<>lkp_CoverageGUID,
 	-- 'UPDATE',
 	-- 'NOCHANGE')
-	DECODE(TRUE,
-		lkp_CoverageDetailDimId IS NULL, 'INSERT',
-		i_CrimeIndustryGroup <> lkp_CrimeIndustryGroup 
-		OR i_CoverageGUID <> lkp_CoverageGUID, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    lkp_CoverageDetailDimId IS NULL, 'INSERT',
+	    i_CrimeIndustryGroup <> lkp_CrimeIndustryGroup OR i_CoverageGUID <> lkp_CoverageGUID, 'UPDATE',
+	    'NOCHANGE'
 	) AS o_changeflag
 	FROM SQ_CoverageDetailCrime
 	LEFT JOIN LKP_CDCD

@@ -18,8 +18,7 @@ EXP_POLKEY AS (
 	pol_version,
 	PolicyNumber,
 	-- *INF*: CONCAT(PolicyNumber,pol_version)
-	CONCAT(PolicyNumber, pol_version
-	) AS Pol_key
+	CONCAT(PolicyNumber, pol_version) AS Pol_key
 	FROM SQ_WBPolicyStaging
 ),
 SQ_policy_dim AS (
@@ -89,8 +88,7 @@ AGG_SR_SUID AS (
 	SourceUID,
 	TotalPremiumChange,
 	-- *INF*: SUM(TotalPremiumChange)
-	SUM(TotalPremiumChange
-	) AS TotalPremiumChangeOut
+	SUM(TotalPremiumChange) AS TotalPremiumChangeOut
 	FROM JNR_Stage_DM
 	GROUP BY SourceReference, SourceUID
 ),
@@ -109,8 +107,7 @@ EXP_Values AS (
 	--    '"TransactionType":"All Transactions",'  || 
 	--    '"TransactionTotal":' || TO_CHAR(TotalPremiumChange) ||
 	-- '}'
-	'{' || '"SourceSystemCode":"DWMRT",' || '"ComponentName":"PolicyMart",' || '"TypeCode":"EXBAL",' || '"SourceReference":"' || SourceReference || '",' || '"SourceTypeCode":"POLKY",' || '"SourceUID":"' || SourceUID || '",' || '"TransactionType":"All Transactions",' || '"TransactionTotal":' || TO_CHAR(TotalPremiumChange
-	) || '}' AS v_JSON_row,
+	'{' || '"SourceSystemCode":"DWMRT",' || '"ComponentName":"PolicyMart",' || '"TypeCode":"EXBAL",' || '"SourceReference":"' || SourceReference || '",' || '"SourceTypeCode":"POLKY",' || '"SourceUID":"' || SourceUID || '",' || '"TransactionType":"All Transactions",' || '"TransactionTotal":' || TO_CHAR(TotalPremiumChange) || '}' AS v_JSON_row,
 	v_JSON_row AS Json_RowData,
 	@{pipeline().parameters.TARGETFILE} AS Filename
 	FROM AGG_SR_SUID

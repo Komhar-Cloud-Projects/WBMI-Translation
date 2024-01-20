@@ -15,11 +15,9 @@ exp_get_data AS (
 	PassThroughChargeTransactionCodeId,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: TO_DATE('1/1/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('1/1/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS EffectiveDate,
+	TO_TIMESTAMP('1/1/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	1 AS CurrentSnapshotFlag,
 	SupPassThroughChargeTypeID
 	FROM SQ_PassThroughChargeTransaction
@@ -75,58 +73,53 @@ Exp_PassThroughTransTypeDim AS (
 	SELECT
 	lkp_sup_premim_transaction_code.StandardPremiumTransactionCode AS lkp_StandardPremiumTransactionCode,
 	-- *INF*: IIF(ISNULL(lkp_StandardPremiumTransactionCode) or IS_SPACES(lkp_StandardPremiumTransactionCode) or LENGTH(lkp_StandardPremiumTransactionCode)=0,'N/A',LTRIM(RTRIM(lkp_StandardPremiumTransactionCode)))
-	IFF(lkp_StandardPremiumTransactionCode IS NULL 
-		OR LENGTH(lkp_StandardPremiumTransactionCode)>0 AND TRIM(lkp_StandardPremiumTransactionCode)='' 
-		OR LENGTH(lkp_StandardPremiumTransactionCode
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(lkp_StandardPremiumTransactionCode
-			)
-		)
+	IFF(
+	    lkp_StandardPremiumTransactionCode IS NULL
+	    or LENGTH(lkp_StandardPremiumTransactionCode)>0
+	    and TRIM(lkp_StandardPremiumTransactionCode)=''
+	    or LENGTH(lkp_StandardPremiumTransactionCode) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(lkp_StandardPremiumTransactionCode))
 	) AS StandardPremiumTransactionCode,
 	lkp_sup_premim_transaction_code.StandardPremiumTransactionCodeDescription AS lkp_StandardPremiumTransactionCodeDescription,
 	-- *INF*: iif(isnull(lkp_StandardPremiumTransactionCodeDescription) or IS_SPACES(lkp_StandardPremiumTransactionCodeDescription) or LENGTH(lkp_StandardPremiumTransactionCodeDescription)=0,'N/A',LTRIM(RTRIM(lkp_StandardPremiumTransactionCodeDescription)))
-	IFF(lkp_StandardPremiumTransactionCodeDescription IS NULL 
-		OR LENGTH(lkp_StandardPremiumTransactionCodeDescription)>0 AND TRIM(lkp_StandardPremiumTransactionCodeDescription)='' 
-		OR LENGTH(lkp_StandardPremiumTransactionCodeDescription
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(lkp_StandardPremiumTransactionCodeDescription
-			)
-		)
+	IFF(
+	    lkp_StandardPremiumTransactionCodeDescription IS NULL
+	    or LENGTH(lkp_StandardPremiumTransactionCodeDescription)>0
+	    and TRIM(lkp_StandardPremiumTransactionCodeDescription)=''
+	    or LENGTH(lkp_StandardPremiumTransactionCodeDescription) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(lkp_StandardPremiumTransactionCodeDescription))
 	) AS StandardPremiumTransactionCodeDescription,
 	lkp_sup_premim_transaction_code.prem_trans_type_descript AS lkp_prem_trans_type_descript,
 	-- *INF*: iif(isnull(lkp_prem_trans_type_descript) or IS_SPACES(lkp_prem_trans_type_descript) or LENGTH(lkp_prem_trans_type_descript)=0,'N/A',LTRIM(RTRIM(lkp_prem_trans_type_descript)))
-	IFF(lkp_prem_trans_type_descript IS NULL 
-		OR LENGTH(lkp_prem_trans_type_descript)>0 AND TRIM(lkp_prem_trans_type_descript)='' 
-		OR LENGTH(lkp_prem_trans_type_descript
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(lkp_prem_trans_type_descript
-			)
-		)
+	IFF(
+	    lkp_prem_trans_type_descript IS NULL
+	    or LENGTH(lkp_prem_trans_type_descript)>0
+	    and TRIM(lkp_prem_trans_type_descript)=''
+	    or LENGTH(lkp_prem_trans_type_descript) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(lkp_prem_trans_type_descript))
 	) AS prem_trans_type_descript,
 	lkp_sup_reason_amended_code.StandardReasonAmendedDescription AS lkp_rsn_amended_code_descript,
 	-- *INF*: iif(isnull(lkp_rsn_amended_code_descript) or IS_SPACES(lkp_rsn_amended_code_descript) or LENGTH(lkp_rsn_amended_code_descript)=0,'N/A',LTRIM(RTRIM(lkp_rsn_amended_code_descript)))
-	IFF(lkp_rsn_amended_code_descript IS NULL 
-		OR LENGTH(lkp_rsn_amended_code_descript)>0 AND TRIM(lkp_rsn_amended_code_descript)='' 
-		OR LENGTH(lkp_rsn_amended_code_descript
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(lkp_rsn_amended_code_descript
-			)
-		)
+	IFF(
+	    lkp_rsn_amended_code_descript IS NULL
+	    or LENGTH(lkp_rsn_amended_code_descript)>0
+	    and TRIM(lkp_rsn_amended_code_descript)=''
+	    or LENGTH(lkp_rsn_amended_code_descript) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(lkp_rsn_amended_code_descript))
 	) AS rsn_amended_code_descript,
 	lkp_sup_reason_amended_code.StandardReasonAmendedCode AS lkp_StandardReasonAmendedCode,
 	-- *INF*: iif(isnull(lkp_StandardReasonAmendedCode) or IS_SPACES(lkp_StandardReasonAmendedCode) or LENGTH(lkp_StandardReasonAmendedCode)=0,'N/A',LTRIM(RTRIM(lkp_StandardReasonAmendedCode)))
-	IFF(lkp_StandardReasonAmendedCode IS NULL 
-		OR LENGTH(lkp_StandardReasonAmendedCode)>0 AND TRIM(lkp_StandardReasonAmendedCode)='' 
-		OR LENGTH(lkp_StandardReasonAmendedCode
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(lkp_StandardReasonAmendedCode
-			)
-		)
+	IFF(
+	    lkp_StandardReasonAmendedCode IS NULL
+	    or LENGTH(lkp_StandardReasonAmendedCode)>0
+	    and TRIM(lkp_StandardReasonAmendedCode)=''
+	    or LENGTH(lkp_StandardReasonAmendedCode) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(lkp_StandardReasonAmendedCode))
 	) AS ReasonAmendedCode,
 	exp_get_data.AuditID,
 	exp_get_data.EffectiveDate,
@@ -134,14 +127,13 @@ Exp_PassThroughTransTypeDim AS (
 	exp_get_data.CurrentSnapshotFlag,
 	lkp_SupPassThroughChargeType.PassThroughChargeType AS lkp_PassThroughChargeType,
 	-- *INF*: iif(isnull(lkp_PassThroughChargeType) or IS_SPACES(lkp_PassThroughChargeType) or LENGTH(lkp_PassThroughChargeType)=0,'N/A',LTRIM(RTRIM(lkp_PassThroughChargeType)))
-	IFF(lkp_PassThroughChargeType IS NULL 
-		OR LENGTH(lkp_PassThroughChargeType)>0 AND TRIM(lkp_PassThroughChargeType)='' 
-		OR LENGTH(lkp_PassThroughChargeType
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(lkp_PassThroughChargeType
-			)
-		)
+	IFF(
+	    lkp_PassThroughChargeType IS NULL
+	    or LENGTH(lkp_PassThroughChargeType)>0
+	    and TRIM(lkp_PassThroughChargeType)=''
+	    or LENGTH(lkp_PassThroughChargeType) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(lkp_PassThroughChargeType))
 	) AS PassThroughChargeType
 	FROM exp_get_data
 	LEFT JOIN lkp_SupPassThroughChargeType

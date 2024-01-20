@@ -192,10 +192,11 @@ EXP_CleanupData AS (
 	-- LicensedIndicator = 'Y', '1', 
 	-- LicensedIndicator = 'N', '0', 
 	-- '1')
-	Decode(true,
-		LicensedIndicator = 'Y', '1',
-		LicensedIndicator = 'N', '0',
-		'1'
+	Decode(
+	    true,
+	    LicensedIndicator = 'Y', '1',
+	    LicensedIndicator = 'N', '0',
+	    '1'
 	) AS o_LicensedIndicator,
 	SQ_Agency_V2.AbbreviatedName,
 	SQ_Agency_V2.AssignedStateCode,
@@ -206,145 +207,65 @@ EXP_CleanupData AS (
 	-- *INF*: :LKP.LKP_AGENCY_V2(lkp_LegalParentAgencyAKID)
 	LKP_AGENCY_V2_lkp_LegalParentAgencyAKID.AgencyCode AS v_LegalPrimaryAgencyCode,
 	-- *INF*: IIF(IsNull(lkp_mail_AgencyAddressID), v_DefaultInt, lkp_mail_AgencyAddressID)
-	IFF(lkp_mail_AgencyAddressID IS NULL,
-		v_DefaultInt,
-		lkp_mail_AgencyAddressID
-	) AS o_mail_AgencyAddressID,
+	IFF(lkp_mail_AgencyAddressID IS NULL, v_DefaultInt, lkp_mail_AgencyAddressID) AS o_mail_AgencyAddressID,
 	-- *INF*: IIF(IsNull(lkp_mail_AgencyAddressID), v_DefaultInt, lkp_mail_AgencyAddressAKID)
-	IFF(lkp_mail_AgencyAddressID IS NULL,
-		v_DefaultInt,
-		lkp_mail_AgencyAddressAKID
-	) AS o_mail_AgencyAddressAKID,
+	IFF(lkp_mail_AgencyAddressID IS NULL, v_DefaultInt, lkp_mail_AgencyAddressAKID) AS o_mail_AgencyAddressAKID,
 	-- *INF*: IIF(IsNull(lkp_physical_AgencyAddressID), v_DefaultInt, lkp_physical_AgencyAddressID)
-	IFF(lkp_physical_AgencyAddressID IS NULL,
-		v_DefaultInt,
-		lkp_physical_AgencyAddressID
-	) AS o_physical_AgencyAddressID,
+	IFF(lkp_physical_AgencyAddressID IS NULL, v_DefaultInt, lkp_physical_AgencyAddressID) AS o_physical_AgencyAddressID,
 	-- *INF*: IIF(IsNull(lkp_physical_AgencyAddressID), v_DefaultInt, lkp_physical_AgencyAddressAKID)
-	IFF(lkp_physical_AgencyAddressID IS NULL,
-		v_DefaultInt,
-		lkp_physical_AgencyAddressAKID
-	) AS o_physical_AgencyAddressAKID,
+	IFF(lkp_physical_AgencyAddressID IS NULL, v_DefaultInt, lkp_physical_AgencyAddressAKID) AS o_physical_AgencyAddressAKID,
 	-- *INF*: IIF(IsNull(lkp_LegalParentAgencyAKID), 'Yes', 'No')
-	IFF(lkp_LegalParentAgencyAKID IS NULL,
-		'Yes',
-		'No'
-	) AS o_PrimaryAgencyIndicator,
+	IFF(lkp_LegalParentAgencyAKID IS NULL, 'Yes', 'No') AS o_PrimaryAgencyIndicator,
 	-- *INF*: IIF(IsNull(lkp_physical_AgencyAddressID), v_DefaultChar, lkp_physical_AddressLine1)
-	IFF(lkp_physical_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_physical_AddressLine1
-	) AS o_physical_AddressLine1,
+	IFF(lkp_physical_AgencyAddressID IS NULL, v_DefaultChar, lkp_physical_AddressLine1) AS o_physical_AddressLine1,
 	-- *INF*: IIF(IsNull(lkp_physical_AgencyAddressID), v_DefaultChar, lkp_physical_AddressLine2)
-	IFF(lkp_physical_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_physical_AddressLine2
-	) AS o_physical_AddressLine2,
+	IFF(lkp_physical_AgencyAddressID IS NULL, v_DefaultChar, lkp_physical_AddressLine2) AS o_physical_AddressLine2,
 	-- *INF*: IIF(IsNull(lkp_physical_AgencyAddressID), v_DefaultChar, lkp_physical_AddressLine3)
-	IFF(lkp_physical_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_physical_AddressLine3
-	) AS o_physical_AddressLine3,
+	IFF(lkp_physical_AgencyAddressID IS NULL, v_DefaultChar, lkp_physical_AddressLine3) AS o_physical_AddressLine3,
 	-- *INF*: IIF(IsNull(lkp_physical_AgencyAddressID), v_DefaultChar, lkp_physical_City)
-	IFF(lkp_physical_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_physical_City
-	) AS o_physical_City,
+	IFF(lkp_physical_AgencyAddressID IS NULL, v_DefaultChar, lkp_physical_City) AS o_physical_City,
 	-- *INF*: IIF(IsNull(lkp_physical_AgencyAddressID), v_DefaultChar, lkp_physical_ZipCode)
-	IFF(lkp_physical_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_physical_ZipCode
-	) AS o_physical_ZipCode,
+	IFF(lkp_physical_AgencyAddressID IS NULL, v_DefaultChar, lkp_physical_ZipCode) AS o_physical_ZipCode,
 	-- *INF*: IIF(IsNull(lkp_physical_AgencyAddressID), v_DefaultChar, lkp_physical_CountyCode)
-	IFF(lkp_physical_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_physical_CountyCode
-	) AS o_physical_CountyCode,
+	IFF(lkp_physical_AgencyAddressID IS NULL, v_DefaultChar, lkp_physical_CountyCode) AS o_physical_CountyCode,
 	-- *INF*: IIF(IsNull(lkp_physical_AgencyAddressID), v_DefaultChar, lkp_physical_CountyName)
-	IFF(lkp_physical_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_physical_CountyName
-	) AS o_physical_CountyName,
+	IFF(lkp_physical_AgencyAddressID IS NULL, v_DefaultChar, lkp_physical_CountyName) AS o_physical_CountyName,
 	-- *INF*: IIF(IsNull(lkp_physical_AgencyAddressID), v_DefaultCharCode, lkp_physical_StateAbbreviation)
-	IFF(lkp_physical_AgencyAddressID IS NULL,
-		v_DefaultCharCode,
-		lkp_physical_StateAbbreviation
-	) AS o_physical_StateAbbreviation,
+	IFF(lkp_physical_AgencyAddressID IS NULL, v_DefaultCharCode, lkp_physical_StateAbbreviation) AS o_physical_StateAbbreviation,
 	-- *INF*: IIF(IsNull(lkp_physical_AgencyAddressID), v_DefaultChar, lkp_physical_CountryAbbreviation)
-	IFF(lkp_physical_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_physical_CountryAbbreviation
-	) AS o_physical_CountryAbbreviation,
+	IFF(lkp_physical_AgencyAddressID IS NULL, v_DefaultChar, lkp_physical_CountryAbbreviation) AS o_physical_CountryAbbreviation,
 	-- *INF*: IIF(IsNull(lkp_physical_AgencyAddressID), v_DefaultDecimal, lkp_physical_Latitude)
-	IFF(lkp_physical_AgencyAddressID IS NULL,
-		v_DefaultDecimal,
-		lkp_physical_Latitude
-	) AS o_physical_Latitude,
+	IFF(lkp_physical_AgencyAddressID IS NULL, v_DefaultDecimal, lkp_physical_Latitude) AS o_physical_Latitude,
 	-- *INF*: IIF(IsNull(lkp_physical_AgencyAddressID), v_DefaultDecimal, lkp_physical_Longitude)
-	IFF(lkp_physical_AgencyAddressID IS NULL,
-		v_DefaultDecimal,
-		lkp_physical_Longitude
-	) AS o_physical_Longitude,
+	IFF(lkp_physical_AgencyAddressID IS NULL, v_DefaultDecimal, lkp_physical_Longitude) AS o_physical_Longitude,
 	-- *INF*: IIF(IsNull(lkp_mail_AgencyAddressID), v_DefaultChar, lkp_mail_AddressLine1)
-	IFF(lkp_mail_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_mail_AddressLine1
-	) AS o_mail_AddressLine1,
+	IFF(lkp_mail_AgencyAddressID IS NULL, v_DefaultChar, lkp_mail_AddressLine1) AS o_mail_AddressLine1,
 	-- *INF*: IIF(IsNull(lkp_mail_AgencyAddressID), v_DefaultChar, lkp_mail_AddressLine2)
-	IFF(lkp_mail_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_mail_AddressLine2
-	) AS o_mail_AddressLine2,
+	IFF(lkp_mail_AgencyAddressID IS NULL, v_DefaultChar, lkp_mail_AddressLine2) AS o_mail_AddressLine2,
 	-- *INF*: IIF(IsNull(lkp_mail_AgencyAddressID), v_DefaultChar, lkp_mail_AddressLine3)
-	IFF(lkp_mail_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_mail_AddressLine3
-	) AS o_mail_AddressLine3,
+	IFF(lkp_mail_AgencyAddressID IS NULL, v_DefaultChar, lkp_mail_AddressLine3) AS o_mail_AddressLine3,
 	-- *INF*: IIF(IsNull(lkp_mail_AgencyAddressID), v_DefaultChar, lkp_mail_City)
-	IFF(lkp_mail_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_mail_City
-	) AS o_mail_City,
+	IFF(lkp_mail_AgencyAddressID IS NULL, v_DefaultChar, lkp_mail_City) AS o_mail_City,
 	-- *INF*: IIF(IsNull(lkp_mail_AgencyAddressID), v_DefaultChar, lkp_mail_ZipCode)
-	IFF(lkp_mail_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_mail_ZipCode
-	) AS o_mail_ZipCode,
+	IFF(lkp_mail_AgencyAddressID IS NULL, v_DefaultChar, lkp_mail_ZipCode) AS o_mail_ZipCode,
 	-- *INF*: IIF(IsNull(lkp_mail_AgencyAddressID), v_DefaultChar, lkp_mail_CountyCode)
-	IFF(lkp_mail_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_mail_CountyCode
-	) AS o_mail_CountyCode,
+	IFF(lkp_mail_AgencyAddressID IS NULL, v_DefaultChar, lkp_mail_CountyCode) AS o_mail_CountyCode,
 	-- *INF*: IIF(IsNull(lkp_mail_AgencyAddressID), v_DefaultChar, lkp_mail_CountyName)
-	IFF(lkp_mail_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_mail_CountyName
-	) AS o_mail_CountyName,
+	IFF(lkp_mail_AgencyAddressID IS NULL, v_DefaultChar, lkp_mail_CountyName) AS o_mail_CountyName,
 	-- *INF*: IIF(IsNull(lkp_mail_AgencyAddressID), v_DefaultCharCode, lkp_mail_StateAbbreviation)
-	IFF(lkp_mail_AgencyAddressID IS NULL,
-		v_DefaultCharCode,
-		lkp_mail_StateAbbreviation
-	) AS o_mail_StateAbbreviation,
+	IFF(lkp_mail_AgencyAddressID IS NULL, v_DefaultCharCode, lkp_mail_StateAbbreviation) AS o_mail_StateAbbreviation,
 	-- *INF*: IIF(IsNull(lkp_mail_AgencyAddressID), v_DefaultChar, lkp_mail_CountryAbbreviation)
-	IFF(lkp_mail_AgencyAddressID IS NULL,
-		v_DefaultChar,
-		lkp_mail_CountryAbbreviation
-	) AS o_mail_CountryAbbreviation,
+	IFF(lkp_mail_AgencyAddressID IS NULL, v_DefaultChar, lkp_mail_CountryAbbreviation) AS o_mail_CountryAbbreviation,
 	-- *INF*: IIF(IsNull(lkp_mail_AgencyAddressID), v_DefaultDecimal, lkp_mail_Latitude)
-	IFF(lkp_mail_AgencyAddressID IS NULL,
-		v_DefaultDecimal,
-		lkp_mail_Latitude
-	) AS o_mail_Latitude,
+	IFF(lkp_mail_AgencyAddressID IS NULL, v_DefaultDecimal, lkp_mail_Latitude) AS o_mail_Latitude,
 	-- *INF*: IIF(IsNull(lkp_mail_AgencyAddressID), v_DefaultDecimal, lkp_mail_Longitude)
-	IFF(lkp_mail_AgencyAddressID IS NULL,
-		v_DefaultDecimal,
-		lkp_mail_Longitude
-	) AS o_mail_Longitude,
+	IFF(lkp_mail_AgencyAddressID IS NULL, v_DefaultDecimal, lkp_mail_Longitude) AS o_mail_Longitude,
 	-- *INF*: IIF(IsNull(v_LegalPrimaryAgencyCode) OR lkp_LegalParentAgencyAKID = lkp_LegalParentAgencyAKID_Deleted,AgencyCode,v_LegalPrimaryAgencyCode)
-	IFF(v_LegalPrimaryAgencyCode IS NULL 
-		OR lkp_LegalParentAgencyAKID = lkp_LegalParentAgencyAKID_Deleted,
-		AgencyCode,
-		v_LegalPrimaryAgencyCode
+	IFF(
+	    v_LegalPrimaryAgencyCode IS NULL
+	    or lkp_LegalParentAgencyAKID = lkp_LegalParentAgencyAKID_Deleted,
+	    AgencyCode,
+	    v_LegalPrimaryAgencyCode
 	) AS o_LegalPrimaryAgencyCode,
 	SQ_Agency_V2.CurrentSnapshotFlag,
 	SQ_Agency_V2.AuditID,
@@ -458,25 +379,20 @@ EXP_CheckForChange AS (
 	-- 
 	-- 
 	-- --MD5(AgencyCode || LegalName || StatusCode || to_char(AppointedDate) || to_char(TerminatedDate) || to_char(LegalParentAgencyAKID) || to_char(physical_AgencyAddressAKID) || to_char(mail_AgencyAddressAKID) || physical_ZipCode)
-	MD5(i_AgencyCode || '&' || i_LegalName || '&' || i_StatusCode || '&' || TO_CHAR(i_AppointedDate
-		) || '&' || TO_CHAR(i_TerminatedDate
-		) || '&' || i_PrimaryAgencyIndicator || '&' || i_physical_ZipCode || '&' || i_LegalPrimaryAgencyCode || '&' || TO_CHAR(LicensedIndicator
-		) || '&' || TO_CHAR(AbbreviatedName
-		) || '&' || TO_CHAR(AssignedStateCode
-		)
-	) AS v_new_Type2HashKey,
+	MD5(i_AgencyCode || '&' || i_LegalName || '&' || i_StatusCode || '&' || TO_CHAR(i_AppointedDate) || '&' || TO_CHAR(i_TerminatedDate) || '&' || i_PrimaryAgencyIndicator || '&' || i_physical_ZipCode || '&' || i_LegalPrimaryAgencyCode || '&' || TO_CHAR(LicensedIndicator) || '&' || TO_CHAR(AbbreviatedName) || '&' || TO_CHAR(AssignedStateCode)) AS v_new_Type2HashKey,
 	-- *INF*: DECODE(TRUE, 
 	-- i_AgencyPKID <> lkp_ExistingAgencyPKID, 'Y',
 	-- i_mail_AgencyAddressPKID <> lkp_ExistingAgencyAddressMailingPKID, 'Y',
 	-- i_physical_AgencyAddressPKID <> lkp_ExistingAgencyAddressPhysicalPKID, 'Y',
 	-- lkp_AgencyClosedDate<>ClosedDate,'Y',
 	-- 'N')
-	DECODE(TRUE,
-		i_AgencyPKID <> lkp_ExistingAgencyPKID, 'Y',
-		i_mail_AgencyAddressPKID <> lkp_ExistingAgencyAddressMailingPKID, 'Y',
-		i_physical_AgencyAddressPKID <> lkp_ExistingAgencyAddressPhysicalPKID, 'Y',
-		lkp_AgencyClosedDate <> ClosedDate, 'Y',
-		'N'
+	DECODE(
+	    TRUE,
+	    i_AgencyPKID <> lkp_ExistingAgencyPKID, 'Y',
+	    i_mail_AgencyAddressPKID <> lkp_ExistingAgencyAddressMailingPKID, 'Y',
+	    i_physical_AgencyAddressPKID <> lkp_ExistingAgencyAddressPhysicalPKID, 'Y',
+	    lkp_AgencyClosedDate <> ClosedDate, 'Y',
+	    'N'
 	) AS v_ChangeToEDWRecord,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(lkp_AgencyDimHashKey), 'Insert',
@@ -492,19 +408,13 @@ EXP_CheckForChange AS (
 	-- 	
 	-- 
 	-- 
-	DECODE(TRUE,
-		lkp_AgencyDimHashKey IS NULL, 'Insert',
-		( lkp_AgencyDimHashKey = v_new_Type2HashKey 
-		) 
-		AND ( v_ChangeToEDWRecord = 'N' 
-		), 'Ignore',
-		( lkp_AgencyDimHashKey <> v_new_Type2HashKey 
-		), 'Expire',
-		( lkp_AgencyDimHashKey = v_new_Type2HashKey 
-		) 
-		AND ( v_ChangeToEDWRecord = 'Y' 
-		), 'Update',
-		'Ignore'
+	DECODE(
+	    TRUE,
+	    lkp_AgencyDimHashKey IS NULL, 'Insert',
+	    (lkp_AgencyDimHashKey = v_new_Type2HashKey) and (v_ChangeToEDWRecord = 'N'), 'Ignore',
+	    (lkp_AgencyDimHashKey <> v_new_Type2HashKey), 'Expire',
+	    (lkp_AgencyDimHashKey = v_new_Type2HashKey) and (v_ChangeToEDWRecord = 'Y'), 'Update',
+	    'Ignore'
 	) AS v_InsertUpdateExpireOrIgnore,
 	1 AS o_CurrentSnapshotFlag,
 	0 AS o_ExpireSnapshotFlag,
@@ -518,10 +428,10 @@ EXP_CheckForChange AS (
 	-- 
 	-- 
 	-- --Decode(v_InsertUpdateExpireOrIgnore, 'Insert', trunc(sysdate, 'DD'), lkp_ExistingEffectiveDate)
-	DECODE(v_InsertUpdateExpireOrIgnore,
-		'Insert', TO_DATE('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS'
-		),
-		SYSDATE
+	DECODE(
+	    v_InsertUpdateExpireOrIgnore,
+	    'Insert', TO_TIMESTAMP('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
 	-- 
@@ -529,13 +439,12 @@ EXP_CheckForChange AS (
 	-- 
 	-- 
 	-- --Decode(v_InsertUpdateExpireOrIgnore, 'Expire', add_to_date(trunc(sysdate, 'DD'), 'MS', -1 ), to_date('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'))
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_ExpirationDate,
 	-- *INF*: ADD_TO_DATE(SYSDATE, 'SS', -1 )
 	-- 
 	-- 
 	-- --ADD_TO_DATE(TRUNC(SYSDATE, 'DD'), 'MS', -1 )
-	DATEADD(SECOND,- 1,SYSDATE) AS o_ExpirationDate_ForExpire,
+	DATEADD(SECOND,- 1,CURRENT_TIMESTAMP) AS o_ExpirationDate_ForExpire,
 	SYSDATE AS o_CurrentDate,
 	v_new_Type2HashKey AS o_HashKey,
 	i_AgencyPKID AS o_AgencyPKID,

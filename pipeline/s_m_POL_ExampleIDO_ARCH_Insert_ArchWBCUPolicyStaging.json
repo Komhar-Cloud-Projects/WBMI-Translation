@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCUPolicyStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCUPolicyStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCUPolicyStaging AS (\n\tSELECT\n\t\tWBCUPolicyStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tWB_CL_PolicyId,\n\t\tWB_CU_PolicyId,\n\t\tSessionId,\n\t\tReinsuranceLiabilityLimit,\n\t\tReinsuranceLiabilityPremium,\n\t\tTaskFlagFormSelectedWB1351,\n\t\tTaskFlagFormSelectedWB1525UM,\n\t\tTaskFlagFormSelectedWB1533UM\n\tFROM WBCUPolicyStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,\n\tWB_CL_PolicyId,\n\tWB_CU_PolicyId,\n\tSessionId,\n\tReinsuranceLiabilityLimit,\n\tReinsuranceLiabilityPremium,\n\tTaskFlagFormSelectedWB1351,\n\t-- *INF*: DECODE(TaskFlagFormSelectedWB1351,'T',1,'F',0,NULL)\n\tDECODE(\n\t    TaskFlagFormSelectedWB1351,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS TaskFlagFormSelectedWB1351_out,\n\tTaskFlagFormSelectedWB1525UM,\n\t-- *INF*: DECODE(TaskFlagFormSelectedWB1525UM,'T',1,'F',0,NULL)\n\tDECODE(\n\t    TaskFlagFormSelectedWB1525UM,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS TaskFlagFormSelectedWB1525UM_out,\n\tTaskFlagFormSelectedWB1533UM,\n\t-- *INF*: DECODE(TaskFlagFormSelectedWB1533UM,'T',1,'F',0,NULL)\n\tDECODE(\n\t    TaskFlagFormSelectedWB1533UM,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS TaskFlagFormSelectedWB1533UM_out\n\tFROM SQ_WBCUPolicyStaging\n),\narchWBCUPolicyStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archWBCUPolicyStaging\n\t(ExtractDate, SourceSystemId, AuditId, WB_CL_PolicyId, WB_CU_PolicyId, SessionId, ReinsuranceLiabilityLimit, ReinsuranceLiabilityPremium, TaskFlagFormSelectedWB1351, TaskFlagFormSelectedWB1525UM, TaskFlagFormSelectedWB1533UM)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tWB_CL_POLICYID, \n\tWB_CU_POLICYID, \n\tSESSIONID, \n\tREINSURANCELIABILITYLIMIT, \n\tREINSURANCELIABILITYPREMIUM, \n\tTaskFlagFormSelectedWB1351_out AS TASKFLAGFORMSELECTEDWB1351, \n\tTaskFlagFormSelectedWB1525UM_out AS TASKFLAGFORMSELECTEDWB1525UM, \n\tTaskFlagFormSelectedWB1533UM_out AS TASKFLAGFORMSELECTEDWB1533UM\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

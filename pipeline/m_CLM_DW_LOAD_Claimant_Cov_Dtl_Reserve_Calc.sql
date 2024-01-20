@@ -106,8 +106,7 @@ EXP_Set_values_reopen AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	reserve_date AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
 	FROM RTR_Grp_Fin_Typ_Cds_Grp_Reopen
@@ -199,18 +198,14 @@ EXP_Set_values_Reclosed AS (
 	'5CLOSEDAFTERREOPEN' AS reserve_date_type,
 	'C' AS financial_type_status_code,
 	-- *INF*: IIF(IN(trans_code, '40', '30'), 100, 1)
-	IFF(trans_code IN ('40','30'),
-		100,
-		1
-	) AS logical_flag,
+	IFF(trans_code IN ('40','30'), 100, 1) AS logical_flag,
 	-- *INF*: :LKP.LKP_CLAIMANT_COV_DTL_RSRV_CALC(claimant_cov_det_ak_id,  financial_type_code, trans_date, '5CLOSEDAFTERREOPEN')
 	LKP_CLAIMANT_COV_DTL_RSRV_CALC_claimant_cov_det_ak_id_financial_type_code_trans_date_5CLOSEDAFTERREOPEN.claimant_cov_det_reserve_calculation_id AS lkp_claimant_cov_det_reserve_calculation_id,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	trans_date AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
 	FROM RTR_Grp_Fin_Typ_Cds_Grp_Reclosed
@@ -300,8 +295,7 @@ EXP_set_values_notice_only AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	trans_date AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
 	FROM RTR_Grp_Fin_Typ_Cds_Grp_NoticeOnly
@@ -437,32 +431,23 @@ AGG_Cov_Fin_Txn_Cd_closed AS (
 	trans_code,
 	trans_date,
 	-- *INF*: MIN(trans_date,trans_code = '22')
-	MIN(trans_date, trans_code = '22'
-	) AS trans_date_op_22,
+	MIN(trans_date, trans_code = '22') AS trans_date_op_22,
 	-- *INF*: MIN(trans_date,trans_code = '23')
-	MIN(trans_date, trans_code = '23'
-	) AS trans_date_op_23,
+	MIN(trans_date, trans_code = '23') AS trans_date_op_23,
 	-- *INF*: MIN(trans_date,trans_code = '41')
-	MIN(trans_date, trans_code = '41'
-	) AS trans_date_op_41,
+	MIN(trans_date, trans_code = '41') AS trans_date_op_41,
 	-- *INF*: MIN(trans_date,trans_code = '42')
-	MIN(trans_date, trans_code = '42'
-	) AS trans_date_op_42,
+	MIN(trans_date, trans_code = '42') AS trans_date_op_42,
 	-- *INF*: MIN(trans_date,trans_code = '32')
-	MIN(trans_date, trans_code = '32'
-	) AS trans_date_op_32,
+	MIN(trans_date, trans_code = '32') AS trans_date_op_32,
 	-- *INF*: MIN(trans_date,trans_code = '33')
-	MIN(trans_date, trans_code = '33'
-	) AS trans_date_op_33,
+	MIN(trans_date, trans_code = '33') AS trans_date_op_33,
 	-- *INF*: MIN(trans_date,trans_code = '30')
-	MIN(trans_date, trans_code = '30'
-	) AS trans_date_op_30,
+	MIN(trans_date, trans_code = '30') AS trans_date_op_30,
 	-- *INF*: MIN(trans_date,NOT IN(trans_code, '20', '30','40'))
-	MIN(trans_date, NOT trans_code IN ('20','30','40')
-	) AS trans_date_op,
+	MIN(trans_date, NOT trans_code IN ('20','30','40')) AS trans_date_op,
 	-- *INF*: MAX(trans_date,IN(trans_code, '20','30','40'))
-	MAX(trans_date, trans_code IN ('20','30','40')
-	) AS trans_date_op_20_40,
+	MAX(trans_date, trans_code IN ('20','30','40')) AS trans_date_op_20_40,
 	source_sys_id
 	FROM RTR_Grp_Fin_Typ_Cds_Grp_Closed
 	GROUP BY claimant_cov_det_ak_id, financial_type_code
@@ -484,55 +469,54 @@ EXP_Concat_Dates_Closed AS (
 	-- *INF*: IIF(NOT ISNULL(trans_date_23_op), trans_date_23_op, IIF(NOT ISNULL(trans_date_22_op), trans_date_22_op, IIF(NOT ISNULL(trans_date_41_op), trans_date_41_op, IIF(NOT ISNULL(trans_date_42_op), trans_date_42_op, IIF(NOT ISNULL(trans_date_20_40_op), trans_date_20_40_op)))))
 	-- 
 	-- 
-	IFF(trans_date_23_op IS NOT NULL,
-		trans_date_23_op,
-		IFF(trans_date_22_op IS NOT NULL,
-			trans_date_22_op,
-			IFF(trans_date_41_op IS NOT NULL,
-				trans_date_41_op,
-				IFF(trans_date_42_op IS NOT NULL,
-					trans_date_42_op,
-					IFF(trans_date_20_40_op IS NOT NULL,
-						trans_date_20_40_op
-					)
-				)
-			)
-		)
+	IFF(
+	    trans_date_23_op IS NOT NULL, trans_date_23_op,
+	    IFF(
+	        trans_date_22_op IS NOT NULL, trans_date_22_op,
+	        IFF(
+	            trans_date_41_op IS NOT NULL, trans_date_41_op,
+	            IFF(
+	                trans_date_42_op IS NOT NULL, trans_date_42_op,
+	                IFF(
+	                    trans_date_20_40_op IS NOT NULL, trans_date_20_40_op
+	                )
+	            )
+	        )
+	    )
 	) AS close_dt_d_e,
 	-- *INF*: IIF(NOT ISNULL(trans_date_23_op), trans_date_23_op, IIF(NOT ISNULL(trans_date_32_op), trans_date_32_op, IIF(NOT ISNULL(trans_date_33_op), trans_date_33_op, IIF(NOT ISNULL(trans_date_20_40_op), trans_date_20_40_op, IIF(NOT ISNULL(trans_date_41_op), trans_date_41_op, IIF(NOT ISNULL(trans_date_42_op), trans_date_42_op, IIF(NOT ISNULL(trans_date_30_op), trans_date_30_op, IIF(NOT ISNULL(trans_date_22_op), trans_date_22_op))))))))
 	-- 
 	-- --IIF(NOT ISNULL(trans_date_32_op),trans_date_32_op,IIF(NOT ISNULL(trans_date_33_op),trans_date_33_op,IIF(NOT ISNULL(trans_date_20_40_op),trans_date_20_40_op,IIF(NOT ISNULL(trans_date_41_op),trans_date_41_op,IIF(NOT ISNULL(trans_date_42_op),trans_date_42_op,IIF(NOT ISNULL(trans_date_30_op),trans_date_30_op, IIF(NOT ISNULL(trans_date_23_op), trans_date_23_op, IIF(NOT ISNULL(trans_date_22_op), trans_date_22_op))))))))
-	IFF(trans_date_23_op IS NOT NULL,
-		trans_date_23_op,
-		IFF(trans_date_32_op IS NOT NULL,
-			trans_date_32_op,
-			IFF(trans_date_33_op IS NOT NULL,
-				trans_date_33_op,
-				IFF(trans_date_20_40_op IS NOT NULL,
-					trans_date_20_40_op,
-					IFF(trans_date_41_op IS NOT NULL,
-						trans_date_41_op,
-						IFF(trans_date_42_op IS NOT NULL,
-							trans_date_42_op,
-							IFF(trans_date_30_op IS NOT NULL,
-								trans_date_30_op,
-								IFF(trans_date_22_op IS NOT NULL,
-									trans_date_22_op
-								)
-							)
-						)
-					)
-				)
-			)
-		)
+	IFF(
+	    trans_date_23_op IS NOT NULL, trans_date_23_op,
+	    IFF(
+	        trans_date_32_op IS NOT NULL, trans_date_32_op,
+	        IFF(
+	            trans_date_33_op IS NOT NULL, trans_date_33_op,
+	            IFF(
+	                trans_date_20_40_op IS NOT NULL, trans_date_20_40_op,
+	                IFF(
+	                    trans_date_41_op IS NOT NULL, trans_date_41_op,
+	                    IFF(
+	                        trans_date_42_op IS NOT NULL, trans_date_42_op,
+	                        IFF(
+	                            trans_date_30_op IS NOT NULL,
+	                            trans_date_30_op,
+	                            IFF(
+	                                trans_date_22_op IS NOT NULL,
+	                                trans_date_22_op
+	                            )
+	                        )
+	                    )
+	                )
+	            )
+	        )
+	    )
 	) AS close_dt_s_b_r,
 	trans_date_op,
 	trans_date_op_20_40 AS trans_date_20_40_op,
 	-- *INF*: IIF(NOT ISNULL(trans_date_op), trans_date_op, trans_date_20_40_op)
-	IFF(trans_date_op IS NOT NULL,
-		trans_date_op,
-		trans_date_20_40_op
-	) AS close_dt,
+	IFF(trans_date_op IS NOT NULL, trans_date_op, trans_date_20_40_op) AS close_dt,
 	source_sys_id
 	FROM AGG_Cov_Fin_Txn_Cd_closed
 ),
@@ -550,8 +534,7 @@ EXP_set_default_values_closed AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID,
 	reserve_date AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	sysdate AS created_date,
 	sysdate AS modified_date,
 	'C' AS financial_type_status_code,
@@ -669,35 +652,25 @@ AGG_Cov_Fin_Txn_Cd_open AS (
 	trans_code,
 	trans_date,
 	-- *INF*: MIN(trans_date,trans_code = '90')
-	MIN(trans_date, trans_code = '90'
-	) AS trans_date_op_90,
+	MIN(trans_date, trans_code = '90') AS trans_date_op_90,
 	-- *INF*: MIN(trans_date,trans_code = '91')
-	MIN(trans_date, trans_code = '91'
-	) AS trans_date_op_91,
+	MIN(trans_date, trans_code = '91') AS trans_date_op_91,
 	-- *INF*: MIN(trans_date,trans_code = '92')
-	MIN(trans_date, trans_code = '92'
-	) AS trans_date_op_92,
+	MIN(trans_date, trans_code = '92') AS trans_date_op_92,
 	-- *INF*: MIN(trans_date,trans_code = '23')
-	MIN(trans_date, trans_code = '23'
-	) AS trans_date_op_23,
+	MIN(trans_date, trans_code = '23') AS trans_date_op_23,
 	-- *INF*: MIN(trans_date,in(trans_code,  '20', '40'))
-	MIN(trans_date, trans_code IN ('20','40')
-	) AS trans_date_op_20_40,
+	MIN(trans_date, trans_code IN ('20','40')) AS trans_date_op_20_40,
 	-- *INF*: MIN(trans_date,trans_code = '33')
-	MIN(trans_date, trans_code = '33'
-	) AS trans_date_op_33,
+	MIN(trans_date, trans_code = '33') AS trans_date_op_33,
 	-- *INF*: MIN(trans_date,trans_code = '30')
-	MIN(trans_date, trans_code = '30'
-	) AS trans_date_op_30,
+	MIN(trans_date, trans_code = '30') AS trans_date_op_30,
 	-- *INF*: MIN(trans_date,trans_code = '22')
-	MIN(trans_date, trans_code = '22'
-	) AS trans_date_op_22,
+	MIN(trans_date, trans_code = '22') AS trans_date_op_22,
 	-- *INF*: MIN(trans_date,trans_code = '66')
-	MIN(trans_date, trans_code = '66'
-	) AS trans_date_op_66,
+	MIN(trans_date, trans_code = '66') AS trans_date_op_66,
 	-- *INF*: MIN(trans_date)
-	MIN(trans_date
-	) AS trans_date_op,
+	MIN(trans_date) AS trans_date_op,
 	source_sys_id
 	FROM RTR_Grp_Fin_Typ_Cds_Grp_Open
 	GROUP BY claimant_cov_det_ak_id, financial_type_code
@@ -719,60 +692,61 @@ EXP_Concat_Dates_Open AS (
 	trans_date_op_22 AS trans_date_22_op,
 	trans_date_op,
 	-- *INF*: IIF(NOT ISNULL(trans_date_23_op),trans_date_23_op,IIF(NOT ISNULL(trans_date_90_op),trans_date_90_op,IIF(NOT ISNULL(trans_date_91_op),trans_date_91_op,IIF(NOT ISNULL(trans_date_92_op),trans_date_92_op,IIF(NOT ISNULL(trans_date_20_40_op),trans_date_20_40_op, IIF(NOT ISNULL(trans_date_op_66), trans_date_op_66, IIF(NOT ISNULL(trans_date_22_op), trans_date_22_op)))))))
-	IFF(trans_date_23_op IS NOT NULL,
-		trans_date_23_op,
-		IFF(trans_date_90_op IS NOT NULL,
-			trans_date_90_op,
-			IFF(trans_date_91_op IS NOT NULL,
-				trans_date_91_op,
-				IFF(trans_date_92_op IS NOT NULL,
-					trans_date_92_op,
-					IFF(trans_date_20_40_op IS NOT NULL,
-						trans_date_20_40_op,
-						IFF(trans_date_op_66 IS NOT NULL,
-							trans_date_op_66,
-							IFF(trans_date_22_op IS NOT NULL,
-								trans_date_22_op
-							)
-						)
-					)
-				)
-			)
-		)
+	IFF(
+	    trans_date_23_op IS NOT NULL, trans_date_23_op,
+	    IFF(
+	        trans_date_90_op IS NOT NULL, trans_date_90_op,
+	        IFF(
+	            trans_date_91_op IS NOT NULL, trans_date_91_op,
+	            IFF(
+	                trans_date_92_op IS NOT NULL, trans_date_92_op,
+	                IFF(
+	                    trans_date_20_40_op IS NOT NULL, trans_date_20_40_op,
+	                    IFF(
+	                        trans_date_op_66 IS NOT NULL, trans_date_op_66,
+	                        IFF(
+	                            trans_date_22_op IS NOT NULL,
+	                            trans_date_22_op
+	                        )
+	                    )
+	                )
+	            )
+	        )
+	    )
 	) AS open_dt_d_e,
 	-- *INF*: IIF(NOT ISNULL(trans_date_90_op),trans_date_90_op,IIF(NOT ISNULL(trans_date_91_op),trans_date_91_op,IIF(NOT ISNULL(trans_date_92_op),trans_date_92_op,IIF(NOT ISNULL(trans_date_33_op),trans_date_33_op,IIF(NOT ISNULL(trans_date_30_op),trans_date_30_op, IIF(NOT ISNULL(trans_date_20_40_op), trans_date_20_40_op, IIF(NOT ISNULL(trans_date_op_66), trans_date_op_66, IIF(NOT ISNULL(trans_date_22_op), trans_date_22_op, IIF(NOT ISNULL(trans_date_23_op), trans_date_23_op)))))))))
-	IFF(trans_date_90_op IS NOT NULL,
-		trans_date_90_op,
-		IFF(trans_date_91_op IS NOT NULL,
-			trans_date_91_op,
-			IFF(trans_date_92_op IS NOT NULL,
-				trans_date_92_op,
-				IFF(trans_date_33_op IS NOT NULL,
-					trans_date_33_op,
-					IFF(trans_date_30_op IS NOT NULL,
-						trans_date_30_op,
-						IFF(trans_date_20_40_op IS NOT NULL,
-							trans_date_20_40_op,
-							IFF(trans_date_op_66 IS NOT NULL,
-								trans_date_op_66,
-								IFF(trans_date_22_op IS NOT NULL,
-									trans_date_22_op,
-									IFF(trans_date_23_op IS NOT NULL,
-										trans_date_23_op
-									)
-								)
-							)
-						)
-					)
-				)
-			)
-		)
+	IFF(
+	    trans_date_90_op IS NOT NULL, trans_date_90_op,
+	    IFF(
+	        trans_date_91_op IS NOT NULL, trans_date_91_op,
+	        IFF(
+	            trans_date_92_op IS NOT NULL, trans_date_92_op,
+	            IFF(
+	                trans_date_33_op IS NOT NULL, trans_date_33_op,
+	                IFF(
+	                    trans_date_30_op IS NOT NULL, trans_date_30_op,
+	                    IFF(
+	                        trans_date_20_40_op IS NOT NULL, trans_date_20_40_op,
+	                        IFF(
+	                            trans_date_op_66 IS NOT NULL,
+	                            trans_date_op_66,
+	                            IFF(
+	                                trans_date_22_op IS NOT NULL,
+	                                trans_date_22_op,
+	                                IFF(
+	                                    trans_date_23_op IS NOT NULL,
+	                                    trans_date_23_op
+	                                )
+	                            )
+	                        )
+	                    )
+	                )
+	            )
+	        )
+	    )
 	) AS open_dt_s_b_r,
 	-- *INF*: IIF( IN(financial_type_code, 'S','B','R'), open_dt_s_b_r, open_dt_d_e)
-	IFF(financial_type_code IN ('S','B','R'),
-		open_dt_s_b_r,
-		open_dt_d_e
-	) AS open_dt,
+	IFF(financial_type_code IN ('S','B','R'), open_dt_s_b_r, open_dt_d_e) AS open_dt,
 	source_sys_id
 	FROM AGG_Cov_Fin_Txn_Cd_open
 ),
@@ -789,8 +763,7 @@ EXP_set_default_values_open AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID,
 	reserve_date AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	sysdate AS created_date,
 	sysdate AS modified_date,
 	'O' AS financial_type_status_code,

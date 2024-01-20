@@ -78,35 +78,17 @@ EXP_metadata AS (
 	SecondaryClassGroup AS i_SecondaryClassGroup,
 	i_CoverageDetailDimId AS o_CoverageDetailDimId,
 	-- *INF*: IIF(ISNULL(i_RadiusOfOperation),'N/A',i_RadiusOfOperation)
-	IFF(i_RadiusOfOperation IS NULL,
-		'N/A',
-		i_RadiusOfOperation
-	) AS o_RadiusOfOperation,
+	IFF(i_RadiusOfOperation IS NULL, 'N/A', i_RadiusOfOperation) AS o_RadiusOfOperation,
 	-- *INF*: IIF(ISNULL(i_VehicleTypeSize),'N/A',i_VehicleTypeSize)
-	IFF(i_VehicleTypeSize IS NULL,
-		'N/A',
-		i_VehicleTypeSize
-	) AS o_VehicleTypeSize,
+	IFF(i_VehicleTypeSize IS NULL, 'N/A', i_VehicleTypeSize) AS o_VehicleTypeSize,
 	-- *INF*: IIF(ISNULL(i_BusinessUseClass),'N/A',i_BusinessUseClass)
-	IFF(i_BusinessUseClass IS NULL,
-		'N/A',
-		i_BusinessUseClass
-	) AS o_BusinessUseClass,
+	IFF(i_BusinessUseClass IS NULL, 'N/A', i_BusinessUseClass) AS o_BusinessUseClass,
 	-- *INF*: IIF(ISNULL(i_SecondaryClass),'N/A',i_SecondaryClass)
-	IFF(i_SecondaryClass IS NULL,
-		'N/A',
-		i_SecondaryClass
-	) AS o_SecondaryClass,
+	IFF(i_SecondaryClass IS NULL, 'N/A', i_SecondaryClass) AS o_SecondaryClass,
 	-- *INF*: IIF(ISNULL(i_FleetType),'N/A',i_FleetType)
-	IFF(i_FleetType IS NULL,
-		'N/A',
-		i_FleetType
-	) AS o_FleetType,
+	IFF(i_FleetType IS NULL, 'N/A', i_FleetType) AS o_FleetType,
 	-- *INF*: IIF(ISNULL(i_SecondaryClassGroup),'N/A',i_SecondaryClassGroup)
-	IFF(i_SecondaryClassGroup IS NULL,
-		'N/A',
-		i_SecondaryClassGroup
-	) AS o_SecondaryClassGroup
+	IFF(i_SecondaryClassGroup IS NULL, 'N/A', i_SecondaryClassGroup) AS o_SecondaryClassGroup
 	FROM SQ_CoverageDetailCommercialAuto
 ),
 UPD_ADDEDCOLUMNS AS (

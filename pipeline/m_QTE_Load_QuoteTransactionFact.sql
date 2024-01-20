@@ -159,14 +159,11 @@ EXP_Default_ProductCode_LineOfBusinessCode AS (
 	ProductCode AS i_ProductCode,
 	InsuranceReferenceLineOfBusinessCode AS i_InsuranceReferenceLineOfBusinessCode,
 	-- *INF*: IIF(ISNULL(i_ProductCode), '000', i_ProductCode)
-	IFF(i_ProductCode IS NULL,
-		'000',
-		i_ProductCode
-	) AS o_ProductCode,
+	IFF(i_ProductCode IS NULL, '000', i_ProductCode) AS o_ProductCode,
 	-- *INF*: IIF(ISNULL(i_InsuranceReferenceLineOfBusinessCode), '000', i_InsuranceReferenceLineOfBusinessCode)
-	IFF(i_InsuranceReferenceLineOfBusinessCode IS NULL,
-		'000',
-		i_InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    i_InsuranceReferenceLineOfBusinessCode IS NULL, '000',
+	    i_InsuranceReferenceLineOfBusinessCode
 	) AS o_InsuranceReferenceLineOfBusinessCode,
 	'1' AS o_RatingPlanCode
 	FROM SQ_Quote
@@ -346,120 +343,68 @@ EXP_GatherAllPorts AS (
 	-- i_QuoteStatusCode='Initialized Quote',0,
 	-- --IN(i_QuoteStatusCode,'Declined','Closed')=1 AND lkp_ReleasedQuoteFlag='0',0,
 	-- i_WrittenPremium)
-	DECODE(TRUE,
-		i_QuoteStatusCode = 'Initialized Quote', 0,
-		i_WrittenPremium
+	DECODE(
+	    TRUE,
+	    i_QuoteStatusCode = 'Initialized Quote', 0,
+	    i_WrittenPremium
 	) AS v_WrittenPremium,
 	-- *INF*: IIF(NOT ISNULL(i_QuoteTransactionId),i_QuoteTransactionId,-1)
-	IFF(i_QuoteTransactionId IS NOT NULL,
-		i_QuoteTransactionId,
-		- 1
-	) AS QuoteTransactionId,
+	IFF(i_QuoteTransactionId IS NOT NULL, i_QuoteTransactionId, - 1) AS QuoteTransactionId,
 	-- *INF*: IIF(i_CurrentSnapshotFlag='T','1','0')
-	IFF(i_CurrentSnapshotFlag = 'T',
-		'1',
-		'0'
-	) AS CurrentSnapshotFlag,
+	IFF(i_CurrentSnapshotFlag = 'T', '1', '0') AS CurrentSnapshotFlag,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_CALENDAR_DIM_CLNDR_ID(TO_DATE(TO_CHAR(StatusDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))), -1, :LKP.LKP_CALENDAR_DIM_CLNDR_ID(TO_DATE(TO_CHAR(StatusDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')))
-	IFF(LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_StatusDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id IS NULL,
-		- 1,
-		LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_StatusDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id
+	IFF(
+	    LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_StatusDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id IS NULL,
+	    - 1,
+	    LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_StatusDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id
 	) AS QuoteStatusDateID,
 	-- *INF*: IIF( ISNULL(:LKP.LKP_CALENDAR_DIM_CLNDR_ID(TO_DATE(TO_CHAR(i_StatusCreatedDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))), -1, :LKP.LKP_CALENDAR_DIM_CLNDR_ID(TO_DATE(TO_CHAR(i_StatusCreatedDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')))
-	IFF(LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_i_StatusCreatedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id IS NULL,
-		- 1,
-		LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_i_StatusCreatedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id
+	IFF(
+	    LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_i_StatusCreatedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id IS NULL,
+	    - 1,
+	    LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_i_StatusCreatedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id
 	) AS QuoteCreatedDateID,
 	-- *INF*: IIF( ISNULL(:LKP.LKP_CALENDAR_DIM_CLNDR_ID(TO_DATE(TO_CHAR(i_QuoteEffectiveDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))), -1, :LKP.LKP_CALENDAR_DIM_CLNDR_ID(TO_DATE(TO_CHAR(i_QuoteEffectiveDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')))
-	IFF(LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_i_QuoteEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id IS NULL,
-		- 1,
-		LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_i_QuoteEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id
+	IFF(
+	    LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_i_QuoteEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id IS NULL,
+	    - 1,
+	    LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_i_QuoteEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id
 	) AS QuoteEffectiveDateID,
 	-- *INF*: IIF( ISNULL(lkp_QuoteStatusDimId), -1, lkp_QuoteStatusDimId)
-	IFF(lkp_QuoteStatusDimId IS NULL,
-		- 1,
-		lkp_QuoteStatusDimId
-	) AS QuoteStatusDimID,
+	IFF(lkp_QuoteStatusDimId IS NULL, - 1, lkp_QuoteStatusDimId) AS QuoteStatusDimID,
 	-- *INF*: IIF( ISNULL(lkp_StateDimID), -1, lkp_StateDimID)
-	IFF(lkp_StateDimID IS NULL,
-		- 1,
-		lkp_StateDimID
-	) AS RiskStateDimID,
+	IFF(lkp_StateDimID IS NULL, - 1, lkp_StateDimID) AS RiskStateDimID,
 	-- *INF*: IIF( ISNULL(lkp_PartyDimID), -1, lkp_PartyDimID)
-	IFF(lkp_PartyDimID IS NULL,
-		- 1,
-		lkp_PartyDimID
-	) AS PartyDimID,
+	IFF(lkp_PartyDimID IS NULL, - 1, lkp_PartyDimID) AS PartyDimID,
 	-- *INF*: IIF( ISNULL(lkp_AgencyDimID), -1, lkp_AgencyDimID)
-	IFF(lkp_AgencyDimID IS NULL,
-		- 1,
-		lkp_AgencyDimID
-	) AS AgencyDimID,
+	IFF(lkp_AgencyDimID IS NULL, - 1, lkp_AgencyDimID) AS AgencyDimID,
 	-- *INF*: IIF( ISNULL(lkp_AgencyEmployeeDimID), -1, lkp_AgencyEmployeeDimID)
-	IFF(lkp_AgencyEmployeeDimID IS NULL,
-		- 1,
-		lkp_AgencyEmployeeDimID
-	) AS AgencyEmployeeDimID,
+	IFF(lkp_AgencyEmployeeDimID IS NULL, - 1, lkp_AgencyEmployeeDimID) AS AgencyEmployeeDimID,
 	-- *INF*: IIF(ISNULL(lkp_UnderwritingDivisionDimID), -1,lkp_UnderwritingDivisionDimID)
-	IFF(lkp_UnderwritingDivisionDimID IS NULL,
-		- 1,
-		lkp_UnderwritingDivisionDimID
-	) AS UnderwritingDivisionDimID,
+	IFF(lkp_UnderwritingDivisionDimID IS NULL, - 1, lkp_UnderwritingDivisionDimID) AS UnderwritingDivisionDimID,
 	-- *INF*: IIF( ISNULL(lkp_ProgramDimId), -1 , lkp_ProgramDimId)
-	IFF(lkp_ProgramDimId IS NULL,
-		- 1,
-		lkp_ProgramDimId
-	) AS ProgramDimId,
+	IFF(lkp_ProgramDimId IS NULL, - 1, lkp_ProgramDimId) AS ProgramDimId,
 	-- *INF*: IIF( ISNULL(lkp_DeclinedQuoteDimId), -1, lkp_DeclinedQuoteDimId)
-	IFF(lkp_DeclinedQuoteDimId IS NULL,
-		- 1,
-		lkp_DeclinedQuoteDimId
-	) AS DeclinedQuoteDimId,
+	IFF(lkp_DeclinedQuoteDimId IS NULL, - 1, lkp_DeclinedQuoteDimId) AS DeclinedQuoteDimId,
 	-- *INF*: IIF( ISNULL(lkp_BusinessClassDimId), -1, lkp_BusinessClassDimId)
-	IFF(lkp_BusinessClassDimId IS NULL,
-		- 1,
-		lkp_BusinessClassDimId
-	) AS BusinessClassDimId,
+	IFF(lkp_BusinessClassDimId IS NULL, - 1, lkp_BusinessClassDimId) AS BusinessClassDimId,
 	-- *INF*: IIF( ISNULL(lkp_InsuranceReferenceDimId), -1, lkp_InsuranceReferenceDimId)
-	IFF(lkp_InsuranceReferenceDimId IS NULL,
-		- 1,
-		lkp_InsuranceReferenceDimId
-	) AS InsuranceReferenceDimId,
+	IFF(lkp_InsuranceReferenceDimId IS NULL, - 1, lkp_InsuranceReferenceDimId) AS InsuranceReferenceDimId,
 	-- *INF*: IIF(i_InternalExternalIndicator =  'External', 1, 0)
-	IFF(i_InternalExternalIndicator = 'External',
-		1,
-		0
-	) AS ExternalQuoteIndicator,
+	IFF(i_InternalExternalIndicator = 'External', 1, 0) AS ExternalQuoteIndicator,
 	-- *INF*: IIF( ISNULL(v_WrittenPremium), 0, v_WrittenPremium)
-	IFF(v_WrittenPremium IS NULL,
-		0,
-		v_WrittenPremium
-	) AS WrittenPremium,
+	IFF(v_WrittenPremium IS NULL, 0, v_WrittenPremium) AS WrittenPremium,
 	-- *INF*: IIF(ISNULL(i_RiskGrade), 'N/A', i_RiskGrade)
-	IFF(i_RiskGrade IS NULL,
-		'N/A',
-		i_RiskGrade
-	) AS RiskGrade,
+	IFF(i_RiskGrade IS NULL, 'N/A', i_RiskGrade) AS RiskGrade,
 	-- *INF*: IIF(NOT ISNULL(lkp_QuoteDimId),lkp_QuoteDimId)
-	IFF(lkp_QuoteDimId IS NOT NULL,
-		lkp_QuoteDimId
-	) AS QuoteDimId,
+	IFF(lkp_QuoteDimId IS NOT NULL, lkp_QuoteDimId) AS QuoteDimId,
 	i_QuoteNumber AS QuoteCounter,
 	-- *INF*: IIF(NOT ISNULL(lkp_PartyNumber),lkp_PartyNumber,'N/A')
-	IFF(lkp_PartyNumber IS NOT NULL,
-		lkp_PartyNumber,
-		'N/A'
-	) AS CustomerCounter,
+	IFF(lkp_PartyNumber IS NOT NULL, lkp_PartyNumber, 'N/A') AS CustomerCounter,
 	-- *INF*: IIF( ISNULL(i_EstimatedQuotePremium), 0, i_EstimatedQuotePremium)
-	IFF(i_EstimatedQuotePremium IS NULL,
-		0,
-		i_EstimatedQuotePremium
-	) AS EstimatedQuotePremium,
+	IFF(i_EstimatedQuotePremium IS NULL, 0, i_EstimatedQuotePremium) AS EstimatedQuotePremium,
 	-- *INF*: IIF( ISNULL(lkp_ClosedQuoteDimId), -1, lkp_ClosedQuoteDimId)
-	IFF(lkp_ClosedQuoteDimId IS NULL,
-		- 1,
-		lkp_ClosedQuoteDimId
-	) AS ClosedQuoteDimId
+	IFF(lkp_ClosedQuoteDimId IS NULL, - 1, lkp_ClosedQuoteDimId) AS ClosedQuoteDimId
 	FROM SQ_Quote
 	LEFT JOIN LKP_AgencyDim
 	ON LKP_AgencyDim.EDWAgencyAKID = SQ_Quote.AgencyAKId
@@ -486,19 +431,13 @@ EXP_GatherAllPorts AS (
 	LEFT JOIN LKP_UnderwritingDivisionDim
 	ON LKP_UnderwritingDivisionDim.EDWUnderwritingAssociateAKID = SQ_Quote.UnderwritingAssociateAKId
 	LEFT JOIN LKP_CALENDAR_DIM_CLNDR_ID LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_StatusDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_StatusDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(StatusDate, 'MM/DD/YYYY'
-		), 'MM/DD/YYYY'
-	)
+	ON LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_StatusDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(TO_CHAR(StatusDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDAR_DIM_CLNDR_ID LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_i_StatusCreatedDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_i_StatusCreatedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(i_StatusCreatedDate, 'MM/DD/YYYY'
-		), 'MM/DD/YYYY'
-	)
+	ON LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_i_StatusCreatedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(TO_CHAR(i_StatusCreatedDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDAR_DIM_CLNDR_ID LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_i_QuoteEffectiveDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_i_QuoteEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_DATE(TO_CHAR(i_QuoteEffectiveDate, 'MM/DD/YYYY'
-		), 'MM/DD/YYYY'
-	)
+	ON LKP_CALENDAR_DIM_CLNDR_ID_TO_DATE_TO_CHAR_i_QuoteEffectiveDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(TO_CHAR(i_QuoteEffectiveDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 ),
 LKP_FirstBound AS (
@@ -581,26 +520,19 @@ EXP_InsertUpdate AS (
 	-- CurrentSnapshotFlag='0' AND ISNULL(lkp_FirstBound) AND ISNULL(lkp_FirstReleasedQuote),'Ignore',
 	-- ISNULL(lkp_QuoteTransactionFactId),'Insert',
 	-- 'Ignore')
-	DECODE(TRUE,
-		lkp_CurrentSnapshotFlag = '1' 
-		AND CurrentSnapshotFlag = '0' 
-		AND lkp_FirstBound IS NULL 
-		AND lkp_FirstReleasedQuote IS NULL, 'Delete',
-		CurrentSnapshotFlag = '0' 
-		AND lkp_FirstBound IS NULL 
-		AND lkp_FirstReleasedQuote IS NULL, 'Ignore',
-		lkp_QuoteTransactionFactId IS NULL, 'Insert',
-		'Ignore'
+	DECODE(
+	    TRUE,
+	    lkp_CurrentSnapshotFlag = '1' AND CurrentSnapshotFlag = '0' AND lkp_FirstBound IS NULL AND lkp_FirstReleasedQuote IS NULL, 'Delete',
+	    CurrentSnapshotFlag = '0' AND lkp_FirstBound IS NULL AND lkp_FirstReleasedQuote IS NULL, 'Ignore',
+	    lkp_QuoteTransactionFactId IS NULL, 'Insert',
+	    'Ignore'
 	) AS InsertUpdate,
 	lkp_QuoteTransactionFactId AS QuoteTransactionFactId,
 	EXP_GatherAllPorts.QuoteId AS EDWQuotePKId,
 	EXP_GatherAllPorts.QuoteTransactionId AS EDWQuoteTransactionPKId,
 	EXP_GatherAllPorts.CurrentSnapshotFlag,
 	-- *INF*: IIF(ISNULL(lkp_FirstBound),'0','1')
-	IFF(lkp_FirstBound IS NULL,
-		'0',
-		'1'
-	) AS FirstBoundFlag,
+	IFF(lkp_FirstBound IS NULL, '0', '1') AS FirstBoundFlag,
 	EXP_GatherAllPorts.QuoteStatusDateID,
 	EXP_GatherAllPorts.QuoteCreatedDateID,
 	EXP_GatherAllPorts.QuoteEffectiveDateID,
@@ -623,10 +555,7 @@ EXP_InsertUpdate AS (
 	EXP_GatherAllPorts.EstimatedQuotePremium,
 	EXP_GatherAllPorts.ClosedQuoteDimId,
 	-- *INF*: IIF(ISNULL(lkp_FirstReleasedQuote),'0','1')
-	IFF(lkp_FirstReleasedQuote IS NULL,
-		'0',
-		'1'
-	) AS FirstReleasedQuoteFlag,
+	IFF(lkp_FirstReleasedQuote IS NULL, '0', '1') AS FirstReleasedQuoteFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId
 	FROM EXP_GatherAllPorts
 	LEFT JOIN LKP_FirstBound

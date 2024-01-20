@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILCommissionAuthorizationStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_BillingODS_ARCH_Insert_ArchDCBILCommissionAuth_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBILCommissionAuthorizationStage AS (\n\tSELECT\n\t\tDCBILCommissionAuthorizationStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCommissionAuthorizationId,\n\t\tAgentReference,\n\t\tAccountId,\n\t\tPolicyTermId,\n\t\tBillItemId,\n\t\tAuthorizedAmount,\n\t\tCommissionSchemeReference,\n\t\tAuthorizationDate,\n\t\tCommissionType,\n\t\tCommissionPercent,\n\t\tCurrencyCulture,\n\t\tLastUpdatedTimestamp,\n\t\tLastUpdatedUserId,\n\t\tCommissionAuthorizationLockingTS,\n\t\tAgencyRollupReference,\n\t\tAuthorizationDateTime,\n\t\tAuthorizationReason,\n\t\tAuthorizationTypeCode,\n\t\tTierAmount,\n\t\tActivity,\n\t\tTransactionTypeCode,\n\t\tPlanId,\n\t\tTransactionGUID\n\tFROM DCBILCommissionAuthorizationStage\n),\nEXP_Metadata AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tDCBILCommissionAuthorizationStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCommissionAuthorizationId,\n\tAgentReference,\n\tAccountId,\n\tPolicyTermId,\n\tBillItemId,\n\tAuthorizedAmount,\n\tCommissionSchemeReference,\n\tAuthorizationDate,\n\tCommissionType,\n\tCommissionPercent,\n\tCurrencyCulture,\n\tLastUpdatedTimestamp,\n\tLastUpdatedUserId,\n\tCommissionAuthorizationLockingTS,\n\tAgencyRollupReference,\n\tAuthorizationDateTime,\n\tAuthorizationReason,\n\tAuthorizationTypeCode,\n\tTierAmount,\n\tActivity,\n\tTransactionTypeCode,\n\tPlanId,\n\tTransactionGUID\n\tFROM SQ_DCBILCommissionAuthorizationStage\n),\nLKP_ArchExist AS (\n\tSELECT\n\tArchDCBILCommissionAuthorizationStageId,\n\tCommissionAuthorizationId\n\tFROM (\n\t\tSELECT \n\t\t\tArchDCBILCommissionAuthorizationStageId,\n\t\t\tCommissionAuthorizationId\n\t\tFROM ArchDCBILCommissionAuthorizationStage\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY CommissionAuthorizationId ORDER BY ArchDCBILCommissionAuthorizationStageId) = 1\n),\nFIL_Exist AS (\n\tSELECT\n\tLKP_ArchExist.ArchDCBILCommissionAuthorizationStageId AS lkp_ArchDCBILCommissionAuthorizationStageId, \n\tEXP_Metadata.o_AuditId AS AuditId, \n\tEXP_Metadata.DCBILCommissionAuthorizationStageId, \n\tEXP_Metadata.ExtractDate, \n\tEXP_Metadata.SourceSystemId, \n\tEXP_Metadata.CommissionAuthorizationId, \n\tEXP_Metadata.AgentReference, \n\tEXP_Metadata.AccountId, \n\tEXP_Metadata.PolicyTermId, \n\tEXP_Metadata.BillItemId, \n\tEXP_Metadata.AuthorizedAmount, \n\tEXP_Metadata.CommissionSchemeReference, \n\tEXP_Metadata.AuthorizationDate, \n\tEXP_Metadata.CommissionType, \n\tEXP_Metadata.CommissionPercent, \n\tEXP_Metadata.CurrencyCulture, \n\tEXP_Metadata.LastUpdatedTimestamp, \n\tEXP_Metadata.LastUpdatedUserId, \n\tEXP_Metadata.CommissionAuthorizationLockingTS, \n\tEXP_Metadata.AgencyRollupReference, \n\tEXP_Metadata.AuthorizationDateTime, \n\tEXP_Metadata.AuthorizationReason, \n\tEXP_Metadata.AuthorizationTypeCode, \n\tEXP_Metadata.TierAmount, \n\tEXP_Metadata.Activity, \n\tEXP_Metadata.TransactionTypeCode, \n\tEXP_Metadata.PlanId, \n\tEXP_Metadata.TransactionGUID\n\tFROM EXP_Metadata\n\tLEFT JOIN LKP_ArchExist\n\tON LKP_ArchExist.CommissionAuthorizationId = EXP_Metadata.CommissionAuthorizationId\n\tWHERE ISNULL(lkp_ArchDCBILCommissionAuthorizationStageId)\n),\nArchDCBILCommissionAuthorizationStage AS (\n\tINSERT INTO ArchDCBILCommissionAuthorizationStage\n\t(ExtractDate, SourceSystemId, AuditId, DCBILCommissionAuthorizationStageId, CommissionAuthorizationId, AgentReference, AccountId, PolicyTermId, BillItemId, AuthorizedAmount, CommissionSchemeReference, AuthorizationDate, CommissionType, CommissionPercent, CurrencyCulture, LastUpdatedTimestamp, LastUpdatedUserId, CommissionAuthorizationLockingTS, AgencyRollupReference, AuthorizationDateTime, AuthorizationReason, AuthorizationTypeCode, TierAmount, Activity, TransactionTypeCode, PlanId, TransactionGUID)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tDCBILCOMMISSIONAUTHORIZATIONSTAGEID, \n\tCOMMISSIONAUTHORIZATIONID, \n\tAGENTREFERENCE, \n\tACCOUNTID, \n\tPOLICYTERMID, \n\tBILLITEMID, \n\tAUTHORIZEDAMOUNT, \n\tCOMMISSIONSCHEMEREFERENCE, \n\tAUTHORIZATIONDATE, \n\tCOMMISSIONTYPE, \n\tCOMMISSIONPERCENT, \n\tCURRENCYCULTURE, \n\tLASTUPDATEDTIMESTAMP, \n\tLASTUPDATEDUSERID, \n\tCOMMISSIONAUTHORIZATIONLOCKINGTS, \n\tAGENCYROLLUPREFERENCE, \n\tAUTHORIZATIONDATETIME, \n\tAUTHORIZATIONREASON, \n\tAUTHORIZATIONTYPECODE, \n\tTIERAMOUNT, \n\tACTIVITY, \n\tTRANSACTIONTYPECODE, \n\tPLANID, \n\tTRANSACTIONGUID\n\tFROM FIL_Exist\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

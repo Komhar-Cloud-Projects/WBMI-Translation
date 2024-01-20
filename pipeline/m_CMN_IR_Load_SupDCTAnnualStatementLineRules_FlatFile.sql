@@ -35,191 +35,131 @@ EXP_Default AS (
 	DctSubCoverageTypeCode AS i_DctSubCoverageTypeCode,
 	DctCoverageVersion AS i_DctCoverageVersion,
 	-- *INF*: LTRIM(RTRIM( i_ASLCode ))
-	LTRIM(RTRIM(i_ASLCode
-		)
-	) AS v_ASLCode,
+	LTRIM(RTRIM(i_ASLCode)) AS v_ASLCode,
 	-- *INF*: LTRIM(RTRIM( i_SubASLCode ))
-	LTRIM(RTRIM(i_SubASLCode
-		)
-	) AS v_SubASLCode,
+	LTRIM(RTRIM(i_SubASLCode)) AS v_SubASLCode,
 	-- *INF*: LTRIM(RTRIM( i_NonSubASLCode ))
-	LTRIM(RTRIM(i_NonSubASLCode
-		)
-	) AS v_NonSubASLCode,
+	LTRIM(RTRIM(i_NonSubASLCode)) AS v_NonSubASLCode,
 	-- *INF*: LTRIM(RTRIM( i_InsuranceLineCode ))
-	LTRIM(RTRIM(i_InsuranceLineCode
-		)
-	) AS v_InsuranceLineCode,
+	LTRIM(RTRIM(i_InsuranceLineCode)) AS v_InsuranceLineCode,
 	-- *INF*: LTRIM(RTRIM( i_CoverageCode ))
-	LTRIM(RTRIM(i_CoverageCode
-		)
-	) AS v_CoverageCode,
+	LTRIM(RTRIM(i_CoverageCode)) AS v_CoverageCode,
 	-- *INF*: LTRIM(RTRIM( i_RatedCoverageCode ))
-	LTRIM(RTRIM(i_RatedCoverageCode
-		)
-	) AS v_RatedCoverageCode,
+	LTRIM(RTRIM(i_RatedCoverageCode)) AS v_RatedCoverageCode,
 	-- *INF*: LTRIM(RTRIM( i_CoverageGroupCode ))
-	LTRIM(RTRIM(i_CoverageGroupCode
-		)
-	) AS v_CoverageGroupCode,
+	LTRIM(RTRIM(i_CoverageGroupCode)) AS v_CoverageGroupCode,
 	-- *INF*: LTRIM(RTRIM( i_CoverageSummaryCode ))
-	LTRIM(RTRIM(i_CoverageSummaryCode
-		)
-	) AS v_CoverageSummaryCode,
+	LTRIM(RTRIM(i_CoverageSummaryCode)) AS v_CoverageSummaryCode,
 	-- *INF*: LTRIM(RTRIM( i_DctRiskTypeCode ))
-	LTRIM(RTRIM(i_DctRiskTypeCode
-		)
-	) AS v_DctRiskTypeCode,
+	LTRIM(RTRIM(i_DctRiskTypeCode)) AS v_DctRiskTypeCode,
 	-- *INF*: LTRIM(RTRIM( i_DctCoverageTypeCode ))
-	LTRIM(RTRIM(i_DctCoverageTypeCode
-		)
-	) AS v_DctCoverageTypeCode,
+	LTRIM(RTRIM(i_DctCoverageTypeCode)) AS v_DctCoverageTypeCode,
 	-- *INF*: LTRIM(RTRIM( i_PmsRiskUnitGroupCode ))
-	LTRIM(RTRIM(i_PmsRiskUnitGroupCode
-		)
-	) AS v_PmsRiskUnitGroupCode,
+	LTRIM(RTRIM(i_PmsRiskUnitGroupCode)) AS v_PmsRiskUnitGroupCode,
 	-- *INF*: LTRIM(RTRIM( i_PmsRiskUnitCode ))
-	LTRIM(RTRIM(i_PmsRiskUnitCode
-		)
-	) AS v_PmsRiskUnitCode,
+	LTRIM(RTRIM(i_PmsRiskUnitCode)) AS v_PmsRiskUnitCode,
 	-- *INF*: LTRIM(RTRIM( i_PmsMajorPerilCode ))
-	LTRIM(RTRIM(i_PmsMajorPerilCode
-		)
-	) AS v_PmsMajorPerilCode,
+	LTRIM(RTRIM(i_PmsMajorPerilCode)) AS v_PmsMajorPerilCode,
 	-- *INF*: LTRIM(RTRIM( i_PmsProductTypeCode ))
-	LTRIM(RTRIM(i_PmsProductTypeCode
-		)
-	) AS v_PmsProductTypeCode,
+	LTRIM(RTRIM(i_PmsProductTypeCode)) AS v_PmsProductTypeCode,
 	-- *INF*: LTRIM(RTRIM( i_DctPerilGroup ))
-	LTRIM(RTRIM(i_DctPerilGroup
-		)
-	) AS v_DctPerilGroup,
+	LTRIM(RTRIM(i_DctPerilGroup)) AS v_DctPerilGroup,
 	-- *INF*: LTRIM(RTRIM( i_DctSubCoverageTypeCode ))
-	LTRIM(RTRIM(i_DctSubCoverageTypeCode
-		)
-	) AS v_DctSubCoverageTypeCode,
+	LTRIM(RTRIM(i_DctSubCoverageTypeCode)) AS v_DctSubCoverageTypeCode,
 	-- *INF*: LTRIM(RTRIM( i_DctCoverageVersion ))
-	LTRIM(RTRIM(i_DctCoverageVersion
-		)
-	) AS v_DctCoverageVersion,
+	LTRIM(RTRIM(i_DctCoverageVersion)) AS v_DctCoverageVersion,
 	-- *INF*: IIF(ISNULL(v_ASLCode) OR v_ASLCode='' OR v_ASLCode='NULL', 'N/A', v_ASLCode)
-	IFF(v_ASLCode IS NULL 
-		OR v_ASLCode = '' 
-		OR v_ASLCode = 'NULL',
-		'N/A',
-		v_ASLCode
-	) AS o_ASLCode,
+	IFF(v_ASLCode IS NULL OR v_ASLCode = '' OR v_ASLCode = 'NULL', 'N/A', v_ASLCode) AS o_ASLCode,
 	-- *INF*: IIF(ISNULL(v_SubASLCode) OR v_SubASLCode='' OR v_SubASLCode='NULL', 'N/A', v_SubASLCode)
-	IFF(v_SubASLCode IS NULL 
-		OR v_SubASLCode = '' 
-		OR v_SubASLCode = 'NULL',
-		'N/A',
-		v_SubASLCode
-	) AS o_SubASLCode,
+	IFF(v_SubASLCode IS NULL OR v_SubASLCode = '' OR v_SubASLCode = 'NULL', 'N/A', v_SubASLCode) AS o_SubASLCode,
 	-- *INF*: IIF(ISNULL(v_NonSubASLCode) OR v_NonSubASLCode='' OR v_NonSubASLCode='NULL', 'N/A', v_NonSubASLCode)
-	IFF(v_NonSubASLCode IS NULL 
-		OR v_NonSubASLCode = '' 
-		OR v_NonSubASLCode = 'NULL',
-		'N/A',
-		v_NonSubASLCode
+	IFF(
+	    v_NonSubASLCode IS NULL OR v_NonSubASLCode = '' OR v_NonSubASLCode = 'NULL', 'N/A',
+	    v_NonSubASLCode
 	) AS o_NonSubASLCode,
 	-- *INF*: IIF(ISNULL(v_InsuranceLineCode) OR v_InsuranceLineCode='' OR v_InsuranceLineCode='NULL', 'N/A', v_InsuranceLineCode)
-	IFF(v_InsuranceLineCode IS NULL 
-		OR v_InsuranceLineCode = '' 
-		OR v_InsuranceLineCode = 'NULL',
-		'N/A',
-		v_InsuranceLineCode
+	IFF(
+	    v_InsuranceLineCode IS NULL OR v_InsuranceLineCode = '' OR v_InsuranceLineCode = 'NULL',
+	    'N/A',
+	    v_InsuranceLineCode
 	) AS o_InsuranceLineCode,
 	-- *INF*: IIF(ISNULL(v_CoverageCode) OR v_CoverageCode='' OR v_CoverageCode='NULL', 'N/A', v_CoverageCode)
-	IFF(v_CoverageCode IS NULL 
-		OR v_CoverageCode = '' 
-		OR v_CoverageCode = 'NULL',
-		'N/A',
-		v_CoverageCode
+	IFF(
+	    v_CoverageCode IS NULL OR v_CoverageCode = '' OR v_CoverageCode = 'NULL', 'N/A',
+	    v_CoverageCode
 	) AS o_CoverageCode,
 	-- *INF*: IIF(ISNULL(v_RatedCoverageCode) OR v_RatedCoverageCode='' OR v_RatedCoverageCode='NULL', 'N/A', v_RatedCoverageCode)
-	IFF(v_RatedCoverageCode IS NULL 
-		OR v_RatedCoverageCode = '' 
-		OR v_RatedCoverageCode = 'NULL',
-		'N/A',
-		v_RatedCoverageCode
+	IFF(
+	    v_RatedCoverageCode IS NULL OR v_RatedCoverageCode = '' OR v_RatedCoverageCode = 'NULL',
+	    'N/A',
+	    v_RatedCoverageCode
 	) AS o_RatedCoverageCode,
 	-- *INF*: IIF(ISNULL(v_CoverageGroupCode) OR v_CoverageGroupCode='' OR v_CoverageGroupCode='NULL', 'N/A', v_CoverageGroupCode)
-	IFF(v_CoverageGroupCode IS NULL 
-		OR v_CoverageGroupCode = '' 
-		OR v_CoverageGroupCode = 'NULL',
-		'N/A',
-		v_CoverageGroupCode
+	IFF(
+	    v_CoverageGroupCode IS NULL OR v_CoverageGroupCode = '' OR v_CoverageGroupCode = 'NULL',
+	    'N/A',
+	    v_CoverageGroupCode
 	) AS o_CoverageGroupCode,
 	-- *INF*: IIF(ISNULL(v_CoverageSummaryCode) OR v_CoverageSummaryCode='' OR v_CoverageSummaryCode='NULL', 'N/A', v_CoverageSummaryCode)
-	IFF(v_CoverageSummaryCode IS NULL 
-		OR v_CoverageSummaryCode = '' 
-		OR v_CoverageSummaryCode = 'NULL',
-		'N/A',
-		v_CoverageSummaryCode
+	IFF(
+	    v_CoverageSummaryCode IS NULL OR v_CoverageSummaryCode = '' OR v_CoverageSummaryCode = 'NULL',
+	    'N/A',
+	    v_CoverageSummaryCode
 	) AS o_CoverageSummaryCode,
 	-- *INF*: IIF(ISNULL(v_DctRiskTypeCode) OR v_DctRiskTypeCode='' OR v_DctRiskTypeCode='NULL', 'N/A', v_DctRiskTypeCode)
-	IFF(v_DctRiskTypeCode IS NULL 
-		OR v_DctRiskTypeCode = '' 
-		OR v_DctRiskTypeCode = 'NULL',
-		'N/A',
-		v_DctRiskTypeCode
+	IFF(
+	    v_DctRiskTypeCode IS NULL OR v_DctRiskTypeCode = '' OR v_DctRiskTypeCode = 'NULL', 'N/A',
+	    v_DctRiskTypeCode
 	) AS o_DctRiskTypeCode,
 	-- *INF*: IIF(ISNULL(v_DctCoverageTypeCode) OR v_DctCoverageTypeCode='' OR v_DctCoverageTypeCode='NULL', 'N/A', v_DctCoverageTypeCode)
-	IFF(v_DctCoverageTypeCode IS NULL 
-		OR v_DctCoverageTypeCode = '' 
-		OR v_DctCoverageTypeCode = 'NULL',
-		'N/A',
-		v_DctCoverageTypeCode
+	IFF(
+	    v_DctCoverageTypeCode IS NULL OR v_DctCoverageTypeCode = '' OR v_DctCoverageTypeCode = 'NULL',
+	    'N/A',
+	    v_DctCoverageTypeCode
 	) AS o_DctCoverageTypeCode,
 	-- *INF*: IIF(ISNULL(v_PmsRiskUnitGroupCode) OR v_PmsRiskUnitGroupCode='' OR v_PmsRiskUnitGroupCode='NULL', 'N/A', v_PmsRiskUnitGroupCode)
-	IFF(v_PmsRiskUnitGroupCode IS NULL 
-		OR v_PmsRiskUnitGroupCode = '' 
-		OR v_PmsRiskUnitGroupCode = 'NULL',
-		'N/A',
-		v_PmsRiskUnitGroupCode
+	IFF(
+	    v_PmsRiskUnitGroupCode IS NULL
+	    or v_PmsRiskUnitGroupCode = ''
+	    or v_PmsRiskUnitGroupCode = 'NULL',
+	    'N/A',
+	    v_PmsRiskUnitGroupCode
 	) AS o_PmsRiskUnitGroupCode,
 	-- *INF*: IIF(ISNULL(v_PmsRiskUnitCode) OR v_PmsRiskUnitCode='' OR v_PmsRiskUnitCode='NULL', 'N/A', v_PmsRiskUnitCode)
-	IFF(v_PmsRiskUnitCode IS NULL 
-		OR v_PmsRiskUnitCode = '' 
-		OR v_PmsRiskUnitCode = 'NULL',
-		'N/A',
-		v_PmsRiskUnitCode
+	IFF(
+	    v_PmsRiskUnitCode IS NULL OR v_PmsRiskUnitCode = '' OR v_PmsRiskUnitCode = 'NULL', 'N/A',
+	    v_PmsRiskUnitCode
 	) AS o_PmsRiskUnitCode,
 	-- *INF*: IIF(ISNULL(v_PmsMajorPerilCode) OR v_PmsMajorPerilCode='' OR v_PmsMajorPerilCode='NULL', 'N/A', v_PmsMajorPerilCode)
-	IFF(v_PmsMajorPerilCode IS NULL 
-		OR v_PmsMajorPerilCode = '' 
-		OR v_PmsMajorPerilCode = 'NULL',
-		'N/A',
-		v_PmsMajorPerilCode
+	IFF(
+	    v_PmsMajorPerilCode IS NULL OR v_PmsMajorPerilCode = '' OR v_PmsMajorPerilCode = 'NULL',
+	    'N/A',
+	    v_PmsMajorPerilCode
 	) AS o_PmsMajorPerilCode,
 	-- *INF*: IIF(ISNULL(v_PmsProductTypeCode) OR v_PmsProductTypeCode='' OR v_PmsProductTypeCode='NULL', 'N/A', v_PmsProductTypeCode)
-	IFF(v_PmsProductTypeCode IS NULL 
-		OR v_PmsProductTypeCode = '' 
-		OR v_PmsProductTypeCode = 'NULL',
-		'N/A',
-		v_PmsProductTypeCode
+	IFF(
+	    v_PmsProductTypeCode IS NULL OR v_PmsProductTypeCode = '' OR v_PmsProductTypeCode = 'NULL',
+	    'N/A',
+	    v_PmsProductTypeCode
 	) AS o_PmsProductTypeCode,
 	-- *INF*: IIF(ISNULL(v_DctPerilGroup) OR v_DctPerilGroup='' OR v_DctPerilGroup='NULL', 'N/A', v_DctPerilGroup)
-	IFF(v_DctPerilGroup IS NULL 
-		OR v_DctPerilGroup = '' 
-		OR v_DctPerilGroup = 'NULL',
-		'N/A',
-		v_DctPerilGroup
+	IFF(
+	    v_DctPerilGroup IS NULL OR v_DctPerilGroup = '' OR v_DctPerilGroup = 'NULL', 'N/A',
+	    v_DctPerilGroup
 	) AS o_DctPerilGroup,
 	-- *INF*: IIF(ISNULL(v_DctSubCoverageTypeCode) OR v_DctSubCoverageTypeCode='' OR v_DctSubCoverageTypeCode='NULL', 'N/A', v_DctSubCoverageTypeCode)
-	IFF(v_DctSubCoverageTypeCode IS NULL 
-		OR v_DctSubCoverageTypeCode = '' 
-		OR v_DctSubCoverageTypeCode = 'NULL',
-		'N/A',
-		v_DctSubCoverageTypeCode
+	IFF(
+	    v_DctSubCoverageTypeCode IS NULL
+	    or v_DctSubCoverageTypeCode = ''
+	    or v_DctSubCoverageTypeCode = 'NULL',
+	    'N/A',
+	    v_DctSubCoverageTypeCode
 	) AS o_DctSubCoverageTypeCode,
 	-- *INF*: IIF(ISNULL(v_DctCoverageVersion) OR v_DctCoverageVersion='' OR v_DctCoverageVersion='NULL', 'N/A', v_DctCoverageVersion)
-	IFF(v_DctCoverageVersion IS NULL 
-		OR v_DctCoverageVersion = '' 
-		OR v_DctCoverageVersion = 'NULL',
-		'N/A',
-		v_DctCoverageVersion
+	IFF(
+	    v_DctCoverageVersion IS NULL OR v_DctCoverageVersion = '' OR v_DctCoverageVersion = 'NULL',
+	    'N/A',
+	    v_DctCoverageVersion
 	) AS o_DctCoverageVersion
 	FROM SQ_DCTASLCoverageCombinations
 ),

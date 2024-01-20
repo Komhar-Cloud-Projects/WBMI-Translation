@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_DCTInsights_ARCH_Insert_ArchWorkDCTPLCoverage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DCTInsights_ARCH_Insert_ArchWorkDCTPLCoverage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTPLCoverage AS (\n\tSELECT\n\t\tWorkDCTPLCoverageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tPolicyId,\n\t\tPolicyKey,\n\t\tAddressId,\n\t\tRiskAddressId,\n\t\tLineOfInsuranceCode,\n\t\tLineOfInsuranceDesc,\n\t\tTransactionDate,\n\t\tCoverageKey,\n\t\tCoverageCodeKey,\n\t\tCoverageCodeDesc,\n\t\tCoverageSubCd,\n\t\tPerilCode,\n\t\tPerilType,\n\t\tExposureClassCode,\n\t\tExposureAmount,\n\t\tExposureAmount_OC,\n\t\tSublineCode,\n\t\tTransactionAmount,\n\t\tCoverageEffectiveDate,\n\t\tCoverageExpirationDate,\n\t\tTerminationDate,\n\t\tCoverageVersion,\n\t\tAnnualStatementLineNumber,\n\t\tSpecialClassGroupCode,\n\t\tAnnualStatementLineCode,\n\t\tSubAnnualStatementLineCode,\n\t\tSubNonAnnualStatementLineCode,\n\t\tMeasureName,\n\t\tMeasureDetailCode,\n\t\tTransactionEffectiveDate,\n\t\tTransactionIssueDate,\n\t\tTransactionReasonCode,\n\t\tDeductibleAmount,\n\t\tProductCode,\n\t\tProductDesc,\n\t\tCoverageId,\n\t\tFullTermPremium,\n\t\tLineageId,\n\t\tStartDate,\n\t\tRiskAddressKey\n\tFROM WorkDCTPLCoverage\n),\nEXP_SRC_DataCollect AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_Auditid,\n\tWorkDCTPLCoverageId,\n\tExtractDate,\n\tSourceSystemId,\n\tPolicyId,\n\tPolicyKey,\n\tAddressId,\n\tRiskAddressId,\n\tLineOfInsuranceCode,\n\tLineOfInsuranceDesc,\n\tTransactionDate,\n\tCoverageKey,\n\tCoverageCodeKey,\n\tCoverageCodeDesc,\n\tCoverageSubCd,\n\tPerilCode,\n\tPerilType,\n\tExposureClassCode,\n\tExposureAmount,\n\tExposureAmount_OC,\n\tSublineCode,\n\tTransactionAmount,\n\tCoverageEffectiveDate,\n\tCoverageExpirationDate,\n\tTerminationDate,\n\tCoverageVersion,\n\tAnnualStatementLineNumber,\n\tSpecialClassGroupCode,\n\tAnnualStatementLineCode,\n\tSubAnnualStatementLineCode,\n\tSubNonAnnualStatementLineCode,\n\tMeasureName,\n\tMeasureDetailCode,\n\tTransactionEffectiveDate,\n\tTransactionIssueDate,\n\tTransactionReasonCode,\n\tDeductibleAmount,\n\tProductCode,\n\tProductDesc,\n\tCoverageId,\n\tFullTermPremium,\n\tLineageId,\n\tStartDate,\n\tRiskAddressKey\n\tFROM SQ_WorkDCTPLCoverage\n),\nArchWorkDCTPLCoverage AS (\n\tINSERT INTO ArchWorkDCTPLCoverage\n\t(Auditid, ExtractDate, SourceSystemId, WorkDCTPLCoverageId, PolicyId, PolicyKey, AddressId, RiskAddressId, CoverageId, LineOfInsuranceCode, LineOfInsuranceDesc, TransactionDate, CoverageKey, CoverageCodeKey, CoverageCodeDesc, CoverageSubCd, PerilCode, PerilType, ExposureClassCode, ExposureAmount, ExposureAmount_OC, SublineCode, TransactionAmount, FullTermPremium, CoverageEffectiveDate, CoverageExpirationDate, TerminationDate, CoverageVersion, AnnualStatementLineNumber, SpecialClassGroupCode, AnnualStatementLineCode, SubAnnualStatementLineCode, SubNonAnnualStatementLineCode, MeasureName, MeasureDetailCode, TransactionEffectiveDate, TransactionIssueDate, TransactionReasonCode, DeductibleAmount, ProductCode, ProductDesc, LineageId, StartDate, RiskAddressKey)\n\tSELECT \n\to_Auditid AS AUDITID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tWORKDCTPLCOVERAGEID, \n\tPOLICYID, \n\tPOLICYKEY, \n\tADDRESSID, \n\tRISKADDRESSID, \n\tCOVERAGEID, \n\tLINEOFINSURANCECODE, \n\tLINEOFINSURANCEDESC, \n\tTRANSACTIONDATE, \n\tCOVERAGEKEY, \n\tCOVERAGECODEKEY, \n\tCOVERAGECODEDESC, \n\tCOVERAGESUBCD, \n\tPERILCODE, \n\tPERILTYPE, \n\tEXPOSURECLASSCODE, \n\tEXPOSUREAMOUNT, \n\tEXPOSUREAMOUNT_OC, \n\tSUBLINECODE, \n\tTRANSACTIONAMOUNT, \n\tFULLTERMPREMIUM, \n\tCOVERAGEEFFECTIVEDATE, \n\tCOVERAGEEXPIRATIONDATE, \n\tTERMINATIONDATE, \n\tCOVERAGEVERSION, \n\tANNUALSTATEMENTLINENUMBER, \n\tSPECIALCLASSGROUPCODE, \n\tANNUALSTATEMENTLINECODE, \n\tSUBANNUALSTATEMENTLINECODE, \n\tSUBNONANNUALSTATEMENTLINECODE, \n\tMEASURENAME, \n\tMEASUREDETAILCODE, \n\tTRANSACTIONEFFECTIVEDATE, \n\tTRANSACTIONISSUEDATE, \n\tTRANSACTIONREASONCODE, \n\tDEDUCTIBLEAMOUNT, \n\tPRODUCTCODE, \n\tPRODUCTDESC, \n\tLINEAGEID, \n\tSTARTDATE, \n\tRISKADDRESSKEY\n\tFROM EXP_SRC_DataCollect\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

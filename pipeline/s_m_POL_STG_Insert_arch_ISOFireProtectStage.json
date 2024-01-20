@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_ISOFireProtectStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_ISOFireProtectStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_ISOFireProtectStage AS (\n\tSELECT\n\t\tISOFireProtectStageID,\n\t\tExtractDate,\n\t\tSourceSyStemID,\n\t\tStateCode,\n\t\tCity,\n\t\tCounty,\n\t\tISOEffDate,\n\t\tISOExpDate,\n\t\tDeleteFlag,\n\t\tModifiedBy,\n\t\tTaxLoc,\n\t\tMineSubsidFlag,\n\t\tHydrantExclFlag,\n\t\tProtectClass,\n\t\tAltProtectClass,\n\t\tBcegsEffYear,\n\t\tCommrclInsType,\n\t\tPersInsType,\n\t\tFootnote\n\tFROM ISOFireProtectStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tISOFireProtectStageID,\n\tExtractDate,\n\tSourceSyStemID,\n\tStateCode,\n\tCity,\n\tCounty,\n\tISOEffDate,\n\tISOExpDate,\n\tDeleteFlag,\n\tModifiedBy,\n\tTaxLoc,\n\tMineSubsidFlag,\n\tHydrantExclFlag,\n\tProtectClass,\n\tAltProtectClass,\n\tBcegsEffYear,\n\tCommrclInsType,\n\tPersInsType,\n\tFootnote,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_ISOFireProtectStage\n),\nArchISOFireProtectStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchISOFireProtectStage\n\t(ISOFireProtectStageID, ExtractDate, SourceSyStemID, AuditID, StateCode, City, County, ISOEffDate, ISOExpDate, DeleteFlag, ModifiedBy, TaxLoc, MineSubsidFlag, HydrantExclFlag, ProtectClass, AltProtectClass, BcegsEffYear, CommrclInsType, PersInsType, Footnote)\n\tSELECT \n\tISOFIREPROTECTSTAGEID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tSTATECODE, \n\tCITY, \n\tCOUNTY, \n\tISOEFFDATE, \n\tISOEXPDATE, \n\tDELETEFLAG, \n\tMODIFIEDBY, \n\tTAXLOC, \n\tMINESUBSIDFLAG, \n\tHYDRANTEXCLFLAG, \n\tPROTECTCLASS, \n\tALTPROTECTCLASS, \n\tBCEGSEFFYEAR, \n\tCOMMRCLINSTYPE, \n\tPERSINSTYPE, \n\tFOOTNOTE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

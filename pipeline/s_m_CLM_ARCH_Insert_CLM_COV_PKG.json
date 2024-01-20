@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLM_COV_PKG",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLM_COV_PKG",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLM_COV_PKG_STAGE AS (\n\tSELECT\n\t\tclm_cov_pkg_id AS CLM_COV_PKG_ID,\n\t\tccp_claim_nbr AS CCP_CLAIM_NBR,\n\t\tccp_object_type_cd AS CCP_OBJECT_TYPE_CD,\n\t\tccp_object_seq_nbr AS CCP_OBJECT_SEQ_NBR,\n\t\tccp_pkg_type_cd AS CCP_PKG_TYPE_CD,\n\t\tccp_pkg_seq_nbr AS CCP_PKG_SEQ_NBR,\n\t\tccp_coi_pct AS CCP_COI_PCT,\n\t\tccp_pkg_ded_amt AS CCP_PKG_DED_AMT,\n\t\tccp_pkg_eff_dt AS CCP_PKG_EFF_DT,\n\t\tccp_pkg_exp_dt AS CCP_PKG_EXP_DT,\n\t\tccp_pkg_cnc_dt AS CCP_PKG_CNC_DT,\n\t\tccp_item_des_id AS CCP_ITEM_DES_ID,\n\t\tccp_pkg_limit_amt AS CCP_PKG_LIMIT_AMT,\n\t\tccp_fin_ind AS CCP_FIN_IND,\n\t\tccp_create_ts AS CCP_CREATE_TS,\n\t\tccp_entry_opr_id AS CCP_ENTRY_OPR_ID,\n\t\tccp_mnl_entry_ind AS CCP_MNL_ENTRY_IND,\n\t\tccp_cov_seq_nbr AS CCP_COV_SEQ_NBR,\n\t\tccp_update_opr_id AS CCP_UPDATE_OPR_ID,\n\t\tccp_upd_ts AS CCP_UPD_TS,\n\t\tccp_pmsd_ts AS CCP_PMSD_TS,\n\t\tccp_ext_seq_nbr AS CCP_EXT_SEQ_NBR,\n\t\tccp_lim_pps_amt AS CCP_LIM_PPS_AMT,\n\t\tccp_lim_poc_amt AS CCP_LIM_POC_AMT,\n\t\tccp_pd_lim_amt AS CCP_PD_LIM_AMT,\n\t\tccp_class_cd AS CCP_CLASS_CD,\n\t\tccp_ins_line_cd AS CCP_INS_LINE_CD,\n\t\tccp_cov_cd AS CCP_COV_CD,\n\t\tccp_bi_ded_amt AS CCP_BI_DED_AMT,\n\t\tccp_pd_ded_amt AS CCP_PD_DED_AMT,\n\t\tccp_ded_csl_ind AS CCP_DED_CSL_IND,\n\t\tccp_ded_bi_ind AS CCP_DED_BI_IND,\n\t\tccp_ded_pd_ind AS CCP_DED_PD_IND,\n\t\tccp_cml_pkg_typ_cd AS CCP_CML_PKG_TYP_CD,\n\t\tccp_pkg_ded_ind AS CCP_PKG_DED_IND,\n\t\tccp_class_seq_nbr AS CCP_CLASS_SEQ_NBR,\n\t\tccp_common_cov_ind AS CCP_COMMON_COV_IND,\n\t\tccp_majr_peril_seq AS CCP_MAJR_PERIL_SEQ,\n\t\tccp_sar_id AS CCP_SAR_ID,\n\t\tccp_ins_line AS CCP_INS_LINE,\n\t\tccp_loc_unit_num AS CCP_LOC_UNIT_NUM,\n\t\tccp_risk_unit_grp AS CCP_RISK_UNIT_GRP,\n\t\tccp_rsk_unt_gr_seq AS CCP_RSK_UNT_GR_SEQ,\n\t\tccp_risk_unit AS CCP_RISK_UNIT,\n\t\tccp_risk_type_ind AS CCP_RISK_TYPE_IND,\n\t\tccp_sub_loc_num AS CCP_SUB_LOC_NUM,\n\t\tccp_seq_risk_unit AS CCP_SEQ_RISK_UNIT,\n\t\textract_date AS EXTRACT_DATE,\n\t\tas_of_date AS AS_OF_DATE,\n\t\trecord_count AS RECORD_COUNT,\n\t\tsource_system_id AS SOURCE_SYSTEM_ID,\n\t\tccp_coverage_form,\n\t\tccp_coverage_type,\n\t\tccp_risk_type,\n\t\tccp_pol_cov_id AS cpp_pol_cov_id\n\tFROM CLM_COV_PKG_STAGE\n),\nEXP_CLM_COV_PKG_STAGE AS (\n\tSELECT\n\tCLM_COV_PKG_ID,\n\tCCP_CLAIM_NBR,\n\tCCP_OBJECT_TYPE_CD,\n\tCCP_OBJECT_SEQ_NBR,\n\tCCP_PKG_TYPE_CD,\n\tCCP_PKG_SEQ_NBR,\n\tCCP_COI_PCT,\n\tCCP_PKG_DED_AMT,\n\tCCP_PKG_EFF_DT,\n\tCCP_PKG_EXP_DT,\n\tCCP_PKG_CNC_DT,\n\tCCP_ITEM_DES_ID,\n\tCCP_PKG_LIMIT_AMT,\n\tCCP_FIN_IND,\n\tCCP_CREATE_TS,\n\tCCP_ENTRY_OPR_ID,\n\tCCP_MNL_ENTRY_IND,\n\tCCP_COV_SEQ_NBR,\n\tCCP_UPDATE_OPR_ID,\n\tCCP_UPD_TS,\n\tCCP_PMSD_TS,\n\tCCP_EXT_SEQ_NBR,\n\tCCP_LIM_PPS_AMT,\n\tCCP_LIM_POC_AMT,\n\tCCP_PD_LIM_AMT,\n\tCCP_CLASS_CD,\n\tCCP_INS_LINE_CD,\n\tCCP_COV_CD,\n\tCCP_BI_DED_AMT,\n\tCCP_PD_DED_AMT,\n\tCCP_DED_CSL_IND,\n\tCCP_DED_BI_IND,\n\tCCP_DED_PD_IND,\n\tCCP_CML_PKG_TYP_CD,\n\tCCP_PKG_DED_IND,\n\tCCP_CLASS_SEQ_NBR,\n\tCCP_COMMON_COV_IND,\n\tCCP_MAJR_PERIL_SEQ,\n\tCCP_SAR_ID,\n\tCCP_INS_LINE,\n\tCCP_LOC_UNIT_NUM,\n\tCCP_RISK_UNIT_GRP,\n\tCCP_RSK_UNT_GR_SEQ,\n\tCCP_RISK_UNIT,\n\tCCP_RISK_TYPE_IND,\n\tCCP_SUB_LOC_NUM,\n\tCCP_SEQ_RISK_UNIT,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\tccp_coverage_form,\n\tccp_coverage_type,\n\tccp_risk_type,\n\tcpp_pol_cov_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AUDIT_ID_OP\n\tFROM SQ_CLM_COV_PKG_STAGE\n),\nARCH_CLM_COV_PKG_STAGE AS (\n\tINSERT INTO ARCH_CLM_COV_PKG_STAGE\n\t(clm_cov_pkg_id, ccp_claim_nbr, ccp_object_type_cd, ccp_object_seq_nbr, ccp_pkg_type_cd, ccp_pkg_seq_nbr, ccp_coi_pct, ccp_pkg_ded_amt, ccp_pkg_eff_dt, ccp_pkg_exp_dt, ccp_pkg_cnc_dt, ccp_item_des_id, ccp_pkg_limit_amt, ccp_fin_ind, ccp_create_ts, ccp_entry_opr_id, ccp_mnl_entry_ind, ccp_cov_seq_nbr, ccp_update_opr_id, ccp_upd_ts, ccp_pmsd_ts, ccp_ext_seq_nbr, ccp_lim_pps_amt, ccp_lim_poc_amt, ccp_pd_lim_amt, ccp_class_cd, ccp_ins_line_cd, ccp_cov_cd, ccp_bi_ded_amt, ccp_pd_ded_amt, ccp_ded_csl_ind, ccp_ded_bi_ind, ccp_ded_pd_ind, ccp_cml_pkg_typ_cd, ccp_pkg_ded_ind, ccp_class_seq_nbr, ccp_common_cov_ind, ccp_majr_peril_seq, ccp_sar_id, ccp_ins_line, ccp_loc_unit_num, ccp_risk_unit_grp, ccp_rsk_unt_gr_seq, ccp_risk_unit, ccp_risk_type_ind, ccp_sub_loc_num, ccp_seq_risk_unit, extract_date, as_of_date, record_count, source_system_id, audit_id, ccp_coverage_form, ccp_coverage_type, ccp_risk_type, ccp_pol_cov_id)\n\tSELECT \n\tCLM_COV_PKG_ID AS CLM_COV_PKG_ID, \n\tCCP_CLAIM_NBR AS CCP_CLAIM_NBR, \n\tCCP_OBJECT_TYPE_CD AS CCP_OBJECT_TYPE_CD, \n\tCCP_OBJECT_SEQ_NBR AS CCP_OBJECT_SEQ_NBR, \n\tCCP_PKG_TYPE_CD AS CCP_PKG_TYPE_CD, \n\tCCP_PKG_SEQ_NBR AS CCP_PKG_SEQ_NBR, \n\tCCP_COI_PCT AS CCP_COI_PCT, \n\tCCP_PKG_DED_AMT AS CCP_PKG_DED_AMT, \n\tCCP_PKG_EFF_DT AS CCP_PKG_EFF_DT, \n\tCCP_PKG_EXP_DT AS CCP_PKG_EXP_DT, \n\tCCP_PKG_CNC_DT AS CCP_PKG_CNC_DT, \n\tCCP_ITEM_DES_ID AS CCP_ITEM_DES_ID, \n\tCCP_PKG_LIMIT_AMT AS CCP_PKG_LIMIT_AMT, \n\tCCP_FIN_IND AS CCP_FIN_IND, \n\tCCP_CREATE_TS AS CCP_CREATE_TS, \n\tCCP_ENTRY_OPR_ID AS CCP_ENTRY_OPR_ID, \n\tCCP_MNL_ENTRY_IND AS CCP_MNL_ENTRY_IND, \n\tCCP_COV_SEQ_NBR AS CCP_COV_SEQ_NBR, \n\tCCP_UPDATE_OPR_ID AS CCP_UPDATE_OPR_ID, \n\tCCP_UPD_TS AS CCP_UPD_TS, \n\tCCP_PMSD_TS AS CCP_PMSD_TS, \n\tCCP_EXT_SEQ_NBR AS CCP_EXT_SEQ_NBR, \n\tCCP_LIM_PPS_AMT AS CCP_LIM_PPS_AMT, \n\tCCP_LIM_POC_AMT AS CCP_LIM_POC_AMT, \n\tCCP_PD_LIM_AMT AS CCP_PD_LIM_AMT, \n\tCCP_CLASS_CD AS CCP_CLASS_CD, \n\tCCP_INS_LINE_CD AS CCP_INS_LINE_CD, \n\tCCP_COV_CD AS CCP_COV_CD, \n\tCCP_BI_DED_AMT AS CCP_BI_DED_AMT, \n\tCCP_PD_DED_AMT AS CCP_PD_DED_AMT, \n\tCCP_DED_CSL_IND AS CCP_DED_CSL_IND, \n\tCCP_DED_BI_IND AS CCP_DED_BI_IND, \n\tCCP_DED_PD_IND AS CCP_DED_PD_IND, \n\tCCP_CML_PKG_TYP_CD AS CCP_CML_PKG_TYP_CD, \n\tCCP_PKG_DED_IND AS CCP_PKG_DED_IND, \n\tCCP_CLASS_SEQ_NBR AS CCP_CLASS_SEQ_NBR, \n\tCCP_COMMON_COV_IND AS CCP_COMMON_COV_IND, \n\tCCP_MAJR_PERIL_SEQ AS CCP_MAJR_PERIL_SEQ, \n\tCCP_SAR_ID AS CCP_SAR_ID, \n\tCCP_INS_LINE AS CCP_INS_LINE, \n\tCCP_LOC_UNIT_NUM AS CCP_LOC_UNIT_NUM, \n\tCCP_RISK_UNIT_GRP AS CCP_RISK_UNIT_GRP, \n\tCCP_RSK_UNT_GR_SEQ AS CCP_RSK_UNT_GR_SEQ, \n\tCCP_RISK_UNIT AS CCP_RISK_UNIT, \n\tCCP_RISK_TYPE_IND AS CCP_RISK_TYPE_IND, \n\tCCP_SUB_LOC_NUM AS CCP_SUB_LOC_NUM, \n\tCCP_SEQ_RISK_UNIT AS CCP_SEQ_RISK_UNIT, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\to_AUDIT_ID_OP AS AUDIT_ID, \n\tCCP_COVERAGE_FORM, \n\tCCP_COVERAGE_TYPE, \n\tCCP_RISK_TYPE, \n\tcpp_pol_cov_id AS CCP_POL_COV_ID\n\tFROM EXP_CLM_COV_PKG_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

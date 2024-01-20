@@ -18,39 +18,23 @@ EXP_CalculateData AS (
 	sysdate AS o_CreatedDate,
 	sysdate AS o_ModifiedDate,
 	-- *INF*: LTRIM(RTRIM(i_LineofBusinessAbbreviation))
-	LTRIM(RTRIM(i_LineofBusinessAbbreviation
-		)
-	) AS o_LineOfBusinessAbbreviation,
+	LTRIM(RTRIM(i_LineofBusinessAbbreviation)) AS o_LineOfBusinessAbbreviation,
 	-- *INF*: LTRIM(RTRIM(i_RatingStateCode))
-	LTRIM(RTRIM(i_RatingStateCode
-		)
-	) AS o_RatingStateCode,
+	LTRIM(RTRIM(i_RatingStateCode)) AS o_RatingStateCode,
 	-- *INF*: TO_DATE(substr(i_Effective_Date,1,19),'YYYY-MM-DD HH24:MI:SS')
 	-- --TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE(substr(i_Effective_Date, 1, 19
-		), 'YYYY-MM-DD HH24:MI:SS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP(substr(i_Effective_Date, 1, 19), 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE(substr(i_Expiration_Date,1,19),'YYYY-MM-DD HH24:MI:SS')
 	-- --TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE(substr(i_Expiration_Date, 1, 19
-		), 'YYYY-MM-DD HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP(substr(i_Expiration_Date, 1, 19), 'YYYY-MM-DD HH24:MI:SS') AS o_ExpirationDate,
 	-- *INF*: LTRIM(RTRIM(i_ClassCode))
-	LTRIM(RTRIM(i_ClassCode
-		)
-	) AS o_ClassCode,
+	LTRIM(RTRIM(i_ClassCode)) AS o_ClassCode,
 	-- *INF*: LTRIM(RTRIM(i_ClassDescription))
-	LTRIM(RTRIM(i_ClassDescription
-		)
-	) AS o_ClassDescription,
+	LTRIM(RTRIM(i_ClassDescription)) AS o_ClassDescription,
 	-- *INF*: LTRIM(RTRIM(i_ClassCodeOriginatingOrganization))
-	LTRIM(RTRIM(i_ClassCodeOriginatingOrganization
-		)
-	) AS o_OriginatingOrganizationCode,
+	LTRIM(RTRIM(i_ClassCodeOriginatingOrganization)) AS o_OriginatingOrganizationCode,
 	-- *INF*: LTRIM(RTRIM(i_CrimeIndustryGroup))
-	LTRIM(RTRIM(i_CrimeIndustryGroup
-		)
-	) AS o_IndustryGroup
+	LTRIM(RTRIM(i_CrimeIndustryGroup)) AS o_IndustryGroup
 	FROM SQ_CrimeClass
 ),
 SupClassificationCrime_IR AS (

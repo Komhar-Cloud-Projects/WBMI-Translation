@@ -410,10 +410,7 @@ EXP_Detect_Changes_Add_MetaData AS (
 	-- --i_ProductCode='553','550',
 	-- --i_ProductCode='610','610',
 	-- --IN(i_ProductCode,'390','900'),'900','N/A')
-	IFF(lkp_SupAP_AccountingProductCode IS NULL,
-		'N/A',
-		lkp_SupAP_AccountingProductCode
-	) AS v_AccountingProductCode,
+	IFF(lkp_SupAP_AccountingProductCode IS NULL, 'N/A', lkp_SupAP_AccountingProductCode) AS v_AccountingProductCode,
 	-- *INF*: IIF(ISNULL(lkp_SupAP_AccountingProductAbbreviation),'N/A',lkp_SupAP_AccountingProductAbbreviation)
 	-- 
 	-- --Decode(TRUE, 
@@ -443,9 +440,9 @@ EXP_Detect_Changes_Add_MetaData AS (
 	-- --i_ProductCode='553','CL IM',
 	-- --i_ProductCode='610','Bonds-Contract',
 	-- --IN(i_ProductCode,'390','900'),'CL Umb','N/A')
-	IFF(lkp_SupAP_AccountingProductAbbreviation IS NULL,
-		'N/A',
-		lkp_SupAP_AccountingProductAbbreviation
+	IFF(
+	    lkp_SupAP_AccountingProductAbbreviation IS NULL, 'N/A',
+	    lkp_SupAP_AccountingProductAbbreviation
 	) AS v_AccountingProductAbbreviation,
 	-- *INF*: IIF(ISNULL(lkp_SupAP_AccountingProductDescription),'N/A',lkp_SupAP_AccountingProductDescription)
 	-- 
@@ -476,9 +473,9 @@ EXP_Detect_Changes_Add_MetaData AS (
 	-- --i_ProductCode='553','Commercial Inland Marine',
 	-- --i_ProductCode='610','Bonds-Contract',
 	-- --IN(i_ProductCode,'390','900'),'Commercial Umbrella','N/A')
-	IFF(lkp_SupAP_AccountingProductDescription IS NULL,
-		'N/A',
-		lkp_SupAP_AccountingProductDescription
+	IFF(
+	    lkp_SupAP_AccountingProductDescription IS NULL, 'N/A',
+	    lkp_SupAP_AccountingProductDescription
 	) AS v_AccountingProductDescription,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(lkp_InsuranceReferenceDimID), 'Insert',
@@ -497,141 +494,76 @@ EXP_Detect_Changes_Add_MetaData AS (
 	-- OR lkp_InsuranceReferenceLegalEntityAbbreviation<>i_InsuranceReferenceLegalEntityAbbreviation
 	-- OR lkp_InsuranceSegmentAbbreviation<>i_InsuranceSegmentAbbreviation OR lkp_RatingPlanAbbreviation<>i_RatingPlanAbbreviation OR lkp_RatingPlanDescription<>i_RatingPlanDescription OR lkp_AccountingProductCode<>v_AccountingProductCode OR lkp_AccountingProductAbbreviation<>v_AccountingProductAbbreviation OR lkp_AccountingProductDescription<>v_AccountingProductDescription, 'Update',
 	--  'NoChange')
-	DECODE(TRUE,
-		lkp_InsuranceReferenceDimID IS NULL, 'Insert',
-		lkp_EnterpriseGroupDescription <> i_EnterpriseGroupDescription 
-		OR lkp_InsuranceReferenceLegalEntityDescription <> i_InsuranceReferenceLegalEntityDescription 
-		OR lkp_StrategicProfitCenterAbbreviation <> i_StrategicProfitCenterAbbreviation 
-		OR lkp_StrategicProfitCenterDescription <> i_StrategicProfitCenterDescription 
-		OR lkp_InsuranceSegmentDescription <> i_InsuranceSegmentDescription 
-		OR lkp_PolicyOfferingAbbreviation <> i_PolicyOfferingAbbreviation 
-		OR lkp_PolicyOfferingDescription <> i_PolicyOfferingDescription 
-		OR lkp_ProductAbbreviation <> i_ProductAbbreviation 
-		OR lkp_ProductDescription <> i_ProductDescription 
-		OR lkp_InsuranceReferenceLineOfBusinessAbbreviation <> i_InsuranceReferenceLineOfBusinessAbbreviation 
-		OR lkp_InsuranceReferenceLineOfBusinessDescription <> i_InsuranceReferenceLineOfBusinessDescription 
-		OR lkp_EnterpriseGroupAbbreviation <> i_EnterpriseGroupAbbreviation 
-		OR lkp_InsuranceReferenceLegalEntityAbbreviation <> i_InsuranceReferenceLegalEntityAbbreviation 
-		OR lkp_InsuranceSegmentAbbreviation <> i_InsuranceSegmentAbbreviation 
-		OR lkp_RatingPlanAbbreviation <> i_RatingPlanAbbreviation 
-		OR lkp_RatingPlanDescription <> i_RatingPlanDescription 
-		OR lkp_AccountingProductCode <> v_AccountingProductCode 
-		OR lkp_AccountingProductAbbreviation <> v_AccountingProductAbbreviation 
-		OR lkp_AccountingProductDescription <> v_AccountingProductDescription, 'Update',
-		'NoChange'
+	DECODE(
+	    TRUE,
+	    lkp_InsuranceReferenceDimID IS NULL, 'Insert',
+	    lkp_EnterpriseGroupDescription <> i_EnterpriseGroupDescription OR lkp_InsuranceReferenceLegalEntityDescription <> i_InsuranceReferenceLegalEntityDescription OR lkp_StrategicProfitCenterAbbreviation <> i_StrategicProfitCenterAbbreviation OR lkp_StrategicProfitCenterDescription <> i_StrategicProfitCenterDescription OR lkp_InsuranceSegmentDescription <> i_InsuranceSegmentDescription OR lkp_PolicyOfferingAbbreviation <> i_PolicyOfferingAbbreviation OR lkp_PolicyOfferingDescription <> i_PolicyOfferingDescription OR lkp_ProductAbbreviation <> i_ProductAbbreviation OR lkp_ProductDescription <> i_ProductDescription OR lkp_InsuranceReferenceLineOfBusinessAbbreviation <> i_InsuranceReferenceLineOfBusinessAbbreviation OR lkp_InsuranceReferenceLineOfBusinessDescription <> i_InsuranceReferenceLineOfBusinessDescription OR lkp_EnterpriseGroupAbbreviation <> i_EnterpriseGroupAbbreviation OR lkp_InsuranceReferenceLegalEntityAbbreviation <> i_InsuranceReferenceLegalEntityAbbreviation OR lkp_InsuranceSegmentAbbreviation <> i_InsuranceSegmentAbbreviation OR lkp_RatingPlanAbbreviation <> i_RatingPlanAbbreviation OR lkp_RatingPlanDescription <> i_RatingPlanDescription OR lkp_AccountingProductCode <> v_AccountingProductCode OR lkp_AccountingProductAbbreviation <> v_AccountingProductAbbreviation OR lkp_AccountingProductDescription <> v_AccountingProductDescription, 'Update',
+	    'NoChange'
 	) AS v_ChangeFlag,
 	v_ChangeFlag AS o_ChangeFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AudutId,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	-- *INF*: IIF(ISNULL(i_EnterpriseGroupCode),'N/A',i_EnterpriseGroupCode)
-	IFF(i_EnterpriseGroupCode IS NULL,
-		'N/A',
-		i_EnterpriseGroupCode
-	) AS o_EnterpriseGroupCode,
+	IFF(i_EnterpriseGroupCode IS NULL, 'N/A', i_EnterpriseGroupCode) AS o_EnterpriseGroupCode,
 	-- *INF*: IIF(ISNULL(i_EnterpriseGroupDescription),'N/A',i_EnterpriseGroupDescription)
 	-- 
-	IFF(i_EnterpriseGroupDescription IS NULL,
-		'N/A',
-		i_EnterpriseGroupDescription
-	) AS o_EnterpriseGroupDescription,
+	IFF(i_EnterpriseGroupDescription IS NULL, 'N/A', i_EnterpriseGroupDescription) AS o_EnterpriseGroupDescription,
 	-- *INF*: IIF(ISNULL(i_InsuranceReferenceLegalEntityCode),'N/A',i_InsuranceReferenceLegalEntityCode)
-	IFF(i_InsuranceReferenceLegalEntityCode IS NULL,
-		'N/A',
-		i_InsuranceReferenceLegalEntityCode
-	) AS o_InsuranceReferenceLegalEntityCode,
+	IFF(i_InsuranceReferenceLegalEntityCode IS NULL, 'N/A', i_InsuranceReferenceLegalEntityCode) AS o_InsuranceReferenceLegalEntityCode,
 	-- *INF*: IIF(ISNULL(i_InsuranceReferenceLegalEntityDescription),'N/A',i_InsuranceReferenceLegalEntityDescription)
-	IFF(i_InsuranceReferenceLegalEntityDescription IS NULL,
-		'N/A',
-		i_InsuranceReferenceLegalEntityDescription
+	IFF(
+	    i_InsuranceReferenceLegalEntityDescription IS NULL, 'N/A',
+	    i_InsuranceReferenceLegalEntityDescription
 	) AS o_InsuranceReferenceLegalEntityDescription,
 	-- *INF*: IIF(ISNULL(i_StrategicProfitCenterCode),'N/A',i_StrategicProfitCenterCode)
-	IFF(i_StrategicProfitCenterCode IS NULL,
-		'N/A',
-		i_StrategicProfitCenterCode
-	) AS o_StrategicProfitCenterCode,
+	IFF(i_StrategicProfitCenterCode IS NULL, 'N/A', i_StrategicProfitCenterCode) AS o_StrategicProfitCenterCode,
 	-- *INF*: IIF(ISNULL(i_StrategicProfitCenterAbbreviation),'N/A',i_StrategicProfitCenterAbbreviation)
-	IFF(i_StrategicProfitCenterAbbreviation IS NULL,
-		'N/A',
-		i_StrategicProfitCenterAbbreviation
-	) AS o_StrategicProfitCenterAbbreviation,
+	IFF(i_StrategicProfitCenterAbbreviation IS NULL, 'N/A', i_StrategicProfitCenterAbbreviation) AS o_StrategicProfitCenterAbbreviation,
 	-- *INF*: IIF(ISNULL(i_StrategicProfitCenterDescription),'N/A',i_StrategicProfitCenterDescription)
-	IFF(i_StrategicProfitCenterDescription IS NULL,
-		'N/A',
-		i_StrategicProfitCenterDescription
-	) AS o_StrategicProfitCenterDescription,
+	IFF(i_StrategicProfitCenterDescription IS NULL, 'N/A', i_StrategicProfitCenterDescription) AS o_StrategicProfitCenterDescription,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentCode),'N/A',i_InsuranceSegmentCode)
-	IFF(i_InsuranceSegmentCode IS NULL,
-		'N/A',
-		i_InsuranceSegmentCode
-	) AS o_InsuranceSegmentCode,
+	IFF(i_InsuranceSegmentCode IS NULL, 'N/A', i_InsuranceSegmentCode) AS o_InsuranceSegmentCode,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentDescription),'N/A',i_InsuranceSegmentDescription)
-	IFF(i_InsuranceSegmentDescription IS NULL,
-		'N/A',
-		i_InsuranceSegmentDescription
-	) AS o_InsuranceSegmentDescription,
+	IFF(i_InsuranceSegmentDescription IS NULL, 'N/A', i_InsuranceSegmentDescription) AS o_InsuranceSegmentDescription,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingCode),'N/A',i_PolicyOfferingCode)
-	IFF(i_PolicyOfferingCode IS NULL,
-		'N/A',
-		i_PolicyOfferingCode
-	) AS o_PolicyOfferingCode,
+	IFF(i_PolicyOfferingCode IS NULL, 'N/A', i_PolicyOfferingCode) AS o_PolicyOfferingCode,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingAbbreviation),'N/A',i_PolicyOfferingAbbreviation)
-	IFF(i_PolicyOfferingAbbreviation IS NULL,
-		'N/A',
-		i_PolicyOfferingAbbreviation
-	) AS o_PolicyOfferingAbbreviation,
+	IFF(i_PolicyOfferingAbbreviation IS NULL, 'N/A', i_PolicyOfferingAbbreviation) AS o_PolicyOfferingAbbreviation,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingDescription),'N/A',i_PolicyOfferingDescription)
-	IFF(i_PolicyOfferingDescription IS NULL,
-		'N/A',
-		i_PolicyOfferingDescription
-	) AS o_PolicyOfferingDescription,
+	IFF(i_PolicyOfferingDescription IS NULL, 'N/A', i_PolicyOfferingDescription) AS o_PolicyOfferingDescription,
 	-- *INF*: IIF(ISNULL(i_ProductCode),'N/A',i_ProductCode)
-	IFF(i_ProductCode IS NULL,
-		'N/A',
-		i_ProductCode
-	) AS o_ProductCode,
+	IFF(i_ProductCode IS NULL, 'N/A', i_ProductCode) AS o_ProductCode,
 	-- *INF*: IIF(ISNULL(i_ProductAbbreviation),'N/A',i_ProductAbbreviation)
-	IFF(i_ProductAbbreviation IS NULL,
-		'N/A',
-		i_ProductAbbreviation
-	) AS o_ProductAbbreviation,
+	IFF(i_ProductAbbreviation IS NULL, 'N/A', i_ProductAbbreviation) AS o_ProductAbbreviation,
 	-- *INF*: IIF(ISNULL(i_ProductDescription),'N/A',i_ProductDescription)
-	IFF(i_ProductDescription IS NULL,
-		'N/A',
-		i_ProductDescription
-	) AS o_ProductDescription,
+	IFF(i_ProductDescription IS NULL, 'N/A', i_ProductDescription) AS o_ProductDescription,
 	-- *INF*: IIF(ISNULL(i_InsuranceReferenceLineOfBusinessCode),'N/A',i_InsuranceReferenceLineOfBusinessCode)
-	IFF(i_InsuranceReferenceLineOfBusinessCode IS NULL,
-		'N/A',
-		i_InsuranceReferenceLineOfBusinessCode
+	IFF(
+	    i_InsuranceReferenceLineOfBusinessCode IS NULL, 'N/A',
+	    i_InsuranceReferenceLineOfBusinessCode
 	) AS o_InsuranceReferenceLineOfBusinessCode,
 	-- *INF*: IIF(ISNULL(i_InsuranceReferenceLineOfBusinessAbbreviation),'N/A',i_InsuranceReferenceLineOfBusinessAbbreviation)
-	IFF(i_InsuranceReferenceLineOfBusinessAbbreviation IS NULL,
-		'N/A',
-		i_InsuranceReferenceLineOfBusinessAbbreviation
+	IFF(
+	    i_InsuranceReferenceLineOfBusinessAbbreviation IS NULL, 'N/A',
+	    i_InsuranceReferenceLineOfBusinessAbbreviation
 	) AS o_InsuranceReferenceLineOfBusinessAbbreviation,
 	-- *INF*: IIF(ISNULL(i_InsuranceReferenceLineOfBusinessDescription),'N/A',i_InsuranceReferenceLineOfBusinessDescription)
-	IFF(i_InsuranceReferenceLineOfBusinessDescription IS NULL,
-		'N/A',
-		i_InsuranceReferenceLineOfBusinessDescription
+	IFF(
+	    i_InsuranceReferenceLineOfBusinessDescription IS NULL, 'N/A',
+	    i_InsuranceReferenceLineOfBusinessDescription
 	) AS o_InsuranceReferenceLineOfBusinessDescription,
 	'N/A' AS o_InsuranceReferenceCoverageTypeCode,
 	'N/A' AS o_InsuranceReferenceCoverageTypeDescription,
 	-- *INF*: IIF(ISNULL(i_EnterpriseGroupAbbreviation),'N/A',i_EnterpriseGroupAbbreviation)
-	IFF(i_EnterpriseGroupAbbreviation IS NULL,
-		'N/A',
-		i_EnterpriseGroupAbbreviation
-	) AS o_EnterpriseGroupAbbreviation,
+	IFF(i_EnterpriseGroupAbbreviation IS NULL, 'N/A', i_EnterpriseGroupAbbreviation) AS o_EnterpriseGroupAbbreviation,
 	-- *INF*: IIF(ISNULL(i_InsuranceReferenceLegalEntityAbbreviation),'N/A',i_InsuranceReferenceLegalEntityAbbreviation)
-	IFF(i_InsuranceReferenceLegalEntityAbbreviation IS NULL,
-		'N/A',
-		i_InsuranceReferenceLegalEntityAbbreviation
+	IFF(
+	    i_InsuranceReferenceLegalEntityAbbreviation IS NULL, 'N/A',
+	    i_InsuranceReferenceLegalEntityAbbreviation
 	) AS o_InsuranceReferenceLegalEntityAbbreviation,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentAbbreviation),'N/A',i_InsuranceSegmentAbbreviation)
-	IFF(i_InsuranceSegmentAbbreviation IS NULL,
-		'N/A',
-		i_InsuranceSegmentAbbreviation
-	) AS o_InsuranceSegmentAbbreviation,
+	IFF(i_InsuranceSegmentAbbreviation IS NULL, 'N/A', i_InsuranceSegmentAbbreviation) AS o_InsuranceSegmentAbbreviation,
 	v_AccountingProductCode AS o_AccountingProductCode,
 	v_AccountingProductAbbreviation AS o_AccountingProductAbbreviation,
 	v_AccountingProductDescription AS o_AccountingProductDescription,

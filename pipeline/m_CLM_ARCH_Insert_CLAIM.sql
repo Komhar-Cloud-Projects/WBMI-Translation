@@ -1,0 +1,90 @@
+WITH
+SQ_claim_stage AS (
+	SELECT claim_stage.claim_stage_id, claim_stage.claim_id, claim_stage.loss_date, claim_stage.loss_occurrence, claim_stage.policy_num, claim_stage.policy_sym, claim_stage.policy_mod, claim_stage.policy_mco, claim_stage.loss_report_date, claim_stage.loss_entry_date, claim_stage.cat_code, claim_stage.loss_street1, claim_stage.loss_street2, claim_stage.loss_street3, claim_stage.loss_city, claim_stage.loss_zip_code, claim_stage.loss_state_code, claim_stage.loss_descript, claim_stage.remark, claim_stage.loss_entry_status, claim_stage.claim_rep_code, claim_stage.appraiser_code, claim_stage.modified_user_id, claim_stage.modified_date, claim_stage.report_office_code, claim_stage.manager_to_notify, claim_stage.fax_to_agency_flag, claim_stage.reprocess_flag, claim_stage.special_entry, claim_stage.direct_report_code, claim_stage.claim_num, claim_stage.extract_date, claim_stage.as_of_date, claim_stage.record_count, claim_stage.source_system_id 
+	FROM
+	 claim_stage
+	WHERE
+	claim_stage.modified_date >= '@{pipeline().parameters.SELECTION_START_TS}'
+),
+EXP_claim AS (
+	SELECT
+	claim_stage_id,
+	claim_id,
+	loss_date,
+	loss_occurrence,
+	policy_num,
+	policy_sym,
+	policy_mod,
+	policy_mco,
+	loss_report_date,
+	loss_entry_date,
+	cat_code,
+	loss_street1,
+	loss_street2,
+	loss_street3,
+	loss_city,
+	loss_zip_code,
+	loss_state_code,
+	loss_descript,
+	remark,
+	loss_entry_status,
+	claim_rep_code,
+	appraiser_code,
+	modified_user_id,
+	modified_date,
+	report_office_code,
+	manager_to_notify,
+	fax_to_agency_flag,
+	reprocess_flag,
+	special_entry,
+	direct_report_code,
+	claim_num,
+	extract_date,
+	as_of_date,
+	record_count,
+	source_system_id,
+	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP
+	FROM SQ_claim_stage
+),
+arch_claim_stage AS (
+	INSERT INTO arch_claim_stage
+	(claim_stage_id, claim_id, loss_date, loss_occurrence, policy_num, policy_sym, policy_mod, policy_mco, loss_report_date, loss_entry_date, cat_code, loss_street1, loss_street2, loss_street3, loss_city, loss_zip_code, loss_state_code, loss_descript, remark, loss_entry_status, claim_rep_code, appraiser_code, modified_user_id, modified_date, report_office_code, manager_to_notify, fax_to_agency_flag, reprocess_flag, special_entry, direct_report_code, claim_num, extract_date, as_of_date, record_count, source_system_id, audit_id)
+	SELECT 
+	CLAIM_STAGE_ID, 
+	CLAIM_ID, 
+	LOSS_DATE, 
+	LOSS_OCCURRENCE, 
+	POLICY_NUM, 
+	POLICY_SYM, 
+	POLICY_MOD, 
+	POLICY_MCO, 
+	LOSS_REPORT_DATE, 
+	LOSS_ENTRY_DATE, 
+	CAT_CODE, 
+	LOSS_STREET1, 
+	LOSS_STREET2, 
+	LOSS_STREET3, 
+	LOSS_CITY, 
+	LOSS_ZIP_CODE, 
+	LOSS_STATE_CODE, 
+	LOSS_DESCRIPT, 
+	REMARK, 
+	LOSS_ENTRY_STATUS, 
+	CLAIM_REP_CODE, 
+	APPRAISER_CODE, 
+	MODIFIED_USER_ID, 
+	MODIFIED_DATE, 
+	REPORT_OFFICE_CODE, 
+	MANAGER_TO_NOTIFY, 
+	FAX_TO_AGENCY_FLAG, 
+	REPROCESS_FLAG, 
+	SPECIAL_ENTRY, 
+	DIRECT_REPORT_CODE, 
+	CLAIM_NUM, 
+	EXTRACT_DATE, 
+	AS_OF_DATE, 
+	RECORD_COUNT, 
+	SOURCE_SYSTEM_ID, 
+	AUDIT_ID_OP AS AUDIT_ID
+	FROM EXP_claim
+),

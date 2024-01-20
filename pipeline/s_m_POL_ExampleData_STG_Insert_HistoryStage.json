@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleData_STG_Insert_HistoryStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleData_STG_Insert_HistoryStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_History AS (\n\tSELECT\n\t\tHistoryID,\n\t\tQuoteID,\n\t\tChangeDate,\n\t\tChange,\n\t\tPreviousPremium,\n\t\tComment,\n\t\tDeleted,\n\t\tManuScriptID,\n\t\tXMLData,\n\t\tFormsXML,\n\t\tFormsTempXML,\n\t\tTransACTVersion,\n\t\tPolicyNumber,\n\t\tCancellationDate,\n\t\tPolicyEffectiveDate,\n\t\tExpirationDate,\n\t\tPolicyStatus,\n\t\tState,\n\t\tTransactionStatus,\n\t\tTransactionEffectiveDate,\n\t\tType,\n\t\tScheduleDate,\n\t\tDeprecatedBy,\n\t\tUserID,\n\t\tTransactionDate,\n\t\tDuplicateRow,\n\t\tOffsetDate,\n\t\tHasPremiumImpact,\n\t\tWrittenPremium,\n\t\tChangePremium,\n\t\tZippedXML,\n\t\tBillingStatus,\n\t\tInforceStatus,\n\t\tRenewStatus\n\tFROM History\n\tWHERE upper(History.Type) ='NEW'\n),\nEXP_Default1 AS (\n\tSELECT\n\tSYSDATE AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tHistoryID,\n\tQuoteID,\n\tChangeDate,\n\tChange,\n\tPreviousPremium,\n\tComment,\n\tDeleted,\n\tManuScriptID,\n\tTransACTVersion,\n\tPolicyNumber,\n\tCancellationDate,\n\tPolicyEffectiveDate,\n\tExpirationDate,\n\tPolicyStatus,\n\tState,\n\tTransactionStatus,\n\tTransactionEffectiveDate,\n\tType,\n\tScheduleDate,\n\tDeprecatedBy,\n\tUserID,\n\tTransactionDate,\n\tDuplicateRow,\n\tOffsetDate,\n\tHasPremiumImpact,\n\tWrittenPremium,\n\tChangePremium,\n\tBillingStatus,\n\tInforceStatus,\n\tRenewStatus\n\tFROM SQ_History\n),\nHistoryStage AS (\n\tTRUNCATE TABLE HistoryStage;\n\tINSERT INTO HistoryStage\n\t(ExtractDate, SourceSystemId, HistoryID, QuoteID, ChangeDate, Change, PreviousPremium, Comment, Deleted, ManuScriptID, TransACTVersion, PolicyNumber, CancellationDate, PolicyEffectiveDate, ExpirationDate, PolicyStatus, State, TransactionStatus, TransactionEffectiveDate, Type, ScheduleDate, DeprecatedBy, UserID, TransactionDate, DuplicateRow, OffsetDate, HasPremiumImpact, WrittenPremium, ChangePremium, BillingStatus, InforceStatus, RenewStatus)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tHISTORYID, \n\tQUOTEID, \n\tCHANGEDATE, \n\tCHANGE, \n\tPREVIOUSPREMIUM, \n\tCOMMENT, \n\tDELETED, \n\tMANUSCRIPTID, \n\tTRANSACTVERSION, \n\tPOLICYNUMBER, \n\tCANCELLATIONDATE, \n\tPOLICYEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tPOLICYSTATUS, \n\tSTATE, \n\tTRANSACTIONSTATUS, \n\tTRANSACTIONEFFECTIVEDATE, \n\tTYPE, \n\tSCHEDULEDATE, \n\tDEPRECATEDBY, \n\tUSERID, \n\tTRANSACTIONDATE, \n\tDUPLICATEROW, \n\tOFFSETDATE, \n\tHASPREMIUMIMPACT, \n\tWRITTENPREMIUM, \n\tCHANGEPREMIUM, \n\tBILLINGSTATUS, \n\tINFORCESTATUS, \n\tRENEWSTATUS\n\tFROM EXP_Default1\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

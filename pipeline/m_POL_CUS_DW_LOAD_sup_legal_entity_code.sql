@@ -25,38 +25,28 @@ EXP_values AS (
 	master_company_number AS in_verbal_description,
 	lineof_business AS in_lineof_business,
 	-- *INF*: iif(isnull(in_lineof_business) or IS_SPACES(in_lineof_business) or LENGTH(in_lineof_business)=0,'N/A',LTRIM(RTRIM(in_lineof_business)))
-	IFF(in_lineof_business IS NULL 
-		OR LENGTH(in_lineof_business)>0 AND TRIM(in_lineof_business)='' 
-		OR LENGTH(in_lineof_business
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_lineof_business
-			)
-		)
+	IFF(
+	    in_lineof_business IS NULL
+	    or LENGTH(in_lineof_business)>0
+	    and TRIM(in_lineof_business)=''
+	    or LENGTH(in_lineof_business) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_lineof_business))
 	) AS line_of_business,
 	lgl_ent_code,
 	legal_entity_literal AS in_legal_entity_literal,
 	-- *INF*: IIF(lgl_ent_code<>'O','N/A',ltrim(rtrim(in_xtdu01_code)))
-	IFF(lgl_ent_code <> 'O',
-		'N/A',
-		ltrim(rtrim(in_xtdu01_code
-			)
-		)
-	) AS lgl_ent_sub_code,
+	IFF(lgl_ent_code <> 'O', 'N/A', ltrim(rtrim(in_xtdu01_code))) AS lgl_ent_sub_code,
 	-- *INF*: IIF(lgl_ent_code<>'O',in_legal_entity_literal,in_verbal_description)
-	IFF(lgl_ent_code <> 'O',
-		in_legal_entity_literal,
-		in_verbal_description
-	) AS v_legal_entity_description,
+	IFF(lgl_ent_code <> 'O', in_legal_entity_literal, in_verbal_description) AS v_legal_entity_description,
 	-- *INF*: iif(isnull(v_legal_entity_description) or IS_SPACES(v_legal_entity_description) or LENGTH(v_legal_entity_description)=0,'Not Avaliable',ltrim(rtrim(v_legal_entity_description)))
-	IFF(v_legal_entity_description IS NULL 
-		OR LENGTH(v_legal_entity_description)>0 AND TRIM(v_legal_entity_description)='' 
-		OR LENGTH(v_legal_entity_description
-		) = 0,
-		'Not Avaliable',
-		ltrim(rtrim(v_legal_entity_description
-			)
-		)
+	IFF(
+	    v_legal_entity_description IS NULL
+	    or LENGTH(v_legal_entity_description)>0
+	    and TRIM(v_legal_entity_description)=''
+	    or LENGTH(v_legal_entity_description) = 0,
+	    'Not Avaliable',
+	    ltrim(rtrim(v_legal_entity_description))
 	) AS lgl_ent_code_descript
 	FROM SQ_gtam_tl79_stage
 ),
@@ -89,30 +79,25 @@ EXP_Detect_Changes AS (
 	EXP_values.lgl_ent_code_descript,
 	-- *INF*: iif(isnull(lkp_sup_legal_entity_id),'NEW',
 	-- IIF(LTRIM(RTRIM(lkp_legal_entity_description)) != LTRIM(RTRIM(lgl_ent_code_descript)),'UPDATE','NOCHANGE'))
-	IFF(lkp_sup_legal_entity_id IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(lkp_legal_entity_description
-				)
-			) != LTRIM(RTRIM(lgl_ent_code_descript
-				)
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    lkp_sup_legal_entity_id IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(lkp_legal_entity_description)) != LTRIM(RTRIM(lgl_ent_code_descript)),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -205,11 +190,10 @@ EXP_Lag_eff_from_date AS (
 	-- AND
 	-- in_legal_entity_sub_code= v_prev_legal_entity_sub_code ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
-	DECODE(TRUE,
-		lob = v_prev_line_of_business 
-		AND in_legal_entity_code = v_prev_legal_entity_code 
-		AND in_legal_entity_sub_code = v_prev_legal_entity_sub_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    lob = v_prev_line_of_business AND in_legal_entity_code = v_prev_legal_entity_code AND in_legal_entity_sub_code = v_prev_legal_entity_sub_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	lob AS v_prev_line_of_business,

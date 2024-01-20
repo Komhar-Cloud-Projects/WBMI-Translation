@@ -1,0 +1,51 @@
+{
+    "name": "s_m_POL_STG_Insert_WorkDCTCoverageTransaction",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_WorkDCTCoverageTransaction",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTCoverageTransaction AS (\n\tWITH PCoverage\r\n\tAS (\r\n\t\tSELECT A.SessionId,\r\n\t\t\tA.ObjectId AS ParentCoverageObjectId,\r\n\t\t\tA.ObjectName AS ParentCoverageObjectName,\r\n\t\t\tA.CoverageId,\r\n\t\t\tA.Id AS CoverageGUID,\r\n\t\t\tA.Type AS CoverageType,\r\n\t\t\tA.Change,\r\n\t\t\tA.Premium AS Premium,\r\n\t\t\tA.Type AS ParentCoverageType,\r\n\t\t\tCASE \r\n\t\t\t\tWHEN A.Deleted = 1\r\n\t\t\t\t\tTHEN '1'\r\n\t\t\t\tWHEN W.Indicator = 1\r\n\t\t\t\t\tTHEN '0'\r\n\t\t\t\tWHEN W.IndicatorbValue = 1\r\n\t\t\t\t\tTHEN '0'\r\n\t\t\t\tELSE '1'\r\n\t\t\t\tEND AS CoverageDeleteFlag,\r\n\t\t\tA.Written,\r\n\t\t\tA.Prior,\r\n\t\t\tA.BaseRate,\r\n\t\t\tModifier.Value IncreasedLimitFactor\r\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCCoverageStaging A\r\n\t\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WBCoverageStage W\r\n\t\t\tON W.CoverageId = A.CoverageId\r\n\tLEFT JOIN (SELECT DISTINCT D.ObjectID,D.value FROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCModifierStaging D\r\n\t             WHERE  D.ObjectName = 'DC_Coverage'\r\n\t                    AND D.Type = 'IncreasedLimitFactor') Modifier ON Modifier.ObjectId = A.CoverageId\r\n\t       WHERE A.ObjectName <> 'DC_Coverage'\r\n\t             -- AND A.Type <> 'IncreaseInBuildingExpenses'\r\n\t       )\t\r\n\tSELECT *,\r\n\t\t'N/A' SubCoverageType\r\n\tFROM PCoverage\r\n\t\r\n\tUNION ALL\r\n\t\r\n\tSELECT B.SessionId AS SessionId,\r\n\t\tB.ParentCoverageObjectId,\r\n\t\tB.ParentCoverageObjectName,\r\n\t\tA.CoverageId,\r\n\t\tA.Id AS CoverageGUID,\r\n\t\tB.ParentCoverageType + '/' + A.Type AS CoverageType,\r\n\t\tA.Change,\r\n\t\tA.Premium AS Premium,\r\n\t\tB.ParentCoverageType AS Ptype,\r\n\t\tCASE \r\n\t\t\tWHEN B.CoverageDeleteFlag = 1\r\n\t\t\t\tTHEN '1'\r\n\t\t\tWHEN A.Deleted = 1\r\n\t\t\t\tTHEN '1'\r\n\t\t\tWHEN W.Indicator = 1\r\n\t\t\t\tTHEN '0'\r\n\t\t\tWHEN W.IndicatorbValue = 1\r\n\t\t\t\tTHEN '0'\r\n\t\t\tELSE '1'\r\n\t\t\tEND AS CoverageDeleteFlag,\r\n\t\tA.Written,\r\n\t\tA.Prior,\r\n\t\tA.BaseRate,\r\n\t\tModifier.Value IncreasedLimitFactor,\r\n\t\tA.Type AS SubCoverageType\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCCoverageStaging A\r\n\tINNER JOIN PCoverage B\r\n\t\tON A.ObjectId = B.CoverageId\r\n\t\t\tAND A.ObjectName = 'DC_Coverage'\r\n\t\t\tAND B.ParentCoverageObjectName <> 'DC_Coverage'\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WBCoverageStage W\r\n\t\tON W.CoverageId = A.CoverageId\r\n\tLEFT OUTER JOIN (SELECT DISTINCT D.ObjectID,D.value FROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCModifierStaging D\r\n\t             WHERE  D.ObjectName = 'DC_Coverage'\r\n\t                    AND D.Type = 'IncreasedLimitFactor' AND D.Scope IS NULL) Modifier ON Modifier.ObjectId = A.CoverageId\n),\nEXP_Default AS (\n\tSELECT\n\tSYSDATE AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tSessionId,\n\tParentCoverageObjectId,\n\tParentCoverageObjectName,\n\tCoverageId,\n\tCoverageGUID,\n\tCoverageType,\n\tChange,\n\tPremium,\n\tParentCoverageType,\n\tCoverageDeleteFlag,\n\tWritten,\n\tPrior,\n\tBaseRate,\n\tIncreasedLimitFactor,\n\tSubCoverageType\n\tFROM SQ_WorkDCTCoverageTransaction\n),\nWorkDCTCoverageTransaction AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkDCTCoverageTransaction;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkDCTCoverageTransaction\n\t(ExtractDate, SourceSystemId, SessionId, ParentCoverageObjectId, ParentCoverageObjectName, CoverageId, CoverageGUID, CoverageType, Change, Premium, ParentCoverageType, CoverageDeleteFlag, Written, Prior, BaseRate, IncreasedLimitFactor, SubCoverageType)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tSESSIONID, \n\tPARENTCOVERAGEOBJECTID, \n\tPARENTCOVERAGEOBJECTNAME, \n\tCOVERAGEID, \n\tCOVERAGEGUID, \n\tCOVERAGETYPE, \n\tCHANGE, \n\tPREMIUM, \n\tPARENTCOVERAGETYPE, \n\tCOVERAGEDELETEFLAG, \n\tWRITTEN, \n\tPRIOR, \n\tBASERATE, \n\tINCREASEDLIMITFACTOR, \n\tSUBCOVERAGETYPE\n\tFROM EXP_Default\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

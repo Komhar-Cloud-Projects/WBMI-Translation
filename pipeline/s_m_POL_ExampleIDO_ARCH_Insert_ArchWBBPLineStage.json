@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPLineStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBBPLineStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBBPLineStage AS (\n\tSELECT\n\t\tWBBPLineStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tBP_LineId,\n\t\tWB_BP_LineId,\n\t\tSessionId,\n\t\tPlusPak,\n\t\tIncludeEarthquake,\n\t\tDescription,\n\t\tValue,\n\t\tAge,\n\t\tMaintenanceAgreement,\n\t\tWarranty,\n\t\tAssociationFactorLiability,\n\t\tAssociationFactorProperty,\n\t\tOverride,\n\t\tLineAdditionalOptionalCoveragesPremium,\n\t\tPlanId,\n\t\tGraduated,\n\t\tGraduatedRateValue,\n\t\tMaximum,\n\t\tRateType,\n\t\tRateValue\n\tFROM WBBPLineStage\n),\nEXPTRANS AS (\n\tSELECT\n\tWBBPLineStageId,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tBP_LineId,\n\tWB_BP_LineId,\n\tSessionId,\n\tPlusPak AS i_PlusPak,\n\t-- *INF*: IIF(i_PlusPak='T','1','0')\n\tIFF(i_PlusPak = 'T', '1', '0') AS o_PlusPak,\n\tIncludeEarthquake AS i_IncludeEarthquake,\n\t-- *INF*: IIF(i_IncludeEarthquake='T','1','0')\n\tIFF(i_IncludeEarthquake = 'T', '1', '0') AS o_IncludeEarthquake,\n\tDescription,\n\tValue,\n\tAge,\n\tMaintenanceAgreement,\n\tWarranty,\n\tAssociationFactorLiability,\n\tAssociationFactorProperty,\n\tOverride AS i_Override,\n\t-- *INF*: IIF(i_Override='T','1','0')\n\tIFF(i_Override = 'T', '1', '0') AS o_Override,\n\tLineAdditionalOptionalCoveragesPremium,\n\tPlanId,\n\tGraduated AS i_Graduated,\n\t-- *INF*: IIF(i_Graduated='T','1','0')\n\tIFF(i_Graduated = 'T', '1', '0') AS o_Graduated,\n\tGraduatedRateValue,\n\tMaximum,\n\tRateType,\n\tRateValue\n\tFROM SQ_WBBPLineStage\n),\nArchWBBPLineStage AS (\n\tINSERT INTO ArchWBBPLineStage\n\t(ExtractDate, SourceSystemId, AuditId, WBBPLineStageId, BP_LineId, WB_BP_LineId, SessionId, PlusPak, IncludeEarthquake, Description, Value, Age, MaintenanceAgreement, Warranty, AssociationFactorLiability, AssociationFactorProperty, Override, LineAdditionalOptionalCoveragesPremium, PlanId, Graduated, GraduatedRateValue, Maximum, RateType, RateValue)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBBPLINESTAGEID, \n\tBP_LINEID, \n\tWB_BP_LINEID, \n\tSESSIONID, \n\to_PlusPak AS PLUSPAK, \n\to_IncludeEarthquake AS INCLUDEEARTHQUAKE, \n\tDESCRIPTION, \n\tVALUE, \n\tAGE, \n\tMAINTENANCEAGREEMENT, \n\tWARRANTY, \n\tASSOCIATIONFACTORLIABILITY, \n\tASSOCIATIONFACTORPROPERTY, \n\to_Override AS OVERRIDE, \n\tLINEADDITIONALOPTIONALCOVERAGESPREMIUM, \n\tPLANID, \n\to_Graduated AS GRADUATED, \n\tGRADUATEDRATEVALUE, \n\tMAXIMUM, \n\tRATETYPE, \n\tRATEVALUE\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

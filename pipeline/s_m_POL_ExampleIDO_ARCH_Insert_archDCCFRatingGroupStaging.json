@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCFRatingGroupStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCCFRatingGroupStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCFRatingGroupStaging AS (\n\tSELECT\n\t\tDCCFRatingGroupStagingId,\n\t\tCF_RatingGroupId,\n\t\tSessionId,\n\t\tId,\n\t\tCauseOfLoss,\n\t\tDeductibleIncreasedTheft,\n\t\tDeductibleWindHail,\n\t\tEarthquake,\n\t\tEarthquakeLimit,\n\t\tEarthquakeLimitOverrideSelect,\n\t\tFlood,\n\t\tFloodLimit,\n\t\tFloodLimitCalc,\n\t\tFloodLimitOverrideSelect,\n\t\tHurricaneCalculationChoice,\n\t\tHurricaneDeductible,\n\t\tNumber,\n\t\tRatingType,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCF_RiskId\n\tFROM DCCFRatingGroupStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCCFRatingGroupStagingId,\n\tCF_RatingGroupId,\n\tSessionId,\n\tId,\n\tCauseOfLoss,\n\tDeductibleIncreasedTheft,\n\tDeductibleWindHail,\n\tEarthquake,\n\t-- *INF*: DECODE(Earthquake,'T',1,'F',0,NULL)\n\tDECODE(\n\t    Earthquake,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Earthquake,\n\tEarthquakeLimit,\n\tEarthquakeLimitOverrideSelect,\n\t-- *INF*: DECODE(EarthquakeLimitOverrideSelect,'T',1,'F',0,NULL)\n\tDECODE(\n\t    EarthquakeLimitOverrideSelect,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_EarthquakeLimitOverrideSelect,\n\tFlood,\n\t-- *INF*: DECODE(Flood,'T',1,'F',0,NULL)\n\tDECODE(\n\t    Flood,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Flood,\n\tFloodLimit,\n\tFloodLimitCalc,\n\tFloodLimitOverrideSelect,\n\t-- *INF*: DECODE(FloodLimitOverrideSelect,'T',1,'F',0,NULL)\n\tDECODE(\n\t    FloodLimitOverrideSelect,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_FloodLimitOverrideSelect,\n\tHurricaneCalculationChoice,\n\tHurricaneDeductible,\n\tNumber,\n\tRatingType,\n\tExtractDate,\n\tSourceSystemId,\n\tCF_RiskId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCFRatingGroupStaging\n),\narchDCCFRatingGroupStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCCFRatingGroupStaging\n\t(CF_RiskId, CF_RatingGroupId, SessionId, Id, CauseOfLoss, DeductibleIncreasedTheft, DeductibleWindHail, Earthquake, EarthquakeLimit, EarthquakeLimitOverrideSelect, Flood, FloodLimit, FloodLimitCalc, FloodLimitOverrideSelect, HurricaneCalculationChoice, HurricaneDeductible, Number, RatingType, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tCF_RISKID, \n\tCF_RATINGGROUPID, \n\tSESSIONID, \n\tID, \n\tCAUSEOFLOSS, \n\tDEDUCTIBLEINCREASEDTHEFT, \n\tDEDUCTIBLEWINDHAIL, \n\to_Earthquake AS EARTHQUAKE, \n\tEARTHQUAKELIMIT, \n\to_EarthquakeLimitOverrideSelect AS EARTHQUAKELIMITOVERRIDESELECT, \n\to_Flood AS FLOOD, \n\tFLOODLIMIT, \n\tFLOODLIMITCALC, \n\to_FloodLimitOverrideSelect AS FLOODLIMITOVERRIDESELECT, \n\tHURRICANECALCULATIONCHOICE, \n\tHURRICANEDEDUCTIBLE, \n\tNUMBER, \n\tRATINGTYPE, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

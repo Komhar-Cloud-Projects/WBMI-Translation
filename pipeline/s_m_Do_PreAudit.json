@@ -32,11 +32,11 @@
         "parameters": {
             "AUDIT_NAME": {
                 "type": "string",
-                "defaultValue": "CLAIMS_CALCULATIONS"
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Claims DataWarehouse/"
+            "name": "CommonDataServices/"
         },
         "annotations": []
     }

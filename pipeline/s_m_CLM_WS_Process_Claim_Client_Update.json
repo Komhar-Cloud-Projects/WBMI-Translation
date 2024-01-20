@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_WS_Process_Claim_Client_Update",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_WS_Process_Claim_Client_Update",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nLKP_ProcessStatus AS (\n\tSELECT\n\tSupProcessStatusId,\n\tProcessStatus\n\tFROM (\n\t\tSELECT \n\t\t\tSupProcessStatusId,\n\t\t\tProcessStatus\n\t\tFROM SupProcessStatus\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ProcessStatus ORDER BY SupProcessStatusId) = 1\n),\nSQ_DCTClaimClientStage AS (\n\tSELECT DCTClaimClientStage.DCTClaimClientStageId, DCTClaimClientStage.CreatedDate, DCTClaimClientStage.ModifiedDate, DCTClaimClientStage.PolicyNumber, DCTClaimClientStage.PolicyVersion, DCTClaimClientStage.AgreementPartyId, DCTClaimClientStage.FirstName, DCTClaimClientStage.LastName, DCTClaimClientStage.Street1, DCTClaimClientStage.Street2, DCTClaimClientStage.City, DCTClaimClientStage.StateCode, DCTClaimClientStage.ZipCode, DCTClaimClientStage.WorkPhoneNumber, DCTClaimClientStage.ErrorDescription, DCTClaimClientStage.SupProcessStatusId, DCTClaimClientStage.FaxNumber, DCTClaimClientStage.BirthDate, DCTClaimClientStage.TaxId ,\r\n\tSupProcessStatus.SupProcessStatusId, SupProcessStatus.ProcessStatus, SupProcessStatus.CreatedDate, SupProcessStatus.CreatedUserId, SupProcessStatus.ModifiedDate, SupProcessStatus.ModifiedUserId\r\n\tFROM\r\n\tDCTClaimClientStage\r\n\tJOIN SupProcessStatus ON DCTClaimClientStage.SupProcessStatusId = SupProcessStatus.SupProcessStatusId\r\n\tWHERE SupProcessStatus.ProcessStatus = 'Request'\n),\nEXP_DCTClaimClientStage AS (\n\tSELECT\n\tDCTClaimClientStageId,\n\tCreatedDate,\n\tModifiedDate,\n\tPolicyNumber,\n\tPolicyVersion,\n\tAgreementPartyId,\n\tFirstName,\n\tLastName,\n\tStreet1,\n\tStreet2,\n\tCity,\n\tStateCode,\n\tZipCode,\n\tWorkPhoneNumber,\n\tErrorDescription,\n\tSupProcessStatusId,\n\tFaxNumber,\n\tBirthDate,\n\tTaxId\n\tFROM SQ_DCTClaimClientStage\n),\nWEB_UpdatePolicyClient AS (-- WEB_UpdatePolicyClient\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nEXP_ClaimDataProcessor_Response AS (\n\tSELECT\n\ttns1_StageId0 AS StageId,\n\ttns1_StatusCode0 AS StatusCode,\n\ttns1_ErrorDescription0 AS ErrorDescription,\n\t-- *INF*: SYSTIMESTAMP()\n\tCURRENT_TIMESTAMP() AS out_ChangedDate,\n\t-- *INF*: IIF(StatusCode = 'Success', :LKP.LKP_PROCESSSTATUS('Complete'), :LKP.LKP_PROCESSSTATUS('Error'))\n\tIFF(\n\t    StatusCode = 'Success', LKP_PROCESSSTATUS__Complete.SupProcessStatusId,\n\t    LKP_PROCESSSTATUS__Error.SupProcessStatusId\n\t) AS out_ProcessStatusId,\n\t-- *INF*: IIF(StatusCode != 'Success', SETVARIABLE(@{pipeline().parameters.ERRORFLAG}, 1))\n\tIFF(StatusCode != 'Success', SETVARIABLE(@{pipeline().parameters.ERRORFLAG}, 1)) AS v_set_ErrorFlag\n\tFROM WEB_UpdatePolicyClient\n\tLEFT JOIN LKP_PROCESSSTATUS LKP_PROCESSSTATUS__Complete\n\tON LKP_PROCESSSTATUS__Complete.ProcessStatus = 'Complete'\n\n\tLEFT JOIN LKP_PROCESSSTATUS LKP_PROCESSSTATUS__Error\n\tON LKP_PROCESSSTATUS__Error.ProcessStatus = 'Error'\n\n),\nUPD_DCTClaimClientStage AS (\n\tSELECT\n\tStageId, \n\tErrorDescription, \n\tout_ChangedDate, \n\tout_ProcessStatusId AS SupProcessStatusId\n\tFROM EXP_ClaimDataProcessor_Response\n),\nDCTClaimClientStage1 AS (\n\tMERGE INTO DCTClaimClientStage AS T\n\tUSING UPD_DCTClaimClientStage AS S\n\tON T.DCTClaimClientStageId = S.StageId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.ModifiedDate = S.out_ChangedDate, T.ErrorDescription = S.ErrorDescription, T.SupProcessStatusId = S.SupProcessStatusId\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "ERRORFLAG": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimDataServices/"
+        },
+        "annotations": []
+    }
+}

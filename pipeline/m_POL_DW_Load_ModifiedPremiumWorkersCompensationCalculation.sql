@@ -206,75 +206,59 @@ EXP_ModifiedPremium_Calculate AS (
 	OtherModifiedDirectWrittenPremium AS i_OtherModifiedDirectWrittenPremium,
 	RateableDirectWrittenPremium AS i_RateableDirectWrittenPremium,
 	-- *INF*: IIF(i_RateableDirectWrittenPremium<0.0010,0,i_RateableDirectWrittenPremium)
-	IFF(i_RateableDirectWrittenPremium < 0.0010,
-		0,
-		i_RateableDirectWrittenPremium
-	) AS v_CorrectedRateableDirectWrittenPremium,
+	IFF(i_RateableDirectWrittenPremium < 0.0010, 0, i_RateableDirectWrittenPremium) AS v_CorrectedRateableDirectWrittenPremium,
 	ClassifiedAdjustmentAmount AS i_ClassifiedAdjustmentAmount,
 	SubjectTransactionCount AS i_SubjectTransactionCount,
 	RateableTransactionCount AS i_RateableTransactionCount,
 	TransactionCount AS i_TransactionCount,
 	PremiumMasterRunDate AS i_PremiumMasterRunDate,
 	-- *INF*:  i_RateableTransactionCount+IIF(ISNULL(i_TransactionCount),0,i_TransactionCount)
-	i_RateableTransactionCount + IFF(i_TransactionCount IS NULL,
-		0,
-		i_TransactionCount
-	) AS v_TrueRateableCount,
+	i_RateableTransactionCount + IFF(i_TransactionCount IS NULL, 0, i_TransactionCount) AS v_TrueRateableCount,
 	-- *INF*: IIF(PremiumMasterCalculationId=v_prev_PremiumMasterCalculationId,1,0)
-	IFF(PremiumMasterCalculationId = v_prev_PremiumMasterCalculationId,
-		1,
-		0
-	) AS v_GeneratedRecordIndicator,
+	IFF(PremiumMasterCalculationId = v_prev_PremiumMasterCalculationId, 1, 0) AS v_GeneratedRecordIndicator,
 	-- *INF*: IIF(v_GeneratedRecordIndicator='1',0,i_DirectWrittenPremium)
-	IFF(v_GeneratedRecordIndicator = '1',
-		0,
-		i_DirectWrittenPremium
-	) AS v_DirectWrittenPremium,
+	IFF(v_GeneratedRecordIndicator = '1', 0, i_DirectWrittenPremium) AS v_DirectWrittenPremium,
 	-- *INF*: IIF(i_subject_to_exprnc_modfctn_class_ind='Y',i_DirectWrittenPremium,0)
-	IFF(i_subject_to_exprnc_modfctn_class_ind = 'Y',
-		i_DirectWrittenPremium,
-		0
-	) AS v_SubjectDirectWrittenPremium,
+	IFF(i_subject_to_exprnc_modfctn_class_ind = 'Y', i_DirectWrittenPremium, 0) AS v_SubjectDirectWrittenPremium,
 	-- *INF*: ROUND(DECODE(TRUE,
 	-- i_SubjectDirectWrittenPremium!=0,v_SubjectDirectWrittenPremium*i_ExperienceModifiedDirectWrittenPremium/i_SubjectDirectWrittenPremium,
 	-- i_subject_to_exprnc_modfctn_class_ind='Y',v_SubjectDirectWrittenPremium+i_ExperienceModifiedDirectWrittenPremium/i_SubjectTransactionCount,
 	-- 0),4)
-	ROUND(DECODE(TRUE,
-		i_SubjectDirectWrittenPremium != 0, v_SubjectDirectWrittenPremium * i_ExperienceModifiedDirectWrittenPremium / i_SubjectDirectWrittenPremium,
-		i_subject_to_exprnc_modfctn_class_ind = 'Y', v_SubjectDirectWrittenPremium + i_ExperienceModifiedDirectWrittenPremium / i_SubjectTransactionCount,
-		0
-		), 4
-	) AS v_ExperienceModifiedDirectWrittenPremium,
+	ROUND(DECODE(
+	        TRUE,
+	        i_SubjectDirectWrittenPremium != 0, v_SubjectDirectWrittenPremium * i_ExperienceModifiedDirectWrittenPremium / i_SubjectDirectWrittenPremium,
+	        i_subject_to_exprnc_modfctn_class_ind = 'Y', v_SubjectDirectWrittenPremium + i_ExperienceModifiedDirectWrittenPremium / i_SubjectTransactionCount,
+	        0
+	    ), 4) AS v_ExperienceModifiedDirectWrittenPremium,
 	-- *INF*: ROUND(DECODE(TRUE,
 	-- i_SubjectDirectWrittenPremium!=0,v_SubjectDirectWrittenPremium*i_ScheduleModifiedDirectWrittenPremium/i_SubjectDirectWrittenPremium,
 	-- i_subject_to_exprnc_modfctn_class_ind='Y',v_SubjectDirectWrittenPremium+i_ScheduleModifiedDirectWrittenPremium/i_SubjectTransactionCount,
 	-- 0),4)
-	ROUND(DECODE(TRUE,
-		i_SubjectDirectWrittenPremium != 0, v_SubjectDirectWrittenPremium * i_ScheduleModifiedDirectWrittenPremium / i_SubjectDirectWrittenPremium,
-		i_subject_to_exprnc_modfctn_class_ind = 'Y', v_SubjectDirectWrittenPremium + i_ScheduleModifiedDirectWrittenPremium / i_SubjectTransactionCount,
-		0
-		), 4
-	) AS v_ScheduleModifiedDirectWrittenPremium,
+	ROUND(DECODE(
+	        TRUE,
+	        i_SubjectDirectWrittenPremium != 0, v_SubjectDirectWrittenPremium * i_ScheduleModifiedDirectWrittenPremium / i_SubjectDirectWrittenPremium,
+	        i_subject_to_exprnc_modfctn_class_ind = 'Y', v_SubjectDirectWrittenPremium + i_ScheduleModifiedDirectWrittenPremium / i_SubjectTransactionCount,
+	        0
+	    ), 4) AS v_ScheduleModifiedDirectWrittenPremium,
 	-- *INF*: ROUND(DECODE(TRUE,
 	-- i_SubjectDirectWrittenPremium!=0,v_SubjectDirectWrittenPremium*i_OtherModifiedDirectWrittenPremium/i_SubjectDirectWrittenPremium,
 	-- i_subject_to_exprnc_modfctn_class_ind='Y',v_SubjectDirectWrittenPremium+i_OtherModifiedDirectWrittenPremium/i_SubjectTransactionCount
 	-- ,0),4)
-	ROUND(DECODE(TRUE,
-		i_SubjectDirectWrittenPremium != 0, v_SubjectDirectWrittenPremium * i_OtherModifiedDirectWrittenPremium / i_SubjectDirectWrittenPremium,
-		i_subject_to_exprnc_modfctn_class_ind = 'Y', v_SubjectDirectWrittenPremium + i_OtherModifiedDirectWrittenPremium / i_SubjectTransactionCount,
-		0
-		), 4
-	) AS v_OtherModifiedDirectWrittenPremium,
+	ROUND(DECODE(
+	        TRUE,
+	        i_SubjectDirectWrittenPremium != 0, v_SubjectDirectWrittenPremium * i_OtherModifiedDirectWrittenPremium / i_SubjectDirectWrittenPremium,
+	        i_subject_to_exprnc_modfctn_class_ind = 'Y', v_SubjectDirectWrittenPremium + i_OtherModifiedDirectWrittenPremium / i_SubjectTransactionCount,
+	        0
+	    ), 4) AS v_OtherModifiedDirectWrittenPremium,
 	-- *INF*: DECODE(TRUE,
 	-- i_ratable_class_ind='Y' AND i_subject_to_exprnc_modfctn_class_ind='Y',v_OtherModifiedDirectWrittenPremium,
 	-- i_ratable_class_ind='Y' AND i_subject_to_exprnc_modfctn_class_ind='N',i_DirectWrittenPremium,
 	-- 0)
-	DECODE(TRUE,
-		i_ratable_class_ind = 'Y' 
-		AND i_subject_to_exprnc_modfctn_class_ind = 'Y', v_OtherModifiedDirectWrittenPremium,
-		i_ratable_class_ind = 'Y' 
-		AND i_subject_to_exprnc_modfctn_class_ind = 'N', i_DirectWrittenPremium,
-		0
+	DECODE(
+	    TRUE,
+	    i_ratable_class_ind = 'Y' AND i_subject_to_exprnc_modfctn_class_ind = 'Y', v_OtherModifiedDirectWrittenPremium,
+	    i_ratable_class_ind = 'Y' AND i_subject_to_exprnc_modfctn_class_ind = 'N', i_DirectWrittenPremium,
+	    0
 	) AS v_RateableDirectWrittenPremium,
 	-- *INF*: ROUND(DECODE(TRUE,
 	-- i_surchg_class_ind='Y',i_DirectWrittenPremium,
@@ -283,56 +267,54 @@ EXP_ModifiedPremium_Calculate AS (
 	-- i_ratable_class_ind='Y' AND v_CorrectedRateableDirectWrittenPremium=0 AND i_RateableTransactionCount!=0,v_RateableDirectWrittenPremium+i_ClassifiedAdjustmentAmount/i_RateableTransactionCount,
 	-- v_TrueRateableCount=0,i_DirectWrittenPremium,
 	-- v_RateableDirectWrittenPremium),4)
-	ROUND(DECODE(TRUE,
-		i_surchg_class_ind = 'Y', i_DirectWrittenPremium,
-		i_ratable_class_ind = 'Y' 
-			AND i_TransactionCount IS NOT NULL, v_RateableDirectWrittenPremium,
-		i_ratable_class_ind = 'Y' 
-			AND v_CorrectedRateableDirectWrittenPremium != 0 
-			AND i_RateableTransactionCount != 0, v_RateableDirectWrittenPremium * ( i_ClassifiedAdjustmentAmount + v_CorrectedRateableDirectWrittenPremium 
-			) / v_CorrectedRateableDirectWrittenPremium,
-		i_ratable_class_ind = 'Y' 
-			AND v_CorrectedRateableDirectWrittenPremium = 0 
-			AND i_RateableTransactionCount != 0, v_RateableDirectWrittenPremium + i_ClassifiedAdjustmentAmount / i_RateableTransactionCount,
-		v_TrueRateableCount = 0, i_DirectWrittenPremium,
-		v_RateableDirectWrittenPremium
-		), 4
-	) AS v_ClassifiedDirectWrittenPremium,
+	ROUND(DECODE(
+	        TRUE,
+	        i_surchg_class_ind = 'Y', i_DirectWrittenPremium,
+	        i_ratable_class_ind = 'Y' AND i_TransactionCount IS NOT NULL, v_RateableDirectWrittenPremium,
+	        i_ratable_class_ind = 'Y' AND v_CorrectedRateableDirectWrittenPremium != 0 AND i_RateableTransactionCount != 0, v_RateableDirectWrittenPremium * (i_ClassifiedAdjustmentAmount + v_CorrectedRateableDirectWrittenPremium) / v_CorrectedRateableDirectWrittenPremium,
+	        i_ratable_class_ind = 'Y' AND v_CorrectedRateableDirectWrittenPremium = 0 AND i_RateableTransactionCount != 0, v_RateableDirectWrittenPremium + i_ClassifiedAdjustmentAmount / i_RateableTransactionCount,
+	        v_TrueRateableCount = 0, i_DirectWrittenPremium,
+	        v_RateableDirectWrittenPremium
+	    ), 4) AS v_ClassifiedDirectWrittenPremium,
 	-- *INF*: IIF(v_GeneratedRecordIndicator='1',v_SubjectDirectWrittenPremium-v_prev_SubjectDirectWrittenPremium,v_SubjectDirectWrittenPremium)
-	IFF(v_GeneratedRecordIndicator = '1',
-		v_SubjectDirectWrittenPremium - v_prev_SubjectDirectWrittenPremium,
-		v_SubjectDirectWrittenPremium
+	IFF(
+	    v_GeneratedRecordIndicator = '1',
+	    v_SubjectDirectWrittenPremium - v_prev_SubjectDirectWrittenPremium,
+	    v_SubjectDirectWrittenPremium
 	) AS v_ChangeInSubjectDirectWrittenPremium,
 	-- *INF*: IIF(v_GeneratedRecordIndicator='1',v_ExperienceModifiedDirectWrittenPremium-v_prev_ExperienceModifiedDirectWrittenPremium,v_ExperienceModifiedDirectWrittenPremium)
-	IFF(v_GeneratedRecordIndicator = '1',
-		v_ExperienceModifiedDirectWrittenPremium - v_prev_ExperienceModifiedDirectWrittenPremium,
-		v_ExperienceModifiedDirectWrittenPremium
+	IFF(
+	    v_GeneratedRecordIndicator = '1',
+	    v_ExperienceModifiedDirectWrittenPremium - v_prev_ExperienceModifiedDirectWrittenPremium,
+	    v_ExperienceModifiedDirectWrittenPremium
 	) AS v_ChangeInExperienceModifiedDirectWrittenPremium,
 	-- *INF*: IIF(v_GeneratedRecordIndicator='1',v_ScheduleModifiedDirectWrittenPremium-v_prev_ScheduleModifiedDirectWrittenPremium,v_ScheduleModifiedDirectWrittenPremium)
-	IFF(v_GeneratedRecordIndicator = '1',
-		v_ScheduleModifiedDirectWrittenPremium - v_prev_ScheduleModifiedDirectWrittenPremium,
-		v_ScheduleModifiedDirectWrittenPremium
+	IFF(
+	    v_GeneratedRecordIndicator = '1',
+	    v_ScheduleModifiedDirectWrittenPremium - v_prev_ScheduleModifiedDirectWrittenPremium,
+	    v_ScheduleModifiedDirectWrittenPremium
 	) AS v_ChangeInScheduleModifiedDirectWrittenPremium,
 	-- *INF*: IIF(v_GeneratedRecordIndicator='1',v_OtherModifiedDirectWrittenPremium-v_prev_OtherModifiedDirectWrittenPremium,v_OtherModifiedDirectWrittenPremium)
-	IFF(v_GeneratedRecordIndicator = '1',
-		v_OtherModifiedDirectWrittenPremium - v_prev_OtherModifiedDirectWrittenPremium,
-		v_OtherModifiedDirectWrittenPremium
+	IFF(
+	    v_GeneratedRecordIndicator = '1',
+	    v_OtherModifiedDirectWrittenPremium - v_prev_OtherModifiedDirectWrittenPremium,
+	    v_OtherModifiedDirectWrittenPremium
 	) AS v_ChangeInOtherModifiedDirectWrittenPremium,
 	-- *INF*: IIF(v_GeneratedRecordIndicator='1',v_RateableDirectWrittenPremium-v_prev_RateableDirectWrittenPremium,v_RateableDirectWrittenPremium)
-	IFF(v_GeneratedRecordIndicator = '1',
-		v_RateableDirectWrittenPremium - v_prev_RateableDirectWrittenPremium,
-		v_RateableDirectWrittenPremium
+	IFF(
+	    v_GeneratedRecordIndicator = '1',
+	    v_RateableDirectWrittenPremium - v_prev_RateableDirectWrittenPremium,
+	    v_RateableDirectWrittenPremium
 	) AS v_ChangeInRateableDirectWrittenPremium,
 	-- *INF*: DECODE(TRUE,
 	-- v_GeneratedRecordIndicator='1' AND v_TrueRateableCount!=0,v_ClassifiedDirectWrittenPremium-v_prev_ClassifiedDirectWrittenPremium,
 	-- v_GeneratedRecordIndicator='1' AND v_TrueRateableCount=0,v_DirectWrittenPremium,
 	-- v_ClassifiedDirectWrittenPremium)
-	DECODE(TRUE,
-		v_GeneratedRecordIndicator = '1' 
-		AND v_TrueRateableCount != 0, v_ClassifiedDirectWrittenPremium - v_prev_ClassifiedDirectWrittenPremium,
-		v_GeneratedRecordIndicator = '1' 
-		AND v_TrueRateableCount = 0, v_DirectWrittenPremium,
-		v_ClassifiedDirectWrittenPremium
+	DECODE(
+	    TRUE,
+	    v_GeneratedRecordIndicator = '1' AND v_TrueRateableCount != 0, v_ClassifiedDirectWrittenPremium - v_prev_ClassifiedDirectWrittenPremium,
+	    v_GeneratedRecordIndicator = '1' AND v_TrueRateableCount = 0, v_DirectWrittenPremium,
+	    v_ClassifiedDirectWrittenPremium
 	) AS v_ChangeInClassifiedDirectWrittenPremium,
 	PremiumMasterCalculationId AS v_prev_PremiumMasterCalculationId,
 	v_SubjectDirectWrittenPremium AS v_prev_SubjectDirectWrittenPremium,
@@ -356,16 +338,14 @@ EXP_ModifiedPremium_Calculate AS (
 	-- *INF*: --ADD_TO_DATE(trunc(sysdate,'MM'),'MM', -1-(@{pipeline().parameters.NO_OF_MONTHS}))
 	-- 
 	-- ADD_TO_DATE(trunc(sysdate,'MM'),'MM',@{pipeline().parameters.NO_OF_MONTHS})
-	DATEADD(MONTH,@{pipeline().parameters.NO_OF_MONTHS},CAST(TRUNC(sysdate, 'MONTH') AS TIMESTAMP_NTZ(0))) AS v_FirstDayOfRunMonth,
+	DATEADD(MONTH,@{pipeline().parameters.NO_OF_MONTHS},CAST(TRUNC(CURRENT_TIMESTAMP, 'MONTH') AS TIMESTAMP_NTZ(0))) AS v_FirstDayOfRunMonth,
 	-- *INF*: IIF(
 	-- TO_DATE(@{pipeline().parameters.SELECTION_START_TS},'MM/DD/YYYY HH24:MI:SS') < TO_DATE('1800-01-02' , 'YYYY-MM-DD'), TO_DATE('1800-01-01' , 'YYYY-MM-DD'),
 	-- v_FirstDayOfRunMonth)
-	IFF(TO_DATE(@{pipeline().parameters.SELECTION_START_TS}, 'MM/DD/YYYY HH24:MI:SS'
-		) < TO_DATE('1800-01-02', 'YYYY-MM-DD'
-		),
-		TO_DATE('1800-01-01', 'YYYY-MM-DD'
-		),
-		v_FirstDayOfRunMonth
+	IFF(
+	    TO_TIMESTAMP(@{pipeline().parameters.SELECTION_START_TS}, 'MM/DD/YYYY HH24:MI:SS') < TO_TIMESTAMP('1800-01-02', 'YYYY-MM-DD'),
+	    TO_TIMESTAMP('1800-01-01', 'YYYY-MM-DD'),
+	    v_FirstDayOfRunMonth
 	) AS v_StartDate,
 	-- *INF*: ADD_TO_DATE(v_FirstDayOfRunMonth,'MM',1)
 	DATEADD(MONTH,1,v_FirstDayOfRunMonth) AS V_EndDate,
@@ -380,17 +360,18 @@ EXP_ModifiedPremium_Calculate AS (
 	-- v_ChangeInRateableDirectWrittenPremium!=0,1,
 	-- v_ChangeInClassifiedDirectWrittenPremium!=0,1,
 	-- 0)
-	DECODE(TRUE,
-		i_PremiumMasterRunDate < v_StartDate, 0,
-		i_PremiumMasterRunDate >= V_EndDate, 0,
-		v_DirectWrittenPremium != 0, 1,
-		v_ChangeInSubjectDirectWrittenPremium != 0, 1,
-		v_ChangeInExperienceModifiedDirectWrittenPremium != 0, 1,
-		v_ChangeInScheduleModifiedDirectWrittenPremium != 0, 1,
-		v_ChangeInOtherModifiedDirectWrittenPremium != 0, 1,
-		v_ChangeInRateableDirectWrittenPremium != 0, 1,
-		v_ChangeInClassifiedDirectWrittenPremium != 0, 1,
-		0
+	DECODE(
+	    TRUE,
+	    i_PremiumMasterRunDate < v_StartDate, 0,
+	    i_PremiumMasterRunDate >= V_EndDate, 0,
+	    v_DirectWrittenPremium != 0, 1,
+	    v_ChangeInSubjectDirectWrittenPremium != 0, 1,
+	    v_ChangeInExperienceModifiedDirectWrittenPremium != 0, 1,
+	    v_ChangeInScheduleModifiedDirectWrittenPremium != 0, 1,
+	    v_ChangeInOtherModifiedDirectWrittenPremium != 0, 1,
+	    v_ChangeInRateableDirectWrittenPremium != 0, 1,
+	    v_ChangeInClassifiedDirectWrittenPremium != 0, 1,
+	    0
 	) AS FilterFlag
 	FROM SQ_PremiumMasterCalculation
 ),
@@ -454,9 +435,10 @@ EXP_TgtExists AS (
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(lkp_ModifiedPremiumWorkersCompensationCalculationId),'NEW',
 	-- 'NOCHANGE')
-	DECODE(TRUE,
-		lkp_ModifiedPremiumWorkersCompensationCalculationId IS NULL, 'NEW',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    lkp_ModifiedPremiumWorkersCompensationCalculationId IS NULL, 'NEW',
+	    'NOCHANGE'
 	) AS o_ChangeFlag
 	FROM FIL_Records_ValidModifiedPremium
 	LEFT JOIN LKP_ModifiedPremiumWorkersCompensationCalculation

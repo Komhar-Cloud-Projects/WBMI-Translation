@@ -34,16 +34,13 @@ EXP_Detect_Changes AS (
 	--     iif(LTRIM(RTRIM(CS01_CODE_DES)) != LTRIM(RTRIM(lkp_CompensableClaimDescription)),
 	--         'UPDATE', 
 	-- 'NOCHANGE'))
-	IFF(lkp_CompensableClaimDescription IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(CS01_CODE_DES
-				)
-			) != LTRIM(RTRIM(lkp_CompensableClaimDescription
-				)
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    lkp_CompensableClaimDescription IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(CS01_CODE_DES)) != LTRIM(RTRIM(lkp_CompensableClaimDescription)),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_ChangeFlag,
 	v_ChangeFlag AS ChangeFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,

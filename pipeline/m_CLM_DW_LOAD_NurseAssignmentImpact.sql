@@ -19,26 +19,19 @@ EXP_Src_Values AS (
 	SELECT
 	nurse_assignment_id,
 	-- *INF*: iif(isnull(ltrim(rtrim(nurse_assignment_id))), -1, nurse_assignment_id)
-	IFF(ltrim(rtrim(nurse_assignment_id
-			)
-		) IS NULL,
-		- 1,
-		nurse_assignment_id
-	) AS o_nurse_assignment_id,
+	IFF(ltrim(rtrim(nurse_assignment_id)) IS NULL, - 1, nurse_assignment_id) AS o_nurse_assignment_id,
 	impact_type,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(impact_type),'N/A',
 	-- IS_SPACES(impact_type),'N/A',
 	-- LENGTH(impact_type)=0,'N/A',
 	-- LTRIM(RTRIM(impact_type)))
-	DECODE(TRUE,
-		impact_type IS NULL, 'N/A',
-		LENGTH(impact_type)>0 AND TRIM(impact_type)='', 'N/A',
-		LENGTH(impact_type
-		) = 0, 'N/A',
-		LTRIM(RTRIM(impact_type
-			)
-		)
+	DECODE(
+	    TRUE,
+	    impact_type IS NULL, 'N/A',
+	    LENGTH(impact_type)>0 AND TRIM(impact_type)='', 'N/A',
+	    LENGTH(impact_type) = 0, 'N/A',
+	    LTRIM(RTRIM(impact_type))
 	) AS o_impact_type,
 	impact_category,
 	-- *INF*: DECODE(TRUE,
@@ -46,37 +39,28 @@ EXP_Src_Values AS (
 	-- IS_SPACES(impact_category),'N/A',
 	-- LENGTH(impact_category)=0,'N/A',
 	-- LTRIM(RTRIM(impact_category)))
-	DECODE(TRUE,
-		impact_category IS NULL, 'N/A',
-		LENGTH(impact_category)>0 AND TRIM(impact_category)='', 'N/A',
-		LENGTH(impact_category
-		) = 0, 'N/A',
-		LTRIM(RTRIM(impact_category
-			)
-		)
+	DECODE(
+	    TRUE,
+	    impact_category IS NULL, 'N/A',
+	    LENGTH(impact_category)>0 AND TRIM(impact_category)='', 'N/A',
+	    LENGTH(impact_category) = 0, 'N/A',
+	    LTRIM(RTRIM(impact_category))
 	) AS o_impact_category,
 	savings_amount,
 	-- *INF*: iif(isnull(ltrim(rtrim(savings_amount))),0,savings_amount)
-	IFF(ltrim(rtrim(savings_amount
-			)
-		) IS NULL,
-		0,
-		savings_amount
-	) AS o_saving_amount,
+	IFF(ltrim(rtrim(savings_amount)) IS NULL, 0, savings_amount) AS o_saving_amount,
 	impact_comment,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(impact_comment),'N/A',
 	-- IS_SPACES(impact_comment),'N/A',
 	-- LENGTH(impact_comment)=0,'N/A',
 	-- LTRIM(RTRIM(impact_comment)))
-	DECODE(TRUE,
-		impact_comment IS NULL, 'N/A',
-		LENGTH(impact_comment)>0 AND TRIM(impact_comment)='', 'N/A',
-		LENGTH(impact_comment
-		) = 0, 'N/A',
-		LTRIM(RTRIM(impact_comment
-			)
-		)
+	DECODE(
+	    TRUE,
+	    impact_comment IS NULL, 'N/A',
+	    LENGTH(impact_comment)>0 AND TRIM(impact_comment)='', 'N/A',
+	    LENGTH(impact_comment) = 0, 'N/A',
+	    LTRIM(RTRIM(impact_comment))
 	) AS o_impact_comment
 	FROM SQ_nurse_assignment_impact_stage
 ),
@@ -120,16 +104,10 @@ EXP_Lkp_Default AS (
 	SELECT
 	LKP_NurseAssignment.NurseAssignmentAkId,
 	-- *INF*: iif(isnull(NurseAssignmentAkId), -1, NurseAssignmentAkId)
-	IFF(NurseAssignmentAkId IS NULL,
-		- 1,
-		NurseAssignmentAkId
-	) AS o_NurseAssignmentAkId,
+	IFF(NurseAssignmentAkId IS NULL, - 1, NurseAssignmentAkId) AS o_NurseAssignmentAkId,
 	LKP_SupNurseImpact.NurseImpactId,
 	-- *INF*: iif(isnull(NurseImpactId), -1,NurseImpactId)
-	IFF(NurseImpactId IS NULL,
-		- 1,
-		NurseImpactId
-	) AS o_NurseImpactId
+	IFF(NurseImpactId IS NULL, - 1, NurseImpactId) AS o_NurseImpactId
 	FROM 
 	LEFT JOIN LKP_NurseAssignment
 	ON LKP_NurseAssignment.nurse_assignment_id = EXP_Src_Values.o_nurse_assignment_id
@@ -186,45 +164,28 @@ EXP_TargetLkp_Detect_Changes AS (
 	-- 
 	--    )
 	-- 
-	IFF(Lkp_NurseAssignmentImpactId IS NULL,
-		'NEW',
-		IFF(ltrim(rtrim(Lkp_NurseAssignmentAkId
-				)
-			) != ltrim(rtrim(NurseAssignmentAkId
-				)
-			) 
-			OR ltrim(rtrim(Lkp_NurseImpactId
-				)
-			) != ltrim(rtrim(NurseImpactId
-				)
-			) 
-			OR ltrim(rtrim(Lkp_SavingsAmount
-				)
-			) != ltrim(rtrim(SavingsAmount
-				)
-			) 
-			OR ltrim(rtrim(Lkp_Comment
-				)
-			) != ltrim(rtrim(Comment
-				)
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    Lkp_NurseAssignmentImpactId IS NULL, 'NEW',
+	    IFF(
+	        ltrim(rtrim(Lkp_NurseAssignmentAkId)) != ltrim(rtrim(NurseAssignmentAkId))
+	        or ltrim(rtrim(Lkp_NurseImpactId)) != ltrim(rtrim(NurseImpactId))
+	        or ltrim(rtrim(Lkp_SavingsAmount)) != ltrim(rtrim(SavingsAmount))
+	        or ltrim(rtrim(Lkp_Comment)) != ltrim(rtrim(Comment)),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangedFlag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
 	-- *INF*: iif(v_ChangedFlag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_ChangedFlag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_ChangedFlag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId,
 	sysdate AS CreatedDate,
 	sysdate AS ModifiedDate,
@@ -275,10 +236,7 @@ EXP_AKid_Insert_Target AS (
 	SavingsAmount,
 	Comment,
 	-- *INF*: iif(ChangedFlag = 'NEW', NEXTVAL, Lkp_NurseAssignmentImpactAkId)
-	IFF(ChangedFlag = 'NEW',
-		NEXTVAL,
-		Lkp_NurseAssignmentImpactAkId
-	) AS NurseAssignmentImpactAkId,
+	IFF(ChangedFlag = 'NEW', NEXTVAL, Lkp_NurseAssignmentImpactAkId) AS NurseAssignmentImpactAkId,
 	Lkp_NurseAssignmentImpactAkId,
 	SEQ_NurseAssignmentImpact.NEXTVAL
 	FROM FIL_Lkp_Records
@@ -345,9 +303,10 @@ EXP_Lag_ExpirationDate AS (
 	-- NurseAssignmentImpactAkId = v_PREV_ROW_NurseAssignmentImpactAkId,
 	-- add_to_date(v_PREV_ROW_EffectiveDate, 'SS', -1),
 	-- orig_ExpirationDate)
-	decode(true,
-		NurseAssignmentImpactAkId = v_PREV_ROW_NurseAssignmentImpactAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
-		orig_ExpirationDate
+	decode(
+	    true,
+	    NurseAssignmentImpactAkId = v_PREV_ROW_NurseAssignmentImpactAkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
+	    orig_ExpirationDate
 	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	EffectiveDate AS v_PREV_ROW_EffectiveDate,

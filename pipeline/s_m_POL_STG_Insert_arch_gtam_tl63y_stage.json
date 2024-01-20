@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_gtam_tl63y_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_gtam_tl63y_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_tl63y_stage1 AS (\n\tSELECT\n\t\tgtam_tl63y_stage_id,\n\t\ttable_fld,\n\t\tkey_len,\n\t\tlocation,\n\t\tmaster_company_number,\n\t\tlocation_state,\n\t\tsubline,\n\t\tclass_description_code,\n\t\tcrime_ind,\n\t\teff_date,\n\t\tclass_desc_num_seq,\n\t\tdata_len,\n\t\tone_line_of_class_desc,\n\t\tseq_ind,\n\t\treg_class_desc_code,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_tl63y_stage1\n),\nLKP_arch_gtam_tl63y_stage AS (\n\tSELECT\n\tarch_gtam_tl63y_stage_id,\n\tone_line_of_class_desc,\n\tseq_ind,\n\treg_class_desc_code,\n\tlocation,\n\tmaster_company_number,\n\tlocation_state,\n\tsubline,\n\tclass_description_code,\n\tcrime_ind,\n\teff_date,\n\tclass_desc_num_seq\n\tFROM (\n\t\tSELECT tl.arch_gtam_tl63y_stage_id as arch_gtam_tl63y_stage_id          \r\n\t\t      ,tl.location as location\r\n\t\t      ,tl.master_company_number as master_company_number\r\n\t\t      ,tl.location_state as location_state \r\n\t\t      ,tl.subline as subline \r\n\t\t      ,tl.class_description_code as class_description_code\r\n\t\t      ,tl.crime_ind as crime_ind \r\n\t\t      ,tl.eff_date as eff_date\r\n\t\t      ,tl.class_desc_num_seq as   class_desc_num_seq     \r\n\t\t      ,tl.one_line_of_class_desc as one_line_of_class_desc\r\n\t\t       ,tl.seq_ind as seq_ind\r\n\t\t      ,tl.reg_class_desc_code as reg_class_desc_code       \r\n\t\t  FROM  arch_gtam_tl63y_stage tl \r\n\t\t   where \ttl.arch_gtam_tl63y_stage_id  In\r\n\t\t\t(Select max(arch_gtam_tl63y_stage_id ) from arch_gtam_tl63y_stage b\r\n\t\t\tgroup by b.location,b.master_company_number  \r\n\t\t      ,b.location_state  \r\n\t\t      ,b.subline \r\n\t\t      ,b.class_description_code  \r\n\t\t      ,b.crime_ind \r\n\t\t      ,b.eff_date \r\n\t\t      ,b.class_desc_num_seq  )\r\n\t\torder by tl.location\r\n\t\t,tl.master_company_number  \r\n\t\t      ,tl.location_state  \r\n\t\t      ,tl.subline \r\n\t\t      ,tl.class_description_code  \r\n\t\t      ,tl.crime_ind \r\n\t\t      ,tl.eff_date \r\n\t\t      ,tl.class_desc_num_seq--\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY location,master_company_number,location_state,subline,class_description_code,crime_ind,eff_date,class_desc_num_seq ORDER BY arch_gtam_tl63y_stage_id) = 1\n),\nEXP_arch_tl63y_stage AS (\n\tSELECT\n\tSQ_gtam_tl63y_stage1.gtam_tl63y_stage_id,\n\tSQ_gtam_tl63y_stage1.table_fld AS Table_fld,\n\tSQ_gtam_tl63y_stage1.key_len AS Key_len,\n\tSQ_gtam_tl63y_stage1.location,\n\tSQ_gtam_tl63y_stage1.master_company_number,\n\tSQ_gtam_tl63y_stage1.location_state,\n\tSQ_gtam_tl63y_stage1.subline,\n\tSQ_gtam_tl63y_stage1.class_description_code,\n\tSQ_gtam_tl63y_stage1.crime_ind,\n\tSQ_gtam_tl63y_stage1.eff_date,\n\tSQ_gtam_tl63y_stage1.class_desc_num_seq,\n\tSQ_gtam_tl63y_stage1.data_len,\n\tSQ_gtam_tl63y_stage1.one_line_of_class_desc,\n\tSQ_gtam_tl63y_stage1.seq_ind,\n\tSQ_gtam_tl63y_stage1.reg_class_desc_code,\n\tSQ_gtam_tl63y_stage1.extract_date AS EXTRACT_DATE,\n\tSQ_gtam_tl63y_stage1.as_of_date AS AS_OF_DATE,\n\tSQ_gtam_tl63y_stage1.record_count AS RECORD_COUNT,\n\tSQ_gtam_tl63y_stage1.source_system_id AS SOURCE_SYSTEM_ID,\n\tLKP_arch_gtam_tl63y_stage.arch_gtam_tl63y_stage_id AS LKP_arch_gtam_tl63y_stage_id,\n\tLKP_arch_gtam_tl63y_stage.one_line_of_class_desc AS LKP_one_line_of_class_desc,\n\tLKP_arch_gtam_tl63y_stage.seq_ind AS LKP_seq_ind,\n\tLKP_arch_gtam_tl63y_stage.reg_class_desc_code AS LKP_reg_class_desc_code,\n\t-- *INF*: iif(isnull(LKP_arch_gtam_tl63y_stage_id),'NEW',\r\n\t--     iif(  ltrim(rtrim(LKP_one_line_of_class_desc))<>  ltrim(rtrim(one_line_of_class_desc))\r\n\t-- OR ltrim(rtrim(LKP_seq_ind)) <> ltrim(rtrim(seq_ind))\r\n\t-- OR ltrim(rtrim(LKP_reg_class_desc_code)) <> ltrim(rtrim(reg_class_desc_code))\r\n\t-- , 'UPDATE', 'NOCHANGE'))\n\tIFF(\n\t    LKP_arch_gtam_tl63y_stage_id IS NULL, 'NEW',\n\t    IFF(\n\t        ltrim(rtrim(LKP_one_line_of_class_desc)) <> ltrim(rtrim(one_line_of_class_desc))\n\t        or ltrim(rtrim(LKP_seq_ind)) <> ltrim(rtrim(seq_ind))\n\t        or ltrim(rtrim(LKP_reg_class_desc_code)) <> ltrim(rtrim(reg_class_desc_code)),\n\t        'UPDATE',\n\t        'NOCHANGE'\n\t    )\n\t) AS v_Changed_Flag,\n\tv_Changed_Flag AS Changed_Flag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID\n\tFROM SQ_gtam_tl63y_stage1\n\tLEFT JOIN LKP_arch_gtam_tl63y_stage\n\tON LKP_arch_gtam_tl63y_stage.location = SQ_gtam_tl63y_stage1.location AND LKP_arch_gtam_tl63y_stage.master_company_number = SQ_gtam_tl63y_stage1.master_company_number AND LKP_arch_gtam_tl63y_stage.location_state = SQ_gtam_tl63y_stage1.location_state AND LKP_arch_gtam_tl63y_stage.subline = SQ_gtam_tl63y_stage1.subline AND LKP_arch_gtam_tl63y_stage.class_description_code = SQ_gtam_tl63y_stage1.class_description_code AND LKP_arch_gtam_tl63y_stage.crime_ind = SQ_gtam_tl63y_stage1.crime_ind AND LKP_arch_gtam_tl63y_stage.eff_date = SQ_gtam_tl63y_stage1.eff_date AND LKP_arch_gtam_tl63y_stage.class_desc_num_seq = SQ_gtam_tl63y_stage1.class_desc_num_seq\n),\nFIL_Inserts AS (\n\tSELECT\n\tgtam_tl63y_stage_id, \n\tTable_fld, \n\tKey_len, \n\tlocation, \n\tmaster_company_number, \n\tlocation_state, \n\tsubline, \n\tclass_description_code, \n\tcrime_ind, \n\teff_date, \n\tclass_desc_num_seq, \n\tdata_len, \n\tone_line_of_class_desc, \n\tseq_ind, \n\treg_class_desc_code, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tChanged_Flag, \n\tAUDIT_ID\n\tFROM EXP_arch_tl63y_stage\n\tWHERE Changed_Flag = 'NEW' or Changed_Flag = 'UPDATE'\n),\narch_gtam_tl63y_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_gtam_tl63y_stage\n\t(gtam_tl63y_stage_id, table_fld, key_len, location, master_company_number, location_state, subline, class_description_code, crime_ind, eff_date, class_desc_num_seq, data_len, one_line_of_class_desc, seq_ind, reg_class_desc_code, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tGTAM_TL63Y_STAGE_ID, \n\tTable_fld AS TABLE_FLD, \n\tKey_len AS KEY_LEN, \n\tLOCATION, \n\tMASTER_COMPANY_NUMBER, \n\tLOCATION_STATE, \n\tSUBLINE, \n\tCLASS_DESCRIPTION_CODE, \n\tCRIME_IND, \n\tEFF_DATE, \n\tCLASS_DESC_NUM_SEQ, \n\tDATA_LEN, \n\tONE_LINE_OF_CLASS_DESC, \n\tSEQ_IND, \n\tREG_CLASS_DESC_CODE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID\n\tFROM FIL_Inserts\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

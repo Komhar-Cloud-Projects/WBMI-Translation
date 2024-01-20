@@ -1,0 +1,51 @@
+{
+    "name": "s_m_POL_STG_Insert_WorkDCTLocation",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_WorkDCTLocation",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTLocation AS (\n\tSELECT b.LocationAssociationId,\r\n\t\tb.ObjectId,\r\n\t\tb.ObjectName,\r\n\t\tc.LocationId,\r\n\t\tb.SessionId,\r\n\t\tCASE b.ObjectName\r\n\t\t\tWHEN 'DC_GL_Location'\r\n\t\t\t\tTHEN (\r\n\t\t\t\t\t\tSELECT cast(Territory AS VARCHAR(128))\r\n\t\t\t\t\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCGLLocationStaging gl\r\n\t\t\t\t\t\tWHERE gl.SessionId = b.sessionid\r\n\t\t\t\t\t\t\tAND gl.GL_LocationId = b.objectid\r\n\t\t\t\t\t\t)\r\n\t\t\tWHEN 'DC_CA_Location'\r\n\t\t\t\tTHEN (\r\n\t\t\t\t\t\tSELECT cast(Territory AS VARCHAR(128))\r\n\t\t\t\t\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCCALocationStaging cal\r\n\t\t\t\t\t\tWHERE cal.SessionId = b.sessionid\r\n\t\t\t\t\t\t\tAND cal.CA_LocationId = b.objectid\r\n\t\t\t\t\t\t)\r\n\t\t\tWHEN 'DC_BP_Location'\r\n\t\t\t\tTHEN (\r\n\t\t\t\t\t\tSELECT cast(Territory AS VARCHAR(128))\r\n\t\t\t\t\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCBPLocationStage bpl\r\n\t\t\t\t\t\tWHERE bpl.SessionId = b.sessionid\r\n\t\t\t\t\t\t\tAND bpl.BPLocationId = b.objectid\r\n\t\t\t\t\t\t)\r\n\t\t\tELSE 'N/A'\r\n\t\t\tEND AS Territory,\r\n\t\td.LocationNumber,\r\n\t\tc.LocationXmlId,\r\n\t\tc.StateProv StateProvince,\r\n\t\tc.PostalCode,\r\n\t\tc.City,\r\n\t\tc.County,\r\n\t\tc.Address1,\r\n\t\tc.Description LocationDescription,\r\n\t\t'1' As PrimaryStateLocationIndicator,\r\n\t\t'1' AS PrimaryRatingLocationIndicator,\r\n\t\tc.Address2,\r\n\t\tc.Country,\r\n\t\tLocationAssociationType\r\n\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCLocationAssociationStaging b\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DCLocationStaging c\r\n\t\tON b.LocationId = c.LocationId\r\n\t\t\tAND b.SessionId = c.SessionId\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.WBLocationStaging d\r\n\t\tON c.LocationId = d.LocationId\r\n\t\t\tAND c.SessionId = d.SessionId\r\n\tORDER BY LocationAssociationId\n),\nEXP_Default AS (\n\tSELECT\n\tSYSDATE AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tLocationAssociationId,\n\tLocationAssociationObjectId,\n\tLocationAssociationObjectName,\n\tLocationId,\n\tSessionId,\n\tTerritory,\n\tLocationNumber,\n\tLocationXmlId,\n\tStateProvince,\n\tPostalCode,\n\tCity,\n\tCounty,\n\tAddress1,\n\tLocationDescription,\n\tPrimaryStateLocationIndicator,\n\tPrimaryRatingLocationIndicator,\n\tAddress2,\n\tCountry,\n\tLocationAssociationType\n\tFROM SQ_WorkDCTLocation\n),\nWorkDCTLocation AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkDCTLocation;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WorkDCTLocation\n\t(ExtractDate, SourceSystemId, LocationAssociationId, LocationAssociationObjectId, LocationAssociationObjectName, LocationId, SessionId, Territory, LocationNumber, LocationXmlId, StateProvince, PostalCode, City, County, Address1, LocationDescription, PrimaryStateLocationIndicator, PrimaryRatingLocationIndicator, Address2, Country, LocationAssociationType)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tLOCATIONASSOCIATIONID, \n\tLOCATIONASSOCIATIONOBJECTID, \n\tLOCATIONASSOCIATIONOBJECTNAME, \n\tLOCATIONID, \n\tSESSIONID, \n\tTERRITORY, \n\tLOCATIONNUMBER, \n\tLOCATIONXMLID, \n\tSTATEPROVINCE, \n\tPOSTALCODE, \n\tCITY, \n\tCOUNTY, \n\tADDRESS1, \n\tLOCATIONDESCRIPTION, \n\tPRIMARYSTATELOCATIONINDICATOR, \n\tPRIMARYRATINGLOCATIONINDICATOR, \n\tADDRESS2, \n\tCOUNTRY, \n\tLOCATIONASSOCIATIONTYPE\n\tFROM EXP_Default\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

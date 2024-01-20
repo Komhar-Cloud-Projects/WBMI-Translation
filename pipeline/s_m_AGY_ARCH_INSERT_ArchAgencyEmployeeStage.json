@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchAgencyEmployeeStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchAgencyEmployeeStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AgencyEmployeeStage AS (\n\tSELECT\n\t\tAgencyEmployeeStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tAgencyCode,\n\t\tAgencyEmployeeCode,\n\t\tAgencyEmployeeRole,\n\t\tProducerCode,\n\t\tLastName,\n\t\tFirstName,\n\t\tMiddleName,\n\t\tSuffix,\n\t\tNickName,\n\t\tPrincipalFlag,\n\t\tPrimaryContactFlag,\n\t\tPhoneNumber,\n\t\tFaxNumber,\n\t\tEmailAddress,\n\t\tStatusCode,\n\t\tStatusCodeDescription,\n\t\tListedDate,\n\t\tTerminatedDate,\n\t\tUserID,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID\n\tFROM AgencyEmployeeStage\n),\nLKP_ExistingArchive AS (\n\tSELECT\n\tHashKey,\n\tin_AgencyID,\n\tin_AgencyEmployeeCode,\n\tAgencyID,\n\tAgencyEmployeeCode,\n\tModifiedDate\n\tFROM (\n\t\tselect\ta.ModifiedDate as ModifiedDate,\r\n\t\t\t\ta.HashKey as HashKey,\r\n\t\t\t\ta.AgencyID as AgencyID, \r\n\t\t\t\ta.AgencyEmployeeCode as AgencyEmployeeCode\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchAgencyEmployeeStage a\r\n\t\tinner join (\r\n\t\t\t\t\tselect AgencyID, AgencyEmployeeCode, max(ModifiedDate) as ModifiedDate\r\n\t\t\t\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchAgencyEmployeeStage \r\n\t\t\t\t\tgroup by AgencyID, AgencyEmployeeCode) b\r\n\t\ton a.AgencyID = b.AgencyID\r\n\t\tand a.AgencyEmployeeCode = b.AgencyEmployeeCode\r\n\t\tand a.ModifiedDate = b.ModifiedDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyID,AgencyEmployeeCode ORDER BY HashKey) = 1\n),\nEXP_AddAuditID AS (\n\tSELECT\n\tSQ_AgencyEmployeeStage.AgencyEmployeeStageID,\n\tSQ_AgencyEmployeeStage.AgencyODSSourceSystemID,\n\tSQ_AgencyEmployeeStage.HashKey,\n\tSQ_AgencyEmployeeStage.ModifiedUserID,\n\tSQ_AgencyEmployeeStage.ModifiedDate,\n\tSQ_AgencyEmployeeStage.AgencyID,\n\tSQ_AgencyEmployeeStage.AgencyCode,\n\tSQ_AgencyEmployeeStage.AgencyEmployeeCode,\n\tSQ_AgencyEmployeeStage.AgencyEmployeeRole,\n\tSQ_AgencyEmployeeStage.ProducerCode,\n\tSQ_AgencyEmployeeStage.LastName,\n\tSQ_AgencyEmployeeStage.FirstName,\n\tSQ_AgencyEmployeeStage.MiddleName,\n\tSQ_AgencyEmployeeStage.Suffix,\n\tSQ_AgencyEmployeeStage.NickName,\n\tSQ_AgencyEmployeeStage.PrincipalFlag,\n\tSQ_AgencyEmployeeStage.PrimaryContactFlag,\n\tSQ_AgencyEmployeeStage.PhoneNumber,\n\tSQ_AgencyEmployeeStage.FaxNumber,\n\tSQ_AgencyEmployeeStage.EmailAddress,\n\tSQ_AgencyEmployeeStage.StatusCode,\n\tSQ_AgencyEmployeeStage.StatusCodeDescription,\n\tSQ_AgencyEmployeeStage.ListedDate,\n\tSQ_AgencyEmployeeStage.TerminatedDate,\n\tSQ_AgencyEmployeeStage.UserID,\n\tSQ_AgencyEmployeeStage.ExtractDate,\n\tSQ_AgencyEmployeeStage.AsOfDate,\n\tSQ_AgencyEmployeeStage.RecordCount,\n\tSQ_AgencyEmployeeStage.SourceSystemID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS OUT_AUDIT_ID,\n\tLKP_ExistingArchive.HashKey AS lkp_HashKey,\n\t-- *INF*: Decode(true,\r\n\t-- HashKey = lkp_HashKey, 'IGNORE',\r\n\t-- IsNull(lkp_HashKey), 'INSERT',\r\n\t-- 'UPDATE')\n\tDecode(\n\t    true,\n\t    HashKey = lkp_HashKey, 'IGNORE',\n\t    lkp_HashKey IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag\n\tFROM SQ_AgencyEmployeeStage\n\tLEFT JOIN LKP_ExistingArchive\n\tON LKP_ExistingArchive.AgencyID = SQ_AgencyEmployeeStage.AgencyID AND LKP_ExistingArchive.AgencyEmployeeCode = SQ_AgencyEmployeeStage.AgencyEmployeeCode\n),\nFIL_ChangesOnly AS (\n\tSELECT\n\tAgencyEmployeeStageID, \n\tAgencyODSSourceSystemID, \n\tHashKey, \n\tModifiedUserID, \n\tModifiedDate, \n\tAgencyID, \n\tAgencyCode, \n\tAgencyEmployeeCode, \n\tAgencyEmployeeRole, \n\tProducerCode, \n\tLastName, \n\tFirstName, \n\tMiddleName, \n\tSuffix, \n\tNickName, \n\tPrincipalFlag, \n\tPrimaryContactFlag, \n\tPhoneNumber, \n\tFaxNumber, \n\tEmailAddress, \n\tStatusCode, \n\tStatusCodeDescription, \n\tListedDate, \n\tTerminatedDate, \n\tUserID, \n\tUserPassword, \n\tExtractDate, \n\tAsOfDate, \n\tRecordCount, \n\tSourceSystemID, \n\tOUT_AUDIT_ID, \n\to_ChangeFlag\n\tFROM EXP_AddAuditID\n\tWHERE o_ChangeFlag = 'INSERT' OR o_ChangeFlag = 'UPDATE'\n),\nArchAgencyEmployeeStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchAgencyEmployeeStage\n\t(AgencyEmployeeStageID, AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, AgencyEmployeeCode, AgencyEmployeeRole, ProducerCode, LastName, FirstName, MiddleName, Suffix, NickName, PrincipalFlag, PrimaryContactFlag, PhoneNumber, FaxNumber, EmailAddress, StatusCode, StatusCodeDescription, ListedDate, TerminatedDate, UserID, ExtractDate, AsOfDate, RecordCount, SourceSystemID, AuditID)\n\tSELECT \n\tAGENCYEMPLOYEESTAGEID, \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tAGENCYCODE, \n\tAGENCYEMPLOYEECODE, \n\tAGENCYEMPLOYEEROLE, \n\tPRODUCERCODE, \n\tLASTNAME, \n\tFIRSTNAME, \n\tMIDDLENAME, \n\tSUFFIX, \n\tNICKNAME, \n\tPRINCIPALFLAG, \n\tPRIMARYCONTACTFLAG, \n\tPHONENUMBER, \n\tFAXNUMBER, \n\tEMAILADDRESS, \n\tSTATUSCODE, \n\tSTATUSCODEDESCRIPTION, \n\tLISTEDDATE, \n\tTERMINATEDDATE, \n\tUSERID, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\tOUT_AUDIT_ID AS AUDITID\n\tFROM FIL_ChangesOnly\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

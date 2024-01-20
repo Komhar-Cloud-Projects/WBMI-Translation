@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_SUP_CLAIM_DEPT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_SUP_CLAIM_DEPT",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SUP_CLAIM_DEPT_STAGE AS (\n\tSELECT\n\t\tSUP_CLAIM_DEPT_ID,\n\t\tDEPT_CODE,\n\t\tDIVISION_CODE,\n\t\tDEPT_DESC,\n\t\tEXTRACT_DATE,\n\t\tAS_OF_DATE,\n\t\tRECORD_COUNT,\n\t\tSOURCE_SYSTEM_ID\n\tFROM SUP_CLAIM_DEPT_STAGE\n),\nEXP_SUP_CLAIM_DEPT_STAGE AS (\n\tSELECT\n\tSUP_CLAIM_DEPT_ID,\n\tDEPT_CODE,\n\tDIVISION_CODE,\n\tDEPT_DESC,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_SUP_CLAIM_DEPT_STAGE\n),\nARCH_SUP_CLAIM_DEPT_STAGE AS (\n\tINSERT INTO ARCH_SUP_CLAIM_DEPT_STAGE\n\t(SUP_CLAIM_DEPT_ID, DEPT_CODE, DIVISION_CODE, DEPT_DESC, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, AUDIT_ID)\n\tSELECT \n\tSUP_CLAIM_DEPT_ID, \n\tDEPT_CODE, \n\tDIVISION_CODE, \n\tDEPT_DESC, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_SUP_CLAIM_DEPT_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

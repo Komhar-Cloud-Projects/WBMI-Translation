@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCIMRiskInlandMarineStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCIMRiskInlandMarin_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCIMRiskInlandMarineStage AS (\n\tSELECT\n\t\tDCIMRiskInlandMarineStageId,\n\t\tIMRiskId,\n\t\tIMRiskInlandMarineId,\n\t\tSessionId,\n\t\tId,\n\t\tType,\n\t\tBG1PersonalPropertyBaseLossCostOverride,\n\t\tBG1PlusBG2PersonalPropertyRateOverride,\n\t\tBG2PersonalPropertyBaseLossCostOverride,\n\t\tCompanyFactor,\n\t\tCompanyRate,\n\t\tExcessRate,\n\t\tPremiumBase,\n\t\tTentativeRate,\n\t\tNamedStormMaximum,\n\t\tNamedStormMinimum,\n\t\tNamedStormPercentage,\n\t\tReceptacleTypeA,\n\t\tReceptacleTypeB,\n\t\tReceptacleTypeC,\n\t\tReceptacleTypeD,\n\t\tReceptacleTypeE,\n\t\tReceptacleTypeF,\n\t\tReceptacleTypeG,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCIMRiskInlandMarineStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCIMRiskInlandMarineStageId,\n\tIMRiskId,\n\tIMRiskInlandMarineId,\n\tSessionId,\n\tId,\n\tType,\n\tBG1PersonalPropertyBaseLossCostOverride,\n\tBG1PlusBG2PersonalPropertyRateOverride,\n\tBG2PersonalPropertyBaseLossCostOverride,\n\tCompanyFactor,\n\tCompanyRate,\n\tExcessRate AS i_ExcessRate,\n\t-- *INF*: DECODE(i_ExcessRate, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ExcessRate,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ExcessRate,\n\tPremiumBase,\n\tTentativeRate AS i_TentativeRate,\n\t-- *INF*: DECODE(i_TentativeRate, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_TentativeRate,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_TentativeRate,\n\tNamedStormMaximum,\n\tNamedStormMinimum,\n\tNamedStormPercentage,\n\tReceptacleTypeA AS i_ReceptacleTypeA,\n\t-- *INF*: DECODE(i_ReceptacleTypeA, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ReceptacleTypeA,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ReceptacleTypeA,\n\tReceptacleTypeB AS i_ReceptacleTypeB,\n\t-- *INF*: DECODE(i_ReceptacleTypeB, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ReceptacleTypeB,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ReceptacleTypeB,\n\tReceptacleTypeC AS i_ReceptacleTypeC,\n\t-- *INF*: DECODE(i_ReceptacleTypeC, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ReceptacleTypeC,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ReceptacleTypeC,\n\tReceptacleTypeD AS i_ReceptacleTypeD,\n\t-- *INF*: DECODE(i_ReceptacleTypeD, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ReceptacleTypeD,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ReceptacleTypeD,\n\tReceptacleTypeE AS i_ReceptacleTypeE,\n\t-- *INF*: DECODE(i_ReceptacleTypeE, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ReceptacleTypeE,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ReceptacleTypeE,\n\tReceptacleTypeF AS i_ReceptacleTypeF,\n\t-- *INF*: DECODE(i_ReceptacleTypeF, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ReceptacleTypeF,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ReceptacleTypeF,\n\tReceptacleTypeG AS i_ReceptacleTypeG,\n\t-- *INF*: DECODE(i_ReceptacleTypeG, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ReceptacleTypeG,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ReceptacleTypeG,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCIMRiskInlandMarineStage\n),\nArchDCIMRiskInlandMarineStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCIMRiskInlandMarineStage\n\t(DCIMRiskInlandMarineStageId, IMRiskId, IMRiskInlandMarineId, SessionId, Id, Type, BG1PersonalPropertyBaseLossCostOverride, BG1PlusBG2PersonalPropertyRateOverride, BG2PersonalPropertyBaseLossCostOverride, CompanyFactor, CompanyRate, ExcessRate, PremiumBase, TentativeRate, NamedStormMaximum, NamedStormMinimum, NamedStormPercentage, ReceptacleTypeA, ReceptacleTypeB, ReceptacleTypeC, ReceptacleTypeD, ReceptacleTypeE, ReceptacleTypeF, ReceptacleTypeG, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tDCIMRISKINLANDMARINESTAGEID, \n\tIMRISKID, \n\tIMRISKINLANDMARINEID, \n\tSESSIONID, \n\tID, \n\tTYPE, \n\tBG1PERSONALPROPERTYBASELOSSCOSTOVERRIDE, \n\tBG1PLUSBG2PERSONALPROPERTYRATEOVERRIDE, \n\tBG2PERSONALPROPERTYBASELOSSCOSTOVERRIDE, \n\tCOMPANYFACTOR, \n\tCOMPANYRATE, \n\to_ExcessRate AS EXCESSRATE, \n\tPREMIUMBASE, \n\to_TentativeRate AS TENTATIVERATE, \n\tNAMEDSTORMMAXIMUM, \n\tNAMEDSTORMMINIMUM, \n\tNAMEDSTORMPERCENTAGE, \n\to_ReceptacleTypeA AS RECEPTACLETYPEA, \n\to_ReceptacleTypeB AS RECEPTACLETYPEB, \n\to_ReceptacleTypeC AS RECEPTACLETYPEC, \n\to_ReceptacleTypeD AS RECEPTACLETYPED, \n\to_ReceptacleTypeE AS RECEPTACLETYPEE, \n\to_ReceptacleTypeF AS RECEPTACLETYPEF, \n\to_ReceptacleTypeG AS RECEPTACLETYPEG, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

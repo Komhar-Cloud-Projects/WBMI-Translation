@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCWCCoverageManualPremiumStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCWCCoverageManualP_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCWCCoverageManualPremiumStaging AS (\n\tSELECT\n\t\tCoverageId,\n\t\tWC_CoverageManualPremiumId,\n\t\tSessionId,\n\t\tAdmiraltyProgramType,\n\t\tCommercialConstructionPayrollTerritory1,\n\t\tCommercialConstructionPayrollTerritory2,\n\t\tCommercialConstructionPayrollTerritory3,\n\t\tEmployeeType,\n\t\tExposureBasis,\n\t\tFELAProgramType,\n\t\tFireHomeAreasPopulation,\n\t\tFireOutsideAreasPopulation,\n\t\tMinimumPremium,\n\t\tNonRatableElementRate,\n\t\tNumberOfAdditionalFireProtectionContracts,\n\t\tNumberOfApparatus,\n\t\tNumberOfEmployees,\n\t\tNumberOfFullTimeEmployees,\n\t\tNumberOfGinningLocations,\n\t\tNumberOfPartTimeEmployees,\n\t\tNumberOfWeeks,\n\t\tPeriodDate,\n\t\tPrivateResidencePremium,\n\t\tStateOnlyIndicator,\n\t\tUpsetBasis,\n\t\tUSLandHAct,\n\t\tVolunteerAmbulanceEmployersLiabilityIndicator,\n\t\tVolunteerFirefightersEmployersLiabilityIndicator,\n\t\tWaiverOfSubrogationType,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCWCCoverageManualPremiumStaging\n),\nEXP_MetaData AS (\n\tSELECT\n\tCoverageId,\n\tWC_CoverageManualPremiumId,\n\tSessionId,\n\tAdmiraltyProgramType,\n\tCommercialConstructionPayrollTerritory1,\n\tCommercialConstructionPayrollTerritory2,\n\tCommercialConstructionPayrollTerritory3,\n\tEmployeeType,\n\tExposureBasis,\n\tFELAProgramType,\n\tFireHomeAreasPopulation,\n\tFireOutsideAreasPopulation,\n\tMinimumPremium,\n\tNonRatableElementRate,\n\tNumberOfAdditionalFireProtectionContracts,\n\tNumberOfApparatus,\n\tNumberOfEmployees,\n\tNumberOfFullTimeEmployees,\n\tNumberOfGinningLocations,\n\tNumberOfPartTimeEmployees,\n\tNumberOfWeeks,\n\tPeriodDate,\n\tPrivateResidencePremium,\n\tStateOnlyIndicator,\n\tUpsetBasis,\n\tUSLandHAct,\n\tVolunteerAmbulanceEmployersLiabilityIndicator,\n\tVolunteerFirefightersEmployersLiabilityIndicator,\n\tWaiverOfSubrogationType,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_DCWCCoverageManualPremiumStaging\n),\narchDCWCCoverageManualPremiumStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCWCCoverageManualPremiumStaging\n\t(CoverageId, WC_CoverageManualPremiumId, SessionId, AdmiraltyProgramType, CommercialConstructionPayrollTerritory1, CommercialConstructionPayrollTerritory2, CommercialConstructionPayrollTerritory3, EmployeeType, ExposureBasis, FELAProgramType, FireHomeAreasPopulation, FireOutsideAreasPopulation, MinimumPremium, NonRatableElementRate, NumberOfAdditionalFireProtectionContracts, NumberOfApparatus, NumberOfEmployees, NumberOfFullTimeEmployees, NumberOfGinningLocations, NumberOfPartTimeEmployees, NumberOfWeeks, PeriodDate, PrivateResidencePremium, StateOnlyIndicator, UpsetBasis, USLandHAct, VolunteerAmbulanceEmployersLiabilityIndicator, VolunteerFirefightersEmployersLiabilityIndicator, WaiverOfSubrogationType, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tCOVERAGEID, \n\tWC_COVERAGEMANUALPREMIUMID, \n\tSESSIONID, \n\tADMIRALTYPROGRAMTYPE, \n\tCOMMERCIALCONSTRUCTIONPAYROLLTERRITORY1, \n\tCOMMERCIALCONSTRUCTIONPAYROLLTERRITORY2, \n\tCOMMERCIALCONSTRUCTIONPAYROLLTERRITORY3, \n\tEMPLOYEETYPE, \n\tEXPOSUREBASIS, \n\tFELAPROGRAMTYPE, \n\tFIREHOMEAREASPOPULATION, \n\tFIREOUTSIDEAREASPOPULATION, \n\tMINIMUMPREMIUM, \n\tNONRATABLEELEMENTRATE, \n\tNUMBEROFADDITIONALFIREPROTECTIONCONTRACTS, \n\tNUMBEROFAPPARATUS, \n\tNUMBEROFEMPLOYEES, \n\tNUMBEROFFULLTIMEEMPLOYEES, \n\tNUMBEROFGINNINGLOCATIONS, \n\tNUMBEROFPARTTIMEEMPLOYEES, \n\tNUMBEROFWEEKS, \n\tPERIODDATE, \n\tPRIVATERESIDENCEPREMIUM, \n\tSTATEONLYINDICATOR, \n\tUPSETBASIS, \n\tUSLANDHACT, \n\tVOLUNTEERAMBULANCEEMPLOYERSLIABILITYINDICATOR, \n\tVOLUNTEERFIREFIGHTERSEMPLOYERSLIABILITYINDICATOR, \n\tWAIVEROFSUBROGATIONTYPE, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID\n\tFROM EXP_MetaData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

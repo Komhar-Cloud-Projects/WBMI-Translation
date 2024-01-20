@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_Dividend AS (\n\tSELECT\n\t\tDividendId,\n\t\tCurrentSnapshotFlag,\n\t\tAuditID,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tSourceSystemId,\n\t\tCreatedDate,\n\t\tModifiedDate,\n\t\tDividendAKId,\n\t\tPolicyAKId,\n\t\tDividendTransactionEnteredDate,\n\t\tDividendRunDate,\n\t\tStateCode,\n\t\tDividendPlan,\n\t\tDividendType,\n\t\tSupStateId,\n\t\tSupDividendTypeId\n\tFROM Dividend\n\tWHERE CurrentSnapshotFlag=1 and\r\n\tModifiedDate>='@{pipeline().parameters.SELECTION_START_TS}'\n),\nAGG_REMOVE_DUPLICATE AS (\n\tSELECT\n\tDividendPlan,\n\tDividendType,\n\t-- *INF*: IIF(ISNULL(DividendType) OR LTRIM(RTRIM(DividendType))<>'N/A','Dividend','CFA')\n\tIFF(DividendType IS NULL \n\t\tOR LTRIM(RTRIM(DividendType\n\t\t\t)\n\t\t) <> 'N/A',\n\t\t'Dividend',\n\t\t'CFA'\n\t) AS DividendCategory\n\tFROM SQ_Dividend\n\tGROUP BY DividendPlan, DividendType\n),\nLKP_DividendTypeDim AS (\n\tSELECT\n\tDividendTypeDimId,\n\tDividendCategory,\n\tDividendPlan,\n\tDividendType\n\tFROM (\n\t\tSELECT \n\t\t\tDividendTypeDimId,\n\t\t\tDividendCategory,\n\t\t\tDividendPlan,\n\t\t\tDividendType\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.DividendTypeDim\n\t\tWHERE CurrentSnapshotFlag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY DividendPlan,DividendType ORDER BY DividendTypeDimId) = 1\n),\nEXP_Metadata AS (\n\tSELECT\n\tLKP_DividendTypeDim.DividendTypeDimId AS lkp_DividendTypeDimId,\n\tLKP_DividendTypeDim.DividendCategory AS lkp_DividendCategory,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(lkp_DividendTypeDimId), 'NEW', \r\n\t-- lkp_DividendCategory <>DividendCategory,'UPDATE',\r\n\t-- 'NOCHANGE')\n\tDECODE(TRUE,\n\t\tlkp_DividendTypeDimId IS NULL, 'NEW',\n\t\tlkp_DividendCategory <> DividendCategory, 'UPDATE',\n\t\t'NOCHANGE'\n\t) AS Change_Flag,\n\tAGG_REMOVE_DUPLICATE.DividendPlan,\n\tAGG_REMOVE_DUPLICATE.DividendType,\n\tAGG_REMOVE_DUPLICATE.DividendCategory,\n\t1 AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t-- *INF*: TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')\n\tTO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'\n\t) AS o_EffectiveDate,\n\t-- *INF*: TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')\n\tTO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'\n\t) AS o_ExpirationDate,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate\n\tFROM AGG_REMOVE_DUPLICATE\n\tLEFT JOIN LKP_DividendTypeDim\n\tON LKP_DividendTypeDim.DividendPlan = AGG_REMOVE_DUPLICATE.DividendPlan AND LKP_DividendTypeDim.DividendType = AGG_REMOVE_DUPLICATE.DividendType\n),\nRTR_Target AS (\n\tSELECT\n\tlkp_DividendTypeDimId AS DividendTypeDimId,\n\tChange_Flag,\n\tDividendPlan,\n\tDividendType,\n\tDividendCategory,\n\to_CurrentSnapshotFlag AS CurrentSnapshotFlag,\n\to_AuditId AS AuditId,\n\to_EffectiveDate AS EffectiveDate,\n\to_ExpirationDate AS ExpirationDate,\n\to_CreatedDate AS CreatedDate,\n\to_ModifiedDate AS ModifiedDate\n\tFROM EXP_Metadata\n),\nRTR_Target_INSERT AS (SELECT * FROM RTR_Target WHERE Change_Flag='NEW'),\nRTR_Target_UPDATE AS (SELECT * FROM RTR_Target WHERE Change_Flag='UPDATE'),\nUPD_UPDATE AS (\n\tSELECT\n\tDividendTypeDimId, \n\tChange_Flag, \n\tDividendPlan, \n\tDividendType, \n\tDividendCategory, \n\tCurrentSnapshotFlag, \n\tAuditId, \n\tEffectiveDate, \n\tExpirationDate, \n\tCreatedDate, \n\tModifiedDate\n\tFROM RTR_Target_UPDATE\n),\nDividendTypeDim_UPDATE AS (\n\tMERGE INTO DividendTypeDim AS T\n\tUSING UPD_UPDATE AS S\n\tON T.DividendTypeDimId = S.DividendTypeDimId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.AuditId = S.AuditId, T.ModifiedDate = S.ModifiedDate, T.DividendCategory = S.DividendCategory\n),\nDividendTypeDim_INSERT AS (\n\tINSERT INTO DividendTypeDim\n\t(CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, CreatedDate, ModifiedDate, DividendType, DividendPlan, DividendCategory)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tDIVIDENDTYPE, \n\tDIVIDENDPLAN, \n\tDIVIDENDCATEGORY\n\tFROM RTR_Target_INSERT\n),"
+                            "text": "WITH\nSQ_Dividend AS (\n\tSELECT\n\t\tDividendId,\n\t\tCurrentSnapshotFlag,\n\t\tAuditID,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tSourceSystemId,\n\t\tCreatedDate,\n\t\tModifiedDate,\n\t\tDividendAKId,\n\t\tPolicyAKId,\n\t\tDividendTransactionEnteredDate,\n\t\tDividendRunDate,\n\t\tStateCode,\n\t\tDividendPlan,\n\t\tDividendType,\n\t\tSupStateId,\n\t\tSupDividendTypeId\n\tFROM Dividend\n\tWHERE CurrentSnapshotFlag=1 and\r\n\tModifiedDate>='@{pipeline().parameters.SELECTION_START_TS}'\n),\nAGG_REMOVE_DUPLICATE AS (\n\tSELECT\n\tDividendPlan,\n\tDividendType,\n\t-- *INF*: IIF(ISNULL(DividendType) OR LTRIM(RTRIM(DividendType))<>'N/A','Dividend','CFA')\n\tIFF(DividendType IS NULL OR LTRIM(RTRIM(DividendType)) <> 'N/A', 'Dividend', 'CFA') AS DividendCategory\n\tFROM SQ_Dividend\n\tGROUP BY DividendPlan, DividendType\n),\nLKP_DividendTypeDim AS (\n\tSELECT\n\tDividendTypeDimId,\n\tDividendCategory,\n\tDividendPlan,\n\tDividendType\n\tFROM (\n\t\tSELECT \n\t\t\tDividendTypeDimId,\n\t\t\tDividendCategory,\n\t\t\tDividendPlan,\n\t\t\tDividendType\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.DividendTypeDim\n\t\tWHERE CurrentSnapshotFlag=1\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY DividendPlan,DividendType ORDER BY DividendTypeDimId) = 1\n),\nEXP_Metadata AS (\n\tSELECT\n\tLKP_DividendTypeDim.DividendTypeDimId AS lkp_DividendTypeDimId,\n\tLKP_DividendTypeDim.DividendCategory AS lkp_DividendCategory,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- ISNULL(lkp_DividendTypeDimId), 'NEW', \r\n\t-- lkp_DividendCategory <>DividendCategory,'UPDATE',\r\n\t-- 'NOCHANGE')\n\tDECODE(\n\t    TRUE,\n\t    lkp_DividendTypeDimId IS NULL, 'NEW',\n\t    lkp_DividendCategory <> DividendCategory, 'UPDATE',\n\t    'NOCHANGE'\n\t) AS Change_Flag,\n\tAGG_REMOVE_DUPLICATE.DividendPlan,\n\tAGG_REMOVE_DUPLICATE.DividendType,\n\tAGG_REMOVE_DUPLICATE.DividendCategory,\n\t1 AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t-- *INF*: TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')\n\tTO_TIMESTAMP('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,\n\t-- *INF*: TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')\n\tTO_TIMESTAMP('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_ExpirationDate,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate\n\tFROM AGG_REMOVE_DUPLICATE\n\tLEFT JOIN LKP_DividendTypeDim\n\tON LKP_DividendTypeDim.DividendPlan = AGG_REMOVE_DUPLICATE.DividendPlan AND LKP_DividendTypeDim.DividendType = AGG_REMOVE_DUPLICATE.DividendType\n),\nRTR_Target AS (\n\tSELECT\n\tlkp_DividendTypeDimId AS DividendTypeDimId,\n\tChange_Flag,\n\tDividendPlan,\n\tDividendType,\n\tDividendCategory,\n\to_CurrentSnapshotFlag AS CurrentSnapshotFlag,\n\to_AuditId AS AuditId,\n\to_EffectiveDate AS EffectiveDate,\n\to_ExpirationDate AS ExpirationDate,\n\to_CreatedDate AS CreatedDate,\n\to_ModifiedDate AS ModifiedDate\n\tFROM EXP_Metadata\n),\nRTR_Target_INSERT AS (SELECT * FROM RTR_Target WHERE Change_Flag='NEW'),\nRTR_Target_UPDATE AS (SELECT * FROM RTR_Target WHERE Change_Flag='UPDATE'),\nUPD_UPDATE AS (\n\tSELECT\n\tDividendTypeDimId, \n\tChange_Flag, \n\tDividendPlan, \n\tDividendType, \n\tDividendCategory, \n\tCurrentSnapshotFlag, \n\tAuditId, \n\tEffectiveDate, \n\tExpirationDate, \n\tCreatedDate, \n\tModifiedDate\n\tFROM RTR_Target_UPDATE\n),\nDividendTypeDim_UPDATE AS (\n\tMERGE INTO DividendTypeDim AS T\n\tUSING UPD_UPDATE AS S\n\tON T.DividendTypeDimId = S.DividendTypeDimId\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.AuditId = S.AuditId, T.ModifiedDate = S.ModifiedDate, T.DividendCategory = S.DividendCategory\n),\nDividendTypeDim_INSERT AS (\n\tINSERT INTO DividendTypeDim\n\t(CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, CreatedDate, ModifiedDate, DividendType, DividendPlan, DividendCategory)\n\tSELECT \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tDIVIDENDTYPE, \n\tDIVIDENDPLAN, \n\tDIVIDENDCATEGORY\n\tFROM RTR_Target_INSERT\n),"
                         }
                     ]
                 },
@@ -30,45 +30,21 @@
             }
         ],
         "parameters": {
-            "WBMI_AUDIT_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "246511"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "905532"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7604538"
-            },
             "SELECTION_START_TS": {
                 "type": "string",
-                "defaultValue": "08/30/2023 03:00:39"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/31/2023 03:35:00"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_WC_DATA_MART_Claim"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
+                "defaultValue": "Default Value"
             },
             "TARGET_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": "DBO"
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Policy DataMart/"
+            "name": "PolicyDataMart/"
         },
         "annotations": []
     }

@@ -17,19 +17,14 @@ EXP_GetValues AS (
 	SELECT
 	AgencyCode,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(SUBSTR(AgencyCode,1,2))))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(SUBSTR(AgencyCode, 1, 2
-				)
-			)
-		)
-	) AS o_StateCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(LTRIM(RTRIM(SUBSTR(AgencyCode, 1, 2)))) AS o_StateCode,
 	PolicySymbol,
 	PolicyNumber,
 	PolicyModule,
 	PolicySymbol||PolicyNumber||PolicyModule AS O_POL_KEY,
 	DividendPaidDate AS DividendTransactionEnteredDate,
 	-- *INF*: LAST_DAY(DividendTransactionEnteredDate)
-	LAST_DAY(DividendTransactionEnteredDate
-	) AS DividendRunDate,
+	LAST_DAY(DividendTransactionEnteredDate) AS DividendRunDate,
 	DividendPaidAmt
 	FROM SQ_WCDividendPaidStage
 ),
@@ -77,10 +72,7 @@ EXP_sup_state_id AS (
 	SELECT
 	LKP_Policy_PolicyAKID.pol_ak_id AS i_PolicyAKId,
 	-- *INF*: IIF(ISNULL(i_PolicyAKId),-1,i_PolicyAKId)
-	IFF(i_PolicyAKId IS NULL,
-		- 1,
-		i_PolicyAKId
-	) AS o_PolicyAKId,
+	IFF(i_PolicyAKId IS NULL, - 1, i_PolicyAKId) AS o_PolicyAKId,
 	0.0 AS DividendAmount,
 	EXP_GetValues.DividendTransactionEnteredDate,
 	EXP_GetValues.DividendRunDate,
@@ -89,30 +81,18 @@ EXP_sup_state_id AS (
 	-- *INF*: IIF(ISNULL(DividendPlan),'No Dividend',DividendPlan)
 	-- 
 	-- ---- Default value of Dividend Plan which has dividend paid amount is No Dividend
-	IFF(DividendPlan IS NULL,
-		'No Dividend',
-		DividendPlan
-	) AS O_DividendPlan,
+	IFF(DividendPlan IS NULL, 'No Dividend', DividendPlan) AS O_DividendPlan,
 	LKP_Dividend_Plan_Info.DividendType,
 	-- *INF*: IIF(ISNULL(DividendType),'No Dividend Plan',DividendType)
 	-- 
 	-- ---- Default values of Dividend Type which has dividend paid amount is No Dividend Plan
-	IFF(DividendType IS NULL,
-		'No Dividend Plan',
-		DividendType
-	) AS O_DividendType,
+	IFF(DividendType IS NULL, 'No Dividend Plan', DividendType) AS O_DividendType,
 	LKP_Dividend_Plan_Info.SupDividendTypeId,
 	-- *INF*: IIF(ISNULL(SupDividendTypeId),-1,SupDividendTypeId)
-	IFF(SupDividendTypeId IS NULL,
-		- 1,
-		SupDividendTypeId
-	) AS O_SupDividendTypeId,
+	IFF(SupDividendTypeId IS NULL, - 1, SupDividendTypeId) AS O_SupDividendTypeId,
 	LKP_sup_state.sup_state_id AS lkp_sup_state_id,
 	-- *INF*: IIF(ISNULL(lkp_sup_state_id),-1,lkp_sup_state_id)
-	IFF(lkp_sup_state_id IS NULL,
-		- 1,
-		lkp_sup_state_id
-	) AS o_sup_state_id,
+	IFF(lkp_sup_state_id IS NULL, - 1, lkp_sup_state_id) AS o_sup_state_id,
 	EXP_GetValues.DividendPaidAmt
 	FROM EXP_GetValues
 	LEFT JOIN LKP_Dividend_Plan_Info
@@ -179,24 +159,18 @@ EXP_MetaData AS (
 	-- lkp_SupDividendTypeId<>SupDividendTypeId OR
 	-- lkp_DividendPaidAmount<>DividendPaidAmount,'UPDATE',
 	-- 'NOCHANGE')
-	DECODE(TRUE,
-		lkp_DividendId IS NULL, 'NEW',
-		lkp_DividendPayableAmount <> DividendPayableAmount 
-		OR lkp_DividendPlan <> DividendPlan 
-		OR lkp_DividendType <> DividendType 
-		OR lkp_SupStateId <> sup_state_id 
-		OR lkp_SupDividendTypeId <> SupDividendTypeId 
-		OR lkp_DividendPaidAmount <> DividendPaidAmount, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    lkp_DividendId IS NULL, 'NEW',
+	    lkp_DividendPayableAmount <> DividendPayableAmount OR lkp_DividendPlan <> DividendPlan OR lkp_DividendType <> DividendType OR lkp_SupStateId <> sup_state_id OR lkp_SupDividendTypeId <> SupDividendTypeId OR lkp_DividendPaidAmount <> DividendPaidAmount, 'UPDATE',
+	    'NOCHANGE'
 	) AS o_ChangeFlag,
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('1800-01-01 01:00:00', 'YYYY-MM-DD HH24:MI:SS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,

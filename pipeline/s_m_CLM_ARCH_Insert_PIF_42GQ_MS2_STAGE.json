@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_PIF_42GQ_MS2_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_PIF_42GQ_MS2_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_PIF_42GQ_MS2_stage AS (\n\tSELECT\n\t\tpif_42gq_ms2_stage_id AS PIF_42GQ_MS2_stage_id,\n\t\tpif_symbol AS PIF_SYMBOL,\n\t\tpif_policy_number AS PIF_POLICY_NUMBER,\n\t\tpif_module AS PIF_MODULE,\n\t\tipfcgq_rec_length AS IPFCGQ_REC_LENGTH,\n\t\tipfcgq_action_code AS IPFCGQ_ACTION_CODE,\n\t\tipfcgq_file_id AS IPFCGQ_FILE_ID,\n\t\tipfcgq_segment_id AS IPFCGQ_SEGMENT_ID,\n\t\tipfcgq_segment_level_code AS IPFCGQ_SEGMENT_LEVEL_CODE,\n\t\tipfcgq_segment_part_code AS IPFCGQ_SEGMENT_PART_CODE,\n\t\tipfcgq_sub_part_code AS IPFCGQ_SUB_PART_CODE,\n\t\tipfcgq_year_of_loss AS IPFCGQ_YEAR_OF_LOSS,\n\t\tipfcgq_month_of_loss AS IPFCGQ_MONTH_OF_LOSS,\n\t\tipfcgq_day_of_loss AS IPFCGQ_DAY_OF_LOSS,\n\t\tipfcgq_loss_occurence AS IPFCGQ_LOSS_OCCURENCE,\n\t\tipfcgq_loss_claimant AS IPFCGQ_LOSS_CLAIMANT,\n\t\tipfcgq_claimant_use_code AS IPFCGQ_CLAIMANT_USE_CODE,\n\t\tipfcgq_claimant_use_seq AS IPFCGQ_CLAIMANT_USE_SEQ,\n\t\tipfcgq_year_process AS IPFCGQ_YEAR_PROCESS,\n\t\tipfcgq_month_process AS IPFCGQ_MONTH_PROCESS,\n\t\tipfcgq_day_process AS IPFCGQ_DAY_PROCESS,\n\t\tipfcgq_year_change_entry AS IPFCGQ_YEAR_CHANGE_ENTRY,\n\t\tipfcgq_month_change_entry AS IPFCGQ_MONTH_CHANGE_ENTRY,\n\t\tipfcgq_day_change_entry AS IPFCGQ_DAY_CHANGE_ENTRY,\n\t\tipfcgq_sequence_change_entry AS IPFCGQ_SEQUENCE_CHANGE_ENTRY,\n\t\tipfcgq_segment_status AS IPFCGQ_SEGMENT_STATUS,\n\t\tipfcgq_entry_operator AS IPFCGQ_ENTRY_OPERATOR,\n\t\tipfcgq_witness_name_1 AS IPFCGQ_WITNESS_NAME_1,\n\t\tipfcgq_witness_name_2 AS IPFCGQ_WITNESS_NAME_2,\n\t\tipfcgq_supervisor_employer AS IPFCGQ_SUPERVISOR_EMPLOYER,\n\t\tipfcgq_department AS IPFCGQ_DEPARTMENT,\n\t\tipfcgq_department_code AS IPFCGQ_DEPARTMENT_CODE,\n\t\tipfcgq_occupation AS IPFCGQ_OCCUPATION,\n\t\tipfcgq_number_of_part78 AS IPFCGQ_NUMBER_OF_PART78,\n\t\tipfcgq_offset_onset_ind AS IPFCGQ_OFFSET_ONSET_IND,\n\t\tipfcgq_date_hire AS IPFCGQ_DATE_HIRE,\n\t\tipfcgq_pms_future_use_gq AS IPFCGQ_PMS_FUTURE_USE_GQ,\n\t\tipfcgq_direct_reporting AS IPFCGQ_DIRECT_REPORTING,\n\t\tipfcgq_cust_spl_use_gq AS IPFCGQ_CUST_SPL_USE_GQ,\n\t\tipfcgq_yr2000_cust_use AS IPFCGQ_YR2000_CUST_USE,\n\t\tinf_action,\n\t\tinf_timestamp,\n\t\tlogical_flag,\n\t\textract_date AS EXTRACT_DATE,\n\t\tas_of_date AS AS_OF_DATE,\n\t\trecord_count AS RECORD_COUNT,\n\t\tsource_system_id AS SOURCE_SYSTEM_ID\n\tFROM PIF_42GQ_MS2_stage\n),\nEXP_arch_PIF_42GQ_MS2_stage AS (\n\tSELECT\n\tPIF_42GQ_MS2_stage_id,\n\tPIF_SYMBOL,\n\tPIF_POLICY_NUMBER,\n\tPIF_MODULE,\n\tIPFCGQ_REC_LENGTH,\n\tIPFCGQ_ACTION_CODE,\n\tIPFCGQ_FILE_ID,\n\tIPFCGQ_SEGMENT_ID,\n\tIPFCGQ_SEGMENT_LEVEL_CODE,\n\tIPFCGQ_SEGMENT_PART_CODE,\n\tIPFCGQ_SUB_PART_CODE,\n\tIPFCGQ_YEAR_OF_LOSS,\n\tIPFCGQ_MONTH_OF_LOSS,\n\tIPFCGQ_DAY_OF_LOSS,\n\tIPFCGQ_LOSS_OCCURENCE,\n\tIPFCGQ_LOSS_CLAIMANT,\n\tIPFCGQ_CLAIMANT_USE_CODE,\n\tIPFCGQ_CLAIMANT_USE_SEQ,\n\tIPFCGQ_YEAR_PROCESS,\n\tIPFCGQ_MONTH_PROCESS,\n\tIPFCGQ_DAY_PROCESS,\n\tIPFCGQ_YEAR_CHANGE_ENTRY,\n\tIPFCGQ_MONTH_CHANGE_ENTRY,\n\tIPFCGQ_DAY_CHANGE_ENTRY,\n\tIPFCGQ_SEQUENCE_CHANGE_ENTRY,\n\tIPFCGQ_SEGMENT_STATUS,\n\tIPFCGQ_ENTRY_OPERATOR,\n\tIPFCGQ_WITNESS_NAME_1,\n\tIPFCGQ_WITNESS_NAME_2,\n\tIPFCGQ_SUPERVISOR_EMPLOYER,\n\tIPFCGQ_DEPARTMENT,\n\tIPFCGQ_DEPARTMENT_CODE,\n\tIPFCGQ_OCCUPATION,\n\tIPFCGQ_NUMBER_OF_PART78,\n\tIPFCGQ_OFFSET_ONSET_IND,\n\tIPFCGQ_DATE_HIRE,\n\tIPFCGQ_PMS_FUTURE_USE_GQ,\n\tIPFCGQ_DIRECT_REPORTING,\n\tIPFCGQ_CUST_SPL_USE_GQ,\n\tIPFCGQ_YR2000_CUST_USE,\n\tinf_action,\n\tinf_timestamp,\n\tlogical_flag,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_PIF_42GQ_MS2_stage\n),\narch_PIF_42GQ_MS2_stage AS (\n\tINSERT INTO arch_PIF_42GQ_MS2_stage\n\t(pif_42gq_ms2_stage_id, pif_symbol, pif_policy_number, pif_module, ipfcgq_rec_length, ipfcgq_action_code, ipfcgq_file_id, ipfcgq_segment_id, ipfcgq_segment_level_code, ipfcgq_segment_part_code, ipfcgq_sub_part_code, ipfcgq_year_of_loss, ipfcgq_month_of_loss, ipfcgq_day_of_loss, ipfcgq_loss_occurence, ipfcgq_loss_claimant, ipfcgq_claimant_use_code, ipfcgq_claimant_use_seq, ipfcgq_year_process, ipfcgq_month_process, ipfcgq_day_process, ipfcgq_year_change_entry, ipfcgq_month_change_entry, ipfcgq_day_change_entry, ipfcgq_sequence_change_entry, ipfcgq_segment_status, ipfcgq_entry_operator, ipfcgq_witness_name_1, ipfcgq_witness_name_2, ipfcgq_supervisor_employer, ipfcgq_department, ipfcgq_department_code, ipfcgq_occupation, ipfcgq_number_of_part78, ipfcgq_offset_onset_ind, ipfcgq_date_hire, ipfcgq_pms_future_use_gq, ipfcgq_direct_reporting, ipfcgq_cust_spl_use_gq, ipfcgq_yr2000_cust_use, inf_action, inf_timestamp, logical_flag, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tPIF_42GQ_MS2_stage_id AS PIF_42GQ_MS2_STAGE_ID, \n\tPIF_SYMBOL AS PIF_SYMBOL, \n\tPIF_POLICY_NUMBER AS PIF_POLICY_NUMBER, \n\tPIF_MODULE AS PIF_MODULE, \n\tIPFCGQ_REC_LENGTH AS IPFCGQ_REC_LENGTH, \n\tIPFCGQ_ACTION_CODE AS IPFCGQ_ACTION_CODE, \n\tIPFCGQ_FILE_ID AS IPFCGQ_FILE_ID, \n\tIPFCGQ_SEGMENT_ID AS IPFCGQ_SEGMENT_ID, \n\tIPFCGQ_SEGMENT_LEVEL_CODE AS IPFCGQ_SEGMENT_LEVEL_CODE, \n\tIPFCGQ_SEGMENT_PART_CODE AS IPFCGQ_SEGMENT_PART_CODE, \n\tIPFCGQ_SUB_PART_CODE AS IPFCGQ_SUB_PART_CODE, \n\tIPFCGQ_YEAR_OF_LOSS AS IPFCGQ_YEAR_OF_LOSS, \n\tIPFCGQ_MONTH_OF_LOSS AS IPFCGQ_MONTH_OF_LOSS, \n\tIPFCGQ_DAY_OF_LOSS AS IPFCGQ_DAY_OF_LOSS, \n\tIPFCGQ_LOSS_OCCURENCE AS IPFCGQ_LOSS_OCCURENCE, \n\tIPFCGQ_LOSS_CLAIMANT AS IPFCGQ_LOSS_CLAIMANT, \n\tIPFCGQ_CLAIMANT_USE_CODE AS IPFCGQ_CLAIMANT_USE_CODE, \n\tIPFCGQ_CLAIMANT_USE_SEQ AS IPFCGQ_CLAIMANT_USE_SEQ, \n\tIPFCGQ_YEAR_PROCESS AS IPFCGQ_YEAR_PROCESS, \n\tIPFCGQ_MONTH_PROCESS AS IPFCGQ_MONTH_PROCESS, \n\tIPFCGQ_DAY_PROCESS AS IPFCGQ_DAY_PROCESS, \n\tIPFCGQ_YEAR_CHANGE_ENTRY AS IPFCGQ_YEAR_CHANGE_ENTRY, \n\tIPFCGQ_MONTH_CHANGE_ENTRY AS IPFCGQ_MONTH_CHANGE_ENTRY, \n\tIPFCGQ_DAY_CHANGE_ENTRY AS IPFCGQ_DAY_CHANGE_ENTRY, \n\tIPFCGQ_SEQUENCE_CHANGE_ENTRY AS IPFCGQ_SEQUENCE_CHANGE_ENTRY, \n\tIPFCGQ_SEGMENT_STATUS AS IPFCGQ_SEGMENT_STATUS, \n\tIPFCGQ_ENTRY_OPERATOR AS IPFCGQ_ENTRY_OPERATOR, \n\tIPFCGQ_WITNESS_NAME_1 AS IPFCGQ_WITNESS_NAME_1, \n\tIPFCGQ_WITNESS_NAME_2 AS IPFCGQ_WITNESS_NAME_2, \n\tIPFCGQ_SUPERVISOR_EMPLOYER AS IPFCGQ_SUPERVISOR_EMPLOYER, \n\tIPFCGQ_DEPARTMENT AS IPFCGQ_DEPARTMENT, \n\tIPFCGQ_DEPARTMENT_CODE AS IPFCGQ_DEPARTMENT_CODE, \n\tIPFCGQ_OCCUPATION AS IPFCGQ_OCCUPATION, \n\tIPFCGQ_NUMBER_OF_PART78 AS IPFCGQ_NUMBER_OF_PART78, \n\tIPFCGQ_OFFSET_ONSET_IND AS IPFCGQ_OFFSET_ONSET_IND, \n\tIPFCGQ_DATE_HIRE AS IPFCGQ_DATE_HIRE, \n\tIPFCGQ_PMS_FUTURE_USE_GQ AS IPFCGQ_PMS_FUTURE_USE_GQ, \n\tIPFCGQ_DIRECT_REPORTING AS IPFCGQ_DIRECT_REPORTING, \n\tIPFCGQ_CUST_SPL_USE_GQ AS IPFCGQ_CUST_SPL_USE_GQ, \n\tIPFCGQ_YR2000_CUST_USE AS IPFCGQ_YR2000_CUST_USE, \n\tINF_ACTION, \n\tINF_TIMESTAMP, \n\tLOGICAL_FLAG, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_arch_PIF_42GQ_MS2_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -74,9 +74,10 @@ EXP_Detect_Changes AS (
 	-- ISNULL(lkp_CoverageLimitBridgeID),'NEW'
 	-- ,'UPDATE'
 	-- )
-	DECODE(TRUE,
-		lkp_CoverageLimitBridgeID IS NULL, 'NEW',
-		'UPDATE'
+	DECODE(
+	    TRUE,
+	    lkp_CoverageLimitBridgeID IS NULL, 'NEW',
+	    'UPDATE'
 	) AS o_ChangeFlag
 	FROM Exp_Metadata
 	LEFT JOIN LKP_CoverageLimitBridge

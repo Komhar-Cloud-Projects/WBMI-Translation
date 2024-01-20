@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBNDOCoverageDirectorsAndOfficersNFPStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBNDOCoverageDirect_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBNDOCoverageDirectorsAndOfficersNFPStage AS (\n\tSELECT\n\t\tWBNDOCoverageDirectorsAndOfficersNFPStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCoverageId,\n\t\tWB_NDO_CoverageDirectorsAndOfficersNFPId,\n\t\tSessionId,\n\t\tCompositeModifier,\n\t\tRiskTypeClassCode,\n\t\tHazardGroup,\n\t\tHigherLimitRequired,\n\t\tReinsurancePremium,\n\t\tRiskType,\n\t\tQuotingAnEPLI,\n\t\tDefenseCosts,\n\t\tTotalAssets,\n\t\tARate,\n\t\tRetroactiveDate,\n\t\tExtendedReportingPeriodEndorsement,\n\t\tExtendedReportingPeriod,\n\t\tTaxCodeCharter,\n\t\tTaxCodeCharterDescription,\n\t\tPriorRetroactiveDate\n\tFROM WBNDOCoverageDirectorsAndOfficersNFPStage\n),\nEXP_Set_MetaData AS (\n\tSELECT\n\tWBNDOCoverageDirectorsAndOfficersNFPStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCoverageId,\n\tWB_NDO_CoverageDirectorsAndOfficersNFPId,\n\tSessionId,\n\tCompositeModifier,\n\tRiskTypeClassCode,\n\tHazardGroup,\n\tHigherLimitRequired AS i_HigherLimitRequired,\n\t-- *INF*: DECODE(i_HigherLimitRequired,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_HigherLimitRequired,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_HigherLimitRequired,\n\tReinsurancePremium,\n\tRiskType,\n\tQuotingAnEPLI AS i_QuotingAnEPLI,\n\t-- *INF*: DECODE(i_QuotingAnEPLI,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_QuotingAnEPLI,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_QuotingAnEPLI,\n\tDefenseCosts,\n\tTotalAssets,\n\tARate,\n\tRetroactiveDate,\n\tExtendedReportingPeriodEndorsement AS i_ExtendedReportingPeriodEndorsement,\n\t-- *INF*: DECODE(i_ExtendedReportingPeriodEndorsement,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_ExtendedReportingPeriodEndorsement,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ExtendedReportingPeriodEndorsement,\n\tExtendedReportingPeriod,\n\tTaxCodeCharter,\n\tTaxCodeCharterDescription,\n\tPriorRetroactiveDate,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBNDOCoverageDirectorsAndOfficersNFPStage\n),\nArchWBNDOCoverageDirectorsAndOfficersNFPStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBNDOCoverageDirectorsAndOfficersNFPStage\n\t(ExtractDate, SourceSystemId, WBNDOCoverageDirectorsAndOfficersNFPStageId, CoverageId, WB_NDO_CoverageDirectorsAndOfficersNFPId, SessionId, CompositeModifier, RiskTypeClassCode, HazardGroup, HigherLimitRequired, ReinsurancePremium, RiskType, QuotingAnEPLI, DefenseCosts, TotalAssets, ARate, RetroactiveDate, ExtendedReportingPeriodEndorsement, ExtendedReportingPeriod, TaxCodeCharter, TaxCodeCharterDescription, PriorRetroactiveDate)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tWBNDOCOVERAGEDIRECTORSANDOFFICERSNFPSTAGEID, \n\tCOVERAGEID, \n\tWB_NDO_COVERAGEDIRECTORSANDOFFICERSNFPID, \n\tSESSIONID, \n\tCOMPOSITEMODIFIER, \n\tRISKTYPECLASSCODE, \n\tHAZARDGROUP, \n\to_HigherLimitRequired AS HIGHERLIMITREQUIRED, \n\tREINSURANCEPREMIUM, \n\tRISKTYPE, \n\to_QuotingAnEPLI AS QUOTINGANEPLI, \n\tDEFENSECOSTS, \n\tTOTALASSETS, \n\tARATE, \n\tRETROACTIVEDATE, \n\to_ExtendedReportingPeriodEndorsement AS EXTENDEDREPORTINGPERIODENDORSEMENT, \n\tEXTENDEDREPORTINGPERIOD, \n\tTAXCODECHARTER, \n\tTAXCODECHARTERDESCRIPTION, \n\tPRIORRETROACTIVEDATE\n\tFROM EXP_Set_MetaData\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -292,146 +292,127 @@ EXP_Set_Default_Value AS (
 	JNR_CRO_EDW.claim_occurrence_id AS edw_claim_occurrence_pk_id,
 	-- *INF*: IIF(ISNULL(edw_claim_occurrence_pk_id), -1, edw_claim_occurrence_pk_id)
 	-- 
-	IFF(edw_claim_occurrence_pk_id IS NULL,
-		- 1,
-		edw_claim_occurrence_pk_id
-	) AS edw_claim_occurrence_pk_id_out,
+	IFF(edw_claim_occurrence_pk_id IS NULL, - 1, edw_claim_occurrence_pk_id) AS edw_claim_occurrence_pk_id_out,
 	JNR_CRO_EDW.claim_occurrence_calculation_id AS edw_claim_occurrence_calculation_pk_id,
 	-- *INF*: IIF(ISNULL(edw_claim_occurrence_calculation_pk_id),-1,edw_claim_occurrence_calculation_pk_id)
-	IFF(edw_claim_occurrence_calculation_pk_id IS NULL,
-		- 1,
-		edw_claim_occurrence_calculation_pk_id
+	IFF(
+	    edw_claim_occurrence_calculation_pk_id IS NULL, - 1, edw_claim_occurrence_calculation_pk_id
 	) AS edw_claim_occurrence_calculation_pk_id_out,
 	JNR_CRO_EDW.claim_occurrence_reserve_calculation_id AS edw_claim_occurrence_reserve_calculation_direct_loss_pk_id,
 	-- *INF*: IIF(ISNULL(edw_claim_occurrence_reserve_calculation_direct_loss_pk_id),-1,edw_claim_occurrence_reserve_calculation_direct_loss_pk_id)
-	IFF(edw_claim_occurrence_reserve_calculation_direct_loss_pk_id IS NULL,
-		- 1,
-		edw_claim_occurrence_reserve_calculation_direct_loss_pk_id
+	IFF(
+	    edw_claim_occurrence_reserve_calculation_direct_loss_pk_id IS NULL, - 1,
+	    edw_claim_occurrence_reserve_calculation_direct_loss_pk_id
 	) AS edw_claim_occurrence_reserve_calculation_direct_loss_pk_id_out,
 	JNR_CRO_EDW.claim_occurrence_reserve_calculation_id1 AS edw_claim_occurrence_reserve_calculation_exp_pk_id,
 	-- *INF*: IIF(ISNULL(edw_claim_occurrence_reserve_calculation_exp_pk_id),-1,edw_claim_occurrence_reserve_calculation_exp_pk_id)
-	IFF(edw_claim_occurrence_reserve_calculation_exp_pk_id IS NULL,
-		- 1,
-		edw_claim_occurrence_reserve_calculation_exp_pk_id
+	IFF(
+	    edw_claim_occurrence_reserve_calculation_exp_pk_id IS NULL, - 1,
+	    edw_claim_occurrence_reserve_calculation_exp_pk_id
 	) AS edw_claim_occurrence_reserve_calculation_exp_pk_id_out,
 	JNR_CRO_EDW.claim_occurrence_reserve_calculation_id2 AS edw_claim_occurrence_reserve_calculation_subrogation_pk_id,
 	-- *INF*: IIF(ISNULL(edw_claim_occurrence_reserve_calculation_subrogation_pk_id),-1,edw_claim_occurrence_reserve_calculation_subrogation_pk_id)
-	IFF(edw_claim_occurrence_reserve_calculation_subrogation_pk_id IS NULL,
-		- 1,
-		edw_claim_occurrence_reserve_calculation_subrogation_pk_id
+	IFF(
+	    edw_claim_occurrence_reserve_calculation_subrogation_pk_id IS NULL, - 1,
+	    edw_claim_occurrence_reserve_calculation_subrogation_pk_id
 	) AS edw_claim_occurrence_reserve_calculation_subrogation_pk_id_out,
 	JNR_CRO_EDW.claim_occurrence_reserve_calculation_id3 AS edw_claim_occurrence_reserve_calculation_salvage_pk_id,
 	-- *INF*: IIF(ISNULL(edw_claim_occurrence_reserve_calculation_salvage_pk_id),-1,edw_claim_occurrence_reserve_calculation_salvage_pk_id)
-	IFF(edw_claim_occurrence_reserve_calculation_salvage_pk_id IS NULL,
-		- 1,
-		edw_claim_occurrence_reserve_calculation_salvage_pk_id
+	IFF(
+	    edw_claim_occurrence_reserve_calculation_salvage_pk_id IS NULL, - 1,
+	    edw_claim_occurrence_reserve_calculation_salvage_pk_id
 	) AS edw_claim_occurrence_reserve_calculation_salvage_pk_id_out,
 	JNR_CRO_EDW.claim_occurrence_reserve_calculation_id4 AS edw_claim_occurrence_reserve_calculation_other_recovery_pk_id,
 	-- *INF*: IIF(ISNULL(edw_claim_occurrence_reserve_calculation_other_recovery_pk_id),-1,edw_claim_occurrence_reserve_calculation_other_recovery_pk_id)
-	IFF(edw_claim_occurrence_reserve_calculation_other_recovery_pk_id IS NULL,
-		- 1,
-		edw_claim_occurrence_reserve_calculation_other_recovery_pk_id
+	IFF(
+	    edw_claim_occurrence_reserve_calculation_other_recovery_pk_id IS NULL, - 1,
+	    edw_claim_occurrence_reserve_calculation_other_recovery_pk_id
 	) AS edw_claim_occurrence_reserve_calculation_other_recovery_pk_id_out,
 	JNR_CRO_EDW.claim_occurrence_key,
 	JNR_CRO_EDW.claim_occurrence_date_type AS in_claim_occurrence_status_code,
 	-- *INF*: iif(isnull(in_claim_occurrence_status_code) OR LENGTH(in_claim_occurrence_status_code)=0 OR in_claim_occurrence_status_code = 'N/A' ,
 	-- 'N/A',
 	-- substr(in_claim_occurrence_status_code,2))
-	IFF(in_claim_occurrence_status_code IS NULL 
-		OR LENGTH(in_claim_occurrence_status_code
-		) = 0 
-		OR in_claim_occurrence_status_code = 'N/A',
-		'N/A',
-		substr(in_claim_occurrence_status_code, 2
-		)
+	IFF(
+	    in_claim_occurrence_status_code IS NULL
+	    or LENGTH(in_claim_occurrence_status_code) = 0
+	    or in_claim_occurrence_status_code = 'N/A',
+	    'N/A',
+	    substr(in_claim_occurrence_status_code, 2)
 	) AS v_claim_occurrence_status_code,
 	v_claim_occurrence_status_code AS out_claim_occurrence_status_code,
 	JNR_CRO_EDW.reserve_date_type AS in_claim_occurrence_direct_loss_status_code,
 	-- *INF*: iif(isnull(in_claim_occurrence_direct_loss_status_code) OR in_claim_occurrence_direct_loss_status_code='N/A',
 	-- 'N/A',
 	-- substr(in_claim_occurrence_direct_loss_status_code,2))
-	IFF(in_claim_occurrence_direct_loss_status_code IS NULL 
-		OR in_claim_occurrence_direct_loss_status_code = 'N/A',
-		'N/A',
-		substr(in_claim_occurrence_direct_loss_status_code, 2
-		)
+	IFF(
+	    in_claim_occurrence_direct_loss_status_code IS NULL
+	    or in_claim_occurrence_direct_loss_status_code = 'N/A',
+	    'N/A',
+	    substr(in_claim_occurrence_direct_loss_status_code, 2)
 	) AS claim_occurrence_direct_loss_status_code_out,
 	JNR_CRO_EDW.reserve_date_type1 AS in_claim_occurrence_exp_status_code,
 	-- *INF*: iif(isnull(in_claim_occurrence_exp_status_code) OR in_claim_occurrence_exp_status_code = 'N/A'
 	-- ,'N/A',
 	-- substr(in_claim_occurrence_exp_status_code,2))
-	IFF(in_claim_occurrence_exp_status_code IS NULL 
-		OR in_claim_occurrence_exp_status_code = 'N/A',
-		'N/A',
-		substr(in_claim_occurrence_exp_status_code, 2
-		)
+	IFF(
+	    in_claim_occurrence_exp_status_code IS NULL OR in_claim_occurrence_exp_status_code = 'N/A',
+	    'N/A',
+	    substr(in_claim_occurrence_exp_status_code, 2)
 	) AS claim_occurrence_exp_status_code_out,
 	JNR_CRO_EDW.reserve_date_type2 AS in_claim_occurrence_subrogation_status_code,
 	-- *INF*: iif(isnull(in_claim_occurrence_subrogation_status_code) OR in_claim_occurrence_subrogation_status_code ='N/A'
 	-- ,'N/A',
 	-- substr(in_claim_occurrence_subrogation_status_code,2))
-	IFF(in_claim_occurrence_subrogation_status_code IS NULL 
-		OR in_claim_occurrence_subrogation_status_code = 'N/A',
-		'N/A',
-		substr(in_claim_occurrence_subrogation_status_code, 2
-		)
+	IFF(
+	    in_claim_occurrence_subrogation_status_code IS NULL
+	    or in_claim_occurrence_subrogation_status_code = 'N/A',
+	    'N/A',
+	    substr(in_claim_occurrence_subrogation_status_code, 2)
 	) AS claim_occurrence_subrogation_status_code_out,
 	JNR_CRO_EDW.reserve_date_type3 AS in_claim_occurrence_salvage_status_code,
 	-- *INF*: iif(isnull(in_claim_occurrence_salvage_status_code) OR in_claim_occurrence_salvage_status_code='N/A'
 	-- ,'N/A',
 	-- substr(in_claim_occurrence_salvage_status_code,2))
-	IFF(in_claim_occurrence_salvage_status_code IS NULL 
-		OR in_claim_occurrence_salvage_status_code = 'N/A',
-		'N/A',
-		substr(in_claim_occurrence_salvage_status_code, 2
-		)
+	IFF(
+	    in_claim_occurrence_salvage_status_code IS NULL
+	    or in_claim_occurrence_salvage_status_code = 'N/A',
+	    'N/A',
+	    substr(in_claim_occurrence_salvage_status_code, 2)
 	) AS claim_occurrence_salvage_status_code_out,
 	JNR_CRO_EDW.reserve_date_type4 AS in_claim_occurrence_other_recovery_status_code,
 	-- *INF*: iif(isnull(in_claim_occurrence_other_recovery_status_code) OR in_claim_occurrence_other_recovery_status_code = 'N/A'
 	-- ,'N/A',
 	-- substr(in_claim_occurrence_other_recovery_status_code,2))
-	IFF(in_claim_occurrence_other_recovery_status_code IS NULL 
-		OR in_claim_occurrence_other_recovery_status_code = 'N/A',
-		'N/A',
-		substr(in_claim_occurrence_other_recovery_status_code, 2
-		)
+	IFF(
+	    in_claim_occurrence_other_recovery_status_code IS NULL
+	    or in_claim_occurrence_other_recovery_status_code = 'N/A',
+	    'N/A',
+	    substr(in_claim_occurrence_other_recovery_status_code, 2)
 	) AS claim_occurrence_other_recovery_status_code_out,
 	JNR_CRO_EDW.wc_cat_code AS in_wc_cat_code,
 	-- *INF*: iif(isnull(in_wc_cat_code)
 	-- ,'N/A',
 	-- in_wc_cat_code)
-	IFF(in_wc_cat_code IS NULL,
-		'N/A',
-		in_wc_cat_code
-	) AS wc_cat_code_out,
+	IFF(in_wc_cat_code IS NULL, 'N/A', in_wc_cat_code) AS wc_cat_code_out,
 	-- *INF*: iif(isnull(in_claim_occurrence_reopen_ind),'N/A',in_claim_occurrence_reopen_ind)
-	IFF(in_claim_occurrence_reopen_ind IS NULL,
-		'N/A',
-		in_claim_occurrence_reopen_ind
-	) AS claim_occurrence_reopen_ind_out,
+	IFF(in_claim_occurrence_reopen_ind IS NULL, 'N/A', in_claim_occurrence_reopen_ind) AS claim_occurrence_reopen_ind_out,
 	JNR_CRO_EDW.claim_financial_ind AS in_claim_occurrence_financial_ind,
 	-- *INF*: iif(isnull(in_claim_occurrence_financial_ind),'N/A',in_claim_occurrence_financial_ind)
-	IFF(in_claim_occurrence_financial_ind IS NULL,
-		'N/A',
-		in_claim_occurrence_financial_ind
-	) AS claim_occurrence_financial_ind_out,
+	IFF(in_claim_occurrence_financial_ind IS NULL, 'N/A', in_claim_occurrence_financial_ind) AS claim_occurrence_financial_ind_out,
 	JNR_CRO_EDW.claim_supplemental_ind AS in_claim_occurrence_supplemental_ind,
 	-- *INF*: iif(isnull(in_claim_occurrence_supplemental_ind),'N/A',in_claim_occurrence_supplemental_ind)
-	IFF(in_claim_occurrence_supplemental_ind IS NULL,
-		'N/A',
-		in_claim_occurrence_supplemental_ind
+	IFF(
+	    in_claim_occurrence_supplemental_ind IS NULL, 'N/A', in_claim_occurrence_supplemental_ind
 	) AS claim_occurrence_supplemental_ind_out,
 	JNR_CRO_EDW.claim_recovery_ind AS in_claim_occurrence_recovery_ind,
 	-- *INF*: iif(isnull(in_claim_occurrence_recovery_ind),'N/A',in_claim_occurrence_recovery_ind)
-	IFF(in_claim_occurrence_recovery_ind IS NULL,
-		'N/A',
-		in_claim_occurrence_recovery_ind
-	) AS claim_occurrence_recovery_ind_out,
+	IFF(in_claim_occurrence_recovery_ind IS NULL, 'N/A', in_claim_occurrence_recovery_ind) AS claim_occurrence_recovery_ind_out,
 	JNR_CRO_EDW.claim_notice_only_ind AS in_claim_occurrence_notice_only_claim_ind,
 	-- *INF*: iif(isnull(in_claim_occurrence_notice_only_claim_ind),'N/A',in_claim_occurrence_notice_only_claim_ind)
-	IFF(in_claim_occurrence_notice_only_claim_ind IS NULL,
-		'N/A',
-		in_claim_occurrence_notice_only_claim_ind
+	IFF(
+	    in_claim_occurrence_notice_only_claim_ind IS NULL, 'N/A',
+	    in_claim_occurrence_notice_only_claim_ind
 	) AS claim_occurrence_notice_only_claim_ind_out,
 	JNR_CRO_EDW.claim_occurrence_type_code AS claim_occurrence_type,
 	JNR_CRO_EDW.source_claim_occurrence_status_code,
@@ -444,14 +425,8 @@ EXP_Set_Default_Value AS (
 	-- *INF*: IIF(ISNULL(i_state_code) OR RTRIM(LTRIM(i_state_code))='',
 	-- 'N/A',
 	-- RTRIM(LTRIM(i_state_code)))
-	IFF(i_state_code IS NULL 
-		OR RTRIM(LTRIM(i_state_code
-			)
-		) = '',
-		'N/A',
-		RTRIM(LTRIM(i_state_code
-			)
-		)
+	IFF(
+	    i_state_code IS NULL OR RTRIM(LTRIM(i_state_code)) = '', 'N/A', RTRIM(LTRIM(i_state_code))
 	) AS loss_loc_state,
 	JNR_CRO_EDW.loss_loc_county,
 	JNR_CRO_EDW.loss_loc_city,
@@ -461,14 +436,8 @@ EXP_Set_Default_Value AS (
 	-- *INF*: IIF(ISNULL(in_claim_num) OR RTRIM(LTRIM(in_claim_num)) = '',
 	-- 'N/A',
 	-- RTRIM(LTRIM(in_claim_num)))
-	IFF(in_claim_num IS NULL 
-		OR RTRIM(LTRIM(in_claim_num
-			)
-		) = '',
-		'N/A',
-		RTRIM(LTRIM(in_claim_num
-			)
-		)
+	IFF(
+	    in_claim_num IS NULL OR RTRIM(LTRIM(in_claim_num)) = '', 'N/A', RTRIM(LTRIM(in_claim_num))
 	) AS o_claim_num,
 	JNR_CRO_EDW.reins_notified_date,
 	JNR_CRO_EDW.claim_occurrence_num,
@@ -477,10 +446,7 @@ EXP_Set_Default_Value AS (
 	JNR_CRO_EDW.claim_insd_at_fault_code,
 	LKP_Sup_Claim_Insured_At_Fault_Code.claim_insd_at_fault_descript AS i_claim_insd_at_fault_descript,
 	-- *INF*: IIF(ISNULL(i_claim_insd_at_fault_descript),'N/A',i_claim_insd_at_fault_descript)
-	IFF(i_claim_insd_at_fault_descript IS NULL,
-		'N/A',
-		i_claim_insd_at_fault_descript
-	) AS o_claim_insd_at_fault_code_descript,
+	IFF(i_claim_insd_at_fault_descript IS NULL, 'N/A', i_claim_insd_at_fault_descript) AS o_claim_insd_at_fault_code_descript,
 	JNR_CRO_EDW.claim_insd_driver_num AS claim_insd_drvr_num,
 	JNR_CRO_EDW.claim_insd_driver_ind AS claim_insd_drvr_ind,
 	JNR_CRO_EDW.offset_onset_ind AS claim_offset_onset_ind,
@@ -492,45 +458,31 @@ EXP_Set_Default_Value AS (
 	JNR_CRO_EDW.next_diary_date,
 	JNR_CRO_EDW.next_diary_date_rep,
 	-- *INF*: IIF(isnull(claim_rep_role_code), '-1', claim_rep_role_code)
-	IFF(claim_rep_role_code IS NULL,
-		'-1',
-		claim_rep_role_code
-	) AS claim_rep_role_code_out,
+	IFF(claim_rep_role_code IS NULL, '-1', claim_rep_role_code) AS claim_rep_role_code_out,
 	-- *INF*: iif(isnull(in_claim_rep_role_code_descript),'N/A',in_claim_rep_role_code_descript)
-	IFF(in_claim_rep_role_code_descript IS NULL,
-		'N/A',
-		in_claim_rep_role_code_descript
-	) AS claim_rep_role_code_descript_out,
+	IFF(in_claim_rep_role_code_descript IS NULL, 'N/A', in_claim_rep_role_code_descript) AS claim_rep_role_code_descript_out,
 	JNR_CRO_EDW.transferred_claim_dvsn_lvl_ind_E,
 	-- *INF*: IIF(ISNULL(transferred_claim_dvsn_lvl_ind_E), '-1', transferred_claim_dvsn_lvl_ind_E)
-	IFF(transferred_claim_dvsn_lvl_ind_E IS NULL,
-		'-1',
-		transferred_claim_dvsn_lvl_ind_E
-	) AS transferred_claim_dvsn_lvl_ind_out_E,
+	IFF(transferred_claim_dvsn_lvl_ind_E IS NULL, '-1', transferred_claim_dvsn_lvl_ind_E) AS transferred_claim_dvsn_lvl_ind_out_E,
 	JNR_CRO_EDW.transferred_claim_dept_lvl_ind_E,
 	-- *INF*: IIF(ISNULL(transferred_claim_dept_lvl_ind_E), '-1', transferred_claim_dept_lvl_ind_E)
-	IFF(transferred_claim_dept_lvl_ind_E IS NULL,
-		'-1',
-		transferred_claim_dept_lvl_ind_E
-	) AS transferred_claim_dept_lvl_ind_out_E,
+	IFF(transferred_claim_dept_lvl_ind_E IS NULL, '-1', transferred_claim_dept_lvl_ind_E) AS transferred_claim_dept_lvl_ind_out_E,
 	JNR_CRO_EDW.transferred_claim_handling_office_lvl_ind_E,
 	-- *INF*: IIF(ISNULL(transferred_claim_handling_office_lvl_ind_E), '-1', transferred_claim_handling_office_lvl_ind_E)
-	IFF(transferred_claim_handling_office_lvl_ind_E IS NULL,
-		'-1',
-		transferred_claim_handling_office_lvl_ind_E
+	IFF(
+	    transferred_claim_handling_office_lvl_ind_E IS NULL, '-1',
+	    transferred_claim_handling_office_lvl_ind_E
 	) AS transferred_claim_handling_office_lvl_ind_out_E,
 	JNR_CRO_EDW.transferred_claim_adjuster_lvl_ind_E,
 	-- *INF*: IIF(ISNULL(transferred_claim_adjuster_lvl_ind_E), '-1', transferred_claim_adjuster_lvl_ind_E)
-	IFF(transferred_claim_adjuster_lvl_ind_E IS NULL,
-		'-1',
-		transferred_claim_adjuster_lvl_ind_E
+	IFF(
+	    transferred_claim_adjuster_lvl_ind_E IS NULL, '-1', transferred_claim_adjuster_lvl_ind_E
 	) AS transferred_claim_adjuster_lvl_ind_out_E,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	JNR_CRO_EDW.eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	sysdate AS created_date,
 	sysdate AS modified_date,
 	JNR_CRO_EDW.claim_occurrence_ak_id,
@@ -546,46 +498,46 @@ EXP_Set_Default_Value AS (
 	-- *INF*: DECODE(TRUE, v_claim_occurrence_status_code = 'OPEN', claim_occurrence_date, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))
 	-- 
 	-- -- If this evaluates to 1/1/1800, the value will be overwritten in the post-session update that runs in a target of this mapping.
-	DECODE(TRUE,
-		v_claim_occurrence_status_code = 'OPEN', claim_occurrence_date,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		)
+	DECODE(
+	    TRUE,
+	    v_claim_occurrence_status_code = 'OPEN', claim_occurrence_date,
+	    TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
 	) AS v_claim_open_date,
 	v_claim_open_date AS claim_open_date,
 	-- *INF*: DECODE(TRUE, v_claim_occurrence_status_code = 'CLOSED', claim_occurrence_date, TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))
 	-- 
 	-- -- If this evaluates to 1/1/1800, the value will be overwritten in the post-session update that runs in a target of this mapping.
-	DECODE(TRUE,
-		v_claim_occurrence_status_code = 'CLOSED', claim_occurrence_date,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		)
+	DECODE(
+	    TRUE,
+	    v_claim_occurrence_status_code = 'CLOSED', claim_occurrence_date,
+	    TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
 	) AS v_claim_closed_date,
 	v_claim_closed_date AS claim_closed_date,
 	-- *INF*: DECODE(TRUE,v_claim_occurrence_status_code = 'REOPEN',claim_occurrence_date,TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))
 	-- 
 	-- -- If this evaluates to 1/1/1800, the value will be overwritten in the post-session update that runs in a target of this mapping.
-	DECODE(TRUE,
-		v_claim_occurrence_status_code = 'REOPEN', claim_occurrence_date,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		)
+	DECODE(
+	    TRUE,
+	    v_claim_occurrence_status_code = 'REOPEN', claim_occurrence_date,
+	    TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
 	) AS v_claim_reopen_date,
 	v_claim_reopen_date AS claim_reopen_date,
 	-- *INF*: DECODE(TRUE,v_claim_occurrence_status_code = 'CLOSEDAFTERREOPEN', claim_occurrence_date,TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))
 	-- 
 	-- -- If this evaluates to 1/1/1800, the value will be overwritten in the post-session update that runs in a target of this mapping.
-	DECODE(TRUE,
-		v_claim_occurrence_status_code = 'CLOSEDAFTERREOPEN', claim_occurrence_date,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		)
+	DECODE(
+	    TRUE,
+	    v_claim_occurrence_status_code = 'CLOSEDAFTERREOPEN', claim_occurrence_date,
+	    TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
 	) AS v_claim_closed_after_reopen_date,
 	v_claim_closed_after_reopen_date AS claim_closed_after_reopen_date,
 	-- *INF*: DECODE(TRUE,v_claim_occurrence_status_code = 'NOTICEONLY',claim_occurrence_date,TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'))
 	-- 
 	-- -- If this evaluates to 1/1/1800, the value will be overwritten in the post-session update that runs in a target of this mapping.
-	DECODE(TRUE,
-		v_claim_occurrence_status_code = 'NOTICEONLY', claim_occurrence_date,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		)
+	DECODE(
+	    TRUE,
+	    v_claim_occurrence_status_code = 'NOTICEONLY', claim_occurrence_date,
+	    TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
 	) AS v_claim_notice_only_date,
 	v_claim_notice_only_date AS claim_notice_only_date,
 	JNR_CRO_EDW.claim_occurrence_reported_date,
@@ -600,8 +552,7 @@ EXP_Set_Default_Value AS (
 	JNR_CRO_EDW.eff_to_date_H,
 	eff_to_date_H AS eff_to_date_H1,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS default_date,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS default_date,
 	'N/A' AS default_NA,
 	claim_occurrence_ak_id AS v_prev_row_claim_occurrence_ak_id,
 	v_claim_open_date AS v_prev_row_claim_open_date,
@@ -612,53 +563,33 @@ EXP_Set_Default_Value AS (
 	LKP_Sup_State.state_descript AS i_state_descript,
 	-- *INF*: IIF(ISNULL(i_state_descript) OR RTRIM(LTRIM(i_state_descript))='','N/A',i_state_descript)
 	-- 
-	IFF(i_state_descript IS NULL 
-		OR RTRIM(LTRIM(i_state_descript
-			)
-		) = '',
-		'N/A',
-		i_state_descript
+	IFF(
+	    i_state_descript IS NULL OR RTRIM(LTRIM(i_state_descript)) = '', 'N/A', i_state_descript
 	) AS o_LossLocationStateDescription,
 	JNR_CRO_EDW.PrimaryWorkGroup AS in_PrimaryWorkGroup,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_PrimaryWorkGroup)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_PrimaryWorkGroup
-	) AS out_PrimaryWorkGroup,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_PrimaryWorkGroup) AS out_PrimaryWorkGroup,
 	JNR_CRO_EDW.SecondaryWorkGroup AS in_SecondaryWorkGroup,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_SecondaryWorkGroup)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_SecondaryWorkGroup
-	) AS out_SecondaryWorkGroup,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_SecondaryWorkGroup) AS out_SecondaryWorkGroup,
 	JNR_CRO_EDW.ClaimRelationshipKey AS in_ClaimRelationshipKey,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_ClaimRelationshipKey)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_ClaimRelationshipKey
-	) AS out_ClaimRelationshipKey,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_ClaimRelationshipKey) AS out_ClaimRelationshipKey,
 	LKP_SupClaimReportedMethodDescription.ClaimReportedMethodDescription AS in_ClaimReportedMethodDescription,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_ClaimReportedMethodDescription)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_ClaimReportedMethodDescription
-	) AS out_ClaimReportedMethodDescription,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_ClaimReportedMethodDescription) AS out_ClaimReportedMethodDescription,
 	LKP_ClaimStory.Catalyst AS in_Catalyst,
 	-- *INF*: IIF(ISNULL(in_Catalyst),'N/A',in_Catalyst)
-	IFF(in_Catalyst IS NULL,
-		'N/A',
-		in_Catalyst
-	) AS out_Catalyst,
+	IFF(in_Catalyst IS NULL, 'N/A', in_Catalyst) AS out_Catalyst,
 	LKP_ClaimStory.CauseOfDamage AS in_CauseOfDamage,
 	-- *INF*: IIF(ISNULL(in_CauseOfDamage),'N/A',in_CauseOfDamage)
-	IFF(in_CauseOfDamage IS NULL,
-		'N/A',
-		in_CauseOfDamage
-	) AS out_CauseOfDamage,
+	IFF(in_CauseOfDamage IS NULL, 'N/A', in_CauseOfDamage) AS out_CauseOfDamage,
 	LKP_ClaimStory.DamageCaused AS in_DamageCaused,
 	-- *INF*: IIF(ISNULL(in_DamageCaused),'N/A',in_DamageCaused)
-	IFF(in_DamageCaused IS NULL,
-		'N/A',
-		in_DamageCaused
-	) AS out_DamageCaused,
+	IFF(in_DamageCaused IS NULL, 'N/A', in_DamageCaused) AS out_DamageCaused,
 	LKP_ClaimStory.ItemDamaged AS in_ItemDamaged,
 	-- *INF*: IIF(ISNULL(in_ItemDamaged),'N/A',in_ItemDamaged)
-	IFF(in_ItemDamaged IS NULL,
-		'N/A',
-		in_ItemDamaged
-	) AS out_ItemDamaged
+	IFF(in_ItemDamaged IS NULL, 'N/A', in_ItemDamaged) AS out_ItemDamaged
 	FROM JNR_CRO_EDW
 	LEFT JOIN LKP_ClaimStory
 	ON LKP_ClaimStory.ClaimOccurrenceKey = JNR_CRO_EDW.claim_occurrence_key
@@ -1299,9 +1230,10 @@ EXP_Lag_Eff_From_Date AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	edw_claim_occurrence_ak_id = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		edw_claim_occurrence_ak_id = v_PREV_ROW_occurrence_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    edw_claim_occurrence_ak_id = v_PREV_ROW_occurrence_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

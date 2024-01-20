@@ -1,0 +1,51 @@
+{
+    "name": "s_m_POL_DM_LOAD_DB2_Agency_Contingency",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_DM_LOAD_DB2_Agency_Contingency",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkAgencyContingencyYearly AS (\n\tDeclare @Date1 date\r\n\t\r\n\tset @date1=CAST(CAST(YEAR(GETDATE())+@{pipeline().parameters.NUM_OF_YEAR} as varchar)+'/12/31 00:00:00' as date)\r\n\t\r\n\tSELECT \r\n\tWACY.StateCode, \r\n\tWACY.AgencyNumber, \r\n\tWACY.ContingencyYear, \r\n\tWACY.GuaranteedFlag, \r\n\tWACY.AgencyCode, \r\n\tSUM(WACY.GuaranteedContingencyAmount), \r\n\tSUM(WACY.ContingencyAmount), \r\n\tSUM(WACY.YTDDirectWrittenPremium), \r\n\tSUM(WACY.YTDNetEarnedPremium), \r\n\tSUM(WACY.YTDNetIncurredLoss) \r\n\tFROM\r\n\t @{pipeline().parameters.SOURCE_TABLE_OWNER}.WorkAgencyContingencyYearly WACY\r\n\tWHERE \r\n\tWACY.CreatedDate = @date1 and len(WACY.AgencyCode)>=5\r\n\tGroup by WACY.StateCode, \r\n\tWACY.AgencyNumber, \r\n\tWACY.ContingencyYear, \r\n\tWACY.GuaranteedFlag, \r\n\tWACY.AgencyCode\n),\nEXP_Passthrough AS (\n\tSELECT\n\tStateCode AS STATE_CODE,\n\tAgencyNumber AS AGENCY_NUM,\n\tContingencyYear AS CONTINGENCY_YEAR,\n\tGuaranteedFlag AS GUARANTEED,\n\tAgencyCode AS AGENCY_CODE,\n\tGuaranteedContingencyAmount AS GUAR_CNTGNCY_AMT,\n\tContingencyAmount AS CONTINGENCY_AMT,\n\tYTDDirectWrittenPremium AS PREM_WRITTEN,\n\tYTDNetEarnedPremium AS NET_PREM_EARNED,\n\tYTDNetIncurredLoss AS NET_LOSS_INCURRED\n\tFROM SQ_WorkAgencyContingencyYearly\n),\nAGENCY_CONTINGENCY AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.AGENCY_CONTINGENCY\n\t(STATE_CODE, AGENCY_NUM, CONTINGENCY_YEAR, GUARANTEED, AGENCY_CODE, GUAR_CNTGNCY_AMT, CONTINGENCY_AMT, PREM_WRITTEN, NET_PREM_EARNED, NET_LOSS_INCURRED)\n\tSELECT \n\tSTATE_CODE, \n\tAGENCY_NUM, \n\tCONTINGENCY_YEAR, \n\tGUARANTEED, \n\tAGENCY_CODE, \n\tGUAR_CNTGNCY_AMT, \n\tCONTINGENCY_AMT, \n\tPREM_WRITTEN, \n\tNET_PREM_EARNED, \n\tNET_LOSS_INCURRED\n\tFROM EXP_Passthrough\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "NUM_OF_YEAR": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCTaxSurchargeStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCTaxSurchargeStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_TaxSurcharge AS (\n\tWITH cte_DCTaxSurcharge(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.ObjectId, \r\n\tX.ObjectName, \r\n\tX.TaxSurchargeId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.Type, \r\n\tX.Scope, \r\n\tX.Amount, \r\n\tX.Change, \r\n\tX.Written,\r\n\tX.Rate  \r\n\tFROM\r\n\tDC_TaxSurcharge X\r\n\tinner join\r\n\tcte_DCTaxSurcharge Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tObjectId,\n\tObjectName,\n\tTaxSurchargeId,\n\tSessionId,\n\tId,\n\tType,\n\tScope,\n\tAmount,\n\tChange,\n\tWritten,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tRate AS in_Rate,\n\t-- *INF*: LTRIM(RTRIM(in_Rate))\n\tLTRIM(RTRIM(in_Rate)) AS o_Rate\n\tFROM SQ_DC_TaxSurcharge\n),\nDCTaxSurchargeStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCTaxSurchargeStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCTaxSurchargeStaging\n\t(ObjectId, ObjectName, TaxSurchargeId, SessionId, Id, Type, Scope, Amount, Change, Written, ExtractDate, SourceSystemId, Rate)\n\tSELECT \n\tOBJECTID, \n\tOBJECTNAME, \n\tTAXSURCHARGEID, \n\tSESSIONID, \n\tID, \n\tTYPE, \n\tSCOPE, \n\tAMOUNT, \n\tCHANGE, \n\tWRITTEN, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\to_Rate AS RATE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

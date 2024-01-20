@@ -15,121 +15,67 @@ EXP_VALIDATE AS (
 	claim_nbr AS IN_claim_nbr,
 	claimant_id AS IN_claimant_id,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_claim_nbr))) OR IS_SPACES(LTRIM(RTRIM(IN_claim_nbr))) OR LENGTH(LTRIM(RTRIM(IN_claim_nbr)))=0,'N/A',LTRIM(RTRIM(IN_claim_nbr)))
-	IFF(LTRIM(RTRIM(IN_claim_nbr
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(IN_claim_nbr
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(IN_claim_nbr
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(IN_claim_nbr
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(IN_claim_nbr
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(IN_claim_nbr)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(IN_claim_nbr)))>0
+	    and TRIM(LTRIM(RTRIM(IN_claim_nbr)))=''
+	    or LENGTH(LTRIM(RTRIM(IN_claim_nbr))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(IN_claim_nbr))
 	) AS v_claim_nbr,
 	v_claim_nbr AS claim_nbr,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_claimant_id))) OR IS_SPACES(LTRIM(RTRIM(IN_claimant_id))) OR LENGTH(LTRIM(RTRIM(IN_claimant_id)))=0,'N/A',LTRIM(RTRIM(IN_claimant_id)))
-	IFF(LTRIM(RTRIM(IN_claimant_id
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(IN_claimant_id
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(IN_claimant_id
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(IN_claimant_id
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(IN_claimant_id
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(IN_claimant_id)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(IN_claimant_id)))>0
+	    and TRIM(LTRIM(RTRIM(IN_claimant_id)))=''
+	    or LENGTH(LTRIM(RTRIM(IN_claimant_id))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(IN_claimant_id))
 	) AS v_client_id,
 	v_client_id AS client_id,
 	optn_set_item_guid AS IN_optn_set_item_guid,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_optn_set_item_guid))) OR IS_SPACES(LTRIM(RTRIM(IN_optn_set_item_guid))) OR LENGTH(LTRIM(RTRIM(IN_optn_set_item_guid)))=0,'N/A' ,LTRIM(RTRIM(IN_optn_set_item_guid)))
-	IFF(LTRIM(RTRIM(IN_optn_set_item_guid
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(IN_optn_set_item_guid
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(IN_optn_set_item_guid
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(IN_optn_set_item_guid
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(IN_optn_set_item_guid
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(IN_optn_set_item_guid)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(IN_optn_set_item_guid)))>0
+	    and TRIM(LTRIM(RTRIM(IN_optn_set_item_guid)))=''
+	    or LENGTH(LTRIM(RTRIM(IN_optn_set_item_guid))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(IN_optn_set_item_guid))
 	) AS optn_set_item_guid,
 	optn_set_item_val AS IN_optn_set_item_val,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_optn_set_item_val))) OR IS_SPACES(LTRIM(RTRIM(IN_optn_set_item_val))) OR LENGTH(LTRIM(RTRIM(IN_optn_set_item_val)))=0,'N/A' ,LTRIM(RTRIM(IN_optn_set_item_val)))
-	IFF(LTRIM(RTRIM(IN_optn_set_item_val
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(IN_optn_set_item_val
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(IN_optn_set_item_val
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(IN_optn_set_item_val
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(IN_optn_set_item_val
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(IN_optn_set_item_val)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(IN_optn_set_item_val)))>0
+	    and TRIM(LTRIM(RTRIM(IN_optn_set_item_val)))=''
+	    or LENGTH(LTRIM(RTRIM(IN_optn_set_item_val))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(IN_optn_set_item_val))
 	) AS optn_set_item_val,
 	optn_text AS IN_optn_text,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_optn_text))) OR IS_SPACES(LTRIM(RTRIM(IN_optn_text))) OR LENGTH(LTRIM(RTRIM(IN_optn_text)))=0,'N/A' ,LTRIM(RTRIM(IN_optn_text)))
-	IFF(LTRIM(RTRIM(IN_optn_text
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(IN_optn_text
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(IN_optn_text
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(IN_optn_text
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(IN_optn_text
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(IN_optn_text)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(IN_optn_text)))>0
+	    and TRIM(LTRIM(RTRIM(IN_optn_text)))=''
+	    or LENGTH(LTRIM(RTRIM(IN_optn_text))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(IN_optn_text))
 	) AS optn_text,
 	question_guid AS IN_question_guid,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(IN_question_guid))) OR IS_SPACES(LTRIM(RTRIM(IN_question_guid))) OR LENGTH(LTRIM(RTRIM(IN_question_guid)))=0,'N/A' ,LTRIM(RTRIM(IN_question_guid)))
 	-- 
 	-- 
 	-- 
-	IFF(LTRIM(RTRIM(IN_question_guid
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(IN_question_guid
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(IN_question_guid
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(IN_question_guid
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(IN_question_guid
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(IN_question_guid)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(IN_question_guid)))>0
+	    and TRIM(LTRIM(RTRIM(IN_question_guid)))=''
+	    or LENGTH(LTRIM(RTRIM(IN_question_guid))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(IN_question_guid))
 	) AS question_guid
 	FROM SQ_claim_quest_data_stage
 ),
@@ -229,45 +175,31 @@ EXP_DETECT_CHANGES1 AS (
 	-- 	LTRIM(RTRIM(LKP_optn_text)) <> LTRIM(RTRIM(optn_text))     ,
 	-- 	'UPDATE','NOCHANGE'))
 	-- 
-	IFF(claim_answer_ak_id IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(LKP_optn_set_item_guid
-				)
-			) <> LTRIM(RTRIM(optn_set_item_guid
-				)
-			) 
-			OR LTRIM(RTRIM(LKP_optn_set_item_val
-				)
-			) <> LTRIM(RTRIM(optn_set_item_val
-				)
-			) 
-			OR LTRIM(RTRIM(LKP_optn_text
-				)
-			) <> LTRIM(RTRIM(optn_text
-				)
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    claim_answer_ak_id IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(LKP_optn_set_item_guid)) <> LTRIM(RTRIM(optn_set_item_guid))
+	        or LTRIM(RTRIM(LKP_optn_set_item_val)) <> LTRIM(RTRIM(optn_set_item_val))
+	        or LTRIM(RTRIM(LKP_optn_text)) <> LTRIM(RTRIM(optn_text)),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: IIF(v_changed_flag='NEW',TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_changed_flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM:DD:YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM:DD:YYYY HH24:MI:SS'
-	) AS default_date,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM:DD:YYYY HH24:MI:SS') AS default_date,
 	EXP_LKP_VALUES1.claim_party_occurrence_ak_id,
 	EXP_LKP_VALUES1.claim_occurrence_ak_id,
 	EXP_LKP_VALUES1.question_ak_id
@@ -305,10 +237,7 @@ EXP_Determine_AK1 AS (
 	SELECT
 	claim_answer_ak_id AS IN_claim_answer_ak_id,
 	-- *INF*: IIF(changed_flag ='NEW',NEXTVAL,IN_claim_answer_ak_id)
-	IFF(changed_flag = 'NEW',
-		NEXTVAL,
-		IN_claim_answer_ak_id
-	) AS claim_answer_ak_id,
+	IFF(changed_flag = 'NEW', NEXTVAL, IN_claim_answer_ak_id) AS claim_answer_ak_id,
 	optn_set_item_guid,
 	optn_set_item_val,
 	optn_text,
@@ -469,8 +398,7 @@ EXPTRANS1 AS (
 	sysdate AS v_sysdate,
 	v_sysdate AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	v_sysdate AS eff_to_date_update,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	1 AS crrnt_snpsht_flag_1,
@@ -587,11 +515,10 @@ EXP_Lag_eff_from_date AS (
 	eff_from_date,
 	eff_to_date AS orig_eff_to_date,
 	-- *INF*: DECODE(TRUE, question_ak_id=v_prev_row_question_ak_id AND claim_occurence_ak_id = v_prev_row_claim_occurrence_ak_id AND claim_party_ccurrence_ak_id = v_prev_row_claim_party_ccurrence_ak_id,ADD_TO_DATE(v_prev_row_eff_from_date,'SS',-1),orig_eff_to_date)
-	DECODE(TRUE,
-		question_ak_id = v_prev_row_question_ak_id 
-		AND claim_occurence_ak_id = v_prev_row_claim_occurrence_ak_id 
-		AND claim_party_ccurrence_ak_id = v_prev_row_claim_party_ccurrence_ak_id, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    question_ak_id = v_prev_row_question_ak_id AND claim_occurence_ak_id = v_prev_row_claim_occurrence_ak_id AND claim_party_ccurrence_ak_id = v_prev_row_claim_party_ccurrence_ak_id, DATEADD(SECOND,- 1,v_prev_row_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	question_ak_id AS v_prev_row_question_ak_id,

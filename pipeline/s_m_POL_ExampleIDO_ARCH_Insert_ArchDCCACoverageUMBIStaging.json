@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCACoverageUMBIStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCACoverageUMBISta_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nDCCACoverageUMBIStaging AS (\n\tSELECT\n\t\tDCCACoverageUMBIStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tSessionId,\n\t\tCoverageId,\n\t\tCA_CoverageUMBIId,\n\t\tAcceptUMCoverage,\n\t\tCovUMBIPrivateIsFirstWAUMBI,\n\t\tDesignatedPerson,\n\t\tEconomicLossCoverage,\n\t\tIncludeUIM,\n\t\tStatutoryCoverage,\n\t\tTXAutoDescription,\n\t\tTXAutoOtherDescription,\n\t\tUMType,\n\t\tUnderwriterOverride,\n\t\tWAAutoDescription\n\tFROM DCCACoverageUMBIStaging\n\tINNER JOIN DCCACoverageUMBIStaging\n),\nEXPTRANS AS (\n\tSELECT\n\tDCCACoverageUMBIStagingId,\n\tExtractDate,\n\tSourceSystemId,\n\tSessionId,\n\tCoverageId,\n\tCA_CoverageUMBIId,\n\tAcceptUMCoverage,\n\tCovUMBIPrivateIsFirstWAUMBI,\n\tDesignatedPerson,\n\tEconomicLossCoverage,\n\tIncludeUIM,\n\tStatutoryCoverage,\n\tTXAutoDescription,\n\tTXAutoOtherDescription,\n\tUMType,\n\tUnderwriterOverride,\n\tWAAutoDescription,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM DCCACoverageUMBIStaging\n),\nArchDCCACoverageUMBIStaging AS (\n\tINSERT INTO Shortcut_to_ArchDCCACoverageUMBIStaging\n\t(ExtractDate, SourceSystemId, AuditId, DCCACoverageUMBIStagingId, SessionId, CoverageId, CA_CoverageUMBIId, AcceptUMCoverage, CovUMBIPrivateIsFirstWAUMBI, DesignatedPerson, EconomicLossCoverage, IncludeUIM, StatutoryCoverage, TXAutoDescription, TXAutoOtherDescription, UMType, UnderwriterOverride, WAAutoDescription)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCCACOVERAGEUMBISTAGINGID, \n\tSESSIONID, \n\tCOVERAGEID, \n\tCA_COVERAGEUMBIID, \n\tACCEPTUMCOVERAGE, \n\tCOVUMBIPRIVATEISFIRSTWAUMBI, \n\tDESIGNATEDPERSON, \n\tECONOMICLOSSCOVERAGE, \n\tINCLUDEUIM, \n\tSTATUTORYCOVERAGE, \n\tTXAUTODESCRIPTION, \n\tTXAUTOOTHERDESCRIPTION, \n\tUMTYPE, \n\tUNDERWRITEROVERRIDE, \n\tWAAUTODESCRIPTION\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

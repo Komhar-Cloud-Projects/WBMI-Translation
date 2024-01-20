@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_STG_Insert_InsurPayPayment",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Insert_InsurPayPayment",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_InsurPayPayment AS (\n\tselect InsurPayPaymentId, \r\n\t\tExceedDraftNumber, \r\n\t\tInsurPayBatchId, \r\n\t\tInsurPayTrackingNumber, \r\n\t\tInsurPayStatus, \r\n\t\tPaymentCashedDate, \r\n\t\tPaymentMethod, \r\n\t\tOFACSubmittedTimestamp, \r\n\t\tFlaggedByOFAC, \r\n\t\tStopPayRequestedTime, \r\n\t\tCreatedUserId, \r\n\t\tCreatedDate, \r\n\t\tModifiedUserId, \r\n\t\tModifiedDate, \r\n\t\tCheckNumber, \r\n\t\tAccountNumberLast4Digit, \r\n\t\tPaidDate, \r\n\t\tPaymentType,\r\n\t\tStopPayRequestedUser,\r\n\t\tUploadAttemptCount,\r\n\t\tSupPaymentWorkflowId,\r\n\t\tLateInsurPayStatusNotifiedTimestamp,\r\n\t\tExpediteRequested,\r\n\t\tCertifiedRequested,\r\n\t\tAdditionalDocumentsMessageRequested,\r\n\t\tMailTrackingNumber,\r\n\t\tLateExpeditedPaymentNotifiedTimestamp,\r\n\t\tLateExpeditedPaymentReceivedNotifiedTimestamp,\r\n\t\t AttachedDocumentCount\r\n\tfrom dbo.InsurPayPayment \r\n\twhere (CreatedDate  >= '@{pipeline().parameters.SELECTION_START_TS}' \r\n\t    or ModifiedDate  >= '@{pipeline().parameters.SELECTION_START_TS}')\r\n\tUNION \r\n\tselect p.InsurPayPaymentId, \r\n\t\tp.ExceedDraftNumber, \r\n\t\tp.InsurPayBatchId, \r\n\t\tp.InsurPayTrackingNumber, \r\n\t\tp.InsurPayStatus, \r\n\t\tp.PaymentCashedDate, \r\n\t\tp.PaymentMethod, \r\n\t\tp.OFACSubmittedTimestamp, \r\n\t\tp.FlaggedByOFAC, \r\n\t\tp.StopPayRequestedTime, \r\n\t\tp.CreatedUserId, \r\n\t\tp.CreatedDate, \r\n\t\tp.ModifiedUserId, \r\n\t\tp.ModifiedDate, \r\n\t\tp.CheckNumber, \r\n\t\tp.AccountNumberLast4Digit, \r\n\t\tp.PaidDate, \r\n\t\tp.PaymentType,\r\n\t\tp.StopPayRequestedUser,\r\n\t\tp.UploadAttemptCount,\r\n\t\tp.SupPaymentWorkflowId,\r\n\t\tp.LateInsurPayStatusNotifiedTimestamp,\r\n\t\tp.ExpediteRequested,\r\n\t\tp.CertifiedRequested,\r\n\t\tp.AdditionalDocumentsMessageRequested,\r\n\t\tp.MailTrackingNumber,\r\n\t\tp.LateExpeditedPaymentNotifiedTimestamp,\r\n\t\tp.LateExpeditedPaymentReceivedNotifiedTimestamp,\r\n\t      p.AttachedDocumentCount\r\n\tfrom dbo.SupPaymentWorkflow w\r\n\tjoin dbo.InsurPayPayment p on p.SupPaymentWorkflowId = w.SupPaymentWorkflowId\r\n\twhere (w.CreatedDate  >= '@{pipeline().parameters.SELECTION_START_TS}' \r\n\t    or w.ModifiedDate  >= '@{pipeline().parameters.SELECTION_START_TS}')\n),\nEXPTRANS AS (\n\tSELECT\n\tInsurPayPaymentId,\n\tExceedDraftNumber,\n\tInsurPayBatchId,\n\tInsurPayTrackingNumber,\n\tInsurPayStatus,\n\tPaymentCashedDate,\n\tPaymentMethod,\n\tOFACSubmittedTimestamp,\n\tFlaggedByOFAC,\n\tStopPayRequestedTime,\n\tCreatedUserId,\n\tCreatedDate,\n\tModifiedUserId,\n\tModifiedDate,\n\tCheckNumber,\n\tAccountNumberLast4Digit,\n\tPaidDate,\n\tPaymentType,\n\tStopPayRequestedUser,\n\tUploadAttemptCount,\n\tSupPaymentWorkflowId,\n\tLateInsurPayStatusNotifiedTimestamp,\n\tExpediteRequested,\n\tCertifiedRequested,\n\tAdditionalDocumentsMessageRequested,\n\tMailTrackingNumber,\n\tLateExpeditedPaymentNotifiedTimestamp,\n\tLateExpeditedPaymentReceivedNotifiedTimestamp,\n\tAttachedDocumentCount,\n\tCURRENT_TIMESTAMP AS ExtractDate,\n\t'InsurPay' AS SourceSystemId\n\tFROM SQ_InsurPayPayment\n),\nInsurPayPaymentStage AS (\n\tTRUNCATE TABLE InsurPayPaymentStage;\n\tINSERT INTO InsurPayPaymentStage\n\t(ExtractDate, SourceSystemId, InsurPayPaymentId, ExceedDraftNumber, InsurPayBatchId, InsurPayTrackingNumber, InsurPayStatus, PaymentCashedDate, PaymentMethod, OFACSubmittedTimestamp, FlaggedByOFAC, StopPayRequestedTime, CreatedUserId, CreatedDate, ModifiedUserId, ModifiedDate, CheckNumber, AccountNumberLast4Digit, PaidDate, PaymentType, StopPayRequestedUser, UploadAttemptCount, SupPaymentWorkflowId, LateInsurPayStatusNotifiedTimestamp, ExpediteRequested, CertifiedRequested, AdditionalDocumentsMessageRequested, MailTrackingNumber, LateExpeditedPaymentNotifiedTimestamp, LateExpeditedPaymentReceivedNotifiedTimestamp, AttachedDocumentCount)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tINSURPAYPAYMENTID, \n\tEXCEEDDRAFTNUMBER, \n\tINSURPAYBATCHID, \n\tINSURPAYTRACKINGNUMBER, \n\tINSURPAYSTATUS, \n\tPAYMENTCASHEDDATE, \n\tPAYMENTMETHOD, \n\tOFACSUBMITTEDTIMESTAMP, \n\tFLAGGEDBYOFAC, \n\tSTOPPAYREQUESTEDTIME, \n\tCREATEDUSERID, \n\tCREATEDDATE, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tCHECKNUMBER, \n\tACCOUNTNUMBERLAST4DIGIT, \n\tPAIDDATE, \n\tPAYMENTTYPE, \n\tSTOPPAYREQUESTEDUSER, \n\tUPLOADATTEMPTCOUNT, \n\tSUPPAYMENTWORKFLOWID, \n\tLATEINSURPAYSTATUSNOTIFIEDTIMESTAMP, \n\tEXPEDITEREQUESTED, \n\tCERTIFIEDREQUESTED, \n\tADDITIONALDOCUMENTSMESSAGEREQUESTED, \n\tMAILTRACKINGNUMBER, \n\tLATEEXPEDITEDPAYMENTNOTIFIEDTIMESTAMP, \n\tLATEEXPEDITEDPAYMENTRECEIVEDNOTIFIEDTIMESTAMP, \n\tATTACHEDDOCUMENTCOUNT\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

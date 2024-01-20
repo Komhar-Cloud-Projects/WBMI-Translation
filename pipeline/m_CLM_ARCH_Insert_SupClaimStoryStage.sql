@@ -1,0 +1,117 @@
+WITH
+SQ_SupClaimStoryStage AS (
+	SELECT
+		SupClaimStoryStageId,
+		ID,
+		LIST_TYPE,
+		DESCRIPTION,
+		SHOW_FOR_PROPERTY,
+		SHOW_FOR_CASUALTY,
+		SHOW_FOR_WC,
+		ACTIVE_FLAG,
+		ExtractDate,
+		SourceSystemId
+	FROM SupClaimStoryStage
+),
+EXPTRANS AS (
+	SELECT
+	SupClaimStoryStageId,
+	ID,
+	LIST_TYPE,
+	DESCRIPTION,
+	SHOW_FOR_PROPERTY,
+	SHOW_FOR_CASUALTY,
+	SHOW_FOR_WC,
+	ACTIVE_FLAG,
+	ExtractDate,
+	SourceSystemId,
+	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId
+	FROM SQ_SupClaimStoryStage
+),
+LKP_ArchSupClaimStoryStage AS (
+	SELECT
+	ArchSupClaimStoryStageId,
+	SupClaimStoryStageId,
+	ID,
+	LIST_TYPE,
+	DESCRIPTION,
+	SHOW_FOR_PROPERTY,
+	SHOW_FOR_CASUALTY,
+	SHOW_FOR_WC,
+	ACTIVE_FLAG,
+	ExtractDate,
+	SourceSystemId,
+	AuditId,
+	i_ID
+	FROM (
+		SELECT 
+			ArchSupClaimStoryStageId,
+			SupClaimStoryStageId,
+			ID,
+			LIST_TYPE,
+			DESCRIPTION,
+			SHOW_FOR_PROPERTY,
+			SHOW_FOR_CASUALTY,
+			SHOW_FOR_WC,
+			ACTIVE_FLAG,
+			ExtractDate,
+			SourceSystemId,
+			AuditId,
+			i_ID
+		FROM ArchSupClaimStoryStage
+	)
+	QUALIFY ROW_NUMBER() OVER (PARTITION BY ID ORDER BY ArchSupClaimStoryStageId) = 1
+),
+FIL_RemoveExistingEntries AS (
+	SELECT
+	LKP_ArchSupClaimStoryStage.ID AS lkp_ID, 
+	LKP_ArchSupClaimStoryStage.LIST_TYPE AS lkp_LIST_TYPE, 
+	LKP_ArchSupClaimStoryStage.DESCRIPTION AS lkp_DESCRIPTION, 
+	LKP_ArchSupClaimStoryStage.SHOW_FOR_PROPERTY AS lkp_SHOW_FOR_PROPERTY, 
+	LKP_ArchSupClaimStoryStage.SHOW_FOR_CASUALTY AS lkp_SHOW_FOR_CASUALTY, 
+	LKP_ArchSupClaimStoryStage.SHOW_FOR_WC AS lkp_SHOW_FOR_WC, 
+	LKP_ArchSupClaimStoryStage.ACTIVE_FLAG AS lkp_ACTIVE_FLAG, 
+	EXPTRANS.SupClaimStoryStageId, 
+	EXPTRANS.ID, 
+	EXPTRANS.LIST_TYPE, 
+	EXPTRANS.DESCRIPTION, 
+	EXPTRANS.SHOW_FOR_PROPERTY, 
+	EXPTRANS.SHOW_FOR_CASUALTY, 
+	EXPTRANS.SHOW_FOR_WC, 
+	EXPTRANS.ACTIVE_FLAG, 
+	EXPTRANS.ExtractDate, 
+	EXPTRANS.SourceSystemId, 
+	EXPTRANS.AuditId
+	FROM EXPTRANS
+	LEFT JOIN LKP_ArchSupClaimStoryStage
+	ON LKP_ArchSupClaimStoryStage.ID = EXPTRANS.ID
+	WHERE ISNULL(lkp_ID) OR 
+(
+  lkp_ID=ID AND
+    (
+      lkp_LIST_TYPE != LIST_TYPE OR
+      lkp_DESCRIPTION != DESCRIPTION OR
+      lkp_SHOW_FOR_PROPERTY != SHOW_FOR_PROPERTY OR
+      lkp_SHOW_FOR_CASUALTY != SHOW_FOR_CASUALTY OR
+      lkp_SHOW_FOR_WC != SHOW_FOR_WC OR
+      lkp_ACTIVE_FLAG != ACTIVE_FLAG
+    )
+)
+),
+ArchSupClaimStoryStage AS (
+	INSERT INTO ArchSupClaimStoryStage
+	(SupClaimStoryStageId, ID, LIST_TYPE, DESCRIPTION, SHOW_FOR_PROPERTY, SHOW_FOR_CASUALTY, SHOW_FOR_WC, ACTIVE_FLAG, ExtractDate, SourceSystemId, AuditId)
+	SELECT 
+	SUPCLAIMSTORYSTAGEID, 
+	ID, 
+	LIST_TYPE, 
+	DESCRIPTION, 
+	SHOW_FOR_PROPERTY, 
+	SHOW_FOR_CASUALTY, 
+	SHOW_FOR_WC, 
+	ACTIVE_FLAG, 
+	EXTRACTDATE, 
+	SOURCESYSTEMID, 
+	AUDITID
+	FROM FIL_RemoveExistingEntries
+),

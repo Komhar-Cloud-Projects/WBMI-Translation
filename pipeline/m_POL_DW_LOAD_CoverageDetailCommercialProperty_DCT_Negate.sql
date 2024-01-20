@@ -27,11 +27,9 @@ EXP_CoverageDetailCommercialProperty AS (
 	1 AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59' , 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -88,10 +86,11 @@ EXP_DetectChanges AS (
 	LKP_CoverageDetailCommercialProperty.PreferredPropertyFactor AS lkp_PreferredPropertyFactor,
 	LKP_CoverageDetailCommercialProperty.SprinklerFlag AS lkp_SprinklerFlag_origin,
 	-- *INF*: DECODE(lkp_SprinklerFlag_origin,'T',1,'F',0,NULL)
-	DECODE(lkp_SprinklerFlag_origin,
-		'T', 1,
-		'F', 0,
-		NULL
+	DECODE(
+	    lkp_SprinklerFlag_origin,
+	    'T', 1,
+	    'F', 0,
+	    NULL
 	) AS lkp_SprinklerFlag,
 	LKP_CoverageDetailCommercialProperty.ISOCommercialPropertyCauseofLossGroup AS lkp_ISOPropertyCauseofLossGroup,
 	LKP_CoverageDetailCommercialProperty.ISOCommercialPropertyRatingGroupCode AS lkp_ISOCPRatingGroup,
@@ -121,9 +120,10 @@ EXP_DetectChanges AS (
 	-- ISNULL(lkp_PremiumTransactionId),'NEW',
 	-- 'UPDATE'
 	-- )
-	DECODE(TRUE,
-		lkp_PremiumTransactionId IS NULL, 'NEW',
-		'UPDATE'
+	DECODE(
+	    TRUE,
+	    lkp_PremiumTransactionId IS NULL, 'NEW',
+	    'UPDATE'
 	) AS ChangeFlag
 	FROM EXP_CoverageDetailCommercialProperty
 	LEFT JOIN LKP_CoverageDetailCommercialProperty

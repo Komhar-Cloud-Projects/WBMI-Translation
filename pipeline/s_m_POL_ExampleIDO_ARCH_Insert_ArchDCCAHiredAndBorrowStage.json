@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCAHiredAndBorrowStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCAHiredAndBorrowS_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCAHiredAndBorrowStage AS (\n\tSELECT\n\t\tDCCAHiredAndBorrowStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tLineId,\n\t\tCA_StateId,\n\t\tCA_HiredAndBorrowId,\n\t\tSessionId,\n\t\tId,\n\t\tAuditable,\n\t\tExtendedAddlInsured,\n\t\tHoldHarmlessAgreement,\n\t\tInsuranceRequired,\n\t\tPermittedCarrier,\n\t\tStatedAmountAudit,\n\t\tStatedAmountEstimate,\n\t\tType\n\tFROM DCCAHiredAndBorrowStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCCAHiredAndBorrowStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tLineId,\n\tCA_StateId,\n\tCA_HiredAndBorrowId,\n\tSessionId,\n\tId,\n\tAuditable AS i_Auditable,\n\tExtendedAddlInsured AS i_ExtendedAddlInsured,\n\tHoldHarmlessAgreement AS i_HoldHarmlessAgreement,\n\tInsuranceRequired AS i_InsuranceRequired,\n\tPermittedCarrier AS i_PermittedCarrier,\n\t-- *INF*: DECODE(i_Auditable, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_Auditable,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_Auditable,\n\t-- *INF*: DECODE(i_ExtendedAddlInsured, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ExtendedAddlInsured,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ExtendedAddlInsured,\n\t-- *INF*: DECODE(i_HoldHarmlessAgreement, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_HoldHarmlessAgreement,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_HoldHarmlessAgreement,\n\t-- *INF*: DECODE(i_InsuranceRequired, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_InsuranceRequired,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_InsuranceRequired,\n\t-- *INF*: DECODE(i_PermittedCarrier, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_PermittedCarrier,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_PermittedCarrier,\n\tStatedAmountAudit,\n\tStatedAmountEstimate,\n\tType,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCAHiredAndBorrowStage\n),\nArchDCCAHiredAndBorrowStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCAHiredAndBorrowStage\n\t(ExtractDate, SourceSystemId, AuditId, DCCAHiredAndBorrowStageId, LineId, CA_StateId, CA_HiredAndBorrowId, SessionId, Id, Auditable, ExtendedAddlInsured, HoldHarmlessAgreement, InsuranceRequired, PermittedCarrier, StatedAmountAudit, StatedAmountEstimate, Type)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCCAHIREDANDBORROWSTAGEID, \n\tLINEID, \n\tCA_STATEID, \n\tCA_HIREDANDBORROWID, \n\tSESSIONID, \n\tID, \n\to_Auditable AS AUDITABLE, \n\to_ExtendedAddlInsured AS EXTENDEDADDLINSURED, \n\to_HoldHarmlessAgreement AS HOLDHARMLESSAGREEMENT, \n\to_InsuranceRequired AS INSURANCEREQUIRED, \n\to_PermittedCarrier AS PERMITTEDCARRIER, \n\tSTATEDAMOUNTAUDIT, \n\tSTATEDAMOUNTESTIMATE, \n\tTYPE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

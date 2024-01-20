@@ -141,155 +141,124 @@ EXP_Lkp_Values AS (
 	LKP_Territory_Stage.TERRITORY_SYMBOL AS in_rsm_terr_sym,
 	-- *INF*: iif(isnull(in_rsm_terr_sym),'N/A',
 	-- iif(is_spaces(in_rsm_terr_sym),'N/A',in_rsm_terr_sym))
-	IFF(in_rsm_terr_sym IS NULL,
-		'N/A',
-		IFF(LENGTH(in_rsm_terr_sym)>0 AND TRIM(in_rsm_terr_sym)='',
-			'N/A',
-			in_rsm_terr_sym
-		)
+	IFF(
+	    in_rsm_terr_sym IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(in_rsm_terr_sym)>0 AND TRIM(in_rsm_terr_sym)='', 'N/A', in_rsm_terr_sym
+	    )
 	) AS out_rsm_TERR_SYM,
 	LKP_Territory_Stage.TERRITORY_NAME AS in_rsm_TERR_NAME,
 	-- *INF*: iif(isnull(in_rsm_TERR_NAME),'Not Found',iif(is_spaces(in_rsm_TERR_NAME),'Not Found',ltrim(rtrim(in_rsm_TERR_NAME))))
-	IFF(in_rsm_TERR_NAME IS NULL,
-		'Not Found',
-		IFF(LENGTH(in_rsm_TERR_NAME)>0 AND TRIM(in_rsm_TERR_NAME)='',
-			'Not Found',
-			ltrim(rtrim(in_rsm_TERR_NAME
-				)
-			)
-		)
+	IFF(
+	    in_rsm_TERR_NAME IS NULL, 'Not Found',
+	    IFF(
+	        LENGTH(in_rsm_TERR_NAME)>0
+	    and TRIM(in_rsm_TERR_NAME)='', 'Not Found',
+	        ltrim(rtrim(in_rsm_TERR_NAME))
+	    )
 	) AS out_rsm_TERR_NAME,
 	LKP_Territory_Stage.TERRITORY_CODE AS in_rsm_TERR_CODE,
 	-- *INF*: iif(isnull(TO_CHAR(in_rsm_TERR_CODE)),'N/A',TO_CHAR(in_rsm_TERR_CODE))
-	IFF(TO_CHAR(in_rsm_TERR_CODE
-		) IS NULL,
-		'N/A',
-		TO_CHAR(in_rsm_TERR_CODE
-		)
-	) AS out_rsm_TERR_CODE,
+	IFF(TO_CHAR(in_rsm_TERR_CODE) IS NULL, 'N/A', TO_CHAR(in_rsm_TERR_CODE)) AS out_rsm_TERR_CODE,
 	-- *INF*: iif(isnull(STATE_CODE),'N/A',iif(is_spaces(STATE_CODE),'N/A',STATE_CODE))
-	IFF(STATE_CODE IS NULL,
-		'N/A',
-		IFF(LENGTH(STATE_CODE)>0 AND TRIM(STATE_CODE)='',
-			'N/A',
-			STATE_CODE
-		)
+	IFF(
+	    STATE_CODE IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(STATE_CODE)>0 AND TRIM(STATE_CODE)='', 'N/A', STATE_CODE
+	    )
 	) AS v_STATE_CODE,
 	v_STATE_CODE AS agency_state_code,
 	LKP_State_Sup.state_abbrev AS in_agency_state_abbrev,
 	-- *INF*: iif(isnull(in_agency_state_abbrev),'N/A',iif(IS_SPACES(in_agency_state_abbrev),'N/A',in_agency_state_abbrev))
 	-- 
 	-- 
-	IFF(in_agency_state_abbrev IS NULL,
-		'N/A',
-		IFF(LENGTH(in_agency_state_abbrev)>0 AND TRIM(in_agency_state_abbrev)='',
-			'N/A',
-			in_agency_state_abbrev
-		)
+	IFF(
+	    in_agency_state_abbrev IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(in_agency_state_abbrev)>0
+	    and TRIM(in_agency_state_abbrev)='', 'N/A',
+	        in_agency_state_abbrev
+	    )
 	) AS agency_state_abbrev,
 	LKP_State_Sup.state_descript AS in_agency_state_descript,
 	-- *INF*: iif(isnull(in_agency_state_descript),'Not Available',
 	-- iif(is_spaces(in_agency_state_descript),'Not Available',in_agency_state_descript))
-	IFF(in_agency_state_descript IS NULL,
-		'Not Available',
-		IFF(LENGTH(in_agency_state_descript)>0 AND TRIM(in_agency_state_descript)='',
-			'Not Available',
-			in_agency_state_descript
-		)
+	IFF(
+	    in_agency_state_descript IS NULL, 'Not Available',
+	    IFF(
+	        LENGTH(in_agency_state_descript)>0
+	    and TRIM(in_agency_state_descript)='',
+	        'Not Available',
+	        in_agency_state_descript
+	    )
 	) AS out_agency_state_descript,
 	EXP_Values.AGENCY_NUM AS in_AGENCY_NUM,
 	-- *INF*: iif(isnull(in_AGENCY_NUM),'N/A',
 	-- iif(is_spaces(in_AGENCY_NUM),'N/A',in_AGENCY_NUM))
-	IFF(in_AGENCY_NUM IS NULL,
-		'N/A',
-		IFF(LENGTH(in_AGENCY_NUM)>0 AND TRIM(in_AGENCY_NUM)='',
-			'N/A',
-			in_AGENCY_NUM
-		)
+	IFF(
+	    in_AGENCY_NUM IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(in_AGENCY_NUM)>0 AND TRIM(in_AGENCY_NUM)='', 'N/A', in_AGENCY_NUM
+	    )
 	) AS out_AGENCY_NUM,
 	EXP_Values.AGENCY_ABBREV_NAME AS in_AGENCY_NAME,
 	-- *INF*: iif(isnull(in_AGENCY_NAME),'Not Available',
 	-- iif(is_spaces(in_AGENCY_NAME),'Not Available',ltrim(rtrim(in_AGENCY_NAME))))
-	IFF(in_AGENCY_NAME IS NULL,
-		'Not Available',
-		IFF(LENGTH(in_AGENCY_NAME)>0 AND TRIM(in_AGENCY_NAME)='',
-			'Not Available',
-			ltrim(rtrim(in_AGENCY_NAME
-				)
-			)
-		)
+	IFF(
+	    in_AGENCY_NAME IS NULL, 'Not Available',
+	    IFF(
+	        LENGTH(in_AGENCY_NAME)>0
+	    and TRIM(in_AGENCY_NAME)='', 'Not Available',
+	        ltrim(rtrim(in_AGENCY_NAME))
+	    )
 	) AS out_AGENCY_NAME,
 	-- *INF*: :LKP.LKP_RSM_TERRITORY_NAME_RULE(in_rsm_terr_sym)
 	LKP_RSM_TERRITORY_NAME_RULE_in_rsm_terr_sym.rsm_terr_name_rule_id AS v_Audit_Terr_Name_Rule_id,
 	-- *INF*: iif(isnull(v_Audit_Terr_Name_Rule_id),0,v_Audit_Terr_Name_Rule_id)
-	IFF(v_Audit_Terr_Name_Rule_id IS NULL,
-		0,
-		v_Audit_Terr_Name_Rule_id
-	) AS out_v_Audit_Terr_Name_Rule_id,
+	IFF(v_Audit_Terr_Name_Rule_id IS NULL, 0, v_Audit_Terr_Name_Rule_id) AS out_v_Audit_Terr_Name_Rule_id,
 	EXP_Values.DIRCONN_PER_DATE AS in_DIRCONN_PER_DATE,
 	-- *INF*: iif(isnull(in_DIRCONN_PER_DATE),TO_DATE('1/1/1800','MM/DD/YYYY'),in_DIRCONN_PER_DATE)
-	IFF(in_DIRCONN_PER_DATE IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_DIRCONN_PER_DATE
+	IFF(
+	    in_DIRCONN_PER_DATE IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), in_DIRCONN_PER_DATE
 	) AS out_DIRCONN_PER_DATE,
 	EXP_Values.DIRCONN_COMM_DATE AS in_DIRCONN_COMM_DATE,
 	-- *INF*: iif(isnull(in_DIRCONN_COMM_DATE),TO_DATE('1/1/1800','MM/DD/YYYY'),in_DIRCONN_COMM_DATE)
-	IFF(in_DIRCONN_COMM_DATE IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_DIRCONN_COMM_DATE
+	IFF(
+	    in_DIRCONN_COMM_DATE IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), in_DIRCONN_COMM_DATE
 	) AS out_DIRCONN_COMM_DATE,
 	LKP_RSM_Stage.RSM_LAST_NAME,
 	-- *INF*: iif(isnull(RSM_LAST_NAME),'Not Available',iif(is_spaces(RSM_LAST_NAME),'Not Available',(ltrim(rtrim(RSM_LAST_NAME)))))
-	IFF(RSM_LAST_NAME IS NULL,
-		'Not Available',
-		IFF(LENGTH(RSM_LAST_NAME)>0 AND TRIM(RSM_LAST_NAME)='',
-			'Not Available',
-			( ltrim(rtrim(RSM_LAST_NAME
-					)
-				) 
-			)
-		)
+	IFF(
+	    RSM_LAST_NAME IS NULL, 'Not Available',
+	    IFF(
+	        LENGTH(RSM_LAST_NAME)>0
+	    and TRIM(RSM_LAST_NAME)='', 'Not Available',
+	        (ltrim(rtrim(RSM_LAST_NAME)))
+	    )
 	) AS v_RSM_Last_Name,
 	v_RSM_Last_Name AS out_rsm_last_name,
 	LKP_RSM_Stage.RSM_FIRST_NAME,
 	-- *INF*: iif(isnull(RSM_FIRST_NAME),'N/A',iif(is_spaces(RSM_FIRST_NAME),'N/A',(ltrim(rtrim(RSM_FIRST_NAME)))))
-	IFF(RSM_FIRST_NAME IS NULL,
-		'N/A',
-		IFF(LENGTH(RSM_FIRST_NAME)>0 AND TRIM(RSM_FIRST_NAME)='',
-			'N/A',
-			( ltrim(rtrim(RSM_FIRST_NAME
-					)
-				) 
-			)
-		)
+	IFF(
+	    RSM_FIRST_NAME IS NULL, 'N/A',
+	    IFF(
+	        LENGTH(RSM_FIRST_NAME)>0
+	    and TRIM(RSM_FIRST_NAME)='', 'N/A',
+	        (ltrim(rtrim(RSM_FIRST_NAME)))
+	    )
 	) AS v_RSM_FIRST_NAME,
 	-- *INF*: iif(isnull
 	-- (ltrim(rtrim(RSM_FIRST_NAME))
 	-- ||' ' || (ltrim(rtrim(RSM_LAST_NAME)))),'Not Available',(ltrim(rtrim(RSM_FIRST_NAME)))||' ' || (ltrim(rtrim(RSM_LAST_NAME))))
 	-- 
-	IFF(ltrim(rtrim(RSM_FIRST_NAME
-			)
-		) || ' ' || ( ltrim(rtrim(RSM_LAST_NAME
-				)
-			) 
-		) IS NULL,
-		'Not Available',
-		( ltrim(rtrim(RSM_FIRST_NAME
-				)
-			) 
-		) || ' ' || ( ltrim(rtrim(RSM_LAST_NAME
-				)
-			) 
-		)
+	IFF(
+	    ltrim(rtrim(RSM_FIRST_NAME)) || ' ' || (ltrim(rtrim(RSM_LAST_NAME))) IS NULL,
+	    'Not Available',
+	    (ltrim(rtrim(RSM_FIRST_NAME))) || ' ' || (ltrim(rtrim(RSM_LAST_NAME)))
 	) AS out_rsm_full_name,
 	STATE_CODE || in_AGENCY_NUM AS v_Agency_key,
 	-- *INF*: iif(isnull(v_Agency_key), 'N/A',v_Agency_key)
-	IFF(v_Agency_key IS NULL,
-		'N/A',
-		v_Agency_key
-	) AS out_Agency_Key,
+	IFF(v_Agency_key IS NULL, 'N/A', v_Agency_key) AS out_Agency_Key,
 	1 AS crrnt_snpsht_flag,
 	EXP_Values.SOURCE_SYSTEM_ID
 	FROM EXP_Values
@@ -459,41 +428,30 @@ EXP_Detect_Changes AS (
 	EXP_Lkp_Values.out_rsm_last_name,
 	LKP_Related_Agency_Stage_Prim_Agency_key.PRIM_STATE_CODE AS in_prim_agency_state_code,
 	-- *INF*: IIF(ISNULL(in_prim_agency_state_code),agency_state_code,in_prim_agency_state_code)
-	IFF(in_prim_agency_state_code IS NULL,
-		agency_state_code,
-		in_prim_agency_state_code
-	) AS v_prim_agency_state_code,
+	IFF(in_prim_agency_state_code IS NULL, agency_state_code, in_prim_agency_state_code) AS v_prim_agency_state_code,
 	v_prim_agency_state_code || '  ' AS prim_agency_state_code,
 	LKP_State_Sup1.state_abbrev AS in_prim_agency_state_abbrev,
 	-- *INF*: IIF(ISNULL(in_prim_agency_state_abbrev),agency_state_abbrev,in_prim_agency_state_abbrev)
-	IFF(in_prim_agency_state_abbrev IS NULL,
-		agency_state_abbrev,
-		in_prim_agency_state_abbrev
-	) AS v_prim_agency_state_abbrev,
+	IFF(in_prim_agency_state_abbrev IS NULL, agency_state_abbrev, in_prim_agency_state_abbrev) AS v_prim_agency_state_abbrev,
 	v_prim_agency_state_abbrev AS prim_agency_state_abbrev,
 	LKP_State_Sup1.state_descript AS in_prim_agency_state_descript,
 	-- *INF*: IIF(ISNULL(in_prim_agency_state_descript),agency_state_descript,in_prim_agency_state_descript)
-	IFF(in_prim_agency_state_descript IS NULL,
-		agency_state_descript,
-		in_prim_agency_state_descript
+	IFF(
+	    in_prim_agency_state_descript IS NULL, agency_state_descript, in_prim_agency_state_descript
 	) AS v_prim_agency_state_descript,
 	v_prim_agency_state_descript AS prim_agency_state_descript,
 	LKP_Related_Agency_Stage_Prim_Agency_key.PRIM_AGENCY_NUM AS in_prim_AGENCY_NUM,
 	-- *INF*: IIF(ISNULL(in_prim_AGENCY_NUM),AGENCY_NUM,in_prim_AGENCY_NUM)
-	IFF(in_prim_AGENCY_NUM IS NULL,
-		AGENCY_NUM,
-		in_prim_AGENCY_NUM
-	) AS v_prim_AGENCY_NUM,
+	IFF(in_prim_AGENCY_NUM IS NULL, AGENCY_NUM, in_prim_AGENCY_NUM) AS v_prim_AGENCY_NUM,
 	v_prim_AGENCY_NUM AS prim_AGENCY_NUM,
 	v_prim_agency_state_code || v_prim_AGENCY_NUM AS V_out_prim_agency_key,
 	V_out_prim_agency_key AS OUT_PRIM_AGENCY_KEY,
 	LKP_Related_Agency_Stage_Prim_Agency_key.PRIM_AGENCY_ABBREV_NAME AS in_prim_AGENCY_NAME,
 	-- *INF*: RTRIM(IIF(ISNULL(in_prim_AGENCY_NAME),AGENCY_NAME,in_prim_AGENCY_NAME))
-	RTRIM(IFF(in_prim_AGENCY_NAME IS NULL,
-			AGENCY_NAME,
-			in_prim_AGENCY_NAME
-		)
-	) AS v_prim_AGENCY_NAME,
+	RTRIM(
+	    IFF(
+	        in_prim_AGENCY_NAME IS NULL, AGENCY_NAME, in_prim_AGENCY_NAME
+	    )) AS v_prim_AGENCY_NAME,
 	v_prim_AGENCY_NAME AS prim_AGENCY_NAME,
 	EXP_Lkp_Values.agency_state_code,
 	EXP_Lkp_Values.agency_state_abbrev,
@@ -506,25 +464,18 @@ EXP_Detect_Changes AS (
 	EXP_Lkp_Values.out_DIRCONN_COMM_DATE AS DIRCONN_COMM_DATE,
 	LKP_pay_code_stage.pay_code AS in_pay_code,
 	-- *INF*: IIF(isnull(in_pay_code),'N/A',in_pay_code)
-	IFF(in_pay_code IS NULL,
-		'N/A',
-		in_pay_code
-	) AS v_pay_code,
+	IFF(in_pay_code IS NULL, 'N/A', in_pay_code) AS v_pay_code,
 	v_pay_code AS pay_code,
 	LKP_pay_code_stage.pay_code_exp_date AS in_pay_code_exp_date,
 	-- *INF*: iif(isnull(in_pay_code_exp_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_pay_code_exp_date)
-	IFF(in_pay_code_exp_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_pay_code_exp_date
+	IFF(
+	    in_pay_code_exp_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), in_pay_code_exp_date
 	) AS v_pay_code_exp_date,
 	v_pay_code_exp_date AS pay_code_exp_date,
 	LKP_pay_code_stage.pay_code_eff_date AS in_pay_code_eff_date,
 	-- *INF*: iif(isnull(in_pay_code_eff_date),TO_DATE('1/1/1800','MM/DD/YYYY'),in_pay_code_eff_date)
-	IFF(in_pay_code_eff_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_pay_code_eff_date
+	IFF(
+	    in_pay_code_eff_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), in_pay_code_eff_date
 	) AS v_pay_code_eff_date,
 	v_pay_code_eff_date AS pay_code_eff_date,
 	LKP_agency.agency_ak_id,
@@ -579,74 +530,45 @@ EXP_Detect_Changes AS (
 	-- ,
 	-- 'UPDATE',
 	-- 'NOCHANGE'))
-	IFF(agency_id_old IS NULL,
-		'NEW',
-		IFF(( rsm_TERR_SYM <> rsm_terr_sym_old 
-			) 
-			OR ( in_rsm_TERR_CODE <> RTrim(rsm_terr_code_old, '  '
-				) 
-			) 
-			OR ( rsm_TERR_NAME <> rsm_terr_name_old 
-			) 
-			OR ( out_rsm_full_name <> rsm_full_name_old 
-			) 
-			OR ( out_rsm_last_name <> rsm_last_name_old 
-			) 
-			OR ( LPAD(v_prim_agency_state_code, 2
-				) <> LPAD(prim_agency_state_code_old, 2
-				) 
-			) 
-			OR ( v_prim_agency_state_abbrev <> prim_agency_state_abbrev_old 
-			) 
-			OR ( v_prim_agency_state_descript <> prim_agency_state_descript_old 
-			) 
-			OR ( v_prim_AGENCY_NUM <> prim_agency_num_old 
-			) 
-			OR ( V_out_prim_agency_key <> prim_agency_key_old 
-			) 
-			OR ( v_prim_AGENCY_NAME <> prim_agency_name_old 
-			) 
-			OR ( LPAD(agency_state_code, 2
-				) <> LPAD(agency_state_code_old, 2
-				) 
-			) 
-			OR ( agency_state_abbrev <> agency_state_abbrev_old 
-			) 
-			OR ( agency_state_descript <> agency_state_descript_old 
-			) 
-			OR ( AGENCY_NUM <> agency_num_old 
-			) 
-			OR ( out_Agency_Key <> agency_key_old 
-			) 
-			OR ( AGENCY_NAME <> agency_name_old 
-			) 
-			OR ( out_Audit_Terr_Name_Rule_id <> rsm_terr_name_rule_id_old 
-			) 
-			OR ( DIRCONN_PER_DATE <> dirconn_per_date_old 
-			) 
-			OR ( DIRCONN_COMM_DATE <> dirconn_comm_date_old 
-			) 
-			OR ( v_pay_code <> agency_pay_code 
-			) 
-			OR ( v_pay_code_exp_date <> agency_pay_code_eff_to_date 
-			) 
-			OR ( v_pay_code_eff_date <> agency_pay_code_eff_from_date 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    agency_id_old IS NULL, 'NEW',
+	    IFF(
+	        (rsm_TERR_SYM <> rsm_terr_sym_old)
+	        or (in_rsm_TERR_CODE <> RTrim(rsm_terr_code_old, '  '))
+	        or (rsm_TERR_NAME <> rsm_terr_name_old)
+	        or (out_rsm_full_name <> rsm_full_name_old)
+	        or (out_rsm_last_name <> rsm_last_name_old)
+	        or (LPAD(v_prim_agency_state_code, 2) <> LPAD(prim_agency_state_code_old, 2))
+	        or (v_prim_agency_state_abbrev <> prim_agency_state_abbrev_old)
+	        or (v_prim_agency_state_descript <> prim_agency_state_descript_old)
+	        or (v_prim_AGENCY_NUM <> prim_agency_num_old)
+	        or (V_out_prim_agency_key <> prim_agency_key_old)
+	        or (v_prim_AGENCY_NAME <> prim_agency_name_old)
+	        or (LPAD(agency_state_code, 2) <> LPAD(agency_state_code_old, 2))
+	        or (agency_state_abbrev <> agency_state_abbrev_old)
+	        or (agency_state_descript <> agency_state_descript_old)
+	        or (AGENCY_NUM <> agency_num_old)
+	        or (out_Agency_Key <> agency_key_old)
+	        or (AGENCY_NAME <> agency_name_old)
+	        or (out_Audit_Terr_Name_Rule_id <> rsm_terr_name_rule_id_old)
+	        or (DIRCONN_PER_DATE <> dirconn_per_date_old)
+	        or (DIRCONN_COMM_DATE <> dirconn_comm_date_old)
+	        or (v_pay_code <> agency_pay_code)
+	        or (v_pay_code_exp_date <> agency_pay_code_eff_to_date)
+	        or (v_pay_code_eff_date <> agency_pay_code_eff_from_date),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(v_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	v_changed_flag AS changed_flag,
 	LKP_agency.agency_id AS agency_id_old,
 	EXP_Lkp_Values.SOURCE_SYSTEM_ID,
@@ -656,10 +578,7 @@ EXP_Detect_Changes AS (
 	-- *INF*: IIF(v_changed_flag='NEW',
 	-- NEXTVAL,
 	-- agency_ak_id)
-	IFF(v_changed_flag = 'NEW',
-		NEXTVAL,
-		agency_ak_id
-	) AS out_agency_ak_id
+	IFF(v_changed_flag = 'NEW', NEXTVAL, agency_ak_id) AS out_agency_ak_id
 	FROM EXP_Lkp_Values
 	LEFT JOIN LKP_Related_Agency_Stage_Prim_Agency_key
 	ON LKP_Related_Agency_Stage_Prim_Agency_key.REL_STATE_CODE = EXP_Lkp_Values.agency_state_code AND LKP_Related_Agency_Stage_Prim_Agency_key.REL_AGENCY_NUM = EXP_Lkp_Values.out_AGENCY_NUM
@@ -786,10 +705,10 @@ EXP_Lag_eff_from_date AS (
 	-- 
 	-- 
 	-- 
-	DECODE(TRUE,
-		agency_state_code = v_PREV_ROW_agency_state_code 
-		AND agency_num = v_PREV_ROW_agency_num, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    agency_state_code = v_PREV_ROW_agency_state_code and agency_num = v_PREV_ROW_agency_num, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

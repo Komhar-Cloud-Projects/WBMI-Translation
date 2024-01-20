@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_WC_REPORT_HISTORY",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_WC_REPORT_HISTORY",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WC_REPORT_HISTORY_STAGE AS (\n\tSELECT WC_REPORT_HISTORY_STAGE.WC_REPORT_HISTORY_ID, WC_REPORT_HISTORY_STAGE.WRH_OBJECT_SEQ_NBR, WC_REPORT_HISTORY_STAGE.WRH_CLAIM_NBR, WC_REPORT_HISTORY_STAGE.WRH_CREATE_TS, WC_REPORT_HISTORY_STAGE.WRH_REPORT_TYPE, WC_REPORT_HISTORY_STAGE.WRH_REPORTED_DATE, WC_REPORT_HISTORY_STAGE.WRH_UPDATE_TS, WC_REPORT_HISTORY_STAGE.WRH_ENTRY_OPR_ID, WC_REPORT_HISTORY_STAGE.WRH_UPDATE_OPR_ID, WC_REPORT_HISTORY_STAGE.WRH_CLIENT_ID, WC_REPORT_HISTORY_STAGE.EXTRACT_DATE, WC_REPORT_HISTORY_STAGE.AS_OF_DATE, WC_REPORT_HISTORY_STAGE.RECORD_COUNT, WC_REPORT_HISTORY_STAGE.SOURCE_SYSTEM_ID \r\n\tFROM\r\n\t WC_REPORT_HISTORY_STAGE\r\n\tWHERE\r\n\tWC_REPORT_HISTORY_STAGE.WRH_CREATE_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\r\n\tOR\r\n\tWC_REPORT_HISTORY_STAGE.WRH_UPDATE_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXPTRANS AS (\n\tSELECT\n\tWC_REPORT_HISTORY_ID,\n\tWRH_OBJECT_SEQ_NBR,\n\tWRH_CLAIM_NBR,\n\tWRH_CREATE_TS,\n\tWRH_REPORT_TYPE,\n\tWRH_REPORTED_DATE,\n\tWRH_UPDATE_TS,\n\tWRH_ENTRY_OPR_ID,\n\tWRH_UPDATE_OPR_ID,\n\tWRH_CLIENT_ID,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_WC_REPORT_HISTORY_STAGE\n),\nARCH_WC_REPORT_HISTORY_STAGE AS (\n\tINSERT INTO ARCH_WC_REPORT_HISTORY_STAGE\n\t(wc_report_history_id, wrh_object_seq_nbr, wrh_claim_nbr, wrh_create_ts, wrh_report_type, wrh_reported_date, wrh_update_ts, wrh_entry_opr_id, wrh_update_opr_id, wrh_client_id, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tWC_REPORT_HISTORY_ID AS WC_REPORT_HISTORY_ID, \n\tWRH_OBJECT_SEQ_NBR AS WRH_OBJECT_SEQ_NBR, \n\tWRH_CLAIM_NBR AS WRH_CLAIM_NBR, \n\tWRH_CREATE_TS AS WRH_CREATE_TS, \n\tWRH_REPORT_TYPE AS WRH_REPORT_TYPE, \n\tWRH_REPORTED_DATE AS WRH_REPORTED_DATE, \n\tWRH_UPDATE_TS AS WRH_UPDATE_TS, \n\tWRH_ENTRY_OPR_ID AS WRH_ENTRY_OPR_ID, \n\tWRH_UPDATE_OPR_ID AS WRH_UPDATE_OPR_ID, \n\tWRH_CLIENT_ID AS WRH_CLIENT_ID, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

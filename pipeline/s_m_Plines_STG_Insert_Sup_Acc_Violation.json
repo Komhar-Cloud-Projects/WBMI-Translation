@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Plines_STG_Insert_Sup_Acc_Violation",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Plines_STG_Insert_Sup_Acc_Violation",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_sup_acc_violation AS (\n\tSELECT\n\t\tcode,\n\t\teff_date,\n\t\tstate_type_code,\n\t\texp_date,\n\t\tpmsc_code,\n\t\tdescript,\n\t\tmajor_minor_flag,\n\t\tamt_requ_flag,\n\t\tdescript_requ_flag,\n\t\tdriver_requ_type,\n\t\tcov_part_type_code,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\tpolicy_level_claim_flag,\n\t\tattr_severity_code\n\tFROM sup_acc_violation\n),\nEXP_SUP_ACC_VIOLATION AS (\n\tSELECT\n\tcode,\n\teff_date,\n\tstate_type_code,\n\texp_date,\n\tpmsc_code,\n\tdescript,\n\tmajor_minor_flag,\n\tamt_requ_flag,\n\tdescript_requ_flag,\n\tdriver_requ_type,\n\tcov_part_type_code,\n\tmodified_date,\n\tmodified_user_id,\n\tpolicy_level_claim_flag,\n\tattr_severity_code,\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t'' AS RECORD_COUNT,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID\n\tFROM SQ_sup_acc_violation\n),\nsup_acc_violation_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_acc_violation_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_acc_violation_stage\n\t(code, eff_date, state_type_code, exp_date, pmsc_code, descript, major_minor_flag, amt_requ_flag, descript_requ_flag, driver_requ_type, cov_part_type_code, modified_date, modified_user_id, policy_level_claim_flag, attr_severity_code, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tCODE, \n\tEFF_DATE, \n\tSTATE_TYPE_CODE, \n\tEXP_DATE, \n\tPMSC_CODE, \n\tDESCRIPT, \n\tMAJOR_MINOR_FLAG, \n\tAMT_REQU_FLAG, \n\tDESCRIPT_REQU_FLAG, \n\tDRIVER_REQU_TYPE, \n\tCOV_PART_TYPE_CODE, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tPOLICY_LEVEL_CLAIM_FLAG, \n\tATTR_SEVERITY_CODE, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_SUP_ACC_VIOLATION\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CommonStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -16,20 +16,10 @@ EXP_Default_Values AS (
 	SELECT
 	clm_category_code,
 	-- *INF*: iif(isnull(clm_category_code),'N/A', LTRIM(RTRIM(clm_category_code)))
-	IFF(clm_category_code IS NULL,
-		'N/A',
-		LTRIM(RTRIM(clm_category_code
-			)
-		)
-	) AS clm_category_code_OUT,
+	IFF(clm_category_code IS NULL, 'N/A', LTRIM(RTRIM(clm_category_code))) AS clm_category_code_OUT,
 	clm_category_desc,
 	-- *INF*: iif(isnull(clm_category_desc),'N/A', LTRIM(RTRIM(clm_category_desc)))
-	IFF(clm_category_desc IS NULL,
-		'N/A',
-		LTRIM(RTRIM(clm_category_desc
-			)
-		)
-	) AS clm_category_desc_OUT
+	IFF(clm_category_desc IS NULL, 'N/A', LTRIM(RTRIM(clm_category_desc))) AS clm_category_desc_OUT
 	FROM SQ_sup_claim_category_stage
 ),
 LKP_SUP_WC_CLAIM_CTGRY AS (
@@ -53,31 +43,25 @@ EXP_Detect_Changes AS (
 	EXP_Default_Values.clm_category_code_OUT,
 	EXP_Default_Values.clm_category_desc_OUT AS claim_ctgry_code_descript_OUT,
 	-- *INF*: IIF(ISNULL(OLD_claim_ctgry_code), 'NEW', IIF(LTRIM(RTRIM(OLD_claim_ctgry_code_descript)) != (LTRIM(RTRIM(claim_ctgry_code_descript_OUT))), 'UPDATE', 'NOCHANGE'))
-	IFF(OLD_claim_ctgry_code IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(OLD_claim_ctgry_code_descript
-				)
-			) != ( LTRIM(RTRIM(claim_ctgry_code_descript_OUT
-					)
-				) 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    OLD_claim_ctgry_code IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(OLD_claim_ctgry_code_descript)) != (LTRIM(RTRIM(claim_ctgry_code_descript_OUT))),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS V_changed_flag,
 	V_changed_flag AS CHANGED_FLAG,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: iif(V_changed_flag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(V_changed_flag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    V_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id
@@ -137,9 +121,10 @@ EXP_Lag_Eff_From_Date AS (
 	-- 	claim_ctgry_code= v_prev_row_claim_ctgry_code, ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
 	-- 	
-	DECODE(TRUE,
-		claim_ctgry_code = v_prev_row_claim_ctgry_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    claim_ctgry_code = v_prev_row_claim_ctgry_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	claim_ctgry_code AS v_prev_row_claim_ctgry_code,

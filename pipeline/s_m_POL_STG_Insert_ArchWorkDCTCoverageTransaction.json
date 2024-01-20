@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchWorkDCTCoverageTransaction",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchWorkDCTCoverageTransaction",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkDCTCoverageTransaction AS (\n\tSELECT\n\t\tWorkDCTCoverageTransactionId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tSessionId,\n\t\tParentCoverageObjectId,\n\t\tParentCoverageObjectName,\n\t\tCoverageId,\n\t\tCoverageGUID,\n\t\tCoverageType,\n\t\tChange,\n\t\tPremium,\n\t\tParentCoverageType,\n\t\tCoverageDeleteFlag,\n\t\tWritten,\n\t\tPrior,\n\t\tBaseRate,\n\t\tIncreasedLimitFactor,\n\t\tSubCoverageType\n\tFROM WorkDCTCoverageTransaction\n),\nEXp_Default AS (\n\tSELECT\n\tWorkDCTCoverageTransactionId,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,\n\tSessionId,\n\tParentCoverageObjectId,\n\tParentCoverageObjectName,\n\tCoverageId,\n\tCoverageGUID,\n\tCoverageType,\n\tChange,\n\tPremium,\n\tParentCoverageType,\n\tCoverageDeleteFlag,\n\tWritten,\n\tPrior,\n\tBaseRate,\n\tIncreasedLimitFactor,\n\tSubCoverageType\n\tFROM SQ_WorkDCTCoverageTransaction\n),\nArchWorkDCTCoverageTransaction AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWorkDCTCoverageTransaction\n\t(ExtractDate, SourceSystemId, AuditId, WorkDCTCoverageTransactionId, SessionId, ParentCoverageObjectId, ParentCoverageObjectName, CoverageId, CoverageGUID, CoverageType, Change, Premium, ParentCoverageType, CoverageDeleteFlag, Written, Prior, BaseRate, IncreasedLimitFactor, SubCoverageType)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\taudit_id AS AUDITID, \n\tWORKDCTCOVERAGETRANSACTIONID, \n\tSESSIONID, \n\tPARENTCOVERAGEOBJECTID, \n\tPARENTCOVERAGEOBJECTNAME, \n\tCOVERAGEID, \n\tCOVERAGEGUID, \n\tCOVERAGETYPE, \n\tCHANGE, \n\tPREMIUM, \n\tPARENTCOVERAGETYPE, \n\tCOVERAGEDELETEFLAG, \n\tWRITTEN, \n\tPRIOR, \n\tBASERATE, \n\tINCREASEDLIMITFACTOR, \n\tSUBCOVERAGETYPE\n\tFROM EXp_Default\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

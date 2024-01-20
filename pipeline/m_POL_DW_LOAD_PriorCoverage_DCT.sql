@@ -18,14 +18,11 @@ EXP_GetValues AS (
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifedDate,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_CarrierName)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_CarrierName
-	) AS o_PriorCarrierName,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_CarrierName) AS o_PriorCarrierName,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_PolicyNumber)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_PolicyNumber
-	) AS o_PriorPolicyKey,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_PolicyNumber) AS o_PriorPolicyKey,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_LineOfBusiness)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_LineOfBusiness
-	) AS o_PriorInsuranceLine
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_LineOfBusiness) AS o_PriorInsuranceLine
 	FROM SQ_DCPriorInsuranceStaging
 ),
 AGG_RemoveDuplicate AS (

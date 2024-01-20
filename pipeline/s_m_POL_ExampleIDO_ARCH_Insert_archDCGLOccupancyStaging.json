@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCGLOccupancyStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCGLOccupancyStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCGLOccupancyStaging AS (\n\tSELECT\n\t\tGL_RiskId,\n\t\tGL_OccupancyId,\n\t\tSessionId,\n\t\tId,\n\t\tType,\n\t\tShortDescription,\n\t\tGLClassCodeOverride,\n\t\tGLPremiumBasisOverride,\n\t\tOccupancyTypeMonoline,\n\t\tGLClassCode,\n\t\tGLPremiumBasis,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCGLOccupancyStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tGL_RiskId,\n\tGL_OccupancyId,\n\tSessionId,\n\tId,\n\tType,\n\tShortDescription,\n\tGLClassCodeOverride,\n\tGLPremiumBasisOverride,\n\tOccupancyTypeMonoline,\n\tGLClassCode,\n\tGLPremiumBasis,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCGLOccupancyStaging\n),\narchDCGLOccupancyStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCGLOccupancyStaging\n\t(GL_RiskId, GL_OccupancyId, SessionId, Id, Type, ShortDescription, GLClassCodeOverride, GLPremiumBasisOverride, OccupancyTypeMonoline, GLClassCode, GLPremiumBasis, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tGL_RISKID, \n\tGL_OCCUPANCYID, \n\tSESSIONID, \n\tID, \n\tTYPE, \n\tSHORTDESCRIPTION, \n\tGLCLASSCODEOVERRIDE, \n\tGLPREMIUMBASISOVERRIDE, \n\tOCCUPANCYTYPEMONOLINE, \n\tGLCLASSCODE, \n\tGLPREMIUMBASIS, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

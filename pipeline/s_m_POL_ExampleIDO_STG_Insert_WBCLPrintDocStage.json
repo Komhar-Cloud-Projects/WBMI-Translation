@@ -1,0 +1,51 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBCLPrintDocStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBCLPrintDocStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_CL_PrintDoc AS (\n\tSELECT\tX.WB_CL_PrintJobId, \r\n\t\t\tX.WB_CL_PrintDocId, \r\n\t\t\tX.SessionId, \r\n\t\t\tX.Caption, \r\n\t\t\tX.FormName, \r\n\t\t\tX.Manuscript, \r\n\t\t\tX.[Order], \r\n\t\t\tX.PrintDefault, \r\n\t\t\tX.Selected,\r\n\t\t\tX.OnPolicy,\r\n\t\t\tX.[Add],\r\n\t\t\tX.[Remove] \r\n\tFROM\r\n\t\t\tWB_CL_PrintDoc X WITH(nolock)\r\n\t\t\tINNER JOIN wbexampledata.dbo.wb_edwdataloadincrementalsessions Y WITH(\r\n\t                  nolock)\r\n\t               ON X.SessionId = Y.SessionId \r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tSYSDATE AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,\n\tWB_CL_PrintJobId,\n\tWB_CL_PrintDocId,\n\tSessionId,\n\tCaption AS i_Caption,\n\t-- *INF*: REPLACESTR(0,i_Caption,'?','')\n\tREGEXP_REPLACE(i_Caption,'?','','i') AS o_Caption,\n\tFormName,\n\tManuscript,\n\tOrder,\n\tPrintDefault,\n\tSelected,\n\tOnPolicy,\n\tAdd,\n\tRemove\n\tFROM SQ_WB_CL_PrintDoc\n),\nWBCLPrintDocStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCLPrintDocStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBCLPrintDocStage\n\t(ExtractDate, SourceSystemId, WB_CL_PrintJobId, WB_CL_PrintDocId, SessionId, Caption, FormName, Manuscript, Order, PrintDefault, Selected, OnPolicy, Add, Remove)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemID AS SOURCESYSTEMID, \n\tWB_CL_PRINTJOBID, \n\tWB_CL_PRINTDOCID, \n\tSESSIONID, \n\to_Caption AS CAPTION, \n\tFORMNAME, \n\tMANUSCRIPT, \n\tORDER, \n\tPRINTDEFAULT, \n\tSELECTED, \n\tONPOLICY, \n\tADD, \n\tREMOVE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

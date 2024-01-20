@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCPartyStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCPartyStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_Party AS (\n\tWITH cte_DCParty(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.PartyId, \r\n\tX.SessionId, \r\n\tX.PartyXmlId, \r\n\tX.Type, \r\n\tX.OtherType, \r\n\tX.Name, \r\n\tX.DateOfBirth, \r\n\tX.Gender, \r\n\tX.FirstName, \r\n\tX.LastName, \r\n\tX.MiddleName, \r\n\tX.MaritalStatus, \r\n\tX.Title, \r\n\tX.Reference, \r\n\tX.ContactName \r\n\tFROM\r\n\tDC_Party X\r\n\tinner join\r\n\tcte_DCParty Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tPartyId,\n\tSessionId,\n\tPartyXmlId,\n\tType,\n\tOtherType,\n\tName,\n\tDateOfBirth,\n\tGender,\n\tFirstName,\n\tLastName,\n\tMiddleName,\n\tMaritalStatus,\n\tTitle,\n\tReference,\n\tContactName,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\t-- *INF*: substr(Name,1,255)\n\tsubstr(Name, 1, 255) AS o_Name\n\tFROM SQ_DC_Party\n),\nDCPartyStaging AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCPartyStaging;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCPartyStaging\n\t(PartyId, SessionId, PartyXmlId, Type, OtherType, Name, DateOfBirth, Gender, FirstName, LastName, MiddleName, MaritalStatus, Title, Reference, ContactName, ExtractDate, SourceSystemId)\n\tSELECT \n\tPARTYID, \n\tSESSIONID, \n\tPARTYXMLID, \n\tTYPE, \n\tOTHERTYPE, \n\to_Name AS NAME, \n\tDATEOFBIRTH, \n\tGENDER, \n\tFIRSTNAME, \n\tLASTNAME, \n\tMIDDLENAME, \n\tMARITALSTATUS, \n\tTITLE, \n\tREFERENCE, \n\tCONTACTNAME, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

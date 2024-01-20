@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_INSERT_ARCH_ArchWCDividendPaidStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_INSERT_ARCH_ArchWCDividendPaidStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WCDividendPaidStage AS (\n\tSELECT\n\t\tWCDividendPaidStageId,\n\t\tWCDividendStageRecID,\n\t\tDividendPaidDate,\n\t\tDividendPaidAmt,\n\t\tAgencyCode,\n\t\tPolicySymbol,\n\t\tPolicyNumber,\n\t\tPolicyModule,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM WCDividendPaidStage\n),\nEXP_DataCollect AS (\n\tSELECT\n\tWCDividendPaidStageId,\n\tWCDividendStageRecID,\n\tDividendPaidDate,\n\tDividendPaidAmt,\n\tAgencyCode,\n\tPolicySymbol,\n\tPolicyNumber,\n\tPolicyModule,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_WCDividendPaidStage\n),\nArchWCDividendPaidStage AS (\n\tINSERT INTO ArchWCDividendPaidStage\n\t(WCDividendPaidStageId, WCDividendStageRecID, DividendPaidDate, DividendPaidAmt, AgencyCode, PolicySymbol, PolicyNumber, PolicyModule, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tWCDIVIDENDPAIDSTAGEID, \n\tWCDIVIDENDSTAGERECID, \n\tDIVIDENDPAIDDATE, \n\tDIVIDENDPAIDAMT, \n\tAGENCYCODE, \n\tPOLICYSYMBOL, \n\tPOLICYNUMBER, \n\tPOLICYMODULE, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID\n\tFROM EXP_DataCollect\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

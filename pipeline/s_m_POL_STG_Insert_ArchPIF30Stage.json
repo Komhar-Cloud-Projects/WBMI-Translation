@@ -1,0 +1,38 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchPIF30Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchPIF30Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif30Stage AS (\n\tSELECT\n\t\tPif30StageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tAuditId,\n\t\tPerPifSymbol,\n\t\tPerPifpolicyNumber,\n\t\tPerPifModule,\n\t\tPerId,\n\t\tPerUse,\n\t\tPerSequenceNumber,\n\t\tPerAmendmentNumber,\n\t\tPerEnteredDate,\n\t\tPerDescLine1,\n\t\tPerDescline2,\n\t\tPerDescline3,\n\t\tPerStatus,\n\t\tPerOriginalRatebook,\n\t\tPerRatebook,\n\t\tPerEndorsementPrem,\n\t\tPerH390firerb,\n\t\tPerH390ecrb,\n\t\tPerH390vmmrb,\n\t\tPif30Filler,\n\t\tPerPmsfutureuse,\n\t\tPerACAFixedidentifier2,\n\t\tPerExistInscreditdate,\n\t\tPerLpidnumber,\n\t\tPerHOBMunitverb,\n\t\tPerHOBMunit,\n\t\tPerHBBMseq,\n\t\tPerInhomeBusDesc,\n\t\tPerLPIDNumberOld,\n\t\tPerYr2000custuse,\n\t\tPerDuplicateKeySequence\n\tFROM Pif30Stage\n),\nEXP_VALUES AS (\n\tSELECT\n\tPif30StageId,\n\tExtractDate,\n\tSourceSystemId,\n\tAuditId,\n\tPerPifSymbol,\n\tPerPifpolicyNumber,\n\tPerPifModule,\n\tPerId,\n\tPerUse,\n\tPerSequenceNumber,\n\tPerAmendmentNumber,\n\tPerEnteredDate,\n\tPerDescLine1,\n\tPerDescline2,\n\tPerDescline3,\n\tPerStatus,\n\tPerOriginalRatebook,\n\tPerRatebook,\n\tPerEndorsementPrem,\n\tPerH390firerb,\n\tPerH390ecrb,\n\tPerH390vmmrb,\n\tPif30Filler,\n\tPerPmsfutureuse,\n\tPerACAFixedidentifier2,\n\tPerExistInscreditdate,\n\tPerLpidnumber,\n\tPerHOBMunitverb,\n\tPerHOBMunit,\n\tPerHBBMseq,\n\tPerInhomeBusDesc,\n\tPerLPIDNumberOld,\n\tPerYr2000custuse,\n\tPerDuplicateKeySequence\n\tFROM SQ_Pif30Stage\n),\nArchPif30Stage AS (\n\tINSERT INTO ArchPif30Stage\n\t(Pif30StageId, ExtractDate, SourceSystemId, AuditId, PerPifSymbol, PerPifpolicyNumber, PerPifModule, PerId, PerUse, PerSequenceNumber, PerAmendmentNumber, PerEnteredDate, PerDescLine1, PerDescline2, PerDescline3, PerStatus, PerOriginalRatebook, PerRatebook, PerEndorsementPrem, PerH390firerb, PerH390ecrb, PerH390vmmrb, Pif30Filler, PerPmsfutureuse, PerACAFixedidentifier2, PerExistInscreditdate, PerLpidnumber, PerHOBMunitverb, PerHOBMunit, PerHBBMseq, PerInhomeBusDesc, PerLPIDNumberOld, PerYr2000custuse, PerDuplicateKeySequence)\n\tSELECT \n\tPIF30STAGEID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tPERPIFSYMBOL, \n\tPERPIFPOLICYNUMBER, \n\tPERPIFMODULE, \n\tPERID, \n\tPERUSE, \n\tPERSEQUENCENUMBER, \n\tPERAMENDMENTNUMBER, \n\tPERENTEREDDATE, \n\tPERDESCLINE1, \n\tPERDESCLINE2, \n\tPERDESCLINE3, \n\tPERSTATUS, \n\tPERORIGINALRATEBOOK, \n\tPERRATEBOOK, \n\tPERENDORSEMENTPREM, \n\tPERH390FIRERB, \n\tPERH390ECRB, \n\tPERH390VMMRB, \n\tPIF30FILLER, \n\tPERPMSFUTUREUSE, \n\tPERACAFIXEDIDENTIFIER2, \n\tPEREXISTINSCREDITDATE, \n\tPERLPIDNUMBER, \n\tPERHOBMUNITVERB, \n\tPERHOBMUNIT, \n\tPERHBBMSEQ, \n\tPERINHOMEBUSDESC, \n\tPERLPIDNUMBEROLD, \n\tPERYR2000CUSTUSE, \n\tPERDUPLICATEKEYSEQUENCE\n\tFROM EXP_VALUES\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

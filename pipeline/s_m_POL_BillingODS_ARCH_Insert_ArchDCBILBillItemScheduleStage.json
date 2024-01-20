@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILBillItemScheduleStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_BillingODS_ARCH_Insert_ArchDCBILBillItemSchedu_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBILBillItemScheduleStage AS (\n\tSELECT\n\t\tDCBILBillItemScheduleStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tItemScheduleId,\n\t\tAccountId,\n\t\tPolicyTermId,\n\t\tItemId,\n\t\tInstallmentTypeCode,\n\t\tInstallmentDate,\n\t\tDueDate,\n\t\tReceivableTypeCode,\n\t\tReceivableSubTypeCode,\n\t\tTransactionTypeCode,\n\t\tCoverageReference,\n\t\tUnitReference,\n\t\tAggregationReference,\n\t\tAllocationPriority,\n\t\tCurrencyCulture,\n\t\tItemScheduleAmount,\n\t\tItemClosedToCashAmount,\n\t\tItemClosedToCreditAmount,\n\t\tItemWrittenOffAmount,\n\t\tItemRedistributedAmount,\n\t\tItemClosedIndicator,\n\t\tFirstInvoiceId,\n\t\tLastUpdatedTimestamp,\n\t\tLastUpdatedUserId,\n\t\tItemScheduleLockingTS,\n\t\tItemScheduleExtendedData,\n\t\tTransactionGUID,\n\t\tInvoiceStatus\n\tFROM DCBILBillItemScheduleStage\n),\nEXP_Metadata AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tDCBILBillItemScheduleStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tItemScheduleId,\n\tAccountId,\n\tPolicyTermId,\n\tItemId,\n\tInstallmentTypeCode,\n\tInstallmentDate,\n\tDueDate,\n\tReceivableTypeCode,\n\tReceivableSubTypeCode,\n\tTransactionTypeCode,\n\tCoverageReference,\n\tUnitReference,\n\tAggregationReference,\n\tAllocationPriority,\n\tCurrencyCulture,\n\tItemScheduleAmount,\n\tItemClosedToCashAmount,\n\tItemClosedToCreditAmount,\n\tItemWrittenOffAmount,\n\tItemRedistributedAmount,\n\tItemClosedIndicator,\n\tFirstInvoiceId,\n\tLastUpdatedTimestamp,\n\tLastUpdatedUserId,\n\tItemScheduleLockingTS,\n\tItemScheduleExtendedData,\n\tTransactionGUID,\n\tInvoiceStatus\n\tFROM SQ_DCBILBillItemScheduleStage\n),\nLKP_ArchExsit AS (\n\tSELECT\n\tArchDCBILBillItemScheduleStageId,\n\tItemScheduleId\n\tFROM (\n\t\tSELECT \n\t\t\tArchDCBILBillItemScheduleStageId,\n\t\t\tItemScheduleId\n\t\tFROM ArchDCBILBillItemScheduleStage\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ItemScheduleId ORDER BY ArchDCBILBillItemScheduleStageId) = 1\n),\nFIL_Exist AS (\n\tSELECT\n\tLKP_ArchExsit.ArchDCBILBillItemScheduleStageId AS lkp_ArchDCBILBillItemScheduleStageId, \n\tEXP_Metadata.o_AuditId AS AuditId, \n\tEXP_Metadata.DCBILBillItemScheduleStageId, \n\tEXP_Metadata.ExtractDate, \n\tEXP_Metadata.SourceSystemId, \n\tEXP_Metadata.ItemScheduleId, \n\tEXP_Metadata.AccountId, \n\tEXP_Metadata.PolicyTermId, \n\tEXP_Metadata.ItemId, \n\tEXP_Metadata.InstallmentTypeCode, \n\tEXP_Metadata.InstallmentDate, \n\tEXP_Metadata.DueDate, \n\tEXP_Metadata.ReceivableTypeCode, \n\tEXP_Metadata.ReceivableSubTypeCode, \n\tEXP_Metadata.TransactionTypeCode, \n\tEXP_Metadata.CoverageReference, \n\tEXP_Metadata.UnitReference, \n\tEXP_Metadata.AggregationReference, \n\tEXP_Metadata.AllocationPriority, \n\tEXP_Metadata.CurrencyCulture, \n\tEXP_Metadata.ItemScheduleAmount, \n\tEXP_Metadata.ItemClosedToCashAmount, \n\tEXP_Metadata.ItemClosedToCreditAmount, \n\tEXP_Metadata.ItemWrittenOffAmount, \n\tEXP_Metadata.ItemRedistributedAmount, \n\tEXP_Metadata.ItemClosedIndicator, \n\tEXP_Metadata.FirstInvoiceId, \n\tEXP_Metadata.LastUpdatedTimestamp, \n\tEXP_Metadata.LastUpdatedUserId, \n\tEXP_Metadata.ItemScheduleLockingTS, \n\tEXP_Metadata.ItemScheduleExtendedData, \n\tEXP_Metadata.TransactionGUID, \n\tEXP_Metadata.InvoiceStatus\n\tFROM EXP_Metadata\n\tLEFT JOIN LKP_ArchExsit\n\tON LKP_ArchExsit.ItemScheduleId = EXP_Metadata.ItemScheduleId\n\tWHERE ISNULL(lkp_ArchDCBILBillItemScheduleStageId)\n),\nArchDCBILBillItemScheduleStage AS (\n\tINSERT INTO ArchDCBILBillItemScheduleStage\n\t(ExtractDate, SourceSystemId, AuditId, DCBILBillItemScheduleStageId, ItemScheduleId, AccountId, PolicyTermId, ItemId, InstallmentTypeCode, InstallmentDate, DueDate, ReceivableTypeCode, ReceivableSubTypeCode, TransactionTypeCode, CoverageReference, UnitReference, AggregationReference, AllocationPriority, CurrencyCulture, ItemScheduleAmount, ItemClosedToCashAmount, ItemClosedToCreditAmount, ItemWrittenOffAmount, ItemRedistributedAmount, ItemClosedIndicator, FirstInvoiceId, LastUpdatedTimestamp, LastUpdatedUserId, ItemScheduleLockingTS, ItemScheduleExtendedData, TransactionGUID, InvoiceStatus)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tDCBILBILLITEMSCHEDULESTAGEID, \n\tITEMSCHEDULEID, \n\tACCOUNTID, \n\tPOLICYTERMID, \n\tITEMID, \n\tINSTALLMENTTYPECODE, \n\tINSTALLMENTDATE, \n\tDUEDATE, \n\tRECEIVABLETYPECODE, \n\tRECEIVABLESUBTYPECODE, \n\tTRANSACTIONTYPECODE, \n\tCOVERAGEREFERENCE, \n\tUNITREFERENCE, \n\tAGGREGATIONREFERENCE, \n\tALLOCATIONPRIORITY, \n\tCURRENCYCULTURE, \n\tITEMSCHEDULEAMOUNT, \n\tITEMCLOSEDTOCASHAMOUNT, \n\tITEMCLOSEDTOCREDITAMOUNT, \n\tITEMWRITTENOFFAMOUNT, \n\tITEMREDISTRIBUTEDAMOUNT, \n\tITEMCLOSEDINDICATOR, \n\tFIRSTINVOICEID, \n\tLASTUPDATEDTIMESTAMP, \n\tLASTUPDATEDUSERID, \n\tITEMSCHEDULELOCKINGTS, \n\tITEMSCHEDULEEXTENDEDDATA, \n\tTRANSACTIONGUID, \n\tINVOICESTATUS\n\tFROM FIL_Exist\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

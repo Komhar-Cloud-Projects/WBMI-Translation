@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBGLLineStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBGLLineStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBGLLineStage AS (\n\tSELECT\n\t\tWBGLLineStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tGL_LineId,\n\t\tWB_GL_LineId,\n\t\tSessionId,\n\t\tQuotedScheduleMod,\n\t\tLossSensitiveCommission,\n\t\tStudentGroupAccidentPolicy,\n\t\tHiredAndNonOwnedAuto,\n\t\tAbuseMolestationCoverage,\n\t\tWaterActivities,\n\t\tLifeguard,\n\t\tTypeOfWaterActivities,\n\t\tOtherDescription,\n\t\tWhereWaterActivitiesOccur,\n\t\tEmployeeBenefitLiability,\n\t\tEmployeeBenefitLiabilityRetroDate,\n\t\tEmploymentPracticesLiability,\n\t\tEmploymentPracticesNumberOfEmployees,\n\t\tEmploymentPracticesRetroDate,\n\t\tStopGapEmployersLiability,\n\t\tEmploymentPracticesNumberOfEmployeesDisplay,\n\t\tStopGapNumberOfEmployeesDisplay,\n\t\tEmployeePracticesFlatCharge,\n\t\tWaterActivitiesCaption,\n\t\tPremium,\n\t\tPremiumWritten,\n\t\tPremiumChange,\n\t\tCheckWB1372,\n\t\tRetroDate2,\n\t\tReinsuranceApplies,\n\t\tReinsurancePremium,\n\t\tReinsuranceAppliesCGLMessage,\n\t\tReinsurancePremiumMessage,\n\t\tPremOpBIPDDeductible,\n\t\tSplitBIPDDeductible,\n\t\tProductsBIPDDeductible,\n\t\tProductWithdrawalCutoffDate,\n\t\tFringeFactor,\n\t\tSGAFactorForRMF,\n\t\tAuditablePremium,\n\t\tWB1482TotalPremium,\n\t\tAnnotationForPolicyPerOccurenceLimit,\n\t\tPolicyAggregateLimitAnnotation,\n\t\tOCPTotalPremium,\n\t\tRRTotalPremium,\n\t\tExpectedLossRatioLookup,\n\t\tDeductibleBIPerClaim,\n\t\tDeductibleBIPerOccurrence,\n\t\tDeductiblePDPerClaim,\n\t\tDeductiblePDPerOccurrence\n\tFROM WBGLLineStage\n),\nEXP_METADATA AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS O_AuditID,\n\tWBGLLineStageId,\n\tExtractDate,\n\tSourceSystemid,\n\tGL_LineId,\n\tWB_GL_LineId,\n\tSessionId,\n\tQuotedScheduleMod,\n\tLossSensitiveCommission,\n\tStudentGroupAccidentPolicy,\n\tHiredAndNonOwnedAuto,\n\tAbuseMolestationCoverage,\n\tWaterActivities,\n\tLifeguard,\n\tTypeOfWaterActivities,\n\tOtherDescription,\n\tWhereWaterActivitiesOccur,\n\tEmployeeBenefitLiability,\n\tEmployeeBenefitLiabilityRetroDate,\n\tEmploymentPracticesLiability,\n\tEmploymentPracticesNumberOfEmployees,\n\tEmploymentPracticesRetroDate,\n\tStopGapEmployersLiability,\n\tEmploymentPracticesNumberOfEmployeesDisplay,\n\tStopGapNumberOfEmployeesDisplay,\n\tEmployeePracticesFlatCharge,\n\tWaterActivitiesCaption,\n\tPremium,\n\tPremiumWritten,\n\tPremiumChange,\n\tCheckWB1372,\n\tRetroDate2,\n\tReinsuranceApplies,\n\tReinsurancePremium,\n\tReinsuranceAppliesCGLMessage,\n\tReinsurancePremiumMessage,\n\tPremOpBIPDDeductible,\n\tSplitBIPDDeductible,\n\tProductsBIPDDeductible,\n\tProductWithdrawalCutoffDate,\n\tFringeFactor,\n\tSGAFactorForRMF,\n\tAuditablePremium,\n\tWB1482TotalPremium,\n\tAnnotationForPolicyPerOccurenceLimit,\n\tPolicyAggregateLimitAnnotation,\n\tOCPTotalPremium,\n\tRRTotalPremium,\n\tExpectedLossRatioLookup,\n\tDeductibleBIPerClaim,\n\tDeductibleBIPerOccurrence,\n\tDeductiblePDPerClaim,\n\tDeductiblePDPerOccurrence\n\tFROM SQ_WBGLLineStage\n),\nArchWBGLLineStage AS (\n\tINSERT INTO ArchWBGLLineStage\n\t(ExtractDate, SourceSystemId, AuditId, WBGLLineStageId, GL_LineId, WB_GL_LineId, SessionId, QuotedScheduleMod, LossSensitiveCommission, StudentGroupAccidentPolicy, HiredAndNonOwnedAuto, AbuseMolestationCoverage, WaterActivities, Lifeguard, TypeOfWaterActivities, OtherDescription, WhereWaterActivitiesOccur, EmployeeBenefitLiability, EmployeeBenefitLiabilityRetroDate, EmploymentPracticesLiability, EmploymentPracticesNumberOfEmployees, EmploymentPracticesRetroDate, StopGapEmployersLiability, EmploymentPracticesNumberOfEmployeesDisplay, StopGapNumberOfEmployeesDisplay, EmployeePracticesFlatCharge, WaterActivitiesCaption, Premium, PremiumWritten, PremiumChange, CheckWB1372, RetroDate2, ReinsuranceApplies, ReinsurancePremium, ReinsuranceAppliesCGLMessage, ReinsurancePremiumMessage, PremOpBIPDDeductible, SplitBIPDDeductible, ProductsBIPDDeductible, ProductWithdrawalCutoffDate, FringeFactor, SGAFactorForRMF, AuditablePremium, WB1482TotalPremium, AnnotationForPolicyPerOccurenceLimit, PolicyAggregateLimitAnnotation, OCPTotalPremium, RRTotalPremium, ExpectedLossRatioLookup, DeductibleBIPerClaim, DeductibleBIPerOccurrence, DeductiblePDPerClaim, DeductiblePDPerOccurrence)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemid AS SOURCESYSTEMID, \n\tO_AuditID AS AUDITID, \n\tWBGLLINESTAGEID, \n\tGL_LINEID, \n\tWB_GL_LINEID, \n\tSESSIONID, \n\tQUOTEDSCHEDULEMOD, \n\tLOSSSENSITIVECOMMISSION, \n\tSTUDENTGROUPACCIDENTPOLICY, \n\tHIREDANDNONOWNEDAUTO, \n\tABUSEMOLESTATIONCOVERAGE, \n\tWATERACTIVITIES, \n\tLIFEGUARD, \n\tTYPEOFWATERACTIVITIES, \n\tOTHERDESCRIPTION, \n\tWHEREWATERACTIVITIESOCCUR, \n\tEMPLOYEEBENEFITLIABILITY, \n\tEMPLOYEEBENEFITLIABILITYRETRODATE, \n\tEMPLOYMENTPRACTICESLIABILITY, \n\tEMPLOYMENTPRACTICESNUMBEROFEMPLOYEES, \n\tEMPLOYMENTPRACTICESRETRODATE, \n\tSTOPGAPEMPLOYERSLIABILITY, \n\tEMPLOYMENTPRACTICESNUMBEROFEMPLOYEESDISPLAY, \n\tSTOPGAPNUMBEROFEMPLOYEESDISPLAY, \n\tEMPLOYEEPRACTICESFLATCHARGE, \n\tWATERACTIVITIESCAPTION, \n\tPREMIUM, \n\tPREMIUMWRITTEN, \n\tPREMIUMCHANGE, \n\tCHECKWB1372, \n\tRETRODATE2, \n\tREINSURANCEAPPLIES, \n\tREINSURANCEPREMIUM, \n\tREINSURANCEAPPLIESCGLMESSAGE, \n\tREINSURANCEPREMIUMMESSAGE, \n\tPREMOPBIPDDEDUCTIBLE, \n\tSPLITBIPDDEDUCTIBLE, \n\tPRODUCTSBIPDDEDUCTIBLE, \n\tPRODUCTWITHDRAWALCUTOFFDATE, \n\tFRINGEFACTOR, \n\tSGAFACTORFORRMF, \n\tAUDITABLEPREMIUM, \n\tWB1482TOTALPREMIUM, \n\tANNOTATIONFORPOLICYPEROCCURENCELIMIT, \n\tPOLICYAGGREGATELIMITANNOTATION, \n\tOCPTOTALPREMIUM, \n\tRRTOTALPREMIUM, \n\tEXPECTEDLOSSRATIOLOOKUP, \n\tDEDUCTIBLEBIPERCLAIM, \n\tDEDUCTIBLEBIPEROCCURRENCE, \n\tDEDUCTIBLEPDPERCLAIM, \n\tDEDUCTIBLEPDPEROCCURRENCE\n\tFROM EXP_METADATA\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -351,8 +351,7 @@ AGG_RemoveDuplicates AS (
 	sar_insurance_line,
 	sar_risk_unit_group AS i_sar_risk_unit_group,
 	-- *INF*: MAX(i_sar_risk_unit_group)
-	MAX(i_sar_risk_unit_group
-	) AS o_sar_risk_unit_group
+	MAX(i_sar_risk_unit_group) AS o_sar_risk_unit_group
 	FROM SQ_pif_4514_stage
 	GROUP BY pif_symbol, pif_policy_number, pif_module, sar_insurance_line
 ),
@@ -365,8 +364,7 @@ EXP_Set_Values AS (
 	pif_symbol||pif_policy_number||pif_module AS o_pol_key,
 	o_sar_risk_unit_group AS sar_risk_unit_group,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_sar_insurance_line)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_sar_insurance_line
-	) AS o_InsuranceLine
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_sar_insurance_line) AS o_InsuranceLine
 	FROM AGG_RemoveDuplicates
 ),
 LKP_Pif43LXZWCStage AS (
@@ -476,54 +474,41 @@ EXP_IDAndLookupValues AS (
 	EXP_Set_Values.sar_risk_unit_group AS i_sar_risk_unit_group,
 	EXP_Set_Values.o_InsuranceLine AS InsuranceLine,
 	-- *INF*: IIF(:UDF.DEFAULT_VALUE_FOR_STRINGS(i_Pmdrxg1LimOcc_Agg)='N/A',:UDF.DEFAULT_VALUE_FOR_STRINGS(i_Pmdrxg1LimOcc_ProductAgg),:UDF.DEFAULT_VALUE_FOR_STRINGS(i_Pmdrxg1LimOcc_Agg))
-	IFF(:UDF.DEFAULT_VALUE_FOR_STRINGS(i_Pmdrxg1LimOcc_Agg
-		) = 'N/A',
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(i_Pmdrxg1LimOcc_ProductAgg
-		),
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(i_Pmdrxg1LimOcc_Agg
-		)
+	IFF(
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(i_Pmdrxg1LimOcc_Agg) = 'N/A',
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(i_Pmdrxg1LimOcc_ProductAgg),
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(i_Pmdrxg1LimOcc_Agg)
 	) AS v_PolicyPerOccurenceLimit,
 	-- *INF*: IIF(ISNULL(i_Pmdrxg1LimitSubline_Agg) OR IS_SPACES(i_Pmdrxg1LimitSubline_Agg) OR LENGTH(i_Pmdrxg1LimitSubline_Agg)=0,'N/A',LTRIM(RTRIM(i_Pmdrxg1LimitSubline_Agg)))
-	IFF(i_Pmdrxg1LimitSubline_Agg IS NULL 
-		OR LENGTH(i_Pmdrxg1LimitSubline_Agg)>0 AND TRIM(i_Pmdrxg1LimitSubline_Agg)='' 
-		OR LENGTH(i_Pmdrxg1LimitSubline_Agg
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_Pmdrxg1LimitSubline_Agg
-			)
-		)
+	IFF(
+	    i_Pmdrxg1LimitSubline_Agg IS NULL
+	    or LENGTH(i_Pmdrxg1LimitSubline_Agg)>0
+	    and TRIM(i_Pmdrxg1LimitSubline_Agg)=''
+	    or LENGTH(i_Pmdrxg1LimitSubline_Agg) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_Pmdrxg1LimitSubline_Agg))
 	) AS v_Pmdrxg1LimitSubline_Agg,
 	-- *INF*: IIF(ISNULL(i_Pmdrxg1LimitSubline_ProductAgg) OR IS_SPACES(i_Pmdrxg1LimitSubline_ProductAgg) OR LENGTH(i_Pmdrxg1LimitSubline_ProductAgg)=0,'N/A',LTRIM(RTRIM(i_Pmdrxg1LimitSubline_ProductAgg)))
-	IFF(i_Pmdrxg1LimitSubline_ProductAgg IS NULL 
-		OR LENGTH(i_Pmdrxg1LimitSubline_ProductAgg)>0 AND TRIM(i_Pmdrxg1LimitSubline_ProductAgg)='' 
-		OR LENGTH(i_Pmdrxg1LimitSubline_ProductAgg
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_Pmdrxg1LimitSubline_ProductAgg
-			)
-		)
+	IFF(
+	    i_Pmdrxg1LimitSubline_ProductAgg IS NULL
+	    or LENGTH(i_Pmdrxg1LimitSubline_ProductAgg)>0
+	    and TRIM(i_Pmdrxg1LimitSubline_ProductAgg)=''
+	    or LENGTH(i_Pmdrxg1LimitSubline_ProductAgg) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_Pmdrxg1LimitSubline_ProductAgg))
 	) AS v_Pmdrxg1LimitSubline_ProductAgg,
 	-- *INF*: IIF(ISNULL(i_Pmdl4w1CovIiLmtsStdEach), 'N/A', TO_CHAR(i_Pmdl4w1CovIiLmtsStdEach))
-	IFF(i_Pmdl4w1CovIiLmtsStdEach IS NULL,
-		'N/A',
-		TO_CHAR(i_Pmdl4w1CovIiLmtsStdEach
-		)
-	) AS v_Pmdl4w1CovIiLmtsStdEach,
+	IFF(i_Pmdl4w1CovIiLmtsStdEach IS NULL, 'N/A', TO_CHAR(i_Pmdl4w1CovIiLmtsStdEach)) AS v_Pmdl4w1CovIiLmtsStdEach,
 	-- *INF*: IIF(ISNULL(i_Pmdl4w1CovIiLmtsStdPol), 'N/A', TO_CHAR(i_Pmdl4w1CovIiLmtsStdPol))
-	IFF(i_Pmdl4w1CovIiLmtsStdPol IS NULL,
-		'N/A',
-		TO_CHAR(i_Pmdl4w1CovIiLmtsStdPol
-		)
-	) AS v_Pmdl4w1CovIiLmtsStdPol,
+	IFF(i_Pmdl4w1CovIiLmtsStdPol IS NULL, 'N/A', TO_CHAR(i_Pmdl4w1CovIiLmtsStdPol)) AS v_Pmdl4w1CovIiLmtsStdPol,
 	i_pol_ak_id AS o_pol_ak_id,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(IIF(InsuranceLine='GL' AND i_sar_risk_unit_group!='367',v_PolicyPerOccurenceLimit,'N/A'),'0'))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(IFF(InsuranceLine = 'GL' 
-				AND i_sar_risk_unit_group != '367',
-				v_PolicyPerOccurenceLimit,
-				'N/A'
-			), '0'
-		)
-	) AS o_PolicyPerOccurenceLimit,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(LTRIM(
+	        IFF(
+	            InsuranceLine = 'GL' AND i_sar_risk_unit_group != '367',
+	            v_PolicyPerOccurenceLimit,
+	            'N/A'
+	        ), '0')) AS o_PolicyPerOccurenceLimit,
 	-- *INF*: DECODE(TRUE,
 	-- InsuranceLine='WC',v_Pmdl4w1CovIiLmtsStdPol,
 	-- InsuranceLine='GL' and in(i_sar_risk_unit_group,'286', '287', '900')  , 
@@ -540,37 +525,33 @@ EXP_IDAndLookupValues AS (
 	-- InsuranceLine='GL' ,v_Pmdrxg1LimitSubline_Agg,
 	-- 'N/A')
 	-- 
-	DECODE(TRUE,
-		InsuranceLine = 'WC', v_Pmdl4w1CovIiLmtsStdPol,
-		InsuranceLine = 'GL' 
-		AND i_sar_risk_unit_group IN ('286','287','900'), IFF(LKP_SRC_DEPT1553_D_AND_O_pif_symbol_pif_policy_number_pif_module_PolicyAggregateLimit.Value IN ('SEEWB100','SEEWB100L'),
-			LKP_PIF11STAGE_WB100_pif_symbol_pif_policy_number_pif_module_POLICY_AGGREGATE_LIMIT.LimitValue,
-			LKP_SRC_DEPT1553_D_AND_O_pif_symbol_pif_policy_number_pif_module_PolicyAggregateLimit.Value
-		),
-		InsuranceLine = 'GL' 
-		AND i_sar_risk_unit_group IN ('366'), IFF(LKP_SRC_DEPT1553_EPLI_pif_symbol_pif_policy_number_pif_module_PolicyAggregateLimit.Value IN ('SEEWB100','SEEWB100L'),
-			LKP_PIF11STAGE_WB100_pif_symbol_pif_policy_number_pif_module_POLICY_AGGREGATE_LIMIT.LimitValue,
-			LKP_SRC_DEPT1553_EPLI_pif_symbol_pif_policy_number_pif_module_PolicyAggregateLimit.Value
-		),
-		InsuranceLine = 'GL' 
-		AND i_sar_risk_unit_group IN ('367'), v_Pmdrxg1LimitSubline_Agg,
-		InsuranceLine = 'GL', v_Pmdrxg1LimitSubline_Agg,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    InsuranceLine = 'WC', v_Pmdl4w1CovIiLmtsStdPol,
+	    InsuranceLine = 'GL' and i_sar_risk_unit_group IN ('286','287','900'), IFF(
+	        LKP_SRC_DEPT1553_D_AND_O_pif_symbol_pif_policy_number_pif_module_PolicyAggregateLimit.Value IN ('SEEWB100','SEEWB100L'),
+	        LKP_PIF11STAGE_WB100_pif_symbol_pif_policy_number_pif_module_POLICY_AGGREGATE_LIMIT.LimitValue,
+	        LKP_SRC_DEPT1553_D_AND_O_pif_symbol_pif_policy_number_pif_module_PolicyAggregateLimit.Value
+	    ),
+	    InsuranceLine = 'GL' and i_sar_risk_unit_group IN ('366'), IFF(
+	        LKP_SRC_DEPT1553_EPLI_pif_symbol_pif_policy_number_pif_module_PolicyAggregateLimit.Value IN ('SEEWB100','SEEWB100L'),
+	        LKP_PIF11STAGE_WB100_pif_symbol_pif_policy_number_pif_module_POLICY_AGGREGATE_LIMIT.LimitValue,
+	        LKP_SRC_DEPT1553_EPLI_pif_symbol_pif_policy_number_pif_module_PolicyAggregateLimit.Value
+	    ),
+	    InsuranceLine = 'GL' and i_sar_risk_unit_group IN ('367'), v_Pmdrxg1LimitSubline_Agg,
+	    InsuranceLine = 'GL', v_Pmdrxg1LimitSubline_Agg,
+	    'N/A'
 	) AS v_PolicyAggregateLimit,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(IIF(ISNULL(v_PolicyAggregateLimit), 'N/A', v_PolicyAggregateLimit ),'0'))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(IFF(v_PolicyAggregateLimit IS NULL,
-				'N/A',
-				v_PolicyAggregateLimit
-			), '0'
-		)
-	) AS o_PolicyAggregateLimit,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(LTRIM(
+	        IFF(
+	            v_PolicyAggregateLimit IS NULL, 'N/A', v_PolicyAggregateLimit
+	        ), '0')) AS o_PolicyAggregateLimit,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(IIF(InsuranceLine='GL' ,v_Pmdrxg1LimitSubline_ProductAgg,'N/A'),'0'))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(IFF(InsuranceLine = 'GL',
-				v_Pmdrxg1LimitSubline_ProductAgg,
-				'N/A'
-			), '0'
-		)
-	) AS o_PolicyProductAggregateLimit,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(LTRIM(
+	        IFF(
+	            InsuranceLine = 'GL', v_Pmdrxg1LimitSubline_ProductAgg, 'N/A'
+	        ), '0')) AS o_PolicyProductAggregateLimit,
 	v_Pmdl4w1CovIiLmtsStdEach AS o_PolicyPerAccidentLimit,
 	v_Pmdl4w1CovIiLmtsStdEach AS o_PolicyPerDiseaseLimit,
 	-- *INF*: DECODE(True, 
@@ -587,28 +568,26 @@ EXP_IDAndLookupValues AS (
 	-- ),
 	-- 'N/A'
 	--  )
-	DECODE(True,
-		InsuranceLine = 'GL' 
-		AND i_sar_risk_unit_group IN ('286','287','900'), IFF(LKP_SRC_DEPT1553_D_AND_O_pif_symbol_pif_policy_number_pif_module_PolicyPerClaimLimit.Value IN ('SEEWB100','SEEWB100L'),
-			LKP_PIF11STAGE_WB100_pif_symbol_pif_policy_number_pif_module_EACH_CLAIM_LIMIT.LimitValue,
-			LKP_SRC_DEPT1553_D_AND_O_pif_symbol_pif_policy_number_pif_module_PolicyPerClaimLimit.Value
-		),
-		InsuranceLine = 'GL' 
-		AND i_sar_risk_unit_group IN ('367'), i_Pmdrxg1LimOcc_Agg,
-		InsuranceLine = 'GL' 
-		AND i_sar_risk_unit_group IN ('366'), IFF(LKP_SRC_DEPT1553_EPLI_pif_symbol_pif_policy_number_pif_module_PolicyPerClaimLimit.Value IN ('SEEWB100','SEEWB100L'),
-			LKP_PIF11STAGE_WB100_pif_symbol_pif_policy_number_pif_module_EACH_CLAIM_LIMIT.LimitValue,
-			LKP_SRC_DEPT1553_EPLI_pif_symbol_pif_policy_number_pif_module_PolicyPerClaimLimit.Value
-		),
-		'N/A'
+	DECODE(
+	    True,
+	    InsuranceLine = 'GL' and i_sar_risk_unit_group IN ('286','287','900'), IFF(
+	        LKP_SRC_DEPT1553_D_AND_O_pif_symbol_pif_policy_number_pif_module_PolicyPerClaimLimit.Value IN ('SEEWB100','SEEWB100L'),
+	        LKP_PIF11STAGE_WB100_pif_symbol_pif_policy_number_pif_module_EACH_CLAIM_LIMIT.LimitValue,
+	        LKP_SRC_DEPT1553_D_AND_O_pif_symbol_pif_policy_number_pif_module_PolicyPerClaimLimit.Value
+	    ),
+	    InsuranceLine = 'GL' and i_sar_risk_unit_group IN ('367'), i_Pmdrxg1LimOcc_Agg,
+	    InsuranceLine = 'GL' and i_sar_risk_unit_group IN ('366'), IFF(
+	        LKP_SRC_DEPT1553_EPLI_pif_symbol_pif_policy_number_pif_module_PolicyPerClaimLimit.Value IN ('SEEWB100','SEEWB100L'),
+	        LKP_PIF11STAGE_WB100_pif_symbol_pif_policy_number_pif_module_EACH_CLAIM_LIMIT.LimitValue,
+	        LKP_SRC_DEPT1553_EPLI_pif_symbol_pif_policy_number_pif_module_PolicyPerClaimLimit.Value
+	    ),
+	    'N/A'
 	) AS v_PolicyPerClaimLimit,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(IIF(ISNULL(v_PolicyPerClaimLimit), 'N/A', v_PolicyPerClaimLimit),'0'))
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(LTRIM(IFF(v_PolicyPerClaimLimit IS NULL,
-				'N/A',
-				v_PolicyPerClaimLimit
-			), '0'
-		)
-	) AS o_PolicyPerClaimLimit
+	UDF_DEFAULT_VALUE_FOR_STRINGS(LTRIM(
+	        IFF(
+	            v_PolicyPerClaimLimit IS NULL, 'N/A', v_PolicyPerClaimLimit
+	        ), '0')) AS o_PolicyPerClaimLimit
 	FROM EXP_Set_Values
 	LEFT JOIN LKP_Pif43LXZWCStage
 	ON LKP_Pif43LXZWCStage.PifSymbol = EXP_Set_Values.pif_symbol AND LKP_Pif43LXZWCStage.PifPolicyNumber = EXP_Set_Values.pif_policy_number AND LKP_Pif43LXZWCStage.PifModule = EXP_Set_Values.pif_module AND LKP_Pif43LXZWCStage.Pmdl4w1InsuranceLine = EXP_Set_Values.o_InsuranceLine
@@ -716,41 +695,29 @@ EXP_DetectChange AS (
 	-- OR lkp_PolicyPerAccidentLimit<>PolicyPerAccidentLimit
 	-- OR lkp_PolicyPerDiseaseLimit<>PolicyPerDiseaseLimit
 	-- OR lkp_PolicyPerClaimLimit<>PolicyPerClaimLimit),2,0)
-	DECODE(TRUE,
-		lkp_PolicyLimitId IS NULL 
-		AND pol_ak_id <> - 1, 1,
-		pol_ak_id <> - 1 
-		AND ( lkp_PolicyPerOccurenceLimit <> PolicyPerOccurenceLimit 
-			OR lkp_PolicyAggregateLimit <> PolicyAggregateLimit 
-			OR lkp_PolicyProductAggregateLimit <> PolicyProductAggregateLimit 
-			OR lkp_PolicyPerAccidentLimit <> PolicyPerAccidentLimit 
-			OR lkp_PolicyPerDiseaseLimit <> PolicyPerDiseaseLimit 
-			OR lkp_PolicyPerClaimLimit <> PolicyPerClaimLimit 
-		), 2,
-		0
+	DECODE(
+	    TRUE,
+	    lkp_PolicyLimitId IS NULL AND pol_ak_id <> - 1, 1,
+	    pol_ak_id <> - 1 AND (lkp_PolicyPerOccurenceLimit <> PolicyPerOccurenceLimit OR lkp_PolicyAggregateLimit <> PolicyAggregateLimit OR lkp_PolicyProductAggregateLimit <> PolicyProductAggregateLimit OR lkp_PolicyPerAccidentLimit <> PolicyPerAccidentLimit OR lkp_PolicyPerDiseaseLimit <> PolicyPerDiseaseLimit OR lkp_PolicyPerClaimLimit <> PolicyPerClaimLimit), 2,
+	    0
 	) AS v_change_flag,
 	'1' AS o_CurrentSnapshotFlag_Active,
 	'0' AS o_CurrentSnapshotFlag_Inactive,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: IIF(v_change_flag=1,TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_change_flag = 1,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    v_change_flag = 1, TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_ExpirationDate_Active,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate_Active,
 	-- *INF*: ADD_TO_DATE(SYSDATE,'SS',-1)
-	DATEADD(SECOND,- 1,SYSDATE) AS o_ExpirationDate_Inactive,
+	DATEADD(SECOND,- 1,CURRENT_TIMESTAMP) AS o_ExpirationDate_Inactive,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	-- *INF*: IIF(v_change_flag=1,i_NEXTVAL,lkp_PolicyLimitAKId)
-	IFF(v_change_flag = 1,
-		i_NEXTVAL,
-		lkp_PolicyLimitAKId
-	) AS o_PolicyLimitAKId,
+	IFF(v_change_flag = 1, i_NEXTVAL, lkp_PolicyLimitAKId) AS o_PolicyLimitAKId,
 	v_change_flag AS o_change_flag
 	FROM EXP_IDAndLookupValues
 	LEFT JOIN LKP_PolicyLimit

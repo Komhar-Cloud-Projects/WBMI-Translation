@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Plines_STG_Insert_Sup_Anti_Theft",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Plines_STG_Insert_Sup_Anti_Theft",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_sup_anti_theft AS (\n\tSELECT\n\t\tcode,\n\t\teff_date,\n\t\texp_date,\n\t\tstate_type_code,\n\t\tpmsc_category,\n\t\tdescript,\n\t\tmodified_date,\n\t\tmodified_user_id,\n\t\tdescript_long,\n\t\tdiscount_percent\n\tFROM sup_anti_theft\n),\nEXP_SUP_ANTI_THEFT AS (\n\tSELECT\n\tcode,\n\teff_date,\n\texp_date,\n\tstate_type_code,\n\tpmsc_category,\n\tdescript,\n\tmodified_date,\n\tmodified_user_id,\n\tdescript_long,\n\tdiscount_percent,\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t'' AS RECORD_COUNT,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID\n\tFROM SQ_sup_anti_theft\n),\nsup_anti_theft_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_anti_theft_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.sup_anti_theft_stage\n\t(code, eff_date, exp_date, state_type_code, pmsc_category, descript, modified_date, modified_user_id, descript_long, discount_percent, extract_date, as_of_date, record_count, source_system_id)\n\tSELECT \n\tCODE, \n\tEFF_DATE, \n\tEXP_DATE, \n\tSTATE_TYPE_CODE, \n\tPMSC_CATEGORY, \n\tDESCRIPT, \n\tMODIFIED_DATE, \n\tMODIFIED_USER_ID, \n\tDESCRIPT_LONG, \n\tDISCOUNT_PERCENT, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_SUP_ANTI_THEFT\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CommonStaging/"
+        },
+        "annotations": []
+    }
+}

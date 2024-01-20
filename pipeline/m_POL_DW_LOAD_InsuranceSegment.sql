@@ -17,22 +17,17 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_EffectiveDate
+	IFF(
+	    i_EffectiveDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate
 	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ExpirationDate
+	IFF(
+	    i_ExpirationDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'),
+	    i_ExpirationDate
 	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ModifiedDate
+	IFF(
+	    i_ModifiedDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate
 	) AS o_ModifiedDate
 	FROM SQ_InsuranceSegment
 ),
@@ -41,15 +36,9 @@ EXP_NumericValues AS (
 	InsuranceSegmentId AS i_InsuranceSegmentId,
 	InsuranceSegmentAKId AS i_InsuranceSegmentAKId,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentId),-1,i_InsuranceSegmentId)
-	IFF(i_InsuranceSegmentId IS NULL,
-		- 1,
-		i_InsuranceSegmentId
-	) AS o_InsuranceSegmentId,
+	IFF(i_InsuranceSegmentId IS NULL, - 1, i_InsuranceSegmentId) AS o_InsuranceSegmentId,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentAKId),-1,i_InsuranceSegmentAKId)
-	IFF(i_InsuranceSegmentAKId IS NULL,
-		- 1,
-		i_InsuranceSegmentAKId
-	) AS o_InsuranceSegmentAKId
+	IFF(i_InsuranceSegmentAKId IS NULL, - 1, i_InsuranceSegmentAKId) AS o_InsuranceSegmentAKId
 	FROM SQ_InsuranceSegment
 ),
 EXP_StringValues AS (
@@ -59,43 +48,36 @@ EXP_StringValues AS (
 	InsuranceSegmentAbbreviation AS i_InsuranceSegmentAbbreviation,
 	InsuranceSegmentDescription AS i_InsuranceSegmentDescription,
 	-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)
-	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'
-		),
-		1,
-		0
-	) AS o_CurrentSnapshotFlag,
+	IFF(TRUNC(i_ExpirationDate) = TO_TIMESTAMP('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentCode) OR LENGTH(i_InsuranceSegmentCode)=0 OR IS_SPACES(i_InsuranceSegmentCode),'N/A',LTRIM(RTRIM(i_InsuranceSegmentCode)))
-	IFF(i_InsuranceSegmentCode IS NULL 
-		OR LENGTH(i_InsuranceSegmentCode
-		) = 0 
-		OR LENGTH(i_InsuranceSegmentCode)>0 AND TRIM(i_InsuranceSegmentCode)='',
-		'N/A',
-		LTRIM(RTRIM(i_InsuranceSegmentCode
-			)
-		)
+	IFF(
+	    i_InsuranceSegmentCode IS NULL
+	    or LENGTH(i_InsuranceSegmentCode) = 0
+	    or LENGTH(i_InsuranceSegmentCode)>0
+	    and TRIM(i_InsuranceSegmentCode)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_InsuranceSegmentCode))
 	) AS o_InsuranceSegmentCode,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentAbbreviation) OR LENGTH(i_InsuranceSegmentAbbreviation)=0 OR IS_SPACES(i_InsuranceSegmentAbbreviation),'N/A',LTRIM(RTRIM(i_InsuranceSegmentAbbreviation)))
-	IFF(i_InsuranceSegmentAbbreviation IS NULL 
-		OR LENGTH(i_InsuranceSegmentAbbreviation
-		) = 0 
-		OR LENGTH(i_InsuranceSegmentAbbreviation)>0 AND TRIM(i_InsuranceSegmentAbbreviation)='',
-		'N/A',
-		LTRIM(RTRIM(i_InsuranceSegmentAbbreviation
-			)
-		)
+	IFF(
+	    i_InsuranceSegmentAbbreviation IS NULL
+	    or LENGTH(i_InsuranceSegmentAbbreviation) = 0
+	    or LENGTH(i_InsuranceSegmentAbbreviation)>0
+	    and TRIM(i_InsuranceSegmentAbbreviation)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_InsuranceSegmentAbbreviation))
 	) AS o_InsuranceSegmentAbbreviation,
 	-- *INF*: IIF(ISNULL(i_InsuranceSegmentDescription) OR LENGTH(i_InsuranceSegmentDescription)=0 OR IS_SPACES(i_InsuranceSegmentDescription),'N/A',LTRIM(RTRIM(i_InsuranceSegmentDescription)))
-	IFF(i_InsuranceSegmentDescription IS NULL 
-		OR LENGTH(i_InsuranceSegmentDescription
-		) = 0 
-		OR LENGTH(i_InsuranceSegmentDescription)>0 AND TRIM(i_InsuranceSegmentDescription)='',
-		'N/A',
-		LTRIM(RTRIM(i_InsuranceSegmentDescription
-			)
-		)
+	IFF(
+	    i_InsuranceSegmentDescription IS NULL
+	    or LENGTH(i_InsuranceSegmentDescription) = 0
+	    or LENGTH(i_InsuranceSegmentDescription)>0
+	    and TRIM(i_InsuranceSegmentDescription)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_InsuranceSegmentDescription))
 	) AS o_InsuranceSegmentDescription
 	FROM SQ_InsuranceSegment
 ),

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_LOSS_OCCURRENCE_S3P",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_LOSS_OCCURRENCE_S3P",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_loss_occurrence_S3P_STAGE AS (\n\tSELECT loss_occurrence_S3P_STAGE.loss_occurrence_S3P_ID, loss_occurrence_S3P_STAGE.COC_OCCURRENCE_ID, loss_occurrence_S3P_STAGE.COC_ENTRY_OPR_ID, loss_occurrence_S3P_STAGE.COC_OCCURRENCE_TYP, loss_occurrence_S3P_STAGE.COC_OCC_LOC_ID, loss_occurrence_S3P_STAGE.COC_OCC_DES_ID, loss_occurrence_S3P_STAGE.COC_OCC_CMT_ID, loss_occurrence_S3P_STAGE.COC_COUNTRY_CD, loss_occurrence_S3P_STAGE.COC_START_DT, loss_occurrence_S3P_STAGE.COC_END_DT, loss_occurrence_S3P_STAGE.COC_PMSD_TS, loss_occurrence_S3P_STAGE.COC_UPDATE_OPR_ID, loss_occurrence_S3P_STAGE.COC_CREATE_TS, loss_occurrence_S3P_STAGE.COC_UPD_TS, loss_occurrence_S3P_STAGE.COC_CATASTROPHE_CD, loss_occurrence_S3P_STAGE.COC_CSR_OCC_NBR, loss_occurrence_S3P_STAGE.EXTRACT_DATE, loss_occurrence_S3P_STAGE.AS_OF_DATE, loss_occurrence_S3P_STAGE.RECORD_COUNT, loss_occurrence_S3P_STAGE.SOURCE_SYSTEM_ID \r\n\tFROM\r\n\t loss_occurrence_S3P_STAGE\r\n\tWHERE\r\n\tloss_occurrence_S3P_STAGE.COC_CREATE_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\r\n\tOR\r\n\tloss_occurrence_S3P_STAGE.COC_UPD_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_LOSS_OCCURRENCE_STAGE AS (\n\tSELECT\n\tloss_occurrence_S3P_ID AS LOSS_OCCURRENCE_ID,\n\tCOC_OCCURRENCE_ID,\n\tCOC_ENTRY_OPR_ID,\n\tCOC_OCCURRENCE_TYP,\n\tCOC_OCC_LOC_ID,\n\tCOC_OCC_DES_ID,\n\tCOC_OCC_CMT_ID,\n\tCOC_COUNTRY_CD,\n\tCOC_START_DT,\n\tCOC_END_DT,\n\tCOC_PMSD_TS,\n\tCOC_UPDATE_OPR_ID,\n\tCOC_CREATE_TS,\n\tCOC_UPD_TS,\n\tCOC_CATASTROPHE_CD,\n\tCOC_CSR_OCC_NBR,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_loss_occurrence_S3P_STAGE\n),\nARCH_loss_occurrence_S3P_STAGE AS (\n\tINSERT INTO ARCH_loss_occurrence_S3P_STAGE\n\t(loss_occurrence_S3P_ID, COC_OCCURRENCE_ID, COC_ENTRY_OPR_ID, COC_OCCURRENCE_TYP, COC_OCC_LOC_ID, COC_OCC_DES_ID, COC_OCC_CMT_ID, COC_COUNTRY_CD, COC_START_DT, COC_END_DT, COC_PMSD_TS, COC_UPDATE_OPR_ID, COC_CREATE_TS, COC_UPD_TS, COC_CATASTROPHE_CD, COC_CSR_OCC_NBR, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, AUDIT_ID)\n\tSELECT \n\tLOSS_OCCURRENCE_ID AS LOSS_OCCURRENCE_S3P_ID, \n\tCOC_OCCURRENCE_ID, \n\tCOC_ENTRY_OPR_ID, \n\tCOC_OCCURRENCE_TYP, \n\tCOC_OCC_LOC_ID, \n\tCOC_OCC_DES_ID, \n\tCOC_OCC_CMT_ID, \n\tCOC_COUNTRY_CD, \n\tCOC_START_DT, \n\tCOC_END_DT, \n\tCOC_PMSD_TS, \n\tCOC_UPDATE_OPR_ID, \n\tCOC_CREATE_TS, \n\tCOC_UPD_TS, \n\tCOC_CATASTROPHE_CD, \n\tCOC_CSR_OCC_NBR, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_LOSS_OCCURRENCE_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -255,8 +255,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		-- *INF*: TO_DECIMAL(i_Value,8)
 		CAST(i_Value AS FLOAT) AS v_Value,
 		-- *INF*: ROUND(v_Value,4)
-		ROUND(v_Value, 4
-		) AS o_Value
+		ROUND(v_Value, 4) AS o_Value
 		FROM Source_RatingModifier
 	),
 	RTR_InsuranceLine AS (
@@ -288,11 +287,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		Value,
 		Scope,
 		-- *INF*: IIF(Type='IRPM' AND Scope='IRPMFactor',Value,0)
-		IFF(Type = 'IRPM' 
-			AND Scope = 'IRPMFactor',
-			Value,
-			0
-		) AS IRPM_Irpmfactor_IM
+		IFF(Type = 'IRPM' AND Scope = 'IRPMFactor', Value, 0) AS IRPM_Irpmfactor_IM
 		FROM RTR_InsuranceLine_InlandMarine
 	),
 	EXP_Other_lines AS (
@@ -309,11 +304,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		Value,
 		Scope,
 		-- *INF*: IIF(Type='ScheduledMod' AND Scope='Liability',Value,0)
-		IFF(Type = 'ScheduledMod' 
-			AND Scope = 'Liability',
-			Value,
-			0
-		) AS Scheduledmod_Liability_EMP
+		IFF(Type = 'ScheduledMod' AND Scope = 'Liability', Value, 0) AS Scheduledmod_Liability_EMP
 		FROM RTR_InsuranceLine_EmploymentPracticesLiab
 	),
 	EXP_SBOPGeneralLiability AS (
@@ -351,11 +342,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		Value,
 		Scope,
 		-- *INF*: IIF(Type='ScheduledMod' AND Scope='Liability',Value,0)
-		IFF(Type = 'ScheduledMod' 
-			AND Scope = 'Liability',
-			Value,
-			0
-		) AS Scheduledmod_Liability_Crime
+		IFF(Type = 'ScheduledMod' AND Scope = 'Liability', Value, 0) AS Scheduledmod_Liability_Crime
 		FROM RTR_InsuranceLine_Crime
 	),
 	EXP_CommercialUmbrella AS (
@@ -366,11 +353,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		Value,
 		Scope,
 		-- *INF*: IIF(Type='DCTUmbrella' AND Scope='DCTUmbrellaScheduled',Value,0)
-		IFF(Type = 'DCTUmbrella' 
-			AND Scope = 'DCTUmbrellaScheduled',
-			Value,
-			0
-		) AS Scheduledmod_DCTUmbrella
+		IFF(Type = 'DCTUmbrella' AND Scope = 'DCTUmbrellaScheduled', Value, 0) AS Scheduledmod_DCTUmbrella
 		FROM RTR_InsuranceLine_CommercialUmbrella
 	),
 	EXP_BusinessOwners AS (
@@ -381,23 +364,11 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		Value,
 		Scope,
 		-- *INF*: IIF(Type='IRPM' AND Scope='IRPMFactor',Value,0)
-		IFF(Type = 'IRPM' 
-			AND Scope = 'IRPMFactor',
-			Value,
-			0
-		) AS o_ScheduledMod_IRPM_BO,
+		IFF(Type = 'IRPM' AND Scope = 'IRPMFactor', Value, 0) AS o_ScheduledMod_IRPM_BO,
 		-- *INF*: IIF(Type = 'TransitionMod' AND ISNULL(Scope),Value,0)
-		IFF(Type = 'TransitionMod' 
-			AND Scope IS NULL,
-			Value,
-			0
-		) AS o_TransitionMod_BO_7x,
+		IFF(Type = 'TransitionMod' AND Scope IS NULL, Value, 0) AS o_TransitionMod_BO_7x,
 		-- *INF*: IIF(Type = 'TransitionMod' AND Scope='IRPM',Value,0)
-		IFF(Type = 'TransitionMod' 
-			AND Scope = 'IRPM',
-			Value,
-			0
-		) AS o_TransitionMod_BO_9x
+		IFF(Type = 'TransitionMod' AND Scope = 'IRPM', Value, 0) AS o_TransitionMod_BO_9x
 		FROM RTR_InsuranceLine_BusinessOwners
 	),
 	EXP_SBOPProperty AS (
@@ -424,8 +395,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Scheduledmod_Liability_EMP AS i_Scheduledmod_Liability_EMP,
 		-- *INF*: Max(i_Scheduledmod_Liability_EMP)
-		Max(i_Scheduledmod_Liability_EMP
-		) AS o_Scheduledmod_Liability_EMP
+		Max(i_Scheduledmod_Liability_EMP) AS o_Scheduledmod_Liability_EMP
 		FROM EXP_EmploymentPracticesLiab
 		GROUP BY PremiumTransactionID
 	),
@@ -437,14 +407,11 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		o_TransitionMod_BO_7x AS i_TransitionMod_BO_7x,
 		o_TransitionMod_BO_9x AS i_TransitionMod_BO_9x,
 		-- *INF*: Max(i_ScheduledMod_IRPM_BO)
-		Max(i_ScheduledMod_IRPM_BO
-		) AS o_ScheduledMod_IRPM_BO,
+		Max(i_ScheduledMod_IRPM_BO) AS o_ScheduledMod_IRPM_BO,
 		-- *INF*: Max(i_TransitionMod_BO_7x)
-		Max(i_TransitionMod_BO_7x
-		) AS o_TransitionMod_BO_7x,
+		Max(i_TransitionMod_BO_7x) AS o_TransitionMod_BO_7x,
 		-- *INF*: Max(i_TransitionMod_BO_9x)
-		Max(i_TransitionMod_BO_9x
-		) AS o_TransitionMod_BO_9x
+		Max(i_TransitionMod_BO_9x) AS o_TransitionMod_BO_9x
 		FROM EXP_BusinessOwners
 		GROUP BY PremiumTransactionID
 	),
@@ -454,8 +421,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Scheduledmod_Liability_Crime AS i_Scheduledmod_Liability_Crime,
 		-- *INF*: Max(i_Scheduledmod_Liability_Crime)
-		Max(i_Scheduledmod_Liability_Crime
-		) AS o_Scheduledmod_Liability_Crime
+		Max(i_Scheduledmod_Liability_Crime) AS o_Scheduledmod_Liability_Crime
 		FROM EXP_Crime
 		GROUP BY PremiumTransactionID
 	),
@@ -513,8 +479,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		IRPM_Irpmfactor_IM,
 		-- *INF*: Max(IRPM_Irpmfactor_IM)
-		Max(IRPM_Irpmfactor_IM
-		) AS o_IRPM_Irpmfactor_IM
+		Max(IRPM_Irpmfactor_IM) AS o_IRPM_Irpmfactor_IM
 		FROM EXP_InalandMarine
 		GROUP BY PremiumTransactionID
 	),
@@ -547,8 +512,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Scheduledmod_DCTUmbrella AS i_Scheduledmod_DCTUmbrella,
 		-- *INF*: max(i_Scheduledmod_DCTUmbrella)
-		max(i_Scheduledmod_DCTUmbrella
-		) AS o_Scheduledmod_DCTUmbrella
+		max(i_Scheduledmod_DCTUmbrella) AS o_Scheduledmod_DCTUmbrella
 		FROM EXP_CommercialUmbrella
 		GROUP BY PremiumTransactionID
 	),
@@ -590,10 +554,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_TransitionMod
+		IFF(i_Value IS NULL, 0, i_Value) AS o_TransitionMod
 		FROM RTE_Property_Transition_Modifier
 	),
 	EXP_SBOP_Property_TransitionMod AS (
@@ -602,10 +563,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_TransitionMod
+		IFF(i_Value IS NULL, 0, i_Value) AS o_TransitionMod
 		FROM RTE_SBOPProperty_TransitionMod
 	),
 	EXP_OtherMod_MLPDC AS (
@@ -614,10 +572,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_OtherMod_MLPDC
+		IFF(i_Value IS NULL, 0, i_Value) AS o_OtherMod_MLPDC
 		FROM RTE_Property_OtherMod_MLPDC
 	),
 	EXP_OtherMod_StateOwnedPropertyCredit AS (
@@ -626,10 +581,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_OtherMod_StateOwnedPropertyCredit
+		IFF(i_Value IS NULL, 0, i_Value) AS o_OtherMod_StateOwnedPropertyCredit
 		FROM RTE_Property_OtherMod_StateOwnedPropertyCredit
 	),
 	EXP_SBOPGL_ScheduledModifier AS (
@@ -638,10 +590,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_ScheduledModifier
+		IFF(i_Value IS NULL, 0, i_Value) AS o_ScheduledModifier
 		FROM RTE_SBOPGeneralLiabilty_ScheduledModifier
 	),
 	EXP_SBOPGL_ExperienceModifier AS (
@@ -650,10 +599,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_ExperienceModifier
+		IFF(i_Value IS NULL, 0, i_Value) AS o_ExperienceModifier
 		FROM RTE_SBOPGeneralLiabilty_ExperienceModifier
 	),
 	EXP_CA_SchMod_PhysicalDamage AS (
@@ -662,10 +608,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_Scheduledmod_PhyicalDamage
+		IFF(i_Value IS NULL, 0, i_Value) AS o_Scheduledmod_PhyicalDamage
 		FROM RTE_CommercialAuto_ScheduledModifier_PhysicalDamage
 	),
 	EXP_StandardizeModifier_CommercialUmbrella AS (
@@ -685,10 +628,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: iif(isnull(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_ScheduledModifer
+		IFF(i_Value IS NULL, 0, i_Value) AS o_ScheduledModifer
 		FROM RTE_GeneralLiabilty_ScheduledModifier
 	),
 	EXP_GL_ExperienceModifier AS (
@@ -697,10 +637,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_ExperienceModifier
+		IFF(i_Value IS NULL, 0, i_Value) AS o_ExperienceModifier
 		FROM RTE_GeneralLiabilty_ExperienceModifier
 	),
 	EXP_CA_SchMod_Liability AS (
@@ -709,10 +646,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_Scheduledmod_Liability
+		IFF(i_Value IS NULL, 0, i_Value) AS o_Scheduledmod_Liability
 		FROM RTE_CommercialAuto_ScheduledModifier_Liability
 	),
 	EXP_StandardizeModifier_BusinessOwners AS (
@@ -729,11 +663,10 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		-- )
 		-- 
 		-- --Pick the 9x Template Transition factor if available else grab the 7.x. If either are not present then it is defaulted to 1.0 in EXP_Modifier_Null_Handle
-		IFF(i_TransitionMod_BO_9x = 0 
-			OR i_TransitionMod_BO_9x IS NULL 
-			OR i_TransitionMod_BO_9x = 1,
-			i_TransitionMod_BO_7x,
-			i_TransitionMod_BO_9x
+		IFF(
+		    i_TransitionMod_BO_9x = 0 OR i_TransitionMod_BO_9x IS NULL OR i_TransitionMod_BO_9x = 1,
+		    i_TransitionMod_BO_7x,
+		    i_TransitionMod_BO_9x
 		) AS TransitionFactor_BO
 		FROM AGG_RowsToColuns_BusinessOwners
 	),
@@ -754,10 +687,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_Experiencemod_PhysicalDamage
+		IFF(i_Value IS NULL, 0, i_Value) AS o_Experiencemod_PhysicalDamage
 		FROM RTE_CommercialAuto_ExperienceModifier_PhysicalDamage
 	),
 	EXP_CA_ExpMod_Liability AS (
@@ -766,10 +696,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_ExperienceModifier_Liability
+		IFF(i_Value IS NULL, 0, i_Value) AS o_ExperienceModifier_Liability
 		FROM RTE_CommercialAuto_ExperienceModifier_Liability
 	),
 	EXP_OtherMod_PreferredPropertyCreditFactor AS (
@@ -778,10 +705,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_OtherMod_PreferredPropertyCreditFactor
+		IFF(i_Value IS NULL, 0, i_Value) AS o_OtherMod_PreferredPropertyCreditFactor
 		FROM RTE_Property_OtherMod_PreferredPropertyCreditFactor
 	),
 	EXP_OtherMod_MultiLocationCreditFactor AS (
@@ -790,10 +714,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_OtherMod_MultiLocationCreditFactor
+		IFF(i_Value IS NULL, 0, i_Value) AS o_OtherMod_MultiLocationCreditFactor
 		FROM RTE_Property_OtherMod_MultiLocationCreditFactor
 	),
 	EXP_GL_TransitionModifier AS (
@@ -802,10 +723,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_ExperienceModifier
+		IFF(i_Value IS NULL, 0, i_Value) AS o_ExperienceModifier
 		FROM RTE_GeneralLiabilty_TransitionModifier
 	),
 	EXP_ScheduledMod AS (
@@ -814,10 +732,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_Scheduledmod
+		IFF(i_Value IS NULL, 0, i_Value) AS o_Scheduledmod
 		FROM RTE_Property_Scheduled_Modifier
 	),
 	EXP_OtherMod_PreferredProperty AS (
@@ -826,9 +741,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),i_Value)
-		IFF(i_Value IS NULL,
-			i_Value
-		) AS o_OtherMod_PreferredProperty
+		IFF(i_Value IS NULL, i_Value) AS o_OtherMod_PreferredProperty
 		FROM RTE_SBOPProperty_OtherMod_PreferredProperty
 	),
 	EXP_OtherMod_Multilocation AS (
@@ -837,10 +750,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_OtherMod_Multilocation
+		IFF(i_Value IS NULL, 0, i_Value) AS o_OtherMod_Multilocation
 		FROM RTE_SBOPProperty_OtherMod_Multilocation
 	),
 	EXP_SBOP_Property_ScheduledMod AS (
@@ -849,10 +759,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		Value AS i_Value,
 		-- *INF*: IIF(ISNULL(i_Value),0,i_Value)
-		IFF(i_Value IS NULL,
-			0,
-			i_Value
-		) AS o_ScheduledMod
+		IFF(i_Value IS NULL, 0, i_Value) AS o_ScheduledMod
 		FROM RTE_SBOPProperty_ScheduledMod
 	),
 	AGG_RowsToColumns_TransitionMod AS (
@@ -861,8 +768,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_TransitionMod AS i_TransitionMod,
 		-- *INF*: Max(i_TransitionMod)
-		Max(i_TransitionMod
-		) AS o_TransitionMod,
+		Max(i_TransitionMod) AS o_TransitionMod,
 		0 AS o_ScheduledMod,
 		0 AS o_OtherModPreferredPropertyCreditFactor,
 		0 AS o_OtherModMultiLocationCredit,
@@ -877,8 +783,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_TransitionMod AS i_TransitionMod,
 		-- *INF*: Max(i_TransitionMod)
-		Max(i_TransitionMod
-		) AS o_TransitionMod,
+		Max(i_TransitionMod) AS o_TransitionMod,
 		0 AS o_ScheduledMod,
 		0 AS o_OtherMod_PreferredProperty,
 		0 AS o_OtherMod_Multilocation
@@ -891,8 +796,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_OtherMod_MLPDC AS i_OtherMod_MLPDC,
 		-- *INF*: Max(i_OtherMod_MLPDC)
-		Max(i_OtherMod_MLPDC
-		) AS o_OtherMod_MLPDC,
+		Max(i_OtherMod_MLPDC) AS o_OtherMod_MLPDC,
 		0 AS o_OtherModPreferredPropertyCreditFactor,
 		0 AS o_OtherMod_MultiLocationCreditFactor,
 		0 AS o_ScheduledMod,
@@ -907,8 +811,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_ScheduledModifier AS i_ScheduledModifier,
 		-- *INF*: MAX(i_ScheduledModifier)
-		MAX(i_ScheduledModifier
-		) AS o_ScheduledModifier,
+		MAX(i_ScheduledModifier) AS o_ScheduledModifier,
 		0 AS o_ExperienceModifier
 		FROM EXP_SBOPGL_ScheduledModifier
 		GROUP BY PremiumTransactionID
@@ -919,8 +822,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_ExperienceModifier AS i_ExperienceModifier,
 		-- *INF*: Max(i_ExperienceModifier)
-		Max(i_ExperienceModifier
-		) AS o_ExperienceModifier,
+		Max(i_ExperienceModifier) AS o_ExperienceModifier,
 		0 AS o_ScheduledModifier
 		FROM EXP_SBOPGL_ExperienceModifier
 		GROUP BY PremiumTransactionID
@@ -931,8 +833,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_Scheduledmod_PhyicalDamage AS i_Scheduledmod_PhyicalDamage,
 		-- *INF*: MAX(i_Scheduledmod_PhyicalDamage)
-		MAX(i_Scheduledmod_PhyicalDamage
-		) AS o_Scheduledmod_PhyicalDamage,
+		MAX(i_Scheduledmod_PhyicalDamage) AS o_Scheduledmod_PhyicalDamage,
 		0 AS o_Scheduledmod_Liability,
 		0 AS o_Experiencemod_PhysicalDamage,
 		0 AS o_Experiencemod_Liability
@@ -945,8 +846,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_Scheduledmod_Liability AS i_Scheduledmod_Liability,
 		-- *INF*: Max(i_Scheduledmod_Liability)
-		Max(i_Scheduledmod_Liability
-		) AS o_Scheduledmod_Liability,
+		Max(i_Scheduledmod_Liability) AS o_Scheduledmod_Liability,
 		0 AS o_Scheduledmod_PhysicalDamage,
 		0 AS o_Experiencemod_PhysicalDamage,
 		0 AS o_Experiencemod_Liability
@@ -959,8 +859,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_Experiencemod_PhysicalDamage AS i_Experiencemod_PhysicalDamage,
 		-- *INF*: Max(i_Experiencemod_PhysicalDamage)
-		Max(i_Experiencemod_PhysicalDamage
-		) AS o_Experiencemod_PhysicalDamage,
+		Max(i_Experiencemod_PhysicalDamage) AS o_Experiencemod_PhysicalDamage,
 		0 AS o_Scheduledmod_PhysicalDamage,
 		0 AS o_Scheduledmod_Liability,
 		0 AS o_Experiencemod_Liability
@@ -973,8 +872,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_ExperienceModifier_Liability AS i_ExperienceModifier_Liability,
 		-- *INF*: Max(i_ExperienceModifier_Liability)
-		Max(i_ExperienceModifier_Liability
-		) AS o_ExperienceModifier_Liability,
+		Max(i_ExperienceModifier_Liability) AS o_ExperienceModifier_Liability,
 		0 AS o_Scheduledmod_PhysicalDamage,
 		0 AS o_Scheduledmod_Liability,
 		0 AS o_Experiencemod_PhysicalDamage
@@ -987,8 +885,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_OtherMod_PreferredPropertyCreditFactor AS i_OtherMod_PreferredPropertyCreditFactor,
 		-- *INF*: Max(i_OtherMod_PreferredPropertyCreditFactor)
-		Max(i_OtherMod_PreferredPropertyCreditFactor
-		) AS o_OtherMod_PreferredPropertyCreditFactor,
+		Max(i_OtherMod_PreferredPropertyCreditFactor) AS o_OtherMod_PreferredPropertyCreditFactor,
 		0 AS o_OtherModMultiLocationCredit,
 		0 AS o_OtherModMLPDC,
 		0 AS o_ScheduledMod,
@@ -1003,8 +900,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_OtherMod_MultiLocationCreditFactor AS i_OtherMod_MultiLocationCreditFactor,
 		-- *INF*: Max(i_OtherMod_MultiLocationCreditFactor)
-		Max(i_OtherMod_MultiLocationCreditFactor
-		) AS o_OtherMod_MultiLocationCreditFactor,
+		Max(i_OtherMod_MultiLocationCreditFactor) AS o_OtherMod_MultiLocationCreditFactor,
 		0 AS o_OtherModPreferredPropertyCreditFactor,
 		0 AS o_OtherModMLPDC,
 		0 AS o_ScheduledMod,
@@ -1019,8 +915,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_Scheduledmod AS i_ScheduledMod,
 		-- *INF*: Max(i_ScheduledMod)
-		Max(i_ScheduledMod
-		) AS o_ScheduledMod,
+		Max(i_ScheduledMod) AS o_ScheduledMod,
 		0 AS o_OtherModPreferredPropertyCreditFactor,
 		0 AS o_OtherModMultiLocationCredit,
 		0 AS o_OtherModMLPDC,
@@ -1035,8 +930,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_OtherMod_StateOwnedPropertyCredit AS i_OtherMod_StateOwnedPropertyCredit,
 		-- *INF*: Max(i_OtherMod_StateOwnedPropertyCredit)
-		Max(i_OtherMod_StateOwnedPropertyCredit
-		) AS o_OtherMod_StateOwnedPropertyCredit,
+		Max(i_OtherMod_StateOwnedPropertyCredit) AS o_OtherMod_StateOwnedPropertyCredit,
 		0 AS o_OtherModPreferredPropertCredit,
 		0 AS o_OtherModMultiLocationCredit,
 		0 AS o_OtherModMLPDC,
@@ -1051,8 +945,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_OtherMod_PreferredProperty AS i_OtherMod_PreferredProperty,
 		-- *INF*: Max(i_OtherMod_PreferredProperty)
-		Max(i_OtherMod_PreferredProperty
-		) AS o_OtherMod_PreferredProperty,
+		Max(i_OtherMod_PreferredProperty) AS o_OtherMod_PreferredProperty,
 		0 AS o_OtherMod_Multilocation,
 		0 AS o_ScheduledMod,
 		0 AS o_TransitionMod
@@ -1065,8 +958,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_OtherMod_Multilocation AS i_OtherMod_Multilocation,
 		-- *INF*: Max(i_OtherMod_Multilocation)
-		Max(i_OtherMod_Multilocation
-		) AS o_OtherMod_Multilocation,
+		Max(i_OtherMod_Multilocation) AS o_OtherMod_Multilocation,
 		0 AS o_OtherMod_PreferredProperty,
 		0 AS o_ScheduledMod,
 		0 AS o_TransitionMod
@@ -1079,8 +971,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_ScheduledMod AS i_ScheduledMod,
 		-- *INF*: Max(i_ScheduledMod)
-		Max(i_ScheduledMod
-		) AS o_ScheduledMod,
+		Max(i_ScheduledMod) AS o_ScheduledMod,
 		0 AS o_OtherMod_PreferredProperty,
 		0 AS o_OtherMod_Multilocation,
 		0 AS o_TransitionMod
@@ -1093,8 +984,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		o_ExperienceModifier AS i_TransitionModifier,
 		-- *INF*: Max(i_TransitionModifier)
-		Max(i_TransitionModifier
-		) AS o_TransitionModifier,
+		Max(i_TransitionModifier) AS o_TransitionModifier,
 		0 AS o_ExperienceModifier,
 		0 AS o_ScheduledModifier
 		FROM EXP_GL_TransitionModifier
@@ -1108,8 +998,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		0 AS o_TransitionModifier,
 		0 AS o_ExperienceModifier,
 		-- *INF*: max(i_Scheduledmod_Liability_GL)
-		max(i_Scheduledmod_Liability_GL
-		) AS o_Scheduledmod_Liability_GL
+		max(i_Scheduledmod_Liability_GL) AS o_Scheduledmod_Liability_GL
 		FROM EXP_GL_ScheduleModifer
 		GROUP BY PremiumTransactionID
 	),
@@ -1120,8 +1009,7 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		o_ExperienceModifier AS i_ExperienceModifier,
 		0 AS o_TransitionModifier,
 		-- *INF*: Max(i_ExperienceModifier)
-		Max(i_ExperienceModifier
-		) AS o_ExperienceModifier,
+		Max(i_ExperienceModifier) AS o_ExperienceModifier,
 		0 AS o_ScheduledModifier
 		FROM EXP_GL_ExperienceModifier
 		GROUP BY PremiumTransactionID
@@ -1194,20 +1082,16 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKId,
 		Scheduledmod_PhysicalDamage AS i_Scheduledmod_PhysicalDamage,
 		-- *INF*: Max(i_Scheduledmod_PhysicalDamage)
-		Max(i_Scheduledmod_PhysicalDamage
-		) AS o_Scheduledmod_PhysicalDamage,
+		Max(i_Scheduledmod_PhysicalDamage) AS o_Scheduledmod_PhysicalDamage,
 		Scheduledmod_Liability AS i_Scheduledmod_Liability,
 		-- *INF*: Max(i_Scheduledmod_Liability)
-		Max(i_Scheduledmod_Liability
-		) AS o_Scheduledmod_Liability,
+		Max(i_Scheduledmod_Liability) AS o_Scheduledmod_Liability,
 		Experiencemod_PhysicalDamage AS i_Experiencemod_PhysicalDamage,
 		-- *INF*: Max(i_Experiencemod_PhysicalDamage)
-		Max(i_Experiencemod_PhysicalDamage
-		) AS o_Experiencemod_PhysicalDamage,
+		Max(i_Experiencemod_PhysicalDamage) AS o_Experiencemod_PhysicalDamage,
 		Experiencemod_Liability AS i_Experiencemod_Liability,
 		-- *INF*: Max(i_Experiencemod_Liability)
-		Max(i_Experiencemod_Liability
-		) AS o_Experiencemod_Liability
+		Max(i_Experiencemod_Liability) AS o_Experiencemod_Liability
 		FROM UN_CommercialAuto
 		GROUP BY PremiumTransactionId
 	),
@@ -1217,28 +1101,22 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID AS PremiumTransactionAKId,
 		OtherMod_PreferredProperyCredit AS i_OtherModPreferredPropertyCreditFactor,
 		-- *INF*: Max(i_OtherModPreferredPropertyCreditFactor)
-		Max(i_OtherModPreferredPropertyCreditFactor
-		) AS o_OtherModPreferredPropertyCreditFactor,
+		Max(i_OtherModPreferredPropertyCreditFactor) AS o_OtherModPreferredPropertyCreditFactor,
 		OtherMod_MultiLocationCredit AS i_OtherModMultiLocationCredit,
 		-- *INF*: Max(i_OtherModMultiLocationCredit)
-		Max(i_OtherModMultiLocationCredit
-		) AS o_OtherModMultiLocationCredit,
+		Max(i_OtherModMultiLocationCredit) AS o_OtherModMultiLocationCredit,
 		OtherMod_MLPDC AS i_OtherMod_MLPDC,
 		-- *INF*: Max(i_OtherMod_MLPDC)
-		Max(i_OtherMod_MLPDC
-		) AS o_OtherMod_MLPDC,
+		Max(i_OtherMod_MLPDC) AS o_OtherMod_MLPDC,
 		ScheduledMod AS i_ScheduledMod,
 		-- *INF*: Max(i_ScheduledMod)
-		Max(i_ScheduledMod
-		) AS o_ScheduledMod,
+		Max(i_ScheduledMod) AS o_ScheduledMod,
 		TransitionMod AS i_TransitionMod,
 		-- *INF*: Max(i_TransitionMod)
-		Max(i_TransitionMod
-		) AS o_TransitionMod,
+		Max(i_TransitionMod) AS o_TransitionMod,
 		OtherMod_StateOwnedPropertyCredit AS i_OtherMod_StateOwnedPropertyCredit,
 		-- *INF*: Max(i_OtherMod_StateOwnedPropertyCredit)
-		Max(i_OtherMod_StateOwnedPropertyCredit
-		) AS o_OtherModStateOwnedPropertyCredit
+		Max(i_OtherMod_StateOwnedPropertyCredit) AS o_OtherModStateOwnedPropertyCredit
 		FROM Union_Property
 		GROUP BY PremiumTransactionId
 	),
@@ -1248,16 +1126,13 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		ScheduledModifier AS i_ScheduledModifier,
 		-- *INF*: Max(i_ScheduledModifier)
-		Max(i_ScheduledModifier
-		) AS o_ScheduledModifier,
+		Max(i_ScheduledModifier) AS o_ScheduledModifier,
 		ExperienceModifier AS i_ExperienceModifier,
 		-- *INF*: Max(i_ExperienceModifier)
-		Max(i_ExperienceModifier
-		) AS o_ExperienceModifier,
+		Max(i_ExperienceModifier) AS o_ExperienceModifier,
 		TransitionModifier AS i_TransitionModifier,
 		-- *INF*: Max(i_TransitionModifier)
-		Max(i_TransitionModifier
-		) AS o_TransitionModifier
+		Max(i_TransitionModifier) AS o_TransitionModifier
 		FROM UN_GL_Modifier
 		GROUP BY PremiumTransactionID
 	),
@@ -1267,12 +1142,10 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		ScheduledModifier AS i_ScheduledModifier,
 		-- *INF*: Max(i_ScheduledModifier)
-		Max(i_ScheduledModifier
-		) AS o_ScheduledModifier,
+		Max(i_ScheduledModifier) AS o_ScheduledModifier,
 		ExperienceModifier AS i_ExperienceModifier,
 		-- *INF*: Max(i_ExperienceModifier)
-		Max(i_ExperienceModifier
-		) AS o_ExperienceModifier
+		Max(i_ExperienceModifier) AS o_ExperienceModifier
 		FROM UN_SBOPGL_Modifier
 		GROUP BY PremiumTransactionID
 	),
@@ -1282,20 +1155,16 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKId,
 		OtherMod_PreferredProperty AS i_OtherMod_PreferredProperty,
 		-- *INF*: Max(i_OtherMod_PreferredProperty)
-		Max(i_OtherMod_PreferredProperty
-		) AS o_OtherMod_PreferredProperty,
+		Max(i_OtherMod_PreferredProperty) AS o_OtherMod_PreferredProperty,
 		OtherMod_Multilocation AS i_OtherMod_Multilocation,
 		-- *INF*: Max(i_OtherMod_Multilocation)
-		Max(i_OtherMod_Multilocation
-		) AS o_OtherMod_Multilocation,
+		Max(i_OtherMod_Multilocation) AS o_OtherMod_Multilocation,
 		ScheduledMod AS i_ScheduledMod,
 		-- *INF*: Max(i_ScheduledMod)
-		Max(i_ScheduledMod
-		) AS o_ScheduledMod,
+		Max(i_ScheduledMod) AS o_ScheduledMod,
 		TransitionMod AS i_TransitionMod,
 		-- *INF*: Max(i_TransitionMod)
-		Max(i_TransitionMod
-		) AS o_TransitionMod
+		Max(i_TransitionMod) AS o_TransitionMod
 		FROM UN_SBOPProperty
 		GROUP BY PremiumTransactionId
 	),
@@ -1321,14 +1190,11 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		-- 
 		-- 
 		-- 
-		DECODE(TRUE,
-			v_PreferredPropertyCreditFactor IS NULL 
-			OR v_PreferredPropertyCreditFactor = 0.0, 1.0,
-			v_MultiLocationCreditFactor IS NULL 
-			OR v_MultiLocationCreditFactor = 0.0, 1.0,
-			1 - ( 1 - v_PreferredPropertyCreditFactor 
-			) - ( 1 - v_MultiLocationCreditFactor 
-			)
+		DECODE(
+		    TRUE,
+		    v_PreferredPropertyCreditFactor IS NULL OR v_PreferredPropertyCreditFactor = 0.0, 1.0,
+		    v_MultiLocationCreditFactor IS NULL OR v_MultiLocationCreditFactor = 0.0, 1.0,
+		    1 - (1 - v_PreferredPropertyCreditFactor) - (1 - v_MultiLocationCreditFactor)
 		) AS OtherModifiedFactor,
 		i_ScheduledMod AS ScheduleModifiedFactor,
 		1.0 AS ExperienceModifiedFactor,
@@ -1375,27 +1241,27 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		-- 
 		-- 
 		-- 
-		IFF(i_Scheduledmod_PhysicalDamage IS NULL 
-			OR i_Scheduledmod_PhysicalDamage = 0,
-			( IFF(i_Scheduledmod_Liability IS NULL 
-					OR i_Scheduledmod_Liability = 0,
-					1.0,
-					i_Scheduledmod_Liability
-				) 
-			),
-			i_Scheduledmod_PhysicalDamage
+		IFF(
+		    i_Scheduledmod_PhysicalDamage IS NULL or i_Scheduledmod_PhysicalDamage = 0,
+		    (
+		        IFF(
+		            i_Scheduledmod_Liability IS NULL
+		    or i_Scheduledmod_Liability = 0, 1.0,
+		            i_Scheduledmod_Liability
+		        )),
+		    i_Scheduledmod_PhysicalDamage
 		) AS o_ScheduleModifiedFactor,
 		-- *INF*: IIF(ISNULL(i_Experiencemod_PhysicalDamage)  or  i_Experiencemod_PhysicalDamage=0,(IIF(ISNULL(i_Experiencemod_Liability) or
 		-- i_Experiencemod_Liability=0 , 1.0,i_Experiencemod_Liability)), i_Experiencemod_PhysicalDamage)
-		IFF(i_Experiencemod_PhysicalDamage IS NULL 
-			OR i_Experiencemod_PhysicalDamage = 0,
-			( IFF(i_Experiencemod_Liability IS NULL 
-					OR i_Experiencemod_Liability = 0,
-					1.0,
-					i_Experiencemod_Liability
-				) 
-			),
-			i_Experiencemod_PhysicalDamage
+		IFF(
+		    i_Experiencemod_PhysicalDamage IS NULL or i_Experiencemod_PhysicalDamage = 0,
+		    (
+		        IFF(
+		            i_Experiencemod_Liability IS NULL
+		    or i_Experiencemod_Liability = 0, 1.0,
+		            i_Experiencemod_Liability
+		        )),
+		    i_Experiencemod_PhysicalDamage
 		) AS o_ExperienceModifiedFactor,
 		1.0 AS o_TransitionFactor
 		FROM Agg_RowToColumn_CommercialAuto
@@ -1418,10 +1284,11 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		-- i_OtherModStateOwnedPropertyCredit = 0.0, 1.0,
 		-- i_OtherModStateOwnedPropertyCredit)
 		-- --default value to 1.0 when null or absent to ensure that OtherModifier doesn't evaluate to 1 and miss other contributors
-		DECODE(TRUE,
-			i_OtherModStateOwnedPropertyCredit IS NULL, 1.0,
-			i_OtherModStateOwnedPropertyCredit = 0.0, 1.0,
-			i_OtherModStateOwnedPropertyCredit
+		DECODE(
+		    TRUE,
+		    i_OtherModStateOwnedPropertyCredit IS NULL, 1.0,
+		    i_OtherModStateOwnedPropertyCredit = 0.0, 1.0,
+		    i_OtherModStateOwnedPropertyCredit
 		) AS v_OtherModStateOwnedPropertyCredit,
 		-- *INF*: DECODE(TRUE, ISNULL(v_PreferredPropertyCreditFactor) OR   v_PreferredPropertyCreditFactor=0.0 ,1.0,                                                                                                       
 		--                                       ISNULL(v_MultiLocationCreditFactor) OR  v_MultiLocationCreditFactor=0.0,1.0,
@@ -1443,18 +1310,12 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		-- 
 		-- 
 		-- 
-		DECODE(TRUE,
-			v_PreferredPropertyCreditFactor IS NULL 
-			OR v_PreferredPropertyCreditFactor = 0.0, 1.0,
-			v_MultiLocationCreditFactor IS NULL 
-			OR v_MultiLocationCreditFactor = 0.0, 1.0,
-			v_MLPDC IS NULL 
-			OR v_MLPDC = 0.0, 1.0,
-			1 - ( 1 - v_PreferredPropertyCreditFactor 
-			) - ( 1 - v_MultiLocationCreditFactor 
-			) - ( 1 - v_MLPDC 
-			) - ( 1 - v_OtherModStateOwnedPropertyCredit 
-			)
+		DECODE(
+		    TRUE,
+		    v_PreferredPropertyCreditFactor IS NULL OR v_PreferredPropertyCreditFactor = 0.0, 1.0,
+		    v_MultiLocationCreditFactor IS NULL OR v_MultiLocationCreditFactor = 0.0, 1.0,
+		    v_MLPDC IS NULL OR v_MLPDC = 0.0, 1.0,
+		    1 - (1 - v_PreferredPropertyCreditFactor) - (1 - v_MultiLocationCreditFactor) - (1 - v_MLPDC) - (1 - v_OtherModStateOwnedPropertyCredit)
 		) AS OtherModifiedFactor,
 		i_ScheduledMod AS ScheduleModifiedFactor,
 		1.0 AS ExperienceModifiedFactor,
@@ -1501,32 +1362,24 @@ mplt_PremiumTransactionRatingModifier AS (WITH
 		PremiumTransactionAKID,
 		OtherModifiedFactor AS i_OtherModifiedFactor,
 		-- *INF*: iif(isnull(i_OtherModifiedFactor) or i_OtherModifiedFactor=0.0,1.0,i_OtherModifiedFactor)
-		IFF(i_OtherModifiedFactor IS NULL 
-			OR i_OtherModifiedFactor = 0.0,
-			1.0,
-			i_OtherModifiedFactor
+		IFF(
+		    i_OtherModifiedFactor IS NULL or i_OtherModifiedFactor = 0.0, 1.0, i_OtherModifiedFactor
 		) AS o_OtherModifiedFactor,
 		ScheduleModifiedFactor AS i_ScheduleModifiedFactor,
 		-- *INF*: iif(isnull(i_ScheduleModifiedFactor) or i_ScheduleModifiedFactor=0.0,1.0,i_ScheduleModifiedFactor)
-		IFF(i_ScheduleModifiedFactor IS NULL 
-			OR i_ScheduleModifiedFactor = 0.0,
-			1.0,
-			i_ScheduleModifiedFactor
+		IFF(
+		    i_ScheduleModifiedFactor IS NULL or i_ScheduleModifiedFactor = 0.0, 1.0,
+		    i_ScheduleModifiedFactor
 		) AS o_ScheduleModifiedFactor,
 		ExperienceModifiedFactor AS i_ExperienceModifiedFactor,
 		-- *INF*: iif(isnull(i_ExperienceModifiedFactor) or i_ExperienceModifiedFactor=0.0,1.0,i_ExperienceModifiedFactor)
-		IFF(i_ExperienceModifiedFactor IS NULL 
-			OR i_ExperienceModifiedFactor = 0.0,
-			1.0,
-			i_ExperienceModifiedFactor
+		IFF(
+		    i_ExperienceModifiedFactor IS NULL or i_ExperienceModifiedFactor = 0.0, 1.0,
+		    i_ExperienceModifiedFactor
 		) AS o_ExperienceModifiedFactor,
 		TransitionFactor AS i_TransitionFactor,
 		-- *INF*: iif(isnull(i_TransitionFactor) or i_TransitionFactor=0.0,1.0,i_TransitionFactor)
-		IFF(i_TransitionFactor IS NULL 
-			OR i_TransitionFactor = 0.0,
-			1.0,
-			i_TransitionFactor
-		) AS o_TransitionFactor
+		IFF(i_TransitionFactor IS NULL or i_TransitionFactor = 0.0, 1.0, i_TransitionFactor) AS o_TransitionFactor
 		FROM UN_all_InsuranceLines_new
 	),
 	Mplt_RatingModifer_Target AS (
@@ -1635,25 +1488,13 @@ EXP_Extract_offset AS (
 	ExperienceModifiedFactor,
 	TransitionFactor,
 	-- *INF*: IIF(ISNULL(OtherModifiedFactor),1.0,OtherModifiedFactor)
-	IFF(OtherModifiedFactor IS NULL,
-		1.0,
-		OtherModifiedFactor
-	) AS o_OtherModifiedFactor,
+	IFF(OtherModifiedFactor IS NULL, 1.0, OtherModifiedFactor) AS o_OtherModifiedFactor,
 	-- *INF*: IIF(ISNULL(ScheduleModifiedFactor),1.0,ScheduleModifiedFactor)
-	IFF(ScheduleModifiedFactor IS NULL,
-		1.0,
-		ScheduleModifiedFactor
-	) AS o_ScheduleModifiedFactor,
+	IFF(ScheduleModifiedFactor IS NULL, 1.0, ScheduleModifiedFactor) AS o_ScheduleModifiedFactor,
 	-- *INF*: IIF(ISNULL(ExperienceModifiedFactor),1.0,ExperienceModifiedFactor)
-	IFF(ExperienceModifiedFactor IS NULL,
-		1.0,
-		ExperienceModifiedFactor
-	) AS o_ExperienceModifiedFactor,
+	IFF(ExperienceModifiedFactor IS NULL, 1.0, ExperienceModifiedFactor) AS o_ExperienceModifiedFactor,
 	-- *INF*: IIF(ISNULL(TransitionFactor),1.0,TransitionFactor)
-	IFF(TransitionFactor IS NULL,
-		1.0,
-		TransitionFactor
-	) AS o_TransitionFactor
+	IFF(TransitionFactor IS NULL, 1.0, TransitionFactor) AS o_TransitionFactor
 	FROM SQ_PremiumTransactionRatingModifier_offset_records
 ),
 LKP_PremiumtransactionRatingmodifier_offset AS (
@@ -1741,25 +1582,13 @@ EXP_Extract_Deprecated AS (
 	ExperienceModifiedFactor,
 	TransitionFactor,
 	-- *INF*: IIF(ISNULL(OtherModifiedFactor),1.0,OtherModifiedFactor)
-	IFF(OtherModifiedFactor IS NULL,
-		1.0,
-		OtherModifiedFactor
-	) AS o_OtherModifiedFactor,
+	IFF(OtherModifiedFactor IS NULL, 1.0, OtherModifiedFactor) AS o_OtherModifiedFactor,
 	-- *INF*: IIF(ISNULL(ScheduleModifiedFactor),1.0,ScheduleModifiedFactor)
-	IFF(ScheduleModifiedFactor IS NULL,
-		1.0,
-		ScheduleModifiedFactor
-	) AS o_ScheduleModifiedFactor,
+	IFF(ScheduleModifiedFactor IS NULL, 1.0, ScheduleModifiedFactor) AS o_ScheduleModifiedFactor,
 	-- *INF*: IIF(ISNULL(ExperienceModifiedFactor),1.0,ExperienceModifiedFactor)
-	IFF(ExperienceModifiedFactor IS NULL,
-		1.0,
-		ExperienceModifiedFactor
-	) AS o_ExperienceModifiedFactor,
+	IFF(ExperienceModifiedFactor IS NULL, 1.0, ExperienceModifiedFactor) AS o_ExperienceModifiedFactor,
 	-- *INF*: IIF(ISNULL(TransitionFactor),1.0,TransitionFactor)
-	IFF(TransitionFactor IS NULL,
-		1.0,
-		TransitionFactor
-	) AS o_TransitionFactor
+	IFF(TransitionFactor IS NULL, 1.0, TransitionFactor) AS o_TransitionFactor
 	FROM SQ_PremiumTransactionRatingModifier_Deprecated_records
 ),
 LKP_PremiumtransactionRatingmodifier_Deprecated AS (

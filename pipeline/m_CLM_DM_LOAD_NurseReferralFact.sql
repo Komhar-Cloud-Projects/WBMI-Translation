@@ -146,31 +146,19 @@ EXP_Defualt_Values AS (
 	EXP_Scr_Values.NurseReferralId,
 	LKP_NurseReferralDim.NurseReferralDimId AS IN_NurseReferralDimId,
 	-- *INF*: iif(isnull(IN_NurseReferralDimId),-1,IN_NurseReferralDimId)
-	IFF(IN_NurseReferralDimId IS NULL,
-		- 1,
-		IN_NurseReferralDimId
-	) AS v_NurseReferralDimId,
+	IFF(IN_NurseReferralDimId IS NULL, - 1, IN_NurseReferralDimId) AS v_NurseReferralDimId,
 	v_NurseReferralDimId AS NurseReferralDimId,
 	mplt_Claimant_Occurrence_dim_ids.claimant_dim_id AS IN_claimant_dim_id,
 	-- *INF*: iif(isnull(IN_claimant_dim_id), -1,IN_claimant_dim_id)
-	IFF(IN_claimant_dim_id IS NULL,
-		- 1,
-		IN_claimant_dim_id
-	) AS v_claimant_dim_id,
+	IFF(IN_claimant_dim_id IS NULL, - 1, IN_claimant_dim_id) AS v_claimant_dim_id,
 	v_claimant_dim_id AS claimant_dim_id,
 	mplt_Claimant_Occurrence_dim_ids.claim_occurrence_dim_id AS IN_claim_occurrence_dim_id,
 	-- *INF*: iif(isnull(IN_claim_occurrence_dim_id) ,-1, IN_claim_occurrence_dim_id)
-	IFF(IN_claim_occurrence_dim_id IS NULL,
-		- 1,
-		IN_claim_occurrence_dim_id
-	) AS v_claim_occurrence_dim_id,
+	IFF(IN_claim_occurrence_dim_id IS NULL, - 1, IN_claim_occurrence_dim_id) AS v_claim_occurrence_dim_id,
 	v_claim_occurrence_dim_id AS claim_occurrence_dim_id,
 	LKP_NurseReferralTimeWorked.ReferralTotalTimeWorkedHours AS IN_ReferralTotalTimeWorkedHours,
 	-- *INF*: iif(isnull(IN_ReferralTotalTimeWorkedHours),0,IN_ReferralTotalTimeWorkedHours)
-	IFF(IN_ReferralTotalTimeWorkedHours IS NULL,
-		0,
-		IN_ReferralTotalTimeWorkedHours
-	) AS v_ReferralTotalTimeWorkedHours,
+	IFF(IN_ReferralTotalTimeWorkedHours IS NULL, 0, IN_ReferralTotalTimeWorkedHours) AS v_ReferralTotalTimeWorkedHours,
 	v_ReferralTotalTimeWorkedHours AS ReferralTotalTimeWorkedHours
 	FROM EXP_Scr_Values
 	 -- Manually join with mplt_Claimant_Occurrence_dim_ids
@@ -224,16 +212,17 @@ EXP_Detect_Changes AS (
 	--   'UPDATE','NOCHANGE' )
 	-- 
 	--    )
-	IFF(Lkp_NurseReferralFactId IS NULL,
-		'NEW',
-		IFF(Lkp_EdwNurseReferralPkId != NurseReferralId 
-			OR Lkp_claimant_dim_id != claimant_dim_id 
-			OR Lkp_claim_occurrence_dim_id != claim_occurrence_dim_id 
-			OR Lkp_NurseReferralDimId != NurseReferralDimId 
-			OR Lkp_ReferralTotalTimeWorkedHours != ReferralTotalTimeWorkedHours,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    Lkp_NurseReferralFactId IS NULL, 'NEW',
+	    IFF(
+	        Lkp_EdwNurseReferralPkId != NurseReferralId
+	        or Lkp_claimant_dim_id != claimant_dim_id
+	        or Lkp_claim_occurrence_dim_id != claim_occurrence_dim_id
+	        or Lkp_NurseReferralDimId != NurseReferralDimId
+	        or Lkp_ReferralTotalTimeWorkedHours != ReferralTotalTimeWorkedHours,
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangedFlag,
 	EXP_Defualt_Values.NurseReferralId,

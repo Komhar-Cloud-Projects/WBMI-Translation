@@ -62,22 +62,14 @@ EXP_MetaData AS (
 	i_EffectiveDate AS o_EffectiveDate,
 	i_ExpirationDate AS o_ExpirationDate,
 	-- *INF*: RTRIM(LTRIM(i_CoverageGuid))
-	RTRIM(LTRIM(i_CoverageGuid
-		)
-	) AS o_CoverageGuid,
+	RTRIM(LTRIM(i_CoverageGuid)) AS o_CoverageGuid,
 	-- *INF*: RTRIM(LTRIM(i_CoverageType))
-	RTRIM(LTRIM(i_CoverageType
-		)
-	) AS o_CoverageType,
+	RTRIM(LTRIM(i_CoverageType)) AS o_CoverageType,
 	-- *INF*: RTRIM(LTRIM(i_SourceSystemID))
-	RTRIM(LTRIM(i_SourceSystemID
-		)
-	) AS o_SourceSystemID,
+	RTRIM(LTRIM(i_SourceSystemID)) AS o_SourceSystemID,
 	UmbrellaCoverageScope AS i_UmbrellaCoverageScope,
 	-- *INF*: RTRIM(LTRIM(i_UmbrellaCoverageScope))
-	RTRIM(LTRIM(i_UmbrellaCoverageScope
-		)
-	) AS o_UmbrellaCoverageScope,
+	RTRIM(LTRIM(i_UmbrellaCoverageScope)) AS o_UmbrellaCoverageScope,
 	RetroactiveDate AS i_RetroactiveDate,
 	i_RetroactiveDate AS o_RetroactiveDate,
 	PremiumTransactionAKID AS i_PremiumTransactionAKID,
@@ -91,15 +83,12 @@ EXP_MetaData AS (
 	-- *INF*: DECODE(TRUE,
 	-- Num_Records>1, IIF((PolicyCoverageAKID=-1) OR (RatingCoverageAKID=-1),'FAIL','PASS'),
 	-- 'PASS')
-	DECODE(TRUE,
-		Num_Records > 1, IFF(( PolicyCoverageAKID = - 1 
-			) 
-			OR ( RatingCoverageAKID = - 1 
-			),
-			'FAIL',
-			'PASS'
-		),
-		'PASS'
+	DECODE(
+	    TRUE,
+	    Num_Records > 1, IFF(
+	        (PolicyCoverageAKID = - 1) OR (RatingCoverageAKID = - 1), 'FAIL', 'PASS'
+	    ),
+	    'PASS'
 	) AS CheckFlag
 	FROM SQ_CoverageDetailCommercialUmbrella
 ),
@@ -121,10 +110,7 @@ EXP_Business_Rules AS (
 	-- *INF*: :LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Umbrella EACH OCCURRENCE LIMIT')
 	LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Umbrella_EACH_OCCURRENCE_LIMIT.CoverageLimitValue AS v_EachOccuranceLimit,
 	-- *INF*: IIF(ISNULL(v_AggregateLimit),v_GeneralAggregateLimit,v_AggregateLimit)
-	IFF(v_AggregateLimit IS NULL,
-		v_GeneralAggregateLimit,
-		v_AggregateLimit
-	) AS v_UmbrellaLimit_Agg,
+	IFF(v_AggregateLimit IS NULL, v_GeneralAggregateLimit, v_AggregateLimit) AS v_UmbrellaLimit_Agg,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS', v_UmbrellaLimit_Agg,
 	-- i_SourceSystemID='DCT', i_PolicyPerOccurenceLimit,
@@ -133,50 +119,55 @@ EXP_Business_Rules AS (
 	-- 
 	-- 
 	-- --i_SourceSystemID='DCT',:LKP.LKP_POLICYLIMIT(i_PremiumTransactionAKID),
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', v_UmbrellaLimit_Agg,
-		i_SourceSystemID = 'DCT', i_PolicyPerOccurenceLimit,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', v_UmbrellaLimit_Agg,
+	    i_SourceSystemID = 'DCT', i_PolicyPerOccurenceLimit,
+	    'N/A'
 	) AS v_UmbrellaLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Umbrella PERSONAL INJURY AND ADVERTISING INJURY LIMIT'),
 	-- i_SourceSystemID='DCT','TBD',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Umbrella_PERSONAL_INJURY_AND_ADVERTISING_INJURY_LIMIT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'TBD',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Umbrella_PERSONAL_INJURY_AND_ADVERTISING_INJURY_LIMIT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'TBD',
+	    'N/A'
 	) AS v_UmbrellaPersonalInjuryLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'UNDERINSURED MOTORISTS COVERAGE EACH ACCIDENT LIMIT'),
 	-- i_SourceSystemID='DCT','TBD',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_UNDERINSURED_MOTORISTS_COVERAGE_EACH_ACCIDENT_LIMIT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'TBD',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_UNDERINSURED_MOTORISTS_COVERAGE_EACH_ACCIDENT_LIMIT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'TBD',
+	    'N/A'
 	) AS v_UmbrellaUnderInsuredLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'UNINSURED MOTORISTS COVERAGE EACH ACCIDENT LIMIT'),
 	-- i_SourceSystemID='DCT','TBD',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_UNINSURED_MOTORISTS_COVERAGE_EACH_ACCIDENT_LIMIT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'TBD',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_UNINSURED_MOTORISTS_COVERAGE_EACH_ACCIDENT_LIMIT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'TBD',
+	    'N/A'
 	) AS v_UmbrellaUninsuredLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS','N/A',
 	-- i_SourceSystemID='DCT',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'RetentionLimit'),
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', 'N/A',
-		i_SourceSystemID = 'DCT', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_RetentionLimit.CoverageLimitValue,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', 'N/A',
+	    i_SourceSystemID = 'DCT', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_RetentionLimit.CoverageLimitValue,
+	    'N/A'
 	) AS v_UmbrellaRetentionLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - EACH OCCURRENCE LIMIT'),
@@ -186,147 +177,160 @@ EXP_Business_Rules AS (
 	-- 
 	-- 
 	-- 
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_EACH_OCCURRENCE_LIMIT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_OccurrenceLimit.CoverageLimitValue,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_EACH_OCCURRENCE_LIMIT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_OccurrenceLimit.CoverageLimitValue,
+	    'N/A'
 	) AS v_UnderlyingPerOccurrenceLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - EACH OCCURRENCE LIMIT'),
 	-- i_SourceSystemID='DCT','N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_EACH_OCCURRENCE_LIMIT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_EACH_OCCURRENCE_LIMIT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'N/A'
 	) AS v_UnderlyingPerOccurrenceClaimLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS' ,:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - GENERAL AGGREGATE LIMIT'),
 	-- i_SourceSystemID='DCT' AND i_CoverageType='CGLUnderlying',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'AggregateLimit'),
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_GENERAL_AGGREGATE_LIMIT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'CGLUnderlying', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_AggregateLimit.CoverageLimitValue,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_GENERAL_AGGREGATE_LIMIT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'CGLUnderlying', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_AggregateLimit.CoverageLimitValue,
+	    'N/A'
 	) AS v_UnderlyingAggregateLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - GENERAL AGGREGATE LIMIT'),i_SourceSystemID='DCT','N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_GENERAL_AGGREGATE_LIMIT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_GENERAL_AGGREGATE_LIMIT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'N/A'
 	) AS v_UnderlyingPolicyAggregateLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT'),
 	-- i_SourceSystemID='DCT'  AND i_CoverageType='CGLUnderlying',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'ProductsAggregateLimit'),
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_PRODUCTS_COMPLETED_OPERATIONS_AGGREGATE_LIMIT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT' 
-		AND i_CoverageType = 'CGLUnderlying', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_ProductsAggregateLimit.CoverageLimitValue,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_PRODUCTS_COMPLETED_OPERATIONS_AGGREGATE_LIMIT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT' AND i_CoverageType = 'CGLUnderlying', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_ProductsAggregateLimit.CoverageLimitValue,
+	    'N/A'
 	) AS v_UnderlyingProductAggregateLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - PRODUCTS-COMPLETED OPERATIONS AGGREGATE LIMIT'),
 	-- i_SourceSystemID='DCT','TBD',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_PRODUCTS_COMPLETED_OPERATIONS_AGGREGATE_LIMIT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'TBD',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_PRODUCTS_COMPLETED_OPERATIONS_AGGREGATE_LIMIT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'TBD',
+	    'N/A'
 	) AS v_UnderlyingProductCompletedOperationAggregateLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - BODILY INJURY BY ACCIDENT:  EACH ACCIDENT'),
 	-- i_SourceSystemID='DCT','TBD',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_BODILY_INJURY_BY_ACCIDENT_EACH_ACCIDENT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'TBD',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_BODILY_INJURY_BY_ACCIDENT_EACH_ACCIDENT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'TBD',
+	    'N/A'
 	) AS v_UnderlyingAccidentLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - BODILY INJURY BY DISEASE:   POLICY LIMIT'),
 	-- i_SourceSystemID='DCT','TBD',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_BODILY_INJURY_BY_DISEASE_POLICY_LIMIT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'TBD',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_BODILY_INJURY_BY_DISEASE_POLICY_LIMIT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'TBD',
+	    'N/A'
 	) AS v_UnderlyingDiseaseLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - CommonCauseLimit'),
 	-- i_SourceSystemID='DCT','TBD',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_CommonCauseLimit.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'TBD',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_CommonCauseLimit.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'TBD',
+	    'N/A'
 	) AS v_UnderlyingCommonCauseLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - BODILY INJURY - EACH PERSON'),
 	-- i_SourceSystemID='DCT','TBD',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_BODILY_INJURY_EACH_PERSON.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'TBD',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_BODILY_INJURY_EACH_PERSON.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'TBD',
+	    'N/A'
 	) AS v_UnderlyingEachPersonBodilyInjuryLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS' ,:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - PROPERTY DAMAGE - EACH ACCIDENT'),
 	-- i_SourceSystemID='DCT','TBD',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_PROPERTY_DAMAGE_EACH_ACCIDENT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'TBD',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_PROPERTY_DAMAGE_EACH_ACCIDENT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'TBD',
+	    'N/A'
 	) AS v_UnderlyingEachPersonPropertyDamageLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - LossOfMeansSupportLimit'),
 	-- i_SourceSystemID='DCT','TBD',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_LossOfMeansSupportLimit.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'TBD',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_LossOfMeansSupportLimit.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'TBD',
+	    'N/A'
 	) AS v_UnderlyingLossOfMeansSupportLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS',:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - EACH ACCIDENT'),
 	-- i_SourceSystemID='DCT','TBD',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_EACH_ACCIDENT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'TBD',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_EACH_ACCIDENT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'TBD',
+	    'N/A'
 	) AS v_UnderlyingCombinedSingleLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS' ,:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - EACH ACCIDENT - GARAGE OPERATIONS AUTO ONLY'),
 	-- i_SourceSystemID='DCT','TBD',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_EACH_ACCIDENT_GARAGE_OPERATIONS_AUTO_ONLY.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'TBD',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_EACH_ACCIDENT_GARAGE_OPERATIONS_AUTO_ONLY.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'TBD',
+	    'N/A'
 	) AS v_UnderlyingAccidentGarageOperationsAutoOnlyLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS' ,:LKP.LKP_COVERAELIMITVALUE(i_PremiumTransactionAKID,'Underlying - EACH ACCIDENT - GARAGE OPERATIONS OTHER THAN AUTO ONLY'),
 	-- i_SourceSystemID='DCT','TBD',
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_EACH_ACCIDENT_GARAGE_OPERATIONS_OTHER_THAN_AUTO_ONLY.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', 'TBD',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Underlying_EACH_ACCIDENT_GARAGE_OPERATIONS_OTHER_THAN_AUTO_ONLY.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', 'TBD',
+	    'N/A'
 	) AS v_UnderlyingAccidentGarageOperationsOtherThanAutoLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS' ,
@@ -334,10 +338,11 @@ EXP_Business_Rules AS (
 	-- i_SourceSystemID='DCT', i_PolicyPerOccurenceLimit,
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Umbrella_EACH_OCCURRENCE_LIMIT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', i_PolicyPerOccurenceLimit,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Umbrella_EACH_OCCURRENCE_LIMIT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', i_PolicyPerOccurenceLimit,
+	    'N/A'
 	) AS v_UmbrellaPerOccurrenceLimit,
 	-- *INF*: DECODE(TRUE,
 	-- i_SourceSystemID='PMS' ,
@@ -345,120 +350,70 @@ EXP_Business_Rules AS (
 	-- i_SourceSystemID='DCT', i_PolicyAggregateLimit,
 	-- 'N/A'
 	-- )
-	DECODE(TRUE,
-		i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Umbrella_AGGREGATE_LIMIT.CoverageLimitValue,
-		i_SourceSystemID = 'DCT', i_PolicyAggregateLimit,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_SourceSystemID = 'PMS', LKP_COVERAELIMITVALUE_i_PremiumTransactionAKID_Umbrella_AGGREGATE_LIMIT.CoverageLimitValue,
+	    i_SourceSystemID = 'DCT', i_PolicyAggregateLimit,
+	    'N/A'
 	) AS v_UmbrellaAggregateLimit,
 	-- *INF*: IIF(ISNULL(v_UmbrellaPerOccurrenceLimit), 'N/A', v_UmbrellaPerOccurrenceLimit)
-	IFF(v_UmbrellaPerOccurrenceLimit IS NULL,
-		'N/A',
-		v_UmbrellaPerOccurrenceLimit
-	) AS o_UmbrellaPerOccurrenceLimit,
+	IFF(v_UmbrellaPerOccurrenceLimit IS NULL, 'N/A', v_UmbrellaPerOccurrenceLimit) AS o_UmbrellaPerOccurrenceLimit,
 	-- *INF*: IIF(ISNULL(v_UmbrellaAggregateLimit), 'N/A', v_UmbrellaAggregateLimit)
-	IFF(v_UmbrellaAggregateLimit IS NULL,
-		'N/A',
-		v_UmbrellaAggregateLimit
-	) AS o_UmbrellaAggregateLimit,
+	IFF(v_UmbrellaAggregateLimit IS NULL, 'N/A', v_UmbrellaAggregateLimit) AS o_UmbrellaAggregateLimit,
 	-- *INF*: IIF(ISNULL(v_UmbrellaLimit),'N/A',v_UmbrellaLimit)
-	IFF(v_UmbrellaLimit IS NULL,
-		'N/A',
-		v_UmbrellaLimit
-	) AS o_UmbrellaLimit,
+	IFF(v_UmbrellaLimit IS NULL, 'N/A', v_UmbrellaLimit) AS o_UmbrellaLimit,
 	-- *INF*: IIF(ISNULL(v_UmbrellaPersonalInjuryLimit),'N/A',v_UmbrellaPersonalInjuryLimit)
-	IFF(v_UmbrellaPersonalInjuryLimit IS NULL,
-		'N/A',
-		v_UmbrellaPersonalInjuryLimit
-	) AS o_UmbrellaPersonalInjuryLimit,
+	IFF(v_UmbrellaPersonalInjuryLimit IS NULL, 'N/A', v_UmbrellaPersonalInjuryLimit) AS o_UmbrellaPersonalInjuryLimit,
 	-- *INF*: IIF(ISNULL(v_UmbrellaUnderInsuredLimit),'N/A',v_UmbrellaUnderInsuredLimit)
-	IFF(v_UmbrellaUnderInsuredLimit IS NULL,
-		'N/A',
-		v_UmbrellaUnderInsuredLimit
-	) AS o_UmbrellaUnderInsuredLimit,
+	IFF(v_UmbrellaUnderInsuredLimit IS NULL, 'N/A', v_UmbrellaUnderInsuredLimit) AS o_UmbrellaUnderInsuredLimit,
 	-- *INF*: IIF(ISNULL(v_UmbrellaUninsuredLimit),'N/A',v_UmbrellaUninsuredLimit)
-	IFF(v_UmbrellaUninsuredLimit IS NULL,
-		'N/A',
-		v_UmbrellaUninsuredLimit
-	) AS o_UmbrellaUninsuredLimit,
+	IFF(v_UmbrellaUninsuredLimit IS NULL, 'N/A', v_UmbrellaUninsuredLimit) AS o_UmbrellaUninsuredLimit,
 	-- *INF*: IIF(ISNULL(v_UmbrellaRetentionLimit),'N/A',v_UmbrellaRetentionLimit)
-	IFF(v_UmbrellaRetentionLimit IS NULL,
-		'N/A',
-		v_UmbrellaRetentionLimit
-	) AS o_UmbrellaRetentionLimit,
+	IFF(v_UmbrellaRetentionLimit IS NULL, 'N/A', v_UmbrellaRetentionLimit) AS o_UmbrellaRetentionLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingPerOccurrenceLimit),'N/A',v_UnderlyingPerOccurrenceLimit)
-	IFF(v_UnderlyingPerOccurrenceLimit IS NULL,
-		'N/A',
-		v_UnderlyingPerOccurrenceLimit
-	) AS o_UnderlyingPerOccurrenceLimit,
+	IFF(v_UnderlyingPerOccurrenceLimit IS NULL, 'N/A', v_UnderlyingPerOccurrenceLimit) AS o_UnderlyingPerOccurrenceLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingPerOccurrenceClaimLimit),'N/A',v_UnderlyingPerOccurrenceClaimLimit)
-	IFF(v_UnderlyingPerOccurrenceClaimLimit IS NULL,
-		'N/A',
-		v_UnderlyingPerOccurrenceClaimLimit
-	) AS o_UnderlyingPerOccurrenceClaimLimit,
+	IFF(v_UnderlyingPerOccurrenceClaimLimit IS NULL, 'N/A', v_UnderlyingPerOccurrenceClaimLimit) AS o_UnderlyingPerOccurrenceClaimLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingAggregateLimit),'N/A',v_UnderlyingAggregateLimit)
-	IFF(v_UnderlyingAggregateLimit IS NULL,
-		'N/A',
-		v_UnderlyingAggregateLimit
-	) AS o_UnderlyingAggregateLimit,
+	IFF(v_UnderlyingAggregateLimit IS NULL, 'N/A', v_UnderlyingAggregateLimit) AS o_UnderlyingAggregateLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingPolicyAggregateLimit),'N/A',v_UnderlyingPolicyAggregateLimit)
-	IFF(v_UnderlyingPolicyAggregateLimit IS NULL,
-		'N/A',
-		v_UnderlyingPolicyAggregateLimit
-	) AS o_UnderlyingPolicyAggregateLimit,
+	IFF(v_UnderlyingPolicyAggregateLimit IS NULL, 'N/A', v_UnderlyingPolicyAggregateLimit) AS o_UnderlyingPolicyAggregateLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingProductAggregateLimit),'N/A',v_UnderlyingProductAggregateLimit)
-	IFF(v_UnderlyingProductAggregateLimit IS NULL,
-		'N/A',
-		v_UnderlyingProductAggregateLimit
-	) AS o_UnderlyingProductAggregateLimit,
+	IFF(v_UnderlyingProductAggregateLimit IS NULL, 'N/A', v_UnderlyingProductAggregateLimit) AS o_UnderlyingProductAggregateLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingProductCompletedOperationAggregateLimit),'N/A',v_UnderlyingProductCompletedOperationAggregateLimit)
-	IFF(v_UnderlyingProductCompletedOperationAggregateLimit IS NULL,
-		'N/A',
-		v_UnderlyingProductCompletedOperationAggregateLimit
+	IFF(
+	    v_UnderlyingProductCompletedOperationAggregateLimit IS NULL, 'N/A',
+	    v_UnderlyingProductCompletedOperationAggregateLimit
 	) AS o_UnderlyingProductCompletedOperationAggregateLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingAccidentLimit),'N/A',v_UnderlyingAccidentLimit)
-	IFF(v_UnderlyingAccidentLimit IS NULL,
-		'N/A',
-		v_UnderlyingAccidentLimit
-	) AS o_UnderlyingAccidentLimit,
+	IFF(v_UnderlyingAccidentLimit IS NULL, 'N/A', v_UnderlyingAccidentLimit) AS o_UnderlyingAccidentLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingDiseaseLimit),'N/A',v_UnderlyingDiseaseLimit)
-	IFF(v_UnderlyingDiseaseLimit IS NULL,
-		'N/A',
-		v_UnderlyingDiseaseLimit
-	) AS o_UnderlyingDiseaseLimit,
+	IFF(v_UnderlyingDiseaseLimit IS NULL, 'N/A', v_UnderlyingDiseaseLimit) AS o_UnderlyingDiseaseLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingCommonCauseLimit),'N/A',v_UnderlyingCommonCauseLimit)
-	IFF(v_UnderlyingCommonCauseLimit IS NULL,
-		'N/A',
-		v_UnderlyingCommonCauseLimit
-	) AS o_UnderlyingCommonCauseLimit,
+	IFF(v_UnderlyingCommonCauseLimit IS NULL, 'N/A', v_UnderlyingCommonCauseLimit) AS o_UnderlyingCommonCauseLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingEachPersonBodilyInjuryLimit),'N/A',v_UnderlyingEachPersonBodilyInjuryLimit)
-	IFF(v_UnderlyingEachPersonBodilyInjuryLimit IS NULL,
-		'N/A',
-		v_UnderlyingEachPersonBodilyInjuryLimit
+	IFF(
+	    v_UnderlyingEachPersonBodilyInjuryLimit IS NULL, 'N/A',
+	    v_UnderlyingEachPersonBodilyInjuryLimit
 	) AS o_UnderlyingEachPersonBodilyInjuryLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingEachPersonPropertyDamageLimit),'N/A',v_UnderlyingEachPersonPropertyDamageLimit)
-	IFF(v_UnderlyingEachPersonPropertyDamageLimit IS NULL,
-		'N/A',
-		v_UnderlyingEachPersonPropertyDamageLimit
+	IFF(
+	    v_UnderlyingEachPersonPropertyDamageLimit IS NULL, 'N/A',
+	    v_UnderlyingEachPersonPropertyDamageLimit
 	) AS o_UnderlyingEachPersonPropertyDamageLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingLossOfMeansSupportLimit),'N/A',v_UnderlyingLossOfMeansSupportLimit)
-	IFF(v_UnderlyingLossOfMeansSupportLimit IS NULL,
-		'N/A',
-		v_UnderlyingLossOfMeansSupportLimit
-	) AS o_UnderlyingLossOfMeansSupportLimit,
+	IFF(v_UnderlyingLossOfMeansSupportLimit IS NULL, 'N/A', v_UnderlyingLossOfMeansSupportLimit) AS o_UnderlyingLossOfMeansSupportLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingCombinedSingleLimit),'N/A',v_UnderlyingCombinedSingleLimit)
-	IFF(v_UnderlyingCombinedSingleLimit IS NULL,
-		'N/A',
-		v_UnderlyingCombinedSingleLimit
-	) AS o_UnderlyingCombinedSingleLimit,
+	IFF(v_UnderlyingCombinedSingleLimit IS NULL, 'N/A', v_UnderlyingCombinedSingleLimit) AS o_UnderlyingCombinedSingleLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingAccidentGarageOperationsAutoOnlyLimit),'N/A',v_UnderlyingAccidentGarageOperationsAutoOnlyLimit)
-	IFF(v_UnderlyingAccidentGarageOperationsAutoOnlyLimit IS NULL,
-		'N/A',
-		v_UnderlyingAccidentGarageOperationsAutoOnlyLimit
+	IFF(
+	    v_UnderlyingAccidentGarageOperationsAutoOnlyLimit IS NULL, 'N/A',
+	    v_UnderlyingAccidentGarageOperationsAutoOnlyLimit
 	) AS UnderlyingAccidentGarageOperationsAutoOnlyLimit,
 	-- *INF*: IIF(ISNULL(v_UnderlyingAccidentGarageOperationsOtherThanAutoLimit),'N/A',v_UnderlyingAccidentGarageOperationsOtherThanAutoLimit)
-	IFF(v_UnderlyingAccidentGarageOperationsOtherThanAutoLimit IS NULL,
-		'N/A',
-		v_UnderlyingAccidentGarageOperationsOtherThanAutoLimit
+	IFF(
+	    v_UnderlyingAccidentGarageOperationsOtherThanAutoLimit IS NULL, 'N/A',
+	    v_UnderlyingAccidentGarageOperationsOtherThanAutoLimit
 	) AS UnderlyingAccidentGarageOperationsOtherThanAutoLimit,
 	o_UmbrellaCoverageScope AS UmbrellaCoverageScope,
 	o_RetroactiveDate AS RetroactiveDate,
@@ -602,10 +557,7 @@ EXP_Tgt AS (
 	EXP_Business_Rules.RetroactiveDate,
 	LKP_CoverageDetailCommercialUmbrellaDim.CoverageDetailDimId AS LKP_CoverageDetailDimId,
 	-- *INF*: IIF(ISNULL(LKP_CoverageDetailDimId),'NEW','UPDATE')
-	IFF(LKP_CoverageDetailDimId IS NULL,
-		'NEW',
-		'UPDATE'
-	) AS ChangeFlag,
+	IFF(LKP_CoverageDetailDimId IS NULL, 'NEW', 'UPDATE') AS ChangeFlag,
 	EXP_Business_Rules.UmbrellaLayer,
 	EXP_Business_Rules.o_UmbrellaPerOccurrenceLimit AS UmbrellaPerOccurrenceLimit,
 	EXP_Business_Rules.o_UmbrellaAggregateLimit AS UmbrellaAggregateLimit,

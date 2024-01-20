@@ -1,0 +1,83 @@
+WITH
+SQ_DCIMBuildingStage AS (
+	SELECT
+		DCIMBuildingStageId,
+		LineId,
+		IMLocationId,
+		IMBuildingId,
+		SessionId,
+		Id,
+		ConstructionCode,
+		Description,
+		DoorType,
+		NumberOfStories,
+		RoofCovering,
+		RoofDeckAttachment,
+		RoofGeometry,
+		RoofWallConstruction,
+		Sprinkler,
+		SquareFt,
+		WindowProtection,
+		WindstormLossMitigation,
+		YearBuilt,
+		IMLocationXmlId,
+		ExtractDate,
+		SourceSystemId
+	FROM DCIMBuildingStage
+),
+EXP_Metadata AS (
+	SELECT
+	DCIMBuildingStageId,
+	LineId,
+	IMLocationId,
+	IMBuildingId,
+	SessionId,
+	Id,
+	ConstructionCode,
+	Description,
+	DoorType,
+	NumberOfStories,
+	RoofCovering,
+	RoofDeckAttachment,
+	RoofGeometry,
+	RoofWallConstruction,
+	Sprinkler,
+	SquareFt,
+	WindowProtection,
+	WindstormLossMitigation,
+	YearBuilt,
+	IMLocationXmlId,
+	ExtractDate,
+	SourceSystemId,
+	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId
+	FROM SQ_DCIMBuildingStage
+),
+ArchDCIMBuildingStage AS (
+	INSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCIMBuildingStage
+	(DCIMBuildingStageId, LineId, IMLocationId, IMBuildingId, SessionId, Id, ConstructionCode, Description, DoorType, NumberOfStories, RoofCovering, RoofDeckAttachment, RoofGeometry, RoofWallConstruction, Sprinkler, SquareFt, WindowProtection, WindstormLossMitigation, YearBuilt, IMLocationXmlId, ExtractDate, SourceSystemId, AuditId)
+	SELECT 
+	DCIMBUILDINGSTAGEID, 
+	LINEID, 
+	IMLOCATIONID, 
+	IMBUILDINGID, 
+	SESSIONID, 
+	ID, 
+	CONSTRUCTIONCODE, 
+	DESCRIPTION, 
+	DOORTYPE, 
+	NUMBEROFSTORIES, 
+	ROOFCOVERING, 
+	ROOFDECKATTACHMENT, 
+	ROOFGEOMETRY, 
+	ROOFWALLCONSTRUCTION, 
+	SPRINKLER, 
+	SQUAREFT, 
+	WINDOWPROTECTION, 
+	WINDSTORMLOSSMITIGATION, 
+	YEARBUILT, 
+	IMLOCATIONXMLID, 
+	EXTRACTDATE, 
+	SOURCESYSTEMID, 
+	o_AuditId AS AUDITID
+	FROM EXP_Metadata
+),

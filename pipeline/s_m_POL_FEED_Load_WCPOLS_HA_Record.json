@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_FEED_Load_WCPOLS_HA_Record",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_FEED_Load_WCPOLS_HA_Record",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WCPols00Record AS (\n\tSELECT\r\n\t\tWCTrackHistoryID,\r\n\t\tLinkData,\r\n\t     AuditId\r\n\t\tFROM dbo.WCPols00Record\r\n\tWHERE 1=1\r\n\tAND AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tORDER BY WCTrackHistoryID\n),\nSQ_WorkWCForms_RecordHA AS (\n\tSELECT distinct\r\n\t\tST.WCTrackHistoryID\r\n\t\t,F.FormName\r\n\t\t,PT.Name\r\n\t\t,Pol.TransactionEffectiveDate\r\n\t\t,CON_DC.Value DesignatedContractor\r\n\t\t,CON_CC.Value ClassCode\r\n\t\t,CON_CCD.Value ClassCodeDescription\r\n\t\t,CON_PB.Value PremiumBasis\r\n\t\t,CON_RATE.Value Rate\r\n\t\t,CON_MP.Value MinimumPremium\r\n\t\t,CON_EAP.Value EstimatedAnnualPremium\r\n\t\r\n\tFROM dbo.WorkWCStateTerm ST\r\n\t\r\n\tINNER JOIN dbo.WorkWCForms F\r\n\t\tON ST.WCTrackHistoryID = F.WCTrackHistoryID\r\n\tAND F.FormName like 'WC220302%' AND (F.OnPolicy=1 or F.[Add]=1) AND (F.Remove is NULL or F.Remove=0)\r\n\t\r\n\tINNER JOIN dbo.WorkWCParty PT\r\n\t\tON PT.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\t\tAND PT.PartyAssociationType = 'Account'\r\n\t\r\n\tINNER JOIN dbo.WorkWCLine L\r\n\t\tON L.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicy Pol\r\n\t\tON Pol.WCTrackHistoryID = ST.WCTrackHistoryID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CON_DC\r\n\t\tON CON_DC.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CON_DC.Attribute='DesignatedContractor'\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CON_CC\r\n\t\tON CON_CC.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CON_DC.ProcessID=CON_CC.ProcessID\r\n\t\tAND CON_CC.Attribute='ClassCode'\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CON_CCD\r\n\t\tON CON_CCD.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CON_CCD.Attribute='ClassCodeDescription'\r\n\t\tAND CON_DC.ProcessID=CON_CCD.ProcessID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CON_PB\r\n\t\tON CON_PB.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CON_PB.Attribute='PremiumBasis'\r\n\t\tAND CON_DC.ProcessID=CON_PB.ProcessID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CON_RATE\r\n\t\tON CON_RATE.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CON_RATE.Attribute='Rate'\r\n\t\tAND CON_DC.ProcessID=CON_RATE.ProcessID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CON_MP\r\n\t\tON CON_MP.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CON_MP.Attribute='MinimumPremium'\r\n\t\tAND CON_DC.ProcessID=CON_MP.ProcessID\r\n\t\r\n\tINNER JOIN dbo.WorkWCPolicyDetails CON_EAP\r\n\t\tON CON_EAP.WCTrackHistoryID = ST.WCTrackHistoryID \r\n\t\tAND CON_EAP.Attribute='EstimatedAnnualPremium'\r\n\t\tAND CON_DC.ProcessID=CON_EAP.ProcessID\r\n\t\r\n\tWHERE 1 = 1\r\n\tAND ST.AuditId = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\t@{pipeline().parameters.WHERE_CLAUSE_HA}\r\n\tORDER BY ST.WCTrackHistoryID\n),\nJNR_RecordHA AS (SELECT\n\tSQ_WCPols00Record.WCTrackHistoryID, \n\tSQ_WCPols00Record.LinkData, \n\tSQ_WCPols00Record.AuditId, \n\tSQ_WorkWCForms_RecordHA.WCTrackHistoryID AS WCTrackHistoryID1, \n\tSQ_WorkWCForms_RecordHA.FormName, \n\tSQ_WorkWCForms_RecordHA.Name, \n\tSQ_WorkWCForms_RecordHA.TransactionEffectiveDate, \n\tSQ_WorkWCForms_RecordHA.DesignatedContractor, \n\tSQ_WorkWCForms_RecordHA.ClassCode, \n\tSQ_WorkWCForms_RecordHA.ClassCodeDescription, \n\tSQ_WorkWCForms_RecordHA.PremiumBasis, \n\tSQ_WorkWCForms_RecordHA.Rate, \n\tSQ_WorkWCForms_RecordHA.MinimumPremium, \n\tSQ_WorkWCForms_RecordHA.EstimatedAnnualPremium\n\tFROM SQ_WCPols00Record\n\tINNER JOIN SQ_WorkWCForms_RecordHA\n\tON SQ_WorkWCForms_RecordHA.WCTrackHistoryID = SQ_WCPols00Record.WCTrackHistoryID\n),\nmplt_Parse_FormNameField AS (WITH\n\tINPUT_FormName AS (\n\t\t\n\t),\n\tEXPTRANS AS (\n\t\tSELECT\n\t\tParsedNameOfForm,\n\t\tFormNameFromSource,\n\t\t-- *INF*: REVERSE(FormNameFromSource)\n\t\tREVERSE(FormNameFromSource) AS vReversedFromNameFromSource,\n\t\t-- *INF*: REVERSE(substr(vReversedFromNameFromSource,1,4))\n\t\tREVERSE(substr(vReversedFromNameFromSource, 1, 4)) AS vFormEdition,\n\t\t-- *INF*: DECODE(TRUE,\r\n\t\t-- substr(vReversedFromNameFromSource,5,1) >='A' and substr(vReversedFromNameFromSource,5,1) <='Z', substr(vReversedFromNameFromSource,5,1),\r\n\t\t-- ' '\r\n\t\t-- )\r\n\t\t-- \r\n\t\t-- -- check if within A and Z, if not then space\n\t\tDECODE(\n\t\t    TRUE,\n\t\t    substr(vReversedFromNameFromSource, 5, 1) >= 'A' and substr(vReversedFromNameFromSource, 5, 1) <= 'Z', substr(vReversedFromNameFromSource, 5, 1),\n\t\t    ' '\n\t\t) AS vBureauCode,\n\t\tvFormEdition AS oFormEdition,\n\t\tvBureauCode AS oBureauCode\n\t\tFROM INPUT_FormName\n\t),\n\tOUTPUT_FormName AS (\n\t\tSELECT\n\t\tParsedNameOfForm, \n\t\tFormNameFromSource, \n\t\toFormEdition AS FormEdition, \n\t\toBureauCode AS BureauCode\n\t\tFROM EXPTRANS\n\t),\n),\nEXP_RecordOutput AS (\n\tSELECT\n\tSYSDATE AS ExtractDate,\n\tJNR_RecordHA.AuditId,\n\tJNR_RecordHA.WCTrackHistoryID,\n\tJNR_RecordHA.LinkData,\n\t'22' AS StateCode,\n\t'HA' AS RecordTypeCode,\n\t'WC220302' AS o_EndorsementNumber,\n\tmplt_Parse_FormNameField.ParsedNameOfForm1,\n\tmplt_Parse_FormNameField.FormNameFromSource1,\n\tmplt_Parse_FormNameField.BureauCode,\n\tmplt_Parse_FormNameField.FormEdition,\n\tJNR_RecordHA.DesignatedContractor,\n\tJNR_RecordHA.ClassCode,\n\tJNR_RecordHA.ClassCodeDescription,\n\tJNR_RecordHA.PremiumBasis,\n\tJNR_RecordHA.Rate,\n\t-- *INF*: TO_CHAR(TO_DECIMAL(Rate,3)*1000)\n\tTO_CHAR(CAST(Rate AS FLOAT) * 1000) AS v_Rate,\n\tv_Rate AS o_Rate,\n\tJNR_RecordHA.MinimumPremium,\n\tJNR_RecordHA.EstimatedAnnualPremium,\n\tJNR_RecordHA.Name,\n\tJNR_RecordHA.TransactionEffectiveDate,\n\t-- *INF*: TO_CHAR(TransactionEffectiveDate,'YYMMDD')\n\tTO_CHAR(TransactionEffectiveDate, 'YYMMDD') AS o_TransactionEffectiveDate\n\tFROM JNR_RecordHA\n\t -- Manually join with mplt_Parse_FormNameField\n),\nWCPolsHARecord AS (\n\tINSERT INTO WCPolsHARecord\n\t(ExtractDate, AuditId, WCTrackHistoryID, LinkData, StateCode, RecordTypeCode, EndorsementNumber, BureauVersionIdentifierEditionIdentifier, CarrierVersionIdentifier, NameOfIndependentContractor, ClassificationCode, ClassificationWording, RateChargedRate, MinimumPremiumAmount, EstimatedAnnualPremiumAmount, NameOfInsured, EndorsementEffectiveDate)\n\tSELECT \n\tEXTRACTDATE, \n\tAUDITID, \n\tWCTRACKHISTORYID, \n\tLINKDATA, \n\tSTATECODE, \n\tRECORDTYPECODE, \n\to_EndorsementNumber AS ENDORSEMENTNUMBER, \n\tBureauCode AS BUREAUVERSIONIDENTIFIEREDITIONIDENTIFIER, \n\tFormEdition AS CARRIERVERSIONIDENTIFIER, \n\tDesignatedContractor AS NAMEOFINDEPENDENTCONTRACTOR, \n\tClassCode AS CLASSIFICATIONCODE, \n\tClassCodeDescription AS CLASSIFICATIONWORDING, \n\to_Rate AS RATECHARGEDRATE, \n\tMinimumPremium AS MINIMUMPREMIUMAMOUNT, \n\tEstimatedAnnualPremium AS ESTIMATEDANNUALPREMIUMAMOUNT, \n\tName AS NAMEOFINSURED, \n\to_TransactionEffectiveDate AS ENDORSEMENTEFFECTIVEDATE\n\tFROM EXP_RecordOutput\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE_HA": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

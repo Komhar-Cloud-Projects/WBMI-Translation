@@ -1,0 +1,51 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCAVehicleStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCCAVehicleStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCAVehicleStaging AS (\n\tSELECT [DCCAVehicleStagingId]\r\n\t      ,[ExtractDate]\r\n\t      ,[SourceSystemId]\r\n\t      ,[CA_RiskId]\r\n\t      ,[CA_VehicleId]\r\n\t      ,[SessionId]\r\n\t      ,[Id]\r\n\t      ,[AgeGroup]\r\n\t      ,[Auditable]\r\n\t      ,[Make]\r\n\t      ,[Model]\r\n\t      ,[NumberOfVehiclesEstimate]\r\n\t      ,[RadiusOfOperation]\r\n\t      ,[RadiusRating]\r\n\t      ,[StatedAmount]\r\n\t      ,[Territory]\r\n\t      ,[Use]\r\n\t      ,[VIN]\r\n\t      ,[Year]\r\n\t      ,[ZoneGaraging]\r\n\t      ,[ZoneRating]\r\n\t      ,[ZoneTerminal]\r\n\t  FROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.[DCCAVehicleStaging]\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCCAVehicleStagingId,\n\tExtractDate,\n\tSourceSystemId,\n\tCA_RiskId,\n\tCA_VehicleId,\n\tSessionId,\n\tId,\n\tAgeGroup,\n\tAuditable,\n\tMake,\n\tModel,\n\tNumberOfVehiclesEstimate,\n\tRadiusOfOperation,\n\tRadiusRating,\n\tStatedAmount,\n\tTerritory,\n\tUse,\n\tVIN,\n\tYear,\n\tZoneGaraging,\n\tZoneRating,\n\tZoneTerminal,\n\t-- *INF*: DECODE(ZoneRating, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    ZoneRating,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ZoneRating,\n\t-- *INF*: DECODE(RadiusRating, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    RadiusRating,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_RadiusRating,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCAVehicleStaging\n),\nArchDCCAVehicleStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCCAVehicleStaging\n\t(ExtractDate, SourceSystemId, AuditId, CA_RiskId, CA_VehicleId, SessionId, Id, AgeGroup, Auditable, Make, Model, NumberOfVehiclesEstimate, RadiusOfOperation, RadiusRating, StatedAmount, Territory, Use, VIN, Year, ZoneGaraging, ZoneRating, ZoneTerminal)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tCA_RISKID, \n\tCA_VEHICLEID, \n\tSESSIONID, \n\tID, \n\tAGEGROUP, \n\tAUDITABLE, \n\tMAKE, \n\tMODEL, \n\tNUMBEROFVEHICLESESTIMATE, \n\tRADIUSOFOPERATION, \n\to_RadiusRating AS RADIUSRATING, \n\tSTATEDAMOUNT, \n\tTERRITORY, \n\tUSE, \n\tVIN, \n\tYEAR, \n\tZONEGARAGING, \n\to_ZoneRating AS ZONERATING, \n\tZONETERMINAL\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

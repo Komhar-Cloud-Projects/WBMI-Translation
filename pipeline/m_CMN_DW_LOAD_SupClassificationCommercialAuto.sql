@@ -126,9 +126,10 @@ EXP_Detect_Changes AS (
 	-- 
 	-- 
 	--  
-	DECODE(TRUE,
-		LKP_SUPCLASSIFICATIONCOMMERCIALAUTO_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_EffectiveDate_i_ClassDescription_i_ClassCodeOriginatingOrganization_i_CommercialAutoVehicleTypeSize_i_CommercialAutoBusinessUseClass_i_SecondaryClass_i_RadiusofOperation_i_FleetType_i_SecondaryClassGroup.SupClassificationCommercialAutoID IS NOT NULL, 'NOCHANGE',
-		'INSERT'
+	DECODE(
+	    TRUE,
+	    LKP_SUPCLASSIFICATIONCOMMERCIALAUTO_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_EffectiveDate_i_ClassDescription_i_ClassCodeOriginatingOrganization_i_CommercialAutoVehicleTypeSize_i_CommercialAutoBusinessUseClass_i_SecondaryClass_i_RadiusofOperation_i_FleetType_i_SecondaryClassGroup.SupClassificationCommercialAutoID IS NOT NULL, 'NOCHANGE',
+	    'INSERT'
 	) AS v_RecordPopulated,
 	-- *INF*: DECODE(TRUE,
 	-- --i_ExpirationDate   <=  lkp_EffectiveDate OR 1=0 , 'NOCHANGE',
@@ -153,28 +154,12 @@ EXP_Detect_Changes AS (
 	-- 'UPDATE',
 	-- 'NOCHANGE'
 	-- )
-	DECODE(TRUE,
-		i_ExpirationDate <= lkp_EffectiveDate 
-		OR v_RecordPopulated = 'NOCHANGE', 'NOCHANGE',
-		lkp_SupClassificationCommercialAutoID IS NULL 
-		OR ( i_RatingStateCode = lkp_RatingStateCode 
-			AND i_ClassCode = lkp_ClassCode 
-			AND i_ClassCodeOriginatingOrganization = lkp_ClassCodeOriginatingOrganization 
-			AND ( i_ClassDescription <> lkp_ClassDescription 
-				OR i_EffectiveDate <> lkp_EffectiveDate 
-				OR i_ExpirationDate <> lkp_ExpirationDate 
-				OR i_CommercialAutoVehicleTypeSize <> lkp_CommercialAutoVehicleTypeSize 
-				OR i_CommercialAutoBusinessUseClass <> lkp_CommercialAutoBusinessUseClass 
-				OR i_SecondaryClass <> lkp_SecondaryClass 
-				OR i_RadiusofOperation <> lkp_RadiusofOperation 
-				OR i_FleetType <> lkp_FleetType 
-				OR i_SecondaryClassGroup <> lkp_SecondaryClassGroup 
-			) 
-		), 'INSERT',
-		i_RatingStateCode <> lkp_RatingStateCode 
-		OR i_ClassCode <> lkp_ClassCode 
-		OR i_ClassCodeOriginatingOrganization <> lkp_ClassCodeOriginatingOrganization, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    i_ExpirationDate <= lkp_EffectiveDate OR v_RecordPopulated = 'NOCHANGE', 'NOCHANGE',
+	    lkp_SupClassificationCommercialAutoID IS NULL OR (i_RatingStateCode = lkp_RatingStateCode AND i_ClassCode = lkp_ClassCode AND i_ClassCodeOriginatingOrganization = lkp_ClassCodeOriginatingOrganization AND (i_ClassDescription <> lkp_ClassDescription OR i_EffectiveDate <> lkp_EffectiveDate OR i_ExpirationDate <> lkp_ExpirationDate OR i_CommercialAutoVehicleTypeSize <> lkp_CommercialAutoVehicleTypeSize OR i_CommercialAutoBusinessUseClass <> lkp_CommercialAutoBusinessUseClass OR i_SecondaryClass <> lkp_SecondaryClass OR i_RadiusofOperation <> lkp_RadiusofOperation OR i_FleetType <> lkp_FleetType OR i_SecondaryClassGroup <> lkp_SecondaryClassGroup)), 'INSERT',
+	    i_RatingStateCode <> lkp_RatingStateCode OR i_ClassCode <> lkp_ClassCode OR i_ClassCodeOriginatingOrganization <> lkp_ClassCodeOriginatingOrganization, 'UPDATE',
+	    'NOCHANGE'
 	) AS v_ChangeFlag,
 	'Please correct the EffectiveDate in CSV file for ClassCode = '||i_ClassCode||' and RatingStateCode = '|| i_RatingStateCode ||', because EffectiveDate should reflect the real effective date for any change on this ClassCode.' AS v_ErrorMessage,
 	-- *INF*: 'PASS'
@@ -341,20 +326,10 @@ EXP_Lag_Eff_dates AS (
 	-- 								  OR SecondaryClassGroup <> v_PREV_ROW_SecondaryClassGroup
 	-- 								  )
 	-- 		,'0','1')
-	DECODE(TRUE,
-		RatingStateCode = v_PREV_ROW_RatingStateCode 
-		AND ClassCode = v_PREV_ROW_ClassCode 
-		AND ClassCodeOriginatingOrganization = v_PREV_ROW_ClassCodeOriginatingOrganization 
-		AND ( ClassDescription <> v_PREV_ROW_ClassDescription 
-			OR DATEADD(SECOND,+ 1,ExpirationDate) <> v_PREV_ROW_EffectiveDate 
-			OR CommercialAutoVehicleTypeSize <> v_PREV_ROW_CommercialAutoVehicleTypeSize 
-			OR CommercialAutoBusinessUseClass <> v_PREV_ROW_CommercialAutoBusinessUseClass 
-			OR SecondaryClass <> v_PREV_ROW_SecondaryClass 
-			OR RadiusofOperation <> v_PREV_ROW_RadiusofOperation 
-			OR FleetType <> v_PREV_ROW_FleetType 
-			OR SecondaryClassGroup <> v_PREV_ROW_SecondaryClassGroup 
-		), '0',
-		'1'
+	DECODE(
+	    TRUE,
+	    RatingStateCode = v_PREV_ROW_RatingStateCode AND ClassCode = v_PREV_ROW_ClassCode AND ClassCodeOriginatingOrganization = v_PREV_ROW_ClassCodeOriginatingOrganization and (ClassDescription <> v_PREV_ROW_ClassDescription OR DATEADD(SECOND,+ 1,ExpirationDate) <> v_PREV_ROW_EffectiveDate OR CommercialAutoVehicleTypeSize <> v_PREV_ROW_CommercialAutoVehicleTypeSize OR CommercialAutoBusinessUseClass <> v_PREV_ROW_CommercialAutoBusinessUseClass OR SecondaryClass <> v_PREV_ROW_SecondaryClass OR RadiusofOperation <> v_PREV_ROW_RadiusofOperation OR FleetType <> v_PREV_ROW_FleetType OR SecondaryClassGroup <> v_PREV_ROW_SecondaryClassGroup), '0',
+	    '1'
 	) AS v_CurrentSnapshotFlag,
 	-- *INF*: ADD_TO_DATE(   --v_PREV_ROW_EffectiveDate
 	-- 
@@ -364,11 +339,12 @@ EXP_Lag_Eff_dates AS (
 	-- 
 	-- 
 	-- --ADD_TO_DATE(v_PREV_ROW_EffectiveDate,'SS',-1)
-	DATEADD(SECOND,- 1,IFF(v_PREV_ROW_EffectiveDate = TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
-		),
-		sysdate,
-		v_PREV_ROW_EffectiveDate
-	)) AS v_ClassExpirationDate,
+	DATEADD(SECOND,- 1,
+	    IFF(
+	        v_PREV_ROW_EffectiveDate = TO_TIMESTAMP('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'),
+	        CURRENT_TIMESTAMP,
+	        v_PREV_ROW_EffectiveDate
+	    )) AS v_ClassExpirationDate,
 	v_CurrentSnapshotFlag AS o_CurrentSnapshotFlag,
 	v_ClassExpirationDate AS ClassExpirationDate,
 	LineOfBusinessAbbreviation AS v_PREV_ROW_LineOfBusinessAbbreviation,

@@ -23,17 +23,9 @@ EXP_CalcRate AS (
 	BillingCommission,
 	BillingCommission-EDWCommission AS v_CommissionGap,
 	-- *INF*: IIF(v_CommissionGap=0 or EDWPremium=0, 0, v_CommissionGap/EDWPremium)
-	IFF(v_CommissionGap = 0 
-		OR EDWPremium = 0,
-		0,
-		v_CommissionGap / EDWPremium
-	) AS v_CommissionRate,
+	IFF(v_CommissionGap = 0 or EDWPremium = 0, 0, v_CommissionGap / EDWPremium) AS v_CommissionRate,
 	-- *INF*: IIF(v_CommissionRate < -1 OR v_CommissionRate > 1,0.024,v_CommissionRate)
-	IFF(v_CommissionRate < - 1 
-		OR v_CommissionRate > 1,
-		0.024,
-		v_CommissionRate
-	) AS o_CommissionRate
+	IFF(v_CommissionRate < - 1 OR v_CommissionRate > 1, 0.024, v_CommissionRate) AS o_CommissionRate
 	FROM SQ_PremiumTransaction
 ),
 FIL_FinalAuditOnly AS (

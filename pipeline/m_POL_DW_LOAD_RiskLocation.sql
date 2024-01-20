@@ -50,32 +50,27 @@ EXP_Default AS (
 	sar_unit AS locationIndicator,
 	sar_state AS i_sar_state,
 	-- *INF*: IIF(ISNULL(i_sar_state) OR IS_SPACES(i_sar_state) OR LENGTH(i_sar_state)=0, 'N/A', LPAD(LTRIM(RTRIM(i_sar_state)), 2, '0'))
-	IFF(i_sar_state IS NULL 
-		OR LENGTH(i_sar_state)>0 AND TRIM(i_sar_state)='' 
-		OR LENGTH(i_sar_state
-		) = 0,
-		'N/A',
-		LPAD(LTRIM(RTRIM(i_sar_state
-				)
-			), 2, '0'
-		)
+	IFF(
+	    i_sar_state IS NULL
+	    or LENGTH(i_sar_state)>0
+	    and TRIM(i_sar_state)=''
+	    or LENGTH(i_sar_state) = 0,
+	    'N/A',
+	    LPAD(LTRIM(RTRIM(i_sar_state)), 2, '0')
 	) AS o_sar_state,
 	sar_loc_prov_territory,
 	sar_city AS Tax_Location,
 	-- *INF*: IIF(REG_MATCH(:UDF.DEFAULT_VALUE_FOR_STRINGS(Tax_Location) ,'(\d{6})')
 	-- ,:UDF.DEFAULT_VALUE_FOR_STRINGS(Tax_Location)
 	-- ,'000000')
-	IFF(REGEXP_LIKE(:UDF.DEFAULT_VALUE_FOR_STRINGS(Tax_Location
-			), '(\d{6})'
-		),
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(Tax_Location
-		),
-		'000000'
+	IFF(
+	    REGEXP_LIKE(UDF_DEFAULT_VALUE_FOR_STRINGS(Tax_Location), '(\d{6})'),
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(Tax_Location),
+	    '000000'
 	) AS v_Tax_Location,
 	v_Tax_Location AS o_Tax_Location,
 	-- *INF*: SUBSTR(v_Tax_Location,1,2)
-	SUBSTR(v_Tax_Location, 1, 2
-	) AS o_Tax_Location_1_2,
+	SUBSTR(v_Tax_Location, 1, 2) AS o_Tax_Location_1_2,
 	sar_code_14,
 	sar_zip_postal_code
 	FROM SQ_pif_4514_stage
@@ -229,9 +224,7 @@ EXP_Values AS (
 	EXP_Default.Policy_Key,
 	EXP_Default.sar_location_x,
 	-- *INF*: LTRIM(RTRIM(sar_location_x))
-	LTRIM(RTRIM(sar_location_x
-		)
-	) AS v_RiskLocation_Unit,
+	LTRIM(RTRIM(sar_location_x)) AS v_RiskLocation_Unit,
 	v_RiskLocation_Unit AS RiskLocation_Unit,
 	EXP_Default.o_sar_state AS sar_state,
 	sar_state AS sar_state_out,
@@ -243,40 +236,32 @@ EXP_Values AS (
 	-- 
 	-- 
 	-- 
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory
-	) AS sar_loc_prov_territory_Out,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory) AS sar_loc_prov_territory_Out,
 	-- *INF*: LTRIM(RTRIM(sar_county_first_two))
 	-- 
 	-- --IIF(LTRIM(RTRIM(sar_county_first_two)) = '0' OR LENGTH(LTRIM(RTRIM(sar_county_first_two)))<2 OR IS_SPACES(sar_county_first_two), '00',LTRIM(RTRIM(sar_county_first_two)))
-	LTRIM(RTRIM(sar_county_first_two
-		)
-	) AS v_sar_county_first_two,
+	LTRIM(RTRIM(sar_county_first_two)) AS v_sar_county_first_two,
 	-- *INF*: LTRIM(RTRIM(sar_county_last_one))
 	-- 
 	-- --IIF(IS_SPACES(LTRIM(RTRIM(sar_county_last_one))) OR LENGTH(LTRIM(RTRIM(sar_county_last_one))) < 3 ,'000',LTRIM(RTRIM(sar_county_last_one)))
-	LTRIM(RTRIM(sar_county_last_one
-		)
-	) AS v_sar_county_last_one,
+	LTRIM(RTRIM(sar_county_last_one)) AS v_sar_county_last_one,
 	EXP_Default.o_Tax_Location AS Tax_Location,
 	-- *INF*: LTRIM(RTRIM(Tax_Location))
 	-- 
 	-- --IIF(IS_SPACES(LTRIM(RTRIM(sar_city)))  OR ISNULL(LTRIM(RTRIM(sar_city))) OR LENGTH(LTRIM(RTRIM(sar_city))) < 3, '000', LTRIM(RTRIM(sar_city)))
 	-- 
 	-- 
-	LTRIM(RTRIM(Tax_Location
-		)
-	) AS v_sar_city,
+	LTRIM(RTRIM(Tax_Location)) AS v_sar_city,
 	Tax_Location AS Tax_Location_out,
 	EXP_Default.sar_zip_postal_code,
 	-- *INF*: IIF(ISNULL(sar_zip_postal_code)  OR IS_SPACES(sar_zip_postal_code)  OR LENGTH(sar_zip_postal_code) = 0 , 'N/A', LTRIM(RTRIM(sar_zip_postal_code)))
-	IFF(sar_zip_postal_code IS NULL 
-		OR LENGTH(sar_zip_postal_code)>0 AND TRIM(sar_zip_postal_code)='' 
-		OR LENGTH(sar_zip_postal_code
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(sar_zip_postal_code
-			)
-		)
+	IFF(
+	    sar_zip_postal_code IS NULL
+	    or LENGTH(sar_zip_postal_code)>0
+	    and TRIM(sar_zip_postal_code)=''
+	    or LENGTH(sar_zip_postal_code) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(sar_zip_postal_code))
 	) AS v_sar_zip_postal_code,
 	v_sar_zip_postal_code AS sar_zip_postal_code_Out,
 	0 AS logicalIndicator,
@@ -289,65 +274,59 @@ EXP_Values AS (
 	LKP_pif_43jj_stage.pmd4j_address_line_3 AS lkp_pmd4j_address_line_3,
 	LKP_pif_43jj_stage.pmd4j_address_line_4 AS lkp_pmd4j_address_line_4,
 	-- *INF*: IIF(ISNULL(lkp_pmd4j_address_line_1) OR IS_SPACES(lkp_pmd4j_address_line_1) OR LENGTH(lkp_pmd4j_address_line_1)=0,'',LTRIM(lkp_pmd4j_address_line_1))
-	IFF(lkp_pmd4j_address_line_1 IS NULL 
-		OR LENGTH(lkp_pmd4j_address_line_1)>0 AND TRIM(lkp_pmd4j_address_line_1)='' 
-		OR LENGTH(lkp_pmd4j_address_line_1
-		) = 0,
-		'',
-		LTRIM(lkp_pmd4j_address_line_1
-		)
+	IFF(
+	    lkp_pmd4j_address_line_1 IS NULL
+	    or LENGTH(lkp_pmd4j_address_line_1)>0
+	    and TRIM(lkp_pmd4j_address_line_1)=''
+	    or LENGTH(lkp_pmd4j_address_line_1) = 0,
+	    '',
+	    LTRIM(lkp_pmd4j_address_line_1)
 	) AS v_pmd4j_address_line_1,
 	-- *INF*: IIF(ISNULL(lkp_pmd4j_addr_lin_2_pos_1) OR IS_SPACES(lkp_pmd4j_addr_lin_2_pos_1) OR LENGTH(lkp_pmd4j_addr_lin_2_pos_1)=0,'',LTRIM(lkp_pmd4j_addr_lin_2_pos_1))
-	IFF(lkp_pmd4j_addr_lin_2_pos_1 IS NULL 
-		OR LENGTH(lkp_pmd4j_addr_lin_2_pos_1)>0 AND TRIM(lkp_pmd4j_addr_lin_2_pos_1)='' 
-		OR LENGTH(lkp_pmd4j_addr_lin_2_pos_1
-		) = 0,
-		'',
-		LTRIM(lkp_pmd4j_addr_lin_2_pos_1
-		)
+	IFF(
+	    lkp_pmd4j_addr_lin_2_pos_1 IS NULL
+	    or LENGTH(lkp_pmd4j_addr_lin_2_pos_1)>0
+	    and TRIM(lkp_pmd4j_addr_lin_2_pos_1)=''
+	    or LENGTH(lkp_pmd4j_addr_lin_2_pos_1) = 0,
+	    '',
+	    LTRIM(lkp_pmd4j_addr_lin_2_pos_1)
 	) AS v_pmd4j_addr_lin_2_pos_1,
 	-- *INF*: IIF(ISNULL(lkp_pmd4j_addr_lin_2_pos_2_30) OR IS_SPACES(lkp_pmd4j_addr_lin_2_pos_2_30) OR LENGTH(lkp_pmd4j_addr_lin_2_pos_2_30)=0,'',LTRIM(lkp_pmd4j_addr_lin_2_pos_2_30))
-	IFF(lkp_pmd4j_addr_lin_2_pos_2_30 IS NULL 
-		OR LENGTH(lkp_pmd4j_addr_lin_2_pos_2_30)>0 AND TRIM(lkp_pmd4j_addr_lin_2_pos_2_30)='' 
-		OR LENGTH(lkp_pmd4j_addr_lin_2_pos_2_30
-		) = 0,
-		'',
-		LTRIM(lkp_pmd4j_addr_lin_2_pos_2_30
-		)
+	IFF(
+	    lkp_pmd4j_addr_lin_2_pos_2_30 IS NULL
+	    or LENGTH(lkp_pmd4j_addr_lin_2_pos_2_30)>0
+	    and TRIM(lkp_pmd4j_addr_lin_2_pos_2_30)=''
+	    or LENGTH(lkp_pmd4j_addr_lin_2_pos_2_30) = 0,
+	    '',
+	    LTRIM(lkp_pmd4j_addr_lin_2_pos_2_30)
 	) AS v_pmd4j_addr_lin_2_pos_2_30,
 	-- *INF*: IIF(ISNULL(lkp_pmd4j_address_line_3) OR IS_SPACES(lkp_pmd4j_address_line_3) OR LENGTH(lkp_pmd4j_address_line_3)=0,'',LTRIM(lkp_pmd4j_address_line_3))
-	IFF(lkp_pmd4j_address_line_3 IS NULL 
-		OR LENGTH(lkp_pmd4j_address_line_3)>0 AND TRIM(lkp_pmd4j_address_line_3)='' 
-		OR LENGTH(lkp_pmd4j_address_line_3
-		) = 0,
-		'',
-		LTRIM(lkp_pmd4j_address_line_3
-		)
+	IFF(
+	    lkp_pmd4j_address_line_3 IS NULL
+	    or LENGTH(lkp_pmd4j_address_line_3)>0
+	    and TRIM(lkp_pmd4j_address_line_3)=''
+	    or LENGTH(lkp_pmd4j_address_line_3) = 0,
+	    '',
+	    LTRIM(lkp_pmd4j_address_line_3)
 	) AS v_pmd4j_address_line_3,
 	-- *INF*: IIF(ISNULL(lkp_pmd4j_address_line_4) OR IS_SPACES(lkp_pmd4j_address_line_4) OR LENGTH(lkp_pmd4j_address_line_4)=0,'',LTRIM(lkp_pmd4j_address_line_4))
-	IFF(lkp_pmd4j_address_line_4 IS NULL 
-		OR LENGTH(lkp_pmd4j_address_line_4)>0 AND TRIM(lkp_pmd4j_address_line_4)='' 
-		OR LENGTH(lkp_pmd4j_address_line_4
-		) = 0,
-		'',
-		LTRIM(lkp_pmd4j_address_line_4
-		)
+	IFF(
+	    lkp_pmd4j_address_line_4 IS NULL
+	    or LENGTH(lkp_pmd4j_address_line_4)>0
+	    and TRIM(lkp_pmd4j_address_line_4)=''
+	    or LENGTH(lkp_pmd4j_address_line_4) = 0,
+	    '',
+	    LTRIM(lkp_pmd4j_address_line_4)
 	) AS v_pmd4j_address_line_4,
 	v_pmd4j_address_line_1||v_pmd4j_addr_lin_2_pos_1||v_pmd4j_addr_lin_2_pos_2_30||v_pmd4j_address_line_3||v_pmd4j_address_line_4 AS v_FullAddress,
 	v_pmd4j_addr_lin_2_pos_1||v_pmd4j_addr_lin_2_pos_2_30||v_pmd4j_address_line_3||v_pmd4j_address_line_4 AS v_Address_RatingCounty,
 	-- *INF*: LTRIM(RTRIM(IIF(INSTR(v_Address_RatingCounty,',',-1,2)=0,'N/A',
 	-- SUBSTR(v_Address_RatingCounty,INSTR(v_Address_RatingCounty,',',-1,2)+1, INSTR(v_Address_RatingCounty,',',-1,1)-INSTR(v_Address_RatingCounty,',',-1,2)-1))))
-	LTRIM(RTRIM(IFF(REGEXP_INSTR(v_Address_RatingCounty, ',', - 1, 2
-				) = 0,
-				'N/A',
-				SUBSTR(v_Address_RatingCounty, REGEXP_INSTR(v_Address_RatingCounty, ',', - 1, 2
-					) + 1, REGEXP_INSTR(v_Address_RatingCounty, ',', - 1, 1
-					) - REGEXP_INSTR(v_Address_RatingCounty, ',', - 1, 2
-					) - 1
-				)
-			)
-		)
-	) AS v_RatingCounty_pif43jj,
+	LTRIM(RTRIM(
+	        IFF(
+	            REGEXP_INSTR(v_Address_RatingCounty, ',', - 1, 2) = 0, 'N/A',
+	            SUBSTR(v_Address_RatingCounty, REGEXP_INSTR(v_Address_RatingCounty, ',', - 1, 2) + 1, REGEXP_INSTR(v_Address_RatingCounty, ',', - 1, 1) - REGEXP_INSTR(v_Address_RatingCounty, ',', - 1, 2) - 1)
+	        ))) AS v_RatingCounty_pif43jj,
 	-- *INF*: DECODE(TRUE,
 	-- v_RatingCounty_pif43jj='ROCK ISLAND','ROCK',
 	-- v_RatingCounty_pif43jj='ST LOUIS CITY','ST LOUIS',
@@ -368,28 +347,27 @@ EXP_Values AS (
 	-- )
 	-- 
 	-- --only add several data cleansing logic here, it should have more
-	DECODE(TRUE,
-		v_RatingCounty_pif43jj = 'ROCK ISLAND', 'ROCK',
-		v_RatingCounty_pif43jj = 'ST LOUIS CITY', 'ST LOUIS',
-		v_RatingCounty_pif43jj = 'SAINT LOUIS', 'ST LOUIS',
-		v_RatingCounty_pif43jj = 'LACROSSE', 'LA CROSSE',
-		v_RatingCounty_pif43jj = 'BLACKHAWK', 'BLACK HAWK',
-		v_RatingCounty_pif43jj = 'OLMSTEAD', 'OLMSTED',
-		v_RatingCounty_pif43jj = 'HENNIPEN', 'HENNEPIN',
-		v_RatingCounty_pif43jj = 'OUTGAMIE', 'OUTAGAMIE',
-		v_RatingCounty_pif43jj = 'MIWAUKEE', 'MILWAUKEE',
-		v_RatingCounty_pif43jj = 'OTTERTAIL', 'OTTER TAIL',
-		v_RatingCounty_pif43jj = 'TREMPELEAU', 'TREMPEALEAU',
-		v_RatingCounty_pif43jj = 'WAUKEHSA', 'WAUKESHA',
-		v_RatingCounty_pif43jj = 'SAINT CROIX', 'ST CROIX',
-		v_RatingCounty_pif43jj IN ('ADAM','ADMAS'), 'ADAMS',
-		v_RatingCounty_pif43jj IN ('BARREN','BARRO'), 'BARRON',
-		v_RatingCounty_pif43jj
+	DECODE(
+	    TRUE,
+	    v_RatingCounty_pif43jj = 'ROCK ISLAND', 'ROCK',
+	    v_RatingCounty_pif43jj = 'ST LOUIS CITY', 'ST LOUIS',
+	    v_RatingCounty_pif43jj = 'SAINT LOUIS', 'ST LOUIS',
+	    v_RatingCounty_pif43jj = 'LACROSSE', 'LA CROSSE',
+	    v_RatingCounty_pif43jj = 'BLACKHAWK', 'BLACK HAWK',
+	    v_RatingCounty_pif43jj = 'OLMSTEAD', 'OLMSTED',
+	    v_RatingCounty_pif43jj = 'HENNIPEN', 'HENNEPIN',
+	    v_RatingCounty_pif43jj = 'OUTGAMIE', 'OUTAGAMIE',
+	    v_RatingCounty_pif43jj = 'MIWAUKEE', 'MILWAUKEE',
+	    v_RatingCounty_pif43jj = 'OTTERTAIL', 'OTTER TAIL',
+	    v_RatingCounty_pif43jj = 'TREMPELEAU', 'TREMPEALEAU',
+	    v_RatingCounty_pif43jj = 'WAUKEHSA', 'WAUKESHA',
+	    v_RatingCounty_pif43jj = 'SAINT CROIX', 'ST CROIX',
+	    v_RatingCounty_pif43jj IN ('ADAM','ADMAS'), 'ADAMS',
+	    v_RatingCounty_pif43jj IN ('BARREN','BARRO'), 'BARRON',
+	    v_RatingCounty_pif43jj
 	) AS v_RatingCounty_pif43jj_special,
 	-- *INF*: LTRIM(RTRIM(REPLACESTR(0,v_RatingCounty_pif43jj_special,'COUNTY','.','')))
-	LTRIM(RTRIM(REGEXP_REPLACE(v_RatingCounty_pif43jj_special,'COUNTY','.','','i')
-		)
-	) AS v_RatingCounty_pif43jj_format,
+	LTRIM(RTRIM(REGEXP_REPLACE(v_RatingCounty_pif43jj_special,'COUNTY','.','','i'))) AS v_RatingCounty_pif43jj_format,
 	LKP_SupCounty_IL_IN_KY.CountyName AS i_CountyName_IL_IN_KY,
 	-- *INF*: UPPER(DECODE(TRUE,
 	-- IN(sar_state,'12','13','16'),
@@ -398,89 +376,60 @@ EXP_Values AS (
 	-- ))
 	-- 
 	-- --IL,IN,KY
-	UPPER(DECODE(TRUE,
-		sar_state IN ('12','13','16'), IFF(i_CountyName_IL_IN_KY = 'N/A',
-				v_RatingCounty_pif43jj_format,
-				i_CountyName_IL_IN_KY
-			),
-		v_RatingCounty_pif43jj_format
-		)
-	) AS v_RatingCounty,
+	UPPER(DECODE(
+	        TRUE,
+	        sar_state IN ('12','13','16'), IFF(
+	            i_CountyName_IL_IN_KY = 'N/A', v_RatingCounty_pif43jj_format,
+	            i_CountyName_IL_IN_KY
+	        ),
+	        v_RatingCounty_pif43jj_format
+	    )) AS v_RatingCounty,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_SUPCOUNTY_VALIDCHECK(sar_state,REPLACESTR(0,v_RatingCounty,' ',''))),'N/A',v_RatingCounty)
-	IFF(LKP_SUPCOUNTY_VALIDCHECK_sar_state_REPLACESTR_0_v_RatingCounty.SupCountyId IS NULL,
-		'N/A',
-		v_RatingCounty
+	IFF(
+	    LKP_SUPCOUNTY_VALIDCHECK_sar_state_REPLACESTR_0_v_RatingCounty.SupCountyId IS NULL, 'N/A',
+	    v_RatingCounty
 	) AS v_RatingCounty_ValidCheck,
 	-- *INF*: DECODE(TRUE,REG_MATCH(v_FullAddress,'.*\s\s[^,]*,[^,]*,[^,]*'),REG_EXTRACT(v_FullAddress,'(.*)\s\s([^,]*),([^,]*),([^,]*)',1),REG_MATCH(v_FullAddress,'.*\s\s[^,]*,[^,]*'),REG_EXTRACT(v_FullAddress,'(.*)\s\s([^,]*),([^,]*)',1),v_FullAddress)
-	DECODE(TRUE,
-		REGEXP_LIKE(v_FullAddress, '.*\s\s[^,]*,[^,]*,[^,]*'
-		), REG_EXTRACT(v_FullAddress, '(.*)\s\s([^,]*),([^,]*),([^,]*)', 1
-		),
-		REGEXP_LIKE(v_FullAddress, '.*\s\s[^,]*,[^,]*'
-		), REG_EXTRACT(v_FullAddress, '(.*)\s\s([^,]*),([^,]*)', 1
-		),
-		v_FullAddress
+	DECODE(
+	    TRUE,
+	    REGEXP_LIKE(v_FullAddress, '.*\s\s[^,]*,[^,]*,[^,]*'), REG_EXTRACT(v_FullAddress, '(.*)\s\s([^,]*),([^,]*),([^,]*)', 1),
+	    REGEXP_LIKE(v_FullAddress, '.*\s\s[^,]*,[^,]*'), REG_EXTRACT(v_FullAddress, '(.*)\s\s([^,]*),([^,]*)', 1),
+	    v_FullAddress
 	) AS v_AlphaStreetAddress,
 	-- *INF*: RTRIM(REG_REPLACE( v_AlphaStreetAddress, '\s+', ' '))
-	RTRIM(REG_REPLACE(v_AlphaStreetAddress, '\s+', ' '
-		)
-	) AS v_StreetAddress,
+	RTRIM(REGEXP_REPLACE(v_AlphaStreetAddress, '\s+', ' ')) AS v_StreetAddress,
 	-- *INF*: LTRIM(RTRIM(DECODE(TRUE,REG_MATCH(v_FullAddress,'.*\s\s[^,]*,[^,]*,[^,]*'),REG_EXTRACT(v_FullAddress,'(.*)\s\s([^,]*),([^,]*),([^,]*)',2),REG_MATCH(v_FullAddress,'.*\s\s[^,]*,[^,]*'),REG_EXTRACT(v_FullAddress,'(.*)\s\s([^,]*),([^,]*)',2),'N/A')))
-	LTRIM(RTRIM(DECODE(TRUE,
-		REGEXP_LIKE(v_FullAddress, '.*\s\s[^,]*,[^,]*,[^,]*'
-				), REG_EXTRACT(v_FullAddress, '(.*)\s\s([^,]*),([^,]*),([^,]*)', 2
-				),
-		REGEXP_LIKE(v_FullAddress, '.*\s\s[^,]*,[^,]*'
-				), REG_EXTRACT(v_FullAddress, '(.*)\s\s([^,]*),([^,]*)', 2
-				),
-		'N/A'
-			)
-		)
-	) AS v_RatingCity,
+	LTRIM(RTRIM(DECODE(
+	            TRUE,
+	            REGEXP_LIKE(v_FullAddress, '.*\s\s[^,]*,[^,]*,[^,]*'), REG_EXTRACT(v_FullAddress, '(.*)\s\s([^,]*),([^,]*),([^,]*)', 2),
+	            REGEXP_LIKE(v_FullAddress, '.*\s\s[^,]*,[^,]*'), REG_EXTRACT(v_FullAddress, '(.*)\s\s([^,]*),([^,]*)', 2),
+	            'N/A'
+	        ))) AS v_RatingCity,
 	LKP_ISOFireProtectStage.City AS lkp_ISOFireProtectCity,
 	LKP_ISOFireProtectStage.County AS lkp_ISOFireProtectCounty,
 	-- *INF*: IIF(v_RatingCity='','N/A',v_RatingCity)
-	IFF(v_RatingCity = '',
-		'N/A',
-		v_RatingCity
-	) AS o_RatingCity,
+	IFF(v_RatingCity = '', 'N/A', v_RatingCity) AS o_RatingCity,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(v_RatingCounty_ValidCheck)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(v_RatingCounty_ValidCheck
-	) AS o_RatingCounty,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(v_RatingCounty_ValidCheck) AS o_RatingCounty,
 	-- *INF*: IIF(ISNULL(sar_code_14) OR IS_SPACES(sar_code_14) OR LENGTH(sar_code_14)=0 OR sar_state<>'16','N/A',sar_code_14)
-	IFF(sar_code_14 IS NULL 
-		OR LENGTH(sar_code_14)>0 AND TRIM(sar_code_14)='' 
-		OR LENGTH(sar_code_14
-		) = 0 
-		OR sar_state <> '16',
-		'N/A',
-		sar_code_14
+	IFF(
+	    sar_code_14 IS NULL
+	    or LENGTH(sar_code_14)>0
+	    and TRIM(sar_code_14)=''
+	    or LENGTH(sar_code_14) = 0
+	    or sar_state <> '16',
+	    'N/A',
+	    sar_code_14
 	) AS o_KYTaxCode,
 	-- *INF*: IIF(v_StreetAddress='','N/A',v_StreetAddress)
-	IFF(v_StreetAddress = '',
-		'N/A',
-		v_StreetAddress
-	) AS o_StreetAddress,
+	IFF(v_StreetAddress = '', 'N/A', v_StreetAddress) AS o_StreetAddress,
 	-- *INF*: IIF(ISNULL(lkp_ISOFireProtectCity),'N/A',ltrim(rtrim(lkp_ISOFireProtectCity)))
-	IFF(lkp_ISOFireProtectCity IS NULL,
-		'N/A',
-		ltrim(rtrim(lkp_ISOFireProtectCity
-			)
-		)
-	) AS o_ISOFireProtectCity,
+	IFF(lkp_ISOFireProtectCity IS NULL, 'N/A', ltrim(rtrim(lkp_ISOFireProtectCity))) AS o_ISOFireProtectCity,
 	-- *INF*: IIF(ISNULL(lkp_ISOFireProtectCounty),'N/A',ltrim(rtrim(lkp_ISOFireProtectCounty)))
-	IFF(lkp_ISOFireProtectCounty IS NULL,
-		'N/A',
-		ltrim(rtrim(lkp_ISOFireProtectCounty
-			)
-		)
-	) AS o_ISOFireProtectCounty,
+	IFF(lkp_ISOFireProtectCounty IS NULL, 'N/A', ltrim(rtrim(lkp_ISOFireProtectCounty))) AS o_ISOFireProtectCounty,
 	LKP_Pif43IXZWCUnmodStage.Pmdi4w1IntrastateIdNum AS i_Pmdi4w1IntrastateIdNum,
 	-- *INF*: IIF(ISNULL(i_Pmdi4w1IntrastateIdNum),'N/A',i_Pmdi4w1IntrastateIdNum)
-	IFF(i_Pmdi4w1IntrastateIdNum IS NULL,
-		'N/A',
-		i_Pmdi4w1IntrastateIdNum
-	) AS o_IntrastateRiskId
+	IFF(i_Pmdi4w1IntrastateIdNum IS NULL, 'N/A', i_Pmdi4w1IntrastateIdNum) AS o_IntrastateRiskId
 	FROM EXP_Default
 	LEFT JOIN LKP_ISOFireProtectStage
 	ON LKP_ISOFireProtectStage.TaxLoc = EXP_Default.o_Tax_Location
@@ -547,10 +496,11 @@ EXP_Detect_Changes AS (
 	LKP_RiskLocation_RiskLocationAKID.RiskLocationID,
 	LKP_RiskLocation_RiskLocationAKID.CurrentSnapshotFlag AS LKP_CurrentSnapshotFlag,
 	-- *INF*: Decode(LKP_CurrentSnapshotFlag,'T','1','F','0',LKP_CurrentSnapshotFlag)
-	Decode(LKP_CurrentSnapshotFlag,
-		'T', '1',
-		'F', '0',
-		LKP_CurrentSnapshotFlag
+	Decode(
+	    LKP_CurrentSnapshotFlag,
+	    'T', '1',
+	    'F', '0',
+	    LKP_CurrentSnapshotFlag
 	) AS v_LKP_CurrentSnapshotFlag,
 	LKP_RiskLocation_RiskLocationAKID.RiskLocationAKID,
 	EXP_Values.pol_ak_id,
@@ -564,11 +514,9 @@ EXP_Detect_Changes AS (
 	'1' AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS EffectiveDate,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
@@ -576,12 +524,11 @@ EXP_Detect_Changes AS (
 	-- 
 	-- 
 	-- --IIF(ISNULL(RiskLocationAKID) OR (NOT ISNULL(RiskLocationAKID) and v_LKP_CurrentSnapshotFlag='0'), 'NEW','EXISTS')
-	IFF(RiskLocationAKID IS NULL,
-		'NEW',
-		IFF(v_LKP_CurrentSnapshotFlag = '0',
-			'REACTIVATE',
-			'EXISTS'
-		)
+	IFF(
+	    RiskLocationAKID IS NULL, 'NEW',
+	    IFF(
+	        v_LKP_CurrentSnapshotFlag = '0', 'REACTIVATE', 'EXISTS'
+	    )
 	) AS Changed_Flag,
 	EXP_Values.locationIndicator,
 	LKP_Sup_State.sup_state_id,
@@ -590,8 +537,7 @@ EXP_Detect_Changes AS (
 	EXP_Values.o_KYTaxCode AS KYTaxCode,
 	EXP_Values.o_StreetAddress AS StreetAddress,
 	-- *INF*: MD5(StreetAddress||RatingCity||sar_state||sar_zip_postal_code||Tax_Location)
-	MD5(StreetAddress || RatingCity || sar_state || sar_zip_postal_code || Tax_Location
-	) AS o_RiskLocationHashKey,
+	MD5(StreetAddress || RatingCity || sar_state || sar_zip_postal_code || Tax_Location) AS o_RiskLocationHashKey,
 	EXP_Values.o_ISOFireProtectCity AS ISOFireProtectCity,
 	EXP_Values.o_ISOFireProtectCounty AS ISOFireProtectCounty,
 	EXP_Values.o_IntrastateRiskId AS IntrastateRiskId
@@ -641,8 +587,7 @@ EXP_Update_DataCollect AS (
 	RiskLocationID,
 	'1' AS CurrentSnapshotFlag,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate
 	FROM RTR_New_ReActivate_Exists_ReActivate
 ),
 UPD_RiskLocation AS (

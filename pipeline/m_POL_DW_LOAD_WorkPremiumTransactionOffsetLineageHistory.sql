@@ -28,9 +28,10 @@ EXP_WorkPremiumTransactionOffsetLineage AS (
 	PreviousPremiumTransactionAKID,
 	UpdateAttributeFlag AS i_UpdateAttributeFlag,
 	-- *INF*: DECODE(TRUE,i_UpdateAttributeFlag='T','1','0')
-	DECODE(TRUE,
-		i_UpdateAttributeFlag = 'T', '1',
-		'0'
+	DECODE(
+	    TRUE,
+	    i_UpdateAttributeFlag = 'T', '1',
+	    '0'
 	) AS o_UpdateAttributeFlag
 	FROM SQ_WorkPremiumTransactionOffsetLineage
 ),

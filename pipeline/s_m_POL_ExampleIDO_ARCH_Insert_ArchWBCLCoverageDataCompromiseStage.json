@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCLCoverageDataCompromiseStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCLCoverageDataCom_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCLCoverageDataCompromiseStage AS (\n\tSELECT\n\t\tWBCLCoverageDataCompromiseStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tCoverageId,\n\t\tWB_CL_CoverageDataCompromiseId,\n\t\tSessionId,\n\t\tEligibilityQuestion,\n\t\tDefenseAndLiabilityCoverageIndicator,\n\t\tIncreaseAnnualAggregateLimitIndicator,\n\t\tIncreasedLimitQuestionOne,\n\t\tIncreasedLimitQuestionTwo,\n\t\tIncreasedLimitQuestionThree,\n\t\tIncreasedLimitQuestionFour,\n\t\tIncreasedLimitQuestionFive,\n\t\tIncreasedLimitQuestionSix,\n\t\tIncreasedLimitQuestionSeven,\n\t\tIncreasedLimitQuestionEight,\n\t\tIncreasedLimitQuestionNine,\n\t\tIncreasedLimitQuestionTen,\n\t\tIncreasedAnnualAggregateEligibleMessage,\n\t\tDataCompromiseUnavailableMessage,\n\t\tAnnualAggregateStaticText,\n\t\tResponseExpensesDeductible,\n\t\tAnyOnePersonalDataCompromiseStaticText,\n\t\tDefenseAndLiabilityDeductible,\n\t\tIncreasedAnnualAggregateIneligibleMessage\n\tFROM WBCLCoverageDataCompromiseStage\n),\nEXP_Metadata AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tWBCLCoverageDataCompromiseStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCoverageId,\n\tWB_CL_CoverageDataCompromiseId,\n\tSessionId,\n\tEligibilityQuestion,\n\tDefenseAndLiabilityCoverageIndicator,\n\t-- *INF*: DECODE(DefenseAndLiabilityCoverageIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    DefenseAndLiabilityCoverageIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_DefenseAndLiabilityCoverageIndicator,\n\tIncreaseAnnualAggregateLimitIndicator,\n\t-- *INF*: DECODE(IncreaseAnnualAggregateLimitIndicator,'T',1,'F',0,NULL)\n\tDECODE(\n\t    IncreaseAnnualAggregateLimitIndicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncreaseAnnualAggregateLimitIndicator,\n\tIncreasedLimitQuestionOne,\n\tIncreasedLimitQuestionTwo,\n\tIncreasedLimitQuestionThree,\n\tIncreasedLimitQuestionFour,\n\tIncreasedLimitQuestionFive,\n\tIncreasedLimitQuestionSix,\n\tIncreasedLimitQuestionSeven,\n\tIncreasedLimitQuestionEight,\n\tIncreasedLimitQuestionNine,\n\tIncreasedLimitQuestionTen,\n\tIncreasedAnnualAggregateEligibleMessage,\n\tDataCompromiseUnavailableMessage,\n\tAnnualAggregateStaticText,\n\tResponseExpensesDeductible,\n\tAnyOnePersonalDataCompromiseStaticText,\n\tDefenseAndLiabilityDeductible,\n\tIncreasedAnnualAggregateIneligibleMessage\n\tFROM SQ_WBCLCoverageDataCompromiseStage\n),\nArchWBCLCoverageDataCompromiseStage AS (\n\tINSERT INTO ArchWBCLCoverageDataCompromiseStage\n\t(ExtractDate, SourceSystemId, AuditId, WBCLCoverageDataCompromiseStageId, CoverageId, WB_CL_CoverageDataCompromiseId, SessionId, EligibilityQuestion, DefenseAndLiabilityCoverageIndicator, IncreaseAnnualAggregateLimitIndicator, IncreasedLimitQuestionOne, IncreasedLimitQuestionTwo, IncreasedLimitQuestionThree, IncreasedLimitQuestionFour, IncreasedLimitQuestionFive, IncreasedLimitQuestionSix, IncreasedLimitQuestionSeven, IncreasedLimitQuestionEight, IncreasedLimitQuestionNine, IncreasedLimitQuestionTen, IncreasedAnnualAggregateEligibleMessage, DataCompromiseUnavailableMessage, AnnualAggregateStaticText, ResponseExpensesDeductible, AnyOnePersonalDataCompromiseStaticText, DefenseAndLiabilityDeductible, IncreasedAnnualAggregateIneligibleMessage)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBCLCOVERAGEDATACOMPROMISESTAGEID, \n\tCOVERAGEID, \n\tWB_CL_COVERAGEDATACOMPROMISEID, \n\tSESSIONID, \n\tELIGIBILITYQUESTION, \n\to_DefenseAndLiabilityCoverageIndicator AS DEFENSEANDLIABILITYCOVERAGEINDICATOR, \n\to_IncreaseAnnualAggregateLimitIndicator AS INCREASEANNUALAGGREGATELIMITINDICATOR, \n\tINCREASEDLIMITQUESTIONONE, \n\tINCREASEDLIMITQUESTIONTWO, \n\tINCREASEDLIMITQUESTIONTHREE, \n\tINCREASEDLIMITQUESTIONFOUR, \n\tINCREASEDLIMITQUESTIONFIVE, \n\tINCREASEDLIMITQUESTIONSIX, \n\tINCREASEDLIMITQUESTIONSEVEN, \n\tINCREASEDLIMITQUESTIONEIGHT, \n\tINCREASEDLIMITQUESTIONNINE, \n\tINCREASEDLIMITQUESTIONTEN, \n\tINCREASEDANNUALAGGREGATEELIGIBLEMESSAGE, \n\tDATACOMPROMISEUNAVAILABLEMESSAGE, \n\tANNUALAGGREGATESTATICTEXT, \n\tRESPONSEEXPENSESDEDUCTIBLE, \n\tANYONEPERSONALDATACOMPROMISESTATICTEXT, \n\tDEFENSEANDLIABILITYDEDUCTIBLE, \n\tINCREASEDANNUALAGGREGATEINELIGIBLEMESSAGE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

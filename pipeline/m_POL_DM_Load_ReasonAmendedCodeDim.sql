@@ -41,33 +41,22 @@ EXP_ExistingChecking AS (
 	LKP_ReasonAmendedCodeDim.ReasonAmendedCodeDimId AS lkp_ReasonAmendedCodeDimId,
 	-- *INF*: IIF(ISNULL(lkp_ReasonAmendedCodeDimId), 'Insert', 
 	--  'Update')
-	IFF(lkp_ReasonAmendedCodeDimId IS NULL,
-		'Insert',
-		'Update'
-	) AS v_ChangeFlag,
+	IFF(lkp_ReasonAmendedCodeDimId IS NULL, 'Insert', 'Update') AS v_ChangeFlag,
 	v_ChangeFlag AS ChangeFlag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
-	) AS EffectiveDate,
+	TO_TIMESTAMP('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS ExpirationDate,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	AGG_reason_amended_code.StandardReasonAmendedCode AS i_StandardReasonAmendedCode,
 	AGG_reason_amended_code.StandardReasonAmendedDescription AS i_StandardReasonAmendedDescription,
 	-- *INF*: IIF(ISNULL(i_StandardReasonAmendedCode ), 'N/A', i_StandardReasonAmendedCode )
-	IFF(i_StandardReasonAmendedCode IS NULL,
-		'N/A',
-		i_StandardReasonAmendedCode
-	) AS o_StandardReasonAmendedCode,
+	IFF(i_StandardReasonAmendedCode IS NULL, 'N/A', i_StandardReasonAmendedCode) AS o_StandardReasonAmendedCode,
 	-- *INF*: IIF(ISNULL(i_StandardReasonAmendedDescription ), 'N/A', i_StandardReasonAmendedDescription )
-	IFF(i_StandardReasonAmendedDescription IS NULL,
-		'N/A',
-		i_StandardReasonAmendedDescription
-	) AS o_StandardReasonAmendedDescription
+	IFF(i_StandardReasonAmendedDescription IS NULL, 'N/A', i_StandardReasonAmendedDescription) AS o_StandardReasonAmendedDescription
 	FROM AGG_reason_amended_code
 	LEFT JOIN LKP_ReasonAmendedCodeDim
 	ON LKP_ReasonAmendedCodeDim.ReasonAmendedCode = AGG_reason_amended_code.StandardReasonAmendedCode

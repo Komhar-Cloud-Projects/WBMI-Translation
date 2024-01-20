@@ -1,0 +1,55 @@
+{
+    "name": "s_m_CLM_HISTORICAL_UPDATE_SSN_Tokens_OneTime",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_HISTORICAL_UPDATE_SSN_Tokens_OneTime",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WorkTokenExResponse_RPT_EDM AS (\n\tSELECT 1 as SSNId, 1 as SSNToken\n),\nEXP_RPT_EDM AS (\n\tSELECT\n\tSSNId,\n\tSSNToken,\n\t@{pipeline().parameters.SQL_CONNECTION_RPT_EDM} AS SQL_DataBaseConnectionName_RPTEDM\n\tFROM SQ_WorkTokenExResponse_RPT_EDM\n),\nSQL_RPT_EDM AS (-- SQL_RPT_EDM\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nsql_error_RPT_EDM AS (\n\tINSERT INTO sql_error\n\t(sql_error)\n\tSELECT \n\tSQLError AS SQL_ERROR\n\tFROM SQL_RPT_EDM\n),\nSQ_WorkTokenExResponse_WC_Data_Mart AS (\n\tSELECT 1 as SSNId, 1 as SSNToken\n),\nEXP_WC_Data_Mart AS (\n\tSELECT\n\tSSNId,\n\tSSNToken,\n\t@{pipeline().parameters.SQL_CONNECTION_WC_DATAMART} AS SQL_DataBaseConnectionName,\n\t@{pipeline().parameters.SQL_CONNECTION_RPT_EDM} AS SQL_DataBaseConnectionName_RPTEDM\n\tFROM SQ_WorkTokenExResponse_WC_Data_Mart\n),\nSQL_WC_Data_Mart AS (-- SQL_WC_Data_Mart\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nsql_error_WC_Data_Mart AS (\n\tINSERT INTO sql_error\n\t(sql_error)\n\tSELECT \n\tSQLError AS SQL_ERROR\n\tFROM SQL_WC_Data_Mart\n),\nSQ_WorkTokenExResponse_WC_Stage AS (\n\tSELECT 1 as SSNId, 1 as SSNToken\n),\nEXP_WC_Stage AS (\n\tSELECT\n\tSSNId,\n\tSSNToken,\n\t@{pipeline().parameters.SQL_CONNECTION_WC_STAGE} AS SQL_DataBaseConnectionName,\n\t@{pipeline().parameters.SQL_CONNECTION_RPT_EDM} AS SQL_DataBaseConnectionName_RPTEDM\n\tFROM SQ_WorkTokenExResponse_WC_Stage\n),\nSQL_WC_Stage AS (-- SQL_WC_Stage\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nsql_error_WC_Stage AS (\n\tINSERT INTO sql_error\n\t(sql_error)\n\tSELECT \n\tSQLError AS SQL_ERROR\n\tFROM SQL_WC_Stage\n),\nSQ_WorkTokenExResponse_DataFeedMart AS (\n\tSELECT 1 as SSNId, 1 as SSNToken\n),\nEXP_DataFeedMart AS (\n\tSELECT\n\tSSNId,\n\tSSNToken,\n\t@{pipeline().parameters.SQL_CONNECTION_DATAFEEDMART} AS SQL_DataBaseConnectionName,\n\t@{pipeline().parameters.SQL_CONNECTION_RPT_EDM} AS SQL_DataBaseConnectionName_RPTEDM\n\tFROM SQ_WorkTokenExResponse_DataFeedMart\n),\nSQL_DataFeedMart AS (-- SQL_DataFeedMart\n\n\t##############################################\n\n\t# TODO: Place holder for Custom transformation\n\n\t##############################################\n),\nsql_error_DataFeedMart AS (\n\tINSERT INTO sql_error\n\t(sql_error)\n\tSELECT \n\tSQLError AS SQL_ERROR\n\tFROM SQL_DataFeedMart\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SQL_CONNECTION_RPT_EDM": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SQL_CONNECTION_WC_DATAMART": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SQL_CONNECTION_WC_STAGE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SQL_CONNECTION_DATAFEEDMART": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "HistoricalDataUpdate/"
+        },
+        "annotations": []
+    }
+}

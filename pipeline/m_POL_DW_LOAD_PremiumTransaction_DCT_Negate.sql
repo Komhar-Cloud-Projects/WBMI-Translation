@@ -158,10 +158,11 @@ EXP_Default AS (
 	-- DeclaredEventFlag ='F',0,
 	-- ISNULL(DeclaredEventFlag),0
 	-- )
-	DECODE(TRUE,
-		DeclaredEventFlag = 'T', 1,
-		DeclaredEventFlag = 'F', 0,
-		DeclaredEventFlag IS NULL, 0
+	DECODE(
+	    TRUE,
+	    DeclaredEventFlag = 'T', 1,
+	    DeclaredEventFlag = 'F', 0,
+	    DeclaredEventFlag IS NULL, 0
 	) AS O_DeclaredEventFlag,
 	PolicyKey,
 	IterationId,

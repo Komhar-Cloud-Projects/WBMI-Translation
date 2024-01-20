@@ -33,9 +33,7 @@ EXP_METADATA AS (
 	sysdate AS o_ModifiedDate,
 	i_ClassCode AS o_ClassCode,
 	-- *INF*: LTRIM(RTRIM(i_ISOSpecialCauseOfLossCategoryCode))
-	LTRIM(RTRIM(i_ISOSpecialCauseOfLossCategoryCode
-		)
-	) AS o_ISOSpecialCauseOfLossCategoryCode
+	LTRIM(RTRIM(i_ISOSpecialCauseOfLossCategoryCode)) AS o_ISOSpecialCauseOfLossCategoryCode
 	FROM SQ_SupISOSpecialCauseOfLossCategoryRule
 ),
 SupISOSpecialCauseOfLossCategoryRule1 AS (

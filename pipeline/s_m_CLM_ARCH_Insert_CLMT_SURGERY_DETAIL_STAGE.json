@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLMT_SURGERY_DETAIL_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLMT_SURGERY_DETAIL_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_clmt_surgery_detail_stage AS (\n\tSELECT \r\n\tC.ClmtSurgeryDetailStageId, \r\n\tC.clmt_surgery_detail_id, \r\n\tC.surgery_type_cd, \r\n\tC.source_system_id, \r\n\tC.created_ts, \r\n\tC.created_user_id, \r\n\tC.modified_ts, \r\n\tC.modified_user_id, \r\n\tC.ExtractDate, \r\n\tC.SourceSystemId\r\n\t \r\n\tFROM\r\n\t clmt_surgery_detail_stage C\r\n\t\r\n\t--Where\r\n\t--clmt_surgery_detail_stage.created_ts >= --'@{pipeline().parameters.SELECTION_START_TS}'\r\n\t--OR\r\n\t--clmt_surgery_detail_stage.modified_ts >= --'@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_arch_clmt_surgery_detail_stage AS (\n\tSELECT\n\tClmtSurgeryDetailStageId,\n\tclmt_surgery_detail_id,\n\tsurgery_type_cd,\n\tsource_system_id,\n\tcreated_ts,\n\tcreated_user_id,\n\tmodified_ts,\n\tmodified_user_id,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_clmt_surgery_detail_stage\n),\narch_clmt_surgery_detail_stage AS (\n\tINSERT INTO arch_clmt_surgery_detail_stage\n\t(ClmtSurgeryDetailStageId, clmt_surgery_detail_id, surgery_type_cd, source_system_id, created_ts, created_user_id, modified_ts, modified_user_id, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tCLMTSURGERYDETAILSTAGEID, \n\tCLMT_SURGERY_DETAIL_ID, \n\tSURGERY_TYPE_CD, \n\tSOURCE_SYSTEM_ID, \n\tCREATED_TS, \n\tCREATED_USER_ID, \n\tMODIFIED_TS, \n\tMODIFIED_USER_ID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_arch_clmt_surgery_detail_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

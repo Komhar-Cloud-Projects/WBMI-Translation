@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLM_CASE_MANAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLM_CASE_MANAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLM_CASE_MANAGE_STAGE AS (\n\tSELECT\n\t\tclm_case_manage_stage_id,\n\t\ttch_claim_nbr,\n\t\ttch_client_id,\n\t\tcase_name,\n\t\tcase_number,\n\t\tsuit_venue,\n\t\tsuit_state,\n\t\ttrial_date,\n\t\tpolicy_limit_id,\n\t\tcase_desc_id,\n\t\tinj_dam_desc_id,\n\t\tpripst_inj_desc_id,\n\t\tsubro_cont_id,\n\t\tfirst_not_law_suit,\n\t\tdeclaratory_act,\n\t\tsuit_status,\n\t\tdenial_date,\n\t\tprim_lit_handler,\n\t\tlitigation_date,\n\t\tlitigation_closed,\n\t\tcreate_ts,\n\t\tcreate_user_id,\n\t\tupdate_ts,\n\t\tupdate_user_id,\n\t\tliab_cmt_id,\n\t\tpros_cmt_id,\n\t\tcons_cmt_id,\n\t\tcom_umb_res,\n\t\thow_clm_closed,\n\t\tpayment_amt,\n\t\treins_reported,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id,\n\t\tsalvage_desc,\n\t\tsubro_desc,\n\t\tiso_inj_dam_desc,\n\t\tdemand_at_init_lit,\n\t\tobject_type_cd,\n\t\tobject_seq_nbr,\n\t\tcov_type_cd,\n\t\tcov_seq_nbr,\n\t\tbur_cause_loss,\n\t\tauto_pay_ind,\n\t\tlegal_file_type,\n\t\tsettlement_type_cd\n\tFROM CLM_CASE_MANAGE_STAGE\n),\nEXP_CLM_CASE_MANAGE_STAGE AS (\n\tSELECT\n\tclm_case_manage_stage_id,\n\ttch_claim_nbr,\n\ttch_client_id,\n\tcase_name,\n\tcase_number,\n\tsuit_venue,\n\tsuit_state,\n\ttrial_date,\n\tpolicy_limit_id,\n\tcase_desc_id,\n\tinj_dam_desc_id,\n\tpripst_inj_desc_id,\n\tsubro_cont_id,\n\tfirst_not_law_suit,\n\tdeclaratory_act,\n\tsuit_status,\n\tdenial_date,\n\tprim_lit_handler,\n\tlitigation_date,\n\tlitigation_closed,\n\tcreate_ts,\n\tcreate_user_id,\n\tupdate_ts,\n\tupdate_user_id,\n\tliab_cmt_id,\n\tpros_cmt_id,\n\tcons_cmt_id,\n\tcom_umb_res,\n\thow_clm_closed,\n\tpayment_amt,\n\treins_reported,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS Audit_id_op,\n\tsalvage_desc,\n\tsubro_desc,\n\tiso_inj_dam_desc,\n\tdemand_at_init_lit,\n\tobject_type_cd,\n\tobject_seq_nbr,\n\tcov_type_cd,\n\tcov_seq_nbr,\n\tbur_cause_loss,\n\tauto_pay_ind,\n\tlegal_file_type,\n\tsettlement_type_cd\n\tFROM SQ_CLM_CASE_MANAGE_STAGE\n),\nARCH_CLM_CASE_MANAGE_STAGE AS (\n\tINSERT INTO arch_clm_case_manage_stage\n\t(clm_case_manage_stage_id, tch_claim_nbr, tch_client_id, case_name, case_number, suit_venue, suit_state, trial_date, policy_limit_id, case_desc_id, inj_dam_desc_id, pripst_inj_desc_id, subro_cont_id, first_not_law_suit, declaratory_act, suit_status, denial_date, prim_lit_handler, litigation_date, litigation_closed, create_ts, create_user_id, update_ts, update_user_id, liab_cmt_id, pros_cmt_id, cons_cmt_id, com_umb_res, how_clm_closed, payment_amt, reins_reported, extract_date, as_of_date, record_count, source_system_id, audit_id, salvage_desc, subro_desc, iso_inj_dam_desc, demand_at_init_lit, OBJECT_TYPE_CD, OBJECT_SEQ_NBR, COV_TYPE_CD, COV_SEQ_NBR, BUR_CAUSE_LOSS, AUTO_PAY_IND, LEGAL_FILE_TYPE, SETTLEMENT_TYPE_CD)\n\tSELECT \n\tCLM_CASE_MANAGE_STAGE_ID, \n\tTCH_CLAIM_NBR, \n\tTCH_CLIENT_ID, \n\tCASE_NAME, \n\tCASE_NUMBER, \n\tSUIT_VENUE, \n\tSUIT_STATE, \n\tTRIAL_DATE, \n\tPOLICY_LIMIT_ID, \n\tCASE_DESC_ID, \n\tINJ_DAM_DESC_ID, \n\tPRIPST_INJ_DESC_ID, \n\tSUBRO_CONT_ID, \n\tFIRST_NOT_LAW_SUIT, \n\tDECLARATORY_ACT, \n\tSUIT_STATUS, \n\tDENIAL_DATE, \n\tPRIM_LIT_HANDLER, \n\tLITIGATION_DATE, \n\tLITIGATION_CLOSED, \n\tCREATE_TS, \n\tCREATE_USER_ID, \n\tUPDATE_TS, \n\tUPDATE_USER_ID, \n\tLIAB_CMT_ID, \n\tPROS_CMT_ID, \n\tCONS_CMT_ID, \n\tCOM_UMB_RES, \n\tHOW_CLM_CLOSED, \n\tPAYMENT_AMT, \n\tREINS_REPORTED, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAudit_id_op AS AUDIT_ID, \n\tSALVAGE_DESC, \n\tSUBRO_DESC, \n\tISO_INJ_DAM_DESC, \n\tDEMAND_AT_INIT_LIT, \n\tobject_type_cd AS OBJECT_TYPE_CD, \n\tobject_seq_nbr AS OBJECT_SEQ_NBR, \n\tcov_type_cd AS COV_TYPE_CD, \n\tcov_seq_nbr AS COV_SEQ_NBR, \n\tbur_cause_loss AS BUR_CAUSE_LOSS, \n\tauto_pay_ind AS AUTO_PAY_IND, \n\tlegal_file_type AS LEGAL_FILE_TYPE, \n\tsettlement_type_cd AS SETTLEMENT_TYPE_CD\n\tFROM EXP_CLM_CASE_MANAGE_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

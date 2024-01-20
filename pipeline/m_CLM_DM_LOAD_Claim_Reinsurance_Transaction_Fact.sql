@@ -73,8 +73,7 @@ EXP_get_values AS (
 	claim_reins_trans_code,
 	claim_reins_trans_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS v_trans_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS v_trans_date,
 	v_trans_date AS trans_date_out,
 	claim_reins_trans_base_type_code,
 	claim_reins_trans_amt,
@@ -225,10 +224,7 @@ mplt_Claim_occurence_dim_id AS (WITH
 		SELECT
 		LKP_Claim_Party_occurrence.claim_occurrence_ak_id,
 		-- *INF*: IIF(ISNULL(claim_occurrence_ak_id), -1, claim_occurrence_ak_id)
-		IFF(claim_occurrence_ak_id IS NULL,
-			- 1,
-			claim_occurrence_ak_id
-		) AS claim_occurrence_ak_id_out,
+		IFF(claim_occurrence_ak_id IS NULL, - 1, claim_occurrence_ak_id) AS claim_occurrence_ak_id_out,
 		EXP_get_values.IN_trans_date
 		FROM EXP_get_values
 		LEFT JOIN LKP_Claim_Party_occurrence
@@ -719,10 +715,7 @@ mplt_Claim_occurrence_dim_hist_id AS (WITH
 		SELECT
 		LKP_Claim_Party_occurrence.claim_occurrence_ak_id,
 		-- *INF*: IIF(ISNULL(claim_occurrence_ak_id), -1, claim_occurrence_ak_id)
-		IFF(claim_occurrence_ak_id IS NULL,
-			- 1,
-			claim_occurrence_ak_id
-		) AS claim_occurrence_ak_id_out,
+		IFF(claim_occurrence_ak_id IS NULL, - 1, claim_occurrence_ak_id) AS claim_occurrence_ak_id_out,
 		EXP_get_values.IN_trans_date
 		FROM EXP_get_values
 		LEFT JOIN LKP_Claim_Party_occurrence
@@ -1215,24 +1208,15 @@ mplt_Strategic_Business_Division_Dim AS (WITH
 		policy_number,
 		policy_eff_date AS policy_eff_date_in,
 		-- *INF*: IIF(:UDF.DEFAULT_VALUE_FOR_STRINGS(policy_symbol)='N/A','N/A',substr(policy_symbol,1,1))
-		IFF(:UDF.DEFAULT_VALUE_FOR_STRINGS(policy_symbol
-			) = 'N/A',
-			'N/A',
-			substr(policy_symbol, 1, 1
-			)
+		IFF(
+		    UDF_DEFAULT_VALUE_FOR_STRINGS(policy_symbol) = 'N/A', 'N/A', substr(policy_symbol, 1, 1)
 		) AS policy_symbol_position_1,
 		-- *INF*: IIF(:UDF.DEFAULT_VALUE_FOR_STRINGS(policy_number)='N/A','N/A',substr(policy_number,1,1))
-		IFF(:UDF.DEFAULT_VALUE_FOR_STRINGS(policy_number
-			) = 'N/A',
-			'N/A',
-			substr(policy_number, 1, 1
-			)
+		IFF(
+		    UDF_DEFAULT_VALUE_FOR_STRINGS(policy_number) = 'N/A', 'N/A', substr(policy_number, 1, 1)
 		) AS policy_number_position_1,
 		-- *INF*: IIF(isnull(policy_eff_date_in),SYSDATE,policy_eff_date_in)
-		IFF(policy_eff_date_in IS NULL,
-			SYSDATE,
-			policy_eff_date_in
-		) AS policy_eff_date
+		IFF(policy_eff_date_in IS NULL, CURRENT_TIMESTAMP, policy_eff_date_in) AS policy_eff_date
 		FROM INPUT_Strategic_Business_Division
 	),
 	LKP_strategic_business_division_dim AS (
@@ -1284,25 +1268,13 @@ mplt_Strategic_Business_Division_Dim AS (WITH
 		strtgc_bus_dvsn_code,
 		strtgc_bus_dvsn_code_descript,
 		-- *INF*: IIF(isnull(strtgc_bus_dvsn_dim_id),-1,strtgc_bus_dvsn_dim_id)
-		IFF(strtgc_bus_dvsn_dim_id IS NULL,
-			- 1,
-			strtgc_bus_dvsn_dim_id
-		) AS strtgc_bus_dvsn_id_out,
+		IFF(strtgc_bus_dvsn_dim_id IS NULL, - 1, strtgc_bus_dvsn_dim_id) AS strtgc_bus_dvsn_id_out,
 		-- *INF*: IIF(isnull(edw_strtgc_bus_dvsn_ak_id),-1,edw_strtgc_bus_dvsn_ak_id)
-		IFF(edw_strtgc_bus_dvsn_ak_id IS NULL,
-			- 1,
-			edw_strtgc_bus_dvsn_ak_id
-		) AS edw_strtgc_bus_dvsn_ak_id_out,
+		IFF(edw_strtgc_bus_dvsn_ak_id IS NULL, - 1, edw_strtgc_bus_dvsn_ak_id) AS edw_strtgc_bus_dvsn_ak_id_out,
 		-- *INF*: IIF(isnull(strtgc_bus_dvsn_code),'N/A',strtgc_bus_dvsn_code)
-		IFF(strtgc_bus_dvsn_code IS NULL,
-			'N/A',
-			strtgc_bus_dvsn_code
-		) AS strtgc_bus_dvsn_code_out,
+		IFF(strtgc_bus_dvsn_code IS NULL, 'N/A', strtgc_bus_dvsn_code) AS strtgc_bus_dvsn_code_out,
 		-- *INF*: IIF(isnull(strtgc_bus_dvsn_code_descript),'N/A',strtgc_bus_dvsn_code_descript)
-		IFF(strtgc_bus_dvsn_code_descript IS NULL,
-			'N/A',
-			strtgc_bus_dvsn_code_descript
-		) AS strtgc_bus_dvsn_code_descript_out
+		IFF(strtgc_bus_dvsn_code_descript IS NULL, 'N/A', strtgc_bus_dvsn_code_descript) AS strtgc_bus_dvsn_code_descript_out
 		FROM LKP_strategic_business_division_dim
 	),
 	OUTPUT_return_Strategic_Business_Division AS (
@@ -1777,241 +1749,142 @@ EXP_Financial_Values AS (
 	EXP_Values.trans_date_out,
 	EXP_Values.strtgc_bus_dvsn_dim_id,
 	-- *INF*: IIF(ISNULL(strtgc_bus_dvsn_dim_id), 0,strtgc_bus_dvsn_dim_id)
-	IFF(strtgc_bus_dvsn_dim_id IS NULL,
-		0,
-		strtgc_bus_dvsn_dim_id
-	) AS strtgc_bus_dvsn_dim_id_out,
+	IFF(strtgc_bus_dvsn_dim_id IS NULL, 0, strtgc_bus_dvsn_dim_id) AS strtgc_bus_dvsn_dim_id_out,
 	EXP_Values.claim_occurrence_dim_id,
 	-- *INF*: iif(isnull(claim_occurrence_dim_id),-1,claim_occurrence_dim_id)
-	IFF(claim_occurrence_dim_id IS NULL,
-		- 1,
-		claim_occurrence_dim_id
-	) AS claim_occurrence_dim_id_out,
+	IFF(claim_occurrence_dim_id IS NULL, - 1, claim_occurrence_dim_id) AS claim_occurrence_dim_id_out,
 	EXP_Values.claim_occurrence_dim_hist_id,
 	-- *INF*: iif(isnull(claim_occurrence_dim_hist_id),-1,claim_occurrence_dim_hist_id)
-	IFF(claim_occurrence_dim_hist_id IS NULL,
-		- 1,
-		claim_occurrence_dim_hist_id
-	) AS claim_occurrence_dim_hist_id_out,
+	IFF(claim_occurrence_dim_hist_id IS NULL, - 1, claim_occurrence_dim_hist_id) AS claim_occurrence_dim_hist_id_out,
 	EXP_Values.claimant_dim_id,
 	-- *INF*: iif(isnull(claimant_dim_id),-1,claimant_dim_id)
-	IFF(claimant_dim_id IS NULL,
-		- 1,
-		claimant_dim_id
-	) AS claimant_dim_id_out,
+	IFF(claimant_dim_id IS NULL, - 1, claimant_dim_id) AS claimant_dim_id_out,
 	EXP_Values.claimant_dim_hist_id,
 	-- *INF*: iif(isnull(claimant_dim_hist_id),-1,claimant_dim_hist_id)
-	IFF(claimant_dim_hist_id IS NULL,
-		- 1,
-		claimant_dim_hist_id
-	) AS claimant_dim_hist_id_out,
+	IFF(claimant_dim_hist_id IS NULL, - 1, claimant_dim_hist_id) AS claimant_dim_hist_id_out,
 	EXP_Values.claimant_cov_dim_id,
 	-- *INF*: iif(isnull(claimant_cov_dim_id),-1,claimant_cov_dim_id)
-	IFF(claimant_cov_dim_id IS NULL,
-		- 1,
-		claimant_cov_dim_id
-	) AS claimant_cov_dim_id_out,
+	IFF(claimant_cov_dim_id IS NULL, - 1, claimant_cov_dim_id) AS claimant_cov_dim_id_out,
 	EXP_Values.claimant_cov_dim_hist_id,
 	-- *INF*: iif(isnull(claimant_cov_dim_hist_id),-1,claimant_cov_dim_hist_id)
-	IFF(claimant_cov_dim_hist_id IS NULL,
-		- 1,
-		claimant_cov_dim_hist_id
-	) AS claimant_cov_dim_hist_id_out,
+	IFF(claimant_cov_dim_hist_id IS NULL, - 1, claimant_cov_dim_hist_id) AS claimant_cov_dim_hist_id_out,
 	EXP_Values.cov_dim_id,
 	-- *INF*: iif(isnull(cov_dim_id),-1,cov_dim_id)
-	IFF(cov_dim_id IS NULL,
-		- 1,
-		cov_dim_id
-	) AS cov_dim_id_out,
+	IFF(cov_dim_id IS NULL, - 1, cov_dim_id) AS cov_dim_id_out,
 	EXP_Values.cov_dim_hist_id,
 	-- *INF*: iif(isnull(cov_dim_hist_id),-1,cov_dim_hist_id)
-	IFF(cov_dim_hist_id IS NULL,
-		- 1,
-		cov_dim_hist_id
-	) AS cov_dim_hist_id_out,
+	IFF(cov_dim_hist_id IS NULL, - 1, cov_dim_hist_id) AS cov_dim_hist_id_out,
 	EXP_Values.claim_trans_type_dim_id,
 	-- *INF*: iif(isnull(claim_trans_type_dim_id),-1,claim_trans_type_dim_id)
-	IFF(claim_trans_type_dim_id IS NULL,
-		- 1,
-		claim_trans_type_dim_id
-	) AS claim_trans_type_dim_id_out,
+	IFF(claim_trans_type_dim_id IS NULL, - 1, claim_trans_type_dim_id) AS claim_trans_type_dim_id_out,
 	EXP_Values.claim_financial_type_dim_id,
 	-- *INF*: iif(isnull(claim_financial_type_dim_id),-1,claim_financial_type_dim_id)
-	IFF(claim_financial_type_dim_id IS NULL,
-		- 1,
-		claim_financial_type_dim_id
-	) AS claim_financial_type_dim_id_out,
+	IFF(claim_financial_type_dim_id IS NULL, - 1, claim_financial_type_dim_id) AS claim_financial_type_dim_id_out,
 	EXP_Values.claim_rep_dim_prim_claim_rep_id1 AS claim_rep_dim_id,
 	-- *INF*: IIF(ISNULL(claim_rep_dim_id), -1, claim_rep_dim_id)
-	IFF(claim_rep_dim_id IS NULL,
-		- 1,
-		claim_rep_dim_id
-	) AS claim_rep_dim_prim_claim_rep_id,
+	IFF(claim_rep_dim_id IS NULL, - 1, claim_rep_dim_id) AS claim_rep_dim_prim_claim_rep_id,
 	EXP_Values.claim_rep_dim_prim_claim_rep_id AS claim_rep_dim_hist_id,
 	-- *INF*: IIF(ISNULL(claim_rep_dim_hist_id), -1, claim_rep_dim_hist_id)
-	IFF(claim_rep_dim_hist_id IS NULL,
-		- 1,
-		claim_rep_dim_hist_id
-	) AS claim_rep_dim_prim_claim_rep_hist_id,
+	IFF(claim_rep_dim_hist_id IS NULL, - 1, claim_rep_dim_hist_id) AS claim_rep_dim_prim_claim_rep_hist_id,
 	EXP_Values.pol_key_dim_id,
 	-- *INF*: IIF(ISNULL(pol_key_dim_id), -1, pol_key_dim_id)
-	IFF(pol_key_dim_id IS NULL,
-		- 1,
-		pol_key_dim_id
-	) AS pol_key_dim_id_out,
+	IFF(pol_key_dim_id IS NULL, - 1, pol_key_dim_id) AS pol_key_dim_id_out,
 	EXP_Values.pol_key_dim_hist_id,
 	-- *INF*: IIF(ISNULL(pol_key_dim_hist_id), -1, pol_key_dim_hist_id)
-	IFF(pol_key_dim_hist_id IS NULL,
-		- 1,
-		pol_key_dim_hist_id
-	) AS pol_key_dim_hist_id_out,
+	IFF(pol_key_dim_hist_id IS NULL, - 1, pol_key_dim_hist_id) AS pol_key_dim_hist_id_out,
 	-1 AS claim_created_by_dim_id,
 	-1 AS claim_trans_oper_dim_id,
 	EXP_Values.claim_reins_trans_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_reins_trans_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_reins_trans_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_trans_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_trans_date_id), v_claim_trans_date_id, -1)
-	IFF(v_claim_trans_date_id IS NOT NULL,
-		v_claim_trans_date_id,
-		- 1
-	) AS claim_reins_trans_date_id,
+	IFF(v_claim_trans_date_id IS NOT NULL, v_claim_trans_date_id, - 1) AS claim_reins_trans_date_id,
 	EXP_Values.reprocess_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(reprocess_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_reprocess_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_reprocess_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_reprocess_date_id), v_reprocess_date_id, -1)
-	IFF(v_reprocess_date_id IS NOT NULL,
-		v_reprocess_date_id,
-		- 1
-	) AS reprocess_date_id,
+	IFF(v_reprocess_date_id IS NOT NULL, v_reprocess_date_id, - 1) AS reprocess_date_id,
 	EXP_Values.claim_loss_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_loss_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_loss_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_loss_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_loss_date_id), v_claim_loss_date_id, -1)
-	IFF(v_claim_loss_date_id IS NOT NULL,
-		v_claim_loss_date_id,
-		- 1
-	) AS claim_loss_date_id,
+	IFF(v_claim_loss_date_id IS NOT NULL, v_claim_loss_date_id, - 1) AS claim_loss_date_id,
 	EXP_Values.claim_discovery_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_discovery_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_discovery_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_discovery_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_discovery_date_id), v_claim_discovery_date_id, -1)
-	IFF(v_claim_discovery_date_id IS NOT NULL,
-		v_claim_discovery_date_id,
-		- 1
-	) AS claim_discovery_date_id,
+	IFF(v_claim_discovery_date_id IS NOT NULL, v_claim_discovery_date_id, - 1) AS claim_discovery_date_id,
 	EXP_Values.claim_scripted_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_scripted_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_scripted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_scripted_date_id,
 	-- *INF*: IIF(ISNULL(v_claim_scripted_date_id),-1,v_claim_scripted_date_id)
-	IFF(v_claim_scripted_date_id IS NULL,
-		- 1,
-		v_claim_scripted_date_id
-	) AS claim_scripted_date_id,
+	IFF(v_claim_scripted_date_id IS NULL, - 1, v_claim_scripted_date_id) AS claim_scripted_date_id,
 	EXP_Values.source_claim_rpted_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(source_claim_rpted_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_source_claim_rpted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_source_claim_rpted_date_id,
 	-- *INF*: IIF(ISNULL(v_source_claim_rpted_date_id),-1,v_source_claim_rpted_date_id)
-	IFF(v_source_claim_rpted_date_id IS NULL,
-		- 1,
-		v_source_claim_rpted_date_id
-	) AS source_claim_rpted_date_id,
+	IFF(v_source_claim_rpted_date_id IS NULL, - 1, v_source_claim_rpted_date_id) AS source_claim_rpted_date_id,
 	EXP_Values.claim_occurrence_rpted_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_occurrence_rpted_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_occurrence_rpted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_occurrence_rpted_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_occurrence_rpted_date_id), v_claim_occurrence_rpted_date_id, -1)
-	IFF(v_claim_occurrence_rpted_date_id IS NOT NULL,
-		v_claim_occurrence_rpted_date_id,
-		- 1
-	) AS claim_occurrence_rpted_date_id,
+	IFF(v_claim_occurrence_rpted_date_id IS NOT NULL, v_claim_occurrence_rpted_date_id, - 1) AS claim_occurrence_rpted_date_id,
 	EXP_Values.claim_open_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_open_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_open_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_open_date,
 	-- *INF*: IIF(NOT ISNULL(v_claim_open_date), v_claim_open_date, -1)
-	IFF(v_claim_open_date IS NOT NULL,
-		v_claim_open_date,
-		- 1
-	) AS claim_open_date_id,
+	IFF(v_claim_open_date IS NOT NULL, v_claim_open_date, - 1) AS claim_open_date_id,
 	EXP_Values.claim_close_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_close_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_close_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_close_date,
 	-- *INF*: IIF(NOT ISNULL(v_claim_close_date), v_claim_close_date, -1)
-	IFF(v_claim_close_date IS NOT NULL,
-		v_claim_close_date,
-		- 1
-	) AS claim_close_date_id,
+	IFF(v_claim_close_date IS NOT NULL, v_claim_close_date, - 1) AS claim_close_date_id,
 	EXP_Values.claim_reopen_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_reopen_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_reopen_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_reopen_date,
 	-- *INF*: IIF(NOT ISNULL(v_claim_reopen_date), v_claim_reopen_date, -1)
-	IFF(v_claim_reopen_date IS NOT NULL,
-		v_claim_reopen_date,
-		- 1
-	) AS claim_reopen_date_id,
+	IFF(v_claim_reopen_date IS NOT NULL, v_claim_reopen_date, - 1) AS claim_reopen_date_id,
 	EXP_Values.claim_closed_after_reopen_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_closed_after_reopen_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_closed_after_reopen_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_closed_after_reopen_date,
 	-- *INF*: IIF(NOT ISNULL(v_claim_closed_after_reopen_date), v_claim_closed_after_reopen_date, -1)
-	IFF(v_claim_closed_after_reopen_date IS NOT NULL,
-		v_claim_closed_after_reopen_date,
-		- 1
-	) AS claim_closed_after_reopen_date_id,
+	IFF(v_claim_closed_after_reopen_date IS NOT NULL, v_claim_closed_after_reopen_date, - 1) AS claim_closed_after_reopen_date_id,
 	EXP_Values.claim_notice_only_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_notice_only_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_notice_only_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_notice_only_date,
 	-- *INF*: IIF(NOT ISNULL(v_claim_notice_only_date), v_claim_notice_only_date, -1)
-	IFF(v_claim_notice_only_date IS NOT NULL,
-		v_claim_notice_only_date,
-		- 1
-	) AS claim_notice_only_date_id,
+	IFF(v_claim_notice_only_date IS NOT NULL, v_claim_notice_only_date, - 1) AS claim_notice_only_date_id,
 	EXP_Values.claim_cat_start_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_cat_start_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_cat_start_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_cat_start_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_cat_start_date_id), v_claim_cat_start_date_id, -1)
-	IFF(v_claim_cat_start_date_id IS NOT NULL,
-		v_claim_cat_start_date_id,
-		- 1
-	) AS claim_cat_start_date_id,
+	IFF(v_claim_cat_start_date_id IS NOT NULL, v_claim_cat_start_date_id, - 1) AS claim_cat_start_date_id,
 	EXP_Values.claim_cat_end_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_cat_end_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_cat_end_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_cat_end_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_cat_end_date_id), v_claim_cat_end_date_id, -1)
-	IFF(v_claim_cat_end_date_id IS NOT NULL,
-		v_claim_cat_end_date_id,
-		- 1
-	) AS claim_cat_end_date_id,
+	IFF(v_claim_cat_end_date_id IS NOT NULL, v_claim_cat_end_date_id, - 1) AS claim_cat_end_date_id,
 	EXP_Values.claim_rep_assigned_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_rep_assigned_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_rep_assigned_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_rep_assigned_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_rep_assigned_date_id), v_claim_rep_assigned_date_id, -1)
-	IFF(v_claim_rep_assigned_date_id IS NOT NULL,
-		v_claim_rep_assigned_date_id,
-		- 1
-	) AS claim_rep_assigned_date_id,
+	IFF(v_claim_rep_assigned_date_id IS NOT NULL, v_claim_rep_assigned_date_id, - 1) AS claim_rep_assigned_date_id,
 	EXP_Values.claim_rep_unassigned_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(claim_rep_unassigned_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_claim_rep_unassigned_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_claim_rep_unassigned_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_claim_rep_unassigned_date_id), v_claim_rep_unassigned_date_id, -1)
-	IFF(v_claim_rep_unassigned_date_id IS NOT NULL,
-		v_claim_rep_unassigned_date_id,
-		- 1
-	) AS claim_rep_unassigned_date_id,
+	IFF(v_claim_rep_unassigned_date_id IS NOT NULL, v_claim_rep_unassigned_date_id, - 1) AS claim_rep_unassigned_date_id,
 	EXP_Values.claim_reins_trans_id,
 	EXP_Values.pol_eff_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(pol_eff_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_pol_eff_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_pol_eff_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_pol_eff_date_id), v_pol_eff_date_id, -1)
-	IFF(v_pol_eff_date_id IS NOT NULL,
-		v_pol_eff_date_id,
-		- 1
-	) AS pol_eff_date_id,
+	IFF(v_pol_eff_date_id IS NOT NULL, v_pol_eff_date_id, - 1) AS pol_eff_date_id,
 	EXP_Values.pol_exp_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(pol_exp_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_pol_exp_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_pol_exp_date_id,
 	-- *INF*: IIF(NOT ISNULL(v_pol_exp_date_id), v_pol_exp_date_id, -1 )
-	IFF(v_pol_exp_date_id IS NOT NULL,
-		v_pol_exp_date_id,
-		- 1
-	) AS pol_exp_date_id,
+	IFF(v_pol_exp_date_id IS NOT NULL, v_pol_exp_date_id, - 1) AS pol_exp_date_id,
 	EXP_Values.claimant_cov_det_ak_id,
 	EXP_Values.claim_reins_financial_type_code,
 	EXP_Values.claim_reins_trans_code,
@@ -2039,26 +1912,28 @@ EXP_Financial_Values AS (
 	-- '90', 0, 
 	-- '91', 0, 
 	-- '92', 0, 0),0)
-	IFF(claim_reins_financial_type_code = 'D',
-		DECODE(claim_reins_trans_code,
-		'20', claim_reins_trans_amt,
-		'21', claim_reins_trans_amt,
-		'22', claim_reins_trans_amt,
-		'23', claim_reins_trans_amt,
-		'24', claim_reins_trans_amt,
-		'28', claim_reins_trans_amt,
-		'29', claim_reins_trans_amt,
-		'41', 0,
-		'42', 0,
-		'43', 0,
-		'65', 0,
-		'66', 0,
-		'90', 0,
-		'91', 0,
-		'92', 0,
-		0
-		),
-		0
+	IFF(
+	    claim_reins_financial_type_code = 'D',
+	    DECODE(
+	        claim_reins_trans_code,
+	        '20', claim_reins_trans_amt,
+	        '21', claim_reins_trans_amt,
+	        '22', claim_reins_trans_amt,
+	        '23', claim_reins_trans_amt,
+	        '24', claim_reins_trans_amt,
+	        '28', claim_reins_trans_amt,
+	        '29', claim_reins_trans_amt,
+	        '41', 0,
+	        '42', 0,
+	        '43', 0,
+	        '65', 0,
+	        '66', 0,
+	        '90', 0,
+	        '91', 0,
+	        '92', 0,
+	        0
+	    ),
+	    0
 	) AS var_ceded_loss_paid,
 	var_ceded_loss_paid AS ceded_loss_paid,
 	-- *INF*: IIF(claim_reins_financial_type_code = 'D', 
@@ -2077,35 +1952,39 @@ EXP_Financial_Values AS (
 	-- '90', IIF(NOT ISNULL(:LKP.LKP_CLAIM_REINSURANCE_TRANSACTION(claimant_cov_det_ak_id, 'D',claim_reins_trans_date)), 0, claim_reins_trans_hist_amt), 
 	-- '91', IIF(NOT ISNULL(:LKP.LKP_CLAIM_REINSURANCE_TRANSACTION(claimant_cov_det_ak_id, 'D',claim_reins_trans_date)), 0, claim_reins_trans_hist_amt), 
 	-- '92', IIF(NOT ISNULL(:LKP.LKP_CLAIM_REINSURANCE_TRANSACTION(claimant_cov_det_ak_id, 'D',claim_reins_trans_date)), 0, claim_reins_trans_hist_amt), 0))
-	IFF(claim_reins_financial_type_code = 'D',
-		DECODE(claim_reins_trans_code,
-		'20', 0,
-		'21', claim_reins_trans_amt * - 1,
-		'22', ( claim_reins_trans_amt - claim_reins_trans_hist_amt 
-			) * - 1,
-		'23', 0,
-		'24', 0,
-		'28', claim_reins_trans_amt * - 1,
-		'29', 0,
-		'41', claim_reins_trans_hist_amt,
-		'42', claim_reins_trans_hist_amt,
-		'43', 0,
-		'65', claim_reins_trans_hist_amt,
-		'66', claim_reins_trans_hist_amt,
-		'90', IFF(LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_D_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
-				0,
-				claim_reins_trans_hist_amt
-			),
-		'91', IFF(LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_D_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
-				0,
-				claim_reins_trans_hist_amt
-			),
-		'92', IFF(LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_D_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
-				0,
-				claim_reins_trans_hist_amt
-			),
-		0
-		)
+	IFF(
+	    claim_reins_financial_type_code = 'D',
+	    DECODE(
+	        claim_reins_trans_code,
+	        '20', 0,
+	        '21', claim_reins_trans_amt * - 1,
+	        '22', (claim_reins_trans_amt - claim_reins_trans_hist_amt) * - 1,
+	        '23', 0,
+	        '24', 0,
+	        '28', claim_reins_trans_amt * - 1,
+	        '29', 0,
+	        '41', claim_reins_trans_hist_amt,
+	        '42', claim_reins_trans_hist_amt,
+	        '43', 0,
+	        '65', claim_reins_trans_hist_amt,
+	        '66', claim_reins_trans_hist_amt,
+	        '90', IFF(
+	            LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_D_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
+	            0,
+	            claim_reins_trans_hist_amt
+	        ),
+	        '91', IFF(
+	            LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_D_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
+	            0,
+	            claim_reins_trans_hist_amt
+	        ),
+	        '92', IFF(
+	            LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_D_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
+	            0,
+	            claim_reins_trans_hist_amt
+	        ),
+	        0
+	    )
 	) AS var_ceded_loss_outstanding,
 	var_ceded_loss_outstanding AS ceded_loss_outstanding,
 	-- *INF*: IIF(claim_reins_financial_type_code = 'D', 
@@ -2124,34 +2003,39 @@ EXP_Financial_Values AS (
 	-- '90', IIF(NOT ISNULL(:LKP.LKP_CLAIM_REINSURANCE_TRANSACTION(claimant_cov_det_ak_id, 'D',claim_reins_trans_date)), 0, claim_reins_trans_hist_amt), 
 	-- '91', IIF(NOT ISNULL(:LKP.LKP_CLAIM_REINSURANCE_TRANSACTION(claimant_cov_det_ak_id, 'D',claim_reins_trans_date)), 0, claim_reins_trans_hist_amt), 
 	-- '92', IIF(NOT ISNULL(:LKP.LKP_CLAIM_REINSURANCE_TRANSACTION(claimant_cov_det_ak_id, 'D',claim_reins_trans_date)), 0, claim_reins_trans_hist_amt), 1111))
-	IFF(claim_reins_financial_type_code = 'D',
-		DECODE(claim_reins_trans_code,
-		'20', claim_reins_trans_amt,
-		'21', 0,
-		'22', claim_reins_trans_hist_amt,
-		'23', claim_reins_trans_amt,
-		'24', claim_reins_trans_amt,
-		'28', 0,
-		'29', claim_reins_trans_amt,
-		'41', claim_reins_trans_hist_amt,
-		'42', claim_reins_trans_hist_amt,
-		'43', 0,
-		'65', claim_reins_trans_hist_amt,
-		'66', claim_reins_trans_hist_amt,
-		'90', IFF(LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_D_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
-				0,
-				claim_reins_trans_hist_amt
-			),
-		'91', IFF(LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_D_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
-				0,
-				claim_reins_trans_hist_amt
-			),
-		'92', IFF(LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_D_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
-				0,
-				claim_reins_trans_hist_amt
-			),
-		1111
-		)
+	IFF(
+	    claim_reins_financial_type_code = 'D',
+	    DECODE(
+	        claim_reins_trans_code,
+	        '20', claim_reins_trans_amt,
+	        '21', 0,
+	        '22', claim_reins_trans_hist_amt,
+	        '23', claim_reins_trans_amt,
+	        '24', claim_reins_trans_amt,
+	        '28', 0,
+	        '29', claim_reins_trans_amt,
+	        '41', claim_reins_trans_hist_amt,
+	        '42', claim_reins_trans_hist_amt,
+	        '43', 0,
+	        '65', claim_reins_trans_hist_amt,
+	        '66', claim_reins_trans_hist_amt,
+	        '90', IFF(
+	            LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_D_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
+	            0,
+	            claim_reins_trans_hist_amt
+	        ),
+	        '91', IFF(
+	            LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_D_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
+	            0,
+	            claim_reins_trans_hist_amt
+	        ),
+	        '92', IFF(
+	            LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_D_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
+	            0,
+	            claim_reins_trans_hist_amt
+	        ),
+	        1111
+	    )
 	) AS var_ceded_loss_incurred,
 	var_ceded_loss_incurred AS ceded_loss_incurred,
 	-- *INF*: IIF(claim_reins_financial_type_code = 'E', 
@@ -2171,27 +2055,29 @@ EXP_Financial_Values AS (
 	-- '90', 0, 
 	-- '91', 0, 
 	-- '92', 0, 0),0)
-	IFF(claim_reins_financial_type_code = 'E',
-		DECODE(claim_reins_trans_code,
-		'20', claim_reins_trans_amt,
-		'21', claim_reins_trans_amt,
-		'22', claim_reins_trans_amt,
-		'23', claim_reins_trans_amt,
-		'24', claim_reins_trans_amt,
-		'28', claim_reins_trans_amt,
-		'29', claim_reins_trans_amt,
-		'40', 0,
-		'41', 0,
-		'42', 0,
-		'43', 0,
-		'65', 0,
-		'66', 0,
-		'90', 0,
-		'91', 0,
-		'92', 0,
-		0
-		),
-		0
+	IFF(
+	    claim_reins_financial_type_code = 'E',
+	    DECODE(
+	        claim_reins_trans_code,
+	        '20', claim_reins_trans_amt,
+	        '21', claim_reins_trans_amt,
+	        '22', claim_reins_trans_amt,
+	        '23', claim_reins_trans_amt,
+	        '24', claim_reins_trans_amt,
+	        '28', claim_reins_trans_amt,
+	        '29', claim_reins_trans_amt,
+	        '40', 0,
+	        '41', 0,
+	        '42', 0,
+	        '43', 0,
+	        '65', 0,
+	        '66', 0,
+	        '90', 0,
+	        '91', 0,
+	        '92', 0,
+	        0
+	    ),
+	    0
 	) AS var_ceded_alae_paid,
 	var_ceded_alae_paid AS ceded_alae_paid,
 	-- *INF*: IIF(claim_reins_financial_type_code = 'E' and source_sys_id = 'EXCEED',
@@ -2212,38 +2098,41 @@ EXP_Financial_Values AS (
 	-- '91', IIF(NOT ISNULL(:LKP.LKP_CLAIM_REINSURANCE_TRANSACTION(claimant_cov_det_ak_id, 'E',claim_reins_trans_date)), 0, claim_reins_trans_hist_amt), 
 	-- '92', IIF(NOT ISNULL(:LKP.LKP_CLAIM_REINSURANCE_TRANSACTION(claimant_cov_det_ak_id, 'E',claim_reins_trans_date)), 0, claim_reins_trans_hist_amt), 0),
 	-- 0)
-	IFF(claim_reins_financial_type_code = 'E' 
-		AND source_sys_id = 'EXCEED',
-		DECODE(claim_reins_trans_code,
-		'20', 0,
-		'21', claim_reins_trans_amt * - 1,
-		'22', ( claim_reins_trans_amt - claim_reins_trans_hist_amt 
-			) * - 1,
-		'23', 0,
-		'24', 0,
-		'28', claim_reins_trans_amt * - 1,
-		'29', 0,
-		'40', claim_reins_trans_hist_amt,
-		'41', claim_reins_trans_hist_amt,
-		'42', claim_reins_trans_hist_amt,
-		'43', 0,
-		'65', claim_reins_trans_hist_amt,
-		'66', claim_reins_trans_hist_amt,
-		'90', IFF(LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_E_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
-				0,
-				claim_reins_trans_hist_amt
-			),
-		'91', IFF(LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_E_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
-				0,
-				claim_reins_trans_hist_amt
-			),
-		'92', IFF(LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_E_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
-				0,
-				claim_reins_trans_hist_amt
-			),
-		0
-		),
-		0
+	IFF(
+	    claim_reins_financial_type_code = 'E' and source_sys_id = 'EXCEED',
+	    DECODE(
+	        claim_reins_trans_code,
+	        '20', 0,
+	        '21', claim_reins_trans_amt * - 1,
+	        '22', (claim_reins_trans_amt - claim_reins_trans_hist_amt) * - 1,
+	        '23', 0,
+	        '24', 0,
+	        '28', claim_reins_trans_amt * - 1,
+	        '29', 0,
+	        '40', claim_reins_trans_hist_amt,
+	        '41', claim_reins_trans_hist_amt,
+	        '42', claim_reins_trans_hist_amt,
+	        '43', 0,
+	        '65', claim_reins_trans_hist_amt,
+	        '66', claim_reins_trans_hist_amt,
+	        '90', IFF(
+	            LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_E_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
+	            0,
+	            claim_reins_trans_hist_amt
+	        ),
+	        '91', IFF(
+	            LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_E_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
+	            0,
+	            claim_reins_trans_hist_amt
+	        ),
+	        '92', IFF(
+	            LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_E_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
+	            0,
+	            claim_reins_trans_hist_amt
+	        ),
+	        0
+	    ),
+	    0
 	) AS var_ceded_alae_outstanding,
 	var_ceded_alae_outstanding AS ceded_alae_outstanding,
 	-- *INF*: IIF(claim_reins_financial_type_code = 'E' and source_sys_id = 'EXCEED',
@@ -2264,37 +2153,41 @@ EXP_Financial_Values AS (
 	-- '91', IIF(NOT ISNULL(:LKP.LKP_CLAIM_REINSURANCE_TRANSACTION(claimant_cov_det_ak_id, 'E',claim_reins_trans_date)), 0, claim_reins_trans_hist_amt), 
 	-- '92', IIF(NOT ISNULL(:LKP.LKP_CLAIM_REINSURANCE_TRANSACTION(claimant_cov_det_ak_id, 'E',claim_reins_trans_date)), 0, claim_reins_trans_hist_amt), 0),
 	-- 0)
-	IFF(claim_reins_financial_type_code = 'E' 
-		AND source_sys_id = 'EXCEED',
-		DECODE(claim_reins_trans_code,
-		'20', claim_reins_trans_amt,
-		'21', 0,
-		'22', claim_reins_trans_hist_amt,
-		'23', claim_reins_trans_amt,
-		'24', claim_reins_trans_amt,
-		'28', claim_reins_trans_amt,
-		'29', claim_reins_trans_amt,
-		'40', claim_reins_trans_hist_amt,
-		'41', claim_reins_trans_hist_amt,
-		'42', claim_reins_trans_hist_amt,
-		'43', 0,
-		'65', claim_reins_trans_hist_amt,
-		'66', claim_reins_trans_hist_amt,
-		'90', IFF(LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_E_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
-				0,
-				claim_reins_trans_hist_amt
-			),
-		'91', IFF(LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_E_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
-				0,
-				claim_reins_trans_hist_amt
-			),
-		'92', IFF(LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_E_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
-				0,
-				claim_reins_trans_hist_amt
-			),
-		0
-		),
-		0
+	IFF(
+	    claim_reins_financial_type_code = 'E' and source_sys_id = 'EXCEED',
+	    DECODE(
+	        claim_reins_trans_code,
+	        '20', claim_reins_trans_amt,
+	        '21', 0,
+	        '22', claim_reins_trans_hist_amt,
+	        '23', claim_reins_trans_amt,
+	        '24', claim_reins_trans_amt,
+	        '28', claim_reins_trans_amt,
+	        '29', claim_reins_trans_amt,
+	        '40', claim_reins_trans_hist_amt,
+	        '41', claim_reins_trans_hist_amt,
+	        '42', claim_reins_trans_hist_amt,
+	        '43', 0,
+	        '65', claim_reins_trans_hist_amt,
+	        '66', claim_reins_trans_hist_amt,
+	        '90', IFF(
+	            LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_E_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
+	            0,
+	            claim_reins_trans_hist_amt
+	        ),
+	        '91', IFF(
+	            LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_E_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
+	            0,
+	            claim_reins_trans_hist_amt
+	        ),
+	        '92', IFF(
+	            LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_E_claim_reins_trans_date.claimant_cov_det_ak_id IS NOT NULL,
+	            0,
+	            claim_reins_trans_hist_amt
+	        ),
+	        0
+	    ),
+	    0
 	) AS var_ceded_alae_incurred,
 	-- *INF*: var_ceded_alae_paid + var_ceded_alae_outstanding
 	-- 
@@ -2303,82 +2196,52 @@ EXP_Financial_Values AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	EXP_Values.agency_dim_id,
 	-- *INF*: IIF(ISNULL(agency_dim_id), -1, agency_dim_id)
-	IFF(agency_dim_id IS NULL,
-		- 1,
-		agency_dim_id
-	) AS agency_dim_id_out,
+	IFF(agency_dim_id IS NULL, - 1, agency_dim_id) AS agency_dim_id_out,
 	EXP_Values.AgencyDimID1 AS agency_dim_hist_id,
 	-- *INF*: IIF(ISNULL(agency_dim_hist_id), -1, agency_dim_hist_id)
-	IFF(agency_dim_hist_id IS NULL,
-		- 1,
-		agency_dim_hist_id
-	) AS agency_dim_hist_id_out,
+	IFF(agency_dim_hist_id IS NULL, - 1, agency_dim_hist_id) AS agency_dim_hist_id_out,
 	EXP_Values.claim_reins_trans_ak_id,
 	EXP_Values.claim_reins_draft_num,
 	EXP_Values.IN_claim_reins_acct_entered_date,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(to_date(to_char(IN_claim_reins_acct_entered_date, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALENDER_DIM_to_date_to_char_IN_claim_reins_acct_entered_date_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS V_claim_reins_acct_entered_date,
 	-- *INF*: IIF(NOT ISNULL(V_claim_reins_acct_entered_date), V_claim_reins_acct_entered_date, -1)
-	IFF(V_claim_reins_acct_entered_date IS NOT NULL,
-		V_claim_reins_acct_entered_date,
-		- 1
-	) AS OUT_claim_reins_acct_entered_date_Id,
+	IFF(V_claim_reins_acct_entered_date IS NOT NULL, V_claim_reins_acct_entered_date, - 1) AS OUT_claim_reins_acct_entered_date_Id,
 	EXP_Values.offset_onset_ind,
 	'000000' AS Error_Flag,
 	EXP_Values.claim_rep_dim_examiner_id,
 	-- *INF*: IIF(ISNULL(claim_rep_dim_examiner_id), -1, claim_rep_dim_examiner_id)
-	IFF(claim_rep_dim_examiner_id IS NULL,
-		- 1,
-		claim_rep_dim_examiner_id
-	) AS claim_rep_dim_examiner_id_Out,
+	IFF(claim_rep_dim_examiner_id IS NULL, - 1, claim_rep_dim_examiner_id) AS claim_rep_dim_examiner_id_Out,
 	EXP_Values.claim_rep_dim_prim_litigation_handler_id,
 	-- *INF*: IIF(ISNULL(claim_rep_dim_prim_litigation_handler_id), -1, claim_rep_dim_prim_litigation_handler_id)
-	IFF(claim_rep_dim_prim_litigation_handler_id IS NULL,
-		- 1,
-		claim_rep_dim_prim_litigation_handler_id
+	IFF(
+	    claim_rep_dim_prim_litigation_handler_id IS NULL, - 1,
+	    claim_rep_dim_prim_litigation_handler_id
 	) AS claim_rep_dim_prim_litigation_handler_id_out,
 	EXP_Values.claim_rep_dim_examiner_hist_id,
 	-- *INF*: IIF(ISNULL(claim_rep_dim_examiner_hist_id), -1, claim_rep_dim_examiner_hist_id)
-	IFF(claim_rep_dim_examiner_hist_id IS NULL,
-		- 1,
-		claim_rep_dim_examiner_hist_id
-	) AS claim_rep_dim_examiner_hist_id_out,
+	IFF(claim_rep_dim_examiner_hist_id IS NULL, - 1, claim_rep_dim_examiner_hist_id) AS claim_rep_dim_examiner_hist_id_out,
 	EXP_Values.claim_rep_dim_prim_litigation_handler_hist_id,
 	-- *INF*: IIF(ISNULL(claim_rep_dim_prim_litigation_handler_hist_id), -1, claim_rep_dim_prim_litigation_handler_hist_id)
-	IFF(claim_rep_dim_prim_litigation_handler_hist_id IS NULL,
-		- 1,
-		claim_rep_dim_prim_litigation_handler_hist_id
+	IFF(
+	    claim_rep_dim_prim_litigation_handler_hist_id IS NULL, - 1,
+	    claim_rep_dim_prim_litigation_handler_hist_id
 	) AS claim_rep_dim_prim_litigation_handler_hist_id_out,
 	EXP_Values.claim_created_by_id,
 	-- *INF*: IIF(ISNULL(claim_created_by_id),-1,claim_created_by_id)
-	IFF(claim_created_by_id IS NULL,
-		- 1,
-		claim_created_by_id
-	) AS claim_created_by_dim_id_out,
+	IFF(claim_created_by_id IS NULL, - 1, claim_created_by_id) AS claim_created_by_dim_id_out,
 	EXP_Values.claim_case_dim_id,
 	-- *INF*: IIF(ISNULL(claim_case_dim_id),-1,claim_case_dim_id)
-	IFF(claim_case_dim_id IS NULL,
-		- 1,
-		claim_case_dim_id
-	) AS claim_case_dim_id_out,
+	IFF(claim_case_dim_id IS NULL, - 1, claim_case_dim_id) AS claim_case_dim_id_out,
 	EXP_Values.claim_case_dim_hist_id,
 	-- *INF*: IIF(ISNULL(claim_case_dim_hist_id),-1,claim_case_dim_hist_id)
-	IFF(claim_case_dim_hist_id IS NULL,
-		- 1,
-		claim_case_dim_hist_id
-	) AS claim_case_dim_hist_id_out,
+	IFF(claim_case_dim_hist_id IS NULL, - 1, claim_case_dim_hist_id) AS claim_case_dim_hist_id_out,
 	EXP_Values.contract_cust_dim_id,
 	-- *INF*: IIF(ISNULL(contract_cust_dim_id),-1,contract_cust_dim_id)
-	IFF(contract_cust_dim_id IS NULL,
-		- 1,
-		contract_cust_dim_id
-	) AS contract_cust_dim_id_out,
+	IFF(contract_cust_dim_id IS NULL, - 1, contract_cust_dim_id) AS contract_cust_dim_id_out,
 	EXP_Values.contract_cust_dim_hist_id,
 	-- *INF*: IIF(ISNULL(contract_cust_dim_hist_id),-1,contract_cust_dim_hist_id)
-	IFF(contract_cust_dim_hist_id IS NULL,
-		- 1,
-		contract_cust_dim_hist_id
-	) AS contract_cust_dim_hist_id_out,
+	IFF(contract_cust_dim_hist_id IS NULL, - 1, contract_cust_dim_hist_id) AS contract_cust_dim_hist_id_out,
 	-- *INF*: IIF(claim_reins_financial_type_code = 'S', 
 	-- DECODE(claim_reins_trans_code, 
 	-- '25', claim_reins_trans_amt * -1, 
@@ -2389,18 +2252,20 @@ EXP_Financial_Values AS (
 	-- '38', claim_reins_trans_amt * -1, 
 	-- '39', claim_reins_trans_amt * -1 
 	-- , 0),0)
-	IFF(claim_reins_financial_type_code = 'S',
-		DECODE(claim_reins_trans_code,
-		'25', claim_reins_trans_amt * - 1,
-		'31', claim_reins_trans_amt * - 1,
-		'32', claim_reins_trans_amt * - 1,
-		'33', claim_reins_trans_amt * - 1,
-		'34', claim_reins_trans_amt * - 1,
-		'38', claim_reins_trans_amt * - 1,
-		'39', claim_reins_trans_amt * - 1,
-		0
-		),
-		0
+	IFF(
+	    claim_reins_financial_type_code = 'S',
+	    DECODE(
+	        claim_reins_trans_code,
+	        '25', claim_reins_trans_amt * - 1,
+	        '31', claim_reins_trans_amt * - 1,
+	        '32', claim_reins_trans_amt * - 1,
+	        '33', claim_reins_trans_amt * - 1,
+	        '34', claim_reins_trans_amt * - 1,
+	        '38', claim_reins_trans_amt * - 1,
+	        '39', claim_reins_trans_amt * - 1,
+	        0
+	    ),
+	    0
 	) AS var_ceded_salvage_paid,
 	var_ceded_salvage_paid AS ceded_salvage_paid,
 	-- *INF*: IIF(claim_reins_financial_type_code = 'B', 
@@ -2413,18 +2278,20 @@ EXP_Financial_Values AS (
 	-- '38', claim_reins_trans_amt * -1, 
 	-- '39', claim_reins_trans_amt * -1 
 	-- , 0),0)
-	IFF(claim_reins_financial_type_code = 'B',
-		DECODE(claim_reins_trans_code,
-		'25', claim_reins_trans_amt * - 1,
-		'31', claim_reins_trans_amt * - 1,
-		'32', claim_reins_trans_amt * - 1,
-		'33', claim_reins_trans_amt * - 1,
-		'34', claim_reins_trans_amt * - 1,
-		'38', claim_reins_trans_amt * - 1,
-		'39', claim_reins_trans_amt * - 1,
-		0
-		),
-		0
+	IFF(
+	    claim_reins_financial_type_code = 'B',
+	    DECODE(
+	        claim_reins_trans_code,
+	        '25', claim_reins_trans_amt * - 1,
+	        '31', claim_reins_trans_amt * - 1,
+	        '32', claim_reins_trans_amt * - 1,
+	        '33', claim_reins_trans_amt * - 1,
+	        '34', claim_reins_trans_amt * - 1,
+	        '38', claim_reins_trans_amt * - 1,
+	        '39', claim_reins_trans_amt * - 1,
+	        0
+	    ),
+	    0
 	) AS var_ceded_subrogation_paid,
 	var_ceded_subrogation_paid AS ceded_subrogation_paid,
 	-- *INF*: IIF(claim_reins_financial_type_code = 'R' and trans_ctgry_code<>'EX', 
@@ -2437,19 +2304,20 @@ EXP_Financial_Values AS (
 	-- '38', claim_reins_trans_amt * -1, 
 	-- '39', claim_reins_trans_amt * -1 
 	-- , 0),0)
-	IFF(claim_reins_financial_type_code = 'R' 
-		AND trans_ctgry_code <> 'EX',
-		DECODE(claim_reins_trans_code,
-		'25', claim_reins_trans_amt * - 1,
-		'31', claim_reins_trans_amt * - 1,
-		'32', claim_reins_trans_amt * - 1,
-		'33', claim_reins_trans_amt * - 1,
-		'34', claim_reins_trans_amt * - 1,
-		'38', claim_reins_trans_amt * - 1,
-		'39', claim_reins_trans_amt * - 1,
-		0
-		),
-		0
+	IFF(
+	    claim_reins_financial_type_code = 'R' and trans_ctgry_code <> 'EX',
+	    DECODE(
+	        claim_reins_trans_code,
+	        '25', claim_reins_trans_amt * - 1,
+	        '31', claim_reins_trans_amt * - 1,
+	        '32', claim_reins_trans_amt * - 1,
+	        '33', claim_reins_trans_amt * - 1,
+	        '34', claim_reins_trans_amt * - 1,
+	        '38', claim_reins_trans_amt * - 1,
+	        '39', claim_reins_trans_amt * - 1,
+	        0
+	    ),
+	    0
 	) AS var_ceded_other_recovery_loss_paid,
 	var_ceded_other_recovery_loss_paid AS ceded_other_recovery_loss_paid,
 	-- *INF*: IIF(claim_reins_financial_type_code = 'R' and trans_ctgry_code = 'EX', 
@@ -2462,24 +2330,24 @@ EXP_Financial_Values AS (
 	-- '38', claim_reins_trans_amt * -1, 
 	-- '39', claim_reins_trans_amt * -1 
 	-- , 0),0)
-	IFF(claim_reins_financial_type_code = 'R' 
-		AND trans_ctgry_code = 'EX',
-		DECODE(claim_reins_trans_code,
-		'25', claim_reins_trans_amt * - 1,
-		'31', claim_reins_trans_amt * - 1,
-		'32', claim_reins_trans_amt * - 1,
-		'33', claim_reins_trans_amt * - 1,
-		'34', claim_reins_trans_amt * - 1,
-		'38', claim_reins_trans_amt * - 1,
-		'39', claim_reins_trans_amt * - 1,
-		0
-		),
-		0
+	IFF(
+	    claim_reins_financial_type_code = 'R' and trans_ctgry_code = 'EX',
+	    DECODE(
+	        claim_reins_trans_code,
+	        '25', claim_reins_trans_amt * - 1,
+	        '31', claim_reins_trans_amt * - 1,
+	        '32', claim_reins_trans_amt * - 1,
+	        '33', claim_reins_trans_amt * - 1,
+	        '34', claim_reins_trans_amt * - 1,
+	        '38', claim_reins_trans_amt * - 1,
+	        '39', claim_reins_trans_amt * - 1,
+	        0
+	    ),
+	    0
 	) AS var_ceded_other_recovery_alae_paid,
 	var_ceded_other_recovery_alae_paid AS ceded_other_recovery_alae_paid,
 	-- *INF*: round(var_ceded_salvage_paid+var_ceded_subrogation_paid+var_ceded_other_recovery_loss_paid,2)
-	round(var_ceded_salvage_paid + var_ceded_subrogation_paid + var_ceded_other_recovery_loss_paid, 2
-	) AS var_total_ceded_loss_recovery_paid,
+	round(var_ceded_salvage_paid + var_ceded_subrogation_paid + var_ceded_other_recovery_loss_paid, 2) AS var_total_ceded_loss_recovery_paid,
 	var_total_ceded_loss_recovery_paid AS total_ceded_loss_recovery_paid,
 	var_ceded_loss_paid *-1 AS net_loss_paid,
 	var_ceded_loss_outstanding*-1 AS net_loss_outstanding,
@@ -2494,34 +2362,19 @@ EXP_Financial_Values AS (
 	0 AS DEFAULT_AMOUNT,
 	EXP_Values.AgencyDimID,
 	-- *INF*: iif(isnull(AgencyDimID),-1,AgencyDimID)
-	IFF(AgencyDimID IS NULL,
-		- 1,
-		AgencyDimID
-	) AS AgencyDimID_out,
+	IFF(AgencyDimID IS NULL, - 1, AgencyDimID) AS AgencyDimID_out,
 	LKP_SalesDivisionDim.SalesDivisionDimID,
 	-- *INF*: iif(isnull(SalesDivisionDimID),-1,SalesDivisionDimID)
-	IFF(SalesDivisionDimID IS NULL,
-		- 1,
-		SalesDivisionDimID
-	) AS SalesDivisionDimID_out,
+	IFF(SalesDivisionDimID IS NULL, - 1, SalesDivisionDimID) AS SalesDivisionDimID_out,
 	LKP_InsuranceReferenceDimId.InsuranceReferenceDimId,
 	-- *INF*: iif(isnull(InsuranceReferenceDimId),-1,InsuranceReferenceDimId)
-	IFF(InsuranceReferenceDimId IS NULL,
-		- 1,
-		InsuranceReferenceDimId
-	) AS InsuranceReferenceDimId_out,
+	IFF(InsuranceReferenceDimId IS NULL, - 1, InsuranceReferenceDimId) AS InsuranceReferenceDimId_out,
 	LKP_InsuranceReferenceCoverageDim.InsuranceReferenceCoverageDimId,
 	-- *INF*: iif(isnull(InsuranceReferenceCoverageDimId),-1,InsuranceReferenceCoverageDimId)
-	IFF(InsuranceReferenceCoverageDimId IS NULL,
-		- 1,
-		InsuranceReferenceCoverageDimId
-	) AS InsuranceReferenceCoverageDimId_out,
+	IFF(InsuranceReferenceCoverageDimId IS NULL, - 1, InsuranceReferenceCoverageDimId) AS InsuranceReferenceCoverageDimId_out,
 	LKP_CoverageDetailDim.CoverageDetailDimId,
 	-- *INF*: iif(isnull(CoverageDetailDimId),-1,CoverageDetailDimId)
-	IFF(CoverageDetailDimId IS NULL,
-		- 1,
-		CoverageDetailDimId
-	) AS CoverageDetailDimId_out
+	IFF(CoverageDetailDimId IS NULL, - 1, CoverageDetailDimId) AS CoverageDetailDimId_out
 	FROM EXP_Values
 	LEFT JOIN LKP_CoverageDetailDim
 	ON LKP_CoverageDetailDim.claim_reins_trans_id = EXP_Values.claim_reins_trans_id AND LKP_CoverageDetailDim.PolicyAkid = EXP_Values.PolicyAkid
@@ -2532,94 +2385,58 @@ EXP_Financial_Values AS (
 	LEFT JOIN LKP_SalesDivisionDim
 	ON LKP_SalesDivisionDim.AgencyAKID = mplt_Claim_occurence_dim_id.AgencyAKID
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_reins_trans_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_reins_trans_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_reins_trans_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_reins_trans_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(claim_reins_trans_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_reprocess_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_reprocess_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(reprocess_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_reprocess_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(reprocess_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_loss_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_loss_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_loss_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_loss_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(claim_loss_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_discovery_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_discovery_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_discovery_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_discovery_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(claim_discovery_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_scripted_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_scripted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_scripted_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_scripted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(claim_scripted_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_source_claim_rpted_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_source_claim_rpted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(source_claim_rpted_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_source_claim_rpted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(source_claim_rpted_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_occurrence_rpted_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_occurrence_rpted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_occurrence_rpted_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_occurrence_rpted_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(claim_occurrence_rpted_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_open_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_open_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_open_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_open_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(claim_open_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_close_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_close_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_close_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_close_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(claim_close_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_reopen_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_reopen_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_reopen_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_reopen_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(claim_reopen_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_closed_after_reopen_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_closed_after_reopen_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_closed_after_reopen_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_closed_after_reopen_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(claim_closed_after_reopen_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_notice_only_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_notice_only_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_notice_only_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_notice_only_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(claim_notice_only_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_cat_start_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_cat_start_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_cat_start_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_cat_start_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(claim_cat_start_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_cat_end_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_cat_end_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_cat_end_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_cat_end_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(claim_cat_end_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_rep_assigned_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_rep_assigned_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_rep_assigned_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_rep_assigned_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(claim_rep_assigned_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_claim_rep_unassigned_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_claim_rep_unassigned_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(claim_rep_unassigned_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_claim_rep_unassigned_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(claim_rep_unassigned_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_pol_eff_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_pol_eff_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(pol_eff_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_pol_eff_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(pol_eff_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_pol_exp_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_pol_exp_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(pol_exp_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_pol_exp_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(pol_exp_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CLAIM_REINSURANCE_TRANSACTION LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_D_claim_reins_trans_date
 	ON LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_D_claim_reins_trans_date.claimant_cov_det_ak_id = claimant_cov_det_ak_id
@@ -2632,13 +2449,10 @@ EXP_Financial_Values AS (
 	AND LKP_CLAIM_REINSURANCE_TRANSACTION_claimant_cov_det_ak_id_E_claim_reins_trans_date.claim_reins_trans_date = claim_reins_trans_date
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_to_date_to_char_IN_claim_reins_acct_entered_date_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALENDER_DIM_to_date_to_char_IN_claim_reins_acct_entered_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(IN_claim_reins_acct_entered_date, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALENDER_DIM_to_date_to_char_IN_claim_reins_acct_entered_date_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(IN_claim_reins_acct_entered_date, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 	LEFT JOIN LKP_CALENDER_DIM LKP_CALENDER_DIM_TO_DATE_01_01_1800_00_00_00_MM_DD_YYYY_HH24_MI_SS
-	ON LKP_CALENDER_DIM_TO_DATE_01_01_1800_00_00_00_MM_DD_YYYY_HH24_MI_SS.clndr_date = TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-)
+	ON LKP_CALENDER_DIM_TO_DATE_01_01_1800_00_00_00_MM_DD_YYYY_HH24_MI_SS.clndr_date = TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
 
 ),
 EXP_Dim_IDs AS (
@@ -2721,17 +2535,11 @@ EXP_Dim_IDs AS (
 	-- *INF*: :LKP.LKP_REINS_COV_DIM_ID(reins_cov_ak_id,trans_date_out)
 	LKP_REINS_COV_DIM_ID_reins_cov_ak_id_trans_date_out.reins_cov_dim_id AS V_reins_cov_dim_id,
 	-- *INF*: IIF(ISNULL(V_reins_cov_dim_id), -1,V_reins_cov_dim_id)
-	IFF(V_reins_cov_dim_id IS NULL,
-		- 1,
-		V_reins_cov_dim_id
-	) AS reins_cov_dim_id_out,
+	IFF(V_reins_cov_dim_id IS NULL, - 1, V_reins_cov_dim_id) AS reins_cov_dim_id_out,
 	-- *INF*: :LKP.LKP_REINS_COV_DIM_ID(reins_cov_ak_id,claim_reins_trans_date)
 	LKP_REINS_COV_DIM_ID_reins_cov_ak_id_claim_reins_trans_date.reins_cov_dim_id AS V_reins_cov_dim_hist_id,
 	-- *INF*: IIF(ISNULL(V_reins_cov_dim_hist_id), -1,V_reins_cov_dim_hist_id)
-	IFF(V_reins_cov_dim_hist_id IS NULL,
-		- 1,
-		V_reins_cov_dim_hist_id
-	) AS reins_cov_dim_hist_id_out,
+	IFF(V_reins_cov_dim_hist_id IS NULL, - 1, V_reins_cov_dim_hist_id) AS reins_cov_dim_hist_id_out,
 	Error_Flag,
 	strtgc_bus_dvsn_dim_id_out AS strtgc_bus_dvsn_dim_id,
 	AgencyDimID_out AS AgencyDimID,

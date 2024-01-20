@@ -1,0 +1,38 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchPIF045Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchPIF045Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif045Stage AS (\n\tSELECT\n\t\tPif045StageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tAuditId,\n\t\tUndhuPifsymbol,\n\t\tUndhuPifpolicynumber,\n\t\tUndhuPifmodule,\n\t\tUndhuRecordid,\n\t\tUndhuSegmentnumber,\n\t\tUndhuUnitnumber,\n\t\tUndhuChangedate,\n\t\tUndhuUnitscore,\n\t\tUndhuRoomersboarders,\n\t\tUndhuFiller1,\n\t\tUndhuFursILfinearts,\n\t\tUndhuJewelry,\n\t\tUndhuMiscIM,\n\t\tUndhuMiscForms,\n\t\tUndhuAddlLiabExp,\n\t\tUndhuOccupancy,\n\t\tUndhuBusinessonpremises,\n\t\tUndhuMissshores,\n\t\tUndhuProtectiveDevice,\n\t\tUndhuPoolFence,\n\t\tUndhuWiringAge,\n\t\tUndhuPlumbingAge,\n\t\tUndhuHeatingSystemage,\n\t\tUndhuHeatingSystem,\n\t\tUndhuFireplace,\n\t\tUndhuSupplementalHeat,\n\t\tUndhuAgeOfRoof,\n\t\tUndhuInspectedProperty,\n\t\tUndhuRoofMaterial,\n\t\tUndhuFiller2,\n\t\tUndhuConditionOutbldg,\n\t\tUndhuDog,\n\t\tUndhuFarmAnimals,\n\t\tUndhuWiringYear,\n\t\tUndhuPlumbingYear,\n\t\tUndhuHeatingYear,\n\t\tUndhuReplacementCost,\n\t\tUndhuComments,\n\t\tUndhuPmsFutureuse,\n\t\tUndhuRoofYear,\n\t\tUndhuRowhouse,\n\t\tUndhuSqfoot,\n\t\tUndhuElectrical,\n\t\tUndhuHorses,\n\t\tUndhuFarmAcres,\n\t\tUndhuFuelTanksize,\n\t\tUndhuTankage,\n\t\tUndhuIMExhibited,\n\t\tUndhuIMUsedProfComm,\n\t\tUndhuHailResistiveRoof,\n\t\tUndhuWHLossSettlement,\n\t\tUndhuRoofMaterialDiscount,\n\t\tUndhuRoofMaterialSurcharge,\n\t\tUndhuHailResistiveRoofDsc,\n\t\tUndhuWHLossSettlementscg,\n\t\tUndhuWHLossSettlementdsc,\n\t\tUndhuCustfutureuse,\n\t\tUndhuYr2000custuse\n\tFROM Pif045Stage\n),\nEXP_Values AS (\n\tSELECT\n\tPif045StageId,\n\tExtractDate,\n\tSourceSystemId,\n\tAuditId,\n\tUndhuPifsymbol,\n\tUndhuPifpolicynumber,\n\tUndhuPifmodule,\n\tUndhuRecordid,\n\tUndhuSegmentnumber,\n\tUndhuUnitnumber,\n\tUndhuChangedate,\n\tUndhuUnitscore,\n\tUndhuRoomersboarders,\n\tUndhuFiller1,\n\tUndhuFursILfinearts,\n\tUndhuJewelry,\n\tUndhuMiscIM,\n\tUndhuMiscForms,\n\tUndhuAddlLiabExp,\n\tUndhuOccupancy,\n\tUndhuBusinessonpremises,\n\tUndhuMissshores,\n\tUndhuProtectiveDevice,\n\tUndhuPoolFence,\n\tUndhuWiringAge,\n\tUndhuPlumbingAge,\n\tUndhuHeatingSystemage,\n\tUndhuHeatingSystem,\n\tUndhuFireplace,\n\tUndhuSupplementalHeat,\n\tUndhuAgeOfRoof,\n\tUndhuInspectedProperty,\n\tUndhuRoofMaterial,\n\tUndhuFiller2,\n\tUndhuConditionOutbldg,\n\tUndhuDog,\n\tUndhuFarmAnimals,\n\tUndhuWiringYear,\n\tUndhuPlumbingYear,\n\tUndhuHeatingYear,\n\tUndhuReplacementCost,\n\tUndhuComments,\n\tUndhuPmsFutureuse,\n\tUndhuRoofYear,\n\tUndhuRowhouse,\n\tUndhuSqfoot,\n\tUndhuElectrical,\n\tUndhuHorses,\n\tUndhuFarmAcres,\n\tUndhuFuelTanksize,\n\tUndhuTankage,\n\tUndhuIMExhibited,\n\tUndhuIMUsedProfComm,\n\tUndhuHailResistiveRoof,\n\tUndhuWHLossSettlement,\n\tUndhuRoofMaterialDiscount,\n\tUndhuRoofMaterialSurcharge,\n\tUndhuHailResistiveRoofDsc,\n\tUndhuWHLossSettlementscg,\n\tUndhuWHLossSettlementdsc,\n\tUndhuCustfutureuse,\n\tUndhuYr2000custuse\n\tFROM SQ_Pif045Stage\n),\nArchPif045Stage AS (\n\tINSERT INTO ArchPif045Stage\n\t(Pif045StageId, ExtractDate, SourceSystemId, AuditId, UndhuPifsymbol, UndhuPifpolicynumber, UndhuPifmodule, UndhuRecordid, UndhuSegmentnumber, UndhuUnitnumber, UndhuChangedate, UndhuUnitscore, UndhuRoomersboarders, UndhuFiller1, UndhuFursILfinearts, UndhuJewelry, UndhuMiscIM, UndhuMiscForms, UndhuAddlLiabExp, UndhuOccupancy, UndhuBusinessonpremises, UndhuMissshores, UndhuProtectiveDevice, UndhuPoolFence, UndhuWiringAge, UndhuPlumbingAge, UndhuHeatingSystemage, UndhuHeatingSystem, UndhuFireplace, UndhuSupplementalHeat, UndhuAgeOfRoof, UndhuInspectedProperty, UndhuRoofMaterial, UndhuFiller2, UndhuConditionOutbldg, UndhuDog, UndhuFarmAnimals, UndhuWiringYear, UndhuPlumbingYear, UndhuHeatingYear, UndhuReplacementCost, UndhuComments, UndhuPmsFutureuse, UndhuRoofYear, UndhuRowhouse, UndhuSqfoot, UndhuElectrical, UndhuHorses, UndhuFarmAcres, UndhuFuelTanksize, UndhuTankage, UndhuIMExhibited, UndhuIMUsedProfComm, UndhuHailResistiveRoof, UndhuWHLossSettlement, UndhuRoofMaterialDiscount, UndhuRoofMaterialSurcharge, UndhuHailResistiveRoofDsc, UndhuWHLossSettlementscg, UndhuWHLossSettlementdsc, UndhuCustfutureuse, UndhuYr2000custuse)\n\tSELECT \n\tPIF045STAGEID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tUNDHUPIFSYMBOL, \n\tUNDHUPIFPOLICYNUMBER, \n\tUNDHUPIFMODULE, \n\tUNDHURECORDID, \n\tUNDHUSEGMENTNUMBER, \n\tUNDHUUNITNUMBER, \n\tUNDHUCHANGEDATE, \n\tUNDHUUNITSCORE, \n\tUNDHUROOMERSBOARDERS, \n\tUNDHUFILLER1, \n\tUNDHUFURSILFINEARTS, \n\tUNDHUJEWELRY, \n\tUNDHUMISCIM, \n\tUNDHUMISCFORMS, \n\tUNDHUADDLLIABEXP, \n\tUNDHUOCCUPANCY, \n\tUNDHUBUSINESSONPREMISES, \n\tUNDHUMISSSHORES, \n\tUNDHUPROTECTIVEDEVICE, \n\tUNDHUPOOLFENCE, \n\tUNDHUWIRINGAGE, \n\tUNDHUPLUMBINGAGE, \n\tUNDHUHEATINGSYSTEMAGE, \n\tUNDHUHEATINGSYSTEM, \n\tUNDHUFIREPLACE, \n\tUNDHUSUPPLEMENTALHEAT, \n\tUNDHUAGEOFROOF, \n\tUNDHUINSPECTEDPROPERTY, \n\tUNDHUROOFMATERIAL, \n\tUNDHUFILLER2, \n\tUNDHUCONDITIONOUTBLDG, \n\tUNDHUDOG, \n\tUNDHUFARMANIMALS, \n\tUNDHUWIRINGYEAR, \n\tUNDHUPLUMBINGYEAR, \n\tUNDHUHEATINGYEAR, \n\tUNDHUREPLACEMENTCOST, \n\tUNDHUCOMMENTS, \n\tUNDHUPMSFUTUREUSE, \n\tUNDHUROOFYEAR, \n\tUNDHUROWHOUSE, \n\tUNDHUSQFOOT, \n\tUNDHUELECTRICAL, \n\tUNDHUHORSES, \n\tUNDHUFARMACRES, \n\tUNDHUFUELTANKSIZE, \n\tUNDHUTANKAGE, \n\tUNDHUIMEXHIBITED, \n\tUNDHUIMUSEDPROFCOMM, \n\tUNDHUHAILRESISTIVEROOF, \n\tUNDHUWHLOSSSETTLEMENT, \n\tUNDHUROOFMATERIALDISCOUNT, \n\tUNDHUROOFMATERIALSURCHARGE, \n\tUNDHUHAILRESISTIVEROOFDSC, \n\tUNDHUWHLOSSSETTLEMENTSCG, \n\tUNDHUWHLOSSSETTLEMENTDSC, \n\tUNDHUCUSTFUTUREUSE, \n\tUNDHUYR2000CUSTUSE\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

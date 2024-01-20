@@ -15,19 +15,15 @@ EXP_METADATA AS (
 	sysdate AS o_CreatedDate,
 	sysdate AS o_ModifiedDate,
 	-- *INF*: TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
 	i_SourceSystem AS o_SourceSystemID,
 	i_ProductCode AS o_ProductCode,
 	i_MajorPerilCode AS o_MajorPerilCode,
 	i_Subline AS o_SublineCode,
 	-- *INF*: LTRIM(RTRIM(i_ISOPropertyCauseOfLossGroup))
-	LTRIM(RTRIM(i_ISOPropertyCauseOfLossGroup
-		)
-	) AS o_ISOCommercialPropertyCauseOfLossGroup
+	LTRIM(RTRIM(i_ISOPropertyCauseOfLossGroup)) AS o_ISOCommercialPropertyCauseOfLossGroup
 	FROM SQ_ISOPropertyCauseOfLoss
 ),
 SupISOCommercialPropertyCauseOfLossGroup_IR AS (

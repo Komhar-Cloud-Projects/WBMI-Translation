@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_WBIMReinsuranceStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_WBIMReinsuranceStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_IM_Reinsurance AS (\n\tWITH cte_WBIMReinsurance(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.WB_CL_ReinsuranceId, \r\n\tX.WB_IM_ReinsuranceId, \r\n\tX.SessionId, \r\n\tX.BlanketReinsurance, \r\n\tX.ApplyToEntireSchedule, \r\n\tX.ScheduleDetails, \r\n\tX.GrossCedingLimit, \r\n\tX.CedingLimitWithDirectFacTreaty, \r\n\tX.WBNetReinsuranceLimit, \r\n\tX.DirectFacTreatyPremium, \r\n\tX.WBPremium, \r\n\tX.Earthquake, \r\n\tX.Flood, \r\n\tX.InlandMarineNetReinsurancePremium, \r\n\tX.AdditionalComments, \r\n\tX.Underwriter, \r\n\tX.UWDate, \r\n\tX.UWManager, \r\n\tX.UWManagerDate, \r\n\tX.SpecialConditionsInclude, \r\n\tX.SpecialConditionsExclude \r\n\tFROM\r\n\tWB_IM_Reinsurance X\r\n\tinner join\r\n\tcte_WBIMReinsurance Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tWB_CL_ReinsuranceId,\n\tWB_IM_ReinsuranceId,\n\tSessionId,\n\tBlanketReinsurance,\n\t-- *INF*: DECODE(BlanketReinsurance, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    BlanketReinsurance,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_BlanketReinsurance,\n\tApplyToEntireSchedule,\n\t-- *INF*: DECODE(ApplyToEntireSchedule, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    ApplyToEntireSchedule,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ApplyToEntireSchedule,\n\tScheduleDetails,\n\tGrossCedingLimit,\n\tCedingLimitWithDirectFacTreaty,\n\tWBNetReinsuranceLimit,\n\tDirectFacTreatyPremium,\n\tWBPremium,\n\tEarthquake,\n\t-- *INF*: DECODE(Earthquake, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    Earthquake,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Earthquake,\n\tFlood,\n\t-- *INF*: DECODE(Flood, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    Flood,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Flood,\n\tInlandMarineNetReinsurancePremium,\n\tAdditionalComments,\n\tUnderwriter,\n\tUWDate,\n\tUWManager,\n\tUWManagerDate,\n\tSpecialConditionsInclude,\n\tSpecialConditionsExclude,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_WB_IM_Reinsurance\n),\nWBIMReinsuranceStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.WBIMReinsuranceStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.WBIMReinsuranceStage\n\t(ExtractDate, SourceSystemId, WBCLReinsuranceId, WBIMReinsuranceId, SessionId, BlanketReinsurance, ApplyToEntireSchedule, ScheduleDetails, GrossCedingLimit, CedingLimitWithDirectFacTreaty, WBNetReinsuranceLimit, DirectFacTreatyPremium, WBPremium, Earthquake, Flood, InlandMarineNetReinsurancePremium, AdditionalComments, Underwriter, UWDate, UWManager, UWManagerDate, SpecialConditionsInclude, SpecialConditionsExclude)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tWB_CL_ReinsuranceId AS WBCLREINSURANCEID, \n\tWB_IM_ReinsuranceId AS WBIMREINSURANCEID, \n\tSESSIONID, \n\to_BlanketReinsurance AS BLANKETREINSURANCE, \n\to_ApplyToEntireSchedule AS APPLYTOENTIRESCHEDULE, \n\tSCHEDULEDETAILS, \n\tGROSSCEDINGLIMIT, \n\tCEDINGLIMITWITHDIRECTFACTREATY, \n\tWBNETREINSURANCELIMIT, \n\tDIRECTFACTREATYPREMIUM, \n\tWBPREMIUM, \n\to_Earthquake AS EARTHQUAKE, \n\to_Flood AS FLOOD, \n\tINLANDMARINENETREINSURANCEPREMIUM, \n\tADDITIONALCOMMENTS, \n\tUNDERWRITER, \n\tUWDATE, \n\tUWMANAGER, \n\tUWMANAGERDATE, \n\tSPECIALCONDITIONSINCLUDE, \n\tSPECIALCONDITIONSEXCLUDE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

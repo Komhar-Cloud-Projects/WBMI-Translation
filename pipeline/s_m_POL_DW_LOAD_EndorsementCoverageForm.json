@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_EndorsementCoverageForm AS (\n\tSELECT\n\t\tEndorsementCoverageFormId,\n\t\tModifiedDate,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tEndorsementCoverageFormAKId,\n\t\tCoverageFormId,\n\t\tEndorsementCoverageForm\n\tFROM EndorsementCoverageForm\n),\nEXP_DateValues AS (\n\tSELECT\n\tModifiedDate AS i_ModifiedDate,\n\tEffectiveDate AS i_EffectiveDate,\n\tExpirationDate AS i_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)\n\tIFF(i_EffectiveDate IS NULL,\n\t\tTO_DATE('21001231235959', 'YYYYMMDDHH24MISS'\n\t\t),\n\t\ti_EffectiveDate\n\t) AS o_EffectiveDate,\n\t-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)\n\tIFF(i_ExpirationDate IS NULL,\n\t\tTO_DATE('21001231235959', 'YYYYMMDDHH24MISS'\n\t\t),\n\t\ti_ExpirationDate\n\t) AS o_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)\n\tIFF(i_ModifiedDate IS NULL,\n\t\tTO_DATE('21001231235959', 'YYYYMMDDHH24MISS'\n\t\t),\n\t\ti_ModifiedDate\n\t) AS o_ModifiedDate\n\tFROM SQ_EndorsementCoverageForm\n),\nEXP_NumericValues AS (\n\tSELECT\n\tEndorsementCoverageFormId AS i_EndorsementCoverageFormId,\n\tEndorsementCoverageFormAKId AS i_EndorsementCoverageFormAKId,\n\tCoverageFormId AS i_CoverageFormId,\n\t-- *INF*: IIF(ISNULL(i_EndorsementCoverageFormId),-1,i_EndorsementCoverageFormId)\n\tIFF(i_EndorsementCoverageFormId IS NULL,\n\t\t- 1,\n\t\ti_EndorsementCoverageFormId\n\t) AS o_EndorsementCoverageFormId,\n\t-- *INF*: IIF(ISNULL(i_EndorsementCoverageFormAKId),-1,i_EndorsementCoverageFormAKId)\n\tIFF(i_EndorsementCoverageFormAKId IS NULL,\n\t\t- 1,\n\t\ti_EndorsementCoverageFormAKId\n\t) AS o_EndorsementCoverageFormAKId,\n\t-- *INF*: IIF(ISNULL(i_CoverageFormId),-1,i_CoverageFormId)\n\tIFF(i_CoverageFormId IS NULL,\n\t\t- 1,\n\t\ti_CoverageFormId\n\t) AS o_CoverageFormId\n\tFROM SQ_EndorsementCoverageForm\n),\nEXP_StringValues AS (\n\tSELECT\n\tExpirationDate AS i_ExpirationDate,\n\tEndorsementCoverageForm AS i_EndorsementCoverageForm,\n\t-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)\n\tIFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'\n\t\t),\n\t\t1,\n\t\t0\n\t) AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tSYSDATE AS o_CreatedDate,\n\t-- *INF*: IIF(ISNULL(i_EndorsementCoverageForm) OR LENGTH(i_EndorsementCoverageForm)=0 OR IS_SPACES(i_EndorsementCoverageForm),'N/A',LTRIM(RTRIM(i_EndorsementCoverageForm)))\n\tIFF(i_EndorsementCoverageForm IS NULL \n\t\tOR LENGTH(i_EndorsementCoverageForm\n\t\t) = 0 \n\t\tOR LENGTH(i_EndorsementCoverageForm)>0 AND TRIM(i_EndorsementCoverageForm)='',\n\t\t'N/A',\n\t\tLTRIM(RTRIM(i_EndorsementCoverageForm\n\t\t\t)\n\t\t)\n\t) AS o_EndorsementCoverageForm\n\tFROM SQ_EndorsementCoverageForm\n),\nTGT_EndorsementCoverageForm_UpdateElseInsert AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.EndorsementCoverageForm AS T\n\tUSING EXP_StringValues AS S\n\tON T.EndorsementCoverageFormId = S.o_EndorsementCoverageFormId\n\tWHEN MATCHED THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.o_CurrentSnapshotFlag, T.AuditId = S.o_AuditId, T.EffectiveDate = S.o_EffectiveDate, T.ExpirationDate = S.o_ExpirationDate, T.SourceSystemId = S.o_SourceSystemId, T.CreatedDate = S.o_CreatedDate, T.ModifiedDate = S.o_ModifiedDate, T.EndorsementCoverageFormAKId = S.o_EndorsementCoverageFormAKId, T.CoverageFormId = S.o_CoverageFormId, T.EndorsementCoverageForm = S.o_EndorsementCoverageForm\n\tWHEN NOT MATCHED THEN\n\tINSERT (EndorsementCoverageFormId, CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, EndorsementCoverageFormAKId, CoverageFormId, EndorsementCoverageForm)\n\tVALUES (\n\tEXP_NumericValues.o_EndorsementCoverageFormId AS ENDORSEMENTCOVERAGEFORMID, \n\tEXP_StringValues.o_CurrentSnapshotFlag AS CURRENTSNAPSHOTFLAG, \n\tEXP_StringValues.o_AuditId AS AUDITID, \n\tEXP_DateValues.o_EffectiveDate AS EFFECTIVEDATE, \n\tEXP_DateValues.o_ExpirationDate AS EXPIRATIONDATE, \n\tEXP_StringValues.o_SourceSystemId AS SOURCESYSTEMID, \n\tEXP_StringValues.o_CreatedDate AS CREATEDDATE, \n\tEXP_DateValues.o_ModifiedDate AS MODIFIEDDATE, \n\tEXP_NumericValues.o_EndorsementCoverageFormAKId AS ENDORSEMENTCOVERAGEFORMAKID, \n\tEXP_NumericValues.o_CoverageFormId AS COVERAGEFORMID, \n\tEXP_StringValues.o_EndorsementCoverageForm AS ENDORSEMENTCOVERAGEFORM)\n),"
+                            "text": "WITH\nSQ_EndorsementCoverageForm AS (\n\tSELECT\n\t\tEndorsementCoverageFormId,\n\t\tModifiedDate,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tEndorsementCoverageFormAKId,\n\t\tCoverageFormId,\n\t\tEndorsementCoverageForm\n\tFROM EndorsementCoverageForm\n),\nEXP_DateValues AS (\n\tSELECT\n\tModifiedDate AS i_ModifiedDate,\n\tEffectiveDate AS i_EffectiveDate,\n\tExpirationDate AS i_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)\n\tIFF(\n\t    i_EffectiveDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate\n\t) AS o_EffectiveDate,\n\t-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)\n\tIFF(\n\t    i_ExpirationDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'),\n\t    i_ExpirationDate\n\t) AS o_ExpirationDate,\n\t-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)\n\tIFF(\n\t    i_ModifiedDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate\n\t) AS o_ModifiedDate\n\tFROM SQ_EndorsementCoverageForm\n),\nEXP_NumericValues AS (\n\tSELECT\n\tEndorsementCoverageFormId AS i_EndorsementCoverageFormId,\n\tEndorsementCoverageFormAKId AS i_EndorsementCoverageFormAKId,\n\tCoverageFormId AS i_CoverageFormId,\n\t-- *INF*: IIF(ISNULL(i_EndorsementCoverageFormId),-1,i_EndorsementCoverageFormId)\n\tIFF(i_EndorsementCoverageFormId IS NULL, - 1, i_EndorsementCoverageFormId) AS o_EndorsementCoverageFormId,\n\t-- *INF*: IIF(ISNULL(i_EndorsementCoverageFormAKId),-1,i_EndorsementCoverageFormAKId)\n\tIFF(i_EndorsementCoverageFormAKId IS NULL, - 1, i_EndorsementCoverageFormAKId) AS o_EndorsementCoverageFormAKId,\n\t-- *INF*: IIF(ISNULL(i_CoverageFormId),-1,i_CoverageFormId)\n\tIFF(i_CoverageFormId IS NULL, - 1, i_CoverageFormId) AS o_CoverageFormId\n\tFROM SQ_EndorsementCoverageForm\n),\nEXP_StringValues AS (\n\tSELECT\n\tExpirationDate AS i_ExpirationDate,\n\tEndorsementCoverageForm AS i_EndorsementCoverageForm,\n\t-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)\n\tIFF(TRUNC(i_ExpirationDate) = TO_TIMESTAMP('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tSYSDATE AS o_CreatedDate,\n\t-- *INF*: IIF(ISNULL(i_EndorsementCoverageForm) OR LENGTH(i_EndorsementCoverageForm)=0 OR IS_SPACES(i_EndorsementCoverageForm),'N/A',LTRIM(RTRIM(i_EndorsementCoverageForm)))\n\tIFF(\n\t    i_EndorsementCoverageForm IS NULL\n\t    or LENGTH(i_EndorsementCoverageForm) = 0\n\t    or LENGTH(i_EndorsementCoverageForm)>0\n\t    and TRIM(i_EndorsementCoverageForm)='',\n\t    'N/A',\n\t    LTRIM(RTRIM(i_EndorsementCoverageForm))\n\t) AS o_EndorsementCoverageForm\n\tFROM SQ_EndorsementCoverageForm\n),\nTGT_EndorsementCoverageForm_UpdateElseInsert AS (\n\tMERGE INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.EndorsementCoverageForm AS T\n\tUSING EXP_StringValues AS S\n\tON T.EndorsementCoverageFormId = S.o_EndorsementCoverageFormId\n\tWHEN MATCHED THEN\n\tUPDATE SET T.CurrentSnapshotFlag = S.o_CurrentSnapshotFlag, T.AuditId = S.o_AuditId, T.EffectiveDate = S.o_EffectiveDate, T.ExpirationDate = S.o_ExpirationDate, T.SourceSystemId = S.o_SourceSystemId, T.CreatedDate = S.o_CreatedDate, T.ModifiedDate = S.o_ModifiedDate, T.EndorsementCoverageFormAKId = S.o_EndorsementCoverageFormAKId, T.CoverageFormId = S.o_CoverageFormId, T.EndorsementCoverageForm = S.o_EndorsementCoverageForm\n\tWHEN NOT MATCHED THEN\n\tINSERT (EndorsementCoverageFormId, CurrentSnapshotFlag, AuditId, EffectiveDate, ExpirationDate, SourceSystemId, CreatedDate, ModifiedDate, EndorsementCoverageFormAKId, CoverageFormId, EndorsementCoverageForm)\n\tVALUES (\n\tEXP_NumericValues.o_EndorsementCoverageFormId AS ENDORSEMENTCOVERAGEFORMID, \n\tEXP_StringValues.o_CurrentSnapshotFlag AS CURRENTSNAPSHOTFLAG, \n\tEXP_StringValues.o_AuditId AS AUDITID, \n\tEXP_DateValues.o_EffectiveDate AS EFFECTIVEDATE, \n\tEXP_DateValues.o_ExpirationDate AS EXPIRATIONDATE, \n\tEXP_StringValues.o_SourceSystemId AS SOURCESYSTEMID, \n\tEXP_StringValues.o_CreatedDate AS CREATEDDATE, \n\tEXP_DateValues.o_ModifiedDate AS MODIFIEDDATE, \n\tEXP_NumericValues.o_EndorsementCoverageFormAKId AS ENDORSEMENTCOVERAGEFORMAKID, \n\tEXP_NumericValues.o_CoverageFormId AS COVERAGEFORMID, \n\tEXP_StringValues.o_EndorsementCoverageForm AS ENDORSEMENTCOVERAGEFORM)\n),"
                         }
                     ]
                 },
@@ -32,47 +32,19 @@
         "parameters": {
             "WBMI_AUDIT_CONTROL_RUN_ID": {
                 "type": "string",
-                "defaultValue": "246483"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "905450"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7602730"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "08/29/2023 22:00:17"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "08/30/2023 22:00:17"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_InsuranceReference_Policy"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
-            "TARGET_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
+                "defaultValue": "Default Value"
             },
             "SOURCE_SYSTEM_ID": {
                 "type": "string",
-                "defaultValue": "InsRef"
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Policy DataWarehouse/"
+            "name": "PolicyDataWarehouse/"
         },
         "annotations": []
     }

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCCRLocationStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCCRLocationStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCRLocationStage AS (\n\tSELECT\n\t\tDCCRLocationStageId,\n\t\tCR_LocationId,\n\t\tSessionId,\n\t\tId,\n\t\tNumber,\n\t\tDescription,\n\t\tTerritoryGroup,\n\t\tRatableEmployees,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCCRLocationStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCCRLocationStageId,\n\tCR_LocationId,\n\tSessionId,\n\tId,\n\tNumber,\n\tDescription,\n\tTerritoryGroup,\n\tRatableEmployees,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCRLocationStage\n),\nArchDCCRLocationStage AS (\n\tINSERT INTO ArchDCCRLocationStage\n\t(DCCRLocationStageId, CR_LocationId, SessionId, Id, Number, Description, TerritoryGroup, RatableEmployees, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tDCCRLOCATIONSTAGEID, \n\tCR_LOCATIONID, \n\tSESSIONID, \n\tID, \n\tNUMBER, \n\tDESCRIPTION, \n\tTERRITORYGROUP, \n\tRATABLEEMPLOYEES, \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

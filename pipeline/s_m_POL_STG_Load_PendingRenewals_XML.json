@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Load_PendingRenewals_XML",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Load_PendingRenewals_XML",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_History AS (\n\tSELECT h.PolicyNumber\r\n\tFROM  @{pipeline().parameters.SOURCE_TABLE_OWNER}.History h, @{pipeline().parameters.SOURCE_TABLE_OWNER}.Quote q WITH (NOLOCK)\r\n\twhere h.PolicyNumber = q.PolicyNumber\r\n\tand q.Status <> 'Cancelled'\r\n\tand h.QuoteID = q.QuoteID\r\n\tand h.PolicyStatus = 'InForce'\r\n\tand (h.PolicyEffectiveDate > GetDate() + 50 AND h.PolicyEffectiveDate < GetDate() + 51)\r\n\tand h.Type = 'Renew'\r\n\tand h.TransactionStatus = 'Scheduled'\r\n\tand h.DeprecatedBy IS NULL\r\n\tand h.Deleted = 0\r\n\tand h.DuplicateRow = 0\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\r\n\tOrder by h.PolicyNumber\n),\nEXP_History AS (\n\tSELECT\n\tPolicyNumber\n\tFROM SQ_History\n),\nPendingRenewals_XML AS (\n\tINSERT INTO PendingRenewals_XML\n\t(PolicyNumber)\n\tSELECT \n\tPOLICYNUMBER\n\tFROM EXP_History\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

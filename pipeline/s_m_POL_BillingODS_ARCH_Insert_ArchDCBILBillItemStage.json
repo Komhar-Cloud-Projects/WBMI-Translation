@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_BillingODS_ARCH_Insert_ArchDCBILBillItemStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_BillingODS_ARCH_Insert_ArchDCBILBillItemStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBILBillItemStage AS (\n\tSELECT\n\t\tDCBILBillItemStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tItemId,\n\t\tAccountId,\n\t\tPolicyTermId,\n\t\tTransactionDate,\n\t\tTransactionReference,\n\t\tItemEffectiveDate,\n\t\tItemExpirationDate,\n\t\tReceivableTypeCode,\n\t\tReceivableSubTypeCode,\n\t\tTransactionTypeCode,\n\t\tCoverageReference,\n\t\tUnitReference,\n\t\tAggregationReference,\n\t\tCommissionGroupReference,\n\t\tStateCode,\n\t\tDescription,\n\t\tBillInFullIndicator,\n\t\tCurrencyCulture,\n\t\tOriginalTransactionAmount,\n\t\tItemAmount,\n\t\tTransferredAmount,\n\t\tItemCommissionType,\n\t\tItemCommissionAmount,\n\t\tItemCommissionPercent,\n\t\tCommissionAuthorizedAmount,\n\t\tCommissionPlanId,\n\t\tScheduledIndicator,\n\t\tPostedTimestamp,\n\t\tLastUpdatedTimestamp,\n\t\tLastUpdatedUserId,\n\t\tBillItemLockingTS,\n\t\tBillItemExtendedData,\n\t\tEquityBearingIndicator,\n\t\tTriggerTransactionIndicator,\n\t\tFinancialReportingGroupReference,\n\t\tTransactionGUID\n\tFROM DCBILBillItemStage\n),\nEXP_Metadata AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tDCBILBillItemStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tItemId,\n\tAccountId,\n\tPolicyTermId,\n\tTransactionDate,\n\tTransactionReference,\n\tItemEffectiveDate,\n\tItemExpirationDate,\n\tReceivableTypeCode,\n\tReceivableSubTypeCode,\n\tTransactionTypeCode,\n\tCoverageReference,\n\tUnitReference,\n\tAggregationReference,\n\tCommissionGroupReference,\n\tStateCode,\n\tDescription,\n\tBillInFullIndicator,\n\tCurrencyCulture,\n\tOriginalTransactionAmount,\n\tItemAmount,\n\tTransferredAmount,\n\tItemCommissionType,\n\tItemCommissionAmount,\n\tItemCommissionPercent,\n\tCommissionAuthorizedAmount,\n\tCommissionPlanId,\n\tScheduledIndicator,\n\tPostedTimestamp,\n\tLastUpdatedTimestamp,\n\tLastUpdatedUserId,\n\tBillItemLockingTS,\n\tBillItemExtendedData,\n\tEquityBearingIndicator,\n\tTriggerTransactionIndicator,\n\tFinancialReportingGroupReference,\n\tTransactionGUID\n\tFROM SQ_DCBILBillItemStage\n),\nLKP_ArchExsit AS (\n\tSELECT\n\tArchDCBILBillItemStageId,\n\tItemId\n\tFROM (\n\t\tSELECT \n\t\t\tArchDCBILBillItemStageId,\n\t\t\tItemId\n\t\tFROM ArchDCBILBillItemStage\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY ItemId ORDER BY ArchDCBILBillItemStageId) = 1\n),\nFIL_Exist AS (\n\tSELECT\n\tLKP_ArchExsit.ArchDCBILBillItemStageId AS lkp_ArchDCBILBillItemStageId, \n\tEXP_Metadata.o_AuditId AS AuditId, \n\tEXP_Metadata.DCBILBillItemStageId, \n\tEXP_Metadata.ExtractDate, \n\tEXP_Metadata.SourceSystemId, \n\tEXP_Metadata.ItemId, \n\tEXP_Metadata.AccountId, \n\tEXP_Metadata.PolicyTermId, \n\tEXP_Metadata.TransactionDate, \n\tEXP_Metadata.TransactionReference, \n\tEXP_Metadata.ItemEffectiveDate, \n\tEXP_Metadata.ItemExpirationDate, \n\tEXP_Metadata.ReceivableTypeCode, \n\tEXP_Metadata.ReceivableSubTypeCode, \n\tEXP_Metadata.TransactionTypeCode, \n\tEXP_Metadata.CoverageReference, \n\tEXP_Metadata.UnitReference, \n\tEXP_Metadata.AggregationReference, \n\tEXP_Metadata.CommissionGroupReference, \n\tEXP_Metadata.StateCode, \n\tEXP_Metadata.Description, \n\tEXP_Metadata.BillInFullIndicator, \n\tEXP_Metadata.CurrencyCulture, \n\tEXP_Metadata.OriginalTransactionAmount, \n\tEXP_Metadata.ItemAmount, \n\tEXP_Metadata.TransferredAmount, \n\tEXP_Metadata.ItemCommissionType, \n\tEXP_Metadata.ItemCommissionAmount, \n\tEXP_Metadata.ItemCommissionPercent, \n\tEXP_Metadata.CommissionAuthorizedAmount, \n\tEXP_Metadata.CommissionPlanId, \n\tEXP_Metadata.ScheduledIndicator, \n\tEXP_Metadata.PostedTimestamp, \n\tEXP_Metadata.LastUpdatedTimestamp, \n\tEXP_Metadata.LastUpdatedUserId, \n\tEXP_Metadata.BillItemLockingTS, \n\tEXP_Metadata.BillItemExtendedData, \n\tEXP_Metadata.EquityBearingIndicator, \n\tEXP_Metadata.TriggerTransactionIndicator, \n\tEXP_Metadata.FinancialReportingGroupReference, \n\tEXP_Metadata.TransactionGUID\n\tFROM EXP_Metadata\n\tLEFT JOIN LKP_ArchExsit\n\tON LKP_ArchExsit.ItemId = EXP_Metadata.ItemId\n\tWHERE ISNULL(lkp_ArchDCBILBillItemStageId)\n),\nArchDCBILBillItemStage AS (\n\tINSERT INTO ArchDCBILBillItemStage\n\t(ExtractDate, SourceSystemId, AuditId, DCBILBillItemStageId, ItemId, AccountId, PolicyTermId, TransactionDate, TransactionReference, ItemEffectiveDate, ItemExpirationDate, ReceivableTypeCode, ReceivableSubTypeCode, TransactionTypeCode, CoverageReference, UnitReference, AggregationReference, CommissionGroupReference, StateCode, Description, BillInFullIndicator, CurrencyCulture, OriginalTransactionAmount, ItemAmount, TransferredAmount, ItemCommissionType, ItemCommissionAmount, ItemCommissionPercent, CommissionAuthorizedAmount, CommissionPlanId, ScheduledIndicator, PostedTimestamp, LastUpdatedTimestamp, LastUpdatedUserId, BillItemLockingTS, BillItemExtendedData, EquityBearingIndicator, TriggerTransactionIndicator, FinancialReportingGroupReference, TransactionGUID)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tDCBILBILLITEMSTAGEID, \n\tITEMID, \n\tACCOUNTID, \n\tPOLICYTERMID, \n\tTRANSACTIONDATE, \n\tTRANSACTIONREFERENCE, \n\tITEMEFFECTIVEDATE, \n\tITEMEXPIRATIONDATE, \n\tRECEIVABLETYPECODE, \n\tRECEIVABLESUBTYPECODE, \n\tTRANSACTIONTYPECODE, \n\tCOVERAGEREFERENCE, \n\tUNITREFERENCE, \n\tAGGREGATIONREFERENCE, \n\tCOMMISSIONGROUPREFERENCE, \n\tSTATECODE, \n\tDESCRIPTION, \n\tBILLINFULLINDICATOR, \n\tCURRENCYCULTURE, \n\tORIGINALTRANSACTIONAMOUNT, \n\tITEMAMOUNT, \n\tTRANSFERREDAMOUNT, \n\tITEMCOMMISSIONTYPE, \n\tITEMCOMMISSIONAMOUNT, \n\tITEMCOMMISSIONPERCENT, \n\tCOMMISSIONAUTHORIZEDAMOUNT, \n\tCOMMISSIONPLANID, \n\tSCHEDULEDINDICATOR, \n\tPOSTEDTIMESTAMP, \n\tLASTUPDATEDTIMESTAMP, \n\tLASTUPDATEDUSERID, \n\tBILLITEMLOCKINGTS, \n\tBILLITEMEXTENDEDDATA, \n\tEQUITYBEARINGINDICATOR, \n\tTRIGGERTRANSACTIONINDICATOR, \n\tFINANCIALREPORTINGGROUPREFERENCE, \n\tTRANSACTIONGUID\n\tFROM FIL_Exist\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

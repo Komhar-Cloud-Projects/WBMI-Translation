@@ -1,0 +1,38 @@
+{
+    "name": "s_m_CLM_STG_Update_PIF_42GQ_LIT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Update_PIF_42GQ_LIT",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\npif_42gq_lit_stage AS (\n\tSELECT\n\tpif_42gq_lit_stage_id,\n\tipfcgq_loss_claimant,\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module,\n\tipfcgq_year_of_loss,\n\tipfcgq_month_of_loss,\n\tipfcgq_day_of_loss,\n\tipfcgq_loss_occurence\n\tFROM (\n\t\tSELECT \n\t\t\tpif_42gq_lit_stage_id,\n\t\t\tipfcgq_loss_claimant,\n\t\t\tpif_symbol,\n\t\t\tpif_policy_number,\n\t\t\tpif_module,\n\t\t\tipfcgq_year_of_loss,\n\t\t\tipfcgq_month_of_loss,\n\t\t\tipfcgq_day_of_loss,\n\t\t\tipfcgq_loss_occurence\n\t\tFROM pif_42gq_lit_stage\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY pif_symbol,pif_policy_number,pif_module,ipfcgq_year_of_loss,ipfcgq_month_of_loss,ipfcgq_day_of_loss,ipfcgq_loss_occurence,ipfcgq_loss_claimant ORDER BY pif_42gq_lit_stage_id) = 1\n),\nSQ_pif_4578_stage AS (\n\tSELECT\n\t\tpif_4578_stage_id,\n\t\tpif_symbol,\n\t\tpif_policy_number,\n\t\tpif_module,\n\t\tloss_rec_length,\n\t\tloss_action_code,\n\t\tloss_file_id,\n\t\tloss_id,\n\t\tloss_insurance_line,\n\t\tloss_location_number,\n\t\tloss_sub_location_number,\n\t\tloss_risk_unit_group,\n\t\tloss_class_code_group,\n\t\tloss_class_code_member,\n\t\tloss_unit,\n\t\tloss_sequence_risk_unit,\n\t\tloss_type_exposure,\n\t\tloss_major_peril,\n\t\tloss_major_peril_seq,\n\t\tloss_year_item_effective,\n\t\tloss_month_item_effective,\n\t\tloss_day_item_effective,\n\t\tloss_part,\n\t\tloss_year,\n\t\tloss_month,\n\t\tloss_day,\n\t\tloss_occurence,\n\t\tloss_claimant,\n\t\tloss_member,\n\t\tloss_disability,\n\t\tloss_reserve_category,\n\t\tloss_layer,\n\t\tloss_reins_key_id,\n\t\tloss_reins_co_no,\n\t\tloss_reins_broker,\n\t\tloss_base_transaction,\n\t\tloss_transaction,\n\t\tloss_draft_control_seq,\n\t\tloss_sub_part_code,\n\t\tloss_segment_status,\n\t\tloss_entry_operator,\n\t\tloss_transaction_category,\n\t\tloss_year_reported,\n\t\tloss_month_reported,\n\t\tloss_day_reported,\n\t\tloss_cause,\n\t\tloss_adjustor_no,\n\t\tloss_examiner,\n\t\tloss_cost_containment,\n\t\tloss_paid_or_resv_amt,\n\t\tloss_bank_number,\n\t\tloss_draft_amount,\n\t\tloss_draft_no,\n\t\tloss_draft_check_ind,\n\t\tloss_transaction_date,\n\t\tloss_draft_pay_to_1,\n\t\tloss_draft_pay_to_2,\n\t\tloss_draft_pay_to_3,\n\t\tloss_draft_mail_to,\n\t\tloss_net_change_dollars,\n\t\tloss_account_entered_date,\n\t\tloss_average_reserve_code,\n\t\tloss_handling_office,\n\t\tloss_start_yr,\n\t\tloss_start_mo,\n\t\tloss_start_da,\n\t\tloss_fault_code,\n\t\ttc,\n\t\tia,\n\t\tloss_payment_rate,\n\t\tloss_frequency,\n\t\tloss_period_pay,\n\t\tloss_sub_line,\n\t\tloss_payee_phrase,\n\t\tloss_memo_phrase,\n\t\tiws_origin_indicator,\n\t\tloss_aia_codes_1_2,\n\t\tloss_aia_codes_3_4,\n\t\tloss_aia_codes_5_6,\n\t\tloss_aia_sub_code,\n\t\tloss_accident_state,\n\t\tloss_handling_branch,\n\t\tloss_1099_number,\n\t\tloss_claim_payee,\n\t\tloss_claim_payee_name,\n\t\tloss_notes_draft_payee,\n\t\tloss_claim_number,\n\t\tloss_type_claim_payee,\n\t\tloss_zpcd_inj_loc,\n\t\tloss_special_use_1,\n\t\tloss_special_use_2,\n\t\tloss_time,\n\t\tloss_type_disability,\n\t\tloss_claims_made_ind,\n\t\tloss_misc_adjustor_ind,\n\t\tloss_pms_future_use,\n\t\tloss_offset_onset_ind,\n\t\tloss_sub_cont_id,\n\t\tloss_rpt_year,\n\t\tloss_rpt_mon,\n\t\tloss_rpt_day,\n\t\tloss_s3_transaction_date,\n\t\tloss_rr_reported_date,\n\t\tloss_yr2000_cust_use,\n\t\tloss_duplicate_key_sequence,\n\t\tinf_action,\n\t\tinf_timestamp,\n\t\tlogical_flag,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM pif_4578_stage\n),\nEXPTRANS AS (\n\tSELECT\n\tpif_4578_stage_id,\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module,\n\tloss_year,\n\tloss_month,\n\tloss_day,\n\tloss_occurence,\n\tloss_claimant,\n\t-- *INF*: :LKP.PIF_42GQ_LIT_STAGE(pif_symbol,pif_policy_number,pif_module,loss_year,loss_month,loss_day,loss_occurence,loss_claimant)\n\tPIF_42GQ_LIT_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant.pif_42gq_lit_stage_id AS pif_42gq_lit_stage_id,\n\tlogical_flag,\n\tsource_system_id\n\tFROM SQ_pif_4578_stage\n\tLEFT JOIN PIF_42GQ_LIT_STAGE PIF_42GQ_LIT_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant\n\tON PIF_42GQ_LIT_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant.pif_symbol = pif_symbol\n\tAND PIF_42GQ_LIT_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant.pif_policy_number = pif_policy_number\n\tAND PIF_42GQ_LIT_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant.pif_module = pif_module\n\tAND PIF_42GQ_LIT_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant.ipfcgq_year_of_loss = loss_year\n\tAND PIF_42GQ_LIT_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant.ipfcgq_month_of_loss = loss_month\n\tAND PIF_42GQ_LIT_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant.ipfcgq_day_of_loss = loss_day\n\tAND PIF_42GQ_LIT_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant.ipfcgq_loss_occurence = loss_occurence\n\tAND PIF_42GQ_LIT_STAGE_pif_symbol_pif_policy_number_pif_module_loss_year_loss_month_loss_day_loss_occurence_loss_claimant.ipfcgq_loss_claimant = loss_claimant\n\n),\nUPDTRANS AS (\n\tSELECT\n\tpif_42gq_lit_stage_id, \n\tlogical_flag\n\tFROM EXPTRANS\n),\nPIF_42GQ_LIT_stage1 AS (\n\tMERGE INTO PIF_42GQ_LIT_stage AS T\n\tUSING UPDTRANS AS S\n\tON T.pif_42gq_lit_stage_id = S.pif_42gq_lit_stage_id\n\tWHEN MATCHED BY TARGET THEN\n\tUPDATE SET T.logical_flag = S.logical_flag\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

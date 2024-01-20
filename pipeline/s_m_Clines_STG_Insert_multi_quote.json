@@ -1,0 +1,47 @@
+{
+    "name": "s_m_Clines_STG_Insert_multi_quote",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_Clines_STG_Insert_multi_quote",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_multi_quote AS (\n\tSELECT\n\t\tquote_id,\n\t\tcommssn,\n\t\tirpm,\n\t\tmulti_building_bus_class_id,\n\t\tinterstate_risk_id_num,\n\t\trisk_id_num_status_id,\n\t\tcreated_user_id,\n\t\tcreated_date,\n\t\tmodified_user_id,\n\t\tmodified_date\n\tFROM multi_quote\n),\nEXP_Values AS (\n\tSELECT\n\tquote_id,\n\tcommssn,\n\tirpm,\n\tmulti_building_bus_class_id,\n\tinterstate_risk_id_num,\n\trisk_id_num_status_id,\n\tcreated_user_id,\n\tcreated_date,\n\tmodified_user_id,\n\tmodified_date,\n\tSYSDATE AS extract_date,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id\n\tFROM SQ_multi_quote\n),\nmulti_quote_cl_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.multi_quote_cl_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.multi_quote_cl_stage\n\t(quote_id, commssn, irpm, multi_building_bus_class_id, interstate_risk_id_num, risk_id_num_status_id, created_user_id, created_date, modified_user_id, modified_date, extract_date, source_system_id)\n\tSELECT \n\tQUOTE_ID, \n\tCOMMSSN, \n\tIRPM, \n\tMULTI_BUILDING_BUS_CLASS_ID, \n\tINTERSTATE_RISK_ID_NUM, \n\tRISK_ID_NUM_STATUS_ID, \n\tCREATED_USER_ID, \n\tCREATED_DATE, \n\tMODIFIED_USER_ID, \n\tMODIFIED_DATE, \n\tEXTRACT_DATE, \n\tSOURCE_SYSTEM_ID\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CommonStaging/"
+        },
+        "annotations": []
+    }
+}

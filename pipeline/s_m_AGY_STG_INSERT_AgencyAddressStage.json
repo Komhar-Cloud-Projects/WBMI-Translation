@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_STG_INSERT_AgencyAddressStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_STG_INSERT_AgencyAddressStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AgencyAddress AS (\n\tSELECT\n\t\tAgencyAddressID,\n\t\tSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tAddressType,\n\t\tAddressLine1,\n\t\tAddressLine2,\n\t\tAddressLine3,\n\t\tCity,\n\t\tZipCode,\n\t\tCountyCode,\n\t\tCountyName,\n\t\tStateAbbreviation,\n\t\tCountryAbbreviation,\n\t\tLatitude,\n\t\tLongitude\n\tFROM AgencyAddress\n),\nLKP_AgencyCode AS (\n\tSELECT\n\tAgencyCode,\n\tAgencyID\n\tFROM (\n\t\tSELECT \n\t\t\tAgencyCode,\n\t\t\tAgencyID\n\t\tFROM @{pipeline().parameters.SOURCE_TABLE_OWNER}.Agency\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyID ORDER BY AgencyCode) = 1\n),\nEXP_Add_MetaDataFields AS (\n\tSELECT\n\tSQ_AgencyAddress.AgencyAddressID,\n\tSQ_AgencyAddress.SourceSystemID,\n\tSQ_AgencyAddress.HashKey,\n\tSQ_AgencyAddress.ModifiedUserID,\n\tSQ_AgencyAddress.ModifiedDate,\n\tSQ_AgencyAddress.AgencyID,\n\tSQ_AgencyAddress.AddressType,\n\tSQ_AgencyAddress.AddressLine1,\n\tSQ_AgencyAddress.AddressLine2,\n\tSQ_AgencyAddress.AddressLine3,\n\tSQ_AgencyAddress.City,\n\tSQ_AgencyAddress.ZipCode,\n\tSQ_AgencyAddress.CountyCode,\n\tSQ_AgencyAddress.CountyName,\n\tSQ_AgencyAddress.StateAbbreviation,\n\tSQ_AgencyAddress.CountryAbbreviation,\n\tSQ_AgencyAddress.Latitude,\n\tSQ_AgencyAddress.Longitude,\n\tLKP_AgencyCode.AgencyCode AS lkp_AgencyCode,\n\tsysdate AS Extract_Date,\n\tsysdate AS As_of_Date,\n\t1 AS Record_Count,\n\t@{pipeline().parameters.SOURCESYSTEMID} AS Source_System_ID\n\tFROM SQ_AgencyAddress\n\tLEFT JOIN LKP_AgencyCode\n\tON LKP_AgencyCode.AgencyID = SQ_AgencyAddress.AgencyID\n),\nAgencyAddressODSStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyAddressODSStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.AgencyAddressODSStage\n\t(AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, AddressType, AddressLine1, AddressLine2, AddressLine3, City, ZipCode, CountyCode, CountyName, StateAbbreviation, CountryAbbreviation, Latitude, Longitude, ExtractDate, AsOfDate, RecordCount, SourceSystemID)\n\tSELECT \n\tSourceSystemID AS AGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tlkp_AgencyCode AS AGENCYCODE, \n\tADDRESSTYPE, \n\tADDRESSLINE1, \n\tADDRESSLINE2, \n\tADDRESSLINE3, \n\tCITY, \n\tZIPCODE, \n\tCOUNTYCODE, \n\tCOUNTYNAME, \n\tSTATEABBREVIATION, \n\tCOUNTRYABBREVIATION, \n\tLATITUDE, \n\tLONGITUDE, \n\tExtract_Date AS EXTRACTDATE, \n\tAs_of_Date AS ASOFDATE, \n\tRecord_Count AS RECORDCOUNT, \n\tSource_System_ID AS SOURCESYSTEMID\n\tFROM EXP_Add_MetaDataFields\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCESYSTEMID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_pif_03_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_pif_03_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_pif_03_stage AS (\n\tSELECT\n\t\tpif_03_stage_id,\n\t\tpif_symbol,\n\t\tpif_policy_number,\n\t\tpif_module,\n\t\tcomments_rec_length,\n\t\tcomments_action_code,\n\t\tcomments_file_id,\n\t\tcomments_id,\n\t\tcomments_segment_part_code,\n\t\tcomments_reason_suspended,\n\t\tcomments_type_request,\n\t\tcomments_dest_branch,\n\t\tcomments_dest,\n\t\tcomments_requested_by,\n\t\tcomments_suspense_date,\n\t\tcomments_seq,\n\t\tcomments_loss_date,\n\t\tcomments_loss_occurance,\n\t\tcomments_loss_claimant,\n\t\tcomments_frequency,\n\t\tcomments_area,\n\t\tcomments_area_2,\n\t\tcomments_pms_future_use,\n\t\tcomments_payment_ind,\n\t\tcomments_cust_future_use,\n\t\tcomments_yr2000_cust_use,\n\t\tcomments_wbc_key,\n\t\tcomments_dup_key_seq_num,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id,\n\t\tinf_action,\n\t\tinf_timestamp\n\tFROM pif_03_stage\n),\nEXP_arch_pif_03 AS (\n\tSELECT\n\tpif_03_stage_id,\n\tpif_symbol,\n\tpif_policy_number,\n\tpif_module,\n\tcomments_rec_length,\n\tcomments_action_code,\n\tcomments_file_id,\n\tcomments_id,\n\tcomments_segment_part_code,\n\tcomments_reason_suspended,\n\tcomments_type_request,\n\tcomments_dest_branch,\n\tcomments_dest,\n\tcomments_requested_by,\n\tcomments_suspense_date,\n\tcomments_seq,\n\tcomments_loss_date,\n\tcomments_loss_occurance,\n\tcomments_loss_claimant,\n\tcomments_frequency,\n\tcomments_area,\n\tcomments_area_2,\n\tcomments_pms_future_use,\n\tcomments_payment_ind,\n\tcomments_cust_future_use,\n\tcomments_yr2000_cust_use,\n\tcomments_wbc_key,\n\tcomments_dup_key_seq_num,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\tinf_action,\n\tinf_timestamp,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_audit_id\n\tFROM SQ_pif_03_stage\n),\narch_pif_03_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_pif_03_stage\n\t(pif_03_stage_id, pif_symbol, pif_policy_number, pif_module, comments_rec_length, comments_action_code, comments_file_id, comments_id, comments_segment_part_code, comments_reason_suspended, comments_type_request, comments_dest_branch, comments_dest, comments_requested_by, comments_suspense_date, comments_seq, comments_loss_date, comments_loss_occurance, comments_loss_claimant, comments_frequency, comments_area, comments_area_2, comments_pms_future_use, comments_payment_ind, comments_cust_future_use, comments_yr2000_cust_use, comments_wbc_key, comments_dup_key_seq_num, extract_date, as_of_date, record_count, source_system_id, audit_id, inf_action, inf_timestamp)\n\tSELECT \n\tPIF_03_STAGE_ID, \n\tPIF_SYMBOL, \n\tPIF_POLICY_NUMBER, \n\tPIF_MODULE, \n\tCOMMENTS_REC_LENGTH, \n\tCOMMENTS_ACTION_CODE, \n\tCOMMENTS_FILE_ID, \n\tCOMMENTS_ID, \n\tCOMMENTS_SEGMENT_PART_CODE, \n\tCOMMENTS_REASON_SUSPENDED, \n\tCOMMENTS_TYPE_REQUEST, \n\tCOMMENTS_DEST_BRANCH, \n\tCOMMENTS_DEST, \n\tCOMMENTS_REQUESTED_BY, \n\tCOMMENTS_SUSPENSE_DATE, \n\tCOMMENTS_SEQ, \n\tCOMMENTS_LOSS_DATE, \n\tCOMMENTS_LOSS_OCCURANCE, \n\tCOMMENTS_LOSS_CLAIMANT, \n\tCOMMENTS_FREQUENCY, \n\tCOMMENTS_AREA, \n\tCOMMENTS_AREA_2, \n\tCOMMENTS_PMS_FUTURE_USE, \n\tCOMMENTS_PAYMENT_IND, \n\tCOMMENTS_CUST_FUTURE_USE, \n\tCOMMENTS_YR2000_CUST_USE, \n\tCOMMENTS_WBC_KEY, \n\tCOMMENTS_DUP_KEY_SEQ_NUM, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\to_audit_id AS AUDIT_ID, \n\tINF_ACTION, \n\tINF_TIMESTAMP\n\tFROM EXP_arch_pif_03\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -29,20 +29,15 @@ EXP_RiskGradeCode_DWP_New_Renewal AS (
 	pol_issue_code,
 	-- *INF*: DECODE(TRUE, pol_issue_code='N', 'New',
 	-- 'Renewal')
-	DECODE(TRUE,
-		pol_issue_code = 'N', 'New',
-		'Renewal'
+	DECODE(
+	    TRUE,
+	    pol_issue_code = 'N', 'New',
+	    'Renewal'
 	) AS v_PolicyType,
 	-- *INF*: IIF(v_PolicyType='New',PremiumMasterDirectWrittenPremium,0)
-	IFF(v_PolicyType = 'New',
-		PremiumMasterDirectWrittenPremium,
-		0
-	) AS NewPolicyPremium,
+	IFF(v_PolicyType = 'New', PremiumMasterDirectWrittenPremium, 0) AS NewPolicyPremium,
 	-- *INF*: IIF(v_PolicyType='Renewal', PremiumMasterDirectWrittenPremium, 0)
-	IFF(v_PolicyType = 'Renewal',
-		PremiumMasterDirectWrittenPremium,
-		0
-	) AS RenewalPolicyPremium
+	IFF(v_PolicyType = 'Renewal', PremiumMasterDirectWrittenPremium, 0) AS RenewalPolicyPremium
 	FROM SQ_RiskGradeCode_DWP
 ),
 AGG_New_and_Renewal AS (
@@ -51,13 +46,9 @@ AGG_New_and_Renewal AS (
 	NewPolicyPremium,
 	RenewalPolicyPremium,
 	-- *INF*: round(Sum(NewPolicyPremium),2)
-	round(Sum(NewPolicyPremium
-		), 2
-	) AS TotalNewPremium,
+	round(Sum(NewPolicyPremium), 2) AS TotalNewPremium,
 	-- *INF*: round(SUM(RenewalPolicyPremium),2)
-	round(SUM(RenewalPolicyPremium
-		), 2
-	) AS TotalRenewalPremium
+	round(SUM(RenewalPolicyPremium), 2) AS TotalRenewalPremium
 	FROM EXP_RiskGradeCode_DWP_New_Renewal
 	GROUP BY RiskGradeCode
 ),
@@ -90,14 +81,10 @@ AGG_Summary AS (
 	SummaryCode,
 	TotalNewPremium,
 	-- *INF*: Round(Sum(TotalNewPremium),2)
-	Round(Sum(TotalNewPremium
-		), 2
-	) AS Sum_TotalNewPremium,
+	Round(Sum(TotalNewPremium), 2) AS Sum_TotalNewPremium,
 	TotalRenewalPremium,
 	-- *INF*: Round(Sum(TotalRenewalPremium),2)
-	Round(Sum(TotalRenewalPremium
-		), 2
-	) AS Sum_TotalRenewalPremium
+	Round(Sum(TotalRenewalPremium), 2) AS Sum_TotalRenewalPremium
 	FROM EXP_Transform_summary
 	GROUP BY 
 ),

@@ -27,14 +27,12 @@ EXP_Src_Values_Default AS (
 	-- LTRIM(RTRIM(IN_ImpactType)))
 	-- 
 	-- 
-	DECODE(TRUE,
-		IN_ImpactType IS NULL, 'N/A',
-		LENGTH(IN_ImpactType)>0 AND TRIM(IN_ImpactType)='', 'N/A',
-		LENGTH(IN_ImpactType
-		) = 0, 'N/A',
-		LTRIM(RTRIM(IN_ImpactType
-			)
-		)
+	DECODE(
+	    TRUE,
+	    IN_ImpactType IS NULL, 'N/A',
+	    LENGTH(IN_ImpactType)>0 AND TRIM(IN_ImpactType)='', 'N/A',
+	    LENGTH(IN_ImpactType) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_ImpactType))
 	) AS ImpactType,
 	ImpactCategory AS IN_ImpactCategory,
 	-- *INF*: DECODE(TRUE,
@@ -42,14 +40,12 @@ EXP_Src_Values_Default AS (
 	-- IS_SPACES(IN_ImpactCategory),'N/A',
 	-- LENGTH(IN_ImpactCategory)=0,'N/A',
 	-- LTRIM(RTRIM(IN_ImpactCategory)))
-	DECODE(TRUE,
-		IN_ImpactCategory IS NULL, 'N/A',
-		LENGTH(IN_ImpactCategory)>0 AND TRIM(IN_ImpactCategory)='', 'N/A',
-		LENGTH(IN_ImpactCategory
-		) = 0, 'N/A',
-		LTRIM(RTRIM(IN_ImpactCategory
-			)
-		)
+	DECODE(
+	    TRUE,
+	    IN_ImpactCategory IS NULL, 'N/A',
+	    LENGTH(IN_ImpactCategory)>0 AND TRIM(IN_ImpactCategory)='', 'N/A',
+	    LENGTH(IN_ImpactCategory) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_ImpactCategory))
 	) AS ImpactCategory,
 	Description AS IN_Description,
 	-- *INF*: DECODE(TRUE,
@@ -57,31 +53,26 @@ EXP_Src_Values_Default AS (
 	-- IS_SPACES(IN_Description),'N/A',
 	-- LENGTH(IN_Description)=0,'N/A',
 	-- LTRIM(RTRIM(IN_Description)))
-	DECODE(TRUE,
-		IN_Description IS NULL, 'N/A',
-		LENGTH(IN_Description)>0 AND TRIM(IN_Description)='', 'N/A',
-		LENGTH(IN_Description
-		) = 0, 'N/A',
-		LTRIM(RTRIM(IN_Description
-			)
-		)
+	DECODE(
+	    TRUE,
+	    IN_Description IS NULL, 'N/A',
+	    LENGTH(IN_Description)>0 AND TRIM(IN_Description)='', 'N/A',
+	    LENGTH(IN_Description) = 0, 'N/A',
+	    LTRIM(RTRIM(IN_Description))
 	) AS Description,
 	ImpactCategoryExpirationDate AS IN_ImpactCategoryExpirationDate,
 	-- *INF*: iif(isnull(ltrim(rtrim(IN_ImpactCategoryExpirationDate))),TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS'),IN_ImpactCategoryExpirationDate)
-	IFF(ltrim(rtrim(IN_ImpactCategoryExpirationDate
-			)
-		) IS NULL,
-		TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		IN_ImpactCategoryExpirationDate
+	IFF(
+	    ltrim(rtrim(IN_ImpactCategoryExpirationDate)) IS NULL,
+	    TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'),
+	    IN_ImpactCategoryExpirationDate
 	) AS v_ImpactCategoryExpirationDate,
 	v_ImpactCategoryExpirationDate AS ImpactCategoryExpirationDate,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate
 	FROM SQ_SupNurseImpact
@@ -215,9 +206,10 @@ EXP_Lag_ExpirationDate AS (
 	-- EdwSupNurseImpactPkId = v_PREV_ROW_EdwSupNurseImpactPkId,
 	-- add_to_date(v_PREV_ROW_EffectiveDate,'SS',-1),
 	-- orig_ExpirationDate)
-	decode(true,
-		EdwSupNurseImpactPkId = v_PREV_ROW_EdwSupNurseImpactPkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
-		orig_ExpirationDate
+	decode(
+	    true,
+	    EdwSupNurseImpactPkId = v_PREV_ROW_EdwSupNurseImpactPkId, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
+	    orig_ExpirationDate
 	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	SYSDATE AS ModifiedDate,

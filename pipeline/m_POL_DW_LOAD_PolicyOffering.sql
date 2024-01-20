@@ -17,22 +17,17 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_EffectiveDate
+	IFF(
+	    i_EffectiveDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate
 	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ExpirationDate
+	IFF(
+	    i_ExpirationDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'),
+	    i_ExpirationDate
 	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ModifiedDate
+	IFF(
+	    i_ModifiedDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate
 	) AS o_ModifiedDate
 	FROM SQ_PolicyOffering
 ),
@@ -41,15 +36,9 @@ EXP_NumericValues AS (
 	PolicyOfferingId AS i_PolicyOfferingId,
 	PolicyOfferingAKId AS i_PolicyOfferingAKId,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingId),-1,i_PolicyOfferingId)
-	IFF(i_PolicyOfferingId IS NULL,
-		- 1,
-		i_PolicyOfferingId
-	) AS o_PolicyOfferingId,
+	IFF(i_PolicyOfferingId IS NULL, - 1, i_PolicyOfferingId) AS o_PolicyOfferingId,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingAKId),-1,i_PolicyOfferingAKId)
-	IFF(i_PolicyOfferingAKId IS NULL,
-		- 1,
-		i_PolicyOfferingAKId
-	) AS o_PolicyOfferingAKId
+	IFF(i_PolicyOfferingAKId IS NULL, - 1, i_PolicyOfferingAKId) AS o_PolicyOfferingAKId
 	FROM SQ_PolicyOffering
 ),
 EXP_StringValues AS (
@@ -59,43 +48,36 @@ EXP_StringValues AS (
 	PolicyOfferingAbbreviation AS i_PolicyOfferingAbbreviation,
 	PolicyOfferingDescription AS i_PolicyOfferingDescription,
 	-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)
-	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'
-		),
-		1,
-		0
-	) AS o_CurrentSnapshotFlag,
+	IFF(TRUNC(i_ExpirationDate) = TO_TIMESTAMP('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingCode) OR LENGTH(i_PolicyOfferingCode)=0 OR IS_SPACES(i_PolicyOfferingCode),'N/A',LTRIM(RTRIM(i_PolicyOfferingCode)))
-	IFF(i_PolicyOfferingCode IS NULL 
-		OR LENGTH(i_PolicyOfferingCode
-		) = 0 
-		OR LENGTH(i_PolicyOfferingCode)>0 AND TRIM(i_PolicyOfferingCode)='',
-		'N/A',
-		LTRIM(RTRIM(i_PolicyOfferingCode
-			)
-		)
+	IFF(
+	    i_PolicyOfferingCode IS NULL
+	    or LENGTH(i_PolicyOfferingCode) = 0
+	    or LENGTH(i_PolicyOfferingCode)>0
+	    and TRIM(i_PolicyOfferingCode)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_PolicyOfferingCode))
 	) AS o_PolicyOfferingCode,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingAbbreviation) OR LENGTH(i_PolicyOfferingAbbreviation)=0 OR IS_SPACES(i_PolicyOfferingAbbreviation),'N/A',LTRIM(RTRIM(i_PolicyOfferingAbbreviation)))
-	IFF(i_PolicyOfferingAbbreviation IS NULL 
-		OR LENGTH(i_PolicyOfferingAbbreviation
-		) = 0 
-		OR LENGTH(i_PolicyOfferingAbbreviation)>0 AND TRIM(i_PolicyOfferingAbbreviation)='',
-		'N/A',
-		LTRIM(RTRIM(i_PolicyOfferingAbbreviation
-			)
-		)
+	IFF(
+	    i_PolicyOfferingAbbreviation IS NULL
+	    or LENGTH(i_PolicyOfferingAbbreviation) = 0
+	    or LENGTH(i_PolicyOfferingAbbreviation)>0
+	    and TRIM(i_PolicyOfferingAbbreviation)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_PolicyOfferingAbbreviation))
 	) AS o_PolicyOfferingAbbreviation,
 	-- *INF*: IIF(ISNULL(i_PolicyOfferingDescription) OR LENGTH(i_PolicyOfferingDescription)=0 OR IS_SPACES(i_PolicyOfferingDescription),'N/A',LTRIM(RTRIM(i_PolicyOfferingDescription)))
-	IFF(i_PolicyOfferingDescription IS NULL 
-		OR LENGTH(i_PolicyOfferingDescription
-		) = 0 
-		OR LENGTH(i_PolicyOfferingDescription)>0 AND TRIM(i_PolicyOfferingDescription)='',
-		'N/A',
-		LTRIM(RTRIM(i_PolicyOfferingDescription
-			)
-		)
+	IFF(
+	    i_PolicyOfferingDescription IS NULL
+	    or LENGTH(i_PolicyOfferingDescription) = 0
+	    or LENGTH(i_PolicyOfferingDescription)>0
+	    and TRIM(i_PolicyOfferingDescription)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_PolicyOfferingDescription))
 	) AS o_PolicyOfferingDescription
 	FROM SQ_PolicyOffering
 ),

@@ -1,0 +1,43 @@
+{
+    "name": "s_m_POL_BillingODS_ARCH_Insert_ArchDCPLTPlanStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_BillingODS_ARCH_Insert_ArchDCPLTPlanStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCPLTPlanStage AS (\n\tSELECT\n\t\tDCPLTPlanStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tPlanId,\n\t\tAgencyId,\n\t\tLineOfBusinessCode,\n\t\tMasterCompanyCode,\n\t\tPlanActivationDate,\n\t\tPlanExpirationDate,\n\t\tPolicyInceptionDate,\n\t\tProductCode,\n\t\tStateCode,\n\t\tUserKey1,\n\t\tUserKey2,\n\t\tUserKey3,\n\t\tUserKey4,\n\t\tUserKey5,\n\t\tPlanClassCode,\n\t\tPlanTypeCode,\n\t\tPlanData,\n\t\tLastUpdatedTimestamp,\n\t\tLastUpdatedUserId\n\tFROM DCPLTPlanStage\n),\nEXP_Metadata AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tDCPLTPlanStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tPlanId,\n\tAgencyId,\n\tLineOfBusinessCode,\n\tMasterCompanyCode,\n\tPlanActivationDate,\n\tPlanExpirationDate,\n\tPolicyInceptionDate,\n\tProductCode,\n\tStateCode,\n\tUserKey1,\n\tUserKey2,\n\tUserKey3,\n\tUserKey4,\n\tUserKey5,\n\tPlanClassCode,\n\tPlanTypeCode,\n\tPlanData,\n\tLastUpdatedTimestamp,\n\tLastUpdatedUserId\n\tFROM SQ_DCPLTPlanStage\n),\nLKP_ArchExist AS (\n\tSELECT\n\tArchDCPLTPlanStageId,\n\tPlanId\n\tFROM (\n\t\tSELECT \n\t\t\tArchDCPLTPlanStageId,\n\t\t\tPlanId\n\t\tFROM ArchDCPLTPlanStage\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PlanId ORDER BY ArchDCPLTPlanStageId) = 1\n),\nFIL_Exist AS (\n\tSELECT\n\tLKP_ArchExist.ArchDCPLTPlanStageId AS lkp_ArchDCPLTPlanStageId, \n\tEXP_Metadata.o_AuditId AS AuditId, \n\tEXP_Metadata.DCPLTPlanStageId, \n\tEXP_Metadata.ExtractDate, \n\tEXP_Metadata.SourceSystemId, \n\tEXP_Metadata.PlanId, \n\tEXP_Metadata.AgencyId, \n\tEXP_Metadata.LineOfBusinessCode, \n\tEXP_Metadata.MasterCompanyCode, \n\tEXP_Metadata.PlanActivationDate, \n\tEXP_Metadata.PlanExpirationDate, \n\tEXP_Metadata.PolicyInceptionDate, \n\tEXP_Metadata.ProductCode, \n\tEXP_Metadata.StateCode, \n\tEXP_Metadata.UserKey1, \n\tEXP_Metadata.UserKey2, \n\tEXP_Metadata.UserKey3, \n\tEXP_Metadata.UserKey4, \n\tEXP_Metadata.UserKey5, \n\tEXP_Metadata.PlanClassCode, \n\tEXP_Metadata.PlanTypeCode, \n\tEXP_Metadata.PlanData, \n\tEXP_Metadata.LastUpdatedTimestamp, \n\tEXP_Metadata.LastUpdatedUserId\n\tFROM EXP_Metadata\n\tLEFT JOIN LKP_ArchExist\n\tON LKP_ArchExist.PlanId = EXP_Metadata.PlanId\n\tWHERE ISNULL(lkp_ArchDCPLTPlanStageId)\n),\nArchDCPLTPlanStage AS (\n\tINSERT INTO ArchDCPLTPlanStage\n\t(ExtractDate, SourceSystemId, AuditId, DCPLTPlanStageId, PlanId, AgencyId, LineOfBusinessCode, MasterCompanyCode, PlanActivationDate, PlanExpirationDate, PolicyInceptionDate, ProductCode, StateCode, UserKey1, UserKey2, UserKey3, UserKey4, UserKey5, PlanClassCode, PlanTypeCode, PlanData, LastUpdatedTimestamp, LastUpdatedUserId)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID, \n\tDCPLTPLANSTAGEID, \n\tPLANID, \n\tAGENCYID, \n\tLINEOFBUSINESSCODE, \n\tMASTERCOMPANYCODE, \n\tPLANACTIVATIONDATE, \n\tPLANEXPIRATIONDATE, \n\tPOLICYINCEPTIONDATE, \n\tPRODUCTCODE, \n\tSTATECODE, \n\tUSERKEY1, \n\tUSERKEY2, \n\tUSERKEY3, \n\tUSERKEY4, \n\tUSERKEY5, \n\tPLANCLASSCODE, \n\tPLANTYPECODE, \n\tPLANDATA, \n\tLASTUPDATEDTIMESTAMP, \n\tLASTUPDATEDUSERID\n\tFROM FIL_Exist\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

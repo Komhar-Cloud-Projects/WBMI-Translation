@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCBPLocationStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCBPLocationStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_BP_Location AS (\n\tWITH cte_DCBPLocation(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.BP_LocationId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.BuildingAutomaticIncrease, \r\n\tX.BuildingCodeEffectivenessGrading, \r\n\tX.ComputerFraudApplicable, \r\n\tX.Description, \r\n\tX.DesignatedLimitApplicable, \r\n\tX.ElectronicCommerceApplicable, \r\n\tX.EmployeeDishonestyApplicable, \r\n\tX.FLCatastrophicGroundCoverCollapseCounty, \r\n\tX.Territory, \r\n\tX.TerrorismTerr,\r\n\tX.Number   \r\n\tFROM\r\n\tDC_BP_Location X\r\n\tinner join\r\n\tcte_DCBPLocation Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXPTRANS AS (\n\tSELECT\n\tBP_LocationId,\n\tSessionId,\n\tId,\n\tBuildingAutomaticIncrease,\n\tBuildingCodeEffectivenessGrading,\n\tComputerFraudApplicable AS i_ComputerFraudApplicable,\n\t-- *INF*: IIF(i_ComputerFraudApplicable='T',1,0)\n\tIFF(i_ComputerFraudApplicable = 'T', 1, 0) AS o_ComputerFraudApplicable,\n\tDescription,\n\tDesignatedLimitApplicable AS i_DesignatedLimitApplicable,\n\t-- *INF*: IIF(i_DesignatedLimitApplicable='T',1,0)\n\tIFF(i_DesignatedLimitApplicable = 'T', 1, 0) AS o_DesignatedLimitApplicable,\n\tElectronicCommerceApplicable AS i_ElectronicCommerceApplicable,\n\t-- *INF*: IIF(i_ElectronicCommerceApplicable='T',1,0)\n\tIFF(i_ElectronicCommerceApplicable = 'T', 1, 0) AS o_ElectronicCommerceApplicable,\n\tEmployeeDishonestyApplicable AS i_EmployeeDishonestyApplicable,\n\t-- *INF*: IIF(i_EmployeeDishonestyApplicable='T',1,0)\n\tIFF(i_EmployeeDishonestyApplicable = 'T', 1, 0) AS o_EmployeeDishonestyApplicable,\n\tFLCatastrophicGroundCoverCollapseCounty,\n\tTerritory,\n\tTerrorismTerr,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,\n\tNumber\n\tFROM SQ_DC_BP_Location\n),\nDCBPLocationStage AS (\n\tTRUNCATE TABLE DCBPLocationStage;\n\tINSERT INTO DCBPLocationStage\n\t(ExtractDate, SourceSystemId, BPLocationId, SessionId, Id, BuildingAutomaticIncrease, BuildingCodeEffectivenessGrading, ComputerFraudApplicable, Description, DesignatedLimitApplicable, ElectronicCommerceApplicable, EmployeeDishonestyApplicable, FLCatastrophicGroundCoverCollapseCounty, Territory, TerrorismTerr, Number)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tBP_LocationId AS BPLOCATIONID, \n\tSESSIONID, \n\tID, \n\tBUILDINGAUTOMATICINCREASE, \n\tBUILDINGCODEEFFECTIVENESSGRADING, \n\to_ComputerFraudApplicable AS COMPUTERFRAUDAPPLICABLE, \n\tDESCRIPTION, \n\to_DesignatedLimitApplicable AS DESIGNATEDLIMITAPPLICABLE, \n\to_ElectronicCommerceApplicable AS ELECTRONICCOMMERCEAPPLICABLE, \n\to_EmployeeDishonestyApplicable AS EMPLOYEEDISHONESTYAPPLICABLE, \n\tFLCATASTROPHICGROUNDCOVERCOLLAPSECOUNTY, \n\tTERRITORY, \n\tTERRORISMTERR, \n\tNUMBER\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

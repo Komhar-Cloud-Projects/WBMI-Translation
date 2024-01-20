@@ -41,61 +41,47 @@ AGG_Remove_Duplicates AS (
 	i_SessionId AS o_SessionId,
 	i_LocationId AS o_LocationId,
 	-- *INF*: IIF(ISNULL(i_CustomerNum) or IS_SPACES(i_CustomerNum) or LENGTH(i_CustomerNum)=0, 'N/A', LTRIM(RTRIM(i_CustomerNum)))
-	IFF(i_CustomerNum IS NULL 
-		OR LENGTH(i_CustomerNum)>0 AND TRIM(i_CustomerNum)='' 
-		OR LENGTH(i_CustomerNum
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_CustomerNum
-			)
-		)
+	IFF(
+	    i_CustomerNum IS NULL
+	    or LENGTH(i_CustomerNum)>0
+	    and TRIM(i_CustomerNum)=''
+	    or LENGTH(i_CustomerNum) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_CustomerNum))
 	) AS o_CustomerNumber,
 	-- *INF*: IIF(ISNULL(i_Id) or IS_SPACES(i_Id) or LENGTH(i_Id)=0, 'N/A', LTRIM(RTRIM(i_Id)))
-	IFF(i_Id IS NULL 
-		OR LENGTH(i_Id)>0 AND TRIM(i_Id)='' 
-		OR LENGTH(i_Id
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_Id
-			)
-		)
+	IFF(
+	    i_Id IS NULL or LENGTH(i_Id)>0 AND TRIM(i_Id)='' or LENGTH(i_Id) = 0, 'N/A',
+	    LTRIM(RTRIM(i_Id))
 	) AS o_Id,
 	-- *INF*: IIF(ISNULL(i_PolicyNumber) or IS_SPACES(i_PolicyNumber) or LENGTH(i_PolicyNumber)=0, 'N/A', LTRIM(RTRIM(i_PolicyNumber)))
-	IFF(i_PolicyNumber IS NULL 
-		OR LENGTH(i_PolicyNumber)>0 AND TRIM(i_PolicyNumber)='' 
-		OR LENGTH(i_PolicyNumber
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_PolicyNumber
-			)
-		)
+	IFF(
+	    i_PolicyNumber IS NULL
+	    or LENGTH(i_PolicyNumber)>0
+	    and TRIM(i_PolicyNumber)=''
+	    or LENGTH(i_PolicyNumber) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_PolicyNumber))
 	) AS o_PolicyNumber,
 	-- *INF*: IIF(ISNULL(i_PolicyVersion), '00', LPAD(TO_CHAR(i_PolicyVersion), 2 , '0'))
-	IFF(i_PolicyVersion IS NULL,
-		'00',
-		LPAD(TO_CHAR(i_PolicyVersion
-			), 2, '0'
-		)
-	) AS o_PolicyVersion,
+	IFF(i_PolicyVersion IS NULL, '00', LPAD(TO_CHAR(i_PolicyVersion), 2, '0')) AS o_PolicyVersion,
 	-- *INF*: IIF(ISNULL(i_PrimaryEmail) or IS_SPACES(i_PrimaryEmail) or LENGTH(i_PrimaryEmail)=0, 'N/A', LTRIM(RTRIM(i_PrimaryEmail)))
-	IFF(i_PrimaryEmail IS NULL 
-		OR LENGTH(i_PrimaryEmail)>0 AND TRIM(i_PrimaryEmail)='' 
-		OR LENGTH(i_PrimaryEmail
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_PrimaryEmail
-			)
-		)
+	IFF(
+	    i_PrimaryEmail IS NULL
+	    or LENGTH(i_PrimaryEmail)>0
+	    and TRIM(i_PrimaryEmail)=''
+	    or LENGTH(i_PrimaryEmail) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_PrimaryEmail))
 	) AS o_PrimaryEmail,
 	-- *INF*: IIF(ISNULL(i_SecondaryEmail) or IS_SPACES(i_SecondaryEmail) or LENGTH(i_SecondaryEmail)=0, 'N/A', LTRIM(RTRIM(i_SecondaryEmail)))
-	IFF(i_SecondaryEmail IS NULL 
-		OR LENGTH(i_SecondaryEmail)>0 AND TRIM(i_SecondaryEmail)='' 
-		OR LENGTH(i_SecondaryEmail
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_SecondaryEmail
-			)
-		)
+	IFF(
+	    i_SecondaryEmail IS NULL
+	    or LENGTH(i_SecondaryEmail)>0
+	    and TRIM(i_SecondaryEmail)=''
+	    or LENGTH(i_SecondaryEmail) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_SecondaryEmail))
 	) AS o_SecondaryEmail,
 	i_EmailType AS o_EmailType
 	FROM SQ_DCLocationStaging
@@ -262,46 +248,34 @@ EXP_Detect_Changes AS (
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_from_date,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date,
 	LKP_contract_customer_key.contract_cust_ak_id AS ContractCustomerAKID,
 	LKP_SupEmailTypeCode.SupEmailTypeCodeId AS i_SupEmailTypeCodeId,
 	-- *INF*: IIF(ISNULL(i_SupEmailTypeCodeId), -1, i_SupEmailTypeCodeId)
-	IFF(i_SupEmailTypeCodeId IS NULL,
-		- 1,
-		i_SupEmailTypeCodeId
-	) AS o_SupEmailTypeCodeId,
+	IFF(i_SupEmailTypeCodeId IS NULL, - 1, i_SupEmailTypeCodeId) AS o_SupEmailTypeCodeId,
 	LKP_SupEmailPriorityCode.SupEmailPriorityCodeId AS i_SupEmailPriorityCodeId,
 	-- *INF*: IIF(ISNULL(i_SupEmailPriorityCodeId)-1,i_SupEmailPriorityCodeId)
-	IFF(i_SupEmailPriorityCodeId IS NULL - 1,
-		i_SupEmailPriorityCodeId
-	) AS o_SupEmailPriorityCodeId,
+	IFF(i_SupEmailPriorityCodeId IS NULL - 1, i_SupEmailPriorityCodeId) AS o_SupEmailPriorityCodeId,
 	AGG_ContractCustomerMailKey.Email,
 	-- *INF*: IIF(lkp_ContractCustomerEmailAKID=-1 OR ISNULL(lkp_ContractCustomerEmailAddressID),NEXTVAL,lkp_ContractCustomerEmailAKID)
-	IFF(lkp_ContractCustomerEmailAKID = - 1 
-		OR lkp_ContractCustomerEmailAddressID IS NULL,
-		NEXTVAL,
-		lkp_ContractCustomerEmailAKID
+	IFF(
+	    lkp_ContractCustomerEmailAKID = - 1 OR lkp_ContractCustomerEmailAddressID IS NULL, NEXTVAL,
+	    lkp_ContractCustomerEmailAKID
 	) AS o_ContractCustomerEmailAKID,
 	-- *INF*: DECODE(TRUE,
 	-- ContractCustomerAKID=-1 or lkp_ContractCustomerEmailAddressID=-1 , 'NEW', 
 	-- LTRIM(RTRIM(Email)) <> LTRIM(RTRIM(lkp_CustomerEmailAddress)),'UPDATE', 
 	-- 'NOCHANGE')
-	DECODE(TRUE,
-		ContractCustomerAKID = - 1 
-		OR lkp_ContractCustomerEmailAddressID = - 1, 'NEW',
-		LTRIM(RTRIM(Email
-			)
-		) <> LTRIM(RTRIM(lkp_CustomerEmailAddress
-			)
-		), 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    ContractCustomerAKID = - 1 or lkp_ContractCustomerEmailAddressID = - 1, 'NEW',
+	    LTRIM(RTRIM(Email)) <> LTRIM(RTRIM(lkp_CustomerEmailAddress)), 'UPDATE',
+	    'NOCHANGE'
 	) AS v_changed_flag,
 	v_changed_flag AS changed_flag
 	FROM AGG_ContractCustomerMailKey

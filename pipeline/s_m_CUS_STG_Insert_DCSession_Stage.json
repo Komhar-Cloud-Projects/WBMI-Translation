@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CUS_STG_Insert_DCSession_Stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CUS_STG_Insert_DCSession_Stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_Session AS (\n\tSELECT DC_Session.SessionId, DC_Session.ExampleQuoteId, DC_Session.UserName, DC_Session.CreateDateTime, DC_Session.Purpose \r\n\tFROM\r\n\t @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session \r\n\twhere\r\n\t DC_Session.CreateDateTime >='@{pipeline().parameters.SELECTION_START_TS}' and\r\n\t DC_Session.CreateDateTime <'@{pipeline().parameters.SELECTION_END_TS}'\r\n\torder by\r\n\tDC_Session.SessionId\n),\nExp_Session AS (\n\tSELECT\n\tSessionId,\n\tExampleQuoteId,\n\tUserName,\n\tCreateDateTime,\n\tPurpose,\n\tSysdate AS ExtractDate,\n\t'DCT' AS SourceSystemID\n\tFROM SQ_DC_Session\n),\nDCSessionStage AS (\n\tINSERT INTO Shortcut_to_DCSessionStage\n\t(ExtractDate, SourceSystemid, SessionId, UserName, CreateDateTime, Purpose, ExampleQuoteId)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemID AS SOURCESYSTEMID, \n\tSESSIONID, \n\tUSERNAME, \n\tCREATEDATETIME, \n\tPURPOSE, \n\tEXAMPLEQUOTEID\n\tFROM Exp_Session\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CustomerStaging/"
+        },
+        "annotations": []
+    }
+}

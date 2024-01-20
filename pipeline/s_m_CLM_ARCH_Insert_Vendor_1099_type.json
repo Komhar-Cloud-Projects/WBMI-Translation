@@ -1,0 +1,55 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_Vendor_1099_type",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_Vendor_1099_type",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_vendor_1099_type_stage AS (\n\tSELECT\r\n\t vendor_1099_type_stage.vendor_1099_type_id, \r\n\tvendor_1099_type_stage.vendor_type_code, \r\n\tvendor_1099_type_stage.vendor_type_desc \r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.vendor_1099_type_stage\n),\nEXP_arch_vendor_1099_stage AS (\n\tSELECT\n\tvendor_1099_type_id,\n\tvendor_type_code,\n\tvendor_type_desc,\n\tSYSDATE AS extract_date,\n\tSYSDATE AS as_of_date,\n\t'' AS record_count,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id\n\tFROM SQ_vendor_1099_type_stage\n),\nTGT_arch_vendor_1099_type_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_vendor_1099_type_stage\n\t(vendor_1099_type_stage_id, vendor_type_code, vendor_type_desc, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tvendor_1099_type_id AS VENDOR_1099_TYPE_STAGE_ID, \n\tVENDOR_TYPE_CODE, \n\tVENDOR_TYPE_DESC, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID\n\tFROM EXP_arch_vendor_1099_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

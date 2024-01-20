@@ -1,0 +1,239 @@
+WITH
+SQ_SapiensReinsuranceDatesExtract AS (
+	SELECT
+		SOURCE_SEQ_NUM,
+		DATE_CODE,
+		DATE_VALUE,
+		AuditId,
+		CreatedDate,
+		ModifiedDate
+	FROM SapiensReinsuranceDatesExtract
+),
+EXP_Dates AS (
+	SELECT
+	SOURCE_SEQ_NUM,
+	DATE_CODE,
+	DATE_VALUE,
+	AuditId,
+	CreatedDate,
+	ModifiedDate
+	FROM SQ_SapiensReinsuranceDatesExtract
+),
+ArchSapiensReinsuranceDatesExtract AS (
+	INSERT INTO ArchSapiensReinsuranceDatesExtract
+	(SOURCE_SEQ_NUM, DATE_CODE, DATE_VALUE, AuditId, CreatedDate, ModifiedDate)
+	SELECT 
+	SOURCE_SEQ_NUM, 
+	DATE_CODE, 
+	DATE_VALUE, 
+	AUDITID, 
+	CREATEDDATE, 
+	MODIFIEDDATE
+	FROM EXP_Dates
+),
+SQ_SapiensReinsurancePaymentsExtract AS (
+	SELECT
+		SOURCE_SEQ_NUM,
+		ACCOUNTING_ITEM,
+		ACP_SEQ_NUM,
+		ACP_TYPE,
+		ACP_FROM_DT,
+		ACP_TO_DT,
+		ACP_AMOUNT,
+		QUEUE_NO,
+		ACP_TOTAL_AMOUNT,
+		ACP_YEAR_AMOUNT,
+		AuditId,
+		CreatedDate,
+		ModifiedDate,
+		PAYMENT_ATTR
+	FROM SapiensReinsurancePaymentsExtract
+),
+EXP_Payments AS (
+	SELECT
+	SOURCE_SEQ_NUM,
+	ACCOUNTING_ITEM,
+	ACP_SEQ_NUM,
+	ACP_TYPE,
+	ACP_FROM_DT,
+	ACP_TO_DT,
+	ACP_AMOUNT,
+	QUEUE_NO,
+	ACP_TOTAL_AMOUNT,
+	ACP_YEAR_AMOUNT,
+	AuditId,
+	CreatedDate,
+	ModifiedDate,
+	PAYMENT_ATTR
+	FROM SQ_SapiensReinsurancePaymentsExtract
+),
+ArchSapiensReinsurancePaymentsExtract AS (
+	INSERT INTO ArchSapiensReinsurancePaymentsExtract
+	(SOURCE_SEQ_NUM, ACCOUNTING_ITEM, ACP_SEQ_NUM, ACP_TYPE, ACP_FROM_DT, ACP_TO_DT, ACP_AMOUNT, QUEUE_NO, ACP_TOTAL_AMOUNT, ACP_YEAR_AMOUNT, AuditId, CreatedDate, ModifiedDate, PAYMENT_ATTR)
+	SELECT 
+	SOURCE_SEQ_NUM, 
+	ACCOUNTING_ITEM, 
+	ACP_SEQ_NUM, 
+	ACP_TYPE, 
+	ACP_FROM_DT, 
+	ACP_TO_DT, 
+	ACP_AMOUNT, 
+	QUEUE_NO, 
+	ACP_TOTAL_AMOUNT, 
+	ACP_YEAR_AMOUNT, 
+	AUDITID, 
+	CREATEDDATE, 
+	MODIFIEDDATE, 
+	PAYMENT_ATTR
+	FROM EXP_Payments
+),
+SQ_SapiensReinsuranceHeaderExtract AS (
+	SELECT
+		SOURCE_SEQ_NUM,
+		DATA_SOURCE,
+		COMPANY_CODE,
+		POLICY_NO,
+		OBJECT_ID,
+		ENDORSEMENT_NO,
+		TRAN_NO,
+		DOCUMENT_TYPE,
+		CLAIM_ID,
+		SUB_CLAIM_ID,
+		IS_BORDERAEU,
+		BUSINESS_IND,
+		EXCEPTION_IND,
+		QUEUE_NO,
+		BUSINESS_DEPRTMT,
+		XOL_ALLOCATION,
+		ASSUMED_COMPANY,
+		ACCOUNTING_MONTH,
+		SUBSYSTEM_ID,
+		AuditId,
+		CreatedDate,
+		ModifiedDate
+	FROM SapiensReinsuranceHeaderExtract
+),
+EXP_Header AS (
+	SELECT
+	SOURCE_SEQ_NUM,
+	DATA_SOURCE,
+	COMPANY_CODE,
+	POLICY_NO,
+	OBJECT_ID,
+	ENDORSEMENT_NO,
+	TRAN_NO,
+	DOCUMENT_TYPE,
+	CLAIM_ID,
+	SUB_CLAIM_ID,
+	IS_BORDERAEU,
+	BUSINESS_IND,
+	EXCEPTION_IND,
+	QUEUE_NO,
+	BUSINESS_DEPRTMT,
+	XOL_ALLOCATION,
+	ASSUMED_COMPANY,
+	ACCOUNTING_MONTH,
+	SUBSYSTEM_ID,
+	AuditId,
+	CreatedDate,
+	ModifiedDate
+	FROM SQ_SapiensReinsuranceHeaderExtract
+),
+ArchSapiensReinsuranceHeaderExtract AS (
+	INSERT INTO ArchSapiensReinsuranceHeaderExtract
+	(SOURCE_SEQ_NUM, DATA_SOURCE, COMPANY_CODE, POLICY_NO, OBJECT_ID, ENDORSEMENT_NO, TRAN_NO, DOCUMENT_TYPE, CLAIM_ID, SUB_CLAIM_ID, IS_BORDERAEU, BUSINESS_IND, EXCEPTION_IND, QUEUE_NO, BUSINESS_DEPRTMT, XOL_ALLOCATION, ASSUMED_COMPANY, ACCOUNTING_MONTH, SUBSYSTEM_ID, AuditId, CreatedDate, ModifiedDate)
+	SELECT 
+	SOURCE_SEQ_NUM, 
+	DATA_SOURCE, 
+	COMPANY_CODE, 
+	POLICY_NO, 
+	OBJECT_ID, 
+	ENDORSEMENT_NO, 
+	TRAN_NO, 
+	DOCUMENT_TYPE, 
+	CLAIM_ID, 
+	SUB_CLAIM_ID, 
+	IS_BORDERAEU, 
+	BUSINESS_IND, 
+	EXCEPTION_IND, 
+	QUEUE_NO, 
+	BUSINESS_DEPRTMT, 
+	XOL_ALLOCATION, 
+	ASSUMED_COMPANY, 
+	ACCOUNTING_MONTH, 
+	SUBSYSTEM_ID, 
+	AUDITID, 
+	CREATEDDATE, 
+	MODIFIEDDATE
+	FROM EXP_Header
+),
+SQ_SapiensReinsuranceAttributesExtract AS (
+	SELECT
+		SOURCE_SEQ_NUM,
+		ATTR_CODE,
+		ATTR_VAL,
+		OBJ_VAL_SEQ_NO,
+		AuditId,
+		CreatedDate,
+		ModifiedDate
+	FROM SapiensReinsuranceAttributesExtract
+),
+EXP_Attributes AS (
+	SELECT
+	SOURCE_SEQ_NUM,
+	ATTR_CODE,
+	ATTR_VAL,
+	OBJ_VAL_SEQ_NO,
+	AuditId,
+	CreatedDate,
+	ModifiedDate
+	FROM SQ_SapiensReinsuranceAttributesExtract
+),
+ArchSapiensReinsuranceAttributesExtract AS (
+	INSERT INTO ArchSapiensReinsuranceAttributesExtract
+	(SOURCE_SEQ_NUM, ATTR_CODE, ATTR_VAL, OBJ_VAL_SEQ_NO, AuditId, CreatedDate, ModifiedDate)
+	SELECT 
+	SOURCE_SEQ_NUM, 
+	ATTR_CODE, 
+	ATTR_VAL, 
+	OBJ_VAL_SEQ_NO, 
+	AUDITID, 
+	CREATEDDATE, 
+	MODIFIEDDATE
+	FROM EXP_Attributes
+),
+SQ_SapiensReinsuranceAccountingItemsExtract AS (
+	SELECT
+		SOURCE_SEQ_NUM,
+		ACCOUNTING_ITEM,
+		ACOUNTING_AMOUNT,
+		CURRENCY_CODE,
+		AuditId,
+		CreatedDate,
+		ModifiedDate
+	FROM SapiensReinsuranceAccountingItemsExtract
+),
+EXP_AccountingItem AS (
+	SELECT
+	SOURCE_SEQ_NUM,
+	ACCOUNTING_ITEM,
+	ACOUNTING_AMOUNT,
+	CURRENCY_CODE,
+	AuditId,
+	CreatedDate,
+	ModifiedDate
+	FROM SQ_SapiensReinsuranceAccountingItemsExtract
+),
+ArchSapiensReinsuranceAccountingItemsExtract AS (
+	INSERT INTO ArchSapiensReinsuranceAccountingItemsExtract
+	(SOURCE_SEQ_NUM, ACCOUNTING_ITEM, ACOUNTING_AMOUNT, CURRENCY_CODE, AuditId, CreatedDate, ModifiedDate)
+	SELECT 
+	SOURCE_SEQ_NUM, 
+	ACCOUNTING_ITEM, 
+	ACOUNTING_AMOUNT, 
+	CURRENCY_CODE, 
+	AUDITID, 
+	CREATEDDATE, 
+	MODIFIEDDATE
+	FROM EXP_AccountingItem
+),

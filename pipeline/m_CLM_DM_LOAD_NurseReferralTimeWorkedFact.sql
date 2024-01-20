@@ -31,31 +31,20 @@ EXP_Scr_values AS (
 	NurseReferralAkId,
 	TimeWorkedSequence AS IN_TimeWorkedSequence,
 	-- *INF*: iif(isnull(IN_TimeWorkedSequence),-1,IN_TimeWorkedSequence)
-	IFF(IN_TimeWorkedSequence IS NULL,
-		- 1,
-		IN_TimeWorkedSequence
-	) AS v_TimeWorkedSequence,
+	IFF(IN_TimeWorkedSequence IS NULL, - 1, IN_TimeWorkedSequence) AS v_TimeWorkedSequence,
 	v_TimeWorkedSequence AS TimeWorkedSequence,
 	WorkedDate AS IN_WorkedDate,
 	-- *INF*: :LKP.LKP_CALANDER_DIM(to_date(to_char(IN_WorkedDate, 'MM/DD/YYYY'), 'MM/DD/YYYY'))
 	LKP_CALANDER_DIM_to_date_to_char_IN_WorkedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_id AS v_WorkedDate,
 	-- *INF*: iif(isnull(v_WorkedDate),-1,v_WorkedDate)
-	IFF(v_WorkedDate IS NULL,
-		- 1,
-		v_WorkedDate
-	) AS TimeWorkedEnteredDateId,
+	IFF(v_WorkedDate IS NULL, - 1, v_WorkedDate) AS TimeWorkedEnteredDateId,
 	TimeWorkedHours AS IN_TimeWorkedHours,
 	-- *INF*: iif(isnull(IN_TimeWorkedHours), 0,IN_TimeWorkedHours) 
-	IFF(IN_TimeWorkedHours IS NULL,
-		0,
-		IN_TimeWorkedHours
-	) AS v_TimeWorkedHours,
+	IFF(IN_TimeWorkedHours IS NULL, 0, IN_TimeWorkedHours) AS v_TimeWorkedHours,
 	v_TimeWorkedHours AS TimeWorkedHours
 	FROM SQ_NurseReferralTimeWorked
 	LEFT JOIN LKP_CALANDER_DIM LKP_CALANDER_DIM_to_date_to_char_IN_WorkedDate_MM_DD_YYYY_MM_DD_YYYY
-	ON LKP_CALANDER_DIM_to_date_to_char_IN_WorkedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = to_date(to_char(IN_WorkedDate, 'MM/DD/YYYY'
-	), 'MM/DD/YYYY'
-)
+	ON LKP_CALANDER_DIM_to_date_to_char_IN_WorkedDate_MM_DD_YYYY_MM_DD_YYYY.clndr_date = TO_TIMESTAMP(to_char(IN_WorkedDate, 'MM/DD/YYYY'), 'MM/DD/YYYY')
 
 ),
 LKP_NurseReferral_EDW_Scr AS (
@@ -190,24 +179,15 @@ EXP_Defualt_Values AS (
 	SELECT
 	LKP_NurseReferralDim_DM_Tgt.NurseReferralDimId AS IN_NurseReferralDimId,
 	-- *INF*: iif(isnull(IN_NurseReferralDimId),-1,IN_NurseReferralDimId)
-	IFF(IN_NurseReferralDimId IS NULL,
-		- 1,
-		IN_NurseReferralDimId
-	) AS v_NurseReferralDimId,
+	IFF(IN_NurseReferralDimId IS NULL, - 1, IN_NurseReferralDimId) AS v_NurseReferralDimId,
 	v_NurseReferralDimId AS NurseReferralDimId,
 	mplt_Claimant_Occurrence_dim_ids.claim_occurrence_dim_id AS IN_claim_occurrence_dim_id,
 	-- *INF*: iif(isnull(IN_claim_occurrence_dim_id), -1,IN_claim_occurrence_dim_id)
-	IFF(IN_claim_occurrence_dim_id IS NULL,
-		- 1,
-		IN_claim_occurrence_dim_id
-	) AS v_claim_occurrence_dim_id,
+	IFF(IN_claim_occurrence_dim_id IS NULL, - 1, IN_claim_occurrence_dim_id) AS v_claim_occurrence_dim_id,
 	v_claim_occurrence_dim_id AS claim_occurrence_dim_id,
 	mplt_Claimant_Occurrence_dim_ids.claimant_dim_id AS IN_claimant_dim_id,
 	-- *INF*: iif(isnull(IN_claimant_dim_id),-1,IN_claimant_dim_id)
-	IFF(IN_claimant_dim_id IS NULL,
-		- 1,
-		IN_claimant_dim_id
-	) AS v_claimant_dim_id,
+	IFF(IN_claimant_dim_id IS NULL, - 1, IN_claimant_dim_id) AS v_claimant_dim_id,
 	v_claimant_dim_id AS claimant_dim_id,
 	EXP_Scr_values.NurseReferralTimeWorkedId,
 	EXP_Scr_values.TimeWorkedSequence,
@@ -273,18 +253,19 @@ EXP_Lkp_Detect_Changes AS (
 	--   'UPDATE','NOCHANGE' )
 	-- 
 	--   )       
-	IFF(Lkp_NurseReferralTimeWorkedFactId IS NULL,
-		'NEW',
-		IFF(Lkp_EdwNurseReferralTimeWorkedPkId != NurseReferralTimeWorkedId 
-			OR Lkp_claimant_dim_id != claimant_dim_id 
-			OR Lkp_claim_occurrence_dim_id != claim_occurrence_dim_id 
-			OR Lkp_NurseReferralDimId != NurseReferralDimId 
-			OR Lkp_TimeWorkedEnteredDateId != TimeWorkedEnteredDateId 
-			OR Lkp_TimeWorkedSequence != TimeWorkedSequence 
-			OR Lkp_TimeWorkedHours != TimeWorkedHours,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    Lkp_NurseReferralTimeWorkedFactId IS NULL, 'NEW',
+	    IFF(
+	        Lkp_EdwNurseReferralTimeWorkedPkId != NurseReferralTimeWorkedId
+	        or Lkp_claimant_dim_id != claimant_dim_id
+	        or Lkp_claim_occurrence_dim_id != claim_occurrence_dim_id
+	        or Lkp_NurseReferralDimId != NurseReferralDimId
+	        or Lkp_TimeWorkedEnteredDateId != TimeWorkedEnteredDateId
+	        or Lkp_TimeWorkedSequence != TimeWorkedSequence
+	        or Lkp_TimeWorkedHours != TimeWorkedHours,
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangedFlag,
 	EXP_Defualt_Values.NurseReferralDimId,

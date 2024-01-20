@@ -63,55 +63,34 @@ EXP_Modifiers AS (
 	-- i_BureauCode9='100' and i_InsuranceLine='CR' and i_TypeBureauCode='FT',1,
 	-- i_BureauCode7='100' and i_InsuranceLine='CR' and i_TypeBureauCode='BT',1, 
 	-- 0)
-	DECODE(TRUE,
-		i_BureauCode11 = '100' 
-		AND i_InsuranceLine = 'GL', 1,
-		i_BureauCode12 = '100' 
-		AND i_InsuranceLine = 'CR' 
-		AND i_TypeBureauCode = 'CR', 1,
-		i_BureauCode9 = '100' 
-		AND i_InsuranceLine = 'CR' 
-		AND i_TypeBureauCode = 'FT', 1,
-		i_BureauCode7 = '100' 
-		AND i_InsuranceLine = 'CR' 
-		AND i_TypeBureauCode = 'BT', 1,
-		0
+	DECODE(
+	    TRUE,
+	    i_BureauCode11 = '100' and i_InsuranceLine = 'GL', 1,
+	    i_BureauCode12 = '100' and i_InsuranceLine = 'CR' and i_TypeBureauCode = 'CR', 1,
+	    i_BureauCode9 = '100' and i_InsuranceLine = 'CR' and i_TypeBureauCode = 'FT', 1,
+	    i_BureauCode7 = '100' and i_InsuranceLine = 'CR' and i_TypeBureauCode = 'BT', 1,
+	    0
 	) AS v_DefaultFlag,
 	-- *INF*: IIF(v_DefaultFlag=0,
 	-- :LKP.LKP_ArchPif08Stage(i_PolicyKey),
 	-- 1)
-	IFF(v_DefaultFlag = 0,
-		LKP_ARCHPIF08STAGE_i_PolicyKey.RatingModifier,
-		1
-	) AS v_Modifier,
+	IFF(v_DefaultFlag = 0, LKP_ARCHPIF08STAGE_i_PolicyKey.RatingModifier, 1) AS v_Modifier,
 	-- *INF*: IIF(v_DefaultFlag=0,
 	-- i_PolicyKey||'&BND',
 	-- 'Default')
-	IFF(v_DefaultFlag = 0,
-		i_PolicyKey || '&BND',
-		'Default'
-	) AS v_WorkRatingModifierKey,
+	IFF(v_DefaultFlag = 0, i_PolicyKey || '&BND', 'Default') AS v_WorkRatingModifierKey,
 	-- *INF*: IIF(v_DefaultFlag=0,MD5(v_WorkRatingModifierKey),'Default')
-	IFF(v_DefaultFlag = 0,
-		MD5(v_WorkRatingModifierKey
-		),
-		'Default'
-	) AS o_WorkRatingModifierHashKey,
+	IFF(v_DefaultFlag = 0, MD5(v_WorkRatingModifierKey), 'Default') AS o_WorkRatingModifierHashKey,
 	v_WorkRatingModifierKey AS o_WorkRatingModifierKey,
 	-- *INF*: IIF(NOT ISNULL(v_Modifier) AND v_Modifier>0,v_Modifier,1)
-	IFF(v_Modifier IS NULL 
-		AND v_ModifierNOT  > 0,
-		v_Modifier,
-		1
-	) AS o_ScheduleModifiedFactor,
+	IFF(v_Modifier IS NULL AND v_ModifierNOT  > 0, v_Modifier, 1) AS o_ScheduleModifiedFactor,
 	-- *INF*: IIF(v_DefaultFlag=0, 
 	-- ADD_TO_DATE(TRUNC(GREATEST(i_PremiumTransactionEnteredDate,PremiumTransactionEffectiveDate),'DD'),'SS',86399),
 	-- TO_DATE('18000101','YYYYMMDD'))
-	IFF(v_DefaultFlag = 0,
-		DATEADD(SECOND,86399,CAST(TRUNC(GREATEST(i_PremiumTransactionEnteredDate, PremiumTransactionEffectiveDate
-		), 'DAY') AS TIMESTAMP_NTZ(0))),
-		TO_DATE('18000101', 'YYYYMMDD'
-		)
+	IFF(
+	    v_DefaultFlag = 0,
+	    DATEADD(SECOND,86399,CAST(TRUNC(GREATEST(i_PremiumTransactionEnteredDate, PremiumTransactionEffectiveDate), 'DAY') AS TIMESTAMP_NTZ(0))),
+	    TO_TIMESTAMP('18000101', 'YYYYMMDD')
 	) AS o_PremiumTransactionBookedDate
 	FROM SQ_PMS
 	LEFT JOIN LKP_ARCHPIF08STAGE LKP_ARCHPIF08STAGE_i_PolicyKey
@@ -137,11 +116,9 @@ AGGTRANS AS (
 	ScheduleModifiedFactor,
 	PremiumTransactionBookedDate AS i_PremiumTransactionBookedDate,
 	-- *INF*: MIN(i_PremiumTransactionBookedDate)
-	MIN(i_PremiumTransactionBookedDate
-	) AS o_RunDate,
+	MIN(i_PremiumTransactionBookedDate) AS o_RunDate,
 	-- *INF*: MIN(i_PremiumTransactionEffectiveDate)
-	MIN(i_PremiumTransactionEffectiveDate
-	) AS o_RatingModifierEffectiveDate
+	MIN(i_PremiumTransactionEffectiveDate) AS o_RatingModifierEffectiveDate
 	FROM SRTTRANS
 	GROUP BY WorkRatingModifierHashKey
 ),
@@ -182,10 +159,7 @@ EXPTRANS AS (
 	AGGTRANS.o_RunDate AS RunDate,
 	AGGTRANS.o_RatingModifierEffectiveDate AS RatingModifierEffectiveDate,
 	-- *INF*: IIF(ISNULL(lkp_WorkRatingModifierAKId),i_NEXTVAL,lkp_WorkRatingModifierAKId)
-	IFF(lkp_WorkRatingModifierAKId IS NULL,
-		i_NEXTVAL,
-		lkp_WorkRatingModifierAKId
-	) AS WorkRatingModifierAKId
+	IFF(lkp_WorkRatingModifierAKId IS NULL, i_NEXTVAL, lkp_WorkRatingModifierAKId) AS WorkRatingModifierAKId
 	FROM AGGTRANS
 	LEFT JOIN LKP_WorkRatingModifierAKId
 	ON LKP_WorkRatingModifierAKId.WorkRatingModifierHashKey = AGGTRANS.WorkRatingModifierHashKey
@@ -249,30 +223,26 @@ EXP_RatingModifier AS (
 	-- lkp_ScheduleModifiedFactor!=ScheduleModifiedFactor,'NEW',
 	-- lkp_ExperienceModifiedFactor!=ExperienceModifiedFactor,'NEW',
 	-- 'NOCHANGE')
-	DECODE(TRUE,
-		lkp_WorkRatingModifierHashKey IS NULL, 'NEW',
-		lkp_EffectiveDate = i_RunDate, 'NOCHANGE',
-		lkp_OtherModifiedFactor != OtherModifiedFactor, 'NEW',
-		lkp_ScheduleModifiedFactor != ScheduleModifiedFactor, 'NEW',
-		lkp_ExperienceModifiedFactor != ExperienceModifiedFactor, 'NEW',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    lkp_WorkRatingModifierHashKey IS NULL, 'NEW',
+	    lkp_EffectiveDate = i_RunDate, 'NOCHANGE',
+	    lkp_OtherModifiedFactor != OtherModifiedFactor, 'NEW',
+	    lkp_ScheduleModifiedFactor != ScheduleModifiedFactor, 'NEW',
+	    lkp_ExperienceModifiedFactor != ExperienceModifiedFactor, 'NEW',
+	    'NOCHANGE'
 	) AS v_ChangeFlag,
 	-- *INF*: IIF(v_ChangeFlag='NEW',i_RunDate,lkp_EffectiveDate)
-	IFF(v_ChangeFlag = 'NEW',
-		i_RunDate,
-		lkp_EffectiveDate
-	) AS o_RunDate,
+	IFF(v_ChangeFlag = 'NEW', i_RunDate, lkp_EffectiveDate) AS o_RunDate,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	v_ChangeFlag AS o_ChangeFlag,
 	-- *INF*: TO_DATE('01/01/1800 0','MM/DD/YYYY SSSSS')
-	TO_DATE('01/01/1800 0', 'MM/DD/YYYY SSSSS'
-	) AS EffectiveDate,
+	TO_TIMESTAMP('01/01/1800 0', 'MM/DD/YYYY SSSSS') AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 86399','MM/DD/YYYY SSSSS')
-	TO_DATE('12/31/2100 86399', 'MM/DD/YYYY SSSSS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 86399', 'MM/DD/YYYY SSSSS') AS ExpirationDate,
 	'1' AS CurrentSnapshotFlag
 	FROM EXPTRANS
 	LEFT JOIN LKP_WorkRatingModifier
@@ -313,10 +283,7 @@ EXP_DetectChanges AS (
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	-- *INF*: IIF(ISNULL(lkp_PremiumTransactionID),'NEW','NOCHANGE')
-	IFF(lkp_PremiumTransactionID IS NULL,
-		'NEW',
-		'NOCHANGE'
-	) AS o_ChangeFlag
+	IFF(lkp_PremiumTransactionID IS NULL, 'NEW', 'NOCHANGE') AS o_ChangeFlag
 	FROM JNRTRANS
 	LEFT JOIN LKP_WorkPremiumTransactionRatingModifierBridge
 	ON LKP_WorkPremiumTransactionRatingModifierBridge.PremiumTransactionAKId = JNRTRANS.PremiumTransactionAKId

@@ -30,8 +30,7 @@ EXP_Source AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS O_audit_id,
 	sysdate AS O_eff_from_date,
 	-- *INF*: to_date('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	to_date('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS O_eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS O_eff_to_date,
 	sysdate AS O_created_date,
 	sysdate AS O_modified_date,
 	ws_type,
@@ -46,30 +45,16 @@ EXP_Source AS (
 	ws_total_db_amount,
 	ws_total_db_count,
 	-- *INF*: IIF(ws_type = 'D' AND ws_trans_type = 'K', ROUND(v_total_db_amount_chk + ws_amount,2), v_total_db_amount_chk)
-	IFF(ws_type = 'D' 
-		AND ws_trans_type = 'K',
-		ROUND(v_total_db_amount_chk + ws_amount, 2
-		),
-		v_total_db_amount_chk
+	IFF(
+	    ws_type = 'D' AND ws_trans_type = 'K', ROUND(v_total_db_amount_chk + ws_amount, 2),
+	    v_total_db_amount_chk
 	) AS v_total_db_amount_chk,
 	-- *INF*: IIF(ws_type = 'D' AND ws_trans_type = 'K', v_total_db_count_chk +  1, v_total_db_count_chk)
-	IFF(ws_type = 'D' 
-		AND ws_trans_type = 'K',
-		v_total_db_count_chk + 1,
-		v_total_db_count_chk
-	) AS v_total_db_count_chk,
+	IFF(ws_type = 'D' AND ws_trans_type = 'K', v_total_db_count_chk + 1, v_total_db_count_chk) AS v_total_db_count_chk,
 	-- *INF*: IIF(ws_type = 'T' AND v_total_db_amount_chk != ws_total_db_amount, 'N','Y')
-	IFF(ws_type = 'T' 
-		AND v_total_db_amount_chk != ws_total_db_amount,
-		'N',
-		'Y'
-	) AS v_db_amt_check,
+	IFF(ws_type = 'T' AND v_total_db_amount_chk != ws_total_db_amount, 'N', 'Y') AS v_db_amt_check,
 	-- *INF*: IIF(ws_type = 'T' AND v_total_db_count_chk != ws_total_db_count, 'N','Y')
-	IFF(ws_type = 'T' 
-		AND v_total_db_count_chk != ws_total_db_count,
-		'N',
-		'Y'
-	) AS v_db_cnt_check
+	IFF(ws_type = 'T' AND v_total_db_count_chk != ws_total_db_count, 'N', 'Y') AS v_db_cnt_check
 	FROM SQ_bank_file_stage
 ),
 FLT_Source_Rows AS (
@@ -100,31 +85,17 @@ EXP_Insert AS (
 	SYSDATE AS O_modified_date,
 	ws_bank_nbr,
 	-- *INF*: IIF(ISNULL(ltrim(rtrim(ws_bank_nbr))),'N/A',ws_bank_nbr)
-	IFF(ltrim(rtrim(ws_bank_nbr
-			)
-		) IS NULL,
-		'N/A',
-		ws_bank_nbr
-	) AS o_ws_bank_nbr,
+	IFF(ltrim(rtrim(ws_bank_nbr)) IS NULL, 'N/A', ws_bank_nbr) AS o_ws_bank_nbr,
 	ws_acct_nbr,
 	-- *INF*: IIF(ISNULL(ltrim(rtrim(ws_acct_nbr))),'N/A',ws_acct_nbr)
-	IFF(ltrim(rtrim(ws_acct_nbr
-			)
-		) IS NULL,
-		'N/A',
-		ws_acct_nbr
-	) AS o_ws_acct_nbr,
+	IFF(ltrim(rtrim(ws_acct_nbr)) IS NULL, 'N/A', ws_acct_nbr) AS o_ws_acct_nbr,
 	ws_trans_type,
 	ws_check_nbr,
 	ws_amount,
 	ws_trans_code,
 	ws_trans_date,
 	-- *INF*: IIF(ISNULL(ws_trans_date),TO_DATE('1/1/1800','MM/DD/YYYY'),ws_trans_date)
-	IFF(ws_trans_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		ws_trans_date
-	) AS o_ws_trans_date,
+	IFF(ws_trans_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), ws_trans_date) AS o_ws_trans_date,
 	ws_trans_status
 	FROM FLT_Source_Rows
 ),

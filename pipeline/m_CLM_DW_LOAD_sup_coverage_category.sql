@@ -14,41 +14,23 @@ EXP_default AS (
 	SELECT
 	cov_category_code,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(cov_category_code)))OR IS_SPACES(LTRIM(RTRIM(cov_category_code))) OR LENGTH(LTRIM(RTRIM(cov_category_code))) =0, 'N/A',LTRIM(RTRIM(cov_category_code)))
-	IFF(LTRIM(RTRIM(cov_category_code
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(cov_category_code
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(cov_category_code
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(cov_category_code
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(cov_category_code
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(cov_category_code)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(cov_category_code)))>0
+	    and TRIM(LTRIM(RTRIM(cov_category_code)))=''
+	    or LENGTH(LTRIM(RTRIM(cov_category_code))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(cov_category_code))
 	) AS cov_category_code_out,
 	cov_category_descript,
 	-- *INF*: IIF(ISNULL(LTRIM(RTRIM(cov_category_descript))) OR IS_SPACES(LTRIM(RTRIM(cov_category_descript))) OR LENGTH(LTRIM(RTRIM(cov_category_descript))) = 0 ,'N/A' , LTRIM(RTRIM(cov_category_descript)))
-	IFF(LTRIM(RTRIM(cov_category_descript
-			)
-		) IS NULL 
-		OR LENGTH(LTRIM(RTRIM(cov_category_descript
-			)
-		))>0 AND TRIM(LTRIM(RTRIM(cov_category_descript
-			)
-		))='' 
-		OR LENGTH(LTRIM(RTRIM(cov_category_descript
-				)
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(cov_category_descript
-			)
-		)
+	IFF(
+	    LTRIM(RTRIM(cov_category_descript)) IS NULL
+	    or LENGTH(LTRIM(RTRIM(cov_category_descript)))>0
+	    and TRIM(LTRIM(RTRIM(cov_category_descript)))=''
+	    or LENGTH(LTRIM(RTRIM(cov_category_descript))) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(cov_category_descript))
 	) AS cov_category_descript_out
 	FROM SQ_coverage_category_stage
 ),
@@ -76,30 +58,24 @@ EXP_detect_changes AS (
 	-- IIF(LTRIM(RTRIM( old_cov_ctgry_descript)) != (LTRIM(RTRIM(cov_ctgry_descript_out))) 
 	-- 
 	-- , 'UPDATE', 'NOCHANGE'))
-	IFF(sup_cov_ctgry_id IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(old_cov_ctgry_descript
-				)
-			) != ( LTRIM(RTRIM(cov_ctgry_descript_out
-					)
-				) 
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    sup_cov_ctgry_id IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(old_cov_ctgry_descript)) != (LTRIM(RTRIM(cov_ctgry_descript_out))),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	v_changed_flag AS Changed_flag,
 	1 AS crrnt_snpsht_flag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	-- *INF*: IIF(v_changed_flag = 'NEW', TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_changed_flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*:  TO_DATE('12/31/2100 11:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 11:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 11:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -172,9 +148,10 @@ EXP_lag_eff_from_date AS (
 	-- TRUE,cov_ctgry_code= v_Prev_row_cov_ctgry_code, 
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
 	--  
-	DECODE(TRUE,
-		cov_ctgry_code = v_Prev_row_cov_ctgry_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    cov_ctgry_code = v_Prev_row_cov_ctgry_code, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	cov_ctgry_code AS v_Prev_row_cov_ctgry_code,

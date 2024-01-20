@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLM_MED_PLAN_TYPE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLM_MED_PLAN_TYPE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_clm_med_plan_type_stage AS (\n\tSELECT\n\t\tclm_med_plan_type_stage_id,\n\t\tcms_doc_cntl_num,\n\t\tinjured_party_id,\n\t\twbm_plan_ins_type,\n\t\tstate_venue,\n\t\tmed_oblig_to_clmt,\n\t\torm_terminate_dt,\n\t\tno_fault_ins_limit,\n\t\texhaust_limit_dt,\n\t\ttpoc_date1,\n\t\ttpoc_amount1,\n\t\ttpoc_fund_dlay_dt1,\n\t\ttpoc_date2,\n\t\ttpoc_amount2,\n\t\ttpoc_fund_dlay_dt2,\n\t\ttpoc_date3,\n\t\ttpoc_amount3,\n\t\ttpoc_fund_dlay_dt3,\n\t\ttpoc_date4,\n\t\ttpoc_amount4,\n\t\ttpoc_fund_dlay_dt4,\n\t\ttpoc_date5,\n\t\ttpoc_amount5,\n\t\ttpoc_fund_dlay_dt5,\n\t\tcreated_ts,\n\t\tcreated_user_id,\n\t\tmodified_ts,\n\t\tmodified_user_id,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id,\n\t\tplan_type_deleted\n\tFROM clm_med_plan_type_stage\n\tWHERE CREATED_TS >= '@{pipeline().parameters.SELECTION_START_TS}'  OR MODIFIED_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_values AS (\n\tSELECT\n\tclm_med_plan_type_stage_id,\n\tcms_doc_cntl_num,\n\tinjured_party_id,\n\twbm_plan_ins_type,\n\tstate_venue,\n\tmed_oblig_to_clmt,\n\torm_terminate_dt,\n\tno_fault_ins_limit,\n\texhaust_limit_dt,\n\ttpoc_date1,\n\ttpoc_amount1,\n\ttpoc_fund_dlay_dt1,\n\ttpoc_date2,\n\ttpoc_amount2,\n\ttpoc_fund_dlay_dt2,\n\ttpoc_date3,\n\ttpoc_amount3,\n\ttpoc_fund_dlay_dt3,\n\ttpoc_date4,\n\ttpoc_amount4,\n\ttpoc_fund_dlay_dt4,\n\ttpoc_date5,\n\ttpoc_amount5,\n\ttpoc_fund_dlay_dt5,\n\tcreated_ts,\n\tcreated_user_id,\n\tmodified_ts,\n\tmodified_user_id,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID,\n\tplan_type_deleted\n\tFROM SQ_clm_med_plan_type_stage\n),\narch_clm_med_plan_type_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_clm_med_plan_type_stage\n\t(clm_med_plan_type_stage_id, cms_doc_cntl_num, injured_party_id, wbm_plan_ins_type, state_venue, med_oblig_to_clmt, orm_terminate_dt, no_fault_ins_limit, exhaust_limit_dt, tpoc_date1, tpoc_amount1, tpoc_fund_dlay_dt1, tpoc_date2, tpoc_amount2, tpoc_fund_dlay_dt2, tpoc_date3, tpoc_amount3, tpoc_fund_dlay_dt3, tpoc_date4, tpoc_amount4, tpoc_fund_dlay_dt4, tpoc_date5, tpoc_amount5, tpoc_fund_dlay_dt5, created_ts, created_user_id, modified_ts, modified_user_id, extract_date, as_of_date, record_count, source_system_id, audit_id, plan_type_deleted)\n\tSELECT \n\tCLM_MED_PLAN_TYPE_STAGE_ID, \n\tCMS_DOC_CNTL_NUM, \n\tINJURED_PARTY_ID, \n\tWBM_PLAN_INS_TYPE, \n\tSTATE_VENUE, \n\tMED_OBLIG_TO_CLMT, \n\tORM_TERMINATE_DT, \n\tNO_FAULT_INS_LIMIT, \n\tEXHAUST_LIMIT_DT, \n\tTPOC_DATE1, \n\tTPOC_AMOUNT1, \n\tTPOC_FUND_DLAY_DT1, \n\tTPOC_DATE2, \n\tTPOC_AMOUNT2, \n\tTPOC_FUND_DLAY_DT2, \n\tTPOC_DATE3, \n\tTPOC_AMOUNT3, \n\tTPOC_FUND_DLAY_DT3, \n\tTPOC_DATE4, \n\tTPOC_AMOUNT4, \n\tTPOC_FUND_DLAY_DT4, \n\tTPOC_DATE5, \n\tTPOC_AMOUNT5, \n\tTPOC_FUND_DLAY_DT5, \n\tCREATED_TS, \n\tCREATED_USER_ID, \n\tMODIFIED_TS, \n\tMODIFIED_USER_ID, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID AS AUDIT_ID, \n\tPLAN_TYPE_DELETED\n\tFROM EXP_values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

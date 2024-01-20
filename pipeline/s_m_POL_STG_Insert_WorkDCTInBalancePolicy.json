@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_WorkDCTInBalancePolicy",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_WorkDCTInBalancePolicy",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBEDWIncrementalDataQualitySessions AS (\n\tSELECT A.ExtractDate, A.SourceSystemid, A.PolicyNumber, A.HistoryID, A.Purpose, A.SessionID, A.SourceAccountingDate  \r\n\tFROM\r\n\t@{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WBEDWIncrementalDataQualitySessions A \r\n\twhere A.Indicator=1\r\n\tand A.Autoshred<> '1'\n),\nEXP_MetaData AS (\n\tSELECT\n\tExtractDate,\n\tSourceSystemid,\n\tPolicyNumber,\n\tHistoryID,\n\tPurpose,\n\tSessionID,\n\tSourceAccountingDate\n\tFROM SQ_WBEDWIncrementalDataQualitySessions\n),\nLKP_WorkDCTInBalancePolicy AS (\n\tSELECT\n\tHistoryID,\n\tPurpose\n\tFROM (\n\t\tSELECT \n\t\t\tHistoryID,\n\t\t\tPurpose\n\t\tFROM WorkDCTInBalancePolicy\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY HistoryID,Purpose ORDER BY HistoryID) = 1\n),\nEXP_AccountingDate AS (\n\tSELECT\n\tLKP_WorkDCTInBalancePolicy.HistoryID AS LKP_HistoryID,\n\tLKP_WorkDCTInBalancePolicy.Purpose AS LKP_Purpose,\n\tEXP_MetaData.ExtractDate,\n\tEXP_MetaData.SourceSystemid,\n\tCURRENT_TIMESTAMP AS o_CreatedDate,\n\t'InformS' AS o_CreatedUserID,\n\tEXP_MetaData.PolicyNumber,\n\tEXP_MetaData.HistoryID,\n\tEXP_MetaData.SessionID,\n\tEXP_MetaData.Purpose,\n\tEXP_MetaData.SourceAccountingDate,\n\t-- *INF*: DECODE(TRUE,\r\n\t-- TO_CHAR(SESSSTARTTIME,'DD')='01' AND UPPER(TO_CHAR(ADD_TO_DATE(SESSSTARTTIME,'D',-1),'DAY'))='SUNDAY',ADD_TO_DATE(SESSSTARTTIME,'D',-1),\r\n\t-- SESSSTARTTIME\r\n\t-- )\n\tDECODE(\n\t    TRUE,\n\t    TO_CHAR(SESSSTARTTIME, 'DD') = '01' AND UPPER(TO_CHAR(DATEADD(DAY,- 1,SESSSTARTTIME), 'DAY')) = 'SUNDAY', DATEADD(DAY,- 1,SESSSTARTTIME),\n\t    SESSSTARTTIME\n\t) AS v_SessStartTime,\n\t-- *INF*: LAST_DAY(SourceAccountingDate)\n\tLAST_DAY(SourceAccountingDate) AS v_SourceAccountingDate,\n\t-- *INF*: SET_DATE_PART(\r\n\t-- SET_DATE_PART(\r\n\t-- SET_DATE_PART(\r\n\t-- TRUNC(v_SourceAccountingDate,'DAY'), 'HH24', 23),\r\n\t-- 'MI',59),\r\n\t-- 'SS',59)\n\tDATEADD(SECOND,59-DATE_PART(SECOND,DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,CAST(TRUNC(v_SourceAccountingDate, 'DAY') AS TIMESTAMP_NTZ(0))),CAST(TRUNC(v_SourceAccountingDate, 'DAY') AS TIMESTAMP_NTZ(0)))),DATEADD(HOUR,23-DATE_PART(HOUR,CAST(TRUNC(v_SourceAccountingDate, 'DAY') AS TIMESTAMP_NTZ(0))),CAST(TRUNC(v_SourceAccountingDate, 'DAY') AS TIMESTAMP_NTZ(0))))),DATEADD(MINUTE,59-DATE_PART(MINUTE,DATEADD(HOUR,23-DATE_PART(HOUR,CAST(TRUNC(v_SourceAccountingDate, 'DAY') AS TIMESTAMP_NTZ(0))),CAST(TRUNC(v_SourceAccountingDate, 'DAY') AS TIMESTAMP_NTZ(0)))),DATEADD(HOUR,23-DATE_PART(HOUR,CAST(TRUNC(v_SourceAccountingDate, 'DAY') AS TIMESTAMP_NTZ(0))),CAST(TRUNC(v_SourceAccountingDate, 'DAY') AS TIMESTAMP_NTZ(0))))) AS o_SourceAccountingDate,\n\t-- *INF*: DECODE( TRUE,\r\n\t-- NOT ISNULL(LKP_HistoryID),1,\r\n\t-- LTRIM(RTRIM(Purpose))='Onset',0,\r\n\t-- 1)\n\tDECODE(\n\t    TRUE,\n\t    LKP_HistoryID IS NOT NULL, 1,\n\t    LTRIM(RTRIM(Purpose)) = 'Onset', 0,\n\t    1\n\t) AS v_ProcessedFlag,\n\tv_ProcessedFlag AS ProcessedFlag\n\tFROM EXP_MetaData\n\tLEFT JOIN LKP_WorkDCTInBalancePolicy\n\tON LKP_WorkDCTInBalancePolicy.HistoryID = EXP_MetaData.HistoryID AND LKP_WorkDCTInBalancePolicy.Purpose = EXP_MetaData.Purpose\n),\nWorkDCTInBalancePolicy AS (\n\tINSERT INTO WorkDCTInBalancePolicy\n\t(ExtractDate, SourceSystemid, CreatedDate, CreatedUserID, PolicyNumber, HistoryID, SessionID, Purpose, AccountingDate, ProcessedFlag)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_CreatedDate AS CREATEDDATE, \n\to_CreatedUserID AS CREATEDUSERID, \n\tPOLICYNUMBER, \n\tHISTORYID, \n\tSESSIONID, \n\tPURPOSE, \n\to_SourceAccountingDate AS ACCOUNTINGDATE, \n\tPROCESSEDFLAG\n\tFROM EXP_AccountingDate\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

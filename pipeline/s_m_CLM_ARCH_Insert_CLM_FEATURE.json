@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLM_FEATURE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLM_FEATURE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Clm_Feature_Staging AS (\n\tSELECT\n\t\tClmFeatureStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tTch_Claim_Nbr,\n\t\tTch_Client_Id,\n\t\tCov_Type_Cd,\n\t\tCov_Seq_Nbr,\n\t\tBur_Cause_Loss,\n\t\tAdjuster_Client_Id,\n\t\tCreated_TS,\n\t\tModified_TS,\n\t\tcreated_user_id,\n\t\tmodified_user_id\n\tFROM Clm_Feature_Staging\n),\nEXP_Values AS (\n\tSELECT\n\tClmFeatureStagingId,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS out_AuditId,\n\tTch_Claim_Nbr,\n\tTch_Client_Id,\n\tCov_Type_Cd,\n\tCov_Seq_Nbr,\n\tBur_Cause_Loss,\n\tAdjuster_Client_Id,\n\tCreated_TS,\n\tModified_TS,\n\tcreated_user_id,\n\tmodified_user_id\n\tFROM SQ_Clm_Feature_Staging\n),\nArch_Clm_Feature_Staging AS (\n\tINSERT INTO Arch_Clm_Feature_Staging\n\t(ExtractDate, SourceSystemId, AuditId, Tch_Claim_Nbr, Tch_Client_Id, Cov_Type_Cd, Cov_Seq_Nbr, Bur_Cause_Loss, Adjuster_Client_Id, Created_TS, Modified_TS, created_user_id, modified_user_id)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tout_AuditId AS AUDITID, \n\tTCH_CLAIM_NBR, \n\tTCH_CLIENT_ID, \n\tCOV_TYPE_CD, \n\tCOV_SEQ_NBR, \n\tBUR_CAUSE_LOSS, \n\tADJUSTER_CLIENT_ID, \n\tCREATED_TS, \n\tMODIFIED_TS, \n\tCREATED_USER_ID, \n\tMODIFIED_USER_ID\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

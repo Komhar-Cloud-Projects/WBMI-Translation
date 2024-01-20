@@ -168,8 +168,7 @@ EXP_Default AS (
 	SQ_pif_4514_stage.pif_policy_number,
 	SQ_pif_4514_stage.pif_module,
 	-- *INF*: (pif_symbol  || pif_policy_number || pif_module)
-	( pif_symbol || pif_policy_number || pif_module 
-	) AS v_Pol_key,
+	(pif_symbol || pif_policy_number || pif_module) AS v_Pol_key,
 	-- *INF*: :LKP.LKP_POLICY_POLICYAKID(v_Pol_key)
 	LKP_POLICY_POLICYAKID_v_Pol_key.pol_ak_id AS v_LKP_PolicyAKID,
 	v_LKP_PolicyAKID AS PolicyAKID,
@@ -177,39 +176,26 @@ EXP_Default AS (
 	SQ_pif_4514_stage.sar_insurance_line,
 	SQ_pif_4514_stage.sar_location_x AS i_LocationUnitNumber,
 	-- *INF*: LTRIM(RTRIM(i_LocationUnitNumber))
-	LTRIM(RTRIM(i_LocationUnitNumber
-		)
-	) AS v_LocationUnitNumber,
+	LTRIM(RTRIM(i_LocationUnitNumber)) AS v_LocationUnitNumber,
 	SQ_pif_4514_stage.sar_state,
 	-- *INF*: IIF(LTRIM(RTRIM(sar_state))='00', '0',LTRIM(RTRIM(sar_state)))
-	IFF(LTRIM(RTRIM(sar_state
-			)
-		) = '00',
-		'0',
-		LTRIM(RTRIM(sar_state
-			)
-		)
-	) AS v_StateProvinceCode,
+	IFF(LTRIM(RTRIM(sar_state)) = '00', '0', LTRIM(RTRIM(sar_state))) AS v_StateProvinceCode,
 	SQ_pif_4514_stage.sar_loc_prov_territory,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory
-	) AS v_RiskTerritory,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_loc_prov_territory) AS v_RiskTerritory,
 	SQ_pif_4514_stage.sar_city,
 	-- *INF*: iif(reg_match(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city) ,'(\d{6})')
 	-- ,:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city)
 	-- ,'000000')
-	IFF(REGEXP_LIKE(:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city
-			), '(\d{6})'
-		),
-		:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_city
-		),
-		'000000'
+	IFF(
+	    REGEXP_LIKE(UDF_DEFAULT_VALUE_FOR_STRINGS(sar_city), '(\d{6})'),
+	    UDF_DEFAULT_VALUE_FOR_STRINGS(sar_city),
+	    '000000'
 	) AS v_TaxLocation,
 	SQ_pif_4514_stage.sar_type_bureau,
 	SQ_pif_4514_stage.sar_zip_postal_code,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(sar_zip_postal_code)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(sar_zip_postal_code
-	) AS v_ZipPostalCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(sar_zip_postal_code) AS v_ZipPostalCode,
 	SQ_pif_4514_stage.logical_flag AS LogicalIndicator,
 	SQ_pif_4514_stage.pif_line_business,
 	SQ_pif_4514_stage.pif_audit_code,
@@ -219,25 +205,22 @@ EXP_Default AS (
 	LKP_RISKLOCATION_RISKLOCATIONAKID_v_LKP_PolicyAKID_v_LocationUnitNumber_v_RiskTerritory_v_StateProvinceCode_v_ZipPostalCode_v_TaxLocation.RiskLocationAKID AS LKP_RiskLocationAKID,
 	SQ_pif_4514_stage.PriorCarrierName AS i_PriorCarrierName,
 	-- *INF*: LTRIM(RTRIM(i_PriorCarrierName))
-	LTRIM(RTRIM(i_PriorCarrierName
-		)
-	) AS o_PriorCarrierName,
+	LTRIM(RTRIM(i_PriorCarrierName)) AS o_PriorCarrierName,
 	LKP_pif_4514_ClassCode_WC.sar_class_1_4 AS i_sar_class_1_4,
 	LKP_Pif43LXZWCStage_RatingPlan.Pmdl4w1RatingProgramType AS i_Pmdl4w1RatingProgramType,
 	-- *INF*: UPPER(i_Pmdl4w1RatingProgramType)
-	UPPER(i_Pmdl4w1RatingProgramType
-	) AS v_Pmdl4w1RatingProgramType,
+	UPPER(i_Pmdl4w1RatingProgramType) AS v_Pmdl4w1RatingProgramType,
 	-- *INF*: DECODE(TRUE,
 	-- v_Pmdl4w1RatingProgramType='G' AND  NOT ISNULL(i_sar_class_1_4),
 	-- 'Small Deductible',
 	-- v_Pmdl4w1RatingProgramType='R',
 	-- 'Large Risk Alternative Rating Option(LRARO)',
 	-- 'Guaranteed Cost')
-	DECODE(TRUE,
-		v_Pmdl4w1RatingProgramType = 'G' 
-		AND i_sar_class_1_4 IS NOT NULL, 'Small Deductible',
-		v_Pmdl4w1RatingProgramType = 'R', 'Large Risk Alternative Rating Option(LRARO)',
-		'Guaranteed Cost'
+	DECODE(
+	    TRUE,
+	    v_Pmdl4w1RatingProgramType = 'G' AND i_sar_class_1_4 IS NOT NULL, 'Small Deductible',
+	    v_Pmdl4w1RatingProgramType = 'R', 'Large Risk Alternative Rating Option(LRARO)',
+	    'Guaranteed Cost'
 	) AS o_RatingPlanDescription
 	FROM SQ_pif_4514_stage
 	LEFT JOIN LKP_Pif43LXZWCStage_RatingPlan
@@ -269,13 +252,9 @@ EXP_GetAKIDs AS (
 	pif_line_business,
 	-- *INF*: iif(isnull(PolicyAKID)
 	-- ,error('Policy_AK_ID can not be blank'))
-	IFF(PolicyAKID IS NULL,
-		error('Policy_AK_ID can not be blank'
-		)
-	) AS v_ErrorPolicy,
+	IFF(PolicyAKID IS NULL, error('Policy_AK_ID can not be blank')) AS v_ErrorPolicy,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_sar_insurance_line)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_sar_insurance_line
-	) AS v_InsuranceLine,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_sar_insurance_line) AS v_InsuranceLine,
 	-- *INF*: --TO_CHAR(in_sar_cov_eff_year)
 	'' AS v_sar_cov_eff_year,
 	-- *INF*: --LPAD(TO_CHAR(in_sar_cov_eff_month),2,'0')
@@ -288,47 +267,32 @@ EXP_GetAKIDs AS (
 	-- *INF*: --TO_DATE(v_sar_cov_eff_month  || '/'  || v_sar_cov_eff_day  || '/'  || v_sar_cov_eff_year, 'MM/DD/YYYY')
 	'' AS v_PolicyCoverageEffectiveDate,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_sar_type_bureau)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_sar_type_bureau
-	) AS v_TypeBureauCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_sar_type_bureau) AS v_TypeBureauCode,
 	-- *INF*: iif(isnull(RiskLocationAKID)
 	-- ,error('RiskLocationAKID can not be blank'))
-	IFF(RiskLocationAKID IS NULL,
-		error('RiskLocationAKID can not be blank'
-		)
-	) AS v_ErrorRiskLocation,
+	IFF(RiskLocationAKID IS NULL, error('RiskLocationAKID can not be blank')) AS v_ErrorRiskLocation,
 	PolKey || RiskLocationAKID AS v_PolicyCoverageKey,
 	-- *INF*: MD5(to_char(PolicyAKID) || to_char(RiskLocationAKID) || v_InsuranceLine || v_TypeBureauCode)
-	MD5(to_char(PolicyAKID
-		) || to_char(RiskLocationAKID
-		) || v_InsuranceLine || v_TypeBureauCode
-	) AS v_PolicyCoverageHashKey,
+	MD5(to_char(PolicyAKID) || to_char(RiskLocationAKID) || v_InsuranceLine || v_TypeBureauCode) AS v_PolicyCoverageHashKey,
 	v_PolicyCoverageHashKey AS out_PolicyCoverageHashKey,
 	v_PolicyCoverageKey AS out_PolicyCoverageKey,
 	v_InsuranceLine AS out_InsuranceLine,
 	v_TypeBureauCode AS out_TypeBureauCode,
 	-- *INF*: TO_DATE('01/01/1800 23:59:59' , 'MM/DD/YYYY HH24:MI:SS')
 	-- --v_PolicyCoverageEffectiveDate
-	TO_DATE('01/01/1800 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS out_PolicyCoverageEffectiveDate,
+	TO_TIMESTAMP('01/01/1800 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS out_PolicyCoverageEffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59' , 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS out_PolicyCoverageExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS out_PolicyCoverageExpirationDate,
 	-- *INF*: IIF(IN(LTRIM(RTRIM(in_pif_audit_code)),'Y','A','M'),'1','0')
-	IFF(LTRIM(RTRIM(in_pif_audit_code
-			)
-		) IN ('Y','A','M'),
-		'1',
-		'0'
-	) AS out_AuditableIndicator,
+	IFF(LTRIM(RTRIM(in_pif_audit_code)) IN ('Y','A','M'), '1', '0') AS out_AuditableIndicator,
 	-- *INF*: IIF(ISNULL(in_pif_risk_grade_guide) OR IS_SPACES(in_pif_risk_grade_guide) OR LENGTH(in_pif_risk_grade_guide)=0, 'N/A', LTRIM(RTRIM(in_pif_risk_grade_guide)))
-	IFF(in_pif_risk_grade_guide IS NULL 
-		OR LENGTH(in_pif_risk_grade_guide)>0 AND TRIM(in_pif_risk_grade_guide)='' 
-		OR LENGTH(in_pif_risk_grade_guide
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(in_pif_risk_grade_guide
-			)
-		)
+	IFF(
+	    in_pif_risk_grade_guide IS NULL
+	    or LENGTH(in_pif_risk_grade_guide)>0
+	    and TRIM(in_pif_risk_grade_guide)=''
+	    or LENGTH(in_pif_risk_grade_guide) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(in_pif_risk_grade_guide))
 	) AS out_RiskGradeCode,
 	o_PriorCarrierName AS PriorCarrierName,
 	'N/A' AS PriorPolicyKey,
@@ -470,10 +434,11 @@ EXP_GetDefaultValue AS (
 	SELECT
 	LKP_PolicyCoverage.CurrentSnapshotFlag AS LKP_CurrentSnapshotFlag,
 	-- *INF*: Decode(LKP_CurrentSnapshotFlag,'T','1','F','0',LKP_CurrentSnapshotFlag)
-	Decode(LKP_CurrentSnapshotFlag,
-		'T', '1',
-		'F', '0',
-		LKP_CurrentSnapshotFlag
+	Decode(
+	    LKP_CurrentSnapshotFlag,
+	    'T', '1',
+	    'F', '0',
+	    LKP_CurrentSnapshotFlag
 	) AS v_LKP_CurrentSnapshotFlag,
 	LKP_PolicyCoverage.PolicyCoverageAKID AS LKP_PolicyCoverageAKID,
 	LKP_PolicyCoverage.PolicyCoverageID AS in_PolicyCoverageID,
@@ -503,41 +468,34 @@ EXP_GetDefaultValue AS (
 	LKP_PriorCoverage.PriorCoverageId AS lkp_PriorCoverageId,
 	LKP_RatingPlan.RatingPlanAKId AS lkp_RatingPlanAKId,
 	-- *INF*: IIF(ISNULL(lkp_RatingPlanAKId),-1, lkp_RatingPlanAKId)
-	IFF(lkp_RatingPlanAKId IS NULL,
-		- 1,
-		lkp_RatingPlanAKId
-	) AS v_RatingPlanAKId,
+	IFF(lkp_RatingPlanAKId IS NULL, - 1, lkp_RatingPlanAKId) AS v_RatingPlanAKId,
 	-- *INF*: DECODE(in_AuditableIndicator,
 	-- 'T',
 	-- '1',
 	-- 'F',
 	-- '0',
 	-- NULL)
-	DECODE(in_AuditableIndicator,
-		'T', '1',
-		'F', '0',
-		NULL
+	DECODE(
+	    in_AuditableIndicator,
+	    'T', '1',
+	    'F', '0',
+	    NULL
 	) AS v_LKP_AuditableIndicator,
 	-- *INF*: IIF(
 	-- ISNULL(in_Pmdl4w1InterstRiskIdNo2) OR ISNULL(in_Pmdl4w1InterstRiskFiller) OR NOT IN(in_pif_line_business,'WC','WCP'),'N/A',
 	-- in_Pmdl4w1InterstRiskIdNo2 || in_Pmdl4w1InterstRiskFiller
 	-- )
-	IFF(in_Pmdl4w1InterstRiskIdNo2 IS NULL 
-		OR in_Pmdl4w1InterstRiskFiller IS NULL 
-		OR NOT in_pif_line_business IN ('WC','WCP'),
-		'N/A',
-		in_Pmdl4w1InterstRiskIdNo2 || in_Pmdl4w1InterstRiskFiller
+	IFF(
+	    in_Pmdl4w1InterstRiskIdNo2 IS NULL
+	    or in_Pmdl4w1InterstRiskFiller IS NULL
+	    or NOT in_pif_line_business IN ('WC','WCP'),
+	    'N/A',
+	    in_Pmdl4w1InterstRiskIdNo2 || in_Pmdl4w1InterstRiskFiller
 	) AS v_InterstateRiskId,
 	-- *INF*: IIF(ISNULL(in_sup_ins_line_id), -1, in_sup_ins_line_id)
-	IFF(in_sup_ins_line_id IS NULL,
-		- 1,
-		in_sup_ins_line_id
-	) AS out_sup_ins_line_id,
+	IFF(in_sup_ins_line_id IS NULL, - 1, in_sup_ins_line_id) AS out_sup_ins_line_id,
 	-- *INF*: IIF(ISNULL(in_sup_type_bureau_code_id), -1, in_sup_type_bureau_code_id)
-	IFF(in_sup_type_bureau_code_id IS NULL,
-		- 1,
-		in_sup_type_bureau_code_id
-	) AS out_sup_type_bureau_code_id,
+	IFF(in_sup_type_bureau_code_id IS NULL, - 1, in_sup_type_bureau_code_id) AS out_sup_type_bureau_code_id,
 	in_PolicyCoverageID AS LKP_PolicyCoverageID,
 	v_RatingPlanAKId AS o_RatingPlanAKId,
 	v_InterstateRiskId AS o_InterstateRiskId,
@@ -546,16 +504,11 @@ EXP_GetDefaultValue AS (
 	-- 'NEW',v_LKP_CurrentSnapshotFlag='0' or in_RatingPlanAKId != v_RatingPlanAKId OR v_LKP_AuditableIndicator != AuditableIndicator OR in_RiskGradeCode != RiskGradeCode OR in_InterstateRiskId != v_InterstateRiskId OR in_PolicyLimitAKId != lkp_PolicyLimitAKId OR in_PriorCoverageId != lkp_PriorCoverageId,
 	-- 'UPDATE',
 	-- 'NOCHANGE')
-	DECODE(TRUE,
-		in_PolicyCoverageID IS NULL, 'NEW',
-		v_LKP_CurrentSnapshotFlag = '0' 
-		OR in_RatingPlanAKId != v_RatingPlanAKId 
-		OR v_LKP_AuditableIndicator != AuditableIndicator 
-		OR in_RiskGradeCode != RiskGradeCode 
-		OR in_InterstateRiskId != v_InterstateRiskId 
-		OR in_PolicyLimitAKId != lkp_PolicyLimitAKId 
-		OR in_PriorCoverageId != lkp_PriorCoverageId, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    in_PolicyCoverageID IS NULL, 'NEW',
+	    v_LKP_CurrentSnapshotFlag = '0' or in_RatingPlanAKId != v_RatingPlanAKId OR v_LKP_AuditableIndicator != AuditableIndicator OR in_RiskGradeCode != RiskGradeCode OR in_InterstateRiskId != v_InterstateRiskId OR in_PolicyLimitAKId != lkp_PolicyLimitAKId OR in_PriorCoverageId != lkp_PriorCoverageId, 'UPDATE',
+	    'NOCHANGE'
 	) AS o_ChangeFlag,
 	lkp_PolicyLimitAKId AS o_PolicyLimitAKId,
 	lkp_PriorCoverageId AS o_PriorCoverageId
@@ -598,11 +551,9 @@ EXP_GetMetaValues AS (
 	1 AS out_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS out_AuditID,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS out_EffectiveDate,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS out_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59' , 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS out_ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS out_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS out_SourceSystemID,
 	SYSDATE AS out_CreateDate,
 	SYSDATE AS out_ModifiedDate,
@@ -663,10 +614,7 @@ EXP_TGT_DataCollect AS (
 	LogicalIndicator,
 	PolicyCoverageHashKey,
 	-- *INF*: IIF(ISNULL(LKP_PolicyCoverageAKID),NEXTVAL,LKP_PolicyCoverageAKID)
-	IFF(LKP_PolicyCoverageAKID IS NULL,
-		NEXTVAL,
-		LKP_PolicyCoverageAKID
-	) AS PolicyCoverageAKID,
+	IFF(LKP_PolicyCoverageAKID IS NULL, NEXTVAL, LKP_PolicyCoverageAKID) AS PolicyCoverageAKID,
 	PolicyAKID,
 	RiskLocationAKID,
 	PolicyCoverageKey,
@@ -742,8 +690,7 @@ EXP_Update_DataCollect AS (
 	PriorCoverageId,
 	'1' AS CurrentSnapshotFlag,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59' , 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate
 	FROM RTR_PolicyCoverage_UPDATE
 ),
 UPD_Existing AS (

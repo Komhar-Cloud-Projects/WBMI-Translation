@@ -248,82 +248,37 @@ EXP_MetaData AS (
 	-- NOT ISNULL(:LKP.LKP_FiveColumns(i_ClassCode,i_StateCode)),:LKP.LKP_FiveColumns(i_ClassCode,i_StateCode),
 	-- NOT ISNULL(:LKP.LKP_FiveColumns(i_ClassCode,'99')),:LKP.LKP_FiveColumns(i_ClassCode,'99'),
 	-- 'N/A')
-	DECODE(true,
-		LKP_FIVECOLUMNS_i_ClassCode_i_StateCode.lkp_result IS NOT NULL, LKP_FIVECOLUMNS_i_ClassCode_i_StateCode.lkp_result,
-		LKP_FIVECOLUMNS_i_ClassCode_99.lkp_result IS NOT NULL, LKP_FIVECOLUMNS_i_ClassCode_99.lkp_result,
-		'N/A'
+	DECODE(
+	    true,
+	    LKP_FIVECOLUMNS_i_ClassCode_i_StateCode.lkp_result IS NOT NULL, LKP_FIVECOLUMNS_i_ClassCode_i_StateCode.lkp_result,
+	    LKP_FIVECOLUMNS_i_ClassCode_99.lkp_result IS NOT NULL, LKP_FIVECOLUMNS_i_ClassCode_99.lkp_result,
+	    'N/A'
 	) AS v_lkp_result,
 	-- *INF*: SUBSTR(v_lkp_result,1,instr(v_lkp_result,'@1')-1)
-	SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1'
-		) - 1
-	) AS v_CommercialAutoVehicleTypeSize,
+	SUBSTR(v_lkp_result, 1, REGEXP_INSTR(v_lkp_result, '@1') - 1) AS v_CommercialAutoVehicleTypeSize,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@1')+2,instr(v_lkp_result,'@2')-instr(v_lkp_result,'@1')-2)
-	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@1'
-		) + 2, REGEXP_INSTR(v_lkp_result, '@2'
-		) - REGEXP_INSTR(v_lkp_result, '@1'
-		) - 2
-	) AS v_CommercialAutoBusinessUseClass,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@1') + 2, REGEXP_INSTR(v_lkp_result, '@2') - REGEXP_INSTR(v_lkp_result, '@1') - 2) AS v_CommercialAutoBusinessUseClass,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@2')+2,instr(v_lkp_result,'@3')-instr(v_lkp_result,'@2')-2)
-	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@2'
-		) + 2, REGEXP_INSTR(v_lkp_result, '@3'
-		) - REGEXP_INSTR(v_lkp_result, '@2'
-		) - 2
-	) AS v_SecondaryClass,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@2') + 2, REGEXP_INSTR(v_lkp_result, '@3') - REGEXP_INSTR(v_lkp_result, '@2') - 2) AS v_SecondaryClass,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@3')+2,instr(v_lkp_result,'@4')-instr(v_lkp_result,'@3')-2)
-	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@3'
-		) + 2, REGEXP_INSTR(v_lkp_result, '@4'
-		) - REGEXP_INSTR(v_lkp_result, '@3'
-		) - 2
-	) AS v_FleetType,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@3') + 2, REGEXP_INSTR(v_lkp_result, '@4') - REGEXP_INSTR(v_lkp_result, '@3') - 2) AS v_FleetType,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@4')+2,instr(v_lkp_result,'@5')-instr(v_lkp_result,'@4')-2)
-	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@4'
-		) + 2, REGEXP_INSTR(v_lkp_result, '@5'
-		) - REGEXP_INSTR(v_lkp_result, '@4'
-		) - 2
-	) AS v_SecondaryClassGroup,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@4') + 2, REGEXP_INSTR(v_lkp_result, '@5') - REGEXP_INSTR(v_lkp_result, '@4') - 2) AS v_SecondaryClassGroup,
 	-- *INF*: SUBSTR(v_lkp_result,instr(v_lkp_result,'@5')+2,instr(v_lkp_result,'@6')-instr(v_lkp_result,'@5')-2)
-	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@5'
-		) + 2, REGEXP_INSTR(v_lkp_result, '@6'
-		) - REGEXP_INSTR(v_lkp_result, '@5'
-		) - 2
-	) AS v_RadiusofOperation,
+	SUBSTR(v_lkp_result, REGEXP_INSTR(v_lkp_result, '@5') + 2, REGEXP_INSTR(v_lkp_result, '@6') - REGEXP_INSTR(v_lkp_result, '@5') - 2) AS v_RadiusofOperation,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	-- *INF*: IIF(LENGTH(v_CommercialAutoVehicleTypeSize)<1,'N/A',v_CommercialAutoVehicleTypeSize)
-	IFF(LENGTH(v_CommercialAutoVehicleTypeSize
-		) < 1,
-		'N/A',
-		v_CommercialAutoVehicleTypeSize
-	) AS o_CommercialAutoVehicleTypeSize,
+	IFF(LENGTH(v_CommercialAutoVehicleTypeSize) < 1, 'N/A', v_CommercialAutoVehicleTypeSize) AS o_CommercialAutoVehicleTypeSize,
 	-- *INF*: IIF(LENGTH(v_CommercialAutoBusinessUseClass)<1,'N/A',v_CommercialAutoBusinessUseClass)
-	IFF(LENGTH(v_CommercialAutoBusinessUseClass
-		) < 1,
-		'N/A',
-		v_CommercialAutoBusinessUseClass
-	) AS o_CommercialAutoBusinessUseClass,
+	IFF(LENGTH(v_CommercialAutoBusinessUseClass) < 1, 'N/A', v_CommercialAutoBusinessUseClass) AS o_CommercialAutoBusinessUseClass,
 	-- *INF*: IIF(LENGTH(v_SecondaryClass)<1,'N/A',v_SecondaryClass)
-	IFF(LENGTH(v_SecondaryClass
-		) < 1,
-		'N/A',
-		v_SecondaryClass
-	) AS o_SecondaryClass,
+	IFF(LENGTH(v_SecondaryClass) < 1, 'N/A', v_SecondaryClass) AS o_SecondaryClass,
 	-- *INF*: IIF(LENGTH(v_FleetType)<1,'N/A',v_FleetType)
-	IFF(LENGTH(v_FleetType
-		) < 1,
-		'N/A',
-		v_FleetType
-	) AS o_FleetType,
+	IFF(LENGTH(v_FleetType) < 1, 'N/A', v_FleetType) AS o_FleetType,
 	-- *INF*: IIF(LENGTH(v_SecondaryClassGroup)<1,'N/A',v_SecondaryClassGroup)
-	IFF(LENGTH(v_SecondaryClassGroup
-		) < 1,
-		'N/A',
-		v_SecondaryClassGroup
-	) AS o_SecondaryClassGroup,
+	IFF(LENGTH(v_SecondaryClassGroup) < 1, 'N/A', v_SecondaryClassGroup) AS o_SecondaryClassGroup,
 	-- *INF*: IIF(LENGTH(v_RadiusofOperation)<1,'N/A',v_RadiusofOperation)
-	IFF(LENGTH(v_RadiusofOperation
-		) < 1,
-		'N/A',
-		v_RadiusofOperation
-	) AS o_RadiusofOperation
+	IFF(LENGTH(v_RadiusofOperation) < 1, 'N/A', v_RadiusofOperation) AS o_RadiusofOperation
 	FROM Union_PMS_DCT
 	LEFT JOIN LKP_FIVECOLUMNS LKP_FIVECOLUMNS_i_ClassCode_i_StateCode
 	ON LKP_FIVECOLUMNS_i_ClassCode_i_StateCode.ClassCode = i_ClassCode

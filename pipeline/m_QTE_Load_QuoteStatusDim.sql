@@ -23,28 +23,20 @@ EXP_ExistingChecking AS (
 	LKP_QuoteStatusDim.QuoteStatusDimID AS lkp_QuoteStatusDimID,
 	-- *INF*: IIF(ISNULL(lkp_QuoteStatusDimID), 'Insert', 
 	--  'Update')
-	IFF(lkp_QuoteStatusDimID IS NULL,
-		'Insert',
-		'Update'
-	) AS v_ChangeFlag,
+	IFF(lkp_QuoteStatusDimID IS NULL, 'Insert', 'Update') AS v_ChangeFlag,
 	v_ChangeFlag AS ChangeFlag,
 	1 AS CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
-	) AS EffectiveDate,
+	TO_TIMESTAMP('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AS EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59','YYYY-MM-DD HH24:MI:SS')
-	TO_DATE('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS') AS ExpirationDate,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	-1 AS QuoteStatusAKId,
 	SQ_Quote.QuoteStatusCode AS i_StandardQuoteStatusCode,
 	-- *INF*: IIF(ISNULL(i_StandardQuoteStatusCode ), 'N/A', i_StandardQuoteStatusCode )
-	IFF(i_StandardQuoteStatusCode IS NULL,
-		'N/A',
-		i_StandardQuoteStatusCode
-	) AS v_StandardQuoteStatusCode,
+	IFF(i_StandardQuoteStatusCode IS NULL, 'N/A', i_StandardQuoteStatusCode) AS v_StandardQuoteStatusCode,
 	v_StandardQuoteStatusCode AS o_StandardQuoteStatusCode,
 	v_StandardQuoteStatusCode AS o_StandardQuoteStatusDescription
 	FROM SQ_Quote

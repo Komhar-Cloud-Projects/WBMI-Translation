@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_STG_Insert_BANK_MANUAL_CHECKS_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Insert_BANK_MANUAL_CHECKS_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Shortcut_to_Manual_Checks AS (\n\n-- TODO Manual --\n\n),\nEXP_BANK_MANUAL_CHECK_FILE AS (\n\tSELECT\n\t'D' AS WS_TYPE,\n\t'04' AS WS_BANK_NBR,\n\tws_acct_nbr AS WS_ACCT_NBR,\n\t'K' AS WS_TRANS_TYPE,\n\tws_check_nbr AS WS_CHECK_NBR,\n\tws_amount AS WS_AMOUNT,\n\t'481' AS WS_TRANS_CODE,\n\tws_trans_date AS IN_WS_TRANS_DATE,\n\t-- *INF*: TO_DATE(IN_WS_TRANS_DATE,'MM-DD-YYYY')\n\tTO_TIMESTAMP(IN_WS_TRANS_DATE, 'MM-DD-YYYY') AS O_WS_TRANS_DATE,\n\t'U' AS WS_TRANS_STATUS\n\tFROM SQ_Shortcut_to_Manual_Checks\n),\nbank_file_stage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.bank_file_stage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.bank_file_stage\n\t(ws_type, ws_bank_nbr, ws_acct_nbr, ws_trans_type, ws_check_nbr, ws_amount, ws_trans_code, ws_trans_date, ws_trans_status)\n\tSELECT \n\tWS_TYPE AS WS_TYPE, \n\tWS_BANK_NBR AS WS_BANK_NBR, \n\tWS_ACCT_NBR AS WS_ACCT_NBR, \n\tWS_TRANS_TYPE AS WS_TRANS_TYPE, \n\tWS_CHECK_NBR AS WS_CHECK_NBR, \n\tWS_AMOUNT AS WS_AMOUNT, \n\tWS_TRANS_CODE AS WS_TRANS_CODE, \n\tO_WS_TRANS_DATE AS WS_TRANS_DATE, \n\tWS_TRANS_STATUS AS WS_TRANS_STATUS\n\tFROM EXP_BANK_MANUAL_CHECK_FILE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

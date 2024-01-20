@@ -1,0 +1,63 @@
+{
+    "name": "s_m_POL_CLM_LOAD_SapiensReinsuranceBalancingKeyDaily",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_CLM_LOAD_SapiensReinsuranceBalancingKeyDaily",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_ArchSapiensReinsurancePolicy AS (\n\tselect distinct PolicyKey as EntityKey,\r\n\t'Policy' as EntityValue\r\n\tfrom\r\n\tArchSapiensReinsurancePolicy\r\n\twhere auditid = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID}\r\n\tunion\r\n\tselect distinct ClaimNumber,\r\n\t'Claim' as EntityValue\r\n\tfrom \r\n\tArchSapiensReinsuranceClaim\r\n\twhere \r\n\tauditid = @{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} \r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_PreTarget AS (\n\tSELECT\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,\n\tsysdate AS CreatedDate,\n\tsysdate AS ModifiedDate,\n\tEntityKey,\n\tEntityType\n\tFROM SQ_ArchSapiensReinsurancePolicy\n),\nSapiensReinsuranceBalancingKeyDaily_DM AS (\n\tTRUNCATE TABLE @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.SapiensReinsuranceBalancingKeyDaily;\n\tINSERT INTO @{pipeline().parameters.SOURCE_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.SapiensReinsuranceBalancingKeyDaily\n\t(AuditId, CreatedDate, ModifiedDate, EntityKey, EntityType)\n\tSELECT \n\tAuditID AS AUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tENTITYKEY, \n\tENTITYTYPE\n\tFROM EXP_PreTarget\n),\nSapiensReinsuranceBalancingKeyDaily_Sapiens AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.SapiensReinsuranceBalancingKeyDaily;\n\tINSERT INTO @{pipeline().parameters.TARGET_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.SapiensReinsuranceBalancingKeyDaily\n\t(AuditId, CreatedDate, ModifiedDate, EntityKey, EntityType)\n\tSELECT \n\tAuditID AS AUDITID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tENTITYKEY, \n\tENTITYTYPE\n\tFROM EXP_PreTarget\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_DATABASE_NAME": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

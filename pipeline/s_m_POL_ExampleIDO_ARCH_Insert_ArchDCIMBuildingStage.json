@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCIMBuildingStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCIMBuildingStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCIMBuildingStage AS (\n\tSELECT\n\t\tDCIMBuildingStageId,\n\t\tLineId,\n\t\tIMLocationId,\n\t\tIMBuildingId,\n\t\tSessionId,\n\t\tId,\n\t\tConstructionCode,\n\t\tDescription,\n\t\tDoorType,\n\t\tNumberOfStories,\n\t\tRoofCovering,\n\t\tRoofDeckAttachment,\n\t\tRoofGeometry,\n\t\tRoofWallConstruction,\n\t\tSprinkler,\n\t\tSquareFt,\n\t\tWindowProtection,\n\t\tWindstormLossMitigation,\n\t\tYearBuilt,\n\t\tIMLocationXmlId,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCIMBuildingStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCIMBuildingStageId,\n\tLineId,\n\tIMLocationId,\n\tIMBuildingId,\n\tSessionId,\n\tId,\n\tConstructionCode,\n\tDescription,\n\tDoorType,\n\tNumberOfStories,\n\tRoofCovering,\n\tRoofDeckAttachment,\n\tRoofGeometry,\n\tRoofWallConstruction,\n\tSprinkler,\n\tSquareFt,\n\tWindowProtection,\n\tWindstormLossMitigation,\n\tYearBuilt,\n\tIMLocationXmlId,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCIMBuildingStage\n),\nArchDCIMBuildingStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCIMBuildingStage\n\t(DCIMBuildingStageId, LineId, IMLocationId, IMBuildingId, SessionId, Id, ConstructionCode, Description, DoorType, NumberOfStories, RoofCovering, RoofDeckAttachment, RoofGeometry, RoofWallConstruction, Sprinkler, SquareFt, WindowProtection, WindstormLossMitigation, YearBuilt, IMLocationXmlId, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tDCIMBUILDINGSTAGEID, \n\tLINEID, \n\tIMLOCATIONID, \n\tIMBUILDINGID, \n\tSESSIONID, \n\tID, \n\tCONSTRUCTIONCODE, \n\tDESCRIPTION, \n\tDOORTYPE, \n\tNUMBEROFSTORIES, \n\tROOFCOVERING, \n\tROOFDECKATTACHMENT, \n\tROOFGEOMETRY, \n\tROOFWALLCONSTRUCTION, \n\tSPRINKLER, \n\tSQUAREFT, \n\tWINDOWPROTECTION, \n\tWINDSTORMLOSSMITIGATION, \n\tYEARBUILT, \n\tIMLOCATIONXMLID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_SUP_EOR_EXCL_RSN_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_SUP_EOR_EXCL_RSN_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_sup_eor_excl_rsn_stage AS (\n\tSELECT sup_eor_excl_rsn_stage.sup_eor_excl_rsn_stage_id, sup_eor_excl_rsn_stage.autopay_excl_rsn_code, sup_eor_excl_rsn_stage.description, sup_eor_excl_rsn_stage.exclude_from_manualpay, sup_eor_excl_rsn_stage.expiration_date, sup_eor_excl_rsn_stage.created_user_id, sup_eor_excl_rsn_stage.created_ts, sup_eor_excl_rsn_stage.modified_user_id, sup_eor_excl_rsn_stage.modified_ts, sup_eor_excl_rsn_stage.extract_date, sup_eor_excl_rsn_stage.source_system_id \r\n\tFROM\r\n\t @{pipeline().parameters.SOURCE_TABLE_OWNER}.sup_eor_excl_rsn_stage sup_eor_excl_rsn_stage\n),\nEXP_arch_sup_eor_excl_rsn_stage AS (\n\tSELECT\n\tsup_eor_excl_rsn_stage_id,\n\tautopay_excl_rsn_code,\n\tdescription,\n\texclude_from_manualpay,\n\texpiration_date,\n\tcreated_user_id,\n\tcreated_ts,\n\tmodified_user_id,\n\tmodified_ts,\n\textract_date,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_sup_eor_excl_rsn_stage\n),\narch_sup_eor_excl_rsn_stage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_sup_eor_excl_rsn_stage\n\t(sup_eor_excl_rsn_stage_id, autopay_excl_rsn_code, description, exclude_from_manualpay, expiration_date, created_user_id, created_ts, modified_user_id, modified_ts, extract_date, source_system_id, audit_id)\n\tSELECT \n\tSUP_EOR_EXCL_RSN_STAGE_ID, \n\tAUTOPAY_EXCL_RSN_CODE, \n\tDESCRIPTION, \n\tEXCLUDE_FROM_MANUALPAY, \n\tEXPIRATION_DATE, \n\tCREATED_USER_ID, \n\tCREATED_TS, \n\tMODIFIED_USER_ID, \n\tMODIFIED_TS, \n\tEXTRACT_DATE, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_arch_sup_eor_excl_rsn_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

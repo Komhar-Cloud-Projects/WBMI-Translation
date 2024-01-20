@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_ArchPif43UXIMStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_ArchPif43UXIMStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif43UXIMStage AS (\n\tSELECT\n\t\tPif43UXIMStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tPifSymbol,\n\t\tPifPolicyNumber,\n\t\tPifModule,\n\t\tPMDUXI1SegmentId,\n\t\tPMDUXI1SegmentStatus,\n\t\tPMDUXI1YearTransaction,\n\t\tPMDUXI1MonthTransaction,\n\t\tPMDUXI1DayTransaction,\n\t\tPMDUXI1SegmentLevelCode,\n\t\tPMDUXI1SegmentPartCode,\n\t\tPMDUXI1SubPartCode,\n\t\tPMDUXI1InsuranceLine,\n\t\tPMDUXI1LocationNumber,\n\t\tPMDUXI1SubLocationNumber,\n\t\tPMDUXI1RiskUnitGroup,\n\t\tPMDUXI1RiskUnitGroupSeq,\n\t\tPMDUXI1ItemNumber,\n\t\tPMDUXI1RiskSequence,\n\t\tPMDUXI1RiskTypeInd,\n\t\tPMDUXI1YearItemEffective,\n\t\tPMDUXI1MonthItemEffective,\n\t\tPMDUXI1DayItemEffective,\n\t\tPMDUXI1VariableKey,\n\t\tPMDUXI1YearProcess,\n\t\tPMDUXI1MonthProcess,\n\t\tPMDUXI1DayProcess,\n\t\tPMDUXI1RatingState,\n\t\tPMDUXI1ItemDescLine1,\n\t\tPMDUXI1LimitN,\n\t\tPMDUXI1SignsPosition,\n\t\tPMDUXI1DecChangeFlag,\n\t\tPMDUXI1ExtensionInd,\n\t\tPMDUXI1ItemDescLine3,\n\t\tPMDUXI1ItemDescLine4,\n\t\tPMDUXI1ItemDescLine5,\n\t\tPMDUXI1ItemDescLine6,\n\t\tPMDUXI1ItemDescLine7,\n\t\tPMDUXI1ItemDescLine8,\n\t\tPMDUXI1Limit2N,\n\t\tPMDUXI1PmscFutureUse\n\tFROM Pif43UXIMStage\n),\nEXP_Pif43UXIMStage AS (\n\tSELECT\n\tPif43UXIMStageId,\n\tExtractDate,\n\tSourceSystemid,\n\tPifSymbol,\n\tPifPolicyNumber,\n\tPifModule,\n\tPMDUXI1SegmentId,\n\tPMDUXI1SegmentStatus,\n\tPMDUXI1YearTransaction,\n\tPMDUXI1MonthTransaction,\n\tPMDUXI1DayTransaction,\n\tPMDUXI1SegmentLevelCode,\n\tPMDUXI1SegmentPartCode,\n\tPMDUXI1SubPartCode,\n\tPMDUXI1InsuranceLine,\n\tPMDUXI1LocationNumber,\n\tPMDUXI1SubLocationNumber,\n\tPMDUXI1RiskUnitGroup,\n\tPMDUXI1RiskUnitGroupSeq,\n\tPMDUXI1ItemNumber,\n\tPMDUXI1RiskSequence,\n\tPMDUXI1RiskTypeInd,\n\tPMDUXI1YearItemEffective,\n\tPMDUXI1MonthItemEffective,\n\tPMDUXI1DayItemEffective,\n\tPMDUXI1VariableKey,\n\tPMDUXI1YearProcess,\n\tPMDUXI1MonthProcess,\n\tPMDUXI1DayProcess,\n\tPMDUXI1RatingState,\n\tPMDUXI1ItemDescLine1,\n\tPMDUXI1LimitN,\n\tPMDUXI1SignsPosition,\n\tPMDUXI1DecChangeFlag,\n\tPMDUXI1ExtensionInd,\n\tPMDUXI1ItemDescLine3,\n\tPMDUXI1ItemDescLine4,\n\tPMDUXI1ItemDescLine5,\n\tPMDUXI1ItemDescLine6,\n\tPMDUXI1ItemDescLine7,\n\tPMDUXI1ItemDescLine8,\n\tPMDUXI1Limit2N,\n\tPMDUXI1PmscFutureUse,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_audit_id\n\tFROM SQ_Pif43UXIMStage\n),\nArchPif43UXIMStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchPif43UXIMStage\n\t(ExtractDate, SourceSystemid, AuditId, PifSymbol, PifPolicyNumber, PifModule, PMDUXI1SegmentId, PMDUXI1SegmentStatus, PMDUXI1YearTransaction, PMDUXI1MonthTransaction, PMDUXI1DayTransaction, PMDUXI1SegmentLevelCode, PMDUXI1SegmentPartCode, PMDUXI1SubPartCode, PMDUXI1InsuranceLine, PMDUXI1LocationNumber, PMDUXI1SubLocationNumber, PMDUXI1RiskUnitGroup, PMDUXI1RiskUnitGroupSeq, PMDUXI1ItemNumber, PMDUXI1RiskSequence, PMDUXI1RiskTypeInd, PMDUXI1YearItemEffective, PMDUXI1MonthItemEffective, PMDUXI1DayItemEffective, PMDUXI1VariableKey, PMDUXI1YearProcess, PMDUXI1MonthProcess, PMDUXI1DayProcess, PMDUXI1RatingState, PMDUXI1ItemDescLine1, PMDUXI1LimitN, PMDUXI1SignsPosition, PMDUXI1DecChangeFlag, PMDUXI1ExtensionInd, PMDUXI1ItemDescLine3, PMDUXI1ItemDescLine4, PMDUXI1ItemDescLine5, PMDUXI1ItemDescLine6, PMDUXI1ItemDescLine7, PMDUXI1ItemDescLine8, PMDUXI1Limit2N, PMDUXI1PmscFutureUse)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_audit_id AS AUDITID, \n\tPIFSYMBOL, \n\tPIFPOLICYNUMBER, \n\tPIFMODULE, \n\tPMDUXI1SEGMENTID, \n\tPMDUXI1SEGMENTSTATUS, \n\tPMDUXI1YEARTRANSACTION, \n\tPMDUXI1MONTHTRANSACTION, \n\tPMDUXI1DAYTRANSACTION, \n\tPMDUXI1SEGMENTLEVELCODE, \n\tPMDUXI1SEGMENTPARTCODE, \n\tPMDUXI1SUBPARTCODE, \n\tPMDUXI1INSURANCELINE, \n\tPMDUXI1LOCATIONNUMBER, \n\tPMDUXI1SUBLOCATIONNUMBER, \n\tPMDUXI1RISKUNITGROUP, \n\tPMDUXI1RISKUNITGROUPSEQ, \n\tPMDUXI1ITEMNUMBER, \n\tPMDUXI1RISKSEQUENCE, \n\tPMDUXI1RISKTYPEIND, \n\tPMDUXI1YEARITEMEFFECTIVE, \n\tPMDUXI1MONTHITEMEFFECTIVE, \n\tPMDUXI1DAYITEMEFFECTIVE, \n\tPMDUXI1VARIABLEKEY, \n\tPMDUXI1YEARPROCESS, \n\tPMDUXI1MONTHPROCESS, \n\tPMDUXI1DAYPROCESS, \n\tPMDUXI1RATINGSTATE, \n\tPMDUXI1ITEMDESCLINE1, \n\tPMDUXI1LIMITN, \n\tPMDUXI1SIGNSPOSITION, \n\tPMDUXI1DECCHANGEFLAG, \n\tPMDUXI1EXTENSIONIND, \n\tPMDUXI1ITEMDESCLINE3, \n\tPMDUXI1ITEMDESCLINE4, \n\tPMDUXI1ITEMDESCLINE5, \n\tPMDUXI1ITEMDESCLINE6, \n\tPMDUXI1ITEMDESCLINE7, \n\tPMDUXI1ITEMDESCLINE8, \n\tPMDUXI1LIMIT2N, \n\tPMDUXI1PMSCFUTUREUSE\n\tFROM EXP_Pif43UXIMStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

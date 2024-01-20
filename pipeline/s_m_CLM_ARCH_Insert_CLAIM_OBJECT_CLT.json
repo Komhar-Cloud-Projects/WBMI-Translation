@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLAIM_OBJECT_CLT",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLAIM_OBJECT_CLT",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLAIM_OBJECT_CLT_STAGE1 AS (\n\tSELECT CLAIM_OBJECT_CLT_STAGE.CLAIM_OBJECT_CLT_ID, CLAIM_OBJECT_CLT_STAGE.CCT_CLAIM_NBR, CLAIM_OBJECT_CLT_STAGE.CCT_CLIENT_SEQ_NBR, CLAIM_OBJECT_CLT_STAGE.CCT_CLIENT_ID, CLAIM_OBJECT_CLT_STAGE.CCT_CLIENT_STA_CD, CLAIM_OBJECT_CLT_STAGE.CCT_CLIENT_ROLE_CD, CLAIM_OBJECT_CLT_STAGE.CCT_FIN_IND, CLAIM_OBJECT_CLT_STAGE.CCT_OBJECT_SEQ_NBR, CLAIM_OBJECT_CLT_STAGE.CCT_OBJECT_TYPE_CD, CLAIM_OBJECT_CLT_STAGE.CCT_ENTRY_OPR_ID, CLAIM_OBJECT_CLT_STAGE.CCT_UPDATE_OPR_ID, CLAIM_OBJECT_CLT_STAGE.CCT_CREATE_TS, CLAIM_OBJECT_CLT_STAGE.CCT_PMSD_TS, CLAIM_OBJECT_CLT_STAGE.CCT_UPD_TS, CLAIM_OBJECT_CLT_STAGE.CCT_ADR_SEQ_NBR, CLAIM_OBJECT_CLT_STAGE.EXTRACT_DATE, CLAIM_OBJECT_CLT_STAGE.AS_OF_DATE, CLAIM_OBJECT_CLT_STAGE.RECORD_COUNT, CLAIM_OBJECT_CLT_STAGE.SOURCE_SYSTEM_ID \r\n\tFROM\r\n\t CLAIM_OBJECT_CLT_STAGE\r\n\tWHERE\r\n\tCLAIM_OBJECT_CLT_STAGE.CCT_CREATE_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\r\n\tOR\r\n\tCLAIM_OBJECT_CLT_STAGE.CCT_UPD_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_CLAIM_OBJECT_CLT_STAGE AS (\n\tSELECT\n\tCLAIM_OBJECT_CLT_ID,\n\tCCT_CLAIM_NBR,\n\tCCT_CLIENT_SEQ_NBR,\n\tCCT_CLIENT_ID,\n\tCCT_CLIENT_STA_CD,\n\tCCT_CLIENT_ROLE_CD,\n\tCCT_FIN_IND,\n\tCCT_OBJECT_SEQ_NBR,\n\tCCT_OBJECT_TYPE_CD,\n\tCCT_ENTRY_OPR_ID,\n\tCCT_UPDATE_OPR_ID,\n\tCCT_CREATE_TS,\n\tCCT_PMSD_TS,\n\tCCT_UPD_TS,\n\tCCT_ADR_SEQ_NBR,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_CLAIM_OBJECT_CLT_STAGE1\n),\nARCH_CLAIM_OBJECT_CLT_STAGE AS (\n\tINSERT INTO ARCH_CLAIM_OBJECT_CLT_STAGE\n\t(CLAIM_OBJECT_CLT_ID, CCT_CLAIM_NBR, CCT_CLIENT_SEQ_NBR, CCT_CLIENT_ID, CCT_CLIENT_STA_CD, CCT_CLIENT_ROLE_CD, CCT_FIN_IND, CCT_OBJECT_SEQ_NBR, CCT_OBJECT_TYPE_CD, CCT_ENTRY_OPR_ID, CCT_UPDATE_OPR_ID, CCT_CREATE_TS, CCT_PMSD_TS, CCT_UPD_TS, CCT_ADR_SEQ_NBR, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, AUDIT_ID)\n\tSELECT \n\tCLAIM_OBJECT_CLT_ID, \n\tCCT_CLAIM_NBR, \n\tCCT_CLIENT_SEQ_NBR, \n\tCCT_CLIENT_ID, \n\tCCT_CLIENT_STA_CD, \n\tCCT_CLIENT_ROLE_CD, \n\tCCT_FIN_IND, \n\tCCT_OBJECT_SEQ_NBR, \n\tCCT_OBJECT_TYPE_CD, \n\tCCT_ENTRY_OPR_ID, \n\tCCT_UPDATE_OPR_ID, \n\tCCT_CREATE_TS, \n\tCCT_PMSD_TS, \n\tCCT_UPD_TS, \n\tCCT_ADR_SEQ_NBR, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_CLAIM_OBJECT_CLT_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

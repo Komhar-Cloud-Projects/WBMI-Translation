@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_GTAM_tm04_STAGE",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_GTAM_tm04_STAGE",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_gtam_tm04_stage AS (\n\tSELECT\n\t\tgtam_tm04_stage_id,\n\t\ttable_fld,\n\t\tkey_len,\n\t\tlocation_code,\n\t\tmaster_company_number,\n\t\tbranch,\n\t\tdata_len,\n\t\tlm_region,\n\t\textract_date,\n\t\tas_of_date,\n\t\trecord_count,\n\t\tsource_system_id\n\tFROM gtam_tm04_stage\n),\nEXP_arch_GTAM_tm04_stage AS (\n\tSELECT\n\tgtam_tm04_stage_id AS tm04_stage_ID,\n\ttable_fld AS TABLE_FLD,\n\tkey_len AS KEY_LEN,\n\tlocation_code AS LOCATION_CODE,\n\tmaster_company_number,\n\tbranch,\n\tdata_len AS DATA_LEN,\n\tlm_region,\n\textract_date AS EXTRACT_DATE,\n\tas_of_date AS AS_OF_DATE,\n\trecord_count AS RECORD_COUNT,\n\tsource_system_id AS SOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_gtam_tm04_stage\n),\narch_gtam_tm04_stage AS (\n\tINSERT INTO arch_gtam_tm04_stage\n\t(gtam_tm04_stage_id, table_fld, key_len, location_code, master_company_number, branch, data_len, lm_region, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\ttm04_stage_ID AS GTAM_TM04_STAGE_ID, \n\tTABLE_FLD AS TABLE_FLD, \n\tKEY_LEN AS KEY_LEN, \n\tLOCATION_CODE AS LOCATION_CODE, \n\tMASTER_COMPANY_NUMBER, \n\tBRANCH, \n\tDATA_LEN AS DATA_LEN, \n\tLM_REGION, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_arch_GTAM_tm04_stage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

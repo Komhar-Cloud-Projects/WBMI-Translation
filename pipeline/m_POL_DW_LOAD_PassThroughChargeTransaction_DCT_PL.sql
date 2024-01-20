@@ -102,10 +102,7 @@ EXP_EvaluatePassThrough AS (
 	-- *INF*: :LKP.LKP_INCLUDEPASSTHROUGHONLY(CoverageSubCd)
 	LKP_INCLUDEPASSTHROUGHONLY_CoverageSubCd.RatedCoverageCode AS v_lkp_RatedCoverageCode,
 	-- *INF*: IIF(ISNULL(v_lkp_RatedCoverageCode),'0','1')
-	IFF(v_lkp_RatedCoverageCode IS NULL,
-		'0',
-		'1'
-	) AS o_OnluPassThroughFlag,
+	IFF(v_lkp_RatedCoverageCode IS NULL, '0', '1') AS o_OnluPassThroughFlag,
 	ExtractDate
 	FROM SQ_WorkDCTPLCoverage
 	LEFT JOIN LKP_INCLUDEPASSTHROUGHONLY LKP_INCLUDEPASSTHROUGHONLY_CoverageSubCd
@@ -152,15 +149,16 @@ EXP_SourceData AS (
 	-- TransactionTypeCode='Rewrite','31',
 	-- '-1'
 	-- )
-	Decode(TRUE,
-		TransactionTypeCode = 'New', '10',
-		TransactionTypeCode = 'Renew', '11',
-		TransactionTypeCode = 'Endorse', '12',
-		TransactionTypeCode = 'Reinstate', '15',
-		TransactionTypeCode = 'Cancel', '20',
-		TransactionTypeCode = 'Reissue', '30',
-		TransactionTypeCode = 'Rewrite', '31',
-		'-1'
+	Decode(
+	    TRUE,
+	    TransactionTypeCode = 'New', '10',
+	    TransactionTypeCode = 'Renew', '11',
+	    TransactionTypeCode = 'Endorse', '12',
+	    TransactionTypeCode = 'Reinstate', '15',
+	    TransactionTypeCode = 'Cancel', '20',
+	    TransactionTypeCode = 'Reissue', '30',
+	    TransactionTypeCode = 'Rewrite', '31',
+	    '-1'
 	) AS o_standardTransactiontypeCode,
 	PolicyEffectiveDate,
 	MeasureName,
@@ -174,48 +172,39 @@ EXP_SourceData AS (
 	CoverageSubCd,
 	TransactionExpirationDate,
 	-- *INF*: IIF(ISNULL(ltrim(rtrim(PolicyVersion))) or Length(ltrim(rtrim(PolicyVersion)))=0 or IS_SPACES(PolicyVersion),'00',PolicyVersion)
-	IFF(ltrim(rtrim(PolicyVersion
-			)
-		) IS NULL 
-		OR Length(ltrim(rtrim(PolicyVersion
-				)
-			)
-		) = 0 
-		OR LENGTH(PolicyVersion)>0 AND TRIM(PolicyVersion)='',
-		'00',
-		PolicyVersion
+	IFF(
+	    ltrim(rtrim(PolicyVersion)) IS NULL
+	    or Length(ltrim(rtrim(PolicyVersion))) = 0
+	    or LENGTH(PolicyVersion)>0
+	    and TRIM(PolicyVersion)='',
+	    '00',
+	    PolicyVersion
 	) AS v_PolicyVersion,
 	PolicyNumber || v_PolicyVersion AS v_PolicyKey,
 	v_PolicyKey AS o_PolicyKey,
 	-- *INF*: MD5(v_PolicyKey||TO_CHAR(TransactionCreatedDate)||CoverageSubCd)
-	MD5(v_PolicyKey || TO_CHAR(TransactionCreatedDate
-		) || CoverageSubCd
-	) AS o_PassThroughChargeTransactionHashKey,
+	MD5(v_PolicyKey || TO_CHAR(TransactionCreatedDate) || CoverageSubCd) AS o_PassThroughChargeTransactionHashKey,
 	-- *INF*: DECODE(TRUE,
 	-- TO_CHAR(ExtractDate, 'DD' ) ='02' and TO_CHAR( ExtractDate, 'DAY' )='Tuesday',1,
 	-- TO_CHAR(ExtractDate, 'DD' ) ='01',1,
 	-- 0
 	-- )
-	DECODE(TRUE,
-		TO_CHAR(ExtractDate, 'DD'
-		) = '02' 
-		AND TO_CHAR(ExtractDate, 'DAY'
-		) = 'Tuesday', 1,
-		TO_CHAR(ExtractDate, 'DD'
-		) = '01', 1,
-		0
+	DECODE(
+	    TRUE,
+	    TO_CHAR(ExtractDate, 'DD') = '02' and TO_CHAR(ExtractDate, 'DAY') = 'Tuesday', 1,
+	    TO_CHAR(ExtractDate, 'DD') = '01', 1,
+	    0
 	) AS v_AdjustForMonthEnd,
 	-- *INF*: DECODE(TRUE,
 	-- v_AdjustForMonthEnd = 1, ADD_TO_DATE(ExtractDate,'MM',-1),
 	-- ExtractDate)
-	DECODE(TRUE,
-		v_AdjustForMonthEnd = 1, DATEADD(MONTH,- 1,ExtractDate),
-		ExtractDate
+	DECODE(
+	    TRUE,
+	    v_AdjustForMonthEnd = 1, DATEADD(MONTH,- 1,ExtractDate),
+	    ExtractDate
 	) AS v_ExtractDate,
 	-- *INF*: ADD_TO_DATE(ADD_TO_DATE(TRUNC(GREATEST(GREATEST(TransactionCreatedDate,TransactionEffectiveDate),v_ExtractDate), 'MM'),'MM',1),'SS',-1)
-	DATEADD(SECOND,- 1,DATEADD(MONTH,1,CAST(TRUNC(GREATEST(GREATEST(TransactionCreatedDate, TransactionEffectiveDate
-		), v_ExtractDate
-	), 'MONTH') AS TIMESTAMP_NTZ(0)))) AS o_PremiumTransactionBookedDate,
+	DATEADD(SECOND,- 1,DATEADD(MONTH,1,CAST(TRUNC(GREATEST(GREATEST(TransactionCreatedDate, TransactionEffectiveDate), v_ExtractDate), 'MONTH') AS TIMESTAMP_NTZ(0)))) AS o_PremiumTransactionBookedDate,
 	ExtractDate
 	FROM FIL_LetOnlyPassThrough
 ),
@@ -314,8 +303,7 @@ EXP_PassThroughChargeTransaction AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditID,
 	TransactionCreatedDate AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemID,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
@@ -324,16 +312,13 @@ EXP_PassThroughChargeTransaction AS (
 	1 AS DuplicateSequence,
 	in_PassThroughChargeTransactionHashKey AS PassThroughChargeTransactionHashKey,
 	-- *INF*: IIF(ISNULL(lkp_PassThroughChargeTransactionAKID),in_NEXTVAL,lkp_PassThroughChargeTransactionAKID )
-	IFF(lkp_PassThroughChargeTransactionAKID IS NULL,
-		in_NEXTVAL,
-		lkp_PassThroughChargeTransactionAKID
+	IFF(
+	    lkp_PassThroughChargeTransactionAKID IS NULL, in_NEXTVAL,
+	    lkp_PassThroughChargeTransactionAKID
 	) AS PassThroughChargeTransactionAKID,
 	-1 AS StatisticalCoverageAKID,
 	-- *INF*: IIF(ISNULL(TransactionTypeCode),'N/A',TransactionTypeCode)
-	IFF(TransactionTypeCode IS NULL,
-		'N/A',
-		TransactionTypeCode
-	) AS PassThroughChargeTransactionCode,
+	IFF(TransactionTypeCode IS NULL, 'N/A', TransactionTypeCode) AS PassThroughChargeTransactionCode,
 	TransactionCreatedDate AS PassThroughChargeTransactionEnteredDate,
 	TransactionEffectiveDate AS PassThroughChargeTransactionEffectiveDate,
 	TransactionExpirationDate AS PassThroughChargeTransactionExpirationDate,
@@ -345,41 +330,26 @@ EXP_PassThroughChargeTransaction AS (
 	TransactionReasonCode AS ReasonAmendedCode,
 	LKP_sup_passthrough_transaction_code.sup_prem_trans_code_id AS PassThroughChargeTransactionCodeId,
 	-- *INF*: IIF(ISNULL(PassThroughChargeTransactionCodeId),-1,PassThroughChargeTransactionCodeId)
-	IFF(PassThroughChargeTransactionCodeId IS NULL,
-		- 1,
-		PassThroughChargeTransactionCodeId
-	) AS o_PassThroughTransactionCodeId,
+	IFF(PassThroughChargeTransactionCodeId IS NULL, - 1, PassThroughChargeTransactionCodeId) AS o_PassThroughTransactionCodeId,
 	-1 AS RiskLocationAKID,
 	-- *INF*: IIF(ISNULL(lkp_PolicyAkID),-1,lkp_PolicyAkID)
-	IFF(lkp_PolicyAkID IS NULL,
-		- 1,
-		lkp_PolicyAkID
-	) AS PolicyAKID,
+	IFF(lkp_PolicyAkID IS NULL, - 1, lkp_PolicyAkID) AS PolicyAKID,
 	-1 AS SupLGTLineOfInsuranceID,
 	-1 AS PolicyCoverageAKID,
 	-1 AS RatingCoverageAKID,
 	-1 AS SupSurchargeExemptID,
 	-- *INF*: IIF(ISNULL(lkp_SupPassThroughChargeTypeID),-1,lkp_SupPassThroughChargeTypeID)
-	IFF(lkp_SupPassThroughChargeTypeID IS NULL,
-		- 1,
-		lkp_SupPassThroughChargeTypeID
-	) AS SupPassThroughChargeTypeID,
+	IFF(lkp_SupPassThroughChargeTypeID IS NULL, - 1, lkp_SupPassThroughChargeTypeID) AS SupPassThroughChargeTypeID,
 	0 AS TotalAnnualPremiumSubjectToTax,
 	-- *INF*: IIF(ISNULL(CoverageSubCd),'N/A',CoverageSubCd)
-	IFF(CoverageSubCd IS NULL,
-		'N/A',
-		CoverageSubCd
-	) AS DCTTaxCode,
+	IFF(CoverageSubCd IS NULL, 'N/A', CoverageSubCd) AS DCTTaxCode,
 	'Onset' AS OffsetOnsetCode,
 	1 AS LoadSequence,
 	'N/A' AS NegateRestateCode,
 	-- *INF*: IIF(ISNULL(lkp_PassThroughChargeTransactionAKID),1,0)
 	-- -- 1 Do Not Filer
 	-- -- 0 Filter
-	IFF(lkp_PassThroughChargeTransactionAKID IS NULL,
-		1,
-		0
-	) AS FilterFlag
+	IFF(lkp_PassThroughChargeTransactionAKID IS NULL, 1, 0) AS FilterFlag
 	FROM EXP_SourceData
 	LEFT JOIN LKP_GetPolicyAkId
 	ON LKP_GetPolicyAkId.PolicyKey = EXP_SourceData.o_PolicyKey

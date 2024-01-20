@@ -73,10 +73,8 @@ EXP_Balance_Flag AS (
 	pol_key,
 	PassThroughChargeTransactionAmount,
 	-- *INF*: IIF(abs(PassThroughChargeTransactionAmount-DCTTaxesChange)>@{pipeline().parameters.LIMIT},'UnBalanced','Balanced')
-	IFF(abs(PassThroughChargeTransactionAmount - DCTTaxesChange
-		) > @{pipeline().parameters.LIMIT},
-		'UnBalanced',
-		'Balanced'
+	IFF(
+	    abs(PassThroughChargeTransactionAmount - DCTTaxesChange) > @{pipeline().parameters.LIMIT}, 'UnBalanced', 'Balanced'
 	) AS Balance_Flag
 	FROM JNR_DCT_EDW
 ),

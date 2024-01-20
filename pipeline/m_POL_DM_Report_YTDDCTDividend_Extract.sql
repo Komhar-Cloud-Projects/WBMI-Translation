@@ -16,8 +16,7 @@ AGG_Transactions_ByPolicyAgency AS (
 	SELECT
 	DividendPaidAmount,
 	-- *INF*: sum(DividendPaidAmount)
-	sum(DividendPaidAmount
-	) AS o_DividendPaidAmount,
+	sum(DividendPaidAmount) AS o_DividendPaidAmount,
 	AgencyCode,
 	pol_key,
 	StrategicProfitCenterAbbreviation,
@@ -34,8 +33,7 @@ EXP_Unsupress_zeros_PolicyKey AS (
 	-- --pol_key
 	-- 
 	-- --chr(34)||pol_key||chr(34)
-	to_char('"' || pol_key
-	) AS v_pol_key,
+	to_char('"' || pol_key) AS v_pol_key,
 	-- *INF*: --replacestr(2, v_pol_key,'"','')
 	-- v_pol_key
 	v_pol_key AS o_pol_key,
@@ -44,11 +42,7 @@ EXP_Unsupress_zeros_PolicyKey AS (
 	clndr_date,
 	-- *INF*: --IIF(ISNULL(clndr_date),'1800-01-01','"' || clndr_date )
 	-- IIF(ISNULL(clndr_date),'1800-01-01', to_char(clndr_date ))
-	IFF(clndr_date IS NULL,
-		'1800-01-01',
-		to_char(clndr_date
-		)
-	) AS v_clndr_date
+	IFF(clndr_date IS NULL, '1800-01-01', to_char(clndr_date)) AS v_clndr_date
 	FROM AGG_Transactions_ByPolicyAgency
 ),
 YTDDCTDividendExtract AS (

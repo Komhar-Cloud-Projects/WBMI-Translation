@@ -15,22 +15,17 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_EffectiveDate
+	IFF(
+	    i_EffectiveDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate
 	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ExpirationDate
+	IFF(
+	    i_ExpirationDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'),
+	    i_ExpirationDate
 	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ModifiedDate
+	IFF(
+	    i_ModifiedDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate
 	) AS o_ModifiedDate
 	FROM SQ_AssociationProduct
 ),
@@ -40,20 +35,11 @@ EXP_NumericValues AS (
 	AssociationId AS i_AssociationId,
 	ProductId AS i_ProductId,
 	-- *INF*: IIF(ISNULL(i_AssociationProductId),-1,i_AssociationProductId)
-	IFF(i_AssociationProductId IS NULL,
-		- 1,
-		i_AssociationProductId
-	) AS o_AssociationProductId,
+	IFF(i_AssociationProductId IS NULL, - 1, i_AssociationProductId) AS o_AssociationProductId,
 	-- *INF*: IIF(ISNULL(i_AssociationId),-1,i_AssociationId)
-	IFF(i_AssociationId IS NULL,
-		- 1,
-		i_AssociationId
-	) AS o_AssociationId,
+	IFF(i_AssociationId IS NULL, - 1, i_AssociationId) AS o_AssociationId,
 	-- *INF*: IIF(ISNULL(i_ProductId),-1,i_ProductId)
-	IFF(i_ProductId IS NULL,
-		- 1,
-		i_ProductId
-	) AS o_ProductId
+	IFF(i_ProductId IS NULL, - 1, i_ProductId) AS o_ProductId
 	FROM SQ_AssociationProduct
 ),
 EXP_StringValues AS (

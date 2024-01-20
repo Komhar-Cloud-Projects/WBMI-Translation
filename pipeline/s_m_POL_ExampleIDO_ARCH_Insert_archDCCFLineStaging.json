@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCCFLineStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCCFLineStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCCFLineStaging AS (\n\tSELECT\n\t\tDCCFLineStagingId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tLineId,\n\t\tCF_LineId,\n\t\tSessionId,\n\t\tElectricalApparatus,\n\t\tExpenseModFactor,\n\t\tFloodInceptionDate,\n\t\tFormsTentativeRates,\n\t\tStandardPolicy\n\tFROM DCCFLineStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCCFLineStagingId,\n\tExtractDate,\n\tSourceSystemId,\n\tLineId,\n\tCF_LineId,\n\tSessionId,\n\tElectricalApparatus AS i_ElectricalApparatus,\n\t-- *INF*: DECODE(i_ElectricalApparatus,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_ElectricalApparatus,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_ElectricalApparatus,\n\tExpenseModFactor,\n\tFloodInceptionDate,\n\tFormsTentativeRates AS i_FormsTentativeRates,\n\t-- *INF*: DECODE(i_FormsTentativeRates,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_FormsTentativeRates,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_FormsTentativeRates,\n\tStandardPolicy AS i_StandardPolicy,\n\t-- *INF*: DECODE(i_StandardPolicy,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_StandardPolicy,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_StandardPolicy,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCCFLineStaging\n),\narchDCCFLineStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCCFLineStaging\n\t(ExtractDate, SourceSystemId, AuditId, DCCFLineStagingId, LineId, CF_LineId, SessionId, ElectricalApparatus, ExpenseModFactor, FloodInceptionDate, FormsTentativeRates, StandardPolicy)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tDCCFLINESTAGINGID, \n\tLINEID, \n\tCF_LINEID, \n\tSESSIONID, \n\to_ElectricalApparatus AS ELECTRICALAPPARATUS, \n\tEXPENSEMODFACTOR, \n\tFLOODINCEPTIONDATE, \n\to_FormsTentativeRates AS FORMSTENTATIVERATES, \n\to_StandardPolicy AS STANDARDPOLICY\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

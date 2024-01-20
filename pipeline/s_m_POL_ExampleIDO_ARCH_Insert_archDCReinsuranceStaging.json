@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_archDCReinsuranceStaging",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_archDCReinsuranceStaging",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCReinsuranceStaging AS (\n\tSELECT\n\t\tPolicyId,\n\t\tReinsuranceId,\n\t\tSessionId,\n\t\tId,\n\t\tType,\n\t\tAggregateLimit,\n\t\tCertificatePolicyNumber,\n\t\tCommissionRate,\n\t\tOccurrenceLimit,\n\t\tPercentCeded,\n\t\tPercentLoss,\n\t\tCompany,\n\t\tCompanyNumber,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCReinsuranceStaging\n),\nEXP_Metadata AS (\n\tSELECT\n\tPolicyId,\n\tReinsuranceId,\n\tSessionId,\n\tId,\n\tType,\n\tAggregateLimit,\n\tCertificatePolicyNumber,\n\tCommissionRate,\n\tOccurrenceLimit,\n\tPercentCeded,\n\tPercentLoss,\n\tCompany,\n\tCompanyNumber,\n\tEffectiveDate,\n\tExpirationDate,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCReinsuranceStaging\n),\narchDCReinsuranceStaging AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.archDCReinsuranceStaging\n\t(PolicyId, ReinsuranceId, SessionId, Id, Type, AggregateLimit, CertificatePolicyNumber, CommissionRate, OccurrenceLimit, PercentCeded, PercentLoss, Company, CompanyNumber, EffectiveDate, ExpirationDate, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tPOLICYID, \n\tREINSURANCEID, \n\tSESSIONID, \n\tID, \n\tTYPE, \n\tAGGREGATELIMIT, \n\tCERTIFICATEPOLICYNUMBER, \n\tCOMMISSIONRATE, \n\tOCCURRENCELIMIT, \n\tPERCENTCEDED, \n\tPERCENTLOSS, \n\tCOMPANY, \n\tCOMPANYNUMBER, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

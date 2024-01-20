@@ -166,16 +166,7 @@ EXP_ASSIGN_DEFAULTS AS (
 	-- *INF*: IIF(pt_first_name='N/A','', ' '  || pt_first_name) || 
 	-- IIF(pt_mid_name='N/A','', ' '  ||  pt_mid_name) || 
 	-- IIF(pt_last_name='N/A','', ' '  || pt_last_name) 
-	IFF(pt_first_name = 'N/A',
-		'',
-		' ' || pt_first_name
-	) || IFF(pt_mid_name = 'N/A',
-		'',
-		' ' || pt_mid_name
-	) || IFF(pt_last_name = 'N/A',
-		'',
-		' ' || pt_last_name
-	) AS out_pt_full_name,
+	IFF(pt_first_name = 'N/A', '', ' ' || pt_first_name) || IFF(pt_mid_name = 'N/A', '', ' ' || pt_mid_name) || IFF(pt_last_name = 'N/A', '', ' ' || pt_last_name) AS out_pt_full_name,
 	pt_addr AS pt_addr_out,
 	pt_city AS pt_city_out,
 	pt_state AS pt_state_out,
@@ -266,15 +257,12 @@ EXP_ASSIGN_DEFAULTS AS (
 	LKP_pms_clt_eor_stage.pce_date_of_loss,
 	LKP_pms_clt_eor_stage.pce_occurrence,
 	-- *INF*: replaceChr(0,to_char(pce_date_of_loss),'/','')
-	REGEXP_REPLACE(to_char(pce_date_of_loss
-	),'/','','i') AS v_PMS_date_of_loss,
+	REGEXP_REPLACE(to_char(pce_date_of_loss),'/','','i') AS v_PMS_date_of_loss,
 	-- *INF*: pce_policy_sym || pce_policy_num || pce_policy_mod ||  
 	-- v_PMS_date_of_loss 
 	-- || lpad(to_char(pce_occurrence),3,'0')
 	-- 
-	pce_policy_sym || pce_policy_num || pce_policy_mod || v_PMS_date_of_loss || lpad(to_char(pce_occurrence
-		), 3, '0'
-	) AS v_PMS_claim_num,
+	pce_policy_sym || pce_policy_num || pce_policy_mod || v_PMS_date_of_loss || lpad(to_char(pce_occurrence), 3, '0') AS v_PMS_claim_num,
 	LKP_pms_clt_eor_stage.pce_paid_ts AS PMS_paid_date,
 	LKP_pms_clt_eor_stage.check_number AS PMS_draft_num,
 	LKP_pms_clt_eor_stage.amount_paid_by_chk AS PMS_draft_amt,
@@ -282,115 +270,80 @@ EXP_ASSIGN_DEFAULTS AS (
 	-- *INF*: IIF(NOT ISNULL(EXD_claim_num), EXD_claim_num,
 	-- IIF(NOT ISNULL(v_PMS_claim_num), v_PMS_claim_num,
 	-- 'N/A'))
-	IFF(EXD_claim_num IS NOT NULL,
-		EXD_claim_num,
-		IFF(v_PMS_claim_num IS NOT NULL,
-			v_PMS_claim_num,
-			'N/A'
-		)
+	IFF(
+	    EXD_claim_num IS NOT NULL, EXD_claim_num,
+	    IFF(
+	        v_PMS_claim_num IS NOT NULL, v_PMS_claim_num, 'N/A'
+	    )
 	) AS v_claim_num,
 	-- *INF*: :LKP.LKP_claim_occurrence(v_claim_num)
 	LKP_CLAIM_OCCURRENCE_v_claim_num.claim_occurrence_ak_id AS v_claim_occ_ak_id,
 	-- *INF*: IIF(isnull(v_claim_occ_ak_id),-1,v_claim_occ_ak_id)
-	IFF(v_claim_occ_ak_id IS NULL,
-		- 1,
-		v_claim_occ_ak_id
-	) AS claim_occ_ak_id_out,
+	IFF(v_claim_occ_ak_id IS NULL, - 1, v_claim_occ_ak_id) AS claim_occ_ak_id_out,
 	LKP_claim_party_occurrence.claim_party_occurrence_ak_id AS in_claim_party_occurrence_ak_id,
 	-- *INF*: iif(isnull(in_claim_party_occurrence_ak_id),-1,in_claim_party_occurrence_ak_id)
-	IFF(in_claim_party_occurrence_ak_id IS NULL,
-		- 1,
-		in_claim_party_occurrence_ak_id
-	) AS claim_party_occurrence_ak_id,
+	IFF(in_claim_party_occurrence_ak_id IS NULL, - 1, in_claim_party_occurrence_ak_id) AS claim_party_occurrence_ak_id,
 	LKP_medical_bill_vendor.med_bill_vendor_ak_id AS in_med_bill_vendor_ak_id,
 	-- *INF*: iif(isnull(in_med_bill_vendor_ak_id),-1,in_med_bill_vendor_ak_id)
-	IFF(in_med_bill_vendor_ak_id IS NULL,
-		- 1,
-		in_med_bill_vendor_ak_id
-	) AS med_bill_vendor_ak_id,
+	IFF(in_med_bill_vendor_ak_id IS NULL, - 1, in_med_bill_vendor_ak_id) AS med_bill_vendor_ak_id,
 	-- *INF*: IIF(length(ebill_ind)=0,'N/A',ebill_ind)
-	IFF(length(ebill_ind
-		) = 0,
-		'N/A',
-		ebill_ind
-	) AS ebill_ind_out,
+	IFF(length(ebill_ind) = 0, 'N/A', ebill_ind) AS ebill_ind_out,
 	-- *INF*: IIF(NOT ISNULL(EXD_denial_reason_cd), EXD_denial_reason_cd,
 	-- IIF(NOT ISNULL(PMS_denial_reason_cd), PMS_denial_reason_cd,
 	-- 'N/A'))
-	IFF(EXD_denial_reason_cd IS NOT NULL,
-		EXD_denial_reason_cd,
-		IFF(PMS_denial_reason_cd IS NOT NULL,
-			PMS_denial_reason_cd,
-			'N/A'
-		)
+	IFF(
+	    EXD_denial_reason_cd IS NOT NULL, EXD_denial_reason_cd,
+	    IFF(
+	        PMS_denial_reason_cd IS NOT NULL, PMS_denial_reason_cd, 'N/A'
+	    )
 	) AS denial_rsn_cd_out,
 	-- *INF*: IIF(NOT isnull(EXD_draft_num) , EXD_draft_num,
 	-- IIF(NOT isnull(PMS_draft_num) , PMS_draft_num,
 	-- 'N/A'))
-	IFF(EXD_draft_num IS NOT NULL,
-		EXD_draft_num,
-		IFF(PMS_draft_num IS NOT NULL,
-			PMS_draft_num,
-			'N/A'
-		)
+	IFF(
+	    EXD_draft_num IS NOT NULL, EXD_draft_num,
+	    IFF(
+	        PMS_draft_num IS NOT NULL, PMS_draft_num, 'N/A'
+	    )
 	) AS draft_num_out,
 	-- *INF*: IIF(NOT isnull(EXD_draft_amt) ,EXD_draft_amt,
 	-- IIF(NOT isnull(PMS_draft_amt) , PMS_draft_amt,
 	-- 0))
 	-- 
 	-- 
-	IFF(EXD_draft_amt IS NOT NULL,
-		EXD_draft_amt,
-		IFF(PMS_draft_amt IS NOT NULL,
-			PMS_draft_amt,
-			0
-		)
+	IFF(
+	    EXD_draft_amt IS NOT NULL, EXD_draft_amt,
+	    IFF(
+	        PMS_draft_amt IS NOT NULL, PMS_draft_amt, 0
+	    )
 	) AS draft_amt_out,
 	-- *INF*: IIF(NOT ISNULL(EXD_paid_date) ,EXD_paid_date,
 	-- IIF(NOT ISNULL(PMS_paid_date) ,PMS_paid_date,
 	-- TO_DATE('1/1/1800','MM/DD/YYYY')))
 	-- 
-	IFF(EXD_paid_date IS NOT NULL,
-		EXD_paid_date,
-		IFF(PMS_paid_date IS NOT NULL,
-			PMS_paid_date,
-			TO_DATE('1/1/1800', 'MM/DD/YYYY'
-			)
-		)
+	IFF(
+	    EXD_paid_date IS NOT NULL, EXD_paid_date,
+	    IFF(
+	        PMS_paid_date IS NOT NULL, PMS_paid_date, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY')
+	    )
 	) AS draft_paid_date_out,
 	LKP_clm_clt_eor_stage.cce_eor_status AS in_med_bill_review_code,
 	-- *INF*: iif(isnull(in_med_bill_review_code),'N/A',in_med_bill_review_code)
-	IFF(in_med_bill_review_code IS NULL,
-		'N/A',
-		in_med_bill_review_code
-	) AS med_bill_review_code,
+	IFF(in_med_bill_review_code IS NULL, 'N/A', in_med_bill_review_code) AS med_bill_review_code,
 	-- *INF*: iif(isnull(in_autopay_ind),'N/A',in_autopay_ind)
 	-- 
 	--  
-	IFF(in_autopay_ind IS NULL,
-		'N/A',
-		in_autopay_ind
-	) AS autopay_ind_out,
+	IFF(in_autopay_ind IS NULL, 'N/A', in_autopay_ind) AS autopay_ind_out,
 	SQ_med_bill_stage.eor_rcvd_date AS in_eor_rcvd_date,
 	-- *INF*: IIF(ISNULL( in_eor_rcvd_date) ,
 	-- TO_DATE('1/1/1800','MM/DD/YYYY'),in_eor_rcvd_date)
-	IFF(in_eor_rcvd_date IS NULL,
-		TO_DATE('1/1/1800', 'MM/DD/YYYY'
-		),
-		in_eor_rcvd_date
-	) AS o_eor_rcvd_date,
+	IFF(in_eor_rcvd_date IS NULL, TO_TIMESTAMP('1/1/1800', 'MM/DD/YYYY'), in_eor_rcvd_date) AS o_eor_rcvd_date,
 	SQ_med_bill_stage.original_vendor_bill_num AS in_original_vendor_bill_num,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(in_original_vendor_bill_num)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(in_original_vendor_bill_num
-	) AS o_original_vendor_bill_num,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(in_original_vendor_bill_num) AS o_original_vendor_bill_num,
 	SQ_med_bill_stage.auto_adjudicated,
 	-- *INF*: IIF(ISNULL(auto_adjudicated) OR RTRIM(auto_adjudicated)='','N/A',auto_adjudicated)
-	IFF(auto_adjudicated IS NULL 
-		OR RTRIM(auto_adjudicated
-		) = '',
-		'N/A',
-		auto_adjudicated
-	) AS o_auto_adjudicated
+	IFF(auto_adjudicated IS NULL OR RTRIM(auto_adjudicated) = '', 'N/A', auto_adjudicated) AS o_auto_adjudicated
 	FROM SQ_med_bill_stage
 	LEFT JOIN LKP_claim_party_occurrence
 	ON LKP_claim_party_occurrence.claim_party_key = LKP_clm_clt_eor_stage.cce_client_id AND LKP_claim_party_occurrence.claim_occurrence_key = LKP_clm_clt_eor_stage.cce_claim_nbr
@@ -639,59 +592,61 @@ EXPTRANS AS (
 	-- in_draft_num<>draft_num or 
 	-- in_draft_paid_date <> draft_paid_date
 	-- , 'UPDATE','NOCHANGE')) 
-	IFF(med_bill_ak_id IS NULL,
-		'NEW',
-		IFF(in_vendor_bill_num <> vendor_bill_num 
-			OR in_pt_acct_num <> patient_acct_num 
-			OR in_pt_last_name <> patient_last_name 
-			OR in_pt_first_name <> patient_first_name 
-			OR in_pt_mid_name <> patient_mid_name 
-			OR in_pt_addr <> patient_addr 
-			OR in_pt_city <> patient_city 
-			OR in_pt_state <> patient_state 
-			OR in_pt_zip_code <> patient_zip_code 
-			OR in_pt_dob <> patient_birthdate 
-			OR in_pt_gndr <> patient_gndr 
-			OR in_pt_ssn <> patient_ssn 
-			OR in_pt_inj_dt <> patient_inj_date 
-			OR in_refer_physician <> refer_physician 
-			OR in_serv_from_date <> serv_from_date 
-			OR in_serv_to_date <> serv_to_date 
-			OR in_inpt_outpt_ind <> inpatient_outpatient_ind 
-			OR in_bill_issued_date <> bill_issued_date 
-			OR in_bill_rcvd_date <> bill_rcvd_date 
-			OR in_bus_rcvd_date <> bus_rcvd_date 
-			OR in_bill_process_date <> bill_process_date 
-			OR in_pt_admit_date <> patient_admit_date 
-			OR in_pt_discharge_date <> patient_discharge_date 
-			OR in_daily_hospital_rt <> daily_hospital_rate 
-			OR in_bill_review_cost <> bill_review_cost 
-			OR in_total_bill_charge <> total_bill_charge 
-			OR in_total_bill_red <> total_bill_review_red 
-			OR in_total_network_red <> total_network_red 
-			OR in_total_recom_pay <> total_recommend_pay 
-			OR in_total_addtl_charge <> total_addtional_charge 
-			OR in_bill_type <> bill_type 
-			OR in_bill_status_code <> bill_status_code 
-			OR in_fee_sched_code <> fee_sched_code 
-			OR in_network_name <> network_name 
-			OR in_network_num <> network_num 
-			OR in_serv_line_num <> serv_line_num 
-			OR in_deleted_ind <> deleted_ind 
-			OR in_emplyr <> emplyr 
-			OR in_acct_id <> acct_id 
-			OR in_vendor_code <> bill_review_vendor_code 
-			OR in_autopay_ind <> autopay_ind 
-			OR in_ebill_ind <> ebill_ind 
-			OR in_med_bill_review_code <> med_bill_review_code 
-			OR in_original_vendor_bill_num <> OriginalVendorBillNumber 
-			OR in_auto_adjudicated <> AutoAdjudicatedIndicator 
-			OR in_denial_rsn_cd <> denial_rsn_code 
-			OR in_draft_num <> draft_num 
-			OR in_draft_paid_date <> draft_paid_date,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    med_bill_ak_id IS NULL, 'NEW',
+	    IFF(
+	        in_vendor_bill_num <> vendor_bill_num
+	        or in_pt_acct_num <> patient_acct_num
+	        or in_pt_last_name <> patient_last_name
+	        or in_pt_first_name <> patient_first_name
+	        or in_pt_mid_name <> patient_mid_name
+	        or in_pt_addr <> patient_addr
+	        or in_pt_city <> patient_city
+	        or in_pt_state <> patient_state
+	        or in_pt_zip_code <> patient_zip_code
+	        or in_pt_dob <> patient_birthdate
+	        or in_pt_gndr <> patient_gndr
+	        or in_pt_ssn <> patient_ssn
+	        or in_pt_inj_dt <> patient_inj_date
+	        or in_refer_physician <> refer_physician
+	        or in_serv_from_date <> serv_from_date
+	        or in_serv_to_date <> serv_to_date
+	        or in_inpt_outpt_ind <> inpatient_outpatient_ind
+	        or in_bill_issued_date <> bill_issued_date
+	        or in_bill_rcvd_date <> bill_rcvd_date
+	        or in_bus_rcvd_date <> bus_rcvd_date
+	        or in_bill_process_date <> bill_process_date
+	        or in_pt_admit_date <> patient_admit_date
+	        or in_pt_discharge_date <> patient_discharge_date
+	        or in_daily_hospital_rt <> daily_hospital_rate
+	        or in_bill_review_cost <> bill_review_cost
+	        or in_total_bill_charge <> total_bill_charge
+	        or in_total_bill_red <> total_bill_review_red
+	        or in_total_network_red <> total_network_red
+	        or in_total_recom_pay <> total_recommend_pay
+	        or in_total_addtl_charge <> total_addtional_charge
+	        or in_bill_type <> bill_type
+	        or in_bill_status_code <> bill_status_code
+	        or in_fee_sched_code <> fee_sched_code
+	        or in_network_name <> network_name
+	        or in_network_num <> network_num
+	        or in_serv_line_num <> serv_line_num
+	        or in_deleted_ind <> deleted_ind
+	        or in_emplyr <> emplyr
+	        or in_acct_id <> acct_id
+	        or in_vendor_code <> bill_review_vendor_code
+	        or in_autopay_ind <> autopay_ind
+	        or in_ebill_ind <> ebill_ind
+	        or in_med_bill_review_code <> med_bill_review_code
+	        or in_original_vendor_bill_num <>
+	        originalVendorBillNumber
+	        or in_auto_adjudicated <> AutoAdjudicatedIndicator
+	        or in_denial_rsn_cd <> denial_rsn_code
+	        or in_draft_num <> draft_num
+	        or in_draft_paid_date <> draft_paid_date,
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS VChange_flag,
 	VChange_flag AS Change_flag,
 	EXP_ASSIGN_DEFAULTS.claim_occ_ak_id_out AS in_claim_occurrence_ak_id,
@@ -850,8 +805,7 @@ EXP_AUDIT_FIELDS AS (
 	pt_admit_date,
 	pt_discharge_date,
 	-- *INF*: TO_DATE('1/1/1800','mm/dd/yyyy')
-	TO_DATE('1/1/1800', 'mm/dd/yyyy'
-	) AS bill_cov_from_to_dt_default,
+	TO_TIMESTAMP('1/1/1800', 'mm/dd/yyyy') AS bill_cov_from_to_dt_default,
 	daily_hospital_rt,
 	bill_review_cost,
 	total_bill_charge,
@@ -873,14 +827,12 @@ EXP_AUDIT_FIELDS AS (
 	audit_id,
 	-- *INF*: IIF(Change_flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(Change_flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    Change_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_sys_id,
 	sysdate AS created_date,
 	pt_full_name,
@@ -899,10 +851,7 @@ EXP_AUDIT_FIELDS AS (
 	Change_flag,
 	SEQ_med_bill_ak_id.NEXTVAL,
 	-- *INF*: IIF(Change_flag='NEW', NEXTVAL, med_bill_ak_id)
-	IFF(Change_flag = 'NEW',
-		NEXTVAL,
-		med_bill_ak_id
-	) AS med_bill_ak_id_out
+	IFF(Change_flag = 'NEW', NEXTVAL, med_bill_ak_id) AS med_bill_ak_id_out
 	FROM FIL_NEW_CHANGED_ROWS
 ),
 medical_bill_insert AS (
@@ -1004,9 +953,10 @@ EXP_Lag_eff_from_date1 AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	med_bill_key = v_PREV_ROW_occurrence_key, ADD_TO_DATE(v_PREV_ROW_eff_from_date,'SS',-1),
 	-- 	orig_eff_to_date)
-	DECODE(TRUE,
-		med_bill_key = v_PREV_ROW_occurrence_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    med_bill_key = v_PREV_ROW_occurrence_key, DATEADD(SECOND,- 1,v_PREV_ROW_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	v_eff_to_date AS eff_to_date,
 	eff_from_date AS v_PREV_ROW_eff_from_date,

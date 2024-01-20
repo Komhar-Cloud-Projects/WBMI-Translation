@@ -13,11 +13,9 @@ EXP_Form AS (
 	SELECT
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('18000101','YYYYMMDD')
-	TO_DATE('18000101', 'YYYYMMDD'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('18000101', 'YYYYMMDD') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('21001231','YYYYMMDD')
-	TO_DATE('21001231', 'YYYYMMDD'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('21001231', 'YYYYMMDD') AS o_ExpirationDate,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	FormName,

@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_PassThroughChargeTransaction1 AS (\n\tselect W.WorkDCTDataRepairPolicyId,\r\n\tB.pol_key,\r\n\tA.PassThroughChargeTransactionID\r\n\tfrom @{pipeline().parameters.TARGET_TABLE_OWNER}.PassThroughChargeTransaction A\r\n\tinner join @{pipeline().parameters.TARGET_TABLE_OWNER_V2}.policy B\r\n\ton A.PolicyAKID=B.pol_ak_id\r\n\tand B.source_sys_id='DCT'\r\n\tand A.SourceSystemID='DCT'\r\n\tand B.crrnt_snpsht_flag=1\r\n\tinner join StrategicProfitCenter spc on spc.StrategicProfitCenterAKId = B.StrategicProfitCenterAKId\r\n\tINNER JOIN @{pipeline().parameters.STAGE_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.WorkDCTDataRepairPolicy W \r\n\tON W.PolicyKey = B.pol_key \r\n\tAND W.createddate > '@{pipeline().parameters.SELECTION_START_TS}' \r\n\twhere ReasonAmendedCode not in ('CWO','Claw Back') AND spc.StrategicProfitCenterAbbreviation <> 'WB - PL' \r\n\tand A.createddate>= '@{pipeline().parameters.SELECTION_END_TS}'\r\n\tand A.NegateRestateCode in ('Negate','Restate')\n),\nEXP_PassThroughChargeTransaction AS (\n\tSELECT\n\tWorkDCTDataRepairPolicyId,\n\tpol_key,\n\tPassThroughChargeTransactionID\n\tFROM SQ_PassThroughChargeTransaction1\n),\nSQ_WB_EDWInceptionToDate AS (\n\tSelect B.PolicyKey, A.DCTTaxesChange\r\n\tfrom @{pipeline().parameters.DCT_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWInceptionToDate A\r\n\tinner join @{pipeline().parameters.DCT_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWDCTDataRepairPolicy B\r\n\ton A.PolicyNumber+A.PolicyVersion=B.PolicyKey\n),\nEXP_DCT_Tax AS (\n\tSELECT\n\tPolicyKey,\n\tDCTTaxesChange\n\tFROM SQ_WB_EDWInceptionToDate\n),\nSQ_PassThroughChargeTransaction AS (\n\tselect B.Pol_key,sum(A.PassThroughChargeTransactionAmount) PassThroughChargeTransactionAmount \r\n\tfrom @{pipeline().parameters.TARGET_TABLE_OWNER}.PassThroughChargeTransaction A\r\n\tinner join @{pipeline().parameters.TARGET_TABLE_OWNER_V2}.policy B\r\n\ton A.PolicyAKID=B.pol_ak_id\r\n\tand B.source_sys_id='DCT'\r\n\tand A.SourceSystemID='DCT'\r\n\tand B.crrnt_snpsht_flag=1\r\n\tinner join StrategicProfitCenter spc on spc.StrategicProfitCenterAKId = B.StrategicProfitCenterAKId\r\n\tINNER JOIN @{pipeline().parameters.STAGE_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.WorkDCTDataRepairPolicy W \r\n\tON W.PolicyKey = B.pol_key \r\n\tAND W.createddate > '@{pipeline().parameters.SELECTION_START_TS}'\r\n\twhere ReasonAmendedCode not in ('CWO','Claw Back') AND spc.StrategicProfitCenterAbbreviation <> 'WB - PL' \r\n\tgroup by B.Pol_key\n),\nEXP_EDW_Tax AS (\n\tSELECT\n\tpol_key,\n\tPassThroughChargeTransactionAmount\n\tFROM SQ_PassThroughChargeTransaction\n),\nJNR_DCT_EDW AS (SELECT\n\tEXP_DCT_Tax.PolicyKey, \n\tEXP_DCT_Tax.DCTTaxesChange, \n\tEXP_EDW_Tax.pol_key, \n\tEXP_EDW_Tax.PassThroughChargeTransactionAmount\n\tFROM EXP_DCT_Tax\n\tINNER JOIN EXP_EDW_Tax\n\tON EXP_EDW_Tax.pol_key = EXP_DCT_Tax.PolicyKey\n),\nEXP_Balance_Flag AS (\n\tSELECT\n\tPolicyKey,\n\tDCTTaxesChange,\n\tpol_key,\n\tPassThroughChargeTransactionAmount,\n\t-- *INF*: IIF(abs(PassThroughChargeTransactionAmount-DCTTaxesChange)>@{pipeline().parameters.LIMIT},'UnBalanced','Balanced')\n\tIFF(abs(PassThroughChargeTransactionAmount - DCTTaxesChange\n\t\t) > @{pipeline().parameters.LIMIT},\n\t\t'UnBalanced',\n\t\t'Balanced'\n\t) AS Balance_Flag\n\tFROM JNR_DCT_EDW\n),\nRTR_DCT_EDW AS (\n\tSELECT\n\tPolicyKey,\n\tDCTTaxesChange,\n\tpol_key,\n\tPassThroughChargeTransactionAmount,\n\tBalance_Flag\n\tFROM EXP_Balance_Flag\n),\nRTR_DCT_EDW_Balanced AS (SELECT * FROM RTR_DCT_EDW WHERE Balance_Flag = 'Balanced'),\nRTR_DCT_EDW_UnBalanced AS (SELECT * FROM RTR_DCT_EDW WHERE Balance_Flag = 'UnBalanced'),\nEXP_Unbalanced_Policy AS (\n\tSELECT\n\tPolicyKey\n\tFROM RTR_DCT_EDW_UnBalanced\n),\nJNR_UnBalanced_PassThroughChargeTransaction AS (SELECT\n\tEXP_Unbalanced_Policy.PolicyKey, \n\tEXP_PassThroughChargeTransaction.pol_key, \n\tEXP_PassThroughChargeTransaction.PassThroughChargeTransactionID, \n\tEXP_PassThroughChargeTransaction.WorkDCTDataRepairPolicyId\n\tFROM EXP_PassThroughChargeTransaction\n\tINNER JOIN EXP_Unbalanced_Policy\n\tON EXP_Unbalanced_Policy.PolicyKey = EXP_PassThroughChargeTransaction.pol_key\n),\nEXP_UnBalance_PassThroughChargeTransactionid AS (\n\tSELECT\n\tPassThroughChargeTransactionID,\n\tWorkDCTDataRepairPolicyId\n\tFROM JNR_UnBalanced_PassThroughChargeTransaction\n),\nUPD_Delete_PassThroughChargeTransactionid AS (\n\tSELECT\n\tPassThroughChargeTransactionID\n\tFROM EXP_UnBalance_PassThroughChargeTransactionid\n),\nPassThroughChargeTransaction2 AS (\n\tDELETE FROM PassThroughChargeTransaction\n\tWHERE (PassThroughChargeTransactionID) IN (SELECT  PASSTHROUGHCHARGETRANSACTIONID FROM UPD_Delete_PassThroughChargeTransactionid)\n),\nAGG_DataRepair AS (\n\tSELECT\n\tWorkDCTDataRepairPolicyId\n\tFROM EXP_UnBalance_PassThroughChargeTransactionid\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY WorkDCTDataRepairPolicyId ORDER BY NULL) = 1\n),\nUPD_Data_Repair_Delete AS (\n\tSELECT\n\tWorkDCTDataRepairPolicyId\n\tFROM AGG_DataRepair\n),\nWorkDCTDataRepairPolicy AS (\n\tDELETE FROM WorkDCTDataRepairPolicy\n\tWHERE (WorkDCTDataRepairPolicyId) IN (SELECT  WORKDCTDATAREPAIRPOLICYID FROM UPD_Data_Repair_Delete)\n),\nEDW_Data_Repair_Tax AS (\n\tINSERT INTO EDW_Data_Repair_Tax\n\t(PolicyKey, DCTTaxesChange, pol_key, PassThroughChargeTransactionAmount, Balance_Flag)\n\tSELECT \n\tPOLICYKEY, \n\tDCTTAXESCHANGE, \n\tPOL_KEY, \n\tPASSTHROUGHCHARGETRANSACTIONAMOUNT, \n\tBALANCE_FLAG\n\tFROM EXP_Balance_Flag\n),"
+                            "text": "WITH\nSQ_PassThroughChargeTransaction1 AS (\n\tselect W.WorkDCTDataRepairPolicyId,\r\n\tB.pol_key,\r\n\tA.PassThroughChargeTransactionID\r\n\tfrom @{pipeline().parameters.TARGET_TABLE_OWNER}.PassThroughChargeTransaction A\r\n\tinner join @{pipeline().parameters.TARGET_TABLE_OWNER_V2}.policy B\r\n\ton A.PolicyAKID=B.pol_ak_id\r\n\tand B.source_sys_id='DCT'\r\n\tand A.SourceSystemID='DCT'\r\n\tand B.crrnt_snpsht_flag=1\r\n\tinner join StrategicProfitCenter spc on spc.StrategicProfitCenterAKId = B.StrategicProfitCenterAKId\r\n\tINNER JOIN @{pipeline().parameters.STAGE_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.WorkDCTDataRepairPolicy W \r\n\tON W.PolicyKey = B.pol_key \r\n\tAND W.createddate > '@{pipeline().parameters.SELECTION_START_TS}' \r\n\twhere ReasonAmendedCode not in ('CWO','Claw Back') AND spc.StrategicProfitCenterAbbreviation <> 'WB - PL' \r\n\tand A.createddate>= '@{pipeline().parameters.SELECTION_END_TS}'\r\n\tand A.NegateRestateCode in ('Negate','Restate')\n),\nEXP_PassThroughChargeTransaction AS (\n\tSELECT\n\tWorkDCTDataRepairPolicyId,\n\tpol_key,\n\tPassThroughChargeTransactionID\n\tFROM SQ_PassThroughChargeTransaction1\n),\nSQ_WB_EDWInceptionToDate AS (\n\tSelect B.PolicyKey, A.DCTTaxesChange\r\n\tfrom @{pipeline().parameters.DCT_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWInceptionToDate A\r\n\tinner join @{pipeline().parameters.DCT_DATABASE_NAME}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWDCTDataRepairPolicy B\r\n\ton A.PolicyNumber+A.PolicyVersion=B.PolicyKey\n),\nEXP_DCT_Tax AS (\n\tSELECT\n\tPolicyKey,\n\tDCTTaxesChange\n\tFROM SQ_WB_EDWInceptionToDate\n),\nSQ_PassThroughChargeTransaction AS (\n\tselect B.Pol_key,sum(A.PassThroughChargeTransactionAmount) PassThroughChargeTransactionAmount \r\n\tfrom @{pipeline().parameters.TARGET_TABLE_OWNER}.PassThroughChargeTransaction A\r\n\tinner join @{pipeline().parameters.TARGET_TABLE_OWNER_V2}.policy B\r\n\ton A.PolicyAKID=B.pol_ak_id\r\n\tand B.source_sys_id='DCT'\r\n\tand A.SourceSystemID='DCT'\r\n\tand B.crrnt_snpsht_flag=1\r\n\tinner join StrategicProfitCenter spc on spc.StrategicProfitCenterAKId = B.StrategicProfitCenterAKId\r\n\tINNER JOIN @{pipeline().parameters.STAGE_DATABASE_NAME}.@{pipeline().parameters.TARGET_TABLE_OWNER}.WorkDCTDataRepairPolicy W \r\n\tON W.PolicyKey = B.pol_key \r\n\tAND W.createddate > '@{pipeline().parameters.SELECTION_START_TS}'\r\n\twhere ReasonAmendedCode not in ('CWO','Claw Back') AND spc.StrategicProfitCenterAbbreviation <> 'WB - PL' \r\n\tgroup by B.Pol_key\n),\nEXP_EDW_Tax AS (\n\tSELECT\n\tpol_key,\n\tPassThroughChargeTransactionAmount\n\tFROM SQ_PassThroughChargeTransaction\n),\nJNR_DCT_EDW AS (SELECT\n\tEXP_DCT_Tax.PolicyKey, \n\tEXP_DCT_Tax.DCTTaxesChange, \n\tEXP_EDW_Tax.pol_key, \n\tEXP_EDW_Tax.PassThroughChargeTransactionAmount\n\tFROM EXP_DCT_Tax\n\tINNER JOIN EXP_EDW_Tax\n\tON EXP_EDW_Tax.pol_key = EXP_DCT_Tax.PolicyKey\n),\nEXP_Balance_Flag AS (\n\tSELECT\n\tPolicyKey,\n\tDCTTaxesChange,\n\tpol_key,\n\tPassThroughChargeTransactionAmount,\n\t-- *INF*: IIF(abs(PassThroughChargeTransactionAmount-DCTTaxesChange)>@{pipeline().parameters.LIMIT},'UnBalanced','Balanced')\n\tIFF(\n\t    abs(PassThroughChargeTransactionAmount - DCTTaxesChange) > @{pipeline().parameters.LIMIT}, 'UnBalanced', 'Balanced'\n\t) AS Balance_Flag\n\tFROM JNR_DCT_EDW\n),\nRTR_DCT_EDW AS (\n\tSELECT\n\tPolicyKey,\n\tDCTTaxesChange,\n\tpol_key,\n\tPassThroughChargeTransactionAmount,\n\tBalance_Flag\n\tFROM EXP_Balance_Flag\n),\nRTR_DCT_EDW_Balanced AS (SELECT * FROM RTR_DCT_EDW WHERE Balance_Flag = 'Balanced'),\nRTR_DCT_EDW_UnBalanced AS (SELECT * FROM RTR_DCT_EDW WHERE Balance_Flag = 'UnBalanced'),\nEXP_Unbalanced_Policy AS (\n\tSELECT\n\tPolicyKey\n\tFROM RTR_DCT_EDW_UnBalanced\n),\nJNR_UnBalanced_PassThroughChargeTransaction AS (SELECT\n\tEXP_Unbalanced_Policy.PolicyKey, \n\tEXP_PassThroughChargeTransaction.pol_key, \n\tEXP_PassThroughChargeTransaction.PassThroughChargeTransactionID, \n\tEXP_PassThroughChargeTransaction.WorkDCTDataRepairPolicyId\n\tFROM EXP_PassThroughChargeTransaction\n\tINNER JOIN EXP_Unbalanced_Policy\n\tON EXP_Unbalanced_Policy.PolicyKey = EXP_PassThroughChargeTransaction.pol_key\n),\nEXP_UnBalance_PassThroughChargeTransactionid AS (\n\tSELECT\n\tPassThroughChargeTransactionID,\n\tWorkDCTDataRepairPolicyId\n\tFROM JNR_UnBalanced_PassThroughChargeTransaction\n),\nUPD_Delete_PassThroughChargeTransactionid AS (\n\tSELECT\n\tPassThroughChargeTransactionID\n\tFROM EXP_UnBalance_PassThroughChargeTransactionid\n),\nPassThroughChargeTransaction2 AS (\n\tDELETE FROM PassThroughChargeTransaction\n\tWHERE (PassThroughChargeTransactionID) IN (SELECT  PASSTHROUGHCHARGETRANSACTIONID FROM UPD_Delete_PassThroughChargeTransactionid)\n),\nAGG_DataRepair AS (\n\tSELECT\n\tWorkDCTDataRepairPolicyId\n\tFROM EXP_UnBalance_PassThroughChargeTransactionid\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY WorkDCTDataRepairPolicyId ORDER BY NULL) = 1\n),\nUPD_Data_Repair_Delete AS (\n\tSELECT\n\tWorkDCTDataRepairPolicyId\n\tFROM AGG_DataRepair\n),\nWorkDCTDataRepairPolicy AS (\n\tDELETE FROM WorkDCTDataRepairPolicy\n\tWHERE (WorkDCTDataRepairPolicyId) IN (SELECT  WORKDCTDATAREPAIRPOLICYID FROM UPD_Data_Repair_Delete)\n),\nEDW_Data_Repair_Tax AS (\n\tINSERT INTO EDW_Data_Repair_Tax\n\t(PolicyKey, DCTTaxesChange, pol_key, PassThroughChargeTransactionAmount, Balance_Flag)\n\tSELECT \n\tPOLICYKEY, \n\tDCTTAXESCHANGE, \n\tPOL_KEY, \n\tPASSTHROUGHCHARGETRANSACTIONAMOUNT, \n\tBALANCE_FLAG\n\tFROM EXP_Balance_Flag\n),"
                         }
                     ]
                 },
@@ -30,65 +30,41 @@
             }
         ],
         "parameters": {
-            "WBMI_AUDIT_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "216690"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "878317"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7472077"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "06/27/2023 10:25:43"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "06/28/2023 13:55:37"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_ExampleData_Customer"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
-            },
             "TARGET_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": "DBO"
+                "defaultValue": "Default Value"
             },
             "TARGET_TABLE_OWNER_V2": {
                 "type": "string",
-                "defaultValue": "v2"
+                "defaultValue": "Default Value"
             },
             "STAGE_DATABASE_NAME": {
                 "type": "string",
-                "defaultValue": "WC_STAGE"
+                "defaultValue": "Default Value"
             },
-            "LIMIT": {
+            "SELECTION_START_TS": {
                 "type": "string",
-                "defaultValue": "0"
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
             },
             "DCT_DATABASE_NAME": {
                 "type": "string",
-                "defaultValue": "WBExampleData"
+                "defaultValue": "Default Value"
             },
-            "DBCONNECTION_STAGE": {
+            "SOURCE_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": "SQLServer_WC_Stage_Policy"
+                "defaultValue": "Default Value"
+            },
+            "LIMIT": {
+                "type": "string",
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Policy DataWarehouse/"
+            "name": "PolicyDataWarehouse/"
         },
         "annotations": []
     }

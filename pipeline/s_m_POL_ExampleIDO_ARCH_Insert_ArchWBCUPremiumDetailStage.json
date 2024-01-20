@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCUPremiumDetailStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCUPremiumDetailStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCUPremiumDetailStage AS (\n\tSELECT\n\t\tWBCUPremiumDetailStageId,\n\t\tLineId,\n\t\tWBCUPremiumDetailId,\n\t\tSessionId,\n\t\tType,\n\t\tIndicator,\n\t\tMillion,\n\t\tReinsurerForCL,\n\t\tReinsurerForNSI,\n\t\tCommissionRate,\n\t\tPercentCeded,\n\t\tOverride,\n\t\tRevisedFinalPremium,\n\t\tInclude,\n\t\tExclude,\n\t\tCertificateReceived,\n\t\tReinsuranceEffectiveDate,\n\t\tReinsuranceExpirationDate,\n\t\tFinalPremium,\n\t\tFinalPremiumWritten,\n\t\tFinalPremiumChange,\n\t\tReinsurerPremium,\n\t\tReinsurerFinalPremiumDisplay,\n\t\tTypeDuplicate,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM WBCUPremiumDetailStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBCUPremiumDetailStageId,\n\tLineId,\n\tWBCUPremiumDetailId,\n\tSessionId,\n\tType,\n\tIndicator,\n\t-- *INF*: DECODE(Indicator, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    Indicator,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Indicator,\n\tMillion,\n\tReinsurerForCL,\n\tReinsurerForNSI,\n\tCommissionRate,\n\tPercentCeded,\n\tOverride,\n\t-- *INF*: DECODE(Override, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    Override,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Override,\n\tRevisedFinalPremium,\n\tInclude,\n\tExclude,\n\tCertificateReceived,\n\tReinsuranceEffectiveDate,\n\tReinsuranceExpirationDate,\n\tFinalPremium,\n\tFinalPremiumWritten,\n\tFinalPremiumChange,\n\tReinsurerPremium,\n\tReinsurerFinalPremiumDisplay,\n\tTypeDuplicate,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_WBCUPremiumDetailStage\n),\nArchWBCUPremiumDetailStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCUPremiumDetailStage\n\t(WBCUPremiumDetailStageId, LineId, WBCUPremiumDetailId, SessionId, Type, Indicator, Million, ReinsurerForCL, ReinsurerForNSI, CommissionRate, PercentCeded, Override, RevisedFinalPremium, Include, Exclude, CertificateReceived, ReinsuranceEffectiveDate, ReinsuranceExpirationDate, FinalPremium, FinalPremiumWritten, FinalPremiumChange, ReinsurerPremium, ReinsurerFinalPremiumDisplay, TypeDuplicate, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tWBCUPREMIUMDETAILSTAGEID, \n\tLINEID, \n\tWBCUPREMIUMDETAILID, \n\tSESSIONID, \n\tTYPE, \n\to_Indicator AS INDICATOR, \n\tMILLION, \n\tREINSURERFORCL, \n\tREINSURERFORNSI, \n\tCOMMISSIONRATE, \n\tPERCENTCEDED, \n\to_Override AS OVERRIDE, \n\tREVISEDFINALPREMIUM, \n\tINCLUDE, \n\tEXCLUDE, \n\tCERTIFICATERECEIVED, \n\tREINSURANCEEFFECTIVEDATE, \n\tREINSURANCEEXPIRATIONDATE, \n\tFINALPREMIUM, \n\tFINALPREMIUMWRITTEN, \n\tFINALPREMIUMCHANGE, \n\tREINSURERPREMIUM, \n\tREINSURERFINALPREMIUMDISPLAY, \n\tTYPEDUPLICATE, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tAUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -112,10 +112,7 @@ EXP_SRCDataCollect AS (
 	-- *INF*: :LKP.LKP_EXCLUDEPASSTHROUGH(CoverageSubCd)
 	LKP_EXCLUDEPASSTHROUGH_CoverageSubCd.RatedCoverageCode AS v_LKP_PassThroughExclusion,
 	-- *INF*: IIF(ISNULL(v_LKP_PassThroughExclusion),'1','0')
-	IFF(v_LKP_PassThroughExclusion IS NULL,
-		'1',
-		'0'
-	) AS o_PassThroughExclusionFlag,
+	IFF(v_LKP_PassThroughExclusion IS NULL, '1', '0') AS o_PassThroughExclusionFlag,
 	ExtractDate
 	FROM SQ_WorkDCTPLCoverage
 	LEFT JOIN LKP_EXCLUDEPASSTHROUGH LKP_EXCLUDEPASSTHROUGH_CoverageSubCd
@@ -171,27 +168,26 @@ Exp_Get_Values AS (
 	-- '-1'
 	-- )
 	-- 
-	Decode(TRUE,
-		TransactionTypeCode = 'New', '10',
-		TransactionTypeCode = 'Renew', '11',
-		TransactionTypeCode = 'Endorse', '12',
-		TransactionTypeCode = 'Reinstate', '15',
-		TransactionTypeCode = 'Cancel', '20',
-		TransactionTypeCode = 'Reissue', '30',
-		TransactionTypeCode = 'Rewrite', '31',
-		'-1'
+	Decode(
+	    TRUE,
+	    TransactionTypeCode = 'New', '10',
+	    TransactionTypeCode = 'Renew', '11',
+	    TransactionTypeCode = 'Endorse', '12',
+	    TransactionTypeCode = 'Reinstate', '15',
+	    TransactionTypeCode = 'Cancel', '20',
+	    TransactionTypeCode = 'Reissue', '30',
+	    TransactionTypeCode = 'Rewrite', '31',
+	    '-1'
 	) AS o_standardPremiumTransactionCode,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_RATINGCOVERAGE(CoverageKey)),-1,:LKP.LKP_RATINGCOVERAGE(CoverageKey))
-	IFF(LKP_RATINGCOVERAGE_CoverageKey.RatingCoverageAKID IS NULL,
-		- 1,
-		LKP_RATINGCOVERAGE_CoverageKey.RatingCoverageAKID
+	IFF(
+	    LKP_RATINGCOVERAGE_CoverageKey.RatingCoverageAKID IS NULL, - 1,
+	    LKP_RATINGCOVERAGE_CoverageKey.RatingCoverageAKID
 	) AS v_RatingCoverageAkid,
 	v_RatingCoverageAkid AS o_RatingCoverageAkid,
 	-1 AS o_StatisticalCoverageAkid,
 	-- *INF*: MD5(v_RatingCoverageAkid||TO_CHAR(TransactionCreatedDate)|| v_MeasureDetailCode)
-	MD5(v_RatingCoverageAkid || TO_CHAR(TransactionCreatedDate
-		) || v_MeasureDetailCode
-	) AS v_PremiunTransactionHashKey,
+	MD5(v_RatingCoverageAkid || TO_CHAR(TransactionCreatedDate) || v_MeasureDetailCode) AS v_PremiunTransactionHashKey,
 	v_PremiunTransactionHashKey AS o_PremiunTransactionHashKey,
 	'D' AS o_PremiumType,
 	PolicyEffectiveDate,
@@ -202,8 +198,7 @@ Exp_Get_Values AS (
 	ExposureAmount,
 	CoverageKey,
 	-- *INF*: CoverageKey||'||'||TO_CHAR(TransactionCreatedDate)
-	CoverageKey || '||' || TO_CHAR(TransactionCreatedDate
-	) AS o_PremiumTransactionKey,
+	CoverageKey || '||' || TO_CHAR(TransactionCreatedDate) AS o_PremiumTransactionKey,
 	TransactionEffectiveDate,
 	TransactionIssueDate,
 	-- *INF*: DECODE(TRUE,
@@ -211,34 +206,29 @@ Exp_Get_Values AS (
 	-- TO_CHAR(ExtractDate, 'DD' ) ='01',1,
 	-- 0
 	-- )
-	DECODE(TRUE,
-		TO_CHAR(ExtractDate, 'DD'
-		) = '02' 
-		AND TO_CHAR(ExtractDate, 'DAY'
-		) = 'Tuesday', 1,
-		TO_CHAR(ExtractDate, 'DD'
-		) = '01', 1,
-		0
+	DECODE(
+	    TRUE,
+	    TO_CHAR(ExtractDate, 'DD') = '02' and TO_CHAR(ExtractDate, 'DAY') = 'Tuesday', 1,
+	    TO_CHAR(ExtractDate, 'DD') = '01', 1,
+	    0
 	) AS v_AdjustForMonthEnd,
 	-- *INF*: DECODE(TRUE,
 	-- v_AdjustForMonthEnd = 1, ADD_TO_DATE(ExtractDate,'MM',-1),
 	-- ExtractDate)
-	DECODE(TRUE,
-		v_AdjustForMonthEnd = 1, DATEADD(MONTH,- 1,ExtractDate),
-		ExtractDate
+	DECODE(
+	    TRUE,
+	    v_AdjustForMonthEnd = 1, DATEADD(MONTH,- 1,ExtractDate),
+	    ExtractDate
 	) AS v_ExtractDate,
 	-- *INF*: TRUNC(GREATEST(TransactionCreatedDate,TransactionEffectiveDate), 'MM')
-	CAST(TRUNC(GREATEST(TransactionCreatedDate, TransactionEffectiveDate
-	), 'MONTH') AS TIMESTAMP_NTZ(0)) AS v_TransactionIssueDate,
+	CAST(TRUNC(GREATEST(TransactionCreatedDate, TransactionEffectiveDate), 'MONTH') AS TIMESTAMP_NTZ(0)) AS v_TransactionIssueDate,
 	-- *INF*: TRUNC(GREATEST(v_TransactionIssueDate,v_ExtractDate), 'MM')
-	CAST(TRUNC(GREATEST(v_TransactionIssueDate, v_ExtractDate
-	), 'MONTH') AS TIMESTAMP_NTZ(0)) AS o_TransactionIssueDate,
+	CAST(TRUNC(GREATEST(v_TransactionIssueDate, v_ExtractDate), 'MONTH') AS TIMESTAMP_NTZ(0)) AS o_TransactionIssueDate,
 	TransactionReasonCode,
 	DeductibleAmount,
 	0 AS o_ExperienceModificationFactor,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_ExperienceModificationEffectiveDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExperienceModificationEffectiveDate,
 	0 AS o_PackageModificationAdjustmentFactor,
 	'0' AS o_PackageModificationAdjustmentGroupCode,
 	0 AS o_IncreasedLimitFactor,
@@ -248,8 +238,7 @@ Exp_Get_Values AS (
 	0.0000 AS o_BaseRate,
 	'N/A' AS o_ConstructionCode,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_StateRatingEffectiveDate,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS o_StateRatingEffectiveDate,
 	0 AS o_IndividualRiskPremiumModification,
 	'0' AS o_WindCoverageFlag,
 	'N/A' AS o_DeductibleBasis,
@@ -327,8 +316,7 @@ EXP_Format_PremiumTransaction AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	i_PremiumTransactionEnteredDate AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -380,16 +368,11 @@ EXP_Format_PremiumTransaction AS (
 	Exp_Get_Values.o_ServiceCentreName5 AS ServiceCentreName5,
 	Exp_Get_Values.o_NumberOfEmployees AS lkp_NumberOfEmployees,
 	-- *INF*: IIF(ISNULL(lkp_NumberOfEmployees),0,lkp_NumberOfEmployees)
-	IFF(lkp_NumberOfEmployees IS NULL,
-		0,
-		lkp_NumberOfEmployees
-	) AS o_NumberOfEmployees,
+	IFF(lkp_NumberOfEmployees IS NULL, 0, lkp_NumberOfEmployees) AS o_NumberOfEmployees,
 	Exp_Get_Values.o_NegateRestateCode AS NegateRestateCode,
 	Exp_Get_Values.ExposureAmount AS WrittenExposure,
 	-- *INF*: substr(i_PremiumTransactionKey,1,instr(i_PremiumTransactionKey,'~',1,1))
-	substr(i_PremiumTransactionKey, 1, REGEXP_INSTR(i_PremiumTransactionKey, '~', 1, 1
-		)
-	) AS o_Policyakid,
+	substr(i_PremiumTransactionKey, 1, REGEXP_INSTR(i_PremiumTransactionKey, '~', 1, 1)) AS o_Policyakid,
 	0 AS DeclaredEventFlag
 	FROM Exp_Get_Values
 	LEFT JOIN LKP_PremiumTransaction
@@ -813,21 +796,19 @@ EXP_Input_CFA AS (
 	-- TO_CHAR(SYSDATE, 'DD' ) ='01',1,
 	-- 0
 	-- )
-	DECODE(TRUE,
-		TO_CHAR(SYSDATE, 'DD'
-		) = '02' 
-		AND TO_CHAR(SYSDATE, 'DAY'
-		) = 'Tuesday', 1,
-		TO_CHAR(SYSDATE, 'DD'
-		) = '01', 1,
-		0
+	DECODE(
+	    TRUE,
+	    TO_CHAR(CURRENT_TIMESTAMP, 'DD') = '02' and TO_CHAR(CURRENT_TIMESTAMP, 'DAY') = 'Tuesday', 1,
+	    TO_CHAR(CURRENT_TIMESTAMP, 'DD') = '01', 1,
+	    0
 	) AS v_AdjustForMonthEnd,
 	-- *INF*: DECODE(TRUE,
 	-- v_AdjustForMonthEnd = 1, ADD_TO_DATE(SYSDATE,'MM',-1),
 	-- SYSDATE)
-	DECODE(TRUE,
-		v_AdjustForMonthEnd = 1, DATEADD(MONTH,- 1,SYSDATE),
-		SYSDATE
+	DECODE(
+	    TRUE,
+	    v_AdjustForMonthEnd = 1, DATEADD(MONTH,- 1,CURRENT_TIMESTAMP),
+	    CURRENT_TIMESTAMP
 	) AS v_ExtractDate,
 	-- *INF*: IIF
 	-- (
@@ -835,24 +816,21 @@ EXP_Input_CFA AS (
 	-- :LKP.LKP_SUPSTATECFAXREF_PERCENT(PolicyStateCode,pol_eff_date),
 	-- :LKP.LKP_SUPSTATECFAXREF_PERCENT('N/A',pol_eff_date)
 	-- )
-	IFF(LKP_SUPSTATECFAXREF_PERCENT_PolicyStateCode_pol_eff_date.CFARate IS NOT NULL,
-		LKP_SUPSTATECFAXREF_PERCENT_PolicyStateCode_pol_eff_date.CFARate,
-		LKP_SUPSTATECFAXREF_PERCENT__N_A_pol_eff_date.CFARate
+	IFF(
+	    LKP_SUPSTATECFAXREF_PERCENT_PolicyStateCode_pol_eff_date.CFARate IS NOT NULL,
+	    LKP_SUPSTATECFAXREF_PERCENT_PolicyStateCode_pol_eff_date.CFARate,
+	    LKP_SUPSTATECFAXREF_PERCENT__N_A_pol_eff_date.CFARate
 	) AS v_CFARate,
 	-- *INF*: GREATEST(TRUNC(v_ExtractDate,'MM'),TRUNC(PremiumTransactionEffectiveDate,'MM'),TRUNC(EffectiveDate,'MM'))
 	-- 
 	-- 
 	-- 
-	GREATEST(CAST(TRUNC(v_ExtractDate, 'MONTH') AS TIMESTAMP_NTZ(0)), CAST(TRUNC(PremiumTransactionEffectiveDate, 'MONTH') AS TIMESTAMP_NTZ(0)), CAST(TRUNC(EffectiveDate, 'MONTH') AS TIMESTAMP_NTZ(0))
-	) AS o_BookedDate,
+	GREATEST(CAST(TRUNC(v_ExtractDate, 'MONTH') AS TIMESTAMP_NTZ(0)), CAST(TRUNC(PremiumTransactionEffectiveDate, 'MONTH') AS TIMESTAMP_NTZ(0)), CAST(TRUNC(EffectiveDate, 'MONTH') AS TIMESTAMP_NTZ(0))) AS o_BookedDate,
 	'Complete' AS o_Status,
 	-- *INF*: MD5(CFARatingCoverageAKID||TO_CHAR(EffectiveDate)|| 'N/A')
-	MD5(CFARatingCoverageAKID || TO_CHAR(EffectiveDate
-		) || 'N/A'
-	) AS o_PremiumTransactionHashKey,
+	MD5(CFARatingCoverageAKID || TO_CHAR(EffectiveDate) || 'N/A') AS o_PremiumTransactionHashKey,
 	-- *INF*: CFACoverageGuid||'||'||TO_CHAR(EffectiveDate)
-	CFACoverageGuid || '||' || TO_CHAR(EffectiveDate
-	) AS o_PremiumTransactionKey,
+	CFACoverageGuid || '||' || TO_CHAR(EffectiveDate) AS o_PremiumTransactionKey,
 	-- *INF*: v_CFARate * PremiumTransactionAmount
 	-- 
 	-- --PremiumTransactionAmount * (-0.05)
@@ -867,10 +845,10 @@ EXP_Input_CFA AS (
 	-- 
 	-- 
 	-- 
-	IFF(LKP_CFATransactionEffectiveDate IS NULL,
-		TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		LKP_CFATransactionEffectiveDate
+	IFF(
+	    LKP_CFATransactionEffectiveDate IS NULL,
+	    TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    LKP_CFATransactionEffectiveDate
 	) AS v_CFATransactionEffectiveDate,
 	v_CFATransactionEffectiveDate AS o_CFATransactionEffectiveDate
 	FROM SQ_PremiumTransaction_CFA

@@ -17,16 +17,10 @@ EXP_DefaultValues AS (
 	PolicyAKId,
 	FutureAutomaticRenewalFlag AS i_FutureAutomaticRenewalFlag,
 	-- *INF*: IIF(i_FutureAutomaticRenewalFlag='T','1','0')
-	IFF(i_FutureAutomaticRenewalFlag = 'T',
-		'1',
-		'0'
-	) AS o_FutureAutomaticRenewalFlag,
+	IFF(i_FutureAutomaticRenewalFlag = 'T', '1', '0') AS o_FutureAutomaticRenewalFlag,
 	CustomerCarePolicyFutureAutomaticRenewalFlag,
 	-- *INF*: IIF(CustomerCarePolicyFutureAutomaticRenewalFlag='T','1','0')
-	IFF(CustomerCarePolicyFutureAutomaticRenewalFlag = 'T',
-		'1',
-		'0'
-	) AS o_CustomerCarePolicyFutureAutomaticRenewalFlag
+	IFF(CustomerCarePolicyFutureAutomaticRenewalFlag = 'T', '1', '0') AS o_CustomerCarePolicyFutureAutomaticRenewalFlag
 	FROM SQ_PolicyExtension
 ),
 LKP_PolicyExtensionDim AS (
@@ -51,15 +45,9 @@ EXP_InsertOrUpdate AS (
 	LKP_PolicyExtensionDim.FutureAutomaticRenewalFlag AS lkp_FutureAutomaticRenewalFlag,
 	LKP_PolicyExtensionDim.CustomerCarePolicyFutureAutomaticRenewalFlag AS lkp_CustomerCarePolicyFutureAutomaticRenewalFlag,
 	-- *INF*: IIF(lkp_FutureAutomaticRenewalFlag='T','1','0')
-	IFF(lkp_FutureAutomaticRenewalFlag = 'T',
-		'1',
-		'0'
-	) AS v_lkp_FutureAutomaticRenewalFlag,
+	IFF(lkp_FutureAutomaticRenewalFlag = 'T', '1', '0') AS v_lkp_FutureAutomaticRenewalFlag,
 	-- *INF*: IIF(lkp_CustomerCarePolicyFutureAutomaticRenewalFlag='T','1','0')
-	IFF(lkp_CustomerCarePolicyFutureAutomaticRenewalFlag = 'T',
-		'1',
-		'0'
-	) AS v_lkp_CustomerCarePolicyFutureAutomaticRenewalFlag,
+	IFF(lkp_CustomerCarePolicyFutureAutomaticRenewalFlag = 'T', '1', '0') AS v_lkp_CustomerCarePolicyFutureAutomaticRenewalFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	EXP_DefaultValues.SourceSystemId,
 	SYSDATE AS o_CreateDate,
@@ -73,11 +61,12 @@ EXP_InsertOrUpdate AS (
 	-- v_lkp_CustomerCarePolicyFutureAutomaticRenewalFlag != CustomerCarePolicyFutureAutomaticRenewalFlag,'UPDATE',
 	-- 'NOCHANGE'
 	-- )
-	DECODE(TRUE,
-		lkp_PolicyExtensionDimId = - 1, 'NEW',
-		v_lkp_FutureAutomaticRenewalFlag != FutureAutomaticRenewalFlag, 'UPDATE',
-		v_lkp_CustomerCarePolicyFutureAutomaticRenewalFlag != CustomerCarePolicyFutureAutomaticRenewalFlag, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    lkp_PolicyExtensionDimId = - 1, 'NEW',
+	    v_lkp_FutureAutomaticRenewalFlag != FutureAutomaticRenewalFlag, 'UPDATE',
+	    v_lkp_CustomerCarePolicyFutureAutomaticRenewalFlag != CustomerCarePolicyFutureAutomaticRenewalFlag, 'UPDATE',
+	    'NOCHANGE'
 	) AS o_ChangeFlag
 	FROM EXP_DefaultValues
 	LEFT JOIN LKP_PolicyExtensionDim

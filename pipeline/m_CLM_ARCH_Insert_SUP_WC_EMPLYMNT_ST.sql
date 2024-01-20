@@ -1,0 +1,44 @@
+WITH
+SQ_sup_wc_emplymnt_st_stage AS (
+	SELECT
+		sup_employmnt_st_stage_id,
+		wc_code,
+		wc_description,
+		modified_date,
+		modified_user_id,
+		extract_date,
+		as_of_date,
+		record_count,
+		source_system_id
+	FROM sup_wc_emplymnt_st_stage
+),
+EXP_AUDIT_FIELDS AS (
+	SELECT
+	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP,
+	sup_employmnt_st_stage_id,
+	wc_code,
+	wc_description,
+	modified_date,
+	modified_user_id,
+	extract_date,
+	as_of_date,
+	record_count,
+	source_system_id
+	FROM SQ_sup_wc_emplymnt_st_stage
+),
+arch_sup_wc_emplymnt_st_stage AS (
+	INSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.arch_sup_wc_emplymnt_st_stage
+	(sup_employmnt_st_stage_id, wc_code, wc_description, modified_date, modified_user_id, extract_date, as_of_date, record_count, source_system_id, audit_id)
+	SELECT 
+	SUP_EMPLOYMNT_ST_STAGE_ID, 
+	WC_CODE, 
+	WC_DESCRIPTION, 
+	MODIFIED_DATE, 
+	MODIFIED_USER_ID, 
+	EXTRACT_DATE, 
+	AS_OF_DATE, 
+	RECORD_COUNT, 
+	SOURCE_SYSTEM_ID, 
+	AUDIT_ID_OP AS AUDIT_ID
+	FROM EXP_AUDIT_FIELDS
+),

@@ -1,0 +1,289 @@
+{
+    "name": "wkf_FEED_ActuarialAnalysis39Monthly_EarnedPremium_CurrentYearMinus10",
+    "properties": {
+        "activities": [
+            {
+                "name": "Start",
+                "type": "Script",
+                "dependsOn": [],
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_00",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Start",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium_CurrentYearMinus10_Mon1",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_01",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_03",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium_CurrentYearMinus10_Mon8",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_02",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_08",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium_CurrentYearMinus10_Mon11",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_03",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_09",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium_CurrentYearMinus10_Mon7",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_04",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_00",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium_CurrentYearMinus10_Mon2",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_05",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_11",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium_CurrentYearMinus10_Mon5",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_06",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_01",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium_CurrentYearMinus10_Mon9",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_07",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_02",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium_CurrentYearMinus10_Mon12",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_08",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_06",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium_CurrentYearMinus10_Mon10",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_09",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_05",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium_CurrentYearMinus10_Mon6",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_10",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_04",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium_CurrentYearMinus10_Mon3",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            },
+            {
+                "name": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_11",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremiu_10",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "pipeline": {
+                        "type": "PipelineReference",
+                        "referenceName": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium"
+                    },
+                    "parameters": {}
+                },
+                "description": "s_m_POL_FEED_ActuarialAnalysis39Monthly_EarnedPremium_CurrentYearMinus10_Mon4",
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "variables": {}
+    }
+}

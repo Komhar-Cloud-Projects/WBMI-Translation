@@ -1,0 +1,38 @@
+{
+    "name": "s_m_CLM_DELETE_Reinsurance_Errors_SapiensClaimError",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_DELETE_Reinsurance_Errors_SapiensClaimError",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_SapiensClaimError AS (\n\tSELECT\r\n\tsce.SapiensClaimErrorId \r\n\tFROM\r\n\tSapiensClaimError sce\r\n\twhere exists\r\n\t(select 1 from  SapiensReinsuranceClaim src\r\n\t\t\t\t\twhere src.ClaimTransactionPKId = sce.ClaimTransactionPKId)\n),\nUPDTRANS AS (\n\tSELECT\n\tSapiensClaimErrorId\n\tFROM SQ_SapiensClaimError\n),\nSapiensClaimError_Delete AS (\n\tDELETE FROM SapiensClaimError\n\tWHERE (SapiensClaimErrorId) IN (SELECT  SAPIENSCLAIMERRORID FROM UPDTRANS)\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {},
+        "folder": {
+            "name": "PolicyDataServices/"
+        },
+        "annotations": []
+    }
+}

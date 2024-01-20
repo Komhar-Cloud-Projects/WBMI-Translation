@@ -1,0 +1,51 @@
+{
+    "name": "s_m_AGY_ARCH_INSERT_ArchAgencyPayCodeStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_AGY_ARCH_INSERT_ArchAgencyPayCodeStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_AgencyPayCodeStage AS (\n\tSELECT\n\t\tAgencyPayCodeStageID,\n\t\tAgencyODSSourceSystemID,\n\t\tHashKey,\n\t\tModifiedUserID,\n\t\tModifiedDate,\n\t\tAgencyID,\n\t\tAgencyCode,\n\t\tPayCode,\n\t\tCommissionScheduleCode,\n\t\tPayCodeEffectiveDate,\n\t\tPayCodeExpirationDate,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemID\n\tFROM AgencyPayCodeStage\n),\nLKP_Existing AS (\n\tSELECT\n\tHashKey,\n\tAgencyID,\n\tPayCodeEffectiveDate\n\tFROM (\n\t\tselect\ta.ModifiedDate as ModifiedDate,\r\n\t\t\t\ta.HashKey as HashKey,\r\n\t\t\t\ta.AgencyID as AgencyID,\r\n\t\t\t      a.PayCodeEffectiveDate as PayCodeEffectiveDate\r\n\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchAgencyPayCodeStage a\r\n\t\tinner join (\r\n\t\t\t\t\tselect AgencyID, PayCodeEffectiveDate, max(ModifiedDate) as ModifiedDate\r\n\t\t\t\t\tfrom @{pipeline().parameters.SOURCE_TABLE_OWNER}.ArchAgencyPayCodeStage\r\n\t\t\t\t\tgroup by  AgencyID, PayCodeEffectiveDate) b\r\n\t\ton  a.AgencyID = b.AgencyID\r\n\t\tand a.PayCodeEffectiveDate = b.PayCodeEffectiveDate\r\n\t\tand a.ModifiedDate = b.ModifiedDate\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY AgencyID,PayCodeEffectiveDate ORDER BY HashKey) = 1\n),\nEXP_GetData AS (\n\tSELECT\n\tSQ_AgencyPayCodeStage.AgencyPayCodeStageID,\n\tSQ_AgencyPayCodeStage.AgencyODSSourceSystemID,\n\tSQ_AgencyPayCodeStage.HashKey,\n\tSQ_AgencyPayCodeStage.ModifiedUserID,\n\tSQ_AgencyPayCodeStage.ModifiedDate,\n\tSQ_AgencyPayCodeStage.AgencyID,\n\tSQ_AgencyPayCodeStage.AgencyCode,\n\tSQ_AgencyPayCodeStage.PayCode,\n\tSQ_AgencyPayCodeStage.CommissionScheduleCode,\n\tSQ_AgencyPayCodeStage.PayCodeEffectiveDate,\n\tSQ_AgencyPayCodeStage.PayCodeExpirationDate,\n\tSQ_AgencyPayCodeStage.ExtractDate,\n\tSQ_AgencyPayCodeStage.AsOfDate,\n\tSQ_AgencyPayCodeStage.RecordCount,\n\tSQ_AgencyPayCodeStage.SourceSystemID,\n\tLKP_Existing.HashKey AS lkp_HashKey,\n\t-- *INF*: Decode(true,\r\n\t-- HashKey = lkp_HashKey, 'IGNORE',\r\n\t-- IsNull(lkp_HashKey), 'INSERT',\r\n\t-- 'UPDATE')\n\tDecode(\n\t    true,\n\t    HashKey = lkp_HashKey, 'IGNORE',\n\t    lkp_HashKey IS NULL, 'INSERT',\n\t    'UPDATE'\n\t) AS v_ChangeFlag,\n\tv_ChangeFlag AS o_ChangeFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID\n\tFROM SQ_AgencyPayCodeStage\n\tLEFT JOIN LKP_Existing\n\tON LKP_Existing.AgencyID = SQ_AgencyPayCodeStage.AgencyID AND LKP_Existing.PayCodeEffectiveDate = SQ_AgencyPayCodeStage.PayCodeEffectiveDate\n),\nFIL_ChangesOnly AS (\n\tSELECT\n\tAgencyPayCodeStageID, \n\tAgencyODSSourceSystemID, \n\tHashKey, \n\tModifiedUserID, \n\tModifiedDate, \n\tAgencyID, \n\tAgencyCode, \n\tPayCode, \n\tCommissionScheduleCode, \n\tPayCodeEffectiveDate, \n\tPayCodeExpirationDate, \n\tExtractDate, \n\tAsOfDate, \n\tRecordCount, \n\tSourceSystemID, \n\to_AuditID AS AuditID, \n\to_ChangeFlag AS ChangeFlag\n\tFROM EXP_GetData\n\tWHERE ChangeFlag = 'INSERT' OR ChangeFlag = 'UPDATE'\n),\nArchAgencyPayCodeStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchAgencyPayCodeStage\n\t(AgencyPayCodeStageID, AgencyODSSourceSystemID, HashKey, ModifiedUserID, ModifiedDate, AgencyID, AgencyCode, PayCode, CommissionScheduleCode, PayCodeEffectiveDate, PayCodeExpirationDate, ExtractDate, AsOfDate, RecordCount, SourceSystemID, AuditID)\n\tSELECT \n\tAGENCYPAYCODESTAGEID, \n\tAGENCYODSSOURCESYSTEMID, \n\tHASHKEY, \n\tMODIFIEDUSERID, \n\tMODIFIEDDATE, \n\tAGENCYID, \n\tAGENCYCODE, \n\tPAYCODE, \n\tCOMMISSIONSCHEDULECODE, \n\tPAYCODEEFFECTIVEDATE, \n\tPAYCODEEXPIRATIONDATE, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\tAUDITID\n\tFROM FIL_ChangesOnly\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "AgencyStaging/"
+        },
+        "annotations": []
+    }
+}

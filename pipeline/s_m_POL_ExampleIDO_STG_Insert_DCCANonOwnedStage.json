@@ -1,0 +1,67 @@
+{
+    "name": "s_m_POL_ExampleIDO_STG_Insert_DCCANonOwnedStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_STG_Insert_DCCANonOwnedStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_CA_NonOwned AS (\n\tWITH cte_DCCANonOwned(Sessionid) as\r\n\t(select sessionid from @{pipeline().parameters.SOURCE_DATABASE_WB}.@{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_EDWIncrementalDataQualitySessions where ModifiedDate between '@{pipeline().parameters.SELECTION_START_TS}' and '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tAND Autoshred<> '1' \r\n\t UNION \r\n\t select distinct A.sessionid from @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session A Inner join @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Transaction B on A.SessionID=B.SessionID where B.State<> 'committed' and A.CreateDateTime>='@{pipeline().parameters.SELECTION_START_TS}')\r\n\tSELECT \r\n\tX.LineId, \r\n\tX.CA_NonOwnedId, \r\n\tX.SessionId, \r\n\tX.Id, \r\n\tX.Auditable, \r\n\tX.ExtendedEmployeeCov, \r\n\tX.ExtendedVolunteerCov, \r\n\tX.GarageServiceOperations, \r\n\tX.MoreThan50PercentBusinessUse, \r\n\tX.MoreThan50PercentBusinessUseAudit, \r\n\tX.MoreThan50PercentBusinessUseEstimate, \r\n\tX.NumberOfEmployees, \r\n\tX.NumberOfEmployeesAudit, \r\n\tX.NumberOfEmployeesEstimate, \r\n\tX.NumberOfInstructors, \r\n\tX.NumberOfInstructorsAudit, \r\n\tX.NumberOfInstructorsEstimate, \r\n\tX.NumberOfPartners, \r\n\tX.NumberOfPartnersAudit, \r\n\tX.NumberOfPartnersEstimate, \r\n\tX.NumberOfVolunteers, \r\n\tX.NumberOfVolunteersAudit, \r\n\tX.NumberOfVolunteersEstimate, \r\n\tX.PartnersRateTerritory, \r\n\tX.SocialServiceAgency, \r\n\tX.SocialServiceAgencyRisks, \r\n\tX.SocialServiceAgencyRisksARate \r\n\tFROM\r\n\tDC_CA_NonOwned X\r\n\tinner join\r\n\tcte_DCCANonOwned Y on X.Sessionid = Y.Sessionid\r\n\t@{pipeline().parameters.WHERE_CLAUSE}\n),\nEXP_Metadata AS (\n\tSELECT\n\tLineId,\n\tCA_NonOwnedId,\n\tSessionId,\n\tId,\n\tAuditable,\n\tExtendedEmployeeCov AS i_ExtendedEmployeeCov,\n\tExtendedVolunteerCov AS i_ExtendedVolunteerCov,\n\tGarageServiceOperations AS i_GarageServiceOperations,\n\tMoreThan50PercentBusinessUse AS i_MoreThan50PercentBusinessUse,\n\tMoreThan50PercentBusinessUseAudit AS i_MoreThan50PercentBusinessUseAudit,\n\tMoreThan50PercentBusinessUseEstimate AS i_MoreThan50PercentBusinessUseEstimate,\n\t-- *INF*: DECODE(i_ExtendedEmployeeCov, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ExtendedEmployeeCov,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ExtendedEmployeeCov,\n\t-- *INF*: DECODE(i_ExtendedVolunteerCov, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_ExtendedVolunteerCov,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_ExtendedVolunteerCov,\n\t-- *INF*: DECODE(i_GarageServiceOperations, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_GarageServiceOperations,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_GarageServiceOperations,\n\t-- *INF*: DECODE(i_MoreThan50PercentBusinessUse, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_MoreThan50PercentBusinessUse,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_MoreThan50PercentBusinessUse,\n\t-- *INF*: DECODE(i_MoreThan50PercentBusinessUseAudit, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_MoreThan50PercentBusinessUseAudit,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_MoreThan50PercentBusinessUseAudit,\n\t-- *INF*: DECODE(i_MoreThan50PercentBusinessUseEstimate, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_MoreThan50PercentBusinessUseEstimate,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_MoreThan50PercentBusinessUseEstimate,\n\tNumberOfEmployees,\n\tNumberOfEmployeesAudit,\n\tNumberOfEmployeesEstimate,\n\tNumberOfInstructors,\n\tNumberOfInstructorsAudit,\n\tNumberOfInstructorsEstimate,\n\tNumberOfPartners,\n\tNumberOfPartnersAudit,\n\tNumberOfPartnersEstimate,\n\tNumberOfVolunteers,\n\tNumberOfVolunteersAudit,\n\tNumberOfVolunteersEstimate,\n\tPartnersRateTerritory,\n\tSocialServiceAgency AS i_SocialServiceAgency,\n\tSocialServiceAgencyRisks AS i_SocialServiceAgencyRisks,\n\t-- *INF*: DECODE(i_SocialServiceAgency, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_SocialServiceAgency,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_SocialServiceAgency,\n\t-- *INF*: DECODE(i_SocialServiceAgencyRisks, 'T', '1', 'F', '0', NULL)\n\tDECODE(\n\t    i_SocialServiceAgencyRisks,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_SocialServiceAgencyRisks,\n\tSocialServiceAgencyRisksARate,\n\tsysdate AS o_ExtractDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId\n\tFROM SQ_DC_CA_NonOwned\n),\nDCCANonOwnedStage AS (\n\tTRUNCATE TABLE @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCANonOwnedStage;\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.DCCANonOwnedStage\n\t(ExtractDate, SourceSystemId, LineId, CA_NonOwnedId, SessionId, Id, Auditable, ExtendedEmployeeCov, ExtendedVolunteerCov, GarageServiceOperations, MoreThan50PercentBusinessUse, MoreThan50PercentBusinessUseAudit, MoreThan50PercentBusinessUseEstimate, NumberOfEmployees, NumberOfEmployeesAudit, NumberOfEmployeesEstimate, NumberOfInstructors, NumberOfInstructorsAudit, NumberOfInstructorsEstimate, NumberOfPartners, NumberOfPartnersAudit, NumberOfPartnersEstimate, NumberOfVolunteers, NumberOfVolunteersAudit, NumberOfVolunteersEstimate, PartnersRateTerritory, SocialServiceAgency, SocialServiceAgencyRisks, SocialServiceAgencyRisksARate)\n\tSELECT \n\to_ExtractDate AS EXTRACTDATE, \n\to_SourceSystemId AS SOURCESYSTEMID, \n\tLINEID, \n\tCA_NONOWNEDID, \n\tSESSIONID, \n\tID, \n\tAUDITABLE, \n\to_ExtendedEmployeeCov AS EXTENDEDEMPLOYEECOV, \n\to_ExtendedVolunteerCov AS EXTENDEDVOLUNTEERCOV, \n\to_GarageServiceOperations AS GARAGESERVICEOPERATIONS, \n\to_MoreThan50PercentBusinessUse AS MORETHAN50PERCENTBUSINESSUSE, \n\to_MoreThan50PercentBusinessUseAudit AS MORETHAN50PERCENTBUSINESSUSEAUDIT, \n\to_MoreThan50PercentBusinessUseEstimate AS MORETHAN50PERCENTBUSINESSUSEESTIMATE, \n\tNUMBEROFEMPLOYEES, \n\tNUMBEROFEMPLOYEESAUDIT, \n\tNUMBEROFEMPLOYEESESTIMATE, \n\tNUMBEROFINSTRUCTORS, \n\tNUMBEROFINSTRUCTORSAUDIT, \n\tNUMBEROFINSTRUCTORSESTIMATE, \n\tNUMBEROFPARTNERS, \n\tNUMBEROFPARTNERSAUDIT, \n\tNUMBEROFPARTNERSESTIMATE, \n\tNUMBEROFVOLUNTEERS, \n\tNUMBEROFVOLUNTEERSAUDIT, \n\tNUMBEROFVOLUNTEERSESTIMATE, \n\tPARTNERSRATETERRITORY, \n\to_SocialServiceAgency AS SOCIALSERVICEAGENCY, \n\to_SocialServiceAgencyRisks AS SOCIALSERVICEAGENCYRISKS, \n\tSOCIALSERVICEAGENCYRISKSARATE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_DATABASE_WB": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WHERE_CLAUSE": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

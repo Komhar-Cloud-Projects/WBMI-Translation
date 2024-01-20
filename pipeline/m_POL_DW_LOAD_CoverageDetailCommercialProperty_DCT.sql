@@ -130,83 +130,63 @@ EXP_CoverageDetailCommercialProperty AS (
 	-- v_ISOPropertyCauseofLossGroup='SCL'  AND (i_PropertyType='' OR ISNULL(i_PropertyType)), 'Buildings',
 	-- v_ISOPropertyCauseofLossGroup='SCL'  , i_OccupanyCategory,
 	-- 'N/A')
-	DECODE(TRUE,
-		v_ISOPropertyCauseofLossGroup = 'SCL' 
-		AND ( i_PropertyType = '' 
-			OR i_PropertyType IS NULL 
-		), 'Buildings',
-		v_ISOPropertyCauseofLossGroup = 'SCL', i_OccupanyCategory,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    v_ISOPropertyCauseofLossGroup = 'SCL' AND (i_PropertyType = '' OR i_PropertyType IS NULL), 'Buildings',
+	    v_ISOPropertyCauseofLossGroup = 'SCL', i_OccupanyCategory,
+	    'N/A'
 	) AS v_ISOSpecialCauseOfLossCategory,
 	i_PremiumTransactionID AS o_PremiumTransactionID,
 	-- *INF*: IIF(i_CurrentSnapshotFlag='T',1,0)
-	IFF(i_CurrentSnapshotFlag = 'T',
-		1,
-		0
-	) AS o_CurrentSnapshotFlag,
+	IFF(i_CurrentSnapshotFlag = 'T', 1, 0) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59' , 'MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	i_CoverageGuid AS o_CoverageGuid,
 	-- *INF*: :UDF.DEFAULT_VALUE_FOR_STRINGS(i_TerritoryProtectionClass)
-	:UDF.DEFAULT_VALUE_FOR_STRINGS(i_TerritoryProtectionClass
-	) AS o_IsoFireProtectionCode,
+	UDF_DEFAULT_VALUE_FOR_STRINGS(i_TerritoryProtectionClass) AS o_IsoFireProtectionCode,
 	-- *INF*: IIF(ISNULL(i_MultipleLocationCreditFactor),0,i_MultipleLocationCreditFactor)
-	IFF(i_MultipleLocationCreditFactor IS NULL,
-		0,
-		i_MultipleLocationCreditFactor
-	) AS o_MultiLocationCreditFactor,
+	IFF(i_MultipleLocationCreditFactor IS NULL, 0, i_MultipleLocationCreditFactor) AS o_MultiLocationCreditFactor,
 	-- *INF*: IIF(ISNULL(i_PreferredPropertyCredit),0,TO_DECIMAL(i_PreferredPropertyCredit))
-	IFF(i_PreferredPropertyCredit IS NULL,
-		0,
-		CAST(i_PreferredPropertyCredit AS FLOAT)
-	) AS o_PreferredPropertyFactor,
+	IFF(i_PreferredPropertyCredit IS NULL, 0, CAST(i_PreferredPropertyCredit AS FLOAT)) AS o_PreferredPropertyFactor,
 	-- *INF*: DECODE(i_SprinklerFlag,'T',1,'F',0,0)
-	DECODE(i_SprinklerFlag,
-		'T', 1,
-		'F', 0,
-		0
+	DECODE(
+	    i_SprinklerFlag,
+	    'T', 1,
+	    'F', 0,
+	    0
 	) AS o_SprinklerFlag,
 	-- *INF*: iif(isnull(v_ISOPropertyCauseofLossGroup),'N/A',v_ISOPropertyCauseofLossGroup)
-	IFF(v_ISOPropertyCauseofLossGroup IS NULL,
-		'N/A',
-		v_ISOPropertyCauseofLossGroup
-	) AS o_ISOPropertyCauseofLossGroup,
+	IFF(v_ISOPropertyCauseofLossGroup IS NULL, 'N/A', v_ISOPropertyCauseofLossGroup) AS o_ISOPropertyCauseofLossGroup,
 	-- *INF*: IIF(ISNULL(v_ISOSpecialCauseOfLossCategory),'N/A',v_ISOSpecialCauseOfLossCategory)
-	IFF(v_ISOSpecialCauseOfLossCategory IS NULL,
-		'N/A',
-		v_ISOSpecialCauseOfLossCategory
-	) AS o_ISOSpecialCauseOfLossCategory,
+	IFF(v_ISOSpecialCauseOfLossCategory IS NULL, 'N/A', v_ISOSpecialCauseOfLossCategory) AS o_ISOSpecialCauseOfLossCategory,
 	-- *INF*: --LPAD(i_ClassCode,6, '0')
 	-- SUBSTR(i_ClassCode,1,4)
-	SUBSTR(i_ClassCode, 1, 4
-	) AS o_ClassCode,
+	SUBSTR(i_ClassCode, 1, 4) AS o_ClassCode,
 	i_StateProvinceCode AS o_StateProvinceCode,
 	-- *INF*: DECODE(TRUE,
 	-- i_RateType='S', 'Specific',
 	-- i_RateType='C', 'Class',
 	-- 'N/A')
-	DECODE(TRUE,
-		i_RateType = 'S', 'Specific',
-		i_RateType = 'C', 'Class',
-		'N/A'
+	DECODE(
+	    TRUE,
+	    i_RateType = 'S', 'Specific',
+	    i_RateType = 'C', 'Class',
+	    'N/A'
 	) AS o_RateType,
 	i_LineType AS o_LineType,
 	-- *INF*: IIF(ISNULL(i_RetroactiveDate),
 	-- TO_DATE('1800-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS'),
 	-- i_RetroactiveDate
 	-- )
-	IFF(i_RetroactiveDate IS NULL,
-		TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
-		),
-		i_RetroactiveDate
+	IFF(
+	    i_RetroactiveDate IS NULL, TO_TIMESTAMP('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'),
+	    i_RetroactiveDate
 	) AS o_RetroactiveDate
 	FROM AGG_Property
 	LEFT JOIN LKP_SUPISOCOMMERCIALPROPERTYCAUSEOFLOSSGROUP_DCT LKP_SUPISOCOMMERCIALPROPERTYCAUSEOFLOSSGROUP_DCT_i_ProductCode_i_SublineCode
@@ -286,58 +266,46 @@ EXP_Calc AS (
 	-- not isnull(lk_ISOCPRatingGroup),lk_ISOCPRatingGroup,
 	-- not isnull(lk_ISOCPRatingGroup_default),lk_ISOCPRatingGroup_default,
 	-- 'N/A'),'N/A')
-	IFF(ISOPropertyCauseofLossGroup = 'BGI',
-		DECODE(TRUE,
-		lk_ISOCPRatingGroup IS NOT NULL, lk_ISOCPRatingGroup,
-		lk_ISOCPRatingGroup_default IS NOT NULL, lk_ISOCPRatingGroup_default,
-		'N/A'
-		),
-		'N/A'
+	IFF(
+	    ISOPropertyCauseofLossGroup = 'BGI',
+	    DECODE(
+	        TRUE,
+	        lk_ISOCPRatingGroup IS NOT NULL, lk_ISOCPRatingGroup,
+	        lk_ISOCPRatingGroup_default IS NOT NULL, lk_ISOCPRatingGroup_default,
+	        'N/A'
+	    ),
+	    'N/A'
 	) AS v_ISOCPRatingGroup,
 	-- *INF*: DECODE(TRUE,
 	-- not isnull(lk_PropertySpecialClass),lk_PropertySpecialClass,
 	-- not isnull(lk_PropertySpecialClass_default),lk_PropertySpecialClass_default,
 	-- 'N/A')
-	DECODE(TRUE,
-		lk_PropertySpecialClass IS NOT NULL, lk_PropertySpecialClass,
-		lk_PropertySpecialClass_default IS NOT NULL, lk_PropertySpecialClass_default,
-		'N/A'
+	DECODE(
+	    TRUE,
+	    lk_PropertySpecialClass IS NOT NULL, lk_PropertySpecialClass,
+	    lk_PropertySpecialClass_default IS NOT NULL, lk_PropertySpecialClass_default,
+	    'N/A'
 	) AS v_PropertySpecialClass,
 	-- *INF*: IIF(i_LineType='Property' or i_LineType='SBOPProperty',
 	-- ISOPropertyCauseofLossGroup,'N/A')
-	IFF(i_LineType = 'Property' 
-		OR i_LineType = 'SBOPProperty',
-		ISOPropertyCauseofLossGroup,
-		'N/A'
+	IFF(
+	    i_LineType = 'Property' or i_LineType = 'SBOPProperty', ISOPropertyCauseofLossGroup, 'N/A'
 	) AS o_ISOPropertyCauseofLossGroup,
 	-- *INF*: IIF(i_LineType='Property' or i_LineType='SBOPProperty',
 	-- iif(isnull(i_ISOSpecialCauseOfLossCategory),'N/A',i_ISOSpecialCauseOfLossCategory),'N/A')
-	IFF(i_LineType = 'Property' 
-		OR i_LineType = 'SBOPProperty',
-		IFF(i_ISOSpecialCauseOfLossCategory IS NULL,
-			'N/A',
-			i_ISOSpecialCauseOfLossCategory
-		),
-		'N/A'
+	IFF(
+	    i_LineType = 'Property' or i_LineType = 'SBOPProperty',
+	    IFF(
+	        i_ISOSpecialCauseOfLossCategory IS NULL, 'N/A', i_ISOSpecialCauseOfLossCategory
+	    ),
+	    'N/A'
 	) AS o_ISOSpecialCauseOfLossCategory,
 	-- *INF*: IIF(i_LineType='Property' or i_LineType='SBOPProperty',RateType,'N/A')
-	IFF(i_LineType = 'Property' 
-		OR i_LineType = 'SBOPProperty',
-		RateType,
-		'N/A'
-	) AS o_RateType,
+	IFF(i_LineType = 'Property' or i_LineType = 'SBOPProperty', RateType, 'N/A') AS o_RateType,
 	-- *INF*: IIF(i_LineType='Property' or i_LineType='SBOPProperty',v_ISOCPRatingGroup,'N/A')
-	IFF(i_LineType = 'Property' 
-		OR i_LineType = 'SBOPProperty',
-		v_ISOCPRatingGroup,
-		'N/A'
-	) AS o_ISOCPRatingGroup,
+	IFF(i_LineType = 'Property' or i_LineType = 'SBOPProperty', v_ISOCPRatingGroup, 'N/A') AS o_ISOCPRatingGroup,
 	-- *INF*: IIF(i_LineType='Property' or i_LineType='SBOPProperty',v_PropertySpecialClass,'N/A')
-	IFF(i_LineType = 'Property' 
-		OR i_LineType = 'SBOPProperty',
-		v_PropertySpecialClass,
-		'N/A'
-	) AS o_PropertySpecialClass,
+	IFF(i_LineType = 'Property' or i_LineType = 'SBOPProperty', v_PropertySpecialClass, 'N/A') AS o_PropertySpecialClass,
 	EXP_CoverageDetailCommercialProperty.o_RetroactiveDate
 	FROM EXP_CoverageDetailCommercialProperty
 	LEFT JOIN LKP_ISOSpecialCauseOfLossCategoryCode
@@ -387,10 +355,11 @@ EXP_DetectChanges AS (
 	LKP_CoverageDetailCommercialProperty.PreferredPropertyFactor AS lkp_PreferredPropertyFactor,
 	LKP_CoverageDetailCommercialProperty.SprinklerFlag AS lkp_SprinklerFlag_origin,
 	-- *INF*: DECODE(lkp_SprinklerFlag_origin,'T',1,'F',0,NULL)
-	DECODE(lkp_SprinklerFlag_origin,
-		'T', 1,
-		'F', 0,
-		NULL
+	DECODE(
+	    lkp_SprinklerFlag_origin,
+	    'T', 1,
+	    'F', 0,
+	    NULL
 	) AS lkp_SprinklerFlag,
 	LKP_CoverageDetailCommercialProperty.ISOCommercialPropertyCauseofLossGroup AS lkp_ISOPropertyCauseofLossGroup,
 	LKP_CoverageDetailCommercialProperty.ISOCommercialPropertyRatingGroupCode AS lkp_ISOCPRatingGroup,
@@ -430,18 +399,11 @@ EXP_DetectChanges AS (
 	-- , 'UPDATE',
 	-- 'NO CHANGE'
 	-- )
-	DECODE(TRUE,
-		lkp_PremiumTransactionId IS NULL, 'INSERT',
-		lkp_IsoFireProtectionCode <> IsoFireProtectionCode 
-		OR lkp_MultiLocationCreditFactor <> MultiLocationCreditFactor 
-		OR lkp_PreferredPropertyFactor <> PreferredPropertyFactor 
-		OR lkp_SprinklerFlag <> SprinklerFlag 
-		OR lkp_ISOPropertyCauseofLossGroup <> ISOPropertyCauseofLossGroup 
-		OR lkp_ISOCPRatingGroup <> ISOCPRatingGroup 
-		OR lkp_ISOSpecialCauseOfLossCategory <> ISOSpecialCauseOfLossCategory 
-		OR lkp_RateType <> RateType 
-		OR lkp_PropertySpecialClass <> PropertySpecialClass, 'UPDATE',
-		'NO CHANGE'
+	DECODE(
+	    TRUE,
+	    lkp_PremiumTransactionId IS NULL, 'INSERT',
+	    lkp_IsoFireProtectionCode <> IsoFireProtectionCode OR lkp_MultiLocationCreditFactor <> MultiLocationCreditFactor OR lkp_PreferredPropertyFactor <> PreferredPropertyFactor OR lkp_SprinklerFlag <> SprinklerFlag OR lkp_ISOPropertyCauseofLossGroup <> ISOPropertyCauseofLossGroup OR lkp_ISOCPRatingGroup <> ISOCPRatingGroup OR lkp_ISOSpecialCauseOfLossCategory <> ISOSpecialCauseOfLossCategory OR lkp_RateType <> RateType OR lkp_PropertySpecialClass <> PropertySpecialClass, 'UPDATE',
+	    'NO CHANGE'
 	) AS o_ChangeFlag,
 	EXP_Calc.o_RetroactiveDate AS RetroactiveDate
 	FROM EXP_Calc

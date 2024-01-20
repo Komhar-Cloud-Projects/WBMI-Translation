@@ -148,38 +148,23 @@ EXP_Default_Values AS (
 	EXP_Scr_Values.NurseCaseId,
 	LKP_claimant_dim.claimant_dim_id AS IN_claimant_dim_id,
 	-- *INF*: iif(isnull(IN_claimant_dim_id),-1,IN_claimant_dim_id)
-	IFF(IN_claimant_dim_id IS NULL,
-		- 1,
-		IN_claimant_dim_id
-	) AS v_claimant_dim_id,
+	IFF(IN_claimant_dim_id IS NULL, - 1, IN_claimant_dim_id) AS v_claimant_dim_id,
 	v_claimant_dim_id AS claimant_dim_id,
 	LKP_claim_occurrence_dim.claim_occurrence_dim_id AS IN_claim_occurrence_dim_id,
 	-- *INF*: iif(isnull(IN_claim_occurrence_dim_id),-1,IN_claim_occurrence_dim_id)
-	IFF(IN_claim_occurrence_dim_id IS NULL,
-		- 1,
-		IN_claim_occurrence_dim_id
-	) AS v_claim_occurrence_dim_id,
+	IFF(IN_claim_occurrence_dim_id IS NULL, - 1, IN_claim_occurrence_dim_id) AS v_claim_occurrence_dim_id,
 	v_claim_occurrence_dim_id AS claim_occurrence_dim_id,
 	EXP_Scr_Values.EstimatedSavingsAmount AS IN_EstimatedSavingsAmount,
 	-- *INF*: iif( NOT ISNULL(IN_EstimatedSavingsAmount),IN_EstimatedSavingsAmount,0)
-	IFF(IN_EstimatedSavingsAmount IS NOT NULL,
-		IN_EstimatedSavingsAmount,
-		0
-	) AS v_EstimatedSavingAmount,
+	IFF(IN_EstimatedSavingsAmount IS NOT NULL, IN_EstimatedSavingsAmount, 0) AS v_EstimatedSavingAmount,
 	v_EstimatedSavingAmount AS EstimatedSavings,
 	LKP_NurseAssignment.TotalAssignmentTimeWorked AS IN_TotalAssignmentTimeWorked,
 	-- *INF*: iif(isnull(IN_TotalAssignmentTimeWorked),0,IN_TotalAssignmentTimeWorked)
-	IFF(IN_TotalAssignmentTimeWorked IS NULL,
-		0,
-		IN_TotalAssignmentTimeWorked
-	) AS v_TotalAssignmentTimeWorked,
+	IFF(IN_TotalAssignmentTimeWorked IS NULL, 0, IN_TotalAssignmentTimeWorked) AS v_TotalAssignmentTimeWorked,
 	v_TotalAssignmentTimeWorked AS TotalAssignmentTimeWorked,
 	LKP_NurseReferral.TotalReferralTimeWorked AS IN_TotalReferralTimeWorked,
 	-- *INF*: iif(isnull(IN_TotalReferralTimeWorked),0,IN_TotalReferralTimeWorked)
-	IFF(IN_TotalReferralTimeWorked IS NULL,
-		0,
-		IN_TotalReferralTimeWorked
-	) AS v_TotalReferralTimeWorked,
+	IFF(IN_TotalReferralTimeWorked IS NULL, 0, IN_TotalReferralTimeWorked) AS v_TotalReferralTimeWorked,
 	v_TotalReferralTimeWorked AS TotalReferralTimeWorked,
 	v_TotalAssignmentTimeWorked + v_TotalReferralTimeWorked AS v_TotalTimeWorked,
 	v_TotalTimeWorked AS TotalTimeWorked
@@ -248,18 +233,19 @@ EXP_Detect_Changes AS (
 	--   'UPDATE','NOCHANGE' )
 	-- 
 	--   )
-	IFF(Lkp_NurseCaseFactId IS NULL,
-		'NEW',
-		IFF(Lkp_EdwNurseCasePkId != NurseCaseId 
-			OR Lkp_claimant_dim_id != claimant_dim_id 
-			OR Lkp_claim_occurrence_dim_id != claim_occurrence_dim_id 
-			OR Lkp_EstimatedSavings != EstimatedSavings 
-			OR Lkp_TotalAssignmentTimeWorked != TotalAssignmentTimeWorked 
-			OR Lkp_TotalReferralTimeWorked != TotalReferralTimeWorked 
-			OR Lkp_TotalTimeWorked != TotalTimeWorked,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    Lkp_NurseCaseFactId IS NULL, 'NEW',
+	    IFF(
+	        Lkp_EdwNurseCasePkId != NurseCaseId
+	        or Lkp_claimant_dim_id != claimant_dim_id
+	        or Lkp_claim_occurrence_dim_id != claim_occurrence_dim_id
+	        or Lkp_EstimatedSavings != EstimatedSavings
+	        or Lkp_TotalAssignmentTimeWorked != TotalAssignmentTimeWorked
+	        or Lkp_TotalReferralTimeWorked != TotalReferralTimeWorked
+	        or Lkp_TotalTimeWorked != TotalTimeWorked,
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangedFlag,
 	EXP_Default_Values.NurseCaseId,

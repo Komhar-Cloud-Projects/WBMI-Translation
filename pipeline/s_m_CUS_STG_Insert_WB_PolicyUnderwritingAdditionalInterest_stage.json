@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CUS_STG_Insert_WB_PolicyUnderwritingAdditionalInterest_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CUS_STG_Insert_WB_PolicyUnderwritingAdditionalInte_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WB_PolicyUnderwritingAdditionalInterest AS (\n\tSELECT WB_PolicyUnderwritingAdditionalInterest.PartyId, WB_PolicyUnderwritingAdditionalInterest.WB_PolicyUnderwritingAdditionalInterestId, WB_PolicyUnderwritingAdditionalInterest.SessionId, WB_PolicyUnderwritingAdditionalInterest.Interest, WB_PolicyUnderwritingAdditionalInterest.ReferenceLoanNumber, WB_PolicyUnderwritingAdditionalInterest.Country, WB_PolicyUnderwritingAdditionalInterest.GovernmentEntity, WB_PolicyUnderwritingAdditionalInterest.NoticesReinstatements \r\n\tFROM\r\n\t @{pipeline().parameters.SOURCE_TABLE_OWNER}.WB_PolicyUnderwritingAdditionalInterest\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session on\r\n\tWB_PolicyUnderwritingAdditionalInterest.SessionId=DC_Session.SessionId\r\n\tWHERE\r\n\tDC_Session.CreateDateTime >=  '@{pipeline().parameters.SELECTION_START_TS}'\r\n\tand \r\n\tDC_Session.CreateDateTime <  '@{pipeline().parameters.SELECTION_END_TS}'\r\n\tORDER BY\r\n\tWB_PolicyUnderwritingAdditionalInterest.SessionId\n),\nExp_WB_PolicyUnderwritingAdditionalInterest AS (\n\tSELECT\n\tPartyId,\n\tWB_PolicyUnderwritingAdditionalInterestId,\n\tSessionId,\n\tInterest,\n\tReferenceLoanNumber,\n\tCountry,\n\tGovernmentEntity,\n\tNoticesReinstatements,\n\tSysdate AS ExtractDate,\n\t'DCT' AS SourceSystemID\n\tFROM SQ_WB_PolicyUnderwritingAdditionalInterest\n),\nWBPolicyUnderwritingAdditionalInterestStage AS (\n\tINSERT INTO Shortcut_to_WBPolicyUnderwritingAdditionalInterestStage\n\t(ExtractDate, SourceSystemid, PartyId, WB_PolicyUnderwritingAdditionalInterestId, SessionId, Interest, ReferenceLoanNumber, Country, GovernmentEntity, NoticesReinstatements)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemID AS SOURCESYSTEMID, \n\tPARTYID, \n\tWB_POLICYUNDERWRITINGADDITIONALINTERESTID, \n\tSESSIONID, \n\tINTEREST, \n\tREFERENCELOANNUMBER, \n\tCOUNTRY, \n\tGOVERNMENTENTITY, \n\tNOTICESREINSTATEMENTS\n\tFROM Exp_WB_PolicyUnderwritingAdditionalInterest\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CustomerStaging/"
+        },
+        "annotations": []
+    }
+}

@@ -40,7 +40,7 @@
             }
         },
         "folder": {
-            "name": "Claims DataWarehouse/"
+            "name": "ClaimsDataWarehouse/"
         },
         "annotations": []
     }

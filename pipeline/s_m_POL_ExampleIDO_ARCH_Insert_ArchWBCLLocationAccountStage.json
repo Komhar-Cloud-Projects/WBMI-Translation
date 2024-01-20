@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCLLocationAccountStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCLLocationAccount_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCLLocationAccountStage AS (\n\tSELECT\n\t\tWBCLLocationAccountStageId,\n\t\tExtractDate,\n\t\tSourceSystemId AS SourceSyStemId,\n\t\tWBLocationAccountId,\n\t\tWBCLLocationAccountId,\n\t\tSessionId,\n\t\tVehicleGaragingLocation,\n\t\tTaxFactorApplied,\n\t\tKYTaxFactorAppliedIndicator,\n\t\tAnyAlcoholSold,\n\t\tAddressInVerifyState,\n\t\tConfidence,\n\t\tGeocodeMatchCode,\n\t\tGeocodeStatus,\n\t\tGeocodeStatusDisplay,\n\t\tGeocodeStatusDisplayWithDate,\n\t\tIsVerified,\n\t\tLastVerified,\n\t\tLatitude,\n\t\tLongitude\n\tFROM WBCLLocationAccountStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBCLLocationAccountStageId,\n\tExtractDate,\n\tSourceSyStemId,\n\tWBLocationAccountId,\n\tWBCLLocationAccountId,\n\tSessionId,\n\tVehicleGaragingLocation AS i_VehicleGaragingLocation,\n\t-- *INF*: DECODE(i_VehicleGaragingLocation, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    i_VehicleGaragingLocation,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_VehicleGaragingLocation,\n\tTaxFactorApplied,\n\tKYTaxFactorAppliedIndicator,\n\tAnyAlcoholSold,\n\t-- *INF*: DECODE(AnyAlcoholSold, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    AnyAlcoholSold,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AnyAlcoholSold,\n\tAddressInVerifyState,\n\t-- *INF*: DECODE(AddressInVerifyState, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    AddressInVerifyState,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_AddressInVerifyState,\n\tConfidence,\n\tGeocodeMatchCode,\n\tGeocodeStatus,\n\tGeocodeStatusDisplay,\n\tGeocodeStatusDisplayWithDate,\n\tIsVerified,\n\t-- *INF*: DECODE(IsVerified, 'T', 1, 'F', 0, NULL)\n\tDECODE(\n\t    IsVerified,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IsVerified,\n\tLastVerified,\n\tLatitude,\n\tLongitude,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBCLLocationAccountStage\n),\nArchWBCLLocationAccountStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCLLocationAccountStage\n\t(ExtractDate, SourceSystemId, AuditId, WBCLLocationAccountStageId, WBLocationAccountId, WBCLLocationAccountId, SessionId, VehicleGaragingLocation, TaxFactorApplied, KYTaxFactorAppliedIndicator, AnyAlcoholSold, AddressInVerifyState, Confidence, GeocodeMatchCode, GeocodeStatus, GeocodeStatusDisplay, GeocodeStatusDisplayWithDate, IsVerified, LastVerified, Latitude, Longitude)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSyStemId AS SOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBCLLOCATIONACCOUNTSTAGEID, \n\tWBLOCATIONACCOUNTID, \n\tWBCLLOCATIONACCOUNTID, \n\tSESSIONID, \n\to_VehicleGaragingLocation AS VEHICLEGARAGINGLOCATION, \n\tTAXFACTORAPPLIED, \n\tKYTAXFACTORAPPLIEDINDICATOR, \n\to_AnyAlcoholSold AS ANYALCOHOLSOLD, \n\to_AddressInVerifyState AS ADDRESSINVERIFYSTATE, \n\tCONFIDENCE, \n\tGEOCODEMATCHCODE, \n\tGEOCODESTATUS, \n\tGEOCODESTATUSDISPLAY, \n\tGEOCODESTATUSDISPLAYWITHDATE, \n\to_IsVerified AS ISVERIFIED, \n\tLASTVERIFIED, \n\tLATITUDE, \n\tLONGITUDE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

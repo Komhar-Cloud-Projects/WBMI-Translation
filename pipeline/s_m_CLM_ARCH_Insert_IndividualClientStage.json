@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_IndividualClientStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_IndividualClientStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_IndividualClientStage AS (\n\tSELECT [IndividualClientStageId],\r\n\t\t   [ExtractDate],\r\n\t\t   [SourceSystemId],\r\n\t\t   [CLIENT_ID],\r\n\t\t   [HISTORY_VLD_NBR],\r\n\t\t   [CIID_EFF_DT],\r\n\t\t   [CIID_BIR_CIT_NM],\r\n\t\t   [CIID_BIR_CTR_CD],\r\n\t\t   [CIID_DTH_DT],\r\n\t\t   [EDU_LVL_CD],\r\n\t\t   [GRS_SAL_CD],\r\n\t\t   [MRS_CD],\r\n\t\t   [CIID_NBR_DPN],\r\n\t\t   [OCP_CD],\r\n\t\t   [CIID_CZN_CTR_CD],\r\n\t\t   [CIID_NCZ_ARV_DT],\r\n\t\t   [FIN_WORTH_CD],\r\n\t\t   [CIID_OWN_RENT_CODE],\r\n\t\t   [CIID_YEAR_HIRED],\r\n\t\t   [CIID_HEIGHT],\r\n\t\t   [CIID_HGT_UNITS_CD],\r\n\t\t   [CIID_WEIGHT],\r\n\t\t   [CIID_WGT_UNITS_CD],\r\n\t\t   [CIID_POS_TITLE_TXT],\r\n\t\t   [USER_ID],\r\n\t\t   [STATUS_CD],\r\n\t\t   [TERMINAL_ID],\r\n\t\t   [CIID_EXP_DT],\r\n\t\t   [CIID_EFF_ACY_TS],\r\n\t\t   [CIID_EXP_ACY_TS]\r\n\tFROM dbo.IndividualClientStage\r\n\tWHERE CIID_EFF_ACY_TS >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXPTRANS AS (\n\tSELECT\n\tIndividualClientStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tCLIENT_ID,\n\tHISTORY_VLD_NBR,\n\tCIID_EFF_DT,\n\tCIID_BIR_CIT_NM,\n\tCIID_BIR_CTR_CD,\n\tCIID_DTH_DT,\n\tEDU_LVL_CD,\n\tGRS_SAL_CD,\n\tMRS_CD,\n\tCIID_NBR_DPN,\n\tOCP_CD,\n\tCIID_CZN_CTR_CD,\n\tCIID_NCZ_ARV_DT,\n\tFIN_WORTH_CD,\n\tCIID_OWN_RENT_CODE,\n\tCIID_YEAR_HIRED,\n\tCIID_HEIGHT,\n\tCIID_HGT_UNITS_CD,\n\tCIID_WEIGHT,\n\tCIID_WGT_UNITS_CD,\n\tCIID_POS_TITLE_TXT,\n\tUSER_ID,\n\tSTATUS_CD,\n\tTERMINAL_ID,\n\tCIID_EXP_DT,\n\tCIID_EFF_ACY_TS,\n\tCIID_EXP_ACY_TS,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AuditId\n\tFROM SQ_IndividualClientStage\n),\nArchIndividualClientStage AS (\n\tINSERT INTO ArchIndividualClientStage\n\t(AuditId, IndividualClientStageId, ExtractDate, SourceSystemId, CLIENT_ID, HISTORY_VLD_NBR, CIID_EFF_DT, CIID_BIR_CIT_NM, CIID_BIR_CTR_CD, CIID_DTH_DT, EDU_LVL_CD, GRS_SAL_CD, MRS_CD, CIID_NBR_DPN, OCP_CD, CIID_CZN_CTR_CD, CIID_NCZ_ARV_DT, FIN_WORTH_CD, CIID_OWN_RENT_CODE, CIID_YEAR_HIRED, CIID_HEIGHT, CIID_HGT_UNITS_CD, CIID_WEIGHT, CIID_WGT_UNITS_CD, CIID_POS_TITLE_TXT, USER_ID, STATUS_CD, TERMINAL_ID, CIID_EXP_DT, CIID_EFF_ACY_TS, CIID_EXP_ACY_TS)\n\tSELECT \n\tAUDITID, \n\tINDIVIDUALCLIENTSTAGEID, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\tCLIENT_ID, \n\tHISTORY_VLD_NBR, \n\tCIID_EFF_DT, \n\tCIID_BIR_CIT_NM, \n\tCIID_BIR_CTR_CD, \n\tCIID_DTH_DT, \n\tEDU_LVL_CD, \n\tGRS_SAL_CD, \n\tMRS_CD, \n\tCIID_NBR_DPN, \n\tOCP_CD, \n\tCIID_CZN_CTR_CD, \n\tCIID_NCZ_ARV_DT, \n\tFIN_WORTH_CD, \n\tCIID_OWN_RENT_CODE, \n\tCIID_YEAR_HIRED, \n\tCIID_HEIGHT, \n\tCIID_HGT_UNITS_CD, \n\tCIID_WEIGHT, \n\tCIID_WGT_UNITS_CD, \n\tCIID_POS_TITLE_TXT, \n\tUSER_ID, \n\tSTATUS_CD, \n\tTERMINAL_ID, \n\tCIID_EXP_DT, \n\tCIID_EFF_ACY_TS, \n\tCIID_EXP_ACY_TS\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

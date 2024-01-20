@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchDCBPOccupancyStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchDCBPOccupancyStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DCBPOccupancyStage AS (\n\tSELECT\n\t\tDCBPOccupancyStageId,\n\t\tBPRiskId,\n\t\tBPOccupancyId,\n\t\tSessionId,\n\t\tId,\n\t\tAssociationUnitOwners,\n\t\tBOPNewEQ,\n\t\tBOPNewEQOverride,\n\t\tBOPNewEQSL,\n\t\tBOPNewEQSLOverride,\n\t\tBOPNewLiabClassGroup,\n\t\tBOPNewLiabClassGroupOverride,\n\t\tBOPNewLiabExpBase,\n\t\tBOPNewLiabExpBaseOverride,\n\t\tBOPNewNAICS,\n\t\tBOPNewNAICSOverride,\n\t\tBOPNewPropRateNo,\n\t\tBOPNewPropRateNoOverride,\n\t\tBOPNewSIC,\n\t\tBOPNewSICOverride,\n\t\tBOPPMA,\n\t\tBOPPMAOverride,\n\t\tBOPRateGroup,\n\t\tBOPRateGroupOverride,\n\t\tBOPRateNumber,\n\t\tBOPRateNumberOverride,\n\t\tBOPSquareFootage,\n\t\tBuildingPropertyOwnership,\n\t\tCSP,\n\t\tCSPOverride,\n\t\tDescription,\n\t\tDescriptionBOP,\n\t\tEligible,\n\t\tFloorAreaComputation,\n\t\tOccupancyType,\n\t\tOccupancyTypeMonoline,\n\t\tOccupancyTypeOverride,\n\t\tRateGroup,\n\t\tRateGroupOverride,\n\t\tRateNumberRelativity,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM DCBPOccupancyStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tDCBPOccupancyStageId,\n\tBPRiskId,\n\tBPOccupancyId,\n\tSessionId,\n\tId,\n\tAssociationUnitOwners,\n\tBOPNewEQ,\n\tBOPNewEQOverride,\n\tBOPNewEQSL,\n\tBOPNewEQSLOverride,\n\tBOPNewLiabClassGroup,\n\tBOPNewLiabClassGroupOverride,\n\tBOPNewLiabExpBase,\n\tBOPNewLiabExpBaseOverride,\n\tBOPNewNAICS,\n\tBOPNewNAICSOverride,\n\tBOPNewPropRateNo,\n\tBOPNewPropRateNoOverride,\n\tBOPNewSIC,\n\tBOPNewSICOverride,\n\tBOPPMA,\n\tBOPPMAOverride,\n\tBOPRateGroup,\n\tBOPRateGroupOverride,\n\tBOPRateNumber,\n\tBOPRateNumberOverride,\n\tBOPSquareFootage,\n\tBuildingPropertyOwnership,\n\tCSP,\n\tCSPOverride,\n\tDescription,\n\tDescriptionBOP,\n\tEligible,\n\tFloorAreaComputation,\n\tOccupancyType,\n\tOccupancyTypeMonoline,\n\tOccupancyTypeOverride,\n\tRateGroup,\n\tRateGroupOverride,\n\tRateNumberRelativity,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_DCBPOccupancyStage\n),\nArchDCBPOccupancyStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchDCBPOccupancyStage\n\t(DCBPOccupancyStageId, BPRiskId, BPOccupancyId, SessionId, Id, AssociationUnitOwners, BOPNewEQ, BOPNewEQOverride, BOPNewEQSL, BOPNewEQSLOverride, BOPNewLiabClassGroup, BOPNewLiabClassGroupOverride, BOPNewLiabExpBase, BOPNewLiabExpBaseOverride, BOPNewNAICS, BOPNewNAICSOverride, BOPNewPropRateNo, BOPNewPropRateNoOverride, BOPNewSIC, BOPNewSICOverride, BOPPMA, BOPPMAOverride, BOPRateGroup, BOPRateGroupOverride, BOPRateNumber, BOPRateNumberOverride, BOPSquareFootage, BuildingPropertyOwnership, CSP, CSPOverride, Description, DescriptionBOP, Eligible, FloorAreaComputation, OccupancyType, OccupancyTypeMonoline, OccupancyTypeOverride, RateGroup, RateGroupOverride, RateNumberRelativity, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tDCBPOCCUPANCYSTAGEID, \n\tBPRISKID, \n\tBPOCCUPANCYID, \n\tSESSIONID, \n\tID, \n\tASSOCIATIONUNITOWNERS, \n\tBOPNEWEQ, \n\tBOPNEWEQOVERRIDE, \n\tBOPNEWEQSL, \n\tBOPNEWEQSLOVERRIDE, \n\tBOPNEWLIABCLASSGROUP, \n\tBOPNEWLIABCLASSGROUPOVERRIDE, \n\tBOPNEWLIABEXPBASE, \n\tBOPNEWLIABEXPBASEOVERRIDE, \n\tBOPNEWNAICS, \n\tBOPNEWNAICSOVERRIDE, \n\tBOPNEWPROPRATENO, \n\tBOPNEWPROPRATENOOVERRIDE, \n\tBOPNEWSIC, \n\tBOPNEWSICOVERRIDE, \n\tBOPPMA, \n\tBOPPMAOVERRIDE, \n\tBOPRATEGROUP, \n\tBOPRATEGROUPOVERRIDE, \n\tBOPRATENUMBER, \n\tBOPRATENUMBEROVERRIDE, \n\tBOPSQUAREFOOTAGE, \n\tBUILDINGPROPERTYOWNERSHIP, \n\tCSP, \n\tCSPOVERRIDE, \n\tDESCRIPTION, \n\tDESCRIPTIONBOP, \n\tELIGIBLE, \n\tFLOORAREACOMPUTATION, \n\tOCCUPANCYTYPE, \n\tOCCUPANCYTYPEMONOLINE, \n\tOCCUPANCYTYPEOVERRIDE, \n\tRATEGROUP, \n\tRATEGROUPOVERRIDE, \n\tRATENUMBERRELATIVITY, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

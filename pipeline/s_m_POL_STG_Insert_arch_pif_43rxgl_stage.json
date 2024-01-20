@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_arch_pif_43rxgl_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_arch_pif_43rxgl_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif43RXGLStage AS (\n\tSELECT\n\t\tPif43RXGLStageId,\n\t\tPifSymbol,\n\t\tPifPolicyNumber,\n\t\tPifModule,\n\t\tPmdrxg1RecLength,\n\t\tPmdrxg1ActionCode,\n\t\tPmdrxg1FileId,\n\t\tPmdrxg1SegmentId,\n\t\tPmdrxg1SegmentStatus,\n\t\tPmdrxg1YearTransaction,\n\t\tPmdrxg1MonthTransaction,\n\t\tPmdrxg1DayTransaction,\n\t\tPmdrxg1SegmentLevelCode,\n\t\tPmdrxg1SegmentPartCode,\n\t\tPmdrxg1SubPartCode,\n\t\tPmdrxg1InsuranceLine,\n\t\tPmdrxg1LocationNumber,\n\t\tPmdrxg1PmsDefGlSubline,\n\t\tPmdrxg1RiskTypeInd,\n\t\tPmdrxg1YearItemEffective,\n\t\tPmdrxg1MonthItemEffective,\n\t\tPmdrxg1DayItemEffective,\n\t\tPmdrxg1YearProcess,\n\t\tPmdrxg1MonthProcess,\n\t\tPmdrxg1DayProcess,\n\t\tPmdrxg1LimitSubline,\n\t\tPmdrxg1LimAggrPd,\n\t\tPmdrxg1LimOcc,\n\t\tPmdrxg1LimOccPd,\n\t\tPmdrxg1FringeCode1,\n\t\tPmdrxg1FringeRate1,\n\t\tPmdrxg1FringeRateMgInd1,\n\t\tPmdrxg1FringeLimit1,\n\t\tPmdrxg1FringeCode2,\n\t\tPmdrxg1FringeRate2,\n\t\tPmdrxg1FringeRateMgInd2,\n\t\tPmdrxg1FringeLimit2,\n\t\tPmdrxg1FringeCode3,\n\t\tPmdrxg1FringeRate3,\n\t\tPmdrxg1FringeRateMgInd3,\n\t\tPmdrxg1FringeLimit3,\n\t\tPmdrxg1AgentsCommRate,\n\t\tPmdrxg1ExperienceMod,\n\t\tPmdrxg1ScheduleMod,\n\t\tPmdrxg1CommRedMod,\n\t\tPmdrxg1ExpenseMod,\n\t\tPmdrxg1OtherMod,\n\t\tPmdrxg1LimitPerPerson,\n\t\tPmdrxg1DecChangeFlag,\n\t\tPmdrxg1AggByJobInd,\n\t\tPmdrxg1AggByLocation,\n\t\tPmdrxg1PmsFutureUse,\n\t\tPmdrxg1VolPdOcc,\n\t\tPmdrxg1VolPdAgg,\n\t\tPmdrxg1CustSplUse,\n\t\tPmdrxg1VolPdDed,\n\t\tPmdrxg1SaleDisposalOcc,\n\t\tPmdrxg1SaleDisposalAgg,\n\t\tPmdrxg1SdDedPerClm,\n\t\tPmdrxg1LimitedPwIncident,\n\t\tPmdrxg1LimitedPwAgg,\n\t\tPmdrxg1LimitedPwDed,\n\t\tPmdrxg1LimitedPwCutoff,\n\t\tPmdrxg1PrinterEoLs,\n\t\tPmdrxg1PrinterEoAgg,\n\t\tPmdrxg1PrinterEoDed,\n\t\tPmdrxg1EmpBlEmp,\n\t\tPmdrxg1EmpBlAgg,\n\t\tPmdrxg1EmpBlDed,\n\t\tPmdrxg1EmpBlRetro,\n\t\tPmdrxg1EdllLs,\n\t\tPmdrxg1EdllAgg,\n\t\tPmdrxg1EdlbIncident,\n\t\tPmdrxg1EdlbAgg,\n\t\tPmdrxg1EdlbRetro,\n\t\tPmdrxg1Yr2000CustUse,\n\t\tExtractDate,\n\t\tAsOfDate,\n\t\tRecordCount,\n\t\tSourceSystemId\n\tFROM Pif43RXGLStage\n),\nEXP_Values AS (\n\tSELECT\n\tPif43RXGLStageId AS Pif43RXStageId,\n\tPifSymbol,\n\tPifPolicyNumber,\n\tPifModule,\n\tPmdrxg1RecLength AS Pmdlxg1RecLength,\n\tPmdrxg1ActionCode AS Pmdlxg1ActionCode,\n\tPmdrxg1FileId AS Pmdlxg1FileId,\n\tPmdrxg1SegmentId AS Pmdlxg1SegmentId,\n\tPmdrxg1SegmentStatus AS Pmdlxg1SegmentStatus,\n\tPmdrxg1YearTransaction AS Pmdlxg1YearTransaction,\n\tPmdrxg1MonthTransaction AS Pmdlxg1MonthTransaction,\n\tPmdrxg1DayTransaction AS Pmdlxg1DayTransaction,\n\tPmdrxg1SegmentLevelCode,\n\tPmdrxg1SegmentPartCode,\n\tPmdrxg1SubPartCode,\n\tPmdrxg1InsuranceLine,\n\tPmdrxg1LocationNumber,\n\tPmdrxg1PmsDefGlSubline,\n\tPmdrxg1RiskTypeInd,\n\tPmdrxg1YearItemEffective,\n\tPmdrxg1MonthItemEffective,\n\tPmdrxg1DayItemEffective,\n\tPmdrxg1YearProcess,\n\tPmdrxg1MonthProcess,\n\tPmdrxg1DayProcess,\n\tPmdrxg1LimitSubline,\n\tPmdrxg1LimAggrPd,\n\tPmdrxg1LimOcc,\n\tPmdrxg1LimOccPd,\n\tPmdrxg1FringeCode1,\n\tPmdrxg1FringeRate1,\n\tPmdrxg1FringeRateMgInd1,\n\tPmdrxg1FringeLimit1,\n\tPmdrxg1FringeCode2,\n\tPmdrxg1FringeRate2,\n\tPmdrxg1FringeRateMgInd2,\n\tPmdrxg1FringeLimit2,\n\tPmdrxg1FringeCode3,\n\tPmdrxg1FringeRate3,\n\tPmdrxg1FringeRateMgInd3,\n\tPmdrxg1FringeLimit3,\n\tPmdrxg1AgentsCommRate,\n\tPmdrxg1ExperienceMod,\n\tPmdrxg1ScheduleMod,\n\tPmdrxg1CommRedMod,\n\tPmdrxg1ExpenseMod,\n\tPmdrxg1OtherMod,\n\tPmdrxg1LimitPerPerson,\n\tPmdrxg1DecChangeFlag,\n\tPmdrxg1AggByJobInd,\n\tPmdrxg1AggByLocation,\n\tPmdrxg1PmsFutureUse,\n\tPmdrxg1VolPdOcc,\n\tPmdrxg1VolPdAgg,\n\tPmdrxg1CustSplUse,\n\tPmdrxg1VolPdDed,\n\tPmdrxg1SaleDisposalOcc,\n\tPmdrxg1SaleDisposalAgg,\n\tPmdrxg1SdDedPerClm,\n\tPmdrxg1LimitedPwIncident,\n\tPmdrxg1LimitedPwAgg,\n\tPmdrxg1LimitedPwDed,\n\tPmdrxg1LimitedPwCutoff,\n\tPmdrxg1PrinterEoLs,\n\tPmdrxg1PrinterEoAgg,\n\tPmdrxg1PrinterEoDed,\n\tPmdrxg1EmpBlEmp,\n\tPmdrxg1EmpBlAgg,\n\tPmdrxg1EmpBlDed,\n\tPmdrxg1EmpBlRetro,\n\tPmdrxg1EdllLs,\n\tPmdrxg1EdllAgg,\n\tPmdrxg1EdlbIncident,\n\tPmdrxg1EdlbAgg,\n\tPmdrxg1EdlbRetro,\n\tPmdrxg1Yr2000CustUse,\n\tExtractDate,\n\tAsOfDate,\n\tRecordCount,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_Pif43RXGLStage\n),\nArchPif43RXGLStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchPif43RXGLStage\n\t(Pif43RXGLStageId, PifSymbol, PifPolicyNumber, PifModule, Pmdrxg1RecLength, Pmdrxg1ActionCode, Pmdrxg1FileId, Pmdrxg1SegmentId, Pmdrxg1SegmentStatus, Pmdrxg1YearTransaction, Pmdrxg1MonthTransaction, Pmdrxg1DayTransaction, Pmdrxg1SegmentLevelCode, Pmdrxg1SegmentPartCode, Pmdrxg1SubPartCode, Pmdrxg1InsuranceLine, Pmdrxg1LocationNumber, Pmdrxg1PmsDefGlSubline, Pmdrxg1RiskTypeInd, Pmdrxg1YearItemEffective, Pmdrxg1MonthItemEffective, Pmdrxg1DayItemEffective, Pmdrxg1YearProcess, Pmdrxg1MonthProcess, Pmdrxg1DayProcess, Pmdrxg1LimitSubline, Pmdrxg1LimAggrPd, Pmdrxg1LimOcc, Pmdrxg1LimOccPd, Pmdrxg1FringeCode1, Pmdrxg1FringeRate1, Pmdrxg1FringeRateMgInd1, Pmdrxg1FringeLimit1, Pmdrxg1FringeCode2, Pmdrxg1FringeRate2, Pmdrxg1FringeRateMgInd2, Pmdrxg1FringeLimit2, Pmdrxg1FringeCode3, Pmdrxg1FringeRate3, Pmdrxg1FringeRateMgInd3, Pmdrxg1FringeLimit3, Pmdrxg1AgentsCommRate, Pmdrxg1ExperienceMod, Pmdrxg1ScheduleMod, Pmdrxg1CommRedMod, Pmdrxg1ExpenseMod, Pmdrxg1OtherMod, Pmdrxg1LimitPerPerson, Pmdrxg1DecChangeFlag, Pmdrxg1AggByJobInd, Pmdrxg1AggByLocation, Pmdrxg1PmsFutureUse, Pmdrxg1VolPdOcc, Pmdrxg1VolPdAgg, Pmdrxg1CustSplUse, Pmdrxg1VolPdDed, Pmdrxg1SaleDisposalOcc, Pmdrxg1SaleDisposalAgg, Pmdrxg1SdDedPerClm, Pmdrxg1LimitedPwIncident, Pmdrxg1LimitedPwAgg, Pmdrxg1LimitedPwDed, Pmdrxg1LimitedPwCutoff, Pmdrxg1PrinterEoLs, Pmdrxg1PrinterEoAgg, Pmdrxg1PrinterEoDed, Pmdrxg1EmpBlEmp, Pmdrxg1EmpBlAgg, Pmdrxg1EmpBlDed, Pmdrxg1EmpBlRetro, Pmdrxg1EdllLs, Pmdrxg1EdllAgg, Pmdrxg1EdlbIncident, Pmdrxg1EdlbAgg, Pmdrxg1EdlbRetro, Pmdrxg1Yr2000CustUse, ExtractDate, AsOfDate, RecordCount, SourceSystemId, AuditId)\n\tSELECT \n\tPif43RXStageId AS PIF43RXGLSTAGEID, \n\tPIFSYMBOL, \n\tPIFPOLICYNUMBER, \n\tPIFMODULE, \n\tPmdlxg1RecLength AS PMDRXG1RECLENGTH, \n\tPmdlxg1ActionCode AS PMDRXG1ACTIONCODE, \n\tPmdlxg1FileId AS PMDRXG1FILEID, \n\tPmdlxg1SegmentId AS PMDRXG1SEGMENTID, \n\tPmdlxg1SegmentStatus AS PMDRXG1SEGMENTSTATUS, \n\tPmdlxg1YearTransaction AS PMDRXG1YEARTRANSACTION, \n\tPmdlxg1MonthTransaction AS PMDRXG1MONTHTRANSACTION, \n\tPmdlxg1DayTransaction AS PMDRXG1DAYTRANSACTION, \n\tPMDRXG1SEGMENTLEVELCODE, \n\tPMDRXG1SEGMENTPARTCODE, \n\tPMDRXG1SUBPARTCODE, \n\tPMDRXG1INSURANCELINE, \n\tPMDRXG1LOCATIONNUMBER, \n\tPMDRXG1PMSDEFGLSUBLINE, \n\tPMDRXG1RISKTYPEIND, \n\tPMDRXG1YEARITEMEFFECTIVE, \n\tPMDRXG1MONTHITEMEFFECTIVE, \n\tPMDRXG1DAYITEMEFFECTIVE, \n\tPMDRXG1YEARPROCESS, \n\tPMDRXG1MONTHPROCESS, \n\tPMDRXG1DAYPROCESS, \n\tPMDRXG1LIMITSUBLINE, \n\tPMDRXG1LIMAGGRPD, \n\tPMDRXG1LIMOCC, \n\tPMDRXG1LIMOCCPD, \n\tPMDRXG1FRINGECODE1, \n\tPMDRXG1FRINGERATE1, \n\tPMDRXG1FRINGERATEMGIND1, \n\tPMDRXG1FRINGELIMIT1, \n\tPMDRXG1FRINGECODE2, \n\tPMDRXG1FRINGERATE2, \n\tPMDRXG1FRINGERATEMGIND2, \n\tPMDRXG1FRINGELIMIT2, \n\tPMDRXG1FRINGECODE3, \n\tPMDRXG1FRINGERATE3, \n\tPMDRXG1FRINGERATEMGIND3, \n\tPMDRXG1FRINGELIMIT3, \n\tPMDRXG1AGENTSCOMMRATE, \n\tPMDRXG1EXPERIENCEMOD, \n\tPMDRXG1SCHEDULEMOD, \n\tPMDRXG1COMMREDMOD, \n\tPMDRXG1EXPENSEMOD, \n\tPMDRXG1OTHERMOD, \n\tPMDRXG1LIMITPERPERSON, \n\tPMDRXG1DECCHANGEFLAG, \n\tPMDRXG1AGGBYJOBIND, \n\tPMDRXG1AGGBYLOCATION, \n\tPMDRXG1PMSFUTUREUSE, \n\tPMDRXG1VOLPDOCC, \n\tPMDRXG1VOLPDAGG, \n\tPMDRXG1CUSTSPLUSE, \n\tPMDRXG1VOLPDDED, \n\tPMDRXG1SALEDISPOSALOCC, \n\tPMDRXG1SALEDISPOSALAGG, \n\tPMDRXG1SDDEDPERCLM, \n\tPMDRXG1LIMITEDPWINCIDENT, \n\tPMDRXG1LIMITEDPWAGG, \n\tPMDRXG1LIMITEDPWDED, \n\tPMDRXG1LIMITEDPWCUTOFF, \n\tPMDRXG1PRINTEREOLS, \n\tPMDRXG1PRINTEREOAGG, \n\tPMDRXG1PRINTEREODED, \n\tPMDRXG1EMPBLEMP, \n\tPMDRXG1EMPBLAGG, \n\tPMDRXG1EMPBLDED, \n\tPMDRXG1EMPBLRETRO, \n\tPMDRXG1EDLLLS, \n\tPMDRXG1EDLLAGG, \n\tPMDRXG1EDLBINCIDENT, \n\tPMDRXG1EDLBAGG, \n\tPMDRXG1EDLBRETRO, \n\tPMDRXG1YR2000CUSTUSE, \n\tEXTRACTDATE, \n\tASOFDATE, \n\tRECORDCOUNT, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

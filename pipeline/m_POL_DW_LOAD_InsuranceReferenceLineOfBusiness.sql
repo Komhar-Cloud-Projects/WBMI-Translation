@@ -17,22 +17,17 @@ EXP_DateValues AS (
 	EffectiveDate AS i_EffectiveDate,
 	ExpirationDate AS i_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_EffectiveDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_EffectiveDate)
-	IFF(i_EffectiveDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_EffectiveDate
+	IFF(
+	    i_EffectiveDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_EffectiveDate
 	) AS o_EffectiveDate,
 	-- *INF*: IIF(ISNULL(i_ExpirationDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ExpirationDate)
-	IFF(i_ExpirationDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ExpirationDate
+	IFF(
+	    i_ExpirationDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'),
+	    i_ExpirationDate
 	) AS o_ExpirationDate,
 	-- *INF*: IIF(ISNULL(i_ModifiedDate),TO_DATE('21001231235959','YYYYMMDDHH24MISS'),i_ModifiedDate)
-	IFF(i_ModifiedDate IS NULL,
-		TO_DATE('21001231235959', 'YYYYMMDDHH24MISS'
-		),
-		i_ModifiedDate
+	IFF(
+	    i_ModifiedDate IS NULL, TO_TIMESTAMP('21001231235959', 'YYYYMMDDHH24MISS'), i_ModifiedDate
 	) AS o_ModifiedDate
 	FROM SQ_LineOfBusiness
 ),
@@ -41,15 +36,9 @@ EXP_NumericValues AS (
 	LineOfBusinessId AS i_LineOfBusinessId,
 	LineOfBusinessAKId AS i_LineOfBusinessAKId,
 	-- *INF*: IIF(ISNULL(i_LineOfBusinessId),-1,i_LineOfBusinessId)
-	IFF(i_LineOfBusinessId IS NULL,
-		- 1,
-		i_LineOfBusinessId
-	) AS o_LineOfBusinessId,
+	IFF(i_LineOfBusinessId IS NULL, - 1, i_LineOfBusinessId) AS o_LineOfBusinessId,
 	-- *INF*: IIF(ISNULL(i_LineOfBusinessAKId),-1,i_LineOfBusinessAKId)
-	IFF(i_LineOfBusinessAKId IS NULL,
-		- 1,
-		i_LineOfBusinessAKId
-	) AS o_LineOfBusinessAKId
+	IFF(i_LineOfBusinessAKId IS NULL, - 1, i_LineOfBusinessAKId) AS o_LineOfBusinessAKId
 	FROM SQ_LineOfBusiness
 ),
 EXP_StringValues AS (
@@ -59,43 +48,36 @@ EXP_StringValues AS (
 	LineOfBusinessAbbreviation AS i_LineOfBusinessAbbreviation,
 	LineOfBusinessDescription AS i_LineOfBusinessDescription,
 	-- *INF*: IIF(TRUNC(i_ExpirationDate)=TO_DATE('2100-12-31','YYYY-MM-DD'),1,0)
-	IFF(TRUNC(i_ExpirationDate) = TO_DATE('2100-12-31', 'YYYY-MM-DD'
-		),
-		1,
-		0
-	) AS o_CurrentSnapshotFlag,
+	IFF(TRUNC(i_ExpirationDate) = TO_TIMESTAMP('2100-12-31', 'YYYY-MM-DD'), 1, 0) AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	-- *INF*: IIF(ISNULL(i_LineOfBusinessCode) OR LENGTH(i_LineOfBusinessCode)=0 OR IS_SPACES(i_LineOfBusinessCode),'N/A',LTRIM(RTRIM(i_LineOfBusinessCode)))
-	IFF(i_LineOfBusinessCode IS NULL 
-		OR LENGTH(i_LineOfBusinessCode
-		) = 0 
-		OR LENGTH(i_LineOfBusinessCode)>0 AND TRIM(i_LineOfBusinessCode)='',
-		'N/A',
-		LTRIM(RTRIM(i_LineOfBusinessCode
-			)
-		)
+	IFF(
+	    i_LineOfBusinessCode IS NULL
+	    or LENGTH(i_LineOfBusinessCode) = 0
+	    or LENGTH(i_LineOfBusinessCode)>0
+	    and TRIM(i_LineOfBusinessCode)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_LineOfBusinessCode))
 	) AS o_LineOfBusinessCode,
 	-- *INF*: IIF(ISNULL(i_LineOfBusinessAbbreviation) OR LENGTH(i_LineOfBusinessAbbreviation)=0 OR IS_SPACES(i_LineOfBusinessAbbreviation),'N/A',LTRIM(RTRIM(i_LineOfBusinessAbbreviation)))
-	IFF(i_LineOfBusinessAbbreviation IS NULL 
-		OR LENGTH(i_LineOfBusinessAbbreviation
-		) = 0 
-		OR LENGTH(i_LineOfBusinessAbbreviation)>0 AND TRIM(i_LineOfBusinessAbbreviation)='',
-		'N/A',
-		LTRIM(RTRIM(i_LineOfBusinessAbbreviation
-			)
-		)
+	IFF(
+	    i_LineOfBusinessAbbreviation IS NULL
+	    or LENGTH(i_LineOfBusinessAbbreviation) = 0
+	    or LENGTH(i_LineOfBusinessAbbreviation)>0
+	    and TRIM(i_LineOfBusinessAbbreviation)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_LineOfBusinessAbbreviation))
 	) AS o_LineOfBusinessAbbreviation,
 	-- *INF*: IIF(ISNULL(i_LineOfBusinessDescription) OR LENGTH(i_LineOfBusinessDescription)=0 OR IS_SPACES(i_LineOfBusinessDescription),'N/A',LTRIM(RTRIM(i_LineOfBusinessDescription)))
-	IFF(i_LineOfBusinessDescription IS NULL 
-		OR LENGTH(i_LineOfBusinessDescription
-		) = 0 
-		OR LENGTH(i_LineOfBusinessDescription)>0 AND TRIM(i_LineOfBusinessDescription)='',
-		'N/A',
-		LTRIM(RTRIM(i_LineOfBusinessDescription
-			)
-		)
+	IFF(
+	    i_LineOfBusinessDescription IS NULL
+	    or LENGTH(i_LineOfBusinessDescription) = 0
+	    or LENGTH(i_LineOfBusinessDescription)>0
+	    and TRIM(i_LineOfBusinessDescription)='',
+	    'N/A',
+	    LTRIM(RTRIM(i_LineOfBusinessDescription))
 	) AS o_LineOfBusinessDescription
 	FROM SQ_LineOfBusiness
 ),

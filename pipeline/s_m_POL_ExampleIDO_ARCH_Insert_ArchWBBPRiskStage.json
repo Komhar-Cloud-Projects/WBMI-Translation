@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBBPRiskStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBBPRiskStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBBPRiskStage AS (\n\tSELECT\n\t\tWBBPRiskStageId AS WBBPRiskStageID,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tBP_RiskId,\n\t\tWB_BP_RiskId,\n\t\tSessionId,\n\t\tFunctionalValuationReason,\n\t\tDescribeOther,\n\t\tVacantBuilding,\n\t\tBlanketBuildingIneligible,\n\t\tBlanketPersonalPropertyGroupID,\n\t\tMessage1,\n\t\tMessage2,\n\t\tMessage3,\n\t\tSumOfLimits,\n\t\tLocationID,\n\t\tBuildingID,\n\t\tBuildingNumber,\n\t\tProtectionClassOverride,\n\t\tIncludesEarthquakeBuilding,\n\t\tIncludesEarthquakePersonalProperty,\n\t\tBlanketType\n\tFROM WBBPRiskStage\n),\nEXPTRANS AS (\n\tSELECT\n\tWBBPRiskStageID,\n\tExtractDate,\n\tSourceSystemId,\n\tBP_RiskId,\n\tWB_BP_RiskId,\n\tSessionId,\n\tFunctionalValuationReason,\n\tDescribeOther,\n\tVacantBuilding,\n\tBlanketBuildingIneligible,\n\tBlanketPersonalPropertyGroupID,\n\tMessage1,\n\tMessage2,\n\tMessage3,\n\tSumOfLimits,\n\tLocationID,\n\tBuildingID,\n\tBuildingNumber,\n\tProtectionClassOverride,\n\tIncludesEarthquakeBuilding AS i_IncludesEarthquakeBuilding,\n\t-- *INF*: DECODE(i_IncludesEarthquakeBuilding,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_IncludesEarthquakeBuilding,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_IncludesEarthquakeBuilding,\n\tIncludesEarthquakePersonalProperty AS i_IncludesEarthquakePersonalProperty,\n\t-- *INF*: DECODE(i_IncludesEarthquakePersonalProperty,'T','1','F','0',NULL)\n\tDECODE(\n\t    i_IncludesEarthquakePersonalProperty,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_IncludesEarthquakePersonalProperty,\n\tBlanketType,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBBPRiskStage\n),\nArchWBBPRiskStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBBPRiskStage\n\t(ExtractDate, SourceSystemId, AuditId, WBBPRiskStageId, BP_RiskId, WB_BP_RiskId, SessionId, FunctionalValuationReason, DescribeOther, VacantBuilding, BlanketBuildingIneligible, BlanketPersonalPropertyGroupID, IncludesEarthquakeBuilding, IncludesEarthquakePersonalProperty, BlanketType, Message1, Message2, Message3, SumOfLimits, LocationID, BuildingID, BuildingNumber, ProtectionClassOverride)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBBPRiskStageID AS WBBPRISKSTAGEID, \n\tBP_RISKID, \n\tWB_BP_RISKID, \n\tSESSIONID, \n\tFUNCTIONALVALUATIONREASON, \n\tDESCRIBEOTHER, \n\tVACANTBUILDING, \n\tBLANKETBUILDINGINELIGIBLE, \n\tBLANKETPERSONALPROPERTYGROUPID, \n\to_IncludesEarthquakeBuilding AS INCLUDESEARTHQUAKEBUILDING, \n\to_IncludesEarthquakePersonalProperty AS INCLUDESEARTHQUAKEPERSONALPROPERTY, \n\tBLANKETTYPE, \n\tMESSAGE1, \n\tMESSAGE2, \n\tMESSAGE3, \n\tSUMOFLIMITS, \n\tLOCATIONID, \n\tBUILDINGID, \n\tBUILDINGNUMBER, \n\tPROTECTIONCLASSOVERRIDE\n\tFROM EXPTRANS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

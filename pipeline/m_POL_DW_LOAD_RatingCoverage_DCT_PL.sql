@@ -213,10 +213,7 @@ EXP_SRCDataCollect AS (
 	-- *INF*: :LKP.LKP_EXCLUDEPASSTHROUGH(CoverageSubCd)
 	LKP_EXCLUDEPASSTHROUGH_CoverageSubCd.RatedCoverageCode AS v_LKP_PassThroughExclusion,
 	-- *INF*: IIF(ISNULL(v_LKP_PassThroughExclusion),'1','0')
-	IFF(v_LKP_PassThroughExclusion IS NULL,
-		'1',
-		'0'
-	) AS o_PassThroughExlcusionFlag
+	IFF(v_LKP_PassThroughExclusion IS NULL, '1', '0') AS o_PassThroughExlcusionFlag
 	FROM SQ_WorkDCTPLCoverage
 	LEFT JOIN LKP_EXCLUDEPASSTHROUGH LKP_EXCLUDEPASSTHROUGH_CoverageSubCd
 	ON LKP_EXCLUDEPASSTHROUGH_CoverageSubCd.RatedCoverageCode = CoverageSubCd
@@ -297,22 +294,16 @@ EXP_Key_BuiltUp AS (
 	PolicyNumber,
 	PolicyVersion,
 	-- *INF*: PolicyNumber || IIF(ISNULL(ltrim(rtrim(PolicyVersion))) or Length(ltrim(rtrim(PolicyVersion)))=0 or IS_SPACES(PolicyVersion),'00',PolicyVersion)
-	PolicyNumber || IFF(ltrim(rtrim(PolicyVersion
-			)
-		) IS NULL 
-		OR Length(ltrim(rtrim(PolicyVersion
-				)
-			)
-		) = 0 
-		OR LENGTH(PolicyVersion)>0 AND TRIM(PolicyVersion)='',
-		'00',
-		PolicyVersion
+	PolicyNumber || IFF(
+	    ltrim(rtrim(PolicyVersion)) IS NULL
+	    or Length(ltrim(rtrim(PolicyVersion))) = 0
+	    or LENGTH(PolicyVersion)>0
+	    and TRIM(PolicyVersion)='',
+	    '00',
+	    PolicyVersion
 	) AS v_PolicyKey,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_POL_AK_ID(v_PolicyKey)),-1 , :LKP.LKP_POL_AK_ID(v_PolicyKey) )
-	IFF(LKP_POL_AK_ID_v_PolicyKey.pol_ak_id IS NULL,
-		- 1,
-		LKP_POL_AK_ID_v_PolicyKey.pol_ak_id
-	) AS v_Policyakid,
+	IFF(LKP_POL_AK_ID_v_PolicyKey.pol_ak_id IS NULL, - 1, LKP_POL_AK_ID_v_PolicyKey.pol_ak_id) AS v_Policyakid,
 	v_LineOfInsuranceDesc AS o_LineOfInsuranceDesc,
 	'N/A' AS v_LineOfInsuranceDesc,
 	v_Policyakid AS o_PolicyAkid,
@@ -321,28 +312,25 @@ EXP_Key_BuiltUp AS (
 	LocationNumber,
 	v_PolicyKey || '|' || LocationId || '|' ||LocationNumber AS v_RiskLocationKey,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_RISKLOCATION(v_RiskLocationKey)), -1, :LKP.LKP_RISKLOCATION(v_RiskLocationKey) )
-	IFF(LKP_RISKLOCATION_v_RiskLocationKey.RiskLocationAKID IS NULL,
-		- 1,
-		LKP_RISKLOCATION_v_RiskLocationKey.RiskLocationAKID
+	IFF(
+	    LKP_RISKLOCATION_v_RiskLocationKey.RiskLocationAKID IS NULL, - 1,
+	    LKP_RISKLOCATION_v_RiskLocationKey.RiskLocationAKID
 	) AS v_RiskLocationakid,
 	v_RiskLocationakid AS o_RiskLocationAkid,
 	-- *INF*: MD5(TO_CHAR(v_Policyakid)||TO_CHAR(v_RiskLocationakid)||v_LineOfInsuranceDesc||TO_CHAR(PolicyEffectiveDate))
-	MD5(TO_CHAR(v_Policyakid
-		) || TO_CHAR(v_RiskLocationakid
-		) || v_LineOfInsuranceDesc || TO_CHAR(PolicyEffectiveDate
-		)
-	) AS v_PolicyCoverageHashKey,
+	MD5(TO_CHAR(v_Policyakid) || TO_CHAR(v_RiskLocationakid) || v_LineOfInsuranceDesc || TO_CHAR(PolicyEffectiveDate)) AS v_PolicyCoverageHashKey,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_POLICYCOVERAGEAKID(v_PolicyCoverageHashKey)), -1, :LKP.LKP_POLICYCOVERAGEAKID(v_PolicyCoverageHashKey))
-	IFF(LKP_POLICYCOVERAGEAKID_v_PolicyCoverageHashKey.PolicyCoverageAKID IS NULL,
-		- 1,
-		LKP_POLICYCOVERAGEAKID_v_PolicyCoverageHashKey.PolicyCoverageAKID
+	IFF(
+	    LKP_POLICYCOVERAGEAKID_v_PolicyCoverageHashKey.PolicyCoverageAKID IS NULL, - 1,
+	    LKP_POLICYCOVERAGEAKID_v_PolicyCoverageHashKey.PolicyCoverageAKID
 	) AS v_PolicyCoverageakid,
 	v_PolicyCoverageakid AS o_PolicyCoverageakid,
 	LineOfInsuranceCode,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_INSURANCEREFERENCELINEOFBUSINESS(LineOfInsuranceCode)),33,:LKP.LKP_INSURANCEREFERENCELINEOFBUSINESS(LineOfInsuranceCode))
-	IFF(LKP_INSURANCEREFERENCELINEOFBUSINESS_LineOfInsuranceCode.InsuranceReferenceLineOfBusinessAKId IS NULL,
-		33,
-		LKP_INSURANCEREFERENCELINEOFBUSINESS_LineOfInsuranceCode.InsuranceReferenceLineOfBusinessAKId
+	IFF(
+	    LKP_INSURANCEREFERENCELINEOFBUSINESS_LineOfInsuranceCode.InsuranceReferenceLineOfBusinessAKId IS NULL,
+	    33,
+	    LKP_INSURANCEREFERENCELINEOFBUSINESS_LineOfInsuranceCode.InsuranceReferenceLineOfBusinessAKId
 	) AS v_InsuranceReferenceLineOfBusinessAKId,
 	v_InsuranceReferenceLineOfBusinessAKId AS o_InsuranceReferenceLineOfBusinessAKId,
 	PolicyEffectiveDate,
@@ -350,10 +338,7 @@ EXP_Key_BuiltUp AS (
 	CoverageExpirationDate,
 	TransactionAmount,
 	-- *INF*: IIF(TransactionAmount<>0,1,0)
-	IFF(TransactionAmount <> 0,
-		1,
-		0
-	) AS o_PremiumBearingIndicator,
+	IFF(TransactionAmount <> 0, 1, 0) AS o_PremiumBearingIndicator,
 	ExposureAmount,
 	ExposureClassCode,
 	SublineCode,
@@ -369,12 +354,13 @@ EXP_Key_BuiltUp AS (
 	CoverageSubCd,
 	CoverageVersion,
 	-- *INF*: IIF(ISNULL(CoverageVersion) or IS_SPACES(CoverageVersion)  or LENGTH(CoverageVersion)=0,'N/A',CoverageVersion)
-	IFF(CoverageVersion IS NULL 
-		OR LENGTH(CoverageVersion)>0 AND TRIM(CoverageVersion)='' 
-		OR LENGTH(CoverageVersion
-		) = 0,
-		'N/A',
-		CoverageVersion
+	IFF(
+	    CoverageVersion IS NULL
+	    or LENGTH(CoverageVersion)>0
+	    and TRIM(CoverageVersion)=''
+	    or LENGTH(CoverageVersion) = 0,
+	    'N/A',
+	    CoverageVersion
 	) AS o_CoverageVersion,
 	TransactionEffectiveDate,
 	-1 AS o_StatisticalCoverageAKID,
@@ -382,10 +368,7 @@ EXP_Key_BuiltUp AS (
 	ProductDesc,
 	-- *INF*: IIF(ISNULL(:LKP.LKP_PRODUCT(ProductCode)),34,:LKP.LKP_PRODUCT(ProductCode))
 	-- --34 is Unassigned
-	IFF(LKP_PRODUCT_ProductCode.ProductAKId IS NULL,
-		34,
-		LKP_PRODUCT_ProductCode.ProductAKId
-	) AS v_ProductAkid,
+	IFF(LKP_PRODUCT_ProductCode.ProductAKId IS NULL, 34, LKP_PRODUCT_ProductCode.ProductAKId) AS v_ProductAkid,
 	v_ProductAkid AS o_ProductAkid,
 	'000' AS SubLocationUnitNumber,
 	'N/A' AS SpecialClassGroupCode,
@@ -524,26 +507,19 @@ EXP_CalValues AS (
 	LKP_RatingCoverage_WithDate.RatingCoverageHashKey AS lkp_Dt_RatingCoverageHashKey,
 	SEQ_RatingCoverageAKID.NEXTVAL AS i_NEXTVAL,
 	-- *INF*: IIF(ISNULL(lkp_Dt_RatingCoverageId),lkp_RatingCoverageId,lkp_Dt_RatingCoverageId)
-	IFF(lkp_Dt_RatingCoverageId IS NULL,
-		lkp_RatingCoverageId,
-		lkp_Dt_RatingCoverageId
-	) AS v_lkp_RatingCoverageid,
+	IFF(lkp_Dt_RatingCoverageId IS NULL, lkp_RatingCoverageId, lkp_Dt_RatingCoverageId) AS v_lkp_RatingCoverageid,
 	v_lkp_RatingCoverageid AS o_lkp_RatingCoverageId,
 	-- *INF*: IIF(ISNULL(lkp_Dt_RatingCoverageAKID), lkp_RatingCoverageAKID, lkp_Dt_RatingCoverageAKID)
-	IFF(lkp_Dt_RatingCoverageAKID IS NULL,
-		lkp_RatingCoverageAKID,
-		lkp_Dt_RatingCoverageAKID
-	) AS v_lkp_RatingCoverageAKID,
+	IFF(lkp_Dt_RatingCoverageAKID IS NULL, lkp_RatingCoverageAKID, lkp_Dt_RatingCoverageAKID) AS v_lkp_RatingCoverageAKID,
 	-- *INF*: IIF(ISNULL(lkp_Dt_RatingCoverageHashKey), lkp_RatingCoverageHashKey, lkp_Dt_RatingCoverageHashKey)
-	IFF(lkp_Dt_RatingCoverageHashKey IS NULL,
-		lkp_RatingCoverageHashKey,
-		lkp_Dt_RatingCoverageHashKey
+	IFF(
+	    lkp_Dt_RatingCoverageHashKey IS NULL, lkp_RatingCoverageHashKey,
+	    lkp_Dt_RatingCoverageHashKey
 	) AS v_lkp_RatingCoverageHashKey,
 	EXP_Key_BuiltUp.CoverageKey AS i_CoverageGUID,
 	EXP_Key_BuiltUp.TransactionEffectiveDate AS i_TEffectiveDate,
 	-- *INF*: PolicyAKID||'~'||RiskLocationAkid||'~'||i_PolicyCoverageAKID||'~'||TO_CHAR(i_TCreatedDate)||'~'||i_CoverageGUID
-	PolicyAKID || '~' || RiskLocationAkid || '~' || i_PolicyCoverageAKID || '~' || TO_CHAR(i_TCreatedDate
-	) || '~' || i_CoverageGUID AS v_RatingCoverageKey,
+	PolicyAKID || '~' || RiskLocationAkid || '~' || i_PolicyCoverageAKID || '~' || TO_CHAR(i_TCreatedDate) || '~' || i_CoverageGUID AS v_RatingCoverageKey,
 	EXP_Key_BuiltUp.o_CoverageForm AS i_CoverageForm,
 	EXP_Key_BuiltUp.RiskType AS i_RiskType,
 	EXP_Key_BuiltUp.ExposureClassCode AS i_ClassCode,
@@ -577,43 +553,42 @@ EXP_CalValues AS (
 	-- ||i_PerilGroup
 	-- ||OccupancyClassDescription
 	-- ||ActiveBuildingFlag)
-	MD5(i_ClassCode || i_RiskType || TO_CHAR(i_Exposure
-		) || TO_CHAR(RatingCoverageCancellationDate
-		) || i_SubLineCode || i_AnnualStatementLineNumber || TO_CHAR(i_PremiumBearingIndicator
-		) || i_SubLocationUnitNumber || i_SpecialClassGroupCode || i_ClassCodeOrganizationCode || i_PerilGroup || OccupancyClassDescription || ActiveBuildingFlag
-	) AS v_RatingCoverageHashKey,
+	MD5(i_ClassCode || i_RiskType || TO_CHAR(i_Exposure) || TO_CHAR(RatingCoverageCancellationDate) || i_SubLineCode || i_AnnualStatementLineNumber || TO_CHAR(i_PremiumBearingIndicator) || i_SubLocationUnitNumber || i_SpecialClassGroupCode || i_ClassCodeOrganizationCode || i_PerilGroup || OccupancyClassDescription || ActiveBuildingFlag) AS v_RatingCoverageHashKey,
 	-- *INF*: DECODE(TRUE,
 	-- ISNULL(v_lkp_RatingCoverageid) ,'New', 
 	-- ISNULL(lkp_Dt_RatingCoverageAKID),'New',
 	-- v_lkp_RatingCoverageHashKey!=v_RatingCoverageHashKey,'Change',
 	-- 'NoChange')
-	DECODE(TRUE,
-		v_lkp_RatingCoverageid IS NULL, 'New',
-		lkp_Dt_RatingCoverageAKID IS NULL, 'New',
-		v_lkp_RatingCoverageHashKey != v_RatingCoverageHashKey, 'Change',
-		'NoChange'
+	DECODE(
+	    TRUE,
+	    v_lkp_RatingCoverageid IS NULL, 'New',
+	    lkp_Dt_RatingCoverageAKID IS NULL, 'New',
+	    v_lkp_RatingCoverageHashKey != v_RatingCoverageHashKey, 'Change',
+	    'NoChange'
 	) AS v_ChangeFlag,
 	-- *INF*: IIF(PolicyAKID=v_prev_PolicyAKID and 
 	-- i_CoverageGUID=v_prev_CoverageGUID and 
 	-- ParentCoverageType=v_prev_coverageType and 
 	-- SubCoverageTypeCode=v_prev_subCoverageType, v_prev_NEXTVAL, i_NEXTVAL)
-	IFF(PolicyAKID = v_prev_PolicyAKID 
-		AND i_CoverageGUID = v_prev_CoverageGUID 
-		AND ParentCoverageType = v_prev_coverageType 
-		AND SubCoverageTypeCode = v_prev_subCoverageType,
-		v_prev_NEXTVAL,
-		i_NEXTVAL
+	IFF(
+	    PolicyAKID = v_prev_PolicyAKID
+	    and i_CoverageGUID = v_prev_CoverageGUID
+	    and ParentCoverageType = v_prev_coverageType
+	    and SubCoverageTypeCode = v_prev_subCoverageType,
+	    v_prev_NEXTVAL,
+	    i_NEXTVAL
 	) AS v_NEXTVAL,
 	-- *INF*: IIF(PolicyAKID=v_prev_PolicyAKID and 
 	-- i_CoverageGUID=v_prev_CoverageGUID and 
 	-- ParentCoverageType=v_prev_coverageType and 
 	-- SubCoverageTypeCode=v_prev_subCoverageType, v_Seq+1, 1)
-	IFF(PolicyAKID = v_prev_PolicyAKID 
-		AND i_CoverageGUID = v_prev_CoverageGUID 
-		AND ParentCoverageType = v_prev_coverageType 
-		AND SubCoverageTypeCode = v_prev_subCoverageType,
-		v_Seq + 1,
-		1
+	IFF(
+	    PolicyAKID = v_prev_PolicyAKID
+	    and i_CoverageGUID = v_prev_CoverageGUID
+	    and ParentCoverageType = v_prev_coverageType
+	    and SubCoverageTypeCode = v_prev_subCoverageType,
+	    v_Seq + 1,
+	    1
 	) AS v_Seq,
 	v_NEXTVAL AS v_prev_NEXTVAL,
 	i_CoverageGUID AS v_prev_CoverageGUID,
@@ -626,18 +601,16 @@ EXP_CalValues AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	i_TCreatedDate AS o_EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
 	0 AS o_LogicalIndicator,
 	v_RatingCoverageHashKey AS o_RatingCoverageHashKey,
 	-- *INF*: IIF(v_ChangeFlag='New' AND ISNULL(v_lkp_RatingCoverageAKID),v_NEXTVAL,v_lkp_RatingCoverageAKID)
-	IFF(v_ChangeFlag = 'New' 
-		AND v_lkp_RatingCoverageAKID IS NULL,
-		v_NEXTVAL,
-		v_lkp_RatingCoverageAKID
+	IFF(
+	    v_ChangeFlag = 'New' AND v_lkp_RatingCoverageAKID IS NULL, v_NEXTVAL,
+	    v_lkp_RatingCoverageAKID
 	) AS o_RatingCoverageAKID,
 	i_StatisticalCoverageAKID AS o_StatisticalCoverageAKID,
 	i_PolicyCoverageAKID AS o_PolicyCoverageAKID,
@@ -828,9 +801,9 @@ EXP_SetRatingCoverageAkid AS (
 	CoverageGUID,
 	RatingCoverageAKID,
 	-- *INF*: IIF(CoverageGUID=v_PrevTransactionCoverageGUID,v_PrevTransactionRatingCoverageAKID,RatingCoverageAKID)
-	IFF(CoverageGUID = v_PrevTransactionCoverageGUID,
-		v_PrevTransactionRatingCoverageAKID,
-		RatingCoverageAKID
+	IFF(
+	    CoverageGUID = v_PrevTransactionCoverageGUID, v_PrevTransactionRatingCoverageAKID,
+	    RatingCoverageAKID
 	) AS v_RatingCoverageAKID,
 	v_RatingCoverageAKID AS o_RatingCoverageAKID,
 	v_RatingCoverageAKID AS v_PrevTransactionRatingCoverageAKID,
@@ -973,10 +946,10 @@ EXP_GetDates AS (
 	RatingCoverageAKID AS i_RatingCoverageAKID,
 	PolicyAKID AS i_PolicyAKID,
 	-- *INF*: IIF(i_PolicyAKID=v_Prev_PolicyAKID and i_RatingCoverageAKID = v_Prev_RatingCoverageAKID,ADD_TO_DATE(v_Prev_EffectiveDate,'SS',-1),i_ExpirationDate)
-	IFF(i_PolicyAKID = v_Prev_PolicyAKID 
-		AND i_RatingCoverageAKID = v_Prev_RatingCoverageAKID,
-		DATEADD(SECOND,- 1,v_Prev_EffectiveDate),
-		i_ExpirationDate
+	IFF(
+	    i_PolicyAKID = v_Prev_PolicyAKID and i_RatingCoverageAKID = v_Prev_RatingCoverageAKID,
+	    DATEADD(SECOND,- 1,v_Prev_EffectiveDate),
+	    i_ExpirationDate
 	) AS v_ExpirationDate,
 	i_PolicyAKID AS v_Prev_PolicyAKID,
 	i_RatingCoverageAKID AS v_Prev_RatingCoverageAKID,
@@ -1292,10 +1265,7 @@ EXP_Output_CFA AS (
 	-- //v_CoverageGUID=v_prev_CoverageGUID and 
 	-- //CoverageType=v_prev_CoverageType and 
 	-- //v_SubCoverageType=v_prev_SubCoverageType, v_prev_NEXTVAL, i_NEXTVAL)
-	IFF(RatingCoverageAKID = v_prev_RatingCoverageAKID,
-		v_prev_NEXTVAL,
-		i_NEXTVAL
-	) AS v_NEXTVAL,
+	IFF(RatingCoverageAKID = v_prev_RatingCoverageAKID, v_prev_NEXTVAL, i_NEXTVAL) AS v_NEXTVAL,
 	CoverageGUID || 'CFA' AS v_CoverageGUID,
 	SubCoverageTypeCode || 'CFA' AS v_SubCoverageType,
 	RatingCoverageKey||'CFA' AS v_RatingCoverageKey,

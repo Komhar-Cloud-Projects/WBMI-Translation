@@ -21,7 +21,7 @@
                     "scripts": [
                         {
                             "type": "Query",
-                            "text": "WITH\nSQ_CoverageDetailInlandMarine AS (\n\tSELECT CDIM.PremiumTransactionID,\r\n\t       CDIM.CoverageGuid,\r\n\t       CDIM.IsoFireProtectionCode,\r\n\t       PT.PremiumTransactionID \r\n\tFROM  \r\n\tdbo.CoverageDetailInlandMarine CDIM\r\n\tINNER JOIN dbo.WorkPremiumTransactionDataRepairNegate WPTDRN \r\n\tON CDIM.PremiumTransactionID = WPTDRN.OriginalPremiumTransactionID\r\n\tINNER JOIN dbo.PremiumTransaction PT ON PT.PremiumTransactionAKID = WPTDRN.NewNegatePremiumTransactionAKID \r\n\tAND PT.SourceSystemId= '@{pipeline().parameters.SOURCE_SYSTEM_ID}' AND CDIM.SourceSystemID = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n),\nEXP_CoverageDetailInlandMarine AS (\n\tSELECT\n\tPremiumTransactionID,\n\tNewNegatePremiumTransactionID,\n\tNewNegatePremiumTransactionID AS o_PremiumTransactionID,\n\t'1' AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\t-- *INF*: TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS'\n\t) AS o_EffectiveDate,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59' , 'MM/DD/YYYY HH24:MI:SS')\n\tTO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'\n\t) AS o_ExpirationDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\tCoverageGuid,\n\tIsoFireProtectionCode\n\tFROM SQ_CoverageDetailInlandMarine\n),\nLKP_CoverageDetailInlandMarine AS (\n\tSELECT\n\tPremiumTransactionId\n\tFROM (\n\t\tSELECT \n\t\t\tPremiumTransactionId\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageDetailInlandMarine\n\t\tWHERE SourceSystemID='@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PremiumTransactionId ORDER BY PremiumTransactionId DESC) = 1\n),\nRTR_Insert_Update AS (\n\tSELECT\n\tLKP_CoverageDetailInlandMarine.PremiumTransactionId AS lkp_PremiumTransactionId,\n\tEXP_CoverageDetailInlandMarine.o_PremiumTransactionID AS PremiumTransactionId,\n\tEXP_CoverageDetailInlandMarine.o_CurrentSnapshotFlag AS CurrentSnapshotFlag,\n\tEXP_CoverageDetailInlandMarine.o_AuditID AS AuditID,\n\tEXP_CoverageDetailInlandMarine.o_EffectiveDate AS EffectiveDate,\n\tEXP_CoverageDetailInlandMarine.o_ExpirationDate AS ExpirationDate,\n\tEXP_CoverageDetailInlandMarine.o_SourceSystemID AS SourceSystemID,\n\tEXP_CoverageDetailInlandMarine.o_CreatedDate AS CreatedDate,\n\tEXP_CoverageDetailInlandMarine.o_ModifiedDate AS ModifiedDate,\n\tEXP_CoverageDetailInlandMarine.CoverageGuid,\n\tEXP_CoverageDetailInlandMarine.IsoFireProtectionCode\n\tFROM EXP_CoverageDetailInlandMarine\n\tLEFT JOIN LKP_CoverageDetailInlandMarine\n\tON LKP_CoverageDetailInlandMarine.PremiumTransactionId = EXP_CoverageDetailInlandMarine.o_PremiumTransactionID\n),\nRTR_Insert_Update_INSERT AS (SELECT * FROM RTR_Insert_Update WHERE ISNULL(lkp_PremiumTransactionId)),\nTGT_CoverageDetailInlandMarine_INSERT AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageDetailInlandMarine\n\t(PremiumTransactionId, CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, SourceSystemID, CreatedDate, ModifiedDate, CoverageGuid, IsoFireProtectionCode)\n\tSELECT \n\tPREMIUMTRANSACTIONID, \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tCOVERAGEGUID, \n\tISOFIREPROTECTIONCODE\n\tFROM RTR_Insert_Update_INSERT\n),"
+                            "text": "WITH\nSQ_CoverageDetailInlandMarine AS (\n\tSELECT CDIM.PremiumTransactionID,\r\n\t       CDIM.CoverageGuid,\r\n\t       CDIM.IsoFireProtectionCode,\r\n\t       PT.PremiumTransactionID \r\n\tFROM  \r\n\tdbo.CoverageDetailInlandMarine CDIM\r\n\tINNER JOIN dbo.WorkPremiumTransactionDataRepairNegate WPTDRN \r\n\tON CDIM.PremiumTransactionID = WPTDRN.OriginalPremiumTransactionID\r\n\tINNER JOIN dbo.PremiumTransaction PT ON PT.PremiumTransactionAKID = WPTDRN.NewNegatePremiumTransactionAKID \r\n\tAND PT.SourceSystemId= '@{pipeline().parameters.SOURCE_SYSTEM_ID}' AND CDIM.SourceSystemID = '@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n),\nEXP_CoverageDetailInlandMarine AS (\n\tSELECT\n\tPremiumTransactionID,\n\tNewNegatePremiumTransactionID,\n\tNewNegatePremiumTransactionID AS o_PremiumTransactionID,\n\t'1' AS o_CurrentSnapshotFlag,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,\n\t-- *INF*: TO_DATE('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS')\n\tTO_TIMESTAMP('01/01/1800 00:00:00', 'MM/DD/YYYY HH24:MI:SS') AS o_EffectiveDate,\n\t-- *INF*: TO_DATE('12/31/2100 23:59:59' , 'MM/DD/YYYY HH24:MI:SS')\n\tTO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS o_ExpirationDate,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemID,\n\tSYSDATE AS o_CreatedDate,\n\tSYSDATE AS o_ModifiedDate,\n\tCoverageGuid,\n\tIsoFireProtectionCode\n\tFROM SQ_CoverageDetailInlandMarine\n),\nLKP_CoverageDetailInlandMarine AS (\n\tSELECT\n\tPremiumTransactionId\n\tFROM (\n\t\tSELECT \n\t\t\tPremiumTransactionId\n\t\tFROM @{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageDetailInlandMarine\n\t\tWHERE SourceSystemID='@{pipeline().parameters.SOURCE_SYSTEM_ID}'\n\t)\n\tQUALIFY ROW_NUMBER() OVER (PARTITION BY PremiumTransactionId ORDER BY PremiumTransactionId DESC) = 1\n),\nRTR_Insert_Update AS (\n\tSELECT\n\tLKP_CoverageDetailInlandMarine.PremiumTransactionId AS lkp_PremiumTransactionId,\n\tEXP_CoverageDetailInlandMarine.o_PremiumTransactionID AS PremiumTransactionId,\n\tEXP_CoverageDetailInlandMarine.o_CurrentSnapshotFlag AS CurrentSnapshotFlag,\n\tEXP_CoverageDetailInlandMarine.o_AuditID AS AuditID,\n\tEXP_CoverageDetailInlandMarine.o_EffectiveDate AS EffectiveDate,\n\tEXP_CoverageDetailInlandMarine.o_ExpirationDate AS ExpirationDate,\n\tEXP_CoverageDetailInlandMarine.o_SourceSystemID AS SourceSystemID,\n\tEXP_CoverageDetailInlandMarine.o_CreatedDate AS CreatedDate,\n\tEXP_CoverageDetailInlandMarine.o_ModifiedDate AS ModifiedDate,\n\tEXP_CoverageDetailInlandMarine.CoverageGuid,\n\tEXP_CoverageDetailInlandMarine.IsoFireProtectionCode\n\tFROM EXP_CoverageDetailInlandMarine\n\tLEFT JOIN LKP_CoverageDetailInlandMarine\n\tON LKP_CoverageDetailInlandMarine.PremiumTransactionId = EXP_CoverageDetailInlandMarine.o_PremiumTransactionID\n),\nRTR_Insert_Update_INSERT AS (SELECT * FROM RTR_Insert_Update WHERE ISNULL(lkp_PremiumTransactionId)),\nTGT_CoverageDetailInlandMarine_INSERT AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.CoverageDetailInlandMarine\n\t(PremiumTransactionId, CurrentSnapshotFlag, AuditID, EffectiveDate, ExpirationDate, SourceSystemID, CreatedDate, ModifiedDate, CoverageGuid, IsoFireProtectionCode)\n\tSELECT \n\tPREMIUMTRANSACTIONID, \n\tCURRENTSNAPSHOTFLAG, \n\tAUDITID, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\tSOURCESYSTEMID, \n\tCREATEDDATE, \n\tMODIFIEDDATE, \n\tCOVERAGEGUID, \n\tISOFIREPROTECTIONCODE\n\tFROM RTR_Insert_Update_INSERT\n),"
                         }
                     ]
                 },
@@ -30,57 +30,21 @@
             }
         ],
         "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
             "WBMI_AUDIT_CONTROL_RUN_ID": {
                 "type": "string",
-                "defaultValue": "216690"
-            },
-            "WBMI_BATCH_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "881000"
-            },
-            "WBMI_SESSION_CONTROL_RUN_ID": {
-                "type": "string",
-                "defaultValue": "7484963"
-            },
-            "SELECTION_START_TS": {
-                "type": "string",
-                "defaultValue": "06/27/2023 12:02:14"
-            },
-            "SELECTION_END_TS": {
-                "type": "string",
-                "defaultValue": "07/04/2023 10:58:56"
-            },
-            "DBCONNECTION_SOURCE": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
-            "DBCONNECTION_TARGET": {
-                "type": "string",
-                "defaultValue": "SQLServer_RPT_EDM_Claim"
-            },
-            "SOURCE_TABLE_OWNER": {
-                "type": "string",
-                "defaultValue": "DBO"
+                "defaultValue": "Default Value"
             },
             "TARGET_TABLE_OWNER": {
                 "type": "string",
-                "defaultValue": "DBO"
-            },
-            "SOURCE_SYSTEM_ID": {
-                "type": "string",
-                "defaultValue": "DCT"
-            },
-            "SOURCE_DATABASE_NAME": {
-                "type": "string",
-                "defaultValue": "WC_Stage"
-            },
-            "TARGET_TABLE_OWNER_V2": {
-                "type": "string",
-                "defaultValue": "V2"
+                "defaultValue": "Default Value"
             }
         },
         "folder": {
-            "name": "Policy DataWarehouse/"
+            "name": "PolicyDataWarehouse/"
         },
         "annotations": []
     }

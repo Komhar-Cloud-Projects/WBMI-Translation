@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLIENT_TAX",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLIENT_TAX",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_client_tax_stage AS (\n\tSELECT client_tax_stage.client_tax_stage_id, client_tax_stage.client_id, client_tax_stage.citx_tax_seq_nbr, client_tax_stage.history_vld_nbr, client_tax_stage.effective_dt, client_tax_stage.citx_tax_id, client_tax_stage.tax_type_cd, client_tax_stage.citx_tax_st_cd, client_tax_stage.citx_tax_ctr_cd, client_tax_stage.user_id, client_tax_stage.status_cd, client_tax_stage.terminal_id, client_tax_stage.expiration_dt, client_tax_stage.effective_acy_ts, client_tax_stage.expiration_acy_ts, client_tax_stage.extract_date, client_tax_stage.as_of_date, client_tax_stage.record_count, client_tax_stage.source_system_id \r\n\tFROM\r\n\t client_tax_stage\r\n\tWHERE\r\n\tclient_tax_stage.effective_acy_ts >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_CLIENT_TAX_STAGE AS (\n\tSELECT\n\tclient_tax_stage_id,\n\tclient_id,\n\tcitx_tax_seq_nbr,\n\thistory_vld_nbr,\n\teffective_dt,\n\tcitx_tax_id,\n\ttax_type_cd,\n\tcitx_tax_st_cd,\n\tcitx_tax_ctr_cd,\n\tuser_id,\n\tstatus_cd,\n\tterminal_id,\n\texpiration_dt,\n\teffective_acy_ts,\n\texpiration_acy_ts,\n\textract_date,\n\tas_of_date,\n\trecord_count,\n\tsource_system_id,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_client_tax_stage\n),\narch_client_tax_stage AS (\n\tINSERT INTO arch_client_tax_stage\n\t(client_tax_stage_id, client_id, citx_tax_seq_nbr, history_vld_nbr, effective_dt, citx_tax_id, tax_type_cd, citx_tax_st_cd, citx_tax_ctr_cd, user_id, status_cd, terminal_id, expiration_dt, effective_acy_ts, expiration_acy_ts, extract_date, as_of_date, record_count, source_system_id, audit_id)\n\tSELECT \n\tCLIENT_TAX_STAGE_ID, \n\tCLIENT_ID, \n\tCITX_TAX_SEQ_NBR, \n\tHISTORY_VLD_NBR, \n\tEFFECTIVE_DT, \n\tCITX_TAX_ID, \n\tTAX_TYPE_CD, \n\tCITX_TAX_ST_CD, \n\tCITX_TAX_CTR_CD, \n\tUSER_ID, \n\tSTATUS_CD, \n\tTERMINAL_ID, \n\tEXPIRATION_DT, \n\tEFFECTIVE_ACY_TS, \n\tEXPIRATION_ACY_TS, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_CLIENT_TAX_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

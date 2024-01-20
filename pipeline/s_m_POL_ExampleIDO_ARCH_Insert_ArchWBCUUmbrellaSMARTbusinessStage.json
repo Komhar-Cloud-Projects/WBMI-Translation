@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCUUmbrellaSMARTbusinessStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCUUmbrellaSMARTbu_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCUUmbrellaSMARTbusinessStage AS (\n\tSELECT\n\t\tWBCUUmbrellaSMARTBusinessStageId,\n\t\tLineId,\n\t\tWBCUUmbrellaSMARTbusinessId,\n\t\tSessionId,\n\t\tDeleted,\n\t\tDescription,\n\t\tEffectiveDate,\n\t\tExpirationDate,\n\t\tPersonalLiability,\n\t\tPolicyNumber,\n\t\tProfessionalLiabilityAggregateLimit,\n\t\tSMARTbusinessPremium,\n\t\tFirstMillionBasePremium,\n\t\tFirstMillionModifiedPremium,\n\t\tRevisedPremium,\n\t\tCoverageForm,\n\t\tIncludeProfessionalLiability,\n\t\tScheduledModification,\n\t\tOverride,\n\t\tPremium,\n\t\tPremiumChange,\n\t\tPremiumWritten,\n\t\tIDField,\n\t\tUmbrellaSMARTBusinessScheduledModificationLocationInComment,\n\t\tUmbrellaSMARTBusinessScheduledModificationLocationInModification,\n\t\tUmbrellaSMARTBusinessScheduledModificationLocationOutComment,\n\t\tUmbrellaSMARTBusinessScheduledModificationLocationOutModification,\n\t\tUmbrellaSMARTBusinessScheduledModificationPremisesComment,\n\t\tUmbrellaSMARTBusinessScheduledModificationPremisesModification,\n\t\tUmbrellaSMARTBusinessScheduledModificationEquipmentComment,\n\t\tUmbrellaSMARTBusinessScheduledModificationEquipmentModification,\n\t\tUmbrellaSMARTBusinessScheduledModificationManagementComment,\n\t\tUmbrellaSMARTBusinessScheduledModificationManagementModification,\n\t\tUmbrellaSMARTBusinessScheduledModificationEmployeesComment,\n\t\tUmbrellaSMARTBusinessScheduledModificationEmployeesModification,\n\t\tUmbrellaSMARTBusinessScheduledModificationCooperationMedicalComment,\n\t\tUmbrellaSMARTBusinessScheduledModificationCooperationMedicalModification,\n\t\tUmbrellaSMARTBusinessScheduledModificationCooperationSafetyComment,\n\t\tUmbrellaSMARTBusinessScheduledModificationCooperationSafetyModification,\n\t\tModificationTotal,\n\t\tModificationTotalForSMARTBusinessDetailPage,\n\t\tExtractDate,\n\t\tSourceSystemId\n\tFROM WBCUUmbrellaSMARTBusinessStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBCUUmbrellaSMARTBusinessStageId,\n\tLineId,\n\tWBCUUmbrellaSMARTbusinessId,\n\tSessionId,\n\tDeleted AS i_Deleted,\n\t-- *INF*: DECODE(i_Deleted,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_Deleted,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Deleted,\n\tDescription,\n\tEffectiveDate,\n\tExpirationDate,\n\tPersonalLiability AS i_PersonalLiability,\n\t-- *INF*: DECODE(i_PersonalLiability,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_PersonalLiability,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_PersonalLiability,\n\tPolicyNumber,\n\tProfessionalLiabilityAggregateLimit,\n\tSMARTbusinessPremium,\n\tFirstMillionBasePremium,\n\tFirstMillionModifiedPremium,\n\tRevisedPremium,\n\tCoverageForm,\n\tIncludeProfessionalLiability AS i_IncludeProfessionalLiability,\n\t-- *INF*: DECODE(i_IncludeProfessionalLiability,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_IncludeProfessionalLiability,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_IncludeProfessionalLiability,\n\tScheduledModification,\n\tOverride AS i_Override,\n\t-- *INF*: DECODE(i_Override,'T',1,'F',0,NULL)\n\tDECODE(\n\t    i_Override,\n\t    'T', 1,\n\t    'F', 0,\n\t    NULL\n\t) AS o_Override,\n\tPremium,\n\tPremiumChange,\n\tPremiumWritten,\n\tIDField,\n\tUmbrellaSMARTBusinessScheduledModificationLocationInComment,\n\tUmbrellaSMARTBusinessScheduledModificationLocationInModification,\n\tUmbrellaSMARTBusinessScheduledModificationLocationOutComment,\n\tUmbrellaSMARTBusinessScheduledModificationLocationOutModification,\n\tUmbrellaSMARTBusinessScheduledModificationPremisesComment,\n\tUmbrellaSMARTBusinessScheduledModificationPremisesModification,\n\tUmbrellaSMARTBusinessScheduledModificationEquipmentComment,\n\tUmbrellaSMARTBusinessScheduledModificationEquipmentModification,\n\tUmbrellaSMARTBusinessScheduledModificationManagementComment,\n\tUmbrellaSMARTBusinessScheduledModificationManagementModification,\n\tUmbrellaSMARTBusinessScheduledModificationEmployeesComment,\n\tUmbrellaSMARTBusinessScheduledModificationEmployeesModification,\n\tUmbrellaSMARTBusinessScheduledModificationCooperationMedicalComment,\n\tUmbrellaSMARTBusinessScheduledModificationCooperationMedicalModification,\n\tUmbrellaSMARTBusinessScheduledModificationCooperationSafetyComment,\n\tUmbrellaSMARTBusinessScheduledModificationCooperationSafetyModification,\n\tModificationTotal,\n\tModificationTotalForSMARTBusinessDetailPage,\n\tExtractDate,\n\tSourceSystemId,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBCUUmbrellaSMARTbusinessStage\n),\nArchWBCUUmbrellaSMARTBusinessStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBCUUmbrellaSMARTBusinessStage\n\t(WBCUUmbrellaSMARTBusinessStageId, LineId, WBCUUmbrellaSMARTbusinessId, SessionId, Deleted, Description, EffectiveDate, ExpirationDate, PersonalLiability, PolicyNumber, ProfessionalLiabilityAggregateLimit, SMARTbusinessPremium, FirstMillionBasePremium, FirstMillionModifiedPremium, RevisedPremium, CoverageForm, IncludeProfessionalLiability, ScheduledModification, Override, Premium, PremiumChange, PremiumWritten, IDField, UmbrellaSMARTBusinessScheduledModificationLocationInComment, UmbrellaSMARTBusinessScheduledModificationLocationInModification, UmbrellaSMARTBusinessScheduledModificationLocationOutComment, UmbrellaSMARTBusinessScheduledModificationLocationOutModification, UmbrellaSMARTBusinessScheduledModificationPremisesComment, UmbrellaSMARTBusinessScheduledModificationPremisesModification, UmbrellaSMARTBusinessScheduledModificationEquipmentComment, UmbrellaSMARTBusinessScheduledModificationEquipmentModification, UmbrellaSMARTBusinessScheduledModificationManagementComment, UmbrellaSMARTBusinessScheduledModificationManagementModification, UmbrellaSMARTBusinessScheduledModificationEmployeesComment, UmbrellaSMARTBusinessScheduledModificationEmployeesModification, UmbrellaSMARTBusinessScheduledModificationCooperationMedicalComment, UmbrellaSMARTBusinessScheduledModificationCooperationMedicalModification, UmbrellaSMARTBusinessScheduledModificationCooperationSafetyComment, UmbrellaSMARTBusinessScheduledModificationCooperationSafetyModification, ModificationTotal, ModificationTotalForSMARTBusinessDetailPage, ExtractDate, SourceSystemId, AuditId)\n\tSELECT \n\tWBCUUMBRELLASMARTBUSINESSSTAGEID, \n\tLINEID, \n\tWBCUUMBRELLASMARTBUSINESSID, \n\tSESSIONID, \n\to_Deleted AS DELETED, \n\tDESCRIPTION, \n\tEFFECTIVEDATE, \n\tEXPIRATIONDATE, \n\to_PersonalLiability AS PERSONALLIABILITY, \n\tPOLICYNUMBER, \n\tPROFESSIONALLIABILITYAGGREGATELIMIT, \n\tSMARTBUSINESSPREMIUM, \n\tFIRSTMILLIONBASEPREMIUM, \n\tFIRSTMILLIONMODIFIEDPREMIUM, \n\tREVISEDPREMIUM, \n\tCOVERAGEFORM, \n\to_IncludeProfessionalLiability AS INCLUDEPROFESSIONALLIABILITY, \n\tSCHEDULEDMODIFICATION, \n\to_Override AS OVERRIDE, \n\tPREMIUM, \n\tPREMIUMCHANGE, \n\tPREMIUMWRITTEN, \n\tIDFIELD, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONLOCATIONINCOMMENT, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONLOCATIONINMODIFICATION, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONLOCATIONOUTCOMMENT, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONLOCATIONOUTMODIFICATION, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONPREMISESCOMMENT, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONPREMISESMODIFICATION, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONEQUIPMENTCOMMENT, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONEQUIPMENTMODIFICATION, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONMANAGEMENTCOMMENT, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONMANAGEMENTMODIFICATION, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONEMPLOYEESCOMMENT, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONEMPLOYEESMODIFICATION, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONCOOPERATIONMEDICALCOMMENT, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONCOOPERATIONMEDICALMODIFICATION, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONCOOPERATIONSAFETYCOMMENT, \n\tUMBRELLASMARTBUSINESSSCHEDULEDMODIFICATIONCOOPERATIONSAFETYMODIFICATION, \n\tMODIFICATIONTOTAL, \n\tMODIFICATIONTOTALFORSMARTBUSINESSDETAILPAGE, \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

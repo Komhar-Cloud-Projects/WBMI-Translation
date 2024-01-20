@@ -35,20 +35,11 @@ EXP_Metadata AS (
 	UnderlyingPolicyLimitType AS In_UnderlyingPolicyLimitType,
 	NewNegatePremiumTransactionID AS o_PremiumTransactionID,
 	-- *INF*: IIF(ISNULL(In_UnderlyingInsuranceCompanyName),'N/A',In_UnderlyingInsuranceCompanyName)
-	IFF(In_UnderlyingInsuranceCompanyName IS NULL,
-		'N/A',
-		In_UnderlyingInsuranceCompanyName
-	) AS o_UnderlyingInsuranceCompanyName,
+	IFF(In_UnderlyingInsuranceCompanyName IS NULL, 'N/A', In_UnderlyingInsuranceCompanyName) AS o_UnderlyingInsuranceCompanyName,
 	-- *INF*: IIF(ISNULL(In_UnderlyingPolicyKey),'N/A',In_UnderlyingPolicyKey)
-	IFF(In_UnderlyingPolicyKey IS NULL,
-		'N/A',
-		In_UnderlyingPolicyKey
-	) AS o_UnderlyingPolicyKey,
+	IFF(In_UnderlyingPolicyKey IS NULL, 'N/A', In_UnderlyingPolicyKey) AS o_UnderlyingPolicyKey,
 	-- *INF*: IIF(ISNULL(In_UnderlyingPolicyType),'N/A',In_UnderlyingPolicyType)
-	IFF(In_UnderlyingPolicyType IS NULL,
-		'N/A',
-		In_UnderlyingPolicyType
-	) AS o_UnderlyingPolicyType,
+	IFF(In_UnderlyingPolicyType IS NULL, 'N/A', In_UnderlyingPolicyType) AS o_UnderlyingPolicyType,
 	In_UnderlyingPolicyLimit AS o_UnderlyingPolicyLimit,
 	In_UnderlyingPolicyLimitType AS o_UnderlyingPolicyLimitType
 	FROM EXP_CoverageDetailUnderlyingPolicy_DCT_Negate
@@ -95,11 +86,9 @@ EXP_DetectChanges AS (
 	'1' AS o_CurrentSnapshotFlag,
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditID,
 	-- *INF*: TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US'
-	) AS o_EffectiveDate,
+	TO_TIMESTAMP('1800-01-01 00:00:00.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_EffectiveDate,
 	-- *INF*: TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US')
-	TO_DATE('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US'
-	) AS o_ExpirationDate,
+	TO_TIMESTAMP('2100-12-31 23:59:59.000', 'YYYY-MM-DD HH24:MI:SS.US') AS o_ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS o_SourceSystemId,
 	SYSDATE AS o_CreatedDate,
 	SYSDATE AS o_ModifiedDate,
@@ -110,10 +99,7 @@ EXP_DetectChanges AS (
 	In_UnderlyingPolicyLimit AS o_UnderlyingPolicyLimit,
 	In_UnderlyingPolicyLimitType AS o_UnderlyingPolicyLimitType,
 	-- *INF*: IIF(ISNULL(lkp_CoverageDetailUnderlyingPolicyId),'NEW','UPDATE')
-	IFF(lkp_CoverageDetailUnderlyingPolicyId IS NULL,
-		'NEW',
-		'UPDATE'
-	) AS o_DetectChanges
+	IFF(lkp_CoverageDetailUnderlyingPolicyId IS NULL, 'NEW', 'UPDATE') AS o_DetectChanges
 	FROM EXP_Metadata
 	LEFT JOIN LKP_CoverageDetailUnderlyingPolicy
 	ON LKP_CoverageDetailUnderlyingPolicy.PremiumTransactionId = EXP_Metadata.o_PremiumTransactionID AND LKP_CoverageDetailUnderlyingPolicy.UnderlyingInsuranceCompanyName = EXP_Metadata.o_UnderlyingInsuranceCompanyName AND LKP_CoverageDetailUnderlyingPolicy.UnderlyingPolicyKey = EXP_Metadata.o_UnderlyingPolicyKey AND LKP_CoverageDetailUnderlyingPolicy.UnderlyingPolicyType = EXP_Metadata.o_UnderlyingPolicyType AND LKP_CoverageDetailUnderlyingPolicy.UnderlyingPolicyLimitType = EXP_Metadata.o_UnderlyingPolicyLimitType

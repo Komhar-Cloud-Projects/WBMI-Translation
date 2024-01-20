@@ -34,50 +34,23 @@ EXP_Default_Value AS (
 	ModifiedDate,
 	WBEDWInceptionToDateId AS i_WBEDWInceptionToDateId,
 	-- *INF*: IIF(NOT ISNULL(i_PolicyNumber), i_PolicyNumber, '0')
-	IFF(i_PolicyNumber IS NOT NULL,
-		i_PolicyNumber,
-		'0'
-	) AS o_PolicyNumber,
+	IFF(i_PolicyNumber IS NOT NULL, i_PolicyNumber, '0') AS o_PolicyNumber,
 	-- *INF*: IIF(NOT ISNULL(i_PolicyVersion), i_PolicyVersion, '0')
-	IFF(i_PolicyVersion IS NOT NULL,
-		i_PolicyVersion,
-		'0'
-	) AS o_PolicyVersion,
+	IFF(i_PolicyVersion IS NOT NULL, i_PolicyVersion, '0') AS o_PolicyVersion,
 	-- *INF*: IIF(NOT ISNULL(i_IDOWrittenChange), i_IDOWrittenChange, 0)
-	IFF(i_IDOWrittenChange IS NOT NULL,
-		i_IDOWrittenChange,
-		0
-	) AS o_IDOWrittenChange,
+	IFF(i_IDOWrittenChange IS NOT NULL, i_IDOWrittenChange, 0) AS o_IDOWrittenChange,
 	-- *INF*: IIF(NOT ISNULL(i_IDOTaxesChange), i_IDOTaxesChange, 0)
-	IFF(i_IDOTaxesChange IS NOT NULL,
-		i_IDOTaxesChange,
-		0
-	) AS o_IDOTaxesChange,
+	IFF(i_IDOTaxesChange IS NOT NULL, i_IDOTaxesChange, 0) AS o_IDOTaxesChange,
 	-- *INF*: IIF(NOT ISNULL(i_DCTWrittenChange), i_DCTWrittenChange, 0)
-	IFF(i_DCTWrittenChange IS NOT NULL,
-		i_DCTWrittenChange,
-		0
-	) AS o_DCTWrittenChange,
+	IFF(i_DCTWrittenChange IS NOT NULL, i_DCTWrittenChange, 0) AS o_DCTWrittenChange,
 	-- *INF*: IIF(NOT ISNULL(i_DCTTaxesChange), i_DCTTaxesChange, 0)
-	IFF(i_DCTTaxesChange IS NOT NULL,
-		i_DCTTaxesChange,
-		0
-	) AS o_DCTTaxesChange,
+	IFF(i_DCTTaxesChange IS NOT NULL, i_DCTTaxesChange, 0) AS o_DCTTaxesChange,
 	-- *INF*: IIF(NOT ISNULL(i_DCTIDOWrittenChangeOOBAmount), i_DCTIDOWrittenChangeOOBAmount, 0)
-	IFF(i_DCTIDOWrittenChangeOOBAmount IS NOT NULL,
-		i_DCTIDOWrittenChangeOOBAmount,
-		0
-	) AS o_DCTIDOWrittenChangeOOBAmount,
+	IFF(i_DCTIDOWrittenChangeOOBAmount IS NOT NULL, i_DCTIDOWrittenChangeOOBAmount, 0) AS o_DCTIDOWrittenChangeOOBAmount,
 	-- *INF*: IIF(NOT ISNULL(i_DCTIDOTaxesChangeOOBAmount), i_DCTIDOTaxesChangeOOBAmount, 0)
-	IFF(i_DCTIDOTaxesChangeOOBAmount IS NOT NULL,
-		i_DCTIDOTaxesChangeOOBAmount,
-		0
-	) AS o_DCTIDOTaxesChangeOOBAmount,
+	IFF(i_DCTIDOTaxesChangeOOBAmount IS NOT NULL, i_DCTIDOTaxesChangeOOBAmount, 0) AS o_DCTIDOTaxesChangeOOBAmount,
 	-- *INF*: IIF(NOT ISNULL(i_WBEDWInceptionToDateId), i_WBEDWInceptionToDateId, 0)
-	IFF(i_WBEDWInceptionToDateId IS NOT NULL,
-		i_WBEDWInceptionToDateId,
-		0
-	) AS o_WBEDWInceptionToDateId
+	IFF(i_WBEDWInceptionToDateId IS NOT NULL, i_WBEDWInceptionToDateId, 0) AS o_WBEDWInceptionToDateId
 	FROM SQ_WB_EDWInceptionToDate1
 ),
 WBEDWInceptionToDate AS (

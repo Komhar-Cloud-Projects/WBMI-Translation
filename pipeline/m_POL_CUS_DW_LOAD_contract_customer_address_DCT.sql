@@ -40,41 +40,29 @@ AGG_Remove_Duplicates AS (
 	i_PostalCode AS o_PostalCode,
 	i_Country AS o_Country,
 	-- *INF*: IIF(ISNULL(CustomerNum) or IS_SPACES(CustomerNum) or LENGTH(CustomerNum)=0, 'N/A', LTRIM(RTRIM(CustomerNum)))
-	IFF(CustomerNum IS NULL 
-		OR LENGTH(CustomerNum)>0 AND TRIM(CustomerNum)='' 
-		OR LENGTH(CustomerNum
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(CustomerNum
-			)
-		)
+	IFF(
+	    CustomerNum IS NULL
+	    or LENGTH(CustomerNum)>0
+	    and TRIM(CustomerNum)=''
+	    or LENGTH(CustomerNum) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(CustomerNum))
 	) AS o_CustomerNumber,
 	-- *INF*: IIF(ISNULL(i_Id) or IS_SPACES(i_Id) or LENGTH(i_Id)=0, 'N/A', LTRIM(RTRIM(i_Id)))
-	IFF(i_Id IS NULL 
-		OR LENGTH(i_Id)>0 AND TRIM(i_Id)='' 
-		OR LENGTH(i_Id
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_Id
-			)
-		)
+	IFF(
+	    i_Id IS NULL or LENGTH(i_Id)>0 AND TRIM(i_Id)='' or LENGTH(i_Id) = 0, 'N/A',
+	    LTRIM(RTRIM(i_Id))
 	) AS o_Id,
 	-- *INF*: IIF(ISNULL(i_PolicyVersion), '00', LPAD(TO_CHAR(i_PolicyVersion), 2 , '0'))
-	IFF(i_PolicyVersion IS NULL,
-		'00',
-		LPAD(TO_CHAR(i_PolicyVersion
-			), 2, '0'
-		)
-	) AS o_PolicyVersion,
+	IFF(i_PolicyVersion IS NULL, '00', LPAD(TO_CHAR(i_PolicyVersion), 2, '0')) AS o_PolicyVersion,
 	-- *INF*: IIF(ISNULL(i_PolicyNumber) or IS_SPACES(i_PolicyNumber) or LENGTH(i_PolicyNumber)=0, 'N/A', LTRIM(RTRIM(i_PolicyNumber)))
-	IFF(i_PolicyNumber IS NULL 
-		OR LENGTH(i_PolicyNumber)>0 AND TRIM(i_PolicyNumber)='' 
-		OR LENGTH(i_PolicyNumber
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_PolicyNumber
-			)
-		)
+	IFF(
+	    i_PolicyNumber IS NULL
+	    or LENGTH(i_PolicyNumber)>0
+	    and TRIM(i_PolicyNumber)=''
+	    or LENGTH(i_PolicyNumber) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_PolicyNumber))
 	) AS o_PolicyNumber
 	FROM SQ_DCLocationStaging
 	GROUP BY o_PolicyVersion, o_PolicyNumber
@@ -107,88 +95,50 @@ EXP_values AS (
 	i_PolicyNumber || i_PolicyVersion AS o_contract_key,
 	'MAILING' AS o_addr_type,
 	-- *INF*: IIF(ISNULL(i_Address1) or IS_SPACES(i_Address1)  or LENGTH(i_Address1)=0,'N/A',LTRIM(RTRIM(i_Address1)))
-	IFF(i_Address1 IS NULL 
-		OR LENGTH(i_Address1)>0 AND TRIM(i_Address1)='' 
-		OR LENGTH(i_Address1
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_Address1
-			)
-		)
+	IFF(
+	    i_Address1 IS NULL or LENGTH(i_Address1)>0 AND TRIM(i_Address1)='' or LENGTH(i_Address1) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_Address1))
 	) AS o_Address1,
 	-- *INF*: IIF(ISNULL(i_Address2) or IS_SPACES(i_Address2)  or LENGTH(i_Address2)=0,'N/A',LTRIM(RTRIM(i_Address2)))
-	IFF(i_Address2 IS NULL 
-		OR LENGTH(i_Address2)>0 AND TRIM(i_Address2)='' 
-		OR LENGTH(i_Address2
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_Address2
-			)
-		)
+	IFF(
+	    i_Address2 IS NULL or LENGTH(i_Address2)>0 AND TRIM(i_Address2)='' or LENGTH(i_Address2) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_Address2))
 	) AS o_Address2,
 	'N/A' AS o_Address3,
 	-- *INF*: IIF(ISNULL(i_City) or IS_SPACES(i_City)  or LENGTH(i_City)=0,'N/A',LTRIM(RTRIM(i_City)))
-	IFF(i_City IS NULL 
-		OR LENGTH(i_City)>0 AND TRIM(i_City)='' 
-		OR LENGTH(i_City
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_City
-			)
-		)
+	IFF(
+	    i_City IS NULL or LENGTH(i_City)>0 AND TRIM(i_City)='' or LENGTH(i_City) = 0, 'N/A',
+	    LTRIM(RTRIM(i_City))
 	) AS o_City,
 	-- *INF*: IIF(ISNULL(i_State) or IS_SPACES(i_State)  or LENGTH(i_State)=0,'N/A',LTRIM(RTRIM(i_State)))
-	IFF(i_State IS NULL 
-		OR LENGTH(i_State)>0 AND TRIM(i_State)='' 
-		OR LENGTH(i_State
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_State
-			)
-		)
+	IFF(
+	    i_State IS NULL or LENGTH(i_State)>0 AND TRIM(i_State)='' or LENGTH(i_State) = 0, 'N/A',
+	    LTRIM(RTRIM(i_State))
 	) AS o_State,
 	-- *INF*: IIF(ISNULL(SUBSTR(i_PostalCode,1,5)) or IS_SPACES(SUBSTR(i_PostalCode,1,5))  or LENGTH(SUBSTR(i_PostalCode,1,5))=0,'N/A',LTRIM(RTRIM(SUBSTR(i_PostalCode,1,5))))
-	IFF(SUBSTR(i_PostalCode, 1, 5
-		) IS NULL 
-		OR LENGTH(SUBSTR(i_PostalCode, 1, 5
-		))>0 AND TRIM(SUBSTR(i_PostalCode, 1, 5
-		))='' 
-		OR LENGTH(SUBSTR(i_PostalCode, 1, 5
-			)
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(SUBSTR(i_PostalCode, 1, 5
-				)
-			)
-		)
+	IFF(
+	    SUBSTR(i_PostalCode, 1, 5) IS NULL
+	    or LENGTH(SUBSTR(i_PostalCode, 1, 5))>0
+	    and TRIM(SUBSTR(i_PostalCode, 1, 5))=''
+	    or LENGTH(SUBSTR(i_PostalCode, 1, 5)) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(SUBSTR(i_PostalCode, 1, 5)))
 	) AS o_PostalCode,
 	-- *INF*: IIF(SUBSTR(i_PostalCode,6,1)='-',SUBSTR(i_PostalCode,7,4),'N/A')
-	IFF(SUBSTR(i_PostalCode, 6, 1
-		) = '-',
-		SUBSTR(i_PostalCode, 7, 4
-		),
-		'N/A'
-	) AS o_zip_postal_code_extension,
+	IFF(SUBSTR(i_PostalCode, 6, 1) = '-', SUBSTR(i_PostalCode, 7, 4), 'N/A') AS o_zip_postal_code_extension,
 	-- *INF*: IIF(ISNULL(i_County) or IS_SPACES(i_County)  or LENGTH(i_County)=0,'N/A',LTRIM(RTRIM(i_County)))
-	IFF(i_County IS NULL 
-		OR LENGTH(i_County)>0 AND TRIM(i_County)='' 
-		OR LENGTH(i_County
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_County
-			)
-		)
+	IFF(
+	    i_County IS NULL or LENGTH(i_County)>0 AND TRIM(i_County)='' or LENGTH(i_County) = 0, 'N/A',
+	    LTRIM(RTRIM(i_County))
 	) AS o_County,
 	'0000' AS o_loc_unit_num,
 	-- *INF*: IIF(ISNULL(i_Country) or IS_SPACES(i_Country)  or LENGTH(i_Country)=0,'N/A',LTRIM(RTRIM(i_Country)))
-	IFF(i_Country IS NULL 
-		OR LENGTH(i_Country)>0 AND TRIM(i_Country)='' 
-		OR LENGTH(i_Country
-		) = 0,
-		'N/A',
-		LTRIM(RTRIM(i_Country
-			)
-		)
+	IFF(
+	    i_Country IS NULL or LENGTH(i_Country)>0 AND TRIM(i_Country)='' or LENGTH(i_Country) = 0,
+	    'N/A',
+	    LTRIM(RTRIM(i_Country))
 	) AS o_Country,
 	'N/A' AS o_no_match_flag,
 	'N/A' AS o_delivery_confirmation_flag,
@@ -303,85 +253,33 @@ EXP_Detect_Changes AS (
 	-- 
 	-- 
 	-- --iif(NewLookupRow=1,'NEW',IIF(NewLookupRow=2,'UPDATE','NOCHANGE'))
-	IFF(cust_addr_ak_id IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(i_addr_line_1
-				)
-			) != LTRIM(RTRIM(addr_line_1
-				)
-			) 
-			OR LTRIM(RTRIM(i_addr_line_2
-				)
-			) != LTRIM(RTRIM(addr_line_2
-				)
-			) 
-			OR LTRIM(RTRIM(i_addr_line_3
-				)
-			) != LTRIM(RTRIM(addr_line_3
-				)
-			) 
-			OR LTRIM(RTRIM(i_city
-				)
-			) != LTRIM(RTRIM(city
-				)
-			) 
-			OR LTRIM(RTRIM(i_state
-				)
-			) != LTRIM(RTRIM(state
-				)
-			) 
-			OR LTRIM(RTRIM(i_zip_code
-				)
-			) != LTRIM(RTRIM(zip_postal_code
-				)
-			) 
-			OR LTRIM(RTRIM(i_zip_postal_code_extension
-				)
-			) != LTRIM(RTRIM(zip_postal_code_extension
-				)
-			) 
-			OR LTRIM(RTRIM(i_loc_unit_num
-				)
-			) != LTRIM(RTRIM(loc_unit_num
-				)
-			) 
-			OR LTRIM(RTRIM(i_county
-				)
-			) != LTRIM(RTRIM(county_parish_name
-				)
-			) 
-			OR LTRIM(RTRIM(i_country
-				)
-			) != LTRIM(RTRIM(country
-				)
-			) 
-			OR LTRIM(RTRIM(i_no_match_flag
-				)
-			) != LTRIM(RTRIM(no_match_flag
-				)
-			) 
-			OR LTRIM(RTRIM(i_delivery_confirmation_flag
-				)
-			) != LTRIM(RTRIM(delivery_confirmation_flag
-				)
-			) 
-			OR LTRIM(RTRIM(i_group1_match_code
-				)
-			) != LTRIM(RTRIM(group1_match_code
-				)
-			) 
-			OR i_latitude != latitude 
-			OR i_longitude != longitude,
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    cust_addr_ak_id IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(i_addr_line_1)) != LTRIM(RTRIM(addr_line_1))
+	        or LTRIM(RTRIM(i_addr_line_2)) != LTRIM(RTRIM(addr_line_2))
+	        or LTRIM(RTRIM(i_addr_line_3)) != LTRIM(RTRIM(addr_line_3))
+	        or LTRIM(RTRIM(i_city)) != LTRIM(RTRIM(city))
+	        or LTRIM(RTRIM(i_state)) != LTRIM(RTRIM(state))
+	        or LTRIM(RTRIM(i_zip_code)) != LTRIM(RTRIM(zip_postal_code))
+	        or LTRIM(RTRIM(i_zip_postal_code_extension)) != LTRIM(RTRIM(zip_postal_code_extension))
+	        or LTRIM(RTRIM(i_loc_unit_num)) != LTRIM(RTRIM(loc_unit_num))
+	        or LTRIM(RTRIM(i_county)) != LTRIM(RTRIM(county_parish_name))
+	        or LTRIM(RTRIM(i_country)) != LTRIM(RTRIM(country))
+	        or LTRIM(RTRIM(i_no_match_flag)) != LTRIM(RTRIM(no_match_flag))
+	        or LTRIM(RTRIM(i_delivery_confirmation_flag)) != LTRIM(RTRIM(delivery_confirmation_flag))
+	        or LTRIM(RTRIM(i_group1_match_code)) != LTRIM(RTRIM(group1_match_code))
+	        or i_latitude != latitude
+	        or i_longitude != longitude,
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_changed_flag,
 	-- *INF*: IIF(v_changed_flag='NEW',
 	-- 	TO_DATE('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),SYSDATE)
-	IFF(v_changed_flag = 'NEW',
-		TO_DATE('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		SYSDATE
+	IFF(
+	    v_changed_flag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS v_eff_from_date,
 	LKP_contract_customer_address.contract_cust_addr_ak_id AS cust_addr_ak_id,
 	EXP_values.o_addr_type AS addr_type,
@@ -406,8 +304,7 @@ EXP_Detect_Changes AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS audit_id,
 	v_eff_from_date AS eff_from_date,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS eff_to_date,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS eff_to_date,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS source_system_id,
 	SYSDATE AS created_date,
 	SYSDATE AS modified_date
@@ -482,10 +379,7 @@ EXP_Customer_address_ak_id AS (
 	created_date,
 	modified_date,
 	-- *INF*: IIF(ISNULL(i_cust_addr_ak_id),NEXTVAL,i_cust_addr_ak_id)
-	IFF(i_cust_addr_ak_id IS NULL,
-		NEXTVAL,
-		i_cust_addr_ak_id
-	) AS cust_addr_ak_id
+	IFF(i_cust_addr_ak_id IS NULL, NEXTVAL, i_cust_addr_ak_id) AS cust_addr_ak_id
 	FROM FIL_Insert
 ),
 TGT_contract_customer_address_INSERT AS (
@@ -544,9 +438,10 @@ EXP_Lag_eff_from_date AS (
 	-- *INF*: DECODE(TRUE,
 	-- i_cust_addr_ak_id = v_prev_cust_addr_ak_id ,
 	-- ADD_TO_DATE(v_prev_eff_from_date,'SS',-1),orig_eff_to_date)
-	DECODE(TRUE,
-		i_cust_addr_ak_id = v_prev_cust_addr_ak_id, DATEADD(SECOND,- 1,v_prev_eff_from_date),
-		orig_eff_to_date
+	DECODE(
+	    TRUE,
+	    i_cust_addr_ak_id = v_prev_cust_addr_ak_id, DATEADD(SECOND,- 1,v_prev_eff_from_date),
+	    orig_eff_to_date
 	) AS v_eff_to_date,
 	i_cust_addr_ak_id AS v_prev_cust_addr_ak_id,
 	i_eff_from_date AS v_prev_eff_from_date,

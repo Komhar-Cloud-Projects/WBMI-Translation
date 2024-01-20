@@ -287,16 +287,14 @@ EXP_GetValues_Occurrence AS (
 	total_direct_loss_recovery_incurred_CR AS total_direct_loss_recovery_incurred,
 	Loss_Year_CR AS Loss_Year,
 	-- *INF*: SUBSTR(Loss_Year,1,4)
-	SUBSTR(Loss_Year, 1, 4
-	) AS O_Loss_Year,
+	SUBSTR(Loss_Year, 1, 4) AS O_Loss_Year,
 	claim_cat_code_CR,
 	CatastropheDimId_CR,
 	Rundate_CR AS Rundate,
 	total_direct_loss_recovery_incurred_PR,
 	-- *INF*: IIF(ISNULL(total_direct_loss_recovery_incurred_PR),0.0,total_direct_loss_recovery_incurred_PR)
-	IFF(total_direct_loss_recovery_incurred_PR IS NULL,
-		0.0,
-		total_direct_loss_recovery_incurred_PR
+	IFF(
+	    total_direct_loss_recovery_incurred_PR IS NULL, 0.0, total_direct_loss_recovery_incurred_PR
 	) AS V_total_direct_loss_recovery_incurred_PR
 	FROM JNR_CurrentRunMonth_PreviousYear
 ),
@@ -330,10 +328,7 @@ EXP_LegalPrimaryAgency AS (
 	EXP_GetValues_Occurrence.AgencyCode AS IN_AgencyCode,
 	LKP_V3_PrimaryAgencyDimID_CO.LegalPrimaryAgencyCode,
 	-- *INF*: iif(isnull(LegalPrimaryAgencyCode),IN_AgencyCode,LegalPrimaryAgencyCode)
-	IFF(LegalPrimaryAgencyCode IS NULL,
-		IN_AgencyCode,
-		LegalPrimaryAgencyCode
-	) AS o_LegalPrimaryAgencyCode
+	IFF(LegalPrimaryAgencyCode IS NULL, IN_AgencyCode, LegalPrimaryAgencyCode) AS o_LegalPrimaryAgencyCode
 	FROM EXP_GetValues_Occurrence
 	LEFT JOIN LKP_V3_PrimaryAgencyDimID_CO
 	ON LKP_V3_PrimaryAgencyDimID_CO.Agencycode = EXP_GetValues_Occurrence.AgencyCode AND LKP_V3_PrimaryAgencyDimID_CO.eff_from_date <= EXP_GetValues_Occurrence.Rundate AND LKP_V3_PrimaryAgencyDimID_CO.eff_to_date >= EXP_GetValues_Occurrence.Rundate
@@ -510,16 +505,10 @@ EXP_CalValues_Occurrence AS (
 	@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,
 	mplt_PolicyDimID_StopLossCOFact.agency_dim_id AS i_agency_dim_id,
 	-- *INF*: IIF(ISNULL(i_agency_dim_id), -1, i_agency_dim_id)
-	IFF(i_agency_dim_id IS NULL,
-		- 1,
-		i_agency_dim_id
-	) AS o_agency_dim_id,
+	IFF(i_agency_dim_id IS NULL, - 1, i_agency_dim_id) AS o_agency_dim_id,
 	mplt_PolicyDimID_StopLossCOFact.contract_cust_dim_id AS i_contract_cust_dim_id,
 	-- *INF*: IIF(ISNULL(i_contract_cust_dim_id), -1, i_contract_cust_dim_id)
-	IFF(i_contract_cust_dim_id IS NULL,
-		- 1,
-		i_contract_cust_dim_id
-	) AS o_contract_cust_dim_id,
+	IFF(i_contract_cust_dim_id IS NULL, - 1, i_contract_cust_dim_id) AS o_contract_cust_dim_id,
 	mplt_PolicyDimID_StopLossCOFact.pol_dim_id,
 	LKP_claim_occurrence_dim.claim_occurrence_dim_id,
 	-- *INF*: :LKP.LKP_CALENDER_DIM(SET_DATE_PART(SET_DATE_PART(SET_DATE_PART(i_RunDate,'HH',0),'MI',0),'SS',0))
@@ -527,9 +516,8 @@ EXP_CalValues_Occurrence AS (
 	EXP_GetValues_Occurrence.total_direct_loss_recovery_incurred AS TotalDirectIncurredLoss,
 	EXP_GetValues_Occurrence.V_total_direct_loss_recovery_incurred_PR AS total_direct_loss_recovery_incurred_PR,
 	-- *INF*: IIF(isnull(total_direct_loss_recovery_incurred_PR),0.0,total_direct_loss_recovery_incurred_PR)
-	IFF(total_direct_loss_recovery_incurred_PR IS NULL,
-		0.0,
-		total_direct_loss_recovery_incurred_PR
+	IFF(
+	    total_direct_loss_recovery_incurred_PR IS NULL, 0.0, total_direct_loss_recovery_incurred_PR
 	) AS v_total_direct_loss_recovery_incurred_PR,
 	EXP_GetValues_Occurrence.Loss_Year AS IN_LOSS_YEAR,
 	0.0 AS o_StopLossLimit,
@@ -539,10 +527,7 @@ EXP_CalValues_Occurrence AS (
 	EXP_GetValues_Occurrence.edw_claim_occurrence_ak_id,
 	LKP_V3_PrimaryAgencyDimID_CO_Primary.agency_dim_id AS IN_PrimaryAgencyDimId,
 	-- *INF*: IIF(ISNULL(IN_PrimaryAgencyDimId),-1,IN_PrimaryAgencyDimId)
-	IFF(IN_PrimaryAgencyDimId IS NULL,
-		- 1,
-		IN_PrimaryAgencyDimId
-	) AS PrimaryAgencyDimId,
+	IFF(IN_PrimaryAgencyDimId IS NULL, - 1, IN_PrimaryAgencyDimId) AS PrimaryAgencyDimId,
 	EXP_GetValues_Occurrence.CatastropheDimId_CR
 	FROM EXP_GetValues_Occurrence
 	 -- Manually join with mplt_PolicyDimID_StopLossCOFact

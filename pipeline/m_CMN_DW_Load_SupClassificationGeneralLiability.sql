@@ -107,9 +107,10 @@ EXP_Detect_Changes AS (
 	-- 'INSERT')						
 	-- 
 	--  
-	DECODE(TRUE,
-		LKP_SUPCLASSIFICATIONGENERALLIABILITY_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_ClassDescription_i_OriginatingOrganizationCode_i_SublineCode_i_ISOGeneralLiabilityClassGroupCode_i_ISOGeneralLiabilityClassSummary_i_RatingBasis_i_EffectiveDate.SupClassificationGeneralLiabilityId IS NOT NULL, 'NOCHANGE',
-		'INSERT'
+	DECODE(
+	    TRUE,
+	    LKP_SUPCLASSIFICATIONGENERALLIABILITY_CURRENTCHANGEFLAG_i_RatingStateCode_i_ClassCode_i_ClassDescription_i_OriginatingOrganizationCode_i_SublineCode_i_ISOGeneralLiabilityClassGroupCode_i_ISOGeneralLiabilityClassSummary_i_RatingBasis_i_EffectiveDate.SupClassificationGeneralLiabilityId IS NOT NULL, 'NOCHANGE',
+	    'INSERT'
 	) AS v_RecordPopulated,
 	-- *INF*:  DECODE(TRUE,
 	-- --i_ExpirationDate   <=  lkp_EffectiveDate OR 1=1, 'NOCHANGE',
@@ -143,28 +144,12 @@ EXP_Detect_Changes AS (
 	-- 
 	-- 
 	--  
-	DECODE(TRUE,
-		i_ExpirationDate <= lkp_EffectiveDate 
-		OR v_RecordPopulated = 'NOCHANGE', 'NOCHANGE',
-		lkp_SupClassificationGeneralLiabilityId IS NULL 
-		OR ( i_RatingStateCode = lkp_RatingStateCode 
-			AND i_ClassCode = lkp_ClassCode 
-			AND i_OriginatingOrganizationCode = lkp_OriginatingOrganizationCode 
-			AND i_SublineCode = lkp_SublineCode 
-			AND ( i_ClassDescription <> lkp_ClassDescription 
-				OR i_EffectiveDate <> lkp_EffectiveDate 
-				OR i_ExpirationDate <> lkp_ExpirationDate 
-				OR i_ClassDescription <> lkp_ClassDescription 
-				OR i_ISOGeneralLiabilityClassSummary <> lkp_ISOGeneralLiabilityClassSummary 
-				OR i_ISOGeneralLiabilityClassGroupCode <> lkp_ISOGeneralLiabilityClassGroupCode 
-				OR i_RatingBasis <> lkp_RatingBasis 
-			) 
-		), 'INSERT',
-		i_RatingStateCode <> lkp_RatingStateCode 
-		OR i_ClassCode <> lkp_ClassCode 
-		OR i_OriginatingOrganizationCode <> lkp_OriginatingOrganizationCode 
-		OR i_SublineCode <> lkp_SublineCode, 'UPDATE',
-		'NOCHANGE'
+	DECODE(
+	    TRUE,
+	    i_ExpirationDate <= lkp_EffectiveDate OR v_RecordPopulated = 'NOCHANGE', 'NOCHANGE',
+	    lkp_SupClassificationGeneralLiabilityId IS NULL OR (i_RatingStateCode = lkp_RatingStateCode AND i_ClassCode = lkp_ClassCode AND i_OriginatingOrganizationCode = lkp_OriginatingOrganizationCode AND i_SublineCode = lkp_SublineCode AND (i_ClassDescription <> lkp_ClassDescription OR i_EffectiveDate <> lkp_EffectiveDate OR i_ExpirationDate <> lkp_ExpirationDate OR i_ClassDescription <> lkp_ClassDescription OR i_ISOGeneralLiabilityClassSummary <> lkp_ISOGeneralLiabilityClassSummary OR i_ISOGeneralLiabilityClassGroupCode <> lkp_ISOGeneralLiabilityClassGroupCode OR i_RatingBasis <> lkp_RatingBasis)), 'INSERT',
+	    i_RatingStateCode <> lkp_RatingStateCode OR i_ClassCode <> lkp_ClassCode OR i_OriginatingOrganizationCode <> lkp_OriginatingOrganizationCode OR i_SublineCode <> lkp_SublineCode, 'UPDATE',
+	    'NOCHANGE'
 	) AS v_ChangeFlag,
 	'Please correct the EffectiveDate in CSV file for ClassCode = '||i_ClassCode||' and RatingStateCode = '|| i_RatingStateCode ||', because EffectiveDate should reflect the real effective date for any change on this ClassCode.' AS v_ErrorMessage,
 	-- *INF*: 'PASS'
@@ -324,29 +309,22 @@ EXP_Lag_Eff_dates AS (
 	--                    OR RatingBasis <>v_PREV_ROW_RatingBasis
 	--                    )
 	-- 		,'0','1')
-	DECODE(TRUE,
-		RatingStateCode = v_PREV_ROW_RatingStateCode 
-		AND ClassCode = v_PREV_ROW_ClassCode 
-		AND OriginatingOrganizationCode = v_PREV_ROW_OriginatingOrganizationCode 
-		AND SublineCode = v_PREV_ROW_SublineCode 
-		AND ( ClassDescription <> v_PREV_ROW_ClassDescription 
-			OR DATEADD(SECOND,+ 1,ExpirationDate) <> v_PREV_ROW_EffectiveDate 
-			OR ISOGeneralLiabilityClassSummary <> v_PREV_ROW_ISOGeneralLiabilityClassSummary 
-			OR ISOGeneralLiabilityClassGroupCode <> v_PREV_ROW_ISOGeneralLiabilityClassGroupCode 
-			OR RatingBasis <> v_PREV_ROW_RatingBasis 
-		), '0',
-		'1'
+	DECODE(
+	    TRUE,
+	    RatingStateCode = v_PREV_ROW_RatingStateCode AND ClassCode = v_PREV_ROW_ClassCode AND OriginatingOrganizationCode = v_PREV_ROW_OriginatingOrganizationCode AND SublineCode = v_PREV_ROW_SublineCode AND (ClassDescription <> v_PREV_ROW_ClassDescription OR DATEADD(SECOND,+ 1,ExpirationDate) <> v_PREV_ROW_EffectiveDate OR ISOGeneralLiabilityClassSummary <> v_PREV_ROW_ISOGeneralLiabilityClassSummary OR ISOGeneralLiabilityClassGroupCode <> v_PREV_ROW_ISOGeneralLiabilityClassGroupCode OR RatingBasis <> v_PREV_ROW_RatingBasis), '0',
+	    '1'
 	) AS v_CurrentSnapshotFlag,
 	-- *INF*: ADD_TO_DATE(   --v_PREV_ROW_EffectiveDate
 	-- 	IIF(v_PREV_ROW_EffectiveDate =  TO_DATE('1800-01-01 00:00:00' , 'YYYY-MM-DD HH24:MI:SS' ) , sysdate ,v_PREV_ROW_EffectiveDate )
 	-- ,'SS',-1)
 	-- 
 	-- --ADD_TO_DATE(v_PREV_ROW_EffectiveDate,'SS',-1)
-	DATEADD(SECOND,- 1,IFF(v_PREV_ROW_EffectiveDate = TO_DATE('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'
-		),
-		sysdate,
-		v_PREV_ROW_EffectiveDate
-	)) AS v_ClassExpirationDate,
+	DATEADD(SECOND,- 1,
+	    IFF(
+	        v_PREV_ROW_EffectiveDate = TO_TIMESTAMP('1800-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'),
+	        CURRENT_TIMESTAMP,
+	        v_PREV_ROW_EffectiveDate
+	    )) AS v_ClassExpirationDate,
 	v_CurrentSnapshotFlag AS o_CurrentSnapshotFlag,
 	v_ClassExpirationDate AS o_ClassExpirationDate,
 	EffectiveDate AS v_PREV_ROW_EffectiveDate,

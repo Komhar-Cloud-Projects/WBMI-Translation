@@ -1,0 +1,47 @@
+{
+    "name": "s_m_CLM_ARCH_Insert_CLM_COMMENTS",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_ARCH_Insert_CLM_COMMENTS",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_CLM_COMMENTS_STAGE AS (\n\tSELECT CLM_COMMENTS_STAGE.CLM_COMMENTS_ID, CLM_COMMENTS_STAGE.COMMENT_ITEM_NBR, CLM_COMMENTS_STAGE.COMMENT_SEQ_NBR, CLM_COMMENTS_STAGE.FOLDER_KEY, CLM_COMMENTS_STAGE.COMMENT_TYPE, CLM_COMMENTS_STAGE.CLIENT_ID, CLM_COMMENTS_STAGE.AUTHOR_ID, CLM_COMMENTS_STAGE.ENTERED_DT, CLM_COMMENTS_STAGE.TCC_COMMENT_TXT, CLM_COMMENTS_STAGE.EXTRACT_DATE, CLM_COMMENTS_STAGE.AS_OF_DATE, CLM_COMMENTS_STAGE.RECORD_COUNT, CLM_COMMENTS_STAGE.SOURCE_SYSTEM_ID \r\n\tFROM\r\n\t CLM_COMMENTS_STAGE\r\n\tWHERE\r\n\tCLM_COMMENTS_STAGE.ENTERED_DT >= '@{pipeline().parameters.SELECTION_START_TS}'\n),\nEXP_CLM_COMMENTS_STAGE AS (\n\tSELECT\n\tCLM_COMMENTS_ID,\n\tCOMMENT_ITEM_NBR,\n\tCOMMENT_SEQ_NBR,\n\tFOLDER_KEY,\n\tCOMMENT_TYPE,\n\tCLIENT_ID,\n\tAUTHOR_ID,\n\tENTERED_DT,\n\tTCC_COMMENT_TXT,\n\tEXTRACT_DATE,\n\tAS_OF_DATE,\n\tRECORD_COUNT,\n\tSOURCE_SYSTEM_ID,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS AUDIT_ID_OP\n\tFROM SQ_CLM_COMMENTS_STAGE\n),\nARCH_CLM_COMMENTS_STAGE AS (\n\tINSERT INTO ARCH_CLM_COMMENTS_STAGE\n\t(CLM_COMMENTS_ID, COMMENT_ITEM_NBR, COMMENT_SEQ_NBR, FOLDER_KEY, COMMENT_TYPE, CLIENT_ID, AUTHOR_ID, ENTERED_DT, TCC_COMMENT_TXT, EXTRACT_DATE, AS_OF_DATE, RECORD_COUNT, SOURCE_SYSTEM_ID, AUDIT_ID)\n\tSELECT \n\tCLM_COMMENTS_ID, \n\tCOMMENT_ITEM_NBR, \n\tCOMMENT_SEQ_NBR, \n\tFOLDER_KEY, \n\tCOMMENT_TYPE, \n\tCLIENT_ID, \n\tAUTHOR_ID, \n\tENTERED_DT, \n\tTCC_COMMENT_TXT, \n\tEXTRACT_DATE, \n\tAS_OF_DATE, \n\tRECORD_COUNT, \n\tSOURCE_SYSTEM_ID, \n\tAUDIT_ID_OP AS AUDIT_ID\n\tFROM EXP_CLM_COMMENTS_STAGE\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}

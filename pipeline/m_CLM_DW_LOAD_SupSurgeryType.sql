@@ -15,14 +15,12 @@ EXP_Src_Values AS (
 	-- IS_SPACES(CS01_CODE),'N/A',
 	-- LENGTH(CS01_CODE)=0,'N/A',
 	-- LTRIM(RTRIM(CS01_CODE)))
-	DECODE(TRUE,
-		CS01_CODE IS NULL, 'N/A',
-		LENGTH(CS01_CODE)>0 AND TRIM(CS01_CODE)='', 'N/A',
-		LENGTH(CS01_CODE
-		) = 0, 'N/A',
-		LTRIM(RTRIM(CS01_CODE
-			)
-		)
+	DECODE(
+	    TRUE,
+	    CS01_CODE IS NULL, 'N/A',
+	    LENGTH(CS01_CODE)>0 AND TRIM(CS01_CODE)='', 'N/A',
+	    LENGTH(CS01_CODE) = 0, 'N/A',
+	    LTRIM(RTRIM(CS01_CODE))
 	) AS o_CS01_CODE,
 	CS01_CODE_DES,
 	-- *INF*: DECODE(TRUE,
@@ -30,20 +28,16 @@ EXP_Src_Values AS (
 	-- IS_SPACES(CS01_CODE_DES),'N/A',
 	-- LENGTH(CS01_CODE_DES)=0,'N/A',
 	-- LTRIM(RTRIM(CS01_CODE_DES)))
-	DECODE(TRUE,
-		CS01_CODE_DES IS NULL, 'N/A',
-		LENGTH(CS01_CODE_DES)>0 AND TRIM(CS01_CODE_DES)='', 'N/A',
-		LENGTH(CS01_CODE_DES
-		) = 0, 'N/A',
-		LTRIM(RTRIM(CS01_CODE_DES
-			)
-		)
+	DECODE(
+	    TRUE,
+	    CS01_CODE_DES IS NULL, 'N/A',
+	    LENGTH(CS01_CODE_DES)>0 AND TRIM(CS01_CODE_DES)='', 'N/A',
+	    LENGTH(CS01_CODE_DES) = 0, 'N/A',
+	    LTRIM(RTRIM(CS01_CODE_DES))
 	) AS o_CS01_CODE_DES,
 	SOURCE_SYSTEM_ID,
 	-- *INF*: ltrim(rtrim(SOURCE_SYSTEM_ID))
-	ltrim(rtrim(SOURCE_SYSTEM_ID
-		)
-	) AS o_SourceSystemId
+	ltrim(rtrim(SOURCE_SYSTEM_ID)) AS o_SourceSystemId
 	FROM SQ_CLAIM_SUPPORT_01_STAGE
 ),
 LKP_SupSurgeryType AS (
@@ -82,33 +76,24 @@ EXP_TargetLkp_Detect_Changes AS (
 	-- 
 	--    )
 	--   
-	IFF(Lkp_SupSurgeryTypeId IS NULL,
-		'NEW',
-		IFF(LTRIM(RTRIM(CS01_CODE
-				)
-			) != LTRIM(RTRIM(Lkp_SurgeryTypeCode
-				)
-			) 
-			OR LTRIM(RTRIM(CS01_CODE_DES
-				)
-			) != LTRIM(RTRIM(Lkp_SurgeryTypeDescription
-				)
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    Lkp_SupSurgeryTypeId IS NULL, 'NEW',
+	    IFF(
+	        LTRIM(RTRIM(CS01_CODE)) != LTRIM(RTRIM(Lkp_SurgeryTypeCode))
+	        or LTRIM(RTRIM(CS01_CODE_DES)) != LTRIM(RTRIM(Lkp_SurgeryTypeDescription)),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangeFlag,
 	-- *INF*: iif(v_ChangedFlag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_ChangedFlag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_ChangedFlag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
 	1 AS CurrentSnapshotFlag,
@@ -194,9 +179,10 @@ EXP_Lag_ExpirationDate AS (
 	-- --SurgeryTypeDescription=
 	-- --v_PREV_ROW_SurgeryTypeDescription, ADD_TO_DATE(v_PREV_ROW_EffectiveDate,'SS',-1),
 	-- Orig_ExpirationDate)
-	DECODE(TRUE,
-		SurgeryTypeCode = v_PREV_ROW_SurgeryTypeCode, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
-		Orig_ExpirationDate
+	DECODE(
+	    TRUE,
+	    SurgeryTypeCode = v_PREV_ROW_SurgeryTypeCode, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
+	    Orig_ExpirationDate
 	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	v_PREV_ROW_EffectiveDate,

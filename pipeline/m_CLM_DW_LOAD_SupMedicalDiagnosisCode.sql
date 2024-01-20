@@ -18,14 +18,12 @@ EXP_Src_Values AS (
 	-- IS_SPACES(code),'N/A',
 	-- LENGTH(code)=0,'N/A',
 	-- LTRIM(RTRIM(code)))
-	DECODE(TRUE,
-		code IS NULL, 'N/A',
-		LENGTH(code)>0 AND TRIM(code)='', 'N/A',
-		LENGTH(code
-		) = 0, 'N/A',
-		LTRIM(RTRIM(code
-			)
-		)
+	DECODE(
+	    TRUE,
+	    code IS NULL, 'N/A',
+	    LENGTH(code)>0 AND TRIM(code)='', 'N/A',
+	    LENGTH(code) = 0, 'N/A',
+	    LTRIM(RTRIM(code))
 	) AS o_code,
 	short_descript,
 	-- *INF*: DECODE(TRUE,
@@ -33,14 +31,12 @@ EXP_Src_Values AS (
 	-- IS_SPACES(short_descript),'N/A',
 	-- LENGTH(short_descript)=0,'N/A',
 	-- LTRIM(RTRIM(short_descript)))
-	DECODE(TRUE,
-		short_descript IS NULL, 'N/A',
-		LENGTH(short_descript)>0 AND TRIM(short_descript)='', 'N/A',
-		LENGTH(short_descript
-		) = 0, 'N/A',
-		LTRIM(RTRIM(short_descript
-			)
-		)
+	DECODE(
+	    TRUE,
+	    short_descript IS NULL, 'N/A',
+	    LENGTH(short_descript)>0 AND TRIM(short_descript)='', 'N/A',
+	    LENGTH(short_descript) = 0, 'N/A',
+	    LTRIM(RTRIM(short_descript))
 	) AS o_short_descript,
 	long_descript,
 	-- *INF*: DECODE(TRUE,
@@ -48,14 +44,12 @@ EXP_Src_Values AS (
 	-- IS_SPACES(long_descript),'N/A',
 	-- LENGTH(long_descript)=0,'N/A',
 	-- LTRIM(RTRIM(long_descript)))
-	DECODE(TRUE,
-		long_descript IS NULL, 'N/A',
-		LENGTH(long_descript)>0 AND TRIM(long_descript)='', 'N/A',
-		LENGTH(long_descript
-		) = 0, 'N/A',
-		LTRIM(RTRIM(long_descript
-			)
-		)
+	DECODE(
+	    TRUE,
+	    long_descript IS NULL, 'N/A',
+	    LENGTH(long_descript)>0 AND TRIM(long_descript)='', 'N/A',
+	    LENGTH(long_descript) = 0, 'N/A',
+	    LTRIM(RTRIM(long_descript))
 	) AS o_long_descript,
 	med_class_code_type_id
 	FROM SQ_MedicalDiagnosisCodeStage
@@ -136,43 +130,26 @@ EXP_TargetLkp_Detect_Changes AS (
 	--    'UPDATE', 'NOCHANGE' )
 	-- 
 	--    )
-	IFF(Lkp_SupMedicalCauseCodeId IS NULL,
-		'NEW',
-		IFF(ltrim(rtrim(Lkp_SupMedicalClassCodeTypeId
-				)
-			) != ltrim(rtrim(SupMedicalClassCodeTypeId
-				)
-			) 
-			OR ltrim(rtrim(Lkp_MedicalDiagnosisCode
-				)
-			) != ltrim(rtrim(MedicalDiagnosisCode
-				)
-			) 
-			OR ltrim(rtrim(Lkp_ShortDescription
-				)
-			) != ltrim(rtrim(ShortDescription
-				)
-			) 
-			OR ltrim(rtrim(Lkp_LongDescription
-				)
-			) != ltrim(rtrim(LongDescription
-				)
-			),
-			'UPDATE',
-			'NOCHANGE'
-		)
+	IFF(
+	    Lkp_SupMedicalCauseCodeId IS NULL, 'NEW',
+	    IFF(
+	        ltrim(rtrim(Lkp_SupMedicalClassCodeTypeId)) != ltrim(rtrim(SupMedicalClassCodeTypeId))
+	        or ltrim(rtrim(Lkp_MedicalDiagnosisCode)) != ltrim(rtrim(MedicalDiagnosisCode))
+	        or ltrim(rtrim(Lkp_ShortDescription)) != ltrim(rtrim(ShortDescription))
+	        or ltrim(rtrim(Lkp_LongDescription)) != ltrim(rtrim(LongDescription)),
+	        'UPDATE',
+	        'NOCHANGE'
+	    )
 	) AS v_ChangedFlag,
 	v_ChangedFlag AS ChangedFlag,
 	-- *INF*: iif(v_ChangedFlag='NEW',
 	-- 	to_date('01/01/1800 01:00:00','MM/DD/YYYY HH24:MI:SS'),sysdate)
-	IFF(v_ChangedFlag = 'NEW',
-		to_date('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'
-		),
-		sysdate
+	IFF(
+	    v_ChangedFlag = 'NEW', TO_TIMESTAMP('01/01/1800 01:00:00', 'MM/DD/YYYY HH24:MI:SS'),
+	    CURRENT_TIMESTAMP
 	) AS EffectiveDate,
 	-- *INF*: TO_DATE('12/31/2100 23:59:59','MM/DD/YYYY HH24:MI:SS')
-	TO_DATE('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS'
-	) AS ExpirationDate,
+	TO_TIMESTAMP('12/31/2100 23:59:59', 'MM/DD/YYYY HH24:MI:SS') AS ExpirationDate,
 	@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SourceSystemId,
 	SYSDATE AS CreatedDate,
 	SYSDATE AS ModifiedDate,
@@ -263,9 +240,10 @@ EXP_Lag_ExpirationDate AS (
 	-- *INF*: DECODE(TRUE,
 	-- 	MedicalDiagnosisCode= v_PREV_ROW_MedicalDiagnosisCode, ADD_TO_DATE(v_PREV_ROW_EffectiveDate,'SS',-1),
 	-- 	orig_ExpirationDate)
-	DECODE(TRUE,
-		MedicalDiagnosisCode = v_PREV_ROW_MedicalDiagnosisCode, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
-		orig_ExpirationDate
+	DECODE(
+	    TRUE,
+	    MedicalDiagnosisCode = v_PREV_ROW_MedicalDiagnosisCode, DATEADD(SECOND,- 1,v_PREV_ROW_EffectiveDate),
+	    orig_ExpirationDate
 	) AS v_ExpirationDate,
 	v_ExpirationDate AS ExpirationDate,
 	0 AS CurrentSnapshotFlag,

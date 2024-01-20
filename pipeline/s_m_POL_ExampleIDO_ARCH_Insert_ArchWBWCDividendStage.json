@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBWCDividendStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBWCDividendStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBWCDividendStage AS (\n\tSELECT\n\t\tWBWCDividendStageId AS WBWCDividendStageID,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tWBWCDividendId,\n\t\tSessionId,\n\t\tDividendType,\n\t\tManualDividendCalculation,\n\t\tDividendOptions,\n\t\tManualIncurredLossRatio,\n\t\tManualDividendPercentagePaid,\n\t\tManualGrossVariableDividendPercentage,\n\t\tManualTotalEarnedPremium,\n\t\tManualPreviouslyPaidDividentPercentage,\n\t\tManualNetVariableDividendPercentage,\n\t\tManualNetDividendAmount,\n\t\tManualPreviouslyNetVariableDividendPercentage,\n\t\tManualPreviouslyPaidNetVariableDividend,\n\t\tState,\n\t\tProjectedDividendDate,\n\t\tDividendPaid,\n\t\tDividendPaidDate,\n\t\tInDividendSelectEditMode,\n\t\tDividendSoftMessage,\n\t\tDividendMultiStateSoftMessage,\n\t\tArgentCappedFlatDividendPremium,\n\t\tArgentFlatDividendPremium,\n\t\tArgentFlatVariableDividendPremium,\n\t\tArgentVariableDividendPremium,\n\t\tCLNSICappedFlatDividendPremium,\n\t\tCLNSIFlatDividendPremium,\n\t\tCLNSIFlatVariableDividendPremium,\n\t\tCLNSIVariableDividendPremium,\n\t\tDividendIncurredLossRatio,\n\t\tPremium,\n\t\tPercentage,\n\t\tWCLineId\n\tFROM WBWCDividendStage\n),\nEXP_Values AS (\n\tSELECT\n\tInDividendSelectEditMode AS i_InDividendSelectEditMode,\n\tManualDividendCalculation AS i_ManualDividendCalculation,\n\tWBWCDividendStageID,\n\tExtractDate,\n\tSourceSystemId,\n\tWBWCDividendId,\n\tSessionId,\n\tDividendType,\n\tDividendOptions,\n\tManualIncurredLossRatio,\n\tManualDividendPercentagePaid,\n\tManualGrossVariableDividendPercentage,\n\tManualTotalEarnedPremium,\n\tManualPreviouslyPaidDividentPercentage,\n\tManualNetVariableDividendPercentage,\n\tManualNetDividendAmount,\n\tManualPreviouslyNetVariableDividendPercentage,\n\tManualPreviouslyPaidNetVariableDividend,\n\tState,\n\tProjectedDividendDate,\n\tDividendPaid,\n\tDividendPaidDate,\n\tDividendSoftMessage,\n\tDividendMultiStateSoftMessage,\n\tArgentCappedFlatDividendPremium,\n\tArgentFlatDividendPremium,\n\tArgentFlatVariableDividendPremium,\n\tArgentVariableDividendPremium,\n\tCLNSICappedFlatDividendPremium,\n\tCLNSIFlatDividendPremium,\n\tCLNSIFlatVariableDividendPremium,\n\tCLNSIVariableDividendPremium,\n\tDividendIncurredLossRatio,\n\tPremium,\n\tPercentage,\n\t-- *INF*: DECODE(i_InDividendSelectEditMode,'T','1','F','0')\n\tDECODE(\n\t    i_InDividendSelectEditMode,\n\t    'T', '1',\n\t    'F', '0'\n\t) AS o_InDividendSelectEditMode,\n\t-- *INF*: DECODE(i_ManualDividendCalculation,'T','1','F','0')\n\tDECODE(\n\t    i_ManualDividendCalculation,\n\t    'T', '1',\n\t    'F', '0'\n\t) AS o_ManualDividendCalculation,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId,\n\tWCLineId\n\tFROM SQ_WBWCDividendStage\n),\nArchWBWCDividendStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchWBWCDividendStage\n\t(ExtractDate, SourceSystemId, AuditId, WBWCDividendStageId, WBWCDividendId, SessionId, DividendType, ManualDividendCalculation, DividendOptions, ManualIncurredLossRatio, ManualDividendPercentagePaid, ManualGrossVariableDividendPercentage, ManualTotalEarnedPremium, ManualPreviouslyPaidDividentPercentage, ManualNetVariableDividendPercentage, ManualNetDividendAmount, ManualPreviouslyNetVariableDividendPercentage, ManualPreviouslyPaidNetVariableDividend, State, ProjectedDividendDate, DividendPaid, DividendPaidDate, InDividendSelectEditMode, DividendSoftMessage, DividendMultiStateSoftMessage, ArgentCappedFlatDividendPremium, ArgentFlatDividendPremium, ArgentFlatVariableDividendPremium, ArgentVariableDividendPremium, CLNSICappedFlatDividendPremium, CLNSIFlatDividendPremium, CLNSIFlatVariableDividendPremium, CLNSIVariableDividendPremium, DividendIncurredLossRatio, Premium, Percentage, WCLineId)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBWCDividendStageID AS WBWCDIVIDENDSTAGEID, \n\tWBWCDIVIDENDID, \n\tSESSIONID, \n\tDIVIDENDTYPE, \n\to_ManualDividendCalculation AS MANUALDIVIDENDCALCULATION, \n\tDIVIDENDOPTIONS, \n\tMANUALINCURREDLOSSRATIO, \n\tMANUALDIVIDENDPERCENTAGEPAID, \n\tMANUALGROSSVARIABLEDIVIDENDPERCENTAGE, \n\tMANUALTOTALEARNEDPREMIUM, \n\tMANUALPREVIOUSLYPAIDDIVIDENTPERCENTAGE, \n\tMANUALNETVARIABLEDIVIDENDPERCENTAGE, \n\tMANUALNETDIVIDENDAMOUNT, \n\tMANUALPREVIOUSLYNETVARIABLEDIVIDENDPERCENTAGE, \n\tMANUALPREVIOUSLYPAIDNETVARIABLEDIVIDEND, \n\tSTATE, \n\tPROJECTEDDIVIDENDDATE, \n\tDIVIDENDPAID, \n\tDIVIDENDPAIDDATE, \n\to_InDividendSelectEditMode AS INDIVIDENDSELECTEDITMODE, \n\tDIVIDENDSOFTMESSAGE, \n\tDIVIDENDMULTISTATESOFTMESSAGE, \n\tARGENTCAPPEDFLATDIVIDENDPREMIUM, \n\tARGENTFLATDIVIDENDPREMIUM, \n\tARGENTFLATVARIABLEDIVIDENDPREMIUM, \n\tARGENTVARIABLEDIVIDENDPREMIUM, \n\tCLNSICAPPEDFLATDIVIDENDPREMIUM, \n\tCLNSIFLATDIVIDENDPREMIUM, \n\tCLNSIFLATVARIABLEDIVIDENDPREMIUM, \n\tCLNSIVARIABLEDIVIDENDPREMIUM, \n\tDIVIDENDINCURREDLOSSRATIO, \n\tPREMIUM, \n\tPERCENTAGE, \n\tWCLINEID\n\tFROM EXP_Values\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

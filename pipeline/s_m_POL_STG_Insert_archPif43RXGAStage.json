@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_STG_Insert_archPif43RXGAStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_STG_Insert_archPif43RXGAStage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Pif43RXGAStage AS (\n\tSELECT\n\t\tPif43RXGAStageId,\n\t\tExtractDate,\n\t\tSourceSystemid,\n\t\tPifSymbol,\n\t\tPifPolicyNumber,\n\t\tPifModule,\n\t\tPMDRXA1SegmentId,\n\t\tPMDRXA1SegmentStatus,\n\t\tPMDRXA1YearTransaction,\n\t\tPMDRXA1MonthTransaction,\n\t\tPMDRXA1DayTransaction,\n\t\tPMDRXA1SegmentLevelCode,\n\t\tPMDRXA1SegmentPartCode,\n\t\tPMDRXA1SubPartCode,\n\t\tPMDRXA1InsuranceLine,\n\t\tPMDRXA1LocationNumber,\n\t\tPMDRXA1Coverage,\n\t\tPMDRXA1Sequence,\n\t\tPMDRXA1YearItemEffective,\n\t\tPMDRXA1MonthItemEffective,\n\t\tPMDRXA1DayItemEffective,\n\t\tPMDRXA1YearProcess,\n\t\tPMDRXA1MonthProcess,\n\t\tPMDRXA1DayProcess,\n\t\tPMDRXA1PmsUsage,\n\t\tPMDRXA1LimitAgg,\n\t\tPMDRXA1Deductible,\n\t\tPMDRXA1Sym1stTwo,\n\t\tPMDRXA1Sym2ndTwo,\n\t\tPMDRXA1Sym3rdTwo,\n\t\tPMDRXA1ExperMod,\n\t\tPMDRXA1ScheduleMod,\n\t\tPMDRXA1ExpenseMod,\n\t\tPMDRXA1OtherMod,\n\t\tPMDRXA1PkgMod,\n\t\tPMDRXA1ComRedMod,\n\t\tPMDRXA1DecChangeFlag,\n\t\tPMDRXA1ConvertedTerr,\n\t\tPMDRXA1TerrManualOverride,\n\t\tPMDRXA1MultipleTerritories,\n\t\tPMDRXA1CustomerFutureUse,\n\t\tPMDRXA1Yr2000CustUse\n\tFROM Pif43RXGAStage\n),\nEXP_Pif43RXGAStage AS (\n\tSELECT\n\tPif43RXGAStageId,\n\tExtractDate,\n\tSourceSystemid,\n\tPifSymbol,\n\tPifPolicyNumber,\n\tPifModule,\n\tPMDRXA1SegmentId,\n\tPMDRXA1SegmentStatus,\n\tPMDRXA1YearTransaction,\n\tPMDRXA1MonthTransaction,\n\tPMDRXA1DayTransaction,\n\tPMDRXA1SegmentLevelCode,\n\tPMDRXA1SegmentPartCode,\n\tPMDRXA1SubPartCode,\n\tPMDRXA1InsuranceLine,\n\tPMDRXA1LocationNumber,\n\tPMDRXA1Coverage,\n\tPMDRXA1Sequence,\n\tPMDRXA1YearItemEffective,\n\tPMDRXA1MonthItemEffective,\n\tPMDRXA1DayItemEffective,\n\tPMDRXA1YearProcess,\n\tPMDRXA1MonthProcess,\n\tPMDRXA1DayProcess,\n\tPMDRXA1PmsUsage,\n\tPMDRXA1LimitAgg,\n\tPMDRXA1Deductible,\n\tPMDRXA1Sym1stTwo,\n\tPMDRXA1Sym2ndTwo,\n\tPMDRXA1Sym3rdTwo,\n\tPMDRXA1ExperMod,\n\tPMDRXA1ScheduleMod,\n\tPMDRXA1ExpenseMod,\n\tPMDRXA1OtherMod,\n\tPMDRXA1PkgMod,\n\tPMDRXA1ComRedMod,\n\tPMDRXA1DecChangeFlag,\n\tPMDRXA1ConvertedTerr,\n\tPMDRXA1TerrManualOverride,\n\tPMDRXA1MultipleTerritories,\n\tPMDRXA1CustomerFutureUse,\n\tPMDRXA1Yr2000CustUse,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_audit_id\n\tFROM SQ_Pif43RXGAStage\n),\nArchPif43RXGAStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.ArchPif43RXGAStage\n\t(ExtractDate, SourceSystemid, AuditId, PifSymbol, PifPolicyNumber, PifModule, PMDRXA1SegmentId, PMDRXA1SegmentStatus, PMDRXA1YearTransaction, PMDRXA1MonthTransaction, PMDRXA1DayTransaction, PMDRXA1SegmentLevelCode, PMDRXA1SegmentPartCode, PMDRXA1SubPartCode, PMDRXA1InsuranceLine, PMDRXA1LocationNumber, PMDRXA1Coverage, PMDRXA1Sequence, PMDRXA1YearItemEffective, PMDRXA1MonthItemEffective, PMDRXA1DayItemEffective, PMDRXA1YearProcess, PMDRXA1MonthProcess, PMDRXA1DayProcess, PMDRXA1PmsUsage, PMDRXA1LimitAgg, PMDRXA1Deductible, PMDRXA1Sym1stTwo, PMDRXA1Sym2ndTwo, PMDRXA1Sym3rdTwo, PMDRXA1ExperMod, PMDRXA1ScheduleMod, PMDRXA1ExpenseMod, PMDRXA1OtherMod, PMDRXA1PkgMod, PMDRXA1ComRedMod, PMDRXA1DecChangeFlag, PMDRXA1ConvertedTerr, PMDRXA1TerrManualOverride, PMDRXA1MultipleTerritories, PMDRXA1CustomerFutureUse, PMDRXA1Yr2000CustUse)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_audit_id AS AUDITID, \n\tPIFSYMBOL, \n\tPIFPOLICYNUMBER, \n\tPIFMODULE, \n\tPMDRXA1SEGMENTID, \n\tPMDRXA1SEGMENTSTATUS, \n\tPMDRXA1YEARTRANSACTION, \n\tPMDRXA1MONTHTRANSACTION, \n\tPMDRXA1DAYTRANSACTION, \n\tPMDRXA1SEGMENTLEVELCODE, \n\tPMDRXA1SEGMENTPARTCODE, \n\tPMDRXA1SUBPARTCODE, \n\tPMDRXA1INSURANCELINE, \n\tPMDRXA1LOCATIONNUMBER, \n\tPMDRXA1COVERAGE, \n\tPMDRXA1SEQUENCE, \n\tPMDRXA1YEARITEMEFFECTIVE, \n\tPMDRXA1MONTHITEMEFFECTIVE, \n\tPMDRXA1DAYITEMEFFECTIVE, \n\tPMDRXA1YEARPROCESS, \n\tPMDRXA1MONTHPROCESS, \n\tPMDRXA1DAYPROCESS, \n\tPMDRXA1PMSUSAGE, \n\tPMDRXA1LIMITAGG, \n\tPMDRXA1DEDUCTIBLE, \n\tPMDRXA1SYM1STTWO, \n\tPMDRXA1SYM2NDTWO, \n\tPMDRXA1SYM3RDTWO, \n\tPMDRXA1EXPERMOD, \n\tPMDRXA1SCHEDULEMOD, \n\tPMDRXA1EXPENSEMOD, \n\tPMDRXA1OTHERMOD, \n\tPMDRXA1PKGMOD, \n\tPMDRXA1COMREDMOD, \n\tPMDRXA1DECCHANGEFLAG, \n\tPMDRXA1CONVERTEDTERR, \n\tPMDRXA1TERRMANUALOVERRIDE, \n\tPMDRXA1MULTIPLETERRITORIES, \n\tPMDRXA1CUSTOMERFUTUREUSE, \n\tPMDRXA1YR2000CUSTUSE\n\tFROM EXP_Pif43RXGAStage\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

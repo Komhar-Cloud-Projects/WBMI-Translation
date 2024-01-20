@@ -1,0 +1,47 @@
+{
+    "name": "s_m_POL_ExampleIDO_ARCH_Insert_ArchWBCfLocationAccountStage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_POL_ExampleIDO_ARCH_Insert_ArchWBCfLocationAccount_00",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_WBCFLocationAccountStage AS (\n\tSELECT\n\t\tWBCFLocationAccountStageId,\n\t\tExtractDate,\n\t\tSourceSystemId,\n\t\tWBCLLocationAccountId,\n\t\tWBCFLocationAccountId,\n\t\tSessionId,\n\t\tPreferredPropertyCredit,\n\t\tLargeValueRelativityCredit,\n\t\tWidth,\n\t\tFoodContaminationAdvertisingExpenseLimitStoredValue,\n\t\tFoodContaminationIndicatorStoredValue,\n\t\tFoodContaminationLimitStoredValue,\n\t\tFirstTimeOnBuildingScreen,\n\t\tPreferredPropertyCreditFactor\n\tFROM WBCFLocationAccountStage\n),\nEXP_Metadata AS (\n\tSELECT\n\tWBCFLocationAccountStageId,\n\tExtractDate,\n\tSourceSystemId,\n\tWBCLLocationAccountId,\n\tWBCFLocationAccountId,\n\tSessionId,\n\tPreferredPropertyCredit AS i_PreferredPropertyCredit,\n\t-- *INF*: DECODE(i_PreferredPropertyCredit,\r\n\t-- 'T',\r\n\t-- '1',\r\n\t-- 'F',\r\n\t-- '0',\r\n\t-- NULL\r\n\t-- )\n\tDECODE(\n\t    i_PreferredPropertyCredit,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_PreferredPropertyCredit,\n\tLargeValueRelativityCredit AS i_LargeValueRelativityCredit,\n\t-- *INF*: DECODE(i_LargeValueRelativityCredit,\r\n\t-- 'T',\r\n\t-- '1',\r\n\t-- 'F',\r\n\t-- '0',\r\n\t-- NULL\r\n\t-- )\n\tDECODE(\n\t    i_LargeValueRelativityCredit,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_LargeValueRelativityCredit,\n\tWidth,\n\tFoodContaminationAdvertisingExpenseLimitStoredValue,\n\tFoodContaminationIndicatorStoredValue,\n\tFoodContaminationLimitStoredValue,\n\tFirstTimeOnBuildingScreen AS i_FirstTimeOnBuildingScreen,\n\t-- *INF*: DECODE(i_FirstTimeOnBuildingScreen,\r\n\t-- 'T',\r\n\t-- '1',\r\n\t-- 'F',\r\n\t-- '0',\r\n\t-- NULL\r\n\t-- )\n\tDECODE(\n\t    i_FirstTimeOnBuildingScreen,\n\t    'T', '1',\n\t    'F', '0',\n\t    NULL\n\t) AS o_FirstTimeOnBuildingScreen,\n\tPreferredPropertyCreditFactor,\n\t@{pipeline().parameters.WBMI_AUDIT_CONTROL_RUN_ID} AS o_AuditId\n\tFROM SQ_WBCFLocationAccountStage\n),\nArchWBCFLocationAccountStage AS (\n\tINSERT INTO @{pipeline().parameters.TARGET_TABLE_OWNER}.Shortcut_to_ArchWBCFLocationAccountStage\n\t(ExtractDate, SourceSystemId, AuditId, WBCFLocationAccountStageId, WBCLLocationAccountId, WBCFLocationAccountId, SessionId, PreferredPropertyCredit, LargeValueRelativityCredit, Width, FirstTimeOnBuildingScreen, PreferredPropertyCreditFactor, FoodContaminationAdvertisingExpenseLimitStoredValue, FoodContaminationIndicatorStoredValue, FoodContaminationLimitStoredValue)\n\tSELECT \n\tEXTRACTDATE, \n\tSOURCESYSTEMID, \n\to_AuditId AS AUDITID, \n\tWBCFLOCATIONACCOUNTSTAGEID, \n\tWBCLLOCATIONACCOUNTID, \n\tWBCFLOCATIONACCOUNTID, \n\tSESSIONID, \n\to_PreferredPropertyCredit AS PREFERREDPROPERTYCREDIT, \n\to_LargeValueRelativityCredit AS LARGEVALUERELATIVITYCREDIT, \n\tWIDTH, \n\to_FirstTimeOnBuildingScreen AS FIRSTTIMEONBUILDINGSCREEN, \n\tPREFERREDPROPERTYCREDITFACTOR, \n\tFOODCONTAMINATIONADVERTISINGEXPENSELIMITSTOREDVALUE, \n\tFOODCONTAMINATIONINDICATORSTOREDVALUE, \n\tFOODCONTAMINATIONLIMITSTOREDVALUE\n\tFROM EXP_Metadata\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "WBMI_AUDIT_CONTROL_RUN_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "TARGET_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "PolicyStaging/"
+        },
+        "annotations": []
+    }
+}

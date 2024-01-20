@@ -1,0 +1,51 @@
+{
+    "name": "s_m_CUS_STG_Insert_DCT_Party_stage",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CUS_STG_Insert_DCT_Party_stage",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_DC_Party AS (\n\tSELECT DC_Party.PartyId, DC_Party.SessionId, DC_Party.PartyXmlId, DC_Party.Type, DC_Party.OtherType, DC_Party.Name, DC_Party.DateOfBirth, DC_Party.Gender, DC_Party.FirstName, DC_Party.LastName, DC_Party.MiddleName, DC_Party.MaritalStatus, DC_Party.Title, DC_Party.Reference, DC_Party.ContactName \r\n\tFROM\r\n\t DC_Party\r\n\tINNER JOIN @{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session on\r\n\t@{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Party.SessionId=@{pipeline().parameters.SOURCE_TABLE_OWNER}.DC_Session.SessionId\r\n\tWHERE\r\n\tDC_Session.CreateDateTime >=  '@{pipeline().parameters.SELECTION_START_TS}' \r\n\tand\r\n\tDC_Session.CreateDateTime <  '@{pipeline().parameters.SELECTION_END_TS}' \r\n\tORDER BY\r\n\tDC_Party.SessionId\n),\nExp_Party AS (\n\tSELECT\n\tPartyId,\n\tSessionId,\n\tPartyXmlId,\n\tType,\n\tOtherType,\n\tName,\n\tDateOfBirth,\n\tGender,\n\tFirstName,\n\tLastName,\n\tMiddleName,\n\tMaritalStatus,\n\tTitle,\n\tReference,\n\tContactName,\n\tSysdate AS ExtractDate,\n\t'DCT' AS SourceSystemID\n\tFROM SQ_DC_Party\n),\nDCPartyStage AS (\n\tINSERT INTO Shortcut_to_DCPartyStage\n\t(ExtractDate, SourceSystemid, PartyId, SessionId, PartyXmlId, Type, OtherType, Name, DateOfBirth, Gender, FirstName, LastName, MiddleName, MaritalStatus, Title, Reference, ContactName)\n\tSELECT \n\tEXTRACTDATE, \n\tSourceSystemID AS SOURCESYSTEMID, \n\tPARTYID, \n\tSESSIONID, \n\tPARTYXMLID, \n\tTYPE, \n\tOTHERTYPE, \n\tNAME, \n\tDATEOFBIRTH, \n\tGENDER, \n\tFIRSTNAME, \n\tLASTNAME, \n\tMIDDLENAME, \n\tMARITALSTATUS, \n\tTITLE, \n\tREFERENCE, \n\tCONTACTNAME\n\tFROM Exp_Party\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_TABLE_OWNER": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_START_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            },
+            "SELECTION_END_TS": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "CustomerStaging/"
+        },
+        "annotations": []
+    }
+}

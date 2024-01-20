@@ -1,0 +1,43 @@
+{
+    "name": "s_m_CLM_STG_Insert_CHK",
+    "properties": {
+        "activities": [
+            {
+                "name": "m_CLM_STG_Insert_CHK",
+                "type": "Script",
+                "dependsOn": [],
+                "policy": {
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "linkedServiceName": {
+                    "referenceName": "ls_SNOWFLAKE_WBMI",
+                    "type": "LinkedServiceReference"
+                },
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "WITH\nSQ_Chk AS (\n\tSELECT\n\t\tRecordId,\n\t\tCTpId,\n\t\tId,\n\t\tOrigId,\n\t\tAltSrt,\n\t\tAltSrt1,\n\t\tIdPre,\n\t\tModVer,\n\t\tModCd,\n\t\tCmpId,\n\t\tPayToNam1,\n\t\tPayToNam2,\n\t\tPayToNam3,\n\t\tIssDt,\n\t\tPayAmt,\n\t\tOrigPayAmt,\n\t\tResrvAmt,\n\t\tBnkId,\n\t\tBnkNum,\n\t\tLosDt,\n\t\tDt1,\n\t\tDt2,\n\t\tDt3,\n\t\tDt4,\n\t\tDt5,\n\t\tTime1,\n\t\tTime2,\n\t\tTranCd,\n\t\tTaxId,\n\t\tTaxTyp,\n\t\tTax1099,\n\t\tRptAmt1099,\n\t\tSpltPay1099,\n\t\tVndTyp,\n\t\tVndId,\n\t\tAgentTyp,\n\t\tAgentId,\n\t\tMailToNam,\n\t\tMailToAdr1,\n\t\tMailToAdr2,\n\t\tMailToAdr3,\n\t\tMailToAdr4,\n\t\tMailToAdr5,\n\t\tCity,\n\t\tState,\n\t\tCntyCd,\n\t\tCountryId,\n\t\tZipCd,\n\t\tBillState,\n\t\tBillDt,\n\t\tPhNum1,\n\t\tPhNum2,\n\t\tFaxNum,\n\t\tFaxNumTyp,\n\t\tFaxToNam,\n\t\tEmailAdr,\n\t\tMrgId,\n\t\tMrgId2,\n\t\tPayCd,\n\t\tPayToCd,\n\t\tReqId,\n\t\tExamId,\n\t\tExamNam,\n\t\tAdjId,\n\t\tCurId,\n\t\tOffice,\n\t\tDeptCd,\n\t\tMailStop,\n\t\tReissCd,\n\t\tAtchCd,\n\t\tReqNum,\n\t\tImpBch,\n\t\tImpBnkBch,\n\t\tPrtBch,\n\t\tRcnBch,\n\t\tSavRcnBch,\n\t\tExpBch,\n\t\tPdBch,\n\t\tVoidExpCd,\n\t\tPrevVoidExpCd,\n\t\tWriteOffExpCd,\n\t\tSrchLtrCd,\n\t\tPrtCnt,\n\t\tRcnCd,\n\t\tVoidCd,\n\t\tVoidId,\n\t\tVoidDt,\n\t\tUnVoidCd,\n\t\tUnVoidId,\n\t\tUnVoidDt,\n\t\tSigCd,\n\t\tSigCd1,\n\t\tSigCd2,\n\t\tDrftCd,\n\t\tDscCd,\n\t\tRestCd,\n\t\tXCd1,\n\t\tXCd2,\n\t\tXCd3,\n\t\tXCd4,\n\t\tXCd5,\n\t\tXCd6,\n\t\tXCd7,\n\t\tXCd8,\n\t\tXCd9,\n\t\tXCd10,\n\t\tPayRate,\n\t\tXRate1,\n\t\tXRate2,\n\t\tXRate3,\n\t\tXAmt1,\n\t\tXAmt2,\n\t\tXAmt3,\n\t\tXAmt4,\n\t\tXAmt5,\n\t\tXAmt6,\n\t\tXAmt7,\n\t\tXAmt8,\n\t\tXAmt9,\n\t\tXAmt10,\n\t\tSalaryAmt,\n\t\tMaritalStat,\n\t\tFedExempt,\n\t\tStateExempt,\n\t\tDay30Cd,\n\t\tPstCd,\n\t\tRsnCd,\n\t\tPdCd,\n\t\tPdDt,\n\t\tApprovCd,\n\t\tApprovDt,\n\t\tApprovId,\n\t\tApprovCd2,\n\t\tApprovDt2,\n\t\tApprovId2,\n\t\tApprovCd3,\n\t\tApprovDt3,\n\t\tApprovId3,\n\t\tApprovCd4,\n\t\tApprovDt4,\n\t\tApprovId4,\n\t\tApprovCd5,\n\t\tApprovDt5,\n\t\tApprovId5,\n\t\tApprovCd6,\n\t\tApprovDt6,\n\t\tApprovId6,\n\t\tApprovCd7,\n\t\tApprovDt7,\n\t\tApprovId7,\n\t\tApprovCd8,\n\t\tApprovDt8,\n\t\tApprovId8,\n\t\tApprovCd9,\n\t\tApprovDt9,\n\t\tApprovId9,\n\t\tAddDt,\n\t\tAddTime,\n\t\tAddId,\n\t\tChgDt,\n\t\tChgTime,\n\t\tChgId,\n\t\tSrceCd,\n\t\tFrmCd,\n\t\tRefNum,\n\t\tNamTyp,\n\t\tLstNam,\n\t\tFstNam,\n\t\tMidInit,\n\t\tSalutation,\n\t\tAcctNum,\n\t\tExpAcct,\n\t\tDebitAcct,\n\t\tBnkAcct,\n\t\tBnkRout,\n\t\tAcctNam,\n\t\tEftTypCd,\n\t\tBnkAcct2,\n\t\tBnkRout2,\n\t\tAcctNam2,\n\t\tEftTypCd2,\n\t\tBnkAcct3,\n\t\tBnkRout3,\n\t\tAcctNam3,\n\t\tEftTypCd3,\n\t\tAllocPct1,\n\t\tAllocPct2,\n\t\tAllocPct3,\n\t\tOptCd,\n\t\tEftTranCd,\n\t\tAdviceTyp,\n\t\tRepRsn,\n\t\tEmployerTyp,\n\t\tEmployerId,\n\t\tEmployerNam,\n\t\tEmployerAdr1,\n\t\tEmployerAdr2,\n\t\tEmployerAdr3,\n\t\tProviderTyp,\n\t\tProviderId,\n\t\tProviderNam,\n\t\tCarrierTyp,\n\t\tCarrierId,\n\t\tPolId,\n\t\tInsNam,\n\t\tInsAdr1,\n\t\tInsAdr2,\n\t\tInsAdr3,\n\t\tClaimNum,\n\t\tClmntNum,\n\t\tClmntNam,\n\t\tClmntAdr1,\n\t\tClmntAdr2,\n\t\tClmntAdr3,\n\t\tLosCause,\n\t\tDiagCd1,\n\t\tDiagCd2,\n\t\tDiagCd3,\n\t\tDiagCd4,\n\t\tForRsn1,\n\t\tForRsn2,\n\t\tForRsn3,\n\t\tCommentTxt,\n\t\tXNum1,\n\t\tXNum2,\n\t\tXNum3,\n\t\tXNum4,\n\t\tTransferOutBch,\n\t\tTransferInBch,\n\t\tVchCnt,\n\t\tPrtDt,\n\t\tPrtId,\n\t\tTranDt,\n\t\tTranTime,\n\t\tTranTyp,\n\t\tTranId,\n\t\tBTpId,\n\t\tExamTyp,\n\t\tPriority,\n\t\tDeliveryDt,\n\t\tCardNum,\n\t\tCardTyp,\n\t\tExportStat,\n\t\tPrevExportStat\n\tFROM Chk\n),\nEXP_AUDIT_FIELDS AS (\n\tSELECT\n\tSYSDATE AS EXTRACT_DATE,\n\tSYSDATE AS AS_OF_DATE,\n\t'' AS RECORD_COUNT_OP,\n\t@{pipeline().parameters.SOURCE_SYSTEM_ID} AS SOURCE_SYSTEM_ID,\n\tRecordId,\n\tCTpId,\n\tId,\n\tTranCd,\n\tPdDt\n\tFROM SQ_Chk\n),\nChk_stage AS (\n\tTRUNCATE TABLE Chk_stage;\n\tINSERT INTO Chk_stage\n\t(RecordId, CTpId, Id, TranCd, PdDt, extract_date, as_of_Date, record_count, source_system_id)\n\tSELECT \n\tRECORDID, \n\tCTPID, \n\tID, \n\tTRANCD, \n\tPDDT, \n\tEXTRACT_DATE AS EXTRACT_DATE, \n\tAS_OF_DATE AS AS_OF_DATE, \n\tRECORD_COUNT_OP AS RECORD_COUNT, \n\tSOURCE_SYSTEM_ID AS SOURCE_SYSTEM_ID\n\tFROM EXP_AUDIT_FIELDS\n),"
+                        }
+                    ]
+                },
+                "state": "Inactive",
+                "onInactiveMarkAs": "Succeeded"
+            }
+        ],
+        "parameters": {
+            "SOURCE_SYSTEM_ID": {
+                "type": "string",
+                "defaultValue": "Default Value"
+            }
+        },
+        "folder": {
+            "name": "ClaimsStaging/"
+        },
+        "annotations": []
+    }
+}
